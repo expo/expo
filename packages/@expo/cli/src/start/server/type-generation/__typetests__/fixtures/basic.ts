@@ -15,7 +15,8 @@ type DynamicRouteTemplate = `/colors/[color]` | `/animals/[...animal]` | `/mix/[
 
 type RelativePathString = `./${string}` | `../${string}` | '..';
 type AbsoluteRoute = DynamicRouteTemplate | StaticRoutes;
-type ExternalPathString = `http${string}`;
+type ExternalPathString = `${string}:${string}`;
+
 type ExpoRouterRoutes = DynamicRouteTemplate | StaticRoutes | RelativePathString;
 type AllRoutes = ExpoRouterRoutes | ExternalPathString;
 
@@ -164,7 +165,7 @@ export type Href<T> = T extends Record<'pathname', string> ? HrefObject<T> : Rou
 
 export type HrefObject<
   R extends Record<'pathname', string>,
-  P = R['pathname']
+  P = R['pathname'],
 > = P extends DynamicRouteTemplate
   ? { pathname: P; params: InputRouteParams<P> }
   : P extends Route<P>
@@ -208,6 +209,7 @@ export interface LinkComponent {
  * @param props.replace Should replace the current route without adding to the history.
  * @param props.asChild Forward props to child component. Useful for custom buttons.
  * @param props.children Child elements to render the content.
+ * @param props.className On web, this sets the HTML `class` directly. On native, this can be used with CSS interop tools like Nativewind.
  */
 export declare const Link: LinkComponent;
 
@@ -222,18 +224,18 @@ export declare const Redirect: <T>(
 export declare function useRouter(): Router;
 
 export declare function useLocalSearchParams<
-  T extends AllRoutes | UnknownOutputParams = UnknownOutputParams
+  T extends AllRoutes | UnknownOutputParams = UnknownOutputParams,
 >(): T extends AllRoutes ? SearchParams<T> : T;
 
 /** @deprecated renamed to `useGlobalSearchParams` */
 export declare function useSearchParams<
-  T extends AllRoutes | UnknownOutputParams = UnknownOutputParams
+  T extends AllRoutes | UnknownOutputParams = UnknownOutputParams,
 >(): T extends AllRoutes ? SearchParams<T> : T;
 
 export declare function useGlobalSearchParams<
-  T extends AllRoutes | UnknownOutputParams = UnknownOutputParams
+  T extends AllRoutes | UnknownOutputParams = UnknownOutputParams,
 >(): T extends AllRoutes ? SearchParams<T> : T;
 
 export declare function useSegments<
-  T extends AbsoluteRoute | RouteSegments<AbsoluteRoute> | RelativePathString
+  T extends AbsoluteRoute | RouteSegments<AbsoluteRoute> | RelativePathString,
 >(): T extends AbsoluteRoute ? RouteSegments<T> : T extends string ? string[] : T;

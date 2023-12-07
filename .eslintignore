@@ -21,6 +21,6 @@
 **/bin/**
 **/fastlane/**
 **/ios/**
-**/providers/**
+**/kotlin/providers/**
 **/vendored/**
 /docs/public/static/**

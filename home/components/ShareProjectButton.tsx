@@ -2,9 +2,9 @@ import { useExpoTheme } from 'expo-dev-client-components';
 import * as React from 'react';
 import { Share, StyleSheet, TouchableOpacity } from 'react-native';
 
+import * as Icons from './Icons';
 import Config from '../api/Config';
 import * as UrlUtils from '../utils/UrlUtils';
-import * as Icons from './Icons';
 
 export default function ShareProjectButton(
   props: Partial<React.ComponentProps<typeof TouchableOpacity>> & {

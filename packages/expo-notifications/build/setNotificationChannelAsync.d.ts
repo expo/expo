@@ -10,7 +10,7 @@ import { NotificationChannel, NotificationChannelInput } from './NotificationCha
  * the custom notification sound has to be set on the notification (through the [`NotificationContentInput`](#notificationcontentinput)),
  * and for the custom sound to play on Android versions **above** 8.0, the relevant notification channel must have the custom sound configured
  * (through the [`NotificationChannelInput`](#notificationchannelinput)). For more information,
- * see ["Setting custom notification sounds on Android"](#setting-custom-notification-sounds-on-android).
+ * see [Set custom notification sounds on Android](#set-custom-notification-sounds).
  * @param channelId The channel identifier.
  * @param channel Object representing the channel's configuration.
  * @return A Promise which resolving to the object (of type [`NotificationChannel`](#notificationchannel)) describing the modified channel

@@ -1,19 +1,23 @@
 import { useTheme } from '@expo/styleguide';
 
+import { DotGrid } from './DotGrid';
+
 type Props = {
   source: string;
   alt: string;
   darkSource?: string;
+  disableSrcSet?: boolean;
 };
 
-export const Diagram = ({ source, darkSource, alt }: Props) => {
+export const Diagram = ({ source, darkSource, disableSrcSet, alt }: Props) => {
   const { themeName } = useTheme();
   const isDark = themeName === 'dark';
 
   if (!source.match(/\.png$/)) {
     return (
-      <div className="border border-default rounded-md overflow-hidden my-6 max-w-[750px] m-auto">
-        <picture>
+      <div className="bg-default border relative border-default rounded-md overflow-hidden my-6 max-w-[750px] m-auto">
+        <DotGrid />
+        <picture className="relative">
           {isDark && darkSource && <source srcSet={darkSource} />}
           <img src={source} alt={alt} />
         </picture>
@@ -22,14 +26,19 @@ export const Diagram = ({ source, darkSource, alt }: Props) => {
   }
 
   return (
-    <div className="border border-default rounded-md overflow-hidden my-6 max-w-[750px] m-auto">
-      <picture>
-        {!isDark && <source srcSet={source.replace('.png', '.avif')} type="image/avif" />}
-        {darkSource && isDark && (
+    <div className="bg-default border relative border-default rounded-md overflow-hidden my-6 max-w-[750px] m-auto">
+      <DotGrid />
+      <picture className="relative">
+        {!isDark && !disableSrcSet && (
+          <source srcSet={source.replace('.png', '.avif')} type="image/avif" />
+        )}
+        {darkSource && isDark && !disableSrcSet && (
           <source srcSet={darkSource.replace('.png', '.avif')} type="image/avif" />
         )}
-        {!isDark && <source srcSet={source.replace('.png', '.webp')} type="image/webp" />}
-        {darkSource && isDark && (
+        {!isDark && !disableSrcSet && (
+          <source srcSet={source.replace('.png', '.webp')} type="image/webp" />
+        )}
+        {darkSource && isDark && !disableSrcSet && (
           <source srcSet={darkSource.replace('.png', '.webp')} type="image/webp" />
         )}
         {darkSource && isDark && <source srcSet={darkSource} />}

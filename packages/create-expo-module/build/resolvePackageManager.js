@@ -15,12 +15,18 @@ function resolvePackageManager() {
     else if (userAgent?.startsWith('npm')) {
         return 'npm';
     }
+    else if (userAgent?.startsWith('bun')) {
+        return 'bun';
+    }
     // Try availability
     if (isPackageManagerAvailable('yarn')) {
         return 'yarn';
     }
     else if (isPackageManagerAvailable('pnpm')) {
         return 'pnpm';
+    }
+    else if (isPackageManagerAvailable('bun')) {
+        return 'bun';
     }
     return 'npm';
 }
@@ -39,6 +45,8 @@ function formatRunCommand(manager, cmd) {
             return `pnpm run ${cmd}`;
         case 'yarn':
             return `yarn ${cmd}`;
+        case 'bun':
+            return `bun run ${cmd}`;
         case 'npm':
         default:
             return `npm run ${cmd}`;

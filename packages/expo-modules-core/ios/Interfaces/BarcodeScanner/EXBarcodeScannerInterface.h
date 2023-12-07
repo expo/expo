@@ -6,6 +6,7 @@
 
 @protocol EXBarCodeScannerInterface
 
+#if !TARGET_OS_TV
 - (void)setSession:(AVCaptureSession *)session;
 - (void)setSessionQueue:(dispatch_queue_t)sessionQueue;
 - (void)setOnBarCodeScanned:(void (^)(NSDictionary *))onBarCodeScanned;
@@ -17,5 +18,6 @@
 
 - (void)maybeStartBarCodeScanning;
 - (void)stopBarCodeScanning;
+#endif
 
 @end

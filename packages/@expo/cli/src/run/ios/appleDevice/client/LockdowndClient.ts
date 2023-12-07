@@ -9,9 +9,9 @@ import Debug from 'debug';
 import { Socket } from 'net';
 import * as tls from 'tls';
 
-import { LockdownProtocolClient } from '../protocol/LockdownProtocol';
 import { ResponseError, ServiceClient } from './ServiceClient';
 import { UsbmuxdPairRecord } from './UsbmuxdClient';
+import { LockdownProtocolClient } from '../protocol/LockdownProtocol';
 
 const debug = Debug('expo:apple-device:client:lockdownd');
 

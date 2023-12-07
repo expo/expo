@@ -1,5 +1,9 @@
+import { NewManifest } from 'expo-manifests';
 import { NativeModules } from 'react-native';
 import './setUpErrorHandler.fx';
+
+// Dev launcher manifests are only ones served by servers (not embedded bare manifests)
+export type Manifest = NewManifest;
 
 export { disableErrorHandling } from './DevLauncherErrorManager';
 

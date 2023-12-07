@@ -85,7 +85,6 @@ it('runs `npx expo start --help`', async () => {
         --scheme <scheme>               Custom URI protocol to use when launching an app
         -p, --port <number>             Port to start the dev server on (does not apply to web or tunnel). Default: 8081
         
-        --force-manifest-type <string>  Override auto detection of manifest type. Options: expo-updates, classic
         --private-key-path <path>       Path to private key for code signing. Default: "private-key.pem" in the same directory as the certificate specified by the expo-updates configuration in app.json.
         -h, --help                      Usage info
     "
@@ -173,15 +172,15 @@ describe('server', () => {
 
       // URLs
       expect(manifest.launchAsset.url).toBe(
-        'http://127.0.0.1:8081/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false'
+        'http://127.0.0.1:8081/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false&transform.engine=hermes&transform.routerRoot=app'
       );
       expect(manifest.extra.expoGo.debuggerHost).toBe('127.0.0.1:8081');
       expect(manifest.extra.expoGo.mainModuleName).toBe('node_modules/expo/AppEntry');
       expect(manifest.extra.expoClient.hostUri).toBe('127.0.0.1:8081');
 
       // Manifest
-      expect(manifest.runtimeVersion).toBe('exposdk:47.0.0');
-      expect(manifest.extra.expoClient.sdkVersion).toBe('47.0.0');
+      expect(manifest.runtimeVersion).toBe('exposdk:49.0.0');
+      expect(manifest.extra.expoClient.sdkVersion).toBe('49.0.0');
       expect(manifest.extra.expoClient.slug).toBe('basic-start');
       expect(manifest.extra.expoClient.name).toBe('basic-start');
 

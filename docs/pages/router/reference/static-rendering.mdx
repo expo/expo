@@ -193,16 +193,8 @@ export default function Root({ children }: PropsWithChildren) {
       <head>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
-        {/*
-          This viewport disables scaling which makes the mobile website act more like a native app.
-          However this does reduce built-in accessibility. If you want to enable scaling, use this instead:
-            <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-        */}
-        <meta
-          name="viewport"
-          content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1.00001,viewport-fit=cover"
-        />
         {/*
           Disable body scrolling on web. This makes ScrollView components work closer to how they do on native.
           However, body scrolling is often nice to have for mobile web. If you want to enable it, remove this line.
@@ -229,7 +221,7 @@ The exports from `expo-router/html` are related to the Root HTML component.
 
 - `ScrollViewStyleReset`: Root style-reset for full-screen [React Native web apps](https://necolas.github.io/react-native-web/docs/setup/#root-element) with a root `<ScrollView />` should use the following styles to ensure native parity.
 
-## Meta Tags
+## Meta tags
 
 You can add meta tags to your pages with the `<Head />` module from `expo-router`:
 
@@ -283,6 +275,53 @@ export default function Page() {
 }
 ```
 
+## Fonts
+
+> Font optimization is available in SDK 50 and above.
+
+Expo Font has automatic static optimization for font loading in Expo Router. When you load a font with `expo-font`, Expo CLI will automatically extract the font resource and embed it in the page's HTML, enabling preloading, faster hydration, and reduced layout shift.
+
+The following snippet will load Inter into the namespace and statically optimize on web:
+
+```js app/home.js
+import { Text } from 'react-native';
+import { useFonts } from 'expo-font';
+
+export default function App() {
+  /* @info Expo CLI automatically finds and extracts this font during compilation. */
+  const [isLoaded] = useFonts({
+    /* @end */
+    inter: require('@/assets/inter.ttf'),
+  });
+
+  /* @info Always true on web with static rendering enabled. */
+  if (!isLoaded) {
+    /* @end */
+    return null;
+  }
+
+  return <Text style={{ fontFamily: 'inter' }}>Hello Universe</Text>;
+}
+```
+
+This generates the following static HTML:
+
+```html dist/home.html
+/* @info preload the font before the JavaScript loads. */
+<link rel="preload" href="/assets/inter.ttf" as="font" crossorigin />
+/* @end */
+<style id="expo-generated-fonts" type="text/css">
+  @font-face {
+    font-family: inter;
+    src: url(/assets/inter.ttf);
+    font-display: auto;
+  }
+</style>
+```
+
+- Static font optimization requires the font to be loaded syncronously. If the font isn't statically optimized, it could be because it was loaded inside a `useEffect`, deferred component, or async function.
+- Static optimization is only supported with `Font.loadAsync` and `Font.useFonts` from `expo-font`. Wrapper functions are supported as long as the wrappers are synchronous.
+
 ## FAQ
 
 ### How do I add a custom server?
@@ -307,4 +346,4 @@ You can deploy your statically rendered website to any static hosting service. H
 - [Render](https://render.com/)
 - [Surge](https://surge.sh/)
 
-> Note: You don't need to add Single-Page Application styled redirects to your static hosting service. The static website is not a single-page application. It is a collection of static HTML files.
+> **Note:** You don't need to add Single-Page Application styled redirects to your static hosting service. The static website is not a single-page application. It is a collection of static HTML files.

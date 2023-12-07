@@ -15,7 +15,7 @@ def _androidTestRunnerVersion = _ext.has('androidTestRunnerVersion') ? _ext.andr
 
 buildscript {
     // buildscript is evaluated before any other task is executed, so this must be defined here
-    ext._kotlinVersion = rootProject.ext.has("kotlinVersion") ?  rootProject.ext.get('kotlinVersion') : '1.5.30'
+    ext._kotlinVersion = rootProject.ext.has("kotlinVersion") ?  rootProject.ext.get('kotlinVersion') : '1.8.10'
 
     repositories {
         mavenCentral()

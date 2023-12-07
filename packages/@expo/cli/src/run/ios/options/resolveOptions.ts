@@ -1,9 +1,9 @@
-import { isOSType } from '../../../start/platforms/ios/simctl';
-import { resolveBundlerPropsAsync } from '../../resolveBundlerProps';
-import { BuildProps, Options } from '../XcodeBuild.types';
 import { isSimulatorDevice, resolveDeviceAsync } from './resolveDevice';
 import { resolveNativeSchemePropsAsync } from './resolveNativeScheme';
 import { resolveXcodeProject } from './resolveXcodeProject';
+import { isOSType } from '../../../start/platforms/ios/simctl';
+import { resolveBundlerPropsAsync } from '../../resolveBundlerProps';
+import { BuildProps, Options } from '../XcodeBuild.types';
 
 /** Resolve arguments for the `run:ios` command. */
 export async function resolveOptionsAsync(

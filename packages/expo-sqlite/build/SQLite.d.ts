@@ -1,5 +1,5 @@
 import './polyfillNextTick';
-import type { Query, ResultSet, ResultSetError, SQLiteCallback, SQLTransactionAsyncCallback, SQLTransactionAsync, SQLTransactionCallback, SQLTransactionErrorCallback } from './SQLite.types';
+import type { Query, ResultSet, ResultSetError, SQLiteCallback, SQLStatementArg, SQLTransactionAsyncCallback, SQLTransactionAsync, SQLTransactionCallback, SQLTransactionErrorCallback } from './SQLite.types';
 /** The database returned by `openDatabase()` */
 export declare class SQLiteDatabase {
     _name: string;
@@ -9,6 +9,12 @@ export declare class SQLiteDatabase {
      * Executes the SQL statement and returns a callback resolving with the result.
      */
     exec(queries: Query[], readOnly: boolean, callback: SQLiteCallback): void;
+    /**
+     * Due to limitations on `Android` this function is provided to allow raw SQL queries to be
+     * executed on the database. This will be less efficient than using the `exec` function, please use
+     * only when necessary.
+     */
+    execRawQuery(queries: Query[], readOnly: boolean, callback: SQLiteCallback): void;
     /**
      * Executes the SQL statement and returns a Promise resolving with the result.
      */
@@ -30,6 +36,10 @@ export declare class SQLiteDatabase {
      * > The database has to be closed prior to deletion.
      */
     deleteAsync(): Promise<void>;
+    /**
+     * Used to listen to changes in the database.
+     * @param callback A function that receives the `tableName` and `rowId` of the modified data.
+     */
     onDatabaseChange(cb: (result: {
         tableName: string;
         rowId: number;
@@ -74,6 +84,6 @@ export declare class ExpoSQLTransactionAsync implements SQLTransactionAsync {
     private readonly db;
     private readonly readOnly;
     constructor(db: SQLiteDatabase, readOnly: boolean);
-    executeSqlAsync(sqlStatement: string, args?: (number | string)[]): Promise<ResultSetError | ResultSet>;
+    executeSqlAsync(sqlStatement: string, args?: SQLStatementArg[]): Promise<ResultSet>;
 }
 //# sourceMappingURL=SQLite.d.ts.map

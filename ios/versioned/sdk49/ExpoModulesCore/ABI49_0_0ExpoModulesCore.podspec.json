@@ -1,6 +1,6 @@
 {
   "name": "ABI49_0_0ExpoModulesCore",
-  "version": "1.5.7",
+  "version": "1.5.9",
   "summary": "The core of Expo Modules architecture",
   "description": "The core of Expo Modules architecture",
   "license": "MIT",
@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "RCT-Folly": [
-      "2021.07.22.00"
+      "2022.05.16.00"
     ],
     "ABI49_0_0React-Core": [],
     "ABI49_0_0ReactCommon/turbomodule/core": [],

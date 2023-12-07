@@ -21,16 +21,18 @@
     ]
   },
   "resolutions": {
-    "react-native": "0.72.3",
+    "react-native": "0.73.0",
+    "react-refresh": "^0.14.0",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/core": "^6.4.9",
     "**/util": "~0.12.4"
   },
   "dependencies": {
-    "eslint": "^8.29.0",
+    "eslint": "^8.45.0",
     "expo-yarn-workspaces": "*",
     "jsc-android": "^250231.0.0",
-    "prettier": "^2.8.1",
+    "node-gyp": "^10.0.1",
+    "prettier": "^3.0.0",
     "yarn-deduplicate": "^6.0.0"
   }
 }

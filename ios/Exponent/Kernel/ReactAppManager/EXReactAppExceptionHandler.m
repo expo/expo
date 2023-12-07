@@ -18,8 +18,6 @@ RCTFatalHandler handleFatalReactError = ^(NSError *error) {
       // show the error on Home or on the main standalone app if we can't figure out who this error belongs to
       if ([EXKernel sharedInstance].appRegistry.homeAppRecord) {
         record = [EXKernel sharedInstance].appRegistry.homeAppRecord;
-      } else if ([EXKernel sharedInstance].appRegistry.standaloneAppRecord) {
-        record = [EXKernel sharedInstance].appRegistry.standaloneAppRecord;
       }
     }
     if (record) {
@@ -51,6 +49,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)handleSoftJSExceptionWithMessage:(nullable NSString *)message
                                    stack:(nullable NSArray<NSDictionary<NSString *, id> *> *)stack
                              exceptionId:(NSNumber *)exceptionId
+                         extraDataAsJSON:(nullable NSString *)extraDataAsJSON
 {
   // In RN 0.8 this was used to invoke the native red box errors (via `showErrorMessage`).
   // The invocation has since been moved into the method that invokes this delegate method.
@@ -60,6 +59,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)handleFatalJSExceptionWithMessage:(nullable NSString *)message
                                     stack:(nullable NSArray<NSDictionary<NSString *, id> *> *)stack
                               exceptionId:(NSNumber *)exceptionId
+                          extraDataAsJSON:(nullable NSString *)extraDataAsJSON
 {
   NSString *description = [@"Unhandled JS Exception: " stringByAppendingString:message];
   NSDictionary *errorInfo = @{ NSLocalizedDescriptionKey: description, RCTJSStackTraceKey: stack };

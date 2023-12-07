@@ -29,5 +29,15 @@ export default interface AppConfig extends JSONObject {
       androidManifestPath: string;
     };
     isKernel?: boolean;
+
+    extra?: {
+      eas?: {
+        projectId?: string;
+      };
+    };
+
+    updates?: {
+      url?: string;
+    };
   };
 }

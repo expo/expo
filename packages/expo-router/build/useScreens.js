@@ -1,14 +1,20 @@
-import React from 'react';
-import { Route, sortRoutesWithInitial, useRouteNode, } from './Route';
-import EXPO_ROUTER_IMPORT_MODE from './import-mode';
-import { Screen } from './primitives';
-import { EmptyRoute } from './views/EmptyRoute';
-import { SuspenseFallback } from './views/SuspenseFallback';
-import { Try } from './views/Try';
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.createGetIdForRoute = exports.getQualifiedRouteComponent = exports.useSortedScreens = void 0;
+const react_1 = __importDefault(require("react"));
+const Route_1 = require("./Route");
+const import_mode_1 = __importDefault(require("./import-mode"));
+const primitives_1 = require("./primitives");
+const EmptyRoute_1 = require("./views/EmptyRoute");
+const SuspenseFallback_1 = require("./views/SuspenseFallback");
+const Try_1 = require("./views/Try");
 function getSortedChildren(children, order, initialRouteName) {
     if (!order?.length) {
         return children
-            .sort(sortRoutesWithInitial(initialRouteName))
+            .sort((0, Route_1.sortRoutesWithInitial)(initialRouteName))
             .map((route) => ({ route, props: {} }));
     }
     const entries = [...children];
@@ -42,28 +48,29 @@ function getSortedChildren(children, order, initialRouteName) {
     })
         .filter(Boolean);
     // Add any remaining children
-    ordered.push(...entries.sort(sortRoutesWithInitial(initialRouteName)).map((route) => ({ route, props: {} })));
+    ordered.push(...entries.sort((0, Route_1.sortRoutesWithInitial)(initialRouteName)).map((route) => ({ route, props: {} })));
     return ordered;
 }
 /**
  * @returns React Navigation screens sorted by the `route` property.
  */
-export function useSortedScreens(order) {
-    const node = useRouteNode();
+function useSortedScreens(order) {
+    const node = (0, Route_1.useRouteNode)();
     const sorted = node?.children?.length
         ? getSortedChildren(node.children, order, node.initialRouteName)
         : [];
-    return React.useMemo(() => sorted.map((value) => routeToScreen(value.route, value.props)), [sorted]);
+    return react_1.default.useMemo(() => sorted.map((value) => routeToScreen(value.route, value.props)), [sorted]);
 }
+exports.useSortedScreens = useSortedScreens;
 function fromImport({ ErrorBoundary, ...component }) {
     if (ErrorBoundary) {
         return {
-            default: React.forwardRef((props, ref) => {
-                const children = React.createElement(component.default || EmptyRoute, {
+            default: react_1.default.forwardRef((props, ref) => {
+                const children = react_1.default.createElement(component.default || EmptyRoute_1.EmptyRoute, {
                     ...props,
                     ref,
                 });
-                return React.createElement(Try, { catch: ErrorBoundary }, children);
+                return <Try_1.Try catch={ErrorBoundary}>{children}</Try_1.Try>;
             }),
         };
     }
@@ -71,10 +78,10 @@ function fromImport({ ErrorBoundary, ...component }) {
         if (typeof component.default === 'object' &&
             component.default &&
             Object.keys(component.default).length === 0) {
-            return { default: EmptyRoute };
+            return { default: EmptyRoute_1.EmptyRoute };
         }
     }
-    return { default: component.default || EmptyRoute };
+    return { default: component.default };
 }
 function fromLoadedRoute(res) {
     if (!(res instanceof Promise)) {
@@ -86,51 +93,50 @@ function fromLoadedRoute(res) {
 // Without this store, the process enters a recursive loop.
 const qualifiedStore = new WeakMap();
 /** Wrap the component with various enhancements and add access to child routes. */
-export function getQualifiedRouteComponent(value) {
+function getQualifiedRouteComponent(value) {
     if (qualifiedStore.has(value)) {
         return qualifiedStore.get(value);
     }
-    let getLoadable;
+    let ScreenComponent;
     // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
-    if (EXPO_ROUTER_IMPORT_MODE === 'lazy') {
-        const AsyncComponent = React.lazy(async () => {
+    if (import_mode_1.default === 'lazy') {
+        ScreenComponent = react_1.default.lazy(async () => {
             const res = value.loadRoute();
             return fromLoadedRoute(res);
         });
-        getLoadable = (props, ref) => (React.createElement(React.Suspense, { fallback: React.createElement(SuspenseFallback, { route: value }) },
-            React.createElement(AsyncComponent, { ...props,
-                ref,
-                // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
-                // the intention is to make it possible to deduce shared routes.
-                segment: value.route })));
     }
     else {
-        const SyncComponent = React.forwardRef((props, ref) => {
-            const res = value.loadRoute();
-            const Component = fromImport(res).default;
-            return React.createElement(Component, { ...props, ref: ref });
+        const res = value.loadRoute();
+        const Component = fromImport(res).default;
+        ScreenComponent = react_1.default.forwardRef((props, ref) => {
+            return <Component {...props} ref={ref}/>;
         });
-        getLoadable = (props, ref) => (React.createElement(SyncComponent, { ...props,
-            ref,
-            // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
-            // the intention is to make it possible to deduce shared routes.
-            segment: value.route }));
     }
-    const QualifiedRoute = React.forwardRef(({ 
+    const getLoadable = (props, ref) => (<react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
+      <ScreenComponent {...{
+        ...props,
+        ref,
+        // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
+        // the intention is to make it possible to deduce shared routes.
+        segment: value.route,
+    }}/>
+    </react_1.default.Suspense>);
+    const QualifiedRoute = react_1.default.forwardRef(({ 
     // Remove these React Navigation props to
     // enforce usage of expo-router hooks (where the query params are correct).
     route, navigation, 
     // Pass all other props to the component
     ...props }, ref) => {
         const loadable = getLoadable(props, ref);
-        return React.createElement(Route, { node: value }, loadable);
+        return <Route_1.Route node={value}>{loadable}</Route_1.Route>;
     });
     QualifiedRoute.displayName = `Route(${value.route})`;
     qualifiedStore.set(value, QualifiedRoute);
     return QualifiedRoute;
 }
+exports.getQualifiedRouteComponent = getQualifiedRouteComponent;
 /** @returns a function which provides a screen id that matches the dynamic route name in params. */
-export function createGetIdForRoute(route) {
+function createGetIdForRoute(route) {
     if (!route.dynamic?.length) {
         return undefined;
     }
@@ -157,12 +163,11 @@ export function createGetIdForRoute(route) {
         return route.dynamic?.map((segment) => getPreferredId(segment)).join('/');
     };
 }
+exports.createGetIdForRoute = createGetIdForRoute;
 function routeToScreen(route, { options, ...props } = {}) {
-    return (React.createElement(Screen
+    return (<primitives_1.Screen 
     // Users can override the screen getId function.
-    , { 
-        // Users can override the screen getId function.
-        getId: createGetIdForRoute(route), ...props, name: route.route, key: route.route, options: (args) => {
+    getId={createGetIdForRoute(route)} {...props} name={route.route} key={route.route} options={(args) => {
             // Only eager load generated components
             const staticOptions = route.generated ? route.loadRoute()?.getNavOptions : null;
             const staticResult = typeof staticOptions === 'function' ? staticOptions(args) : staticOptions;
@@ -178,6 +183,6 @@ function routeToScreen(route, { options, ...props } = {}) {
                 output.drawerItemStyle = { height: 0, display: 'none' };
             }
             return output;
-        }, getComponent: () => getQualifiedRouteComponent(route) }));
+        }} getComponent={() => getQualifiedRouteComponent(route)}/>);
 }
 //# sourceMappingURL=useScreens.js.map

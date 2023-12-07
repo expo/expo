@@ -4,12 +4,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.ensureSlash = ensureSlash;
-exports.getEntryPoint = getEntryPoint;
-exports.getEntryPointWithExtensions = getEntryPointWithExtensions;
 exports.getFileWithExtensions = getFileWithExtensions;
 exports.getPossibleProjectRoot = getPossibleProjectRoot;
 exports.resolveEntryPoint = resolveEntryPoint;
-exports.resolveFromSilentWithExtensions = resolveFromSilentWithExtensions;
 function _fs() {
   const data = _interopRequireDefault(require("fs"));
   _fs = function () {
@@ -31,6 +28,13 @@ function _resolveFrom() {
   };
   return data;
 }
+function _extensions() {
+  const data = require("./extensions");
+  _extensions = function () {
+    return data;
+  };
+  return data;
+}
 function _Config() {
   const data = require("../Config");
   _Config = function () {
@@ -38,9 +42,9 @@ function _Config() {
   };
   return data;
 }
-function _extensions() {
-  const data = require("./extensions");
-  _extensions = function () {
+function _Errors() {
+  const data = require("../Errors");
+  _Errors = function () {
     return data;
   };
   return data;
@@ -61,57 +65,34 @@ function getPossibleProjectRoot() {
   return _fs().default.realpathSync(process.cwd());
 }
 const nativePlatforms = ['ios', 'android'];
+
+/** @returns the absolute entry file for an Expo project. */
 function resolveEntryPoint(projectRoot, {
   platform,
-  projectConfig
-}) {
-  const platforms = nativePlatforms.includes(platform) ? [platform, 'native'] : [platform];
-  return getEntryPoint(projectRoot, ['./index'], platforms, projectConfig);
-}
-function getEntryPoint(projectRoot, entryFiles, platforms, projectConfig) {
+  pkg = (0, _Config().getPackageJson)(projectRoot)
+} = {}) {
+  const platforms = !platform ? [] : nativePlatforms.includes(platform) ? [platform, 'native'] : [platform];
   const extensions = (0, _extensions().getBareExtensions)(platforms);
-  return getEntryPointWithExtensions(projectRoot, entryFiles, extensions, projectConfig);
-}
 
-// Used to resolve the main entry file for a project.
-function getEntryPointWithExtensions(projectRoot, entryFiles, extensions, projectConfig) {
-  if (!projectConfig) {
-    // drop all logging abilities
-    const original = process.stdout.write;
-    process.stdout.write = () => true;
-    try {
-      projectConfig = (0, _Config().getConfig)(projectRoot, {
-        skipSDKVersionRequirement: true
-      });
-    } finally {
-      process.stdout.write = original;
-    }
-  }
+  // If the config doesn't define a custom entry then we want to look at the `package.json`s `main` field, and try again.
   const {
-    pkg
-  } = projectConfig;
-  if (pkg) {
-    // If the config doesn't define a custom entry then we want to look at the `package.json`s `main` field, and try again.
-    const {
-      main
-    } = pkg;
-    if (main && typeof main === 'string') {
-      // Testing the main field against all of the provided extensions - for legacy reasons we can't use node module resolution as the package.json allows you to pass in a file without a relative path and expect it as a relative path.
-      let entry = getFileWithExtensions(projectRoot, main, extensions);
-      if (!entry) {
-        // Allow for paths like: `{ "main": "expo/AppEntry" }`
-        entry = resolveFromSilentWithExtensions(projectRoot, main, extensions);
-        if (!entry) throw new Error(`Cannot resolve entry file: The \`main\` field defined in your \`package.json\` points to a non-existent path.`);
-      }
-      return entry;
+    main
+  } = pkg;
+  if (main && typeof main === 'string') {
+    // Testing the main field against all of the provided extensions - for legacy reasons we can't use node module resolution as the package.json allows you to pass in a file without a relative path and expect it as a relative path.
+    let entry = getFileWithExtensions(projectRoot, main, extensions);
+    if (!entry) {
+      // Allow for paths like: `{ "main": "expo/AppEntry" }`
+      entry = resolveFromSilentWithExtensions(projectRoot, main, extensions);
+      if (!entry) throw new (_Errors().ConfigError)(`Cannot resolve entry file: The \`main\` field defined in your \`package.json\` points to an unresolvable or non-existent path.`, 'ENTRY_NOT_FOUND');
     }
+    return entry;
   }
 
-  // Now we will start looking for a default entry point using the provided `entryFiles` argument.
-  // This will add support for create-react-app (src/index.js) and react-native-cli (index.js) which don't define a main.
-  for (const fileName of entryFiles) {
-    const entry = resolveFromSilentWithExtensions(projectRoot, fileName, extensions);
-    if (entry) return entry;
+  // Check for a root index.* file in the project root.
+  const entry = resolveFromSilentWithExtensions(projectRoot, './index', extensions);
+  if (entry) {
+    return entry;
   }
   try {
     // If none of the default files exist then we will attempt to use the main Expo entry point.
@@ -121,7 +102,7 @@ function getEntryPointWithExtensions(projectRoot, entryFiles, extensions, projec
     // TODO(Bacon): We may want to do a check against `./App` and `expo` in the `package.json` `dependencies` as we can more accurately ensure that the project is expo-min without needing the modules installed.
     return (0, _resolveFrom().default)(projectRoot, 'expo/AppEntry');
   } catch {
-    throw new Error(`The project entry file could not be resolved. Please define it in the \`main\` field of the \`package.json\`, create an \`index.js\`, or install the \`expo\` package.`);
+    throw new (_Errors().ConfigError)(`The project entry file could not be resolved. Define it in the \`main\` field of the \`package.json\`, create an \`index.js\`, or install the \`expo\` package.`, 'ENTRY_NOT_FOUND');
   }
 }
 
@@ -129,7 +110,7 @@ function getEntryPointWithExtensions(projectRoot, entryFiles, extensions, projec
 function resolveFromSilentWithExtensions(fromDirectory, moduleId, extensions) {
   for (const extension of extensions) {
     const modulePath = _resolveFrom().default.silent(fromDirectory, `${moduleId}.${extension}`);
-    if (modulePath && modulePath.endsWith(extension)) {
+    if (modulePath !== null && modulePath !== void 0 && modulePath.endsWith(extension)) {
       return modulePath;
     }
   }

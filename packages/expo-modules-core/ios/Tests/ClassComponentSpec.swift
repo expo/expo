@@ -3,7 +3,7 @@ import ExpoModulesTestCore
 @testable import ExpoModulesCore
 
 class ClassComponentSpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
     describe("basic") {
       it("factory returns a component") {
         let klass = Class("") {}

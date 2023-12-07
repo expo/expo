@@ -16,7 +16,9 @@
 #include <jsi/decorator.h>
 #include <jsi/jsi.h>
 
+#include <atomic>
 #include <memory>
+#include <string>
 #include <thread>
 
 #if __has_include(<reacthermes/HermesExecutorFactory.h>)
@@ -25,7 +27,10 @@
 #include <hermes/hermes.h>
 #endif
 
-#if REACT_NATIVE_MINOR_VERSION >= 71
+#if REACT_NATIVE_MINOR_VERSION >= 73
+#include <hermes/inspector-modern/chrome/Registration.h>
+#else
+#include <hermes/inspector/RuntimeAdapter.h>
 #include <hermes/inspector/chrome/Registration.h>
 #endif
 
@@ -33,13 +38,20 @@ namespace reanimated {
 
 using namespace facebook;
 using namespace react;
+#if HERMES_ENABLE_DEBUGGER
+#if REACT_NATIVE_MINOR_VERSION >= 73
+using namespace facebook::hermes::inspector_modern;
+#else
+using namespace facebook::hermes::inspector;
+#endif
+#endif // HERMES_ENABLE_DEBUGGER
 
 // ReentrancyCheck is copied from React Native
 // from ReactCommon/hermes/executor/HermesExecutorFactory.cpp
-// https://github.com/facebook/react-native/blob/main/ReactCommon/hermes/executor/HermesExecutorFactory.cpp
+// https://github.com/facebook/react-native/blob/main/packages/react-native/ReactCommon/hermes/executor/HermesExecutorFactory.cpp
 struct ReanimatedReentrancyCheck {
-// This is effectively a very subtle and complex assert, so only
-// include it in builds which would include asserts.
+  // This is effectively a very subtle and complex assert, so only
+  // include it in builds which would include asserts.
 #ifndef NDEBUG
   ReanimatedReentrancyCheck() : tid(std::thread::id()), depth(0) {}
 
@@ -67,13 +79,13 @@ struct ReanimatedReentrancyCheck {
       // Returns true if tid and expected were the same.  If they
       // were, then the stored tid referred to no thread, and we
       // atomically saved this thread's tid.  Now increment depth.
-      assert(depth == 0 && "No thread id, but depth != 0");
+      assert(depth == 0 && "[Reanimated] No thread id, but depth != 0");
       ++depth;
     } else if (expected == this_id) {
       // If the stored tid referred to a thread, expected was set to
       // that value.  If that value is this thread's tid, that's ok,
       // just increment depth again.
-      assert(depth != 0 && "Thread id was set, but depth == 0");
+      assert(depth != 0 && "[Reanimated] Thread id was set, but depth == 0");
       ++depth;
     } else {
       // The stored tid was some other thread.  This indicates a bad
@@ -87,13 +99,13 @@ struct ReanimatedReentrancyCheck {
   void after() {
     assert(
         tid.load(std::memory_order_relaxed) == std::this_thread::get_id() &&
-        "No thread id in after()");
+        "[Reanimated] No thread id in after()");
     if (--depth == 0) {
       // If we decremented depth to zero, store no-thread into tid.
       std::thread::id expected = std::this_thread::get_id();
       bool didWrite = tid.compare_exchange_strong(
           expected, std::thread::id(), std::memory_order_relaxed);
-      assert(didWrite && "Decremented to zero, but no tid write");
+      assert(didWrite && "[Reanimated] Decremented to zero, but no tid write");
     }
   }
 
@@ -110,13 +122,14 @@ struct ReanimatedReentrancyCheck {
 // jsi::Runtime. So the inheritance is: ReanimatedHermesRuntime ->
 // WithRuntimeDecorator -> DecoratedRuntime -> jsi::Runtime You can find out
 // more about this in ReactCommon/jsi/jsi/Decorator.h or by following this link:
-// https://github.com/facebook/react-native/blob/main/ReactCommon/jsi/jsi/decorator.h
+// https://github.com/facebook/react-native/blob/main/packages/react-native/ReactCommon/jsi/jsi/decorator.h
 class ReanimatedHermesRuntime
     : public jsi::WithRuntimeDecorator<ReanimatedReentrancyCheck> {
  public:
   ReanimatedHermesRuntime(
       std::unique_ptr<facebook::hermes::HermesRuntime> runtime,
-      std::shared_ptr<MessageQueueThread> jsQueue);
+      const std::shared_ptr<MessageQueueThread> &jsQueue,
+      const std::string &name);
   ~ReanimatedHermesRuntime();
 
  private:
@@ -124,7 +137,7 @@ class ReanimatedHermesRuntime
   ReanimatedReentrancyCheck reentrancyCheck_;
 #if HERMES_ENABLE_DEBUGGER
 #if REACT_NATIVE_MINOR_VERSION >= 71
-  facebook::hermes::inspector::chrome::DebugSessionToken debugToken_;
+  chrome::DebugSessionToken debugToken_;
 #endif // REACT_NATIVE_MINOR_VERSION >= 71
 #endif // HERMES_ENABLE_DEBUGGER
 };

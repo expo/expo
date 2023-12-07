@@ -40,25 +40,36 @@ function _sass() {
   return data;
 }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+/**
+ * Copyright 2023-present 650 Industries (Expo). All rights reserved.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 const countLines = require('metro/src/lib/countLines');
 async function transform(config, projectRoot, filename, data, options) {
-  var _jsModuleResults$outp2;
   const isCss = options.type !== 'asset' && /\.(s?css|sass)$/.test(filename);
   // If the file is not CSS, then use the default behavior.
   if (!isCss) {
     var _options$customTransf;
     const environment = (_options$customTransf = options.customTransformOptions) === null || _options$customTransf === void 0 ? void 0 : _options$customTransf.environment;
-    if (environment === 'client' &&
+    if (environment !== 'node' && (
     // TODO: Ensure this works with windows.
-    // TODO: Add +api files.
-    filename.match(new RegExp(`^app/\\+html(\\.${options.platform})?\\.([tj]sx?|[cm]js)?$`))) {
-      // Remove the server-only +html file from the bundle when bundling for a client environment.
+    filename.match(new RegExp(`^app/\\+html(\\.${options.platform})?\\.([tj]sx?|[cm]js)?$`)) ||
+    // Strip +api files.
+    filename.match(/\+api(\.(native|ios|android|web))?\.[tj]sx?$/))) {
+      // Remove the server-only +html file and API Routes from the bundle when bundling for a client environment.
       return _metroTransformWorker().default.transform(config, projectRoot, filename, !options.minify ? Buffer.from(
       // Use a string so this notice is visible in the bundle if the user is
       // looking for it.
-      '"> The server-only +html file was removed from the client JS bundle by Expo CLI."') : Buffer.from(''), options);
+      '"> The server-only file was removed from the client JS bundle by Expo CLI."') : Buffer.from(''), options);
+    }
+    if (environment !== 'node' && !filename.match(/\/node_modules\//) && filename.match(/\+api(\.(native|ios|android|web))?\.[tj]sx?$/)) {
+      // Clear the contents of +api files when bundling for the client.
+      // This ensures that the client doesn't accidentally use the server-only +api files.
+      return _metroTransformWorker().default.transform(config, projectRoot, filename, Buffer.from(''), options);
     }
     return _metroTransformWorker().default.transform(config, projectRoot, filename, data, options);
   }
@@ -73,10 +84,13 @@ async function transform(config, projectRoot, filename, data, options) {
   let code = data.toString('utf8');
 
   // Apply postcss transforms
-  code = await (0, _postcss().transformPostCssModule)(projectRoot, {
+  const postcssResults = await (0, _postcss().transformPostCssModule)(projectRoot, {
     src: code,
     filename
   });
+  if (postcssResults.hasPostcss) {
+    code = postcssResults.src;
+  }
 
   // TODO: When native has CSS support, this will need to move higher up.
   const syntax = (0, _sass().matchSass)(filename);
@@ -129,7 +143,7 @@ async function transform(config, projectRoot, filename, data, options) {
 
   const {
     transform
-  } = await Promise.resolve().then(() => _interopRequireWildcard(require('lightningcss')));
+  } = require('lightningcss');
 
   // TODO: Add bundling to resolve imports
   // https://lightningcss.dev/bundling.html#bundling-order
@@ -161,14 +175,16 @@ async function transform(config, projectRoot, filename, data, options) {
   const output = [{
     type: 'js/module',
     data: {
-      // @ts-expect-error
-      ...((_jsModuleResults$outp2 = jsModuleResults.output[0]) === null || _jsModuleResults$outp2 === void 0 ? void 0 : _jsModuleResults$outp2.data),
+      ...jsModuleResults.output[0].data,
       // Append additional css metadata for static extraction.
       css: {
         code: cssCode,
         lineCount: countLines(cssCode),
         map: [],
-        functionMap: null
+        functionMap: null,
+        // Disable caching for CSS files when postcss is enabled and has been run on the file.
+        // This ensures that things like tailwind can update on every change.
+        skipCache: postcssResults.hasPostcss
       }
     }
   }];

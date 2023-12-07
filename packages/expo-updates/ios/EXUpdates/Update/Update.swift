@@ -128,7 +128,7 @@ public class Update: NSObject {
     self.isDevelopmentMode = isDevelopmentMode
   }
 
-  internal static func update(
+  public static func update(
     withManifest: [String: Any],
     responseHeaderData: ResponseHeaderData,
     extensions: [String: Any],
@@ -159,20 +159,12 @@ public class Update: NSObject {
     withEmbeddedManifest: [String: Any],
     config: UpdatesConfig,
     database: UpdatesDatabase?
-  ) -> Update {
-    if withEmbeddedManifest["releaseId"] != nil {
-      return LegacyUpdate.update(
-        withLegacyManifest: LegacyManifest(rawManifestJSON: withEmbeddedManifest),
-        config: config,
-        database: database
-      )
-    } else {
-      return BareUpdate.update(
-        withBareManifest: BareManifest(rawManifestJSON: withEmbeddedManifest),
-        config: config,
-        database: database
-      )
-    }
+  ) -> BareUpdate {
+    return BareUpdate.update(
+      withBareManifest: BareManifest(rawManifestJSON: withEmbeddedManifest),
+      config: config,
+      database: database
+    )
   }
 
   /**

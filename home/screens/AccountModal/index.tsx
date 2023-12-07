@@ -5,15 +5,17 @@ import React from 'react';
 import { ActivityIndicator, Platform } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import { useHome_CurrentUserActorQuery } from '../../graphql/types';
 import { LoggedInAccountView } from './LoggedInAccountView';
 import { LoggedOutAccountView } from './LoggedOutAccountView';
 import { ModalHeader } from './ModalHeader';
+import { useHome_CurrentUserActorQuery } from '../../graphql/types';
 
 export function AccountModal() {
   const theme = useExpoTheme();
 
-  const { data, loading, error, refetch } = useHome_CurrentUserActorQuery();
+  const { data, loading, error, refetch } = useHome_CurrentUserActorQuery({
+    fetchPolicy: 'cache-and-network',
+  });
 
   if (loading) {
     return (

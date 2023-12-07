@@ -394,6 +394,10 @@ async function generateReactNativePodScriptAsync(
       find: /\$(CODEGEN_OUTPUT_DIR)\b/g,
       replaceWith: `$${versionName}$1`,
     },
+    {
+      find: /(REACT_NATIVE_PATH)\b/g,
+      replaceWith: `${versionName}$1`,
+    },
     { find: /\b(React-Codegen)\b/g, replaceWith: `${versionName}$1` },
     { find: /(\$\(PODS_ROOT\)\/Headers\/Private\/)React-/g, replaceWith: `$1${versionName}React-` },
     {
@@ -644,7 +648,7 @@ async function generateExpoKitPodspecAsync(
     '"$(PODS_CONFIGURATION_BUILD_DIR)/${versionName}EXUpdates/Swift Compatibility Header"',
   ]
   s.pod_target_xcconfig    = {
-    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+    "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
     "USE_HEADERMAP"       => "YES",
     "DEFINES_MODULE"      => "YES",
     "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),

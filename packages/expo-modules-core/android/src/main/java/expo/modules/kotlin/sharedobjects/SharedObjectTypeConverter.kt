@@ -1,5 +1,6 @@
 package expo.modules.kotlin.sharedobjects
 
+import com.facebook.react.bridge.Dynamic
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.InvalidSharedObjectException
 import expo.modules.kotlin.jni.CppType
@@ -13,15 +14,22 @@ class SharedObjectTypeConverter<T : SharedObject>(
 ) : NullAwareTypeConverter<T>(type.isMarkedNullable) {
   @Suppress("UNCHECKED_CAST")
   override fun convertNonOptional(value: Any, context: AppContext?): T {
-    val id = SharedObjectId(value as Int)
+    val id = SharedObjectId(
+      if (value is Dynamic) {
+        value.asInt()
+      } else {
+        value as Int
+      }
+    )
+
     val appContext = context.toStrongReference()
-    val result = appContext.sharedObjectRegistry.toNativeObject(id)
+    val result = id.toNativeObject(appContext)
       ?: throw InvalidSharedObjectException(type)
 
     return result as T
   }
 
-  override fun getCppRequiredTypes() = ExpectedType(CppType.SHARED_OBJECT_ID)
+  override fun getCppRequiredTypes() = ExpectedType(CppType.SHARED_OBJECT_ID, CppType.INT)
 
   override fun isTrivial(): Boolean = false
 }

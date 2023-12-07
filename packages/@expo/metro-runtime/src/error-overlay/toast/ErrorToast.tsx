@@ -6,12 +6,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React, { useEffect } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { ErrorToastMessage } from './ErrorToastMessage';
 import * as LogBoxData from '../Data/LogBoxData';
 import { LogBoxLog } from '../Data/LogBoxLog';
 import * as LogBoxStyle from '../UI/LogBoxStyle';
-import { ErrorToastMessage } from './ErrorToastMessage';
 
 type Props = {
   log: LogBoxLog;
@@ -128,7 +128,11 @@ const countStyles = StyleSheet.create({
     lineHeight: 18,
     textAlign: 'center',
     fontWeight: '600',
-    textShadow: `0px 0px 3px ${LogBoxStyle.getBackgroundColor(0.8)}`,
+    ...Platform.select({
+      web: {
+        textShadow: `0px 0px 3px ${LogBoxStyle.getBackgroundColor(0.8)}`,
+      },
+    }),
   },
 });
 

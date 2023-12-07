@@ -57,6 +57,17 @@ public class ReanimatedKeyboardEventListener {
     ViewCompat.setOnApplyWindowInsetsListener(
         rootView,
         (v, insets) -> {
+          if (state == KeyboardState.OPEN) {
+            int keyboardHeight =
+                (int)
+                    PixelUtil.toDIPFromPixel(
+                        Math.max(
+                            0,
+                            insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+                                - insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom));
+
+            updateKeyboard(keyboardHeight);
+          }
           int paddingBottom = 0;
           if (!BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
               && BuildConfig.REACT_NATIVE_MINOR_VERSION < 70) {
@@ -64,7 +75,7 @@ public class ReanimatedKeyboardEventListener {
           }
           int paddingTop = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top;
           View content =
-              rootView.getRootView().findViewById(com.swmansion.reanimated.R.id.action_bar_root);
+              rootView.getRootView().findViewById(androidx.appcompat.R.id.action_bar_root);
 
           FrameLayout.LayoutParams params =
               new FrameLayout.LayoutParams(
@@ -149,7 +160,7 @@ public class ReanimatedKeyboardEventListener {
     ViewCompat.setOnApplyWindowInsetsListener(getRootView(), null);
     ViewCompat.setWindowInsetsAnimationCallback(getRootView(), null);
     View content =
-        getRootView().getRootView().findViewById(com.swmansion.reanimated.R.id.action_bar_root);
+        getRootView().getRootView().findViewById(androidx.appcompat.R.id.action_bar_root);
 
     FrameLayout.LayoutParams params =
         new FrameLayout.LayoutParams(

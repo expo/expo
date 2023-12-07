@@ -8,8 +8,10 @@ import {
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import * as React from 'react';
 import { Platform, StyleSheet, Linking } from 'react-native';
-import { DiagnosticsStackScreen } from 'screens/DiagnosticsScreen';
 
+import BottomTab, { getNavigatorProps } from './BottomTabNavigator';
+import { HomeStackRoutes, SettingsStackRoutes, ModalStackRoutes } from './Navigation.types';
+import defaultNavigationOptions from './defaultNavigationOptions';
 import DiagnosticsIcon from '../components/Icons';
 import { ColorTheme } from '../constants/Colors';
 import Themes from '../constants/Themes';
@@ -27,9 +29,8 @@ import {
   alertWithCameraPermissionInstructions,
   requestCameraPermissionsAsync,
 } from '../utils/PermissionUtils';
-import BottomTab, { getNavigatorProps } from './BottomTabNavigator';
-import { HomeStackRoutes, SettingsStackRoutes, ModalStackRoutes } from './Navigation.types';
-import defaultNavigationOptions from './defaultNavigationOptions';
+
+import { DiagnosticsStackScreen } from '@/screens/DiagnosticsScreen';
 
 // TODO(Bacon): Do we need to create a new one each time?
 const HomeStack = createStackNavigator<HomeStackRoutes>();

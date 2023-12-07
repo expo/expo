@@ -1,6 +1,6 @@
 {
   "name": "ABI49_0_0ExpoScreenOrientation",
-  "version": "6.0.4",
+  "version": "6.0.5",
   "summary": "Expo universal module for managing device's screen orientation",
   "description": "Expo universal module for managing device's screen orientation",
   "license": "MIT",
@@ -16,7 +16,7 @@
   "static_framework": true,
   "dependencies": {
     "RCT-Folly": [
-      "2021.07.22.00"
+      "2022.05.16.00"
     ],
     "ABI49_0_0ExpoModulesCore": [],
     "ABI49_0_0React-Core": [],

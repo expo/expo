@@ -7,10 +7,10 @@ import { Stream } from 'stream';
 import tar from 'tar';
 import { promisify } from 'util';
 
-import { createCachedFetch } from '../api/rest/client';
 import { createEntryResolver, createFileTransform } from './createFileTransform';
 import { ensureDirectoryAsync } from './dir';
 import { CommandError } from './errors';
+import { createCachedFetch } from '../api/rest/client';
 
 const debug = require('debug')('expo:utils:npm') as typeof console.log;
 

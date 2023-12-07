@@ -1,3 +1,32 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.LogBoxInspectorFooter = void 0;
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -5,25 +34,26 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { useSelectedLog } from '../Data/LogContext';
-import * as LogBoxStyle from '../UI/LogBoxStyle';
-export function LogBoxInspectorFooter(props) {
-    const log = useSelectedLog();
+const react_1 = __importDefault(require("react"));
+const react_native_1 = require("react-native");
+const LogContext_1 = require("../Data/LogContext");
+const LogBoxStyle = __importStar(require("../UI/LogBoxStyle"));
+function LogBoxInspectorFooter(props) {
+    const log = (0, LogContext_1.useSelectedLog)();
     if (['static', 'syntax'].includes(log.level)) {
-        return (React.createElement(View, { style: styles.root },
-            React.createElement(View, { style: styles.button },
-                React.createElement(Text, { style: styles.syntaxErrorText }, "This error cannot be dismissed."))));
+        return (react_1.default.createElement(react_native_1.View, { style: styles.root },
+            react_1.default.createElement(react_native_1.View, { style: styles.button },
+                react_1.default.createElement(react_native_1.Text, { style: styles.syntaxErrorText }, "This error cannot be dismissed."))));
     }
-    return (React.createElement(View, { style: styles.root },
-        React.createElement(FooterButton, { text: "Dismiss", onPress: props.onDismiss }),
-        React.createElement(FooterButton, { text: "Minimize", onPress: props.onMinimize })));
+    return (react_1.default.createElement(react_native_1.View, { style: styles.root },
+        react_1.default.createElement(FooterButton, { text: "Dismiss", onPress: props.onDismiss }),
+        react_1.default.createElement(FooterButton, { text: "Minimize", onPress: props.onMinimize })));
 }
+exports.LogBoxInspectorFooter = LogBoxInspectorFooter;
 function FooterButton({ text, onPress }) {
-    return (React.createElement(Pressable, { onPress: onPress, style: { flex: 1 } }, ({ 
+    return (react_1.default.createElement(react_native_1.Pressable, { onPress: onPress, style: { flex: 1 } }, ({ 
     /** @ts-expect-error: react-native types are broken. */
-    hovered, pressed, }) => (React.createElement(View, { style: [
+    hovered, pressed, }) => (react_1.default.createElement(react_native_1.View, { style: [
             buttonStyles.safeArea,
             {
                 // @ts-expect-error: web-only type
@@ -35,10 +65,10 @@ function FooterButton({ text, onPress }) {
                         : LogBoxStyle.getBackgroundColor(),
             },
         ] },
-        React.createElement(View, { style: buttonStyles.content },
-            React.createElement(Text, { style: buttonStyles.label }, text))))));
+        react_1.default.createElement(react_native_1.View, { style: buttonStyles.content },
+            react_1.default.createElement(react_native_1.Text, { style: buttonStyles.label }, text))))));
 }
-const buttonStyles = StyleSheet.create({
+const buttonStyles = react_native_1.StyleSheet.create({
     safeArea: {
         flex: 1,
         borderTopWidth: 1,
@@ -58,10 +88,14 @@ const buttonStyles = StyleSheet.create({
         lineHeight: 20,
     },
 });
-const styles = StyleSheet.create({
+const styles = react_native_1.StyleSheet.create({
     root: {
         backgroundColor: LogBoxStyle.getBackgroundColor(1),
-        boxShadow: `0 -2px 0 2px #000`,
+        ...react_native_1.Platform.select({
+            web: {
+                boxShadow: `0 -2px 0 2px #000`,
+            },
+        }),
         flexDirection: 'row',
     },
     button: {

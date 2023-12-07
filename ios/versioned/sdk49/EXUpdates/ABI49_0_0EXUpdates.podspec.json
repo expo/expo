@@ -1,6 +1,6 @@
 {
   "name": "ABI49_0_0EXUpdates",
-  "version": "0.18.10",
+  "version": "0.18.11",
   "summary": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
   "description": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
   "license": "MIT",
@@ -20,7 +20,7 @@
       "~> 1.8"
     ],
     "RCT-Folly": [
-      "2021.07.22.00"
+      "2022.05.16.00"
     ],
     "ABI49_0_0ExpoModulesCore": [],
     "ABI49_0_0React-Core": [],

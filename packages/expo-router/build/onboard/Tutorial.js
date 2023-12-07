@@ -1,24 +1,35 @@
-import { View, Text, Pressable, StyleSheet } from '@bacons/react-views';
-import React from 'react';
-import { StatusBar, Platform } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { createEntryFileAsync } from './createEntryFile';
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Tutorial = void 0;
+const react_1 = __importDefault(require("react"));
+const react_native_1 = require("react-native");
+const react_native_safe_area_context_1 = require("react-native-safe-area-context");
+const createEntryFile_1 = require("./createEntryFile");
+const exports_1 = require("../exports");
+const Pressable_1 = require("../views/Pressable");
 // TODO: Use openLinkFromBrowser thing
 function Header() {
-    return (React.createElement(Pressable, null, ({ hovered }) => (React.createElement(Text, { role: "heading", "aria-level": 1, style: [styles.title, Platform.OS !== 'web' && { textAlign: 'left' }] },
-        "Welcome to",
-        ' ',
-        React.createElement(Text, { href: "https://github.com/expo/expo-router/", style: [
+    return (<Pressable_1.Pressable>
+      {({ hovered }) => (<react_native_1.Text role="heading" aria-level={1} style={[styles.title, react_native_1.Platform.OS !== 'web' && { textAlign: 'left' }]}>
+          Welcome to{' '}
+          <exports_1.Link href="https://github.com/expo/expo-router/" style={[
                 hovered && {
                     textDecorationColor: 'white',
                     textDecorationLine: 'underline',
                 },
-            ] }, "Expo")))));
+            ]}>
+            Expo
+          </exports_1.Link>
+        </react_native_1.Text>)}
+    </Pressable_1.Pressable>);
 }
 const canAutoTouchFile = process.env.EXPO_ROUTER_APP_ROOT != null;
-export function Tutorial() {
-    React.useEffect(() => {
-        if (Platform.OS === 'web') {
+function Tutorial() {
+    react_1.default.useEffect(() => {
+        if (react_native_1.Platform.OS === 'web') {
             // Reset the route on web so the initial route isn't a 404 after
             // the user has created the entry file.
             // This is useful for cases where you are testing the tutorial.
@@ -32,20 +43,22 @@ export function Tutorial() {
             }
         }
     }, []);
-    return (React.createElement(View, { style: styles.background },
-        React.createElement(StatusBar, { barStyle: "light-content" }),
-        React.createElement(SafeAreaView, { style: styles.safeArea },
-            React.createElement(View, { style: styles.container },
-                React.createElement(Header, null),
-                React.createElement(Text, { role: "heading", "aria-level": 2, style: styles.subtitle },
-                    "Start by creating a file",
-                    '\n',
-                    "in the",
-                    ' ',
-                    React.createElement(Text, { style: { fontWeight: 'bold' } }, getRootDir()),
-                    " directory."),
-                canAutoTouchFile && React.createElement(Button, null)))));
+    return (<react_native_1.View style={styles.background}>
+      <react_native_1.StatusBar barStyle="light-content"/>
+
+      <react_native_safe_area_context_1.SafeAreaView style={styles.safeArea}>
+        <react_native_1.View style={styles.container}>
+          <Header />
+          <react_native_1.Text role="heading" aria-level={2} style={styles.subtitle}>
+            Start by creating a file{'\n'}in the{' '}
+            <react_native_1.Text style={{ fontWeight: 'bold' }}>{getRootDir()}</react_native_1.Text> directory.
+          </react_native_1.Text>
+          {canAutoTouchFile && <Button />}
+        </react_native_1.View>
+      </react_native_safe_area_context_1.SafeAreaView>
+    </react_native_1.View>);
 }
+exports.Tutorial = Tutorial;
 function getRootDir() {
     const dir = process.env.EXPO_ROUTER_ABS_APP_ROOT;
     if (dir.match(/\/src\/app$/)) {
@@ -57,10 +70,10 @@ function getRootDir() {
     return dir.split('/').pop() ?? dir;
 }
 function Button() {
-    return (React.createElement(Pressable, { onPress: () => {
-            createEntryFileAsync();
-        }, style: {
-            ...Platform.select({
+    return (<Pressable_1.Pressable onPress={() => {
+            (0, createEntryFile_1.createEntryFileAsync)();
+        }} style={{
+            ...react_native_1.Platform.select({
                 web: {
                     // subtle white shadow
                     boxShadow: 'rgba(255, 255, 255, 0.15) 0px 0px 20px 5px',
@@ -73,29 +86,35 @@ function Button() {
                     overflow: 'hidden',
                 },
             }),
-        } }, ({ pressed, hovered }) => (React.createElement(View, { style: [
-            styles.buttonContainer,
-            hovered && {
-                backgroundColor: 'white',
-            },
-            pressed && {
-                backgroundColor: 'rgba(255,255,255,0.7)',
-            },
-        ] },
-        React.createElement(Text, { style: [styles.code, hovered && { color: 'black' }] },
-            React.createElement(Text, { style: { color: '#BCC3CD' } }, "$"),
-            " touch ",
-            getRootDir(),
-            "/index.js")))));
+        }}>
+      {({ pressed, hovered }) => (<react_native_1.View style={[
+                styles.buttonContainer,
+                hovered && {
+                    backgroundColor: 'white',
+                },
+                pressed && {
+                    backgroundColor: 'rgba(255,255,255,0.7)',
+                },
+            ]}>
+          <react_native_1.Text style={[styles.code, hovered && { color: 'black' }]}>
+            <react_native_1.Text style={{ color: '#BCC3CD' }}>$</react_native_1.Text> touch {getRootDir()}
+            /index.js
+          </react_native_1.Text>
+        </react_native_1.View>)}
+    </Pressable_1.Pressable>);
 }
-const styles = StyleSheet.create({
+const styles = react_native_1.StyleSheet.create({
     background: {
+        ...react_native_1.Platform.select({
+            web: {
+                backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)',
+                backgroundPositionX: -3,
+                backgroundPositionY: -3,
+                backgroundSize: '40px 40px',
+            },
+        }),
         backgroundColor: 'black',
         flex: 1,
-        backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)',
-        backgroundPositionX: -3,
-        backgroundPositionY: -3,
-        backgroundSize: '40px 40px',
     },
     safeArea: {
         flex: 1,
@@ -116,10 +135,14 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     buttonContainer: {
-        transitionDuration: '200ms',
-        backgroundColor: Platform.select({
-            web: 'transparent',
-            default: 'white',
+        ...react_native_1.Platform.select({
+            web: {
+                transitionDuration: '200ms',
+                backgroundColor: 'transparent',
+            },
+            default: {
+                backgroundColor: 'white',
+            },
         }),
         borderColor: 'white',
         borderWidth: 2,
@@ -130,19 +153,23 @@ const styles = StyleSheet.create({
         color: 'black',
     },
     code: {
+        ...react_native_1.Platform.select({
+            web: {
+                transitionDuration: '200ms',
+                color: 'white',
+                fontFamily: 'Courier',
+            },
+            default: {
+                color: 'black',
+                fontFamily: react_native_1.Platform.select({
+                    ios: 'Courier New',
+                    android: 'monospace',
+                }),
+            },
+        }),
         userSelect: 'none',
         fontSize: 18,
-        transitionDuration: '200ms',
         fontWeight: 'bold',
-        color: Platform.select({
-            web: 'white',
-            default: 'black',
-        }),
-        fontFamily: Platform.select({
-            default: 'Courier',
-            ios: 'Courier New',
-            android: 'monospace',
-        }),
     },
     subtitle: {
         color: '#BCC3CD',

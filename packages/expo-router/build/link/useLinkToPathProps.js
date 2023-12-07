@@ -1,6 +1,9 @@
-import { Platform } from 'react-native';
-import { useExpoRouter } from '../global-state/router-store';
-import { stripGroupSegmentsFromPath } from '../matchers';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const react_native_1 = require("react-native");
+const getPathFromState_1 = require("../fork/getPathFromState");
+const router_store_1 = require("../global-state/router-store");
+const matchers_1 = require("../matchers");
 function eventShouldPreventDefault(e) {
     if (e?.defaultPrevented) {
         return false;
@@ -20,11 +23,11 @@ function eventShouldPreventDefault(e) {
     }
     return false;
 }
-export default function useLinkToPathProps(props) {
-    const { linkTo } = useExpoRouter();
+function useLinkToPathProps(props) {
+    const { linkTo } = (0, router_store_1.useExpoRouter)();
     const onPress = (e) => {
         let shouldHandle = false;
-        if (Platform.OS !== 'web' || !e) {
+        if (react_native_1.Platform.OS !== 'web' || !e) {
             shouldHandle = e ? !e.defaultPrevented : true;
         }
         else if (eventShouldPreventDefault(e)) {
@@ -36,10 +39,11 @@ export default function useLinkToPathProps(props) {
         }
     };
     return {
-        // Ensure there's always a value for href
-        href: stripGroupSegmentsFromPath(props.href) || '/',
-        accessibilityRole: 'link',
+        // Ensure there's always a value for href. Manually append the baseUrl to the href prop that shows in the static HTML.
+        href: (0, getPathFromState_1.appendBaseUrl)((0, matchers_1.stripGroupSegmentsFromPath)(props.href) || '/'),
+        role: 'link',
         onPress,
     };
 }
+exports.default = useLinkToPathProps;
 //# sourceMappingURL=useLinkToPathProps.js.map

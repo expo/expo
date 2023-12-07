@@ -12,15 +12,15 @@ Monorepos, or _"monolithic repositories"_, are single repositories containing mu
 
 ## Example monorepo
 
-In this example, we will set up a monorepo using yarn workspaces without the [nohoist](https://classic.yarnpkg.com/blog/2018/02/15/nohoist/) option. We will assume some familiar names, but you can fully customize them. After this guide, our basic structure should look like this:
+In this example, we will set up a monorepo using Yarn workspaces without the [nohoist](https://classic.yarnpkg.com/blog/2018/02/15/nohoist/) option. We will assume some familiar names, but you can fully customize them. After this guide, our basic structure should look like this:
 
 - **apps/** - Contains multiple projects, including React Native apps.
 - **packages/** - Contains different packages used by our apps.
-- **package.json** - Root package file, containing yarn workspaces config.
+- **package.json** - Root package file, containing Yarn workspaces config.
 
 ### Root package file
 
-All yarn monorepos should have a "root" **package.json** file. It is the main configuration for our monorepo and may contain packages installed for all projects in the repository. You can run `yarn init`, or create the **package.json** manually. It should look something like this:
+All Yarn monorepos should have a "root" **package.json** file. It is the main configuration for our monorepo and may contain packages installed for all projects in the repository. You can run `yarn init`, or create the **package.json** manually. It should look something like this:
 
 ```json package.json
 {
@@ -31,7 +31,7 @@ All yarn monorepos should have a "root" **package.json** file. It is the main co
 
 ### Set up yarn workspaces
 
-Yarn and other tooling have a concept called _"workspaces"_. Every package and app in our repository has its own workspace. Before we can use them, we have to instruct yarn where to find these workspaces. We can do that by setting the `workspaces` property using [glob patterns](https://classic.yarnpkg.com/lang/en/docs/workspaces/#toc-tips-tricks), in the **package.json**:
+Yarn and other tooling have a concept called _"workspaces"_. Every package and app in our repository has its own workspace. Before we can use them, we have to instruct Yarn where to find these workspaces. We can do that by setting the `workspaces` property using [glob patterns](https://classic.yarnpkg.com/lang/en/docs/workspaces/#toc-tips-tricks), in the **package.json**:
 
 ```json package.json
 {
@@ -96,7 +96,7 @@ module.exports = config;
 
 Metro has three separate stages in its bundling process, [documented here](https://facebook.github.io/metro/docs/concepts). During the first phase, **Resolution**, Metro resolves your app's required files and dependencies. Metro does that with the `watchFolders` option, which is set to the project directory by default. This default setting works great for apps that don't use a monorepo structure.
 
-When using monorepos, your app dependencies splits up into different directories. Each of these directories must be within the scope of the [watchFolders](https://facebook.github.io/metro/docs/configuration/#watchfolders). If a file is outside of that scope, Metro won't be able to find it. Setting this path to the root of your monorepo will force Metro to watch all files within the repository and possibly cause a slow initial startup time.
+When using monorepos, your app dependencies splits up into different directories. Each of these directories must be within the scope of the [watchFolders](https://facebook.github.io/metro/docs/configuration/#watchfolders). If a changed file is outside of that scope, Metro won't be able to find it. Setting this path to the root of your monorepo will force Metro to watch all files within the repository and possibly cause a slow initial startup time.
 
 As your monorepo increases in size, watching all files within the monorepo becomes slower. You can speed things up by only watching the packages your app uses. Typically, these are the ones that are installed with an asterisk (\*) in your **package.json**. For example:
 
@@ -198,6 +198,12 @@ registerRootComponent(App);
 ```
 
 > This new entrypoint already exists for bare projects. You only need to add this if you have a managed project.
+
+If you are using [Expo Router](/router/introduction/), define the [`EXPO_USE_METRO_WORKSPACE_ROOT`](/more/expo-cli/#environment-variables) environment variable when running the `npx expo start` command. It enables the auto server root detection for Metro.
+
+<Terminal cmd={['$ EXPO_USE_METRO_WORKSPACE_ROOT=1 npx expo start']} />
+
+This variable can also be defined inside a **.env** file.
 
 ### Create a package
 

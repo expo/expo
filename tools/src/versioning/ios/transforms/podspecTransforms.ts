@@ -73,10 +73,9 @@ export function podspecTransforms(versionName: string): TransformPipeline {
         with: `.exclude_files$1${versionName}$2$3`,
       },
       {
-        // using jsc to expose jsi.h
         paths: 'React-jsi.podspec',
-        replace: /^(\s+Pod::Spec.new do \|s\|.*)$/gm,
-        with: '\n# using jsc to expose jsi.h\njs_engine = :jsc$1',
+        replace: /(s\.source_files\s*=\s*"jsi\/)(JSIDynamic)/g,
+        with: `$1${versionName}$2`,
       },
       {
         paths: 'React-jsc.podspec',

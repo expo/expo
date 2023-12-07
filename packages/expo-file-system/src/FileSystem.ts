@@ -1,4 +1,4 @@
-import { EventEmitter, Subscription, UnavailabilityError, uuidv4 } from 'expo-modules-core';
+import { EventEmitter, Subscription, UnavailabilityError, uuid } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import ExponentFileSystem from './ExponentFileSystem';
@@ -54,8 +54,10 @@ export const documentDirectory = normalizeEndingSlash(ExponentFileSystem.documen
  */
 export const cacheDirectory = normalizeEndingSlash(ExponentFileSystem.cacheDirectory);
 
-// @docsMissing
-export const { bundledAssets, bundleDirectory } = ExponentFileSystem;
+/**
+ * URI to the directory where assets bundled with the application are stored.
+ */
+export const bundleDirectory = normalizeEndingSlash(ExponentFileSystem.bundleDirectory);
 
 /**
  * Get metadata information about a file, directory or external content/asset.
@@ -344,9 +346,9 @@ export function createUploadTask(
 }
 
 export abstract class FileSystemCancellableNetworkTask<
-  T extends DownloadProgressData | UploadProgressData
+  T extends DownloadProgressData | UploadProgressData,
 > {
-  private _uuid = uuidv4();
+  private _uuid = uuid.v4();
   protected taskWasCanceled = false;
   private emitter = new EventEmitter(ExponentFileSystem);
   private subscription?: Subscription | null;

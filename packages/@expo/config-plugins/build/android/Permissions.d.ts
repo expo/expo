@@ -1,6 +1,6 @@
 import { ExpoConfig } from '@expo/config-types';
-import { ConfigPlugin } from '../Plugin.types';
 import { AndroidManifest, ManifestUsesPermission } from './Manifest';
+import { ConfigPlugin } from '../Plugin.types';
 export declare const withPermissions: ConfigPlugin<string[] | void>;
 /** Given a permission or list of permissions, block permissions in the final `AndroidManifest.xml` to ensure no installed library or plugin can add them. */
 export declare const withBlockedPermissions: ConfigPlugin<string[] | string>;

@@ -1,11 +1,11 @@
-module.exports = require(require.resolve('resolve-from'));
+const resolveFrom = require(require.resolve('resolve-from'));
 
-module.exports.silent = (fromDirectory, request) => {
+const silent = (fromDirectory: string, request: string) => {
   const fs = require('fs');
   const path = require('path');
   try {
     fromDirectory = fs.realpathSync(fromDirectory);
-  } catch (error) {
+  } catch (error: any) {
     if (error.code === 'ENOENT') {
       fromDirectory = path.resolve(fromDirectory);
     } else {
@@ -13,8 +13,28 @@ module.exports.silent = (fromDirectory, request) => {
     }
   }
 
-  const outputPath = path.join(fromDirectory, 'node_modules', request);
+  let outputPath = path.join(fromDirectory, 'node_modules', request);
+  if (fs.existsSync(outputPath)) {
+    return outputPath;
+  }
+  if (!path.extname(outputPath)) {
+    outputPath += '.js';
+  }
+  if (fs.existsSync(outputPath)) {
+    return outputPath;
+  }
+  outputPath = path.join(fromDirectory, request);
   if (fs.existsSync(outputPath)) {
     return outputPath;
   }
 };
+
+module.exports = jest.fn((fromDirectory, request) => {
+  const path = silent(fromDirectory, request);
+  if (!path) {
+    return resolveFrom(fromDirectory, request);
+  }
+  return path;
+});
+
+module.exports.silent = jest.fn(silent);

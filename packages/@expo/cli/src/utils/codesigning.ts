@@ -11,11 +11,15 @@ import {
 import { ExpoConfig } from '@expo/config';
 import { getExpoHomeDirectory } from '@expo/config/build/getUserState';
 import JsonFile, { JSONObject } from '@expo/json-file';
+import { CombinedError } from '@urql/core';
 import { promises as fs } from 'fs';
+import { GraphQLError } from 'graphql';
 import { pki as PKI } from 'node-forge';
 import path from 'path';
 import { Dictionary, parseDictionary } from 'structured-headers';
 
+import { env } from './env';
+import { CommandError } from './errors';
 import { getExpoGoIntermediateCertificateAsync } from '../api/getExpoGoIntermediateCertificate';
 import { getProjectDevelopmentCertificateAsync } from '../api/getProjectDevelopmentCertificate';
 import { AppQuery } from '../api/graphql/queries/AppQuery';
@@ -24,8 +28,6 @@ import { Actor } from '../api/user/user';
 import { AppByIdQuery, Permission } from '../graphql/generated';
 import * as Log from '../log';
 import { learnMore } from '../utils/link';
-import { env } from './env';
-import { CommandError } from './errors';
 
 const debug = require('debug')('expo:codesigning') as typeof console.log;
 
@@ -192,9 +194,8 @@ async function getExpoRootDevelopmentCodeSigningInfoAsync(
     return null;
   }
 
-  const developmentCodeSigningInfoFromFile = await DevelopmentCodeSigningInfoFile.readAsync(
-    easProjectId
-  );
+  const developmentCodeSigningInfoFromFile =
+    await DevelopmentCodeSigningInfoFile.readAsync(easProjectId);
   const validatedCodeSigningInfo = validateStoredDevelopmentExpoRootCertificateCodeSigningInfo(
     developmentCodeSigningInfoFromFile,
     easProjectId
@@ -382,7 +383,15 @@ async function fetchAndCacheNewDevelopmentCodeSigningInfoAsync(
   easProjectId: string
 ): Promise<CodeSigningInfo | null> {
   const actor = await ensureLoggedInAsync();
-  const app = await AppQuery.byIdAsync(easProjectId);
+  let app: AppByIdQuery['app']['byId'];
+  try {
+    app = await AppQuery.byIdAsync(easProjectId);
+  } catch (e) {
+    if (e instanceof GraphQLError || e instanceof CombinedError) {
+      return null;
+    }
+    throw e;
+  }
   if (!actorCanGetProjectDevelopmentCertificate(actor, app)) {
     return null;
   }

@@ -18,6 +18,14 @@ include ':expoview'
 include ':tools'
 include ':packages:react-native:ReactAndroid'
 project(':packages:react-native:ReactAndroid').projectDir = new File(rootDir, '../react-native-lab/react-native/packages/react-native/ReactAndroid')
+dependencyResolutionManagement {
+  versionCatalogs {
+    defaultLibrariesExtensionName = "expoLibs"
+    libs {
+      from(files("../react-native-lab/react-native/packages/react-native/gradle/libs.versions.toml"))
+    }
+  }
+}
 include ':packages:react-native:ReactAndroid:hermes-engine'
 project(':packages:react-native:ReactAndroid:hermes-engine').projectDir = new File(rootDir, '../react-native-lab/react-native/packages/react-native/ReactAndroid/hermes-engine')
 include ':expo-modules-test-core'
@@ -30,8 +38,6 @@ project(":expo-random").projectDir = new File("../packages/expo-random/android")
 [
     // ADD_NEW_SUPPORTED_ABIS_HERE
     "abi49_0_0",
-    "abi48_0_0",
-    "abi47_0_0",
 ].forEach({ abiVariant ->
   include ":expoview-$abiVariant"
   project(":expoview-$abiVariant").projectDir = new File(rootDir, "versioned-abis/expoview-$abiVariant")
@@ -41,7 +47,6 @@ useExpoModules([
     exclude : [
         'expo-module-template',
         'expo-module-template-local',
-        'expo-in-app-purchases',
         'react-native-reanimated',
         'expo-dev-menu-interface',
         'expo-dev-menu',
@@ -54,5 +59,3 @@ useExpoModules([
 
 useVendoredModulesForSettingsGradle('unversioned')
 useVendoredModulesForSettingsGradle('sdk49')
-useVendoredModulesForSettingsGradle('sdk48')
-useVendoredModulesForSettingsGradle('sdk47')

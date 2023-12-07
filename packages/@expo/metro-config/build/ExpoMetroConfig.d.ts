@@ -9,6 +9,7 @@ export interface LoadOptions {
     resetCache?: boolean;
 }
 export interface DefaultConfigOptions {
+    /** @deprecated */
     mode?: 'exotic';
     /**
      * **Experimental:** Enable CSS support for Metro web, and shim on native.
@@ -18,7 +19,7 @@ export interface DefaultConfigOptions {
      */
     isCSSEnabled?: boolean;
 }
-export declare function getDefaultConfig(projectRoot: string, options?: DefaultConfigOptions): InputConfigT;
+export declare function getDefaultConfig(projectRoot: string, { mode, isCSSEnabled }?: DefaultConfigOptions): InputConfigT;
 export declare function loadAsync(projectRoot: string, { reporter, ...metroOptions }?: LoadOptions): Promise<MetroConfig>;
 export { MetroConfig, INTERNAL_CALLSITES_REGEX };
 export declare const EXPO_DEBUG: boolean;

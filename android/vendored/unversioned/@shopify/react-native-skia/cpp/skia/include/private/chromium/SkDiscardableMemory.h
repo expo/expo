@@ -47,7 +47,7 @@ public:
      *
      * Nested calls to lock are not allowed.
      */
-    virtual bool SK_WARN_UNUSED_RESULT lock() = 0;
+    [[nodiscard]] virtual bool lock() = 0;
 
     /**
      * Returns the current pointer for the discardable memory. This call is ONLY

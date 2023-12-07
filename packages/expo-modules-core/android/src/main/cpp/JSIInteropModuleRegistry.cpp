@@ -14,6 +14,7 @@ namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
 
 namespace expo {
+
 jni::local_ref<JSIInteropModuleRegistry::jhybriddata>
 JSIInteropModuleRegistry::initHybrid(jni::alias_ref<jhybridobject> jThis) {
   return makeCxxInstance(jThis);
@@ -29,6 +30,7 @@ void JSIInteropModuleRegistry::registerNatives() {
                    makeNativeMethod("global", JSIInteropModuleRegistry::global),
                    makeNativeMethod("createObject", JSIInteropModuleRegistry::createObject),
                    makeNativeMethod("drainJSEventLoop", JSIInteropModuleRegistry::drainJSEventLoop),
+                   makeNativeMethod("wasDeallocated", JSIInteropModuleRegistry::jniWasDeallocated),
                  });
 }
 
@@ -38,8 +40,7 @@ JSIInteropModuleRegistry::JSIInteropModuleRegistry(jni::alias_ref<jhybridobject>
 void JSIInteropModuleRegistry::installJSI(
   jlong jsRuntimePointer,
   jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
-  jni::alias_ref<react::CallInvokerHolder::javaobject> jsInvokerHolder,
-  jni::alias_ref<react::CallInvokerHolder::javaobject> nativeInvokerHolder
+  jni::alias_ref<react::CallInvokerHolder::javaobject> jsInvokerHolder
 ) {
   this->jniDeallocator = jni::make_global(jniDeallocator);
 
@@ -50,9 +51,10 @@ void JSIInteropModuleRegistry::installJSI(
   runtimeHolder = std::make_shared<JavaScriptRuntime>(
     this,
     runtime,
-    jsInvokerHolder->cthis()->getCallInvoker(),
-    nativeInvokerHolder->cthis()->getCallInvoker()
+    jsInvokerHolder->cthis()->getCallInvoker()
   );
+
+  runtimeHolder->installMainObject();
 
   auto expoModules = std::make_shared<ExpoModulesHostObject>(this);
   auto expoModulesObject = jsi::Object::createFromHostObject(*runtime, expoModules);
@@ -88,6 +90,8 @@ void JSIInteropModuleRegistry::installJSIForTests(
   jsi::Runtime &jsiRuntime = runtimeHolder->get();
 
   jsRegistry = std::make_unique<JSReferencesCache>(jsiRuntime);
+
+  runtimeHolder->installMainObject();
 
   auto expoModules = std::make_shared<ExpoModulesHostObject>(this);
   auto expoModulesObject = jsi::Object::createFromHostObject(jsiRuntime, expoModules);
@@ -184,5 +188,9 @@ void JSIInteropModuleRegistry::registerSharedObject(
       "registerSharedObject"
     );
   method(javaPart_, std::move(native), std::move(js));
+}
+
+void JSIInteropModuleRegistry::jniWasDeallocated() {
+  wasDeallocated = true;
 }
 } // namespace expo

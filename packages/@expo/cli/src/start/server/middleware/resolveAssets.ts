@@ -1,9 +1,9 @@
 import { ExpoConfig } from '@expo/config';
-import { BundleAssetWithFileHashes } from '@expo/dev-server';
 import fs from 'fs/promises';
 import path from 'path';
 
 import { getAssetSchemasAsync } from '../../../api/getExpoSchema';
+import { BundleAssetWithFileHashes } from '../../../export/fork-bundleAsync';
 import * as Log from '../../../log';
 import { fileExistsAsync } from '../../../utils/dir';
 import { CommandError } from '../../../utils/errors';
@@ -22,7 +22,7 @@ type ManifestResolutionError = Error & {
 /** Inline the contents of each platform's `googleServicesFile` so runtimes can access them. */
 export async function resolveGoogleServicesFile(
   projectRoot: string,
-  manifest: Pick<ExpoConfig, 'android' | 'ios'>
+  manifest: Partial<Pick<ExpoConfig, 'android' | 'ios'>>
 ) {
   if (manifest.android?.googleServicesFile) {
     try {

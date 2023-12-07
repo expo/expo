@@ -2,7 +2,7 @@ import * as Crypto from '../Crypto';
 import ExpoCrypto from '../ExpoCrypto';
 
 jest.mock('../ExpoCrypto', () => ({
-  getRandomBytesAsync: jest.fn(async () => 0),
+  getRandomValues: jest.fn(async () => 0),
   getRandomBase64StringAsync: jest.fn(async () => 0),
   digestStringAsync: jest.fn(async () => 0),
   digestString: jest.fn(async () => 0),
@@ -69,12 +69,12 @@ it(`asserts invalid encoding errors`, async () => {
 it(`accepts valid byte counts`, async () => {
   for (const value of [0, 1024, 512.5]) {
     await expect(Crypto.getRandomBytesAsync(value));
-    expect(ExpoCrypto.getRandomBytesAsync).lastCalledWith(Math.floor(value));
+    expect(ExpoCrypto.getRandomValues).toHaveBeenCalled();
   }
 });
 
-it(`falls back to an alternative native method when getRandomBytesAsync is not available`, async () => {
-  ExpoCrypto.getRandomBytesAsync = null;
+it(`falls back to an alternative native method when getRandomValues is not available`, async () => {
+  ExpoCrypto.getRandomValues = null;
   await expect(Crypto.getRandomBytesAsync(1024));
   expect(ExpoCrypto.getRandomBase64StringAsync).toHaveBeenCalled();
 });

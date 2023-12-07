@@ -34,7 +34,15 @@ const testElementValueAsync = async (testID: string) => {
   return attributes?.text || '';
 };
 
-const pressTestButtonAsync = async (testID: string) => await element(by.id(testID)).tap();
+const pressTestButtonAsync = async (testID: string) => {
+  await element(by.id(testID)).tap();
+};
+
+const waitForAsynchronousTaskCompletion = async (timeout: number = 1000) => {
+  await waitFor(element(by.id('numActive')))
+    .toHaveText('0')
+    .withTimeout(timeout);
+};
 
 const readLogEntriesAsync = async () => {
   await element(by.id('readLogEntries')).tap();
@@ -89,6 +97,46 @@ describe('Basic tests', () => {
 
     const message2 = await testElementValueAsync('updateString');
     jestExpect(message2).toBe('test');
+
+    await device.terminateApp();
+  });
+
+  it('reloads', async () => {
+    jest.setTimeout(300000 * TIMEOUT_BIAS);
+    Server.start(Update.serverPort, protocolVersion);
+    await device.installApp();
+    await device.launchApp({
+      newInstance: true,
+    });
+    await waitForAppToBecomeVisible();
+
+    const isReloadingBefore = await testElementValueAsync('isReloading');
+    jestExpect(isReloadingBefore).toBe('false');
+    const startTimeBefore = parseInt(await testElementValueAsync('startTime'), 10);
+    jestExpect(startTimeBefore).toBeGreaterThan(0);
+
+    await pressTestButtonAsync('reload');
+
+    // wait 3 seconds for reload to complete
+    // it's delayed 2 seconds after the button press in the client so the button press finish registers in detox
+    await setTimeout(3000);
+
+    // on android, the react context must be reacquired by detox.
+    // there's no detox public API to tell it that react native
+    // has been reloaded by the client application and that it should
+    // reacquire the react context. Instead, we use the detox reload
+    // API to do a second reload which reacquires the context. This
+    // detox reload method does the same thing that expo-updates reload does
+    // under the hood, so this is ok and is the best we can do. It should
+    // do the job of catching issues in react native either way.
+    if (device.getPlatform() === 'android') {
+      await device.reloadReactNative();
+    }
+
+    const isReloadingAfter = await testElementValueAsync('isReloading');
+    jestExpect(isReloadingAfter).toBe('false');
+    const startTimeAfter = parseInt(await testElementValueAsync('startTime'), 10);
+    jestExpect(startTimeAfter).toBeGreaterThan(startTimeBefore);
 
     await device.terminateApp();
   });
@@ -491,6 +539,8 @@ describe('JS API tests', () => {
 
     // Test extra params
     await pressTestButtonAsync('setExtraParams');
+    await waitForAsynchronousTaskCompletion();
+
     const extraParamsString = await testElementValueAsync('extraParamsString');
     console.warn(`extraParamsString = ${extraParamsString}`);
     jestExpect(extraParamsString).toContain('testparam');
@@ -499,11 +549,17 @@ describe('JS API tests', () => {
 
     Server.start(Update.serverPort, protocolVersion);
     await Server.serveSignedManifest(manifest, projectRoot);
+
     await pressTestButtonAsync('checkForUpdate');
+    console.warn(((await element(by.id('numActive')).getAttributes()) as any).text);
+    await waitForAsynchronousTaskCompletion();
+
     const availableUpdateID = await testElementValueAsync('availableUpdateID');
     jestExpect(availableUpdateID).toEqual(manifest.id);
+
     await pressTestButtonAsync('downloadUpdate');
-    await setTimeout(2000);
+    await waitForAsynchronousTaskCompletion();
+
     Server.stop();
     await device.terminateApp();
     await device.launchApp();
@@ -564,9 +620,7 @@ describe('JS API tests', () => {
 
     // Check for update, and expect isUpdateAvailable to be true
     await pressTestButtonAsync('checkForUpdate');
-    await pressTestButtonAsync('checkForUpdate');
-    await pressTestButtonAsync('checkForUpdate');
-    await pressTestButtonAsync('checkForUpdate');
+    await waitForAsynchronousTaskCompletion();
 
     const isUpdatePending2 = await testElementValueAsync('state.isUpdatePending');
     const isUpdateAvailable2 = await testElementValueAsync('state.isUpdateAvailable');
@@ -582,18 +636,13 @@ describe('JS API tests', () => {
 
     // Download update and expect isUpdatePending to be true
     await pressTestButtonAsync('downloadUpdate');
-    await pressTestButtonAsync('downloadUpdate');
-    await pressTestButtonAsync('downloadUpdate');
-    await pressTestButtonAsync('downloadUpdate');
+    await waitForAsynchronousTaskCompletion();
 
     const isUpdatePending3 = await testElementValueAsync('state.isUpdatePending');
     const isUpdateAvailable3 = await testElementValueAsync('state.isUpdateAvailable');
     const latestManifestId3 = await testElementValueAsync('state.latestManifest.id');
     const downloadedManifestId3 = await testElementValueAsync('state.downloadedManifest.id');
     const isRollback3 = await testElementValueAsync('state.isRollback');
-    await waitFor(element(by.id('activity')))
-      .not.toBeVisible()
-      .withTimeout(2000);
 
     console.warn(`isUpdatePending3 = ${isUpdatePending3}`);
     console.warn(`isUpdateAvailable3 = ${isUpdateAvailable3}`);
@@ -603,9 +652,8 @@ describe('JS API tests', () => {
 
     // Test native context reader
     await pressTestButtonAsync('readNativeStateContext');
-    await waitFor(element(by.id('activity')))
-      .not.toBeVisible()
-      .withTimeout(2000);
+    await waitForAsynchronousTaskCompletion();
+
     const nativeStateContextString = await testElementValueAsync('nativeStateContextString');
     const nativeStateContext = JSON.parse(nativeStateContextString);
     console.warn(`nativeStateContext = ${JSON.stringify(nativeStateContext, null, 2)}`);
@@ -620,12 +668,14 @@ describe('JS API tests', () => {
     const latestManifestId4 = await testElementValueAsync('state.latestManifest.id');
     const downloadedManifestId4 = await testElementValueAsync('state.downloadedManifest.id');
     const isRollback4 = await testElementValueAsync('state.isRollback');
+    const rollbackCommitTime4 = await testElementValueAsync('state.rollbackCommitTime');
 
     console.warn(`isUpdatePending4 = ${isUpdatePending4}`);
     console.warn(`isUpdateAvailable4 = ${isUpdateAvailable4}`);
     console.warn(`isRollback4 = ${isRollback4}`);
     console.warn(`latestManifestId4 = ${latestManifestId4}`);
     console.warn(`downloadedManifestId4 = ${downloadedManifestId4}`);
+    console.warn(`rollbackCommitTime4 = ${rollbackCommitTime4}`);
 
     const updatesExpoClientUpdateString = await testElementValueAsync('updates.expoClient');
     const constantsExpoConfigUpdateString = await testElementValueAsync('constants.expoConfig');
@@ -638,18 +688,21 @@ describe('JS API tests', () => {
 
     // Check for update, and expect isRollback to be true
     await pressTestButtonAsync('checkForUpdate');
+    await waitForAsynchronousTaskCompletion();
 
     const isUpdatePending5 = await testElementValueAsync('state.isUpdatePending');
     const isUpdateAvailable5 = await testElementValueAsync('state.isUpdateAvailable');
     const latestManifestId5 = await testElementValueAsync('state.latestManifest.id');
     const downloadedManifestId5 = await testElementValueAsync('state.downloadedManifest.id');
     const isRollback5 = await testElementValueAsync('state.isRollback');
+    const rollbackCommitTime5 = await testElementValueAsync('state.rollbackCommitTime');
 
     console.warn(`isUpdatePending5 = ${isUpdatePending5}`);
     console.warn(`isUpdateAvailable5 = ${isUpdateAvailable5}`);
     console.warn(`isRollback5 = ${isRollback5}`);
     console.warn(`latestManifestId5 = ${latestManifestId5}`);
     console.warn(`downloadedManifestId5 = ${downloadedManifestId5}`);
+    console.warn(`rollbackCommitTime5 = ${rollbackCommitTime5}`);
 
     // Terminate and relaunch app, we should be running the original bundle again, and back to the default state
     await device.terminateApp();
@@ -661,12 +714,14 @@ describe('JS API tests', () => {
     const latestManifestId6 = await testElementValueAsync('state.latestManifest.id');
     const downloadedManifestId6 = await testElementValueAsync('state.downloadedManifest.id');
     const isRollback6 = await testElementValueAsync('state.isRollback');
+    const rollbackCommitTime6 = await testElementValueAsync('state.rollbackCommitTime');
 
     console.warn(`isUpdatePending6 = ${isUpdatePending6}`);
     console.warn(`isUpdateAvailable6 = ${isUpdateAvailable6}`);
     console.warn(`isRollback6 = ${isRollback6}`);
     console.warn(`latestManifestId6 = ${latestManifestId6}`);
     console.warn(`downloadedManifestId6 = ${downloadedManifestId6}`);
+    console.warn(`rollbackCommitTime6 = ${rollbackCommitTime6}`);
 
     const updatesExpoConfigRollbackString = await testElementValueAsync('updates.expoClient');
     const constantsExpoConfigRollbackString = await testElementValueAsync('constants.expoConfig');
@@ -700,19 +755,29 @@ describe('JS API tests', () => {
     jestExpect(nativeStateContext.latestManifest?.id).toEqual(manifest.id);
     jestExpect(nativeStateContext.isUpdateAvailable).toBe(true);
     jestExpect(nativeStateContext.isUpdatePending).toBe(true);
-    jestExpect(nativeStateContext.isRollback).toBe(false);
     // After restarting
     jestExpect(isUpdateAvailable4).toEqual('false');
     jestExpect(isUpdatePending4).toEqual('false');
     jestExpect(isRollback4).toEqual('false');
     jestExpect(latestManifestId4).toEqual('');
     jestExpect(downloadedManifestId4).toEqual('');
+    jestExpect(rollbackCommitTime4).toEqual('');
     // After check for update and getting a rollback
     jestExpect(isUpdateAvailable5).toEqual('true');
     jestExpect(isUpdatePending5).toEqual('false');
     jestExpect(isRollback5).toEqual('true');
     jestExpect(latestManifestId5).toEqual('');
     jestExpect(downloadedManifestId5).toEqual('');
+    jestExpect(rollbackCommitTime5).not.toEqual('');
+
+    // Check for update, and expect isRollback to be true
+    await pressTestButtonAsync('triggerParallelFetchAndDownload');
+    await waitForAsynchronousTaskCompletion(4000);
+
+    const didCheckAndDownloadHappenInParallel = await testElementValueAsync(
+      'didCheckAndDownloadHappenInParallel'
+    );
+    jestExpect(didCheckAndDownloadHappenInParallel).toEqual('false');
   });
 
   it('Receives expected events when update available on start', async () => {
@@ -998,8 +1063,14 @@ describe('Asset deletion recovery tests', () => {
     // Verify all the assets -- including the JS bundle from the update (which wasn't in the
     // embedded update) -- have been restored. Additionally verify from the server side that the
     // updated bundle was re-downloaded.
+    // With asset exclusion, on Android, the number of assets found may be greater than the number in the manifest,
+    // as the total will include embedded assets that were copied.
     numAssets = await checkNumAssetsAsync();
-    jestExpect(numAssets).toBe(manifest.assets.length + 1);
+    if (platform === 'ios') {
+      jestExpect(numAssets).toBe(manifest.assets.length + 1);
+    } else {
+      jestExpect(numAssets).toBeGreaterThanOrEqual(manifest.assets.length + 1);
+    }
     updateID = await testElementValueAsync('updateID');
     jestExpect(updateID).toEqual(manifest.id);
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1); // should have re-downloaded only the JS bundle; the rest should have been copied from the app binary

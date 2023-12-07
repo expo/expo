@@ -1,7 +1,6 @@
 import { createHash } from 'crypto';
 import { createReadStream } from 'fs';
 import fs from 'fs/promises';
-import minimatch from 'minimatch';
 import pLimit from 'p-limit';
 import path from 'path';
 
@@ -13,6 +12,7 @@ import type {
   HashSourceContents,
   NormalizedOptions,
 } from '../Fingerprint.types';
+import { isIgnoredPath } from '../utils/Path';
 import { profile } from '../utils/Profile';
 
 /**
@@ -82,10 +82,14 @@ export async function createFileHashResultsAsync(
   limiter: pLimit.Limit,
   projectRoot: string,
   options: NormalizedOptions
-): Promise<HashResult> {
+): Promise<HashResult | null> {
   // Backup code for faster hashing
   /*
   return limiter(async () => {
+    if (isIgnoredPath(filePath, options.ignorePaths)) {
+      return null;
+    }
+
     const hasher = createHash(options.hashAlgorithm);
 
     const stat = await fs.stat(filePath);
@@ -102,7 +106,11 @@ export async function createFileHashResultsAsync(
   */
 
   return limiter(() => {
-    return new Promise<HashResult>((resolve, reject) => {
+    return new Promise<HashResult | null>((resolve, reject) => {
+      if (isIgnoredPath(filePath, options.ignorePaths)) {
+        return resolve(null);
+      }
+
       let resolved = false;
       const hasher = createHash(options.hashAlgorithm);
       const stream = createReadStream(path.join(projectRoot, filePath));
@@ -124,18 +132,6 @@ export async function createFileHashResultsAsync(
 }
 
 /**
- * Indicate the given `dirPath` should be excluded by `dirExcludes`
- */
-function isExcludedDir(dirPath: string, dirExcludes: string[]): boolean {
-  for (const exclude of dirExcludes) {
-    if (minimatch(dirPath, exclude)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-/**
  * Create `HashResult` for a dir.
  * If the dir is excluded, returns null rather than a HashResult
  */
@@ -146,7 +142,7 @@ export async function createDirHashResultsAsync(
   options: NormalizedOptions,
   depth: number = 0
 ): Promise<HashResult | null> {
-  if (isExcludedDir(dirPath, options.dirExcludes)) {
+  if (isIgnoredPath(dirPath, options.ignorePaths)) {
     return null;
   }
   const dirents = (await fs.readdir(path.join(projectRoot, dirPath), { withFileTypes: true })).sort(
@@ -164,12 +160,15 @@ export async function createDirHashResultsAsync(
   }
 
   const hasher = createHash(options.hashAlgorithm);
-  const results = await Promise.all(promises);
+  const results = (await Promise.all(promises)).filter(
+    (result): result is HashResult => result != null
+  );
+  if (results.length === 0) {
+    return null;
+  }
   for (const result of results) {
-    if (result != null) {
-      hasher.update(result.id);
-      hasher.update(result.hex);
-    }
+    hasher.update(result.id);
+    hasher.update(result.hex);
   }
   const hex = hasher.digest('hex');
 

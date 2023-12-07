@@ -6,7 +6,7 @@ export { AppOwnership, ExecutionEnvironment, UserInterfaceIdiom, };
 if (!ExponentConstants) {
     console.warn("No native ExponentConstants module found, are you sure the expo-constants's module is linked properly?");
 }
-let rawManifest = null;
+let rawUpdatesManifest = null;
 // If expo-updates defines a non-empty manifest, prefer that one
 if (NativeModulesProxy.ExpoUpdates) {
     let updatesManifest;
@@ -17,27 +17,33 @@ if (NativeModulesProxy.ExpoUpdates) {
         updatesManifest = JSON.parse(NativeModulesProxy.ExpoUpdates.manifestString);
     }
     if (updatesManifest && Object.keys(updatesManifest).length > 0) {
-        rawManifest = updatesManifest;
+        rawUpdatesManifest = updatesManifest;
     }
 }
 // If dev-launcher defines a non-empty manifest, prefer that one
+let rawDevLauncherManifest = null;
 if (NativeModules.EXDevLauncher) {
     let devLauncherManifest;
     if (NativeModules.EXDevLauncher.manifestString) {
         devLauncherManifest = JSON.parse(NativeModules.EXDevLauncher.manifestString);
     }
     if (devLauncherManifest && Object.keys(devLauncherManifest).length > 0) {
-        rawManifest = devLauncherManifest;
+        rawDevLauncherManifest = devLauncherManifest;
     }
 }
 // Fall back to ExponentConstants.manifest if we don't have one from Updates
-if (!rawManifest && ExponentConstants && ExponentConstants.manifest) {
-    rawManifest = ExponentConstants.manifest;
+let rawAppConfig = null;
+if (ExponentConstants && ExponentConstants.manifest) {
+    const appConfig = ExponentConstants.manifest;
     // On Android we pass the manifest in JSON form so this step is necessary
-    if (typeof rawManifest === 'string') {
-        rawManifest = JSON.parse(rawManifest);
+    if (typeof appConfig === 'string') {
+        rawAppConfig = JSON.parse(appConfig);
+    }
+    else {
+        rawAppConfig = appConfig;
     }
 }
+let rawManifest = rawUpdatesManifest ?? rawDevLauncherManifest ?? rawAppConfig;
 const { name, appOwnership, ...nativeConstants } = (ExponentConstants || {});
 let warnedAboutManifestField = false;
 const constants = {
@@ -61,7 +67,7 @@ Object.defineProperties(constants, {
     __unsafeNoWarnManifest: {
         get() {
             const maybeManifest = getManifest(true);
-            if (!maybeManifest || !isAppManifest(maybeManifest)) {
+            if (!maybeManifest || !isBareManifest(maybeManifest)) {
                 return null;
             }
             return maybeManifest;
@@ -85,7 +91,7 @@ Object.defineProperties(constants, {
                 warnedAboutManifestField = true;
             }
             const maybeManifest = getManifest();
-            if (!maybeManifest || !isAppManifest(maybeManifest)) {
+            if (!maybeManifest || !isBareManifest(maybeManifest)) {
                 return null;
             }
             return maybeManifest;
@@ -108,10 +114,15 @@ Object.defineProperties(constants, {
             if (!maybeManifest) {
                 return null;
             }
+            // if running an embedded update, maybeManifest is a BareManifest which doesn't have
+            // the expo config. Instead, the embedded expo-constants app.config should be used.
+            if (NativeModulesProxy.ExpoUpdates && NativeModulesProxy.ExpoUpdates.isEmbeddedLaunch) {
+                return rawAppConfig;
+            }
             if (isManifest(maybeManifest)) {
                 return maybeManifest.extra?.expoClient ?? null;
             }
-            else if (isAppManifest(maybeManifest)) {
+            else if (isBareManifest(maybeManifest)) {
                 return maybeManifest;
             }
             return null;
@@ -127,7 +138,7 @@ Object.defineProperties(constants, {
             if (isManifest(maybeManifest)) {
                 return maybeManifest.extra?.expoGo ?? null;
             }
-            else if (isAppManifest(maybeManifest)) {
+            else if (isBareManifest(maybeManifest)) {
                 return maybeManifest;
             }
             return null;
@@ -143,7 +154,7 @@ Object.defineProperties(constants, {
             if (isManifest(maybeManifest)) {
                 return maybeManifest.extra?.eas ?? null;
             }
-            else if (isAppManifest(maybeManifest)) {
+            else if (isBareManifest(maybeManifest)) {
                 return maybeManifest;
             }
             return null;
@@ -160,7 +171,7 @@ Object.defineProperties(constants, {
         enumerable: false,
     },
 });
-function isAppManifest(manifest) {
+function isBareManifest(manifest) {
     return !isManifest(manifest);
 }
 function isManifest(manifest) {

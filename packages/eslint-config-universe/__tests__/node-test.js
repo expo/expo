@@ -14,7 +14,7 @@ it(`has a Node config`, () => {
         baseConfig: getBaseConfig(),
         overrideConfigFile: configFile,
         useEslintrc: false,
-      })
+      }),
   ).not.toThrow();
 });
 
@@ -27,7 +27,7 @@ it(`lints with the Node config`, async () => {
       ignore: false,
       useEslintrc: false,
     },
-    ['__tests__/fixtures/*all*', '__tests__/fixtures/*node*']
+    ['__tests__/fixtures/*all*', '__tests__/fixtures/*node*'],
   );
   for (const result of results) {
     const relativeFilePath = path.relative(__dirname, result.filePath);

@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import host.exp.exponent.Constants
 import host.exp.exponent.LauncherActivity
 import host.exp.exponent.kernel.ExponentError
 import host.exp.exponent.kernel.Kernel
@@ -42,7 +41,7 @@ class ErrorActivity() : FragmentActivity() {
 
     ExperienceActivity.removeNotification(this)
 
-    manifestUrl = intent.extras!!.getString(MANIFEST_URL_KEY) ?: Constants.INITIAL_URL
+    manifestUrl = intent.extras!!.getString(MANIFEST_URL_KEY)
     pager.adapter = ViewPagerAdapter(supportFragmentManager)
   }
 
@@ -131,6 +130,7 @@ class ErrorActivity() : FragmentActivity() {
     const val USER_ERROR_MESSAGE_KEY = "userErrorMessage"
     const val DEVELOPER_ERROR_MESSAGE_KEY = "developerErrorMessage"
     const val DEBUG_MODE_KEY = "isDebugModeEnabled"
+    const val ERROR_HEADER_KEY = "errorHeader"
 
     @JvmStatic var visibleActivity: ErrorActivity? = null
       private set

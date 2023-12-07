@@ -1,7 +1,6 @@
 package expo.modules.brightness
 
 import android.Manifest
-import android.os.Build
 import android.provider.Settings
 import android.view.WindowManager
 import expo.modules.core.errors.InvalidArgumentException
@@ -13,12 +12,17 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import kotlin.math.roundToInt
 
+const val brightnessChangeEvent = "Expo.brightnessDidChange"
+
 class BrightnessModule : Module() {
   private val currentActivity
     get() = appContext.currentActivity ?: throw Exceptions.MissingActivity()
 
   override fun definition() = ModuleDefinition {
     Name("ExpoBrightness")
+
+    // This is unused on Android. It is only here to suppress the native event emitter warning
+    Events(brightnessChangeEvent)
 
     AsyncFunction("requestPermissionsAsync") { promise: Promise ->
       Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.WRITE_SETTINGS)
@@ -53,7 +57,7 @@ class BrightnessModule : Module() {
     AsyncFunction("setSystemBrightnessAsync") { brightnessValue: Float ->
       // we have to just check this every time
       // if we try to store a value for this permission, there is no way to know if the user has changed it
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.System.canWrite(currentActivity)) {
+      if (!Settings.System.canWrite(currentActivity)) {
         throw BrightnessPermissionsException()
       }
       // manual mode must be set in order to change system brightness (sets the automatic mode off)
@@ -91,7 +95,7 @@ class BrightnessModule : Module() {
     AsyncFunction("setSystemBrightnessModeAsync") { brightnessMode: Int ->
       // we have to just check this every time
       // if we try to store a value for this permission, there is no way to know if the user has changed it
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.System.canWrite(currentActivity)) {
+      if (!Settings.System.canWrite(currentActivity)) {
         throw BrightnessPermissionsException()
       }
       Settings.System.putInt(

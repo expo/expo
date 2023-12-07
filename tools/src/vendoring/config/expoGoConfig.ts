@@ -49,12 +49,13 @@ const config: VendoringTargetConfig = {
       // },
     },
     'lottie-react-native': {
-      source: 'https://github.com/lottie-react-native/lottie-react-native.git',
+      source: 'lottie-react-native',
+      sourceType: 'npm',
       ios: {},
-      // android: {
-      //   includeFiles: 'src/android/**',
-      //   excludeFiles: ['src/android/gradle.properties', 'src/android/gradle-maven-push.gradle'],
-      // },
+      android: {
+        includeFiles: ['android/**'],
+        excludeFiles: ['src/android/gradle.properties', 'src/android/gradle-maven-push.gradle'],
+      },
     },
     'react-native-gesture-handler': {
       source: 'https://github.com/software-mansion/react-native-gesture-handler.git',
@@ -100,7 +101,7 @@ const config: VendoringTargetConfig = {
         async mutatePodspec(podspec: Podspec) {
           const reactCommonDir = path.relative(
             EXPO_DIR,
-            path.join(REACT_NATIVE_SUBMODULE_DIR, 'packages', 'react-native', 'ReactCommon')
+            path.join(REACT_NATIVE_SUBMODULE_DIR, 'ReactCommon')
           );
           // `reanimated_utils.rb` generates wrong and confusing paths to ReactCommon headers, so we need to fix them.
           podspec.xcconfig['HEADER_SEARCH_PATHS'] = podspec.xcconfig[
@@ -243,7 +244,9 @@ const config: VendoringTargetConfig = {
     },
     '@react-native-community/netinfo': {
       source: 'https://github.com/react-native-netinfo/react-native-netinfo',
-      ios: {},
+      ios: {
+        excludeFiles: 'example/**/*',
+      },
     },
     'react-native-webview': {
       source: 'https://github.com/react-native-webview/react-native-webview.git',
@@ -411,7 +414,9 @@ const config: VendoringTargetConfig = {
               framework
             );
             const sharedFrameworkPath = path.join(vendoredCommonDir, path.basename(framework));
-            await fs.unlink(sharedFrameworkPath);
+            try {
+              await fs.unlink(sharedFrameworkPath);
+            } catch {}
             await fs.symlink(
               path.relative(path.dirname(sharedFrameworkPath), sourceFrameworkPath),
               sharedFrameworkPath
@@ -438,7 +443,13 @@ const config: VendoringTargetConfig = {
         includeFiles: ['android/**', 'cpp/**'],
         async postCopyFilesHookAsync(sourceDirectory, targetDirectory) {
           // create symlink from node_modules/@shopify/react-native-skia to common lib dir
-          const libs = ['libskia.a', 'libskshaper.a', 'libsvg.a'];
+          const libs = [
+            'libskia.a',
+            'libskparagraph.a',
+            'libskshaper.a',
+            'libsvg.a',
+            'libskunicode.a',
+          ];
           const archs = ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'];
           for (const lib of libs) {
             for (const arch of archs) {
@@ -450,7 +461,9 @@ const config: VendoringTargetConfig = {
               );
               const commonLibPath = path.join(targetDirectory, '../../../common/libs', arch, lib);
               await fs.ensureDir(path.dirname(commonLibPath));
-              await fs.unlink(commonLibPath);
+              try {
+                await fs.unlink(commonLibPath);
+              } catch {}
               await fs.symlink(
                 path.relative(path.dirname(commonLibPath), sourceLibPath),
                 commonLibPath

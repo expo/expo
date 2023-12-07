@@ -1,7 +1,12 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const react_1 = __importDefault(require("react"));
+const client_1 = __importDefault(require("react-dom/client"));
 let currentRoot = null;
-export default {
+exports.default = {
     show() {
         if (currentRoot) {
             return;
@@ -11,8 +16,8 @@ export default {
         const div = document.createElement('div');
         div.id = 'error-overlay';
         document.body.appendChild(div);
-        currentRoot = ReactDOM.createRoot(div);
-        currentRoot.render(React.createElement(ErrorOverlay, null));
+        currentRoot = client_1.default.createRoot(div);
+        currentRoot.render(react_1.default.createElement(ErrorOverlay, null));
     },
     hide() {
         // Remove div with ID `error-overlay`

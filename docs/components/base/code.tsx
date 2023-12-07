@@ -1,17 +1,19 @@
 import { css } from '@emotion/react';
-import { theme, typography } from '@expo/styleguide';
+import { mergeClasses, theme, Themes, typography } from '@expo/styleguide';
 import { borderRadius, spacing } from '@expo/styleguide-base';
-import { FileCode01Icon, LayoutAlt01Icon } from '@expo/styleguide-icons';
+import { FileCode01Icon, LayoutAlt01Icon, Server03Icon } from '@expo/styleguide-icons';
 import { Language, Prism } from 'prism-react-renderer';
 import * as React from 'react';
 import tippy, { roundArrow } from 'tippy.js';
 
 import { installLanguages } from './languages';
 
+import { useCodeBlockSettingsContext } from '~/providers/CodeBlockSettingsProvider';
 import { Snippet } from '~/ui/components/Snippet/Snippet';
 import { SnippetContent } from '~/ui/components/Snippet/SnippetContent';
 import { SnippetHeader } from '~/ui/components/Snippet/SnippetHeader';
 import { CopyAction } from '~/ui/components/Snippet/actions/CopyAction';
+import { SettingsAction } from '~/ui/components/Snippet/actions/SettingsAction';
 import { CODE } from '~/ui/components/Text';
 
 // @ts-ignore Jest ESM issue https://github.com/facebook/jest/issues/9430
@@ -23,6 +25,164 @@ const attributes = {
   'data-text': true,
 };
 
+type Props = {
+  className?: string;
+};
+
+export function cleanCopyValue(value: string) {
+  return value
+    .replace(/\/\*\s?@(info[^*]+|end|hide[^*]+).?\*\//g, '')
+    .replace(/#\s?@(info[^#]+|end|hide[^#]+).?#/g, '')
+    .replace(/<!--\s?@(info[^<>]+|end|hide[^<>]+).?-->/g, '')
+    .replace(/^ +\r?\n|\n +\r?$/gm, '');
+}
+
+function escapeHtml(text: string) {
+  return text.replace(/"/g, '&quot;');
+}
+
+function replaceXmlCommentsWithAnnotations(value: string) {
+  return value
+    .replace(/<span class="token comment">&lt;!-- @info (.*?)--><\/span>\s*/g, (_, content) => {
+      return content
+        ? `<span class="code-annotation with-tooltip" data-tippy-content="${escapeHtml(content)}">`
+        : '<span class="code-annotation">';
+    })
+    .replace(/<span class="token comment">&lt;!-- @hide (.*?)--><\/span>\s*/g, (_, content) => {
+      return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${escapeHtml(
+        content
+      )}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
+    })
+    .replace(/\s*<span class="token comment">&lt;!-- @end --><\/span>/g, '</span>');
+}
+
+function replaceHashCommentsWithAnnotations(value: string) {
+  return value
+    .replace(/<span class="token comment"># @info (.*?)#<\/span>\s*/g, (_, content) => {
+      return content
+        ? `<span class="code-annotation with-tooltip" data-tippy-content="${escapeHtml(content)}">`
+        : '<span class="code-annotation">';
+    })
+    .replace(/<span class="token comment"># @hide (.*?)#<\/span>\s*/g, (_, content) => {
+      return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${escapeHtml(
+        content
+      )}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
+    })
+    .replace(/\s*<span class="token comment"># @end #<\/span>/g, '</span>');
+}
+
+function replaceSlashCommentsWithAnnotations(value: string) {
+  return value
+    .replace(/<span class="token comment">\/\* @info (.*?)\*\/<\/span>\s*/g, (_, content) => {
+      return content
+        ? `<span class="code-annotation with-tooltip" data-tippy-content="${escapeHtml(content)}">`
+        : '<span class="code-annotation">';
+    })
+    .replace(/<span class="token comment">\/\* @hide (.*?)\*\/<\/span>\s*/g, (_, content) => {
+      return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${escapeHtml(
+        content
+      )}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
+    })
+    .replace(/\s*<span class="token comment">\/\* @end \*\/<\/span>/g, '</span>');
+}
+
+function parseValue(value: string) {
+  if (value.startsWith('@@@')) {
+    const valueChunks = value.split('@@@');
+    return {
+      title: valueChunks[1],
+      value: valueChunks[2],
+    };
+  }
+  return {
+    value,
+  };
+}
+
+export function Code({ className, children }: React.PropsWithChildren<Props>) {
+  const { preferredTheme, wordWrap } = useCodeBlockSettingsContext();
+
+  React.useEffect(() => {
+    const tippyFunc = testTippy || tippy;
+    tippyFunc('.code-annotation.with-tooltip', {
+      allowHTML: true,
+      theme: 'expo',
+      placement: 'top',
+      arrow: roundArrow,
+      interactive: true,
+      offset: [0, 20],
+      appendTo: document.body,
+    });
+  }, []);
+
+  // note(simek): MDX dropped `inlineCode` pseudo-tag, and we need to relay on `pre` and `code` now,
+  // which results in this nesting mess, we should fix it in the future
+  const rootProps =
+    className && className.startsWith('language')
+      ? { className, children }
+      : (React.Children.toArray(children)[0] as JSX.Element)?.props;
+
+  const value = parseValue(rootProps?.children?.toString() || '');
+  let html = value.value;
+
+  // mdx will add the class `language-foo` to codeblocks with the tag `foo`
+  // if this class is present, we want to slice out `language-`
+  let lang = rootProps.className && rootProps.className.slice(9).toLowerCase();
+
+  // Allow for code blocks without a language.
+  if (lang) {
+    // sh isn't supported, use sh to match js, and ts
+    if (lang in remapLanguages) {
+      lang = remapLanguages[lang];
+    }
+
+    const grammar = Prism.languages[lang as keyof typeof Prism.languages];
+    if (!grammar) {
+      throw new Error(`docs currently do not support language: ${lang}`);
+    }
+
+    html = Prism.highlight(html, grammar, lang as Language);
+    if (['properties', 'ruby', 'bash', 'yaml'].includes(lang)) {
+      html = replaceHashCommentsWithAnnotations(html);
+    } else if (['xml', 'html'].includes(lang)) {
+      html = replaceXmlCommentsWithAnnotations(html);
+    } else {
+      html = replaceSlashCommentsWithAnnotations(html);
+    }
+  }
+
+  return value?.title ? (
+    <Snippet>
+      <SnippetHeader title={value.title} Icon={getIconForFile(value.title)}>
+        <CopyAction text={cleanCopyValue(value.value)} />
+        <SettingsAction />
+      </SnippetHeader>
+      <SnippetContent className="p-0">
+        <pre
+          css={STYLES_CODE_CONTAINER}
+          className={mergeClasses(wordWrap && '!whitespace-pre-wrap !break-words')}
+          {...attributes}>
+          <code
+            css={STYLES_CODE_BLOCK}
+            dangerouslySetInnerHTML={{ __html: html.replace(/^@@@.+@@@/g, '') }}
+          />
+        </pre>
+      </SnippetContent>
+    </Snippet>
+  ) : (
+    <pre
+      css={[STYLES_CODE_CONTAINER, STYLES_CODE_CONTAINER_BLOCK]}
+      className={mergeClasses(
+        preferredTheme === Themes.DARK && 'dark-theme',
+        wordWrap && '!whitespace-pre-wrap !break-words',
+        'last:mb-0'
+      )}
+      {...attributes}>
+      <code css={STYLES_CODE_BLOCK} dangerouslySetInnerHTML={{ __html: html }} />
+    </pre>
+  );
+}
+
 const STYLES_CODE_BLOCK = css`
   ${typography.body.code};
   color: ${theme.text.default};
@@ -33,8 +193,11 @@ const STYLES_CODE_BLOCK = css`
   .code-annotation {
     transition: 200ms ease all;
     transition-property: text-shadow, opacity;
-    text-shadow: ${theme.palette.yellow7} 0 0 10px, ${theme.palette.yellow7} 0 0 10px,
-      ${theme.palette.yellow7} 0 0 10px, ${theme.palette.yellow7} 0 0 10px;
+    text-shadow:
+      ${theme.palette.yellow7} 0 0 10px,
+      ${theme.palette.yellow7} 0 0 10px,
+      ${theme.palette.yellow7} 0 0 10px,
+      ${theme.palette.yellow7} 0 0 10px;
   }
 
   .code-annotation.with-tooltip:hover {
@@ -71,173 +234,6 @@ const STYLES_CODE_CONTAINER = css`
     margin-bottom: 0;
   }
 `;
-
-type Props = {
-  className?: string;
-};
-
-export function cleanCopyValue(value: string) {
-  return value
-    .replace(/\/\*\s?@(info[^*]+|end|hide[^*]+).?\*\//g, '')
-    .replace(/#\s?@(info[^#]+|end|hide[^#]+).?#/g, '')
-    .replace(/<!--\s?@(info[^<>]+|end|hide[^<>]+).?-->/g, '')
-    .replace(/^ +\r?\n|\n +\r?$/gm, '');
-}
-
-export class Code extends React.Component<React.PropsWithChildren<Props>> {
-  componentDidMount() {
-    this.runTippy();
-  }
-
-  componentDidUpdate() {
-    this.runTippy();
-  }
-
-  private runTippy() {
-    const tippyFunc = testTippy || tippy;
-    tippyFunc('.code-annotation.with-tooltip', {
-      allowHTML: true,
-      theme: 'expo',
-      placement: 'top',
-      arrow: roundArrow,
-      interactive: true,
-      offset: [0, 20],
-      appendTo: document.body,
-    });
-  }
-
-  private escapeHtml(text: string) {
-    return text.replace(/"/g, '&quot;');
-  }
-
-  private replaceXmlCommentsWithAnnotations(value: string) {
-    return value
-      .replace(
-        /<span class="token comment">&lt;!-- @info (.*?)--><\/span>\s*/g,
-        (match, content) => {
-          return content
-            ? `<span class="code-annotation with-tooltip" data-tippy-content="${this.escapeHtml(
-                content
-              )}">`
-            : '<span class="code-annotation">';
-        }
-      )
-      .replace(
-        /<span class="token comment">&lt;!-- @hide (.*?)--><\/span>\s*/g,
-        (match, content) => {
-          return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${this.escapeHtml(
-            content
-          )}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
-        }
-      )
-      .replace(/\s*<span class="token comment">&lt;!-- @end --><\/span>/g, '</span>');
-  }
-
-  private replaceHashCommentsWithAnnotations(value: string) {
-    return value
-      .replace(/<span class="token comment"># @info (.*?)#<\/span>\s*/g, (match, content) => {
-        return content
-          ? `<span class="code-annotation with-tooltip" data-tippy-content="${this.escapeHtml(
-              content
-            )}">`
-          : '<span class="code-annotation">';
-      })
-      .replace(/<span class="token comment"># @hide (.*?)#<\/span>\s*/g, (match, content) => {
-        return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${this.escapeHtml(
-          content
-        )}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
-      })
-      .replace(/\s*<span class="token comment"># @end #<\/span>/g, '</span>');
-  }
-
-  private replaceSlashCommentsWithAnnotations(value: string) {
-    return value
-      .replace(/<span class="token comment">\/\* @info (.*?)\*\/<\/span>\s*/g, (match, content) => {
-        return content
-          ? `<span class="code-annotation with-tooltip" data-tippy-content="${this.escapeHtml(
-              content
-            )}">`
-          : '<span class="code-annotation">';
-      })
-      .replace(/<span class="token comment">\/\* @hide (.*?)\*\/<\/span>\s*/g, (match, content) => {
-        return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${this.escapeHtml(
-          content
-        )}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
-      })
-      .replace(/\s*<span class="token comment">\/\* @end \*\/<\/span>/g, '</span>');
-  }
-
-  private parseValue(value: string) {
-    if (value.startsWith('@@@')) {
-      const valueChunks = value.split('@@@');
-      return {
-        title: valueChunks[1],
-        value: valueChunks[2],
-      };
-    }
-    return {
-      value,
-    };
-  }
-
-  render() {
-    // note(simek): MDX dropped `inlineCode` pseudo-tag, and we need to relay on `pre` and `code` now,
-    // which results in this nesting mess, we should fix it in the future
-    const child =
-      this.props.className && this.props.className.startsWith('language')
-        ? this
-        : (React.Children.toArray(this.props.children)[0] as JSX.Element);
-
-    const value = this.parseValue(child?.props?.children?.toString() || '');
-    let html = value.value;
-
-    // mdx will add the class `language-foo` to codeblocks with the tag `foo`
-    // if this class is present, we want to slice out `language-`
-    let lang = child.props.className && child.props.className.slice(9).toLowerCase();
-
-    // Allow for code blocks without a language.
-    if (lang) {
-      // sh isn't supported, use sh to match js, and ts
-      if (lang in remapLanguages) {
-        lang = remapLanguages[lang];
-      }
-
-      const grammar = Prism.languages[lang as keyof typeof Prism.languages];
-      if (!grammar) {
-        throw new Error(`docs currently do not support language: ${lang}`);
-      }
-
-      html = Prism.highlight(html, grammar, lang as Language);
-      if (['properties', 'ruby', 'bash', 'yaml'].includes(lang)) {
-        html = this.replaceHashCommentsWithAnnotations(html);
-      } else if (['xml', 'html'].includes(lang)) {
-        html = this.replaceXmlCommentsWithAnnotations(html);
-      } else {
-        html = this.replaceSlashCommentsWithAnnotations(html);
-      }
-    }
-
-    return value?.title ? (
-      <Snippet>
-        <SnippetHeader title={value.title} Icon={getIconForFile(value.title)}>
-          <CopyAction text={cleanCopyValue(value.value)} />
-        </SnippetHeader>
-        <SnippetContent className="p-0">
-          <pre css={STYLES_CODE_CONTAINER} {...attributes}>
-            <code
-              css={STYLES_CODE_BLOCK}
-              dangerouslySetInnerHTML={{ __html: html.replace(/^@@@.+@@@/g, '') }}
-            />
-          </pre>
-        </SnippetContent>
-      </Snippet>
-    ) : (
-      <pre css={[STYLES_CODE_CONTAINER, STYLES_CODE_CONTAINER_BLOCK]} {...attributes}>
-        <code css={STYLES_CODE_BLOCK} dangerouslySetInnerHTML={{ __html: html }} />
-      </pre>
-    );
-  }
-}
 
 const remapLanguages: Record<string, string> = {
   'objective-c': 'objc',
@@ -281,6 +277,9 @@ export const CodeBlock = ({ children, inline = false }: CodeBlockProps) => {
 function getIconForFile(filename: string) {
   if (/_layout\.[jt]sx?$/.test(filename)) {
     return LayoutAlt01Icon;
+  }
+  if (/\+api\.[jt]sx?$/.test(filename)) {
+    return Server03Icon;
   }
   return FileCode01Icon;
 }

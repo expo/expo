@@ -14,9 +14,9 @@ import fs from 'fs';
 import { Request, RequestInfo, RequestInit, Response } from 'node-fetch';
 import { URLSearchParams } from 'url';
 
-import { FetchLike } from '../client.types';
 import { FileSystemCache } from './FileSystemCache';
 import { NFCResponse } from './response';
+import { FetchLike } from '../client.types';
 
 const CACHE_VERSION = 3;
 

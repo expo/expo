@@ -1,11 +1,4 @@
 import {
-  ClipboardImage,
-  GetImageOptions,
-  GetStringOptions,
-  SetStringOptions,
-  StringFormat,
-} from '../Clipboard.types';
-import {
   ClipboardUnavailableException,
   CopyFailureException,
   NoPermissionException,
@@ -20,6 +13,13 @@ import {
   htmlToPlainText,
   isClipboardPermissionDeniedAsync,
 } from './Utils';
+import {
+  ClipboardImage,
+  GetImageOptions,
+  GetStringOptions,
+  SetStringOptions,
+  StringFormat,
+} from '../Clipboard.types';
 
 export default {
   get name(): string {

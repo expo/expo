@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { getUserDefinedFile } from './publicFolder';
+import { ExportAssetMap } from './saveAssets';
 
 const debug = require('debug')('expo:favicon') as typeof console.log;
 
@@ -14,7 +15,7 @@ export function getUserDefinedFaviconFile(projectRoot: string): string | null {
 
 export async function getVirtualFaviconAssetsAsync(
   projectRoot: string,
-  outputDir: string
+  { baseUrl, outputDir, files }: { outputDir: string; baseUrl: string; files?: ExportAssetMap }
 ): Promise<((html: string) => string) | null> {
   const existing = getUserDefinedFaviconFile(projectRoot);
   if (existing) {
@@ -29,21 +30,32 @@ export async function getVirtualFaviconAssetsAsync(
   }
 
   await Promise.all(
-    [data].map((asset) => {
+    [data].map(async (asset) => {
       const assetPath = path.join(outputDir, asset.path);
-      debug('Writing asset to disk: ' + assetPath);
-      return fs.promises.writeFile(assetPath, asset.source);
+      if (files) {
+        debug('Storing asset for persisting: ' + assetPath);
+        files?.set(asset.path, {
+          contents: asset.source,
+          targetDomain: 'client',
+        });
+      } else {
+        debug('Writing asset to disk: ' + assetPath);
+        await fs.promises.writeFile(assetPath, asset.source);
+      }
     })
   );
 
-  return injectFaviconTag;
-}
-
-function injectFaviconTag(html: string): string {
-  if (!html.includes('</head>')) {
-    return html;
+  function injectFaviconTag(html: string): string {
+    if (!html.includes('</head>')) {
+      return html;
+    }
+    return html.replace(
+      '</head>',
+      `<link rel="shortcut icon" href="${baseUrl}/favicon.ico" /></head>`
+    );
   }
-  return html.replace('</head>', `<link rel="shortcut icon" href="/favicon.ico" /></head>`);
+
+  return injectFaviconTag;
 }
 
 export async function getFaviconFromExpoConfigAsync(projectRoot: string) {

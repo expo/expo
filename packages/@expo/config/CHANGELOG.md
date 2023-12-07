@@ -10,6 +10,35 @@
 
 ### 💡 Others
 
+- Replace `@expo/babel-preset-cli` with `expo-module-scripts`. ([#25416](https://github.com/expo/expo/pull/25416) by [@byCedric](https://github.com/byCedric))
+
+## 8.4.0 — 2023-10-17
+
+- Warn when dynamic config doesn't use static config present in project. ([#24308](https://github.com/expo/expo/pull/24308) by [@keith-kurak](https://github.com/keith-kurak))
+
+### 🛠 Breaking changes
+
+- Remove `getEntryPoint`, `getEntryPointWithExtensions`, `resolveFromSilentWithExtensions` functions from `@expo/config/paths`. ([#24688](https://github.com/expo/expo/pull/24688) by [@EvanBacon](https://github.com/EvanBacon))
+- Fully drop support for `expo.entryFile` in the `app.json`. ([#24688](https://github.com/expo/expo/pull/24688) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+- Fixed the `withAnonymous` config plugins' property name for anonymous raw functions. ([#24363](https://github.com/expo/expo/pull/24363) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Rewrite `resolveEntryPoint` from `@expo/config/paths`. ([#21725](https://github.com/expo/expo/pull/21725) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 8.3.1 — 2023-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 8.3.0 — 2023-09-04
+
+### 🛠 Breaking changes
+
+- Remove classic manifest types. ([#24054](https://github.com/expo/expo/pull/24054) by [@wschurman](https://github.com/wschurman))
+
 ## 8.2.1 — 2023-08-02
 
 _This version does not introduce any user-facing changes._

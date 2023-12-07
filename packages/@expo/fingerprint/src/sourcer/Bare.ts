@@ -1,10 +1,11 @@
 import spawnAsync from '@expo/spawn-async';
+import assert from 'assert';
 import chalk from 'chalk';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import type { HashSource, NormalizedOptions, Platform } from '../Fingerprint.types';
 import { getFileBasedHashSourceAsync } from './Utils';
+import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
 
 const debug = require('debug')('expo:fingerprint:sourcer:Bare');
 
@@ -80,36 +81,40 @@ export async function getRncliAutolinkingSourcesAsync(
     const config = JSON.parse(stdout);
     const { root } = config;
     const reasons = ['bareRncliAutolinking'];
-    for (const depData of Object.values<any>(config.dependencies)) {
-      const filePath = path.relative(root, depData.root);
-      results.push({ type: 'dir', filePath, reasons });
-      debug(`Adding react-native-cli autolinking dir - ${chalk.dim(filePath)}`);
-      for (const platform of options.platforms) {
-        const platformData = getRncliPlatformData(depData, root, platform);
-        if (platformData) {
-          results.push({
-            type: 'contents',
-            id: `rncliAutolinkingConfig:${depData.name}:${platform}`,
-            contents: platformData,
-            reasons,
-          });
-        }
+    const autolinkingConfig: Record<string, any> = {};
+    for (const [depName, depData] of Object.entries<any>(config.dependencies)) {
+      try {
+        stripRncliAutolinkingAbsolutePaths(depData, root);
+        const filePath = depData.root;
+        debug(`Adding react-native-cli autolinking dir - ${chalk.dim(filePath)}`);
+        results.push({ type: 'dir', filePath, reasons });
+
+        autolinkingConfig[depName] = depData;
+      } catch (e) {
+        debug(chalk.red(`Error adding react-native-cli autolinking dir - ${depName}.\n${e}`));
       }
     }
+
+    results.push({
+      type: 'contents',
+      id: 'rncliAutolinkingConfig',
+      contents: JSON.stringify(autolinkingConfig),
+      reasons,
+    });
     return results;
-  } catch {
+  } catch (e) {
+    debug(chalk.red(`Error adding react-native-cli autolinking sources.\n${e}`));
     return [];
   }
 }
 
-function getRncliPlatformData(dependency: any, root: string, platform: Platform): string {
-  const platformData = dependency.platforms[platform];
-  if (!platformData) {
-    return '';
+function stripRncliAutolinkingAbsolutePaths(dependency: any, root: string): void {
+  assert(dependency.root);
+  const dependencyRoot = dependency.root;
+  dependency.root = path.relative(root, dependencyRoot);
+  for (const platformData of Object.values<any>(dependency.platforms)) {
+    for (const [key, value] of Object.entries<any>(platformData ?? {})) {
+      platformData[key] = value.startsWith?.(dependencyRoot) ? path.relative(root, value) : value;
+    }
   }
-  const json: Record<string, string> = {};
-  for (const [key, value] of Object.entries<any>(platformData)) {
-    json[key] = value?.startsWith?.(root) ? path.relative(root, value) : value;
-  }
-  return JSON.stringify(json);
 }

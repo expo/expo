@@ -35,6 +35,7 @@ internal struct AssetInfo: Record {
   @Field var height: Double = 0
   @Field var fileName: String? = nil
   @Field var fileSize: Int? = nil
+  @Field var mimeType: String? = nil
   @Field var base64: String? = nil
   @Field var exif: ExifInfo? = nil
   @Field var duration: Double? = nil

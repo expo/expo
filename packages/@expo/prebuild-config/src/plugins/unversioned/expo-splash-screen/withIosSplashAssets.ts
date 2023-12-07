@@ -6,13 +6,13 @@ import fs from 'fs-extra';
 import Jimp from 'jimp-compact';
 import * as path from 'path';
 
+import { IOSSplashConfig } from './getIosSplashConfig';
 import {
   ContentsJsonImage,
   ContentsJsonImageAppearance,
   createContentsJsonItem,
   writeContentsJsonAsync,
 } from '../../icons/AssetContents';
-import { IOSSplashConfig } from './getIosSplashConfig';
 
 const debug = Debug('expo:prebuild-config:expo-splash-screen:ios:assets');
 

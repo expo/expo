@@ -299,8 +299,8 @@ export async function isRootedExperimentalAsync(): Promise<boolean> {
 }
 
 /**
- * **Using this method requires you to [add the `REQUEST_INSTALL_PACKAGES` permission](/config/app#permissions).**
- * Returns whether applications can be installed for this user via the system's [Intent#ACTION_INSTALL_PACKAGE](https://developer.android.com/reference/android/content/Intent.html#ACTION_INSTALL_PACKAGE)
+ * **Using this method requires you to [add the `REQUEST_INSTALL_PACKAGES` permission](./../config/app/#permissions).**
+ * Returns whether applications can be installed for this user via the system's [`ACTION_INSTALL_PACKAGE`](https://developer.android.com/reference/android/content/Intent.html#ACTION_INSTALL_PACKAGE)
  * mechanism rather than through the OS's default app store, like Google Play.
  * @return Returns a promise that resolves to a `boolean` that represents whether the calling package is allowed to request package installation.
  * @example

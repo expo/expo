@@ -53,7 +53,9 @@ export class UrlCreator {
     if (
       !protocol ||
       // Prohibit the use of http(s) in dev client URIs since they'll never be valid.
-      ['http', 'https'].includes(protocol.toLowerCase())
+      ['http', 'https'].includes(protocol.toLowerCase()) ||
+      // Prohibit the use of `_` characters in the protocol, Node will throw an error when parsing these URLs
+      protocol.includes('_')
     ) {
       return null;
     }

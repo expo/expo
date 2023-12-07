@@ -1,7 +1,25 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+buildscript {
+  // Simple helper that allows the root project to override versions declared by this library.
+  ext.safeExtGet = { prop, fallback ->
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+  }
+
+  repositories {
+    mavenCentral()
+    google()
+    maven { url "https://jitpack.io" }
+  }
+  dependencies {
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.6.10')}")
+  }
+}
+
+plugins {
+   alias libs.plugins.android.library
+   alias libs.plugins.kotlin.android
+   alias libs.plugins.download
+}
 apply plugin: 'maven-publish'
-apply plugin: 'de.undercouch.download'
 apply plugin: 'kotlin-kapt'
 apply from: new File(rootDir, "versioning_linking.gradle")
 
@@ -36,21 +54,12 @@ def currentHermesVersion = file("${project(':packages:react-native:ReactAndroid'
 def buildHermesSource = currentHermesVersion != prebuiltHermesVersion
 logger.info(":expoview - buildHermesSource[${buildHermesSource}]")
 
-buildscript {
-  // Simple helper that allows the root project to override versions declared by this library.
-  ext.safeExtGet = { prop, fallback ->
-    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
-  }
-
-  repositories {
-    mavenCentral()
-    google()
-    maven { url "https://jitpack.io" }
-  }
-  dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.6.10')}")
-  }
+def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+if (expoModulesCorePlugin.exists()) {
+  apply from: expoModulesCorePlugin
+  applyKotlinExpoModulesCorePlugin()
 }
+
 
 repositories {
   mavenCentral()
@@ -58,7 +67,25 @@ repositories {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 33)
+  namespace "host.exp.expoview"
+
+  buildFeatures {
+    buildConfig = true
+  }
+
+  // Remove this if and it's contents, when support for SDK49 is dropped
+  if (!safeExtGet("expoProvidesDefaultConfig", false)) {
+    compileSdkVersion safeExtGet("compileSdkVersion", 34)
+
+    defaultConfig {
+      minSdkVersion safeExtGet("minSdkVersion", 23)
+      targetSdkVersion safeExtGet("targetSdkVersion", 34)
+    }
+
+    lintOptions {
+      abortOnError false
+    }
+  }
 
   // Used to override the NDK path/version on internal CI or by allowing
   // users to customize the NDK path/version from their root project (e.g. for M1 support)
@@ -69,13 +96,16 @@ android {
     ndkVersion rootProject.ext.ndkVersion
   }
 
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_11
-    targetCompatibility JavaVersion.VERSION_11
-  }
+  def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
+  if (agpVersion.tokenize('.')[0].toInteger() < 8) {
+    compileOptions {
+      sourceCompatibility JavaVersion.VERSION_11
+      targetCompatibility JavaVersion.VERSION_11
+    }
 
-  kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_11.majorVersion
+    kotlinOptions {
+      jvmTarget = JavaVersion.VERSION_11.majorVersion
+    }
   }
 
   buildFeatures {
@@ -83,8 +113,6 @@ android {
   }
 
   defaultConfig {
-    minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 1
     versionName "1.0"
 
@@ -210,33 +238,27 @@ dependencies {
   // BEGIN_SDK_49
   versionedApi 'host.exp:reactandroid-abi49_0_0:1.0.0'
   // END_SDK_49
-  // BEGIN_SDK_48
-  versionedApi 'host.exp:reactandroid-abi48_0_0:1.0.0'
-  // END_SDK_48
-  // BEGIN_SDK_47
-  versionedApi 'host.exp:reactandroid-abi47_0_0:1.0.0'
-  // END_SDK_47
   // WHEN_VERSIONING_REMOVE_TO_HERE
 
   // React native dependencies
-  api("androidx.appcompat:appcompat-resources:${reactProperties.getProperty('ANDROIDX_APPCOMPAT_VERSION')}")
-  api("androidx.appcompat:appcompat:${reactProperties.getProperty('ANDROIDX_APPCOMPAT_VERSION')}")
-  api("androidx.autofill:autofill:${reactProperties.getProperty('ANDROIDX_AUTOFILL_VERSION')}")
-  api("androidx.swiperefreshlayout:swiperefreshlayout:${reactProperties.getProperty('SWIPEREFRESH_LAYOUT_VERSION')}")
+  api(libs.androidx.appcompat.resources)
+  api(libs.androidx.appcompat)
+  api(libs.androidx.autofill)
+  api(libs.androidx.swiperefreshlayout)
 
-  api("com.facebook.fbjni:fbjni:${reactProperties.getProperty('FBJNI_VERSION')}")
-  api("com.facebook.fresco:fresco:${reactProperties.getProperty('FRESCO_VERSION')}")
-  api("com.facebook.fresco:imagepipeline-okhttp3:${reactProperties.getProperty('FRESCO_VERSION')}")
-  api("com.facebook.fresco:ui-common:${reactProperties.getProperty('FRESCO_VERSION')}")
-  api("com.facebook.infer.annotation:infer-annotation:${reactProperties.getProperty('INFER_ANNOTATIONS_VERSION')}")
-  api("com.facebook.soloader:soloader:${reactProperties.getProperty('SO_LOADER_VERSION')}")
-  api("com.facebook.yoga:proguard-annotations:${reactProperties.getProperty('PROGUARD_ANNOTATIONS_VERSION')}")
+  api(libs.fbjni)
+  api(libs.fresco)
+  api(libs.fresco.imagepipeline.okhttp3)
+  api(libs.fresco.ui.common)
+  api(libs.infer.annotation)
+  api(libs.soloader)
+  api(libs.yoga.proguard.annotations)
 
-  api("com.google.code.findbugs:jsr305:${reactProperties.getProperty('JSR305_VERSION')}")
-  api("com.squareup.okhttp3:okhttp-urlconnection:${reactProperties.getProperty('OKHTTP_VERSION')}")
-  api("com.squareup.okhttp3:okhttp:${reactProperties.getProperty('OKHTTP_VERSION')}")
-  api("com.squareup.okio:okio:${reactProperties.getProperty('OKIO_VERSION')}")
-  api("javax.inject:javax.inject:${reactProperties.getProperty('JAVAX_INJECT_VERSION')}")
+  api(libs.jsr305)
+  api(libs.okhttp3.urlconnection)
+  api(libs.okhttp3)
+  api(libs.okio)
+  api(libs.javax.inject)
 
   // Our dependencies
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
@@ -245,9 +267,9 @@ dependencies {
   api 'com.google.firebase:firebase-crashlytics-ndk:18.3.6'
   api "androidx.room:room-runtime:2.1.0"
 
-  api("com.facebook.fresco:animated-gif:${reactProperties.getProperty('FRESCO_VERSION')}")
-  api("com.facebook.fresco:animated-webp:${reactProperties.getProperty('FRESCO_VERSION')}")
-  api("com.facebook.fresco:webpsupport:${reactProperties.getProperty('FRESCO_VERSION')}")
+  api(expoLibs.fresco.animated.gif)
+  api(expoLibs.fresco.animated.webp)
+  api(expoLibs.fresco.webpsupport)
 
   api 'com.squareup.picasso:picasso:2.5.2'
   api 'com.google.android.gms:play-services-analytics:17.0.0'
@@ -332,8 +354,8 @@ dependencies {
   api 'com.github.troZee:ViewPager2:v1.0.6'
 
   // stripe-react-native
-  implementation('com.stripe:stripe-android:20.25.+')
-  implementation('com.stripe:financial-connections:20.25.+')
+  implementation('com.stripe:stripe-android:20.34.+')
+  implementation('com.stripe:financial-connections:20.34.+')
   compileOnly 'com.stripe:stripe-android-issuing-push-provisioning:1.1.0'
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0'
   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"

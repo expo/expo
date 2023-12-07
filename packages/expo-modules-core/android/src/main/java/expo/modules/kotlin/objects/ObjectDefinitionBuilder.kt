@@ -1,15 +1,3 @@
-/**
- * We used a function from the experimental STD API - typeOf (see kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/type-of.html).
- * We shouldn't have any problem with that function, cause it's widely used in other libraries created by JetBrains like kotlinx-serializer.
- * This function is super handy if we want to receive a collection type.
- * For example, it's very hard to obtain the generic parameter type from the list class.
- * In plain Java, it's almost impossible. There is a trick to getting such information using something called TypeToken.
- * For instance, the Gson library uses this workaround. But there still will be a problem with nullability.
- * We didn't find a good solution to distinguish between List<Any?> and List<Any>.
- * Mainly because from the JVM perspective it's the same type.
- * That's why we used typeOf. It solves all problems described above.
- */
-@file:OptIn(ExperimentalStdlibApi::class)
 @file:Suppress("FunctionName")
 
 package expo.modules.kotlin.objects
@@ -21,11 +9,15 @@ import expo.modules.kotlin.functions.AsyncFunction
 import expo.modules.kotlin.functions.AsyncFunctionBuilder
 import expo.modules.kotlin.functions.AsyncFunctionComponent
 import expo.modules.kotlin.functions.AsyncFunctionWithPromiseComponent
+import expo.modules.kotlin.functions.FunctionBuilder
 import expo.modules.kotlin.functions.SyncFunctionComponent
 import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinitionBuilder
+import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.types.toAnyType
+import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.typeOf
 
 /**
@@ -33,15 +25,20 @@ import kotlin.reflect.typeOf
  */
 open class ObjectDefinitionBuilder {
   private var constantsProvider = { emptyMap<String, Any?>() }
-  private var eventsDefinition: EventsDefinition? = null
+
+  @PublishedApi
+  internal var eventsDefinition: EventsDefinition? = null
 
   @PublishedApi
   internal var syncFunctions = mutableMapOf<String, SyncFunctionComponent>()
 
   @PublishedApi
+  internal var syncFunctionBuilder = mutableMapOf<String, FunctionBuilder>()
+
+  @PublishedApi
   internal var asyncFunctions = mutableMapOf<String, AsyncFunction>()
 
-  private var functionBuilders = mutableMapOf<String, AsyncFunctionBuilder>()
+  private var asyncFunctionBuilders = mutableMapOf<String, AsyncFunctionBuilder>()
 
   @PublishedApi
   internal var properties = mutableMapOf<String, PropertyComponentBuilder>()
@@ -61,8 +58,8 @@ open class ObjectDefinitionBuilder {
 
     return ObjectDefinitionData(
       constantsProvider,
-      syncFunctions,
-      asyncFunctions + functionBuilders.mapValues { (_, value) -> value.build() },
+      syncFunctions + syncFunctionBuilder.mapValues { (_, value) -> value.build() },
+      asyncFunctions + asyncFunctionBuilders.mapValues { (_, value) -> value.build() },
       eventsDefinition,
       properties.mapValues { (_, value) -> value.build() }
     )
@@ -71,7 +68,7 @@ open class ObjectDefinitionBuilder {
   private fun containsFunction(functionName: String): Boolean {
     return syncFunctions.containsKey(functionName) ||
       asyncFunctions.containsKey(functionName) ||
-      functionBuilders.containsKey(functionName)
+      asyncFunctionBuilders.containsKey(functionName)
   }
 
   /**
@@ -87,6 +84,10 @@ open class ObjectDefinitionBuilder {
   fun Constants(vararg constants: Pair<String, Any?>) {
     constantsProvider = { constants.toMap() }
   }
+
+  fun Function(
+    name: String
+  ) = FunctionBuilder(name).also { syncFunctionBuilder[name] = it }
 
   @JvmName("FunctionWithoutArgs")
   inline fun Function(
@@ -304,7 +305,7 @@ open class ObjectDefinitionBuilder {
 
   fun AsyncFunction(
     name: String
-  ) = AsyncFunctionBuilder(name).also { functionBuilders[name] = it }
+  ) = AsyncFunctionBuilder(name).also { asyncFunctionBuilders[name] = it }
 
   /**
    * Defines event names that this module can send to JavaScript.
@@ -319,6 +320,28 @@ open class ObjectDefinitionBuilder {
   @JvmName("EventsWithArray")
   fun Events(events: Array<String>) {
     eventsDefinition = EventsDefinition(events)
+  }
+
+  inline fun <reified T> Events() where T : Enumerable, T : Enum<T> {
+    val primaryConstructor = T::class.primaryConstructor
+    val events = if (primaryConstructor?.parameters?.size == 1) {
+      val parameterName = primaryConstructor.parameters.first().name
+
+      val parameterProperty = T::class
+        .declaredMemberProperties
+        .find { it.name == parameterName }
+      requireNotNull(parameterProperty) { "Cannot find a property for $parameterName parameter" }
+      require(parameterProperty.returnType.classifier == String::class) { "The enum parameter has to be a string." }
+      enumValues<T>().map {
+        parameterProperty.get(it) as String
+      }
+    } else {
+      enumValues<T>().map {
+        it.name
+      }
+    }
+
+    eventsDefinition = EventsDefinition(events.toTypedArray())
   }
 
   /**
@@ -338,7 +361,7 @@ open class ObjectDefinitionBuilder {
   /**
    * Creates the property with given name. The component is basically no-op if you don't call `.get()` or `.set()` on it.
    */
-  fun Property(name: String): PropertyComponentBuilder {
+  open fun Property(name: String): PropertyComponentBuilder {
     return PropertyComponentBuilder(name).also {
       properties[name] = it
     }
@@ -376,7 +399,7 @@ inline fun Module.Object(block: ObjectDefinitionBuilder.() -> Unit): JavaScriptM
       objectData
         .properties
         .forEach { (_, prop) ->
-          prop.attachToJSObject(this)
+          prop.attachToJSObject(appContext, this)
         }
     }
 }

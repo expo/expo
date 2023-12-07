@@ -1,5 +1,5 @@
-import * as Log from '../../log';
 import { FetchLike } from './client.types';
+import * as Log from '../../log';
 const debug = require('debug')('expo:api:fetch:progress') as typeof console.log;
 
 export function wrapFetchWithProgress(fetch: FetchLike): FetchLike {

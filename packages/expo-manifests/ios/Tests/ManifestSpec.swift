@@ -5,7 +5,7 @@ import ExpoModulesTestCore
 @testable import EXManifests
 
 final class ManifestSpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
     describe("getPluginProperties") {
       it("should return nil when plugin is not matched") {
         var manifestJson: [String: Any] = [:]

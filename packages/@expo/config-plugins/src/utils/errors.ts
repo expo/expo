@@ -21,7 +21,11 @@ export class PluginError extends Error {
   readonly name = 'PluginError';
   readonly isPluginError = true;
 
-  constructor(message: string, public code: PluginErrorCode, public cause?: Error) {
+  constructor(
+    message: string,
+    public code: PluginErrorCode,
+    public cause?: Error
+  ) {
     super(cause ? `${message}\n└─ Cause: ${cause.name}: ${cause.message}` : message);
   }
 }

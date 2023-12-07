@@ -7,13 +7,15 @@
 #import "EXAppViewController.h"
 #import "EXHomeAppManager.h"
 #import "EXKernel.h"
-#import "EXHomeLoader.h"
+#import "EXDevelopmentHomeLoader.h"
 #import "EXKernelAppRecord.h"
 #import "EXKernelAppRegistry.h"
 #import "EXKernelLinkingManager.h"
 #import "EXKernelServiceRegistry.h"
 #import "EXRootViewController.h"
 #import "EXDevMenuManager.h"
+#import "EXEmbeddedHomeLoader.h"
+#import "EXBuildConstants.h"
 
 @import ExpoScreenOrientation;
 
@@ -74,7 +76,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)createRootAppAndMakeVisible
 {
   EXHomeAppManager *homeAppManager = [[EXHomeAppManager alloc] init];
-  EXHomeLoader *homeAppLoader = [[EXHomeLoader alloc] initWithLocalManifest:[EXHomeAppManager bundledHomeManifest]];
+
+  // if developing, use development manifest from EXBuildConstants
+  EXAbstractLoader *homeAppLoader;
+  if ([EXBuildConstants sharedInstance].isDevKernel) {
+    homeAppLoader = [[EXDevelopmentHomeLoader alloc] init];
+  } else {
+    homeAppLoader = [[EXEmbeddedHomeLoader alloc] init];
+  }
+
   EXKernelAppRecord *homeAppRecord = [[EXKernelAppRecord alloc] initWithAppLoader:homeAppLoader appManager:homeAppManager];
   [[EXKernel sharedInstance].appRegistry registerHomeAppRecord:homeAppRecord];
   [self moveAppToVisible:homeAppRecord];

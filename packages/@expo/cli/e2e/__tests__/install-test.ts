@@ -56,6 +56,7 @@ it('runs `npx install install --help`', async () => {
         --fix       Automatically update any invalid package versions
         --npm       Use npm to install dependencies. Default when package-lock.json exists
         --yarn      Use Yarn to install dependencies. Default when yarn.lock exists
+        --bun       Use bun to install dependencies. Default when bun.lockb exists
         --pnpm      Use pnpm to install dependencies. Default when pnpm-lock.yaml exists
         -h, --help  Usage info
 
@@ -89,9 +90,9 @@ it(
 
     // Added expected package
     const pkgDependencies = pkg.dependencies as Record<string, string>;
-    expect(pkgDependencies['expo-sms']).toBe('~11.0.0');
+    expect(pkgDependencies['expo-sms']).toBe('~11.4.0');
     expect(pkg.devDependencies).toEqual({
-      '@babel/core': '^7.12.9',
+      '@babel/core': '^7.20.0',
     });
 
     // Added new packages
@@ -102,7 +103,7 @@ it(
       'react-native',
     ]);
 
-    expect(files).toStrictEqual(['App.js', 'app.json', 'package.json', 'yarn.lock']);
+    expect(files).toStrictEqual(['App.js', 'app.json', 'bun.lockb', 'package.json']);
   },
   // Could take 45s depending on how fast npm installs
   60 * 1000
@@ -112,7 +113,7 @@ it(
   'runs `npx expo install --check` fails',
   async () => {
     const projectRoot = await setupTestProjectAsync('install-check-fail', 'with-blank');
-    await installAsync(projectRoot, ['add', 'expo-sms@1.0.0', 'expo-auth-session@1.0.0']);
+    await installAsync(projectRoot, ['expo-sms@1.0.0', 'expo-auth-session@1.0.0']);
 
     let pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
     // Added expected package
@@ -124,9 +125,8 @@ it(
       throw new Error('SHOULD NOT HAPPEN');
     } catch (e) {
       const error = e as ExecaError;
-      expect(error.stderr).toMatch(/expo-auth-session@1\.0\.0 - expected version: ~3\.\d\.\d/);
+      expect(error.stderr).toMatch(/expo-auth-session@1\.0\.0 - expected version: ~5\.\d\.\d/);
       expect(error.stderr).toMatch(/expo-sms@1\.0\.0 - expected version: ~11\.\d\.\d/);
-      expect(error.stderr).toMatch(/npx expo install --fix/);
     }
 
     await expect(
@@ -147,7 +147,7 @@ it(
   'runs `npx expo install --fix` fails',
   async () => {
     const projectRoot = await setupTestProjectAsync('install-fix-fail', 'with-blank');
-    await installAsync(projectRoot, ['add', 'expo-sms@1.0.0', 'expo-auth-session@1.0.0']);
+    await installAsync(projectRoot, ['expo-sms@1.0.0', 'expo-auth-session@1.0.0']);
 
     await execa('node', [bin, 'install', '--fix', 'expo-sms'], { cwd: projectRoot });
 
@@ -160,7 +160,7 @@ it(
     let pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
     // Added expected package
     let pkgDependencies = pkg.dependencies as Record<string, string>;
-    expect(pkgDependencies['expo-sms']).toBe('~11.0.0');
+    expect(pkgDependencies['expo-sms']).toBe('~11.4.0');
 
     // Didn't fix expo-auth-session since we didn't pass it in
     expect(pkgDependencies['expo-auth-session']).toBe('1.0.0');
@@ -173,7 +173,33 @@ it(
 
     // Didn't fix expo-auth-session since we didn't pass it in
     pkgDependencies = pkg.dependencies as Record<string, string>;
-    expect(pkgDependencies['expo-auth-session']).toBe('~3.8.0');
+    expect(pkgDependencies['expo-auth-session']).toBe('~5.0.2');
+  },
+  // Could take 45s depending on how fast npm installs
+  60 * 1000
+);
+
+it(
+  'runs `npx expo install expo@<version> --fix`',
+  async () => {
+    const projectRoot = await setupTestProjectAsync('install-expo-canary-fix', 'with-blank');
+    const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
+
+    // Add a package that requires "fixing" when using canary
+    await execa('node', [bin, 'install', 'expo-dev-client'], { cwd: projectRoot });
+
+    // Ensure `expo-dev-client` is installed
+    expect(pkg.read().dependencies).toMatchObject({
+      'expo-dev-client': expect.any(String),
+    });
+
+    // Add `expo@canary` to the project, and `--fix` project dependencies
+    await execa('node', [bin, 'install', 'expo@canary', '--fix'], { cwd: projectRoot });
+
+    // Ensure `expo-dev-client` is using canary version
+    expect(pkg.read().dependencies).toMatchObject({
+      'expo-dev-client': expect.stringContaining('canary'),
+    });
   },
   // Could take 45s depending on how fast npm installs
   60 * 1000

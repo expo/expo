@@ -200,7 +200,7 @@ exports[`parse parses "https://example.com:8000/test/path" 1`] = `
 exports[`parse parses "https://example.com:8000/test/path+with+plus" 1`] = `
 {
   "hostname": "example.com",
-  "path": "with+plus",
+  "path": "test/path+with+plus",
   "queryParams": {},
   "scheme": "https",
 }

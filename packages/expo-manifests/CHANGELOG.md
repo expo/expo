@@ -10,6 +10,35 @@
 
 ### 💡 Others
 
+## 0.12.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.11.0 — 2023-10-17
+
+_This version does not introduce any user-facing changes._
+
+## 0.10.0 — 2023-09-15
+
+### 🎉 New features
+
+- Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
+
+## 0.9.0 — 2023-09-04
+
+### 🛠 Breaking changes
+
+- Remove classic manifest types. ([#24053](https://github.com/expo/expo/pull/24053) by [@wschurman](https://github.com/wschurman))
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- Make expo-manifests source of truth for manifest TS types. ([#24049](https://github.com/expo/expo/pull/24049) by [@wschurman](https://github.com/wschurman))
+
 ## 0.8.1 — 2023-08-02
 
 ### 🛠 Breaking changes

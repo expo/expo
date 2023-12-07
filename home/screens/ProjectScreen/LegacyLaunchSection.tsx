@@ -6,11 +6,11 @@ import { Linking, Platform } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import semver from 'semver';
 
+import { WarningBox } from './WarningBox';
 import { SectionHeader } from '../../components/SectionHeader';
 import { WebContainerProjectPage_Query } from '../../graphql/types';
 import Environment from '../../utils/Environment';
 import * as UrlUtils from '../../utils/UrlUtils';
-import { WarningBox } from './WarningBox';
 
 type ProjectPageApp = WebContainerProjectPage_Query['app']['byId'];
 

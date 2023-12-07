@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { GestureResponderEvent, Platform } from 'react-native';
 
+import { appendBaseUrl } from '../fork/getPathFromState';
 import { useExpoRouter } from '../global-state/router-store';
 import { stripGroupSegmentsFromPath } from '../matchers';
 
@@ -47,9 +48,9 @@ export default function useLinkToPathProps(props: { href: string; replace?: bool
   };
 
   return {
-    // Ensure there's always a value for href
-    href: stripGroupSegmentsFromPath(props.href) || '/',
-    accessibilityRole: 'link' as const,
+    // Ensure there's always a value for href. Manually append the baseUrl to the href prop that shows in the static HTML.
+    href: appendBaseUrl(stripGroupSegmentsFromPath(props.href) || '/'),
+    role: 'link' as const,
     onPress,
   };
 }

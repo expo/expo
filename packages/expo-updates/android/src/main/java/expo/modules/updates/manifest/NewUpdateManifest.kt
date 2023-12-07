@@ -31,9 +31,7 @@ class NewUpdateManifest private constructor(
   private val mExtensions: JSONObject?
 ) : UpdateManifest {
   override val updateEntity: UpdateEntity by lazy {
-    UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey).apply {
-      manifest = this@NewUpdateManifest.manifest.getRawJson()
-    }
+    UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey, this@NewUpdateManifest.manifest.getRawJson())
   }
 
   private val assetHeaders: Map<String, JSONObject> by lazy {
@@ -99,7 +97,7 @@ class NewUpdateManifest private constructor(
       val launchAsset = manifest.getLaunchAsset()
       val assets = manifest.getAssets()
       val commitTime: Date = try {
-        UpdatesUtils.parseDateString(manifest.getCreatedAt()) ?: Date()
+        UpdatesUtils.parseDateString(manifest.getCreatedAt())
       } catch (e: ParseException) {
         Log.e(TAG, "Could not parse manifest createdAt string; falling back to current time", e)
         Date()
@@ -107,7 +105,7 @@ class NewUpdateManifest private constructor(
       return NewUpdateManifest(
         manifest,
         id,
-        configuration.scopeKey!!,
+        configuration.scopeKey,
         commitTime,
         runtimeVersion,
         launchAsset,

@@ -1,22 +1,7 @@
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { ConfigPlugin } from '../Plugin.types';
-import { createStringsXmlPlugin, withAndroidManifest } from '../plugins/android-plugins';
-import { withPlugins } from '../plugins/withPlugins';
-import {
-  ExpoConfigUpdates,
-  getExpoUpdatesPackageVersion,
-  getRuntimeVersionNullable,
-  getSDKVersion,
-  getUpdatesCheckOnLaunch,
-  getUpdatesCodeSigningCertificate,
-  getUpdatesCodeSigningMetadataStringified,
-  getUpdatesRequestHeadersStringified,
-  getUpdatesEnabled,
-  getUpdatesTimeout,
-  getUpdateUrl,
-} from '../utils/Updates';
+import { Resources } from '.';
 import {
   addMetaDataItemToMainApplication,
   AndroidManifest,
@@ -27,6 +12,22 @@ import {
 } from './Manifest';
 import { buildResourceItem, ResourceXML } from './Resources';
 import { removeStringItem, setStringItem } from './Strings';
+import { ConfigPlugin, ExportedConfigWithProps } from '../Plugin.types';
+import { createStringsXmlPlugin, withAndroidManifest } from '../plugins/android-plugins';
+import { withPlugins } from '../plugins/withPlugins';
+import {
+  ExpoConfigUpdates,
+  getExpoUpdatesPackageVersion,
+  getRuntimeVersionNullableAsync,
+  getSDKVersion,
+  getUpdatesCheckOnLaunch,
+  getUpdatesCodeSigningCertificate,
+  getUpdatesCodeSigningMetadataStringified,
+  getUpdatesRequestHeadersStringified,
+  getUpdatesEnabled,
+  getUpdatesTimeout,
+  getUpdateUrl,
+} from '../utils/Updates';
 
 const CREATE_MANIFEST_ANDROID_PATH = 'expo-updates/scripts/create-manifest-android.gradle';
 
@@ -46,25 +47,18 @@ export enum Config {
 // when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
 // Also ensure the docs are up-to-date: https://docs.expo.dev/bare/installing-updates/
 
-export const withUpdates: ConfigPlugin<{ expoUsername: string | null }> = (
-  config,
-  { expoUsername }
-) => {
-  return withPlugins(config, [[withUpdatesManifest, { expoUsername }], withRuntimeVersionResource]);
+export const withUpdates: ConfigPlugin = (config) => {
+  return withPlugins(config, [withUpdatesManifest, withRuntimeVersionResource]);
 };
 
-const withUpdatesManifest: ConfigPlugin<{ expoUsername: string | null }> = (
-  config,
-  { expoUsername }
-) => {
-  return withAndroidManifest(config, (config) => {
+const withUpdatesManifest: ConfigPlugin = (config) => {
+  return withAndroidManifest(config, async (config) => {
     const projectRoot = config.modRequest.projectRoot;
     const expoUpdatesPackageVersion = getExpoUpdatesPackageVersion(projectRoot);
-    config.modResults = setUpdatesConfig(
+    config.modResults = await setUpdatesConfigAsync(
       projectRoot,
       config,
       config.modResults,
-      expoUsername,
       expoUpdatesPackageVersion
     );
     return config;
@@ -72,15 +66,16 @@ const withUpdatesManifest: ConfigPlugin<{ expoUsername: string | null }> = (
 };
 
 const withRuntimeVersionResource = createStringsXmlPlugin(
-  applyRuntimeVersionFromConfig,
+  applyRuntimeVersionFromConfigAsync,
   'withRuntimeVersionResource'
 );
 
-export function applyRuntimeVersionFromConfig(
-  config: Pick<ExpoConfigUpdates, 'sdkVersion' | 'runtimeVersion'>,
+export async function applyRuntimeVersionFromConfigAsync(
+  config: ExportedConfigWithProps<Resources.ResourceXML>,
   stringsJSON: ResourceXML
-): ResourceXML {
-  const runtimeVersion = getRuntimeVersionNullable(config, 'android');
+): Promise<ResourceXML> {
+  const projectRoot = config.modRequest.projectRoot;
+  const runtimeVersion = await getRuntimeVersionNullableAsync(projectRoot, config, 'android');
   if (runtimeVersion) {
     return setStringItem(
       [buildResourceItem({ name: 'expo_runtime_version', value: runtimeVersion })],
@@ -90,19 +85,18 @@ export function applyRuntimeVersionFromConfig(
   return removeStringItem('expo_runtime_version', stringsJSON);
 }
 
-export function setUpdatesConfig(
+export async function setUpdatesConfigAsync(
   projectRoot: string,
   config: ExpoConfigUpdates,
   androidManifest: AndroidManifest,
-  username: string | null,
   expoUpdatesPackageVersion?: string | null
-): AndroidManifest {
+): Promise<AndroidManifest> {
   const mainApplication = getMainApplicationOrThrow(androidManifest);
 
   addMetaDataItemToMainApplication(
     mainApplication,
     Config.ENABLED,
-    String(getUpdatesEnabled(config, username))
+    String(getUpdatesEnabled(config))
   );
   addMetaDataItemToMainApplication(
     mainApplication,
@@ -115,7 +109,7 @@ export function setUpdatesConfig(
     String(getUpdatesTimeout(config))
   );
 
-  const updateUrl = getUpdateUrl(config, username);
+  const updateUrl = getUpdateUrl(config);
   if (updateUrl) {
     addMetaDataItemToMainApplication(mainApplication, Config.UPDATE_URL, updateUrl);
   } else {
@@ -158,16 +152,17 @@ export function setUpdatesConfig(
     );
   }
 
-  return setVersionsConfig(config, androidManifest);
+  return await setVersionsConfigAsync(projectRoot, config, androidManifest);
 }
 
-export function setVersionsConfig(
+export async function setVersionsConfigAsync(
+  projectRoot: string,
   config: Pick<ExpoConfigUpdates, 'sdkVersion' | 'runtimeVersion'>,
   androidManifest: AndroidManifest
-): AndroidManifest {
+): Promise<AndroidManifest> {
   const mainApplication = getMainApplicationOrThrow(androidManifest);
 
-  const runtimeVersion = getRuntimeVersionNullable(config, 'android');
+  const runtimeVersion = await getRuntimeVersionNullableAsync(projectRoot, config, 'android');
   if (!runtimeVersion && findMetaDataItem(mainApplication, Config.RUNTIME_VERSION) > -1) {
     throw new Error(
       'A runtime version is set in your AndroidManifest.xml, but is missing from your app.json/app.config.js. Please either set runtimeVersion in your app.json/app.config.js or remove expo.modules.updates.EXPO_RUNTIME_VERSION from your AndroidManifest.xml.'
@@ -259,16 +254,14 @@ export function isMainApplicationMetaDataSet(androidManifest: AndroidManifest): 
   return Boolean(updateUrl && (sdkVersion || runtimeVersion));
 }
 
-export function isMainApplicationMetaDataSynced(
+export async function isMainApplicationMetaDataSyncedAsync(
   projectRoot: string,
   config: ExpoConfigUpdates,
-  androidManifest: AndroidManifest,
-  username: string | null
-): boolean {
+  androidManifest: AndroidManifest
+): Promise<boolean> {
   return (
-    getUpdateUrl(config, username) ===
-      getMainApplicationMetaDataValue(androidManifest, Config.UPDATE_URL) &&
-    String(getUpdatesEnabled(config, username)) ===
+    getUpdateUrl(config) === getMainApplicationMetaDataValue(androidManifest, Config.UPDATE_URL) &&
+    String(getUpdatesEnabled(config)) ===
       getMainApplicationMetaDataValue(androidManifest, Config.ENABLED) &&
     String(getUpdatesTimeout(config)) ===
       getMainApplicationMetaDataValue(androidManifest, Config.LAUNCH_WAIT_MS) &&
@@ -278,15 +271,20 @@ export function isMainApplicationMetaDataSynced(
       getMainApplicationMetaDataValue(androidManifest, Config.CODE_SIGNING_CERTIFICATE) &&
     getUpdatesCodeSigningMetadataStringified(config) ===
       getMainApplicationMetaDataValue(androidManifest, Config.CODE_SIGNING_METADATA) &&
-    areVersionsSynced(config, androidManifest)
+    (await areVersionsSyncedAsync(projectRoot, config, androidManifest))
   );
 }
 
-export function areVersionsSynced(
+export async function areVersionsSyncedAsync(
+  projectRoot: string,
   config: Pick<ExpoConfigUpdates, 'runtimeVersion' | 'sdkVersion'>,
   androidManifest: AndroidManifest
-): boolean {
-  const expectedRuntimeVersion = getRuntimeVersionNullable(config, 'android');
+): Promise<boolean> {
+  const expectedRuntimeVersion = await getRuntimeVersionNullableAsync(
+    projectRoot,
+    config,
+    'android'
+  );
   const expectedSdkVersion = getSDKVersion(config);
 
   const currentRuntimeVersion = getMainApplicationMetaDataValue(

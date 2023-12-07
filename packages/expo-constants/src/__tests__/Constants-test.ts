@@ -1,7 +1,8 @@
+import { ExpoConfig } from '@expo/config-types';
 import { Platform } from 'react-native';
 
 import Constants, { ExecutionEnvironment } from '../Constants';
-import { AppManifest, Manifest } from '../Constants.types';
+import { Manifest } from '../Constants.types';
 
 it(`defines a manifest`, () => {
   expect(Constants.manifest).toBeTruthy();
@@ -13,18 +14,12 @@ it(`defines a linking URI`, () => {
 });
 
 describe(`manifest`, () => {
-  const fakeManifest: AppManifest = {
-    id: '@jester/manifest',
+  const fakeEmbeddedAppConfig: ExpoConfig = {
     name: 'manifest',
     slug: 'manifest',
-    bundleUrl: '',
+    version: '1.0.0',
   };
-  const fakeManifest2: AppManifest = {
-    id: '@jester/manifest2',
-    name: 'manifest2',
-    slug: 'manifest2',
-    bundleUrl: '',
-  };
+
   const fakeManifestNew: Manifest = {
     id: 'fakeid',
     metadata: {},
@@ -96,9 +91,9 @@ describe(`manifest`, () => {
   }
 
   it(`exists if defined as an object in ExponentConstants`, () => {
-    mockExponentConstants({ manifest: fakeManifest });
+    mockExponentConstants({ manifest: fakeEmbeddedAppConfig });
     const ConstantsWithMock = require('../Constants').default;
-    expect(ConstantsWithMock.manifest).toEqual(fakeManifest);
+    expect(ConstantsWithMock.manifest).toEqual(fakeEmbeddedAppConfig);
     expect(console.warn).toHaveBeenCalledTimes(1);
     expect(console.warn).toHaveBeenCalledWith(
       expect.stringContaining(
@@ -108,9 +103,9 @@ describe(`manifest`, () => {
   });
 
   it(`exists if defined as a string in ExponentConstants`, () => {
-    mockExponentConstants({ manifest: JSON.stringify(fakeManifest) });
+    mockExponentConstants({ manifest: JSON.stringify(fakeEmbeddedAppConfig) });
     const ConstantsWithMock = require('../Constants').default;
-    expect(ConstantsWithMock.manifest).toEqual(fakeManifest);
+    expect(ConstantsWithMock.manifest).toEqual(fakeEmbeddedAppConfig);
     expect(console.warn).toHaveBeenCalledTimes(1);
     expect(console.warn).toHaveBeenCalledWith(
       expect.stringContaining(
@@ -121,28 +116,18 @@ describe(`manifest`, () => {
 
   it(`exists if defined as an object by expo-updates`, () => {
     mockExponentConstants({ manifest: undefined });
-    mockExpoUpdates({ manifest: fakeManifest, manifestString: undefined });
+    mockExpoUpdates({ manifest: fakeManifestNew, manifestString: undefined });
     const ConstantsWithMock = require('../Constants').default;
-    expect(ConstantsWithMock.manifest).toEqual(fakeManifest);
-    expect(console.warn).toHaveBeenCalledTimes(1);
-    expect(console.warn).toHaveBeenCalledWith(
-      expect.stringContaining(
-        'Constants.manifest has been deprecated in favor of Constants.expoConfig.'
-      )
-    );
+    expect(ConstantsWithMock.manifest2).toEqual(fakeManifestNew);
+    expect(console.warn).not.toHaveBeenCalled();
   });
 
   it(`exists if defined as a string by expo-updates`, () => {
     mockExponentConstants({ manifest: undefined });
-    mockExpoUpdates({ manifest: undefined, manifestString: JSON.stringify(fakeManifest) });
+    mockExpoUpdates({ manifest: undefined, manifestString: JSON.stringify(fakeManifestNew) });
     const ConstantsWithMock = require('../Constants').default;
-    expect(ConstantsWithMock.manifest).toEqual(fakeManifest);
-    expect(console.warn).toHaveBeenCalledTimes(1);
-    expect(console.warn).toHaveBeenCalledWith(
-      expect.stringContaining(
-        'Constants.manifest has been deprecated in favor of Constants.expoConfig.'
-      )
-    );
+    expect(ConstantsWithMock.manifest2).toEqual(fakeManifestNew);
+    expect(console.warn).not.toHaveBeenCalled();
   });
 
   it(`is null if undefined in ExponentConstants and expo-updates with bare execution environment`, () => {
@@ -194,37 +179,18 @@ describe(`manifest`, () => {
   });
 
   it(`is overridden by expo-updates if both are defined`, () => {
-    mockExponentConstants({ manifest: fakeManifest });
-    mockExpoUpdates({ manifest: fakeManifest2 });
+    mockExponentConstants({ manifest: fakeEmbeddedAppConfig });
+    mockExpoUpdates({ manifest: fakeManifestNew });
     const ConstantsWithMock = require('../Constants').default;
-    expect(ConstantsWithMock.manifest).toEqual(fakeManifest2);
-    expect(console.warn).toHaveBeenCalledTimes(1);
-    expect(console.warn).toHaveBeenCalledWith(
-      expect.stringContaining(
-        'Constants.manifest has been deprecated in favor of Constants.expoConfig.'
-      )
-    );
+    expect(ConstantsWithMock.manifest2).toEqual(fakeManifestNew);
+    expect(console.warn).not.toHaveBeenCalled();
   });
 
   it(`is not overridden if expo-updates exports an empty manifest`, () => {
-    mockExponentConstants({ manifest: fakeManifest });
+    mockExponentConstants({ manifest: fakeEmbeddedAppConfig });
     mockExpoUpdates({ manifest: {} });
     const ConstantsWithMock = require('../Constants').default;
-    expect(ConstantsWithMock.manifest).toEqual(fakeManifest);
-    expect(console.warn).toHaveBeenCalledTimes(1);
-    expect(console.warn).toHaveBeenCalledWith(
-      expect.stringContaining(
-        'Constants.manifest has been deprecated in favor of Constants.expoConfig.'
-      )
-    );
-  });
-
-  it(`does not have manifest2 when manifest is a classic manifest`, () => {
-    mockExponentConstants({ manifest: fakeManifest });
-    mockExpoUpdates({ manifest: fakeManifest });
-    const ConstantsWithMock = require('../Constants').default;
-    expect(ConstantsWithMock.manifest).toEqual(fakeManifest);
-    expect(ConstantsWithMock.manifest2).toBeNull();
+    expect(ConstantsWithMock.manifest).toEqual(fakeEmbeddedAppConfig);
     expect(console.warn).toHaveBeenCalledTimes(1);
     expect(console.warn).toHaveBeenCalledWith(
       expect.stringContaining(
@@ -234,7 +200,7 @@ describe(`manifest`, () => {
   });
 
   it(`has manifest2 when manifest is a new manifest`, () => {
-    mockExponentConstants({ manifest: fakeManifestNew });
+    mockExponentConstants({ manifest: fakeEmbeddedAppConfig });
     mockExpoUpdates({ manifest: fakeManifestNew });
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toBeNull();
@@ -248,19 +214,19 @@ describe(`manifest`, () => {
   });
 
   describe('expoConfig', () => {
-    it('is present for classic manifests', () => {
-      mockExponentConstants({ manifest: fakeManifest });
-      mockExpoUpdates({ manifest: fakeManifest });
-      const ConstantsWithMock = require('../Constants').default;
-      expect(ConstantsWithMock.expoConfig).toEqual(fakeManifest);
-      expect(console.warn).not.toHaveBeenCalled();
-    });
-
     it('is present for new manifests', () => {
-      mockExponentConstants({ manifest: fakeManifestNew });
+      mockExponentConstants({ manifest: fakeEmbeddedAppConfig });
       mockExpoUpdates({ manifest: fakeManifestNew });
       const ConstantsWithMock = require('../Constants').default;
       expect(ConstantsWithMock.expoConfig).toEqual(fakeManifestNew.extra?.expoClient);
+      expect(console.warn).not.toHaveBeenCalled();
+    });
+
+    it('uses embedded app config for running embedded manifests', () => {
+      mockExponentConstants({ manifest: fakeEmbeddedAppConfig });
+      mockExpoUpdates({ manifest: fakeManifestNew, isEmbeddedLaunch: true });
+      const ConstantsWithMock = require('../Constants').default;
+      expect(ConstantsWithMock.expoConfig).toEqual(fakeEmbeddedAppConfig);
       expect(console.warn).not.toHaveBeenCalled();
     });
   });

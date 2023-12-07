@@ -49,10 +49,10 @@ internal struct ImagePickerOptions: Record {
 
   @Field
   var allowsMultipleSelection: Bool = false
-  
+
   @Field
   var selectionLimit: Int = UNLIMITED_SELECTION
-  
+
   @Field
   var orderedSelection: Bool = false
 }

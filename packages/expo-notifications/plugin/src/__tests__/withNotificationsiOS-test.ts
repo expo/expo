@@ -2,8 +2,8 @@ import { IOSConfig } from 'expo/config-plugins';
 import { fs, vol } from 'memfs';
 import * as path from 'path';
 
-import { setNotificationSounds } from '../withNotificationsIOS';
 import { getDirFromFS } from './withNotificationsAndroid-test';
+import { setNotificationSounds } from '../withNotificationsIOS';
 
 jest.mock('fs');
 

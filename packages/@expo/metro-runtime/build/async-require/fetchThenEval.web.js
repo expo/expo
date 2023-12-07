@@ -1,3 +1,6 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.fetchThenEvalAsync = void 0;
 /**
  * Copyright © 2022 650 Industries.
  *
@@ -5,9 +8,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 // Basically `__webpack_require__.l`.
-export function fetchThenEvalAsync(url, { scriptType, nonce, crossOrigin, } = {}) {
+function fetchThenEvalAsync(url, { scriptType, nonce, crossOrigin, } = {}) {
     if (typeof document === 'undefined') {
-        throw new Error('Cannot use fetchThenEvalAsync in a non-browser environment.');
+        return require('./fetchThenEvalJs').fetchThenEvalAsync(url);
     }
     return new Promise((resolve, reject) => {
         const script = document.createElement('script');
@@ -53,6 +56,7 @@ export function fetchThenEvalAsync(url, { scriptType, nonce, crossOrigin, } = {}
         document.head.appendChild(script);
     });
 }
+exports.fetchThenEvalAsync = fetchThenEvalAsync;
 class AsyncRequireError extends Error {
     name = 'AsyncRequireError';
     type;

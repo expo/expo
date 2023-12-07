@@ -192,7 +192,7 @@ export const PlaybackMixin = {
             seekMillisToleranceBefore: tolerances.toleranceMillisBefore,
         });
     },
-    async setRateAsync(rate, shouldCorrectPitch = false, pitchCorrectionQuality = PitchCorrectionQuality.Low) {
+    async setRateAsync(rate, shouldCorrectPitch = false, pitchCorrectionQuality = PitchCorrectionQuality.Medium) {
         return this.setStatusAsync({
             rate,
             shouldCorrectPitch,

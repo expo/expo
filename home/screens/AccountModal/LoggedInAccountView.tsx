@@ -1,6 +1,5 @@
 import { borderRadius, CheckIcon, iconSize, spacing, UsersIcon } from '@expo/styleguide-native';
 import { useNavigation } from '@react-navigation/native';
-import { SectionHeader } from 'components/SectionHeader';
 import { Text, View, Image, useExpoTheme, Row, Spacer, Divider } from 'expo-dev-client-components';
 import React from 'react';
 import { FlatList } from 'react-native';
@@ -10,6 +9,8 @@ import { Home_CurrentUserActorQuery } from '../../graphql/types';
 import { useDispatch } from '../../redux/Hooks';
 import SessionActions from '../../redux/SessionActions';
 import { useAccountName } from '../../utils/AccountNameContext';
+
+import { SectionHeader } from '@/components/SectionHeader';
 
 type Props = {
   accounts: Exclude<Home_CurrentUserActorQuery['meUserActor'], undefined | null>['accounts'];
@@ -29,7 +30,7 @@ export function LoggedInAccountView({ accounts }: Props) {
   return (
     <View flex="1">
       <View flex="1">
-        <FlatList<typeof accounts[number]>
+        <FlatList<(typeof accounts)[number]>
           data={accounts}
           contentContainerStyle={{ padding: spacing[4] }}
           ListHeaderComponent={() => (

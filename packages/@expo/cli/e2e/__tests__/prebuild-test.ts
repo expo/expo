@@ -82,6 +82,7 @@ it('runs `npx expo prebuild --help`', async () => {
         --clean                                  Delete the native folders and regenerate them before applying changes
         --npm                                    Use npm to install dependencies. Default when package-lock.json exists
         --yarn                                   Use Yarn to install dependencies. Default when yarn.lock exists
+        --bun                                    Use bun to install dependencies. Default when bun.lockb exists
         --pnpm                                   Use pnpm to install dependencies. Default when pnpm-lock.yaml exists
         --template <template>                    Project template to clone from. File path pointing to a local tar file or a github repo
         -p, --platform <all|android|ios>         Platforms to sync: ios, android, all. Default: all
@@ -109,7 +110,6 @@ it(
   'runs `npx expo prebuild`',
   async () => {
     const projectRoot = await setupTestProjectAsync('basic-prebuild', 'with-blank');
-    // `npx expo prebuild --no-install`
 
     const templateFolder = await ensureTemplatePathAsync();
     console.log('Using local template:', templateFolder);
@@ -135,8 +135,6 @@ it(
     // Added new packages
     expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
       'expo',
-      'expo-splash-screen',
-      'expo-status-bar',
       'react',
       'react-native',
     ]);
@@ -156,10 +154,9 @@ it(
         "android/app/debug.keystore",
         "android/app/proguard-rules.pro",
         "android/app/src/debug/AndroidManifest.xml",
-        "android/app/src/debug/java/com/example/minimal/ReactNativeFlipper.java",
         "android/app/src/main/AndroidManifest.xml",
-        "android/app/src/main/java/com/example/minimal/MainActivity.java",
-        "android/app/src/main/java/com/example/minimal/MainApplication.java",
+        "android/app/src/main/java/com/example/minimal/MainActivity.kt",
+        "android/app/src/main/java/com/example/minimal/MainApplication.kt",
         "android/app/src/main/res/drawable/rn_edit_text_material.xml",
         "android/app/src/main/res/drawable/splashscreen.xml",
         "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
@@ -176,7 +173,6 @@ it(
         "android/app/src/main/res/values/strings.xml",
         "android/app/src/main/res/values/styles.xml",
         "android/app/src/main/res/values-night/colors.xml",
-        "android/app/src/release/java/com/example/minimal/ReactNativeFlipper.java",
         "android/build.gradle",
         "android/gradle/wrapper/gradle-wrapper.jar",
         "android/gradle/wrapper/gradle-wrapper.properties",
@@ -185,6 +181,7 @@ it(
         "android/gradlew.bat",
         "android/settings.gradle",
         "app.json",
+        "bun.lockb",
         "ios/.gitignore",
         "ios/.xcode.env",
         "ios/Podfile",
@@ -207,7 +204,6 @@ it(
         "ios/basicprebuild.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist",
         "ios/basicprebuild.xcodeproj/xcshareddata/xcschemes/basicprebuild.xcscheme",
         "package.json",
-        "yarn.lock",
       ]
     `);
   },

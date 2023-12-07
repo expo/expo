@@ -1,8 +1,7 @@
+import { registerRootComponent } from 'expo';
+import * as SplashScreen from 'expo-splash-screen';
 import React from 'react';
 import { Platform, View } from 'react-native';
-
-import registerRootComponent from './fork/expo/registerRootComponent';
-import { SplashScreen, _internal_preventAutoHideAsync } from './views/Splash';
 
 function isBaseObject(obj: any) {
   if (Object.prototype.toString.call(obj) !== '[object Object]') {
@@ -54,10 +53,17 @@ export function renderRootComponent(Component: React.ComponentType<any>) {
   try {
     // This must be delayed so the user has a chance to call it first.
     setTimeout(() => {
-      _internal_preventAutoHideAsync();
+      // @ts-expect-error: This function is native-only and for internal-use only.
+      SplashScreen._internal_preventAutoHideAsync?.();
     });
 
-    registerRootComponent(Component);
+    if (process.env.NODE_ENV !== 'production') {
+      const { withErrorOverlay } =
+        require('@expo/metro-runtime/error-overlay') as typeof import('@expo/metro-runtime/error-overlay');
+      registerRootComponent(withErrorOverlay(Component));
+    } else {
+      registerRootComponent(Component);
+    }
   } catch (e) {
     // Hide the splash screen if there was an error so the user can see it.
     SplashScreen.hideAsync();

@@ -28,9 +28,7 @@ public class DeviceModule: Module {
     }
 
     AsyncFunction("getUptimeAsync") { () -> Double in
-      let uptimeMs: Double = ProcessInfo.processInfo.systemUptime * 1000
-
-      return uptimeMs
+      return ProcessInfo.processInfo.systemUptime * 1000
     }
 
     AsyncFunction("isRootedExperimentalAsync") { () -> Bool in
@@ -46,7 +44,7 @@ func getDeviceType() -> Int {
   }
 
   // if it's built for iPad running on a Mac
-  if #available(iOS 14.0, *) {
+  if #available(iOS 14.0, tvOS 14.0, *) {
     if ProcessInfo.processInfo.isiOSAppOnMac {
       return DeviceType.desktop.rawValue
     }
@@ -73,9 +71,9 @@ func isDevice() -> Bool {
 }
 
 func osBuildId() -> String? {
-  #if os(tvOS)
+#if os(tvOS)
   return nil
-  #else
+#else
   // Credit: https://stackoverflow.com/a/65858410
   var mib: [Int32] = [CTL_KERN, KERN_OSVERSION]
   let namelen = UInt32(MemoryLayout.size(ofValue: mib) / MemoryLayout.size(ofValue: mib[0]))
@@ -92,7 +90,7 @@ func osBuildId() -> String? {
   }
 
   return nil
-  #endif
+#endif
 }
 
 func cpuArchitectures() -> [String]? {

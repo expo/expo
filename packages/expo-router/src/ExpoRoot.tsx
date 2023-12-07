@@ -1,3 +1,4 @@
+import { NavigationAction } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import { StatusBar } from 'expo-status-bar';
 import React, { FunctionComponent, ReactNode, Fragment } from 'react';
@@ -15,35 +16,15 @@ export type ExpoRootProps = {
   wrapper?: FunctionComponent<{ children: ReactNode }>;
 };
 
-function getGestureHandlerRootView() {
-  try {
-    const { GestureHandlerRootView } =
-      require('react-native-gesture-handler') as typeof import('react-native-gesture-handler');
+const isTestEnv = process.env.NODE_ENV === 'test';
 
-    if (!GestureHandlerRootView) {
-      return React.Fragment;
-    }
-
-    // eslint-disable-next-line no-inner-declarations
-    function GestureHandler(props: any) {
-      return <GestureHandlerRootView style={{ flex: 1 }} {...props} />;
-    }
-    if (process.env.NODE_ENV === 'development') {
-      // @ts-expect-error
-      GestureHandler.displayName = 'GestureHandlerRootView';
-    }
-    return GestureHandler;
-  } catch {
-    return React.Fragment;
-  }
-}
-
-const GestureHandlerRootView = getGestureHandlerRootView();
-
-const INITIAL_METRICS = {
-  frame: { x: 0, y: 0, width: 0, height: 0 },
-  insets: { top: 0, left: 0, right: 0, bottom: 0 },
-};
+const INITIAL_METRICS =
+  Platform.OS === 'web' || isTestEnv
+    ? {
+        frame: { x: 0, y: 0, width: 0, height: 0 },
+        insets: { top: 0, left: 0, right: 0, bottom: 0 },
+      }
+    : undefined;
 
 const hasViewControllerBasedStatusBarAppearance =
   Platform.OS === 'ios' &&
@@ -52,22 +33,19 @@ const hasViewControllerBasedStatusBarAppearance =
 export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRootProps) {
   /*
    * Due to static rendering we need to wrap these top level views in second wrapper
-   * View's like <GestureHandlerRootView /> generate a <div> so if the parent wrapper
+   * View's like <SafeAreaProvider /> generate a <div> so if the parent wrapper
    * is a HTML document, we need to ensure its inside the <body>
    */
-  const wrapper: ExpoRootProps['wrapper'] = ({ children }) => {
+  const wrapper = ({ children }) => {
     return (
       <ParentWrapper>
-        <GestureHandlerRootView>
-          <SafeAreaProvider
-            // SSR support
-            initialMetrics={INITIAL_METRICS}>
-            {children}
-
-            {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
-            {!hasViewControllerBasedStatusBarAppearance && <StatusBar style="auto" />}
-          </SafeAreaProvider>
-        </GestureHandlerRootView>
+        <SafeAreaProvider
+          // SSR support
+          initialMetrics={INITIAL_METRICS}>
+          {children}
+          {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
+          {!hasViewControllerBasedStatusBarAppearance && <StatusBar style="auto" />}
+        </SafeAreaProvider>
       </ParentWrapper>
     );
   };
@@ -109,6 +87,7 @@ function ContextNavigator({
       ref={store.navigationRef}
       initialState={store.initialState}
       linking={store.linking}
+      onUnhandledAction={onUnhandledAction}
       documentTitle={{
         enabled: false,
       }}>
@@ -117,4 +96,49 @@ function ContextNavigator({
       </WrapperComponent>
     </UpstreamNavigationContainer>
   );
+}
+
+let onUnhandledAction: (action: NavigationAction) => void;
+
+if (process.env.NODE_ENV !== 'production') {
+  onUnhandledAction = (action: NavigationAction) => {
+    const payload: Record<string, any> | undefined = action.payload;
+
+    let message = `The action '${action.type}'${
+      payload ? ` with payload ${JSON.stringify(action.payload)}` : ''
+    } was not handled by any navigator.`;
+
+    switch (action.type) {
+      case 'NAVIGATE':
+      case 'PUSH':
+      case 'REPLACE':
+      case 'JUMP_TO':
+        if (payload?.name) {
+          message += `\n\nDo you have a route named '${payload.name}'?`;
+        } else {
+          message += `\n\nYou need to pass the name of the screen to navigate to. This may be a bug.`;
+        }
+
+        break;
+      case 'GO_BACK':
+      case 'POP':
+      case 'POP_TO_TOP':
+        message += `\n\nIs there any screen to go back to?`;
+        break;
+      case 'OPEN_DRAWER':
+      case 'CLOSE_DRAWER':
+      case 'TOGGLE_DRAWER':
+        message += `\n\nIs your screen inside a Drawer navigator?`;
+        break;
+    }
+
+    message += `\n\nThis is a development-only warning and won't be shown in production.`;
+
+    if (process.env.NODE_ENV === 'test') {
+      throw new Error(message);
+    }
+    console.error(message);
+  };
+} else {
+  onUnhandledAction = function () {};
 }

@@ -2,9 +2,9 @@ import JsonFile from '@expo/json-file';
 import npmPackageArg from 'npm-package-arg';
 import path from 'path';
 
+import { BasePackageManager } from './BasePackageManager';
 import { findYarnOrNpmWorkspaceRoot, NPM_LOCK_FILE } from '../utils/nodeWorkspaces';
 import { createPendingSpawnAsync } from '../utils/spawn';
-import { BasePackageManager } from './BasePackageManager';
 
 export class NpmPackageManager extends BasePackageManager {
   readonly name = 'npm';
@@ -129,9 +129,8 @@ export class NpmPackageManager extends BasePackageManager {
     }
 
     const pkgPath = path.join(this.options.cwd?.toString() || '.', 'package.json');
-    const pkg = await JsonFile.readAsync<Record<typeof packageType, { [pkgName: string]: string }>>(
-      pkgPath
-    );
+    const pkg =
+      await JsonFile.readAsync<Record<typeof packageType, { [pkgName: string]: string }>>(pkgPath);
 
     packageSpecs.forEach((spec) => {
       pkg[packageType] = pkg[packageType] || {};

@@ -8,7 +8,61 @@
 
 ### 🐛 Bug fixes
 
+- On `Android`, handle using files from `SAF` correctly. ([#25389](https://github.com/expo/expo/pull/25389) by [@alanjhughes](https://github.com/alanjhughes))
+- Removed legacy `bundledAssets` constant that was used only in standalone apps. ([#25484](https://github.com/expo/expo/pull/25484) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Added missing check for directory permissions in `deleteAsync` method. ([#25704](https://github.com/expo/expo/pull/25704) by [@tsapeta](https://github.com/tsapeta))
+
 ### 💡 Others
+
+## 15.4.5 — 2023-11-20
+
+### 🐛 Bug fixes
+
+- On `Android`, use `addInterceptor` instead of `addNetworkInterceptor` in `downloadResumableStartAsync`. ([#24702](https://github.com/expo/expo/pull/24702) by [@alanhughes](https://github.com/alanjhughes))
+
+## 15.9.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 15.8.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- On `Android`, use `addInterceptor` instead of `addNetworkInterceptor` in `downloadResumableStartAsync`. ([#24702](https://github.com/expo/expo/pull/24702) by [@alanhughes](https://github.com/alanjhughes))
+
+## 15.7.0 — 2023-09-15
+
+### 🎉 New features
+
+- Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
+
+### 💡 Others
+
+- Migrated to Swift and Expo Modules API on iOS. ([#23943](https://github.com/expo/expo/pull/23943) by [@tsapeta](https://github.com/tsapeta))
+- Throw the correct error when we can't find the permissions modules. ([#24464](https://github.com/expo/expo/pull/24464) by [@alanhughes](https://github.com/alanjhughes))
+
+## 15.6.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+## 15.4.4 - 2023-08-29
+
+_This version does not introduce any user-facing changes._
+
+## 15.4.3 - 2023-08-09
+
+### 🐛 Bug fixes
+
+- Fix regression in `copyAsync` on Android. ([#23892](https://github.com/expo/expo/pull/23892) by [@brentvatne](https://github.com/brentvatne))
 
 ## 15.5.1 — 2023-08-02
 

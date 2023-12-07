@@ -19,6 +19,7 @@ export const ASSETS = {
   github: ASSETS_PATH + 'github.png',
   google: ASSETS_PATH + 'google.png',
   imgur: ASSETS_PATH + 'imgur.png',
+  keycloak: ASSETS_PATH + 'keycloak.png',
   okta: ASSETS_PATH + 'okta.png',
   reddit: ASSETS_PATH + 'reddit.png',
   slack: ASSETS_PATH + 'slack.png',

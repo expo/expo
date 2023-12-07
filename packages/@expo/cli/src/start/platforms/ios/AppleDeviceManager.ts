@@ -4,13 +4,6 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
-import { delayAsync, waitForActionAsync } from '../../../utils/delay';
-import { CommandError } from '../../../utils/errors';
-import { parsePlistAsync } from '../../../utils/plist';
-import { validateUrl } from '../../../utils/url';
-import { DeviceManager } from '../DeviceManager';
-import { ExpoGoInstaller } from '../ExpoGoInstaller';
-import { BaseResolveDeviceProps } from '../PlatformManager';
 import { assertSystemRequirementsAsync } from './assertSystemRequirements';
 import { ensureSimulatorAppRunningAsync } from './ensureSimulatorAppRunning';
 import {
@@ -20,6 +13,13 @@ import {
 } from './getBestSimulator';
 import { promptAppleDeviceAsync } from './promptAppleDevice';
 import * as SimControl from './simctl';
+import { delayAsync, waitForActionAsync } from '../../../utils/delay';
+import { CommandError } from '../../../utils/errors';
+import { parsePlistAsync } from '../../../utils/plist';
+import { validateUrl } from '../../../utils/url';
+import { DeviceManager } from '../DeviceManager';
+import { ExpoGoInstaller } from '../ExpoGoInstaller';
+import { BaseResolveDeviceProps } from '../PlatformManager';
 
 const debug = require('debug')('expo:start:platforms:ios:AppleDeviceManager') as typeof console.log;
 

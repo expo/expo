@@ -13,11 +13,14 @@
 #import "EXReactAppManager+Private.h"
 #import "EXVersionManagerObjC.h"
 #import "EXVersions.h"
+#import "EXEmbeddedHomeLoader.h"
 
 #import <EXConstants/EXConstantsService.h>
 
 #import <React/RCTUtils.h>
 #import <React/RCTBridge.h>
+
+#import "Expo_Go-Swift.h"
 
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
@@ -25,8 +28,6 @@
 @import EXUpdates;
 
 NSString * const kEXHomeLaunchUrlDefaultsKey = @"EXKernelLaunchUrlDefaultsKey";
-NSString *kEXHomeBundleResourceName = @"kernel.ios";
-NSString *kEXHomeManifestResourceName = @"kernel-manifest";
 
 @implementation EXHomeAppManager
 
@@ -37,7 +38,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
     @"constants": @{
         @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
         @"linkingUri": @"exp://",
-        @"experienceUrl": [@"exp://" stringByAppendingString:self.appRecord.appLoader.manifest.hostUri],
+        @"experienceUrl": [@"exp://" stringByAppendingString:(self.appRecord.appLoader.manifest.hostUri ?: @"")],
         @"manifest": self.appRecord.appLoader.manifest.rawManifestJSON,
         @"executionEnvironment": EXConstantsExecutionEnvironmentStoreClient,
         @"appOwnership": @"expo",
@@ -66,7 +67,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
 
 - (void)addHistoryItemWithUrl:(NSURL *)manifestUrl manifest:(EXManifestsManifest *)manifest
 {
-  if (!manifest || !manifestUrl || [manifest.legacyId isEqualToString:@"@exponent/home"] || [manifest.legacyId isEqualToString:@"@expo-dogfooding/home"]) {
+  if (!manifest || !manifestUrl || [manifest.legacyId isEqualToString:@"@exponent/home"]) {
     return;
   }
   NSDictionary *params = @{
@@ -162,41 +163,6 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
     initialHomeUrl = [EXKernelLinkingManager initialUrlFromLaunchOptions:[self launchOptionsForBridge]];
   }
   return initialHomeUrl;
-}
-
-+ (EXManifestsManifest * _Nullable)bundledHomeManifest
-{
-  NSString *manifestJson = nil;
-  BOOL usesNSBundleManifest = NO;
-
-  // if developing, use development manifest from EXBuildConstants
-  if ([EXBuildConstants sharedInstance].isDevKernel) {
-    manifestJson = [EXBuildConstants sharedInstance].kernelManifestJsonString;
-  }
-
-  // otherwise use published manifest
-  if (!manifestJson) {
-    NSString *manifestPath = [[NSBundle mainBundle] pathForResource:kEXHomeManifestResourceName ofType:@"json"];
-    if (manifestPath) {
-      NSError *error;
-      usesNSBundleManifest = YES;
-      manifestJson = [NSString stringWithContentsOfFile:manifestPath encoding:NSUTF8StringEncoding error:&error];
-      if (error) {
-        manifestJson = nil;
-      }
-    }
-  }
-
-  if (manifestJson) {
-    id manifest = RCTJSONParse(manifestJson, nil);
-    if ([manifest isKindOfClass:[NSDictionary class]]) {
-      if (usesNSBundleManifest && !([manifest[@"id"] isEqualToString:@"@exponent/home"] || [manifest[@"id"] isEqualToString:@"@expo-dogfooding/home"])) {
-        DDLogError(@"Bundled kernel manifest was published with an id other than @exponent/home or @expo-dogfooding/home");
-      }
-      return [EXManifestsManifestFactory manifestForManifestJSON:manifest];
-    }
-  }
-  return nil;
 }
 
 - (BOOL)requiresValidManifests

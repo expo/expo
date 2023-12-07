@@ -36,6 +36,12 @@ const UseUpdatesTestApp = () => {
       {/* Booleans */}
       <Text testID="isUpdateAvailable">{`${isUpdateAvailable}`}</Text>
       <Text testID="isUpdatePending">{`${isUpdatePending}`}</Text>
+      <Text testID="isRollback">{`${
+        availableUpdate?.type === Updates.UpdateInfoType.ROLLBACK
+      }`}</Text>
+      <Text testID="rollbackTime">{`${
+        availableUpdate?.createdAt.toISOString().substring(0, 19) || ''
+      }`}</Text>
       {/* Errors, if they occur */}
       {checkError ? <Text testID="checkError">{checkError.message}</Text> : null}
       {downloadError ? <Text testID="downloadError">{downloadError.message}</Text> : null}

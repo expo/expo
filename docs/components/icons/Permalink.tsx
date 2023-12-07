@@ -1,7 +1,15 @@
 import * as React from 'react';
 
-const PermaLink = () => (
+type PermaLinkProps = {
+  onClick?: (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => void;
+};
+
+// note(Keith): Do not replace with a styleguide-icon version.
+// None of the available options look quite right in docs.
+// This icon should instead be eventually added to @expo/styleguide-icons.
+const PermaLink = ({ onClick }: PermaLinkProps) => (
   <svg
+    onClick={onClick}
     aria-label="permalink"
     className="anchor-icon"
     width="24"

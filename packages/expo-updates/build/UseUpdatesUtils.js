@@ -17,14 +17,18 @@ export const updateFromManifest = (manifest) => {
         updateId: manifest.id ?? '',
         createdAt: manifest && 'createdAt' in manifest && manifest.createdAt
             ? new Date(manifest.createdAt)
-            : manifest && 'publishedTime' in manifest && manifest.publishedTime
-                ? new Date(manifest.publishedTime)
-                : // We should never reach this if the manifest is valid and has a commit time,
-                    // but leave this in so that createdAt is always defined
-                    new Date(0),
+            : // We should never reach this if the manifest is valid and has a commit time,
+                // but leave this in so that createdAt is always defined
+                new Date(0),
         manifest,
     };
 };
+export const updateFromRollback = (rollback) => ({
+    type: UpdateInfoType.ROLLBACK,
+    createdAt: new Date(rollback.commitTime),
+    manifest: undefined,
+    updateId: undefined,
+});
 // Default useUpdates() state
 export const defaultUseUpdatesState = {
     isChecking: false,
@@ -36,10 +40,14 @@ export const defaultUseUpdatesState = {
 export const reduceUpdatesStateFromContext = (updatesState, context) => {
     const availableUpdate = context?.latestManifest
         ? updateFromManifest(context?.latestManifest)
-        : undefined;
+        : context.rollback
+            ? updateFromRollback(context.rollback)
+            : undefined;
     const downloadedUpdate = context?.downloadedManifest
         ? updateFromManifest(context?.downloadedManifest)
-        : undefined;
+        : context.rollback
+            ? updateFromRollback(context.rollback)
+            : undefined;
     return {
         ...updatesState,
         isUpdateAvailable: context.isUpdateAvailable,

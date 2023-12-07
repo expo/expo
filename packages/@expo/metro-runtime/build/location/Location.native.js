@@ -1,6 +1,8 @@
+"use strict";
 // Copyright © 2023 650 Industries.
 // Copyright 2018-2023 the Deno authors. All rights reserved. MIT license.
-import URL from 'url-parse';
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.install = exports.setLocationHref = void 0;
 class DOMException extends Error {
     constructor(message, name) {
         super(message);
@@ -17,9 +19,7 @@ class Location {
         const url = new URL(
         // @ts-expect-error
         href);
-        // @ts-expect-error
         url.username = '';
-        // @ts-expect-error
         url.password = '';
         Object.defineProperties(this, {
             hash: {
@@ -93,7 +93,6 @@ class Location {
             },
             search: {
                 get() {
-                    // @ts-expect-error
                     return url.search;
                 },
                 set() {
@@ -172,10 +171,11 @@ Object.defineProperties(Location.prototype, {
     },
 });
 let location = undefined;
-export function setLocationHref(href) {
+function setLocationHref(href) {
     location = new Location(href);
 }
-export function install() {
+exports.setLocationHref = setLocationHref;
+function install() {
     Object.defineProperty(global, 'Location', {
         value: Location,
         configurable: true,
@@ -191,4 +191,5 @@ export function install() {
         enumerable: true,
     });
 }
+exports.install = install;
 //# sourceMappingURL=Location.native.js.map

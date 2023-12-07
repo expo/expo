@@ -3,6 +3,7 @@ package versioned.host.exp.exponent
 
 import android.content.Context
 import android.os.Looper
+import com.airbnb.android.react.lottie.LottiePackage
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
@@ -20,7 +21,6 @@ import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.manifests.core.Manifest
-import host.exp.exponent.Constants
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.kernel.ExperienceKey
 // WHEN_VERSIONING_REMOVE_FROM_HERE
@@ -32,7 +32,6 @@ import org.json.JSONException
 import versioned.host.exp.exponent.modules.api.*
 import versioned.host.exp.exponent.modules.api.cognito.RNAWSCognitoModule
 import versioned.host.exp.exponent.modules.api.components.datetimepicker.RNDateTimePickerPackage
-import versioned.host.exp.exponent.modules.api.components.lottie.LottiePackage
 import versioned.host.exp.exponent.modules.api.components.maps.MapsPackage
 import versioned.host.exp.exponent.modules.api.components.maskedview.RNCMaskedViewPackage
 import versioned.host.exp.exponent.modules.api.components.picker.RNCPickerPackage
@@ -116,8 +115,8 @@ class ExponentPackage : ReactPackage {
       nativeModules.add((ExponentKernelModuleProvider.newInstance(reactContext) as NativeModule?)!!)
       // WHEN_VERSIONING_REMOVE_TO_HERE
     }
-    if (!isKernel && !Constants.isStandaloneApp()) {
-      // We need DevMenuModule only in non-home and non-standalone apps.
+    if (!isKernel) {
+      // We need DevMenuModule only in non-home apps.
       nativeModules.add(DevMenuModule(reactContext, experienceProperties, manifest))
     }
 

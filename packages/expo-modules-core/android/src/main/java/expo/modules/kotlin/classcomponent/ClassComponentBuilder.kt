@@ -4,6 +4,7 @@ package expo.modules.kotlin.classcomponent
 
 import expo.modules.kotlin.functions.SyncFunctionComponent
 import expo.modules.kotlin.objects.ObjectDefinitionBuilder
+import expo.modules.kotlin.objects.PropertyComponentBuilderWithThis
 import expo.modules.kotlin.types.toAnyType
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
@@ -12,7 +13,7 @@ import kotlin.reflect.typeOf
 class ClassComponentBuilder<SharedObjectType : Any>(
   val name: String,
   private val ownerClass: KClass<SharedObjectType>,
-  private val ownerType: KType
+  val ownerType: KType
 ) : ObjectDefinitionBuilder() {
   var constructor: SyncFunctionComponent? = null
 
@@ -107,6 +108,22 @@ class ClassComponentBuilder<SharedObjectType : Any>(
   ): SyncFunctionComponent {
     return SyncFunctionComponent("constructor", arrayOf({ typeOf<P0>() }.toAnyType<P0>(), { typeOf<P1>() }.toAnyType<P1>(), { typeOf<P2>() }.toAnyType<P2>(), { typeOf<P3>() }.toAnyType<P3>(), { typeOf<P4>() }.toAnyType<P4>(), { typeOf<P5>() }.toAnyType<P5>(), { typeOf<P6>() }.toAnyType<P6>(), { typeOf<P7>() }.toAnyType<P7>())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5, it[6] as P6, it[7] as P7) }.also {
       constructor = it
+    }
+  }
+
+  /**
+   * Creates the read-only property whose getter takes the caller as an argument.
+   */
+  inline fun <T> Property(name: String, crossinline body: (owner: SharedObjectType) -> T): PropertyComponentBuilderWithThis<SharedObjectType> {
+    return PropertyComponentBuilderWithThis<SharedObjectType>(ownerType, name).also {
+      it.get(body)
+      properties[name] = it
+    }
+  }
+
+  override fun Property(name: String): PropertyComponentBuilderWithThis<SharedObjectType> {
+    return PropertyComponentBuilderWithThis<SharedObjectType>(ownerType, name).also {
+      properties[name] = it
     }
   }
 }

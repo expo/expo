@@ -1,8 +1,7 @@
 import { getConfig, getNameFromConfig } from '@expo/config';
-import { getRuntimeVersionNullable } from '@expo/config-plugins/build/utils/Updates';
+import { getRuntimeVersionNullableAsync } from '@expo/config-plugins/build/utils/Updates';
 import { vol } from 'memfs';
 
-import { asMock } from '../../../../__tests__/asMock';
 import { InterstitialPageMiddleware } from '../InterstitialPageMiddleware';
 import { ServerRequest, ServerResponse } from '../server.types';
 
@@ -19,7 +18,7 @@ jest.mock('@expo/config', () => ({
   getNameFromConfig: jest.fn(() => 'my-app'),
 }));
 jest.mock('@expo/config-plugins/build/utils/Updates', () => ({
-  getRuntimeVersionNullable: jest.fn(),
+  getRuntimeVersionNullableAsync: jest.fn(),
 }));
 
 const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
@@ -38,7 +37,7 @@ afterAll(() => {
   process.chdir(originalCwd);
 });
 
-describe('_shouldHandleRequest', () => {
+describe('shouldHandleRequest', () => {
   const middleware = new InterstitialPageMiddleware('/');
   it(`returns false when the middleware should not handle`, () => {
     for (const req of [
@@ -46,24 +45,24 @@ describe('_shouldHandleRequest', () => {
       asReq({ url: 'http://localhost:8081' }),
       asReq({ url: 'http://localhost:8081/' }),
     ]) {
-      expect(middleware._shouldHandleRequest(req)).toBe(false);
+      expect(middleware.shouldHandleRequest(req)).toBe(false);
     }
   });
   it(`returns true when the middleware should handle`, () => {
     for (const req of [asReq({ url: 'http://localhost:8081/_expo/loading' })]) {
-      expect(middleware._shouldHandleRequest(req)).toBe(true);
+      expect(middleware.shouldHandleRequest(req)).toBe(true);
     }
   });
 });
 
-describe('_getProjectOptions', () => {
+describe('_getProjectOptionsAsync', () => {
   it('returns the project settings from the config', async () => {
-    asMock(getNameFromConfig).mockReturnValueOnce({ appName: 'my-app' });
-    asMock(getRuntimeVersionNullable).mockReturnValueOnce('123');
+    jest.mocked(getNameFromConfig).mockReturnValueOnce({ appName: 'my-app' });
+    jest.mocked(getRuntimeVersionNullableAsync).mockResolvedValueOnce('123');
 
     const middleware = new InterstitialPageMiddleware('/');
 
-    expect(middleware._getProjectOptions('ios')).toEqual({
+    expect(await middleware._getProjectOptionsAsync('ios')).toEqual({
       appName: 'my-app',
       projectVersion: {
         type: 'runtime',
@@ -71,18 +70,19 @@ describe('_getProjectOptions', () => {
       },
     });
     expect(getConfig).toBeCalled();
-    expect(getRuntimeVersionNullable).toBeCalledWith(
+    expect(getRuntimeVersionNullableAsync).toBeCalledWith(
+      '/',
       { name: 'my-app', sdkVersion: '45.0.0', slug: 'my-app' },
       'ios'
     );
   });
   it('returns the project settings from the config with SDK version', async () => {
-    asMock(getNameFromConfig).mockReturnValueOnce({ appName: 'my-app' });
-    asMock(getRuntimeVersionNullable).mockReturnValueOnce(null);
+    jest.mocked(getNameFromConfig).mockReturnValueOnce({ appName: 'my-app' });
+    jest.mocked(getRuntimeVersionNullableAsync).mockResolvedValueOnce(null);
 
     const middleware = new InterstitialPageMiddleware('/');
 
-    expect(middleware._getProjectOptions('ios')).toEqual({
+    expect(await middleware._getProjectOptionsAsync('ios')).toEqual({
       appName: 'my-app',
       projectVersion: {
         type: 'sdk',
@@ -90,7 +90,8 @@ describe('_getProjectOptions', () => {
       },
     });
     expect(getConfig).toBeCalled();
-    expect(getRuntimeVersionNullable).toBeCalledWith(
+    expect(getRuntimeVersionNullableAsync).toBeCalledWith(
+      '/',
       { name: 'my-app', sdkVersion: '45.0.0', slug: 'my-app' },
       'ios'
     );
@@ -147,13 +148,15 @@ describe('handleRequestAsync', () => {
   it('returns the interstitial page with platform header', async () => {
     const middleware = new InterstitialPageMiddleware('/');
 
-    middleware._getProjectOptions = jest.fn(() => ({
-      appName: 'App',
-      projectVersion: {
-        type: 'runtime',
-        version: '123',
-      },
-    }));
+    middleware._getProjectOptionsAsync = jest.fn(() =>
+      Promise.resolve({
+        appName: 'App',
+        projectVersion: {
+          type: 'runtime',
+          version: '123',
+        },
+      })
+    );
 
     middleware._getPageAsync = jest.fn(async () => 'mock-value');
 
@@ -182,13 +185,15 @@ describe('handleRequestAsync', () => {
   it('returns the interstitial page with user-agent header', async () => {
     const middleware = new InterstitialPageMiddleware('/');
 
-    middleware._getProjectOptions = jest.fn(() => ({
-      appName: 'App',
-      projectVersion: {
-        type: 'runtime',
-        version: '123',
-      },
-    }));
+    middleware._getProjectOptionsAsync = jest.fn(() =>
+      Promise.resolve({
+        appName: 'App',
+        projectVersion: {
+          type: 'runtime',
+          version: '123',
+        },
+      })
+    );
 
     middleware._getPageAsync = jest.fn(async () => 'mock-value');
 

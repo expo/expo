@@ -5,6 +5,15 @@ const isEqual = require('lodash/isEqual');
 // Derive the Expo Jest preset from the React Native one
 const jestPreset = cloneDeep(require('react-native/jest-preset'));
 
+const { withTypescriptMapping } = require('./src/preset/withTypescriptMapping');
+
+// Emulate the alias behavior of Expo's Metro resolver.
+jestPreset.moduleNameMapper = {
+  ...(jestPreset.moduleNameMapper || {}),
+  '^react-native-vector-icons$': '@expo/vector-icons',
+  '^react-native-vector-icons/(.*)': '@expo/vector-icons/$1',
+};
+
 // transform
 if (!jestPreset.transform) {
   jestPreset.transform = {
@@ -40,7 +49,8 @@ if (!Array.isArray(jestPreset.transformIgnorePatterns)) {
 
 // Also please keep `testing-with-jest.md` file up to date
 jestPreset.transformIgnorePatterns = [
-  'node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)',
+  '/node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)',
+  '/node_modules/react-native-reanimated/plugin/',
 ];
 
 // setupFiles
@@ -49,4 +59,5 @@ if (!Array.isArray(jestPreset.setupFiles)) {
 }
 jestPreset.setupFiles.push(require.resolve('jest-expo/src/preset/setup.js'));
 
-module.exports = jestPreset;
+// Add typescript custom mapping
+module.exports = withTypescriptMapping(jestPreset);

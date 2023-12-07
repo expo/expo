@@ -1,4 +1,3 @@
-import { asMock } from '../../__tests__/asMock';
 import { hasDirectDevClientDependency } from '../../utils/analytics/getDevClientProperties';
 import { resolvePortAsync } from '../../utils/port';
 import { resolveHostType, resolveOptionsAsync, resolvePortsAsync } from '../resolveOptions';
@@ -81,14 +80,16 @@ describe(resolveHostType, () => {
 
 describe(resolvePortsAsync, () => {
   beforeEach(() => {
-    asMock(resolvePortAsync).mockImplementation(async (root, { defaultPort, fallbackPort }) => {
-      if (typeof defaultPort === 'string' && defaultPort) {
-        return parseInt(defaultPort, 10);
-      } else if (typeof defaultPort === 'number' && defaultPort) {
-        return defaultPort;
-      }
-      return fallbackPort;
-    });
+    jest
+      .mocked(resolvePortAsync)
+      .mockImplementation(async (root, { defaultPort, fallbackPort }) => {
+        if (typeof defaultPort === 'string' && defaultPort) {
+          return parseInt(defaultPort, 10);
+        } else if (typeof defaultPort === 'number' && defaultPort) {
+          return defaultPort;
+        }
+        return fallbackPort;
+      });
   });
   it(`resolves default port for metro`, async () => {
     await expect(resolvePortsAsync('/noop', {}, { webOnly: false })).resolves.toStrictEqual({

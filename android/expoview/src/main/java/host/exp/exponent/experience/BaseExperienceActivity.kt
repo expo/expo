@@ -6,7 +6,6 @@ import android.content.res.Configuration
 import android.os.Bundle
 import com.facebook.drawee.backends.pipeline.Fresco
 import de.greenrobot.event.EventBus
-import host.exp.exponent.Constants
 import host.exp.exponent.RNObject
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.kernel.*
@@ -136,7 +135,7 @@ abstract class BaseExperienceActivity : MultipleVersionReactNativeActivity() {
       if (errorQueue.isEmpty()) {
         return@runOnUiThread
       }
-      val (isFatal, errorMessage) = sendErrorsToErrorActivity()
+      val (isFatal, errorMessage, errorHeader) = sendErrorsToErrorActivity()
       if (!shouldShowErrorScreen(errorMessage)) {
         return@runOnUiThread
       }
@@ -144,11 +143,6 @@ abstract class BaseExperienceActivity : MultipleVersionReactNativeActivity() {
         return@runOnUiThread
       }
 
-      // we don't ever want to show any Expo UI in a production standalone app
-      // so hard crash in this case
-      if (Constants.isStandaloneApp() && !isDebugModeEnabled) {
-        throw RuntimeException("Expo encountered a fatal error: " + errorMessage.developerErrorMessage())
-      }
       if (!isDebugModeEnabled) {
         removeAllViewsFromContainer()
         reactInstanceManager.assign(null)
@@ -162,6 +156,7 @@ abstract class BaseExperienceActivity : MultipleVersionReactNativeActivity() {
       onError(intent)
       intent.apply {
         putExtra(ErrorActivity.DEBUG_MODE_KEY, isDebugModeEnabled)
+        putExtra(ErrorActivity.ERROR_HEADER_KEY, errorHeader)
         putExtra(ErrorActivity.USER_ERROR_MESSAGE_KEY, errorMessage.userErrorMessage())
         putExtra(
           ErrorActivity.DEVELOPER_ERROR_MESSAGE_KEY,
@@ -199,9 +194,10 @@ abstract class BaseExperienceActivity : MultipleVersionReactNativeActivity() {
       // Otherwise onResume will consumeErrorQueue
     }
 
-    private fun sendErrorsToErrorActivity(): Pair<Boolean, ExponentErrorMessage> {
+    private fun sendErrorsToErrorActivity(): Triple<Boolean, ExponentErrorMessage, String?> {
       var isFatal = false
       var errorMessage = developerErrorMessage("")
+      var errorHeader: String? = null
       synchronized(errorQueue) {
         while (!errorQueue.isEmpty()) {
           val error = errorQueue.remove()
@@ -209,12 +205,13 @@ abstract class BaseExperienceActivity : MultipleVersionReactNativeActivity() {
 
           // Just use the last error message for now, is there a better way to do this?
           errorMessage = error.errorMessage
+          errorHeader = error.errorHeader
           if (error.isFatal) {
             isFatal = true
           }
         }
       }
-      return Pair(isFatal, errorMessage)
+      return Triple(isFatal, errorMessage, errorHeader)
     }
   }
 }

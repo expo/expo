@@ -38,6 +38,13 @@ function _path() {
   };
   return data;
 }
+function _Paths() {
+  const data = require("./Paths");
+  _Paths = function () {
+    return data;
+  };
+  return data;
+}
 function _androidPlugins() {
   const data = require("../plugins/android-plugins");
   _androidPlugins = function () {
@@ -62,13 +69,6 @@ function _modules() {
 function _warnings() {
   const data = require("../utils/warnings");
   _warnings = function () {
-    return data;
-  };
-  return data;
-}
-function _Paths() {
-  const data = require("./Paths");
-  _Paths = function () {
     return data;
   };
   return data;
@@ -245,7 +245,7 @@ async function renamePackageOnDiskForType({
     try {
       if (_fs().default.lstatSync(filepath).isFile()) {
         let contents = _fs().default.readFileSync(filepath).toString();
-        contents = contents.replace(new RegExp(currentPackageName, 'g'), packageName);
+        contents = replacePackageName(contents, currentPackageName, packageName);
         if (['.h', '.cpp'].includes(_path().default.extname(filepath))) {
           contents = contents.replace(new RegExp(transformJavaClassDescriptor(currentPackageName).replace(/\//g, '\\'), 'g'), transformJavaClassDescriptor(packageName));
         }
@@ -280,6 +280,21 @@ async function getApplicationIdAsync(projectRoot) {
   const matchResult = buildGradle.match(/applicationId ['"](.*)['"]/);
   // TODO add fallback for legacy cases to read from AndroidManifest.xml
   return (_matchResult$ = matchResult === null || matchResult === void 0 ? void 0 : matchResult[1]) !== null && _matchResult$ !== void 0 ? _matchResult$ : null;
+}
+
+/**
+ * Replace the package name with the new package name, in the given source.
+ * This has to be limited to avoid accidentally replacing imports when the old package name overlaps.
+ */
+function replacePackageName(content, oldName, newName) {
+  const oldNameEscaped = oldName.replace(/\./g, '\\.');
+  return content
+  // Replace any quoted instances "com.old" -> "com.new"
+  .replace(new RegExp(`"${oldNameEscaped}"`, 'g'), `"${newName}"`)
+  // Replace special non-quoted instances, only when prefixed by package or namespace
+  .replace(new RegExp(`(package|namespace)(\\s+)${oldNameEscaped}`, 'g'), `$1$2${newName}`)
+  // Replace special import instances, without overlapping with other imports (trailing `.` to close it off)
+  .replace(new RegExp(`(import\\s+)${oldNameEscaped}\\.`, 'g'), `$1${newName}.`);
 }
 
 /**

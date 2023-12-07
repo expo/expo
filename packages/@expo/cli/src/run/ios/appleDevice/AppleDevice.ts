@@ -2,16 +2,17 @@ import Debug from 'debug';
 import fs from 'fs';
 import path from 'path';
 
-import { Log } from '../../../log';
-import { XcodeDeveloperDiskImagePrerequisite } from '../../../start/doctor/apple/XcodeDeveloperDiskImagePrerequisite';
-import { delayAsync } from '../../../utils/delay';
-import { CommandError } from '../../../utils/errors';
-import { installExitHooks } from '../../../utils/exit';
 import { ClientManager } from './ClientManager';
 import { IPLookupResult, OnInstallProgressCallback } from './client/InstallationProxyClient';
 import { LockdowndClient } from './client/LockdowndClient';
 import { UsbmuxdClient } from './client/UsbmuxdClient';
 import { AFC_STATUS, AFCError } from './protocol/AFCProtocol';
+import { Log } from '../../../log';
+import { XcodeDeveloperDiskImagePrerequisite } from '../../../start/doctor/apple/XcodeDeveloperDiskImagePrerequisite';
+import { xcrunAsync } from '../../../start/platforms/ios/xcrun';
+import { delayAsync } from '../../../utils/delay';
+import { CommandError } from '../../../utils/errors';
+import { installExitHooks } from '../../../utils/exit';
 
 const debug = Debug('expo:apple-device');
 
@@ -122,8 +123,13 @@ export async function runOnDevice({
     if (appInfo) {
       // launch fails with EBusy or ENotFound if you try to launch immediately after install
       await delayAsync(200);
-      const debugServerClient = await launchApp(clientManager, { appInfo, detach: !waitForApp });
-      if (waitForApp) {
+      const debugServerClient = await launchApp(clientManager, {
+        bundleId,
+        appInfo,
+        detach: !waitForApp,
+      });
+
+      if (waitForApp && debugServerClient) {
         installExitHooks(async () => {
           // causes continue() to return
           debugServerClient.halt();
@@ -181,7 +187,7 @@ async function uploadApp(
   await afcClient.uploadDirectory(appBinaryPath, destinationPath);
 }
 
-async function launchApp(
+async function launchAppWithUsbmux(
   clientManager: ClientManager,
   { appInfo, detach }: { appInfo: IPLookupResult[string]; detach?: boolean }
 ) {
@@ -216,4 +222,36 @@ async function launchApp(
     }
   }
   throw new CommandError('Unable to launch app, number of tries exceeded');
+}
+
+async function launchAppWithDeviceCtl(deviceId: string, bundleId: string) {
+  await xcrunAsync(['devicectl', 'device', 'process', 'launch', '--device', deviceId, bundleId]);
+}
+
+/**
+ * iOS 17 introduces a new protocol called RemoteXPC.
+ * This is not yet implemented, so we fallback to devicectl.
+ *
+ * @see https://github.com/doronz88/pymobiledevice3/blob/master/misc/RemoteXPC.md#process-remoted
+ */
+async function launchApp(
+  clientManager: ClientManager,
+  {
+    bundleId,
+    appInfo,
+    detach,
+  }: { bundleId: string; appInfo: IPLookupResult[string]; detach?: boolean }
+) {
+  try {
+    return await launchAppWithUsbmux(clientManager, { appInfo, detach });
+  } catch (error) {
+    debug('Failed to launch app with Usbmuxd, falling back to xcrun...', error);
+
+    // Get the device UDID and close the connection, to allow `xcrun devicectl` to connect
+    const deviceId = clientManager.device.Properties.SerialNumber;
+    clientManager.end();
+
+    // Fallback to devicectl for iOS 17 support
+    return await launchAppWithDeviceCtl(deviceId, bundleId);
+  }
 }

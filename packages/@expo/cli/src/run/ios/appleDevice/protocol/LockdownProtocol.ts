@@ -10,9 +10,9 @@ import plist from '@expo/plist';
 import Debug from 'debug';
 import { Socket } from 'net';
 
-import { CommandError } from '../../../../utils/errors';
 import type { ProtocolWriter } from './AbstractProtocol';
 import { PlistProtocolReader, ProtocolClient, ProtocolReaderFactory } from './AbstractProtocol';
+import { CommandError } from '../../../../utils/errors';
 
 const debug = Debug('expo:apple-device:protocol:lockdown');
 export const LOCKDOWN_HEADER_SIZE = 4;
@@ -51,7 +51,7 @@ export function isLockdownErrorResponse(resp: any): resp is LockdownErrorRespons
 }
 
 export class LockdownProtocolClient<
-  MessageType extends LockdownRequest | LockdownCommand = LockdownRequest
+  MessageType extends LockdownRequest | LockdownCommand = LockdownRequest,
 > extends ProtocolClient<MessageType> {
   constructor(socket: Socket) {
     super(socket, new ProtocolReaderFactory(LockdownProtocolReader), new LockdownProtocolWriter());

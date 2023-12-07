@@ -28,7 +28,6 @@ export async function registerAsync() {
     } else {
       spinner.fail(failedMessage);
     }
-    return;
   } catch (error) {
     spinner.fail(failedMessage);
     throw error;

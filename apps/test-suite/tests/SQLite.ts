@@ -1,10 +1,12 @@
-import assert from 'assert';
 import { Asset } from 'expo-asset';
 import * as FS from 'expo-file-system';
 import { Platform } from 'expo-modules-core';
 import * as SQLite from 'expo-sqlite';
 
 export const name = 'SQLite';
+
+// The version here needs to be the same as both the podspec and build.gradle for expo-sqlite
+const VERSION = '3.42.0';
 
 // TODO: Only tests successful cases, needs to test error cases like bad database name etc.
 export function test(t) {
@@ -67,6 +69,44 @@ export function test(t) {
         const { exists } = await FS.getInfoAsync(`${FS.documentDirectory}SQLite/test.db`);
         t.expect(exists).toBeTruthy();
       }
+    });
+
+    t.it(`should use specified SQLite version: ${VERSION}`, async () => {
+      const db = SQLite.openDatabase('test.db');
+
+      await new Promise((resolve, reject) => {
+        db.transaction(
+          (tx) => {
+            tx.executeSql('SELECT sqlite_version()', [], (_, results) => {
+              const queryVersion = results.rows._array[0]['sqlite_version()'];
+              t.expect(queryVersion).toEqual(VERSION);
+            });
+          },
+          reject,
+          () => {
+            resolve(null);
+          }
+        );
+      });
+    });
+
+    t.it(`unixepoch() is supported`, async () => {
+      const db = SQLite.openDatabase('test.db');
+
+      await new Promise((resolve, reject) => {
+        db.transaction(
+          (tx) => {
+            tx.executeSql('SELECT unixepoch()', [], (_, results) => {
+              const epoch = results.rows._array[0]['unixepoch()'];
+              t.expect(epoch).toBeTruthy();
+            });
+          },
+          reject,
+          () => {
+            resolve(null);
+          }
+        );
+      });
     });
 
     if (Platform.OS !== 'web') {
@@ -315,6 +355,83 @@ export function test(t) {
       });
     }
 
+    t.it('should support the `RETURNING` clause using raw queries', async () => {
+      const db = SQLite.openDatabase('test.db');
+      await new Promise((resolve, reject) => {
+        db.transaction(
+          (tx) => {
+            const nop = () => {};
+            const onError = (_, error) => {
+              reject(error);
+              return false;
+            };
+
+            tx.executeSql('DROP TABLE IF EXISTS customers;', [], nop, onError);
+            tx.executeSql(
+              'CREATE TABLE customers (id PRIMARY KEY NOT NULL, name VARCHAR(255),email VARCHAR(255));',
+              [],
+              nop,
+              onError
+            );
+          },
+          reject,
+          () => {
+            resolve(null);
+          }
+        );
+      });
+
+      db.execRawQuery(
+        [
+          {
+            // Unsupprted on Android using the `exec` function
+            sql: "INSERT INTO customers (id, name, email) VALUES (1, 'John Doe', 'john@example.com') RETURNING name, email;",
+            args: [],
+          },
+        ],
+        false,
+        (tx, results) => {
+          // @ts-expect-error
+          t.expect(results.rows[0].email).toBe('john@example.com');
+          // @ts-expect-error
+          t.expect(results.rows[0].name).toBe('John Doe');
+        }
+      );
+
+      db.execRawQuery(
+        [
+          {
+            sql: "UPDATE customers SET name='Jane Doe', email='jane@example.com' WHERE id=1 RETURNING name, email;",
+            args: [],
+          },
+        ],
+        false,
+        (tx, results) => {
+          // @ts-expect-error
+          t.expect(results.rows[0].email).toBe('jane@example.com');
+          // @ts-expect-error
+          t.expect(results.rows[0].name).toBe('Jane Doe');
+        }
+      );
+
+      db.execRawQuery(
+        [
+          {
+            // Unsupprted on Android using the `exec` function
+            sql: 'DELETE from customers WHERE id=1 RETURNING name, email;',
+            args: [],
+          },
+        ],
+        false,
+        (tx, results) => {
+          // @ts-expect-error
+          t.expect(results.rows[0].email).toBe('jane@example.com');
+          // @ts-expect-error
+          t.expect(results.rows[0].name).toBe('Jane Doe');
+        }
+      );
+    });
+
     t.it('should return correct rowsAffected value', async () => {
       const db = SQLite.openDatabase('test.db');
       await new Promise((resolve, reject) => {
@@ -551,23 +668,9 @@ export function test(t) {
         await db.transactionAsync(async (tx) => {
           await tx.executeSqlAsync('INSERT INTO Users (name) VALUES (?)', [userName]);
           const result = await tx.executeSqlAsync('SELECT * FROM Users LIMIT 1');
-          assert(!isResultSetError(result));
           const currentUser = result.rows[0].name;
           t.expect(currentUser).toEqual('Tim Duncan');
         });
-      });
-
-      t.it('should load crsqlite extension correctly', async () => {
-        const db = SQLite.openDatabase('test.db');
-        await db.execAsync([{ sql: 'DROP TABLE IF EXISTS foo;', args: [] }], false);
-        await db.execAsync([{ sql: 'create table foo (a primary key, b);', args: [] }], false);
-        await db.execAsync([{ sql: 'select crsql_as_crr("foo");', args: [] }], false);
-        await db.execAsync([{ sql: 'insert into foo (a,b) values (1,2);', args: [] }], false);
-        const result = await db.execAsync(
-          [{ sql: 'select * from crsql_changes;', args: [] }],
-          false
-        );
-        console.log('ooxx r', JSON.stringify(result, false, 2));
       });
 
       t.it('should support Promise.all', async () => {
@@ -590,7 +693,6 @@ export function test(t) {
           ]);
 
           const result = await tx.executeSqlAsync('SELECT COUNT(*) FROM Users');
-          assert(!isResultSetError(result));
           const recordCount = result.rows[0]['COUNT(*)'];
           t.expect(recordCount).toEqual(3);
         });
@@ -603,10 +705,16 @@ export function test(t) {
 
           // create table in readOnly transaction
           await db.transactionAsync(async (tx) => {
-            const result = await tx.executeSqlAsync('DROP TABLE IF EXISTS Users;', []);
-            assert(isResultSetError(result));
-            t.expect(result.error).toBeDefined();
-            t.expect(result.error.message).toContain('could not prepare ');
+            let error: Error | null = null;
+            try {
+              await tx.executeSqlAsync('DROP TABLE IF EXISTS Users;', []);
+            } catch (e: unknown) {
+              if (e instanceof Error) {
+                error = e;
+              }
+            }
+            t.expect(error).toBeDefined();
+            t.expect(error.message).toContain('could not prepare ');
           }, true);
         }
       );
@@ -627,7 +735,6 @@ export function test(t) {
         });
         await db.transactionAsync(async (tx) => {
           const result = await tx.executeSqlAsync('SELECT COUNT(*) FROM Users');
-          assert(!isResultSetError(result));
           const recordCount = result.rows[0]['COUNT(*)'];
           t.expect(recordCount).toEqual(1);
         }, true);
@@ -637,13 +744,12 @@ export function test(t) {
             await tx.executeSqlAsync('INSERT INTO Users (name) VALUES (?)', ['bbb']);
             await tx.executeSqlAsync('INSERT INTO Users (name) VALUES (?)', ['ccc']);
             // exeuting invalid sql statement will throw an exception
-            await tx.executeSqlAsync(undefined);
+            await tx.executeSqlAsync(null);
           })
         );
 
         await db.transactionAsync(async (tx) => {
           const result = await tx.executeSqlAsync('SELECT COUNT(*) FROM Users');
-          assert(!isResultSetError(result));
           const recordCount = result.rows[0]['COUNT(*)'];
           t.expect(recordCount).toEqual(1);
         }, true);
@@ -659,7 +765,6 @@ export function test(t) {
           );
           // a result-returning pragma
           let result = await tx.executeSqlAsync('PRAGMA table_info(SomeTable);', []);
-          assert(!isResultSetError(result));
           t.expect(result.rows.length).toEqual(2);
           t.expect(result.rows[0].name).toEqual('id');
           t.expect(result.rows[1].name).toEqual('name');
@@ -668,17 +773,10 @@ export function test(t) {
           // a setter/getter pragma
           await tx.executeSqlAsync('PRAGMA user_version = 123;', []);
           result = await tx.executeSqlAsync('PRAGMA user_version;', []);
-          assert(!isResultSetError(result));
           t.expect(result.rows.length).toEqual(1);
           t.expect(result.rows[0].user_version).toEqual(123);
         });
       });
     }); // t.describe('SQLiteAsync')
   }
-}
-
-function isResultSetError(
-  result: SQLite.ResultSet | SQLite.ResultSetError
-): result is SQLite.ResultSetError {
-  return 'error' in result;
 }

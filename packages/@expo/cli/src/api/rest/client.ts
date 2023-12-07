@@ -3,18 +3,17 @@ import { JSONValue } from '@expo/json-file';
 import fetchInstance from 'node-fetch';
 import path from 'path';
 
-import { env } from '../../utils/env';
-import { CommandError } from '../../utils/errors';
-import { getExpoApiBaseUrl } from '../endpoint';
-import { disableNetwork } from '../settings';
-import UserSettings from '../user/UserSettings';
-import { FileSystemCache } from './cache/FileSystemCache';
 import { wrapFetchWithCache } from './cache/wrapFetchWithCache';
 import { FetchLike } from './client.types';
 import { wrapFetchWithBaseUrl } from './wrapFetchWithBaseUrl';
 import { wrapFetchWithOffline } from './wrapFetchWithOffline';
 import { wrapFetchWithProgress } from './wrapFetchWithProgress';
 import { wrapFetchWithProxy } from './wrapFetchWithProxy';
+import { env } from '../../utils/env';
+import { CommandError } from '../../utils/errors';
+import { getExpoApiBaseUrl } from '../endpoint';
+import { disableNetwork } from '../settings';
+import UserSettings from '../user/UserSettings';
 
 export class ApiV2Error extends Error {
   readonly name = 'ApiV2Error';
@@ -134,6 +133,9 @@ export function createCachedFetch({
   if (skipCache || env.EXPO_BETA || env.EXPO_NO_CACHE) {
     return fetch;
   }
+
+  const { FileSystemCache } =
+    require('./cache/FileSystemCache') as typeof import('./cache/FileSystemCache');
 
   return wrapFetchWithCache(
     fetch,

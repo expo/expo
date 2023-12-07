@@ -1,9 +1,6 @@
-import { Platform } from 'expo-modules-core';
-import qs from 'qs';
-
 const getDevServer = () => {
   // Disable for SSR
-  if (!Platform.isDOMAvailable) {
+  if (typeof window === 'undefined') {
     return {
       bundleLoadedFromServer: true,
       fullBundleUrl: '',
@@ -21,15 +18,11 @@ const getDevServer = () => {
         return document.currentScript.src;
       }
 
-      const url = window.location.toString();
-      const query = qs.parse(url);
+      const bundleUrl = new URL(location.href);
 
-      return (
-        location.origin +
-        location.pathname +
-        '?' +
-        qs.stringify({ ...query, platform: Platform.OS })
-      );
+      bundleUrl.searchParams.set('platform', 'web');
+
+      return bundleUrl.toString();
     },
     url: location.origin + location.pathname,
   };

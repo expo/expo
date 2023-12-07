@@ -22,7 +22,6 @@ beforeAll(async () => {
   process.env.FORCE_COLOR = '0';
   process.env.CI = '1';
   process.env._EXPO_E2E_USE_PATH_ALIASES = '1';
-  delete process.env.EXPO_WEB_OUTPUT_MODE;
 });
 
 afterAll(() => {
@@ -59,13 +58,13 @@ it('runs `npx expo export --help`', async () => {
 
       Options
         <dir>                      Directory of the Expo project. Default: Current working directory
-        --dev                      Configure static files for developing locally using a non-https server
         --output-dir <dir>         The directory to export the static files to. Default: dist
-        --max-workers <number>     Maximum number of tasks to allow the bundler to spawn
-        --dump-assetmap            Dump the asset map for further processing
-        --dump-sourcemap           Dump the source map for debugging the JS bundle
-        -p, --platform <platform>  Options: android, ios, web, all. Default: all
+        --dev                      Configure static files for developing locally using a non-https server
         --no-minify                Prevent minifying source
+        --max-workers <number>     Maximum number of tasks to allow the bundler to spawn
+        --dump-assetmap            Emit an asset map for further processing
+        -p, --platform <platform>  Options: android, ios, web, all. Default: all
+        -s, --source-maps          Emit JavaScript source maps
         -c, --clear                Clear the bundler cache
         -h, --help                 Usage info
     "
@@ -81,6 +80,10 @@ describe('server', () => {
       // `npx expo export`
       await execa('node', [bin, 'export', '--dump-sourcemap', '--dump-assetmap'], {
         cwd: projectRoot,
+        env: {
+          NODE_ENV: 'production',
+          EXPO_USE_FAST_RESOLVER: 'false',
+        },
       });
 
       const outputDir = path.join(projectRoot, 'dist');
@@ -116,7 +119,7 @@ describe('server', () => {
                 path: 'assets/3858f62230ac3c915f300c664312c63f',
               },
             ],
-            bundle: expect.stringMatching(/bundles\/android-.*\.hbc/),
+            bundle: expect.stringMatching(/_expo\/static\/js\/android\/AppEntry-.*\.hbc/),
           },
           ios: {
             assets: [
@@ -133,24 +136,7 @@ describe('server', () => {
                 path: 'assets/2f334f6c7ca5b2a504bdf8acdee104f3',
               },
             ],
-            bundle: expect.stringMatching(/bundles\/ios-.*\.hbc/),
-          },
-          web: {
-            assets: [
-              {
-                ext: 'png',
-                path: 'assets/fb960eb5e4eb49ec8786c7f6c4a57ce2',
-              },
-              {
-                ext: 'png',
-                path: 'assets/9ce7db807e4147e00df372d053c154c2',
-              },
-              {
-                ext: 'ttf',
-                path: 'assets/3858f62230ac3c915f300c664312c63f',
-              },
-            ],
-            bundle: expect.stringMatching(/bundles\/web-.*\.js/),
+            bundle: expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-.*\.hbc/),
           },
         },
         version: 0,
@@ -201,6 +187,12 @@ describe('server', () => {
 
       // If this changes then everything else probably changed as well.
       expect(files).toEqual([
+        expect.stringMatching(/_expo\/static\/js\/android\/AppEntry-[\w\d]+\.hbc/),
+        expect.stringMatching(/_expo\/static\/js\/android\/AppEntry-[\w\d]+\.hbc\.map/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.hbc/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.hbc\.map/),
+        expect.stringMatching(/_expo\/static\/js\/web\/AppEntry-[\w\d]+\.js/),
+        expect.stringMatching(/_expo\/static\/js\/web\/AppEntry-[\w\d]+\.js\.map/),
         'assetmap.json',
         'assets/2f334f6c7ca5b2a504bdf8acdee104f3',
         'assets/3858f62230ac3c915f300c664312c63f',
@@ -210,104 +202,13 @@ describe('server', () => {
         'assets/assets/icon@2x.png',
 
         'assets/fb960eb5e4eb49ec8786c7f6c4a57ce2',
-        expect.stringMatching(/bundles\/android-[\w\d]+\.hbc/),
-        expect.stringMatching(/bundles\/android-[\w\d]+\.map/),
-        expect.stringMatching(/bundles\/ios-[\w\d]+\.hbc/),
-        expect.stringMatching(/bundles\/ios-[\w\d]+\.map/),
-        expect.stringMatching(/bundles\/web-[\w\d]+\.js/),
-        expect.stringMatching(/bundles\/web-[\w\d]+\.map/),
         'debug.html',
-        'drawable-mdpi/assets_icon.png',
-        'drawable-xhdpi/assets_icon.png',
         'favicon.ico',
         'index.html',
         'metadata.json',
-        'raw/assets_font.ttf',
       ]);
     },
     // Could take 45s depending on how fast npm installs
     120 * 1000
-  );
-
-  xit(
-    'runs `npx expo export -p web` for static rendering',
-    async () => {
-      const projectRoot = await setupTestProjectAsync('export-router', 'with-router', '48.0.0');
-      await execa('node', [bin, 'export', '-p', 'web'], {
-        cwd: projectRoot,
-        env: {
-          EXPO_WEB_OUTPUT_MODE: 'static',
-        },
-      });
-
-      const outputDir = path.join(projectRoot, 'dist');
-      // List output files with sizes for snapshotting.
-      // This is to make sure that any changes to the output are intentional.
-      // Posix path formatting is used to make paths the same across OSes.
-      const files = klawSync(outputDir)
-        .map((entry) => {
-          if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-            return null;
-          }
-          return path.posix.relative(outputDir, entry.path);
-        })
-        .filter(Boolean);
-
-      const metadata = await JsonFile.readAsync(path.resolve(outputDir, 'metadata.json'));
-
-      expect(metadata).toEqual({
-        bundler: 'metro',
-        fileMetadata: {
-          web: {
-            assets: expect.anything(),
-            bundle: expect.stringMatching(/bundles\/web-.*\.js/),
-          },
-        },
-        version: 0,
-      });
-
-      // If this changes then everything else probably changed as well.
-      expect(files).toEqual([
-        '[...404].html',
-        '_sitemap.html',
-        'about.html',
-        'assets/35ba0eaec5a4f5ed12ca16fabeae451d',
-        'assets/369745d4a4a6fa62fa0ed495f89aa964',
-        'assets/4f355ba1efca4b9c0e7a6271af047f61',
-        'assets/5223c8d9b0d08b82a5670fb5f71faf78',
-        'assets/52dec48a970c0a4eed4119cd1252ab09',
-        'assets/5b50965d3dfbc518fe50ce36c314a6ec',
-        'assets/817aca47ff3cea63020753d336e628a4',
-        'assets/b2de8e638d92e0f719fa92fa4085e02a',
-        'assets/cbbeac683d803ac27cefb817787d2bfa',
-        'assets/e62addcde857ebdb7342e6b9f1095e97',
-        expect.stringMatching(/bundles\/web-[\w\d]+\.js/),
-        'favicon.ico',
-        'index.html',
-        'metadata.json',
-      ]);
-
-      const about = await fs.readFile(path.join(outputDir, 'about.html'), 'utf8');
-
-      // Route-specific head tags
-      expect(about).toContain(`<title data-rh="true">About | Website</title>`);
-
-      // Nested head tags from layout route
-      expect(about).toContain('<meta data-rh="true" name="fake" content="bar"/>');
-
-      // Root element
-      expect(about).toContain('<div id="root">');
-      // Content of the page
-      expect(about).toContain('data-testid="content">About</div>');
-
-      // <script src="/bundles/web-c91ecb663cfce9b9e90e28d253e72e0a.js" defer>
-      const sanitizedAbout = about.replace(
-        /<script src="\/bundles\/.*" defer>/g,
-        '<script src="/bundles/[mock].js" defer>'
-      );
-      expect(sanitizedAbout).toMatchSnapshot();
-    },
-    // Could take 45s depending on how fast npm installs
-    240 * 1000
   );
 });

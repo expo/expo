@@ -11,7 +11,7 @@ type PlatformTagProps = Omit<TagProps, 'name'> & {
   platform: PlatformName;
 };
 
-export const PlatformTag = ({ platform, type }: PlatformTagProps) => {
+export const PlatformTag = ({ platform, type, className }: PlatformTagProps) => {
   const platformName = getPlatformName(platform);
 
   return (
@@ -22,7 +22,8 @@ export const PlatformTag = ({ platform, type }: PlatformTagProps) => {
           platformName === 'ios' ||
           platformName === 'web' ||
           platformName === 'expo') &&
-          TAG_CLASSES[platformName]
+          TAG_CLASSES[platformName],
+        className
       )}>
       {type !== 'toc' && <PlatformIcon platform={platformName} />}
       <span css={labelStyle}>{formatName(platform)}</span>

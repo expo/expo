@@ -1,3 +1,29 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.LogBoxInspectorSourceMapStatus = void 0;
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -5,22 +31,22 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import React, { useEffect, useState } from 'react';
-import { Animated, Easing, StyleSheet, Text } from 'react-native';
-import { LogBoxButton } from '../UI/LogBoxButton';
-import * as LogBoxStyle from '../UI/LogBoxStyle';
-export function LogBoxInspectorSourceMapStatus(props) {
-    const [state, setState] = useState({
+const react_1 = __importStar(require("react"));
+const react_native_1 = require("react-native");
+const LogBoxButton_1 = require("../UI/LogBoxButton");
+const LogBoxStyle = __importStar(require("../UI/LogBoxStyle"));
+function LogBoxInspectorSourceMapStatus(props) {
+    const [state, setState] = (0, react_1.useState)({
         animation: null,
         rotate: null,
     });
-    useEffect(() => {
+    (0, react_1.useEffect)(() => {
         if (props.status === 'PENDING') {
             if (state.animation == null) {
-                const animated = new Animated.Value(0);
-                const animation = Animated.loop(Animated.timing(animated, {
+                const animated = new react_native_1.Animated.Value(0);
+                const animation = react_native_1.Animated.loop(react_native_1.Animated.timing(animated, {
                     duration: 2000,
-                    easing: Easing.linear,
+                    easing: react_native_1.Easing.linear,
                     toValue: 1,
                     useNativeDriver: true,
                 }));
@@ -64,19 +90,20 @@ export function LogBoxInspectorSourceMapStatus(props) {
     if (props.status === 'COMPLETE' || image == null) {
         return null;
     }
-    return (React.createElement(LogBoxButton, { backgroundColor: {
+    return (react_1.default.createElement(LogBoxButton_1.LogBoxButton, { backgroundColor: {
             default: 'transparent',
             pressed: LogBoxStyle.getBackgroundColor(1),
         }, hitSlop: { bottom: 8, left: 8, right: 8, top: 8 }, onPress: props.onPress, style: styles.root },
-        React.createElement(Animated.Image, { source: image, tintColor: color ?? LogBoxStyle.getTextColor(0.4), style: [
+        react_1.default.createElement(react_native_1.Animated.Image, { source: image, tintColor: color ?? LogBoxStyle.getTextColor(0.4), style: [
                 styles.image,
                 state.rotate == null || props.status !== 'PENDING'
                     ? null
                     : { transform: [{ rotate: state.rotate }] },
             ] }),
-        React.createElement(Text, { style: [styles.text, { color }] }, "Source Map")));
+        react_1.default.createElement(react_native_1.Text, { style: [styles.text, { color }] }, "Source Map")));
 }
-const styles = StyleSheet.create({
+exports.LogBoxInspectorSourceMapStatus = LogBoxInspectorSourceMapStatus;
+const styles = react_native_1.StyleSheet.create({
     root: {
         alignItems: 'center',
         borderRadius: 12,

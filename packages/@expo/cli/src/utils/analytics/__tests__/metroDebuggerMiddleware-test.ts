@@ -23,7 +23,7 @@ const req = (options: { url: string; userAgent?: string; origin?: string }) =>
       'user-agent': options.userAgent,
       origin: options.origin,
     },
-  } as Parameters<Middleware>[0]);
+  }) as Parameters<Middleware>[0];
 
 describe(findDebugTool, () => {
   it('returns flipper from user agent', () => {

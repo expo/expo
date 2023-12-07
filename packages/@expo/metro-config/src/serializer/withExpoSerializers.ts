@@ -5,19 +5,27 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
-import { MixedOutput } from 'metro';
-import { InputConfigT, SerializerConfigT } from 'metro-config';
-import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
+import { MetroConfig, Module, ReadOnlyGraph } from 'metro';
 import bundleToString from 'metro/src/lib/bundleToString';
+import { ConfigT, InputConfigT } from 'metro-config';
 
-import { env } from '../env';
-import { environmentVariableSerializerPlugin } from './environmentVariableSerializerPlugin';
-import { fileNameFromContents, getCssSerialAssets } from './getCssDeps';
+import {
+  environmentVariableSerializerPlugin,
+  serverPreludeSerializerPlugin,
+} from './environmentVariableSerializerPlugin';
+import { ExpoSerializerOptions, baseJSBundle } from './fork/baseJSBundle';
+import { graphToSerialAssetsAsync } from './serializeChunks';
 import { SerialAsset } from './serializerAssets';
+import { env } from '../env';
 
-export type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
+export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 
-export type SerializerParameters = Parameters<Serializer>;
+export type SerializerParameters = [
+  string,
+  readonly Module[],
+  ReadOnlyGraph,
+  ExpoSerializerOptions,
+];
 
 // A serializer that processes the input and returns a modified version.
 // Unlike a serializer, these can be chained together.
@@ -25,6 +33,7 @@ export type SerializerPlugin = (...props: SerializerParameters) => SerializerPar
 
 export function withExpoSerializers(config: InputConfigT): InputConfigT {
   const processors: SerializerPlugin[] = [];
+  processors.push(serverPreludeSerializerPlugin);
   if (!env.EXPO_NO_CLIENT_ENV_VARS) {
     processors.push(environmentVariableSerializerPlugin);
   }
@@ -44,12 +53,19 @@ export function withSerializerPlugins(
     ...config,
     serializer: {
       ...config.serializer,
-      customSerializer: createSerializerFromSerialProcessors(processors, originalSerializer),
+      customSerializer: createSerializerFromSerialProcessors(
+        config,
+        processors,
+        originalSerializer
+      ),
     },
   };
 }
 
-function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serializer {
+function getDefaultSerializer(
+  config: MetroConfig,
+  fallbackSerializer?: Serializer | null
+): Serializer {
   const defaultSerializer =
     fallbackSerializer ??
     (async (...params: SerializerParameters) => {
@@ -60,56 +76,72 @@ function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serialize
   return async (
     ...props: SerializerParameters
   ): Promise<string | { code: string; map: string }> => {
-    const [, , graph, options] = props;
-    const jsCode = await defaultSerializer(...props);
+    const [, , , options] = props;
 
-    if (!options.sourceUrl) {
-      return jsCode;
-    }
-    const sourceUrl = isJscSafeUrl(options.sourceUrl)
-      ? toNormalUrl(options.sourceUrl)
-      : options.sourceUrl;
-    const url = new URL(sourceUrl, 'https://expo.dev');
-    if (
-      url.searchParams.get('platform') !== 'web' ||
-      url.searchParams.get('serializer.output') !== 'static'
-    ) {
-      // Default behavior if `serializer.output=static` is not present in the URL.
-      return jsCode;
-    }
+    const customSerializerOptions = options.serializerOptions;
 
-    const cssDeps = getCssSerialAssets<MixedOutput>(graph.dependencies, {
-      projectRoot: options.projectRoot,
-      processModuleFilter: options.processModuleFilter,
-    });
+    // Custom options can only be passed outside of the dev server, meaning
+    // we don't need to stringify the results at the end, i.e. this is `npx expo export` or `npx expo export:embed`.
+    const supportsNonSerialReturn = !!customSerializerOptions?.output;
 
-    let jsAsset: SerialAsset | undefined;
+    const serializerOptions = (() => {
+      if (customSerializerOptions) {
+        return {
+          includeBytecode: customSerializerOptions.includeBytecode,
+          outputMode: customSerializerOptions.output,
+          includeSourceMaps: customSerializerOptions.includeSourceMaps,
+        };
+      }
+      if (options.sourceUrl) {
+        const sourceUrl = isJscSafeUrl(options.sourceUrl)
+          ? toNormalUrl(options.sourceUrl)
+          : options.sourceUrl;
 
-    if (jsCode) {
-      const stringContents = typeof jsCode === 'string' ? jsCode : jsCode.code;
-      jsAsset = {
-        filename: options.dev
-          ? 'index.js'
-          : `_expo/static/js/web/${fileNameFromContents({
-              filepath: url.pathname,
-              src: stringContents,
-            })}.js`,
-        originFilename: 'index.js',
-        type: 'js',
-        metadata: {},
-        source: stringContents,
-      };
+        const url = new URL(sourceUrl, 'https://expo.dev');
+
+        return {
+          outputMode: url.searchParams.get('serializer.output'),
+          includeSourceMaps: url.searchParams.get('serializer.map') === 'true',
+          includeBytecode: url.searchParams.get('serializer.bytecode') === 'true',
+        };
+      }
+      return null;
+    })();
+
+    if (serializerOptions?.outputMode !== 'static') {
+      return defaultSerializer(...props);
     }
 
-    return JSON.stringify([jsAsset, ...cssDeps]);
+    // Mutate the serializer options with the parsed options.
+    options.serializerOptions = {
+      ...options.serializerOptions,
+      ...serializerOptions,
+    };
+
+    const assets = await graphToSerialAssetsAsync(
+      config,
+      {
+        includeSourceMaps: !!serializerOptions.includeSourceMaps,
+        includeBytecode: !!serializerOptions.includeBytecode,
+      },
+      ...props
+    );
+
+    if (supportsNonSerialReturn) {
+      // @ts-expect-error: this is future proofing for adding assets to the output as well.
+      return assets;
+    }
+
+    return JSON.stringify(assets);
   };
 }
 
 export function createSerializerFromSerialProcessors(
+  config: MetroConfig,
   processors: (SerializerPlugin | undefined)[],
   originalSerializer?: Serializer | null
 ): Serializer {
-  const finalSerializer = getDefaultSerializer(originalSerializer);
+  const finalSerializer = getDefaultSerializer(config, originalSerializer);
   return (...props: SerializerParameters): ReturnType<Serializer> => {
     for (const processor of processors) {
       if (processor) {

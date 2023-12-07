@@ -11,7 +11,7 @@ public enum CheckAutomaticallyConfig: Int {
   case WifiOnly = 1
   case Never = 2
   case ErrorRecoveryOnly = 3
-  var asString: String {
+  public var asString: String {
     switch self {
     case .Always:
       return "ALWAYS"
@@ -28,6 +28,8 @@ public enum CheckAutomaticallyConfig: Int {
 @objc(EXUpdatesConfigError)
 public enum UpdatesConfigError: Int, Error {
   case ExpoUpdatesConfigPlistError
+  case ExpoUpdatesConfigMissingURLError
+  case ExpoUpdatesMissingRuntimeVersionError
 }
 
 /**
@@ -69,12 +71,11 @@ public final class UpdatesConfig: NSObject {
   public static let EXUpdatesConfigCheckOnLaunchValueErrorRecoveryOnly = "ERROR_RECOVERY_ONLY"
   public static let EXUpdatesConfigCheckOnLaunchValueNever = "NEVER"
 
-  private static let ReleaseChannelDefaultValue = "default"
+  public static let ReleaseChannelDefaultValue = "default"
 
-  public let isEnabled: Bool
   public let expectsSignedManifest: Bool
-  public let scopeKey: String?
-  public let updateUrl: URL?
+  public let scopeKey: String
+  public let updateUrl: URL
   public let requestHeaders: [String: String]
   public let releaseChannel: String
   public let launchWaitMs: Int
@@ -85,26 +86,26 @@ public final class UpdatesConfig: NSObject {
   public let enableExpoUpdatesProtocolV0CompatibilityMode: Bool
 
   public let sdkVersion: String?
-  public let runtimeVersion: String?
+  public let runtimeVersionRaw: String?
+  public let runtimeVersionRealized: String
 
   public let hasEmbeddedUpdate: Bool
 
   internal required init(
-    isEnabled: Bool,
     expectsSignedManifest: Bool,
-    scopeKey: String?,
-    updateUrl: URL?,
+    scopeKey: String,
+    updateUrl: URL,
     requestHeaders: [String: String],
     releaseChannel: String,
     launchWaitMs: Int,
     checkOnLaunch: CheckAutomaticallyConfig,
     codeSigningConfiguration: CodeSigningConfiguration?,
     sdkVersion: String?,
-    runtimeVersion: String?,
+    runtimeVersionRaw: String?,
+    runtimeVersionRealized: String,
     hasEmbeddedUpdate: Bool,
     enableExpoUpdatesProtocolV0CompatibilityMode: Bool
   ) {
-    self.isEnabled = isEnabled
     self.expectsSignedManifest = expectsSignedManifest
     self.scopeKey = scopeKey
     self.updateUrl = updateUrl
@@ -114,23 +115,17 @@ public final class UpdatesConfig: NSObject {
     self.checkOnLaunch = checkOnLaunch
     self.codeSigningConfiguration = codeSigningConfiguration
     self.sdkVersion = sdkVersion
-    self.runtimeVersion = runtimeVersion
+    self.runtimeVersionRaw = runtimeVersionRaw
+    self.runtimeVersionRealized = runtimeVersionRealized
     self.hasEmbeddedUpdate = hasEmbeddedUpdate
     self.enableExpoUpdatesProtocolV0CompatibilityMode = enableExpoUpdatesProtocolV0CompatibilityMode
   }
 
-  public func isMissingRuntimeVersion() -> Bool {
-    return (runtimeVersion?.isEmpty ?? true) && (sdkVersion?.isEmpty ?? true)
-  }
-
-  public static func configWithExpoPlist(mergingOtherDictionary: [String: Any]?) throws -> UpdatesConfig {
-    guard let configPath = Bundle.main.path(forResource: PlistName, ofType: "plist") else {
+  private static func configDictionaryWithExpoPlist(mergingOtherDictionary: [String: Any]?) throws -> [String: Any] {
+    guard let configPlistPath = Bundle.main.path(forResource: PlistName, ofType: "plist") else {
       throw UpdatesConfigError.ExpoUpdatesConfigPlistError
     }
-    return try configWithExpoPlist(configPlistPath: configPath, mergingOtherDictionary: mergingOtherDictionary)
-  }
 
-  public static func configWithExpoPlist(configPlistPath: String, mergingOtherDictionary: [String: Any]?) throws -> UpdatesConfig {
     // swiftlint:disable:next legacy_objc_type
     guard let configNSDictionary = NSDictionary(contentsOfFile: configPlistPath) as? [String: Any] else {
       throw UpdatesConfigError.ExpoUpdatesConfigPlistError
@@ -141,21 +136,54 @@ public final class UpdatesConfig: NSObject {
       dictionary = dictionary.merging(mergingOtherDictionary, uniquingKeysWith: { _, new in new })
     }
 
-    return UpdatesConfig.config(fromDictionary: dictionary)
+    return dictionary
   }
 
-  public static func config(fromDictionary config: [String: Any]) -> UpdatesConfig {
-    let isEnabled = config.optionalValue(forKey: EXUpdatesConfigEnabledKey) ?? false
-    let expectsSignedManifest = config.optionalValue(forKey: EXUpdatesConfigExpectsSignedManifestKey) ?? false
-    let updateUrl: URL? = config.optionalValue(forKey: EXUpdatesConfigUpdateUrlKey).let { it in
-      URL(string: it)
+  public static func isMissingRuntimeVersion(mergingOtherDictionary: [String: Any]?) -> Bool {
+    guard let dictionary = try? configDictionaryWithExpoPlist(mergingOtherDictionary: mergingOtherDictionary) else {
+      return true
     }
 
-    var scopeKey: String? = config.optionalValue(forKey: EXUpdatesConfigScopeKeyKey)
-    if scopeKey == nil,
-      let updateUrl = updateUrl {
-      scopeKey = UpdatesConfig.normalizedURLOrigin(url: updateUrl)
+    let sdkVersion: String? = dictionary.optionalValue(forKey: EXUpdatesConfigSDKVersionKey)
+    let runtimeVersion: String? = dictionary.optionalValue(forKey: EXUpdatesConfigRuntimeVersionKey)
+
+    return (sdkVersion?.isEmpty ?? true) && (runtimeVersion?.isEmpty ?? true)
+  }
+
+  public static func canCreateValidConfiguration(mergingOtherDictionary: [String: Any]?) -> Bool {
+    guard let dictionary = try? configDictionaryWithExpoPlist(mergingOtherDictionary: mergingOtherDictionary) else {
+      return false
     }
+
+    guard dictionary.optionalValue(forKey: EXUpdatesConfigEnabledKey) ?? true else {
+      return false
+    }
+
+    let updateUrl: URL? = dictionary.optionalValue(forKey: EXUpdatesConfigUpdateUrlKey).let { it in
+      URL(string: it)
+    }
+    guard updateUrl != nil else {
+      return false
+    }
+
+    if isMissingRuntimeVersion(mergingOtherDictionary: mergingOtherDictionary) {
+      return false
+    }
+
+    return true
+  }
+
+  public static func configWithExpoPlist(mergingOtherDictionary: [String: Any]?) throws -> UpdatesConfig {
+    let dictionary = try configDictionaryWithExpoPlist(mergingOtherDictionary: mergingOtherDictionary)
+    return try UpdatesConfig.config(fromDictionary: dictionary)
+  }
+
+  public static func config(fromDictionary config: [String: Any]) throws -> UpdatesConfig {
+    let expectsSignedManifest = config.optionalValue(forKey: EXUpdatesConfigExpectsSignedManifestKey) ?? false
+    guard let updateUrl = URL(string: config.requiredValue(forKey: EXUpdatesConfigUpdateUrlKey)) else {
+      throw UpdatesConfigError.ExpoUpdatesConfigMissingURLError
+    }
+    let scopeKey = config.optionalValue(forKey: EXUpdatesConfigScopeKeyKey) ?? UpdatesConfig.normalizedURLOrigin(url: updateUrl)
 
     let requestHeaders: [String: String] = config.optionalValue(forKey: EXUpdatesConfigRequestHeadersKey) ?? [:]
     let releaseChannel = config.optionalValue(forKey: EXUpdatesConfigReleaseChannelKey) ?? ReleaseChannelDefaultValue
@@ -189,7 +217,12 @@ public final class UpdatesConfig: NSObject {
     } ?? CheckAutomaticallyConfig.Always
 
     let sdkVersion: String? = config.optionalValue(forKey: EXUpdatesConfigSDKVersionKey)
-    let runtimeVersion: String? = config.optionalValue(forKey: EXUpdatesConfigRuntimeVersionKey)
+    let runtimeVersionRaw: String? = config.optionalValue(forKey: EXUpdatesConfigRuntimeVersionKey)
+
+    guard let runtimeVersionRealized = runtimeVersionRaw ?? sdkVersion else {
+      throw UpdatesConfigError.ExpoUpdatesMissingRuntimeVersionError
+    }
+
     let hasEmbeddedUpdate = config.optionalValue(forKey: EXUpdatesConfigHasEmbeddedUpdateKey) ?? true
 
     let codeSigningConfiguration = config.optionalValue(forKey: EXUpdatesConfigCodeSigningCertificateKey).let { (certificateString: String) in
@@ -210,7 +243,6 @@ public final class UpdatesConfig: NSObject {
     let enableExpoUpdatesProtocolV0CompatibilityMode = config.optionalValue(forKey: EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityModeKey) ?? false
 
     return UpdatesConfig(
-      isEnabled: isEnabled,
       expectsSignedManifest: expectsSignedManifest,
       scopeKey: scopeKey,
       updateUrl: updateUrl,
@@ -220,7 +252,8 @@ public final class UpdatesConfig: NSObject {
       checkOnLaunch: checkOnLaunch,
       codeSigningConfiguration: codeSigningConfiguration,
       sdkVersion: sdkVersion,
-      runtimeVersion: runtimeVersion,
+      runtimeVersionRaw: runtimeVersionRaw,
+      runtimeVersionRealized: runtimeVersionRealized,
       hasEmbeddedUpdate: hasEmbeddedUpdate,
       enableExpoUpdatesProtocolV0CompatibilityMode: enableExpoUpdatesProtocolV0CompatibilityMode
     )

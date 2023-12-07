@@ -100,7 +100,7 @@ data class SourceMap(
           parsedUri = computeUri(context)
         }
 
-        // Override the size for local assets. This ensures that
+        // Override the size for local assets (apart from SVGs). This ensures that
         // resizeMode "center" displays the image in the correct size.
         if (width != 0 && height != 0) {
           override((width * scale).toInt(), (height * scale).toInt())

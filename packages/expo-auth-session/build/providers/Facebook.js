@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import { Platform } from 'react-native';
+import { applyRequiredScopes } from './ProviderUtils';
 import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
 import { AuthRequest, makeRedirectUri, ResponseType, } from '../AuthSession';
 import { generateHexStringAsync } from '../PKCE';
-import { applyRequiredScopes } from './ProviderUtils';
 const settings = {
     windowFeatures: { width: 700, height: 600 },
     // These are required for Firebase to work properly which is a reasonable default.

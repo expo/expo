@@ -3,7 +3,6 @@
 // swiftlint:disable legacy_objc_type
 
 import Foundation
-import ASN1Decoder
 import CommonCrypto
 
 internal typealias VerifySignatureSuccessBlock = (_ success: Bool) -> Void

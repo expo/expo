@@ -12,7 +12,7 @@ export function matchDeepDynamicRouteName(name: string): string | undefined {
 
 /** Match `(page)` -> `page` */
 export function matchGroupName(name: string): string | undefined {
-  return name.match(/^\(([^/]+?)\)$/)?.[1];
+  return name.match(/^(?:[^\\(\\)])*?\(([^\\/]+)\).*?$/)?.[1];
 }
 
 export function getNameFromFilePath(name: string): string {
@@ -31,7 +31,7 @@ export function getContextKey(name: string): string {
 
 /** Remove `.js`, `.ts`, `.jsx`, `.tsx` */
 export function removeSupportedExtensions(name: string): string {
-  return name.replace(/\.[jt]sx?$/g, '');
+  return name.replace(/(\+api)?\.[jt]sx?$/g, '');
 }
 
 // Remove any amount of `./` and `../` from the start of the string

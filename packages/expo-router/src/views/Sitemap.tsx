@@ -1,9 +1,18 @@
-import { Image, Pressable, StyleSheet, Text, View } from '@bacons/react-views';
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import React from 'react';
-import { ScrollView, Platform, StatusBar, useWindowDimensions } from 'react-native';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  Platform,
+  StatusBar,
+  useWindowDimensions,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { Pressable } from './Pressable';
 import { RouteNode } from '../Route';
 import { useExpoRouter } from '../global-state/router-store';
 import { router } from '../imperative-api';
@@ -229,7 +238,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    transitionDuration: '100ms',
+    ...Platform.select({
+      web: {
+        transitionDuration: '100ms',
+      },
+    }),
   },
   filename: { color: 'white', fontSize: 20, marginLeft: 12 },
   virtual: { textAlign: 'right', color: 'white' },

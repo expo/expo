@@ -31,17 +31,21 @@ A React component that blurs everything underneath the view. Common usage of thi
 <SnackInline label='Basic BlurView usage' dependencies={['expo-blur']}>
 
 ```jsx
-import React from 'react';
-import { Image, Text, StyleSheet, View } from 'react-native';
+import { Text, StyleSheet, View, SafeAreaView } from 'react-native';
 import { BlurView } from 'expo-blur';
-
-const uri = 'https://s3.amazonaws.com/exp-icon-assets/ExpoEmptyManifest_192.png';
 
 export default function App() {
   const text = 'Hello, my container is blurring contents underneath!';
   return (
-    <View style={styles.container}>
-      <Image style={[StyleSheet.absoluteFill, styles.image]} source={{ uri }} />
+    <SafeAreaView style={styles.container}>
+      <View style={styles.background}>
+        {[...Array(20).keys()].map((i) => (
+          <View
+            key={`box-${i}`}
+            style={[styles.box, i % 2 === 1 ? styles.boxOdd : styles.boxEven]}
+          />
+        ))}
+      </View>
       <BlurView intensity={100} style={styles.blurContainer}>
         <Text style={styles.text}>{text}</Text>
       </BlurView>
@@ -51,7 +55,7 @@ export default function App() {
       <BlurView intensity={90} tint="dark" style={styles.blurContainer}>
         <Text style={[styles.text, { color: '#fff' }]}>{text}</Text>
       </BlurView>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -60,15 +64,29 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  image: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
-  },
   blurContainer: {
     flex: 1,
     padding: 20,
+    margin: 16,
+    textAlign: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
+    borderRadius: 20,
+  },
+  background: {
+    flex: 1,
+    flexWrap: 'wrap',
+    ...StyleSheet.absoluteFill,
+  },
+  box: {
+    width: '25%',
+    height: '20%',
+  },
+  boxEven: {
+    backgroundColor: 'orangered',
+  },
+  boxOdd: {
+    backgroundColor: 'gold',
   },
   text: {
     fontSize: 24,
@@ -87,3 +105,7 @@ import { BlurView } from 'expo-blur';
 ```
 
 <APISection packageName="expo-blur" />
+
+## Using `borderRadius` with `BlurView`
+
+When using `BlurView` on Android and iOS, the `borderRadius` property is not applied when provided explicitly. To fix this, you can use the `overflow: 'hidden'` style since `BlurView` inherits props from `<View>`. See [Usage](#usage) for an example.

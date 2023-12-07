@@ -11,9 +11,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.nfc.NfcAdapter
-import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.widget.Toast
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory
@@ -30,9 +28,11 @@ import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.facebook.react.shell.MainReactPackage
 import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
+import expo.modules.jsonutils.require
 import expo.modules.notifications.service.NotificationsService.Companion.getNotificationResponseFromOpenIntent
 import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
 import expo.modules.manifests.core.Manifest
+import expo.modules.manifests.core.NewManifest
 import host.exp.exponent.*
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderCallback
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderStatus
@@ -159,9 +159,6 @@ class Kernel : KernelInterface() {
 
   // Don't call this until a loading screen is up, since it has to do some work on the main thread.
   fun startJSKernel(activity: Activity?) {
-    if (Constants.isStandaloneApp()) {
-      return
-    }
     activityContext = activity
     SoLoader.init(context, false)
     synchronized(this) {
@@ -171,11 +168,11 @@ class Kernel : KernelInterface() {
       isStarted = true
     }
     hasError = false
-    if (!exponentSharedPreferences.shouldUseInternetKernel()) {
+    if (!exponentSharedPreferences.shouldUseEmbeddedKernel()) {
       try {
         // Make sure we can get the manifest successfully. This can fail in dev mode
         // if the kernel packager is not running.
-        exponentManifest.getKernelManifest()
+        exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest
       } catch (e: Throwable) {
         Exponent.instance
           .runOnUiThread { // Hack to make this show up for a while. Can't use an Alert because LauncherActivity has a transparent theme. This should only be seen by internal developers.
@@ -196,36 +193,8 @@ class Kernel : KernelInterface() {
     // On first run use the embedded kernel js but fire off a request for the new js in the background.
     val bundleUrlToLoad =
       bundleUrl + (if (ExpoViewBuildConfig.DEBUG) "" else "?versionName=" + ExpoViewKernel.instance.versionName)
-    if (exponentSharedPreferences.shouldUseInternetKernel() &&
-      exponentSharedPreferences.getBoolean(ExponentSharedPreferences.ExponentSharedPreferencesKey.IS_FIRST_KERNEL_RUN_KEY)
-    ) {
+    if (exponentSharedPreferences.shouldUseEmbeddedKernel()) {
       kernelBundleListener().onBundleLoaded(Constants.EMBEDDED_KERNEL_PATH)
-
-      // Now preload bundle for next run
-      Handler().postDelayed(
-        {
-          Exponent.instance.loadJSBundle(
-            null,
-            bundleUrlToLoad,
-            KernelConstants.KERNEL_BUNDLE_ID,
-            RNObject.UNVERSIONED,
-            object : BundleListener {
-              override fun onBundleLoaded(localBundlePath: String) {
-                exponentSharedPreferences.setBoolean(
-                  ExponentSharedPreferences.ExponentSharedPreferencesKey.IS_FIRST_KERNEL_RUN_KEY,
-                  false
-                )
-                EXL.d(TAG, "Successfully preloaded kernel bundle")
-              }
-
-              override fun onError(e: Exception) {
-                EXL.e(TAG, "Error preloading kernel bundle: $e")
-              }
-            }
-          )
-        },
-        KernelConstants.DELAY_TO_PRELOAD_KERNEL_JS
-      )
     } else {
       var shouldNotUseKernelCache =
         exponentSharedPreferences.getBoolean(ExponentSharedPreferences.ExponentSharedPreferencesKey.SHOULD_NOT_USE_KERNEL_CACHE)
@@ -239,6 +208,7 @@ class Kernel : KernelInterface() {
       Exponent.instance.loadJSBundle(
         null,
         bundleUrlToLoad,
+        bundleAssetRequestHeaders,
         KernelConstants.KERNEL_BUNDLE_ID,
         RNObject.UNVERSIONED,
         kernelBundleListener(),
@@ -267,7 +237,7 @@ class Kernel : KernelInterface() {
             .addPackage(
               ExponentPackage.kernelExponentPackage(
                 context,
-                exponentManifest.getKernelManifest(),
+                exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest,
                 HomeActivity.homeExpoPackages(),
                 HomeActivity.Companion,
                 initialURL
@@ -275,11 +245,11 @@ class Kernel : KernelInterface() {
             )
             .addPackage(
               ExpoTurboPackage.kernelExpoTurboPackage(
-                exponentManifest.getKernelManifest(), initialURL
+                exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest, initialURL
               )
             )
             .setInitialLifecycleState(LifecycleState.RESUMED)
-          if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE && exponentManifest.getKernelManifest().isDevelopmentMode()) {
+          if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE && exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.isDevelopmentMode()) {
             Exponent.enableDeveloperSupport(
               kernelDebuggerHost, kernelMainModuleName,
               RNObject.wrap(builder)
@@ -313,22 +283,39 @@ class Kernel : KernelInterface() {
   }
 
   private val kernelDebuggerHost: String
-    get() = exponentManifest.getKernelManifest().getDebuggerHost()
+    get() = exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getDebuggerHost()
   private val kernelMainModuleName: String
-    get() = exponentManifest.getKernelManifest().getMainModuleName()
+    get() = exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getMainModuleName()
   private val bundleUrl: String?
     get() {
       return try {
-        exponentManifest.getKernelManifest().getBundleURL()
+        exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getBundleURL()
       } catch (e: JSONException) {
         KernelProvider.instance.handleError(e)
         null
       }
     }
+  private val bundleAssetRequestHeaders: JSONObject
+    get() {
+      return try {
+        val manifestAndAssetRequestHeaders = exponentManifest.getKernelManifestAndAssetRequestHeaders()
+        val manifest = manifestAndAssetRequestHeaders.manifest
+        if (manifest is NewManifest) {
+          val bundleKey = manifest.getLaunchAsset().getString("key")
+          val map: Map<String, JSONObject> = manifestAndAssetRequestHeaders.assetRequestHeaders.let { it.keys().asSequence().associateWith { key -> it.require(key) } } ?: mapOf()
+          map[bundleKey] ?: JSONObject()
+        } else {
+          JSONObject()
+        }
+      } catch (e: JSONException) {
+        KernelProvider.instance.handleError(e)
+        JSONObject()
+      }
+    }
   private val kernelRevisionId: String?
     get() {
       return try {
-        exponentManifest.getKernelManifest().getRevisionId()
+        exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getRevisionId()
       } catch (e: JSONException) {
         KernelProvider.instance.handleError(e)
         null
@@ -369,7 +356,7 @@ class Kernel : KernelInterface() {
     }
   private val jsExecutorFactory: JavaScriptExecutorFactory
     get() {
-      val manifest = exponentManifest.getKernelManifest()
+      val manifest = exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest
       val appName = manifest.getName() ?: ""
       val deviceName = AndroidInfoHelpers.getFriendlyDeviceName()
 
@@ -511,19 +498,9 @@ class Kernel : KernelInterface() {
       }
     }
     if (uri != null && shouldOpenUrl(uri)) {
-      if (Constants.INITIAL_URL == null) {
-        // We got an "exp://", "exps://", "http://", or "https://" app link
-        openExperience(ExperienceOptions(uri.toString(), uri.toString(), null))
-        return
-      } else {
-        // We got a custom scheme link
-        // TODO: we still might want to parse this if we're running a different experience inside a
-        // shell app. For example, we are running Brighten in the List shell and go to Twitter login.
-        // We might want to set the return uri to thelistapp://exp.host/@brighten/brighten+deeplink
-        // But we also can't break thelistapp:// deep links that look like thelistapp://l/listid
-        openExperience(ExperienceOptions(Constants.INITIAL_URL, uri.toString(), null))
-        return
-      }
+      // We got an "exp://", "exps://", "http://", or "https://" app link
+      openExperience(ExperienceOptions(uri.toString(), uri.toString(), null))
+      return
     }
     openDefaultUrl()
   }
@@ -555,8 +532,7 @@ class Kernel : KernelInterface() {
   }
 
   private fun openDefaultUrl() {
-    val defaultUrl =
-      if (Constants.INITIAL_URL == null) KernelConstants.HOME_MANIFEST_URL else Constants.INITIAL_URL
+    val defaultUrl = KernelConstants.HOME_MANIFEST_URL
     openExperience(ExperienceOptions(defaultUrl, defaultUrl, null))
   }
 
@@ -651,10 +627,7 @@ class Kernel : KernelInterface() {
       openHomeActivity()
       return
     }
-    if (Constants.isStandaloneApp()) {
-      openShellAppActivity(forceCache)
-      return
-    }
+
     ErrorActivity.clearErrorList()
     val tasks: List<AppTask> = experienceActivityTasks
     var existingTask: AppTask? = run {
@@ -877,11 +850,9 @@ class Kernel : KernelInterface() {
           task.finishAndRemoveTask()
           return
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-          if (taskInfo.numActivities == 1 && (taskInfo.topActivity!!.className == LauncherActivity::class.java.name)) {
-            task.finishAndRemoveTask()
-            return
-          }
+        if (taskInfo.numActivities == 1 && (taskInfo.topActivity!!.className == LauncherActivity::class.java.name)) {
+          task.finishAndRemoveTask()
+          return
         }
       }
     } catch (e: NoSuchFieldException) {
@@ -945,7 +916,7 @@ class Kernel : KernelInterface() {
   }
 
   override fun handleError(exception: Exception) {
-    handleReactNativeError(ExceptionUtils.exceptionToErrorMessage(exception), null, -1, true)
+    handleReactNativeError(ExceptionUtils.exceptionToErrorMessage(exception), null, -1, true, ExceptionUtils.exceptionToErrorHeader(exception))
   }
 
   // TODO: probably need to call this from other places.
@@ -1092,7 +1063,8 @@ class Kernel : KernelInterface() {
       errorMessage: ExponentErrorMessage,
       detailsUnversioned: Any?,
       exceptionId: Int?,
-      isFatal: Boolean
+      isFatal: Boolean,
+      errorHeader: String? = null,
     ) {
       val stackList = ArrayList<Bundle>()
       if (detailsUnversioned != null) {
@@ -1132,7 +1104,7 @@ class Kernel : KernelInterface() {
       val stack = stackList.toTypedArray()
       BaseExperienceActivity.addError(
         ExponentError(
-          errorMessage, stack,
+          errorMessage, errorHeader, stack,
           getExceptionId(exceptionId), isFatal
         )
       )

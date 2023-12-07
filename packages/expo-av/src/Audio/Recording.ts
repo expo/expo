@@ -8,12 +8,6 @@ import {
   Platform,
 } from 'expo-modules-core';
 
-import {
-  _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS,
-  AVPlaybackStatus,
-  AVPlaybackStatusToSet,
-} from '../AV';
-import ExponentAV from '../ExponentAV';
 import { isAudioEnabled, throwIfAudioIsDisabled } from './AudioAvailability';
 import {
   RecordingInput,
@@ -23,6 +17,12 @@ import {
 } from './Recording.types';
 import { RecordingOptionsPresets } from './RecordingConstants';
 import { Sound, SoundObject } from './Sound';
+import {
+  _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS,
+  AVPlaybackStatus,
+  AVPlaybackStatusToSet,
+} from '../AV';
+import ExponentAV from '../ExponentAV';
 
 let _recorderExists: boolean = false;
 const eventEmitter = Platform.OS === 'android' ? new EventEmitter(ExponentAV) : null;
@@ -59,6 +59,8 @@ export const usePermissions = createPermissionHook({
 
 // @needsAudit
 /**
+ * > **warning** **Warning**: Experimental for web.
+ *
  * This class represents an audio recording. After creating an instance of this class, `prepareToRecordAsync`
  * must be called in order to record audio. Once recording is finished, call `stopAndUnloadAsync`. Note that
  * only one recorder is allowed to exist in the state between `prepareToRecordAsync` and `stopAndUnloadAsync`

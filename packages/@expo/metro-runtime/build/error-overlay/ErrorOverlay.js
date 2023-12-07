@@ -1,3 +1,29 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ErrorOverlayBodyContents = exports.ErrorOverlayBody = exports.LogBoxInspector = exports.LogBoxInspectorContainer = void 0;
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -5,16 +31,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import React, { useCallback, useEffect, useState } from 'react';
-import { Keyboard, ScrollView, View, StyleSheet } from 'react-native';
-import * as LogBoxData from './Data/LogBoxData';
-import { useLogs, useSelectedLog } from './Data/LogContext';
-import * as LogBoxStyle from './UI/LogBoxStyle';
-import { LogBoxInspectorCodeFrame } from './overlay/LogBoxInspectorCodeFrame';
-import { LogBoxInspectorFooter as ErrorOverlayFooter } from './overlay/LogBoxInspectorFooter';
-import { LogBoxInspectorHeader as ErrorOverlayHeader } from './overlay/LogBoxInspectorHeader';
-import { LogBoxInspectorMessageHeader } from './overlay/LogBoxInspectorMessageHeader';
-import { LogBoxInspectorStackFrames } from './overlay/LogBoxInspectorStackFrames';
+const react_1 = __importStar(require("react"));
+const react_native_1 = require("react-native");
+const LogBoxData = __importStar(require("./Data/LogBoxData"));
+const LogContext_1 = require("./Data/LogContext");
+const LogBoxStyle = __importStar(require("./UI/LogBoxStyle"));
+const LogBoxInspectorCodeFrame_1 = require("./overlay/LogBoxInspectorCodeFrame");
+const LogBoxInspectorFooter_1 = require("./overlay/LogBoxInspectorFooter");
+const LogBoxInspectorHeader_1 = require("./overlay/LogBoxInspectorHeader");
+const LogBoxInspectorMessageHeader_1 = require("./overlay/LogBoxInspectorMessageHeader");
+const LogBoxInspectorStackFrames_1 = require("./overlay/LogBoxInspectorStackFrames");
 const HEADER_TITLE_MAP = {
     warn: 'Console Warning',
     error: 'Console Error',
@@ -23,16 +49,17 @@ const HEADER_TITLE_MAP = {
     static: 'Static Rendering Error (Node.js)',
     component: 'Render Error',
 };
-export function LogBoxInspectorContainer() {
-    const { selectedLogIndex, logs } = useLogs();
+function LogBoxInspectorContainer() {
+    const { selectedLogIndex, logs } = (0, LogContext_1.useLogs)();
     const log = logs[selectedLogIndex];
     if (log == null) {
         return null;
     }
-    return React.createElement(LogBoxInspector, { log: log, selectedLogIndex: selectedLogIndex, logs: logs });
+    return react_1.default.createElement(LogBoxInspector, { log: log, selectedLogIndex: selectedLogIndex, logs: logs });
 }
-export function LogBoxInspector({ log, selectedLogIndex, logs, }) {
-    const onDismiss = useCallback(() => {
+exports.LogBoxInspectorContainer = LogBoxInspectorContainer;
+function LogBoxInspector({ log, selectedLogIndex, logs, }) {
+    const onDismiss = (0, react_1.useCallback)(() => {
         // Here we handle the cases when the log is dismissed and it
         // was either the last log, or when the current index
         // is now outside the bounds of the log array.
@@ -47,19 +74,19 @@ export function LogBoxInspector({ log, selectedLogIndex, logs, }) {
             LogBoxData.dismiss(logsArray[selectedLogIndex]);
         }
     }, [selectedLogIndex]);
-    const onMinimize = useCallback(() => {
+    const onMinimize = (0, react_1.useCallback)(() => {
         LogBoxData.setSelectedLog(-1);
     }, []);
-    const onChangeSelectedIndex = useCallback((index) => {
+    const onChangeSelectedIndex = (0, react_1.useCallback)((index) => {
         LogBoxData.setSelectedLog(index);
     }, []);
-    useEffect(() => {
+    (0, react_1.useEffect)(() => {
         if (log) {
             LogBoxData.symbolicateLogNow('stack', log);
             LogBoxData.symbolicateLogNow('component', log);
         }
     }, [log]);
-    useEffect(() => {
+    (0, react_1.useEffect)(() => {
         // Optimistically symbolicate the last and next logs.
         if (logs.length > 1) {
             const selected = selectedLogIndex;
@@ -72,41 +99,46 @@ export function LogBoxInspector({ log, selectedLogIndex, logs, }) {
             }
         }
     }, [logs, selectedLogIndex]);
-    useEffect(() => {
-        Keyboard.dismiss();
+    (0, react_1.useEffect)(() => {
+        react_native_1.Keyboard.dismiss();
     }, []);
-    const _handleRetry = useCallback((type) => {
+    const _handleRetry = (0, react_1.useCallback)((type) => {
         LogBoxData.retrySymbolicateLogNow(type, log);
     }, [log]);
-    return (React.createElement(View, { style: styles.container },
-        React.createElement(ErrorOverlayHeader, { onSelectIndex: onChangeSelectedIndex, level: log.level }),
-        React.createElement(ErrorOverlayBody, { onRetry: _handleRetry }),
-        React.createElement(ErrorOverlayFooter, { onDismiss: onDismiss, onMinimize: onMinimize })));
+    return (react_1.default.createElement(react_native_1.View, { style: styles.container },
+        react_1.default.createElement(LogBoxInspectorHeader_1.LogBoxInspectorHeader, { onSelectIndex: onChangeSelectedIndex, level: log.level }),
+        react_1.default.createElement(ErrorOverlayBody, { onRetry: _handleRetry }),
+        react_1.default.createElement(LogBoxInspectorFooter_1.LogBoxInspectorFooter, { onDismiss: onDismiss, onMinimize: onMinimize })));
 }
-export function ErrorOverlayBody({ onRetry }) {
-    const log = useSelectedLog();
-    return React.createElement(ErrorOverlayBodyContents, { log: log, onRetry: onRetry });
+exports.LogBoxInspector = LogBoxInspector;
+function ErrorOverlayBody({ onRetry }) {
+    const log = (0, LogContext_1.useSelectedLog)();
+    return react_1.default.createElement(ErrorOverlayBodyContents, { log: log, onRetry: onRetry });
 }
-export function ErrorOverlayBodyContents({ log, onRetry, }) {
-    const [collapsed, setCollapsed] = useState(true);
-    useEffect(() => {
+exports.ErrorOverlayBody = ErrorOverlayBody;
+function ErrorOverlayBodyContents({ log, onRetry, }) {
+    const [collapsed, setCollapsed] = (0, react_1.useState)(true);
+    (0, react_1.useEffect)(() => {
         setCollapsed(true);
     }, [log]);
     const headerTitle = HEADER_TITLE_MAP[log.isComponentError ? 'component' : log.level] ?? log.type;
-    const header = (React.createElement(LogBoxInspectorMessageHeader, { collapsed: collapsed, onPress: () => setCollapsed(!collapsed), message: log.message, level: log.level, title: headerTitle }));
-    return (React.createElement(React.Fragment, null,
+    const header = (react_1.default.createElement(LogBoxInspectorMessageHeader_1.LogBoxInspectorMessageHeader, { collapsed: collapsed, onPress: () => setCollapsed(!collapsed), message: log.message, level: log.level, title: headerTitle }));
+    // Hide useless React stack.
+    const needsStack = !log.message.content.match(/(Expected server HTML to contain a matching|Text content did not match\.)/);
+    return (react_1.default.createElement(react_1.default.Fragment, null,
         collapsed && header,
-        React.createElement(ScrollView, { style: styles.scrollBody },
+        react_1.default.createElement(react_native_1.ScrollView, { style: styles.scrollBody },
             !collapsed && header,
-            React.createElement(LogBoxInspectorCodeFrame, { codeFrame: log.codeFrame }),
-            React.createElement(LogBoxInspectorStackFrames, { type: "stack", 
+            react_1.default.createElement(LogBoxInspectorCodeFrame_1.LogBoxInspectorCodeFrame, { codeFrame: log.codeFrame }),
+            needsStack && (react_1.default.createElement(LogBoxInspectorStackFrames_1.LogBoxInspectorStackFrames, { type: "stack", 
                 // eslint-disable-next-line react/jsx-no-bind
-                onRetry: onRetry.bind(onRetry, 'stack') }),
-            !!log?.componentStack?.length && (React.createElement(LogBoxInspectorStackFrames, { type: "component", 
+                onRetry: onRetry.bind(onRetry, 'stack') })),
+            !!log?.componentStack?.length && (react_1.default.createElement(LogBoxInspectorStackFrames_1.LogBoxInspectorStackFrames, { type: "component", 
                 // eslint-disable-next-line react/jsx-no-bind
                 onRetry: onRetry.bind(onRetry, 'component') })))));
 }
-const styles = StyleSheet.create({
+exports.ErrorOverlayBodyContents = ErrorOverlayBodyContents;
+const styles = react_native_1.StyleSheet.create({
     scrollBody: {
         backgroundColor: LogBoxStyle.getBackgroundColor(1),
         flex: 1,
@@ -122,5 +154,5 @@ const styles = StyleSheet.create({
         position: 'fixed',
     },
 });
-export default LogBoxData.withSubscription(LogBoxInspectorContainer);
+exports.default = LogBoxData.withSubscription(LogBoxInspectorContainer);
 //# sourceMappingURL=ErrorOverlay.js.map

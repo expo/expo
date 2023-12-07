@@ -3,29 +3,31 @@ title: Hosting Updates on Your Servers
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
-import { FileTree } from "~/ui/components/FileTree";
+import { FileTree } from '~/ui/components/FileTree';
 
 > This doc was archived in August 2022 and will not receive any further updates. Please use EAS Update instead. [Learn more](/eas-update/introduction)
 
-Normally, when updates are enabled, your app will fetch updates comprising JavaScript bundles and assets from Expo’s CDN. However, there will be situations when you will want to host your JS bundles and assets on your own servers. For example, updates are slow or unusable in countries that have blocked Expo’s CDN providers on AWS and Google Cloud. In these cases, you can host your updates on your own servers to better suit your use cases.
+Normally, when updates are enabled, your app will fetch updates comprising JavaScript bundles and assets from Expo's CDN. However, there will be situations when you will want to host your JS bundles and assets on your own servers. For example, updates are slow or unusable in countries that have blocked Expo's CDN providers on AWS and Google Cloud. In these cases, you can host your updates on your own servers to better suit your use cases.
 
 For simplicity, the rest of this article will refer to hosting an update for the Android platform, but you could swap out Android for iOS at any point and everything would still be true.
 
 ## Exporting the update
 
-First, you’ll need to export all the static files of your update so they can be served from your CDN. To do this, run `expo export --public-url <server-endpoint>` in your project directory and it will output all your app’s static files to a directory named `dist`. In this guide, we will use `https://expo.github.io/self-hosting-example` as our example server endpoint. Asset and bundle files are named by the MD5 hash of their content. Your output directory should look something like this now:
+First, you'll need to export all the static files of your update so they can be served from your CDN. To do this, run `expo export --public-url <server-endpoint>` in your project directory and it will output all your app's static files to a directory named `dist`. In this guide, we will use `https://expo.github.io/self-hosting-example` as our example server endpoint. Asset and bundle files are named by the MD5 hash of their content. Your output directory should look something like this now:
 
-<FileTree files={[
-  './android-index.json',
-  './ios-index.json',
-  './assets/1eccbc4c41d49fd81840aef3eaabe862',
-  './bundles/android-01ee6e3ab3e8c16a4d926c91808d5320.js',
-  './bundles/ios-ee8206cc754d3f7aa9123b7f909d94ea.js',
-]} />
+<FileTree
+  files={[
+    './android-index.json',
+    './ios-index.json',
+    './assets/1eccbc4c41d49fd81840aef3eaabe862',
+    './bundles/android-01ee6e3ab3e8c16a4d926c91808d5320.js',
+    './bundles/ios-ee8206cc754d3f7aa9123b7f909d94ea.js',
+  ]}
+/>
 
 ## Hosting your static files
 
-Once you've exported your update's static files, you can host the contents on your own server. For example, in your `dist` output directory, an easy way to host your own files is to push the contents to GitHub. You can enable [GitHub Pages](https://pages.github.com/) to make your app available at a base URL like https://username.github.io/project-name. To host your files on GitHub, you'd do something like this:
+Once you have exported your update's static files, you can host the contents on your own server. For example, in your `dist` output directory, an easy way to host your own files is to push the contents to GitHub. You can enable [GitHub Pages](https://pages.github.com/) to make your app available at a base URL like https://username.github.io/project-name. To host your files on GitHub, you'd do something like this:
 
 <Terminal
   cmd={[
@@ -42,7 +44,7 @@ Once you've exported your update's static files, you can host the contents on yo
 
 To setup a QR code to view your hosted update, or if you want to host your files locally, follow the instructions below in the 'Loading QR Code/URL in Development' section.
 
-### HTTP Headers
+### HTTP headers
 
 On some hosting services such as [AWS](https://aws.amazon.com/) and [Firebase](http://firebase.google.com/), you'll need to explicitly set the header `"Content-Type"` of JavaScript files as `"application/javascript"` so that [updates](./configuring-updates) work correctly. Otherwise [Updates.checkForUpdateAsync()](/versions/latest/sdk/updates/#updatescheckforupdateasync) will fail with the error _"Failed to fetch new update"_.
 
@@ -128,11 +130,11 @@ Here is an example URL from a remote server: [https://expo.github.io/self-hostin
 
 Here is an example URL from localhost: `http://localhost:8000/android-index.json`
 
-## Advanced Topics
+## Advanced topics
 
 ### Debugging
 
-When Expo CLI bundles your update, minification is always enabled. In order to see the original source code of your update for debugging purposes, you can generate source maps. Here is an example workflow:
+When Expo CLI bundles your update, minification is always enabled. To see the original source code of your update for debugging purposes, you can generate source maps. Here is an example workflow:
 
 1. Run `expo export --dump-sourcemap --public-url <your-url>`. This will also export your bundle sourcemaps in the **bundles** directory.
 2. A **debug.html** file will also be created at the root of your output directory.
@@ -140,9 +142,9 @@ When Expo CLI bundles your update, minification is always enabled. In order to s
 
 ![Debugging Source Code](/static/images/host-your-app-debug.png)
 
-### Asset Hosting
+### Asset hosting
 
-By default, all assets are hosted from an `assets` path resolving from your `public-url` (e.g. https://expo.github.io/self-hosting-example/assets). You can override this behavior in the `assetUrlOverride` field of your `android-index.json`. All relative URL's will be resolved from the `public-url`.
+By default, all assets are hosted from an `assets` path resolving from your `public-url` (for example, https://expo.github.io/self-hosting-example/assets). You can override this behavior in the `assetUrlOverride` field of your `android-index.json`. All relative URL's will be resolved from the `public-url`.
 
 ### Special fields
 

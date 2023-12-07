@@ -6,7 +6,6 @@ typedef enum EXKernelDevManifestSource {
   kEXKernelDevManifestSourceNone,
   kEXKernelDevManifestSourceLocal,
   kEXKernelDevManifestSourcePublished,
-  kEXKernelDevManifestSourceDogfooding,
 } EXKernelDevManifestSource;
 
 @interface EXBuildConstants : NSObject
@@ -16,10 +15,9 @@ typedef enum EXKernelDevManifestSource {
 @property (nonatomic, readonly) BOOL isDevKernel;
 @property (nonatomic, readonly) NSDictionary *defaultApiKeys;
 @property (nonatomic, readonly) EXKernelDevManifestSource kernelDevManifestSource;
-@property (nonatomic, readonly) NSString *kernelManifestJsonString;
+@property (nonatomic, readonly) NSString *kernelManifestAndAssetRequestHeadersJsonString;
 @property (nonatomic, readonly) NSURL *apiServerEndpoint;
 @property (nonatomic, strong) NSString *temporarySdkVersion;
-@property (nonatomic, strong) NSString *expoKitDevelopmentUrl;
 @property (nonatomic, strong) NSString *expoRuntimeVersion;
 
 @end

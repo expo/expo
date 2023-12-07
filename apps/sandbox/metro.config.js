@@ -9,16 +9,13 @@ const path = require('path');
 
 const root = path.join(__dirname, '../..');
 
-config.watchFolders = [
-  __dirname,
-  ...['packages', 'node_modules', 'react-native-lab'].map((v) => path.join(root, v)),
-];
+config.watchFolders = [__dirname, ...['packages', 'node_modules'].map((v) => path.join(root, v))];
 
 config.resolver.blockList = [
   ...config.resolver.blockList,
 
+  /\/expo-router\/node_modules\/@react-navigation/,
   /node_modules\/@react-navigation\/native-stack\/node_modules\/@react-navigation\//,
-  /packages\/expo-router\/node_modules\/@react-navigation/,
   /node_modules\/pretty-format\/node_modules\/react-is/,
 ];
 

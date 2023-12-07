@@ -28,7 +28,7 @@ The `eas update:configure` will add two values to your project's app config.
 
 The `runtimeVersion` property guarantees compatibility between a build's native code and an update. It's necessary to set this value manually whenever you make a change to any native code in your project. Read [our doc on runtime versions](/eas-update/runtime-versions/#custom--runtimeversion) and learn how to [avoid publishing bad updates](/eas-update/runtime-versions/#avoiding-crashes-with-incompatible-updates).
 
-The `updates.url` property is the "https://u.expo.dev" domain followed by your project's ID on EAS' servers. If you go to the URL directly, you'll see an error about missing a header. You can see a manifest by adding three query parameters to the URL: `runtime-version`, `channel-name`, and `platform`. If we published an update with a runtime version of `1.0.0`, a channel of `production`, and a platform of `android`, the full URL you could visit would be similar to this:
+The `updates.url` property is the "https://u.expo.dev" domain followed by your project's ID on EAS servers. If you go to the URL directly, you'll see an error about missing a header. You can see a manifest by adding three query parameters to the URL: `runtime-version`, `channel-name`, and `platform`. If we published an update with a runtime version of `1.0.0`, a channel of `production`, and a platform of `android`, the full URL you could visit would be similar to this:
 
 ```sh
 https://u.expo.dev/your-project-id?runtime-version=1.0.0&channel-name=production&platform=android
@@ -88,7 +88,7 @@ Inside **Expo.plist**, you'll see the following additions:
 
 The `EXUpdatesURL` value should contain your project's ID.
 
-Once you've built your project into a build, the `expo-updates` library will make requests for manifests with the native configuration defined above, along with the channel specified in **eas.json**.
+Once you have built your project into a build, the `expo-updates` library will make requests for manifests with the native configuration defined above, along with the channel specified in **eas.json**.
 
 ## Configuring the channel manually
 

@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import com.facebook.react.BuildConfig;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -21,7 +22,8 @@ import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
-import com.swmansion.reanimated.Scheduler;
+import com.swmansion.reanimated.AndroidUIScheduler;
+import com.swmansion.reanimated.Utils;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +32,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 public class AnimationsManager implements ViewHierarchyObserver {
-  private WeakReference<Scheduler> mScheduler;
+  private WeakReference<AndroidUIScheduler> mWeakAndroidUIScheduler;
   private ReactContext mContext;
   private UIManagerModule mUIManager;
   private NativeMethodsHolder mNativeMethodsHolder;
@@ -54,8 +56,8 @@ public class AnimationsManager implements ViewHierarchyObserver {
     return mReanimatedNativeHierarchyManager;
   }
 
-  public void setScheduler(Scheduler scheduler) {
-    mScheduler = new WeakReference<>(scheduler);
+  public void setAndroidUIScheduler(AndroidUIScheduler androidUIScheduler) {
+    mWeakAndroidUIScheduler = new WeakReference<>(androidUIScheduler);
   }
 
   public AnimationsManager(ReactContext context, UIManagerModule uiManagerModule) {
@@ -84,7 +86,7 @@ public class AnimationsManager implements ViewHierarchyObserver {
     Integer tag = view.getId();
     mCallbacks.put(tag, callback);
 
-    if (!removeOrAnimateExitRecursive(view, true)) {
+    if (!removeOrAnimateExitRecursive(view, true, true)) {
       removeView(view, parent);
     }
   }
@@ -100,9 +102,9 @@ public class AnimationsManager implements ViewHierarchyObserver {
       return;
     }
 
-    Scheduler strongScheduler = mScheduler.get();
-    if (strongScheduler != null) {
-      strongScheduler.triggerUI();
+    AndroidUIScheduler androidUIScheduler = mWeakAndroidUIScheduler.get();
+    if (androidUIScheduler != null) {
+      androidUIScheduler.triggerUI();
     }
     int tag = view.getId();
     HashMap<String, Object> targetValues = after.toTargetMap();
@@ -177,6 +179,26 @@ public class AnimationsManager implements ViewHierarchyObserver {
     if (hasAnimationForTag(view.getId(), LayoutAnimations.Types.SHARED_ELEMENT_TRANSITION)) {
       mSharedTransitionManager.notifyAboutNewView(view);
     }
+    if (BuildConfig.DEBUG) {
+      checkDuplicateSharedTag(view);
+    }
+  }
+
+  private void checkDuplicateSharedTag(View view) {
+    int viewTag = view.getId();
+
+    ViewParent parent = view.getParent();
+    while (parent != null) {
+      if (parent.getClass().getSimpleName().equals("Screen")) {
+        break;
+      }
+      parent = (ViewParent) parent.getParent();
+    }
+
+    if (parent != null) {
+      int screenTag = ((View) parent).getId();
+      mNativeMethodsHolder.checkDuplicateSharedTag(viewTag, screenTag);
+    }
   }
 
   public void progressLayoutAnimation(
@@ -203,7 +225,7 @@ public class AnimationsManager implements ViewHierarchyObserver {
     setNewProps(newStyle, view, viewManager, parentViewManager, parent.getId(), isSharedTransition);
   }
 
-  public void endLayoutAnimation(int tag, boolean cancelled, boolean removeView) {
+  public void endLayoutAnimation(int tag, boolean removeView) {
     View view = resolveView(tag);
 
     if (view == null) {
@@ -270,7 +292,10 @@ public class AnimationsManager implements ViewHierarchyObserver {
       keys = Snapshot.currentKeysToTransform;
     }
     for (String key : keys) {
-      preparedValues.put(key, PixelUtil.toDIPFromPixel((int) values.get(key)));
+      Object value = values.get(key);
+      float pixelsValue = Utils.convertToFloat(value);
+      float dipValue = PixelUtil.toDIPFromPixel(pixelsValue);
+      preparedValues.put(key, dipValue);
     }
 
     if (addTransform) {
@@ -342,13 +367,12 @@ public class AnimationsManager implements ViewHierarchyObserver {
       view.setScaleX(matrixValues[0]);
       view.setScaleY(matrixValues[4]);
       // as far, let's support only scale and translation. Rotation maybe the future feature
-      // (http://eecs.qmul.ac.uk/~gslabaugh/publications/euler.pdf)
+      // http://eecs.qmul.ac.uk/~gslabaugh/publications/euler.pdf
 
       props.remove(Snapshot.TRANSFORM_MATRIX);
     }
 
-    updateLayout(
-        view, parentViewManager, parentTag, view.getId(), x, y, width, height, isPositionAbsolute);
+    updateLayout(view, parentViewManager, parentTag, x, y, width, height, isPositionAbsolute);
     props.remove(Snapshot.ORIGIN_X);
     props.remove(Snapshot.ORIGIN_Y);
     props.remove(Snapshot.GLOBAL_ORIGIN_X);
@@ -386,7 +410,8 @@ public class AnimationsManager implements ViewHierarchyObserver {
     } else if (value instanceof ReadableMap) {
       propMap.putMap(key, (ReadableMap) value);
     } else {
-      throw new IllegalStateException("Unknown type of animated value [Layout Animations]");
+      throw new IllegalStateException(
+          "[Reanimated] Unknown type of animated value for Layout Animations.");
     }
   }
 
@@ -394,7 +419,6 @@ public class AnimationsManager implements ViewHierarchyObserver {
       View viewToUpdate,
       ViewManager parentViewManager,
       int parentTag,
-      int tag,
       float xf,
       float yf,
       float widthf,
@@ -446,9 +470,9 @@ public class AnimationsManager implements ViewHierarchyObserver {
         parentViewManagerWithChildren = (IViewManagerWithChildren) parentViewManager;
       } else {
         throw new IllegalViewOperationException(
-            "Trying to use view with tag "
+            "[Reanimated] Trying to use view with tag "
                 + parentTag
-                + " as a parent, but its Manager doesn't implement IViewManagerWithChildren");
+                + " as a parent, but its Manager doesn't implement IViewManagerWithChildren.");
       }
       if (!parentViewManagerWithChildren.needsCustomLayoutForChildren()) {
         viewToUpdate.layout(x, y, x + width, y + height);
@@ -465,6 +489,10 @@ public class AnimationsManager implements ViewHierarchyObserver {
     }
   }
 
+  public boolean shouldAnimateExiting(int tag, boolean shouldAnimate) {
+    return mNativeMethodsHolder.shouldAnimateExiting(tag, shouldAnimate);
+  }
+
   public boolean hasAnimationForTag(int tag, int type) {
     return mNativeMethodsHolder.hasAnimation(tag, type);
   }
@@ -473,17 +501,28 @@ public class AnimationsManager implements ViewHierarchyObserver {
     return mNativeMethodsHolder != null && mNativeMethodsHolder.isLayoutAnimationEnabled();
   }
 
-  private boolean removeOrAnimateExitRecursive(View view, boolean shouldRemove) {
+  private boolean removeOrAnimateExitRecursive(
+      View view, boolean shouldRemove, boolean shouldAnimate) {
     int tag = view.getId();
     ViewManager viewManager = resolveViewManager(tag);
 
-    if (viewManager != null && viewManager.getName().equals("RNSScreenStack")) {
-      cancelAnimationsRecursive(view);
-      return false;
+    if (viewManager != null) {
+      String viewManagerName = viewManager.getName();
+      if (viewManagerName.equals("RCTModalHostView")
+          || viewManagerName.equals("RNSScreen")
+          || viewManagerName.equals("RNSScreenStack")) {
+        // don't run exiting animation when ScreenStack, Screen, or Modal are removing
+        cancelAnimationsRecursive(view);
+        return false;
+      }
     }
 
+    shouldAnimate = shouldAnimateExiting(tag, shouldAnimate);
+
     boolean hasExitAnimation =
-        hasAnimationForTag(tag, LayoutAnimations.Types.EXITING) || mExitingViews.containsKey(tag);
+        shouldAnimate
+            && (hasAnimationForTag(tag, LayoutAnimations.Types.EXITING)
+                || mExitingViews.containsKey(tag));
     boolean hasAnimatedChildren = false;
     shouldRemove = shouldRemove && !hasExitAnimation;
 
@@ -501,9 +540,9 @@ public class AnimationsManager implements ViewHierarchyObserver {
       ViewGroup viewGroup = (ViewGroup) view;
       for (int i = viewGroup.getChildCount() - 1; i >= 0; i--) {
         View child = viewGroup.getChildAt(i);
-        if (removeOrAnimateExitRecursive(child, shouldRemove)) {
+        if (removeOrAnimateExitRecursive(child, shouldRemove, shouldAnimate)) {
           hasAnimatedChildren = true;
-        } else if (shouldRemove) {
+        } else if (shouldRemove && child.getId() != -1) {
           toBeRemoved.add(child);
         }
       }
@@ -529,6 +568,13 @@ public class AnimationsManager implements ViewHierarchyObserver {
     }
 
     if (hasAnimatedChildren) {
+      if (tag == -1) {
+        // View tags are used to identify react views, therefore native-only views
+        // don't have any view tag and view.getId returns -1
+        // We shouldn't manage lifetime of non-react components.
+        cancelAnimationsRecursive(view);
+        return false;
+      }
       mAncestorsToRemove.add(tag);
     }
 
@@ -537,13 +583,6 @@ public class AnimationsManager implements ViewHierarchyObserver {
     }
 
     return true;
-  }
-
-  public void clearAnimationConfigForTag(int tag) {
-    View view = resolveView(tag);
-    if (view != null) {
-      clearAnimationConfigRecursive(view);
-    }
   }
 
   public void clearAnimationConfigRecursive(View view) {
@@ -617,7 +656,7 @@ public class AnimationsManager implements ViewHierarchyObserver {
 
   public void cancelAnimationsRecursive(View view) {
     if (mExitingViews.containsKey(view.getId())) {
-      endLayoutAnimation(view.getId(), true, true);
+      endLayoutAnimation(view.getId(), true);
     } else if (view instanceof ViewGroup && mExitingSubviewCountMap.containsKey(view.getId())) {
       cancelAnimationsInSubviews((ViewGroup) view);
     }
@@ -632,7 +671,7 @@ public class AnimationsManager implements ViewHierarchyObserver {
       }
 
       if (mExitingViews.containsKey(child.getId())) {
-        endLayoutAnimation(child.getId(), true, true);
+        endLayoutAnimation(child.getId(), true);
       } else if (child instanceof ViewGroup && mExitingSubviewCountMap.containsKey(child.getId())) {
         cancelAnimationsInSubviews((ViewGroup) child);
       }

@@ -1,20 +1,26 @@
-import { useNavigation as useUpstreamNavigation } from '@react-navigation/native';
-import React from 'react';
-import { useContextKey } from './Route';
-import { getNameFromFilePath } from './matchers';
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.resolveParentId = exports.useNavigation = void 0;
+const native_1 = require("@react-navigation/native");
+const react_1 = __importDefault(require("react"));
+const Route_1 = require("./Route");
+const matchers_1 = require("./matchers");
 /**
  * Return the navigation object for the current route.
  * @param parent Provide an absolute path like `/(root)` to the parent route or a relative path like `../../` to the parent route.
  * @returns the navigation object for the provided route.
  */
-export function useNavigation(parent) {
-    const navigation = useUpstreamNavigation();
-    const contextKey = useContextKey();
-    const normalizedParent = React.useMemo(() => {
+function useNavigation(parent) {
+    const navigation = (0, native_1.useNavigation)();
+    const contextKey = (0, Route_1.useContextKey)();
+    const normalizedParent = react_1.default.useMemo(() => {
         if (!parent) {
             return null;
         }
-        const normalized = getNameFromFilePath(parent);
+        const normalized = (0, matchers_1.getNameFromFilePath)(parent);
         if (parent.startsWith('.')) {
             return relativePaths(contextKey, parent);
         }
@@ -31,15 +37,17 @@ export function useNavigation(parent) {
     }
     return navigation;
 }
-export function resolveParentId(contextKey, parentId) {
+exports.useNavigation = useNavigation;
+function resolveParentId(contextKey, parentId) {
     if (!parentId) {
         return null;
     }
     if (parentId.startsWith('.')) {
-        return getNameFromFilePath(relativePaths(contextKey, parentId));
+        return (0, matchers_1.getNameFromFilePath)(relativePaths(contextKey, parentId));
     }
-    return getNameFromFilePath(parentId);
+    return (0, matchers_1.getNameFromFilePath)(parentId);
 }
+exports.resolveParentId = resolveParentId;
 // Resolve a path like `../` relative to a path like `/foo/bar`
 function relativePaths(from, to) {
     const fromParts = from.split('/').filter(Boolean);

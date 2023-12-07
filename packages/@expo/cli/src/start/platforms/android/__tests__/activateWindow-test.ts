@@ -2,7 +2,6 @@
 import { execAsync } from '@expo/osascript';
 import { execFileSync } from 'child_process';
 
-import { asMock } from '../../../../__tests__/asMock';
 import { activateWindowAsync } from '../activateWindow';
 
 const platform = process.platform;
@@ -31,7 +30,7 @@ it(`skips for devices`, async () => {
 
 it(`brings window to the front`, async () => {
   mockPlatform('darwin');
-  asMock(execFileSync).mockReturnValueOnce('36420' as any);
+  jest.mocked(execFileSync).mockReturnValueOnce('36420' as any);
   await activateWindowAsync({ type: 'emulator', pid: 'emulator-5554' });
   expect(execFileSync).toBeCalledTimes(1);
   expect(execAsync).toBeCalledTimes(1);
@@ -40,7 +39,7 @@ it(`brings window to the front`, async () => {
 
 it(`skips if the pid cannot be found`, async () => {
   mockPlatform('darwin');
-  asMock(execFileSync).mockReturnValueOnce('' as any);
+  jest.mocked(execFileSync).mockReturnValueOnce('' as any);
   await activateWindowAsync({ type: 'emulator', pid: 'emulator-5554' });
   expect(execFileSync).toBeCalledTimes(1);
   expect(execAsync).toBeCalledTimes(0);

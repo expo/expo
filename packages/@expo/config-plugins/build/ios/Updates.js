@@ -7,11 +7,11 @@ exports.Config = void 0;
 exports.ensureBundleReactNativePhaseContainsConfigurationScript = ensureBundleReactNativePhaseContainsConfigurationScript;
 exports.getBundleReactNativePhase = getBundleReactNativePhase;
 exports.isPlistConfigurationSet = isPlistConfigurationSet;
-exports.isPlistConfigurationSynced = isPlistConfigurationSynced;
-exports.isPlistVersionConfigurationSynced = isPlistVersionConfigurationSynced;
+exports.isPlistConfigurationSyncedAsync = isPlistConfigurationSyncedAsync;
+exports.isPlistVersionConfigurationSyncedAsync = isPlistVersionConfigurationSyncedAsync;
 exports.isShellScriptBuildPhaseConfigured = isShellScriptBuildPhaseConfigured;
-exports.setUpdatesConfig = setUpdatesConfig;
-exports.setVersionsConfig = setVersionsConfig;
+exports.setUpdatesConfigAsync = setUpdatesConfigAsync;
+exports.setVersionsConfigAsync = setVersionsConfigAsync;
 exports.withUpdates = void 0;
 function path() {
   const data = _interopRequireWildcard(require("path"));
@@ -60,25 +60,23 @@ exports.Config = Config;
   Config["CODE_SIGNING_CERTIFICATE"] = "EXUpdatesCodeSigningCertificate";
   Config["CODE_SIGNING_METADATA"] = "EXUpdatesCodeSigningMetadata";
 })(Config || (exports.Config = Config = {}));
-const withUpdates = (config, {
-  expoUsername
-}) => {
-  return (0, _iosPlugins().withExpoPlist)(config, config => {
+const withUpdates = config => {
+  return (0, _iosPlugins().withExpoPlist)(config, async config => {
     const projectRoot = config.modRequest.projectRoot;
     const expoUpdatesPackageVersion = (0, _Updates().getExpoUpdatesPackageVersion)(projectRoot);
-    config.modResults = setUpdatesConfig(projectRoot, config, config.modResults, expoUsername, expoUpdatesPackageVersion);
+    config.modResults = await setUpdatesConfigAsync(projectRoot, config, config.modResults, expoUpdatesPackageVersion);
     return config;
   });
 };
 exports.withUpdates = withUpdates;
-function setUpdatesConfig(projectRoot, config, expoPlist, username, expoUpdatesPackageVersion) {
+async function setUpdatesConfigAsync(projectRoot, config, expoPlist, expoUpdatesPackageVersion) {
   const newExpoPlist = {
     ...expoPlist,
-    [Config.ENABLED]: (0, _Updates().getUpdatesEnabled)(config, username),
+    [Config.ENABLED]: (0, _Updates().getUpdatesEnabled)(config),
     [Config.CHECK_ON_LAUNCH]: (0, _Updates().getUpdatesCheckOnLaunch)(config, expoUpdatesPackageVersion),
     [Config.LAUNCH_WAIT_MS]: (0, _Updates().getUpdatesTimeout)(config)
   };
-  const updateUrl = (0, _Updates().getUpdateUrl)(config, username);
+  const updateUrl = (0, _Updates().getUpdateUrl)(config);
   if (updateUrl) {
     newExpoPlist[Config.UPDATE_URL] = updateUrl;
   } else {
@@ -102,13 +100,13 @@ function setUpdatesConfig(projectRoot, config, expoPlist, username, expoUpdatesP
   } else {
     delete newExpoPlist[Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY];
   }
-  return setVersionsConfig(config, newExpoPlist);
+  return await setVersionsConfigAsync(projectRoot, config, newExpoPlist);
 }
-function setVersionsConfig(config, expoPlist) {
+async function setVersionsConfigAsync(projectRoot, config, expoPlist) {
   const newExpoPlist = {
     ...expoPlist
   };
-  const runtimeVersion = (0, _Updates().getRuntimeVersionNullable)(config, 'ios');
+  const runtimeVersion = await (0, _Updates().getRuntimeVersionNullableAsync)(projectRoot, config, 'ios');
   if (!runtimeVersion && expoPlist[Config.RUNTIME_VERSION]) {
     throw new Error('A runtime version is set in your Expo.plist, but is missing from your app.json/app.config.js. Please either set runtimeVersion in your app.json/app.config.js or remove EXUpdatesRuntimeVersion from your Expo.plist.');
   }
@@ -166,12 +164,12 @@ function isShellScriptBuildPhaseConfigured(projectRoot, project) {
 function isPlistConfigurationSet(expoPlist) {
   return Boolean(expoPlist.EXUpdatesURL && (expoPlist.EXUpdatesSDKVersion || expoPlist.EXUpdatesRuntimeVersion));
 }
-function isPlistConfigurationSynced(projectRoot, config, expoPlist, username) {
-  return (0, _Updates().getUpdateUrl)(config, username) === expoPlist.EXUpdatesURL && (0, _Updates().getUpdatesEnabled)(config, username) === expoPlist.EXUpdatesEnabled && (0, _Updates().getUpdatesTimeout)(config) === expoPlist.EXUpdatesLaunchWaitMs && (0, _Updates().getUpdatesCheckOnLaunch)(config) === expoPlist.EXUpdatesCheckOnLaunch && (0, _Updates().getUpdatesCodeSigningCertificate)(projectRoot, config) === expoPlist.EXUpdatesCodeSigningCertificate && (0, _Updates().getUpdatesCodeSigningMetadata)(config) === expoPlist.EXUpdatesCodeSigningMetadata && isPlistVersionConfigurationSynced(config, expoPlist);
+async function isPlistConfigurationSyncedAsync(projectRoot, config, expoPlist) {
+  return (0, _Updates().getUpdateUrl)(config) === expoPlist.EXUpdatesURL && (0, _Updates().getUpdatesEnabled)(config) === expoPlist.EXUpdatesEnabled && (0, _Updates().getUpdatesTimeout)(config) === expoPlist.EXUpdatesLaunchWaitMs && (0, _Updates().getUpdatesCheckOnLaunch)(config) === expoPlist.EXUpdatesCheckOnLaunch && (0, _Updates().getUpdatesCodeSigningCertificate)(projectRoot, config) === expoPlist.EXUpdatesCodeSigningCertificate && (0, _Updates().getUpdatesCodeSigningMetadata)(config) === expoPlist.EXUpdatesCodeSigningMetadata && (await isPlistVersionConfigurationSyncedAsync(projectRoot, config, expoPlist));
 }
-function isPlistVersionConfigurationSynced(config, expoPlist) {
+async function isPlistVersionConfigurationSyncedAsync(projectRoot, config, expoPlist) {
   var _expoPlist$EXUpdatesR, _expoPlist$EXUpdatesS;
-  const expectedRuntimeVersion = (0, _Updates().getRuntimeVersionNullable)(config, 'ios');
+  const expectedRuntimeVersion = await (0, _Updates().getRuntimeVersionNullableAsync)(projectRoot, config, 'ios');
   const expectedSdkVersion = (0, _Updates().getSDKVersion)(config);
   const currentRuntimeVersion = (_expoPlist$EXUpdatesR = expoPlist.EXUpdatesRuntimeVersion) !== null && _expoPlist$EXUpdatesR !== void 0 ? _expoPlist$EXUpdatesR : null;
   const currentSdkVersion = (_expoPlist$EXUpdatesS = expoPlist.EXUpdatesSDKVersion) !== null && _expoPlist$EXUpdatesS !== void 0 ? _expoPlist$EXUpdatesS : null;

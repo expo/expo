@@ -2,6 +2,8 @@ type ExpoObject = {
     modules: undefined | {
         [key: string]: any;
     };
+    uuidv4: () => string;
+    uuidv5: (name: string, namespace: string) => string;
 };
 declare global {
     var expo: ExpoObject | undefined;
@@ -22,5 +24,13 @@ declare global {
  * @throws Error when there is no native module with given name.
  */
 export declare function requireNativeModule<ModuleType = any>(moduleName: string): ModuleType;
+/**
+ * Imports the native module registered with the given name. The same as `requireNativeModule`,
+ * but returns `null` when the module cannot be found instead of throwing an error.
+ *
+ * @param moduleName Name of the requested native module.
+ * @returns Object representing the native module or `null` when it cannot be found.
+ */
+export declare function requireOptionalNativeModule<ModuleType = any>(moduleName: string): ModuleType | null;
 export {};
 //# sourceMappingURL=requireNativeModule.d.ts.map

@@ -9,7 +9,7 @@ export type IBBoolean = 'YES' | 'NO' | boolean;
 
 export type IBItem<
   H extends Record<string, any>,
-  B extends Record<string, any[]> = { [key: string]: any }
+  B extends Record<string, any[]> = { [key: string]: any },
 > = {
   $: H;
 } & B;

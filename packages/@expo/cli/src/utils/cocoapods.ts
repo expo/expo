@@ -5,12 +5,12 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
-import * as Log from '../log';
-import { hashForDependencyMap } from '../prebuild/updatePackageJson';
 import { ensureDirectoryAsync } from './dir';
 import { env } from './env';
 import { AbortCommandError } from './errors';
 import { logNewSection } from './ora';
+import * as Log from '../log';
+import { hashForDependencyMap } from '../prebuild/updatePackageJson';
 
 type PackageChecksums = {
   /** checksum for the `package.json` dependency object. */
@@ -110,10 +110,13 @@ export async function installCocoaPodsAsync(projectRoot: string): Promise<boolea
   }
 
   try {
-    await packageManager.installAsync({ spinner: step });
+    await packageManager.installAsync({
+      // @ts-expect-error: multiple versions in the monorepo
+      spinner: step,
+    });
     // Create cached list for later
     await hasPackageJsonDependencyListChangedAsync(projectRoot).catch(() => null);
-    step.succeed('Installed pods and initialized Xcode workspace.');
+    step.succeed('Installed CocoaPods');
     return true;
   } catch (error: any) {
     step.stopAndPersist({

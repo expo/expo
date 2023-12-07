@@ -12,9 +12,10 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.events.Event
 import com.facebook.react.uimanager.events.RCTEventEmitter
 import com.swmansion.gesturehandler.core.GestureHandler
+import com.swmansion.gesturehandler.react.eventbuilders.GestureHandlerEventDataBuilder
 
 class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>() {
-  private var extraData: WritableMap? = null
+  private var dataBuilder: GestureHandlerEventDataBuilder<*>? = null
   private var coalescingKey: Short = 0
 
   // On the new architecture, native animated expects event names prefixed with `top` instead of `on`,
@@ -26,17 +27,17 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
 
   private fun <T : GestureHandler<T>> init(
     handler: T,
-    dataExtractor: RNGestureHandlerEventDataExtractor<T>?,
+    dataBuilder: GestureHandlerEventDataBuilder<T>,
     useNativeAnimatedName: Boolean
   ) {
     super.init(handler.view!!.id)
-    extraData = createEventData(handler, dataExtractor)
-    coalescingKey = handler.eventCoalescingKey
+    this.dataBuilder = dataBuilder
     this.useTopPrefixedName = useNativeAnimatedName
+    coalescingKey = handler.eventCoalescingKey
   }
 
   override fun onDispose() {
-    extraData = null
+    dataBuilder = null
     EVENTS_POOL.release(this)
   }
 
@@ -47,7 +48,7 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
   override fun getCoalescingKey() = coalescingKey
 
   override fun dispatch(rctEventEmitter: RCTEventEmitter) {
-    rctEventEmitter.receiveEvent(viewTag, EVENT_NAME, extraData)
+    rctEventEmitter.receiveEvent(viewTag, EVENT_NAME, createEventData(dataBuilder!!))
   }
 
   companion object {
@@ -58,20 +59,17 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
 
     fun <T : GestureHandler<T>> obtain(
       handler: T,
-      dataExtractor: RNGestureHandlerEventDataExtractor<T>?,
+      dataBuilder: GestureHandlerEventDataBuilder<T>,
       useTopPrefixedName: Boolean = false
     ): RNGestureHandlerEvent =
       (EVENTS_POOL.acquire() ?: RNGestureHandlerEvent()).apply {
-        init(handler, dataExtractor, useTopPrefixedName)
+        init(handler, dataBuilder, useTopPrefixedName)
       }
 
-    fun <T : GestureHandler<T>> createEventData(
-      handler: T,
-      dataExtractor: RNGestureHandlerEventDataExtractor<T>?
+    fun createEventData(
+      dataBuilder: GestureHandlerEventDataBuilder<*>
     ): WritableMap = Arguments.createMap().apply {
-      dataExtractor?.extractEventData(handler, this)
-      putInt("handlerTag", handler.tag)
-      putInt("state", handler.state)
+      dataBuilder.buildEventData(this)
     }
   }
 }

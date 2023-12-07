@@ -1,5 +1,7 @@
-import fs from 'fs';
-import path from 'path';
+// @ts-ignore: types node
+import fs from 'node:fs';
+// @ts-ignore: types node
+import path from 'node:path';
 
 import { RequireContext } from '../types';
 
@@ -13,7 +15,7 @@ export default function requireContext(
   function readDirectory(directory: string) {
     fs.readdirSync(directory).forEach((file: string) => {
       const fullPath = path.resolve(directory, file);
-      const relativePath = `./${path.relative(base, fullPath)}`;
+      const relativePath = `./${path.relative(base, fullPath).split(path.sep).join('/')}`;
 
       if (fs.statSync(fullPath).isDirectory()) {
         if (scanSubDirectories) readDirectory(fullPath);

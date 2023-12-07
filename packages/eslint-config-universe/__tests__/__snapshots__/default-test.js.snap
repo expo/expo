@@ -268,29 +268,18 @@ exports[`lints with the default config: fixtures/all-03.ts 1`] = `
       "ruleId": "@typescript-eslint/no-unused-vars",
       "severity": 1,
     },
-    {
-      "column": 28,
-      "endColumn": 37,
-      "endLine": 6,
-      "line": 6,
-      "message": "Use 'as string' instead of '<string>'.",
-      "messageId": "as",
-      "nodeType": "TSTypeAssertion",
-      "ruleId": "@typescript-eslint/consistent-type-assertions",
-      "severity": 1,
-    },
   ],
-  "source": "const tsUnused1 = 0;
+  "output": "const tsUnused1 = 0;
 
 function tsUnused2() {
   const x: any = 'hi';
   const asCast = x as string;
-  const angleBracketCast = <string>x;
+  const angleBracketCast = x as string;
 }
 ",
   "suppressedMessages": [],
   "usedDeprecatedRules": [],
-  "warningCount": 5,
+  "warningCount": 4,
 }
 `;
 

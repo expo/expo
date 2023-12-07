@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -5,11 +6,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.createStringifySafeWithLimits = void 0;
 /**
  * Tries to stringify with JSON.stringify and toString, but catches exceptions
  * (e.g. from circular objects) and always returns a string and never throws.
  */
-export function createStringifySafeWithLimits(limits) {
+function createStringifySafeWithLimits(limits) {
     const { maxDepth = Number.POSITIVE_INFINITY, maxStringLimit = Number.POSITIVE_INFINITY, maxArrayLimit = Number.POSITIVE_INFINITY, maxObjectKeysLimit = Number.POSITIVE_INFINITY, } = limits;
     const stack = [];
     function replacer(_key, value) {
@@ -100,11 +103,12 @@ export function createStringifySafeWithLimits(limits) {
         return '["' + typeof arg + '" failed to stringify]';
     };
 }
+exports.createStringifySafeWithLimits = createStringifySafeWithLimits;
 const stringifySafe = createStringifySafeWithLimits({
     maxDepth: 10,
     maxStringLimit: 100,
     maxArrayLimit: 50,
     maxObjectKeysLimit: 50,
 });
-export default stringifySafe;
+exports.default = stringifySafe;
 //# sourceMappingURL=index.js.map

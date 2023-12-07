@@ -59,8 +59,8 @@ This is one of the reasons why the Expo Modules ecosystem was designed from the 
 
 Another big pain point we have encountered is the validation of arguments passed from JavaScript to native functions.
 This is especially error-prone, time-consuming, and difficult to maintain when it comes to `NSDictionary` or `ReadableMap`, where the type of values is unknown in runtime, and each property needs to be validated separately by the developer.
-A valuable feature of the Expo native modules API is its full knowledge of the argument types the native function expects. It can pre-validate and convert the arguments for you! The dictionaries can be represented as native structs that we call [Records](./module-api.md#records).
-Knowing the argument types, it is also possible to [automatically convert arguments](./module-api.md#convertibles) to some platform-specific types (for example, `{ x: number, y: number }` or `[number, number]` can be translated to CoreGraphics's `CGPoint` for your convenience).
+A valuable feature of the Expo native modules API is its full knowledge of the argument types the native function expects. It can pre-validate and convert the arguments for you! The dictionaries can be represented as native structs that we call [Records](./module-api/#records).
+Knowing the argument types, it is also possible to [automatically convert arguments](./module-api/#convertibles) to some platform-specific types (for example, `{ x: number, y: number }` or `[number, number]` can be translated to CoreGraphics's `CGPoint` for your convenience).
 
 ### React Native New Architecture
 
@@ -74,11 +74,3 @@ As we all, React Native developers, use high-level JavaScript on a daily basis, 
 Moreover, including C++ code in the library has a negative impact on build times, especially on Android, and can be more difficult to debug.
 
 We took these into account when designing the Expo Modules API with the goal in mind to make it renderer-agnostic, so that the module doesn't need to know whether the app is run on the new architecture or not, significantly reducing the cost for library developers.
-
-## Next steps
-
-<BoxLink
-  title="Get Started"
-  description="Learn how to create a new Expo module or setup existing library as an Expo module."
-  href="./get-started"
-/>

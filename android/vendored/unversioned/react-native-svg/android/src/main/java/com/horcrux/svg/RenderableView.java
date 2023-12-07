@@ -266,6 +266,28 @@ public abstract class RenderableView extends VirtualView implements ReactHitSlop
     invalidate();
   }
 
+  public void setStrokeDasharray(@Nullable String strokeDasharray) {
+    if (strokeDasharray != null) {
+      String stringValue = strokeDasharray.trim();
+      stringValue = stringValue.replaceAll(",", " ");
+      String[] strings = stringValue.split(" ");
+      ArrayList<SVGLength> list = new ArrayList<>(strings.length);
+      for (String length : strings) {
+        list.add(new SVGLength(length));
+      }
+      this.strokeDasharray = new SVGLength[Math.max(list.size(), 2)];
+      for (int i = 0; i < list.size(); i++) {
+        this.strokeDasharray[i] = list.get(i);
+      }
+      if (list.size() == 1) {
+        this.strokeDasharray[1] = this.strokeDasharray[0];
+      }
+    } else {
+      this.strokeDasharray = null;
+    }
+    invalidate();
+  }
+
   public void setStrokeDashoffset(float strokeDashoffset) {
     this.strokeDashoffset = strokeDashoffset * mScale;
     invalidate();
@@ -570,8 +592,10 @@ public abstract class RenderableView extends VirtualView implements ReactHitSlop
         }
       case 2:
         {
-          int brush = getSvgView().mTintColor;
-          paint.setColor(brush);
+          int color = getSvgView().mTintColor;
+          int alpha = color >>> 24;
+          alpha = Math.round((float) alpha * opacity);
+          paint.setColor(alpha << 24 | (color & 0x00ffffff));
           break;
         }
       case 3:

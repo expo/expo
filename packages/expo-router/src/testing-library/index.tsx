@@ -5,17 +5,17 @@ import { render, RenderResult } from '@testing-library/react-native';
 import path from 'path';
 import React from 'react';
 
-import { ExpoRoot } from '../ExpoRoot';
-import { stateCache } from '../getLinkingConfig';
-import { store } from '../global-state/router-store';
-import { RequireContext } from '../types';
 import {
   FileStub,
   inMemoryContext,
   requireContext,
   requireContextWithOverrides,
 } from './context-stubs';
-import { initialUrlRef } from './mocks';
+import { setInitialUrl } from './mocks';
+import { ExpoRoot } from '../ExpoRoot';
+import { stateCache } from '../getLinkingConfig';
+import { store } from '../global-state/router-store';
+import { RequireContext } from '../types';
 
 // re-export everything
 export * from '@testing-library/react-native';
@@ -57,12 +57,11 @@ export function renderRouter(
   let ctx: RequireContext;
 
   // Reset the initial URL
-  initialUrlRef.value = initialUrl as any;
+
+  setInitialUrl(initialUrl);
 
   // Force the render to be synchronous
-  process.env.EXPO_ROUTER_IMPORT_MODE_WEB = 'sync';
-  process.env.EXPO_ROUTER_IMPORT_MODE_IOS = 'sync';
-  process.env.EXPO_ROUTER_IMPORT_MODE_ANDROID = 'sync';
+  process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
 
   if (typeof context === 'string') {
     ctx = requireContext(path.resolve(process.cwd(), context));

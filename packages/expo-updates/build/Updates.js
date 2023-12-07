@@ -1,6 +1,16 @@
 import { CodedError, NativeModulesProxy, UnavailabilityError } from 'expo-modules-core';
 import ExpoUpdates from './ExpoUpdates';
 /**
+ * Whether expo-updates is enabled. This may be false in a variety of cases including:
+ * - enabled set to false in configuration
+ * - missing or invalid URL in configuration
+ * - missing runtime version or SDK version in configuration
+ * - error accessing storage on device during initialization
+ *
+ * When false, the embedded update is loaded.
+ */
+export const isEnabled = !!ExpoUpdates.isEnabled;
+/**
  * The UUID that uniquely identifies the currently running update. The
  * UUID is represented in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) and
  * will always use lowercase letters. This value is `null` when running in a local development environment or any other environment where `expo-updates` is disabled.
@@ -97,8 +107,8 @@ const manualUpdatesInstructions = isUsingExpoDevelopmentClient
  * executed after the `Updates.reloadAsync` method call resolves, since that depends on the OS and
  * the state of the native module and main threads.
  *
- * This method cannot be used in development mode, and the returned promise will be rejected if you
- * try to do so.
+ * This method cannot be used in Expo Go or development mode, and the returned promise will be rejected if you
+ * try to do so. It also rejects when expo-updates is not enabled.
  *
  * @return A promise that fulfills right before the reload instruction is sent to the JS runtime, or
  * rejects if it cannot find a reference to the JS runtime. If the promise is rejected in production
@@ -113,7 +123,7 @@ export async function reloadAsync() {
     if (!ExpoUpdates.reload) {
         throw new UnavailabilityError('Updates', 'reloadAsync');
     }
-    if (!ExpoUpdates?.nativeDebug && (__DEV__ || isUsingExpoDevelopmentClient)) {
+    if (!ExpoUpdates?.nativeDebug && __DEV__ && !isUsingExpoDevelopmentClient) {
         throw new CodedError('ERR_UPDATES_DISABLED', `You cannot use the Updates module in development mode in a production app. ${manualUpdatesInstructions}`);
     }
     await ExpoUpdates.reload();
@@ -130,8 +140,8 @@ export async function reloadAsync() {
  *
  * @return A promise that fulfills with an [`UpdateCheckResult`](#updatecheckresult) object.
  *
- * The promise rejects if the app is in development mode, or if there is an unexpected error or
- * timeout communicating with the server.
+ * The promise rejects in Expo Go or if the app is in development mode, or if there is an unexpected error or
+ * timeout communicating with the server. It also rejects when expo-updates is not enabled.
  */
 export async function checkForUpdateAsync() {
     if (!ExpoUpdates.checkForUpdateAsync) {
@@ -149,6 +159,8 @@ export async function checkForUpdateAsync() {
 }
 /**
  * Retrieves the current extra params.
+ *
+ * This method cannot be used in Expo Go or development mode. It also rejects when expo-updates is not enabled.
  */
 export async function getExtraParamsAsync() {
     if (!ExpoUpdates.getExtraParamsAsync) {
@@ -158,14 +170,10 @@ export async function getExtraParamsAsync() {
 }
 /**
  * Sets an extra param if value is non-null, otherwise unsets the param.
- * Extra params are sent in a header of update requests.
- * The update server may use these params when evaluating logic to determine which update to serve.
- * EAS Update merges these params into the fields used to evaluate channel–branch mapping logic.
+ * Extra params are sent as an [Expo Structured Field Value Dictionary](https://docs.expo.dev/technical-specs/expo-sfv-0/)
+ * in the `Expo-Extra-Params` header of update requests. A compliant update server may use these params when selecting an update to serve.
  *
- * @example An app may want to add a feature where users can opt-in to beta updates. In this instance,
- * extra params could be set to `{userType: 'beta'}`, and then the server can use this information
- * when deciding which update to serve. If using EAS Update, the channel-branch mapping can be set to
- * discriminate branches based on the `userType`.
+ * This method cannot be used in Expo Go or development mode. It also rejects when expo-updates is not enabled.
  */
 export async function setExtraParamAsync(key, value) {
     if (!ExpoUpdates.setExtraParamAsync) {
@@ -210,10 +218,14 @@ export async function clearLogEntriesAsync() {
  * storage. This method cannot be used in development mode, and the returned promise will be
  * rejected if you try to do so.
  *
+ > **Note:** [`reloadAsync()`](#updatesreloadasync) can be called after promise resolution to
+ * reload the app using the most recently downloaded version. Otherwise, the update will be applied
+ * on the next app cold start.
+ *
  * @return A promise that fulfills with an [`UpdateFetchResult`](#updatefetchresult) object.
  *
- * The promise rejects if the app is in development mode, or if there is an unexpected error or
- * timeout communicating with the server.
+ * The promise rejects in Expo Go or if the app is in development mode, or if there is an unexpected error or
+ * timeout communicating with the server. It also rejects when expo-updates is not enabled.
  */
 export async function fetchUpdateAsync() {
     if (!ExpoUpdates.fetchUpdateAsync) {
@@ -238,12 +250,8 @@ export function clearUpdateCacheExperimentalAsync(_sdkVersion) {
 /**
  * @hidden
  */
-export async function getNativeStateMachineContextAsync() {
-    // Return the current state machine context
-    if (!ExpoUpdates.getNativeStateMachineContextAsync) {
-        throw new UnavailabilityError('Updates', 'getNativeStateMachineContextAsync');
-    }
-    const nativeContext = await ExpoUpdates.getNativeStateMachineContextAsync();
+export function transformNativeStateMachineContext(originalNativeContext) {
+    const nativeContext = { ...originalNativeContext };
     if (nativeContext.latestManifestString) {
         nativeContext.latestManifest = JSON.parse(nativeContext.latestManifestString);
         delete nativeContext.latestManifestString;
@@ -256,6 +264,21 @@ export async function getNativeStateMachineContextAsync() {
         nativeContext.lastCheckForUpdateTime = new Date(nativeContext.lastCheckForUpdateTimeString);
         delete nativeContext.lastCheckForUpdateTimeString;
     }
+    if (nativeContext.rollbackString) {
+        nativeContext.rollback = JSON.parse(nativeContext.rollbackString);
+        delete nativeContext.rollbackString;
+    }
     return nativeContext;
+}
+/**
+ * @hidden
+ */
+export async function getNativeStateMachineContextAsync() {
+    // Return the current state machine context
+    if (!ExpoUpdates.getNativeStateMachineContextAsync) {
+        throw new UnavailabilityError('Updates', 'getNativeStateMachineContextAsync');
+    }
+    const nativeContext = await ExpoUpdates.getNativeStateMachineContextAsync();
+    return transformNativeStateMachineContext(nativeContext);
 }
 //# sourceMappingURL=Updates.js.map

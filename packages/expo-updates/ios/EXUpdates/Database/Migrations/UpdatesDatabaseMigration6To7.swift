@@ -3,7 +3,7 @@
 // swiftlint:disable line_length
 
 import Foundation
-import SQLite3
+import sqlite3
 
 internal final class UpdatesDatabaseMigration6To7: UpdatesDatabaseMigration {
   private(set) var filename: String = "expo-v6.db"

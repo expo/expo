@@ -71,6 +71,10 @@ jni::local_ref<JavaCallback::JavaPart> createJavaCallbackFromJSIFunction(
           }
 
           jsi::Value arg = jsi::valueFromDynamic(strongWrapper2->runtime(), responses);
+          auto enhancedArg = decorateValueForDynamicExtension(strongWrapper2->runtime(), arg);
+          if (enhancedArg) {
+            arg = std::move(*enhancedArg);
+          }
           if (!isRejectCallback) {
             strongWrapper2->callback().call(
               strongWrapper2->runtime(),
@@ -134,7 +138,6 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
     nullptr
   );
 
-  std::vector<jobject> result(count);
 
   const auto getCurrentArg = [&thisValue, args, takesOwner = takesOwner](
     size_t index
@@ -152,22 +155,21 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
   for (size_t argIndex = 0; argIndex < count; argIndex++) {
     const jsi::Value &arg = getCurrentArg(argIndex);
     auto &type = argTypes[argIndex];
-    if (arg.isNull() || arg.isUndefined()) {
+
+    if (type->converter->canConvert(rt, arg)) {
+      auto converterValue = type->converter->convert(rt, env, moduleRegistry, arg);
+      env->SetObjectArrayElement(argumentArray, argIndex, converterValue);
+      env->DeleteLocalRef(converterValue);
+    } else if (arg.isNull() || arg.isUndefined()) {
       // If value is null or undefined, we just passes a null
       // Kotlin code will check if expected type is nullable.
-      result[argIndex] = nullptr;
+      continue;
     } else {
-      if (type->converter->canConvert(rt, arg)) {
-        auto converterValue = type->converter->convert(rt, env, moduleRegistry, arg);
-        env->SetObjectArrayElement(argumentArray, argIndex, converterValue);
-        env->DeleteLocalRef(converterValue);
-      } else {
-        auto stringRepresentation = arg.toString(rt).utf8(rt);
-        throwNewJavaException(
-          UnexpectedException::create(
-            "Cannot convert '" + stringRepresentation + "' to a Kotlin type.").get()
-        );
-      }
+      auto stringRepresentation = arg.toString(rt).utf8(rt);
+      throwNewJavaException(
+        UnexpectedException::create(
+          "Cannot convert '" + stringRepresentation + "' to a Kotlin type.").get()
+      );
     }
   }
 
@@ -310,6 +312,15 @@ jsi::Function MethodMetadata::toAsyncFunction(
       const jsi::Value *args,
       size_t count
     ) -> jsi::Value {
+      /**
+       * Halt execution during cleaning phase as modules and js context will be deallocated soon.
+       * The output of this method doesn't matter.
+       * We added that check to prevent the app from crashing when users reload their apps.
+       */
+      if (moduleRegistry->wasDeallocated) {
+        return jsi::Value::undefined();
+      }
+
       JNIEnv *env = jni::Environment::current();
 
       /**

@@ -10,6 +10,41 @@
 
 ### 💡 Others
 
+- Drop `crypto` usage on web. ([#25411](https://github.com/expo/expo/pull/25411) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 15.3.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 15.2.0 — 2023-10-17
+
+_This version does not introduce any user-facing changes._
+
+## 15.1.0 — 2023-09-15
+
+### 🎉 New features
+
+- Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
+
+### 💡 Others
+
+- Use dedicated `requireOptionalNativeModule` instead of try-catching `requireNativeModule`. ([#24262](https://github.com/expo/expo/pull/24262) by [@tsapeta](https://github.com/tsapeta))
+
+## 15.0.0 — 2023-09-04
+
+### 🛠 Breaking changes
+
+- Change source of truth for constants types. ([#24049](https://github.com/expo/expo/pull/24049) by [@wschurman](https://github.com/wschurman))
+- Remove classic manifest types. ([#24053](https://github.com/expo/expo/pull/24053) by [@wschurman](https://github.com/wschurman))
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
 ## 14.5.1 — 2023-08-02
 
 ### 🛠 Breaking changes

@@ -69,5 +69,12 @@ internal class DevMenuInternalSettingsWrapper(private val devSettings: DevIntern
     set(value) {
       devSettings.isRemoteJSDebugEnabled = value
     }
+
+  var isJSDevModeEnabled: Boolean
+    get() = devSettings.isJSDevModeEnabled
+    set(value) {
+      devSettings.isJSDevModeEnabled = value
+    }
+
   val packagerConnectionSettings: PackagerConnectionSettings = devSettings.packagerConnectionSettings
 }

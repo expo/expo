@@ -8,13 +8,6 @@ exports.setDisplayName = setDisplayName;
 exports.setName = setName;
 exports.setProductName = setProductName;
 exports.withProductName = exports.withName = exports.withDisplayName = void 0;
-function _iosPlugins() {
-  const data = require("../plugins/ios-plugins");
-  _iosPlugins = function () {
-    return data;
-  };
-  return data;
-}
 function _Target() {
   const data = require("./Target");
   _Target = function () {
@@ -25,6 +18,13 @@ function _Target() {
 function _Xcodeproj() {
   const data = require("./utils/Xcodeproj");
   _Xcodeproj = function () {
+    return data;
+  };
+  return data;
+}
+function _iosPlugins() {
+  const data = require("../plugins/ios-plugins");
+  _iosPlugins = function () {
     return data;
   };
   return data;

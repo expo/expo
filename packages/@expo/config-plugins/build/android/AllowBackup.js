@@ -7,16 +7,16 @@ exports.getAllowBackup = getAllowBackup;
 exports.getAllowBackupFromManifest = getAllowBackupFromManifest;
 exports.setAllowBackup = setAllowBackup;
 exports.withAllowBackup = void 0;
-function _androidPlugins() {
-  const data = require("../plugins/android-plugins");
-  _androidPlugins = function () {
+function _Manifest() {
+  const data = require("./Manifest");
+  _Manifest = function () {
     return data;
   };
   return data;
 }
-function _Manifest() {
-  const data = require("./Manifest");
-  _Manifest = function () {
+function _androidPlugins() {
+  const data = require("../plugins/android-plugins");
+  _androidPlugins = function () {
     return data;
   };
   return data;

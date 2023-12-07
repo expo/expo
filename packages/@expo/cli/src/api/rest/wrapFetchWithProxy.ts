@@ -1,7 +1,7 @@
 import createHttpsProxyAgent from 'https-proxy-agent';
 
-import { env } from '../../utils/env';
 import { FetchLike } from './client.types';
+import { env } from '../../utils/env';
 
 const debug = require('debug')('expo:api:fetch:proxy') as typeof console.log;
 

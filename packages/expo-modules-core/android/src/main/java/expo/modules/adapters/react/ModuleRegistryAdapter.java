@@ -12,8 +12,6 @@ import java.util.Objects;
 import androidx.annotation.Nullable;
 
 import expo.modules.BuildConfig;
-import expo.modules.adapters.react.views.SimpleViewManagerAdapter;
-import expo.modules.adapters.react.views.ViewGroupManagerAdapter;
 import expo.modules.core.ModuleRegistry;
 import expo.modules.core.interfaces.Consumer;
 import expo.modules.core.interfaces.InternalModule;
@@ -105,17 +103,6 @@ public class ModuleRegistryAdapter implements ReactPackage {
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
     List<ViewManager> viewManagerList = new ArrayList<>(mModuleRegistryProvider.getReactViewManagers(reactContext));
 
-    for (expo.modules.core.ViewManager viewManager : mModuleRegistryProvider.getViewManagers(reactContext)) {
-      switch (viewManager.getViewManagerType()) {
-        case GROUP:
-          viewManagerList.add(new ViewGroupManagerAdapter(viewManager));
-          break;
-        case SIMPLE:
-          viewManagerList.add(new SimpleViewManagerAdapter(viewManager));
-          break;
-      }
-    }
-
     NativeModulesProxy modulesProxy = Objects.requireNonNull(getOrCreateNativeModulesProxy(reactContext, null));
     KotlinInteropModuleRegistry kotlinInteropModuleRegistry = modulesProxy.getKotlinInteropModuleRegistry();
     List<ViewManager<?, ?>> kViewManager = kotlinInteropModuleRegistry.exportViewManagers();
@@ -135,7 +122,7 @@ public class ModuleRegistryAdapter implements ReactPackage {
     @Nullable ModuleRegistry moduleRegistry
   ) {
     if (mModulesProxy != null && mModulesProxy.getReactContext() != reactContext) {
-      setModulesProxy(mModulesProxy);
+      setModulesProxy(null);
     }
     if (mModulesProxy == null) {
       ModuleRegistry registry = moduleRegistry != null ? moduleRegistry : mModuleRegistryProvider.get(reactContext);

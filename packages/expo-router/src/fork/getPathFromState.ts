@@ -1,6 +1,5 @@
 import { PathConfig, PathConfigMap, validatePathConfig } from '@react-navigation/core';
 import type { NavigationState, PartialState, Route } from '@react-navigation/routers';
-import * as queryString from 'query-string';
 
 import { matchDeepDynamicRouteName, matchDynamicName, matchGroupName } from '../matchers';
 
@@ -135,7 +134,7 @@ export function getPathDataFromState<ParamList extends object>(
   }
 
   return getPathFromResolvedState(
-    state,
+    JSON.parse(JSON.stringify(state)),
     // Create a normalized configs object which will be easier to use
     createNormalizedConfigs(options.screens),
     { preserveGroups, preserveDynamicRoutes }
@@ -343,7 +342,9 @@ function getPathFromResolvedState(
   while (current) {
     path += '/';
 
+    // Make mutable copies to ensure we don't leak state outside of the function.
     const route = current.routes[current.index ?? 0] as CustomRoute;
+
     // NOTE(EvanBacon): Fill in current route using state that was passed as params.
     // if (isInvalidParams(route.params)) {
     if (!route.state && isInvalidParams(route.params)) {
@@ -391,7 +392,7 @@ function getPathFromResolvedState(
           }
         }
 
-        const query = queryString.stringify(focusedParams, { sort: false });
+        const query = new URLSearchParams(focusedParams).toString();
         if (query) {
           path += `?${query}`;
         }
@@ -400,7 +401,7 @@ function getPathFromResolvedState(
     }
   }
 
-  return { path: basicSanitizePath(path), params: decodeParams(allParams) };
+  return { path: appendBaseUrl(basicSanitizePath(path)), params: decodeParams(allParams) };
 }
 
 function decodeParams(params: Record<string, string>) {
@@ -438,10 +439,16 @@ function getPathWithConventionsCollapsed({
       // Since the page doesn't actually exist
       if (p.startsWith('*')) {
         if (preserveDynamicRoutes) {
+          if (name === 'not-found') {
+            return '+not-found';
+          }
           return `[...${name}]`;
         }
         if (params[name]) {
-          return params[name].join('/');
+          if (Array.isArray(params[name])) {
+            return params[name].join('/');
+          }
+          return params[name];
         }
         if (i === 0) {
           // This can occur when a wildcard matches all routes and the given path was `/`.
@@ -607,3 +614,15 @@ const createNormalizedConfigs = (
   Object.fromEntries(
     Object.entries(options).map(([name, c]) => [name, createConfigItem(c, pattern)])
   );
+
+export function appendBaseUrl(
+  path: string,
+  baseUrl: string | undefined = process.env.EXPO_BASE_URL
+) {
+  if (process.env.NODE_ENV !== 'development') {
+    if (baseUrl) {
+      return `/${baseUrl.replace(/^\/+/, '').replace(/\/$/, '')}${path}`;
+    }
+  }
+  return path;
+}

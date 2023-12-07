@@ -6,9 +6,51 @@
 
 ### 🎉 New features
 
+- Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
+- `ios.bundleIdentifier` will now only be set on the main `.pbxproj` file, using the serial `withXcodeProject` modifier. ([#25490](https://github.com/expo/expo/pull/25490) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
+
+- Replace `@expo/babel-preset-cli` with `expo-module-scripts`. ([#25417](https://github.com/expo/expo/pull/25417) by [@byCedric](https://github.com/byCedric))
+
+## 7.7.0 — 2023-11-14
+
+### 🐛 Bug fixes
+
+- Only modify quoted or prefixed android package names. ([#24559](https://github.com/expo/expo/pull/24559) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+- Update tests. ([#25211](https://github.com/expo/expo/pull/25211) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 7.6.0 — 2023-10-17
+
+### 💡 Others
+
+- Added a new type `ManifestQuery` to model the top-level `<queries>` tag in the App Manifest. ([#24619](https://github.com/expo/expo/pull/24619) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 7.5.0 — 2023-09-15
+
+### 🛠 Breaking changes
+
+- Replace `getRuntimeVersion` / `getRuntimeVersionNullable` with `getRuntimeVersionAsync` / `getRuntimeVersionNullableAsync`. ([#24126](https://github.com/expo/expo/pull/24126) by [@mccraveiro](https://github.com/mccraveiro))
+
+### 🎉 New features
+
+- Add fingerprintExperimental runtime version policy. ([#24126](https://github.com/expo/expo/pull/24126) by [@mccraveiro](https://github.com/mccraveiro))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix DeviceFamily.ts to work for Apple TV. ([#24411](https://github.com/expo/expo/pull/24411) by [@douglowder](https://github.com/douglowder))
+
+## 7.4.0 — 2023-09-04
+
+### 🛠 Breaking changes
+
+- Remove classic updates. ([#24066](https://github.com/expo/expo/pull/24066) by [@wschurman](https://github.com/wschurman))
 
 ## 7.3.1 — 2023-08-02
 

@@ -429,6 +429,9 @@ EX_EXPORT_MODULE(ExponentAV);
 {
   NSNumber *interruptionType = [[notification userInfo] objectForKey:AVAudioSessionInterruptionTypeKey];
   if (interruptionType.unsignedIntegerValue == AVAudioSessionInterruptionTypeBegan) {
+    if (_audioRecorder && [_audioRecorder isRecording]) {
+      [self _deactivateAudioSession];
+    }
     _currentAudioSessionMode = EXAVAudioSessionModeInactive;
   }
   
@@ -971,13 +974,14 @@ EX_EXPORT_METHOD_AS(stopAudioRecording,
                     rejecter:(EXPromiseRejectBlock)reject)
 {
   if ([self _checkAudioRecorderExistsOrReject:reject]) {
+    _audioRecorderDurationMillis = [self _getDurationMillisOfRecordingAudioRecorder];
     if (_audioRecorder.recording) {
-      _audioRecorderDurationMillis = [self _getDurationMillisOfRecordingAudioRecorder];
       [_audioRecorder stop];
+    }
       _prevAudioRecorderDurationMillis = 0;
       _audioRecorderStartTimestamp = 0;
       [self demoteAudioSessionIfPossible];
-    }
+
     resolve([self _getAudioRecorderStatus]);
   }
 }

@@ -1,7 +1,11 @@
-import Constants from 'expo-constants';
+import { NewManifest, BareManifest } from 'expo-manifests';
+
+export type Manifest = NewManifest | BareManifest;
 
 /**
- * The types of update-related events.
+ * @deprecated The types of update-related events, used with `addListener()` and `useUpdateEvents()`.
+ * These APIs are deprecated and will be removed in a future release corresponding with SDK 51.
+ * Use [`useUpdates()`](#useupdates) instead.
  */
 export enum UpdateEventType {
   /**
@@ -20,22 +24,36 @@ export enum UpdateEventType {
   ERROR = 'error',
 }
 
-// @docsMissing
-// TODO(eric): move source of truth for manifest type to this module
-/**
- * @hidden
- */
-export type ClassicManifest = typeof Constants.manifest;
+export enum UpdateCheckResultNotAvailableReason {
+  /**
+   * No update manifest or rollback directive received from the update server.
+   */
+  NO_UPDATE_AVAILABLE_ON_SERVER = 'noUpdateAvailableOnServer',
+  /**
+   * An update manifest was received from the update server, but the update is not launchable,
+   * or does not pass the configured selection policy.
+   */
+  UPDATE_REJECTED_BY_SELECTION_POLICY = 'updateRejectedBySelectionPolicy',
+  /**
+   * An update manifest was received from the update server, but the update has been previously
+   * launched on this device and never successfully launched.
+   */
+  UPDATE_PREVIOUSLY_FAILED = 'updatePreviouslyFailed',
+  /**
+   * A rollback directive was received from the update server, but the directive does not pass
+   * the configured selection policy.
+   */
+  ROLLBACK_REJECTED_BY_SELECTION_POLICY = 'rollbackRejectedBySelectionPolicy',
+  /**
+   * A rollback directive was received from the update server, but this app has no embedded update.
+   */
+  ROLLBACK_NO_EMBEDDED = 'rollbackNoEmbeddedConfiguration',
+}
 
-// @docsMissing
 /**
- * @hidden
+ * The update check result when a rollback directive is received.
  */
-export type Manifest = ClassicManifest | typeof Constants.manifest2;
-// modern manifest type is intentionally not exported, since the plan is to call it just "Manifest"
-// in the future
-
-type UpdateCheckResultRollBackToEmbedded = {
+export type UpdateCheckResultRollBack = {
   /**
    * Whether an update is available. This property is false for a roll back update.
    */
@@ -48,12 +66,16 @@ type UpdateCheckResultRollBackToEmbedded = {
    * Whether a roll back to embedded update is available.
    */
   isRollBackToEmbedded: true;
+  /**
+   * If no new update is found, this contains one of several enum values indicating the reason.
+   */
+  reason: undefined;
 };
 
 /**
- * The successful result of checking for a new update.
+ * The update check result when a new update is found on the server.
  */
-export type UpdateCheckResultSuccess = {
+export type UpdateCheckResultAvailable = {
   /**
    * Whether an update is available. This property is false for a roll back update.
    */
@@ -66,12 +88,16 @@ export type UpdateCheckResultSuccess = {
    * Whether a roll back to embedded update is available.
    */
   isRollBackToEmbedded: false;
+  /**
+   * If no new update is found, this contains one of several enum values indicating the reason.
+   */
+  reason: undefined;
 };
 
 /**
- * The failed result of checking for a new update.
+ * The update check result if no new update was found.
  */
-export type UpdateCheckResultFailure = {
+export type UpdateCheckResultNotAvailable = {
   /**
    * Whether an update is available. This property is false for a roll back update.
    */
@@ -84,15 +110,29 @@ export type UpdateCheckResultFailure = {
    * Whether a roll back to embedded update is available.
    */
   isRollBackToEmbedded: false;
+  /**
+   * If no new update is found, this contains one of several enum values indicating the reason.
+   */
+  reason: UpdateCheckResultNotAvailableReason;
 };
 
 /**
  * The result of checking for a new update.
  */
 export type UpdateCheckResult =
-  | UpdateCheckResultRollBackToEmbedded
-  | UpdateCheckResultSuccess
-  | UpdateCheckResultFailure;
+  | UpdateCheckResultRollBack
+  | UpdateCheckResultAvailable
+  | UpdateCheckResultNotAvailable;
+
+/**
+ * @deprecated
+ */
+export type UpdateCheckResultSuccess = UpdateCheckResultAvailable;
+
+/**
+ * @deprecated
+ */
+export type UpdateCheckResultFailure = UpdateCheckResultNotAvailable;
 
 /**
  * The successful result of fetching a new update.
@@ -272,6 +312,14 @@ export type LocalAssets = Record<string, string>;
 /**
  * @hidden
  */
+export type UpdatesNativeStateRollback = {
+  // ISO date string with the rollback commit time
+  commitTime: string;
+};
+
+/**
+ * @hidden
+ */
 export type UpdatesNativeStateMachineContext = {
   // The native state machine context, either read directly from a native module method,
   // or received in a state change event. Used internally by this module and not exported publicly.
@@ -279,10 +327,10 @@ export type UpdatesNativeStateMachineContext = {
   isUpdatePending: boolean;
   isChecking: boolean;
   isDownloading: boolean;
-  isRollback: boolean;
   isRestarting: boolean;
   latestManifest?: Manifest;
   downloadedManifest?: Manifest;
+  rollback?: UpdatesNativeStateRollback;
   checkError?: Error;
   downloadError?: Error;
   lastCheckForUpdateTime?: Date;

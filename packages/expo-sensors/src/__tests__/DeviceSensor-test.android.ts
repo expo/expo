@@ -1,5 +1,5 @@
-import DeviceSensor from '../DeviceSensor';
 import MockNativeSensorModule from './mocks/MockNativeSensorModule';
+import DeviceSensor from '../DeviceSensor';
 
 it(`starts and stops observing on Android`, () => {
   const nativeModule = new MockNativeSensorModule();

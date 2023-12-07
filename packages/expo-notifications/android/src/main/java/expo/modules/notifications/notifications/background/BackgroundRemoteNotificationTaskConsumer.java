@@ -7,9 +7,6 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.util.Log;
 
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.ProcessLifecycleOwner;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,7 +23,7 @@ import expo.modules.interfaces.taskManager.TaskInterface;
 import expo.modules.interfaces.taskManager.TaskManagerUtilsInterface;
 
 /**
- * Represents a task to be run when the app is backgrounded and receives a remote push
+ * Represents a task to be run when the app is receives a remote push
  * notification. Map of current tasks is maintained in {@link FirebaseMessagingDelegate}.
  */
 public class BackgroundRemoteNotificationTaskConsumer extends TaskConsumer implements TaskConsumerInterface {
@@ -59,9 +56,8 @@ public class BackgroundRemoteNotificationTaskConsumer extends TaskConsumer imple
 
   public void scheduleJob(Bundle bundle) {
     Context context = getContext();
-    boolean isInForeground = ProcessLifecycleOwner.get().getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED);
 
-    if (context != null && mTask != null && !isInForeground) {
+    if (context != null && mTask != null) {
       PersistableBundle data = new PersistableBundle();
       // Bundles are not persistable, so let's convert to a JSON string
       data.putString(NOTIFICATION_KEY, bundleToJson(bundle).toString());

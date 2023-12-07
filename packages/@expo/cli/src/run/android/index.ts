@@ -53,13 +53,13 @@ export const expoRunAndroid: Command = async (argv) => {
     );
   }
 
-  const { resolveStringOrBooleanArgsAsync } = await import('../../utils/resolveArgs');
+  const { resolveStringOrBooleanArgsAsync } = await import('../../utils/resolveArgs.js');
   const parsed = await resolveStringOrBooleanArgsAsync(argv ?? [], rawArgsMap, {
     '--device': Boolean,
     '-d': '--device',
   }).catch(logCmdError);
 
-  const { runAndroidAsync } = await import('./runAndroidAsync');
+  const { runAndroidAsync } = await import('./runAndroidAsync.js');
 
   return runAndroidAsync(path.resolve(parsed.projectRoot), {
     // Parsed options

@@ -11,12 +11,14 @@ const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
 const spawn_1 = require("../utils/spawn");
 class CocoaPodsError extends Error {
+    code;
+    cause;
+    name = 'CocoaPodsError';
+    isPackageManagerError = true;
     constructor(message, code, cause) {
         super(cause ? `${message}\n└─ Cause: ${cause.message}` : message);
         this.code = code;
         this.cause = cause;
-        this.name = 'CocoaPodsError';
-        this.isPackageManagerError = true;
     }
 }
 exports.CocoaPodsError = CocoaPodsError;
@@ -30,6 +32,8 @@ function extractMissingDependencyError(errorOutput) {
 }
 exports.extractMissingDependencyError = extractMissingDependencyError;
 class CocoaPodsPackageManager {
+    options;
+    silent;
     static getPodProjectRoot(projectRoot) {
         if (CocoaPodsPackageManager.isUsingPods(projectRoot))
             return projectRoot;

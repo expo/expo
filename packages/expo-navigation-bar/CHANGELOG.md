@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+## 2.7.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 2.6.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+## 2.5.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Migrate to Expo Modules API. ([#23933](https://github.com/expo/expo/pull/23933) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 2.4.1 — 2023-08-02
 
 ### 🐛 Bug fixes

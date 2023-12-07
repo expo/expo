@@ -3,10 +3,10 @@ import chalk from 'chalk';
 import { spawn } from 'child_process';
 import os from 'os';
 
+import { Device, getAttachedDevicesAsync, isBootAnimationCompleteAsync } from './adb';
 import * as Log from '../../../log';
 import { AbortCommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
-import { Device, getAttachedDevicesAsync, isBootAnimationCompleteAsync } from './adb';
 
 export const EMULATOR_MAX_WAIT_TIMEOUT = 60 * 1000 * 3;
 

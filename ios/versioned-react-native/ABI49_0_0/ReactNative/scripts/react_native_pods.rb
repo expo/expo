@@ -19,7 +19,7 @@ require_relative './cocoapods/local_podspec_patch.rb'
 $ABI49_0_0CODEGEN_OUTPUT_DIR = 'versioned-react-native/ABI49_0_0/ReactNative/codegen/ios'
 $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
 $CODEGEN_MODULE_DIR = '.'
-$FOLLY_VERSION = '2021.07.22.00'
+$folly_version = '2022.05.16.00'
 
 $START_TIME = Time.now.to_i
 
@@ -77,7 +77,7 @@ def use_react_native_ABI49_0_0! (
 
   # Set the app_path as env variable so the podspecs can access it.
   ENV['APP_PATH'] = app_path
-  ENV['REACT_NATIVE_PATH'] = path
+  ENV['ABI49_0_0REACT_NATIVE_PATH'] = path
 
   # Current target definition is provided by Cocoapods and it refers to the target
   # that has invoked the `use_react_native!` function.

@@ -6,9 +6,54 @@
 
 ### 🎉 New features
 
+- Added custom native fonts support to `Font.isLoaded()`. ([#25770](https://github.com/expo/expo/pull/25770) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 11.9.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- Handle the case where no argument is passed to the plugin. ([#25138](https://github.com/expo/expo/pull/25138) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 11.8.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 🎉 New features
+
+- Added config plugin to allow fonts to be linked at build time. ([#24772](https://github.com/expo/expo/pull/24772) by [@alanjhughes](https://github.com/alanjhughes))
+- Remove `unimodule.json` in favour of `expo-module.config.json`. ([#25099](https://github.com/expo/expo/pull/25099) by [@reichhartd](https://github.com/reichhartd))
+
+## 11.7.0 — 2023-09-15
+
+### 🎉 New features
+
+- Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
+
+### 💡 Others
+
+- Updated types for server functions. ([#23911](https://github.com/expo/expo/pull/23911) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 11.6.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- Add static font extraction support with `expo-router`. ([#24027](https://github.com/expo/expo/pull/24027) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Migrated `FontLoaderModule` to use Expo Modules API. ([#24015](https://github.com/expo/expo/pull/24015) by [@lukmccall](https://github.com/lukmccall))
 
 ## 11.5.1 — 2023-08-02
 

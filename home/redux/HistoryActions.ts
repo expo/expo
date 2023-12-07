@@ -1,7 +1,7 @@
+import { AppDispatch, AppThunk } from './Store.types';
 import LocalStorage from '../storage/LocalStorage';
 import { HistoryItem } from '../types';
 import { Manifest } from '../types/Manifest';
-import { AppDispatch, AppThunk } from './Store.types';
 
 export default {
   loadHistory(): AppThunk {
@@ -26,8 +26,6 @@ export default {
   addHistoryItem(manifestUrl: string, manifest: Manifest): AppThunk {
     return async (dispatch: AppDispatch) => {
       const historyItem: HistoryItem = {
-        // TODO(wschurman): audit for new manifests
-        bundleUrl: manifest && 'bundleUrl' in manifest ? manifest.bundleUrl : '',
         manifestUrl,
         manifest,
         url: manifestUrl,

@@ -7,31 +7,50 @@ import ExpoModulesTestCore
 import EXManifests
 
 class LegacyUpdateSpec : ExpoSpec {
-  let config = UpdatesConfig.config(fromDictionary: [
-    UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test"
+  static let config = try! UpdatesConfig.config(fromDictionary: [
+    UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
+    UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
   ])
-  let selfHostedConfig = UpdatesConfig.config(fromDictionary: [
+  static let selfHostedConfig = try! UpdatesConfig.config(fromDictionary: [
     UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://esamelson.github.io/self-hosting-test/ios-index.json",
     UpdatesConfig.EXUpdatesConfigSDKVersionKey: "38.0.0"
   ])
-  let database = UpdatesDatabase()
+  static let database = UpdatesDatabase()
 
-  override func spec() {
+  override class func spec() {
     describe("bundledAssetBaseUrl") {
       it("expo domain") {
         let manifest = LegacyManifest(rawManifestJSON: [:])
         let expected = URL(string: "https://classic-assets.eascdn.net/~assets/")
-        expect(LegacyUpdate.bundledAssetBaseUrl(withManifest: manifest, config: UpdatesConfig.config(fromDictionary: [UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test"]))) == expected
-        expect(LegacyUpdate.bundledAssetBaseUrl(withManifest: manifest, config: UpdatesConfig.config(fromDictionary: [UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://expo.io/@test/test"]))) == expected
-        expect(LegacyUpdate.bundledAssetBaseUrl(withManifest: manifest, config: UpdatesConfig.config(fromDictionary: [UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://expo.test/@test/test"]))) == expected
+        expect(LegacyUpdate.bundledAssetBaseUrl(withManifest: manifest, config: try! UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
+          UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
+        ]))) == expected
+        expect(LegacyUpdate.bundledAssetBaseUrl(withManifest: manifest, config: try! UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://expo.io/@test/test",
+          UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
+        ]))) == expected
+        expect(LegacyUpdate.bundledAssetBaseUrl(withManifest: manifest, config: try! UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://expo.test/@test/test",
+          UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
+        ]))) == expected
       }
 
       it("expo subdomain") {
         let manifest = LegacyManifest(rawManifestJSON: [:])
         let expected = URL(string: "https://classic-assets.eascdn.net/~assets/")
-        expect(LegacyUpdate.bundledAssetBaseUrl(withManifest: manifest, config: UpdatesConfig.config(fromDictionary: [UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://staging.exp.host/@test/test"]))) == expected
-        expect(LegacyUpdate.bundledAssetBaseUrl(withManifest: manifest, config: UpdatesConfig.config(fromDictionary: [UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://staging.expo.io/@test/test"]))) == expected
-        expect(LegacyUpdate.bundledAssetBaseUrl(withManifest: manifest, config: UpdatesConfig.config(fromDictionary: [UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://staging.expo.test/@test/test"]))) == expected
+        expect(LegacyUpdate.bundledAssetBaseUrl(withManifest: manifest, config: try! UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://staging.exp.host/@test/test",
+          UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
+        ]))) == expected
+        expect(LegacyUpdate.bundledAssetBaseUrl(withManifest: manifest, config: try! UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://staging.expo.io/@test/test",
+          UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
+        ]))) == expected
+        expect(LegacyUpdate.bundledAssetBaseUrl(withManifest: manifest, config: try! UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://staging.expo.test/@test/test",
+          UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
+        ]))) == expected
       }
 
       it("AssetUrlOverride AbsoluteUrl") {

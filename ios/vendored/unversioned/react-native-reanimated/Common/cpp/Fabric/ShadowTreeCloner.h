@@ -7,34 +7,15 @@
 #include <memory>
 #include <set>
 
-#include "NewestShadowNodesRegistry.h"
-
 using namespace facebook;
 using namespace react;
 
 namespace reanimated {
 
-class ShadowTreeCloner {
- public:
-  ShadowTreeCloner(
-      std::shared_ptr<NewestShadowNodesRegistry> newestShadowNodesRegistry,
-      std::shared_ptr<UIManager> uiManager,
-      SurfaceId surfaceId);
-
-  ~ShadowTreeCloner();
-
-  ShadowNode::Unshared cloneWithNewProps(
-      const ShadowNode::Shared &oldRootNode,
-      const ShadowNodeFamily &family,
-      RawProps &&rawProps);
-
-  void updateYogaChildren();
-
- private:
-  std::shared_ptr<NewestShadowNodesRegistry> newestShadowNodesRegistry_;
-  PropsParserContext propsParserContext_;
-  std::set<ShadowNode *> yogaChildrenUpdates_;
-};
+ShadowNode::Unshared cloneShadowTreeWithNewProps(
+    const ShadowNode::Shared &oldRootNode,
+    const ShadowNodeFamily &family,
+    RawProps &&rawProps);
 
 } // namespace reanimated
 

@@ -5,15 +5,15 @@ import { Divider, Spacer, Text, useExpoTheme, View } from 'expo-dev-client-compo
 import * as React from 'react';
 import { ActivityIndicator } from 'react-native';
 
+import { EASUpdateLaunchSection } from './EASUpdateLaunchSection';
+import { EmptySection } from './EmptySection';
+import { LegacyLaunchSection } from './LegacyLaunchSection';
+import { ProjectHeader } from './ProjectHeader';
 import { ConstantItem } from '../../components/ConstantItem';
 import ScrollView from '../../components/NavigationScrollView';
 import ShareProjectButton from '../../components/ShareProjectButton';
 import { WebContainerProjectPage_Query } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
-import { EASUpdateLaunchSection } from './EASUpdateLaunchSection';
-import { EmptySection } from './EmptySection';
-import { LegacyLaunchSection } from './LegacyLaunchSection';
-import { ProjectHeader } from './ProjectHeader';
 
 const ERROR_TEXT = dedent`
   An unexpected error has occurred.

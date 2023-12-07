@@ -1,20 +1,16 @@
 {
-    "extends": "@tsconfig/node14/tsconfig.json",
-    
-    "compilerOptions": {
-      "declaration": true,
-      "moduleResolution": "node",
-      "strictNullChecks": true,
-      "strictPropertyInitialization": true,
-      "strictFunctionTypes": true,
-      "noImplicitAny": true,
-      "noImplicitThis": true,
-      "noImplicitReturns": true,
-      "allowSyntheticDefaultImports": true,
-      "baseUrl": ".",
-      "paths": {
-        "*": ["ts-declarations/*", "node_modules/*"]
-      }
-    }
+  "extends": "@tsconfig/node18/tsconfig.json",
+
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "declaration": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "strictFunctionTypes": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noImplicitReturns": true,
+    "allowSyntheticDefaultImports": true,
+    "downlevelIteration": true
   }
-  
+}

@@ -50,6 +50,7 @@
 
 **How:**
 
+- `et update-versions --sdkVersion XX.X.X --key expoVersion --value <expo package version>`
 - `et update-versions --sdkVersion XX.X.X --key facebookReactVersion --value <react package version>`
 - `et update-versions --sdkVersion XX.X.X --key facebookReactNativeVersion --value <react-native package version>`
 - `et update-versions --sdkVersion XX.X.X --key expoReactNativeTag --value sdk-XX.X.X`
@@ -252,7 +253,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 - Make sure to run `yarn` in `home`.
 - Publish dev home first by running `et publish-dev-home`. Commit the change to `dev-home-config.json`; do not commit any other changes from the script (in particular, if it changes `home/app.json`, do not commit those changes).
 - Run a debug build of both the iOS and Android versions of Expo Go to smoke test the newly published dev home.
-- To publish production home, log into expo-cli with the `exponent` account (credentials in 1P). Then publish home with `EXPO_NO_DOCTOR=true expo publish`. This will publish home to production (making it available as an OTA update for the SDK version in `app.json`) and write changes to two manifests and bundles (one each for iOS and Android) in the repo. Commit these changes.
+- To publish production home, log into eas-cli with the `exponent` account (credentials in 1P). Then publish home with `et publish-prod-home`. This will publish home to production (update is unused in production) and write to two manifests and bundles (one each for iOS and Android) in the repo to be embedded in builds of Expo Go. Commit these changes.
 
 ## 3.2. Build and submit
 
@@ -265,10 +266,8 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 - **iOS**:
 
   - Bump Expo Go versions (CFBundleVersion, CFBundleShortVersionString) in `ios/Exponent/Supporting/Info.plist`.
-  - We use `fastlane match` to sync our iOS credentials (certificates and provisioning profiles) - you will need them to properly archive and upload the distribution build to App Store Connect. Run `fastlane match appstore` from the project root folder to download them. You'll need to be authorized and have Google Cloud keys to do this, if you don't have them ask someone who has been publishing Expo Go in the past.
-  - Make sure build's metadata are up to date (see files under `fastlane/metadata/en-US`).
   - Make sure that production home app is published and new JS bundles are up-to-date - they're gonna be bundled within the binary and used at the first app run (before Expo Go downloads an OTA update).
-  - Run `fastlane ios release` from the project root folder and follow the prompt. This step can take 30+ minutes, as fastlane will update (or create) the App Store Connect record, generate a signed archive, and upload it. If for some reason you have to archive and upload the app through Xcode (without Fastlane), make sure to use `Expo Go (versioned)` Xcode scheme.
+  - Run `et eas ios-client-build-and-submit` from the project root folder and follow the prompt. This step can take 30+ minutes.
   - Wait for Apple to finish processing your new build. This step can take another 30+ minutes (but sometimes just a few).
   - Once the processing is done, go to TestFlight section in App Store Connect, click on the new build and then click `Provide Export Compliance Information` button and select **"None of the algorithms mentioned above"** in the dialog - we generally have not made changes to encryption.
     - Alternatively, you can set the [`ios.config.usesNonExemptEncryption` to `false`](https://docs.expo.dev/versions/latest/sdk/securestore/#exempting-encryption-prompt) in the Expo config. This will automatically set the export compliance to **"None of the algorithms mentioned above"** and will avoid displaying this prompt each time you are going through this process in App Store Connect.
@@ -277,8 +276,8 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 - **Android**:
   - Unlike for iOS, we will not submit the Android app to the store at this point. We just need to bump the version so we can do an APK build for distribution through Expo CLI.
-  - Bump the `versionCode` and `versionName` in android/app/build.gradle. Commit this to main and cherry-pick to the release branch. You might need to check the previous release branch to make sure the new `versionCode` is greater than the previous patch version, in case that commit never made it to main.
-  - The APK will be available as an artifact from the "Android Client" CI job. If no CI jobs are running on the release branch, you just need to open a PR from the release branch to main. (Don't merge it; it only exists to make CI jobs run.)
+  - Bump the `versionName` in android/app/build.gradle. Commit this to main and cherry-pick to the release branch. EAS Build will automatically manage the `versionCode` for you.
+  - Run `et dispatch client-android-eas-release` and wait for EAS Build to finish the APK building.
   - Download the APK and do a quick smoke test: install it in your local emulator or on a device and open a project.
 
 ## 3.3. Make a simulator/emulator build
@@ -291,7 +290,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 **How:**
 
-- Run `et dispatch client-{ios,android}-simulator` to trigger building Expo Go for simulators, uploading the archive to S3 and updating URL in versions endpoint.
+- Run `et eas ios-simulator-client-build-and-publish` or `et eas android-apk-build-and-publish` to trigger building Expo Go for simulators, uploading the archive to S3 and updating URL in versions endpoint.
 - Once the job is finished, test if this simulator build work as expected. You can install and launch it using expotools command `et client-install -p {ios,android}`.
 - Ensure that you update the root `iosVersion`/`androidVersion` `iosUrl`/`androidUrl` properties, eg:
   - `et update-versions-endpoint -k 'iosVersion' -v '2.19.3' --root`
@@ -341,6 +340,7 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
   - `react-native-web`
   - `babel-preset-expo`
   - `@expo/config-plugins`
+  - `@expo/metro-config`
   - `@expo/webpack-config`
   - `@expo/prebuild-config`
   - `expo-modules-autolinking`
@@ -422,9 +422,8 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
 - **iOS**:
   - Log into [App Store Connect](https://appstoreconnect.apple.com) and release the approved version.
 - **Android**:
-  - Add a new file under `/fastlane/android/metadata/en-US/changelogs/[versionCode].txt` (it should usually read “Add support for Expo SDK XX”).
-  - Open `Android Client` workflow on GitHub Actions and when it completes, download the APK from Artifacts and do a smoke test -- install it on a fresh Android device, turn on airplane mode, and make sure Home loads.
-  - Run `et dispatch client-android-release` to trigger appropriate job on GitHub Actions. About 45 minutes later the update should be **downloadable** via Play Store.
+  - Download the APK from (step [3.2](#32-build-and-submit)) and do a smoke test -- install it on a fresh Android device, turn on airplane mode, and make sure Home loads.
+  - Run `et eas android-client-build-and-submit` to trigger appropriate job on EAS Build. About 60 minutes later the update should be **downloadable** via Play Store.
 
 ## 6.2. Promote packages to latest on NPM registry
 

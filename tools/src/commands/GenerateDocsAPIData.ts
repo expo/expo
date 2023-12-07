@@ -56,7 +56,6 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-image': [['Image.tsx', 'Image.types.ts']],
   'expo-image-manipulator': ['ImageManipulator.ts'],
   'expo-image-picker': ['ImagePicker.ts'],
-  'expo-in-app-purchases': ['InAppPurchases.ts'],
   'expo-intent-launcher': ['IntentLauncher.ts'],
   'expo-keep-awake': ['index.ts'],
   'expo-light-sensor': [['LightSensor.ts', 'DeviceSensor.ts'], 'expo-sensors'],
@@ -80,8 +79,9 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-sharing': ['Sharing.ts'],
   'expo-sms': ['SMS.ts'],
   'expo-speech': ['Speech/Speech.ts'],
-  'expo-splash-screen': ['SplashScreen.ts'],
+  'expo-splash-screen': ['index.ts'],
   'expo-sqlite': ['index.ts'],
+  'expo-sqlite-next': ['next/index.ts', 'expo-sqlite'],
   'expo-status-bar': ['StatusBar.ts'],
   'expo-store-review': ['StoreReview.ts'],
   'expo-system-ui': ['SystemUI.ts'],
@@ -139,6 +139,7 @@ const executeCommand = async (
     excludeProtected: true,
     skipErrorChecking: true,
     excludeExternals: true,
+    jsDocCompatibility: false,
     pretty: !MINIFY_JSON,
   });
 
@@ -158,16 +159,18 @@ const executeCommand = async (
         .sort((a, b) => a.name.localeCompare(b.name));
     }
 
+    const { readme, symbolIdMap, ...trimmedOutput } = output;
+
     if (MINIFY_JSON) {
       const minifiedJson = recursiveOmitBy(
-        output,
+        trimmedOutput,
         ({ key, node }) =>
           ['id', 'groups', 'target', 'kindString', 'originalName'].includes(key) ||
           (key === 'flags' && !Object.keys(node).length)
       );
       await fs.writeFile(jsonOutputPath, JSON.stringify(minifiedJson, null, 0));
     } else {
-      await fs.writeFile(jsonOutputPath, JSON.stringify(output));
+      await fs.writeFile(jsonOutputPath, JSON.stringify(trimmedOutput));
     }
   } else {
     throw new Error(`💥 Failed to extract API data from source code for '${packageName}' package.`);

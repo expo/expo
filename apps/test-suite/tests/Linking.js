@@ -53,7 +53,7 @@ export function test(t) {
         // "The specified URL has an unsupported scheme. Only HTTP and HTTPS URLs are supported."
         t.it('listener gets called with a proper URL when opened from a web modal', async () => {
           let handlerCalled = false;
-          const testUrl = Linking.makeUrl('++message=hello');
+          const testUrl = Linking.createURL('++message=hello');
           const handler = ({ url }) => {
             t.expect(url).toEqual(testUrl);
             handlerCalled = true;
@@ -71,11 +71,11 @@ export function test(t) {
         t.it('listener gets called with a proper URL when opened from a web browser', async () => {
           let handlerCalled = false;
           const handler = ({ url }) => {
-            t.expect(url).toEqual(Linking.makeUrl('++message=Redirected automatically by timer'));
+            t.expect(url).toEqual(Linking.createURL('++message=Redirected automatically by timer'));
             handlerCalled = true;
           };
           const subscription = Linking.addEventListener('url', handler);
-          await Linking.openURL(`${redirectingBackendUrl}${Linking.makeUrl('++')}`);
+          await Linking.openURL(`${redirectingBackendUrl}${Linking.createURL('++')}`);
           await waitFor(8000);
           t.expect(handlerCalled).toBe(true);
           subscription.remove();
@@ -85,12 +85,12 @@ export function test(t) {
       t.it('listener gets called with a proper URL when opened from a web modal', async () => {
         let handlerCalled = false;
         const handler = ({ url }) => {
-          t.expect(url).toEqual(Linking.makeUrl('++message=Redirected automatically by timer'));
+          t.expect(url).toEqual(Linking.createURL('++message=Redirected automatically by timer'));
           handlerCalled = true;
           if (Platform.OS === 'ios') WebBrowser.dismissBrowser();
         };
         const subscription = Linking.addEventListener('url', handler);
-        await WebBrowser.openBrowserAsync(`${redirectingBackendUrl}${Linking.makeUrl('++')}`);
+        await WebBrowser.openBrowserAsync(`${redirectingBackendUrl}${Linking.createURL('++')}`);
         await waitFor(1000);
         t.expect(handlerCalled).toBe(true);
         subscription.remove();
@@ -102,7 +102,7 @@ export function test(t) {
           handlerCalled = true;
         };
         const subscription = Linking.addEventListener('url', handler);
-        await Linking.openURL(Linking.makeUrl('++'));
+        await Linking.openURL(Linking.createURL('++'));
         await waitFor(500);
         t.expect(handlerCalled).toBe(true);
         subscription.remove();
@@ -119,7 +119,7 @@ export function test(t) {
           handlerCalled = true;
         };
         const subscription = Linking.addEventListener('url', handler);
-        await Linking.openURL(Linking.makeUrl('++test/path?query=param'));
+        await Linking.openURL(Linking.createURL('++test/path?query=param'));
         await waitFor(500);
         t.expect(handlerCalled).toBe(true);
         subscription.remove();

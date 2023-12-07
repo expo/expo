@@ -1,7 +1,37 @@
 import { useEffect, useState } from 'react';
 
-import { loadAsync } from './Font';
+import { loadAsync, isLoaded } from './Font';
 import { FontSource } from './Font.types';
+
+function isMapLoaded(map: string | Record<string, FontSource>) {
+  if (typeof map === 'string') {
+    return isLoaded(map);
+  } else {
+    return Object.keys(map).every((fontFamily) => isLoaded(fontFamily));
+  }
+}
+
+function useRuntimeFonts(map: string | Record<string, FontSource>): [boolean, Error | null] {
+  const [loaded, setLoaded] = useState(
+    // For web rehydration, we need to check if the fonts are already loaded during the static render.
+    // Native will also benefit from this optimization.
+    isMapLoaded(map)
+  );
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    loadAsync(map)
+      .then(() => setLoaded(true))
+      .catch(setError);
+  }, []);
+
+  return [loaded, error];
+}
+
+function useStaticFonts(map: string | Record<string, FontSource>): [boolean, Error | null] {
+  loadAsync(map);
+  return [true, null];
+}
 
 // @needsAudit
 /**
@@ -21,15 +51,5 @@ import { FontSource } from './Font.types';
  * loading.
  * - __error__ (`Error | null`) - An error encountered when loading the fonts.
  */
-export function useFonts(map: string | Record<string, FontSource>): [boolean, Error | null] {
-  const [loaded, setLoaded] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
-
-  useEffect(() => {
-    loadAsync(map)
-      .then(() => setLoaded(true))
-      .catch(setError);
-  }, []);
-
-  return [loaded, error];
-}
+export const useFonts: (map: string | Record<string, FontSource>) => [boolean, Error | null] =
+  typeof window === 'undefined' ? useStaticFonts : useRuntimeFonts;

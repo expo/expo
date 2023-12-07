@@ -17,22 +17,22 @@
   "dependencies": {
     "ABI49_0_0React-Core": [],
     "Stripe": [
-      "~> 23.8.0"
+      "~> 23.18.0"
     ],
     "StripePaymentSheet": [
-      "~> 23.8.0"
+      "~> 23.18.0"
     ],
     "StripePayments": [
-      "~> 23.8.0"
+      "~> 23.18.0"
     ],
     "StripePaymentsUI": [
-      "~> 23.8.0"
+      "~> 23.18.0"
     ],
     "StripeApplePay": [
-      "~> 23.8.0"
+      "~> 23.18.0"
     ],
     "StripeFinancialConnections": [
-      "~> 23.8.0"
+      "~> 23.18.0"
     ]
   },
   "testspecs": [

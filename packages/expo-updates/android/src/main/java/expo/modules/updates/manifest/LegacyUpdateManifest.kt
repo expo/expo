@@ -34,8 +34,7 @@ class LegacyUpdateManifest private constructor(
   private val mAssets: JSONArray?
 ) : UpdateManifest {
   override val updateEntity: UpdateEntity by lazy {
-    UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey).apply {
-      manifest = this@LegacyUpdateManifest.manifest.getRawJson()
+    UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey, this@LegacyUpdateManifest.manifest.getRawJson()).apply {
       if (isDevelopmentMode) {
         status = UpdateStatus.DEVELOPMENT
       }
@@ -119,9 +118,9 @@ class LegacyUpdateManifest private constructor(
       val bundledAssets = manifest.getBundledAssets()
       return LegacyUpdateManifest(
         manifest,
-        configuration.updateUrl!!,
+        configuration.updateUrl,
         id,
-        configuration.scopeKey!!,
+        configuration.scopeKey,
         commitTime,
         runtimeVersion,
         bundleUrl,

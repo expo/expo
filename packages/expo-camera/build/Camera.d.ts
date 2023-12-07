@@ -102,7 +102,7 @@ export default class Camera extends React.Component<CameraProps> {
      * for an `Image` element for example. `exif` is included if the `exif` option was truthy, and is an object containing EXIF
      * data for the image--the names of its properties are EXIF tags and their values are the values for those tags.
      *
-     * > On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem.md#filesystemcopyasyncoptions)
+     * > On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem/#filesystemcachedirectory)
      * > to make a permanent copy of the image.
      */
     takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture>;
@@ -118,7 +118,7 @@ export default class Camera extends React.Component<CameraProps> {
      * @return Returns a Promise that resolves to an array of strings representing picture sizes that can be passed to `pictureSize` prop.
      * The list varies across Android devices but is the same for every iOS.
      */
-    getAvailablePictureSizesAsync(ratio?: string): Promise<string[]>;
+    getAvailablePictureSizesAsync(ratio: string): Promise<string[]>;
     /**
      * Starts recording a video that will be saved to cache directory. Videos are rotated to match device's orientation.
      * Flipping camera during a recording results in stopping it.
@@ -134,15 +134,15 @@ export default class Camera extends React.Component<CameraProps> {
     /**
      * Stops recording if any is in progress.
      */
-    stopRecording(): void;
+    stopRecording(): Promise<void>;
     /**
      * Pauses the camera preview. It is not recommended to use `takePictureAsync` when preview is paused.
      */
-    pausePreview(): void;
+    pausePreview(): Promise<void>;
     /**
      * Resumes the camera preview.
      */
-    resumePreview(): void;
+    resumePreview(): Promise<void>;
     _onCameraReady: () => void;
     _onMountError: ({ nativeEvent }: {
         nativeEvent: {

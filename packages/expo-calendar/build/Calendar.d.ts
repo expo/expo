@@ -584,7 +584,7 @@ export declare function getEventAsync(id: string, recurringEventOptions?: Recurr
  * @param eventData A map of details for the event to be created.
  * @return A promise which fulfils with a string representing the ID of the newly created event.
  */
-export declare function createEventAsync(calendarId: string, eventData?: Partial<Event>): Promise<string>;
+export declare function createEventAsync(calendarId: string, eventData?: Omit<Partial<Event>, 'id'>): Promise<string>;
 /**
  * Updates the provided details of an existing calendar stored on the device. To remove a property,
  * explicitly set it to `null` in `details`.
@@ -592,7 +592,7 @@ export declare function createEventAsync(calendarId: string, eventData?: Partial
  * @param details A map of properties to be updated.
  * @param recurringEventOptions A map of options for recurring events.
  */
-export declare function updateEventAsync(id: string, details?: Partial<Event>, recurringEventOptions?: RecurringEventOptions): Promise<string>;
+export declare function updateEventAsync(id: string, details?: Omit<Partial<Event>, 'id'>, recurringEventOptions?: RecurringEventOptions): Promise<string>;
 /**
  * Deletes an existing event from the device. Use with caution.
  * @param id ID of the event to be deleted.

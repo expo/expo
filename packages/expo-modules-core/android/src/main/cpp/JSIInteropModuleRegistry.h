@@ -14,6 +14,9 @@
 #include <jsi/jsi.h>
 #include <ReactCommon/CallInvokerHolder.h>
 #include <ReactCommon/CallInvoker.h>
+#if REACT_NATIVE_TARGET_VERSION >= 73
+#include <ReactCommon/NativeMethodCallInvokerHolder.h>
+#endif
 
 #include <memory>
 
@@ -22,6 +25,7 @@ namespace jsi = facebook::jsi;
 namespace react = facebook::react;
 
 namespace expo {
+
 /**
  * A JNI wrapper to initialize CPP part of modules and access all data from the module registry.
  */
@@ -41,8 +45,7 @@ public:
   void installJSI(
     jlong jsRuntimePointer,
     jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
-    jni::alias_ref<react::CallInvokerHolder::javaobject> jsInvokerHolder,
-    jni::alias_ref<react::CallInvokerHolder::javaobject> nativeInvokerHolder
+    jni::alias_ref<react::CallInvokerHolder::javaobject> jsInvokerHolder
   );
 
   /**
@@ -103,10 +106,11 @@ public:
   void drainJSEventLoop();
 
   std::shared_ptr<react::CallInvoker> jsInvoker;
-  std::shared_ptr<react::CallInvoker> nativeInvoker;
   std::shared_ptr<JavaScriptRuntime> runtimeHolder;
   std::unique_ptr<JSReferencesCache> jsRegistry;
   jni::global_ref<JNIDeallocator::javaobject> jniDeallocator;
+
+  bool wasDeallocated = false;
 private:
   friend HybridBase;
   jni::global_ref<JSIInteropModuleRegistry::javaobject> javaPart_;
@@ -121,5 +125,7 @@ private:
   inline jni::local_ref<JavaScriptModuleObject::javaobject> callGetCoreModuleObject() const;
 
   inline bool callHasModule(const std::string &moduleName) const;
+
+  void jniWasDeallocated();
 };
 } // namespace expo

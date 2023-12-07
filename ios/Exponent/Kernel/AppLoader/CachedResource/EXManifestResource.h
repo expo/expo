@@ -28,7 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSError *)verifyManifestSdkVersion:(EXManifestsManifest *)maybeManifest;
 - (NSError *)formatError:(NSError *)error;
-
++ (NSString * _Nonnull)formatHeader:(NSError * _Nonnull)error;
++ (NSAttributedString * _Nonnull)addErrorStringHyperlinks:(NSString * _Nonnull)errorString;
 @end
 
 NS_ASSUME_NONNULL_END

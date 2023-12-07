@@ -68,7 +68,7 @@ public:
     return JsiSkPath::toValue(runtime, getContext(), std::move(path));
   }
 
-  EXPORT_JSI_API_TYPENAME(JsiSkContourMeasure, "ContourMeasure")
+  EXPORT_JSI_API_TYPENAME(JsiSkContourMeasure, ContourMeasure)
 
   JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkContourMeasure, getPosTan),
                        JSI_EXPORT_FUNC(JsiSkContourMeasure, length),

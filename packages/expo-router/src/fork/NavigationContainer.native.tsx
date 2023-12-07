@@ -25,14 +25,6 @@ import * as React from 'react';
 
 import useLinking from './useLinking';
 
-declare global {
-  // eslint-disable-next-line no-var
-  var REACT_NAVIGATION_DEVTOOLS: WeakMap<
-    NavigationContainerRef<any>,
-    { readonly linking: LinkingOptions<any> }
-  >;
-}
-
 global.REACT_NAVIGATION_DEVTOOLS = new WeakMap();
 
 type Props<ParamList extends object> = NavigationContainerProps & {
@@ -145,7 +137,7 @@ function NavigationContainerInner(
 }
 
 const NavigationContainer = React.forwardRef(NavigationContainerInner) as <
-  RootParamList extends object = ReactNavigation.RootParamList
+  RootParamList extends object = ReactNavigation.RootParamList,
 >(
   props: Props<RootParamList> & {
     ref?: React.Ref<NavigationContainerRef<RootParamList>>;

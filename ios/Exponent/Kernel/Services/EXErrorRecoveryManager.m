@@ -3,6 +3,7 @@
 #import "EXBuildConstants.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXKernel.h"
+#import "EXScopedBridgeModule.h"
 
 #import <React/RCTAssert.h>
 

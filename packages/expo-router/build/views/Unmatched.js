@@ -1,49 +1,68 @@
-import { StyleSheet, Text, View } from '@bacons/react-views';
-import { createURL } from 'expo-linking';
-import React from 'react';
-import { usePathname, useRouter } from '../hooks';
-import { Link } from '../link/Link';
-import { useNavigation } from '../useNavigation';
-const useLayoutEffect = typeof window !== 'undefined' ? React.useLayoutEffect : function () { };
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Unmatched = void 0;
+const expo_linking_1 = require("expo-linking");
+const react_1 = __importDefault(require("react"));
+const react_native_1 = require("react-native");
+const hooks_1 = require("../hooks");
+const Link_1 = require("../link/Link");
+const useNavigation_1 = require("../useNavigation");
+const useLayoutEffect = typeof window !== 'undefined' ? react_1.default.useLayoutEffect : function () { };
 function NoSSR({ children }) {
-    const [render, setRender] = React.useState(false);
-    React.useEffect(() => {
+    const [render, setRender] = react_1.default.useState(false);
+    react_1.default.useEffect(() => {
         setRender(true);
     }, []);
     if (!render) {
         return null;
     }
-    return React.createElement(React.Fragment, null, children);
+    return <>{children}</>;
 }
 /** Default screen for unmatched routes. */
-export function Unmatched() {
-    const router = useRouter();
-    const navigation = useNavigation();
-    const pathname = usePathname();
-    const url = createURL(pathname);
+function Unmatched() {
+    const router = (0, hooks_1.useRouter)();
+    const navigation = (0, useNavigation_1.useNavigation)();
+    const pathname = (0, hooks_1.usePathname)();
+    const url = (0, expo_linking_1.createURL)(pathname);
     useLayoutEffect(() => {
         navigation.setOptions({
             title: 'Not Found',
         });
     }, [navigation]);
-    return (React.createElement(View, { style: styles.container },
-        React.createElement(Text, { role: "heading", "aria-level": 1, style: styles.title }, "Unmatched Route"),
-        React.createElement(Text, { role: "heading", "aria-level": 2, style: styles.subtitle },
-            "Page could not be found.",
-            ' ',
-            React.createElement(Text, { onPress: () => {
-                    if (router.canGoBack()) {
-                        router.back();
-                    }
-                    else {
-                        router.replace('/');
-                    }
-                }, style: styles.link }, "Go back.")),
-        React.createElement(NoSSR, null,
-            React.createElement(Link, { href: pathname, replace: true, style: styles.link }, url)),
-        React.createElement(Link, { href: "/_sitemap", replace: true, style: [styles.link, { marginTop: 8 }] }, "Sitemap")));
+    return (<react_native_1.View style={styles.container}>
+      <react_native_1.Text role="heading" aria-level={1} style={styles.title}>
+        Unmatched Route
+      </react_native_1.Text>
+      <react_native_1.Text role="heading" aria-level={2} style={styles.subtitle}>
+        Page could not be found.{' '}
+        <react_native_1.Text onPress={() => {
+            if (router.canGoBack()) {
+                router.back();
+            }
+            else {
+                router.replace('/');
+            }
+        }} style={styles.link}>
+          Go back.
+        </react_native_1.Text>
+      </react_native_1.Text>
+
+      <NoSSR>
+        <Link_1.Link href={pathname} replace style={styles.link}>
+          {url}
+        </Link_1.Link>
+      </NoSSR>
+
+      <Link_1.Link href="/_sitemap" replace style={[styles.link, { marginTop: 8 }]}>
+        Sitemap
+      </Link_1.Link>
+    </react_native_1.View>);
 }
-const styles = StyleSheet.create({
+exports.Unmatched = Unmatched;
+const styles = react_native_1.StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: 'black',

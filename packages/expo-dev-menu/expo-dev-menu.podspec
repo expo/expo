@@ -2,7 +2,16 @@ require 'json'
 
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
+reactNativeVersion = '0.0.0'
+begin
+  reactNativeVersion = `node --print "require('react-native/package.json').version"`
+rescue
+  reactNativeVersion = '0.0.0'
+end
+reactNativeTargetVersion = reactNativeVersion.split('.')[1].to_i
+
+folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -Wno-comma -Wno-shorten-64-to-32'
+compiler_flags = folly_compiler_flags + ' ' + "-DREACT_NATIVE_TARGET_VERSION=#{reactNativeTargetVersion}"
 
 Pod::Spec.new do |s|
   s.name           = 'expo-dev-menu'
@@ -12,7 +21,7 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '13.0'
+  s.platform       = :ios, '13.4'
   s.swift_version  = '5.2'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
@@ -46,7 +55,7 @@ Pod::Spec.new do |s|
   end
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
-    'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
+    'CLANG_CXX_LANGUAGE_STANDARD' => 'c++20',
     'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
   }
   unless defined?(install_modules_dependencies)
@@ -83,14 +92,24 @@ Pod::Spec.new do |s|
   s.subspec 'Main' do |main|
     s.source_files   = 'ios/**/*.{h,m,mm,swift}'
     s.preserve_paths = 'ios/**/*.{h,m,mm,swift}'
-    s.exclude_files  = 'ios/*Tests/**/*', 'vendored/**/*'
-    s.compiler_flags = folly_compiler_flags
+    s.exclude_files  = 'ios/*Tests/**/*', 'ios/ReactNativeCompatibles/**/*', 'vendored/**/*'
+    s.compiler_flags = compiler_flags
 
     main.dependency 'React-Core'
     main.dependency "EXManifests"
     main.dependency 'ExpoModulesCore'
     main.dependency 'expo-dev-menu-interface'
     main.dependency "expo-dev-menu/Vendored"
+  end
+
+  s.subspec 'ReactNativeCompatibles' do |ss|
+    if reactNativeTargetVersion >= 73
+      ss.source_files = 'ios/ReactNativeCompatibles/ReactNative/**/*'
+    else
+      ss.source_files = 'ios/ReactNativeCompatibles/ReactNative72/**/*'
+    end
+    ss.compiler_flags = compiler_flags
+    ss.dependency 'React-Core'
   end
 
   s.test_spec 'Tests' do |test_spec|
@@ -101,7 +120,7 @@ Pod::Spec.new do |s|
     test_spec.dependency 'React-CoreModules'
     # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
     test_spec.dependency 'ExpoModulesTestCore'
-    test_spec.platform = :ios, '13.0'
+    test_spec.platform = :ios, '13.4'
   end
 
   s.test_spec 'UITests' do |test_spec|
@@ -109,8 +128,8 @@ Pod::Spec.new do |s|
     test_spec.source_files = 'ios/UITests/**/*'
     test_spec.dependency 'React-CoreModules'
     test_spec.dependency 'React'
-    test_spec.platform = :ios, '13.0'
+    test_spec.platform = :ios, '13.4'
   end
 
-  s.default_subspec = 'Main'
+  s.default_subspec = ['Main', 'ReactNativeCompatibles']
 end

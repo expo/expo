@@ -14,6 +14,7 @@ import expo.modules.imagepicker.UNLIMITED_SELECTION
 import expo.modules.imagepicker.getAllDataUris
 import expo.modules.imagepicker.toMediaType
 import expo.modules.kotlin.activityresult.AppContextActivityResultContract
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.providers.AppContextProvider
 import java.io.Serializable
 
@@ -28,9 +29,8 @@ internal class ImageLibraryContract(
   private val appContextProvider: AppContextProvider,
 ) : AppContextActivityResultContract<ImageLibraryContractOptions, ImagePickerContractResult> {
   private val contentResolver: ContentResolver
-    get() = requireNotNull(appContextProvider.appContext.reactContext) {
-      "React Application Context is null"
-    }.contentResolver
+    get() = appContextProvider.appContext.reactContext?.contentResolver
+      ?: throw Exceptions.ReactContextLost()
 
   override fun createIntent(context: Context, input: ImageLibraryContractOptions): Intent {
     val request = PickVisualMediaRequest.Builder()
@@ -75,7 +75,7 @@ internal class ImageLibraryContract(
 
   override fun parseResult(input: ImageLibraryContractOptions, resultCode: Int, intent: Intent?) =
     if (resultCode == Activity.RESULT_CANCELED) {
-      ImagePickerContractResult.Cancelled()
+      ImagePickerContractResult.Cancelled
     } else {
       intent?.takeIf { resultCode == Activity.RESULT_OK }?.getAllDataUris()?.let { uris ->
         if (input.options.allowsMultipleSelection) {
@@ -86,18 +86,18 @@ internal class ImageLibraryContract(
           )
         } else {
           if (intent.data != null) {
-            intent.data?.let {
-              val type = it.toMediaType(contentResolver)
-              ImagePickerContractResult.Success(listOf(type to it))
+            intent.data?.let { uri ->
+              val type = uri.toMediaType(contentResolver)
+              ImagePickerContractResult.Success(listOf(type to uri))
             }
           } else {
             uris.firstOrNull()?.let { uri ->
               val type = uri.toMediaType(contentResolver)
               ImagePickerContractResult.Success(listOf(type to uri))
-            } ?: ImagePickerContractResult.Error()
+            } ?: ImagePickerContractResult.Error
           }
         }
-      } ?: ImagePickerContractResult.Error()
+      } ?: ImagePickerContractResult.Error
     }
 }
 

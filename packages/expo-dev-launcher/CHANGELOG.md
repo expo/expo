@@ -6,9 +6,104 @@
 
 ### 🎉 New features
 
+- Launch directly into the previously opened project by default. ([#25500](https://github.com/expo/expo/pull/25500) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Bump C++ compiler setting to C++20. ([#25548](https://github.com/expo/expo/pull/25548) by [@kudo](https://github.com/kudo))
+
+## 3.4.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- [Android] Fix dev server not using query params from manifest when loading the JS bundle. ([#25061](https://github.com/expo/expo/pull/25061), [#25147](https://github.com/expo/expo/pull/25147) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
+- Update bundles with new Metro chaining and StatusBar mocks. ([#25148](https://github.com/expo/expo/pull/25148) by [@EvanBacon](https://github.com/EvanBacon))
+- Rebuild with Metro inline requires enabled. ([#25089](https://github.com/expo/expo/pull/25089) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove deprecated `REACT_NATIVE_OVERRIDE_VERSION` for React Native nightly testing. ([#25151](https://github.com/expo/expo/pull/25151) by [@kudo](https://github.com/kudo))
+- Removed backward compatible code for deprecated SDKs. ([#25154](https://github.com/expo/expo/pull/25154) by [@kudo](https://github.com/kudo))
+- Split updates controllers depending on configuration, changing native public API. ([#25085](https://github.com/expo/expo/pull/25085) by [@wschurman](https://github.com/wschurman))
+
+## 3.3.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 🎉 New features
+
+- Improve 'Development servers' and 'Recently opened' UX. ([#24665](https://github.com/expo/expo/pull/24665) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add support for skipping the launcher screen and launching directly into a previously opened project. ([#24614](https://github.com/expo/expo/pull/24614), [#24646](https://github.com/expo/expo/pull/24646), [#24758](https://github.com/expo/expo/pull/24758) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix Cmd+D opening React Native Debug Menu on launcher screen. ([#24580](https://github.com/expo/expo/pull/24580) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Fixed app launch when using multiple scenes. ([#24565](https://github.com/expo/expo/pull/24565) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Fetch dev sessions whenever navigating to the launcher home screen. ([#24378](https://github.com/expo/expo/pull/24378), [#24502](https://github.com/expo/expo/pull/24502) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
+- Ship untranspiled JSX to support custom handling of `jsx` and `createElement`. ([#24889](https://github.com/expo/expo/pull/24889) by [@EvanBacon](https://github.com/EvanBacon))
+- Drop support for configuring SDK 44 and below with Prebuild. ([#24504](https://github.com/expo/expo/pull/24504) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 2.4.13 — 2023-09-25
+
+### 🐛 Bug fixes
+
+- Fetch dev sessions whenever navigating to the launcher home screen. ([#24378](https://github.com/expo/expo/pull/24378), [#24502](https://github.com/expo/expo/pull/24502) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 3.2.1 — 2023-09-18
+
+_This version does not introduce any user-facing changes._
+
+## 2.4.12 — 2023-09-16
+
+### 💡 Others
+
+- Revert [dev-launcher] Fetch dev sessions whenever navigating to Home screen (#24378))
+
+## 2.4.11 — 2023-09-15
+
+### 🐛 Bug fixes
+
+- Fetch dev sessions whenever navigating to the launcher home screen. ([#24378](https://github.com/expo/expo/pull/24378) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
+- Update dev sessions default ports to check. ([#24380](https://github.com/expo/expo/pull/24380) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 3.2.0 — 2023-09-15
+
+### 💡 Others
+
+- Update dev sessions default ports to check. ([#24380](https://github.com/expo/expo/pull/24380) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Fetch dev sessions whenever navigating to the launcher home screen. ([#24378](https://github.com/expo/expo/pull/24378) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 3.1.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Use correct `httpServerLocation` files during export. ([#24090](https://github.com/expo/expo/pull/24090) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Migrate to Expo CLI. ([#23806](https://github.com/expo/expo/pull/23806) by [@EvanBacon](https://github.com/EvanBacon))
+- Change source of truth for constants types. ([#24049](https://github.com/expo/expo/pull/24049) by [@wschurman](https://github.com/wschurman))
+- Remove classic manifest types. ([#24053](https://github.com/expo/expo/pull/24053) by [@wschurman](https://github.com/wschurman))
 
 ## 3.0.0 — 2023-08-02
 

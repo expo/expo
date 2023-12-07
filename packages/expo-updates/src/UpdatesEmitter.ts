@@ -1,6 +1,7 @@
 import { DeviceEventEmitter } from 'expo-modules-core';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 
+import { transformNativeStateMachineContext } from './Updates';
 import type { UpdateEvent, UpdatesNativeStateChangeEvent } from './Updates.types';
 
 let _emitter: EventEmitter | null;
@@ -19,6 +20,9 @@ function _getEmitter(): EventEmitter {
 
 // Reemits native UpdateEvents sent during the startup update check
 function _emitEvent(params): void {
+  if (!_emitter) {
+    throw new Error(`EventEmitter must be initialized to use from its listener`);
+  }
   let newParams = { ...params };
   if (typeof params === 'string') {
     newParams = JSON.parse(params);
@@ -27,43 +31,28 @@ function _emitEvent(params): void {
     newParams.manifest = JSON.parse(newParams.manifestString);
     delete newParams.manifestString;
   }
-
-  if (!_emitter) {
-    throw new Error(`EventEmitter must be initialized to use from its listener`);
-  }
   _emitter.emit('Expo.updatesEvent', newParams);
 }
 
 // Reemits native state change events
 function _emitNativeStateChangeEvent(params: any) {
+  if (!_emitter) {
+    throw new Error(`EventEmitter must be initialized to use from its listener`);
+  }
   let newParams = { ...params };
   if (typeof params === 'string') {
     newParams = JSON.parse(params);
   }
-  if (newParams.context.latestManifestString) {
-    newParams.context.latestManifest = JSON.parse(newParams.context.latestManifestString);
-    delete newParams.context.latestManifestString;
-  }
-  if (newParams.context.downloadedManifestString) {
-    newParams.context.downloadedManifest = JSON.parse(newParams.context.downloadedManifestString);
-    delete newParams.context.downloadedManifestString;
-  }
-  if (newParams.context.lastCheckForUpdateTimeString) {
-    newParams.context.lastCheckForUpdateTime = new Date(
-      newParams.context.lastCheckForUpdateTimeString
-    );
-    delete newParams.context.lastCheckForUpdateTimeString;
-  }
-  if (!_emitter) {
-    throw new Error(`EventEmitter must be initialized to use from its listener`);
-  }
-  _emitter?.emit('Expo.updatesStateChangeEvent', newParams);
+  newParams.context = transformNativeStateMachineContext(newParams.context);
+  _emitter.emit('Expo.updatesStateChangeEvent', newParams);
 }
 
 /**
- * Adds a callback to be invoked when updates-related events occur (such as upon the initial app
+ * @deprecated Adds a callback to be invoked when updates-related events occur (such as upon the initial app
  * load) due to auto-update settings chosen at build-time. See also the
  * [`useUpdateEvents`](#useupdateeventslistener) React hook.
+ * This API is deprecated and will be removed in a future release corresponding with SDK 51.
+ * Use [`useUpdates()`](#useupdates) instead.
  *
  * @param listener A function that will be invoked with an [`UpdateEvent`](#updateevent) instance
  * and should not return any value.

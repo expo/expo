@@ -115,7 +115,7 @@ public class LocalizationModule: Module {
   }
 
   static func getMeasurementSystemForLocale(_ locale: Locale) -> String {
-    if #available(iOS 16, *) {
+    if #available(iOS 16, tvOS 16, *) {
       let measurementSystems = [
         Locale.MeasurementSystem.us: "us",
         Locale.MeasurementSystem.uk: "uk",
@@ -133,6 +133,20 @@ public class LocalizationModule: Module {
       .map { languageTag -> [String: Any?] in
         let languageLocale = Locale.init(identifier: languageTag)
 
+        if #available(iOS 16, tvOS 16, *) {
+          return [
+            "languageTag": languageTag,
+            "languageCode": languageLocale.language.languageCode?.identifier,
+            "regionCode": languageLocale.region?.identifier,
+            "textDirection": languageLocale.language.characterDirection == .rightToLeft ? "rtl" : "ltr",
+            "decimalSeparator": userSettingsLocale.decimalSeparator,
+            "digitGroupingSeparator": userSettingsLocale.groupingSeparator,
+            "measurementSystem": getMeasurementSystemForLocale(userSettingsLocale),
+            "currencyCode": languageLocale.currencyCode,
+            "currencySymbol": languageLocale.currencySymbol,
+            "temperatureUnit": getTemperatureUnit()
+          ]
+        }
         return [
           "languageTag": languageTag,
           "languageCode": languageLocale.languageCode,
@@ -142,7 +156,8 @@ public class LocalizationModule: Module {
           "digitGroupingSeparator": userSettingsLocale.groupingSeparator,
           "measurementSystem": getMeasurementSystemForLocale(userSettingsLocale),
           "currencyCode": languageLocale.currencyCode,
-          "currencySymbol": languageLocale.currencySymbol
+          "currencySymbol": languageLocale.currencySymbol,
+          "temperatureUnit": getTemperatureUnit()
         ]
       }
   }
@@ -152,6 +167,20 @@ public class LocalizationModule: Module {
     // we send both events since on iOS it means both calendar and locale needs an update
     sendEvent(LOCALE_SETTINGS_CHANGED)
     sendEvent(CALENDAR_SETTINGS_CHANGED)
+  }
+
+  static func getTemperatureUnit() -> String? {
+    let formatter = MeasurementFormatter()
+    formatter.locale = Locale.current
+
+    let temperature = Measurement(value: 0, unit: UnitTemperature.celsius)
+    let formatted = formatter.string(from: temperature)
+
+    guard let unitCharacter = formatted.last else {
+      return nil
+    }
+
+    return unitCharacter == "F" ? "fahrenheit" : "celsius"
   }
 
   // https://stackoverflow.com/a/28183182

@@ -6,11 +6,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import UTFSequence from 'react-native/Libraries/UTFSequence';
-
+import type { LogBoxLogData } from './LogBoxLog';
 import parseErrorStack from '../modules/parseErrorStack';
 import stringifySafe from '../modules/stringifySafe';
-import type { LogBoxLogData } from './LogBoxLog';
 type ExceptionData = any;
 
 const BABEL_TRANSFORM_ERROR_FORMAT =
@@ -50,7 +48,7 @@ export type Message = {
 
 export type ComponentStack = CodeFrame[];
 
-const SUBSTITUTION = UTFSequence.BOM + '%s';
+const SUBSTITUTION = '\ufeff%s';
 
 export function parseInterpolation(args: readonly any[]): {
   category: Category;

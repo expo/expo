@@ -1,11 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.loadBundleAsync = void 0;
 /**
  * Copyright © 2022 650 Industries.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { buildUrlForBundle } from './buildUrlForBundle';
-import { fetchThenEvalAsync } from './fetchThenEval';
+const buildUrlForBundle_1 = require("./buildUrlForBundle");
+const fetchThenEval_1 = require("./fetchThenEval");
 // import LoadingView from '../LoadingView';
 let pendingRequests = 0;
 /**
@@ -13,10 +16,10 @@ let pendingRequests = 0;
  *
  * @param bundlePath Given a statement like `import('./Bacon')` `bundlePath` would be `Bacon.bundle?params=from-metro`.
  */
-export async function loadBundleAsync(bundlePath) {
-    const requestUrl = buildUrlForBundle(bundlePath);
+async function loadBundleAsync(bundlePath) {
+    const requestUrl = (0, buildUrlForBundle_1.buildUrlForBundle)(bundlePath);
     if (process.env.NODE_ENV === 'production') {
-        return fetchThenEvalAsync(requestUrl);
+        return (0, fetchThenEval_1.fetchThenEvalAsync)(requestUrl);
     }
     else {
         const LoadingView = require('../LoadingView')
@@ -24,7 +27,7 @@ export async function loadBundleAsync(bundlePath) {
         // Send a signal to the `expo` package to show the loading indicator.
         LoadingView.showMessage('Downloading...', 'load');
         pendingRequests++;
-        return fetchThenEvalAsync(requestUrl)
+        return (0, fetchThenEval_1.fetchThenEvalAsync)(requestUrl)
             .then(() => {
             if (process.env.NODE_ENV !== 'production') {
                 const HMRClient = require('../HMRClient')
@@ -39,4 +42,5 @@ export async function loadBundleAsync(bundlePath) {
         });
     }
 }
+exports.loadBundleAsync = loadBundleAsync;
 //# sourceMappingURL=loadBundle.js.map

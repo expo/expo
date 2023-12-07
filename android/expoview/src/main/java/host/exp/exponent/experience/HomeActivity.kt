@@ -4,7 +4,6 @@ package host.exp.exponent.experience
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.os.Debug
 import android.view.View
@@ -26,19 +25,19 @@ import expo.modules.easclient.EASClientModule
 import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.FileSystemPackage
-import expo.modules.font.FontLoaderPackage
 import expo.modules.haptics.HapticsModule
+import expo.modules.keepawake.KeepAwakeModule
 import expo.modules.keepawake.KeepAwakePackage
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.kotlin.modules.Module
 import expo.modules.lineargradient.LinearGradientModule
 import expo.modules.notifications.NotificationsPackage
-import expo.modules.permissions.PermissionsPackage
 import expo.modules.splashscreen.SplashScreenImageResizeMode
 import expo.modules.splashscreen.SplashScreenModule
 import expo.modules.splashscreen.SplashScreenPackage
 import expo.modules.splashscreen.singletons.SplashScreen
 import expo.modules.taskManager.TaskManagerPackage
+import expo.modules.trackingtransparency.TrackingTransparencyModule
 import expo.modules.webbrowser.WebBrowserModule
 import host.exp.exponent.Constants
 import host.exp.exponent.ExponentManifest
@@ -62,7 +61,7 @@ open class HomeActivity : BaseExperienceActivity() {
     NativeModuleDepsProvider.instance.inject(HomeActivity::class.java, this)
 
     sdkVersion = RNObject.UNVERSIONED
-    manifest = exponentManifest.getKernelManifest()
+    manifest = exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest
     experienceKey = try {
       ExperienceKey.fromManifest(manifest!!)
     } catch (e: JSONException) {
@@ -74,7 +73,7 @@ open class HomeActivity : BaseExperienceActivity() {
     // is disabled in Home as of end of 2020, to fix some issues with dev menu, see:
     // https://github.com/expo/expo/blob/eb9bd274472e646a730fd535a4bcf360039cbd49/android/expoview/src/main/java/versioned/host/exp/exponent/ExponentPackage.java#L200-L207
     // ExperienceActivityUtils.overrideUiMode(mExponentManifest.getKernelManifest(), this);
-    ExperienceActivityUtils.configureStatusBar(exponentManifest.getKernelManifest(), this)
+    ExperienceActivityUtils.configureStatusBar(exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest, this)
 
     EventBus.getDefault().registerSticky(this)
     kernel.startJSKernel(this)
@@ -108,16 +107,12 @@ open class HomeActivity : BaseExperienceActivity() {
   private fun tryInstallLeakCanary(shouldAskForPermissions: Boolean) {
     if (BuildConfig.DEBUG && Constants.ENABLE_LEAK_CANARY) {
       // Leak canary needs WRITE_EXTERNAL_STORAGE permission
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        if (shouldAskForPermissions && ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-          ) != PackageManager.PERMISSION_GRANTED
-        ) {
-          requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1248919246)
-        } else {
-          LeakCanary.install(application)
-        }
+      if (shouldAskForPermissions && ContextCompat.checkSelfPermission(
+          this,
+          Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) != PackageManager.PERMISSION_GRANTED
+      ) {
+        requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1248919246)
       } else {
         LeakCanary.install(application)
       }
@@ -154,9 +149,7 @@ open class HomeActivity : BaseExperienceActivity() {
     fun homeExpoPackages(): List<Package> {
       return listOf(
         ConstantsPackage(),
-        PermissionsPackage(),
         FileSystemPackage(),
-        FontLoaderPackage(),
         BarCodeScannerPackage(),
         KeepAwakePackage(),
         FaceDetectorPackage(),
@@ -177,8 +170,10 @@ open class HomeActivity : BaseExperienceActivity() {
         EASClientModule::class.java,
         FileSystemModule::class.java,
         HapticsModule::class.java,
+        KeepAwakeModule::class.java,
         LinearGradientModule::class.java,
         SplashScreenModule::class.java,
+        TrackingTransparencyModule::class.java,
         WebBrowserModule::class.java,
       )
     }

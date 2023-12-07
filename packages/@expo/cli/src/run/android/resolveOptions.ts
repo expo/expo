@@ -1,8 +1,8 @@
-import { AndroidDeviceManager } from '../../start/platforms/android/AndroidDeviceManager';
-import { BundlerProps, resolveBundlerPropsAsync } from '../resolveBundlerProps';
 import { resolveDeviceAsync } from './resolveDevice';
 import { GradleProps, resolveGradleProps } from './resolveGradleProps';
 import { LaunchProps, resolveLaunchPropsAsync } from './resolveLaunchProps';
+import { AndroidDeviceManager } from '../../start/platforms/android/AndroidDeviceManager';
+import { BundlerProps, resolveBundlerPropsAsync } from '../resolveBundlerProps';
 
 export type Options = {
   variant?: string;

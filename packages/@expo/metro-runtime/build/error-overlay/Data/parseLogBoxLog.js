@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -5,14 +6,18 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import UTFSequence from 'react-native/Libraries/UTFSequence';
-import parseErrorStack from '../modules/parseErrorStack';
-import stringifySafe from '../modules/stringifySafe';
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.parseLogBoxLog = exports.parseLogBoxException = exports.parseComponentStack = exports.parseInterpolation = void 0;
+const parseErrorStack_1 = __importDefault(require("../modules/parseErrorStack"));
+const stringifySafe_1 = __importDefault(require("../modules/stringifySafe"));
 const BABEL_TRANSFORM_ERROR_FORMAT = /^(?:TransformError )?(?:SyntaxError: |ReferenceError: )(.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/;
 const BABEL_CODE_FRAME_ERROR_FORMAT = /^(?:TransformError )?(?:.*):? (?:.*?)(\/.*): ([\s\S]+?)\n([ >]{2}[\d\s]+ \|[\s\S]+|\u{001b}[\s\S]+)/u;
 const METRO_ERROR_FORMAT = /^(?:InternalError Metro has encountered an error:) (.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/u;
-const SUBSTITUTION = UTFSequence.BOM + '%s';
-export function parseInterpolation(args) {
+const SUBSTITUTION = '\ufeff%s';
+function parseInterpolation(args) {
     const categoryParts = [];
     const contentParts = [];
     const substitutionOffsets = [];
@@ -35,7 +40,7 @@ export function parseInterpolation(args) {
                     // which causes the LogBox to look odd.
                     const substitution = typeof substitutions[substitutionIndex] === 'string'
                         ? substitutions[substitutionIndex]
-                        : stringifySafe(substitutions[substitutionIndex]);
+                        : (0, stringifySafe_1.default)(substitutions[substitutionIndex]);
                     substitutionOffsets.push({
                         length: substitution.length,
                         offset: contentString.length,
@@ -61,7 +66,7 @@ export function parseInterpolation(args) {
         // Don't stringify a string type.
         // It adds quotation mark wrappers around the string,
         // which causes the LogBox to look odd.
-        return typeof arg === 'string' ? arg : stringifySafe(arg);
+        return typeof arg === 'string' ? arg : (0, stringifySafe_1.default)(arg);
     });
     categoryParts.push(...remainingArgs);
     contentParts.push(...remainingArgs);
@@ -73,17 +78,18 @@ export function parseInterpolation(args) {
         },
     };
 }
+exports.parseInterpolation = parseInterpolation;
 function isComponentStack(consoleArgument) {
     const isOldComponentStackFormat = / {4}in/.test(consoleArgument);
     const isNewComponentStackFormat = / {4}at/.test(consoleArgument);
     const isNewJSCComponentStackFormat = /@.*\n/.test(consoleArgument);
     return isOldComponentStackFormat || isNewComponentStackFormat || isNewJSCComponentStackFormat;
 }
-export function parseComponentStack(message) {
+function parseComponentStack(message) {
     // In newer versions of React, the component stack is formatted as a call stack frame.
     // First try to parse the component stack as a call stack frame, and if that doesn't
     // work then we'll fallback to the old custom component stack format parsing.
-    const stack = parseErrorStack(message);
+    const stack = (0, parseErrorStack_1.default)(message);
     if (stack && stack.length > 0) {
         return stack.map((frame) => ({
             content: frame.methodName,
@@ -114,7 +120,8 @@ export function parseComponentStack(message) {
     })
         .filter(Boolean);
 }
-export function parseLogBoxException(error) {
+exports.parseComponentStack = parseComponentStack;
+function parseLogBoxException(error) {
     const message = error.originalMessage != null ? error.originalMessage : 'Unknown';
     const metroInternalError = message.match(METRO_ERROR_FORMAT);
     if (metroInternalError) {
@@ -227,7 +234,8 @@ export function parseLogBoxException(error) {
         ...parseLogBoxLog([message]),
     };
 }
-export function parseLogBoxLog(args) {
+exports.parseLogBoxException = parseLogBoxException;
+function parseLogBoxLog(args) {
     const message = args[0];
     let argsWithoutComponentStack = [];
     let componentStack = [];
@@ -265,4 +273,5 @@ export function parseLogBoxLog(args) {
         componentStack,
     };
 }
+exports.parseLogBoxLog = parseLogBoxLog;
 //# sourceMappingURL=parseLogBoxLog.js.map

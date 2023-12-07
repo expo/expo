@@ -2,7 +2,6 @@
 
 #ifdef RCT_NEW_ARCH_ENABLED
 #include <react/renderer/uimanager/UIManager.h>
-#include "NewestShadowNodesRegistry.h"
 #endif
 
 #include <memory>
@@ -12,45 +11,38 @@
 #include <vector>
 
 #include "AnimatedSensorModule.h"
-#include "ErrorHandler.h"
+#include "EventHandlerRegistry.h"
+#include "JSScheduler.h"
 #include "LayoutAnimationsManager.h"
 #include "NativeReanimatedModuleSpec.h"
 #include "PlatformDepMethodsHolder.h"
-#include "RuntimeDecorator.h"
-#include "RuntimeManager.h"
-#include "Scheduler.h"
 #include "SingleInstanceChecker.h"
+#include "UIScheduler.h"
+
+#ifdef RCT_NEW_ARCH_ENABLED
+#include "PropsRegistry.h"
+#include "ReanimatedCommitHook.h"
+#if REACT_NATIVE_MINOR_VERSION >= 73
+#include "ReanimatedMountHook.h"
+#endif
+#endif
 
 namespace reanimated {
 
-using FrameCallback = std::function<void(double)>;
-
-class EventHandlerRegistry;
-
-class NativeReanimatedModule : public NativeReanimatedModuleSpec,
-                               public RuntimeManager {
+class NativeReanimatedModule : public NativeReanimatedModuleSpec {
  public:
   NativeReanimatedModule(
+      jsi::Runtime &rnRuntime,
       const std::shared_ptr<CallInvoker> &jsInvoker,
-      const std::shared_ptr<Scheduler> &scheduler,
-      const std::shared_ptr<jsi::Runtime> &rt,
-      const std::shared_ptr<ErrorHandler> &errorHandler,
-#ifdef RCT_NEW_ARCH_ENABLED
-  // nothing
-#else
-      std::function<jsi::Value(jsi::Runtime &, const int, const jsi::String &)>
-          propObtainer,
-#endif
-      PlatformDepMethodsHolder platformDepMethodsHolder);
+      const std::shared_ptr<MessageQueueThread> &jsQueue,
+      const std::shared_ptr<UIScheduler> &uiScheduler,
+      const PlatformDepMethodsHolder &platformDepMethodsHolder);
 
   ~NativeReanimatedModule();
 
-  std::shared_ptr<JSRuntimeHelper> runtimeHelper;
-
-  void installCoreFunctions(
+  void installValueUnpacker(
       jsi::Runtime &rt,
-      const jsi::Value &callGuard,
-      const jsi::Value &valueUnpacker) override;
+      const jsi::Value &valueUnpackerCode) override;
 
   jsi::Value makeShareableClone(
       jsi::Runtime &rt,
@@ -70,10 +62,20 @@ class NativeReanimatedModule : public NativeReanimatedModuleSpec,
 
   void scheduleOnUI(jsi::Runtime &rt, const jsi::Value &worklet) override;
 
+  jsi::Value createWorkletRuntime(
+      jsi::Runtime &rt,
+      const jsi::Value &name,
+      const jsi::Value &initializer) override;
+  jsi::Value scheduleOnRuntime(
+      jsi::Runtime &rt,
+      const jsi::Value &workletRuntimeValue,
+      const jsi::Value &shareableWorkletValue) override;
+
   jsi::Value registerEventHandler(
       jsi::Runtime &rt,
-      const jsi::Value &eventHash,
-      const jsi::Value &worklet) override;
+      const jsi::Value &worklet,
+      const jsi::Value &eventName,
+      const jsi::Value &emitterReactTag) override;
   void unregisterEventHandler(
       jsi::Runtime &rt,
       const jsi::Value &registrationId) override;
@@ -96,33 +98,35 @@ class NativeReanimatedModule : public NativeReanimatedModuleSpec,
       const jsi::Value &type,
       const jsi::Value &sharedTransitionTag,
       const jsi::Value &config) override;
+  void setShouldAnimateExiting(
+      jsi::Runtime &rt,
+      const jsi::Value &viewTag,
+      const jsi::Value &shouldAnimate) override;
 
   void onRender(double timestampMs);
 
-  void onEvent(
-      double eventTimestamp,
+  bool isAnyHandlerWaitingForEvent(
       const std::string &eventName,
-      const jsi::Value &payload);
-
-  bool isAnyHandlerWaitingForEvent(std::string eventName);
+      const int emitterReactTag);
 
   void maybeRequestRender();
-  UpdatePropsFunction updatePropsFunction;
 
   bool handleEvent(
       const std::string &eventName,
+      const int emitterReactTag,
       const jsi::Value &payload,
       double currentTime);
+
+  inline std::shared_ptr<JSLogger> getJSLogger() const {
+    return jsLogger_;
+  }
 
 #ifdef RCT_NEW_ARCH_ENABLED
   bool handleRawEvent(const RawEvent &rawEvent, double currentTime);
 
-  void updateProps(
-      jsi::Runtime &rt,
-      const jsi::Value &shadowNodeValue,
-      const jsi::Value &props);
+  void updateProps(jsi::Runtime &rt, const jsi::Value &operations);
 
-  void removeShadowNodeFromRegistry(jsi::Runtime &rt, const jsi::Value &tag);
+  void removeFromPropsRegistry(jsi::Runtime &rt, const jsi::Value &viewTags);
 
   void performOperations();
 
@@ -134,10 +138,7 @@ class NativeReanimatedModule : public NativeReanimatedModuleSpec,
 
   jsi::Value measure(jsi::Runtime &rt, const jsi::Value &shadowNodeValue);
 
-  void setUIManager(std::shared_ptr<UIManager> uiManager);
-
-  void setNewestShadowNodesRegistry(
-      std::shared_ptr<NewestShadowNodesRegistry> newestShadowNodesRegistry);
+  void initializeFabric(const std::shared_ptr<UIManager> &uiManager);
 #endif
 
   jsi::Value registerSensor(
@@ -162,24 +163,41 @@ class NativeReanimatedModule : public NativeReanimatedModuleSpec,
     return layoutAnimationsManager_;
   }
 
+  inline jsi::Runtime &getUIRuntime() {
+    return uiWorkletRuntime_->getJSIRuntime();
+  }
+
  private:
+  void requestAnimationFrame(jsi::Runtime &rt, const jsi::Value &callback);
+
 #ifdef RCT_NEW_ARCH_ENABLED
-  bool isThereAnyLayoutProp(jsi::Runtime &rt, const jsi::Value &props);
+  bool isThereAnyLayoutProp(jsi::Runtime &rt, const jsi::Object &props);
+  jsi::Value filterNonAnimatableProps(
+      jsi::Runtime &rt,
+      const jsi::Value &props);
 #endif // RCT_NEW_ARCH_ENABLED
 
-  std::unique_ptr<EventHandlerRegistry> eventHandlerRegistry;
-  std::function<void(FrameCallback &, jsi::Runtime &)> requestRender;
-  std::vector<FrameCallback> frameCallbacks;
-  bool renderRequested = false;
-  std::function<jsi::Value(jsi::Runtime &, const int, const jsi::String &)>
-      propObtainer;
-  std::function<void(double)> onRenderCallback;
-  AnimatedSensorModule animatedSensorModule;
-  ConfigurePropsFunction configurePropsPlatformFunction;
+  const std::shared_ptr<MessageQueueThread> jsQueue_;
+  const std::shared_ptr<JSScheduler> jsScheduler_;
+  const std::shared_ptr<UIScheduler> uiScheduler_;
+  std::shared_ptr<WorkletRuntime> uiWorkletRuntime_;
+  std::string valueUnpackerCode_;
+
+  std::unique_ptr<EventHandlerRegistry> eventHandlerRegistry_;
+  const RequestRenderFunction requestRender_;
+  std::vector<std::shared_ptr<jsi::Value>> frameCallbacks_;
+  volatile bool renderRequested_{false};
+  const std::function<void(const double)> onRenderCallback_;
+  AnimatedSensorModule animatedSensorModule_;
+  const std::shared_ptr<JSLogger> jsLogger_;
+  LayoutAnimationsManager layoutAnimationsManager_;
 
 #ifdef RCT_NEW_ARCH_ENABLED
-  SynchronouslyUpdateUIPropsFunction synchronouslyUpdateUIPropsFunction;
+  const SynchronouslyUpdateUIPropsFunction synchronouslyUpdateUIPropsFunction_;
 
+  std::unordered_set<std::string> nativePropNames_; // filled by configureProps
+  std::unordered_set<std::string>
+      animatablePropNames_; // filled by configureProps
   std::shared_ptr<UIManager> uiManager_;
 
   // After app reload, surfaceId on iOS is still 1 but on Android it's 11.
@@ -189,18 +207,23 @@ class NativeReanimatedModule : public NativeReanimatedModuleSpec,
   std::vector<std::pair<ShadowNode::Shared, std::unique_ptr<jsi::Value>>>
       operationsInBatch_; // TODO: refactor std::pair to custom struct
 
-  std::shared_ptr<NewestShadowNodesRegistry> newestShadowNodesRegistry_;
-
-  std::vector<Tag> tagsToRemove_; // from newestShadowNodesRegistry_
+  std::shared_ptr<PropsRegistry> propsRegistry_;
+  std::shared_ptr<ReanimatedCommitHook> commitHook_;
+#if REACT_NATIVE_MINOR_VERSION >= 73
+  std::shared_ptr<ReanimatedMountHook> mountHook_;
 #endif
 
-  std::unordered_set<std::string> nativePropNames_; // filled by configureProps
-  LayoutAnimationsManager layoutAnimationsManager_;
+  std::vector<Tag> tagsToRemove_; // from `propsRegistry_`
+#else
+  const ObtainPropFunction obtainPropFunction_;
+  const ConfigurePropsFunction configurePropsPlatformFunction_;
+  const UpdatePropsFunction updatePropsFunction_;
+#endif
 
-  KeyboardEventSubscribeFunction subscribeForKeyboardEventsFunction;
-  KeyboardEventUnsubscribeFunction unsubscribeFromKeyboardEventsFunction;
+  const KeyboardEventSubscribeFunction subscribeForKeyboardEventsFunction_;
+  const KeyboardEventUnsubscribeFunction unsubscribeFromKeyboardEventsFunction_;
 
-#ifdef DEBUG
+#ifndef NDEBUG
   SingleInstanceChecker<NativeReanimatedModule> singleInstanceChecker_;
 #endif
 };

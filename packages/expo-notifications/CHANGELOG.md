@@ -10,6 +10,51 @@
 
 ### 💡 Others
 
+## 0.26.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.25.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- Send background notifications through when the app is in the foreground ([#24684](https://github.com/expo/expo/pull/24684) by [@kadikraman](https://github.com/kadikraman))
+
+### 💡 Others
+
+- Migrated codebase to use Expo Modules API. ([#24499](https://github.com/expo/expo/pull/24499) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.24.2 — 2023-09-18
+
+_This version does not introduce any user-facing changes._
+
+## 0.24.1 — 2023-09-15
+
+### 💡 Others
+
+- Remove legacy expo package notifications module code. ([#24325](https://github.com/expo/expo/pull/24325) by [@wschurman](https://github.com/wschurman))
+
+## 0.24.0 — 2023-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.23.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Fix server rendering with Metro web. ([#24195](https://github.com/expo/expo/pull/24195) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.22.0 — 2023-08-02
 
 _This version does not introduce any user-facing changes._

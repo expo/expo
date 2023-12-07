@@ -1,5 +1,12 @@
 export default [
   {
+    name: 'withoutCredentials',
+    type: 'boolean',
+    description: [
+      "When set to `true`, EAS CLI won't require you to configure credentials when building the app. This comes in handy when using EAS Build [custom builds](/custom-builds/get-started/).",
+    ],
+  },
+  {
     name: 'extends',
     type: 'string',
     description: [
@@ -59,7 +66,7 @@ export default [
     enum: ['default', 'medium', 'large'],
     description: [
       'The resource class that will be used to run this build.',
-      'To see mapping for each platform, see [Android-specific resource class field](eas-json/#resourceclass-1) and [iOS-specific resource class field](eas-json/#resourceclass-2) documentation.',
+      'To see mapping for each platform, see [Android-specific resource class field](#resourceclass-1) and [iOS-specific resource class field](#resourceclass-2) documentation.',
       '',
       'The `large` resource class is not available on the free plan.',
     ],
@@ -90,6 +97,11 @@ export default [
     name: 'yarn',
     type: 'string',
     description: ['Version of Yarn.'],
+  },
+  {
+    name: 'pnpm',
+    type: 'string',
+    description: ['Version of pnpm.'],
   },
   {
     name: 'expoCli',

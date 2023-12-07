@@ -23,8 +23,7 @@ export interface Options {
   sourcemapSourcesRoot?: string;
   sourcemapUseAbsolutePath: boolean;
   verbose: boolean;
-  unstableTransformProfile: string;
-  generateStaticViewConfigs: boolean;
+  unstableTransformProfile?: string;
 }
 
 function assertIsBoolean(val: any): asserts val is boolean {
@@ -40,10 +39,7 @@ export function resolveOptions(
   const dev = parsed.args['--dev'] ?? true;
   assertIsBoolean(dev);
 
-  const generateStaticViewConfigs = parsed.args['--generate-static-view-configs'] ?? true;
-  assertIsBoolean(generateStaticViewConfigs);
-
-  const minify = parsed.args['--minify'] ?? true;
+  const minify = parsed.args['--minify'] ?? !dev;
   assertIsBoolean(minify);
 
   const entryFile = args['--entry-file'];
@@ -68,13 +64,12 @@ export function resolveOptions(
     sourcemapSourcesRoot: args['--sourcemap-sources-root'],
     sourcemapUseAbsolutePath: !!parsed.args['--sourcemap-use-absolute-path'],
     assetsDest: args['--assets-dest'],
-    unstableTransformProfile: args['--unstable-transform-profile'] ?? 'default',
+    unstableTransformProfile: args['--unstable-transform-profile'],
     resetCache: !!parsed.args['--reset-cache'],
     resetGlobalCache: false,
     verbose: args['--verbose'] ?? env.EXPO_DEBUG,
     config: args['--config'] ? path.resolve(args['--config']) : undefined,
     dev,
-    generateStaticViewConfigs,
     minify,
   };
 }

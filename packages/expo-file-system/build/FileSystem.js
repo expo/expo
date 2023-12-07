@@ -1,4 +1,4 @@
-import { EventEmitter, UnavailabilityError, uuidv4 } from 'expo-modules-core';
+import { EventEmitter, UnavailabilityError, uuid } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import ExponentFileSystem from './ExponentFileSystem';
 import { FileSystemSessionType, FileSystemUploadType, } from './FileSystem.types';
@@ -25,8 +25,10 @@ export const documentDirectory = normalizeEndingSlash(ExponentFileSystem.documen
  * Example uses are for downloaded or generated files that the app just needs for one-time usage.
  */
 export const cacheDirectory = normalizeEndingSlash(ExponentFileSystem.cacheDirectory);
-// @docsMissing
-export const { bundledAssets, bundleDirectory } = ExponentFileSystem;
+/**
+ * URI to the directory where assets bundled with the application are stored.
+ */
+export const bundleDirectory = normalizeEndingSlash(ExponentFileSystem.bundleDirectory);
 /**
  * Get metadata information about a file, directory or external content/asset.
  * @param fileUri URI to the file or directory. See [supported URI schemes](#supported-uri-schemes).
@@ -268,7 +270,7 @@ export function createUploadTask(url, fileUri, options, callback) {
     return new UploadTask(url, fileUri, options, callback);
 }
 export class FileSystemCancellableNetworkTask {
-    _uuid = uuidv4();
+    _uuid = uuid.v4();
     taskWasCanceled = false;
     emitter = new EventEmitter(ExponentFileSystem);
     subscription;

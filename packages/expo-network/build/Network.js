@@ -50,28 +50,6 @@ export async function getIpAddressAsync() {
 }
 // @needsAudit
 /**
- * Gets the specified network interface's MAC address.
- *
- * > Beginning with iOS 7 and Android 11, non-system applications can no longer access the device's
- * MAC address. In SDK 41 and above, this method will always resolve to a predefined value that
- * isn't useful.
- *
- * If you need to identify the device, use the `getIosIdForVendorAsync()` method / `androidId`
- * property of the `expo-application` unimodule instead.
- *
- * @deprecated This method is deprecated and will be removed in a future SDK version.
- *
- * @param interfaceName A string representing interface name (`eth0`, `wlan0`) or `null` (default),
- * meaning the method should fetch the MAC address of the first available interface.
- *
- * @return A `Promise` that fulfils with the value `'02:00:00:00:00:00'`.
- */
-export async function getMacAddressAsync(interfaceName = null) {
-    console.warn('Network.getMacAddressAsync has been deprecated and will be removed in a future SDK version. To uniquely identify a device, use the expo-application module instead.');
-    return '02:00:00:00:00:00';
-}
-// @needsAudit
-/**
  * Tells if the device is in airplane mode.
  * @return Returns a `Promise` that fulfils with a `boolean` value for whether the device is in
  * airplane mode or not.

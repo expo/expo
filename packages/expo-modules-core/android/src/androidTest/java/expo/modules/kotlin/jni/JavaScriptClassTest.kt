@@ -46,7 +46,7 @@ class JavaScriptClassTest {
     inlineModule {
       Name("TestModule")
       Class("MyClass") {
-        Property("foo") {
+        Property("foo") { ->
           "bar"
         }
       }
@@ -65,7 +65,7 @@ class JavaScriptClassTest {
         Function("f") { owner: JavaScriptObject ->
           return@Function owner.getProperty("foo").getString()
         }
-        Property("foo") {
+        Property("foo") { ->
           "bar"
         }
       }
@@ -206,5 +206,39 @@ class JavaScriptClassTest {
   ) {
     val result = evaluateScript("new expo.modules.TestModule.MyClass().foo").getString()
     Truth.assertThat(result).isEqualTo("bar")
+  }
+
+  @Test
+  fun class_with_shared_object_should_receives_self_in_properties() {
+    class MySharedObject : SharedObject() {
+      var x: Int = 20
+      var y: Int = 30
+    }
+
+    withJSIInterop(
+      inlineModule {
+        Name("TestModule")
+        Class(MySharedObject::class) {
+          Constructor {
+            return@Constructor MySharedObject()
+          }
+
+          Property("x") { self: MySharedObject ->
+            self.x
+          }
+
+          Property("y")
+            .get { self: MySharedObject ->
+              self.y
+            }
+        }
+      }
+    ) {
+      val x = evaluateScript("(new expo.modules.TestModule.MySharedObject()).x").getInt()
+      val y = evaluateScript("(new expo.modules.TestModule.MySharedObject()).y").getInt()
+
+      Truth.assertThat(x).isEqualTo(20)
+      Truth.assertThat(y).isEqualTo(30)
+    }
   }
 }

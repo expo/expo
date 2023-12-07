@@ -248,11 +248,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)_handleMenuCommand
 {
-  if ([EXEnvironment sharedEnvironment].isDetached) {
-    [[EXKernel sharedInstance].visibleApp.appManager showDevMenu];
-  } else {
-    [[EXKernel sharedInstance] switchTasks];
-  }
+  [[EXKernel sharedInstance] switchTasks];
 }
 
 - (void)_handleRefreshCommand

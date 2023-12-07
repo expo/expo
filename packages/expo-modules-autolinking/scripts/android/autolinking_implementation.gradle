@@ -79,9 +79,12 @@ class ExpoAutolinkingManager {
     this.options = options
   }
 
-  Object resolve() {
+  Object resolve(shouldUseCachedValue=false) {
     if (cachedResolvingResults) {
       return cachedResolvingResults
+    }
+    if (shouldUseCachedValue) {
+      logger.warn("Warning: Expo modules were resolved multiple times. Probably something is wrong with the project configuration.")
     }
     String[] args = convertOptionsToCommandArgs('resolve', this.options)
     args += ['--json']
@@ -97,32 +100,36 @@ class ExpoAutolinkingManager {
     return options?.useAAR == true
   }
 
-  ExpoModule[] getModules() {
-    Object json = resolve()
+  ExpoModule[] getModules(shouldUseCachedValue=false) {
+    Object json = resolve(shouldUseCachedValue)
     return json.modules.collect { new ExpoModule(it) }
   }
 
-  MavenRepo[] getExtraMavenRepos() {
-    Object json = resolve()
+  MavenRepo[] getExtraMavenRepos(shouldUseCachedValue=false) {
+    Object json = resolve(shouldUseCachedValue)
     return json.extraDependencies.androidMavenRepos.collect { new MavenRepo(it) }
+  }
+
+  static String getGeneratedFilePath(Project project) {
+    return Paths.get(
+      project.buildDir.toString(),
+      generatedFilesSrcDir,
+      generatedPackageListNamespace.replace('.', '/'),
+      generatedPackageListFilename
+    ).toString()
   }
 
   static void generatePackageList(Project project, Map options) {
     String[] args = convertOptionsToCommandArgs('generate-package-list', options)
 
     // Construct absolute path to generated package list.
-    def generatedFilePath = Paths.get(
-      project.buildDir.toString(),
-      generatedFilesSrcDir,
-      generatedPackageListNamespace.replace('.', '/'),
-      generatedPackageListFilename
-    )
+    def generatedFilePath = getGeneratedFilePath(project)
 
     args += [
       '--namespace',
       generatedPackageListNamespace,
       '--target',
-      generatedFilePath.toString()
+      generatedFilePath
     ]
 
     if (options == null) {
@@ -146,7 +153,8 @@ class ExpoAutolinkingManager {
       'node',
       '--no-warnings',
       '--eval',
-      'require(\'expo-modules-autolinking\')(process.argv.slice(1))',
+      // Resolve the `expo` > `expo-modules-autolinking` chain from the project root
+      'require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo\')] }))(process.argv.slice(1))',
       '--',
       command,
       '--platform',
@@ -267,7 +275,7 @@ if (rootProject instanceof ProjectDescriptor) {
 
   def addDependencies = { DependencyHandler handler, Project project ->
     def manager = validateExpoAutolinkingManager(gradle.ext.expoAutolinkingManager)
-    def modules = manager.getModules()
+    def modules = manager.getModules(true)
 
     if (!modules.length) {
       return
@@ -334,12 +342,25 @@ if (rootProject instanceof ProjectDescriptor) {
     ExpoAutolinkingManager.generatePackageList(project, options)
   }
 
+  ext.getGenerateExpoModulesPackagesListPath = {
+    return ExpoAutolinkingManager.getGeneratedFilePath(project)
+  }
+
+  ext.getModulesConfig = {
+    if (!gradle.ext.has('expoAutolinkingManager')) {
+      return null
+    }
+
+    def modules = gradle.ext.expoAutolinkingManager.resolve(true).modules
+    return modules.toString()
+  }
+
   ext.ensureDependeciesWereEvaluated = { Project project ->
     if (!gradle.ext.has('expoAutolinkingManager')) {
       return
     }
 
-    def modules = gradle.ext.expoAutolinkingManager.getModules()
+    def modules = gradle.ext.expoAutolinkingManager.getModules(true)
     for (module in modules) {
       for (moduleProject in module.projects) {
         def dependency = project.findProject(":${moduleProject.name}")

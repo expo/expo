@@ -1,6 +1,6 @@
 {
   "name": "ABI49_0_0EXSplashScreen",
-  "version": "0.20.4",
+  "version": "0.20.5",
   "summary": "Provides a module to allow keeping the native Splash Screen visible until you choose to hide it.",
   "description": "Provides a module to allow keeping the native Splash Screen visible until you choose to hide it.",
   "license": "MIT",
@@ -15,7 +15,7 @@
   "static_framework": true,
   "dependencies": {
     "RCT-Folly": [
-      "2021.07.22.00"
+      "2022.05.16.00"
     ],
     "ABI49_0_0ExpoModulesCore": [],
     "ABI49_0_0React-Core": []

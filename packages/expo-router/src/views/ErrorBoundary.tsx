@@ -1,46 +1,85 @@
-import { Pressable, StyleSheet, Text, View } from '@bacons/react-views';
-import { LogContext } from '@expo/metro-runtime/build/error-overlay/Data/LogContext';
-import { LogBoxInspectorStackFrames } from '@expo/metro-runtime/build/error-overlay/overlay/LogBoxInspectorStackFrames';
-import { LogBoxLog, parseErrorStack } from '@expo/metro-runtime/symbolicate';
+import type { LogBoxLog } from '@expo/metro-runtime/symbolicate';
 import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
 import React from 'react';
-import { Platform, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Platform, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Link } from '../link/Link';
+import { Pressable } from './Pressable';
 import { ErrorBoundaryProps } from './Try';
+import { Link } from '../link/Link';
 
-function useMetroSymbolication(error: Error) {
-  const [logBoxLog, setLogBoxLog] = React.useState<LogBoxLog | null>(null);
+let useMetroSymbolication: (error: Error) => LogBoxLog | null;
 
-  React.useEffect(() => {
-    let isMounted = true;
-    const stack = parseErrorStack(error.stack);
+if (process.env.NODE_ENV === 'development') {
+  const { LogBoxLog, parseErrorStack } =
+    require('@expo/metro-runtime/symbolicate') as typeof import('@expo/metro-runtime/symbolicate');
+  useMetroSymbolication = function (error: Error) {
+    const [logBoxLog, setLogBoxLog] = React.useState<LogBoxLog | null>(null);
 
-    const log = new LogBoxLog({
-      level: 'error',
-      message: {
-        content: error.message,
-        substitutions: [],
-      },
-      isComponentError: false,
-      stack,
-      category: error.message,
-      componentStack: [],
-    });
+    React.useEffect(() => {
+      let isMounted = true;
+      const stack = parseErrorStack(error.stack);
 
-    log.symbolicate('stack', (symbolicatedLog) => {
-      if (isMounted) {
-        setLogBoxLog(log);
-      }
-    });
+      const log = new LogBoxLog({
+        level: 'error',
+        message: {
+          content: error.message,
+          substitutions: [],
+        },
+        isComponentError: false,
+        stack,
+        category: error.message,
+        componentStack: [],
+      });
 
-    return () => {
-      isMounted = false;
-    };
-  }, [error]);
+      log.symbolicate('stack', (symbolicatedLog) => {
+        if (isMounted) {
+          setLogBoxLog(log);
+        }
+      });
 
-  return logBoxLog;
+      return () => {
+        isMounted = false;
+      };
+    }, [error]);
+
+    return logBoxLog;
+  };
+} else {
+  useMetroSymbolication = function () {
+    return null;
+  };
+}
+
+let StackTrace: React.FC<{ logData: LogBoxLog | null }>;
+
+if (process.env.NODE_ENV === 'development') {
+  const { LogContext } = require('@expo/metro-runtime/build/error-overlay/Data/LogContext');
+  const {
+    LogBoxInspectorStackFrames,
+  } = require('@expo/metro-runtime/build/error-overlay/overlay/LogBoxInspectorStackFrames');
+
+  StackTrace = function ({ logData }: { logData: LogBoxLog | null }) {
+    if (!logData?.symbolicated?.stack?.stack) {
+      return null;
+    }
+    return (
+      <ScrollView style={{ flex: 1 }}>
+        <LogContext.Provider
+          value={{
+            isDisabled: false,
+            logs: [logData],
+            selectedLogIndex: 0,
+          }}>
+          <LogBoxInspectorStackFrames onRetry={function () {}} type="stack" />
+        </LogContext.Provider>
+      </ScrollView>
+    );
+  };
+} else {
+  StackTrace = function () {
+    return <View style={{ flex: 1 }} />;
+  };
 }
 
 export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
@@ -54,13 +93,14 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
         <View
           style={{
             marginBottom: 12,
-            flexDirection: 'row',
+            gap: 4,
             flexWrap: 'wrap',
-            justifyContent: 'space-between',
-            alignItems: 'center',
           }}>
           <Text role="heading" aria-level={1} style={styles.title}>
             Something went wrong
+          </Text>
+          <Text role="heading" aria-level={2} style={styles.errorMessage}>
+            Error: {error.message}
           </Text>
         </View>
 
@@ -78,7 +118,6 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
                 style={[
                   styles.buttonText,
                   {
-                    transitionDuration: '100ms',
                     color: hovered || pressed ? 'black' : 'white',
                   },
                 ]}>
@@ -89,24 +128,6 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
         </Pressable>
       </Wrapper>
     </View>
-  );
-}
-
-function StackTrace({ logData }: { logData: LogBoxLog | null }) {
-  if (!logData?.symbolicated?.stack?.stack) {
-    return null;
-  }
-  return (
-    <ScrollView style={{ flex: 1 }}>
-      <LogContext.Provider
-        value={{
-          isDisabled: false,
-          logs: [logData],
-          selectedLogIndex: 0,
-        }}>
-        <LogBoxInspectorStackFrames onRetry={function () {}} type="stack" />
-      </LogContext.Provider>
-    </ScrollView>
   );
 }
 
@@ -127,9 +148,18 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: 'black',
+    ...Platform.select({
+      web: {
+        transitionDuration: '100ms',
+      },
+    }),
   },
   buttonInner: {
-    transitionDuration: '100ms',
+    ...Platform.select({
+      web: {
+        transitionDuration: '100ms',
+      },
+    }),
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderColor: 'white',
@@ -145,6 +175,10 @@ const styles = StyleSheet.create({
       android: 'monospace',
     }),
     fontWeight: '500',
+  },
+  errorMessage: {
+    color: 'white',
+    fontSize: 16,
   },
   subtitle: {
     color: 'white',

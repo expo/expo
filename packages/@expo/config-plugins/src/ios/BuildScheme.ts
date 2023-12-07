@@ -1,7 +1,7 @@
-import { readXMLAsync } from '../utils/XML';
 import { findSchemeNames, findSchemePaths } from './Paths';
 import { findSignableTargets, TargetType } from './Target';
 import { getPbxproj, unquote } from './utils/Xcodeproj';
+import { readXMLAsync } from '../utils/XML';
 
 interface SchemeXML {
   Scheme?: {

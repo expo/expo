@@ -1,7 +1,7 @@
-import * as Log from '../../../log';
-import { installExitHooks } from '../../../utils/exit';
 import { assertSdkRoot } from './AndroidSdk';
 import { adbArgs, Device, getAttachedDevicesAsync, getServer, logUnauthorized } from './adb';
+import * as Log from '../../../log';
+import { installExitHooks } from '../../../utils/exit';
 
 const debug = require('debug')('expo:start:platforms:android:adbReverse') as typeof console.log;
 

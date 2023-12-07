@@ -9,6 +9,7 @@ import type {
   ResultSet,
   ResultSetError,
   SQLiteCallback,
+  SQLStatementArg,
   SQLTransactionAsyncCallback,
   SQLTransactionAsync,
   SQLTransactionCallback,
@@ -49,6 +50,26 @@ export class SQLiteDatabase {
       },
       (error) => {
         // TODO: make the native API consistently reject with an error, not a string or other type
+        callback(error instanceof Error ? error : new Error(error));
+      }
+    );
+  }
+
+  /**
+   * Due to limitations on `Android` this function is provided to allow raw SQL queries to be
+   * executed on the database. This will be less efficient than using the `exec` function, please use
+   * only when necessary.
+   */
+  execRawQuery(queries: Query[], readOnly: boolean, callback: SQLiteCallback): void {
+    if (Platform.OS === 'ios') {
+      return this.exec(queries, readOnly, callback);
+    }
+
+    ExpoSQLite.execRawQuery(this._name, queries.map(_serializeQuery), readOnly).then(
+      (nativeResultSets) => {
+        callback(null, nativeResultSets.map(_deserializeResultSet));
+      },
+      (error) => {
         callback(error instanceof Error ? error : new Error(error));
       }
     );
@@ -105,6 +126,10 @@ export class SQLiteDatabase {
     return ExpoSQLite.deleteAsync(this._name);
   }
 
+  /**
+   * Used to listen to changes in the database.
+   * @param callback A function that receives the `tableName` and `rowId` of the modified data.
+   */
   onDatabaseChange(cb: (result: { tableName: string; rowId: number }) => void) {
     return emitter.addListener('onDatabaseChange', cb);
   }
@@ -220,6 +245,7 @@ export function openDatabase(
   }
   const db = _openExpoSQLiteDatabase(name, version, description, size, callback);
   db.exec = db._db.exec.bind(db._db);
+  db.execRawQuery = db._db.execRawQuery.bind(db._db);
   db.execAsync = db._db.execAsync.bind(db._db);
   db.closeAsync = db._db.closeAsync.bind(db._db);
   db.closeSync = db._db.closeSync.bind(db._db);
@@ -234,16 +260,24 @@ export function openDatabase(
  * @internal
  */
 export class ExpoSQLTransactionAsync implements SQLTransactionAsync {
-  constructor(private readonly db: SQLiteDatabase, private readonly readOnly: boolean) {}
+  constructor(
+    private readonly db: SQLiteDatabase,
+    private readonly readOnly: boolean
+  ) {}
 
-  async executeSqlAsync(
-    sqlStatement: string,
-    args?: (number | string)[]
-  ): Promise<ResultSetError | ResultSet> {
+  async executeSqlAsync(sqlStatement: string, args?: SQLStatementArg[]): Promise<ResultSet> {
     const resultSets = await this.db.execAsync(
       [{ sql: sqlStatement, args: args ?? [] }],
       this.readOnly
     );
-    return resultSets[0];
+    const result = resultSets[0];
+    if (isResultSetError(result)) {
+      throw result.error;
+    }
+    return result;
   }
+}
+
+function isResultSetError(result: ResultSet | ResultSetError): result is ResultSetError {
+  return 'error' in result;
 }

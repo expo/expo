@@ -140,7 +140,7 @@ export type FileSystemUploadResult = FileSystemHttpResult & {
 
 // @docsMissing
 export type FileSystemNetworkTaskProgressCallback<
-  T extends DownloadProgressData | UploadProgressData
+  T extends DownloadProgressData | UploadProgressData,
 > = (data: T) => void;
 
 /**

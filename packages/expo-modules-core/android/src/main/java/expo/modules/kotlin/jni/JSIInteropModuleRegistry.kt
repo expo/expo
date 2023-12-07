@@ -32,8 +32,7 @@ class JSIInteropModuleRegistry(appContext: AppContext) : Destructible {
   external fun installJSI(
     jsRuntimePointer: Long,
     jniDeallocator: JNIDeallocator,
-    jsInvokerHolder: CallInvokerHolderImpl,
-    nativeInvokerHolder: CallInvokerHolderImpl
+    jsInvokerHolder: CallInvokerHolderImpl
   )
 
   /**
@@ -68,6 +67,11 @@ class JSIInteropModuleRegistry(appContext: AppContext) : Destructible {
    * Drains the JavaScript VM internal Microtask (a.k.a. event loop) queue.
    */
   external fun drainJSEventLoop()
+
+  /**
+   * Informs C++ that runtime was deallocated.
+   */
+  external fun wasDeallocated()
 
   /**
    * Returns a `JavaScriptModuleObject` that is a bridge between [expo.modules.kotlin.modules.Module]

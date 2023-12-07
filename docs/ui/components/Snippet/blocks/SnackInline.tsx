@@ -12,6 +12,7 @@ import { cleanCopyValue } from '~/components/base/code';
 import { PageApiVersionContextType, usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
 import { CopyAction } from '~/ui/components/Snippet/actions/CopyAction';
+import { SettingsAction } from '~/ui/components/Snippet/actions/SettingsAction';
 
 const DEFAULT_PLATFORM = 'android';
 const { LATEST_VERSION } = versions;
@@ -105,6 +106,7 @@ export const SnackInline = ({
             type="submit">
             {buttonTitle || 'Open in Snack'}
           </SnippetAction>
+          <SettingsAction />
         </form>
       </SnippetHeader>
       <SnippetContent ref={contentRef} className={mergeClasses('p-0', contentHidden && 'hidden')}>

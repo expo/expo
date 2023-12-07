@@ -1,15 +1,16 @@
 {
   "name": "@expo/prebuild-config",
-  "version": "6.3.0",
+  "version": "6.6.0",
   "description": "Get the prebuild config",
   "main": "build/index.js",
   "scripts": {
-    "watch": "tsc --watch --preserveWatchOutput",
     "build": "tsc --emitDeclarationOnly && babel src --out-dir build --extensions \".ts\" --source-maps --ignore \"src/**/__mocks__/*\",\"src/**/__tests__/*\"",
-    "prepare": "yarn run clean && yarn build",
-    "clean": "rimraf build ./tsconfig.tsbuildinfo",
-    "lint": "eslint .",
-    "test": "jest"
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "prepare": "expo-module clean && yarn run build",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "test": "expo-module test",
+    "typecheck": "expo-module typecheck"
   },
   "repository": {
     "type": "git",
@@ -35,10 +36,10 @@
     "@types/xml2js": "~0.4.11"
   },
   "dependencies": {
-    "@expo/config": "~8.2.0",
-    "@expo/config-plugins": "~7.3.0",
-    "@expo/config-types": "^49.0.0-alpha.1",
-    "@expo/image-utils": "0.3.22",
+    "@expo/config": "~8.4.0",
+    "@expo/config-plugins": "~7.7.0",
+    "@expo/config-types": "^50.0.0-alpha.1",
+    "@expo/image-utils": "^0.3.23",
     "@expo/json-file": "^8.2.37",
     "debug": "^4.3.1",
     "fs-extra": "^9.0.0",
@@ -47,6 +48,7 @@
     "xml2js": "0.6.0"
   },
   "peerDependencies": {
+    "expo-module-scripts": "^3.3.0",
     "expo-modules-autolinking": ">=0.8.1"
   },
   "publishConfig": {

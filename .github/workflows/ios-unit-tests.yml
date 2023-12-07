@@ -37,14 +37,14 @@ concurrency:
 jobs:
   build:
     runs-on: macos-13
-    timeout-minutes: 60
+    timeout-minutes: 75
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
         with:
           submodules: true
-      - name: 🔨 Switch to Xcode 14.3
-        run: sudo xcode-select --switch /Applications/Xcode_14.3.app
+      - name: 🔨 Switch to Xcode 14.3.1
+        run: sudo xcode-select --switch /Applications/Xcode_14.3.1.app
       - name: 🔓 Decrypt secrets if possible
         uses: ./.github/actions/expo-git-decrypt
         with:
@@ -71,7 +71,9 @@ jobs:
         run: pod install
         working-directory: apps/native-tests/ios
       - name: 🧪 Run native iOS unit tests
-        timeout-minutes: 45
+        timeout-minutes: 60
         env:
           FASTLANE_SKIP_UPDATE_CHECK: '1'
+          FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 30
+          FASTLANE_XCODEBUILD_SETTINGS_RETRIES: 8
         run: expotools native-unit-tests --platform ios

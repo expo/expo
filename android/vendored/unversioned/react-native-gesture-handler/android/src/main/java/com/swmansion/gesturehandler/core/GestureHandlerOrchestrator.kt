@@ -19,13 +19,9 @@ class GestureHandlerOrchestrator(
    * traversing view hierarchy and looking for gesture handlers.
    */
   var minimumAlphaForTraversal = DEFAULT_MIN_ALPHA_FOR_TRAVERSAL
-
-  private val gestureHandlers = arrayOfNulls<GestureHandler<*>?>(SIMULTANEOUS_GESTURE_HANDLER_LIMIT)
-  private val awaitingHandlers = arrayOfNulls<GestureHandler<*>?>(SIMULTANEOUS_GESTURE_HANDLER_LIMIT)
-  private val preparedHandlers = arrayOfNulls<GestureHandler<*>?>(SIMULTANEOUS_GESTURE_HANDLER_LIMIT)
-  private val handlersToCancel = arrayOfNulls<GestureHandler<*>?>(SIMULTANEOUS_GESTURE_HANDLER_LIMIT)
-  private var gestureHandlersCount = 0
-  private var awaitingHandlersCount = 0
+  private val gestureHandlers = arrayListOf<GestureHandler<*>>()
+  private val awaitingHandlers = arrayListOf<GestureHandler<*>>()
+  private val preparedHandlers = arrayListOf<GestureHandler<*>>()
   private var isHandlingTouch = false
   private var handlingChangeSemaphore = 0
   private var finishedHandlersCleanupScheduled = false
@@ -37,7 +33,7 @@ class GestureHandlerOrchestrator(
   fun onTouchEvent(event: MotionEvent): Boolean {
     isHandlingTouch = true
     val action = event.actionMasked
-    if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
+    if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN || action == MotionEvent.ACTION_HOVER_MOVE) {
       extractGestureHandlers(event)
     } else if (action == MotionEvent.ACTION_CANCEL) {
       cancelAll()
@@ -60,23 +56,9 @@ class GestureHandlerOrchestrator(
     }
   }
 
-  private inline fun compactHandlersIf(handlers: Array<GestureHandler<*>?>, count: Int, predicate: (handler: GestureHandler<*>?) -> Boolean): Int {
-    var out = 0
-    for (i in 0 until count) {
-      if (predicate(handlers[i])) {
-        handlers[out++] = handlers[i]
-      }
-    }
-    return out
-  }
-
   private fun cleanupFinishedHandlers() {
-    var shouldCleanEmptyCells = false
-    for (i in gestureHandlersCount - 1 downTo 0) {
-      val handler = gestureHandlers[i]!!
+    for (handler in gestureHandlers.asReversed()) {
       if (isFinished(handler.state) && !handler.isAwaiting) {
-        gestureHandlers[i] = null
-        shouldCleanEmptyCells = true
         handler.reset()
         handler.apply {
           isActive = false
@@ -85,17 +67,14 @@ class GestureHandlerOrchestrator(
         }
       }
     }
-    if (shouldCleanEmptyCells) {
-      gestureHandlersCount = compactHandlersIf(gestureHandlers, gestureHandlersCount) { handler ->
-        handler != null
-      }
-    }
+
+    gestureHandlers.removeAll { isFinished(it.state) && !it.isAwaiting }
+
     finishedHandlersCleanupScheduled = false
   }
 
   private fun hasOtherHandlerToWaitFor(handler: GestureHandler<*>): Boolean {
-    for (i in 0 until gestureHandlersCount) {
-      val otherHandler = gestureHandlers[i]!!
+    for (otherHandler in gestureHandlers) {
       if (!isFinished(otherHandler.state) && shouldHandlerWaitForOther(handler, otherHandler)) {
         return true
       }
@@ -115,9 +94,7 @@ class GestureHandlerOrchestrator(
   }
 
   private fun cleanupAwaitingHandlers() {
-    awaitingHandlersCount = compactHandlersIf(awaitingHandlers, awaitingHandlersCount) { handler ->
-      handler!!.isAwaiting
-    }
+    awaitingHandlers.removeAll { !it.isAwaiting }
   }
 
   /*package*/
@@ -125,9 +102,8 @@ class GestureHandlerOrchestrator(
     handlingChangeSemaphore += 1
     if (isFinished(newState)) {
       // if there were handlers awaiting completion of this handler, we can trigger active state
-      for (i in 0 until awaitingHandlersCount) {
-        val otherHandler = awaitingHandlers[i]
-        if (shouldHandlerWaitForOther(otherHandler!!, handler)) {
+      for (otherHandler in awaitingHandlers) {
+        if (shouldHandlerWaitForOther(otherHandler, handler)) {
           if (newState == GestureHandler.STATE_END) {
             // gesture has ended, we need to kill the awaiting handler
             otherHandler.cancel()
@@ -182,21 +158,15 @@ class GestureHandlerOrchestrator(
       shouldResetProgress = true
       activationIndex = this@GestureHandlerOrchestrator.activationIndex++
     }
-    var toCancelCount = 0
-    // Cancel all handlers that are required to be cancel upon current handler's activation
-    for (i in 0 until gestureHandlersCount) {
-      val otherHandler = gestureHandlers[i]!!
+
+    for (otherHandler in gestureHandlers.asReversed()) {
       if (shouldHandlerBeCancelledBy(otherHandler, handler)) {
-        handlersToCancel[toCancelCount++] = otherHandler
+        otherHandler.cancel()
       }
-    }
-    for (i in toCancelCount - 1 downTo 0) {
-      handlersToCancel[i]!!.cancel()
     }
 
     // Clear all awaiting handlers waiting for the current handler to fail
-    for (i in awaitingHandlersCount - 1 downTo 0) {
-      val otherHandler = awaitingHandlers[i]!!
+    for (otherHandler in awaitingHandlers.reversed()) {
       if (shouldHandlerBeCancelledBy(otherHandler, handler)) {
         otherHandler.cancel()
         otherHandler.isAwaiting = false
@@ -218,32 +188,31 @@ class GestureHandlerOrchestrator(
   private fun deliverEventToGestureHandlers(event: MotionEvent) {
     // Copy handlers to "prepared handlers" array, because the list of active handlers can change
     // as a result of state updates
-    val handlersCount = gestureHandlersCount
+    preparedHandlers.clear()
+    preparedHandlers.addAll(gestureHandlers)
 
-    gestureHandlers.copyInto(preparedHandlers, 0, 0, handlersCount)
     // We want to deliver events to active handlers first in order of their activation (handlers
     // that activated first will first get event delivered). Otherwise we deliver events in the
     // order in which handlers has been added ("most direct" children goes first). Therefore we rely
     // on Arrays.sort providing a stable sort (as children are registered in order in which they
     // should be tested)
-    preparedHandlers.sortWith(handlersComparator, 0, handlersCount)
-    for (i in 0 until handlersCount) {
-      deliverEventToGestureHandler(preparedHandlers[i]!!, event)
+    preparedHandlers.sortWith(handlersComparator)
+    for (handler in preparedHandlers) {
+      deliverEventToGestureHandler(handler, event)
     }
   }
 
   private fun cancelAll() {
-    for (i in awaitingHandlersCount - 1 downTo 0) {
-      awaitingHandlers[i]!!.cancel()
+    for (handler in awaitingHandlers.reversed()) {
+      handler.cancel()
     }
     // Copy handlers to "prepared handlers" array, because the list of active handlers can change
     // as a result of state updates
-    val handlersCount = gestureHandlersCount
-    for (i in 0 until handlersCount) {
-      preparedHandlers[i] = gestureHandlers[i]
-    }
-    for (i in handlersCount - 1 downTo 0) {
-      preparedHandlers[i]!!.cancel()
+    preparedHandlers.clear()
+    preparedHandlers.addAll(gestureHandlers)
+
+    for (handler in gestureHandlers.reversed()) {
+      handler.cancel()
     }
   }
 
@@ -295,7 +264,7 @@ class GestureHandlerOrchestrator(
 
       // if event was of type UP or POINTER_UP we request handler to stop tracking now that
       // the event has been dispatched
-      if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP) {
+      if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_HOVER_EXIT) {
         val pointerId = event.getPointerId(event.actionIndex)
         handler.stopTrackingPointer(pointerId)
       }
@@ -324,6 +293,8 @@ class GestureHandlerOrchestrator(
     }
     return parent === wrapperView
   }
+
+  fun isAnyHandlerActive() = gestureHandlers.any { it.state == GestureHandler.STATE_ACTIVE }
 
   /**
    * Transforms an event in the coordinates of wrapperView into the coordinate space of the received view.
@@ -397,13 +368,11 @@ class GestureHandlerOrchestrator(
   }
 
   private fun addAwaitingHandler(handler: GestureHandler<*>) {
-    for (i in 0 until awaitingHandlersCount) {
-      if (awaitingHandlers[i] === handler) {
-        return
-      }
+    if (awaitingHandlers.contains(handler)) {
+      return
     }
-    check(awaitingHandlersCount < awaitingHandlers.size) { "Too many recognizers" }
-    awaitingHandlers[awaitingHandlersCount++] = handler
+
+    awaitingHandlers.add(handler)
     with(handler) {
       isAwaiting = true
       activationIndex = this@GestureHandlerOrchestrator.activationIndex++
@@ -411,13 +380,11 @@ class GestureHandlerOrchestrator(
   }
 
   private fun recordHandlerIfNotPresent(handler: GestureHandler<*>, view: View) {
-    for (i in 0 until gestureHandlersCount) {
-      if (gestureHandlers[i] === handler) {
-        return
-      }
+    if (gestureHandlers.contains(handler)) {
+      return
     }
-    check(gestureHandlersCount < gestureHandlers.size) { "Too many recognizers" }
-    gestureHandlers[gestureHandlersCount++] = handler
+
+    gestureHandlers.add(handler)
     handler.isActive = false
     handler.isAwaiting = false
     handler.activationIndex = Int.MAX_VALUE
@@ -464,16 +431,24 @@ class GestureHandlerOrchestrator(
     return found
   }
 
-  private fun recordViewHandlersForPointer(view: View, coords: FloatArray, pointerId: Int): Boolean {
+  private fun recordViewHandlersForPointer(view: View, coords: FloatArray, pointerId: Int, event: MotionEvent): Boolean {
     var found = false
     handlerRegistry.getHandlersForView(view)?.let {
       synchronized(it) {
         for (handler in it) {
-          if (handler.isEnabled && handler.isWithinBounds(view, coords[0], coords[1])) {
-            recordHandlerIfNotPresent(handler, view)
-            handler.startTrackingPointer(pointerId)
-            found = true
+          // skip disabled and out-of-bounds handlers
+          if (!handler.isEnabled || !handler.isWithinBounds(view, coords[0], coords[1])) {
+            continue
           }
+
+          // we don't want to extract gestures other than hover when processing hover events
+          if (event.action in listOf(MotionEvent.ACTION_HOVER_EXIT, MotionEvent.ACTION_HOVER_ENTER, MotionEvent.ACTION_HOVER_MOVE) && handler !is HoverGestureHandler) {
+            continue
+          }
+
+          recordHandlerIfNotPresent(handler, view)
+          handler.startTrackingPointer(pointerId)
+          found = true
         }
       }
     }
@@ -494,11 +469,11 @@ class GestureHandlerOrchestrator(
     val pointerId = event.getPointerId(actionIndex)
     tempCoords[0] = event.getX(actionIndex)
     tempCoords[1] = event.getY(actionIndex)
-    traverseWithPointerEvents(wrapperView, tempCoords, pointerId)
-    extractGestureHandlers(wrapperView, tempCoords, pointerId)
+    traverseWithPointerEvents(wrapperView, tempCoords, pointerId, event)
+    extractGestureHandlers(wrapperView, tempCoords, pointerId, event)
   }
 
-  private fun extractGestureHandlers(viewGroup: ViewGroup, coords: FloatArray, pointerId: Int): Boolean {
+  private fun extractGestureHandlers(viewGroup: ViewGroup, coords: FloatArray, pointerId: Int, event: MotionEvent): Boolean {
     val childrenCount = viewGroup.childCount
     for (i in childrenCount - 1 downTo 0) {
       val child = viewConfigHelper.getChildInDrawingOrderAtIndex(viewGroup, i)
@@ -513,7 +488,7 @@ class GestureHandlerOrchestrator(
         if (!isClipping(child) || isTransformedTouchPointInView(coords[0], coords[1], child)) {
           // we only consider the view if touch is inside the view bounds or if the view's children
           // can render outside of the view bounds (overflow visible)
-          found = traverseWithPointerEvents(child, coords, pointerId)
+          found = traverseWithPointerEvents(child, coords, pointerId, event)
         }
         coords[0] = restoreX
         coords[1] = restoreY
@@ -525,7 +500,7 @@ class GestureHandlerOrchestrator(
     return false
   }
 
-  private fun traverseWithPointerEvents(view: View, coords: FloatArray, pointerId: Int): Boolean =
+  private fun traverseWithPointerEvents(view: View, coords: FloatArray, pointerId: Int, event: MotionEvent): Boolean =
     when (viewConfigHelper.getPointerEventsConfigForView(view)) {
       PointerEventsConfig.NONE -> {
         // This view and its children can't be the target
@@ -534,7 +509,7 @@ class GestureHandlerOrchestrator(
       PointerEventsConfig.BOX_ONLY -> {
         // This view is the target, its children don't matter
         (
-          recordViewHandlersForPointer(view, coords, pointerId) ||
+          recordViewHandlersForPointer(view, coords, pointerId, event) ||
             shouldHandlerlessViewBecomeTouchTarget(view, coords)
           )
       }
@@ -542,10 +517,10 @@ class GestureHandlerOrchestrator(
         // This view can't be the target, but its children might
         when (view) {
           is ViewGroup -> {
-            extractGestureHandlers(view, coords, pointerId).also { found ->
+            extractGestureHandlers(view, coords, pointerId, event).also { found ->
               // A child view is handling touch, also extract handlers attached to this view
               if (found) {
-                recordViewHandlersForPointer(view, coords, pointerId)
+                recordViewHandlersForPointer(view, coords, pointerId, event)
               }
             }
           }
@@ -554,7 +529,7 @@ class GestureHandlerOrchestrator(
           // handlers attached to the text input, as it makes sense that gestures would work on a
           // non-editable TextInput.
           is EditText -> {
-            recordViewHandlersForPointer(view, coords, pointerId)
+            recordViewHandlersForPointer(view, coords, pointerId, event)
           }
           else -> false
         }
@@ -562,11 +537,11 @@ class GestureHandlerOrchestrator(
       PointerEventsConfig.AUTO -> {
         // Either this view or one of its children is the target
         val found = if (view is ViewGroup) {
-          extractGestureHandlers(view, coords, pointerId)
+          extractGestureHandlers(view, coords, pointerId, event)
         } else false
 
         (
-          recordViewHandlersForPointer(view, coords, pointerId) ||
+          recordViewHandlersForPointer(view, coords, pointerId, event) ||
             found || shouldHandlerlessViewBecomeTouchTarget(view, coords)
           )
       }
@@ -580,10 +555,24 @@ class GestureHandlerOrchestrator(
   private fun isClipping(view: View) =
     view !is ViewGroup || viewConfigHelper.isViewClippingChildren(view)
 
+  fun activateNativeHandlersForView(view: View) {
+    handlerRegistry.getHandlersForView(view)?.forEach {
+      if (it !is NativeViewGestureHandler) {
+        return@forEach
+      }
+      this.recordHandlerIfNotPresent(it, view)
+
+      it.withMarkedAsInBounds {
+        it.begin()
+        it.activate()
+        it.end()
+      }
+    }
+  }
+
   companion object {
     // The limit doesn't necessarily need to exists, it was just simpler to implement it that way
     // it is also more allocation-wise efficient to have a fixed limit
-    private const val SIMULTANEOUS_GESTURE_HANDLER_LIMIT = 20
 
     // Be default fully transparent views can receive touch
     private const val DEFAULT_MIN_ALPHA_FOR_TRAVERSAL = 0f

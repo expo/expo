@@ -1,13 +1,8 @@
 import { ClassAttributes, ComponentProps, ComponentType } from 'react';
-import {
-  AccessibilityRole,
-  StyleProp,
-  Text as NativeText,
-  TextStyle as NativeTextStyle,
-} from 'react-native';
+import { StyleProp, Text as NativeText, TextStyle as NativeTextStyle } from 'react-native';
 
-import { createSafeStyledView } from '../css/createSafeStyledView';
 import { WebViewStyle } from './View';
+import { createSafeStyledView } from '../css/createSafeStyledView';
 
 // https://github.com/necolas/react-native-web/issues/832
 
@@ -43,8 +38,12 @@ export type WebTextProps = {
   /** @platform web */
   tabIndex?: number;
   /** @platform web */
+  'aria-level'?: number;
+  /**
+   * @deprecated use `aria-level` instead.
+   * @platform web
+   */
   accessibilityLevel?: number;
-  accessibilityRole?: 'listitem' | 'heading' | AccessibilityRole;
   /** @platform web */
   href?: string;
   /** @deprecated use the prop `hrefAttrs={{ target: '...' }}` instead. */
@@ -62,7 +61,7 @@ export type WebTextProps = {
   lang?: string;
 };
 
-export type TextProps = Omit<NativeTextProps, 'style' | 'accessibilityRole'> & WebTextProps;
+export type TextProps = Omit<NativeTextProps, 'style'> & WebTextProps;
 
 const Text = NativeText as ComponentType<TextProps>;
 

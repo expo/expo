@@ -11,24 +11,23 @@ RCT_EXTERN_METHOD(
                   )
 
 RCT_EXTERN_METHOD(
-                  isApplePaySupported: (RCTPromiseResolveBlock)resolve
-                  rejecter: (RCTPromiseRejectBlock)reject)
-
-RCT_EXTERN_METHOD(
                   createToken: (NSDictionary *)params
                   resolver: (RCTPromiseResolveBlock)resolve
-                  rejecter: (RCTPromiseRejectBlock)reject)
+                  rejecter: (RCTPromiseRejectBlock)reject
+                  )
 
 RCT_EXTERN_METHOD(
                   isPlatformPaySupported:(NSDictionary *)params
                   resolver: (RCTPromiseResolveBlock)resolve
-                  rejecter: (RCTPromiseRejectBlock)reject)
+                  rejecter: (RCTPromiseRejectBlock)reject
+                  )
 
 RCT_EXTERN_METHOD(
                   createPlatformPayPaymentMethod:(NSDictionary *)params
                   usesDeprecatedTokenFlow:(BOOL)usesDeprecatedTokenFlow
                   resolver: (RCTPromiseResolveBlock)resolve
-                  rejecter: (RCTPromiseRejectBlock)reject)
+                  rejecter: (RCTPromiseRejectBlock)reject
+                  )
 
 RCT_EXTERN_METHOD(
                   confirmPlatformPay:(NSString *)clientSecret
@@ -40,42 +39,30 @@ RCT_EXTERN_METHOD(
 
 RCT_EXTERN_METHOD(
                   dismissPlatformPay: (RCTPromiseResolveBlock)resolve
-                  rejecter: (RCTPromiseRejectBlock)reject)
+                  rejecter: (RCTPromiseRejectBlock)reject
+                  )
 
 RCT_EXTERN_METHOD(
                   updatePlatformPaySheet:(NSArray *)summaryItems
                   shippingMethods:(NSArray *)summaryItems
                   errors: (NSArray *)errors
                   resolver: (RCTPromiseResolveBlock)resolve
-                  rejecter: (RCTPromiseRejectBlock)reject)
-
-RCT_EXTERN_METHOD(
-                  presentApplePay:(NSDictionary *)params
-                  resolver: (RCTPromiseResolveBlock)resolve
-                  rejecter: (RCTPromiseRejectBlock)reject)
+                  rejecter: (RCTPromiseRejectBlock)reject
+                  )
 
 RCT_EXTERN_METHOD(
                   openApplePaySetup: (RCTPromiseResolveBlock)resolve
-                  rejecter: (RCTPromiseRejectBlock)reject)
-
-RCT_EXTERN_METHOD(
-                  updateApplePaySummaryItems:(NSArray *)summaryItems
-                  errorAddressFields: (NSArray *)errorAddressFields
-                  resolver: (RCTPromiseResolveBlock)resolve
-                  rejecter: (RCTPromiseRejectBlock)reject)
+                  rejecter: (RCTPromiseRejectBlock)reject
+                  )
 
 RCT_EXTERN_METHOD(
                   createTokenForCVCUpdate:(NSString *)cvc
                   resolver: (RCTPromiseResolveBlock)resolve
-                  rejecter: (RCTPromiseRejectBlock)reject)
+                  rejecter: (RCTPromiseRejectBlock)reject
+                  )
 
 RCT_EXTERN_METHOD(
                   handleURLCallback:(NSString *)url
-                  resolver: (RCTPromiseResolveBlock)resolve
-                  rejecter: (RCTPromiseRejectBlock)reject)
-
-RCT_EXTERN_METHOD(
-                  confirmApplePayPayment:(NSString *)clientSecret
                   resolver: (RCTPromiseResolveBlock)resolve
                   rejecter: (RCTPromiseRejectBlock)reject
                   )
@@ -107,14 +94,20 @@ RCT_EXTERN_METHOD(
                   )
 
 RCT_EXTERN_METHOD(
+                  handleNextActionForSetup:(NSString *)setupIntentClientSecret
+                  returnURL:(NSString *)returnURL
+                  resolver: (RCTPromiseResolveBlock)resolve
+                  rejecter: (RCTPromiseRejectBlock)reject
+                  )
+
+RCT_EXTERN_METHOD(
                   initPaymentSheet:(NSDictionary *)params
                   resolver: (RCTPromiseResolveBlock)resolve
                   rejecter: (RCTPromiseRejectBlock)reject
                   )
 
 RCT_EXTERN_METHOD(
-                  initPaymentSheetWithOrderTracking:(NSDictionary *)params
-                  callback:(RCTResponseSenderBlock)orderTrackingCallback
+                  intentCreationCallback:(NSDictionary *)result
                   resolver: (RCTPromiseResolveBlock)resolve
                   rejecter: (RCTPromiseRejectBlock)reject
                   )
@@ -190,6 +183,59 @@ RCT_EXTERN_METHOD(
                   orderIdentifier:(NSString *)orderIdentifier
                   webServiceUrl:(NSString *)webServiceUrl
                   authenticationToken:(NSString *)authenticationToken
+                  resolver: (RCTPromiseResolveBlock)resolve
+                  rejecter: (RCTPromiseRejectBlock)reject
+                  )
+
+RCT_EXTERN_METHOD(
+                  initCustomerSheet:(NSDictionary *)params
+                  customerAdapterOverrides: (NSDictionary *)customerAdapterOverrides
+                  resolver: (RCTPromiseResolveBlock)resolve
+                  rejecter: (RCTPromiseRejectBlock)reject
+                  )
+
+RCT_EXTERN_METHOD(
+                  presentCustomerSheet:(NSDictionary *)params
+                  resolver: (RCTPromiseResolveBlock)resolve
+                  rejecter: (RCTPromiseRejectBlock)reject
+                  )
+
+RCT_EXTERN_METHOD(
+                  retrieveCustomerSheetPaymentOptionSelection:(RCTPromiseResolveBlock)resolve
+                  rejecter: (RCTPromiseRejectBlock)reject
+                  )
+
+RCT_EXTERN_METHOD(
+                  customerAdapterFetchPaymentMethodsCallback:(NSArray *)paymentMethods
+                  resolver: (RCTPromiseResolveBlock)resolve
+                  rejecter: (RCTPromiseRejectBlock)reject
+                  )
+
+RCT_EXTERN_METHOD(
+                  customerAdapterAttachPaymentMethodCallback:(NSDictionary *)unusedPaymentMethod
+                  resolver: (RCTPromiseResolveBlock)resolve
+                  rejecter: (RCTPromiseRejectBlock)reject
+                  )
+
+RCT_EXTERN_METHOD(
+                  customerAdapterDetachPaymentMethodCallback:(NSDictionary *)unusedPaymentMethod
+                  resolver: (RCTPromiseResolveBlock)resolve
+                  rejecter: (RCTPromiseRejectBlock)reject
+                  )
+
+RCT_EXTERN_METHOD(
+                  customerAdapterSetSelectedPaymentOptionCallback:(RCTPromiseResolveBlock)resolve
+                  rejecter: (RCTPromiseRejectBlock)reject
+                  )
+
+RCT_EXTERN_METHOD(
+                  customerAdapterFetchSelectedPaymentOptionCallback:(NSString *)paymentOption
+                  resolver: (RCTPromiseResolveBlock)resolve
+                  rejecter: (RCTPromiseRejectBlock)reject
+                  )
+
+RCT_EXTERN_METHOD(
+                  customerAdapterSetupIntentClientSecretForCustomerAttachCallback:(NSString *)clientSecret
                   resolver: (RCTPromiseResolveBlock)resolve
                   rejecter: (RCTPromiseRejectBlock)reject
                   )

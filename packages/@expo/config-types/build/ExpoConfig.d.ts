@@ -41,7 +41,7 @@ export interface ExpoConfig {
      * Set this to `{"policy": "nativeVersion"}` to generate it automatically.
      */
     runtimeVersion?: string | {
-        policy: 'nativeVersion' | 'sdkVersion' | 'appVersion';
+        policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprintExperimental';
     };
     /**
      * Your app version. In addition to this field, you'll also use `ios.buildNumber` and `android.versionCode` — read more about how to version your app [here](https://docs.expo.dev/distribution/app-stores/#versioning-your-app). On iOS this corresponds to `CFBundleShortVersionString`, and on Android, this corresponds to `versionName`. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
@@ -212,10 +212,6 @@ export interface ExpoConfig {
         requestHeaders?: {
             [k: string]: any;
         };
-        /**
-         * Whether to use deprecated Classic Updates when developing with the local Expo CLI and creating builds. Omitting this or setting it to false affects the behavior of APIs like `Constants.manifest`. SDK 49 is the last SDK version that supports Classic Updates.
-         */
-        useClassicUpdates?: boolean;
     };
     /**
      * Provide overrides by locale for System Dialog prompts like Permissions Boxes
@@ -252,6 +248,14 @@ export interface ExpoConfig {
      * Enable experimental features that may be unstable, unsupported, or removed without deprecation notices.
      */
     experiments?: {
+        /**
+         * Export a website relative to a subpath of a domain. The path will be prepended as-is to links to all bundled resources. Prefix the path with a `/` (recommended) to load all resources relative to the server root. If the path **does not** start with a `/` then resources will be loaded relative to the code that requests them, this could lead to unexpected behavior. Example '/subpath'. Defaults to '' (empty string).
+         */
+        baseUrl?: string;
+        /**
+         * If true, indicates that this project does not support tablets or handsets, and only supports Apple TV and Android TV
+         */
+        supportsTVOnly?: boolean;
         /**
          * Enable tsconfig/jsconfig `compilerOptions.paths` and `compilerOptions.baseUrl` support for import aliases in Metro.
          */
@@ -467,7 +471,7 @@ export interface IOS {
      * Set this to `{"policy": "nativeVersion"}` to generate it automatically.
      */
     runtimeVersion?: string | {
-        policy: 'nativeVersion' | 'sdkVersion' | 'appVersion';
+        policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprintExperimental';
     };
 }
 /**
@@ -528,53 +532,7 @@ export interface Android {
      */
     playStoreUrl?: string;
     /**
-     * List of permissions used by the standalone app.
-     *
-     *  To use ONLY the following minimum necessary permissions and none of the extras supported by Expo in a default managed app, set `permissions` to `[]`. The minimum necessary permissions do not require a Privacy Policy when uploading to Google Play Store and are:
-     * • receive data from Internet
-     * • view network connections
-     * • full network access
-     * • change your audio settings
-     * • prevent device from sleeping
-     *
-     *  To use ALL permissions supported by Expo by default, do not specify the `permissions` key.
-     *
-     *   To use the minimum necessary permissions ALONG with certain additional permissions, specify those extras in `permissions`, e.g.
-     *
-     *  `[ "CAMERA", "ACCESS_FINE_LOCATION" ]`.
-     *
-     *   You can specify the following permissions depending on what you need:
-     *
-     * - `ACCESS_COARSE_LOCATION`
-     * - `ACCESS_FINE_LOCATION`
-     * - `ACCESS_BACKGROUND_LOCATION`
-     * - `CAMERA`
-     * - `RECORD_AUDIO`
-     * - `READ_CONTACTS`
-     * - `WRITE_CONTACTS`
-     * - `READ_CALENDAR`
-     * - `WRITE_CALENDAR`
-     * - `READ_EXTERNAL_STORAGE`
-     * - `WRITE_EXTERNAL_STORAGE`
-     * - `USE_FINGERPRINT`
-     * - `USE_BIOMETRIC`
-     * - `WRITE_SETTINGS`
-     * - `VIBRATE`
-     * - `READ_PHONE_STATE`
-     * - `FOREGROUND_SERVICE`
-     * - `WAKE_LOCK`
-     * - `com.anddoes.launcher.permission.UPDATE_COUNT`
-     * - `com.android.launcher.permission.INSTALL_SHORTCUT`
-     * - `com.google.android.c2dm.permission.RECEIVE`
-     * - `com.google.android.gms.permission.ACTIVITY_RECOGNITION`
-     * - `com.google.android.providers.gsf.permission.READ_GSERVICES`
-     * - `com.htc.launcher.permission.READ_SETTINGS`
-     * - `com.htc.launcher.permission.UPDATE_SHORTCUT`
-     * - `com.majeur.launcher.permission.UPDATE_BADGE`
-     * - `com.sec.android.provider.badge.permission.READ`
-     * - `com.sec.android.provider.badge.permission.WRITE`
-     * - `com.sonyericsson.home.permission.BROADCAST_BADGE`
-     *
+     * A list of permissions to add to the app `AndroidManifest.xml` during prebuild. For example: `['android.permission.SCHEDULE_EXACT_ALARM']`
      */
     permissions?: string[];
     /**
@@ -582,7 +540,7 @@ export interface Android {
      */
     blockedPermissions?: string[];
     /**
-     * [Firebase Configuration File](https://support.google.com/firebase/answer/7015592) Location of the `GoogleService-Info.plist` file for configuring Firebase. Including this key automatically enables FCM in your standalone app.
+     * [Firebase Configuration File](https://support.google.com/firebase/answer/7015592) Location of the `google-services.json` file for configuring Firebase. Including this key automatically enables FCM in your standalone app.
      */
     googleServicesFile?: string;
     /**
@@ -743,7 +701,7 @@ export interface Android {
      * Set this to `{"policy": "nativeVersion"}` to generate it automatically.
      */
     runtimeVersion?: string | {
-        policy: 'nativeVersion' | 'sdkVersion' | 'appVersion';
+        policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprintExperimental';
     };
 }
 export interface AndroidIntentFiltersData {
@@ -781,9 +739,9 @@ export interface AndroidIntentFiltersData {
  */
 export interface Web {
     /**
-     * Sets the rendering method for the web app for both `expo start` and `expo export`. `static` statically renders HTML files for every route in the `app/` directory, which is available only in Expo Router apps. `single` outputs a Single Page Application (SPA), with a single `index.html` in the output folder, and has no statically indexable HTML. Defaults to `single`.
+     * Sets the export method for the web app for both `expo start` and `expo export`. `static` statically renders HTML files for every route in the `app/` directory, which is available only in Expo Router apps. `single` outputs a Single Page Application (SPA), with a single `index.html` in the output folder, and has no statically indexable HTML. `server` outputs static HTML, and API Routes for hosting with a custom Node.js server. Defaults to `single`.
      */
-    output?: 'single' | 'static';
+    output?: 'single' | 'static' | 'server';
     /**
      * Relative path of an image to use for your app's favicon.
      */

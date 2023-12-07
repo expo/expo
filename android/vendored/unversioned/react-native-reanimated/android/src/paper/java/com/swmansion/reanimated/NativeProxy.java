@@ -24,26 +24,29 @@ public class NativeProxy extends NativeProxyCommon {
         CallInvokerHolderImpl holder =
                 (CallInvokerHolderImpl) context.getCatalystInstance().getJSCallInvokerHolder();
         LayoutAnimations LayoutAnimations = new LayoutAnimations(context);
+        ReanimatedMessageQueueThread messageQueueThread = new ReanimatedMessageQueueThread();
         mHybridData =
                 initHybrid(
                         context.getJavaScriptContextHolder().get(),
                         holder,
-                        mScheduler,
-                        LayoutAnimations);
+                        mAndroidUIScheduler,
+                        LayoutAnimations,
+                        messageQueueThread);
         prepareLayoutAnimations(LayoutAnimations);
-        ReanimatedMessageQueueThread messageQueueThread = new ReanimatedMessageQueueThread();
-        installJSIBindings(messageQueueThread);
+        installJSIBindings();
+        if (BuildConfig.DEBUG) {
+            checkCppVersion();
+        }
     }
 
     private native HybridData initHybrid(
             long jsContext,
             CallInvokerHolderImpl jsCallInvokerHolder,
-            Scheduler scheduler,
-            LayoutAnimations LayoutAnimations);
+            AndroidUIScheduler androidUIScheduler,
+            LayoutAnimations LayoutAnimations,
+            MessageQueueThread messageQueueThread);
 
-    private native void installJSIBindings(MessageQueueThread messageQueueThread);
-
-    public native boolean isAnyHandlerWaitingForEvent(String eventName);
+    public native boolean isAnyHandlerWaitingForEvent(String eventName, int emitterReactTag);
 
     public native void performOperations();
 
@@ -73,6 +76,15 @@ public class NativeProxy extends NativeProxyCommon {
             }
 
             @Override
+            public boolean shouldAnimateExiting(int tag, boolean shouldAnimate) {
+                LayoutAnimations layoutAnimations = weakLayoutAnimations.get();
+                if (layoutAnimations != null) {
+                    return layoutAnimations.shouldAnimateExiting(tag, shouldAnimate);
+                }
+                return false;
+            }
+
+            @Override
             public boolean isLayoutAnimationEnabled() {
                 LayoutAnimations layoutAnimations = weakLayoutAnimations.get();
                 if (layoutAnimations != null) {
@@ -99,10 +111,10 @@ public class NativeProxy extends NativeProxyCommon {
             }
 
             @Override
-            public void cancelAnimation(int tag, int type, boolean cancelled, boolean removeView) {
+            public void cancelAnimation(int tag) {
                 LayoutAnimations layoutAnimations = weakLayoutAnimations.get();
                 if (layoutAnimations != null) {
-                    layoutAnimations.cancelAnimationForTag(tag, type, cancelled, removeView);
+                    layoutAnimations.cancelAnimationForTag(tag);
                 }
             }
 
@@ -113,6 +125,13 @@ public class NativeProxy extends NativeProxyCommon {
                     return layoutAnimations.findPrecedingViewTagForTransition(tag);
                 }
                 return -1;
+            }
+
+            public void checkDuplicateSharedTag(int viewTag, int screenTag) {
+                LayoutAnimations layoutAnimations = weakLayoutAnimations.get();
+                if (layoutAnimations != null) {
+                    layoutAnimations.checkDuplicateSharedTag(viewTag, screenTag);
+                }
             }
         };
     }

@@ -50,11 +50,7 @@ EX_REGISTER_SINGLETON_MODULE(Permissions)
 }
 
 - (BOOL)hasGrantedPermission:(NSString *)permission forExperience:(NSString *)scopeKey
-{
-  if ([EXEnvironment sharedEnvironment].isDetached) {
-    return YES;
-  }
-  
+{  
   return [self getPermission:[EXPermissionsManager mapPermissionType:permission] forExperience:scopeKey] == EXPermissionStatusGranted;
 }
 

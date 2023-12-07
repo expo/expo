@@ -23,8 +23,7 @@ import {
   STYLES_APIBOX_NESTED,
   STYLES_NOT_EXPOSED_HEADER,
   TypeDocKind,
-  H3Code,
-  H4Code,
+  getH3CodeWithBaseNestingLevel,
   getTagData,
   getCommentContent,
   BoxSectionHeader,
@@ -42,11 +41,12 @@ export type RenderMethodOptions = {
   apiName?: string;
   header?: string;
   exposeInSidebar?: boolean;
+  baseNestingLevel?: number;
 };
 
 export const renderMethod = (
   method: MethodDefinitionData | AccessorDefinitionData | PropData,
-  { apiName, exposeInSidebar = true }: RenderMethodOptions = {}
+  { apiName, exposeInSidebar = true, ...options }: RenderMethodOptions = {}
 ) => {
   const signatures =
     (method as MethodDefinitionData).signatures ||
@@ -54,7 +54,8 @@ export const renderMethod = (
       (method as AccessorDefinitionData)?.getSignature,
     ] ||
     [];
-  const HeaderComponent = exposeInSidebar ? H3Code : H4Code;
+  const baseNestingLevel = options.baseNestingLevel ?? (exposeInSidebar ? 3 : 4);
+  const HeaderComponent = getH3CodeWithBaseNestingLevel(baseNestingLevel);
   return signatures.map(
     ({ name, parameters, comment, type }: MethodSignatureData | TypeSignaturesData) => {
       const returnComment = getTagData('returns', comment);
@@ -150,7 +151,7 @@ export const APIMethod = ({
         comment: {
           summary: [{ kind: 'text', text: param.comment }],
         },
-      } as MethodParamData)
+      }) as MethodParamData
   );
   return renderMethod(
     {

@@ -2,7 +2,6 @@ package expo.modules.kotlin.views
 
 import android.view.View
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.Utils
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.exception.NullArgumentException
 import expo.modules.kotlin.jni.CppType
@@ -17,7 +16,9 @@ class ViewTypeConverter<T : View>(
 ) : TypeConverter<T>() {
 
   override fun convert(value: Any?, context: AppContext?): T? {
-    Utils.assertMainThread()
+    val appContext = context.toStrongReference()
+    appContext.assertMainThread()
+
     if (value == null) {
       if (type.isMarkedNullable) {
         return null
@@ -25,7 +26,6 @@ class ViewTypeConverter<T : View>(
       throw NullArgumentException()
     }
 
-    val appContext = context.toStrongReference()
     val viewTag = value as Int
     val view = appContext.findView<T>(viewTag)
     if (!type.isMarkedNullable && view == null) {

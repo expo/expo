@@ -29,15 +29,13 @@ abstract class ExpoApplication : MultiDexApplication() {
     super.onCreate()
 
     ExpoViewBuildConfig.DEBUG = isDebug
-    ExpoViewBuildConfig.USE_INTERNET_KERNEL = shouldUseInternetKernel()
+    ExpoViewBuildConfig.USE_EMBEDDED_KERNEL = shouldUseEmbeddedKernel()
 
     if (ExpoViewBuildConfig.DEBUG && Constants.WAIT_FOR_DEBUGGER) {
       Debug.waitForDebugger()
     }
 
-    if (!Constants.isStandaloneApp()) {
-      KernelConstants.MAIN_ACTIVITY_CLASS = LauncherActivity::class.java
-    }
+    KernelConstants.MAIN_ACTIVITY_CLASS = LauncherActivity::class.java
 
     KernelProvider.setFactory(object : KernelFactory {
       override fun create(): KernelInterface {
@@ -85,7 +83,7 @@ abstract class ExpoApplication : MultiDexApplication() {
 
   // we're leaving this stub in here so that if people don't modify their MainApplication to
   // remove the override of shouldUseInternetKernel() their project will still build without errors
-  fun shouldUseInternetKernel(): Boolean {
+  fun shouldUseEmbeddedKernel(): Boolean {
     return !isDebug
   }
 

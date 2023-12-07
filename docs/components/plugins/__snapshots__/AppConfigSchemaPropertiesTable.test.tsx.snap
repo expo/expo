@@ -3,14 +3,14 @@
 exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
 <div>
   <div
-    class="css-c2t1qw-AppConfigProperty"
+    class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
   >
     <p
       class="  css-1kfqm4n-TextComponent"
       data-text="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#name"
       >
         <span
@@ -76,16 +76,17 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       Name of your app.
     </p>
     <details
-      class="css-u1z7e0-Collapsible"
+      class="css-xpa10j"
+      id="bare-workflow"
     >
       <summary
-        class="css-1iomq2j-Collapsible"
+        class="css-zjlxe1"
       >
         <div
-          class="css-166ujkg-Collapsible"
+          class="css-qos8r6"
         >
           <svg
-            class="icon-sm text-icon-default css-1wgpnk4-Collapsible"
+            class="icon-sm text-icon-default css-nlesit"
             fill="none"
             role="img"
             viewBox="0 0 24 24"
@@ -102,15 +103,47 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </g>
           </svg>
         </div>
-        <span
-          class="css-1n5kx9e-TextComponent"
-          data-text="true"
+        <a
+          href="#bare-workflow"
         >
-          Bare Workflow
-        </span>
+          <span
+            class="css-1n5kx9e-TextComponent"
+            data-text="true"
+          >
+            Bare Workflow
+          </span>
+          <span
+            class="css-13330di"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
       </summary>
       <div
-        class="css-b8vpa7-Collapsible"
+        class="last:[&>*]:!mb-1 css-qbaxbl"
       >
         <p
           class="mb-4 css-1kfqm4n-TextComponent"
@@ -123,14 +156,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     <div />
   </div>
   <div
-    class="css-c2t1qw-AppConfigProperty"
+    class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
   >
     <p
       class="  css-1kfqm4n-TextComponent"
       data-text="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#androidnavigationbar"
       >
         <span
@@ -196,16 +229,17 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       Configuration for the bottom navigation bar on Android.
     </p>
     <details
-      class="css-u1z7e0-Collapsible"
+      class="css-xpa10j"
+      id="expokit"
     >
       <summary
-        class="css-1iomq2j-Collapsible"
+        class="css-zjlxe1"
       >
         <div
-          class="css-166ujkg-Collapsible"
+          class="css-qos8r6"
         >
           <svg
-            class="icon-sm text-icon-default css-1wgpnk4-Collapsible"
+            class="icon-sm text-icon-default css-nlesit"
             fill="none"
             role="img"
             viewBox="0 0 24 24"
@@ -222,15 +256,47 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </g>
           </svg>
         </div>
-        <span
-          class="css-1n5kx9e-TextComponent"
-          data-text="true"
+        <a
+          href="#expokit"
         >
-          ExpoKit
-        </span>
+          <span
+            class="css-1n5kx9e-TextComponent"
+            data-text="true"
+          >
+            ExpoKit
+          </span>
+          <span
+            class="css-13330di"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
       </summary>
       <div
-        class="css-b8vpa7-Collapsible"
+        class="last:[&>*]:!mb-1 css-qbaxbl"
       >
         <p
           class="mb-4 css-1kfqm4n-TextComponent"
@@ -241,16 +307,17 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </div>
     </details>
     <details
-      class="css-u1z7e0-Collapsible"
+      class="css-xpa10j"
+      id="bare-workflow-1"
     >
       <summary
-        class="css-1iomq2j-Collapsible"
+        class="css-zjlxe1"
       >
         <div
-          class="css-166ujkg-Collapsible"
+          class="css-qos8r6"
         >
           <svg
-            class="icon-sm text-icon-default css-1wgpnk4-Collapsible"
+            class="icon-sm text-icon-default css-nlesit"
             fill="none"
             role="img"
             viewBox="0 0 24 24"
@@ -267,15 +334,47 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </g>
           </svg>
         </div>
-        <span
-          class="css-1n5kx9e-TextComponent"
-          data-text="true"
+        <a
+          href="#bare-workflow-1"
         >
-          Bare Workflow
-        </span>
+          <span
+            class="css-1n5kx9e-TextComponent"
+            data-text="true"
+          >
+            Bare Workflow
+          </span>
+          <span
+            class="css-13330di"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
       </summary>
       <div
-        class="css-b8vpa7-Collapsible"
+        class="last:[&>*]:!mb-1 css-qbaxbl"
       >
         <p
           class="mb-4 css-1kfqm4n-TextComponent"
@@ -287,14 +386,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </details>
     <div>
       <div
-        class="css-c2t1qw-AppConfigProperty"
+        class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
       >
         <p
           class="  css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <a
-            class="css-1y48vg3"
+            class="css-1yk6eqh"
             href="#visible"
           >
             <span
@@ -369,16 +468,17 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           Determines how and when the navigation bar is shown.
         </p>
         <details
-          class="css-u1z7e0-Collapsible"
+          class="css-xpa10j"
+          id="expokit-1"
         >
           <summary
-            class="css-1iomq2j-Collapsible"
+            class="css-zjlxe1"
           >
             <div
-              class="css-166ujkg-Collapsible"
+              class="css-qos8r6"
             >
               <svg
-                class="icon-sm text-icon-default css-1wgpnk4-Collapsible"
+                class="icon-sm text-icon-default css-nlesit"
                 fill="none"
                 role="img"
                 viewBox="0 0 24 24"
@@ -395,15 +495,47 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 </g>
               </svg>
             </div>
-            <span
-              class="css-1n5kx9e-TextComponent"
-              data-text="true"
+            <a
+              href="#expokit-1"
             >
-              ExpoKit
-            </span>
+              <span
+                class="css-1n5kx9e-TextComponent"
+                data-text="true"
+              >
+                ExpoKit
+              </span>
+              <span
+                class="css-13330di"
+              >
+                <svg
+                  aria-label="permalink"
+                  class="anchor-icon"
+                  fill="none"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                  <path
+                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                </svg>
+              </span>
+            </a>
           </summary>
           <div
-            class="css-b8vpa7-Collapsible"
+            class="last:[&>*]:!mb-1 css-qbaxbl"
           >
             <p
               class="mb-4 css-1kfqm4n-TextComponent"
@@ -415,14 +547,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </details>
         <div>
           <div
-            class="css-c2t1qw-AppConfigProperty"
+            class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
           >
             <p
               class="  css-1kfqm4n-TextComponent"
               data-text="true"
             >
               <a
-                class="css-1y48vg3"
+                class="css-1yk6eqh"
                 href="#always"
               >
                 <span
@@ -501,14 +633,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </div>
       <div
-        class="css-c2t1qw-AppConfigProperty"
+        class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
       >
         <p
           class="  css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <a
-            class="css-1y48vg3"
+            class="css-1yk6eqh"
             href="#backgroundcolor"
           >
             <span
@@ -601,14 +733,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </div>
   </div>
   <div
-    class="css-c2t1qw-AppConfigProperty"
+    class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
   >
     <p
       class="  css-1kfqm4n-TextComponent"
       data-text="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#intentfilters"
       >
         <span
@@ -674,16 +806,17 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       Configuration for setting an array of custom intent filters in Android manifest.
     </p>
     <details
-      class="css-u1z7e0-Collapsible"
+      class="css-xpa10j"
+      id="bare-workflow-2"
     >
       <summary
-        class="css-1iomq2j-Collapsible"
+        class="css-zjlxe1"
       >
         <div
-          class="css-166ujkg-Collapsible"
+          class="css-qos8r6"
         >
           <svg
-            class="icon-sm text-icon-default css-1wgpnk4-Collapsible"
+            class="icon-sm text-icon-default css-nlesit"
             fill="none"
             role="img"
             viewBox="0 0 24 24"
@@ -700,15 +833,47 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </g>
           </svg>
         </div>
-        <span
-          class="css-1n5kx9e-TextComponent"
-          data-text="true"
+        <a
+          href="#bare-workflow-2"
         >
-          Bare Workflow
-        </span>
+          <span
+            class="css-1n5kx9e-TextComponent"
+            data-text="true"
+          >
+            Bare Workflow
+          </span>
+          <span
+            class="css-13330di"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
       </summary>
       <div
-        class="css-b8vpa7-Collapsible"
+        class="last:[&>*]:!mb-1 css-qbaxbl"
       >
         <p
           class="mb-4 css-1kfqm4n-TextComponent"
@@ -762,14 +927,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </blockquote>
     <div>
       <div
-        class="css-c2t1qw-AppConfigProperty"
+        class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
       >
         <p
           class="  css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <a
-            class="css-1y48vg3"
+            class="css-1yk6eqh"
             href="#autoverify"
           >
             <span
@@ -846,14 +1011,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <div />
       </div>
       <div
-        class="css-c2t1qw-AppConfigProperty"
+        class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
       >
         <p
           class="  css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <a
-            class="css-1y48vg3"
+            class="css-1yk6eqh"
             href="#data"
           >
             <span
@@ -923,14 +1088,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </p>
         <div>
           <div
-            class="css-c2t1qw-AppConfigProperty"
+            class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
           >
             <p
               class="  css-1kfqm4n-TextComponent"
               data-text="true"
             >
               <a
-                class="css-1y48vg3"
+                class="css-1yk6eqh"
                 href="#host"
               >
                 <span

@@ -11,6 +11,7 @@ function arrayize(value) {
  * A class that wraps the raw config (`expo-module.json` or `unimodule.json`).
  */
 class ExpoModuleConfig {
+    rawConfig;
     constructor(rawConfig) {
         this.rawConfig = rawConfig;
     }

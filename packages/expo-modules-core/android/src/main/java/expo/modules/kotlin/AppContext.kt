@@ -9,8 +9,9 @@ import android.view.View
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import com.facebook.react.uimanager.UIManagerHelper
+import com.facebook.react.uimanager.UIManagerModule
+import com.facebook.react.uimanager.common.UIManagerType
 import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.core.errors.ContextDestroyedException
 import expo.modules.core.errors.ModuleNotFoundException
@@ -36,6 +37,7 @@ import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.events.KEventEmitterWrapper
 import expo.modules.kotlin.events.KModuleEventEmitterWrapper
 import expo.modules.kotlin.events.OnActivityResultPayload
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.jni.JNIDeallocator
 import expo.modules.kotlin.jni.JSIInteropModuleRegistry
 import expo.modules.kotlin.modules.Module
@@ -147,8 +149,7 @@ class AppContext(
             jsiInterop.installJSI(
               it,
               jniDeallocator,
-              jsContextProvider.jsCallInvokerHolder,
-              catalystInstance.nativeCallInvokerHolder as CallInvokerHolderImpl
+              jsContextProvider.jsCallInvokerHolder
             )
             logger.info("✅ JSI interop was installed")
           }
@@ -283,7 +284,7 @@ class AppContext(
       return KEventEmitterWrapper(legacyEventEmitter, reactContextHolder)
     }
 
-  internal val errorManager: ErrorManagerModule?
+  val errorManager: ErrorManagerModule?
     get() = registry.getModule()
 
   internal fun onDestroy() = trace("AppContext.onDestroy") {
@@ -294,6 +295,9 @@ class AppContext(
     modulesQueue.cancel(ContextDestroyedException())
     mainQueue.cancel(ContextDestroyedException())
     backgroundCoroutineScope.cancel(ContextDestroyedException())
+    if (::jsiInterop.isInitialized) {
+      jsiInterop.wasDeallocated()
+    }
     jniDeallocator.deallocate()
     logger.info("✅ AppContext was destroyed")
   }
@@ -348,6 +352,22 @@ class AppContext(
   fun <T : View> findView(viewTag: Int): T? {
     val reactContext = reactContextHolder.get() ?: return null
     return UIManagerHelper.getUIManagerForReactTag(reactContext, viewTag)?.resolveView(viewTag) as? T
+  }
+
+  internal fun dispatchOnMainUsingUIManager(block: () -> Unit) {
+    val reactContext = reactContextHolder.get() ?: throw Exceptions.ReactContextLost()
+    val uiManager = UIManagerHelper.getUIManagerForReactTag(
+      reactContext,
+      UIManagerType.DEFAULT
+    ) as UIManagerModule
+
+    uiManager.addUIBlock {
+      block()
+    }
+  }
+
+  internal fun assertMainThread() {
+    Utils.assertMainThread()
   }
 
   /**

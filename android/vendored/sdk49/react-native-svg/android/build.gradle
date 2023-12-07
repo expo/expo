@@ -90,6 +90,7 @@ dependencies {
     implementation 'host.exp:reactandroid-abi49_0_0:1.0.0'
     compileOnly 'com.facebook.fresco:fresco:+'
     compileOnly 'com.facebook.fresco:imagepipeline-okhttp3:+'
+    compileOnly 'com.facebook.fresco:middleware:+'
     compileOnly 'com.facebook.fresco:ui-common:+'
     compileOnly 'javax.inject:javax.inject:+'
     compileOnly 'com.facebook.fbjni:fbjni:+'

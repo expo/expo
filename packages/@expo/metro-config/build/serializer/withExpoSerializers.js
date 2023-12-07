@@ -19,23 +19,9 @@ function _jscSafeUrl() {
   };
   return data;
 }
-function _baseJSBundle() {
-  const data = _interopRequireDefault(require("metro/src/DeltaBundler/Serializers/baseJSBundle"));
-  _baseJSBundle = function () {
-    return data;
-  };
-  return data;
-}
 function _bundleToString() {
   const data = _interopRequireDefault(require("metro/src/lib/bundleToString"));
   _bundleToString = function () {
-    return data;
-  };
-  return data;
-}
-function _env() {
-  const data = require("../env");
-  _env = function () {
     return data;
   };
   return data;
@@ -47,9 +33,16 @@ function _environmentVariableSerializerPlugin() {
   };
   return data;
 }
-function _getCssDeps() {
-  const data = require("./getCssDeps");
-  _getCssDeps = function () {
+function _baseJSBundle() {
+  const data = require("./fork/baseJSBundle");
+  _baseJSBundle = function () {
+    return data;
+  };
+  return data;
+}
+function _serializeChunks() {
+  const data = require("./serializeChunks");
+  _serializeChunks = function () {
     return data;
   };
   return data;
@@ -57,6 +50,13 @@ function _getCssDeps() {
 function _serializerAssets() {
   const data = require("./serializerAssets");
   _serializerAssets = function () {
+    return data;
+  };
+  return data;
+}
+function _env() {
+  const data = require("../env");
+  _env = function () {
     return data;
   };
   return data;
@@ -71,6 +71,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function withExpoSerializers(config) {
   const processors = [];
+  processors.push(_environmentVariableSerializerPlugin().serverPreludeSerializerPlugin);
   if (!_env().env.EXPO_NO_CLIENT_ENV_VARS) {
     processors.push(_environmentVariableSerializerPlugin().environmentVariableSerializerPlugin);
   }
@@ -86,51 +87,64 @@ function withSerializerPlugins(config, processors) {
     ...config,
     serializer: {
       ...config.serializer,
-      customSerializer: createSerializerFromSerialProcessors(processors, originalSerializer)
+      customSerializer: createSerializerFromSerialProcessors(config, processors, originalSerializer)
     }
   };
 }
-function getDefaultSerializer(fallbackSerializer) {
+function getDefaultSerializer(config, fallbackSerializer) {
   const defaultSerializer = fallbackSerializer !== null && fallbackSerializer !== void 0 ? fallbackSerializer : async (...params) => {
-    const bundle = (0, _baseJSBundle().default)(...params);
+    const bundle = (0, _baseJSBundle().baseJSBundle)(...params);
     const outputCode = (0, _bundleToString().default)(bundle).code;
     return outputCode;
   };
   return async (...props) => {
-    const [,, graph, options] = props;
-    const jsCode = await defaultSerializer(...props);
-    if (!options.sourceUrl) {
-      return jsCode;
+    const [,,, options] = props;
+    const customSerializerOptions = options.serializerOptions;
+
+    // Custom options can only be passed outside of the dev server, meaning
+    // we don't need to stringify the results at the end, i.e. this is `npx expo export` or `npx expo export:embed`.
+    const supportsNonSerialReturn = !!(customSerializerOptions !== null && customSerializerOptions !== void 0 && customSerializerOptions.output);
+    const serializerOptions = (() => {
+      if (customSerializerOptions) {
+        return {
+          includeBytecode: customSerializerOptions.includeBytecode,
+          outputMode: customSerializerOptions.output,
+          includeSourceMaps: customSerializerOptions.includeSourceMaps
+        };
+      }
+      if (options.sourceUrl) {
+        const sourceUrl = (0, _jscSafeUrl().isJscSafeUrl)(options.sourceUrl) ? (0, _jscSafeUrl().toNormalUrl)(options.sourceUrl) : options.sourceUrl;
+        const url = new URL(sourceUrl, 'https://expo.dev');
+        return {
+          outputMode: url.searchParams.get('serializer.output'),
+          includeSourceMaps: url.searchParams.get('serializer.map') === 'true',
+          includeBytecode: url.searchParams.get('serializer.bytecode') === 'true'
+        };
+      }
+      return null;
+    })();
+    if ((serializerOptions === null || serializerOptions === void 0 ? void 0 : serializerOptions.outputMode) !== 'static') {
+      return defaultSerializer(...props);
     }
-    const sourceUrl = (0, _jscSafeUrl().isJscSafeUrl)(options.sourceUrl) ? (0, _jscSafeUrl().toNormalUrl)(options.sourceUrl) : options.sourceUrl;
-    const url = new URL(sourceUrl, 'https://expo.dev');
-    if (url.searchParams.get('platform') !== 'web' || url.searchParams.get('serializer.output') !== 'static') {
-      // Default behavior if `serializer.output=static` is not present in the URL.
-      return jsCode;
+
+    // Mutate the serializer options with the parsed options.
+    options.serializerOptions = {
+      ...options.serializerOptions,
+      ...serializerOptions
+    };
+    const assets = await (0, _serializeChunks().graphToSerialAssetsAsync)(config, {
+      includeSourceMaps: !!serializerOptions.includeSourceMaps,
+      includeBytecode: !!serializerOptions.includeBytecode
+    }, ...props);
+    if (supportsNonSerialReturn) {
+      // @ts-expect-error: this is future proofing for adding assets to the output as well.
+      return assets;
     }
-    const cssDeps = (0, _getCssDeps().getCssSerialAssets)(graph.dependencies, {
-      projectRoot: options.projectRoot,
-      processModuleFilter: options.processModuleFilter
-    });
-    let jsAsset;
-    if (jsCode) {
-      const stringContents = typeof jsCode === 'string' ? jsCode : jsCode.code;
-      jsAsset = {
-        filename: options.dev ? 'index.js' : `_expo/static/js/web/${(0, _getCssDeps().fileNameFromContents)({
-          filepath: url.pathname,
-          src: stringContents
-        })}.js`,
-        originFilename: 'index.js',
-        type: 'js',
-        metadata: {},
-        source: stringContents
-      };
-    }
-    return JSON.stringify([jsAsset, ...cssDeps]);
+    return JSON.stringify(assets);
   };
 }
-function createSerializerFromSerialProcessors(processors, originalSerializer) {
-  const finalSerializer = getDefaultSerializer(originalSerializer);
+function createSerializerFromSerialProcessors(config, processors, originalSerializer) {
+  const finalSerializer = getDefaultSerializer(config, originalSerializer);
   return (...props) => {
     for (const processor of processors) {
       if (processor) {

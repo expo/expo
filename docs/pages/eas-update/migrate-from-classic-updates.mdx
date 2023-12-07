@@ -5,6 +5,7 @@ description: A guide to help migrate from Classic Updates to EAS Update.
 
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { A } from '~/ui/components/Text';
 
 > SDK 49 will be the last version to support Classic Updates. To continue using the deprecated `expo publish` command, set [`updates.useClassicUpdates`](/versions/latest/config/app/#useclassicupdates) in your app config.
 
@@ -56,7 +57,7 @@ To ensure that updates are compatible with the underlying native code inside a b
 
 <Step label="3">
 
-To allow updates to apply to builds built with EAS, update your EAS build profiles in **eas.json** to include `channel` properties. These channels replace `releaseChannel` properties. We find it convenient to name the `channel` after the profile's name. For instance, the `preview` profile has a `channel` named `"preview"` and the `production` profile has a `channel` named `"production"`.
+To allow updates to apply to builds built with EAS, update your EAS Build profiles in **eas.json** to include `channel` properties. These channels replace `releaseChannel` properties. We find it convenient to name the `channel` after the profile's name. For instance, the `preview` profile has a `channel` named `"preview"` and the `production` profile has a `channel` named `"production"`.
 
 ```json eas.json
 {
@@ -115,4 +116,4 @@ Once published, you can see the update in the [Expo dashboard](https://expo.dev/
 
 The steps described above allow you to use a similar flow to Classic Updates. However, EAS Update is more flexible and has more features. It can be used to create more stable release flows. Learn [how EAS Update works](/eas-update/how-it-works) and how you can craft a more stable [deployment process](/eas-update/deployment-patterns) for your project and your team.
 
-If you experience issues with migrating, check out our [debugging guide](/eas-update/debug). If you have feedback, join us on [Discord](https://chat.expo.dev/) in the #update channel.
+If you experience issues with migrating, check out our [debugging guide](/eas-update/debug). If you have feedback, join us on <A href="https://chat.expo.dev/" shouldLeakReferrer>Discord</A> in the #update channel.

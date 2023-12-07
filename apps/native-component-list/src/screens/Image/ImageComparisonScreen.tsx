@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { SectionList, StyleSheet, Text, View } from 'react-native';
 
-import Colors from '../../constants/Colors';
 import ImageTestListItem from './ImageTestListItem';
 import imageTests from './tests';
 import { ImageTest } from './types';
+import Colors from '../../constants/Colors';
 
 export default function ImageComparisonScreen() {
   const renderItem = ({ item }: any) => {

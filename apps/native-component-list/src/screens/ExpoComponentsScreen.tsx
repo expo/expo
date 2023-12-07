@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import ExpoAPIIcon from '../components/ExpoAPIIcon';
 import ComponentListScreen from './ComponentListScreen';
+import ExpoAPIIcon from '../components/ExpoAPIIcon';
 
 const screens = [
   'ActivityIndicator',
@@ -9,6 +9,8 @@ const screens = [
   'BlurView',
   'Button',
   'Camera',
+  'Camera (next)',
+  'Camera (next barcode)',
   'Checkbox',
   'ClipboardPasteButton',
   'DateTimePicker',
@@ -42,7 +44,8 @@ const screens = [
   'TextInput',
   'TouchableBounce',
   'Touchables',
-  'Video',
+  'Video (expo-av)',
+  'Video (expo-video)',
   'PagerView',
   'WebView',
 ];

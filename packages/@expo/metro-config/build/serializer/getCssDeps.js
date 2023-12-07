@@ -38,13 +38,13 @@ function _hash() {
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 // s = static
 const STATIC_EXPORT_DIRECTORY = '_expo/static/css';
-function filterJsModules(dependencies, {
+function filterJsModules(dependencies, type, {
   processModuleFilter,
   projectRoot
 }) {
   const assets = [];
   for (const module of dependencies.values()) {
-    if ((0, _js().isJsModule)(module) && processModuleFilter(module) && (0, _js().getJsOutput)(module).type === 'js/module' && _path().default.relative(projectRoot, module.path) !== 'package.json') {
+    if ((0, _js().isJsModule)(module) && processModuleFilter(module) && (0, _js().getJsOutput)(module).type === type && _path().default.relative(projectRoot, module.path) !== 'package.json') {
       assets.push(module);
     }
   }
@@ -55,22 +55,23 @@ function getCssSerialAssets(dependencies, {
   projectRoot
 }) {
   const assets = [];
-  for (const module of filterJsModules(dependencies, {
+  for (const module of filterJsModules(dependencies, 'js/module', {
     processModuleFilter,
     projectRoot
   })) {
     const cssMetadata = getCssMetadata(module);
     if (cssMetadata) {
       const contents = cssMetadata.code;
+      const originFilename = _path().default.relative(projectRoot, module.path);
       const filename = _path().default.join(
       // Consistent location
       STATIC_EXPORT_DIRECTORY,
       // Hashed file contents + name for caching
       fileNameFromContents({
-        filepath: module.path,
+        // Stable filename for hashing in CI.
+        filepath: originFilename,
         src: contents
       }) + '.css');
-      const originFilename = _path().default.relative(projectRoot, module.path);
       assets.push({
         type: 'css',
         originFilename,
@@ -99,7 +100,9 @@ function fileNameFromContents({
   filepath,
   src
 }) {
-  return getFileName(filepath) + '-' + (0, _hash().hashString)(filepath + src);
+  // Decode if the path is encoded from the Metro dev server, then normalize paths for Windows support.
+  const decoded = decodeURIComponent(filepath).replace(/\\/g, '/');
+  return getFileName(decoded) + '-' + (0, _hash().hashString)(src);
 }
 function getFileName(module) {
   return _path().default.basename(module).replace(/\.[^.]+$/, '');

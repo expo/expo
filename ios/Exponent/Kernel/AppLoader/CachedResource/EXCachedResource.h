@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
                            cachePath:(NSString * _Nullable)cachePath;
 
 /**
- *  Filesystem path to the downloaded and cached copy of this resource.
+ *   Filesystem path to the downloaded and cached copy of this resource.
  */
 - (NSString *)resourceCachePath;
 /**

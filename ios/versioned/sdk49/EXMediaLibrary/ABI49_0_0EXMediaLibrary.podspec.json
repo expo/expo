@@ -1,6 +1,6 @@
 {
   "name": "ABI49_0_0EXMediaLibrary",
-  "version": "15.4.0",
+  "version": "15.4.1",
   "summary": "Provides access to user's media library.",
   "description": "Provides access to user's media library.",
   "license": "MIT",
@@ -19,7 +19,7 @@
   ],
   "dependencies": {
     "RCT-Folly": [
-      "2021.07.22.00"
+      "2022.05.16.00"
     ],
     "ABI49_0_0ExpoModulesCore": [],
     "ABI49_0_0React-Core": []

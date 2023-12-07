@@ -79,7 +79,7 @@ Metro also supports removing code based on the `__DEV__` global boolean, however
 
 ## Tree shaking by platform
 
-In order to remove code based on the `Platform` module from `react-native`, you need to add the following to your **metro.config.js**:
+To remove code based on the `Platform` module from `react-native`, you need to add the following to your **metro.config.js**:
 
 ```js metro.config.js
 const { getDefaultConfig } = require('expo/metro-config');
@@ -279,7 +279,7 @@ To use it, run the following command:
 
 This will show an interactive breakdown of what makes up your JavaScript bundle. Using this, you can find large packages that you may not have intended to bundle into your project. The smaller the bundle, the faster your app will start.
 
-## Web Support
+## Web support
 
 > **info** Metro web support is under development and only works with the [local Expo CLI](/more/expo-cli/) and Expo SDK 46 or newer. It's recommended you use it with [Expo Router](https://expo.github.io/router/docs).
 
@@ -291,27 +291,31 @@ All Metro web features should be universal (bundling, static files, assets) maki
 
 Learn once, bundle everywhere!
 
-### Expo webpack vs. Expo Metro
+### Expo webpack versus Expo Metro
 
 Universal Expo Metro is designed to be fully universal, meaning any web bundling features should also work on native too. Because of this, we make some breaking changes between the two bundler implementations, carefully check the difference if you're moving from webpack to Metro.
 
-| Feature           | Metro                               | webpack                |
-| ----------------- | ----------------------------------- | ---------------------- |
-| Start command     | `npx expo start`                    | `npx expo start`       |
-| Bundle command    | `npx expo export`                   | `npx expo export:web`  |
-| Output folder     | **dist**                            | **web-build**          |
-| Static folder     | **public**                          | **web**                |
-| Config file       | **metro.config.js**                 | **webpack.config.js**  |
-| Default config    | `@expo/metro-config`                | `@expo/webpack-config` |
-| Multi-platform    | <YesIcon />                         | <NoIcon />             |
-| Fast Refresh      | <YesIcon /> (`@expo/metro-runtime`) | <NoIcon />             |
-| Error Overlay     | <YesIcon /> (`@expo/metro-runtime`) | <NoIcon />             |
-| Deferred Bundling | <YesIcon /> (`@expo/metro-runtime`) | <NoIcon />             |
-| Global CSS        | <PendingIcon /> (Beta • SDK 49)     | <YesIcon />            |
-| CSS Modules       | <PendingIcon /> (Beta • SDK 49)     | <NoIcon />             |
-| Bundle Splitting  | <PendingIcon /> (pending native)    | <YesIcon />            |
-| Tree Shaking      | <NoIcon />                          | <YesIcon />            |
-| Asset Manifests   | <NoIcon />                          | <YesIcon />            |
+| Feature                  | Metro                               | webpack                |
+| ------------------------ | ----------------------------------- | ---------------------- |
+| Start command            | `npx expo start`                    | `npx expo start`       |
+| Bundle command           | `npx expo export`                   | `npx expo export:web`  |
+| Output folder            | **dist**                            | **web-build**          |
+| Static folder            | **public**                          | **web**                |
+| Config file              | **metro.config.js**                 | **webpack.config.js**  |
+| Default config           | `@expo/metro-config`                | `@expo/webpack-config` |
+| Multi-platform           | <YesIcon />                         | <NoIcon />             |
+| Lazy bundling            | <YesIcon />                         | <NoIcon />             |
+| Incremental Bundling     | <YesIcon />                         | <NoIcon />             |
+| Static Generation        | <YesIcon />                         | <NoIcon />             |
+| Fast Refresh             | <YesIcon /> (`@expo/metro-runtime`) | <NoIcon />             |
+| Error Overlay            | <YesIcon /> (`@expo/metro-runtime`) | <NoIcon />             |
+| Global CSS               | <YesIcon /> (SDK 50)                | <YesIcon />            |
+| CSS Modules              | <YesIcon /> (SDK 50)                | <NoIcon />             |
+| API Routes               | <YesIcon /> (SDK 50)                | <NoIcon />             |
+| Bundle Splitting         | <YesIcon /> (SDK 50 • web)          | <YesIcon />            |
+| Static Font Optimization | <YesIcon /> (SDK 50 • web)          | <NoIcon />             |
+| Tree Shaking             | <PendingIcon /> (Partial support)   | <YesIcon />            |
+| Asset Manifests          | <NoIcon />                          | <YesIcon />            |
 
 Note that aliases, resolution, and other bundler features are now universal across platforms as well!
 
@@ -365,7 +369,7 @@ The output is found in the **dist** directory. To test it locally and see it wil
 
 You can deploy the website using any popular web host by following a guide from [publishing websites](/distribution/publishing-websites), and substitute the **web-build** directory for **dist**.
 
-#### Static Files
+#### Static files
 
 Expo's Metro implementation supports hosting static files from the dev server by putting them in the root **public/** directory. It is similar to many other web frameworks. In Expo webpack, the **web** directory is default.
 

@@ -4,6 +4,13 @@ const iosResourcesList = iosResources.map(({symbol, description}) => `- \`${symb
 
 export default [
   {
+    name: 'withoutCredentials',
+    type: 'boolean',
+    description: [
+      "When set to `true`, EAS CLI won't require you to configure credentials when building the app. This comes in handy when using EAS Build [custom builds](/custom-builds/get-started/).",
+    ],
+  },
+  {
     name: 'simulator',
     type: 'boolean',
     description: [ 'If set to true, creates build for simulator. Defaults to false' ],
@@ -40,8 +47,8 @@ export default [
     enum: ['default', 'medium', ...iosResourceClasses],
     description: [
       'The iOS-specific resource class that will be used to run this build.',
-      '- For SDK version >= 45 or React Native version >= 0.71.0 `default` maps to `m-medium`, otherwise it maps to `intel-medium`',
-      '- For SDK version >= 45 or React Native version >= 0.71.0 `medium` maps to `m-medium`, otherwise it maps to `intel-medium`',
+      '`m-medium`',
+      '`m-medium`',
       '',
       'Build resources:',
       ...iosResourcesList,
