@@ -112,6 +112,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)moveHomeToVisible
 {
   [[EXDevMenuManager sharedInstance] close];
+  [[self _getHomeAppManager] dispatchForegroundHomeEvent];
   [self moveAppToVisible:[EXKernel sharedInstance].appRegistry.homeAppRecord];
 }
 

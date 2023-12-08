@@ -94,6 +94,11 @@ NSString * const kEXHomeLaunchUrlDefaultsKey = @"EXKernelLaunchUrlDefaultsKey";
   [self _dispatchHomeJSEvent:@"showQRReader" body:@{} onSuccess:nil onFailure:nil];
 }
 
+- (void)dispatchForegroundHomeEvent
+{
+  [self _dispatchHomeJSEvent:@"foregroundHome" body:@{} onSuccess:nil onFailure:nil];
+}
+
 #pragma mark - EXReactAppManager
 
 - (NSArray *)extraModulesForBridge:(RCTBridge *)bridge

@@ -107,6 +107,17 @@ class ExponentKernelModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod
+  fun getLastCrashDate(promise: Promise) {
+    try {
+      val lastCrashDate = exponentSharedPreferences.getLong(ExponentSharedPreferences.ExponentSharedPreferencesKey.LAST_FATAL_ERROR_DATE_KEY)
+      promise.resolve(lastCrashDate.toString())
+    } catch (e: Exception) {
+      promise.resolve(null)
+      EXL.e(TAG, e)
+    }
+  }
+
+  @ReactMethod
   fun goToHomeFromErrorScreen() {
     if (ErrorActivity.visibleActivity == null) {
       // shouldn't ever get here

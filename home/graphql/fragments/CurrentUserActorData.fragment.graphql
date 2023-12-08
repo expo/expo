@@ -5,6 +5,7 @@ fragment CurrentUserActorData on UserActor {
   firstName
   lastName
   profilePhoto
+  bestContactEmail
   accounts {
     id
     name
