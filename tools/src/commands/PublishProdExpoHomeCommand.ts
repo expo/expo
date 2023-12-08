@@ -129,7 +129,7 @@ async function fetchManifestAndBundleAsync(
   groupId: string,
   platform: 'ios' | 'android'
 ): Promise<void> {
-  const manifestUrl = `https://staging-u.expo.dev/${projectId}/group/${groupId}`;
+  const manifestUrl = `https://u.expo.dev/${projectId}/group/${groupId}`;
   const manifestResponse = await fetch(manifestUrl, {
     method: 'GET',
     headers: {
