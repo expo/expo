@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix `Unable to find module for ExpoModulesCore.ViewModuleWrapper`.
+- [iOS] Fix `Unable to find module for ExpoModulesCore.ViewModuleWrapper`. ([#25813](https://github.com/expo/expo/pull/25813) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
