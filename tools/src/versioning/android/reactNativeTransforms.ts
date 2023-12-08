@@ -172,6 +172,12 @@ export function reactNativeTransforms(
         replaceWith: '-DHERMES_ENABLE_DEBUGGER=1',
       },
       {
+        // Enable HERMES_ENABLE_DEBUGGER
+        paths: './ReactCommon/hermes/inspector-modern/CMakeLists.txt',
+        find: 'if(${CMAKE_BUILD_TYPE} MATCHES Debug)',
+        replaceWith: 'if(True)',
+      },
+      {
         // workaround build dependency issue to explicitly link hermes_executor_common to hermes_executor
         // originally, it's hermes_inspector -> hermes_executor_common -> hermes_executor
         paths: './ReactAndroid/src/main/jni/react/hermes/reactexecutor/CMakeLists.txt',

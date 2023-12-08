@@ -7,10 +7,10 @@ import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.updates.BuildConfig
 import expo.modules.updates.logging.UpdatesLogEntry
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.statemachine.UpdatesStateContext
+import host.exp.expoview.BuildConfig
 import host.exp.exponent.kernel.KernelConstants
 import host.exp.exponent.kernel.KernelProvider
 import java.util.Date
@@ -43,7 +43,7 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
         constants["runtimeVersion"] = configuration.runtimeVersionRaw ?: ""
         constants["checkAutomatically"] = configuration.checkOnLaunch.toJSString()
         constants["channel"] = configuration.requestHeaders["expo-channel-name"] ?: ""
-        constants["nativeDebug"] = BuildConfig.EX_UPDATES_NATIVE_DEBUG
+        constants["nativeDebug"] = BuildConfig.DEBUG
 
         val launchedUpdate = appLoaderLocal.launcher.launchedUpdate
         if (launchedUpdate != null) {
