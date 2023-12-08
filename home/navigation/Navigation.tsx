@@ -31,6 +31,7 @@ import {
 } from '../utils/PermissionUtils';
 
 import { DiagnosticsStackScreen } from '@/screens/DiagnosticsScreen';
+import { FeedbackFormScreen } from '@/screens/FeedbackFormScreen';
 
 // TODO(Bacon): Do we need to create a new one each time?
 const HomeStack = createStackNavigator<HomeStackRoutes>();
@@ -93,6 +94,13 @@ function HomeStackScreen() {
         component={BranchDetailsScreen}
         options={{
           title: 'Branch',
+        }}
+      />
+      <HomeStack.Screen
+        name="FeedbackForm"
+        component={FeedbackFormScreen}
+        options={{
+          title: 'Share your feedback',
         }}
       />
     </HomeStack.Navigator>
