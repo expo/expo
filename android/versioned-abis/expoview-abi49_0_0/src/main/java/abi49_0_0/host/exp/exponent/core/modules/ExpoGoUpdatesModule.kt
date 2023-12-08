@@ -10,7 +10,6 @@ import abi49_0_0.expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.updates.logging.UpdatesLogEntry
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.statemachine.UpdatesStateContext
-import host.exp.expoview.BuildConfig
 import host.exp.exponent.kernel.KernelConstants
 import host.exp.exponent.kernel.KernelProvider
 import java.util.Date
@@ -43,7 +42,7 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
         constants["runtimeVersion"] = configuration.runtimeVersionRaw ?: ""
         constants["checkAutomatically"] = configuration.checkOnLaunch.toJSString()
         constants["channel"] = configuration.requestHeaders["expo-channel-name"] ?: ""
-        constants["nativeDebug"] = BuildConfig.DEBUG
+        constants["nativeDebug"] = false
 
         val launchedUpdate = appLoaderLocal.launcher.launchedUpdate
         if (launchedUpdate != null) {

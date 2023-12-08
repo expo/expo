@@ -18,7 +18,6 @@ fun main(args: Array<String>) {
     return
   }
 
-  println(System.getProperty("user.dir"))
   val inputJarPath = args[0]
   val outputJarPath = determineOutputPath(args[1])
 
