@@ -59,6 +59,7 @@
 - (NSString *)symbolPrefixForSdkVersion:(NSString *)version isKernel:(BOOL)isKernel
 {
 #ifdef INCLUDES_VERSIONED_CODE
+  // Projects that use the latest SDK version use unversioned code
   if (isKernel || [version isEqualToString:_temporarySdkVersion]) {
     return @"";
   }
