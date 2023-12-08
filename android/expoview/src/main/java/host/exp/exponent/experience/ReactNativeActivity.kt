@@ -242,7 +242,7 @@ abstract class ReactNativeActivity :
       return reactRootViewRNClass as Class<out ViewGroup>
     }
     var sdkVersion = manifest.getExpoGoSDKVersion()
-    if (Constants.TEMPORARY_ABI_VERSION != null && Constants.TEMPORARY_ABI_VERSION == this.sdkVersion) {
+    if (Constants.TEMPORARY_SDK_VERSION == sdkVersion) {
       sdkVersion = RNObject.UNVERSIONED
     }
     return RNObject("com.facebook.react.ReactRootView").loadVersion(sdkVersion!!).rnClass() as Class<out ViewGroup>
