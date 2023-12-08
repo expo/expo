@@ -72,6 +72,9 @@ export function FeedbackFormScreen() {
               onChangeText={setEmail}
               editable={!submitting}
               placeholder="your@email.com"
+              inputMode="email"
+              autoComplete="email"
+              autoCapitalize="none"
               value={email}
             />
           </View>
