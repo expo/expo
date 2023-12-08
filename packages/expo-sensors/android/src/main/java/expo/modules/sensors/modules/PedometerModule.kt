@@ -1,9 +1,13 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 package expo.modules.sensors.modules
 
+import android.Manifest
 import android.hardware.Sensor
+import android.os.Build
 import android.os.Bundle
+import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.sensors.services.PedometerServiceInterface
+import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -37,6 +41,24 @@ class PedometerModule : Module() {
       EventName,
       listenerDecorator = { stepsAtTheBeginning = null }
     ) { sensorProxy }
+
+    AsyncFunction("getPermissionsAsync") { promise: Promise ->
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        Permissions.getPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.ACTIVITY_RECOGNITION)
+      } else {
+        // Permissions don't need to be requested on Android versions below Q
+        Permissions.getPermissionsWithPermissionsManager(appContext.permissions, promise)
+      }
+    }
+
+    AsyncFunction("requestPermissionsAsync") { promise: Promise ->
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.ACTIVITY_RECOGNITION)
+      } else {
+        // Permissions don't need to be requested on Android versions below Q
+        Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise)
+      }
+    }
 
     AsyncFunction("getStepCountAsync") { _: Int, _: Int ->
       throw NotSupportedException("Getting step count for date range is not supported on Android yet")
