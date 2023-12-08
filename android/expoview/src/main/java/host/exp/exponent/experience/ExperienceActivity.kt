@@ -439,9 +439,9 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
 
     sdkVersion = manifest.getExpoGoSDKVersion()
 
-    // Sometime we want to release a new version without adding a new .aar. Use TEMPORARY_ABI_VERSION
+    // Sometime we want to release a new version without adding a new .aar. Use TEMPORARY_SDK_VERSION
     // to point to the unversioned code in ReactAndroid.
-    if (Constants.TEMPORARY_ABI_VERSION != null && Constants.TEMPORARY_ABI_VERSION == sdkVersion) {
+    if (Constants.TEMPORARY_SDK_VERSION == sdkVersion) {
       sdkVersion = RNObject.UNVERSIONED
     }
 

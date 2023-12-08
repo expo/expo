@@ -1,6 +1,7 @@
 package host.exp.exponent.kernel
 
 import expo.modules.manifests.core.Manifest
+import host.exp.exponent.Constants
 import host.exp.exponent.RNObject
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -16,6 +17,12 @@ object KernelNetworkInterceptor {
 
   fun start(manifest: Manifest, reactInstanceManager: Any?) {
     sdkVersion = manifest.getExpoGoSDKVersion() ?: throw IllegalArgumentException("Invalid SDK version")
+    // Sometime we want to release a new version without adding a new .aar. Use TEMPORARY_SDK_VERSION
+    // to point to the unversioned code in ReactAndroid.
+    if (Constants.TEMPORARY_SDK_VERSION == sdkVersion) {
+      sdkVersion = RNObject.UNVERSIONED
+    }
+
     val sdkMajorVersion = sdkVersion.split(".")[0].toIntOrNull() ?: Int.MAX_VALUE
     if (sdkMajorVersion < 49) {
       return
