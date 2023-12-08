@@ -60,3 +60,7 @@ export function onEventSuccess(eventId: string, result: object): void {
 export function onEventFailure(eventId: string, message: string): void {
   NativeKernel.onEventFailure(eventId, message);
 }
+
+export async function getLastCrashDate(): Promise<number | null> {
+  return Number(await NativeKernel.getLastCrashDate());
+}
