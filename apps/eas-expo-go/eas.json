@@ -27,6 +27,7 @@
           "key": "sdk50-0.73.0",
           "customPaths": ["../../ios/Pods"]
         },
+        "cocoapods": "1.14.2",
         "resourceClass": "medium",
         "env": {
           "EAS_BUILD_PLATFORM": "ios",
