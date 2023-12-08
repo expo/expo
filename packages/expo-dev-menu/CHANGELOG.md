@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `Unable to find module for ExpoModulesCore.ViewModuleWrapper`. ([#25813](https://github.com/expo/expo/pull/25813) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 - Bump C++ compiler setting to C++20. ([#25548](https://github.com/expo/expo/pull/25548) by [@kudo](https://github.com/kudo))
