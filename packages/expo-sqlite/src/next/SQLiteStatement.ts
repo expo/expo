@@ -49,12 +49,12 @@ export class SQLiteStatement {
    * await statement.finalizeAsync();
    * ```
    */
-  public eachAsync<T>(params: SQLiteBindParams): AsyncGenerator<T>;
+  public eachAsync<T>(params: SQLiteBindParams): AsyncIterableIterator<T>;
   /**
    * @hidden
    */
-  public eachAsync<T>(...params: SQLiteVariadicBindParams): AsyncGenerator<T>;
-  public async *eachAsync<T>(...params: unknown[]): AsyncGenerator<T> {
+  public eachAsync<T>(...params: SQLiteVariadicBindParams): AsyncIterableIterator<T>;
+  public async *eachAsync<T>(...params: unknown[]): AsyncIterableIterator<T> {
     const paramTuple = normalizeParams(...params);
     const func = this.nativeStatement.getAsync.bind(this.nativeStatement);
 
@@ -149,12 +149,12 @@ export class SQLiteStatement {
    * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
    */
-  public eachSync<T>(params: SQLiteBindParams): Generator<T>;
+  public eachSync<T>(params: SQLiteBindParams): IterableIterator<T>;
   /**
    * @hidden
    */
-  public eachSync<T>(...params: SQLiteVariadicBindParams): Generator<T>;
-  public *eachSync<T>(...params: unknown[]): Generator<T> {
+  public eachSync<T>(...params: SQLiteVariadicBindParams): IterableIterator<T>;
+  public *eachSync<T>(...params: unknown[]): IterableIterator<T> {
     const paramTuple = normalizeParams(...params);
     const func = this.nativeStatement.getSync.bind(this.nativeStatement);
 
