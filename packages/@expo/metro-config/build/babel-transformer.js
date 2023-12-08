@@ -99,7 +99,9 @@ function getBabelCaller({
     // Provide the project root for accurately reading the Expo config.
     projectRoot: options.projectRoot,
     isNodeModule,
-    isHMREnabled: options.hot
+    isHMREnabled: options.hot,
+    // Set the standard Babel flag to disable ESM transformations.
+    supportsStaticESM: options.experimentalImportSupport
   };
 }
 const transform = ({

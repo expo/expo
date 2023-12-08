@@ -34,6 +34,7 @@
     "babel-transformer"
   ],
   "dependencies": {
+    "@babel/generator": "^7.20.0",
     "@expo/config": "~8.4.0",
     "@expo/env": "~0.1.0",
     "@expo/json-file": "~8.2.37",
