@@ -116,6 +116,7 @@ function getDefaultSerializer(
       return null;
     })();
 
+    // TODO(quin): how can i get the default serializer to run?
     if (serializerOptions?.outputMode !== 'static') {
       return defaultSerializer(...props);
     }

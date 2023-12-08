@@ -52,6 +52,7 @@ export async function graphToSerialAssetsAsync(
   ...props: SerializerParameters
 ): Promise<{ artifacts: SerialAsset[] | null; assets: AssetData[] }> {
   const [entryFile, preModules, graph, options] = props;
+  // TODO: maybe call the default serializer around here?
 
   const cssDeps = getCssSerialAssets<MixedOutput>(graph.dependencies, {
     projectRoot: options.projectRoot,
@@ -406,11 +407,15 @@ class Chunk {
       if (hermesBundleOutput.hbc) {
         // TODO: Unclear if we should add multiple assets, link the assets, or mutate the first asset.
         // jsAsset.metadata.hbc = hermesBundleOutput.hbc;
+        // DEBUG Push the js bundle for debugging purposes
+        assets.push({ ...assets[0] });
         // @ts-expect-error: TODO
         jsAsset.source = hermesBundleOutput.hbc;
         jsAsset.filename = jsAsset.filename.replace(/\.js$/, '.hbc');
       }
       if (assets[1] && hermesBundleOutput.sourcemap) {
+        // DEBUG Push the js source map for debugging purposes
+        assets.push({ ...assets[1] });
         assets[1].source = hermesBundleOutput.sourcemap;
         assets[1].filename = assets[1].filename.replace(/\.js\.map$/, '.hbc.map');
       }
