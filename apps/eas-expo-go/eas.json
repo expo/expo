@@ -26,6 +26,7 @@
           "key": "sdk50-0.73.0",
           "customPaths": ["../../ios/Pods"]
         },
+        "image": "macos-ventura-13.6-xcode-15.0",
         "cocoapods": "1.14.2",
         "resourceClass": "medium",
         "env": {
