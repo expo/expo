@@ -1,9 +1,12 @@
+import { InstalledDependencyVersionCheck } from '../checks/InstalledDependencyVersionCheck';
 import { DoctorCheck } from '../checks/checks.types';
 import {
+  getChecks,
   printCheckResultSummaryOnComplete,
   printFailedCheckIssueAndAdvice,
   runChecksAsync,
 } from '../doctor';
+import { env } from '../utils/env';
 import { Log } from '../utils/log';
 
 jest.mock(`../utils/log`);
@@ -44,6 +47,32 @@ class MockUnexpectedThrowCheck implements DoctorCheck {
   sdkVersionRange = '*';
   runAsync = jest.fn(() => Promise.reject(new Error('Unexpected error thrown from check.')));
 }
+
+describe(getChecks, () => {
+  it('skips the InstalledDependencyVersionCheck if environment variable is set', async () => {
+    const mock = jest
+      .spyOn(env, 'EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK', 'get')
+      .mockImplementation(() => true);
+    const checks = getChecks();
+    expect(mock).toHaveBeenCalled();
+    expect(
+      checks.find((check) => check instanceof InstalledDependencyVersionCheck)
+    ).toBeUndefined();
+    mock.mockRestore();
+  });
+
+  it('includes the InstalledDependencyVersionCheck if environment variable is not set', async () => {
+    const mock = jest
+      .spyOn(env, 'EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK', 'get')
+      .mockImplementation(() => false);
+    const checks = getChecks();
+    expect(mock).toHaveBeenCalled();
+    expect(
+      checks.find((check) => check instanceof InstalledDependencyVersionCheck)
+    ).not.toBeUndefined();
+    mock.mockRestore();
+  });
+});
 
 describe(runChecksAsync, () => {
   it(`returns a DoctorCheckRunnerJob for each check`, async () => {

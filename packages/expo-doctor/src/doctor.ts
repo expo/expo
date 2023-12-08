@@ -115,6 +115,25 @@ export async function runChecksAsync(
   );
 }
 
+export function getChecks() {
+  // add additional checks here
+  const checks = [
+    new GlobalPrereqsVersionCheck(),
+    new IllegalPackageCheck(),
+    new GlobalPackageInstalledCheck(),
+    new SupportPackageVersionCheck(),
+    new ExpoConfigSchemaCheck(),
+    new ExpoConfigCommonIssueCheck(),
+    new DirectPackageInstallCheck(),
+    new PackageJsonCheck(),
+    new ProjectSetupCheck(),
+  ];
+  if (!env.EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK) {
+    checks.push(new InstalledDependencyVersionCheck());
+  }
+  return checks;
+}
+
 export async function actionAsync(projectRoot: string) {
   await warnUponCmdExe();
 
@@ -133,19 +152,7 @@ export async function actionAsync(projectRoot: string) {
     return;
   }
 
-  // add additional checks here
-  const checks = [
-    new GlobalPrereqsVersionCheck(),
-    new IllegalPackageCheck(),
-    new GlobalPackageInstalledCheck(),
-    new SupportPackageVersionCheck(),
-    new InstalledDependencyVersionCheck(),
-    new ExpoConfigSchemaCheck(),
-    new ExpoConfigCommonIssueCheck(),
-    new DirectPackageInstallCheck(),
-    new PackageJsonCheck(),
-    new ProjectSetupCheck(),
-  ];
+  const checks = getChecks();
 
   const filteredChecks = checks.filter(
     (check) =>
