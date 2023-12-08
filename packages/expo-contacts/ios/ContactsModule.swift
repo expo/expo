@@ -296,7 +296,7 @@ public class ContactsModule: Module {
     }
   }
 
-  func getContact(withId identifier: String) throws -> CNContact {
+  private func getContact(withId identifier: String) throws -> CNContact {
     do {
       let keysToFetch = [CNContactViewController.descriptorForRequiredKeys()]
       return try contactStore.unifiedContact(withIdentifier: identifier, keysToFetch: keysToFetch)
