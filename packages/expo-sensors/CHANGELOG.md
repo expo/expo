@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix pedometer not working due to lack of permissions.
+
 ### 💡 Others
 
 ## 12.8.0 — 2023-11-14
