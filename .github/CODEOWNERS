@@ -9,6 +9,7 @@
 /packages/@expo/metro-config                    @EvanBacon @bycedric @marklawlor
 /packages/@expo/metro-runtime                   @EvanBacon @bycedric @marklawlor
 /packages/@expo/package-manager                 @EvanBacon @bycedric
+/packages/@expo/plist                           @EvanBacon @bycedric
 /packages/babel-preset-expo                     @brentvatne @ide @EvanBacon
 /packages/create-expo                           @EvanBacon @bycedric
 /packages/expo-*                                @alanjhughes
