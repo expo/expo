@@ -125,14 +125,26 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
       }
     }
 
-    // Add common chunk if one exists.
+    // If common dependencies were found, extract them to the entry chunk.
+    // TODO: Extract the metro-runtime to a common chunk apart from the entry chunk then load the common dependencies before the entry chunk.
     if (commonDependencies.length) {
-      const commonDependenciesUnique = [...new Set(commonDependencies)];
-      const commonChunk = new Chunk(chunkIdForModules(commonDependenciesUnique), commonDependenciesUnique, graph, options, false, true);
-      entryChunk.requiredChunks.add(commonChunk);
-      chunks.add(commonChunk);
+      for (const dep of commonDependencies) {
+        entryChunk.deps.add(dep);
+      }
+      // const commonDependenciesUnique = [...new Set(commonDependencies)];
+      // const commonChunk = new Chunk(
+      //   chunkIdForModules(commonDependenciesUnique),
+      //   commonDependenciesUnique,
+      //   graph,
+      //   options,
+      //   false,
+      //   true
+      // );
+      // entryChunk.requiredChunks.add(commonChunk);
+      // chunks.add(commonChunk);
     }
   }
+
   const jsAssets = await serializeChunksAsync(chunks, (_config$serializer = config.serializer) !== null && _config$serializer !== void 0 ? _config$serializer : {}, serializeChunkOptions);
 
   // TODO: Convert to serial assets
