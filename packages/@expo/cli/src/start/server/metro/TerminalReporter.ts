@@ -12,6 +12,8 @@ import {
 } from './TerminalReporter.types';
 import { stripAnsi } from '../../../utils/ansi';
 
+const debug = require('debug')('expo:metro:logger') as typeof console.log;
+
 /**
  * A standard way to log a warning to the terminal. This should not be called
  * from some arbitrary Metro logic, only from the reporters. Instead of
@@ -52,6 +54,9 @@ export class TerminalReporter extends XTerminalReporter implements TerminalRepor
   /** Keep track of how long a bundle takes to complete */
   _bundleTimers: Map<string, number> = new Map();
 
+  /** Keep track of bundle processes that should not be logged. */
+  _hiddenBundleEvents: Set<string> = new Set();
+
   _log(event: TerminalReportableEvent): void {
     switch (event.type) {
       case 'transform_cache_reset':
@@ -73,6 +78,11 @@ export class TerminalReporter extends XTerminalReporter implements TerminalRepor
     level: 'trace' | 'info' | 'warn' | 'log' | 'group' | 'groupCollapsed' | 'groupEnd' | 'debug';
     data: unknown[];
   }): boolean {
+    return false;
+  }
+
+  /** Gives subclasses an easy interface for filtering out bundle events, specifically for source maps. Return `true` to skip. */
+  shouldFilterBundleEvent(event: TerminalReportableEvent): boolean {
     return false;
   }
 
@@ -102,7 +112,19 @@ export class TerminalReporter extends XTerminalReporter implements TerminalRepor
       event.bundleDetails.buildID = event.buildID;
     }
 
-    super._updateState(event);
+    const buildID = event.bundleDetails?.buildID ?? event.buildID;
+
+    if (buildID && !this._hiddenBundleEvents.has(buildID)) {
+      if (this.shouldFilterBundleEvent(event)) {
+        debug('skipping bundle events for', buildID, event);
+        this._hiddenBundleEvents.add(buildID);
+      } else {
+        super._updateState(event);
+      }
+    } else {
+      super._updateState(event);
+    }
+
     switch (event.type) {
       case 'bundle_build_done':
       case 'bundle_build_failed': {
