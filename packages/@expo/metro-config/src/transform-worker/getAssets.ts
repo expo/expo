@@ -9,7 +9,7 @@ import { AssetData, Module } from 'metro';
 import { getAssetData } from 'metro/src/Assets';
 import { getJsOutput, isJsModule } from 'metro/src/DeltaBundler/Serializers/helpers/js';
 import assert from 'node:assert';
-// import crypto from 'node:crypto';
+import crypto from 'node:crypto';
 import path from 'node:path';
 
 import { ReadOnlyDependencies } from '../serializer/getCssDeps';
@@ -22,11 +22,11 @@ type Options = {
   publicPath: string;
 };
 
-// function md5Hash(data: string) {
-//   const hash = crypto.createHash('md5');
-//   hash.update(data);
-//   return hash.digest('hex');
-// }
+function md5Hash(data: string) {
+  const hash = crypto.createHash('md5');
+  hash.update(data);
+  return hash.digest('hex');
+}
 
 function assertHashedAssetData(data: AssetData): asserts data is HashedAssetData {
   assert(
@@ -46,14 +46,14 @@ export async function getUniversalAssetData(
   assertHashedAssetData(data);
 
   // NOTE(EvanBacon): This is where we modify the asset to include a hash in the name for web cache invalidation.
-  //   if (platform === 'web' && publicPath.includes('?export_path=')) {
-  //     // Store original name for reading the asset on-disk later.
-  //     data._name = data.name;
-  //     // `local-image.[contenthash]`. Using `.` but this won't work if we ever apply to Android because Android res files cannot contain `.`.
-  //     // TODO: Prevent one multi-res image from updating the hash in all images.
-  //     // @ts-expect-error: name is typed as readonly.
-  //     data.name = `${data.name}.${md5Hash(data.fileHashes.join(''))}`;
-  //   }
+  if (platform === 'web' && publicPath.includes('?export_path=')) {
+    // Store original name for reading the asset on-disk later.
+    data._name = data.name;
+    // `local-image.[contenthash]`. Using `.` but this won't work if we ever apply to Android because Android res files cannot contain `.`.
+    // TODO: Prevent one multi-res image from updating the hash in all images.
+    // @ts-expect-error: name is typed as readonly.
+    data.name = `${data.name}.${md5Hash(data.fileHashes.join(''))}`;
+  }
 
   return data;
 }

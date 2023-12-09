@@ -26,6 +26,13 @@ function _nodeAssert() {
   };
   return data;
 }
+function _nodeCrypto() {
+  const data = _interopRequireDefault(require("node:crypto"));
+  _nodeCrypto = function () {
+    return data;
+  };
+  return data;
+}
 function _nodePath() {
   const data = _interopRequireDefault(require("node:path"));
   _nodePath = function () {
@@ -42,14 +49,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * LICENSE file in the root directory of this source tree.
  */
 
-// import crypto from 'node:crypto';
-
-// function md5Hash(data: string) {
-//   const hash = crypto.createHash('md5');
-//   hash.update(data);
-//   return hash.digest('hex');
-// }
-
+function md5Hash(data) {
+  const hash = _nodeCrypto().default.createHash('md5');
+  hash.update(data);
+  return hash.digest('hex');
+}
 function assertHashedAssetData(data) {
   (0, _nodeAssert().default)('fileHashes' in data, 'Assets must have hashed files. Ensure the expo-asset plugin is installed.');
 }
@@ -58,15 +62,14 @@ async function getUniversalAssetData(assetPath, localPath, assetDataPlugins, pla
   assertHashedAssetData(data);
 
   // NOTE(EvanBacon): This is where we modify the asset to include a hash in the name for web cache invalidation.
-  //   if (platform === 'web' && publicPath.includes('?export_path=')) {
-  //     // Store original name for reading the asset on-disk later.
-  //     data._name = data.name;
-  //     // `local-image.[contenthash]`. Using `.` but this won't work if we ever apply to Android because Android res files cannot contain `.`.
-  //     // TODO: Prevent one multi-res image from updating the hash in all images.
-  //     // @ts-expect-error: name is typed as readonly.
-  //     data.name = `${data.name}.${md5Hash(data.fileHashes.join(''))}`;
-  //   }
-
+  if (platform === 'web' && publicPath.includes('?export_path=')) {
+    // Store original name for reading the asset on-disk later.
+    data._name = data.name;
+    // `local-image.[contenthash]`. Using `.` but this won't work if we ever apply to Android because Android res files cannot contain `.`.
+    // TODO: Prevent one multi-res image from updating the hash in all images.
+    // @ts-expect-error: name is typed as readonly.
+    data.name = `${data.name}.${md5Hash(data.fileHashes.join(''))}`;
+  }
   return data;
 }
 async function getAssets(dependencies, options) {
