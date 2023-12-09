@@ -35,7 +35,6 @@
     "probe-image-size": "^7.1.0"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.176",
     "@types/probe-image-size": "^7.2.4",
     "expo-module-scripts": "^3.3.0"
   },
