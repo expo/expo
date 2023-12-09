@@ -95,17 +95,18 @@ export function baseJSBundle(
   });
 }
 
+export type BaseJsBundleOptions = ExpoSerializerOptions & {
+  platform: string;
+  baseUrl: string;
+  splitChunks: boolean;
+  skipWrapping: boolean;
+  computedAsyncModulePaths: Record<string, string> | null;
+};
 export function baseJSBundleWithDependencies(
   entryPoint: string,
   preModules: readonly Module[],
   dependencies: Module<MixedOutput>[],
-  options: ExpoSerializerOptions & {
-    platform: string;
-    baseUrl: string;
-    splitChunks: boolean;
-    skipWrapping: boolean;
-    computedAsyncModulePaths: Record<string, string> | null;
-  }
+  options: BaseJsBundleOptions
 ): Bundle {
   for (const module of dependencies) {
     options.createModuleId(module.path);

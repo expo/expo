@@ -23,6 +23,7 @@ import pathToRegExp from 'path-to-regexp';
 import { buildHermesBundleAsync } from './exportHermes';
 import { getExportPathForDependencyWithOptions } from './exportPath';
 import {
+  BaseJsBundleOptions,
   ExpoSerializerOptions,
   baseJSBundleWithDependencies,
   getBaseUrlOption,
@@ -44,7 +45,14 @@ type ChunkSettings = {
 export type SerializeChunkOptions = {
   includeSourceMaps: boolean;
   includeBytecode: boolean;
+  fallbackSerializer?: Serializer;
 };
+
+type ChunkContextAsOptions = {
+  includeSourceMaps: boolean;
+  deps: Set<Module>;
+};
+type InnerSerializerOptions = BaseJsBundleOptions & ChunkContextAsOptions;
 
 export async function graphToSerialAssetsAsync(
   config: MetroConfig,
@@ -52,7 +60,6 @@ export async function graphToSerialAssetsAsync(
   ...props: SerializerParameters
 ): Promise<{ artifacts: SerialAsset[] | null; assets: AssetData[] }> {
   const [entryFile, preModules, graph, options] = props;
-  // TODO: maybe call the default serializer around here?
 
   const cssDeps = getCssSerialAssets<MixedOutput>(graph.dependencies, {
     projectRoot: options.projectRoot,
@@ -138,6 +145,66 @@ export async function graphToSerialAssetsAsync(
 
   return { artifacts: [...jsAssets, ...cssDeps], assets: metroAssets };
 }
+
+export const createChunkSerializer = () => {
+  return (
+    ...props: SerializerParameters
+  ): {
+    code: string;
+    map?: string;
+  } => {
+    const [entryFile, preModules, , options] = props;
+    const innerSerializerOptions = options as InnerSerializerOptions;
+    const {
+      deps,
+      includeSourceMaps,
+      inlineSourceMap,
+      sourceMapUrl,
+      createModuleId,
+      serverRoot,
+      projectRoot,
+    } = innerSerializerOptions;
+    if (!deps) {
+      throw new Error('uh oh, you need to wrap the expo serializer');
+    }
+    const jsSplitBundle = baseJSBundleWithDependencies(
+      entryFile,
+      preModules,
+      [...deps],
+      innerSerializerOptions
+    );
+
+    const code = bundleToString(jsSplitBundle).code;
+
+    const shouldBuildMap = includeSourceMaps && !inlineSourceMap && sourceMapUrl;
+    if (!shouldBuildMap) {
+      return { code };
+    }
+    const modules = [
+      ...preModules,
+      ...getSortedModules([...deps], {
+        createModuleId,
+      }),
+    ].map((module) => {
+      // TODO: Make this user-configurable.
+
+      // Make all paths relative to the server root to prevent the entire user filesystem from being exposed.
+      if (module.path.startsWith('/')) {
+        return {
+          ...module,
+          path: '/' + path.relative(serverRoot ?? projectRoot, module.path),
+        };
+      }
+      return module;
+    });
+
+    const sourceMap = sourceMapString(modules, {
+      excludeSource: false,
+      ...innerSerializerOptions,
+    });
+    return { code, map: sourceMap };
+  };
+};
 
 class Chunk {
   public deps: Set<Module> = new Set();
@@ -302,23 +369,83 @@ class Chunk {
     }
   }
 
-  private serializeToCode(serializerConfig: Partial<SerializerConfigT>, chunks: Chunk[]) {
+  /*   private serializeToCode(serializerConfig: Partial<SerializerConfigT>, chunks: Chunk[]) {
     return this.serializeToCodeWithTemplates(serializerConfig, {
       skipWrapping: false,
       sourceMapUrl: this.getAdjustedSourceMapUrl(serializerConfig) ?? undefined,
       computedAsyncModulePaths: this.getComputedPathsForAsyncDependencies(serializerConfig, chunks),
     });
+  } */
+
+  private getChunkSerializerOptions(
+    serializerConfig: Partial<SerializerConfigT>,
+    chunks: Chunk[],
+    { includeSourceMaps }: SerializeChunkOptions
+  ): InnerSerializerOptions {
+    const entryFile = this.name;
+    return {
+      ...this.options,
+      // serializeCodeToTemplate args
+      skipWrapping: false,
+      sourceMapUrl: this.getAdjustedSourceMapUrl(serializerConfig) ?? undefined,
+      computedAsyncModulePaths: this.getComputedPathsForAsyncDependencies(serializerConfig, chunks),
+      // serializeCodeToTemplate invocation
+      runBeforeMainModule:
+        serializerConfig?.getModulesRunBeforeMainModule?.(
+          path.relative(this.options.projectRoot, entryFile)
+        ) ?? [],
+      runModule: !this.isVendor && !this.isAsync,
+      modulesOnly: this.preModules.size === 0,
+      platform: this.getPlatform(),
+      baseUrl: getBaseUrlOption(this.graph, this.options),
+      splitChunks: getSplitChunksOption(this.graph, this.options),
+      ///skipWrapping: true, // TODO: this resolves to the original options in the original implementation
+      // computedAsyncModulePaths: null, // TODO: this resolves to the original options in the original implementation
+      includeSourceMaps,
+      deps: this.deps,
+    };
+  }
+
+  private async serializeToCodeAndMapAsync(
+    serializerConfig: Partial<SerializerConfigT>,
+    chunks: Chunk[],
+    options: SerializeChunkOptions
+  ): Promise<{ code: string; map?: string }> {
+    const { fallbackSerializer } = options;
+    const chunkSerializerOptions = this.getChunkSerializerOptions(
+      serializerConfig,
+      chunks,
+      options
+    );
+    if (fallbackSerializer) {
+      // Note: fallback serializer must call the serializer from createChunkSerializer.
+      const serializerResult = await fallbackSerializer(
+        this.name,
+        [...this.preModules],
+        this.graph,
+        chunkSerializerOptions
+      );
+      if (typeof serializerResult === 'string') {
+        return { code: serializerResult };
+      }
+      return { code: serializerResult.code, map: serializerResult.map };
+    } else {
+      const serialize = createChunkSerializer();
+      return serialize(this.name, [...this.preModules], this.graph, chunkSerializerOptions);
+    }
   }
 
   async serializeToAssetsAsync(
     serializerConfig: Partial<SerializerConfigT>,
     chunks: Chunk[],
-    {
+    { includeSourceMaps, includeBytecode, fallbackSerializer }: SerializeChunkOptions
+  ): Promise<SerialAsset[]> {
+    //const jsCode = this.serializeToCode(serializerConfig, chunks);
+    const { code: jsCode, map } = await this.serializeToCodeAndMapAsync(serializerConfig, chunks, {
       includeSourceMaps,
       includeBytecode,
-    }: { includeSourceMaps?: boolean; includeBytecode?: boolean }
-  ): Promise<SerialAsset[]> {
-    const jsCode = this.serializeToCode(serializerConfig, chunks);
+      fallbackSerializer,
+    });
 
     const relativeEntry = path.relative(this.options.projectRoot, this.name);
     const outputFile = this.getFilenameForConfig(
@@ -344,42 +471,13 @@ class Chunk {
 
     const assets: SerialAsset[] = [jsAsset];
 
-    if (
-      // Only include the source map if the `options.sourceMapUrl` option is provided and we are exporting a static build.
-      includeSourceMaps &&
-      !this.options.inlineSourceMap &&
-      this.options.sourceMapUrl
-    ) {
-      const modules = [
-        ...this.preModules,
-        ...getSortedModules([...this.deps], {
-          createModuleId: this.options.createModuleId,
-        }),
-      ].map((module) => {
-        // TODO: Make this user-configurable.
-
-        // Make all paths relative to the server root to prevent the entire user filesystem from being exposed.
-        if (module.path.startsWith('/')) {
-          return {
-            ...module,
-            path:
-              '/' + path.relative(this.options.serverRoot ?? this.options.projectRoot, module.path),
-          };
-        }
-        return module;
-      });
-
-      const sourceMap = sourceMapString(modules, {
-        excludeSource: false,
-        ...this.options,
-      });
-
+    if (map) {
       assets.push({
         filename: this.options.dev ? jsAsset.filename + '.map' : outputFile + '.map',
         originFilename: jsAsset.originFilename,
         type: 'map',
         metadata: {},
-        source: sourceMap,
+        source: map,
       });
     }
 
@@ -532,7 +630,7 @@ function gatherChunks(
 async function serializeChunksAsync(
   chunks: Set<Chunk>,
   serializerConfig: Partial<SerializerConfigT>,
-  { includeSourceMaps, includeBytecode }: SerializeChunkOptions
+  { includeSourceMaps, includeBytecode, fallbackSerializer }: SerializeChunkOptions
 ) {
   const jsAssets: SerialAsset[] = [];
 
@@ -543,6 +641,7 @@ async function serializeChunksAsync(
         ...(await chunk.serializeToAssetsAsync(serializerConfig, chunksArray, {
           includeSourceMaps,
           includeBytecode,
+          fallbackSerializer,
         }))
       );
     })

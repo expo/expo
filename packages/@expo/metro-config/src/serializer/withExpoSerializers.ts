@@ -27,7 +27,7 @@ export type SerializerParameters = [
   ExpoSerializerOptions,
 ];
 
-type SerializerOptions = {
+type SerializerConfigOptions = {
   customSerializer?: Serializer;
 };
 
@@ -37,7 +37,7 @@ export type SerializerPlugin = (...props: SerializerParameters) => SerializerPar
 
 export function withExpoSerializers(
   config: InputConfigT,
-  options: SerializerOptions = {}
+  options: SerializerConfigOptions = {}
 ): InputConfigT {
   const processors: SerializerPlugin[] = [];
   processors.push(serverPreludeSerializerPlugin);
@@ -53,7 +53,7 @@ export function withExpoSerializers(
 export function withSerializerPlugins(
   config: InputConfigT,
   processors: SerializerPlugin[],
-  options: SerializerOptions = {}
+  options: SerializerConfigOptions = {}
 ): InputConfigT {
   const originalSerializer = options.customSerializer ?? config.serializer?.customSerializer;
 
@@ -74,13 +74,6 @@ function getDefaultSerializer(
   config: MetroConfig,
   fallbackSerializer?: Serializer | null
 ): Serializer {
-  const defaultSerializer =
-    fallbackSerializer ??
-    (async (...params: SerializerParameters) => {
-      const bundle = baseJSBundle(...params);
-      const outputCode = bundleToString(bundle).code;
-      return outputCode;
-    });
   return async (
     ...props: SerializerParameters
   ): Promise<string | { code: string; map: string }> => {
@@ -116,8 +109,14 @@ function getDefaultSerializer(
       return null;
     })();
 
-    // TODO(quin): how can i get the default serializer to run?
     if (serializerOptions?.outputMode !== 'static') {
+      const defaultSerializer =
+        fallbackSerializer ??
+        (async (...params: SerializerParameters) => {
+          const bundle = baseJSBundle(...params);
+          const outputCode = bundleToString(bundle).code;
+          return outputCode;
+        });
       return defaultSerializer(...props);
     }
 
@@ -132,6 +131,7 @@ function getDefaultSerializer(
       {
         includeSourceMaps: !!serializerOptions.includeSourceMaps,
         includeBytecode: !!serializerOptions.includeBytecode,
+        fallbackSerializer: fallbackSerializer ?? undefined,
       },
       ...props
     );
