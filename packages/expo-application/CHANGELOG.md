@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- On iOS, fixed a regression that prevented expo go from determining the release type.
+- On iOS, fixed a regression that prevented expo go from determining the release type. ([#25834](https://github.com/expo/expo/pull/25834) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
