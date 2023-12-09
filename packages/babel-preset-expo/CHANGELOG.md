@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Support caller option `supportsStaticESM` to disable cjs transforms.
 - Inject async routes using caller. ([#25627](https://github.com/expo/expo/pull/25627) by [@EvanBacon](https://github.com/EvanBacon))
 - Use babel caller to determine the `expo-router` root directory. ([#25658](https://github.com/expo/expo/pull/25658) by [@EvanBacon](https://github.com/EvanBacon))
 - Moved `react-refresh` babel plugin from Metro/Webpack to `babel-preset-expo`. ([#25461](https://github.com/expo/expo/pull/25461) by [@EvanBacon](https://github.com/EvanBacon))
