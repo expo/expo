@@ -22,9 +22,10 @@ type Options = {
   publicPath: string;
 };
 
-function md5Hash(data: string) {
+function md5Hash(data: string[]) {
+  if (data.length === 1) return data[0];
   const hash = crypto.createHash('md5');
-  hash.update(data);
+  hash.update(data.join(''));
   return hash.digest('hex');
 }
 
@@ -52,7 +53,7 @@ export async function getUniversalAssetData(
     // `local-image.[contenthash]`. Using `.` but this won't work if we ever apply to Android because Android res files cannot contain `.`.
     // TODO: Prevent one multi-res image from updating the hash in all images.
     // @ts-expect-error: name is typed as readonly.
-    data.name = `${data.name}.${md5Hash(data.fileHashes.join(''))}`;
+    data.name = `${data.name}.${md5Hash(data.fileHashes)}`;
   }
 
   return data;

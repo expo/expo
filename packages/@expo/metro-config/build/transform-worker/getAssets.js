@@ -50,8 +50,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 
 function md5Hash(data) {
+  if (data.length === 1) return data[0];
   const hash = _nodeCrypto().default.createHash('md5');
-  hash.update(data);
+  hash.update(data.join(''));
   return hash.digest('hex');
 }
 function assertHashedAssetData(data) {
@@ -68,7 +69,7 @@ async function getUniversalAssetData(assetPath, localPath, assetDataPlugins, pla
     // `local-image.[contenthash]`. Using `.` but this won't work if we ever apply to Android because Android res files cannot contain `.`.
     // TODO: Prevent one multi-res image from updating the hash in all images.
     // @ts-expect-error: name is typed as readonly.
-    data.name = `${data.name}.${md5Hash(data.fileHashes.join(''))}`;
+    data.name = `${data.name}.${md5Hash(data.fileHashes)}`;
   }
   return data;
 }
