@@ -6,7 +6,6 @@
  */
 import { buildUrlForBundle } from './buildUrlForBundle';
 import { fetchThenEvalAsync } from './fetchThenEval';
-// import LoadingView from '../LoadingView';
 
 let pendingRequests = 0;
 
@@ -21,24 +20,22 @@ export async function loadBundleAsync(bundlePath: string): Promise<void> {
   if (process.env.NODE_ENV === 'production') {
     return fetchThenEvalAsync(requestUrl);
   } else {
+    const Platform = require('react-native').Platform;
     const LoadingView = require('../LoadingView')
       .default as typeof import('../LoadingView').default;
-
-    // Send a signal to the `expo` package to show the loading indicator.
-    LoadingView.showMessage('Downloading...', 'load');
-
+    if (Platform.OS !== 'web') {
+      // Send a signal to the `expo` package to show the loading indicator.
+      LoadingView.showMessage('Downloading...', 'load');
+    }
     pendingRequests++;
 
     return fetchThenEvalAsync(requestUrl)
       .then(() => {
-        if (process.env.NODE_ENV !== 'production') {
-          const HMRClient = require('../HMRClient')
-            .default as typeof import('../HMRClient').default;
-          HMRClient.registerBundle(requestUrl);
-        }
+        const HMRClient = require('../HMRClient').default as typeof import('../HMRClient').default;
+        HMRClient.registerBundle(requestUrl);
       })
       .finally(() => {
-        if (!--pendingRequests) {
+        if (!--pendingRequests && Platform.OS !== 'web') {
           LoadingView.hide();
         }
       });
