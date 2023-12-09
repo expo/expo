@@ -79,14 +79,14 @@ describe('exports static with bundle splitting', () => {
   // Ensure the correct script tags are injected.
   it('has eager script tags in html', async () => {
     expect(await getScriptTagsAsync('index.html')).toEqual(
-      ['index', '_layout', 'index', 'head'].map(expectChunkPathMatching)
+      ['index', '_layout', 'index'].map(expectChunkPathMatching)
     );
   });
   it('has eager script tags in dynamic html', async () => {
     const staticParamsPage = await getScriptTagsAsync('welcome-to-the-universe.html');
 
     expect(staticParamsPage).toEqual(
-      ['index', '[post]', '_layout', 'head'].map(expectChunkPathMatching)
+      ['index', '[post]', '_layout'].map(expectChunkPathMatching)
     );
 
     expect(await getScriptTagsAsync('[post].html')).toEqual(staticParamsPage);
@@ -94,7 +94,7 @@ describe('exports static with bundle splitting', () => {
   it('has (fewer) eager script tags in generated routes', async () => {
     // Less chunks because the not-found route is not an async import.
     expect(await getScriptTagsAsync('+not-found.html')).toEqual(
-      ['index', '_layout', 'head'].map(expectChunkPathMatching)
+      ['index', '_layout'].map(expectChunkPathMatching)
     );
   });
 
@@ -123,7 +123,7 @@ describe('exports static with bundle splitting', () => {
     // "_expo/static/js/web/links-4545c832242c66b83e4bd38b67066808.js.map",
     // "_expo/static/js/web/styled-93437b3b1dcaa498dabb3a1de3aae7ac.js.map",
     expect(mapFiles).toEqual(
-      ['\\[post\\]', '_layout', 'about', 'asset', 'head', 'index', 'index', 'links', 'styled'].map(
+      ['\\[post\\]', '_layout', 'about', 'asset', 'index', 'index', 'links', 'styled'].map(
         (file) =>
           expect.stringMatching(new RegExp(`_expo\\/static\\/js\\/web\\/${file}-.*\\.js\\.map`))
       )
