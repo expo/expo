@@ -14,7 +14,7 @@
 
 ### 💡 Others
 
-- Skip showing "Downloading..." overlay on web.
+- Skip showing "Downloading..." overlay on web. ([#25832](https://github.com/expo/expo/pull/25832) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.0.4 — 2023-11-14
 
