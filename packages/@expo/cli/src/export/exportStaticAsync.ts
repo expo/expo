@@ -54,8 +54,8 @@ type HtmlRequestLocation = {
 
 /** @private */
 export async function unstable_exportStaticAsync(projectRoot: string, options: Options) {
-  Log.warn(
-    `Experimental static rendering is enabled. ` +
+  Log.log(
+    `Static rendering is enabled. ` +
       learnMore('https://docs.expo.dev/router/reference/static-rendering/')
   );
 

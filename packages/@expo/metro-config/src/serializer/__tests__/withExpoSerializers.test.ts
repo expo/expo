@@ -494,6 +494,7 @@ describe('serializes', () => {
     });
   });
 
+  // NOTE: This has been disabled pending a shared runtime chunk.
   it(`dedupes shared module in async imports`, async () => {
     const artifacts = await serializeSplitAsync({
       'index.js': `
@@ -515,31 +516,36 @@ describe('serializes', () => {
 
     expect(artifacts.map((art) => art.filename)).toMatchInlineSnapshot(`
       [
-        "_expo/static/js/web/index-2886bcb99609bebf6f5d5b3a6fef2aca.js",
+        "_expo/static/js/web/index-bd9fb82a51c035b74188cf502f39f808.js",
         "_expo/static/js/web/math-b278c4815cd8b12f59e193dbc2a4d19b.js",
         "_expo/static/js/web/shapes-405334a7946b0b9fb76331cda92fa85a.js",
-        "_expo/static/js/web/colors-f0d273187f9a6fb9aa2b039462d8aa07.js",
       ]
     `);
 
     expect(artifacts).toMatchInlineSnapshot(`
       [
         {
-          "filename": "_expo/static/js/web/index-2886bcb99609bebf6f5d5b3a6fef2aca.js",
+          "filename": "_expo/static/js/web/index-bd9fb82a51c035b74188cf502f39f808.js",
           "metadata": {
             "isAsync": false,
             "modulePaths": [
               "/app/index.js",
+              "/app/colors.js",
             ],
-            "requires": [
-              "_expo/static/js/web/colors-f0d273187f9a6fb9aa2b039462d8aa07.js",
-            ],
+            "requires": [],
           },
           "originFilename": "index.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
         _$$_REQUIRE(dependencyMap[1], "expo-mock/async-require")(dependencyMap[0], dependencyMap.paths, "./math");
         _$$_REQUIRE(dependencyMap[1], "expo-mock/async-require")(dependencyMap[2], dependencyMap.paths, "./shapes");
       },"/app/index.js",{"0":"/app/math.js","1":"/app/node_modules/expo-mock/async-require/index.js","2":"/app/shapes.js","paths":{"/app/math.js":"/_expo/static/js/web/math-b278c4815cd8b12f59e193dbc2a4d19b.js","/app/shapes.js":"/_expo/static/js/web/shapes-405334a7946b0b9fb76331cda92fa85a.js"}});
+      __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
+        Object.defineProperty(exports, '__esModule', {
+          value: true
+        });
+        const orange = 'orange';
+        exports.orange = orange;
+      },"/app/colors.js",[]);
       TEST_RUN_MODULE("/app/index.js");",
           "type": "js",
         },
@@ -583,30 +589,11 @@ describe('serializes', () => {
       },"/app/shapes.js",["/app/colors.js"]);",
           "type": "js",
         },
-        {
-          "filename": "_expo/static/js/web/colors-f0d273187f9a6fb9aa2b039462d8aa07.js",
-          "metadata": {
-            "isAsync": false,
-            "modulePaths": [
-              "/app/colors.js",
-            ],
-            "requires": [],
-          },
-          "originFilename": "colors.js",
-          "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
-        Object.defineProperty(exports, '__esModule', {
-          value: true
-        });
-        const orange = 'orange';
-        exports.orange = orange;
-      },"/app/colors.js",[]);",
-          "type": "js",
-        },
       ]
     `);
 
     // Split bundle
-    expect(artifacts.length).toBe(4);
+    expect(artifacts.length).toBe(3);
     expect(artifacts[1].metadata).toEqual({
       isAsync: true,
       modulePaths: ['/app/math.js'],
@@ -618,17 +605,17 @@ describe('serializes', () => {
       requires: [],
     });
 
-    // The shared sync import is deduped and added to a common chunk.
-    // This will be loaded in the index.html before the other bundles.
-    expect(artifacts[3].filename).toEqual(
-      expect.stringMatching(/_expo\/static\/js\/web\/colors-.*\.js/)
-    );
-    expect(artifacts[3].metadata).toEqual({
-      isAsync: false,
-      modulePaths: ['/app/colors.js'],
-      requires: [],
-    });
-    // Ensure the dedupe chunk isn't run, just loaded.
-    expect(artifacts[3].source).not.toMatch(/TEST_RUN_MODULE/);
+    // // The shared sync import is deduped and added to a common chunk.
+    // // This will be loaded in the index.html before the other bundles.
+    // expect(artifacts[3].filename).toEqual(
+    //   expect.stringMatching(/_expo\/static\/js\/web\/colors-.*\.js/)
+    // );
+    // expect(artifacts[3].metadata).toEqual({
+    //   isAsync: false,
+    //   modulePaths: ['/app/colors.js'],
+    //   requires: [],
+    // });
+    // // Ensure the dedupe chunk isn't run, just loaded.
+    // expect(artifacts[3].source).not.toMatch(/TEST_RUN_MODULE/);
   });
 });
