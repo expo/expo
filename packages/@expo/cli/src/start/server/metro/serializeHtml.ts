@@ -92,7 +92,7 @@ function htmlFromSerialAssets(
               return '';
             }
             // Mark async chunks as defer so they don't block the page load.
-            return `<script src="${baseUrl}/${filename}" defer></script>`;
+            // return `<script src="${baseUrl}/${filename}" defer></script>`;
           }
 
           return `<script src="${baseUrl}/${filename}"></script>`;
