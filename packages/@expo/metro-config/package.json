@@ -34,7 +34,11 @@
     "babel-transformer"
   ],
   "dependencies": {
-    "@babel/generator": "^7.20.0",
+    "@babel/core": "^7.20.0",
+    "@babel/generator": "~7.20.5",
+    "@babel/parser": "^7.20.0",
+    "@babel/types": "^7.20.0",
+
     "@expo/config": "~8.4.0",
     "@expo/env": "~0.1.0",
     "@expo/json-file": "~8.2.37",
@@ -51,11 +55,9 @@
     "sucrase": "^3.20.0"
   },
   "peerDependencies": {
-    "@babel/core": "*",
     "@react-native/babel-preset": "*"
   },
   "devDependencies": {
-    "@babel/core": "^7.15.5",
     "@types/path-to-regexp": "^1.7.0",
     "expo-module-scripts": "^3.3.0",
     "sass": "^1.60.0"

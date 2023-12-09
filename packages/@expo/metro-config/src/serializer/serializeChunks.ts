@@ -125,6 +125,13 @@ export async function graphToSerialAssetsAsync(
     serializeChunkOptions
   );
 
+  // TODO: Can this be anything besides true?
+  const isExporting = true;
+  const baseUrl = getBaseUrlOption(graph, { serializerOptions: serializeChunkOptions });
+  const publicPath = isExporting
+    ? `/assets?export_path=${(baseUrl.replace(/\/+$/, '') ?? '') + '/assets'}`
+    : '/assets/?unstable_path=.';
+
   // TODO: Convert to serial assets
   // TODO: Disable this call dynamically in development since assets are fetched differently.
   const metroAssets = (await getMetroAssets(graph.dependencies, {
@@ -132,7 +139,7 @@ export async function graphToSerialAssetsAsync(
     assetPlugins: config.transformer?.assetPlugins ?? [],
     platform: getPlatformOption(graph, options) ?? 'web',
     projectRoot: options.projectRoot, // this._getServerRootDir(),
-    publicPath: config.transformer?.publicPath ?? '/',
+    publicPath,
   })) as AssetData[];
 
   return { artifacts: [...jsAssets, ...cssDeps], assets: metroAssets };

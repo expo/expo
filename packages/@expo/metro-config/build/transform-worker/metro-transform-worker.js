@@ -251,26 +251,28 @@ async function transformJS(file, {
   // NOTE(EvanBacon): We apply this conditionally in `babel-preset-expo` with other AST transforms.
   // plugins.push([metroTransformPlugins.inlinePlugin, babelPluginOpts]);
 
-  if (plugins.length) {
-    ast = nullthrows(
-    // @ts-expect-error
-    (0, _core().transformFromAstSync)(ast, '', {
-      ast: true,
-      babelrc: false,
-      code: false,
-      configFile: false,
-      comments: true,
-      filename: file.filename,
-      plugins,
-      sourceMaps: false,
-      // Not-Cloning the input AST here should be safe because other code paths above this call
-      // are mutating the AST as well and no code is depending on the original AST.
-      // However, switching the flag to false caused issues with ES Modules if `experimentalImportSupport` isn't used https://github.com/facebook/metro/issues/641
-      // either because one of the plugins is doing something funky or Babel messes up some caches.
-      // Make sure to test the above mentioned case before flipping the flag back to false.
-      cloneInputAst: true
-    }).ast);
-  }
+  // TODO: This MUST be run even though no plugins are added, otherwise the babel runtime generators are broken.
+  // if (plugins.length) {
+  ast = nullthrows(
+  // @ts-expect-error
+  (0, _core().transformFromAstSync)(ast, '', {
+    ast: true,
+    babelrc: false,
+    code: false,
+    configFile: false,
+    comments: true,
+    filename: file.filename,
+    plugins,
+    sourceMaps: false,
+    // Not-Cloning the input AST here should be safe because other code paths above this call
+    // are mutating the AST as well and no code is depending on the original AST.
+    // However, switching the flag to false caused issues with ES Modules if `experimentalImportSupport` isn't used https://github.com/facebook/metro/issues/641
+    // either because one of the plugins is doing something funky or Babel messes up some caches.
+    // Make sure to test the above mentioned case before flipping the flag back to false.
+    cloneInputAst: true
+  }).ast);
+  // }
+
   if (!options.dev) {
     // Run the constant folding plugin in its own pass, avoiding race conditions
     // with other plugins that have exit() visitors on Program (e.g. the ESM
