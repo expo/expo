@@ -11,13 +11,6 @@ function _assert() {
   };
   return data;
 }
-function _getAssets() {
-  const data = _interopRequireDefault(require("metro/src/DeltaBundler/Serializers/getAssets"));
-  _getAssets = function () {
-    return data;
-  };
-  return data;
-}
 function _sourceMapString() {
   const data = _interopRequireDefault(require("metro/src/DeltaBundler/Serializers/sourceMapString"));
   _sourceMapString = function () {
@@ -70,6 +63,13 @@ function _baseJSBundle() {
 function _getCssDeps() {
   const data = require("./getCssDeps");
   _getCssDeps = function () {
+    return data;
+  };
+  return data;
+}
+function _getAssets() {
+  const data = _interopRequireDefault(require("../transform-worker/getAssets"));
+  _getAssets = function () {
     return data;
   };
   return data;

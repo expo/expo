@@ -286,18 +286,6 @@ declare module 'metro/src/Assets' {
     type: string;
   };
 
-  export type AssetDataWithoutFiles = {
-    __packager_asset: boolean;
-    fileSystemLocation: string;
-    hash: string;
-    height: number | null;
-    httpServerLocation: string;
-    name: string;
-    scales: number[];
-    type: string;
-    width: number | null;
-  };
-
   export type AssetDataFiltered = {
     __packager_asset: boolean;
     hash: string;
@@ -309,7 +297,9 @@ declare module 'metro/src/Assets' {
     width: number | null;
   };
 
-  export type AssetData = AssetDataWithoutFiles & { files: string[] };
+  import { AssetData, AssetDataWithoutFiles } from 'metro';
+
+  export { AssetData, AssetDataWithoutFiles };
 
   export type AssetDataPlugin = (assetData: AssetData) => AssetData | Promise<AssetData>;
 
@@ -321,7 +311,7 @@ declare module 'metro/src/Assets' {
     assetExts: readonly string[]
   ): Promise<Buffer>;
 
-  async function getAssetData(
+  export async function getAssetData(
     assetPath: string,
     localPath: string,
     assetDataPlugins: readonly string[],
@@ -331,7 +321,7 @@ declare module 'metro/src/Assets' {
 }
 
 declare module 'metro' {
-  export * from 'metro/src/index.d';
+  export * from 'metro/src/index.d.ts';
 
   // Exports `Server` from 'metro' since TypeScript re-exporting doesn't work for default exports.
   // https://github.com/facebook/metro/blob/40f9f068109f27ccd80f45f861501a8839f36d85/packages/metro/types/index.d.ts#L14

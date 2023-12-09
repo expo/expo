@@ -8,10 +8,11 @@
  * Fork of the upstream transformer, but with modifications made for web production hashing.
  * https://github.com/facebook/metro/blob/412771475c540b6f85d75d9dcd5a39a6e0753582/packages/metro-transform-worker/src/utils/assetTransformer.js#L1
  */
-import { getAssetData } from 'metro/src/Assets';
 import { generateAssetCodeFileAst } from 'metro/src/Bundler/util';
 import { BabelTransformerArgs } from 'metro-babel-transformer';
 import path from 'node:path';
+
+import { getUniversalAssetData } from './getAssets';
 
 export async function transform(
   { filename, options }: BabelTransformerArgs,
@@ -27,7 +28,7 @@ export async function transform(
 
   const absolutePath = path.resolve(options.projectRoot, filename);
 
-  const data = await getAssetData(
+  const data = await getUniversalAssetData(
     absolutePath,
     filename,
     assetDataPlugins,

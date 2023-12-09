@@ -343,9 +343,6 @@ async function transformJS(file, {
       reservedNames: reserved
     }));
   }
-
-  // console.log('wrappedAst', require('util').inspect(wrappedAst, { depth: 10, colors: true }));
-
   const result = (0, _generator().default)(wrappedAst, {
     comments: true,
     compact: config.unstable_compactOutput,
@@ -354,14 +351,6 @@ async function transformJS(file, {
     sourceFileName: file.filename,
     sourceMaps: true
   }, file.code);
-  console.log('minify:', result.code, result.code.length, {
-    comments: true,
-    compact: config.unstable_compactOutput,
-    filename: file.filename,
-    retainLines: false,
-    sourceFileName: file.filename,
-    sourceMaps: true
-  }, file.functionMap);
 
   // @ts-expect-error: incorrectly typed upstream
   let map = result.rawMappings ? result.rawMappings.map(_metroSourceMap().toSegmentTuple) : [];

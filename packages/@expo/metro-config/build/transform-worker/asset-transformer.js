@@ -4,13 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.transform = transform;
-function _Assets() {
-  const data = require("metro/src/Assets");
-  _Assets = function () {
-    return data;
-  };
-  return data;
-}
 function _util() {
   const data = require("metro/src/Bundler/util");
   _util = function () {
@@ -21,6 +14,13 @@ function _util() {
 function _nodePath() {
   const data = _interopRequireDefault(require("node:path"));
   _nodePath = function () {
+    return data;
+  };
+  return data;
+}
+function _getAssets() {
+  const data = require("./getAssets");
+  _getAssets = function () {
     return data;
   };
   return data;
@@ -49,7 +49,7 @@ async function transform({
     minify: false
   };
   const absolutePath = _nodePath().default.resolve(options.projectRoot, filename);
-  const data = await (0, _Assets().getAssetData)(absolutePath, filename, assetDataPlugins, options.platform, options.publicPath);
+  const data = await (0, _getAssets().getUniversalAssetData)(absolutePath, filename, assetDataPlugins, options.platform, options.publicPath);
   return {
     ast: (0, _util().generateAssetCodeFileAst)(assetRegistryPath, data)
   };

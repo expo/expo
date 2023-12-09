@@ -13,7 +13,6 @@ import {
   ReadOnlyGraph,
   SerializerOptions,
 } from 'metro';
-import getMetroAssets from 'metro/src/DeltaBundler/Serializers/getAssets';
 import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString';
 import bundleToString from 'metro/src/lib/bundleToString';
 import { ConfigT, SerializerConfigT } from 'metro-config';
@@ -31,6 +30,7 @@ import {
 } from './fork/baseJSBundle';
 import { getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
+import getMetroAssets from '../transform-worker/getAssets';
 
 type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 
