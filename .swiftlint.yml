@@ -84,7 +84,6 @@ disabled_rules:
   - reduce_boolean
   - todo
   - weak_delegate
-  - cyclomatic_complexity
 
 # Rules run by `swiftlint analyze`.
 analyzer_rules:
@@ -126,6 +125,11 @@ control_statement: warning
 
 # Directly return the expression instead of assigning it to a variable first.
 direct_return: warning
+
+# Limits the complexity of function bodies.
+cyclomatic_complexity:
+  warning: 20
+  error: 28
 
 # Prefer initializers over object literals.
 discouraged_object_literal:
