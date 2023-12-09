@@ -272,7 +272,7 @@ You can configure the prefix for static assets by setting the `experiments.baseU
 {
   "expo": {
     "experiments": {
-      "basePath": "/my-root"
+      "baseUrl": "/my-root"
     }
   }
 }
@@ -280,7 +280,7 @@ You can configure the prefix for static assets by setting the `experiments.baseU
 
 This will export the website with all resources prefixed with `/my-root`. For example, an image at `assets/image.png` will be expected to be hosted at **/my-root/assets/image.png**. The actual file will be located in the same file system location as the entire directory is expected to be hosted at `/my-root` on the server.
 
-Expo Router has built-in support for `basePath`. When using the `Link` and `router` APIs, the `basePath` will be automatically prepended to the URL.
+Expo Router has built-in support for `baseUrl`. When using the `Link` and `router` APIs, the `baseUrl` will be automatically prepended to the URL.
 
 ```js app/blog/index.tsx
 import { Link } from 'expo-router';
@@ -296,11 +296,11 @@ This will **export** to the following:
 <a href="/my-root/post/123">Go to blog post</a>
 ```
 
-If you use `<a>`, React Navigation, or the `Linking` API directly, you'll need to manually prepend the `basePath`.
+If you use `<a>`, React Navigation, or the `Linking` API directly, you'll need to manually prepend the `baseUrl`.
 
-The `basePath` functionality is production-only and must be set before exporting the website. If you change the value, you must re-export the website.
+The `baseUrl` functionality is production-only and must be set before exporting the website. If you change the value, you must re-export the website.
 
-Images and other assets will work automatically if you `require` or `import` them. If you directly reference a resource URL then you will need to append the **basePath** manually.
+Images and other assets will work automatically if you `require` or `import` them. If you directly reference a resource URL then you will need to append the **baseUrl** manually.
 
 ```js app/index.tsx
 import { Image } from 'expo-image';
