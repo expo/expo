@@ -8,7 +8,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.android.tools.build:manifest-merger:31.0.2")
+    implementation("com.android.tools.build:manifest-merger:31.2.0")
 }
 
 application {

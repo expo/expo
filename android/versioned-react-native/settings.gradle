@@ -3,3 +3,11 @@ include ':packages:react-native:ReactAndroid'
 project(':packages:react-native:ReactAndroid').projectDir = new File(rootDir, 'packages/react-native/ReactAndroid')
 include ':packages:react-native:ReactAndroid:hermes-engine'
 project(':packages:react-native:ReactAndroid:hermes-engine').projectDir = new File(rootDir, 'packages/react-native/ReactAndroid/hermes-engine')
+
+dependencyResolutionManagement {
+  versionCatalogs {
+    libs {
+      from(files("./packages/react-native/gradle/libs.versions.toml"))
+    }
+  }
+}

@@ -19,6 +19,7 @@ import kotlinx.coroutines.withContext
 
 // these unused imports must stay because of versioning
 /* ktlint-disable no-unused-imports */
+import expo.modules.updates.UpdatesController
 /* ktlint-enable no-unused-imports */
 
 /**

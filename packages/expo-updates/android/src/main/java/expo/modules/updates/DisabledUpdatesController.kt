@@ -11,6 +11,11 @@ import expo.modules.updates.launcher.NoDatabaseLauncher
 import expo.modules.updates.statemachine.UpdatesStateContext
 import java.io.File
 
+// this needs to stay for versioning to work
+/* ktlint-disable no-unused-imports */
+import expo.modules.updates.UpdatesConfiguration
+/* ktlint-enable no-unused-imports */
+
 /**
  * Updates controller for applications that either disable updates explicitly or have an error
  * during initialization. Errors that may occur include but are not limited to:

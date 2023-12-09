@@ -4,6 +4,7 @@
 # Requires $EXPO_ROOT_DIR to be defined in the environment.
 
 ORIGINAL_ABI_VERSION=`echo $1`
+KOTLIN_METADATA_STRIPPER_JAR=`echo $2`
 MAJOR_ABI_VERSION=`echo $1 | sed 's/\..*//g'`
 ABI_VERSION_NUMBER=`echo $1 | sed 's/\./_/g'`
 ABI_VERSION="abi$ABI_VERSION_NUMBER"
@@ -44,6 +45,12 @@ if [ "x$UNRENAMED_LIBS" != "x" ]; then
   exit 1
 fi
 unset UNRENAMED_LIBS
+set -e
+
+# Strip kotlin metadata
+set +e
+$KOTLIN_METADATA_STRIPPER_JAR expoview/libs/ReactAndroid-temp/classes.jar expoview/libs/ReactAndroid-temp/classes-stripped.jar
+mv -f expoview/libs/ReactAndroid-temp/classes-stripped.jar expoview/libs/ReactAndroid-temp/classes.jar
 set -e
 
 # Write jarjar rules file. Used in next step to rename package

@@ -32,6 +32,11 @@ import expo.modules.updates.statemachine.UpdatesStateMachine
 import java.io.File
 import java.lang.ref.WeakReference
 
+// this needs to stay for versioning to work
+/* ktlint-disable no-unused-imports */
+import expo.modules.updates.UpdatesConfiguration
+/* ktlint-enable no-unused-imports */
+
 /**
  * Updates controller for applications that have updates enabled and properly-configured.
  */

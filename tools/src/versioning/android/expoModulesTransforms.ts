@@ -45,14 +45,9 @@ function expoModulesBaseTransforms(pkg: Package, abiVersion: string): FileTransf
         replaceWith: '',
       },
       {
-        paths: './src/main/{java,kotlin}/**/*.java',
-        find: /\/\/ *EXPO_VERSIONING_NEEDS_EXPOVIEW_R/g,
-        replaceWith: `import ${abiVersion}.host.exp.expoview.R;`,
-      },
-      {
         paths: './src/main/{java,kotlin}/**/*.kt',
-        find: /\/\/ *EXPO_VERSIONING_NEEDS_EXPOVIEW_R/g,
-        replaceWith: `import ${abiVersion}.host.exp.expoview.R`,
+        find: /\/\/ *EXPO_VERSIONING_NEEDS_PACKAGE_R/g,
+        replaceWith: `import ${pkg.androidPackageNamespace}.R`,
       },
     ],
   };
@@ -88,6 +83,15 @@ export function expoModulesTransforms(pkg: Package, abiVersion: string): FileTra
           paths: './**/*.kt',
           find: /BuildConfig\.(EX_UPDATES_NATIVE_DEBUG|EX_UPDATES_ANDROID_DELAY_LOAD_APP)/g,
           replaceWith: 'false',
+        },
+        {
+          // passing versioned CodedException between unversioned IUpdatesController and versioned UpdatesModule
+          paths: './**/UpdatesModule.kt',
+          find: /override fun onFailure\(exception: CodedException\) {[\s\S]*?}/g,
+          replaceWith: `\
+override fun onFailure(exception: expo.modules.kotlin.exception.CodedException) {
+            promise.reject(CodedException(exception.code, exception.message, exception.cause))
+          }`,
         },
       ],
     },

@@ -30,6 +30,27 @@ export function reactNativeTransforms(
         find: /(\bid\("com\.facebook\.react"\)$)/m,
         replaceWith: '// $1',
       },
+      // Fix classpath with an unknown version
+      {
+        paths: './ReactAndroid/build.gradle',
+        find: /(\alias\(libs\.plugins\.android\.library\)$)/m,
+        replaceWith: 'id("com.android.library")',
+      },
+      {
+        paths: './ReactAndroid/hermes-engine/build.gradle',
+        find: /(\alias\(libs\.plugins\.android\.library\)$)/m,
+        replaceWith: 'id("com.android.library")',
+      },
+      {
+        paths: './ReactAndroid/build.gradle',
+        find: /(\alias\(libs\.plugins\.download\)$)/m,
+        replaceWith: 'id("de.undercouch.download")',
+      },
+      {
+        paths: './ReactAndroid/build.gradle',
+        find: /(\alias\(libs\.plugins\.kotlin\.android\)$)/m,
+        replaceWith: 'id("org.jetbrains.kotlin.android")',
+      },
       {
         paths: './ReactAndroid/build.gradle',
         find: /(^react {[^]+?\n\})/m,
@@ -37,7 +58,22 @@ export function reactNativeTransforms(
       },
       {
         paths: './ReactAndroid/build.gradle',
-        find: /(\b(preBuild\.)?dependsOn\("generateCodegenArtifactsFromSchema"\))/g,
+        find: /(\b(preBuild\.)?dependsOn\("generateCodegenArtifactsFromSchema"\))/m,
+        replaceWith: '// $1',
+      },
+      {
+        paths: './ReactAndroid/build.gradle',
+        find: /\b(generateCodegenSchemaFromJavaScript.dependsOn\(buildCodegenCLITask\))/m,
+        replaceWith: '// $1',
+      },
+      {
+        paths: './ReactAndroid/build.gradle',
+        find: /\b(buildCodegenCLITask,)/g,
+        replaceWith: '// $1',
+      },
+      {
+        paths: './ReactAndroid/build.gradle',
+        find: /\b(generateCodegenArtifactsFromSchema,)/g,
         replaceWith: '// $1',
       },
       {
@@ -136,11 +172,17 @@ export function reactNativeTransforms(
         replaceWith: '-DHERMES_ENABLE_DEBUGGER=1',
       },
       {
+        // Enable HERMES_ENABLE_DEBUGGER
+        paths: './ReactCommon/hermes/inspector-modern/CMakeLists.txt',
+        find: 'if(${CMAKE_BUILD_TYPE} MATCHES Debug)',
+        replaceWith: 'if(True)',
+      },
+      {
         // workaround build dependency issue to explicitly link hermes_executor_common to hermes_executor
         // originally, it's hermes_inspector -> hermes_executor_common -> hermes_executor
         paths: './ReactAndroid/src/main/jni/react/hermes/reactexecutor/CMakeLists.txt',
         find: /^(\s+hermes_executor_common.*)$/m,
-        replaceWith: `$1\n        hermes_inspector_${abiVersion}`,
+        replaceWith: `$1\n        hermes_inspector_modern_${abiVersion}`,
       },
     ],
   };
