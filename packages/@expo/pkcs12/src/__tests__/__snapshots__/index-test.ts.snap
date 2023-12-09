@@ -1,25 +1,25 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`getting the ASN.1 representation of a X.509 certificate from PKCS#12 files gets the ASN.1 value of supported RSA certificates from PKCS #12 keystores 1`] = `
-Object {
+{
   "composed": true,
   "constructed": true,
   "tagClass": 0,
   "type": 16,
-  "value": Array [
-    Object {
+  "value": [
+    {
       "composed": true,
       "constructed": true,
       "tagClass": 0,
       "type": 16,
-      "value": Array [
-        Object {
+      "value": [
+        {
           "composed": true,
           "constructed": true,
           "tagClass": 128,
           "type": 0,
-          "value": Array [
-            Object {
+          "value": [
+            {
               "composed": false,
               "constructed": false,
               "tagClass": 0,
@@ -28,20 +28,20 @@ Object {
             },
           ],
         },
-        Object {
+        {
           "composed": false,
           "constructed": false,
           "tagClass": 0,
           "type": 2,
           "value": "W&\\"",
         },
-        Object {
+        {
           "composed": true,
           "constructed": true,
           "tagClass": 0,
           "type": 16,
-          "value": Array [
-            Object {
+          "value": [
+            {
               "composed": false,
               "constructed": false,
               "tagClass": 0,
@@ -49,7 +49,7 @@ Object {
               "value": "*H÷
 ",
             },
-            Object {
+            {
               "composed": false,
               "constructed": false,
               "tagClass": 0,
@@ -58,32 +58,32 @@ Object {
             },
           ],
         },
-        Object {
+        {
           "composed": true,
           "constructed": true,
           "tagClass": 0,
           "type": 16,
-          "value": Array [
-            Object {
+          "value": [
+            {
               "composed": true,
               "constructed": true,
               "tagClass": 0,
               "type": 17,
-              "value": Array [
-                Object {
+              "value": [
+                {
                   "composed": true,
                   "constructed": true,
                   "tagClass": 0,
                   "type": 16,
-                  "value": Array [
-                    Object {
+                  "value": [
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
                       "type": 6,
                       "value": "U",
                     },
-                    Object {
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
@@ -94,26 +94,26 @@ Object {
                 },
               ],
             },
-            Object {
+            {
               "composed": true,
               "constructed": true,
               "tagClass": 0,
               "type": 17,
-              "value": Array [
-                Object {
+              "value": [
+                {
                   "composed": true,
                   "constructed": true,
                   "tagClass": 0,
                   "type": 16,
-                  "value": Array [
-                    Object {
+                  "value": [
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
                       "type": 6,
                       "value": "U",
                     },
-                    Object {
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
@@ -124,26 +124,26 @@ Object {
                 },
               ],
             },
-            Object {
+            {
               "composed": true,
               "constructed": true,
               "tagClass": 0,
               "type": 17,
-              "value": Array [
-                Object {
+              "value": [
+                {
                   "composed": true,
                   "constructed": true,
                   "tagClass": 0,
                   "type": 16,
-                  "value": Array [
-                    Object {
+                  "value": [
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
                       "type": 6,
                       "value": "U",
                     },
-                    Object {
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
@@ -154,19 +154,19 @@ Object {
                 },
               ],
             },
-            Object {
+            {
               "composed": true,
               "constructed": true,
               "tagClass": 0,
               "type": 17,
-              "value": Array [
-                Object {
+              "value": [
+                {
                   "composed": true,
                   "constructed": true,
                   "tagClass": 0,
                   "type": 16,
-                  "value": Array [
-                    Object {
+                  "value": [
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
@@ -174,7 +174,7 @@ Object {
                       "value": "U
 ",
                     },
-                    Object {
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
@@ -185,26 +185,26 @@ Object {
                 },
               ],
             },
-            Object {
+            {
               "composed": true,
               "constructed": true,
               "tagClass": 0,
               "type": 17,
-              "value": Array [
-                Object {
+              "value": [
+                {
                   "composed": true,
                   "constructed": true,
                   "tagClass": 0,
                   "type": 16,
-                  "value": Array [
-                    Object {
+                  "value": [
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
                       "type": 6,
                       "value": "U",
                     },
-                    Object {
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
@@ -215,26 +215,26 @@ Object {
                 },
               ],
             },
-            Object {
+            {
               "composed": true,
               "constructed": true,
               "tagClass": 0,
               "type": 17,
-              "value": Array [
-                Object {
+              "value": [
+                {
                   "composed": true,
                   "constructed": true,
                   "tagClass": 0,
                   "type": 16,
-                  "value": Array [
-                    Object {
+                  "value": [
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
                       "type": 6,
                       "value": "U",
                     },
-                    Object {
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
@@ -247,20 +247,20 @@ Object {
             },
           ],
         },
-        Object {
+        {
           "composed": true,
           "constructed": true,
           "tagClass": 0,
           "type": 16,
-          "value": Array [
-            Object {
+          "value": [
+            {
               "composed": false,
               "constructed": false,
               "tagClass": 0,
               "type": 23,
               "value": "201008111622Z",
             },
-            Object {
+            {
               "composed": false,
               "constructed": false,
               "tagClass": 0,
@@ -269,32 +269,32 @@ Object {
             },
           ],
         },
-        Object {
+        {
           "composed": true,
           "constructed": true,
           "tagClass": 0,
           "type": 16,
-          "value": Array [
-            Object {
+          "value": [
+            {
               "composed": true,
               "constructed": true,
               "tagClass": 0,
               "type": 17,
-              "value": Array [
-                Object {
+              "value": [
+                {
                   "composed": true,
                   "constructed": true,
                   "tagClass": 0,
                   "type": 16,
-                  "value": Array [
-                    Object {
+                  "value": [
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
                       "type": 6,
                       "value": "U",
                     },
-                    Object {
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
@@ -305,26 +305,26 @@ Object {
                 },
               ],
             },
-            Object {
+            {
               "composed": true,
               "constructed": true,
               "tagClass": 0,
               "type": 17,
-              "value": Array [
-                Object {
+              "value": [
+                {
                   "composed": true,
                   "constructed": true,
                   "tagClass": 0,
                   "type": 16,
-                  "value": Array [
-                    Object {
+                  "value": [
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
                       "type": 6,
                       "value": "U",
                     },
-                    Object {
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
@@ -335,26 +335,26 @@ Object {
                 },
               ],
             },
-            Object {
+            {
               "composed": true,
               "constructed": true,
               "tagClass": 0,
               "type": 17,
-              "value": Array [
-                Object {
+              "value": [
+                {
                   "composed": true,
                   "constructed": true,
                   "tagClass": 0,
                   "type": 16,
-                  "value": Array [
-                    Object {
+                  "value": [
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
                       "type": 6,
                       "value": "U",
                     },
-                    Object {
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
@@ -365,19 +365,19 @@ Object {
                 },
               ],
             },
-            Object {
+            {
               "composed": true,
               "constructed": true,
               "tagClass": 0,
               "type": 17,
-              "value": Array [
-                Object {
+              "value": [
+                {
                   "composed": true,
                   "constructed": true,
                   "tagClass": 0,
                   "type": 16,
-                  "value": Array [
-                    Object {
+                  "value": [
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
@@ -385,7 +385,7 @@ Object {
                       "value": "U
 ",
                     },
-                    Object {
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
@@ -396,26 +396,26 @@ Object {
                 },
               ],
             },
-            Object {
+            {
               "composed": true,
               "constructed": true,
               "tagClass": 0,
               "type": 17,
-              "value": Array [
-                Object {
+              "value": [
+                {
                   "composed": true,
                   "constructed": true,
                   "tagClass": 0,
                   "type": 16,
-                  "value": Array [
-                    Object {
+                  "value": [
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
                       "type": 6,
                       "value": "U",
                     },
-                    Object {
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
@@ -426,26 +426,26 @@ Object {
                 },
               ],
             },
-            Object {
+            {
               "composed": true,
               "constructed": true,
               "tagClass": 0,
               "type": 17,
-              "value": Array [
-                Object {
+              "value": [
+                {
                   "composed": true,
                   "constructed": true,
                   "tagClass": 0,
                   "type": 16,
-                  "value": Array [
-                    Object {
+                  "value": [
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
                       "type": 6,
                       "value": "U",
                     },
-                    Object {
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
@@ -458,19 +458,19 @@ Object {
             },
           ],
         },
-        Object {
+        {
           "composed": true,
           "constructed": true,
           "tagClass": 0,
           "type": 16,
-          "value": Array [
-            Object {
+          "value": [
+            {
               "composed": true,
               "constructed": true,
               "tagClass": 0,
               "type": 16,
-              "value": Array [
-                Object {
+              "value": [
+                {
                   "composed": false,
                   "constructed": false,
                   "tagClass": 0,
@@ -478,7 +478,7 @@ Object {
                   "value": "*H÷
 ",
                 },
-                Object {
+                {
                   "composed": false,
                   "constructed": false,
                   "tagClass": 0,
@@ -487,7 +487,7 @@ Object {
                 },
               ],
             },
-            Object {
+            {
               "bitStringContents": " 0
  ½#E0Õ<¸/,Ç»´B«YUÎZÔI cRJÕ{p¦³PðÖçÒ¨/«¿ÙÁÙ¾G[[å´DÉ¾ìÚIª«Pþ54
 1Óß$¬¢m<½ò¶x®qýxù)\\"V§Ã_
@@ -496,19 +496,19 @@ PÂ$*ccÁ­AM½çÁ»2¤òaõ~±ªz¬°ÀÕ#WA³/ªå\\"i8¥ÄÐÒ�
 !|øû&÷D3¾eMc a¼	b¢¨¿ÿéGø¾ó·Ê®Ê»£ÿ±Ç./:Í ",
               "composed": true,
               "constructed": false,
-              "original": Object {
+              "original": {
                 "composed": true,
                 "constructed": false,
                 "tagClass": 0,
                 "type": 3,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": true,
                     "constructed": true,
                     "tagClass": 0,
                     "type": 16,
-                    "value": Array [
-                      Object {
+                    "value": [
+                      {
                         "composed": false,
                         "constructed": false,
                         "tagClass": 0,
@@ -519,7 +519,7 @@ PÂ$*ccÁ­AM½çÁ»2¤òaõ~±ªz¬°ÀÕ#WA³/ªå\\"i8¥ÄÐÒ�
 PÂ$*ccÁ­AM½çÁ»2¤òaõ~±ªz¬°ÀÕ#WA³/ªå\\"i8¥ÄÐÒýKÊ
 !|øû&÷D3¾eMc a¼	b¢¨¿ÿéGø¾ó·Ê®Ê»£ÿ±Ç./:Í",
                       },
-                      Object {
+                      {
                         "composed": false,
                         "constructed": false,
                         "tagClass": 0,
@@ -532,14 +532,14 @@ PÂ$*ccÁ­AM½çÁ»2¤òaõ~±ªz¬°ÀÕ#WA³/ªå\\"i8¥ÄÐÒ�
               },
               "tagClass": 0,
               "type": 3,
-              "value": Array [
-                Object {
+              "value": [
+                {
                   "composed": true,
                   "constructed": true,
                   "tagClass": 0,
                   "type": 16,
-                  "value": Array [
-                    Object {
+                  "value": [
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
@@ -550,7 +550,7 @@ PÂ$*ccÁ­AM½çÁ»2¤òaõ~±ªz¬°ÀÕ#WA³/ªå\\"i8¥ÄÐÒ�
 PÂ$*ccÁ­AM½çÁ»2¤òaõ~±ªz¬°ÀÕ#WA³/ªå\\"i8¥ÄÐÒýKÊ
 !|øû&÷D3¾eMc a¼	b¢¨¿ÿéGø¾ó·Ê®Ê»£ÿ±Ç./:Í",
                     },
-                    Object {
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
@@ -563,32 +563,32 @@ PÂ$*ccÁ­AM½çÁ»2¤òaõ~±ªz¬°ÀÕ#WA³/ªå\\"i8¥ÄÐÒ�
             },
           ],
         },
-        Object {
+        {
           "composed": true,
           "constructed": true,
           "tagClass": 128,
           "type": 3,
-          "value": Array [
-            Object {
+          "value": [
+            {
               "composed": true,
               "constructed": true,
               "tagClass": 0,
               "type": 16,
-              "value": Array [
-                Object {
+              "value": [
+                {
                   "composed": true,
                   "constructed": true,
                   "tagClass": 0,
                   "type": 16,
-                  "value": Array [
-                    Object {
+                  "value": [
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
                       "type": 6,
                       "value": "U",
                     },
-                    Object {
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
@@ -603,13 +603,13 @@ PÂ$*ccÁ­AM½çÁ»2¤òaõ~±ªz¬°ÀÕ#WA³/ªå\\"i8¥ÄÐÒ�
         },
       ],
     },
-    Object {
+    {
       "composed": true,
       "constructed": true,
       "tagClass": 0,
       "type": 16,
-      "value": Array [
-        Object {
+      "value": [
+        {
           "composed": false,
           "constructed": false,
           "tagClass": 0,
@@ -617,7 +617,7 @@ PÂ$*ccÁ­AM½çÁ»2¤òaõ~±ªz¬°ÀÕ#WA³/ªå\\"i8¥ÄÐÒ�
           "value": "*H÷
 ",
         },
-        Object {
+        {
           "composed": false,
           "constructed": false,
           "tagClass": 0,
@@ -626,7 +626,7 @@ PÂ$*ccÁ­AM½çÁ»2¤òaõ~±ªz¬°ÀÕ#WA³/ªå\\"i8¥ÄÐÒ�
         },
       ],
     },
-    Object {
+    {
       "composed": false,
       "constructed": false,
       "tagClass": 0,
@@ -638,32 +638,32 @@ PÂ$*ccÁ­AM½çÁ»2¤òaõ~±ªz¬°ÀÕ#WA³/ªå\\"i8¥ÄÐÒ�
 `;
 
 exports[`getting the ASN.1 representation of a X.509 certificate from PKCS#12 files gets the ASN.1 value of unsupported DSA certificates from PKCS #12 keystores 1`] = `
-Object {
+{
   "composed": true,
   "constructed": true,
   "tagClass": 0,
   "type": 16,
-  "value": Array [
-    Object {
+  "value": [
+    {
       "composed": true,
       "constructed": true,
       "tagClass": 0,
       "type": 16,
-      "value": Array [
-        Object {
+      "value": [
+        {
           "composed": false,
           "constructed": false,
           "tagClass": 0,
           "type": 2,
           "value": " Æ»íö:0-6",
         },
-        Object {
+        {
           "composed": true,
           "constructed": true,
           "tagClass": 0,
           "type": 16,
-          "value": Array [
-            Object {
+          "value": [
+            {
               "composed": false,
               "constructed": false,
               "tagClass": 0,
@@ -672,32 +672,32 @@ Object {
             },
           ],
         },
-        Object {
+        {
           "composed": true,
           "constructed": true,
           "tagClass": 0,
           "type": 16,
-          "value": Array [
-            Object {
+          "value": [
+            {
               "composed": true,
               "constructed": true,
               "tagClass": 0,
               "type": 17,
-              "value": Array [
-                Object {
+              "value": [
+                {
                   "composed": true,
                   "constructed": true,
                   "tagClass": 0,
                   "type": 16,
-                  "value": Array [
-                    Object {
+                  "value": [
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
                       "type": 6,
                       "value": "U",
                     },
-                    Object {
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
@@ -710,20 +710,20 @@ Object {
             },
           ],
         },
-        Object {
+        {
           "composed": true,
           "constructed": true,
           "tagClass": 0,
           "type": 16,
-          "value": Array [
-            Object {
+          "value": [
+            {
               "composed": false,
               "constructed": false,
               "tagClass": 0,
               "type": 23,
               "value": "201104052138Z",
             },
-            Object {
+            {
               "composed": false,
               "constructed": false,
               "tagClass": 0,
@@ -732,32 +732,32 @@ Object {
             },
           ],
         },
-        Object {
+        {
           "composed": true,
           "constructed": true,
           "tagClass": 0,
           "type": 16,
-          "value": Array [
-            Object {
+          "value": [
+            {
               "composed": true,
               "constructed": true,
               "tagClass": 0,
               "type": 17,
-              "value": Array [
-                Object {
+              "value": [
+                {
                   "composed": true,
                   "constructed": true,
                   "tagClass": 0,
                   "type": 16,
-                  "value": Array [
-                    Object {
+                  "value": [
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
                       "type": 6,
                       "value": "U",
                     },
-                    Object {
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
@@ -770,41 +770,41 @@ Object {
             },
           ],
         },
-        Object {
+        {
           "composed": true,
           "constructed": true,
           "tagClass": 0,
           "type": 16,
-          "value": Array [
-            Object {
+          "value": [
+            {
               "composed": true,
               "constructed": true,
               "tagClass": 0,
               "type": 16,
-              "value": Array [
-                Object {
+              "value": [
+                {
                   "composed": false,
                   "constructed": false,
                   "tagClass": 0,
                   "type": 6,
                   "value": "*HÎ8",
                 },
-                Object {
+                {
                   "composed": true,
                   "constructed": true,
                   "tagClass": 0,
                   "type": 16,
-                  "value": Array [
-                    Object {
+                  "value": [
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
                       "type": 2,
-                      "value": " Ý½( Ë»ã,à²h;åÉ»'÷lC9ÚæÃõ#¿µÞ_Ié»  ý±UçiizY¾\\"ÀCvüSöþÐöÇÙÚp{á÷9g±è\`³ÐzvJ+Õáü¾³¢¢Á«[£ÃèJÃô ô ÜQEàF¶^:É;ÅýAiÑÿ¥R ¢×Õ,áwb>À²yûÖþ2vjk©))Vã­ÊRÏÃ×úïoòÖ]#¬MpõýZÇ~Ã´wAs4¢epqÊ>LÿkBnÇyë¬E­9ÙºÍÆ3Í	
+                      "value": " Ý½( Ë»ã,à²h;åÉ»'÷lC9ÚæÃõ#¿µÞ_Ié»  ý±UçiizY¾\\"ÀCvüSöþÐöÇÙÚp{á÷9g±è\`³ÐzvJ+Õáü¾³¢¢Á«[£ÃèJÃô ô ÜQEàF¶^:É;ÅýAiÑÿ¥R ¢×Õ,áwb>À²yûÖþ2vjk©))Vã­ÊRÏÃ×úïoòÖ]#¬MpõýZÇ~Ã´wAs4¢epqÊ>LÿkBnÇyë¬E­9ÙºÍÆ3Í
 úw¡--Þòó!.ÇIu+Èñ>q»÷q¤ú«Ò~©µýÛ(ëÕ¸§6gù&S}Ï5Je|¿ÇÑ&ã{oR^°^\\\\µ÷Ç¾Éàkàw&³Üï1f¶¶Ooµ
 êî[![r}[ÇñõÏ´b*·DùuaPÌùÁê:ó£ïÆAXe¯ç",
                     },
-                    Object {
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
@@ -812,7 +812,7 @@ Object {
                       "value": " Ý
 WtDÅfâºë¿ëñïÓ°I¤W.´CÝp?",
                     },
-                    Object {
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
@@ -829,7 +829,7 @@ Z^³¬»Å%OnÄBI§¶ôÈ.!&ëáÚ¶´½Ô½pärà3¯33ø©�
                 },
               ],
             },
-            Object {
+            {
               "bitStringContents": "  Éu>Ãj?°´{éôYuL9«ñW9a½­Ñf]'±YíÉr½°2ïþW}0à¥C
 ÜR7k(6ñµ/ðã\`ªâE§û
 Ü8*h6iË}9|«HÚ×EhySî!_CÂq¢­Úàª<©5~Xgß¼töèÅ¯Û×FÌ7Vß2S°÷!ZÉMÀ¶)]biHJD~¯YõéaJÎèÎÔlç.s$øKµÇF³7æýPhÍK?ÑMðOkDQç\`÷Ïâ(
@@ -837,13 +837,13 @@ Z^³¬»Å%OnÄBI§¶ôÈ.!&ëáÚ¶´½Ô½pärà3¯33ø©�
 õ",
               "composed": true,
               "constructed": false,
-              "original": Object {
+              "original": {
                 "composed": true,
                 "constructed": false,
                 "tagClass": 0,
                 "type": 3,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -858,8 +858,8 @@ Z^³¬»Å%OnÄBI§¶ôÈ.!&ëáÚ¶´½Ô½pärà3¯33ø©�
               },
               "tagClass": 0,
               "type": 3,
-              "value": Array [
-                Object {
+              "value": [
+                {
                   "composed": false,
                   "constructed": false,
                   "tagClass": 0,
@@ -876,13 +876,13 @@ Z^³¬»Å%OnÄBI§¶ôÈ.!&ëáÚ¶´½Ô½pärà3¯33ø©�
         },
       ],
     },
-    Object {
+    {
       "composed": true,
       "constructed": true,
       "tagClass": 0,
       "type": 16,
-      "value": Array [
-        Object {
+      "value": [
+        {
           "composed": false,
           "constructed": false,
           "tagClass": 0,
@@ -891,30 +891,30 @@ Z^³¬»Å%OnÄBI§¶ôÈ.!&ëáÚ¶´½Ô½pärà3¯33ø©�
         },
       ],
     },
-    Object {
+    {
       "bitStringContents": " 0E! Úw.J<ÇEa£¸¼iâêÔn8m  fj¡û´óÉ¾¨Ü¢r·@$öc$)©¸OtK[",
       "composed": true,
       "constructed": false,
-      "original": Object {
+      "original": {
         "composed": true,
         "constructed": false,
         "tagClass": 0,
         "type": 3,
-        "value": Array [
-          Object {
+        "value": [
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 16,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": false,
                 "constructed": false,
                 "tagClass": 0,
                 "type": 2,
                 "value": " Úw.J<ÇEa£¸¼iâêÔn8m ",
               },
-              Object {
+              {
                 "composed": false,
                 "constructed": false,
                 "tagClass": 0,
@@ -927,21 +927,21 @@ Z^³¬»Å%OnÄBI§¶ôÈ.!&ëáÚ¶´½Ô½pärà3¯33ø©�
       },
       "tagClass": 0,
       "type": 3,
-      "value": Array [
-        Object {
+      "value": [
+        {
           "composed": true,
           "constructed": true,
           "tagClass": 0,
           "type": 16,
-          "value": Array [
-            Object {
+          "value": [
+            {
               "composed": false,
               "constructed": false,
               "tagClass": 0,
               "type": 2,
               "value": " Úw.J<ÇEa£¸¼iâêÔn8m ",
             },
-            Object {
+            {
               "composed": false,
               "constructed": false,
               "tagClass": 0,
@@ -957,16 +957,16 @@ Z^³¬»Å%OnÄBI§¶ôÈ.!&ëáÚ¶´½Ô½pärà3¯33ø©�
 `;
 
 exports[`reading X.509 certificates from PKCS#12 files reads X.509 certificates from conventional p12 files using #getX509Certificate 1`] = `
-Object {
-  "extensions": Array [
-    Object {
+{
+  "extensions": [
+    {
       "cA": true,
       "critical": false,
       "id": "2.5.29.19",
       "name": "basicConstraints",
       "value": "0ÿ",
     },
-    Object {
+    {
       "cRLSign": true,
       "critical": false,
       "dataEncipherment": true,
@@ -981,14 +981,14 @@ Object {
       "nonRepudiation": true,
       "value": " ÿ",
     },
-    Object {
+    {
       "critical": false,
       "id": "2.5.29.14",
       "name": "subjectKeyIdentifier",
       "subjectKeyIdentifier": "e50980e94f7ad172f84882364848427318a3d096",
       "value": "å	éOzÑrøH6HHBs£Ð",
     },
-    Object {
+    {
       "critical": false,
       "id": "2.5.29.35",
       "name": "authorityKeyIdentifier",
@@ -999,17 +999,17 @@ Object {
   "getExtension": [Function],
   "isIssuer": [Function],
   "issued": [Function],
-  "issuer": Object {
+  "issuer": {
     "addField": [Function],
-    "attributes": Array [
-      Object {
+    "attributes": [
+      {
         "name": "countryName",
         "shortName": "C",
         "type": "2.5.4.6",
         "value": "US",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "commonName",
         "shortName": "CN",
         "type": "2.5.4.3",
@@ -1020,17 +1020,17 @@ Object {
     "getField": [Function],
     "hash": "64d7ddd8b72851acedab0b6a26653ffc05c174c1",
   },
-  "md": Object {
+  "md": {
     "algorithm": "sha256",
     "blockLength": 64,
     "digest": [Function],
     "digestLength": 32,
-    "fullMessageLength": Array [
+    "fullMessageLength": [
       0,
       562,
     ],
     "messageLength": 562,
-    "messageLength64": Array [
+    "messageLength64": [
       0,
       562,
     ],
@@ -1038,9 +1038,9 @@ Object {
     "start": [Function],
     "update": [Function],
   },
-  "publicKey": Object {
+  "publicKey": {
     "e": BigInteger {
-      "data": Array [
+      "data": [
         65537,
       ],
       "s": 0,
@@ -1048,7 +1048,7 @@ Object {
     },
     "encrypt": [Function],
     "n": BigInteger {
-      "data": Array [
+      "data": [
         40992799,
         81124506,
         27843431,
@@ -1133,26 +1133,26 @@ Object {
   "setExtensions": [Function],
   "setIssuer": [Function],
   "setSubject": [Function],
-  "siginfo": Object {
+  "siginfo": {
     "algorithmOid": "1.2.840.113549.1.1.11",
-    "parameters": Object {},
+    "parameters": {},
   },
   "sign": [Function],
   "signature": "\\"	lÜ¸Xò¶	¼zÝiØÜ¾IÝ-±Î(~A'@ÜÍ0)ZZ¶[còú¶äÂÀófîaBÚ=24L<@)þþpkª3\`dvy?ùÜ}¥íæ¢
 ±5@jIê)4ÛhíÒr\`{n0¤!4ÜB=¹úUïñ[®SSè\`ÚÓ*k2Ãû«5u#R@f]:ø&¤¡îù,I.i®4²EpÍH¯Ð ÐMC¢÷,	ËVóúBN_cnÒ7vx=w2_+sWþ8l]+¥w A+Ó­³¼mlOw>ÁàuãizQÏUFÛvqâ¯«",
   "signatureOid": "1.2.840.113549.1.1.11",
-  "signatureParameters": Object {},
-  "subject": Object {
+  "signatureParameters": {},
+  "subject": {
     "addField": [Function],
-    "attributes": Array [
-      Object {
+    "attributes": [
+      {
         "name": "countryName",
         "shortName": "C",
         "type": "2.5.4.6",
         "value": "US",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "commonName",
         "shortName": "CN",
         "type": "2.5.4.3",
@@ -1163,19 +1163,19 @@ Object {
     "getField": [Function],
     "hash": "64d7ddd8b72851acedab0b6a26653ffc05c174c1",
   },
-  "tbsCertificate": Object {
+  "tbsCertificate": {
     "composed": true,
     "constructed": true,
     "tagClass": 0,
     "type": 16,
-    "value": Array [
-      Object {
+    "value": [
+      {
         "composed": true,
         "constructed": true,
         "tagClass": 128,
         "type": 0,
-        "value": Array [
-          Object {
+        "value": [
+          {
             "composed": false,
             "constructed": false,
             "tagClass": 0,
@@ -1184,20 +1184,20 @@ Object {
           },
         ],
       },
-      Object {
+      {
         "composed": false,
         "constructed": false,
         "tagClass": 0,
         "type": 2,
         "value": "",
       },
-      Object {
+      {
         "composed": true,
         "constructed": true,
         "tagClass": 0,
         "type": 16,
-        "value": Array [
-          Object {
+        "value": [
+          {
             "composed": false,
             "constructed": false,
             "tagClass": 0,
@@ -1207,32 +1207,32 @@ Object {
           },
         ],
       },
-      Object {
+      {
         "composed": true,
         "constructed": true,
         "tagClass": 0,
         "type": 16,
-        "value": Array [
-          Object {
+        "value": [
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -1241,20 +1241,20 @@ Object {
                   },
                 ],
               },
-              Object {
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -1267,20 +1267,20 @@ Object {
           },
         ],
       },
-      Object {
+      {
         "composed": true,
         "constructed": true,
         "tagClass": 0,
         "type": 16,
-        "value": Array [
-          Object {
+        "value": [
+          {
             "composed": false,
             "constructed": false,
             "tagClass": 0,
             "type": 23,
             "value": "130131210000Z",
           },
-          Object {
+          {
             "composed": false,
             "constructed": false,
             "tagClass": 0,
@@ -1289,32 +1289,32 @@ Object {
           },
         ],
       },
-      Object {
+      {
         "composed": true,
         "constructed": true,
         "tagClass": 0,
         "type": 16,
-        "value": Array [
-          Object {
+        "value": [
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -1323,20 +1323,20 @@ Object {
                   },
                 ],
               },
-              Object {
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -1349,19 +1349,19 @@ Object {
           },
         ],
       },
-      Object {
+      {
         "composed": true,
         "constructed": true,
         "tagClass": 0,
         "type": 16,
-        "value": Array [
-          Object {
+        "value": [
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 16,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": false,
                 "constructed": false,
                 "tagClass": 0,
@@ -1369,7 +1369,7 @@ Object {
                 "value": "*H÷
 ",
               },
-              Object {
+              {
                 "composed": false,
                 "constructed": false,
                 "tagClass": 0,
@@ -1378,26 +1378,26 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "bitStringContents": " 0
  â¡'
 áqf¤Ä3ÿaÆÅìSëçÀ©ùýáçµc´4nõû×èfX¯Ì*²©Y:@ÝÞZ´Ùbiÿò¥Þ A[9P)Hÿ£·2Ü½^SÒW	¶nÐIe|ÁYqfvM{QÙÞ!$S~ýÁR\\\\)r¥1óyP×2Mu0}
 eBÿ±ÄÖ¥\\"*Ü´«Cñ¡<C1õdùpXuÒMt3Ær-Yþ5R¢pE¤	1q(Wè¡éCRæOûBà&U'Ô eÛbèlT·&4DÁ¨ÛgM]É¢q ",
             "composed": true,
             "constructed": false,
-            "original": Object {
+            "original": {
               "composed": true,
               "constructed": false,
               "tagClass": 0,
               "type": 3,
-              "value": Array [
-                Object {
+              "value": [
+                {
                   "composed": true,
                   "constructed": true,
                   "tagClass": 0,
                   "type": 16,
-                  "value": Array [
-                    Object {
+                  "value": [
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
@@ -1406,7 +1406,7 @@ eBÿ±ÄÖ¥\\"*Ü´«Cñ¡<C1õdùpXuÒMt3Ær-Yþ5R¢p�
 áqf¤Ä3ÿaÆÅìSëçÀ©ùýáçµc´4nõû×èfX¯Ì*²©Y:@ÝÞZ´Ùbiÿò¥Þ A[9P)Hÿ£·2Ü½^SÒW	¶nÐIe|ÁYqfvM{QÙÞ!$S~ýÁR\\\\)r¥1óyP×2Mu0}
 eBÿ±ÄÖ¥\\"*Ü´«Cñ¡<C1õdùpXuÒMt3Ær-Yþ5R¢pE¤	1q(Wè¡éCRæOûBà&U'Ô eÛbèlT·&4DÁ¨ÛgM]É¢q",
                     },
-                    Object {
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
@@ -1419,14 +1419,14 @@ eBÿ±ÄÖ¥\\"*Ü´«Cñ¡<C1õdùpXuÒMt3Ær-Yþ5R¢p�
             },
             "tagClass": 0,
             "type": 3,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -1435,7 +1435,7 @@ eBÿ±ÄÖ¥\\"*Ü´«Cñ¡<C1õdùpXuÒMt3Ær-Yþ5R¢p�
 áqf¤Ä3ÿaÆÅìSëçÀ©ùýáçµc´4nõû×èfX¯Ì*²©Y:@ÝÞZ´Ùbiÿò¥Þ A[9P)Hÿ£·2Ü½^SÒW	¶nÐIe|ÁYqfvM{QÙÞ!$S~ýÁR\\\\)r¥1óyP×2Mu0}
 eBÿ±ÄÖ¥\\"*Ü´«Cñ¡<C1õdùpXuÒMt3Ær-Yþ5R¢pE¤	1q(Wè¡éCRæOûBà&U'Ô eÛbèlT·&4DÁ¨ÛgM]É¢q",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -1448,32 +1448,32 @@ eBÿ±ÄÖ¥\\"*Ü´«Cñ¡<C1õdùpXuÒMt3Ær-Yþ5R¢p�
           },
         ],
       },
-      Object {
+      {
         "composed": true,
         "constructed": true,
         "tagClass": 128,
         "type": 3,
-        "value": Array [
-          Object {
+        "value": [
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 16,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -1482,20 +1482,20 @@ eBÿ±ÄÖ¥\\"*Ü´«Cñ¡<C1õdùpXuÒMt3Ær-Yþ5R¢p�
                   },
                 ],
               },
-              Object {
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -1504,20 +1504,20 @@ eBÿ±ÄÖ¥\\"*Ü´«Cñ¡<C1õdùpXuÒMt3Ær-Yþ5R¢p�
                   },
                 ],
               },
-              Object {
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -1526,20 +1526,20 @@ eBÿ±ÄÖ¥\\"*Ü´«Cñ¡<C1õdùpXuÒMt3Ær-Yþ5R¢p�
                   },
                 ],
               },
-              Object {
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U#",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -1554,7 +1554,7 @@ eBÿ±ÄÖ¥\\"*Ü´«Cñ¡<C1õdùpXuÒMt3Ær-Yþ5R¢p�
       },
     ],
   },
-  "validity": Object {
+  "validity": {
     "notAfter": 2016-01-31T21:00:00.000Z,
     "notBefore": 2013-01-31T21:00:00.000Z,
   },
@@ -1565,9 +1565,9 @@ eBÿ±ÄÖ¥\\"*Ü´«Cñ¡<C1õdùpXuÒMt3Ær-Yþ5R¢p�
 `;
 
 exports[`reading X.509 certificates from PKCS#12 files reads X.509 certificates from p12 keystores using #getX509Certificate 1`] = `
-Object {
-  "extensions": Array [
-    Object {
+{
+  "extensions": [
+    {
       "critical": false,
       "id": "2.5.29.14",
       "name": "subjectKeyIdentifier",
@@ -1579,45 +1579,45 @@ Object {
   "getExtension": [Function],
   "isIssuer": [Function],
   "issued": [Function],
-  "issuer": Object {
+  "issuer": {
     "addField": [Function],
-    "attributes": Array [
-      Object {
+    "attributes": [
+      {
         "name": "countryName",
         "shortName": "C",
         "type": "2.5.4.6",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "stateOrProvinceName",
         "shortName": "ST",
         "type": "2.5.4.8",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "localityName",
         "shortName": "L",
         "type": "2.5.4.7",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "organizationName",
         "shortName": "O",
         "type": "2.5.4.10",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "organizationalUnitName",
         "shortName": "OU",
         "type": "2.5.4.11",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "commonName",
         "shortName": "CN",
         "type": "2.5.4.3",
@@ -1628,17 +1628,17 @@ Object {
     "getField": [Function],
     "hash": "38d78bf6a681a88363f0b2ceaeeac5bae8298245",
   },
-  "md": Object {
+  "md": {
     "algorithm": "sha256",
     "blockLength": 64,
     "digest": [Function],
     "digestLength": 32,
-    "fullMessageLength": Array [
+    "fullMessageLength": [
       0,
       611,
     ],
     "messageLength": 611,
-    "messageLength64": Array [
+    "messageLength64": [
       0,
       611,
     ],
@@ -1646,9 +1646,9 @@ Object {
     "start": [Function],
     "update": [Function],
   },
-  "publicKey": Object {
+  "publicKey": {
     "e": BigInteger {
-      "data": Array [
+      "data": [
         65537,
       ],
       "s": 0,
@@ -1656,7 +1656,7 @@ Object {
     },
     "encrypt": [Function],
     "n": BigInteger {
-      "data": Array [
+      "data": [
         237976269,
         185674866,
         195235583,
@@ -1741,53 +1741,53 @@ Object {
   "setExtensions": [Function],
   "setIssuer": [Function],
   "setSubject": [Function],
-  "siginfo": Object {
+  "siginfo": {
     "algorithmOid": "1.2.840.113549.1.1.11",
-    "parameters": Object {},
+    "parameters": {},
   },
   "sign": [Function],
   "signature": "~²K²Î0Éq¡IaHé4JJÓY\\\\J¸+Ô¡BÀ¬þ\`´¤XÓ»°èÌ6¤%dAÿG÷Ê]ÆÉË¡vý	aåúxñMkíï@/e·f>9ÑÏÔï´DI×¨èj+¯Ñ-·£T(êöåýg«òÄò».qº³Ë\\\\fQé  éÃjfü7BïCajïkµV;õ5ùKÐkû¥F_ZÅ2¶p¶»úpSQðÐ ÐêëÞÔ±m³kI	èa=èÀ¿$r¬~ßkÕHFÅÈ?Ò0y>~Ñø",
   "signatureOid": "1.2.840.113549.1.1.11",
-  "signatureParameters": Object {},
-  "subject": Object {
+  "signatureParameters": {},
+  "subject": {
     "addField": [Function],
-    "attributes": Array [
-      Object {
+    "attributes": [
+      {
         "name": "countryName",
         "shortName": "C",
         "type": "2.5.4.6",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "stateOrProvinceName",
         "shortName": "ST",
         "type": "2.5.4.8",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "localityName",
         "shortName": "L",
         "type": "2.5.4.7",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "organizationName",
         "shortName": "O",
         "type": "2.5.4.10",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "organizationalUnitName",
         "shortName": "OU",
         "type": "2.5.4.11",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "commonName",
         "shortName": "CN",
         "type": "2.5.4.3",
@@ -1798,19 +1798,19 @@ Object {
     "getField": [Function],
     "hash": "38d78bf6a681a88363f0b2ceaeeac5bae8298245",
   },
-  "tbsCertificate": Object {
+  "tbsCertificate": {
     "composed": true,
     "constructed": true,
     "tagClass": 0,
     "type": 16,
-    "value": Array [
-      Object {
+    "value": [
+      {
         "composed": true,
         "constructed": true,
         "tagClass": 128,
         "type": 0,
-        "value": Array [
-          Object {
+        "value": [
+          {
             "composed": false,
             "constructed": false,
             "tagClass": 0,
@@ -1819,20 +1819,20 @@ Object {
           },
         ],
       },
-      Object {
+      {
         "composed": false,
         "constructed": false,
         "tagClass": 0,
         "type": 2,
         "value": "W&\\"",
       },
-      Object {
+      {
         "composed": true,
         "constructed": true,
         "tagClass": 0,
         "type": 16,
-        "value": Array [
-          Object {
+        "value": [
+          {
             "composed": false,
             "constructed": false,
             "tagClass": 0,
@@ -1840,7 +1840,7 @@ Object {
             "value": "*H÷
 ",
           },
-          Object {
+          {
             "composed": false,
             "constructed": false,
             "tagClass": 0,
@@ -1849,32 +1849,32 @@ Object {
           },
         ],
       },
-      Object {
+      {
         "composed": true,
         "constructed": true,
         "tagClass": 0,
         "type": 16,
-        "value": Array [
-          Object {
+        "value": [
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -1885,26 +1885,26 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -1915,26 +1915,26 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -1945,19 +1945,19 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -1965,7 +1965,7 @@ Object {
                     "value": "U
 ",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -1976,26 +1976,26 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -2006,26 +2006,26 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -2038,20 +2038,20 @@ Object {
           },
         ],
       },
-      Object {
+      {
         "composed": true,
         "constructed": true,
         "tagClass": 0,
         "type": 16,
-        "value": Array [
-          Object {
+        "value": [
+          {
             "composed": false,
             "constructed": false,
             "tagClass": 0,
             "type": 23,
             "value": "201008111622Z",
           },
-          Object {
+          {
             "composed": false,
             "constructed": false,
             "tagClass": 0,
@@ -2060,32 +2060,32 @@ Object {
           },
         ],
       },
-      Object {
+      {
         "composed": true,
         "constructed": true,
         "tagClass": 0,
         "type": 16,
-        "value": Array [
-          Object {
+        "value": [
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -2096,26 +2096,26 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -2126,26 +2126,26 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -2156,19 +2156,19 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -2176,7 +2176,7 @@ Object {
                     "value": "U
 ",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -2187,26 +2187,26 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -2217,26 +2217,26 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -2249,19 +2249,19 @@ Object {
           },
         ],
       },
-      Object {
+      {
         "composed": true,
         "constructed": true,
         "tagClass": 0,
         "type": 16,
-        "value": Array [
-          Object {
+        "value": [
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 16,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": false,
                 "constructed": false,
                 "tagClass": 0,
@@ -2269,7 +2269,7 @@ Object {
                 "value": "*H÷
 ",
               },
-              Object {
+              {
                 "composed": false,
                 "constructed": false,
                 "tagClass": 0,
@@ -2278,7 +2278,7 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "bitStringContents": " 0
  ½#E0Õ<¸/,Ç»´B«YUÎZÔI cRJÕ{p¦³PðÖçÒ¨/«¿ÙÁÙ¾G[[å´DÉ¾ìÚIª«Pþ54
 1Óß$¬¢m<½ò¶x®qýxù)\\"V§Ã_
@@ -2287,19 +2287,19 @@ PÂ$*ccÁ­AM½çÁ»2¤òaõ~±ªz¬°ÀÕ#WA³/ªå\\"i8¥ÄÐÒ�
 !|øû&÷D3¾eMc a¼	b¢¨¿ÿéGø¾ó·Ê®Ê»£ÿ±Ç./:Í ",
             "composed": true,
             "constructed": false,
-            "original": Object {
+            "original": {
               "composed": true,
               "constructed": false,
               "tagClass": 0,
               "type": 3,
-              "value": Array [
-                Object {
+              "value": [
+                {
                   "composed": true,
                   "constructed": true,
                   "tagClass": 0,
                   "type": 16,
-                  "value": Array [
-                    Object {
+                  "value": [
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
@@ -2310,7 +2310,7 @@ PÂ$*ccÁ­AM½çÁ»2¤òaõ~±ªz¬°ÀÕ#WA³/ªå\\"i8¥ÄÐÒ�
 PÂ$*ccÁ­AM½çÁ»2¤òaõ~±ªz¬°ÀÕ#WA³/ªå\\"i8¥ÄÐÒýKÊ
 !|øû&÷D3¾eMc a¼	b¢¨¿ÿéGø¾ó·Ê®Ê»£ÿ±Ç./:Í",
                     },
-                    Object {
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
@@ -2323,14 +2323,14 @@ PÂ$*ccÁ­AM½çÁ»2¤òaõ~±ªz¬°ÀÕ#WA³/ªå\\"i8¥ÄÐÒ�
             },
             "tagClass": 0,
             "type": 3,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -2341,7 +2341,7 @@ PÂ$*ccÁ­AM½çÁ»2¤òaõ~±ªz¬°ÀÕ#WA³/ªå\\"i8¥ÄÐÒ�
 PÂ$*ccÁ­AM½çÁ»2¤òaõ~±ªz¬°ÀÕ#WA³/ªå\\"i8¥ÄÐÒýKÊ
 !|øû&÷D3¾eMc a¼	b¢¨¿ÿéGø¾ó·Ê®Ê»£ÿ±Ç./:Í",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -2354,32 +2354,32 @@ PÂ$*ccÁ­AM½çÁ»2¤òaõ~±ªz¬°ÀÕ#WA³/ªå\\"i8¥ÄÐÒ�
           },
         ],
       },
-      Object {
+      {
         "composed": true,
         "constructed": true,
         "tagClass": 128,
         "type": 3,
-        "value": Array [
-          Object {
+        "value": [
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 16,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -2394,7 +2394,7 @@ PÂ$*ccÁ­AM½çÁ»2¤òaõ~±ªz¬°ÀÕ#WA³/ªå\\"i8¥ÄÐÒ�
       },
     ],
   },
-  "validity": Object {
+  "validity": {
     "notAfter": 2022-10-08T11:16:22.000Z,
     "notBefore": 2020-10-08T11:16:22.000Z,
   },
@@ -2405,9 +2405,9 @@ PÂ$*ccÁ­AM½çÁ»2¤òaõ~±ªz¬°ÀÕ#WA³/ªå\\"i8¥ÄÐÒ�
 `;
 
 exports[`reading X.509 certificates from PKCS#12 files reads X.509 certificates from p12 keystores using #getX509CertificateByFriendlyName 1`] = `
-Object {
-  "extensions": Array [
-    Object {
+{
+  "extensions": [
+    {
       "critical": false,
       "id": "2.5.29.14",
       "name": "subjectKeyIdentifier",
@@ -2419,45 +2419,45 @@ Object {
   "getExtension": [Function],
   "isIssuer": [Function],
   "issued": [Function],
-  "issuer": Object {
+  "issuer": {
     "addField": [Function],
-    "attributes": Array [
-      Object {
+    "attributes": [
+      {
         "name": "countryName",
         "shortName": "C",
         "type": "2.5.4.6",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "stateOrProvinceName",
         "shortName": "ST",
         "type": "2.5.4.8",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "localityName",
         "shortName": "L",
         "type": "2.5.4.7",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "organizationName",
         "shortName": "O",
         "type": "2.5.4.10",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "organizationalUnitName",
         "shortName": "OU",
         "type": "2.5.4.11",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "commonName",
         "shortName": "CN",
         "type": "2.5.4.3",
@@ -2468,17 +2468,17 @@ Object {
     "getField": [Function],
     "hash": "38d78bf6a681a88363f0b2ceaeeac5bae8298245",
   },
-  "md": Object {
+  "md": {
     "algorithm": "sha256",
     "blockLength": 64,
     "digest": [Function],
     "digestLength": 32,
-    "fullMessageLength": Array [
+    "fullMessageLength": [
       0,
       611,
     ],
     "messageLength": 611,
-    "messageLength64": Array [
+    "messageLength64": [
       0,
       611,
     ],
@@ -2486,9 +2486,9 @@ Object {
     "start": [Function],
     "update": [Function],
   },
-  "publicKey": Object {
+  "publicKey": {
     "e": BigInteger {
-      "data": Array [
+      "data": [
         65537,
       ],
       "s": 0,
@@ -2496,7 +2496,7 @@ Object {
     },
     "encrypt": [Function],
     "n": BigInteger {
-      "data": Array [
+      "data": [
         237976269,
         185674866,
         195235583,
@@ -2581,53 +2581,53 @@ Object {
   "setExtensions": [Function],
   "setIssuer": [Function],
   "setSubject": [Function],
-  "siginfo": Object {
+  "siginfo": {
     "algorithmOid": "1.2.840.113549.1.1.11",
-    "parameters": Object {},
+    "parameters": {},
   },
   "sign": [Function],
   "signature": "~²K²Î0Éq¡IaHé4JJÓY\\\\J¸+Ô¡BÀ¬þ\`´¤XÓ»°èÌ6¤%dAÿG÷Ê]ÆÉË¡vý	aåúxñMkíï@/e·f>9ÑÏÔï´DI×¨èj+¯Ñ-·£T(êöåýg«òÄò».qº³Ë\\\\fQé  éÃjfü7BïCajïkµV;õ5ùKÐkû¥F_ZÅ2¶p¶»úpSQðÐ ÐêëÞÔ±m³kI	èa=èÀ¿$r¬~ßkÕHFÅÈ?Ò0y>~Ñø",
   "signatureOid": "1.2.840.113549.1.1.11",
-  "signatureParameters": Object {},
-  "subject": Object {
+  "signatureParameters": {},
+  "subject": {
     "addField": [Function],
-    "attributes": Array [
-      Object {
+    "attributes": [
+      {
         "name": "countryName",
         "shortName": "C",
         "type": "2.5.4.6",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "stateOrProvinceName",
         "shortName": "ST",
         "type": "2.5.4.8",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "localityName",
         "shortName": "L",
         "type": "2.5.4.7",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "organizationName",
         "shortName": "O",
         "type": "2.5.4.10",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "organizationalUnitName",
         "shortName": "OU",
         "type": "2.5.4.11",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "commonName",
         "shortName": "CN",
         "type": "2.5.4.3",
@@ -2638,19 +2638,19 @@ Object {
     "getField": [Function],
     "hash": "38d78bf6a681a88363f0b2ceaeeac5bae8298245",
   },
-  "tbsCertificate": Object {
+  "tbsCertificate": {
     "composed": true,
     "constructed": true,
     "tagClass": 0,
     "type": 16,
-    "value": Array [
-      Object {
+    "value": [
+      {
         "composed": true,
         "constructed": true,
         "tagClass": 128,
         "type": 0,
-        "value": Array [
-          Object {
+        "value": [
+          {
             "composed": false,
             "constructed": false,
             "tagClass": 0,
@@ -2659,20 +2659,20 @@ Object {
           },
         ],
       },
-      Object {
+      {
         "composed": false,
         "constructed": false,
         "tagClass": 0,
         "type": 2,
         "value": "W&\\"",
       },
-      Object {
+      {
         "composed": true,
         "constructed": true,
         "tagClass": 0,
         "type": 16,
-        "value": Array [
-          Object {
+        "value": [
+          {
             "composed": false,
             "constructed": false,
             "tagClass": 0,
@@ -2680,7 +2680,7 @@ Object {
             "value": "*H÷
 ",
           },
-          Object {
+          {
             "composed": false,
             "constructed": false,
             "tagClass": 0,
@@ -2689,32 +2689,32 @@ Object {
           },
         ],
       },
-      Object {
+      {
         "composed": true,
         "constructed": true,
         "tagClass": 0,
         "type": 16,
-        "value": Array [
-          Object {
+        "value": [
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -2725,26 +2725,26 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -2755,26 +2755,26 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -2785,19 +2785,19 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -2805,7 +2805,7 @@ Object {
                     "value": "U
 ",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -2816,26 +2816,26 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -2846,26 +2846,26 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -2878,20 +2878,20 @@ Object {
           },
         ],
       },
-      Object {
+      {
         "composed": true,
         "constructed": true,
         "tagClass": 0,
         "type": 16,
-        "value": Array [
-          Object {
+        "value": [
+          {
             "composed": false,
             "constructed": false,
             "tagClass": 0,
             "type": 23,
             "value": "201008111622Z",
           },
-          Object {
+          {
             "composed": false,
             "constructed": false,
             "tagClass": 0,
@@ -2900,32 +2900,32 @@ Object {
           },
         ],
       },
-      Object {
+      {
         "composed": true,
         "constructed": true,
         "tagClass": 0,
         "type": 16,
-        "value": Array [
-          Object {
+        "value": [
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -2936,26 +2936,26 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -2966,26 +2966,26 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -2996,19 +2996,19 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -3016,7 +3016,7 @@ Object {
                     "value": "U
 ",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -3027,26 +3027,26 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -3057,26 +3057,26 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -3089,19 +3089,19 @@ Object {
           },
         ],
       },
-      Object {
+      {
         "composed": true,
         "constructed": true,
         "tagClass": 0,
         "type": 16,
-        "value": Array [
-          Object {
+        "value": [
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 16,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": false,
                 "constructed": false,
                 "tagClass": 0,
@@ -3109,7 +3109,7 @@ Object {
                 "value": "*H÷
 ",
               },
-              Object {
+              {
                 "composed": false,
                 "constructed": false,
                 "tagClass": 0,
@@ -3118,7 +3118,7 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "bitStringContents": " 0
  ½#E0Õ<¸/,Ç»´B«YUÎZÔI cRJÕ{p¦³PðÖçÒ¨/«¿ÙÁÙ¾G[[å´DÉ¾ìÚIª«Pþ54
 1Óß$¬¢m<½ò¶x®qýxù)\\"V§Ã_
@@ -3127,19 +3127,19 @@ PÂ$*ccÁ­AM½çÁ»2¤òaõ~±ªz¬°ÀÕ#WA³/ªå\\"i8¥ÄÐÒ�
 !|øû&÷D3¾eMc a¼	b¢¨¿ÿéGø¾ó·Ê®Ê»£ÿ±Ç./:Í ",
             "composed": true,
             "constructed": false,
-            "original": Object {
+            "original": {
               "composed": true,
               "constructed": false,
               "tagClass": 0,
               "type": 3,
-              "value": Array [
-                Object {
+              "value": [
+                {
                   "composed": true,
                   "constructed": true,
                   "tagClass": 0,
                   "type": 16,
-                  "value": Array [
-                    Object {
+                  "value": [
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
@@ -3150,7 +3150,7 @@ PÂ$*ccÁ­AM½çÁ»2¤òaõ~±ªz¬°ÀÕ#WA³/ªå\\"i8¥ÄÐÒ�
 PÂ$*ccÁ­AM½çÁ»2¤òaõ~±ªz¬°ÀÕ#WA³/ªå\\"i8¥ÄÐÒýKÊ
 !|øû&÷D3¾eMc a¼	b¢¨¿ÿéGø¾ó·Ê®Ê»£ÿ±Ç./:Í",
                     },
-                    Object {
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
@@ -3163,14 +3163,14 @@ PÂ$*ccÁ­AM½çÁ»2¤òaõ~±ªz¬°ÀÕ#WA³/ªå\\"i8¥ÄÐÒ�
             },
             "tagClass": 0,
             "type": 3,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -3181,7 +3181,7 @@ PÂ$*ccÁ­AM½çÁ»2¤òaõ~±ªz¬°ÀÕ#WA³/ªå\\"i8¥ÄÐÒ�
 PÂ$*ccÁ­AM½çÁ»2¤òaõ~±ªz¬°ÀÕ#WA³/ªå\\"i8¥ÄÐÒýKÊ
 !|øû&÷D3¾eMc a¼	b¢¨¿ÿéGø¾ó·Ê®Ê»£ÿ±Ç./:Í",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -3194,32 +3194,32 @@ PÂ$*ccÁ­AM½çÁ»2¤òaõ~±ªz¬°ÀÕ#WA³/ªå\\"i8¥ÄÐÒ�
           },
         ],
       },
-      Object {
+      {
         "composed": true,
         "constructed": true,
         "tagClass": 128,
         "type": 3,
-        "value": Array [
-          Object {
+        "value": [
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 16,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -3234,7 +3234,7 @@ PÂ$*ccÁ­AM½çÁ»2¤òaõ~±ªz¬°ÀÕ#WA³/ªå\\"i8¥ÄÐÒ�
       },
     ],
   },
-  "validity": Object {
+  "validity": {
     "notAfter": 2022-10-08T11:16:22.000Z,
     "notBefore": 2020-10-08T11:16:22.000Z,
   },
@@ -3245,9 +3245,9 @@ PÂ$*ccÁ­AM½çÁ»2¤òaõ~±ªz¬°ÀÕ#WA³/ªå\\"i8¥ÄÐÒ�
 `;
 
 exports[`reading X.509 certificates from PKCS#12 files reads X.509 certificates from p12 keystores with uppercase alias using #getX509CertificateByFriendlyName 1`] = `
-Object {
-  "extensions": Array [
-    Object {
+{
+  "extensions": [
+    {
       "critical": false,
       "id": "2.5.29.14",
       "name": "subjectKeyIdentifier",
@@ -3259,45 +3259,45 @@ Object {
   "getExtension": [Function],
   "isIssuer": [Function],
   "issued": [Function],
-  "issuer": Object {
+  "issuer": {
     "addField": [Function],
-    "attributes": Array [
-      Object {
+    "attributes": [
+      {
         "name": "countryName",
         "shortName": "C",
         "type": "2.5.4.6",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "stateOrProvinceName",
         "shortName": "ST",
         "type": "2.5.4.8",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "localityName",
         "shortName": "L",
         "type": "2.5.4.7",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "organizationName",
         "shortName": "O",
         "type": "2.5.4.10",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "organizationalUnitName",
         "shortName": "OU",
         "type": "2.5.4.11",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "commonName",
         "shortName": "CN",
         "type": "2.5.4.3",
@@ -3308,17 +3308,17 @@ Object {
     "getField": [Function],
     "hash": "38d78bf6a681a88363f0b2ceaeeac5bae8298245",
   },
-  "md": Object {
+  "md": {
     "algorithm": "sha256",
     "blockLength": 64,
     "digest": [Function],
     "digestLength": 32,
-    "fullMessageLength": Array [
+    "fullMessageLength": [
       0,
       611,
     ],
     "messageLength": 611,
-    "messageLength64": Array [
+    "messageLength64": [
       0,
       611,
     ],
@@ -3326,9 +3326,9 @@ Object {
     "start": [Function],
     "update": [Function],
   },
-  "publicKey": Object {
+  "publicKey": {
     "e": BigInteger {
-      "data": Array [
+      "data": [
         65537,
       ],
       "s": 0,
@@ -3336,7 +3336,7 @@ Object {
     },
     "encrypt": [Function],
     "n": BigInteger {
-      "data": Array [
+      "data": [
         116700891,
         197905305,
         118237247,
@@ -3421,9 +3421,9 @@ Object {
   "setExtensions": [Function],
   "setIssuer": [Function],
   "setSubject": [Function],
-  "siginfo": Object {
+  "siginfo": {
     "algorithmOid": "1.2.840.113549.1.1.11",
-    "parameters": Object {},
+    "parameters": {},
   },
   "sign": [Function],
   "signature": "2	ÁF ôv½iØ
@@ -3432,46 +3432,46 @@ Object {
 ÛtD®
 \\"ÿ\`gôþtÙ¶ñK½¶Àö2ïegkìåº·É¸àÐ·êi3¥&",
   "signatureOid": "1.2.840.113549.1.1.11",
-  "signatureParameters": Object {},
-  "subject": Object {
+  "signatureParameters": {},
+  "subject": {
     "addField": [Function],
-    "attributes": Array [
-      Object {
+    "attributes": [
+      {
         "name": "countryName",
         "shortName": "C",
         "type": "2.5.4.6",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "stateOrProvinceName",
         "shortName": "ST",
         "type": "2.5.4.8",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "localityName",
         "shortName": "L",
         "type": "2.5.4.7",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "organizationName",
         "shortName": "O",
         "type": "2.5.4.10",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "organizationalUnitName",
         "shortName": "OU",
         "type": "2.5.4.11",
         "value": "Unknown",
         "valueTagClass": 19,
       },
-      Object {
+      {
         "name": "commonName",
         "shortName": "CN",
         "type": "2.5.4.3",
@@ -3482,19 +3482,19 @@ Object {
     "getField": [Function],
     "hash": "38d78bf6a681a88363f0b2ceaeeac5bae8298245",
   },
-  "tbsCertificate": Object {
+  "tbsCertificate": {
     "composed": true,
     "constructed": true,
     "tagClass": 0,
     "type": 16,
-    "value": Array [
-      Object {
+    "value": [
+      {
         "composed": true,
         "constructed": true,
         "tagClass": 128,
         "type": 0,
-        "value": Array [
-          Object {
+        "value": [
+          {
             "composed": false,
             "constructed": false,
             "tagClass": 0,
@@ -3503,20 +3503,20 @@ Object {
           },
         ],
       },
-      Object {
+      {
         "composed": false,
         "constructed": false,
         "tagClass": 0,
         "type": 2,
         "value": "=å5<",
       },
-      Object {
+      {
         "composed": true,
         "constructed": true,
         "tagClass": 0,
         "type": 16,
-        "value": Array [
-          Object {
+        "value": [
+          {
             "composed": false,
             "constructed": false,
             "tagClass": 0,
@@ -3524,7 +3524,7 @@ Object {
             "value": "*H÷
 ",
           },
-          Object {
+          {
             "composed": false,
             "constructed": false,
             "tagClass": 0,
@@ -3533,32 +3533,32 @@ Object {
           },
         ],
       },
-      Object {
+      {
         "composed": true,
         "constructed": true,
         "tagClass": 0,
         "type": 16,
-        "value": Array [
-          Object {
+        "value": [
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -3569,26 +3569,26 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -3599,26 +3599,26 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -3629,19 +3629,19 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -3649,7 +3649,7 @@ Object {
                     "value": "U
 ",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -3660,26 +3660,26 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -3690,26 +3690,26 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -3722,20 +3722,20 @@ Object {
           },
         ],
       },
-      Object {
+      {
         "composed": true,
         "constructed": true,
         "tagClass": 0,
         "type": 16,
-        "value": Array [
-          Object {
+        "value": [
+          {
             "composed": false,
             "constructed": false,
             "tagClass": 0,
             "type": 23,
             "value": "201025065131Z",
           },
-          Object {
+          {
             "composed": false,
             "constructed": false,
             "tagClass": 0,
@@ -3744,32 +3744,32 @@ Object {
           },
         ],
       },
-      Object {
+      {
         "composed": true,
         "constructed": true,
         "tagClass": 0,
         "type": 16,
-        "value": Array [
-          Object {
+        "value": [
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -3780,26 +3780,26 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -3810,26 +3810,26 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -3840,19 +3840,19 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -3860,7 +3860,7 @@ Object {
                     "value": "U
 ",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -3871,26 +3871,26 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -3901,26 +3901,26 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 17,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -3933,19 +3933,19 @@ Object {
           },
         ],
       },
-      Object {
+      {
         "composed": true,
         "constructed": true,
         "tagClass": 0,
         "type": 16,
-        "value": Array [
-          Object {
+        "value": [
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 16,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": false,
                 "constructed": false,
                 "tagClass": 0,
@@ -3953,7 +3953,7 @@ Object {
                 "value": "*H÷
 ",
               },
-              Object {
+              {
                 "composed": false,
                 "constructed": false,
                 "tagClass": 0,
@@ -3962,7 +3962,7 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "bitStringContents": " 0
  ªÀ|ö7¶Í
 À^4B\`lWb
@@ -3971,19 +3971,19 @@ Object {
 è;ª¾ù¡+;ã<õY­ÜpJ³ø	½øÚ®K¼ii®[&ÐÉr#ø;k©_hÜÒF·tðdùâ)ÛÅÑ9Ä=ç ·qsÂòlj´|ux¸UºqðêÐWF%\`ÿ=üõ§ôóö_	½á¶â§(?¼¼¹ô¶Û ",
             "composed": true,
             "constructed": false,
-            "original": Object {
+            "original": {
               "composed": true,
               "constructed": false,
               "tagClass": 0,
               "type": 3,
-              "value": Array [
-                Object {
+              "value": [
+                {
                   "composed": true,
                   "constructed": true,
                   "tagClass": 0,
                   "type": 16,
-                  "value": Array [
-                    Object {
+                  "value": [
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
@@ -3994,7 +3994,7 @@ Object {
 â'ïºïåÏØ;¶¯w«u^q³h÷ÛÝÿï­ÂNî¥Kýà1<ßÆÈõ¾{Ô¹
 è;ª¾ù¡+;ã<õY­ÜpJ³ø	½øÚ®K¼ii®[&ÐÉr#ø;k©_hÜÒF·tðdùâ)ÛÅÑ9Ä=ç ·qsÂòlj´|ux¸UºqðêÐWF%\`ÿ=üõ§ôóö_	½á¶â§(?¼¼¹ô¶Û",
                     },
-                    Object {
+                    {
                       "composed": false,
                       "constructed": false,
                       "tagClass": 0,
@@ -4007,14 +4007,14 @@ Object {
             },
             "tagClass": 0,
             "type": 3,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -4025,7 +4025,7 @@ Object {
 â'ïºïåÏØ;¶¯w«u^q³h÷ÛÝÿï­ÂNî¥Kýà1<ßÆÈõ¾{Ô¹
 è;ª¾ù¡+;ã<õY­ÜpJ³ø	½øÚ®K¼ii®[&ÐÉr#ø;k©_hÜÒF·tðdùâ)ÛÅÑ9Ä=ç ·qsÂòlj´|ux¸UºqðêÐWF%\`ÿ=üõ§ôóö_	½á¶â§(?¼¼¹ô¶Û",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -4038,32 +4038,32 @@ Object {
           },
         ],
       },
-      Object {
+      {
         "composed": true,
         "constructed": true,
         "tagClass": 128,
         "type": 3,
-        "value": Array [
-          Object {
+        "value": [
+          {
             "composed": true,
             "constructed": true,
             "tagClass": 0,
             "type": 16,
-            "value": Array [
-              Object {
+            "value": [
+              {
                 "composed": true,
                 "constructed": true,
                 "tagClass": 0,
                 "type": 16,
-                "value": Array [
-                  Object {
+                "value": [
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
                     "type": 6,
                     "value": "U",
                   },
-                  Object {
+                  {
                     "composed": false,
                     "constructed": false,
                     "tagClass": 0,
@@ -4078,7 +4078,7 @@ Object {
       },
     ],
   },
-  "validity": Object {
+  "validity": {
     "notAfter": 2022-10-25T06:51:31.000Z,
     "notBefore": 2020-10-25T06:51:31.000Z,
   },
