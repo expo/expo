@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Skip showing "Downloading..." overlay on web.
+
 ## 3.0.4 — 2023-11-14
 
 ### 💡 Others
