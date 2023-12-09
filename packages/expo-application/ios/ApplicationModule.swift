@@ -36,12 +36,12 @@ public class ApplicationModule: Module {
     }
 
     AsyncFunction("getApplicationReleaseTypeAsync") { () -> Int in
-      let mainProvisioningProfile = ApplicationModuleProvisioningProfile.mainProvisioningProfile
+      let mainProvisioningProfile = EXProvisioningProfile.main()
       return mainProvisioningProfile.appReleaseType().rawValue
     }
 
     AsyncFunction("getPushNotificationServiceEnvironmentAsync") { () -> String? in
-      let mainProvisioningProfile = ApplicationModuleProvisioningProfile.mainProvisioningProfile
+      let mainProvisioningProfile = EXProvisioningProfile.main()
       return mainProvisioningProfile.notificationServiceEnvironment()
     }
   }
