@@ -92,6 +92,11 @@ export function vendoredModulesTransforms(prefix: string): Record<string, FileTr
             '$rootDir/../react-native-lab/react-native/packages/react-native/ReactAndroid/gradle.properties',
         },
         {
+          paths: 'build.gradle',
+          find: /(prefab {\s+reanimated)/,
+          replaceWith: `$1_${prefix}`,
+        },
+        {
           paths: 'CMakeLists.txt',
           find: /\b(hermes-engine::libhermes)/g,
           replaceWith: `$1_${prefix}`,
@@ -105,6 +110,12 @@ export function vendoredModulesTransforms(prefix: string): Record<string, FileTr
           paths: '**/*.{java,kt}',
           find: new RegExp(`\\b(?<!${prefix}\\.)(com.swmansion.reanimated.R\\.)`, 'g'),
           replaceWith: `${prefix}.$1`,
+        },
+        {
+          // Disble cpp version check because the prebuilt jniLib would be a release build and may pair with debug build of the java code.
+          paths: 'NativeProxy.java',
+          find: /(checkCppVersion\(\);)/,
+          replaceWith: `// $1`,
         },
       ],
     },
@@ -120,6 +131,24 @@ export function vendoredModulesTransforms(prefix: string): Record<string, FileTr
       content: [
         {
           find: /\b(import (static )?)(com.reactnativepagerview.)/g,
+          replaceWith: `$1${prefix}.$3`,
+        },
+      ],
+    },
+    'lottie-react-native': {
+      path: [
+        {
+          find: 'src/newarch/com',
+          replaceWith: `src/oldarch/${prefix}/com`,
+        },
+        {
+          find: 'src/oldarch/com',
+          replaceWith: `src/oldarch/${prefix}/com`,
+        },
+      ],
+      content: [
+        {
+          find: /\b(import (static )?)(com.airbnb.android.react.lottie.)/g,
           replaceWith: `$1${prefix}.$3`,
         },
       ],
@@ -174,6 +203,12 @@ export function exponentPackageTransforms(prefix: string): Record<string, String
     'react-native-pager-view': [
       {
         find: /\bimport (com.reactnativepagerview.)/g,
+        replaceWith: `import ${prefix}.$1`,
+      },
+    ],
+    'lottie-react-native': [
+      {
+        find: /\bimport (com.airbnb.android.react.lottie.)/g,
         replaceWith: `import ${prefix}.$1`,
       },
     ],
