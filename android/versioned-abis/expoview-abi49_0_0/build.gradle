@@ -37,6 +37,8 @@ repositories {
 }
 
 android {
+  namespace "abi49_0_0.host.exp.expoview"
+
   compileSdkVersion safeExtGet("compileSdkVersion", 33)
 
   // Used to override the NDK path/version on internal CI or by allowing
@@ -200,7 +202,6 @@ dependencies {
 
   // expo-image
   def GLIDE_VERSION = "4.13.2"
-  implementation "com.github.zjupure:webpdecoder:2.1.${GLIDE_VERSION}"
   api "com.github.bumptech.glide:glide:${GLIDE_VERSION}"
   kapt "com.github.bumptech.glide:compiler:${GLIDE_VERSION}"
   implementation "com.github.bumptech.glide:avif-integration:${GLIDE_VERSION}"
