@@ -34,8 +34,8 @@ export default function UserReviewSection({ snacks, apps }: Props) {
           Enjoying Expo Go?
         </Text>
         <Text size="small" type="InterRegular" style={styles.subtitle}>
-          Whether you love us or feel we could be doing better, let us know, your feedback will help
-          us improve the app.
+          Whether you love the app or feel we could be doing better, let us know! Your feedback will
+          help us improve.
         </Text>
         <Row style={{ gap: 10 }}>
           <Button.FadeOnPressContainer
