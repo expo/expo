@@ -301,7 +301,7 @@ describe('exports static', () => {
     expect(page).toContain('<div id="root">');
 
     const sanitized = page.replace(
-      /<script src="\/_expo\/static\/js\/web\/.*" defer>/g,
+      /<script src="\/_expo\/static\/js\/web\/.*" defer>/,
       '<script src="/_expo/static/js/web/[mock].js" defer>'
     );
     expect(sanitized).toMatchSnapshot();

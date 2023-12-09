@@ -95,7 +95,7 @@ function htmlFromSerialAssets(
             // return `<script src="${baseUrl}/${filename}" defer></script>`;
           }
 
-          return `<script src="${baseUrl}/${filename}"></script>`;
+          return `<script src="${baseUrl}/${filename}" defer></script>`;
         })
         .join('');
 
