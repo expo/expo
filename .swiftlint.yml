@@ -125,8 +125,8 @@ control_statement: warning
 
 # Limits the complexity of function bodies.
 cyclomatic_complexity:
-  warning: 12
-  error: 20
+  warning: 20
+  error: 28
   ignores_case_statements: true
 
 # Directly return the expression instead of assigning it to a variable first.
