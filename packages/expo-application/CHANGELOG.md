@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On iOS, fixed a regression that prevented expo go from determining the release type.
+
 ### 💡 Others
 
 ## 5.7.0 — 2023-11-14
