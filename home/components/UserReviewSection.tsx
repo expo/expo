@@ -1,5 +1,6 @@
 import { iconSize, XIcon, spacing, typography } from '@expo/styleguide-native';
 import { Row, Text, useExpoTheme, View, Button } from 'expo-dev-client-components';
+import { isDevice } from 'expo-device';
 import { CommonAppDataFragment, CommonSnackDataFragment } from 'graphql/types';
 import React from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
@@ -19,7 +20,7 @@ export default function UserReviewSection({ snacks, apps }: Props) {
     });
   const theme = useExpoTheme();
 
-  if (!shouldShowReviewSection) {
+  if (!isDevice || !shouldShowReviewSection) {
     return null;
   }
 
