@@ -9,6 +9,7 @@
 /packages/@expo/metro-config                    @EvanBacon @bycedric @marklawlor
 /packages/@expo/metro-runtime                   @EvanBacon @bycedric @marklawlor
 /packages/@expo/package-manager                 @EvanBacon @bycedric
+/packages/@expo/plist                           @EvanBacon @bycedric
 /packages/babel-preset-expo                     @brentvatne @ide @EvanBacon
 /packages/create-expo                           @EvanBacon @bycedric
 /packages/expo-*                                @alanjhughes
@@ -96,6 +97,7 @@
 /packages/jest-expo-puppeteer                   @ide @EvanBacon
 /packages/jest-expo                             @brentvatne @EvanBacon
 /packages/pod-install                           @bycedric @EvanBacon
+/packages/uri-scheme                            @bycedric @EvanBacon
 /tools                                          @tsapeta
 /docs                                           @Simek @amandeepmittal
 /.github/workflows                              @tsapeta @brentvatne @kudo

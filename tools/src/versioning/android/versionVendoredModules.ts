@@ -209,7 +209,9 @@ async function baseTransformsFactoryAsync(prefix: string): Promise<Required<File
           `    compileOnly 'com.facebook.fbjni:fbjni:+'\n` +
           `    compileOnly 'com.facebook.yoga:proguard-annotations:+'\n` +
           `    compileOnly 'com.facebook.soloader:soloader:+'\n` +
+          `    compileOnly 'com.facebook.fresco:drawee:+'\n` +
           `    compileOnly 'com.facebook.fresco:fbcore:+'\n` +
+          `    compileOnly 'com.facebook.fresco:middleware:+'\n` +
           `    compileOnly 'com.facebook.infer.annotation:infer-annotation:+'\n` +
           `    compileOnly 'androidx.annotation:annotation:+'\n` +
           `    compileOnly 'com.google.code.findbugs:jsr305:+'\n` +

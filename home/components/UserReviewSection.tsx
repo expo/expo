@@ -1,5 +1,6 @@
 import { iconSize, XIcon, spacing, typography } from '@expo/styleguide-native';
 import { Row, Text, useExpoTheme, View, Button } from 'expo-dev-client-components';
+import { isDevice } from 'expo-device';
 import { CommonAppDataFragment, CommonSnackDataFragment } from 'graphql/types';
 import React from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
@@ -19,7 +20,7 @@ export default function UserReviewSection({ snacks, apps }: Props) {
     });
   const theme = useExpoTheme();
 
-  if (!shouldShowReviewSection) {
+  if (!isDevice || !shouldShowReviewSection) {
     return null;
   }
 
@@ -33,8 +34,8 @@ export default function UserReviewSection({ snacks, apps }: Props) {
           Enjoying Expo Go?
         </Text>
         <Text size="small" type="InterRegular" style={styles.subtitle}>
-          Whether you love us or feel we could be doing better, let us know, your feedback will help
-          us improve the app.
+          Whether you love the app or feel we could be doing better, let us know! Your feedback will
+          help us improve.
         </Text>
         <Row style={{ gap: 10 }}>
           <Button.FadeOnPressContainer
