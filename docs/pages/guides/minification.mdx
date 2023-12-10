@@ -1,0 +1,139 @@
+---
+title: Minifying JavaScript
+sidebar_title: Minificiation
+description: Learn about customizing the JavaScript minification process in Expo CLI with Metro bundler.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+import { YesIcon, NoIcon, PendingIcon } from '~/ui/components/DocIcons';
+import { Step } from '~/ui/components/Step';
+
+Minification is an optimization build step that removes unnecessary characters from source code to reduce its final size, thus improving load times.
+
+In Expo CLI, minification is performed on JavaScript files during the production export, e.g. `npx expo export`, `npx expo export:embed`, `eas build`, etc.
+
+The default minification of Expo CLI is often sufficient for most projects, but you can customize the minifier to optimize for speed or remove additional features like logs.
+
+Minification collapses whitespace, removes comments, and shortens static operations. For example, the following code:
+
+```js Input
+// This comment will be stripped
+console.log('a' + ' ' + 'long' + ' string' + ' to ' + 'collapse');
+```
+
+Is minified to:
+
+```js Output
+console.log('a long string to collapse');
+```
+
+Comments can be preserved by using the `/** @preserve */` directive.
+
+## Customizing the minifier
+
+There are different minifiers which offer different tradeoffs between speed and compression. You can customize the minifier used by Expo CLI by modifying the `metro.config.js` file in your project.
+
+### Terser
+
+> [`terser`](https://github.com/terser/terser) is the default minifier in SDK 48 and above: ([Metro@0.73.0 changelog](https://github.com/facebook/metro/releases/tag/v0.73.0)).
+
+For projects SDK 47 and below, you can use [`terser`](https://github.com/terser/terser) instead of `uglify-es` to mangle and compress your project.
+
+<Step label="1">
+
+Install Terser in your project by running the following command:
+
+<Terminal cmd={['$ yarn add --dev metro-minify-terser']} />
+
+</Step>
+
+<Step label="2">
+
+Set Terser as a minifier with `transformer.minifierPath`, and pass in [`terser` options](https://github.com/terser/terser#compress-options) via `transformer.minifierConfig`.
+
+```js metro.config.js
+const { getDefaultConfig } = require('expo/metro-config');
+
+const config = getDefaultConfig(__dirname);
+
+config.transformer.minifierPath = 'metro-minify-terser';
+config.transformer.minifierConfig = {
+  // Terser options...
+};
+
+module.exports = config;
+```
+
+</Step>
+
+
+### Unsafe Terser options
+
+For additional compression that may not work in all JavaScript engines, you can enable the [`unsafe` `compress` options](https://terser.org/docs/miscellaneous/#the-unsafe-compress-option):
+
+```js metro.config.js
+const { getDefaultConfig } = require('expo/metro-config');
+
+const config = getDefaultConfig(__dirname);
+
+config.transformer.minifierPath = 'metro-minify-terser';
+
+config.transformer.minifierConfig = {
+  compress: {
+    // Enable all unsafe optimizations.
+    unsafe: true,
+    unsafe_arrows: true,
+    unsafe_comps: true,
+    unsafe_Function: true,
+    unsafe_math: true,
+    unsafe_symbols: true,
+    unsafe_methods: true,
+    unsafe_proto: true,
+    unsafe_regexp: true,
+    unsafe_undefined: true,
+    unused: true,
+  },
+};
+
+module.exports = config;
+```
+
+### esbuild
+
+You can use [`esbuild`](https://esbuild.github.io/) to minify exponentially faster than `uglify-es` and `terser`. For more information, see [`metro-minify-esbuild` usage](https://github.com/EvanBacon/metro-minify-esbuild#usage).
+
+### Uglify
+
+> [`uglify-es`](https://github.com/mishoo/UglifyJS) is the default minifier in SDK 47 and below, this used the [following options](https://github.com/facebook/metro/blob/b629f44239bbb3414491755185cf19b5834b4b7a/packages/metro-config/src/defaults/index.js#L94-L111).
+
+For projects SDK 48 and above, you can use [`uglify-es`](https://github.com/mishoo/UglifyJS) like so:
+
+<Step label="1">
+
+Install Uglify in your project by running the following command:
+
+<Terminal cmd={['$ yarn add --dev metro-minify-uglify']} />
+
+> Ensure the version of `metro-minify-uglify` matches the version of `metro` in your project.
+
+</Step>
+
+<Step label="2">
+
+Set Uglify as a minifier with `transformer.minifierPath`, and pass in [options](https://github.com/mishoo/UglifyJS#compress-options) to `transformer.minifierConfig`.
+
+```js metro.config.js
+const { getDefaultConfig } = require('expo/metro-config');
+
+const config = getDefaultConfig(__dirname);
+
+config.transformer.minifierPath = 'metro-minify-uglify';
+config.transformer.minifierConfig = {
+  // Options: https://github.com/mishoo/UglifyJS#compress-options
+};
+
+module.exports = config;
+```
+
+</Step>
+

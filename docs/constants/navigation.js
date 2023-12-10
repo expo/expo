@@ -143,7 +143,16 @@ const general = [
         makePage('distribution/publishing-websites.mdx'),
         makePage('guides/customizing-metro.mdx'),
         makePage('guides/customizing-webpack.mdx'),
+      ],
+      { expanded: false }
+    ),
+    makeGroup(
+      'Bundling',
+      [
+        makePage('guides/customizing-metro.mdx'),
+        makePage('guides/customizing-webpack.mdx'),
         makePage('guides/bundle-size.mdx'),
+        makePage('guides/minification.mdx'),
       ],
       { expanded: false }
     ),
