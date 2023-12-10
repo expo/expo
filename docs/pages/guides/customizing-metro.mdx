@@ -57,95 +57,9 @@ config.resolver.assetExts.push(
 module.exports = config;
 ```
 
-## Tree shaking by mode
+## Tree shaking
 
-To strip code in production or development, use the `process.env.NODE_ENV` environment variable. For example:
-
-```js Input
-if (process.env.NODE_ENV === 'development') {
-  console.log('Hello in development');
-}
-```
-
-```js Output (development)
-'development' === process.env.NODE_ENV && console.log('Hello in development');
-```
-
-```js Output (production)
-/* @hide Empty file */
-```
-
-Metro also supports removing code based on the `__DEV__` global boolean, however this is less common in the JavaScript ecosystem.
-
-## Tree shaking by platform
-
-To remove code based on the `Platform` module from `react-native`, you need to add the following to your **metro.config.js**:
-
-```js metro.config.js
-const { getDefaultConfig } = require('expo/metro-config');
-
-const config = getDefaultConfig(__dirname);
-
-config.transformer.getTransformOptions = async () => ({
-  transform: {
-    /* @info this feature is experimental and may cause other issues. */
-    experimentalImportSupport: true,
-    /* @end */
-  },
-});
-
-module.exports = config;
-```
-
-And configure the `babel.config.js` to preserve import/export syntax:
-
-```js babel.config.js
-module.exports = function (api) {
-  api.cache(true);
-  /* @info */
-  const disableImportExportTransform = true;
-  /* @end */
-  return {
-    presets: [
-      [
-        'babel-preset-expo',
-        {
-          native: {
-            /* @info */
-            disableImportExportTransform,
-            /* @end */
-          },
-          web: {
-            /* @info */
-            disableImportExportTransform,
-            /* @end */
-          },
-        },
-      ],
-    ],
-  };
-};
-```
-
-Now the following transformation input:
-
-```js Input
-import { Platform } from 'react-native';
-
-if (Platform.OS === 'ios') {
-  console.log('Hello on iOS');
-}
-```
-
-Will produce the following output:
-
-```js Output (iOS)
-console.log('Hello on iOS');
-```
-
-```js Output (Android)
-/* @hide Empty on Android */
-```
+Learn more about tree shaking in the [bundle size guide](/guides/bundle-size).
 
 ## Minification
 
