@@ -1,0 +1,246 @@
+---
+title: JavaScript Bundle Optimization
+description: Learn about improving the production JavaScript bundle size of Expo apps and websites.
+---
+
+import { Step } from '~/ui/components/Step';
+import { Terminal } from '~/ui/components/Snippet';
+import { Tab, Tabs, TabsGroup } from '~/ui/components/Tabs';
+
+Bundle performance varies depending on the platform you're building for. For example, web browser do not support precompiled bytecode, so the JavaScript bundle size is very important for improving startup time and performance. The smaller the bundle, the faster it can be downloaded and parsed.
+
+## Analyzing bundle size
+
+The libraries you use influence the size of your production JavaScript bundle. You can use [souce map explorer][source-map-explorer] to visualize the production bundle and identify which libraries are contributing to the bundle size.
+
+<Step label="1">
+
+To use source map explorer, first install it in the project:
+
+  <Terminal cmd={['$ yarn add -D source-map-explorer']} />
+
+</Step>
+<Step label="2">
+
+  Then add a script to your `package.json` to run it, you may need to adjust the input path depending on the platform or SDK you're using. For the sake of brevity, this example assumes the project is Expo SDK 50 and does not use Expo Router `server` output.
+
+  ```json package.json
+  {
+    "scripts": {
+      "analyze:web": "source-map-explorer 'dist/_expo/static/js/web/*.js' 'dist/_expo/static/js/web/*.js.map'",
+      "analyze:ios": "source-map-explorer 'dist/_expo/static/js/ios/*.js' 'dist/_expo/static/js/ios/*.js.map'",
+      "analyze:android": "source-map-explorer 'dist/_expo/static/js/android/*.js' 'dist/_expo/static/js/android/*.js.map'",
+    }
+  }
+  ```
+
+  If you are using the SDK 50 `server` output for web, then use `npx source-map-explorer dist/client/_expo/static/js/web/*.js dist/client/_expo/static/js/web/*.js.map` to map web bundles. This is because web bundles are output to the `dist/client` subdirectory to prevent exposing server code to the client.
+
+</Step>
+<Step label="3">
+
+  Now you can export your production JavaScript bundle. Be sure to include the `--source-maps` flag so that source map explorer can read the source maps.
+
+    <Terminal cmd={['$ npx expo export --source-maps --platform web']} />
+
+  You should see the JavaScript bundle and source map paths in the output from this command. We'll pass these to source map explorer in the next step.
+
+  > Avoid publishing source maps to production as they can cause both security issues and performance issues (browser will download the large maps).
+
+</Step>
+<Step label="4">
+
+  Now to analyze the bundle, run the script you added in the previous step.
+
+  <Terminal cmd={['$ yarn analyze:web']} />
+
+  If you encounter the following error:
+  
+  ```
+  You must provide the URL of lib/mappings.wasm by calling SourceMapConsumer.initialize({ 'lib/mappings.wasm': ... }) before using SourceMapConsumer
+  ``` 
+  
+  Then this is probably due to a [known issue](https://github.com/danvk/source-map-explorer/issues/247) in `source-map-explorer` regarding Node.js +18 support. 
+  
+  Set the environment variable `NODE_OPTIONS=--no-experimental-fetch` before running the analyze script.
+
+</Step>
+
+You may see a warning like `Unable to map 809/13787 bytes (5.87%)` in the output, this is because the bundler runtime definitions (e.g. `__d(() => {}, [])`) are often not included in the source maps. This is a consistent value and shouldn't be a cause for concern.
+
+## Bundle splitting
+
+Starting in Expo SDK 50, Expo CLI will automatically split bundles based on async imports (web-only for now).
+
+This technique can be used in conjunction with Expo Router to automatically split the bundle based on route files in the `app/` directory. This will only load the the code required for the current route, and defer loading additional JavaScript until the user navigates to different pages. Learn more in [Async Routes](/router/reference/async-routes).
+
+## Barrel files
+
+Barrel files are files that export all of the modules in a directory. They are used to make importing modules easier. For example, component-based icon libraries often do this.
+
+```js node_modules/<example library>/index.js
+export { default as IconA } from './IconA';
+export { default as IconB } from './IconB';
+export { default as IconC } from './IconC';
+```
+
+If you're looking to reduce bundle size, identify which of these modules you're using and try to import them directly. 
+
+The ease of use you get out of quickly importing files is important, especially if you don't have a minimum-viable product/project released yet, so avoid over-optimizing on "use no barrel files" too early in the development-cycle.
+
+## Tree shaking
+
+Tree shaking is a technique that removes unused code from the production bundle. Expo CLI employs a couple different techniques for removing unused code.
+
+- Platform shaking: removes code that is not applicable to the platform you're bundling for. For example, if you're building for web, code that is only used on iOS or Android will be removed. Learn more in [Platform shaking](/guides/customizing-metro#).
+
+
+## Platform shaking
+
+Expo CLI bundles apps individually for each platform (iOS, Android, web). This means that code that is only used on one platform will be removed from the other platforms. We call this technique "platform shaking".
+
+Specifically, any code that is used conditionally based on the `Platform` module from `react-native` will be removed from the other platforms. Note that `Platform.select` and `Platform.OS` will only be removed if they're clearly imported from `react-native` on a per-file basis, if a module re-exports them, then they will not be removed.
+
+For example, consider the following transformation input:
+
+```js Input
+import { Platform } from 'react-native';
+
+if (Platform.OS === 'ios') {
+  console.log('Hello on iOS');
+}
+```
+
+The production bundle will remove the conditional based on the output platform:
+
+```js Output (iOS)
+console.log('Hello on iOS');
+```
+
+```js Output (Android)
+/* @hide Empty on Android */
+```
+
+### Enabling platform shaking
+
+<Tabs>
+  <Tab label="Expo SDK 50 and greater">
+  
+    Platform shaking is enabled by default in Expo SDK 50 and only applied when bundling for production.
+
+  </Tab>
+  <Tab label="Expo SDK 49 and lower">
+
+    To remove code based on the `Platform` module from `react-native`, you need to add the following to your **metro.config.js**:
+
+    ```js metro.config.js
+    const { getDefaultConfig } = require('expo/metro-config');
+
+    const config = getDefaultConfig(__dirname);
+
+    config.transformer.getTransformOptions = async () => ({
+      transform: {
+        /* @info this feature is experimental and may cause other issues. */
+        experimentalImportSupport: true,
+        /* @end */
+      },
+    });
+
+    module.exports = config;
+    ```
+
+    And configure the `babel.config.js` to preserve import/export syntax:
+
+    ```js babel.config.js
+    module.exports = function (api) {
+      api.cache(true);
+      /* @info */
+      const disableImportExportTransform = true;
+      /* @end */
+      return {
+        presets: [
+          [
+            'babel-preset-expo',
+            {
+              native: {
+                /* @info */
+                disableImportExportTransform,
+                /* @end */
+              },
+              web: {
+                /* @info */
+                disableImportExportTransform,
+                /* @end */
+              },
+            },
+          ],
+        ],
+      };
+    };
+    ```
+  </Tab>
+</Tabs>
+
+## Removing development-only code
+
+You may have code in your project that is intended to help your development process and should be removed during the production bundle. For these cases, use the `process.env.NODE_ENV` environment variable or the non-standard `__DEV__` global boolean. For example:
+
+```js Input
+if (process.env.NODE_ENV === 'development') {
+  console.log('Hello in development');
+}
+
+if (__DEV__) {
+  console.log('Another development-only conditional...');
+}
+```
+
+```js Output (production)
+/* @hide Empty file */
+```
+
+For speed purposes, Expo CLI will only perform code elimination in production builds, meaning the conditionals will be kept in development builds.
+
+## Custom code removal
+
+Starting in Expo SDK 50, `EXPO_PUBLIC_` environment variables are inlined before minification. This means you can use them to remove code from the production bundle. For example:
+
+```js .env
+EXPO_PUBLIC_DISABLE_FEATURE=true
+```
+
+```js Input
+if (!process.env.EXPO_PUBLIC_DISABLE_FEATURE) {
+  console.log('Hello from the feature!');
+}
+```
+
+```js Post babel-preset-expo
+if (!"true") {
+  console.log('Hello from the feature!');
+}
+```
+
+```js Post minifier
+// Empty file
+```
+
+This does not apply to server code as environment variables are not inlined in server bundles.
+
+## Lighthouse
+
+Lighthouse is a great way to see how fast, accessible, and performant your website is.
+You can test your project with the _Audit_ tab in Chrome, or with the [**Lighthouse CLI**][lighthouse].
+
+After creating a production build with `npx expo export -p web` and serving it somewhere (`npx serve dist`, production deployment, custom server), run Lighthouse with the URL your site is hosted at.
+
+<Terminal cmd={[
+  '# Install the lighthouse CLI',
+  '$ npm install -g lighthouse',
+  '# Run the lighthouse CLI for your site',
+  '$ npx lighthouse <url> --view'
+]} />
+
+
+[lighthouse]: https://github.com/GoogleChrome/lighthouse#using-the-node-cli
+[source-map-explorer]: https://www.npmjs.com/package/source-map-explorer
