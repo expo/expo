@@ -94,17 +94,9 @@ export async function persistMetroAssetsAsync(
   for (const asset of assetsToCopy) {
     const validScales = new Set(filterPlatformAssetScales(platform, asset.scales));
     for (let idx = 0; idx < asset.scales.length; idx++) {
-      const filePath = asset.files[idx];
       const scale = asset.scales[idx];
       if (validScales.has(scale)) {
-        await write(
-          filePath,
-          getAssetLocalPath(asset, {
-            platform,
-            scale,
-            baseUrl,
-          })
-        );
+        await write(asset.files[idx], getAssetLocalPath(asset, { platform, scale, baseUrl }));
       }
     }
   }

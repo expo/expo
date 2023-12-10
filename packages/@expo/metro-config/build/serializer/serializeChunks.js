@@ -152,7 +152,8 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
   const baseUrl = (0, _baseJSBundle().getBaseUrlOption)(graph, {
     serializerOptions: serializeChunkOptions
   });
-  const publicPath = isExporting ? `/assets?export_path=${((_baseUrl$replace = baseUrl.replace(/\/+$/, '')) !== null && _baseUrl$replace !== void 0 ? _baseUrl$replace : '') + '/assets'}` : '/assets/?unstable_path=.';
+  const assetPublicUrl = ((_baseUrl$replace = baseUrl.replace(/\/+$/, '')) !== null && _baseUrl$replace !== void 0 ? _baseUrl$replace : '') + '/assets';
+  const publicPath = isExporting ? graph.transformOptions.platform === 'web' ? `/assets?export_path=${assetPublicUrl}` : assetPublicUrl : '/assets/?unstable_path=.';
 
   // TODO: Convert to serial assets
   // TODO: Disable this call dynamically in development since assets are fetched differently.

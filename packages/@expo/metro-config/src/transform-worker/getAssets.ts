@@ -48,8 +48,6 @@ export async function getUniversalAssetData(
 
   // NOTE(EvanBacon): This is where we modify the asset to include a hash in the name for web cache invalidation.
   if (platform === 'web' && publicPath.includes('?export_path=')) {
-    // Store original name for reading the asset on-disk later.
-    data._name = data.name;
     // `local-image.[contenthash]`. Using `.` but this won't work if we ever apply to Android because Android res files cannot contain `.`.
     // TODO: Prevent one multi-res image from updating the hash in all images.
     // @ts-expect-error: name is typed as readonly.
