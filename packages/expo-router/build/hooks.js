@@ -86,11 +86,30 @@ exports.useGlobalSearchParams = useGlobalSearchParams;
  * To observe updates even when the invoking route is not focused, use `useGlobalSearchParams()`.
  */
 function useLocalSearchParams() {
-    return (useOptionalLocalRoute()?.params ?? {});
+    const params = react_1.default.useContext(native_1.NavigationRouteContext)?.params ?? {};
+    return Object.fromEntries(Object.entries(params).map(([key, value]) => {
+        if (Array.isArray(value)) {
+            return [
+                key,
+                value.map((v) => {
+                    try {
+                        return decodeURIComponent(v);
+                    }
+                    catch {
+                        return v;
+                    }
+                }),
+            ];
+        }
+        else {
+            try {
+                return [key, decodeURIComponent(value)];
+            }
+            catch {
+                return [key, value];
+            }
+        }
+    }));
 }
 exports.useLocalSearchParams = useLocalSearchParams;
-function useOptionalLocalRoute() {
-    const route = react_1.default.useContext(native_1.NavigationRouteContext);
-    return route;
-}
 //# sourceMappingURL=hooks.js.map

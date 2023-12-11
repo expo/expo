@@ -232,8 +232,7 @@ function walkConfigItems(
 
     if (route.params) {
       const params = processParamsWithUserSettings(configItem, route.params);
-      // TODO: Does this need to be a null check?
-      if (pattern) {
+      if (pattern !== undefined && pattern !== null) {
         Object.assign(collectedParams, params);
       }
       if (deepEqual(focusedRoute, route)) {
@@ -408,7 +407,11 @@ function decodeParams(params: Record<string, string>) {
   const parsed: Record<string, any> = {};
 
   for (const [key, value] of Object.entries(params)) {
-    parsed[key] = decodeURIComponent(value);
+    try {
+      parsed[key] = decodeURIComponent(value);
+    } catch {
+      parsed[key] = value;
+    }
   }
 
   return parsed;

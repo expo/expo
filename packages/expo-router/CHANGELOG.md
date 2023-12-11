@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Ensure search parameters are always decoded ([#25589](https://github.com/expo/expo/pull/25589) by [@marklawlor](https://github.com/marklawlor))
+
 ### 🛠 Breaking changes
 
 - Change default CSS reset to align with `react-native-web@0.19.8`. ([#25429](https://github.com/expo/expo/pull/25429) by [@EvanBacon](https://github.com/EvanBacon))
