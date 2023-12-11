@@ -1,9 +1,9 @@
 import { ExpoConfig, getConfigFilePaths, Platform, ProjectConfig } from '@expo/config';
 import { LoadOptions } from '@expo/metro-config';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets';
 import assert from 'assert';
 import Metro, { MixedOutput, Module, ReadOnlyGraph } from 'metro';
-import getMetroAssets from 'metro/src/DeltaBundler/Serializers/getAssets';
 import type { TransformInputOptions } from 'metro/src/DeltaBundler/types';
 import IncrementalBundler from 'metro/src/IncrementalBundler';
 import Server from 'metro/src/Server';
@@ -200,10 +200,7 @@ async function bundleProductionMetroClientAsync(
 
 // Forked out of Metro because the `this._getServerRootDir()` doesn't match the development
 // behavior.
-export async function getAssets(
-  metro: Metro.Server,
-  options: MetroBundleOptions
-): Promise<readonly BundleAssetWithFileHashes[]> {
+export async function getAssets(metro: Metro.Server, options: MetroBundleOptions) {
   const { entryFile, onProgress, resolverOptions, transformOptions } = splitBundleOptions(options);
 
   // @ts-expect-error: _bundler isn't exposed on the type.

@@ -7,8 +7,6 @@ import type IncrementalBundler from 'metro/src/IncrementalBundler';
 import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
 import path from 'path';
 
-// import { getAssetData } from 'metro/src/Assets';
-
 type Options = {
   processModuleFilter: (modules: Module) => boolean;
   assetPlugins: readonly string[];
