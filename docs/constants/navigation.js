@@ -233,6 +233,7 @@ const general = [
     makePage('build/updates.mdx'),
     makePage('build/building-on-ci.mdx'),
     makePage('build/building-from-github.mdx'),
+    makePage('build/orbit.mdx'),
     makeGroup(
       'App Signing',
       [
