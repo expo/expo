@@ -93,6 +93,9 @@ function getBabelCaller({ filename, options }: Pick<BabelTransformerArgs, 'filen
     isNodeModule,
 
     isHMREnabled: options.hot,
+
+    // Set the standard Babel flag to disable ESM transformations.
+    supportsStaticESM: options.experimentalImportSupport,
   };
 }
 

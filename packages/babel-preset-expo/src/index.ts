@@ -63,6 +63,9 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   const isDev = api.caller(getIsDev);
   const isFastRefreshEnabled = api.caller(getIsFastRefreshEnabled);
   const baseUrl = api.caller(getBaseUrl);
+  const supportsStaticESM: boolean | undefined = api.caller(
+    (caller) => (caller as any)?.supportsStaticESM
+  );
 
   // Unlike `isDev`, this will be `true` when the bundler is explicitly set to `production`,
   // i.e. `false` when testing, development, or used with a bundler that doesn't specify the correct inputs.
@@ -81,9 +84,9 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     if (platform === 'web') {
       // Only disable import/export transform when Webpack is used because
       // Metro does not support tree-shaking.
-      platformOptions.disableImportExportTransform = isWebpack;
+      platformOptions.disableImportExportTransform = supportsStaticESM ?? isWebpack;
     } else {
-      platformOptions.disableImportExportTransform = false;
+      platformOptions.disableImportExportTransform = supportsStaticESM ?? false;
     }
   }
 

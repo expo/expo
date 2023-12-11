@@ -1,8 +1,8 @@
-import upstreamTransformer, { JsTransformOptions } from 'metro-transform-worker';
-
+import * as upstreamTransformer from '../metro-transform-worker';
+import type { JsTransformOptions } from '../metro-transform-worker';
 import { transform } from '../transform-worker';
 
-jest.mock('metro-transform-worker', () => ({
+jest.mock('../metro-transform-worker', () => ({
   transform: jest.fn(),
 }));
 
@@ -18,9 +18,8 @@ const doTransformForOutput = async (
   jest.mocked(upstreamTransformer.transform).mockResolvedValueOnce({
     dependencies: [],
     output: [
-      {
-        data: {},
-      },
+      // @ts-expect-error
+      {},
     ],
   });
   const output = await doTransform(filename, src, options);
@@ -237,6 +236,7 @@ describe('Expo Router server files (+html, +api)', () => {
             dev: true,
             minify: false,
             customTransformOptions: {
+              __proto__: null,
               environment: 'client',
             },
             platform: 'web',
@@ -254,6 +254,7 @@ describe('Expo Router server files (+html, +api)', () => {
             dev: true,
             minify: false,
             customTransformOptions: {
+              __proto__: null,
               environment: 'client',
             },
             platform,
@@ -269,6 +270,7 @@ describe('Expo Router server files (+html, +api)', () => {
           dev: false,
           minify: true,
           customTransformOptions: {
+            __proto__: null,
             environment: 'client',
           },
           platform: 'web',
@@ -294,6 +296,7 @@ describe('Expo Router server files (+html, +api)', () => {
           dev: true,
           minify: false,
           customTransformOptions: {
+            __proto__: null,
             environment: 'node',
           },
           platform: 'ios',
