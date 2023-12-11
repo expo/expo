@@ -60,7 +60,6 @@ class ErrorActivity() : FragmentActivity() {
   override fun onBackPressed() {
     if (pager.currentItem == 0) {
       kernel.killActivityStack(this)
-      kernel.dispatchForegroundHomeEvent()
     } else {
       pager.currentItem = pager.currentItem - 1
     }
@@ -69,7 +68,6 @@ class ErrorActivity() : FragmentActivity() {
   fun onClickHome() {
     clearErrorList()
 
-    kernel.dispatchForegroundHomeEvent()
     startActivity(Intent(this, LauncherActivity::class.java))
 
     // Mark as not visible so that any new errors go to a new activity.
