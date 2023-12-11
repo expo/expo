@@ -220,7 +220,7 @@ class Kernel : KernelInterface() {
   private fun kernelBundleListener(): BundleListener {
     return object : BundleListener {
       override fun onBundleLoaded(localBundlePath: String) {
-        if (!ExpoViewBuildConfig.DEBUG) {
+        if (!exponentSharedPreferences.shouldUseEmbeddedKernel() && !ExpoViewBuildConfig.DEBUG) {
           exponentSharedPreferences.setString(
             ExponentSharedPreferences.ExponentSharedPreferencesKey.KERNEL_REVISION_ID,
             kernelRevisionId

@@ -152,3 +152,9 @@
 
 ##### svg #####
 -keep public class com.horcrux.svg.** { *; }
+
+##### DI #####
+-keep @javax.inject.Inject class *
+-keepclassmembers class * {
+  @javax.inject.Inject *;
+}
