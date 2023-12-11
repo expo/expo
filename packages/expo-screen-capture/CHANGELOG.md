@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `getPermissionsAsync` and `requestPermissionsAsync` methods.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
