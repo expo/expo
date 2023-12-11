@@ -239,6 +239,7 @@ export class SQLiteDatabase {
    * A convenience wrapper around [`SQLiteDatabase.prepareAsync()`](#prepareasyncsource), [`SQLiteStatement.executeAsync()`](#executeasyncparams), [`SQLiteExecuteAsyncResult`](#sqliteexecuteasyncresult) `AsyncIterator`, and [`SQLiteStatement.finalizeAsync()`](#finalizeasync).
    * @param source A string containing the SQL query.
    * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
+   * @returns Rather than returning Promise, this function returns an [`AsyncIterableIterator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator). You can use `for await...of` to iterate over the rows from the SQLite query result.
    */
   public getEachAsync<T>(source: string, params: SQLiteBindParams): AsyncIterableIterator<T>;
   /**
@@ -343,6 +344,7 @@ export class SQLiteDatabase {
    * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    * @param source A string containing the SQL query.
    * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
+   * @returns This function returns an [`IterableIterator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator). You can use `for...of` to iterate over the rows from the SQLite query result.
    */
   public getEachSync<T>(source: string, params: SQLiteBindParams): IterableIterator<T>;
   /**

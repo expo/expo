@@ -137,7 +137,7 @@ async function openDatabaseWithInitAsync({ databaseName, options, onInit, }) {
 }
 // Referenced from https://github.com/reactjs/react.dev/blob/6570e6cd79a16ac3b1a2902632eddab7e6abb9ad/src/content/reference/react/Suspense.md
 /**
- * A custom hook like [`React.use`](https://react.dev/reference/react/use) hook using private Suspense implementation.
+ * A custom hook like `React.use` hook using private Suspense implementation.
  */
 function use(promise) {
     if (isReactUsePromise(promise)) {

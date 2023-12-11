@@ -26,8 +26,10 @@ export declare class SQLiteStatement {
      */
     resetAsync(): Promise<void>;
     /**
-     * Finalize the prepared statement.
-     * > **Note:** Remember to finalize the prepared statement whenever you call `prepareAsync()` to avoid resource leaks.
+     * Finalize the prepared statement. This will call the [`sqlite3_finalize()`](https://www.sqlite.org/c3ref/finalize.html) C function under the hood.
+     *
+     * Attempting to access a finalized statement will result in an error.
+     * > **Note:** While expo-sqlite will automatically finalize any orphaned prepared statements upon closing the database, it is considered best practice to manually finalize prepared statements as soon as they are no longer needed. This helps to prevent resource leaks. You can use the `try...finally` statement to ensure that prepared statements are finalized even if an error occurs.
      */
     finalizeAsync(): Promise<void>;
     /**
@@ -49,10 +51,10 @@ export declare class SQLiteStatement {
      */
     resetSync(): void;
     /**
-     * Finalize the prepared statement.
+     * Finalize the prepared statement. This will call the [`sqlite3_finalize()`](https://www.sqlite.org/c3ref/finalize.html) C function under the hood.
      *
-     * > **Note:** Remember to finalize the prepared statement whenever you call `prepareSync()` to avoid resource leaks.
-     *
+     * Attempting to access a finalized statement will result in an error.
+     * > **Note:** While expo-sqlite will automatically finalize any orphaned prepared statements upon closing the database, it is considered best practice to manually finalize prepared statements as soon as they are no longer needed. This helps to prevent resource leaks. You can use the `try...finally` statement to ensure that prepared statements are finalized even if an error occurs.
      */
     finalizeSync(): void;
 }
