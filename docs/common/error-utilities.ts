@@ -333,7 +333,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/setup-native-firebase/': '/guides/using-firebase/',
   '/development/installation/': '/develop/development-builds/create-a-build/',
   '/guides/routing-and-navigation/': '/routing/introduction/',
-  '/router/reference/api-routes': '/preview/api-routes/',
   '/build-reference/custom-build-config/': '/custom-builds/get-started/',
   '/eas-update/migrate-codepush-to-eas-update/': '/eas-update/codepush/',
   '/guides/testing-on-devices': '/build/internal-distribution/',

@@ -211,7 +211,6 @@ redirects[archive/expokit/eject/]=archive/glossary/
 redirects[archive/expokit/overview/]=archive/glossary/
 redirects[expokit/overview/]=archive/glossary/
 redirects[more/latest]=versions/latest/
-redirects[router/reference/api-routes]=preview/api-routes/
 redirects[versions/latest/sdk/error-recovery/]=versions/latest/
 redirects[eas-update/eas-update-with-local-build/]=eas-update/build-locally/
 redirects[bare/existing-apps/]=bare/installing-expo-modules/
