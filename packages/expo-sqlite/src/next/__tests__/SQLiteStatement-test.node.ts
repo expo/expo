@@ -1,5 +1,5 @@
 import { openDatabaseAsync, SQLiteDatabase } from '../SQLiteDatabase';
-import { composeRow, composeRows, SQLiteStatement, normalizeParams } from '../SQLiteStatement';
+import { SQLiteStatement } from '../SQLiteStatement';
 
 jest.mock('../ExpoSQLiteNext');
 
@@ -25,64 +25,70 @@ describe(SQLiteStatement, () => {
     await db.closeAsync();
   });
 
-  it('runExec should return SQLiteRunResult', async () => {
+  it('executeAsync should return object with `lastInsertRowId` and `changes`', async () => {
     const statement = await db.prepareAsync('INSERT INTO test (value, intValue) VALUES (?, ?)');
-    const result = await statement.runAsync('hello', 111);
-    expect(result.lastInsertRowId).toBeDefined();
+    const result = await statement.executeAsync('hello', 111);
+    expect(result.lastInsertRowId).toBeGreaterThan(0);
     expect(result.changes).toBe(1);
     await statement.finalizeAsync();
   });
 
-  it('getExec should support variadic unnamed parameter binding', async () => {
+  it('executeAsync should support variadic unnamed parameter binding', async () => {
     const statement = await db.prepareAsync('SELECT * FROM test WHERE value = ? AND intValue = ?');
-    const result = await statement.getAsync<TestEntity>('test1', 789);
-    expect(result?.intValue).toBe(789);
+    const result = await statement.executeAsync<TestEntity>('test1', 789);
+    const firstRow = await result.getFirstAsync();
+    expect(firstRow?.intValue).toBe(789);
     await statement.finalizeAsync();
   });
 
-  it('getExec should support array unnamed parameter binding', async () => {
+  it('executeAsync should support array unnamed parameter binding', async () => {
     const statement = await db.prepareAsync('SELECT * FROM test WHERE value = ? AND intValue = ?');
-    const result = await statement.getAsync<TestEntity>(['test1', 789]);
-    expect(result?.intValue).toBe(789);
+    const result = await statement.executeAsync<TestEntity>(['test1', 789]);
+    const firstRow = await result.getFirstAsync();
+    expect(firstRow?.intValue).toBe(789);
     await statement.finalizeAsync();
   });
 
-  it('getExec should support named parameter binding', async () => {
+  it('executeAsync should support named parameter binding', async () => {
     const statement = await db.prepareAsync(
       'SELECT * FROM test WHERE value = $value and intValue = $intValue'
     );
-    const result = await statement.getAsync<TestEntity>({ $value: 'test1', $intValue: 789 });
-    expect(result?.intValue).toBe(789);
+    const result = await statement.executeAsync<TestEntity>({ $value: 'test1', $intValue: 789 });
+    const firstRow = await result.getFirstAsync();
+    expect(firstRow?.intValue).toBe(789);
     await statement.finalizeAsync();
   });
 
-  it('getExec should return null result when no matched in query', async () => {
+  it('executeAsync + getFirstAsync should return null result when no matched in query', async () => {
     const statement = await db.prepareAsync('SELECT * FROM test WHERE value = ?');
-    const result = await statement.getAsync<TestEntity>('not-exist');
-    expect(result).toBeNull();
+    const result = await statement.executeAsync<TestEntity>('not-exist');
+    const firstRow = await result.getFirstAsync();
+    expect(firstRow).toBeNull();
     await statement.finalizeAsync();
   });
 
-  it('allExec should return all items', async () => {
+  it('executeAsync + getAllAsync should return all items', async () => {
     const statement = await db.prepareAsync('SELECT * FROM test WHERE intValue > ?');
-    const results = await statement.allAsync<TestEntity>([200]);
-    expect(results.length).toBe(2);
-    expect(results[0].intValue).toBe(456);
-    expect(results[1].intValue).toBe(789);
+    const result = await statement.executeAsync<TestEntity>([200]);
+    const allRows = await result.getAllAsync();
+    expect(allRows.length).toBe(2);
+    expect(allRows[0].intValue).toBe(456);
+    expect(allRows[1].intValue).toBe(789);
     await statement.finalizeAsync();
   });
 
-  it('eachExec should return async iterable', async () => {
+  it('executeAsync should return async iterable', async () => {
     const statement = await db.prepareAsync(
       'SELECT * FROM test WHERE intValue > $intValue ORDER BY intValue DESC'
     );
-    const results: TestEntity[] = [];
-    for await (const row of statement.eachAsync<TestEntity>({ $intValue: 200 })) {
-      results.push(row);
+    const result = await statement.executeAsync<TestEntity>({ $intValue: 200 });
+    const rows: TestEntity[] = [];
+    for await (const row of result) {
+      rows.push(row);
     }
-    expect(results.length).toBe(2);
-    expect(results[0].intValue).toBe(789);
-    expect(results[1].intValue).toBe(456);
+    expect(rows.length).toBe(2);
+    expect(rows[0].intValue).toBe(789);
+    expect(rows[1].intValue).toBe(456);
     await statement.finalizeAsync();
   });
 
@@ -104,152 +110,14 @@ describe(SQLiteStatement, () => {
 
   it('resetAsync should reset the statement cursor', async () => {
     const statement = await db.prepareAsync('SELECT * FROM test ORDER BY intValue ASC');
-    let result = await statement.getAsync<TestEntity>();
-    expect(result?.intValue).toBe(123);
-    result = await statement.getAsync<TestEntity>();
-    expect(result?.intValue).toBe(456);
+    const result = await statement.executeAsync<TestEntity>();
+    let row = (await result.next()).value;
+    expect(row?.intValue).toBe(123);
+    row = (await result.next()).value;
+    expect(row?.intValue).toBe(456);
     await statement.resetAsync();
-    result = await statement.getAsync<TestEntity>();
-    expect(result?.intValue).toBe(123);
+    row = (await result.next()).value;
+    expect(row?.intValue).toBe(123);
     await statement.finalizeAsync();
-  });
-});
-
-describe(normalizeParams, () => {
-  it('should accept no params', () => {
-    expect(normalizeParams()).toStrictEqual([{}, {}, true]);
-  });
-
-  it('should accept variadic empty array', () => {
-    expect(normalizeParams(...[])).toStrictEqual([{}, {}, true]);
-  });
-
-  it('should accept single primitive param as array', () => {
-    expect(normalizeParams(1)).toStrictEqual([{ 0: 1 }, {}, true]);
-    expect(normalizeParams('hello')).toStrictEqual([{ 0: 'hello' }, {}, true]);
-  });
-
-  it('should accept variadic params', () => {
-    expect(normalizeParams(1, 2, 3)).toStrictEqual([{ 0: 1, 1: 2, 2: 3 }, {}, true]);
-  });
-
-  it('should accept array params', () => {
-    expect(normalizeParams([1, 2, 3])).toStrictEqual([{ 0: 1, 1: 2, 2: 3 }, {}, true]);
-  });
-
-  it('should accept object params', () => {
-    expect(normalizeParams({ foo: 'foo', bar: 'bar' })).toStrictEqual([
-      { foo: 'foo', bar: 'bar' },
-      {},
-      false,
-    ]);
-  });
-
-  it('should support blob params', () => {
-    const blob = new Uint8Array([0x00]);
-    const blob2 = new Uint8Array([0x01]);
-    expect(normalizeParams(blob)).toStrictEqual([{}, { 0: blob }, true]);
-    expect(normalizeParams('hello', blob)).toStrictEqual([{ 0: 'hello' }, { 1: blob }, true]);
-    expect(normalizeParams(['hello', blob, 'world', blob2])).toStrictEqual([
-      { 0: 'hello', 2: 'world' },
-      { 1: blob, 3: blob2 },
-      true,
-    ]);
-    expect(normalizeParams({ foo: 'foo', bar: blob })).toStrictEqual([
-      { foo: 'foo' },
-      { bar: blob },
-      false,
-    ]);
-  });
-
-  it('special cases - should pass as array params', () => {
-    expect(normalizeParams({ foo: 'foo', bar: 'bar' }, 1, 2, 3)).toStrictEqual([
-      { 0: { foo: 'foo', bar: 'bar' }, 1: 1, 2: 2, 3: 3 },
-      {},
-      true,
-    ]);
-    expect(normalizeParams({ foo: 'foo', bar: 'bar' }, [1, 2, 3])).toStrictEqual([
-      { 0: { foo: 'foo', bar: 'bar' }, 1: [1, 2, 3] },
-      {},
-      true,
-    ]);
-    expect(normalizeParams({ foo: 'foo', bar: 'bar' }, { hello: 'hello' })).toStrictEqual([
-      { 0: { foo: 'foo', bar: 'bar' }, 1: { hello: 'hello' } },
-      {},
-      true,
-    ]);
-  });
-});
-
-describe(composeRow, () => {
-  it('should compose row', () => {
-    const columnNames = ['id', 'value', 'intValue'];
-    const columnValues = [1, 'hello', 123];
-    expect(composeRow(columnNames, columnValues)).toEqual({
-      id: 1,
-      value: 'hello',
-      intValue: 123,
-    });
-  });
-
-  it('should throw error when column names and values count mismatch', () => {
-    const columnNames = ['id', 'value', 'intValue'];
-    const columnValues = [1, 'hello'];
-    expect(() => composeRow(columnNames, columnValues)).toThrow();
-  });
-});
-
-describe(composeRows, () => {
-  it('should compose rows', () => {
-    const columnNames = ['id', 'value', 'intValue'];
-    const columnValuesList = [
-      [1, 'hello', 123],
-      [2, 'world', 456],
-    ];
-    expect(composeRows(columnNames, columnValuesList)).toEqual([
-      {
-        id: 1,
-        value: 'hello',
-        intValue: 123,
-      },
-      {
-        id: 2,
-        value: 'world',
-        intValue: 456,
-      },
-    ]);
-  });
-
-  it('should throw error when column names and values count mismatch', () => {
-    const columnNames = ['id', 'value', 'intValue'];
-    const columnValuesList = [[1, 'hello']];
-    expect(() => composeRows(columnNames, columnValuesList)).toThrow();
-  });
-
-  it('not throw error when column names and values count mismatch only for some partial values', () => {
-    const columnNames = ['id', 'value', 'intValue'];
-    const columnValuesList = [
-      [1, 'hello', 123],
-      [2, 'world'],
-    ];
-    expect(() => composeRows(columnNames, columnValuesList)).not.toThrow();
-    expect(composeRows(columnNames, columnValuesList)).toEqual([
-      {
-        id: 1,
-        value: 'hello',
-        intValue: 123,
-      },
-      {
-        id: 2,
-        value: 'world',
-        intValue: undefined,
-      },
-    ]);
-  });
-
-  it('should return empty array when column values list is empty', () => {
-    const columnNames = ['id', 'value', 'intValue'];
-    const columnValuesList = [];
-    expect(composeRows(columnNames, columnValuesList)).toEqual([]);
   });
 });

@@ -7,6 +7,7 @@ import {
   SQLiteBindParams,
   SQLiteBindPrimitiveParams,
   SQLiteColumnNames,
+  SQLiteColumnValues,
   SQLiteRunResult,
 } from '../NativeStatement';
 
@@ -77,7 +78,6 @@ class NativeDatabase {
 class NativeStatement {
   public sqlite3Stmt: sqlite3.Statement | null = null;
   private iterator: ReturnType<sqlite3.Statement['iterate']> | null = null;
-  private iteratorParams: SQLiteBindParams = [];
 
   //#region Asynchronous API
 
@@ -89,44 +89,24 @@ class NativeStatement {
         bindParams: SQLiteBindPrimitiveParams,
         bindBlobParams: SQLiteBindBlobParams,
         shouldPassAsArray: boolean
-      ): Promise<SQLiteRunResult> =>
+      ): Promise<SQLiteRunResult & { firstRowValues: SQLiteColumnValues }> =>
         Promise.resolve(
           this._run(normalizeSQLite3Args(bindParams, bindBlobParams, shouldPassAsArray))
         )
     );
-  public getAsync = jest
-    .fn()
-    .mockImplementation(
-      (
-        database: NativeDatabase,
-        bindParams: SQLiteBindPrimitiveParams,
-        bindBlobParams: SQLiteBindBlobParams,
-        shouldPassAsArray: boolean
-      ): Promise<any> => {
-        assert(this.sqlite3Stmt);
-        if (this.iterator == null) {
-          this.iteratorParams = normalizeSQLite3Args(bindParams, bindBlobParams, shouldPassAsArray);
-          this.iterator = this.sqlite3Stmt.iterate(this.iteratorParams);
-        }
-        const result = this.iterator.next();
-        const columnValues =
-          result.done === false ? Object.values(result.value as Record<string, any>) : null;
-        return Promise.resolve(columnValues);
-      }
-    );
+  public stepAsync = jest.fn().mockImplementation((database: NativeDatabase): Promise<any> => {
+    assert(this.sqlite3Stmt);
+    if (this.iterator == null) {
+      this.iterator = this.sqlite3Stmt.iterate();
+    }
+    const result = this.iterator.next();
+    const columnValues =
+      result.done === false ? Object.values(result.value as Record<string, any>) : null;
+    return Promise.resolve(columnValues);
+  });
   public getAllAsync = jest
     .fn()
-    .mockImplementation(
-      (
-        database: NativeDatabase,
-        bindParams: SQLiteBindPrimitiveParams,
-        bindBlobParams: SQLiteBindBlobParams,
-        shouldPassAsArray: boolean
-      ) =>
-        Promise.resolve(
-          this._allValues(normalizeSQLite3Args(bindParams, bindBlobParams, shouldPassAsArray))
-        )
-    );
+    .mockImplementation((database: NativeDatabase) => Promise.resolve(this._allValues()));
   public getColumnNamesAsync = jest.fn().mockImplementation(async (database: NativeDatabase) => {
     assert(this.sqlite3Stmt);
     return this.sqlite3Stmt.columns().map((column) => column.name);
@@ -150,39 +130,20 @@ class NativeStatement {
         bindParams: SQLiteBindPrimitiveParams,
         bindBlobParams: SQLiteBindBlobParams,
         shouldPassAsArray: boolean
-      ): SQLiteRunResult =>
+      ): SQLiteRunResult & { firstRowValues: SQLiteColumnValues } =>
         this._run(normalizeSQLite3Args(bindParams, bindBlobParams, shouldPassAsArray))
     );
-  public getSync = jest
-    .fn()
-    .mockImplementation(
-      (
-        database: NativeDatabase,
-        bindParams: SQLiteBindPrimitiveParams,
-        bindBlobParams: SQLiteBindBlobParams,
-        shouldPassAsArray: boolean
-      ): any => {
-        assert(this.sqlite3Stmt);
-        if (this.iterator == null) {
-          this.iteratorParams = normalizeSQLite3Args(bindParams, bindBlobParams, shouldPassAsArray);
-          this.iterator = this.sqlite3Stmt.iterate(this.iteratorParams);
-        }
-        const result = this.iterator.next();
-        const columnValues =
-          result.done === false ? Object.values(result.value as Record<string, any>) : null;
-        return columnValues;
-      }
-    );
-  public getAllSync = jest
-    .fn()
-    .mockImplementation(
-      (
-        database: NativeDatabase,
-        bindParams: SQLiteBindPrimitiveParams,
-        bindBlobParams: SQLiteBindBlobParams,
-        shouldPassAsArray: boolean
-      ) => this._allValues(normalizeSQLite3Args(bindParams, bindBlobParams, shouldPassAsArray))
-    );
+  public stepSync = jest.fn().mockImplementation((database: NativeDatabase): any => {
+    assert(this.sqlite3Stmt);
+    if (this.iterator == null) {
+      this.iterator = this.sqlite3Stmt.iterate();
+    }
+    const result = this.iterator.next();
+    const columnValues =
+      result.done === false ? Object.values(result.value as Record<string, any>) : null;
+    return columnValues;
+  });
+  public getAllSync = jest.fn().mockImplementation((database: NativeDatabase) => this._allValues());
   public getColumnNamesSync = jest.fn().mockImplementation((database: NativeDatabase) => {
     assert(this.sqlite3Stmt);
     return this.sqlite3Stmt.columns().map((column) => column.name);
@@ -196,31 +157,33 @@ class NativeStatement {
 
   //#endregion
 
-  private _run = (...params: any[]): SQLiteRunResult => {
+  private _run = (...params: any[]): SQLiteRunResult & { firstRowValues: SQLiteColumnValues } => {
     assert(this.sqlite3Stmt);
-    const result = this.sqlite3Stmt.run(...params);
+    this.sqlite3Stmt.bind(...params);
+    const result = this.sqlite3Stmt.run();
     return {
       lastInsertRowId: Number(result.lastInsertRowid),
       changes: result.changes,
+      // NOTE: better-sqlite3 will call sqlite3_reset from run() and we have no way to get the first row values.
+      firstRowValues: [],
     };
   };
 
-  private _allValues = (...params: any[]): SQLiteColumnNames[] => {
+  private _allValues = (): SQLiteColumnNames[] => {
     assert(this.sqlite3Stmt);
     const sqlite3Stmt = this.sqlite3Stmt as any;
-    return sqlite3Stmt.all(...params).map((row: any) => Object.values(row));
+    return sqlite3Stmt.all().map((row: any) => Object.values(row));
   };
 
   private _reset = () => {
     assert(this.sqlite3Stmt);
     this.iterator?.return?.();
-    this.iterator = this.sqlite3Stmt.iterate(this.iteratorParams);
+    this.iterator = this.sqlite3Stmt.iterate();
   };
 
   private _finalize = () => {
     this.iterator?.return?.();
     this.iterator = null;
-    this.iteratorParams = [];
   };
 }
 

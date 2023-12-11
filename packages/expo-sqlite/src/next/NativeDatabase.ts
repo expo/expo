@@ -38,7 +38,7 @@ export interface SQLiteOpenOptions {
   enableCRSQLite?: boolean;
 
   /**
-   * Whether to call the [`sqlite3_update_hook`](https://www.sqlite.org/c3ref/update_hook.html) function and enable the `onDatabaseChange` events. You can later subscribe to the change events by [`addDatabaseChangeListener`](#sqliteadddatabasechangelistenerlistener).
+   * Whether to call the [`sqlite3_update_hook()`](https://www.sqlite.org/c3ref/update_hook.html) function and enable the `onDatabaseChange` events. You can later subscribe to the change events by [`addDatabaseChangeListener`](#sqliteadddatabasechangelistenerlistener).
    * @default false
    */
   enableChangeListener?: boolean;

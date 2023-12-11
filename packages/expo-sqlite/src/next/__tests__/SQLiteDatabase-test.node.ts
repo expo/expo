@@ -51,18 +51,18 @@ describe('Database', () => {
     expect(result.changes).toBe(1);
   });
 
-  it('getAsync should return a row', async () => {
+  it('getFirstAsync should return a row', async () => {
     db = await openDatabaseAsync(':memory:');
     await db.execAsync(
       'CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL, intValue INTEGER)'
     );
     await db.runAsync('INSERT INTO test (value, intValue) VALUES (?, ?)', 'test', 123);
-    const result = await db.getAsync<TestEntity>('SELECT * FROM test');
+    const result = await db.getFirstAsync<TestEntity>('SELECT * FROM test');
     expect(result?.value).toBe('test');
     expect(result?.intValue).toBe(123);
   });
 
-  it('eachAsync should return async iterable', async () => {
+  it('getEachAsync should return async iterable', async () => {
     db = await openDatabaseAsync(':memory:');
     await db.execAsync(`
   CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL, intValue INTEGER);
@@ -71,7 +71,9 @@ describe('Database', () => {
   INSERT INTO test (value, intValue) VALUES ('test3', 789);
   `);
     const results: TestEntity[] = [];
-    for await (const row of db.eachAsync<TestEntity>('SELECT * FROM test ORDER BY intValue DESC')) {
+    for await (const row of db.getEachAsync<TestEntity>(
+      'SELECT * FROM test ORDER BY intValue DESC'
+    )) {
       results.push(row);
     }
     expect(results[0].intValue).toBe(789);
@@ -79,7 +81,7 @@ describe('Database', () => {
     expect(results[2].intValue).toBe(123);
   });
 
-  it('eachAsync should finalize from early iterator return', async () => {
+  it('getEachAsync should finalize from early iterator return', async () => {
     db = await openDatabaseAsync(':memory:');
     const mockPrepareAsync = jest.spyOn(db, 'prepareAsync');
     await db.execAsync(`
@@ -89,14 +91,16 @@ describe('Database', () => {
   INSERT INTO test (value, intValue) VALUES ('test3', 789);
   `);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    for await (const row of db.eachAsync<TestEntity>('SELECT * FROM test ORDER BY intValue DESC')) {
+    for await (const row of db.getEachAsync<TestEntity>(
+      'SELECT * FROM test ORDER BY intValue DESC'
+    )) {
       break;
     }
     const mockStatement = await mockPrepareAsync.mock.results[0].value;
     expect(mockStatement.nativeStatement.finalizeAsync).toHaveBeenCalled();
   });
 
-  it('eachSync should finalize from early iterator return', async () => {
+  it('getEachSync should finalize from early iterator return', async () => {
     db = await openDatabaseAsync(':memory:');
     const mockPrepareSync = jest.spyOn(db, 'prepareSync');
     await db.execAsync(`
@@ -106,14 +110,14 @@ describe('Database', () => {
   INSERT INTO test (value, intValue) VALUES ('test3', 789);
   `);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    for (const row of db.eachSync<TestEntity>('SELECT * FROM test ORDER BY intValue DESC')) {
+    for (const row of db.getEachSync<TestEntity>('SELECT * FROM test ORDER BY intValue DESC')) {
       break;
     }
     const mockStatement = await mockPrepareSync.mock.results[0].value;
     expect(mockStatement.nativeStatement.finalizeSync).toHaveBeenCalled();
   });
 
-  it('allAsync should return all items', async () => {
+  it('getAllAsync should return all items', async () => {
     db = await openDatabaseAsync(':memory:');
     await db.execAsync(`
   CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL, intValue INTEGER);
@@ -121,7 +125,7 @@ describe('Database', () => {
   INSERT INTO test (value, intValue) VALUES ('test2', 456);
   INSERT INTO test (value, intValue) VALUES ('test3', 789);
   `);
-    const results = await db.allAsync<TestEntity>('SELECT * FROM test ORDER BY intValue DESC');
+    const results = await db.getAllAsync<TestEntity>('SELECT * FROM test ORDER BY intValue DESC');
     expect(results[0].intValue).toBe(789);
     expect(results[1].intValue).toBe(456);
     expect(results[2].intValue).toBe(123);
@@ -136,7 +140,7 @@ describe('Database', () => {
     await db.withTransactionAsync(async () => {
       await db?.runAsync('INSERT INTO test (value, intValue) VALUES (?, ?)', 'test', 123);
     });
-    const results = await db.allAsync<TestEntity>('SELECT * FROM test');
+    const results = await db.getAllAsync<TestEntity>('SELECT * FROM test');
     expect(results.length).toBe(1);
   });
 
@@ -153,7 +157,7 @@ describe('Database', () => {
       })
     ).rejects.toThrow();
 
-    const results = await db.allAsync<TestEntity>('SELECT * FROM test');
+    const results = await db.getAllAsync<TestEntity>('SELECT * FROM test');
     expect(results.length).toBe(0);
   });
 
@@ -167,7 +171,7 @@ INSERT INTO Users (name) VALUES ('aaa');
 
     const promise1 = db.withTransactionAsync(async () => {
       for (let i = 0; i < 10; ++i) {
-        const result = await db?.getAsync<{ name: string }>('SELECT name FROM Users');
+        const result = await db?.getFirstAsync<{ name: string }>('SELECT name FROM Users');
         if (result?.name !== 'aaa') {
           throw new Error(`Exception from promise1: Expected aaa but received ${result?.name}}`);
         }
@@ -180,7 +184,7 @@ INSERT INTO Users (name) VALUES ('aaa');
       try {
         await delayAsync(100);
         await db?.runAsync('UPDATE Users SET name = ?', 'bbb');
-        const result = await db?.getAsync<{ name: string }>('SELECT name FROM Users');
+        const result = await db?.getFirstAsync<{ name: string }>('SELECT name FROM Users');
         if (result?.name !== 'bbb') {
           throw new Error(`Exception from promise2: Expected bbb but received ${result?.name}}`);
         }
@@ -205,7 +209,7 @@ INSERT INTO Users (name) VALUES ('aaa');
 
     const promise1 = db.withExclusiveTransactionAsync(async (txn) => {
       for (let i = 0; i < 10; ++i) {
-        const result = await txn.getAsync<{ name: string }>('SELECT name FROM Users');
+        const result = await txn.getFirstAsync<{ name: string }>('SELECT name FROM Users');
         if (result?.name !== 'aaa') {
           throw new Error(`Exception from promise1: Expected aaa but received ${result?.name}}`);
         }
@@ -218,7 +222,7 @@ INSERT INTO Users (name) VALUES ('aaa');
       try {
         await delayAsync(100);
         await db?.runAsync('UPDATE Users SET name = ?', 'bbb');
-        const result = await db?.getAsync<{ name: string }>('SELECT name FROM Users');
+        const result = await db?.getFirstAsync<{ name: string }>('SELECT name FROM Users');
         if (result?.name !== 'bbb') {
           throw new Error(`Exception from promise2: Expected bbb but received ${result?.name}}`);
         }
@@ -252,18 +256,18 @@ describe('Database - Synchronous calls', () => {
     db = null;
   });
 
-  it('getSync should return a row', () => {
+  it('getFirstSync should return a row', () => {
     db = openDatabaseSync(':memory:');
     db.execSync(
       'CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL, intValue INTEGER)'
     );
     db.runSync('INSERT INTO test (value, intValue) VALUES (?, ?)', 'test', 123);
-    const result = db.getSync<TestEntity>('SELECT * FROM test');
+    const result = db.getFirstSync<TestEntity>('SELECT * FROM test');
     expect(result?.value).toBe('test');
     expect(result?.intValue).toBe(123);
   });
 
-  it('eachSync should return iterable', () => {
+  it('getEachSync should return iterable', () => {
     db = openDatabaseSync(':memory:');
     db.execSync(`
   CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL, intValue INTEGER);
@@ -272,7 +276,7 @@ describe('Database - Synchronous calls', () => {
   INSERT INTO test (value, intValue) VALUES ('test3', 789);
   `);
     const results: TestEntity[] = [];
-    for (const row of db.eachSync<TestEntity>('SELECT * FROM test ORDER BY intValue DESC')) {
+    for (const row of db.getEachSync<TestEntity>('SELECT * FROM test ORDER BY intValue DESC')) {
       results.push(row);
     }
     expect(results[0].intValue).toBe(789);
@@ -289,7 +293,7 @@ describe('Database - Synchronous calls', () => {
     db.withTransactionSync(() => {
       db?.runSync('INSERT INTO test (value, intValue) VALUES (?, ?)', 'test', 123);
     });
-    const results = db.allSync<TestEntity>('SELECT * FROM test');
+    const results = db.getAllSync<TestEntity>('SELECT * FROM test');
     expect(results.length).toBe(1);
   });
 
@@ -306,7 +310,7 @@ describe('Database - Synchronous calls', () => {
       });
     }).toThrow();
 
-    const results = db.allSync<TestEntity>('SELECT * FROM test');
+    const results = db.getAllSync<TestEntity>('SELECT * FROM test');
     expect(results.length).toBe(0);
   });
 });

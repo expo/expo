@@ -1,14 +1,14 @@
 /**
- * Result of a `runAsync` call.
+ * A result returned by [`SQLiteDatabase.runAsync`](#runasyncsource-params) or [`SQLiteDatabase.runSync`](#runsyncsource-params).
  */
 export interface SQLiteRunResult {
   /**
-   * The last inserted row ID.
+   * The last inserted row ID. Returned from the [`sqlite3_last_insert_rowid()`](https://www.sqlite.org/c3ref/last_insert_rowid.html) function.
    */
   lastInsertRowId: number;
 
   /**
-   * The number of rows affected.
+   * The number of rows affected. Returned from the [`sqlite3_changes()`](https://www.sqlite.org/c3ref/changes.html) function.
    */
   changes: number;
 }
@@ -18,26 +18,29 @@ export interface SQLiteRunResult {
  * You can either pass the parameters in the following forms:
  *
  * @example
- * - A single array for unnamed parameters.
+ * A single array for unnamed parameters.
  * ```ts
  * const statement = await db.prepareAsync('SELECT * FROM test WHERE value = ? AND intValue = ?');
- * await statement.getAsync(['test1', 789]);
+ * const result = await statement.executeAsync(['test1', 789]);
+ * const firstRow = await result.getFirstAsync();
  * ```
  *
  * @example
- * - Variadic arguments for unnamed parameters.
+ * Variadic arguments for unnamed parameters.
  * ```ts
  * const statement = await db.prepareAsync('SELECT * FROM test WHERE value = ? AND intValue = ?');
- * await statement.getAsync('test1', 789);
+ * const result = await statement.executeAsync('test1', 789);
+ * const firstRow = await result.getFirstAsync();
  * ```
  *
  * @example
- * - A single object for [named parameters](https://www.sqlite.org/lang_expr.html)
+ * A single object for [named parameters](https://www.sqlite.org/lang_expr.html)
  *
  * We support multiple named parameter forms such as `:VVV`, `@VVV`, and `$VVV`. We recommend using `$VVV` because JavaScript allows using `$` in identifiers without escaping.
  * ```ts
  * const statement = await db.prepareAsync('SELECT * FROM test WHERE value = $value AND intValue = $intValue');
- * await statement.getAsync({ $value: 'test1', $intValue: 789 });
+ * const result = await statement.executeAsync({ $value: 'test1', $intValue: 789 });
+ * const firstRow = await result.getFirstAsync();
  * ```
  */
 export type SQLiteBindValue = string | number | null | boolean | Uint8Array;
@@ -48,7 +51,7 @@ export type SQLiteBindPrimitiveParams = Record<string, Exclude<SQLiteBindValue, 
 export type SQLiteBindBlobParams = Record<string, Uint8Array>;
 export type SQLiteColumnNames = string[];
 export type SQLiteColumnValues = any[];
-type SQLiteAnyDatabase = any;
+export type SQLiteAnyDatabase = any;
 
 /**
  * A class that represents an instance of the SQLite statement.
@@ -61,22 +64,11 @@ export declare class NativeStatement {
     bindParams: SQLiteBindPrimitiveParams,
     bindBlobParams: SQLiteBindBlobParams,
     shouldPassAsArray: boolean
-  ): Promise<SQLiteRunResult>;
-  public getAsync(
-    database: SQLiteAnyDatabase,
-    bindParams: SQLiteBindPrimitiveParams,
-    bindBlobParams: SQLiteBindBlobParams,
-    shouldPassAsArray: boolean
-  ): Promise<SQLiteColumnValues | null | undefined>;
-  public getAllAsync(
-    database: SQLiteAnyDatabase,
-    bindParams: SQLiteBindPrimitiveParams,
-    bindBlobParams: SQLiteBindBlobParams,
-    shouldPassAsArray: boolean
-  ): Promise<SQLiteColumnValues[]>;
-  public getColumnNamesAsync(): Promise<SQLiteColumnNames>;
-
+  ): Promise<SQLiteRunResult & { firstRowValues: SQLiteColumnValues }>;
+  public stepAsync(database: SQLiteAnyDatabase): Promise<SQLiteColumnValues | null | undefined>;
+  public getAllAsync(database: SQLiteAnyDatabase): Promise<SQLiteColumnValues[]>;
   public resetAsync(database: SQLiteAnyDatabase): Promise<void>;
+  public getColumnNamesAsync(): Promise<SQLiteColumnNames>;
   public finalizeAsync(database: SQLiteAnyDatabase): Promise<void>;
 
   //#endregion
@@ -88,22 +80,11 @@ export declare class NativeStatement {
     bindParams: SQLiteBindPrimitiveParams,
     bindBlobParams: SQLiteBindBlobParams,
     shouldPassAsArray: boolean
-  ): SQLiteRunResult;
-  public getSync(
-    database: SQLiteAnyDatabase,
-    bindParams: SQLiteBindPrimitiveParams,
-    bindBlobParams: SQLiteBindBlobParams,
-    shouldPassAsArray: boolean
-  ): SQLiteColumnValues | null | undefined;
-  public getAllSync(
-    database: SQLiteAnyDatabase,
-    bindParams: SQLiteBindPrimitiveParams,
-    bindBlobParams: SQLiteBindBlobParams,
-    shouldPassAsArray: boolean
-  ): SQLiteColumnValues[];
-  public getColumnNamesSync(): string[];
-
+  ): SQLiteRunResult & { firstRowValues: SQLiteColumnValues };
+  public stepSync(database: SQLiteAnyDatabase): SQLiteColumnValues | null | undefined;
+  public getAllSync(database: SQLiteAnyDatabase): SQLiteColumnValues[];
   public resetSync(database: SQLiteAnyDatabase): void;
+  public getColumnNamesSync(): string[];
   public finalizeSync(database: SQLiteAnyDatabase): void;
 
   //#endregion

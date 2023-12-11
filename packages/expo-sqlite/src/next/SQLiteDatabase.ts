@@ -4,6 +4,8 @@ import ExpoSQLite from './ExpoSQLiteNext';
 import { NativeDatabase, SQLiteOpenOptions } from './NativeDatabase';
 import {
   SQLiteBindParams,
+  SQLiteExecuteAsyncResult,
+  SQLiteExecuteSyncResult,
   SQLiteRunResult,
   SQLiteStatement,
   SQLiteVariadicBindParams,
@@ -48,7 +50,7 @@ export class SQLiteDatabase {
   }
 
   /**
-   * Prepare a SQL statement.
+   * Create a [prepared SQLite statement](https://www.sqlite.org/c3ref/prepare.html).
    *
    * @param source A string containing the SQL query.
    */
@@ -100,7 +102,7 @@ export class SQLiteDatabase {
    * the other async write queries will abort with `database is locked` error.
    *
    * @param task An async function to execute within a transaction. Any queries inside the transaction must be executed on the `txn` object.
-   * The `txn` object has the same interfaces as the `Database` object. You can use `txn` like a `Database` object.
+   * The `txn` object has the same interfaces as the [`SQLiteDatabase`](#sqlitedatabase) object. You can use `txn` like a [`SQLiteDatabase`](#sqlitedatabase) object.
    *
    * @example
    * ```ts
@@ -157,7 +159,7 @@ export class SQLiteDatabase {
   }
 
   /**
-   * Prepare a SQL statement.
+   * Create a [prepared SQLite statement](https://www.sqlite.org/c3ref/prepare.html).
    *
    * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    *
@@ -190,8 +192,7 @@ export class SQLiteDatabase {
   //#region Statement API shorthands
 
   /**
-   * Shorthand for [`prepareAsync()`](#prepareasyncsource) and [`Statement.runAsync()`](#runasyncparams).
-   * Unlike [`Statement.runAsync()`](#runasyncparams), this method finalizes the statement after execution.
+   * A convenience wrapper around [`SQLiteDatabase.prepareAsync()`](#prepareasyncsource), [`SQLiteStatement.executeAsync()`](#executeasyncparams), and [`SQLiteStatement.finalizeAsync()`](#finalizeasync).
    * @param source A string containing the SQL query.
    * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
    */
@@ -203,9 +204,9 @@ export class SQLiteDatabase {
   public runAsync(source: string, ...params: SQLiteVariadicBindParams): Promise<SQLiteRunResult>;
   public async runAsync(source: string, ...params: any[]): Promise<SQLiteRunResult> {
     const statement = await this.prepareAsync(source);
-    let result;
+    let result: SQLiteExecuteAsyncResult<unknown>;
     try {
-      result = await statement.runAsync(...params);
+      result = await statement.executeAsync(...params);
     } finally {
       await statement.finalizeAsync();
     }
@@ -213,86 +214,87 @@ export class SQLiteDatabase {
   }
 
   /**
-   * Shorthand for [`prepareAsync()`](#prepareasyncsource) and [`Statement.getAsync()`](#getasyncparams).
-   * Unlike [`Statement.getAsync()`](#getasyncparams), this method finalizes the statement after execution.
+   * A convenience wrapper around [`SQLiteDatabase.prepareAsync()`](#prepareasyncsource), [`SQLiteStatement.executeAsync()`](#executeasyncparams), [`SQLiteExecuteAsyncResult.getFirstAsync()`](#getfirstasync), and [`SQLiteStatement.finalizeAsync()`](#finalizeasync).
    * @param source A string containing the SQL query.
    * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
    */
-  public getAsync<T>(source: string, params: SQLiteBindParams): Promise<T | null>;
+  public getFirstAsync<T>(source: string, params: SQLiteBindParams): Promise<T | null>;
   /**
    * @hidden
    */
-  public getAsync<T>(source: string, ...params: SQLiteVariadicBindParams): Promise<T | null>;
-  public async getAsync<T>(source: string, ...params: any[]): Promise<T | null> {
+  public getFirstAsync<T>(source: string, ...params: SQLiteVariadicBindParams): Promise<T | null>;
+  public async getFirstAsync<T>(source: string, ...params: any[]): Promise<T | null> {
     const statement = await this.prepareAsync(source);
-    let result;
+    let firstRow: T | null;
     try {
-      result = await statement.getAsync<T>(...params);
+      const result = await statement.executeAsync<T>(...params);
+      firstRow = await result.getFirstAsync();
     } finally {
       await statement.finalizeAsync();
     }
-    return result;
+    return firstRow;
   }
 
   /**
-   * Shorthand for [`prepareAsync()`](#prepareasyncsource) and [`Statement.eachAsync()`](#eachasyncparams).
-   * Unlike [`Statement.eachAsync()`](#eachasyncparams), this method finalizes the statement after execution.
+   * A convenience wrapper around [`SQLiteDatabase.prepareAsync()`](#prepareasyncsource), [`SQLiteStatement.executeAsync()`](#executeasyncparams), [`SQLiteExecuteAsyncResult`](#sqliteexecuteasyncresult) `AsyncIterator`, and [`SQLiteStatement.finalizeAsync()`](#finalizeasync).
    * @param source A string containing the SQL query.
    * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
    */
-  public eachAsync<T>(source: string, params: SQLiteBindParams): AsyncIterableIterator<T>;
+  public getEachAsync<T>(source: string, params: SQLiteBindParams): AsyncIterableIterator<T>;
   /**
    * @hidden
    */
-  public eachAsync<T>(
+  public getEachAsync<T>(
     source: string,
     ...params: SQLiteVariadicBindParams
   ): AsyncIterableIterator<T>;
-  public async *eachAsync<T>(source: string, ...params: any[]): AsyncIterableIterator<T> {
+  public async *getEachAsync<T>(source: string, ...params: any[]): AsyncIterableIterator<T> {
     const statement = await this.prepareAsync(source);
     try {
-      yield* await statement.eachAsync<T>(...params);
+      const result = await statement.executeAsync<T>(...params);
+      for await (const row of result) {
+        yield row;
+      }
     } finally {
       await statement.finalizeAsync();
     }
   }
 
   /**
-   * Shorthand for [`prepareAsync()`](#prepareasyncsource) and [`Statement.allAsync()`](#allasyncparams).
-   * Unlike [`Statement.allAsync()`](#allasyncparams), this method finalizes the statement after execution.
+   * A convenience wrapper around [`SQLiteDatabase.prepareAsync()`](#prepareasyncsource), [`SQLiteStatement.executeAsync()`](#executeasyncparams), [`SQLiteExecuteAsyncResult.getAllAsync()`](#getallasync), and [`SQLiteStatement.finalizeAsync()`](#finalizeasync).
    * @param source A string containing the SQL query.
    * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
    * @example
    * ```ts
    * // For unnamed parameters, you pass values in an array.
-   * db.allAsync('SELECT * FROM test WHERE intValue = ? AND name = ?', [1, 'Hello']);
+   * db.getAllAsync('SELECT * FROM test WHERE intValue = ? AND name = ?', [1, 'Hello']);
    *
    * // For unnamed parameters, you pass values in variadic arguments.
-   * db.allAsync('SELECT * FROM test WHERE intValue = ? AND name = ?', 1, 'Hello');
+   * db.getAllAsync('SELECT * FROM test WHERE intValue = ? AND name = ?', 1, 'Hello');
    *
    * // For named parameters, you should pass values in object.
-   * db.allAsync('SELECT * FROM test WHERE intValue = $intValue AND name = $name', { $intValue: 1, $name: 'Hello' });
+   * db.getAllAsync('SELECT * FROM test WHERE intValue = $intValue AND name = $name', { $intValue: 1, $name: 'Hello' });
    * ```
    */
-  public allAsync<T>(source: string, params: SQLiteBindParams): Promise<T[]>;
+  public getAllAsync<T>(source: string, params: SQLiteBindParams): Promise<T[]>;
   /**
    * @hidden
    */
-  public allAsync<T>(source: string, ...params: SQLiteVariadicBindParams): Promise<T[]>;
-  public async allAsync<T>(source: string, ...params: any[]): Promise<T[]> {
+  public getAllAsync<T>(source: string, ...params: SQLiteVariadicBindParams): Promise<T[]>;
+  public async getAllAsync<T>(source: string, ...params: any[]): Promise<T[]> {
     const statement = await this.prepareAsync(source);
-    let result;
+    let allRows;
     try {
-      result = await statement.allAsync<T>(...params);
+      const result = await statement.executeAsync<T>(...params);
+      allRows = await result.getAllAsync();
     } finally {
       await statement.finalizeAsync();
     }
-    return result;
+    return allRows;
   }
 
   /**
-   * Shorthand for [`prepareAsync()`](#prepareasyncsource) and [`Statement.runSync()`](#runsyncparams).
-   * Unlike [`Statement.runSync()`](#runsyncparams), this method finalizes the statement after execution.
+   * A convenience wrapper around [`SQLiteDatabase.prepareSync()`](#preparesyncsource), [`SQLiteStatement.executeSync()`](#executesyncparams), and [`SQLiteStatement.finalizeSync()`](#finalizesync).
    * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    * @param source A string containing the SQL query.
    * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
@@ -304,9 +306,9 @@ export class SQLiteDatabase {
   public runSync(source: string, ...params: SQLiteVariadicBindParams): SQLiteRunResult;
   public runSync(source: string, ...params: any[]): SQLiteRunResult {
     const statement = this.prepareSync(source);
-    let result;
+    let result: SQLiteExecuteSyncResult<unknown>;
     try {
-      result = statement.runSync(...params);
+      result = statement.executeSync(...params);
     } finally {
       statement.finalizeSync();
     }
@@ -314,70 +316,72 @@ export class SQLiteDatabase {
   }
 
   /**
-   * Shorthand for [`prepareAsync()`](#prepareasyncsource) and [`Statement.getSync()`](#getsyncparams).
-   * Unlike [`Statement.getSync()`](#getsyncparams), this method finalizes the statement after execution.
+   * A convenience wrapper around [`SQLiteDatabase.prepareSync()`](#preparesyncsource), [`SQLiteStatement.executeSync()`](#executesyncparams), [`SQLiteExecuteSyncResult.getFirstSync()`](#getfirstsync), and [`SQLiteStatement.finalizeSync()`](#finalizesync).
    * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    * @param source A string containing the SQL query.
    * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
    */
-  public getSync<T>(source: string, params: SQLiteBindParams): T | null;
+  public getFirstSync<T>(source: string, params: SQLiteBindParams): T | null;
   /**
    * @hidden
    */
-  public getSync<T>(source: string, ...params: SQLiteVariadicBindParams): T | null;
-  public getSync<T>(source: string, ...params: any[]): T | null {
+  public getFirstSync<T>(source: string, ...params: SQLiteVariadicBindParams): T | null;
+  public getFirstSync<T>(source: string, ...params: any[]): T | null {
     const statement = this.prepareSync(source);
-    let result;
+    let firstRow: T | null;
     try {
-      result = statement.getSync<T>(...params);
+      const result = statement.executeSync<T>(...params);
+      firstRow = result.getFirstSync();
     } finally {
       statement.finalizeSync();
     }
-    return result;
+    return firstRow;
   }
 
   /**
-   * Shorthand for [`prepareAsync()`](#prepareasyncsource) and [`Statement.eachSync()`](#eachsyncparams).
-   * Unlike [`Statement.eachSync()`](#eachsyncparams), this method finalizes the statement after execution.
+   * A convenience wrapper around [`SQLiteDatabase.prepareSync()`](#preparesyncsource), [`SQLiteStatement.executeSync()`](#executesyncparams), [`SQLiteExecuteSyncResult`](#sqliteexecutesyncresult) `Iterator`, and [`SQLiteStatement.finalizeSync()`](#finalizesync).
    * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    * @param source A string containing the SQL query.
    * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
    */
-  public eachSync<T>(source: string, params: SQLiteBindParams): IterableIterator<T>;
+  public getEachSync<T>(source: string, params: SQLiteBindParams): IterableIterator<T>;
   /**
    * @hidden
    */
-  public eachSync<T>(source: string, ...params: SQLiteVariadicBindParams): IterableIterator<T>;
-  public *eachSync<T>(source: string, ...params: any[]): IterableIterator<T> {
+  public getEachSync<T>(source: string, ...params: SQLiteVariadicBindParams): IterableIterator<T>;
+  public *getEachSync<T>(source: string, ...params: any[]): IterableIterator<T> {
     const statement = this.prepareSync(source);
     try {
-      yield* statement.eachSync<T>(...params);
+      const result = statement.executeSync<T>(...params);
+      for (const row of result) {
+        yield row;
+      }
     } finally {
       statement.finalizeSync();
     }
   }
 
   /**
-   * Shorthand for [`prepareAsync()`](#prepareasyncsource) and [`Statement.allSync()`](#allsyncparams).
-   * Unlike [`Statement.allSync()`](#allsyncparams), this method finalizes the statement after execution.
+   * A convenience wrapper around [`SQLiteDatabase.prepareSync()`](#preparesyncsource), [`SQLiteStatement.executeSync()`](#executesyncparams), [`SQLiteExecuteSyncResult.getAllSync()`](#getallsync), and [`SQLiteStatement.finalizeSync()`](#finalizesync).
    * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    * @param source A string containing the SQL query.
    * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
    */
-  public allSync<T>(source: string, params: SQLiteBindParams): T[];
+  public getAllSync<T>(source: string, params: SQLiteBindParams): T[];
   /**
    * @hidden
    */
-  public allSync<T>(source: string, ...params: SQLiteVariadicBindParams): T[];
-  public allSync<T>(source: string, ...params: any[]): T[] {
+  public getAllSync<T>(source: string, ...params: SQLiteVariadicBindParams): T[];
+  public getAllSync<T>(source: string, ...params: any[]): T[] {
     const statement = this.prepareSync(source);
-    let result;
+    let allRows;
     try {
-      result = statement.allSync<T>(...params);
+      const result = statement.executeSync<T>(...params);
+      allRows = result.getAllSync();
     } finally {
       statement.finalizeSync();
     }
-    return result;
+    return allRows;
   }
 
   //#endregion

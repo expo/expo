@@ -21,6 +21,7 @@ internal class NativeStatementBinding {
   // region sqlite3 bindings
 
   external fun sqlite3_bind_parameter_index(name: String): Int
+  external fun sqlite3_clear_bindings(): Int
   external fun sqlite3_column_count(): Int
   external fun sqlite3_column_name(index: Int): String
   external fun sqlite3_finalize(): Int

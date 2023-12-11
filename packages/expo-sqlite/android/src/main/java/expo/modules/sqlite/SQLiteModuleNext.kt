@@ -119,18 +119,25 @@ class SQLiteModuleNext : Module() {
         return@Function run(statement, database, bindParams, bindBlobParams, shouldPassAsArray)
       }
 
-      AsyncFunction("getAsync") { statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any>, bindBlobParams: Map<String, ByteArray>, shouldPassAsArray: Boolean ->
-        return@AsyncFunction get(statement, database, bindParams, bindBlobParams, shouldPassAsArray)
+      AsyncFunction("stepAsync") { statement: NativeStatement, database: NativeDatabase ->
+        return@AsyncFunction step(statement, database)
       }
-      Function("getSync") { statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any>, bindBlobParams: Map<String, ByteArray>, shouldPassAsArray: Boolean ->
-        return@Function get(statement, database, bindParams, bindBlobParams, shouldPassAsArray)
+      Function("stepSync") { statement: NativeStatement, database: NativeDatabase ->
+        return@Function step(statement, database)
       }
 
-      AsyncFunction("getAllAsync") { statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any>, bindBlobParams: Map<String, ByteArray>, shouldPassAsArray: Boolean ->
-        return@AsyncFunction getAll(statement, database, bindParams, bindBlobParams, shouldPassAsArray)
+      AsyncFunction("getAllAsync") { statement: NativeStatement, database: NativeDatabase ->
+        return@AsyncFunction getAll(statement, database)
       }
-      Function("getAllSync") { statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any>, bindBlobParams: Map<String, ByteArray>, shouldPassAsArray: Boolean ->
-        return@Function getAll(statement, database, bindParams, bindBlobParams, shouldPassAsArray)
+      Function("getAllSync") { statement: NativeStatement, database: NativeDatabase ->
+        return@Function getAll(statement, database)
+      }
+
+      AsyncFunction("resetAsync") { statement: NativeStatement, database: NativeDatabase ->
+        return@AsyncFunction reset(statement, database)
+      }
+      Function("resetSync") { statement: NativeStatement, database: NativeDatabase ->
+        return@Function reset(statement, database)
       }
 
       AsyncFunction("getColumnNamesAsync") { statement: NativeStatement ->
@@ -140,13 +147,6 @@ class SQLiteModuleNext : Module() {
       Function("getColumnNamesSync") { statement: NativeStatement ->
         maybeThrowForFinalizedStatement(statement)
         return@Function statement.ref.getColumnNames()
-      }
-
-      AsyncFunction("resetAsync") { statement: NativeStatement, database: NativeDatabase ->
-        return@AsyncFunction reset(statement, database)
-      }
-      Function("resetSync") { statement: NativeStatement, database: NativeDatabase ->
-        return@Function reset(statement, database)
       }
 
       AsyncFunction("finalizeAsync") { statement: NativeStatement, database: NativeDatabase ->
@@ -193,18 +193,27 @@ class SQLiteModuleNext : Module() {
   private fun prepareStatement(database: NativeDatabase, statement: NativeStatement, source: String) {
     maybeThrowForClosedDatabase(database)
     maybeThrowForFinalizedStatement(statement)
-    database.ref.sqlite3_prepare_v2(source, statement.ref)
+    if (database.ref.sqlite3_prepare_v2(source, statement.ref) != NativeDatabaseBinding.SQLITE_OK) {
+      throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+    }
     maybeAddCachedStatement(database, statement)
   }
 
   @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
-  private fun run(statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any>, bindBlobParams: Map<String, ByteArray>, shouldPassAsArray: Boolean): Map<String, Int> {
+  private fun run(statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any>, bindBlobParams: Map<String, ByteArray>, shouldPassAsArray: Boolean): Map<String, Any> {
     maybeThrowForClosedDatabase(database)
     maybeThrowForFinalizedStatement(statement)
+    statement.ref.sqlite3_reset()
+    statement.ref.sqlite3_clear_bindings()
     for ((key, param) in bindParams) {
       val index = getBindParamIndex(statement, key, shouldPassAsArray)
       if (index > 0) {
-        statement.ref.bindStatementParam(index, param)
+        // expo-modules-core AnyTypeConverter casts JavaScript Number to Kotlin Double,
+        // here to cast as Long if the value is an integer.
+        val normalizedParam =
+          if (param is Double && param.toDouble() % 1.0 == 0.0) param.toLong()
+          else param
+        statement.ref.bindStatementParam(index, normalizedParam)
       }
     }
     for ((key, param) in bindBlobParams) {
@@ -218,29 +227,20 @@ class SQLiteModuleNext : Module() {
     if (ret != NativeDatabaseBinding.SQLITE_ROW && ret != NativeDatabaseBinding.SQLITE_DONE) {
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
     }
+    val firstRowValues: SQLiteColumnValues =
+      if (ret == NativeDatabaseBinding.SQLITE_ROW) statement.ref.getColumnValues()
+      else arrayListOf()
     return mapOf(
       "lastInsertRowId" to database.ref.sqlite3_last_insert_rowid().toInt(),
       "changes" to database.ref.sqlite3_changes(),
+      "firstRowValues" to firstRowValues,
     )
   }
 
   @Throws(AccessClosedResourceException::class, InvalidConvertibleException::class, SQLiteErrorException::class)
-  private fun get(statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any>, bindBlobParams: Map<String, ByteArray>, shouldPassAsArray: Boolean): SQLiteColumnValues? {
+  private fun step(statement: NativeStatement, database: NativeDatabase): SQLiteColumnValues? {
     maybeThrowForClosedDatabase(database)
     maybeThrowForFinalizedStatement(statement)
-    for ((key, param) in bindParams) {
-      val index = getBindParamIndex(statement, key, shouldPassAsArray)
-      if (index > 0) {
-        statement.ref.bindStatementParam(index, param)
-      }
-    }
-    for ((key, param) in bindBlobParams) {
-      val index = getBindParamIndex(statement, key, shouldPassAsArray)
-      if (index > 0) {
-        statement.ref.bindStatementParam(index, param)
-      }
-    }
-
     val ret = statement.ref.sqlite3_step()
     if (ret == NativeDatabaseBinding.SQLITE_ROW) {
       return statement.ref.getColumnValues()
@@ -252,22 +252,9 @@ class SQLiteModuleNext : Module() {
   }
 
   @Throws(AccessClosedResourceException::class, InvalidConvertibleException::class, SQLiteErrorException::class)
-  private fun getAll(statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any>, bindBlobParams: Map<String, ByteArray>, shouldPassAsArray: Boolean): List<SQLiteColumnValues> {
+  private fun getAll(statement: NativeStatement, database: NativeDatabase): List<SQLiteColumnValues> {
     maybeThrowForClosedDatabase(database)
     maybeThrowForFinalizedStatement(statement)
-    for ((key, param) in bindParams) {
-      val index = getBindParamIndex(statement, key, shouldPassAsArray)
-      if (index > 0) {
-        statement.ref.bindStatementParam(index, param)
-      }
-    }
-    for ((key, param) in bindBlobParams) {
-      val index = getBindParamIndex(statement, key, shouldPassAsArray)
-      if (index > 0) {
-        statement.ref.bindStatementParam(index, param)
-      }
-    }
-
     val columnValuesList = mutableListOf<SQLiteColumnValues>()
     while (true) {
       val ret = statement.ref.sqlite3_step()
