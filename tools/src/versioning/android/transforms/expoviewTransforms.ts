@@ -43,6 +43,11 @@ export function expoviewTransforms(abiVersion: string): FileTransforms {
         replaceWith: `useVendoredModulesForExpoView('${sdkVersion}')`,
       },
       {
+        paths: './build.gradle',
+        find: /(namespace ['"])(.*['"])/,
+        replaceWith: `$1${abiVersion}.$2`,
+      },
+      {
         paths: './src/main/AndroidManifest.xml',
         find: /host\.exp\.expoview/g,
         replaceWith: `${abiVersion}.host.exp.expoview`,
