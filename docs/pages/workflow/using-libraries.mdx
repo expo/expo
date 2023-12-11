@@ -97,9 +97,10 @@ After the React Native Directory, the [npm registry](https://www.npmjs.com/) is 
 
 ### Determining third-party library compatibility
 
-Expo Go is not intended for building production apps. It is a way to quickly test your app while you are developing it, but it does not include all of the native code that is required to support every library. You can check **React Native Directory** to find a library that is compatible with Expo Go by visiting the website and verifying that it has a "✔️ Expo Go" tag. You can also enable the [filter by Expo Go](https://reactnative.directory/?expo=true).
+Use Expo [development builds](/workflow/overview/#development-builds) for building production-quality apps. It includes all of the native code that your project needs to run. This is a great way to test your app before you publish it to the App Store or Google Play. You can also include libraries that require native projects (**android** and **ios** directories) configuration.
 
-A [development build](/workflow/overview/#development-builds) of your project is like creating a personal version of Expo Go that is customized for your project. It includes all of the native code that your project needs to run. This is a great way to test your app before you publish it to the App Store or Google Play. You can also include libraries that require native projects (**android** and **ios** directories) configuration.
+The Expo Go app is an optional stepping stone towards development builds. You can use it to quickly test your app while you are developing it, but it does not include all of the native code required to support every library. You can check **React Native Directory** to find a library compatible with Expo Go by visiting the website and verifying that it has a "✔️ Expo Go" tag. You can also enable the [filter by Expo Go](https://reactnative.directory/?expo=true).
+
 
 To determine if a new dependency changes native project directories, you can check the following:
 
