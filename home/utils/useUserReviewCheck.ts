@@ -4,7 +4,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import * as StoreReview from 'expo-store-review';
 import { CommonAppDataFragment, CommonSnackDataFragment } from 'graphql/types';
 import { useEffect, useState } from 'react';
-import { EventSubscription } from 'react-native';
+import { Platform, AppState, NativeEventSubscription } from 'react-native';
 
 import addListenerWithNativeCallback from './addListenerWithNativeCallback';
 import * as Kernel from '../kernel/Kernel';
@@ -12,8 +12,26 @@ import { HomeStackRoutes } from '../navigation/Navigation.types';
 
 export function listenForForegroundEvent(
   listener: (event: any) => Promise<any>
-): EventSubscription {
-  return addListenerWithNativeCallback('ExponentKernel.foregroundHome', listener);
+): NativeEventSubscription {
+  if (Platform.OS === 'ios') {
+    /**
+     * On iOS the launcher is always rendered, even when opening projects
+     * the launcher keeps running in a View in the background. Because of that
+     * we need a native event to be able detect when the "home" is in the foreground.
+     */
+    return addListenerWithNativeCallback('ExponentKernel.foregroundHome', listener);
+  }
+
+  /**
+   * On Android we use different activities for the launcher and projects,
+   * that way we can detect when the app is in the foreground by listening
+   * to AppState changes.
+   */
+  return AppState.addEventListener('change', (state) => {
+    if (state === 'active') {
+      listener(state);
+    }
+  });
 }
 
 type UserReviewInfo = {
