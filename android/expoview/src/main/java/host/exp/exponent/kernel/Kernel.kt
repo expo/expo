@@ -742,21 +742,6 @@ class Kernel : KernelInterface() {
     killOrphanedLauncherActivities()
   }
 
-  fun dispatchForegroundHomeEvent() {
-    queueEvent(
-      "ExponentKernel.foregroundHome", Arguments.createMap(),
-      object : KernelEventCallback {
-        override fun onEventSuccess(result: ReadableMap) {
-          EXL.d(TAG, "Successfully called ExponentKernel.foregroundHome in kernel JS.")
-        }
-
-        override fun onEventFailure(errorMessage: String?) {
-          EXL.e(TAG, "Error calling ExponentKernel.foregroundHome in kernel JS: $errorMessage")
-        }
-      }
-    )
-  }
-
   /*
    *
    * Optimistic experiences

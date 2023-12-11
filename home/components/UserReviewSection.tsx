@@ -40,13 +40,13 @@ export default function UserReviewSection({ snacks, apps }: Props) {
         <Row style={{ gap: 10 }}>
           <Button.FadeOnPressContainer
             flex="1"
-            bg="secondary"
+            bg="tertiary"
             onPress={provideFeedback}
             padding="tiny">
             <Button.Text
               align="center"
               size="medium"
-              color="secondary"
+              color="tertiary"
               type="InterSemiBold"
               style={typography.fontSizes[14]}>
               Not really
@@ -54,13 +54,13 @@ export default function UserReviewSection({ snacks, apps }: Props) {
           </Button.FadeOnPressContainer>
           <Button.FadeOnPressContainer
             flex="1"
-            bg="primary"
+            bg="tertiary"
             onPress={requestStoreReview}
             padding="tiny">
             <Button.Text
               align="center"
               size="medium"
-              color="primary"
+              color="tertiary"
               type="InterSemiBold"
               style={typography.fontSizes[14]}>
               Love it!
