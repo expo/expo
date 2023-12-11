@@ -294,6 +294,30 @@ export default function App() {
 
 As mentioned earlier, using monorepos is not for everyone. You take on increased complexity and need to solve issues you most likely will run into. Here are a couple of common issues you might encounter.
 
+### Multiple React Native versions within the monorepo
+
+Expo SDK 50 and higher has improved support for more complext `node_modules` patterns, such as isolated modules. Unfortunately, React Native itself can still cause issues when installing multiple versions inside a single monorepo. Because of that, it's recommended to only use a single version of React Native.
+
+You can check if your monorepo has multiple React Native versions, and why they are installed, through the package managers.
+
+<Terminal cmd={[
+  '# Bun does not support `bun why` yet, but you can use `yarn why`',
+  '$ bun install --yarn && yarn why react-native',
+  '',
+  '# npm supports the `npm explain` command, aliased to `npm why`',
+  '# https://docs.npmjs.com/cli/v10/commands/npm-explain',
+  '$ npm why react-native',
+  '',
+  '# pnpm only iterates the full monorepo with the `--recursive` flag',
+  '# https://pnpm.io/cli/why',
+  '$ pnpm why --recursive react-native',
+  '',
+  '# yarn supports the `yarn why` command',
+  '# https://classic.yarnpkg.com/en/docs/cli/why',
+  '$ yarn why react-native',
+]} />
+
+
 ### Can I use another monorepo tool instead of Yarn workspaces?
 
 There are a lot of monorepo tools available, and each of these tools has its benefits. It's hard for us to keep up with the latest tools and methods, and because of that, we can't officially support new monorepo tools. That being said, if the tool follows these three rules, it should work fine.
