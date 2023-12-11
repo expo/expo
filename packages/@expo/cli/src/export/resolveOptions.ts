@@ -12,6 +12,7 @@ export type Options = {
   minify: boolean;
   dumpAssetmap: boolean;
   sourceMaps: boolean;
+  embeddedManifestPath?: string;
 };
 
 /** Returns an array of platforms based on the input platform identifier and runtime constraints. */
@@ -77,5 +78,6 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
     maxWorkers: args['--max-workers'],
     dumpAssetmap: !!args['--dump-assetmap'],
     sourceMaps: !!args['--source-maps'],
+    embeddedManifestPath: args['--verify-assets'],
   };
 }

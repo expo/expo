@@ -34,6 +34,7 @@ export async function exportAppAsync(
     sourceMaps,
     minify,
     maxWorkers,
+    embeddedManifestPath,
   }: Pick<
     Options,
     | 'dumpAssetmap'
@@ -44,6 +45,7 @@ export async function exportAppAsync(
     | 'platforms'
     | 'minify'
     | 'maxWorkers'
+    | 'embeddedManifestPath'
   >
 ): Promise<void> {
   setNodeEnv(dev ? 'development' : 'production');
@@ -108,6 +110,7 @@ export async function exportAppAsync(
       outputDir: outputPath,
       bundles,
       baseUrl,
+      embeddedManifestPath,
     });
 
     if (dumpAssetmap) {

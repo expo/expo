@@ -18,6 +18,7 @@ export const expoExport: Command = async (argv) => {
       '--output-dir': String,
       '--platform': [String],
       '--no-minify': Boolean,
+      '--verify-assets': String,
 
       // Hack: This is added because EAS CLI always includes the flag.
       // If supplied, we'll do nothing with the value, but at least the process won't crash.
@@ -53,6 +54,7 @@ export const expoExport: Command = async (argv) => {
         chalk`-p, --platform <platform>  Options: android, ios, web, all. {dim Default: all}`,
         `-s, --source-maps          Emit JavaScript source maps`,
         `-c, --clear                Clear the bundler cache`,
+        `-v, --verify-assets <path> Given a path to the build's embedded manifest, check for assets omitted from the export (android, ios)`,
         `-h, --help                 Usage info`,
       ].join('\n')
     );

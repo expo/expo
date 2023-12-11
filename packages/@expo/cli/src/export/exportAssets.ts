@@ -1,4 +1,5 @@
 import { ExpoConfig } from '@expo/config';
+import chalk from 'chalk';
 import fs from 'fs';
 import minimatch from 'minimatch';
 import path from 'path';
@@ -118,6 +119,67 @@ function shouldBundleAsset(asset: Asset, patterns: string[]) {
   );
 }
 
+function getBuildManifestAssetSet(buildManifestPath?: string) {
+  if (!buildManifestPath) {
+    return undefined;
+  }
+  const embeddedManifestString = fs.readFileSync(buildManifestPath, { encoding: 'utf-8' });
+  const embeddedManifest: { assets: { packagerHash: string }[] } =
+    JSON.parse(embeddedManifestString);
+  return new Set((embeddedManifest.assets ?? []).map((asset) => asset.packagerHash));
+}
+
+function warnAboutMissingAsset(assetHash: string, buildManifestAssetSet: Set<string> | undefined) {
+  if (!buildManifestAssetSet) {
+    return false; // user didn't pass in a build manifest
+  }
+  return !buildManifestAssetSet.has(assetHash);
+}
+
+export function filterAssets(
+  projectRoot: string,
+  {
+    assets,
+    exp,
+    buildManifestAssetSet,
+  }: {
+    assets: Asset[];
+    exp: ExpoConfig;
+    buildManifestAssetSet: Set<string> | undefined;
+  }
+) {
+  const bundledAssetsSet = resolveAssetPatternsToBeBundled(projectRoot, exp, assets);
+  let filteredAssets = assets;
+  const embeddedHashSet: Set<string> = new Set();
+  const missingAssetFiles = new Set();
+  if (assets[0]?.fileHashes) {
+    debug(`Assets = ${JSON.stringify(assets, null, 2)}`);
+
+    if (bundledAssetsSet) {
+      debug(`Bundled assets = ${JSON.stringify([...bundledAssetsSet], null, 2)}`);
+      // Filter asset objects to only ones that include assetPatternsToBeBundled matches
+      filteredAssets = assets.filter((asset) => {
+        const shouldInclude = assetShouldBeIncludedInExport(asset, bundledAssetsSet);
+        if (!shouldInclude) {
+          embeddedHashSet.add(asset.hash);
+          if (warnAboutMissingAsset(asset.hash, buildManifestAssetSet)) {
+            asset.files.forEach((filepath) =>
+              missingAssetFiles.add(path.relative(projectRoot, filepath))
+            );
+          }
+        }
+        return shouldInclude;
+      });
+      debug(`Filtered assets count = ${filteredAssets.length}`);
+    }
+  }
+  return {
+    filteredAssets,
+    embeddedHashSet,
+    missingAssetFiles,
+  };
+}
+
 export async function exportAssetsAsync(
   projectRoot: string,
   {
@@ -126,12 +188,14 @@ export async function exportAssetsAsync(
     bundles: { web, ...bundles },
     baseUrl,
     files = new Map(),
+    embeddedManifestPath,
   }: {
     exp: ExpoConfig;
     bundles: Partial<Record<string, BundleOutput>>;
     outputDir: string;
     baseUrl: string;
     files?: ExportAssetMap;
+    embeddedManifestPath?: string;
   }
 ) {
   // NOTE: We use a different system for static web
@@ -146,35 +210,31 @@ export async function exportAssetsAsync(
     });
   }
 
+  const buildManifestAssetSet = getBuildManifestAssetSet(embeddedManifestPath);
+
   const assets: Asset[] = uniqBy(
     Object.values(bundles).flatMap((bundle) => bundle!.assets),
     (asset) => asset.hash
   );
 
-  let bundledAssetsSet: Set<string> | undefined = undefined;
-  let filteredAssets = assets;
-  const embeddedHashSet: Set<string> = new Set();
+  const { filteredAssets, embeddedHashSet, missingAssetFiles } = filterAssets(projectRoot, {
+    assets,
+    exp,
+    buildManifestAssetSet,
+  });
 
   if (assets[0]?.fileHashes) {
-    debug(`Assets = ${JSON.stringify(assets, null, 2)}`);
-    // Updates the manifest to reflect additional asset bundling + configs
-    // Get only asset strings for assets we will save
-    bundledAssetsSet = resolveAssetPatternsToBeBundled(projectRoot, exp, assets);
-    if (bundledAssetsSet) {
-      debug(`Bundled assets = ${JSON.stringify([...bundledAssetsSet], null, 2)}`);
-      // Filter asset objects to only ones that include assetPatternsToBeBundled matches
-      filteredAssets = assets.filter((asset) => {
-        const shouldInclude = assetShouldBeIncludedInExport(asset, bundledAssetsSet);
-        if (!shouldInclude) {
-          embeddedHashSet.add(asset.hash);
-        }
-        return shouldInclude;
-      });
-      debug(`Filtered assets count = ${filteredAssets.length}`);
-    }
-
     const hashes = new Set<string>();
 
+    if (missingAssetFiles.size > 0) {
+      Log.warn(
+        chalk.yellow`Some assets were resolved by Metro that are not in the exported manifest, and are not in the embedded manifest:\n${[
+          ...missingAssetFiles,
+        ]
+          .map((filepath) => `  ${filepath}`)
+          .join('\n')}`
+      );
+    }
     // Add assets to copy.
     filteredAssets.forEach((asset) => {
       const assetId =
