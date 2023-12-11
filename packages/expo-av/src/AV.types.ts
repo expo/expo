@@ -66,21 +66,9 @@ export type AVPlaybackNativeSource = {
   uri: string;
   overridingExtension?: string | null;
   headers?: Record<string, string>;
-  drm?: string | null;
 
 };
 
-/**
- * @hidden
- */
-export type DRMConfig = {
-  type: string;
-  licenseServer: string;
-  headers?: Record<string, string>;
-  base64Certificate: boolean;
-  certificateUrl: string;
-  getLicense?: (...args: any[]) => void;
-}
 // @needsAudit
 /**
  * Object passed to the `onMetadataUpdate` function.

@@ -13,7 +13,6 @@ import {
   AVPlaybackStatusToSet,
   AVPlaybackTolerance,
   PitchCorrectionQuality,
-  DRMConfig,
 } from './AV';
 import ExpoVideoManager from './ExpoVideoManager';
 import ExponentAV from './ExponentAV';
@@ -301,27 +300,6 @@ class Video extends React.Component<VideoProps, VideoState> implements Playback 
       />
     ) : null;
   };
-  _onGetLicense = (event) => {
-    if (this.props.drm && this.props.drm.getLicense instanceof Function) {
-      const data = event.nativeEvent;
-      //TODO: FIX FOR iOS
-      // if (data && data.spcBase64) {
-      //   const getLicenseOverride = this.props.drm.getLicense(data.spcBase64, data.contentId, data.licenseUrl);
-      //   const getLicensePromise = Promise.resolve(getLicenseOverride); // Handles both scenarios, getLicenseOverride being a promise and not.
-      //   getLicensePromise.then((result => {
-      //     if (result !== undefined) {
-      //       NativeModules.VideoManager.setLicenseResult(result, findNodeHandle(this._root));
-      //     } else {
-      //       NativeModules.VideoManager.setLicenseError && NativeModules.VideoManager.setLicenseError('Empty license result', findNodeHandle(this._root));
-      //     }
-      //   })).catch((error) => {
-      //     NativeModules.VideoManager.setLicenseError && NativeModules.VideoManager.setLicenseError(error, findNodeHandle(this._root));
-      //   });
-      // } else {
-      //   NativeModules.VideoManager.setLicenseError && NativeModules.VideoManager.setLicenseError("No spc received", findNodeHandle(this._root));
-      // }
-    }
-  }
 
   render() {
     const source = getNativeSourceFromSource(this.props.source) || undefined;
@@ -336,9 +314,6 @@ class Video extends React.Component<VideoProps, VideoState> implements Playback 
       } else if (resizeMode === ResizeMode.COVER) {
         nativeResizeMode = ExpoVideoManagerConstants.ScaleAspectFill;
       }
-    }
-    if (this.props.drm) {
-
     }
 
     // Set status via individual props
@@ -377,7 +352,6 @@ class Video extends React.Component<VideoProps, VideoState> implements Playback 
       onLoadStart: this._nativeOnLoadStart,
       onLoad: this._nativeOnLoad,
       onError: this._nativeOnError,
-      onGetLicense: this.props.drm && this.props.drm.getLicense && this._onGetLicense,
       onReadyForDisplay: this._nativeOnReadyForDisplay,
       onFullscreenUpdate: this._nativeOnFullscreenUpdate,
     };
