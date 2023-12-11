@@ -59,9 +59,19 @@ export function getNormalizedStatePath(
     // of converting to string then back to object
     params: Object.entries(params).reduce((prev, [key, value]) => {
       if (Array.isArray(value)) {
-        prev[key] = value.map(decodeURIComponent);
+        prev[key] = value.map((v: string) => {
+          try {
+            return decodeURIComponent(v);
+          } catch {
+            return v;
+          }
+        });
       } else {
-        prev[key] = decodeURIComponent(value as string);
+        try {
+          prev[key] = decodeURIComponent(value as string);
+        } catch {
+          prev[key] = value as string;
+        }
       }
       return prev;
     }, {} as SearchParams),

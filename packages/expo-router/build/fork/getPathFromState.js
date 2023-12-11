@@ -152,8 +152,7 @@ function walkConfigItems(route, focusedRoute, configs, { preserveDynamicRoutes, 
         pattern = inputPattern;
         if (route.params) {
             const params = processParamsWithUserSettings(configItem, route.params);
-            // TODO: Does this need to be a null check?
-            if (pattern) {
+            if (pattern !== undefined && pattern !== null) {
                 Object.assign(collectedParams, params);
             }
             if (deepEqual(focusedRoute, route)) {
@@ -291,7 +290,12 @@ function getPathFromResolvedState(state, configs, { preserveGroups, preserveDyna
 function decodeParams(params) {
     const parsed = {};
     for (const [key, value] of Object.entries(params)) {
-        parsed[key] = decodeURIComponent(value);
+        try {
+            parsed[key] = decodeURIComponent(value);
+        }
+        catch {
+            parsed[key] = value;
+        }
     }
     return parsed;
 }
