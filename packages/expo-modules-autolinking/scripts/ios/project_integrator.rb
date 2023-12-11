@@ -109,7 +109,7 @@ module Expo
     def self.set_autolinking_configuration(project)
       project.native_targets.each do |native_target|
         native_target.build_configurations.each do |build_configuration|
-          configuration_flag = "-D #{CONFIGURATION_FLAG_PREFIX}#{build_configuration.debug? ? "DEBUG" : "RELEASE"}"          
+          configuration_flag = "-D #{CONFIGURATION_FLAG_PREFIX}#{build_configuration.debug? ? "DEBUG" : "RELEASE"}"
           build_settings = build_configuration.build_settings
 
           # For some targets it might be `nil` by default which is an equivalent to `$(inherited)`
@@ -121,11 +121,11 @@ module Expo
           if !build_settings[SWIFT_FLAGS].include?(configuration_flag)
             # Remove existing flag to make sure we don't put another one each time
             build_settings[SWIFT_FLAGS] = build_settings[SWIFT_FLAGS].gsub(/\b-D\s+#{Regexp.quote(CONFIGURATION_FLAG_PREFIX)}\w+/, '')
-  
+
             # Add the correct flag
             build_settings[SWIFT_FLAGS] << ' ' << configuration_flag
 
-            # Make sure the project will be saved as we did some changes 
+            # Make sure the project will be saved as we did some changes
             project.mark_dirty!
           end
         end
@@ -258,7 +258,7 @@ module Expo
         fi
       }
 
-      with_node --no-warnings --eval "require(\'expo-modules-autolinking\')(process.argv.slice(1))" generate-package-list #{args} --target "#{modules_provider_path}"
+      with_node --no-warnings --eval "require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))" generate-package-list #{args} --target "#{modules_provider_path}"
       SUPPORT_SCRIPT
     end
 

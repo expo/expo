@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Resolve `expo-modules-autolinking` from `expo` in the generated project integrator. ([#25817](https://github.com/expo/expo/pull/25817) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 1.8.0 — 2023-11-14
