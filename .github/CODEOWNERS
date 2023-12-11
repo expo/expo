@@ -10,7 +10,7 @@
 /packages/@expo/metro-runtime                   @EvanBacon @bycedric @marklawlor
 /packages/@expo/package-manager                 @EvanBacon @bycedric
 /packages/@expo/plist                           @EvanBacon @bycedric
-/packages/@expo/pkcs12                          @bycedric
+/packages/@expo/pkcs12                          @bycedric @quinlanj
 /packages/babel-preset-expo                     @brentvatne @ide @EvanBacon
 /packages/create-expo                           @EvanBacon @bycedric
 /packages/expo-*                                @alanjhughes
