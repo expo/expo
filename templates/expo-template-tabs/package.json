@@ -38,11 +38,5 @@
     "jest-expo": "~50.0.0-alpha.4",
     "react-test-renderer": "18.2.0",
     "typescript": "^5.1.3"
-  },
-  "overrides": {
-    "react-refresh": "~0.14.0"
-  },
-  "resolutions": {
-    "react-refresh": "~0.14.0"
   }
 }
