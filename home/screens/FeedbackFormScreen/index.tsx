@@ -1,4 +1,5 @@
 import { CheckIcon, spacing } from '@expo/styleguide-native';
+import { useNavigation } from '@react-navigation/native';
 import {
   Text,
   View,
@@ -15,8 +16,12 @@ import { ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
 import { APIV2Client } from '../../api/APIV2Client';
 import { useInitialData } from '../../utils/InitialDataContext';
 
+const EMAIL_REGEX =
+  /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
+
 export function FeedbackFormScreen() {
   const theme = useExpoTheme();
+  const navigation = useNavigation();
   const { currentUserData } = useInitialData();
 
   const [submitting, setSubmitting] = useState(false);
@@ -30,12 +35,19 @@ export function FeedbackFormScreen() {
     setError(undefined);
     setSubmitting(true);
     try {
+      const body: { feedback: string; email?: string } = {
+        feedback,
+      };
+      if (email.trim().length > 0) {
+        if (!EMAIL_REGEX.test(email)) {
+          setError('Please enter a valid email address.');
+          return;
+        }
+        body.email = email;
+      }
       const api = new APIV2Client();
       await api.sendUnauthenticatedApiV2Request('/feedback/expo-go-send', {
-        body: {
-          feedback,
-          email,
-        },
+        body,
       });
       setSubmitted(true);
     } catch (error) {
@@ -47,10 +59,19 @@ export function FeedbackFormScreen() {
 
   if (submitted) {
     return (
-      <View flex="1" padding="medium" align="centered">
-        <CheckIcon color={theme.status.success} size={50} />
-        <Text type="InterBold">Thanks for sharing your feedback!</Text>
-        <Text size="small">Your feedback will help us make our app better.</Text>
+      <View flex="1" px="medium" py="24">
+        <View style={styles.thanksForSharingContainer} pb="12">
+          <CheckIcon color={theme.status.success} size={80} />
+          <Text type="InterBold" size="large">
+            Thanks for sharing your feedback!
+          </Text>
+          <Text size="small">Your feedback will help us make our app better.</Text>
+        </View>
+        <Button.FadeOnPressContainer padding="tiny" onPress={navigation.goBack} bg="primary">
+          <Button.Text align="center" size="medium" color="primary" type="InterSemiBold">
+            Continue
+          </Button.Text>
+        </Button.FadeOnPressContainer>
       </View>
     );
   }
@@ -126,5 +147,8 @@ export function FeedbackFormScreen() {
 const styles = StyleSheet.create({
   activityIndicator: {
     height: 26,
+  },
+  thanksForSharingContainer: {
+    alignItems: 'center',
   },
 });
