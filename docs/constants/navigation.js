@@ -150,9 +150,9 @@ const general = [
       'Bundling',
       [
         makePage('guides/customizing-metro.mdx'),
-        makePage('guides/customizing-webpack.mdx'),
-        makePage('guides/bundle-size.mdx'),
-        makePage('guides/minification.mdx'),
+        makePage('guides/analyzing-bundles.mdx'),
+        makePage('guides/tree-shaking.mdx'),
+        makePage('guides/minify.mdx'),
       ],
       { expanded: false }
     ),

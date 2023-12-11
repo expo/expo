@@ -57,13 +57,19 @@ config.resolver.assetExts.push(
 module.exports = config;
 ```
 
+## Bundle splitting
+
+Starting in Expo SDK 50, Expo CLI will automatically split bundles based on async imports (web-only for now).
+
+This technique can be used in conjunction with Expo Router to automatically split the bundle based on route files in the `app/` directory. This will only load the the code required for the current route, and defer loading additional JavaScript until the user navigates to different pages. Learn more in [Async Routes](/router/reference/async-routes).
+
 ## Tree shaking
 
 Learn more about tree shaking in the [bundle size guide](/guides/bundle-size).
 
 ## Minification
 
-Learn more about customizing the minifier in the [minification guide](/guides/minification).
+Learn more about customizing the minifier in the [minification guide](/guides/minify).
 
 ## Source map exploration
 
