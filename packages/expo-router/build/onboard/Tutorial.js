@@ -12,15 +12,19 @@ const exports_1 = require("../exports");
 const Pressable_1 = require("../views/Pressable");
 // TODO: Use openLinkFromBrowser thing
 function Header() {
-    return (react_1.default.createElement(Pressable_1.Pressable, null, ({ hovered }) => (react_1.default.createElement(react_native_1.Text, { role: "heading", "aria-level": 1, style: [styles.title, react_native_1.Platform.OS !== 'web' && { textAlign: 'left' }] },
-        "Welcome to",
-        ' ',
-        react_1.default.createElement(exports_1.Link, { href: "https://github.com/expo/expo-router/", style: [
+    return (<Pressable_1.Pressable>
+      {({ hovered }) => (<react_native_1.Text role="heading" aria-level={1} style={[styles.title, react_native_1.Platform.OS !== 'web' && { textAlign: 'left' }]}>
+          Welcome to{' '}
+          <exports_1.Link href="https://github.com/expo/expo-router/" style={[
                 hovered && {
                     textDecorationColor: 'white',
                     textDecorationLine: 'underline',
                 },
-            ] }, "Expo")))));
+            ]}>
+            Expo
+          </exports_1.Link>
+        </react_native_1.Text>)}
+    </Pressable_1.Pressable>);
 }
 const canAutoTouchFile = process.env.EXPO_ROUTER_APP_ROOT != null;
 function Tutorial() {
@@ -39,19 +43,20 @@ function Tutorial() {
             }
         }
     }, []);
-    return (react_1.default.createElement(react_native_1.View, { style: styles.background },
-        react_1.default.createElement(react_native_1.StatusBar, { barStyle: "light-content" }),
-        react_1.default.createElement(react_native_safe_area_context_1.SafeAreaView, { style: styles.safeArea },
-            react_1.default.createElement(react_native_1.View, { style: styles.container },
-                react_1.default.createElement(Header, null),
-                react_1.default.createElement(react_native_1.Text, { role: "heading", "aria-level": 2, style: styles.subtitle },
-                    "Start by creating a file",
-                    '\n',
-                    "in the",
-                    ' ',
-                    react_1.default.createElement(react_native_1.Text, { style: { fontWeight: 'bold' } }, getRootDir()),
-                    " directory."),
-                canAutoTouchFile && react_1.default.createElement(Button, null)))));
+    return (<react_native_1.View style={styles.background}>
+      <react_native_1.StatusBar barStyle="light-content"/>
+
+      <react_native_safe_area_context_1.SafeAreaView style={styles.safeArea}>
+        <react_native_1.View style={styles.container}>
+          <Header />
+          <react_native_1.Text role="heading" aria-level={2} style={styles.subtitle}>
+            Start by creating a file{'\n'}in the{' '}
+            <react_native_1.Text style={{ fontWeight: 'bold' }}>{getRootDir()}</react_native_1.Text> directory.
+          </react_native_1.Text>
+          {canAutoTouchFile && <Button />}
+        </react_native_1.View>
+      </react_native_safe_area_context_1.SafeAreaView>
+    </react_native_1.View>);
 }
 exports.Tutorial = Tutorial;
 function getRootDir() {
@@ -65,9 +70,9 @@ function getRootDir() {
     return dir.split('/').pop() ?? dir;
 }
 function Button() {
-    return (react_1.default.createElement(Pressable_1.Pressable, { onPress: () => {
+    return (<Pressable_1.Pressable onPress={() => {
             (0, createEntryFile_1.createEntryFileAsync)();
-        }, style: {
+        }} style={{
             ...react_native_1.Platform.select({
                 web: {
                     // subtle white shadow
@@ -81,20 +86,22 @@ function Button() {
                     overflow: 'hidden',
                 },
             }),
-        } }, ({ pressed, hovered }) => (react_1.default.createElement(react_native_1.View, { style: [
-            styles.buttonContainer,
-            hovered && {
-                backgroundColor: 'white',
-            },
-            pressed && {
-                backgroundColor: 'rgba(255,255,255,0.7)',
-            },
-        ] },
-        react_1.default.createElement(react_native_1.Text, { style: [styles.code, hovered && { color: 'black' }] },
-            react_1.default.createElement(react_native_1.Text, { style: { color: '#BCC3CD' } }, "$"),
-            " touch ",
-            getRootDir(),
-            "/index.js")))));
+        }}>
+      {({ pressed, hovered }) => (<react_native_1.View style={[
+                styles.buttonContainer,
+                hovered && {
+                    backgroundColor: 'white',
+                },
+                pressed && {
+                    backgroundColor: 'rgba(255,255,255,0.7)',
+                },
+            ]}>
+          <react_native_1.Text style={[styles.code, hovered && { color: 'black' }]}>
+            <react_native_1.Text style={{ color: '#BCC3CD' }}>$</react_native_1.Text> touch {getRootDir()}
+            /index.js
+          </react_native_1.Text>
+        </react_native_1.View>)}
+    </Pressable_1.Pressable>);
 }
 const styles = react_native_1.StyleSheet.create({
     background: {

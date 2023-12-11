@@ -29,6 +29,7 @@ import Connectivity from '../../api/Connectivity';
 import ScrollView from '../../components/NavigationScrollView';
 import { SectionHeader } from '../../components/SectionHeader';
 import ThemedStatusBar from '../../components/ThemedStatusBar';
+import UserReviewSection from '../../components/UserReviewSection';
 import {
   HomeScreenDataDocument,
   HomeScreenDataQuery,
@@ -113,6 +114,7 @@ export class HomeScreenView extends React.Component<Props, State> {
           key={Platform.OS === 'ios' ? this.props.allHistory.count() : 'scroll-view'}
           style={styles.container}
           contentContainerStyle={[styles.contentContainer]}>
+          <UserReviewSection apps={data?.apps} snacks={data?.snacks} />
           <DevelopmentServersHeader onHelpPress={this._handlePressHelpProjects} />
           {projects?.length ? (
             <View bg="default" rounded="large" border="default" overflow="hidden">

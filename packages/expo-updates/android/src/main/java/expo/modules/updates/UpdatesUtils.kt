@@ -5,7 +5,6 @@ import expo.modules.updates.UpdatesConfiguration.CheckAutomaticallyConfiguration
 import expo.modules.updates.db.entity.AssetEntity
 import android.os.AsyncTask
 import android.net.ConnectivityManager
-import android.os.Build
 import android.util.Base64
 import android.util.Log
 import com.facebook.react.ReactNativeHost
@@ -21,7 +20,6 @@ import org.json.JSONObject
 import java.io.*
 import java.lang.ClassCastException
 import java.lang.Exception
-import java.lang.IllegalArgumentException
 import java.lang.ref.WeakReference
 import java.security.DigestInputStream
 import java.security.MessageDigest
@@ -221,9 +219,6 @@ object UpdatesUtils {
     updatesConfiguration: UpdatesConfiguration,
     context: Context
   ): Boolean {
-    if (updatesConfiguration.updateUrl == null) {
-      return false
-    }
     return when (updatesConfiguration.checkOnLaunch) {
       CheckAutomaticallyConfiguration.NEVER -> false
       // check will happen later on if there's an error
@@ -243,21 +238,6 @@ object UpdatesUtils {
     }
   }
 
-  fun getRuntimeVersion(updatesConfiguration: UpdatesConfiguration): String {
-    val runtimeVersion = updatesConfiguration.runtimeVersion
-    val sdkVersion = updatesConfiguration.sdkVersion
-    return if (runtimeVersion != null && runtimeVersion.isNotEmpty()) {
-      runtimeVersion
-    } else if (sdkVersion != null && sdkVersion.isNotEmpty()) {
-      sdkVersion
-    } else {
-      // various places in the code assume that we have a nonnull runtimeVersion, so if the developer
-      // hasn't configured either runtimeVersion or sdkVersion, we'll use a dummy value of "1" but warn
-      // the developer in JS that they need to configure one of these values
-      "1"
-    }
-  }
-
   // https://stackoverflow.com/questions/9655181/how-to-convert-a-byte-array-to-a-hex-string-in-java
   private val HEX_ARRAY = "0123456789ABCDEF".toCharArray()
   fun bytesToHex(bytes: ByteArray): String {
@@ -272,26 +252,21 @@ object UpdatesUtils {
 
   @Throws(ParseException::class)
   fun parseDateString(dateString: String): Date {
-    return try {
-      val formatter: DateFormat = when (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        true -> SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'X'", Locale.US)
-        false -> SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US).apply {
-          timeZone = TimeZone.getTimeZone("GMT")
-        }
+    try {
+      val formatter: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'X'", Locale.US)
+      return formatter.parse(dateString) as Date
+    } catch (e: Exception) {
+      // Don't throw on first attempt
+    }
+    // First attempt failed, try with 'Z' format string
+    try {
+      val formatter: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US).apply {
+        timeZone = TimeZone.getTimeZone("GMT")
       }
-      formatter.parse(dateString) as Date
-    } catch (e: ParseException) {
-      Log.e(TAG, "Failed to parse date string on first try: $dateString", e)
-      // some old Android versions don't support the 'X' character in SimpleDateFormat, so try without this
-      val formatter: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
-      formatter.timeZone = TimeZone.getTimeZone("GMT")
-      // throw if this fails too
-      formatter.parse(dateString) as Date
-    } catch (e: IllegalArgumentException) {
-      Log.e(TAG, "Failed to parse date string on first try: $dateString", e)
-      val formatter: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
-      formatter.timeZone = TimeZone.getTimeZone("GMT")
-      formatter.parse(dateString) as Date
+      return formatter.parse(dateString) as Date
+    } catch (e: Exception) {
+      // Throw if the second parse attempt fails
+      throw e
     }
   }
 }

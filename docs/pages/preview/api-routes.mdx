@@ -8,7 +8,7 @@ description: Learn how to create server functions with Expo Router.
 import { FileTree } from '~/ui/components/FileTree';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
-import { Collapsible } from '~/ui/components/Collapsible';
+import { Tab, Tabs } from '~/ui/components/Tabs';
 
 Expo Router enables you to write server code for all platforms, right in your **app** directory.
 
@@ -236,7 +236,8 @@ const express = require('express');
 const compression = require('compression');
 const morgan = require('morgan');
 
-const BUILD_DIR = path.join(process.cwd(), 'dist');
+const CLIENT_BUILD_DIR = path.join(process.cwd(), 'dist/client');
+const SERVER_BUILD_DIR = path.join(process.cwd(), 'dist/server');
 
 const app = express();
 
@@ -248,10 +249,7 @@ app.disable('x-powered-by');
 process.env.NODE_ENV = 'production';
 
 app.use(
-  // Prevent access to expo functions as these may
-  // contain sensitive information.
-  [/^\/_expo\/functions($|\/)/, '/'],
-  express.static(BUILD_DIR, {
+  express.static(CLIENT_BUILD_DIR, {
     maxAge: '1h',
     extensions: ['html'],
   })
@@ -262,7 +260,7 @@ app.use(morgan('tiny'));
 app.all(
   '*',
   createRequestHandler({
-    build: BUILD_DIR,
+    build: SERVER_BUILD_DIR,
   })
 );
 const port = process.env.PORT || 3000;
@@ -295,7 +293,7 @@ const { createRequestHandler } = require('@expo/server/adapter/netlify');
 
 const handler = createRequestHandler({
   /* @info Points to the root `dist/` (output) folder */
-  build: require('path').join(__dirname, '../../dist'),
+  build: require('path').join(__dirname, '../../dist/server'),
   /* @end */
   mode: process.env.NODE_ENV,
 });
@@ -313,7 +311,7 @@ Create a Netlify configuration file at the root of your project to redirect all 
 [build]
   command = "expo export -p web"
   functions = "netlify/functions"
-  publish = "dist"
+  publish = "dist/client"
 
 [[redirects]]
   from = "/*"
@@ -322,10 +320,10 @@ Create a Netlify configuration file at the root of your project to redirect all 
 
 [functions]
   # Include everything to ensure dynamic routes can be used.
-  included_files = ["dist/**/*"]
+  included_files = ["dist/server/**/*"]
 
 [[headers]]
-  for = "/dist/_expo/functions/*"
+  for = "/dist/server/_expo/functions/*"
   [headers.values]
     # Set to 60 seconds as an example.
     "Cache-Control" = "public, max-age=60, s-maxage=60"
@@ -364,9 +362,123 @@ If you're using any environment variables or **.env** files, add them to Netlify
 
 </Step>
 
+### Vercel
+
+> **warning** This is experimental and subject to breaking changes. We have no continuous tests against this configuration.
+
+<Step label="1">
+
+Create a server entry file. All requests will be delegated through this middleware. The exact file location is important.
+
+```js api/index.js
+const { createRequestHandler } = require('@expo/server/adapter/vercel');
+
+module.exports = createRequestHandler({
+  /* @info Points to the root `dist/` (output) folder */
+  build: require('path').join(__dirname, '../dist/server'),
+  /* @end */
+  mode: process.env.NODE_ENV,
+});
+```
+
+</Step>
+
+<Step label="2">
+
+Create a Vercel configuration file (**vercel.json**) at the root of your project to redirect all requests to the server function.
+
+<Tabs>
+<Tab label="vercel.json v2">
+
+```json vercel.json
+{
+  "version": 2,
+  "outputDirectory": "dist",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist/client"
+      }
+    },
+    {
+      "src": "api/index.js",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["dist/server/**"]
+      }
+    }
+  ],
+  "routes": [
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/api/index.js"
+    }
+  ]
+}
+```
+
+The **legacy** version of the **vercel.json** needs a `@vercel/static-build` runtime to serve your assets from the **dist/client** output directory.
+
+</Tab>
+<Tab label="vercel.json v3">
+
+```json vercel.json
+{
+  "buildCommand": "expo export -p web",
+  "outputDirectory": "dist/client",
+  "functions": {
+    "api/index.js": {
+      "runtime": "@vercel/node@3.0.11",
+      "includeFiles": "dist/server/**"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api/index.js"
+    }
+  ]
+}
+```
+
+The newer version of the **vercel.json** does not use `routes` and `builds` configuration options anymore, and serves your public assets from the **dist/client** output directory automatically.
+
+</Tab>
+</Tabs>
+
+</Step>
+
+<Step label="3">
+
+After you have created the configuration files, add a `vercel-build` script to your **package.json** file and set it to `expo export -p web`.
+
+</Step>
+
+<Step label="4">
+
+Deploy to Vercel with the [Vercel CLI](https://vercel.com/docs/cli).
+
+<Terminal
+  cmd={[
+    '# Install the Vercel CLI globally if needed.',
+    '$ npm install vercel -g',
+    '# Deploy the website.',
+    '$ vercel deploy',
+  ]}
+/>
+
+You can now visit your website at the URL provided by the Vercel CLI.
+
+</Step>
+
 ## Known limitations
 
-There are a number of known features that are not currently supported in the API Routes beta release.
+Several known features are not currently supported in the API Routes beta release.
 
 ### No dynamic imports
 

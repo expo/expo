@@ -9,10 +9,15 @@
 #define SkImageFilter_DEFINED
 
 #include "include/core/SkFlattenable.h"
-#include "include/core/SkMatrix.h"
 #include "include/core/SkRect.h"
+#include "include/core/SkRefCnt.h"
+#include "include/private/base/SkAPI.h"
+
+#include <cstddef>
 
 class SkColorFilter;
+class SkMatrix;
+struct SkDeserialProcs;
 
 /**
  *  Base class for image filters. If one is installed in the paint, then all drawing occurs as

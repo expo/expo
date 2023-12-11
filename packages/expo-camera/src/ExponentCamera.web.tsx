@@ -113,21 +113,21 @@ const ExponentCamera = React.forwardRef(
         StyleSheet.absoluteFill,
         styles.video,
         {
+          pointerEvents: props.pointerEvents,
           // Flip the camera
           transform: isFrontFacingCamera ? [{ scaleX: -1 }] : undefined,
         },
       ];
-    }, [native.type]);
+    }, [props.pointerEvents, native.type]);
 
     return (
-      <View pointerEvents="box-none" style={[styles.videoWrapper, props.style]}>
+      <View style={[styles.videoWrapper, props.style]}>
         <Video
           autoPlay
           playsInline
           muted={isMuted}
           poster={poster}
           // webkitPlaysinline
-          pointerEvents={props.pointerEvents}
           ref={video}
           style={style}
         />
@@ -155,6 +155,7 @@ const styles = StyleSheet.create({
   videoWrapper: {
     flex: 1,
     alignItems: 'stretch',
+    pointerEvents: 'box-none',
   },
   video: {
     width: '100%',

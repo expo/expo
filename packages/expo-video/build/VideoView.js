@@ -1,25 +1,38 @@
-import React from 'react';
+import { PureComponent, useMemo, createRef } from 'react';
 import NativeVideoModule from './NativeVideoModule';
 import NativeVideoView from './NativeVideoView';
 export function useVideoPlayer(source = null) {
-    return React.useMemo(() => {
+    return useMemo(() => {
         return new NativeVideoModule.VideoPlayer(source);
     }, []);
 }
-export class VideoView extends React.PureComponent {
-    nativeRef = React.createRef();
+export class VideoView extends PureComponent {
+    nativeRef = createRef();
     enterFullscreen() {
-        // @ts-expect-error
         this.nativeRef.current?.enterFullscreen();
     }
     exitFullscreen() {
-        // @ts-expect-error
         this.nativeRef.current?.exitFullscreen();
+    }
+    /**
+     * Enters Picture in Picture (PiP) mode. Throws an exception if the device does not support PiP.
+     * > **Note:** Only one player can be in Picture in Picture (PiP) mode at a time.
+     * @platform ios 14+
+     */
+    startPictureInPicture() {
+        return this.nativeRef.current?.startPictureInPicture();
+    }
+    /**
+     * Exits Picture in Picture (PiP) mode.
+     * @platform ios 14+
+     */
+    stopPictureInPicture() {
+        return this.nativeRef.current?.stopPictureInPicture();
     }
     render() {
         const { player, ...props } = this.props;
         const playerId = getPlayerId(player);
-        return React.createElement(NativeVideoView, { ...props, player: playerId, ref: this.nativeRef });
+        return <NativeVideoView {...props} player={playerId} ref={this.nativeRef}/>;
     }
 }
 // Temporary solution to pass the shared object ID instead of the player object.

@@ -67,6 +67,13 @@ function _metroConfig() {
   };
   return data;
 }
+function _os() {
+  const data = _interopRequireDefault(require("os"));
+  _os = function () {
+    return data;
+  };
+  return data;
+}
 function _path() {
   const data = _interopRequireDefault(require("path"));
   _path = function () {
@@ -91,6 +98,13 @@ function _customizeFrame() {
 function _env2() {
   const data = require("./env");
   _env2 = function () {
+    return data;
+  };
+  return data;
+}
+function _fileStore() {
+  const data = require("./file-store");
+  _fileStore = function () {
     return data;
   };
   return data;
@@ -151,6 +165,40 @@ function getAssetPlugins(projectRoot) {
   return [hashAssetFilesPath];
 }
 let hasWarnedAboutExotic = false;
+
+// Patch Metro's graph to support always parsing certain modules. This enables
+// things like Tailwind CSS which update based on their own heuristics.
+function patchMetroGraphToSupportUncachedModules() {
+  const {
+    Graph
+  } = require('metro/src/DeltaBundler/Graph');
+  const original_traverseDependencies = Graph.prototype.traverseDependencies;
+  if (!original_traverseDependencies.__patched) {
+    original_traverseDependencies.__patched = true;
+    Graph.prototype.traverseDependencies = function (paths, options) {
+      this.dependencies.forEach(dependency => {
+        // Find any dependencies that have been marked as `skipCache` and ensure they are invalidated.
+        // `skipCache` is set when a CSS module is found by PostCSS.
+        if (dependency.output.find(file => {
+          var _file$data$css;
+          return (_file$data$css = file.data.css) === null || _file$data$css === void 0 ? void 0 : _file$data$css.skipCache;
+        }) && !paths.includes(dependency.path)) {
+          // Ensure we invalidate the `unstable_transformResultKey` (input hash) so the module isn't removed in
+          // the Graph._processModule method.
+          dependency.unstable_transformResultKey = dependency.unstable_transformResultKey + '.';
+
+          // Add the path to the list of modified paths so it gets run through the transformer again,
+          // this will ensure it is passed to PostCSS -> Tailwind.
+          paths.push(dependency.path);
+        }
+      });
+      // Invoke the original method with the new paths to ensure the standard behavior is preserved.
+      return original_traverseDependencies.call(this, paths, options);
+    };
+    // Ensure we don't patch the method twice.
+    Graph.prototype.traverseDependencies.__patched = true;
+  }
+}
 function getDefaultConfig(projectRoot, {
   mode,
   isCSSEnabled = true
@@ -159,10 +207,13 @@ function getDefaultConfig(projectRoot, {
     getDefaultConfig: getDefaultMetroConfig,
     mergeConfig
   } = (0, _metroConfig2().importMetroConfig)(projectRoot);
+  if (isCSSEnabled) {
+    patchMetroGraphToSupportUncachedModules();
+  }
   const isExotic = mode === 'exotic' || _env2().env.EXPO_USE_EXOTIC;
   if (isExotic && !hasWarnedAboutExotic) {
     hasWarnedAboutExotic = true;
-    console.log(_chalk().default.gray(`\u203A Unstable feature ${_chalk().default.bold`EXPO_USE_EXOTIC`} is enabled. Bundling may not work as expected, and is subject to breaking changes.`));
+    console.log(_chalk().default.gray(`\u203A Feature ${_chalk().default.bold`EXPO_USE_EXOTIC`} is no longer supported.`));
   }
   const reactNativePath = _path().default.dirname((0, _resolveFrom().default)(projectRoot, 'react-native/package.json'));
   try {
@@ -196,7 +247,6 @@ function getDefaultConfig(projectRoot, {
   });
   const pkg = (0, _config().getPackageJson)(projectRoot);
   const watchFolders = (0, _getWatchFolders().getWatchFolders)(projectRoot);
-  // TODO: nodeModulesPaths does not work with the new Node.js package.json exports API, this causes packages like uuid to fail. Disabling for now.
   const nodeModulesPaths = (0, _getModulesPaths().getModulesPaths)(projectRoot);
   if (_env2().env.EXPO_DEBUG) {
     console.log();
@@ -208,7 +258,6 @@ function getDefaultConfig(projectRoot, {
     console.log(`- React Native: ${reactNativePath}`);
     console.log(`- Watch Folders: ${watchFolders.join(', ')}`);
     console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
-    console.log(`- Exotic: ${isExotic}`);
     console.log(`- Env Files: ${envFiles}`);
     console.log(`- Sass: ${sassVersion}`);
     console.log(`- Reanimated: ${reanimatedVersion}`);
@@ -220,14 +269,22 @@ function getDefaultConfig(projectRoot, {
     reporter,
     ...metroDefaultValues
   } = getDefaultMetroConfig.getDefaultValues(projectRoot);
+  const cacheStore = new (_fileStore().FileStore)({
+    root: _path().default.join(_os().default.tmpdir(), 'metro-cache')
+  });
 
   // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
   // This is a convenience for getDefaultConfig use in metro.config.js, e.g. to modify assetExts.
   const metroConfig = mergeConfig(metroDefaultValues, {
     watchFolders,
     resolver: {
-      // unstable_conditionsByPlatform: { web: ['browser'] },
-      unstable_conditionNames: ['require', 'import', 'react-native'],
+      unstable_conditionsByPlatform: {
+        ios: ['react-native'],
+        android: ['react-native'],
+        // This is removed for server platforms.
+        web: ['browser']
+      },
+      unstable_conditionNames: ['require', 'import'],
       resolverMainFields: ['react-native', 'browser', 'main'],
       platforms: ['ios', 'android'],
       assetExts: metroDefaultValues.resolver.assetExts.concat(
@@ -236,6 +293,7 @@ function getDefaultConfig(projectRoot, {
       sourceExts,
       nodeModulesPaths
     },
+    cacheStores: [cacheStore],
     watcher: {
       // strip starting dot from env files
       additionalExts: envFiles.map(file => file.replace(/^\./, ''))
@@ -245,6 +303,10 @@ function getDefaultConfig(projectRoot, {
         const preModules = [
         // MUST be first
         require.resolve(_path().default.join(reactNativePath, 'Libraries/Core/InitializeCore'))];
+        const stdRuntime = _resolveFrom().default.silent(projectRoot, 'expo/build/winter');
+        if (stdRuntime) {
+          preModules.push(stdRuntime);
+        }
 
         // We need to shift this to be the first module so web Fast Refresh works as expected.
         // This will only be applied if the module is installed and imported somewhere in the bundle already.
@@ -254,7 +316,7 @@ function getDefaultConfig(projectRoot, {
         }
         return preModules;
       },
-      getPolyfills: () => require(_path().default.join(reactNativePath, 'rn-get-polyfills'))()
+      getPolyfills: () => require('@react-native/js-polyfills')()
     },
     server: {
       rewriteRequestUrl: (0, _rewriteRequestUrl().getRewriteRequestUrl)(projectRoot),
@@ -266,9 +328,7 @@ function getDefaultConfig(projectRoot, {
     symbolicator: {
       customizeFrame: (0, _customizeFrame().getDefaultCustomizeFrame)()
     },
-    transformerPath: isCSSEnabled ?
-    // Custom worker that adds CSS support for Metro web.
-    require.resolve('./transform-worker/transform-worker') : metroDefaultValues.transformerPath,
+    transformerPath: require.resolve('./transform-worker/transform-worker'),
     transformer: {
       // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
       // @ts-expect-error: not on type.
@@ -280,11 +340,17 @@ function getDefaultConfig(projectRoot, {
       // `require.context` support
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,
-      babelTransformerPath: isExotic ?
-      // TODO: Combine these into one transformer.
-      require.resolve('./transformer/metro-expo-exotic-babel-transformer') : require.resolve('./babel-transformer'),
-      assetRegistryPath: 'react-native/Libraries/Image/AssetRegistry',
-      assetPlugins: getAssetPlugins(projectRoot)
+      babelTransformerPath: require.resolve('./babel-transformer'),
+      // See: https://github.com/facebook/react-native/blob/v0.73.0/packages/metro-config/index.js#L72-L74
+      asyncRequireModulePath: _resolveFrom().default.silent(projectRoot, '@expo/metro-runtime/async-require') || (0, _resolveFrom().default)(reactNativePath, metroDefaultValues.transformer.asyncRequireModulePath),
+      assetRegistryPath: '@react-native/assets-registry/registry',
+      assetPlugins: getAssetPlugins(projectRoot),
+      getTransformOptions: async () => ({
+        transform: {
+          experimentalImportSupport: false,
+          inlineRequires: false
+        }
+      })
     }
   });
   return (0, _withExpoSerializers().withExpoSerializers)(metroConfig);

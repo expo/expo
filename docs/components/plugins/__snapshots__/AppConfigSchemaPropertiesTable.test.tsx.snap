@@ -3,14 +3,14 @@
 exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
 <div>
   <div
-    class="css-c2t1qw-AppConfigProperty"
+    class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
   >
     <p
       class="  css-1kfqm4n-TextComponent"
       data-text="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#name"
       >
         <span
@@ -76,7 +76,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       Name of your app.
     </p>
     <details
-      class="css-834wmb"
+      class="css-xpa10j"
       id="bare-workflow"
     >
       <summary
@@ -143,7 +143,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </a>
       </summary>
       <div
-        class="css-16wdqb0"
+        class="last:[&>*]:!mb-1 css-qbaxbl"
       >
         <p
           class="mb-4 css-1kfqm4n-TextComponent"
@@ -156,14 +156,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     <div />
   </div>
   <div
-    class="css-c2t1qw-AppConfigProperty"
+    class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
   >
     <p
       class="  css-1kfqm4n-TextComponent"
       data-text="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#androidnavigationbar"
       >
         <span
@@ -229,7 +229,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       Configuration for the bottom navigation bar on Android.
     </p>
     <details
-      class="css-834wmb"
+      class="css-xpa10j"
       id="expokit"
     >
       <summary
@@ -296,7 +296,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </a>
       </summary>
       <div
-        class="css-16wdqb0"
+        class="last:[&>*]:!mb-1 css-qbaxbl"
       >
         <p
           class="mb-4 css-1kfqm4n-TextComponent"
@@ -307,7 +307,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </div>
     </details>
     <details
-      class="css-834wmb"
+      class="css-xpa10j"
       id="bare-workflow-1"
     >
       <summary
@@ -374,7 +374,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </a>
       </summary>
       <div
-        class="css-16wdqb0"
+        class="last:[&>*]:!mb-1 css-qbaxbl"
       >
         <p
           class="mb-4 css-1kfqm4n-TextComponent"
@@ -386,14 +386,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </details>
     <div>
       <div
-        class="css-c2t1qw-AppConfigProperty"
+        class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
       >
         <p
           class="  css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <a
-            class="css-1y48vg3"
+            class="css-1yk6eqh"
             href="#visible"
           >
             <span
@@ -468,7 +468,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           Determines how and when the navigation bar is shown.
         </p>
         <details
-          class="css-834wmb"
+          class="css-xpa10j"
           id="expokit-1"
         >
           <summary
@@ -535,7 +535,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </a>
           </summary>
           <div
-            class="css-16wdqb0"
+            class="last:[&>*]:!mb-1 css-qbaxbl"
           >
             <p
               class="mb-4 css-1kfqm4n-TextComponent"
@@ -547,14 +547,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </details>
         <div>
           <div
-            class="css-c2t1qw-AppConfigProperty"
+            class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
           >
             <p
               class="  css-1kfqm4n-TextComponent"
               data-text="true"
             >
               <a
-                class="css-1y48vg3"
+                class="css-1yk6eqh"
                 href="#always"
               >
                 <span
@@ -633,14 +633,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </div>
       <div
-        class="css-c2t1qw-AppConfigProperty"
+        class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
       >
         <p
           class="  css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <a
-            class="css-1y48vg3"
+            class="css-1yk6eqh"
             href="#backgroundcolor"
           >
             <span
@@ -733,14 +733,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </div>
   </div>
   <div
-    class="css-c2t1qw-AppConfigProperty"
+    class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
   >
     <p
       class="  css-1kfqm4n-TextComponent"
       data-text="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#intentfilters"
       >
         <span
@@ -806,7 +806,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       Configuration for setting an array of custom intent filters in Android manifest.
     </p>
     <details
-      class="css-834wmb"
+      class="css-xpa10j"
       id="bare-workflow-2"
     >
       <summary
@@ -873,7 +873,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </a>
       </summary>
       <div
-        class="css-16wdqb0"
+        class="last:[&>*]:!mb-1 css-qbaxbl"
       >
         <p
           class="mb-4 css-1kfqm4n-TextComponent"
@@ -927,14 +927,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </blockquote>
     <div>
       <div
-        class="css-c2t1qw-AppConfigProperty"
+        class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
       >
         <p
           class="  css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <a
-            class="css-1y48vg3"
+            class="css-1yk6eqh"
             href="#autoverify"
           >
             <span
@@ -1011,14 +1011,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <div />
       </div>
       <div
-        class="css-c2t1qw-AppConfigProperty"
+        class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
       >
         <p
           class="  css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <a
-            class="css-1y48vg3"
+            class="css-1yk6eqh"
             href="#data"
           >
             <span
@@ -1088,14 +1088,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </p>
         <div>
           <div
-            class="css-c2t1qw-AppConfigProperty"
+            class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
           >
             <p
               class="  css-1kfqm4n-TextComponent"
               data-text="true"
             >
               <a
-                class="css-1y48vg3"
+                class="css-1yk6eqh"
                 href="#host"
               >
                 <span

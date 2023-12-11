@@ -8,6 +8,18 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Resolve `expo-modules-autolinking` from `expo` in the generated project integrator. ([#25817](https://github.com/expo/expo/pull/25817) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+## 1.8.0 — 2023-11-14
+
+### 🎉 New features
+
+- Added Expo CLI devtools plugins support. ([#24649](https://github.com/expo/expo/pull/24649) by [@kudo](https://github.com/kudo))
+
+## 1.7.0 — 2023-10-17
+
 ### 💡 Others
 
 - Transpile for Node 18 (LTS). ([#24471](https://github.com/expo/expo/pull/24471) by [@EvanBacon](https://github.com/EvanBacon))

@@ -8,10 +8,16 @@ import {
 import { resolveEntryPoint } from '@expo/config/paths';
 import findWorkspaceRoot from 'find-yarn-workspace-root';
 import path from 'path';
-import resolveFrom from 'resolve-from';
 import { resolve } from 'url';
 
 import { ExpoMiddleware } from './ExpoMiddleware';
+import {
+  shouldEnableAsyncImports,
+  createBundleUrlPath,
+  getBaseUrlFromExpoConfig,
+  getAsyncRoutesFromExpoConfig,
+  createBundleUrlPathFromExpoConfig,
+} from './metroOptions';
 import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
 import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
 import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
@@ -22,6 +28,7 @@ import { CommandError } from '../../../utils/errors';
 import { stripExtension } from '../../../utils/url';
 import * as ProjectDevices from '../../project/devices';
 import { UrlCreator } from '../UrlCreator';
+import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
 import { getPlatformBundlers } from '../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
 
@@ -71,72 +78,6 @@ export function resolveMainModuleName(
   debug(`Resolved entry point: ${entryPoint} (project root: ${projectRoot})`);
 
   return stripExtension(entryPoint, 'js');
-}
-
-export function shouldEnableAsyncImports(projectRoot: string): boolean {
-  if (env.EXPO_NO_METRO_LAZY) {
-    return false;
-  }
-
-  // `@expo/metro-runtime` includes support for the fetch + eval runtime code required
-  // to support async imports. If it's not installed, we can't support async imports.
-  // If it is installed, the user MUST import it somewhere in their project.
-  // Expo Router automatically pulls this in, so we can check for it.
-  return resolveFrom.silent(projectRoot, '@expo/metro-runtime') != null;
-}
-
-export function createBundleUrlPath({
-  platform,
-  mainModuleName,
-  mode,
-  minify = mode === 'production',
-  environment,
-  serializerOutput,
-  serializerIncludeMaps,
-  lazy,
-  engine,
-}: {
-  platform: string;
-  mainModuleName: string;
-  mode: string;
-  minify?: boolean;
-  environment?: string;
-  serializerOutput?: 'static';
-  serializerIncludeMaps?: boolean;
-  lazy?: boolean;
-  engine?: 'hermes';
-}): string {
-  const queryParams = new URLSearchParams({
-    platform: encodeURIComponent(platform),
-    dev: String(mode !== 'production'),
-    // TODO: Is this still needed?
-    hot: String(false),
-  });
-
-  if (lazy) {
-    queryParams.append('lazy', String(lazy));
-  }
-
-  if (minify) {
-    queryParams.append('minify', String(minify));
-  }
-
-  if (engine) {
-    queryParams.append('transform.engine', engine);
-  }
-
-  if (environment) {
-    queryParams.append('resolver.environment', environment);
-    queryParams.append('transform.environment', environment);
-  }
-  if (serializerOutput) {
-    queryParams.append('serializer.output', serializerOutput);
-  }
-  if (serializerIncludeMaps) {
-    queryParams.append('serializer.map', String(serializerIncludeMaps));
-  }
-
-  return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
 }
 
 /** Info about the computer hosting the dev server. */
@@ -226,6 +167,13 @@ export abstract class ManifestMiddleware<
       mainModuleName,
       hostname,
       engine: isHermesEnabled ? 'hermes' : undefined,
+      baseUrl: getBaseUrlFromExpoConfig(projectConfig.exp),
+      asyncRoutes: getAsyncRoutesFromExpoConfig(
+        projectConfig.exp,
+        this.options.mode ?? 'development',
+        platform
+      ),
+      routerRoot: getRouterDirectoryModuleIdWithManifest(this.projectRoot, projectConfig.exp),
     });
 
     // Resolve all assets and set them on the manifest as URLs
@@ -277,11 +225,19 @@ export abstract class ManifestMiddleware<
     mainModuleName,
     hostname,
     engine,
+    baseUrl,
+    isExporting,
+    asyncRoutes,
+    routerRoot,
   }: {
     platform: string;
     hostname?: string | null;
     mainModuleName: string;
     engine?: 'hermes';
+    baseUrl?: string;
+    asyncRoutes: boolean;
+    isExporting?: boolean;
+    routerRoot: string;
   }): string {
     const path = createBundleUrlPath({
       mode: this.options.mode ?? 'development',
@@ -290,6 +246,10 @@ export abstract class ManifestMiddleware<
       mainModuleName,
       lazy: shouldEnableAsyncImports(this.projectRoot),
       engine,
+      baseUrl,
+      isExporting: !!isExporting,
+      asyncRoutes,
+      routerRoot,
     });
 
     return (
@@ -299,34 +259,6 @@ export abstract class ManifestMiddleware<
         hostname,
       }) + path
     );
-  }
-
-  private _getBundleUrlPath({
-    platform,
-    mainModuleName,
-    engine,
-  }: {
-    platform: string;
-    mainModuleName: string;
-    engine?: 'hermes';
-  }): string {
-    const queryParams = new URLSearchParams({
-      platform: encodeURIComponent(platform),
-      dev: String(this.options.mode !== 'production'),
-      // TODO: Is this still needed?
-      hot: String(false),
-    });
-    if (shouldEnableAsyncImports(this.projectRoot)) {
-      queryParams.append('lazy', String(true));
-    }
-    if (engine) {
-      queryParams.append('transform.engine', String(engine));
-    }
-    if (this.options.minify) {
-      queryParams.append('minify', String(this.options.minify));
-    }
-
-    return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
   }
 
   /** Log telemetry. */
@@ -392,11 +324,16 @@ export abstract class ManifestMiddleware<
       pkg: this.initialProjectConfig.pkg,
       platform,
     });
-    return this._getBundleUrlPath({
+
+    return createBundleUrlPathFromExpoConfig(this.projectRoot, this.initialProjectConfig.exp, {
       platform,
       mainModuleName,
+      minify: this.options.minify,
+      lazy: shouldEnableAsyncImports(this.projectRoot),
+      mode: this.options.mode ?? 'development',
       // Hermes doesn't support more modern JS features than most, if not all, modern browser.
       engine: 'hermes',
+      isExporting: false,
     });
   }
 

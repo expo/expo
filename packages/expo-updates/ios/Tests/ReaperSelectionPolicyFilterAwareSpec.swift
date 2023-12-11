@@ -7,7 +7,7 @@ import ExpoModulesTestCore
 import EXManifests
 
 class ReaperSelectionPolicyFilterAwareSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     var config: UpdatesConfig!
     var database: UpdatesDatabase!
     var update1: Update!
@@ -20,8 +20,10 @@ class ReaperSelectionPolicyFilterAwareSpec : ExpoSpec {
     beforeEach {
       let runtimeVersion = "1.0"
       let scopeKey = "dummyScope"
-      config = UpdatesConfig.config(fromDictionary: [
-        UpdatesConfig.EXUpdatesConfigScopeKeyKey: "scope1"
+      config = try! UpdatesConfig.config(fromDictionary: [
+        UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://example.com",
+        UpdatesConfig.EXUpdatesConfigScopeKeyKey: "scope1",
+        UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
       ])
       database = UpdatesDatabase()
       update1 = Update(
@@ -119,8 +121,10 @@ class ReaperSelectionPolicyFilterAwareSpec : ExpoSpec {
       }
       
       it("updates to delete - different scope key") {
-        let configDifferentScope = UpdatesConfig.config(fromDictionary: [
-          UpdatesConfig.EXUpdatesConfigScopeKeyKey: "differentScopeKey"
+        let configDifferentScope = try! UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://example.com",
+          UpdatesConfig.EXUpdatesConfigScopeKeyKey: "differentScopeKey",
+          UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
         ])
         let update4DifferentScope = Update(
           manifest: update4.manifest,

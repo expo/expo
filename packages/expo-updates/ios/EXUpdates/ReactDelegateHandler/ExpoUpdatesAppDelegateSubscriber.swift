@@ -11,7 +11,7 @@ import EXUpdatesInterface
 public final class ExpoUpdatesAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   public func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
     if EXAppDefines.APP_DEBUG && !UpdatesUtils.isNativeDebuggingEnabled() {
-      UpdatesControllerRegistry.sharedInstance.controller = DevLauncherController.sharedInstance
+      UpdatesControllerRegistry.sharedInstance.controller = AppController.initializeAsDevLauncherWithoutStarting()
     }
     return true
   }

@@ -59,21 +59,9 @@
 - (NSString *)symbolPrefixForSdkVersion:(NSString *)version isKernel:(BOOL)isKernel
 {
 #ifdef INCLUDES_VERSIONED_CODE
-  NSDictionary *detachedVersions = _versions[@"detachedNativeVersions"];
-  if (detachedVersions) {
-    if (!isKernel && detachedVersions[@"shell"]) {
-      // we are in a detached shell scenario, so we always want to leave the shell unprefixed
-      return @"";
-    }
-    if (isKernel && detachedVersions[@"shell"] && detachedVersions[@"kernel"]) {
-      if ([detachedVersions[@"shell"] isEqualToString:detachedVersions[@"kernel"]]) {
-        // kernel version matches shell version, so run them both unprefixed
-        return @"";
-      } else {
-        // kernel needs to run on prefixed code for the given kernel version, continue
-        version = detachedVersions[@"kernel"];
-      }
-    }
+  // Projects that use the latest SDK version use unversioned code
+  if (isKernel || [version isEqualToString:_temporarySdkVersion]) {
+    return @"";
   }
   if (version && version.length && ![version isEqualToString:@"UNVERSIONED"]) {
     return [[@"ABI" stringByAppendingString:version] stringByReplacingOccurrencesOfString:@"." withString:@"_"];

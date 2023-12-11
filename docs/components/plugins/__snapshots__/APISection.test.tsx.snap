@@ -7,7 +7,7 @@ exports[`APISection expo-apple-authentication 1`] = `
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#component"
     >
       <span
@@ -57,7 +57,7 @@ exports[`APISection expo-apple-authentication 1`] = `
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#appleauthenticationbutton"
       >
         <span
@@ -295,7 +295,7 @@ for more details.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#props"
       >
         <span
@@ -346,7 +346,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-1y48vg3"
+            class="css-1yk6eqh"
             href="#buttonstyle"
           >
             <span
@@ -430,7 +430,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-1y48vg3"
+            class="css-1yk6eqh"
             href="#buttontype"
           >
             <span
@@ -514,7 +514,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-1y48vg3"
+            class="css-1yk6eqh"
             href="#cornerradius"
           >
             <span
@@ -606,7 +606,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-1y48vg3"
+            class="css-1yk6eqh"
             href="#onpress"
           >
             <span
@@ -700,7 +700,7 @@ in here.
           data-heading="true"
         >
           <a
-            class="css-1y48vg3"
+            class="css-1yk6eqh"
             href="#style"
           >
             <span
@@ -830,7 +830,7 @@ properties.
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#inherited-props"
         >
           <span
@@ -901,7 +901,7 @@ properties.
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#methods"
     >
       <span
@@ -951,7 +951,7 @@ properties.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#getcredentialstateasyncuser"
       >
         <span
@@ -1219,7 +1219,7 @@ value depending on the state of the credential.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#isavailableasync"
       >
         <span
@@ -1355,7 +1355,7 @@ value depending on the state of the credential.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#refreshasyncoptions"
       >
         <span
@@ -1588,7 +1588,7 @@ refresh operation.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#signinasyncoptions"
       >
         <span
@@ -1868,7 +1868,7 @@ sign-in operation.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#signoutasyncoptions"
       >
         <span
@@ -2132,7 +2132,7 @@ sign-out operation.
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#event-subscriptions"
     >
       <span
@@ -2182,7 +2182,7 @@ sign-out operation.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#addrevokelistenerlistener"
       >
         <span
@@ -2346,7 +2346,7 @@ sign-out operation.
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#types"
     >
       <span
@@ -2396,7 +2396,7 @@ sign-out operation.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#appleauthenticationcredential"
       >
         <span
@@ -2921,7 +2921,7 @@ developers.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#appleauthenticationfullname"
       >
         <span
@@ -3228,7 +3228,7 @@ may be
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#appleauthenticationrefreshoptions"
       >
         <span
@@ -3538,7 +3538,7 @@ OAuth 2.0 protocol
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#appleauthenticationsigninoptions"
       >
         <span
@@ -3869,7 +3869,7 @@ OAuth 2.0 protocol
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#appleauthenticationsignoutoptions"
       >
         <span
@@ -4109,7 +4109,7 @@ OAuth 2.0 protocol
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#subscription"
       >
         <span
@@ -4225,7 +4225,7 @@ OAuth 2.0 protocol
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#enums"
     >
       <span
@@ -4268,87 +4268,97 @@ OAuth 2.0 protocol
     </a>
   </h2>
   <div
-    class="css-1gsbrid"
+    class="!p-0 css-1fultt1"
   >
-    <h3
-      class="  css-wbzzgj-TextComponent"
-      data-heading="true"
+    <div
+      class="px-5 pt-4"
     >
-      <a
-        class="css-1y48vg3"
-        href="#appleauthenticationbuttonstyle"
+      <h3
+        class="  css-wbzzgj-TextComponent"
+        data-heading="true"
       >
-        <span
-          class="css-s3qkfm"
-          id="appleauthenticationbuttonstyle"
-        />
-        <span
-          class="css-6n7j50"
+        <a
+          class="css-1yk6eqh"
+          href="#appleauthenticationbuttonstyle"
+        >
+          <span
+            class="css-s3qkfm"
+            id="appleauthenticationbuttonstyle"
+          />
+          <span
+            class="css-6n7j50"
+          >
+            <code
+              class="css-yd3r23-TextComponent"
+              data-text="true"
+            >
+              AppleAuthenticationButtonStyle
+            </code>
+          </span>
+          <span
+            class="css-13330di"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h3>
+      <p
+        class="mb-4 css-1kfqm4n-TextComponent"
+        data-text="true"
+      >
+        An enum whose values control which pre-defined color scheme to use when rendering an 
+        <a
+          class="css-1na8e0o-A"
+          href="#appleauthenticationappleauthenticationbutton"
         >
           <code
-            class="css-yd3r23-TextComponent"
+            class="css-1a6y07t-TextComponent"
             data-text="true"
           >
-            AppleAuthenticationButtonStyle
+            AppleAuthenticationButton
           </code>
-        </span>
-        <span
-          class="css-13330di"
-        >
-          <svg
-            aria-label="permalink"
-            class="anchor-icon"
-            fill="none"
-            height="24"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-            <path
-              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-          </svg>
-        </span>
-      </a>
-    </h3>
-    <p
-      class="mb-4 css-1kfqm4n-TextComponent"
-      data-text="true"
-    >
-      An enum whose values control which pre-defined color scheme to use when rendering an 
-      <a
-        class="css-1na8e0o-A"
-        href="#appleauthenticationappleauthenticationbutton"
+        </a>
+        .
+      </p>
+      <p
+        class="!mb-0 !border-b-0 css-1eksndl-BoxSectionHeader"
+        data-text="true"
       >
-        <code
-          class="css-1a6y07t-TextComponent"
-          data-text="true"
-        >
-          AppleAuthenticationButton
-        </code>
-      </a>
-      .
-    </p>
+        AppleAuthenticationButtonStyle Values
+      </p>
+    </div>
     <div
-      class="css-11xr3cd"
+      class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
         class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#white"
         >
           <span
@@ -4409,14 +4419,14 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-11xr3cd"
+      class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
         class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#white_outline"
         >
           <span
@@ -4477,14 +4487,14 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-11xr3cd"
+      class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
         class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#black"
         >
           <span
@@ -4546,87 +4556,97 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-1gsbrid"
+    class="!p-0 css-1fultt1"
   >
-    <h3
-      class="  css-wbzzgj-TextComponent"
-      data-heading="true"
+    <div
+      class="px-5 pt-4"
     >
-      <a
-        class="css-1y48vg3"
-        href="#appleauthenticationbuttontype"
+      <h3
+        class="  css-wbzzgj-TextComponent"
+        data-heading="true"
       >
-        <span
-          class="css-s3qkfm"
-          id="appleauthenticationbuttontype"
-        />
-        <span
-          class="css-6n7j50"
+        <a
+          class="css-1yk6eqh"
+          href="#appleauthenticationbuttontype"
+        >
+          <span
+            class="css-s3qkfm"
+            id="appleauthenticationbuttontype"
+          />
+          <span
+            class="css-6n7j50"
+          >
+            <code
+              class="css-yd3r23-TextComponent"
+              data-text="true"
+            >
+              AppleAuthenticationButtonType
+            </code>
+          </span>
+          <span
+            class="css-13330di"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h3>
+      <p
+        class="mb-4 css-1kfqm4n-TextComponent"
+        data-text="true"
+      >
+        An enum whose values control which pre-defined text to use when rendering an 
+        <a
+          class="css-1na8e0o-A"
+          href="#appleauthenticationappleauthenticationbutton"
         >
           <code
-            class="css-yd3r23-TextComponent"
+            class="css-1a6y07t-TextComponent"
             data-text="true"
           >
-            AppleAuthenticationButtonType
+            AppleAuthenticationButton
           </code>
-        </span>
-        <span
-          class="css-13330di"
-        >
-          <svg
-            aria-label="permalink"
-            class="anchor-icon"
-            fill="none"
-            height="24"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-            <path
-              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-          </svg>
-        </span>
-      </a>
-    </h3>
-    <p
-      class="mb-4 css-1kfqm4n-TextComponent"
-      data-text="true"
-    >
-      An enum whose values control which pre-defined text to use when rendering an 
-      <a
-        class="css-1na8e0o-A"
-        href="#appleauthenticationappleauthenticationbutton"
+        </a>
+        .
+      </p>
+      <p
+        class="!mb-0 !border-b-0 css-1eksndl-BoxSectionHeader"
+        data-text="true"
       >
-        <code
-          class="css-1a6y07t-TextComponent"
-          data-text="true"
-        >
-          AppleAuthenticationButton
-        </code>
-      </a>
-      .
-    </p>
+        AppleAuthenticationButtonType Values
+      </p>
+    </div>
     <div
-      class="css-11xr3cd"
+      class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
         class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#sign_in"
         >
           <span
@@ -4687,14 +4707,14 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-11xr3cd"
+      class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
         class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#continue"
         >
           <span
@@ -4755,7 +4775,7 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-11xr3cd"
+      class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <strong
         class="css-bvflvn-TextComponent"
@@ -4795,7 +4815,7 @@ OAuth 2.0 protocol
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#sign_up"
         >
           <span
@@ -4857,140 +4877,150 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-1gsbrid"
+    class="!p-0 css-1fultt1"
   >
-    <h3
-      class="  css-wbzzgj-TextComponent"
-      data-heading="true"
+    <div
+      class="px-5 pt-4"
     >
-      <a
-        class="css-1y48vg3"
-        href="#appleauthenticationcredentialstate"
+      <h3
+        class="  css-wbzzgj-TextComponent"
+        data-heading="true"
       >
-        <span
-          class="css-s3qkfm"
-          id="appleauthenticationcredentialstate"
-        />
-        <span
-          class="css-6n7j50"
+        <a
+          class="css-1yk6eqh"
+          href="#appleauthenticationcredentialstate"
+        >
+          <span
+            class="css-s3qkfm"
+            id="appleauthenticationcredentialstate"
+          />
+          <span
+            class="css-6n7j50"
+          >
+            <code
+              class="css-yd3r23-TextComponent"
+              data-text="true"
+            >
+              AppleAuthenticationCredentialState
+            </code>
+          </span>
+          <span
+            class="css-13330di"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h3>
+      <p
+        class="mb-4 css-1kfqm4n-TextComponent"
+        data-text="true"
+      >
+        An enum whose values specify state of the credential when checked with 
+        <a
+          class="css-1na8e0o-A"
+          href="#appleauthenticationgetcredentialstateasyncuser"
         >
           <code
-            class="css-yd3r23-TextComponent"
+            class="css-1a6y07t-TextComponent"
             data-text="true"
           >
-            AppleAuthenticationCredentialState
+            AppleAuthentication.getCredentialStateAsync()
           </code>
-        </span>
-        <span
-          class="css-13330di"
+        </a>
+        .
+      </p>
+      <blockquote
+        class="css-zknray-Callout"
+        data-testid="callout-container"
+      >
+        <div
+          class="css-7jywx8-Callout"
         >
           <svg
-            aria-label="permalink"
-            class="anchor-icon"
-            fill="none"
-            height="24"
+            class="icon-sm text-icon-default"
+            fill="currentColor"
+            role="img"
             viewBox="0 0 24 24"
-            width="24"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <path
-              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-            <path
-              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
+            <g
+              id="info-circle"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
+                fill-rule="evenodd"
+                id="Solid"
+              />
+            </g>
           </svg>
-        </span>
-      </a>
-    </h3>
-    <p
-      class="mb-4 css-1kfqm4n-TextComponent"
-      data-text="true"
-    >
-      An enum whose values specify state of the credential when checked with 
-      <a
-        class="css-1na8e0o-A"
-        href="#appleauthenticationgetcredentialstateasyncuser"
-      >
-        <code
-          class="css-1a6y07t-TextComponent"
-          data-text="true"
+        </div>
+        <div
+          class="css-1m74yfi-Callout"
         >
-          AppleAuthentication.getCredentialStateAsync()
-        </code>
-      </a>
-      .
-    </p>
-    <blockquote
-      class="css-zknray-Callout"
-      data-testid="callout-container"
-    >
-      <div
-        class="css-7jywx8-Callout"
-      >
-        <svg
-          class="icon-sm text-icon-default"
-          fill="currentColor"
-          role="img"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <g
-            id="info-circle"
+          <p
+            class="mb-4 css-1kfqm4n-TextComponent"
+            data-text="true"
           >
-            <path
-              clip-rule="evenodd"
-              d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
-              fill-rule="evenodd"
-              id="Solid"
-            />
-          </g>
-        </svg>
-      </div>
-      <div
-        class="css-1m74yfi-Callout"
-      >
-        <p
-          class="mb-4 css-1kfqm4n-TextComponent"
-          data-text="true"
-        >
-          <strong
-            class="css-bvflvn-TextComponent"
-          >
-            See:
-          </strong>
-           
-          <a
-            class="css-1na8e0o-A"
-            href="https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidprovidercredentialstate"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Apple
+            <strong
+              class="css-bvflvn-TextComponent"
+            >
+              See:
+            </strong>
+             
+            <a
+              class="css-1na8e0o-A"
+              href="https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidprovidercredentialstate"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              Apple
 Documentation
-          </a>
-          
+            </a>
+            
 for more details.
-        </p>
-      </div>
-    </blockquote>
+          </p>
+        </div>
+      </blockquote>
+      <p
+        class="!mb-0 !border-b-0 css-1eksndl-BoxSectionHeader"
+        data-text="true"
+      >
+        AppleAuthenticationCredentialState Values
+      </p>
+    </div>
     <div
-      class="css-11xr3cd"
+      class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
         class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#revoked"
         >
           <span
@@ -5045,14 +5075,14 @@ for more details.
       </code>
     </div>
     <div
-      class="css-11xr3cd"
+      class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
         class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#authorized"
         >
           <span
@@ -5107,14 +5137,14 @@ for more details.
       </code>
     </div>
     <div
-      class="css-11xr3cd"
+      class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
         class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#not_found"
         >
           <span
@@ -5169,14 +5199,14 @@ for more details.
       </code>
     </div>
     <div
-      class="css-11xr3cd"
+      class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
         class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#transferred"
         >
           <span
@@ -5232,69 +5262,79 @@ for more details.
     </div>
   </div>
   <div
-    class="css-1gsbrid"
+    class="!p-0 css-1fultt1"
   >
-    <h3
-      class="  css-wbzzgj-TextComponent"
-      data-heading="true"
-    >
-      <a
-        class="css-1y48vg3"
-        href="#appleauthenticationoperation"
-      >
-        <span
-          class="css-s3qkfm"
-          id="appleauthenticationoperation"
-        />
-        <span
-          class="css-6n7j50"
-        >
-          <code
-            class="css-yd3r23-TextComponent"
-            data-text="true"
-          >
-            AppleAuthenticationOperation
-          </code>
-        </span>
-        <span
-          class="css-13330di"
-        >
-          <svg
-            aria-label="permalink"
-            class="anchor-icon"
-            fill="none"
-            height="24"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-            <path
-              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-          </svg>
-        </span>
-      </a>
-    </h3>
     <div
-      class="css-11xr3cd"
+      class="px-5 pt-4"
+    >
+      <h3
+        class="  css-wbzzgj-TextComponent"
+        data-heading="true"
+      >
+        <a
+          class="css-1yk6eqh"
+          href="#appleauthenticationoperation"
+        >
+          <span
+            class="css-s3qkfm"
+            id="appleauthenticationoperation"
+          />
+          <span
+            class="css-6n7j50"
+          >
+            <code
+              class="css-yd3r23-TextComponent"
+              data-text="true"
+            >
+              AppleAuthenticationOperation
+            </code>
+          </span>
+          <span
+            class="css-13330di"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h3>
+      <p
+        class="!mb-0 !border-b-0 css-1eksndl-BoxSectionHeader"
+        data-text="true"
+      >
+        AppleAuthenticationOperation Values
+      </p>
+    </div>
+    <div
+      class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
         class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#implicit"
         >
           <span
@@ -5355,14 +5395,14 @@ for more details.
       </p>
     </div>
     <div
-      class="css-11xr3cd"
+      class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
         class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#login"
         >
           <span
@@ -5417,14 +5457,14 @@ for more details.
       </code>
     </div>
     <div
-      class="css-11xr3cd"
+      class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
         class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#refresh"
         >
           <span
@@ -5479,14 +5519,14 @@ for more details.
       </code>
     </div>
     <div
-      class="css-11xr3cd"
+      class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
         class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#logout"
         >
           <span
@@ -5542,184 +5582,194 @@ for more details.
     </div>
   </div>
   <div
-    class="css-1gsbrid"
+    class="!p-0 css-1fultt1"
   >
-    <h3
-      class="  css-wbzzgj-TextComponent"
-      data-heading="true"
+    <div
+      class="px-5 pt-4"
     >
-      <a
-        class="css-1y48vg3"
-        href="#appleauthenticationscope"
+      <h3
+        class="  css-wbzzgj-TextComponent"
+        data-heading="true"
       >
-        <span
-          class="css-s3qkfm"
-          id="appleauthenticationscope"
-        />
-        <span
-          class="css-6n7j50"
+        <a
+          class="css-1yk6eqh"
+          href="#appleauthenticationscope"
+        >
+          <span
+            class="css-s3qkfm"
+            id="appleauthenticationscope"
+          />
+          <span
+            class="css-6n7j50"
+          >
+            <code
+              class="css-yd3r23-TextComponent"
+              data-text="true"
+            >
+              AppleAuthenticationScope
+            </code>
+          </span>
+          <span
+            class="css-13330di"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h3>
+      <p
+        class="mb-4 css-1kfqm4n-TextComponent"
+        data-text="true"
+      >
+        An enum whose values specify scopes you can request when calling 
+        <a
+          class="css-1na8e0o-A"
+          href="#appleauthenticationsigninasyncoptions"
         >
           <code
-            class="css-yd3r23-TextComponent"
+            class="css-1a6y07t-TextComponent"
             data-text="true"
           >
-            AppleAuthenticationScope
+            AppleAuthentication.signInAsync()
           </code>
-        </span>
-        <span
-          class="css-13330di"
+        </a>
+        .
+      </p>
+      
+
+      <blockquote
+        class="css-zknray-Callout"
+        data-testid="callout-container"
+      >
+        <div
+          class="css-7jywx8-Callout"
         >
           <svg
-            aria-label="permalink"
-            class="anchor-icon"
-            fill="none"
-            height="24"
+            class="icon-sm text-icon-default"
+            fill="currentColor"
+            role="img"
             viewBox="0 0 24 24"
-            width="24"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <path
-              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-            <path
-              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
+            <g
+              id="info-circle"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
+                fill-rule="evenodd"
+                id="Solid"
+              />
+            </g>
           </svg>
-        </span>
-      </a>
-    </h3>
-    <p
-      class="mb-4 css-1kfqm4n-TextComponent"
-      data-text="true"
-    >
-      An enum whose values specify scopes you can request when calling 
-      <a
-        class="css-1na8e0o-A"
-        href="#appleauthenticationsigninasyncoptions"
-      >
-        <code
-          class="css-1a6y07t-TextComponent"
-          data-text="true"
+        </div>
+        <div
+          class="css-1m74yfi-Callout"
         >
-          AppleAuthentication.signInAsync()
-        </code>
-      </a>
-      .
-    </p>
-    
-
-    <blockquote
-      class="css-zknray-Callout"
-      data-testid="callout-container"
-    >
-      <div
-        class="css-7jywx8-Callout"
-      >
-        <svg
-          class="icon-sm text-icon-default"
-          fill="currentColor"
-          role="img"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <g
-            id="info-circle"
-          >
-            <path
-              clip-rule="evenodd"
-              d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
-              fill-rule="evenodd"
-              id="Solid"
-            />
-          </g>
-        </svg>
-      </div>
-      <div
-        class="css-1m74yfi-Callout"
-      >
-        
-
-        <p
-          class="mb-4 css-1kfqm4n-TextComponent"
-          data-text="true"
-        >
-          Note that it is possible that you will not be granted all of the scopes which you request.
-You will still need to handle null values for any fields you request.
-        </p>
-        
-
-      </div>
-    </blockquote>
-    <blockquote
-      class="css-zknray-Callout"
-      data-testid="callout-container"
-    >
-      <div
-        class="css-7jywx8-Callout"
-      >
-        <svg
-          class="icon-sm text-icon-default"
-          fill="currentColor"
-          role="img"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <g
-            id="info-circle"
-          >
-            <path
-              clip-rule="evenodd"
-              d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
-              fill-rule="evenodd"
-              id="Solid"
-            />
-          </g>
-        </svg>
-      </div>
-      <div
-        class="css-1m74yfi-Callout"
-      >
-        <p
-          class="mb-4 css-1kfqm4n-TextComponent"
-          data-text="true"
-        >
-          <strong
-            class="css-bvflvn-TextComponent"
-          >
-            See:
-          </strong>
-           
-          <a
-            class="css-1na8e0o-A"
-            href="https://developer.apple.com/documentation/authenticationservices/asauthorizationscope"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Apple
-Documentation
-          </a>
           
+
+          <p
+            class="mb-4 css-1kfqm4n-TextComponent"
+            data-text="true"
+          >
+            Note that it is possible that you will not be granted all of the scopes which you request.
+You will still need to handle null values for any fields you request.
+          </p>
+          
+
+        </div>
+      </blockquote>
+      <blockquote
+        class="css-zknray-Callout"
+        data-testid="callout-container"
+      >
+        <div
+          class="css-7jywx8-Callout"
+        >
+          <svg
+            class="icon-sm text-icon-default"
+            fill="currentColor"
+            role="img"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g
+              id="info-circle"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
+                fill-rule="evenodd"
+                id="Solid"
+              />
+            </g>
+          </svg>
+        </div>
+        <div
+          class="css-1m74yfi-Callout"
+        >
+          <p
+            class="mb-4 css-1kfqm4n-TextComponent"
+            data-text="true"
+          >
+            <strong
+              class="css-bvflvn-TextComponent"
+            >
+              See:
+            </strong>
+             
+            <a
+              class="css-1na8e0o-A"
+              href="https://developer.apple.com/documentation/authenticationservices/asauthorizationscope"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              Apple
+Documentation
+            </a>
+            
 for more details.
-        </p>
-      </div>
-    </blockquote>
+          </p>
+        </div>
+      </blockquote>
+      <p
+        class="!mb-0 !border-b-0 css-1eksndl-BoxSectionHeader"
+        data-text="true"
+      >
+        AppleAuthenticationScope Values
+      </p>
+    </div>
     <div
-      class="css-11xr3cd"
+      class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
         class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#full_name"
         >
           <span
@@ -5774,14 +5824,14 @@ for more details.
       </code>
     </div>
     <div
-      class="css-11xr3cd"
+      class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
         class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#email"
         >
           <span
@@ -5837,128 +5887,138 @@ for more details.
     </div>
   </div>
   <div
-    class="css-1gsbrid"
+    class="!p-0 css-1fultt1"
   >
-    <h3
-      class="  css-wbzzgj-TextComponent"
-      data-heading="true"
+    <div
+      class="px-5 pt-4"
     >
-      <a
-        class="css-1y48vg3"
-        href="#appleauthenticationuserdetectionstatus"
+      <h3
+        class="  css-wbzzgj-TextComponent"
+        data-heading="true"
       >
-        <span
-          class="css-s3qkfm"
-          id="appleauthenticationuserdetectionstatus"
-        />
-        <span
-          class="css-6n7j50"
+        <a
+          class="css-1yk6eqh"
+          href="#appleauthenticationuserdetectionstatus"
         >
-          <code
-            class="css-yd3r23-TextComponent"
-            data-text="true"
+          <span
+            class="css-s3qkfm"
+            id="appleauthenticationuserdetectionstatus"
+          />
+          <span
+            class="css-6n7j50"
           >
-            AppleAuthenticationUserDetectionStatus
-          </code>
-        </span>
-        <span
-          class="css-13330di"
+            <code
+              class="css-yd3r23-TextComponent"
+              data-text="true"
+            >
+              AppleAuthenticationUserDetectionStatus
+            </code>
+          </span>
+          <span
+            class="css-13330di"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h3>
+      <p
+        class="mb-4 css-1kfqm4n-TextComponent"
+        data-text="true"
+      >
+        An enum whose values specify the system's best guess for how likely the current user is a real person.
+      </p>
+      <blockquote
+        class="css-zknray-Callout"
+        data-testid="callout-container"
+      >
+        <div
+          class="css-7jywx8-Callout"
         >
           <svg
-            aria-label="permalink"
-            class="anchor-icon"
-            fill="none"
-            height="24"
+            class="icon-sm text-icon-default"
+            fill="currentColor"
+            role="img"
             viewBox="0 0 24 24"
-            width="24"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <path
-              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-            <path
-              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
+            <g
+              id="info-circle"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
+                fill-rule="evenodd"
+                id="Solid"
+              />
+            </g>
           </svg>
-        </span>
-      </a>
-    </h3>
-    <p
-      class="mb-4 css-1kfqm4n-TextComponent"
-      data-text="true"
-    >
-      An enum whose values specify the system's best guess for how likely the current user is a real person.
-    </p>
-    <blockquote
-      class="css-zknray-Callout"
-      data-testid="callout-container"
-    >
-      <div
-        class="css-7jywx8-Callout"
-      >
-        <svg
-          class="icon-sm text-icon-default"
-          fill="currentColor"
-          role="img"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
+        </div>
+        <div
+          class="css-1m74yfi-Callout"
         >
-          <g
-            id="info-circle"
+          <p
+            class="mb-4 css-1kfqm4n-TextComponent"
+            data-text="true"
           >
-            <path
-              clip-rule="evenodd"
-              d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
-              fill-rule="evenodd"
-              id="Solid"
-            />
-          </g>
-        </svg>
-      </div>
-      <div
-        class="css-1m74yfi-Callout"
-      >
-        <p
-          class="mb-4 css-1kfqm4n-TextComponent"
-          data-text="true"
-        >
-          <strong
-            class="css-bvflvn-TextComponent"
-          >
-            See:
-          </strong>
-           
-          <a
-            class="css-1na8e0o-A"
-            href="https://developer.apple.com/documentation/authenticationservices/asuserdetectionstatus"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Apple
+            <strong
+              class="css-bvflvn-TextComponent"
+            >
+              See:
+            </strong>
+             
+            <a
+              class="css-1na8e0o-A"
+              href="https://developer.apple.com/documentation/authenticationservices/asuserdetectionstatus"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              Apple
 Documentation
-          </a>
-          
+            </a>
+            
 for more details.
-        </p>
-      </div>
-    </blockquote>
+          </p>
+        </div>
+      </blockquote>
+      <p
+        class="!mb-0 !border-b-0 css-1eksndl-BoxSectionHeader"
+        data-text="true"
+      >
+        AppleAuthenticationUserDetectionStatus Values
+      </p>
+    </div>
     <div
-      class="css-11xr3cd"
+      class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
         class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#unsupported"
         >
           <span
@@ -6019,14 +6079,14 @@ for more details.
       </p>
     </div>
     <div
-      class="css-11xr3cd"
+      class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
         class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#unknown"
         >
           <span
@@ -6087,14 +6147,14 @@ for more details.
       </p>
     </div>
     <div
-      class="css-11xr3cd"
+      class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
         class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#likely_real"
         >
           <span
@@ -6165,7 +6225,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#component"
     >
       <span
@@ -6215,7 +6275,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#barcodescanner"
       >
         <span
@@ -6295,7 +6355,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#props"
       >
         <span
@@ -6346,7 +6406,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
           data-heading="true"
         >
           <a
-            class="css-1y48vg3"
+            class="css-1yk6eqh"
             href="#barcodetypes"
           >
             <span
@@ -6469,7 +6529,7 @@ minimize battery usage.
           data-heading="true"
         >
           <a
-            class="css-1y48vg3"
+            class="css-1yk6eqh"
             href="#onbarcodescanned"
           >
             <span
@@ -6630,7 +6690,7 @@ data has been retrieved.
           data-heading="true"
         >
           <a
-            class="css-1y48vg3"
+            class="css-1yk6eqh"
             href="#type"
           >
             <span
@@ -6764,7 +6824,7 @@ Same as
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#inherited-props"
         >
           <span
@@ -6835,7 +6895,7 @@ Same as
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#hooks"
     >
       <span
@@ -6885,7 +6945,7 @@ Same as
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#usepermissionsoptions"
       >
         <span
@@ -7039,11 +7099,11 @@ This uses both
     </p>
     <pre>
       <pre
-        class="css-1tmj8fm"
+        class="last:mb-0 css-1r21cuo-Code"
         data-text="true"
       >
         <code
-          class="css-1r5zesl"
+          class="css-dpez7n-Code"
         >
           <span
             class="token keyword"
@@ -7201,7 +7261,7 @@ This uses both
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#methods"
     >
       <span
@@ -7251,7 +7311,7 @@ This uses both
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#barcodescannergetpermissionsasync"
       >
         <span
@@ -7390,7 +7450,7 @@ This uses both
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#barcodescannerrequestpermissionsasync"
       >
         <span
@@ -7551,7 +7611,7 @@ This uses both
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#barcodescannerscanfromurlasyncurl-barcodetypes"
       >
         <span
@@ -7840,7 +7900,7 @@ code.
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#interfaces"
     >
       <span
@@ -7890,7 +7950,7 @@ code.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#permissionresponse"
       >
         <span
@@ -8133,7 +8193,7 @@ in order to enable/disable the permission.
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#types"
     >
       <span
@@ -8183,7 +8243,7 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#barcodebounds"
       >
         <span
@@ -8348,7 +8408,7 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#barcodeevent"
       >
         <span
@@ -8490,7 +8550,7 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#barcodeeventcallbackarguments"
       >
         <span
@@ -8612,7 +8672,7 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#barcodepoint"
       >
         <span
@@ -8788,7 +8848,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#barcodescannedcallback"
       >
         <span
@@ -8913,7 +8973,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#barcodescannerresult"
       >
         <span
@@ -9192,7 +9252,7 @@ you don't get this value.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#barcodesize"
       >
         <span
@@ -9347,7 +9407,7 @@ you don't get this value.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#permissionhookoptions"
       >
         <span
@@ -9425,7 +9485,7 @@ you don't get this value.
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#enums"
     >
       <span
@@ -9468,69 +9528,79 @@ you don't get this value.
     </a>
   </h2>
   <div
-    class="css-1gsbrid"
+    class="!p-0 css-1fultt1"
   >
-    <h3
-      class="  css-wbzzgj-TextComponent"
-      data-heading="true"
-    >
-      <a
-        class="css-1y48vg3"
-        href="#permissionstatus"
-      >
-        <span
-          class="css-s3qkfm"
-          id="permissionstatus"
-        />
-        <span
-          class="css-6n7j50"
-        >
-          <code
-            class="css-yd3r23-TextComponent"
-            data-text="true"
-          >
-            PermissionStatus
-          </code>
-        </span>
-        <span
-          class="css-13330di"
-        >
-          <svg
-            aria-label="permalink"
-            class="anchor-icon"
-            fill="none"
-            height="24"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-            <path
-              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-          </svg>
-        </span>
-      </a>
-    </h3>
     <div
-      class="css-11xr3cd"
+      class="px-5 pt-4"
+    >
+      <h3
+        class="  css-wbzzgj-TextComponent"
+        data-heading="true"
+      >
+        <a
+          class="css-1yk6eqh"
+          href="#permissionstatus"
+        >
+          <span
+            class="css-s3qkfm"
+            id="permissionstatus"
+          />
+          <span
+            class="css-6n7j50"
+          >
+            <code
+              class="css-yd3r23-TextComponent"
+              data-text="true"
+            >
+              PermissionStatus
+            </code>
+          </span>
+          <span
+            class="css-13330di"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h3>
+      <p
+        class="!mb-0 !border-b-0 css-1eksndl-BoxSectionHeader"
+        data-text="true"
+      >
+        PermissionStatus Values
+      </p>
+    </div>
+    <div
+      class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
         class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#denied"
         >
           <span
@@ -9591,14 +9661,14 @@ you don't get this value.
       </p>
     </div>
     <div
-      class="css-11xr3cd"
+      class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
         class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#granted"
         >
           <span
@@ -9659,14 +9729,14 @@ you don't get this value.
       </p>
     </div>
     <div
-      class="css-11xr3cd"
+      class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
         class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#undetermined"
         >
           <span
@@ -9737,7 +9807,7 @@ exports[`APISection expo-pedometer 1`] = `
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#methods"
     >
       <span
@@ -9787,7 +9857,7 @@ exports[`APISection expo-pedometer 1`] = `
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#getpermissionsasync"
       >
         <span
@@ -9941,7 +10011,7 @@ exports[`APISection expo-pedometer 1`] = `
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#getstepcountasyncstart-end"
       >
         <span
@@ -10255,7 +10325,7 @@ a start date that is more than seven days in the past returns only the available
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#isavailableasync"
       >
         <span
@@ -10385,7 +10455,7 @@ available on this device.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#requestpermissionsasync"
       >
         <span
@@ -10506,7 +10576,7 @@ available on this device.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#watchstepcountcallback"
       >
         <span
@@ -10723,7 +10793,7 @@ provided with a single argument that is
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#interfaces"
     >
       <span
@@ -10773,7 +10843,7 @@ provided with a single argument that is
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#permissionresponse"
       >
         <span
@@ -11016,7 +11086,7 @@ in order to enable/disable the permission.
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#types"
     >
       <span
@@ -11066,7 +11136,7 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#pedometerresult"
       >
         <span
@@ -11188,7 +11258,7 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#pedometerupdatecallback"
       >
         <span
@@ -11319,7 +11389,7 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#permissionexpiration"
       >
         <span
@@ -11406,7 +11476,7 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#subscription"
       >
         <span
@@ -11522,7 +11592,7 @@ in order to enable/disable the permission.
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#enums"
     >
       <span
@@ -11565,69 +11635,79 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-    class="css-1gsbrid"
+    class="!p-0 css-1fultt1"
   >
-    <h3
-      class="  css-wbzzgj-TextComponent"
-      data-heading="true"
-    >
-      <a
-        class="css-1y48vg3"
-        href="#permissionstatus"
-      >
-        <span
-          class="css-s3qkfm"
-          id="permissionstatus"
-        />
-        <span
-          class="css-6n7j50"
-        >
-          <code
-            class="css-yd3r23-TextComponent"
-            data-text="true"
-          >
-            PermissionStatus
-          </code>
-        </span>
-        <span
-          class="css-13330di"
-        >
-          <svg
-            aria-label="permalink"
-            class="anchor-icon"
-            fill="none"
-            height="24"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-            <path
-              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-          </svg>
-        </span>
-      </a>
-    </h3>
     <div
-      class="css-11xr3cd"
+      class="px-5 pt-4"
+    >
+      <h3
+        class="  css-wbzzgj-TextComponent"
+        data-heading="true"
+      >
+        <a
+          class="css-1yk6eqh"
+          href="#permissionstatus"
+        >
+          <span
+            class="css-s3qkfm"
+            id="permissionstatus"
+          />
+          <span
+            class="css-6n7j50"
+          >
+            <code
+              class="css-yd3r23-TextComponent"
+              data-text="true"
+            >
+              PermissionStatus
+            </code>
+          </span>
+          <span
+            class="css-13330di"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h3>
+      <p
+        class="!mb-0 !border-b-0 css-1eksndl-BoxSectionHeader"
+        data-text="true"
+      >
+        PermissionStatus Values
+      </p>
+    </div>
+    <div
+      class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
         class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#denied"
         >
           <span
@@ -11688,14 +11768,14 @@ in order to enable/disable the permission.
       </p>
     </div>
     <div
-      class="css-11xr3cd"
+      class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
         class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#granted"
         >
           <span
@@ -11756,14 +11836,14 @@ in order to enable/disable the permission.
       </p>
     </div>
     <div
-      class="css-11xr3cd"
+      class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
         class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#undetermined"
         >
           <span

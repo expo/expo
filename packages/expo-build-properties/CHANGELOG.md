@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 0.11.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.10.0 — 2023-10-17
+
+### 🎉 New features
+
+- Add `android.manifestQueries` to allow adding and modifying the `<queries>` tag in the App Manifest. ([#24619](https://github.com/expo/expo/pull/24619) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 0.9.1 — 2023-09-04
 
 _This version does not introduce any user-facing changes._

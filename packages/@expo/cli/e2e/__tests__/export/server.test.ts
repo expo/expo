@@ -13,6 +13,7 @@ describe('server-output', () => {
 
   beforeAll(
     async () => {
+      await ensurePortFreeAsync(8081);
       await execa('node', [bin, 'export', '-p', 'web', '--output-dir', 'dist-server'], {
         cwd: projectRoot,
         env: {
@@ -71,6 +72,17 @@ describe('server-output', () => {
           method: method.toLowerCase(),
         });
       });
+    });
+
+    it(`can serve build-time static dynamic route`, async () => {
+      const res = await fetch('http://localhost:3000/blog-ssg/abc');
+      expect(res.status).toEqual(200);
+      expect(await res.text()).toMatch(/Post: <!-- -->abc/);
+
+      // This route is not pre-rendered and should show the default value for the dynamic parameter.
+      const res2 = await fetch('http://localhost:3000/blog-ssg/123');
+      expect(res2.status).toEqual(200);
+      expect(await res2.text()).toMatch(/Post: <!-- -->\[post\]/);
     });
 
     it(`can serve up custom not-found`, async () => {
@@ -227,31 +239,31 @@ describe('server-output', () => {
         .filter(Boolean);
 
       // The wrapper should not be included as a route.
-      expect(files).not.toContain('+html.html');
-      expect(files).not.toContain('_layout.html');
+      expect(files).not.toContain('server/+html.html');
+      expect(files).not.toContain('server/_layout.html');
 
       // Has routes.json
-      expect(files).toContain('_expo/routes.json');
+      expect(files).toContain('server/_expo/routes.json');
 
       // Has functions
-      expect(files).toContain('_expo/functions/methods+api.js');
-      expect(files).toContain('_expo/functions/api/[dynamic]+api.js');
-      expect(files).toContain('_expo/functions/api/externals+api.js');
+      expect(files).toContain('server/_expo/functions/methods+api.js');
+      expect(files).toContain('server/_expo/functions/api/[dynamic]+api.js');
+      expect(files).toContain('server/_expo/functions/api/externals+api.js');
 
       // TODO: We shouldn't export this
-      expect(files).toContain('_expo/functions/api/empty+api.js');
+      expect(files).toContain('server/_expo/functions/api/empty+api.js');
 
       // Has single variation of group file
-      expect(files).toContain('(alpha)/beta.html');
-      expect(files).not.toContain('beta.html');
+      expect(files).toContain('server/(alpha)/beta.html');
+      expect(files).not.toContain('server/beta.html');
 
       // Injected by framework
-      expect(files).toContain('_sitemap.html');
-      expect(files).toContain('+not-found.html');
+      expect(files).toContain('server/_sitemap.html');
+      expect(files).toContain('server/+not-found.html');
 
       // Normal routes
-      expect(files).toContain('index.html');
-      expect(files).toContain('blog/[post].html');
+      expect(files).toContain('server/index.html');
+      expect(files).toContain('server/blog/[post].html');
     },
     5 * 1000
   );

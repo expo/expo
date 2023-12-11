@@ -5,25 +5,27 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
-import { Module, MixedOutput } from 'metro';
-import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
-// @ts-expect-error
-import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString';
+import { MetroConfig, Module, ReadOnlyGraph } from 'metro';
 import bundleToString from 'metro/src/lib/bundleToString';
-import { InputConfigT, SerializerConfigT } from 'metro-config';
-import path from 'path';
+import { ConfigT, InputConfigT } from 'metro-config';
 
 import {
-  serverPreludeSerializerPlugin,
   environmentVariableSerializerPlugin,
+  serverPreludeSerializerPlugin,
 } from './environmentVariableSerializerPlugin';
-import { fileNameFromContents, getCssSerialAssets } from './getCssDeps';
+import { ExpoSerializerOptions, baseJSBundle } from './fork/baseJSBundle';
+import { graphToSerialAssetsAsync } from './serializeChunks';
 import { SerialAsset } from './serializerAssets';
 import { env } from '../env';
 
-export type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
+export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 
-export type SerializerParameters = Parameters<Serializer>;
+export type SerializerParameters = [
+  string,
+  readonly Module[],
+  ReadOnlyGraph,
+  ExpoSerializerOptions,
+];
 
 // A serializer that processes the input and returns a modified version.
 // Unlike a serializer, these can be chained together.
@@ -51,12 +53,19 @@ export function withSerializerPlugins(
     ...config,
     serializer: {
       ...config.serializer,
-      customSerializer: createSerializerFromSerialProcessors(processors, originalSerializer),
+      customSerializer: createSerializerFromSerialProcessors(
+        config,
+        processors,
+        originalSerializer
+      ),
     },
   };
 }
 
-function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serializer {
+function getDefaultSerializer(
+  config: MetroConfig,
+  fallbackSerializer?: Serializer | null
+): Serializer {
   const defaultSerializer =
     fallbackSerializer ??
     (async (...params: SerializerParameters) => {
@@ -67,122 +76,72 @@ function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serialize
   return async (
     ...props: SerializerParameters
   ): Promise<string | { code: string; map: string }> => {
-    const [entryPoint, preModules, graph, options] = props;
+    const [, , , options] = props;
 
-    const jsCode = await defaultSerializer(entryPoint, preModules, graph, options);
+    const customSerializerOptions = options.serializerOptions;
 
-    if (!options.sourceUrl) {
-      return jsCode;
-    }
-    const sourceUrl = isJscSafeUrl(options.sourceUrl)
-      ? toNormalUrl(options.sourceUrl)
-      : options.sourceUrl;
-    const url = new URL(sourceUrl, 'https://expo.dev');
-    if (
-      url.searchParams.get('platform') !== 'web' ||
-      url.searchParams.get('serializer.output') !== 'static'
-    ) {
-      // Default behavior if `serializer.output=static` is not present in the URL.
-      return jsCode;
-    }
+    // Custom options can only be passed outside of the dev server, meaning
+    // we don't need to stringify the results at the end, i.e. this is `npx expo export` or `npx expo export:embed`.
+    const supportsNonSerialReturn = !!customSerializerOptions?.output;
 
-    const includeSourceMaps = url.searchParams.get('serializer.map') === 'true';
-
-    const cssDeps = getCssSerialAssets<MixedOutput>(graph.dependencies, {
-      projectRoot: options.projectRoot,
-      processModuleFilter: options.processModuleFilter,
-    });
-
-    const jsAssets: SerialAsset[] = [];
-
-    if (jsCode) {
-      const stringContents = typeof jsCode === 'string' ? jsCode : jsCode.code;
-      const jsFilename = fileNameFromContents({
-        filepath: url.pathname,
-        src: stringContents,
-      });
-      jsAssets.push({
-        filename: options.dev ? 'index.js' : `_expo/static/js/web/${jsFilename}.js`,
-        originFilename: 'index.js',
-        type: 'js',
-        metadata: {},
-        source: stringContents,
-      });
-
-      if (
-        // Only include the source map if the `options.sourceMapUrl` option is provided and we are exporting a static build.
-        includeSourceMaps &&
-        options.sourceMapUrl
-      ) {
-        const sourceMap = typeof jsCode === 'string' ? serializeToSourceMap(...props) : jsCode.map;
-
-        // Make all paths relative to the server root to prevent the entire user filesystem from being exposed.
-        const parsed = JSON.parse(sourceMap);
-        // TODO: Maybe we can do this earlier.
-        parsed.sources = parsed.sources.map(
-          // TODO: Maybe basePath support
-          (value: string) => {
-            if (value.startsWith('/')) {
-              return '/' + path.relative(options.serverRoot ?? options.projectRoot, value);
-            }
-            // Prevent `__prelude__` from being relative.
-            return value;
-          }
-        );
-
-        jsAssets.push({
-          filename: options.dev ? 'index.map' : `_expo/static/js/web/${jsFilename}.js.map`,
-          originFilename: 'index.map',
-          type: 'map',
-          metadata: {},
-          source: JSON.stringify(parsed),
-        });
+    const serializerOptions = (() => {
+      if (customSerializerOptions) {
+        return {
+          includeBytecode: customSerializerOptions.includeBytecode,
+          outputMode: customSerializerOptions.output,
+          includeSourceMaps: customSerializerOptions.includeSourceMaps,
+        };
       }
+      if (options.sourceUrl) {
+        const sourceUrl = isJscSafeUrl(options.sourceUrl)
+          ? toNormalUrl(options.sourceUrl)
+          : options.sourceUrl;
+
+        const url = new URL(sourceUrl, 'https://expo.dev');
+
+        return {
+          outputMode: url.searchParams.get('serializer.output'),
+          includeSourceMaps: url.searchParams.get('serializer.map') === 'true',
+          includeBytecode: url.searchParams.get('serializer.bytecode') === 'true',
+        };
+      }
+      return null;
+    })();
+
+    if (serializerOptions?.outputMode !== 'static') {
+      return defaultSerializer(...props);
     }
 
-    return JSON.stringify([...jsAssets, ...cssDeps]);
+    // Mutate the serializer options with the parsed options.
+    options.serializerOptions = {
+      ...options.serializerOptions,
+      ...serializerOptions,
+    };
+
+    const assets = await graphToSerialAssetsAsync(
+      config,
+      {
+        includeSourceMaps: !!serializerOptions.includeSourceMaps,
+        includeBytecode: !!serializerOptions.includeBytecode,
+      },
+      ...props
+    );
+
+    if (supportsNonSerialReturn) {
+      // @ts-expect-error: this is future proofing for adding assets to the output as well.
+      return assets;
+    }
+
+    return JSON.stringify(assets);
   };
 }
 
-function getSortedModules(
-  graph: SerializerParameters[2],
-  {
-    createModuleId,
-  }: {
-    createModuleId: (path: string) => number;
-  }
-): readonly Module<any>[] {
-  const modules = [...graph.dependencies.values()];
-  // Assign IDs to modules in a consistent order
-  for (const module of modules) {
-    createModuleId(module.path);
-  }
-  // Sort by IDs
-  return modules.sort(
-    (a: Module<any>, b: Module<any>) => createModuleId(a.path) - createModuleId(b.path)
-  );
-}
-
-function serializeToSourceMap(...props: SerializerParameters): string {
-  const [, prepend, graph, options] = props;
-
-  const modules = [
-    ...prepend,
-    ...getSortedModules(graph, {
-      createModuleId: options.createModuleId,
-    }),
-  ];
-
-  return sourceMapString(modules, {
-    ...options,
-  });
-}
-
 export function createSerializerFromSerialProcessors(
+  config: MetroConfig,
   processors: (SerializerPlugin | undefined)[],
   originalSerializer?: Serializer | null
 ): Serializer {
-  const finalSerializer = getDefaultSerializer(originalSerializer);
+  const finalSerializer = getDefaultSerializer(config, originalSerializer);
   return (...props: SerializerParameters): ReturnType<Serializer> => {
     for (const processor of processors) {
       if (processor) {

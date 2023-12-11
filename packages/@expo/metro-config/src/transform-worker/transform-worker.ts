@@ -5,8 +5,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from 'metro-source-map';
-import worker, {
+import countLines from 'metro/src/lib/countLines';
+import type {
   JsTransformerConfig,
   JsTransformOptions,
   TransformResponse,
@@ -14,22 +14,10 @@ import worker, {
 
 import { wrapDevelopmentCSS } from './css';
 import { matchCssModule, transformCssModuleWeb } from './css-modules';
+import * as worker from './metro-transform-worker';
 import { transformPostCssModule } from './postcss';
 import { compileSass, matchSass } from './sass';
-
-const countLines = require('metro/src/lib/countLines') as (string: string) => number;
-
-type JSFileType = 'js/script' | 'js/module' | 'js/module/asset';
-
-type JsOutput = {
-  data: {
-    code: string;
-    lineCount: number;
-    map: MetroSourceMapSegmentTuple[];
-    functionMap: FBSourceFunctionMap | null;
-  };
-  type: JSFileType;
-};
+import { ExpoJsOutput, JsOutput } from '../serializer/jsOutput';
 
 export async function transform(
   config: JsTransformerConfig,
@@ -95,10 +83,14 @@ export async function transform(
   let code = data.toString('utf8');
 
   // Apply postcss transforms
-  code = await transformPostCssModule(projectRoot, {
+  const postcssResults = await transformPostCssModule(projectRoot, {
     src: code,
     filename,
   });
+
+  if (postcssResults.hasPostcss) {
+    code = postcssResults.src;
+  }
 
   // TODO: When native has CSS support, this will need to move higher up.
   const syntax = matchSass(filename);
@@ -133,7 +125,6 @@ export async function transform(
       {
         type: 'js/module',
         data: {
-          // @ts-expect-error
           ...jsModuleResults.output[0]?.data,
 
           // Append additional css metadata for static extraction.
@@ -188,12 +179,11 @@ export async function transform(
   // In production, we export the CSS as a string and use a special type to prevent
   // it from being included in the JS bundle. We'll extract the CSS like an asset later
   // and append it to the HTML bundle.
-  const output: JsOutput[] = [
+  const output: ExpoJsOutput[] = [
     {
       type: 'js/module',
       data: {
-        // @ts-expect-error
-        ...jsModuleResults.output[0]?.data,
+        ...(jsModuleResults.output[0] as ExpoJsOutput).data,
 
         // Append additional css metadata for static extraction.
         css: {
@@ -201,6 +191,9 @@ export async function transform(
           lineCount: countLines(cssCode),
           map: [],
           functionMap: null,
+          // Disable caching for CSS files when postcss is enabled and has been run on the file.
+          // This ensures that things like tailwind can update on every change.
+          skipCache: postcssResults.hasPostcss,
         },
       },
     },

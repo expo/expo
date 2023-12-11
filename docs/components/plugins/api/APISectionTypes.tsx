@@ -189,7 +189,10 @@ const renderType = ({
         </div>
       );
     }
-  } else if ((type.name === 'Record' && type.typeArguments) || type.type === 'reference') {
+  } else if (
+    (type.name === 'Record' && type.typeArguments) ||
+    ['array', 'reference'].includes(type.type)
+  ) {
     return (
       <div key={`record-definition-${name}`} css={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} />
@@ -247,6 +250,28 @@ const renderType = ({
             {' : '}
             {type.falseType && resolveTypeName(type.falseType)}
           </CODE>
+        </P>
+      </div>
+    );
+  } else if (type.type === 'templateLiteral' && type.tail) {
+    const possibleData = [type.head ?? '', ...type.tail.flat()].filter(
+      entry => typeof entry !== 'string'
+    );
+
+    if (possibleData.length === 0 || typeof possibleData[0] === 'string') {
+      return undefined;
+    }
+
+    return (
+      <div key={`conditional-type-definition-${name}`} css={STYLES_APIBOX}>
+        <APISectionDeprecationNote comment={comment} />
+        <APISectionPlatformTags comment={comment} prefix="Only for:" />
+        <H3Code tags={getTagNamesList(comment)}>
+          <MONOSPACE weight="medium">{name}</MONOSPACE>
+        </H3Code>
+        <CommentTextBlock comment={comment} includePlatforms={false} />
+        <P>
+          String union of <CODE>{resolveTypeName(possibleData[0])}</CODE> values.
         </P>
       </div>
     );

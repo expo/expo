@@ -23,5 +23,5 @@ export const A = forwardRef(({ href, target, download, rel, ...props }: LinkProp
       },
     },
   });
-  return <Text accessibilityRole="link" {...props} {...nativeProps} ref={ref} />;
+  return <Text role="link" {...props} {...nativeProps} ref={ref} />;
 }) as ComponentType<LinkProps>;

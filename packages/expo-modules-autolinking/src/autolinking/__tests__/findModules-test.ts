@@ -1,5 +1,4 @@
 import glob from 'fast-glob';
-import findUp from 'find-up';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -13,19 +12,14 @@ import type { findModulesAsync as findModulesAsyncType } from '../findModules';
 const expoRoot = path.join(__dirname, '..', '..', '..', '..', '..');
 
 jest.mock('fast-glob');
-jest.mock('find-up');
 jest.mock('fs-extra');
 
-// mock findUp.sync to fix `mergeLinkingOptions` package.json resolution when requiring `findModules`.
-(findUp.sync as jest.MockedFunction<any>).mockReturnValueOnce(path.join(expoRoot, 'package.json'));
-const mockProjectPackageJsonPath = jest.fn();
+const mockProjectPackageJsonPath = jest.fn().mockResolvedValue(path.join(expoRoot, 'package.json'));
 jest.mock('../mergeLinkingOptions', () => {
   const actualModule = jest.requireActual('../mergeLinkingOptions');
   return {
     ...actualModule,
-    get projectPackageJsonPath() {
-      return mockProjectPackageJsonPath();
-    },
+    getProjectPackageJsonPathAsync: mockProjectPackageJsonPath,
   };
 });
 
@@ -89,6 +83,7 @@ describe(findModulesAsync, () => {
     const result = await findModulesAsync({
       searchPaths: [searchPath],
       platform: 'ios',
+      projectRoot: expoRoot,
     });
     expect(result['react-native-third-party']).not.toBeUndefined();
   });
@@ -108,6 +103,7 @@ describe(findModulesAsync, () => {
     const result = await findModulesAsync({
       searchPaths: [searchPath],
       platform: 'ios',
+      projectRoot: expoRoot,
     });
     expect(Object.keys(result).length).toBe(2);
   });
@@ -129,7 +125,7 @@ describe(findModulesAsync, () => {
 
       // mock app project package.json
       const appDependencies = isNegativeTest ? {} : { pkg: '*' };
-      mockProjectPackageJsonPath.mockReturnValue(appPackageJsonPath);
+      mockProjectPackageJsonPath.mockResolvedValue(appPackageJsonPath);
       registerRequireMock(appPackageJsonPath, {
         name: 'app',
         version: '0.0.1',
@@ -147,6 +143,7 @@ describe(findModulesAsync, () => {
       const result = await findModulesAsync({
         searchPaths,
         platform: 'ios',
+        projectRoot: expoRoot,
       });
       if (isNegativeTest) {
         expect(result['pkg']).toBeUndefined();
@@ -175,7 +172,7 @@ describe(findModulesAsync, () => {
       // mock app project package.json
 
       const appDependencies = isNegativeTest ? {} : { 'dpk-pkg': '*' };
-      mockProjectPackageJsonPath.mockReturnValue(appPackageJsonPath);
+      mockProjectPackageJsonPath.mockResolvedValue(appPackageJsonPath);
       registerRequireMock(appPackageJsonPath, {
         name: 'app',
         version: '0.0.1',
@@ -202,6 +199,7 @@ describe(findModulesAsync, () => {
       const result = await findModulesAsync({
         searchPaths,
         platform: 'ios',
+        projectRoot: expoRoot,
       });
       if (isNegativeTest) {
         expect(result['pkg']).toBeUndefined();
@@ -223,7 +221,7 @@ describe(findModulesAsync, () => {
     const appNodeModules = path.join(expoRoot, 'packages', 'app', 'node_modules');
 
     // mock app project package.json
-    mockProjectPackageJsonPath.mockReturnValue(appPackageJsonPath);
+    mockProjectPackageJsonPath.mockResolvedValue(appPackageJsonPath);
     registerRequireMock(appPackageJsonPath, {
       name: 'app',
       version: '0.0.1',
@@ -249,6 +247,7 @@ describe(findModulesAsync, () => {
     const result = await findModulesAsync({
       searchPaths,
       platform: 'ios',
+      projectRoot: expoRoot,
     });
     expect(result['pkg']).not.toBeUndefined();
     expect(result['pkg'].version).toEqual('1.0.0');
@@ -330,6 +329,7 @@ describe(findModulesAsync, () => {
     const result = await findModulesAsync({
       searchPaths: [modulesRoot],
       platform: 'ios',
+      projectRoot: expoRoot,
     });
 
     // Validate `expo` and nested dependencies are linked
@@ -421,6 +421,7 @@ describe(findModulesAsync, () => {
     const result = await findModulesAsync({
       searchPaths: [modulesRoot],
       platform: 'ios',
+      projectRoot: expoRoot,
     });
 
     // Validate both `expo` and `expo-application` are linked

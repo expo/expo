@@ -81,6 +81,11 @@ public final class AppContext: NSObject {
   internal private(set) lazy var coreModule = CoreModule(appContext: self)
 
   /**
+   The module holder for the core module.
+   */
+  internal private(set) lazy var coreModuleHolder = ModuleHolder(appContext: self, module: coreModule)
+
+  /**
    Designated initializer without modules provider.
    */
   public init(config: AppContextConfig = .default) {
@@ -91,7 +96,7 @@ public final class AppContext: NSObject {
   }
 
   public convenience init(legacyModulesProxy: Any, legacyModuleRegistry: Any, config: AppContextConfig = .default) {
-    self.init()
+    self.init(config: config)
     self.legacyModulesProxy = legacyModulesProxy as? LegacyNativeModulesProxy
     self.legacyModuleRegistry = legacyModuleRegistry as? EXModuleRegistry
   }
@@ -362,7 +367,7 @@ public final class AppContext: NSObject {
 
   internal func prepareRuntime() throws {
     let runtime = try runtime
-    let coreObject = try coreModule.definition().build(appContext: self)
+    let coreObject = try coreModuleHolder.definition.build(appContext: self)
 
     // Initialize `global.expo`.
     try runtime.initializeCoreObject(coreObject)

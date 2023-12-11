@@ -1,12 +1,19 @@
 /packages/@expo/cli                             @EvanBacon @bycedric
 /packages/@expo/config                          @EvanBacon
+/packages/@expo/env                             @EvanBacon @bycedric
 /packages/@expo/prebuild-config                 @EvanBacon
 /packages/@expo/config-plugins                  @EvanBacon @brentvatne
 /packages/@expo/config-types                    @EvanBacon @douglowder
+/packages/@expo/image-utils                     @bycedric @EvanBacon
+/packages/@expo/json-file                       @EvanBacon @bycedric
 /packages/@expo/metro-config                    @EvanBacon @bycedric @marklawlor
 /packages/@expo/metro-runtime                   @EvanBacon @bycedric @marklawlor
 /packages/@expo/package-manager                 @EvanBacon @bycedric
+/packages/@expo/plist                           @EvanBacon @bycedric
+/packages/@expo/pkcs12                          @bycedric @quinlanj
+/packages/@expo/schemer                         @bycedric
 /packages/babel-preset-expo                     @brentvatne @ide @EvanBacon
+/packages/create-expo                           @EvanBacon @bycedric
 /packages/expo-*                                @alanjhughes
 /packages/expo-app-loader-provider              @tsapeta
 /packages/expo-apple-authentication             @tsapeta
@@ -33,6 +40,7 @@
 /packages/expo-dev-menu-interface               @lukmccall @douglowder @gabrieldonadel
 /packages/expo-device                           @ide @tsapeta
 /packages/expo-document-picker                  @lukmccall
+/packages/expo-env-info                         @bycedric @kbrandwijk
 /packages/expo-face-detector                    @kudo
 /packages/expo-file-system                      @brentvatne @kudo @ide @tsapeta
 /packages/expo-font                             @tsapeta
@@ -55,6 +63,7 @@
 /packages/expo-module-template-local            @aleqsio @tsapeta
 /packages/expo-modules-autolinking              @tsapeta @kudo @lukmccall
 /packages/expo-modules-core                     @tsapeta @kudo @lukmccall
+/packages/expo-modules-test-core                @tsapeta @aleqsio
 /packages/expo-navigation-bar                   @EvanBacon
 /packages/expo-network                          @ide
 /packages/expo-notifications                    @tsapeta
@@ -82,12 +91,15 @@
 /packages/expo-updates                          @wschurman @douglowder
 /packages/expo-updates-interface                @wschurman @douglowder
 /packages/expo-video-thumbnails                 @tsapeta
+/packages/expo-video                            @tsapeta @aleqsio
 /packages/expo-web-browser                      @tsapeta
 /packages/expo-yarn-workspaces                  @ide
 /packages/expo                                  @ide @tsapeta @brentvatne
 /packages/jest-expo-enzyme                      @ide @EvanBacon
 /packages/jest-expo-puppeteer                   @ide @EvanBacon
 /packages/jest-expo                             @brentvatne @EvanBacon
+/packages/pod-install                           @bycedric @EvanBacon
+/packages/uri-scheme                            @bycedric @EvanBacon
 /tools                                          @tsapeta
 /docs                                           @Simek @amandeepmittal
 /.github/workflows                              @tsapeta @brentvatne @kudo

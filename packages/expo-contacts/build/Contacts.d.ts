@@ -77,7 +77,7 @@ export type PhoneNumber = {
     digits?: string;
     /**
      * Country code.
-     * @example `+1`
+     * @example `us`
      */
     countryCode?: string;
     /**
@@ -205,6 +205,10 @@ export type UrlAddress = {
  * > On Android you can get dimensions using [`Image.getSize`](https://reactnative.dev/docs/image#getsize) method.
  */
 export type Image = {
+    /**
+     * A **local image URI**.
+     * > **Note**: If you have a remote URI, download it first using  [`FileSystem.downloadAsync`](/versions/latest/sdk/filesystem/#filesystemdownloadasyncuri-fileuri-options).
+     */
     uri?: string;
     /**
      * Image width.

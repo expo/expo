@@ -149,8 +149,7 @@ class AppContext(
             jsiInterop.installJSI(
               it,
               jniDeallocator,
-              jsContextProvider.jsCallInvokerHolder,
-              ReactNativeCompatibleHelper.getNativeMethodCallInvokerHolderImplCompatible(catalystInstance)
+              jsContextProvider.jsCallInvokerHolder
             )
             logger.info("✅ JSI interop was installed")
           }
@@ -296,6 +295,9 @@ class AppContext(
     modulesQueue.cancel(ContextDestroyedException())
     mainQueue.cancel(ContextDestroyedException())
     backgroundCoroutineScope.cancel(ContextDestroyedException())
+    if (::jsiInterop.isInitialized) {
+      jsiInterop.wasDeallocated()
+    }
     jniDeallocator.deallocate()
     logger.info("✅ AppContext was destroyed")
   }

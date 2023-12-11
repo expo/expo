@@ -54,33 +54,11 @@ def safeAppExtGet(prop, fallback) {
 def resolveBuildType() {
     Gradle gradle = getGradle()
     String tskReqStr = gradle.getStartParameter().getTaskRequests()['args'].toString()
-    
     return tskReqStr.contains('Release') ? 'release' : 'debug'
-}
-
-def resolveClientSideBuild() {
-    def clientSideBuild = System.getenv("CLIENT_SIDE_BUILD")
-    if (clientSideBuild != null) {
-        return clientSideBuild == "True"
-    }
-
-    if (hasProperty("clientSideBuild")) {
-        return property("clientSideBuild") == "true"
-    }
-
-    if (isDeveloperMode()) {
-        return false
-    }
-
-    return true
 }
 
 def isReanimatedExampleApp() {
     return safeAppExtGet("isReanimatedExampleApp", false)
-}
-
-def isDeveloperMode() {
-    return isReanimatedExampleApp() || System.getenv("REANIMATED_PACKAGE_BUILD") == "1"
 }
 
 def isNewArchitectureEnabled() {
@@ -97,7 +75,7 @@ def resolveReactNativeDirectory() {
         return file(reactNativeLocation)
     }
 
-    if (isDeveloperMode()) {
+    if (isReanimatedExampleApp()) {
         return file("$projectDir/../${getPlaygroundAppName()}/node_modules/react-native")
     }
 
@@ -114,9 +92,7 @@ def resolveReactNativeDirectory() {
     }
 
     throw new GradleException(
-        "[Reanimated] Unable to resolve react-native location in " +
-        "node_modules. You should project extension property (in app/build.gradle) " +
-        "`REACT_NATIVE_NODE_MODULES_DIR` with path to react-native."
+        "[Reanimated] Unable to resolve react-native location in node_modules. You should project extension property (in `app/build.gradle`) `REACT_NATIVE_NODE_MODULES_DIR` with path to react-native."
     )
 }
 
@@ -130,18 +106,10 @@ def getPlaygroundAppName() { // only for the development
                 playgroundAppName = projectCatalogAbsolutePath.substring(slashPosition + 1)
             }
         })
-    } catch(_) {
-        return "NOT_FOUND"
+    } catch (_) {
+        throw new GradleException("[Reanimated] Couldn't determine playground app name.")
     }
     return playgroundAppName
-}
-
-def shouldAssertNoMultipleInstances() {
-  if (rootProject.hasProperty("disableMultipleInstancesCheck")) {
-    return rootProject.property("disableMultipleInstancesCheck") != "true"
-  } else {
-    return true
-  }
 }
 
 def getReanimatedVersion() {
@@ -162,11 +130,6 @@ def toPlatformFileString(String path) {
   return path
 }
 
-boolean CLIENT_SIDE_BUILD = resolveClientSideBuild()
-if (CLIENT_SIDE_BUILD) {
-    configurations.maybeCreate("default")
-}
-
 def reactNativeRootDir = Paths.get(projectDir.getPath(), '../../../../../react-native-lab/react-native/packages/react-native').toFile()
 
 def reactProperties = new Properties()
@@ -174,9 +137,9 @@ file("$reactNativeRootDir/ReactAndroid/gradle.properties").withInputStream { rea
 
 def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME")
 def REACT_NATIVE_MINOR_VERSION = REACT_NATIVE_VERSION.startsWith("0.0.0-") ? 1000 : REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
-def REANIMATED_PACKAGE_BUILD = System.getenv("REANIMATED_PACKAGE_BUILD")
-def REANIMATED_VERSION = "3.3.0"
+def REANIMATED_VERSION = "3.6.0"
 def REANIMATED_MAJOR_VERSION = 3
+def IS_NEW_ARCHITECTURE_ENABLED = isNewArchitectureEnabled()
 
 // for React Native <= 0.70
 def BOOST_VERSION = reactProperties.getProperty("BOOST_VERSION")
@@ -195,6 +158,8 @@ def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 
 def reactNativeThirdParty = new File("$reactNativeRootDir/ReactAndroid/src/main/jni/third-party")
 def reactNativeAndroidDownloadDir = new File("$reactNativeRootDir/ReactAndroid/build/downloads")
+
+def prefabHeadersDir = project.file("$buildDir/prefab-headers/reanimated")
 
 def JS_RUNTIME = {
     return "hermes" // Expo Go always uses hermes
@@ -239,146 +204,6 @@ def reactNativeArchitectures() {
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
-def detectAAR(Integer rnMinorVersion, String engine) { // Reanimated2 only
-    def rnMinorVersionCopy = rnMinorVersion
-    def aar = file("react-native-reanimated-${rnMinorVersionCopy}-${engine}.aar")
-
-    if (aar.exists()) {
-        println "AAR for react-native-reanimated has been found\n$aar"
-        return aar
-    } else {
-        while (!aar.exists() && rnMinorVersionCopy >= 63) {
-            rnMinorVersionCopy -= 1
-            aar = file("react-native-reanimated-${rnMinorVersionCopy}-${engine}.aar")
-        }
-
-        if (rnMinorVersionCopy < 63) {
-            println "No AAR for react-native-reanimated found. Attempting to build from source."
-        } else { // aar exists, but was build for lower react-native version
-            println "\n\n\n"
-            println "****************************************************************************************"
-            println "\n\n\n"
-            println "WARNING reanimated - no version-specific reanimated AAR for react-native version $rnMinorVersion found."
-            println "Falling back to AAR for react-native version $rnMinorVersionCopy."
-            println "The react-native JSI interface is not ABI-safe yet, this may result in crashes."
-            println "Please post a pull request to implement support for react-native version $rnMinorVersion to the reanimated repo."
-            println "Thanks!"
-            println "\n\n\n"
-            println "****************************************************************************************"
-
-            return aar
-        }
-    }
-    return null
-}
-
-def isUserDemandToBuildFromSource() { // Reanimated2 only
-    def buildFromSourceConf = false
-    rootProject.getSubprojects().forEach({project ->
-        if (project.plugins.hasPlugin("com.android.application")) {
-            if (
-            project.ext.has("reanimated")
-                    && project.ext.reanimated.buildFromSource
-            ) {
-                buildFromSourceConf = true
-            }
-        }
-    })
-    return buildFromSourceConf
-}
-
-def shouldBuildFromSource(aar, jsRuntimeName) { // Reanimated2 only
-    if (jsRuntimeName == "v8") {
-        return true
-    }
-    else if (isDeveloperMode()) {
-        // Example app
-        return true
-    }
-    else if (isUserDemandToBuildFromSource()) {
-        // on user demand
-        return true
-    }
-    else if (aar != null) {
-        // when binary exist
-        return false
-    }
-    // when binary is not found
-    return true
-}
-
-def getTaskByPath(
-        project,
-        String appName,
-        String secondPart,
-        String flavorString,
-        String lastPart
-) {  // Reanimated2 only
-    String pathName = "${appName}:${secondPart}${flavorString}${lastPart}"
-    Task task = project.getTasks().findByPath(pathName)
-    if (task != null) {
-        return task
-    }
-    pathName = "${appName}:${secondPart}${flavorString.capitalize()}${lastPart}"
-    return project.getTasks().findByPath(pathName)
-}
-
-def aar = detectAAR(REACT_NATIVE_MINOR_VERSION, JS_RUNTIME)
-boolean BUILD_FROM_SOURCE = shouldBuildFromSource(aar, JS_RUNTIME)
-
-if (!BUILD_FROM_SOURCE && !isNewArchitectureEnabled()) { // Reanimated2 only
-    if (REACT_NATIVE_MINOR_VERSION < 65) {
-        tasks.register("replaceSoTaskDebug", replaceSoTask)
-        tasks.register("replaceSoTaskRelease", replaceSoTask)
-        Task replaceSoTaskDebug = project.getTasks().findByPath(":react-native-reanimated:replaceSoTaskDebug")
-        Task replaceSoTaskRelease = project.getTasks().findByPath(":react-native-reanimated:replaceSoTaskRelease")
-
-        if (replaceSoTaskDebug != null && replaceSoTaskRelease != null) {
-            rootProject.getSubprojects().forEach({project ->
-                if (project.plugins.hasPlugin("com.android.application") && project.getProperties().get("android")) {
-                    def projectProperties = project.getProperties()
-                    def flavorString = getCurrentFlavor()
-                    def reanimatedConf = projectProperties.get("reanimated")
-
-                    if (
-                    flavorString != "NOT-FOUND"
-                            && (!reanimatedConf || (reanimatedConf && !reanimatedConf.get("enablePackagingOptions")))
-                    ) {
-                        replaceSoTask.appName = projectProperties.path
-                        replaceSoTask.buildDir = projectProperties.buildDir
-                        def appName = projectProperties.path
-
-                        Task debugNativeLibsTask = getTaskByPath(project, appName, "merge", flavorString, "DebugNativeLibs")
-                        Task debugDebugSymbolsTask = getTaskByPath(project, appName, "strip", flavorString, "DebugDebugSymbols")
-                        Task releaseNativeLibsTask = getTaskByPath(project, appName, "merge", flavorString, "ReleaseNativeLibs")
-                        Task releaseDebugSymbolsTask = getTaskByPath(project, appName, "strip", flavorString, "ReleaseDebugSymbols")
-                        Task debugTask = getTaskByPath(project, appName, "package", flavorString, "Debug")
-                        Task releaseTask = getTaskByPath(project, appName, "package", flavorString, "Release")
-
-                        if (
-                        debugNativeLibsTask != null && debugDebugSymbolsTask != null
-                                && releaseNativeLibsTask != null && releaseDebugSymbolsTask != null
-                                && debugTask != null && releaseTask != null
-                        ) {
-                            replaceSoTaskDebug.dependsOn(debugNativeLibsTask, debugDebugSymbolsTask)
-                            debugTask.dependsOn(replaceSoTaskDebug)
-                            replaceSoTaskRelease.dependsOn(releaseNativeLibsTask, releaseDebugSymbolsTask)
-                            releaseTask.dependsOn(replaceSoTaskRelease)
-                        }
-                    }
-                }
-            })
-        }
-    }
-
-    artifacts.add("default", aar)
-}
-
-// end if already loaded aar
-if (!BUILD_FROM_SOURCE) {
-    return
-}
-
 buildscript {
     repositories {
         google()
@@ -404,21 +229,40 @@ apply plugin: "de.undercouch.download"
 
 android {
     compileSdkVersion safeExtGet("compileSdkVersion", 30)
+
     def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
     if (agpVersion.tokenize('.')[0].toInteger() >= 7) {
         namespace "com.swmansion.reanimated"
     }
-    if (REACT_NATIVE_MINOR_VERSION >= 71) {
-        buildFeatures {
+
+    if (rootProject.hasProperty("ndkPath")) {
+        ndkPath rootProject.ext.ndkPath
+    }
+    if (rootProject.hasProperty("ndkVersion")) {
+        ndkVersion rootProject.ext.ndkVersion
+    }
+
+    buildFeatures {
+        if (REACT_NATIVE_MINOR_VERSION > 68) {
             prefab true
+            prefabPublishing true
+            buildConfig true
         }
     }
+
+    prefab {
+        reanimated {
+            headers prefabHeadersDir.absolutePath
+        }
+    }
+
     defaultConfig {
         minSdkVersion safeExtGet("minSdkVersion", 16)
         targetSdkVersion safeExtGet("targetSdkVersion", 30)
         versionCode 1
         versionName "1.0"
-        buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
+        buildConfigField("boolean", "IS_NEW_ARCHITECTURE_ENABLED", IS_NEW_ARCHITECTURE_ENABLED.toString())
+        buildConfigField("String", "REANIMATED_VERSION_JAVA", "\"${REANIMATED_VERSION}\"")
         externalNativeBuild {
             cmake {
                 arguments "-DANDROID_STL=c++_shared",
@@ -428,11 +272,8 @@ android {
                         "-DREACT_NATIVE_DIR=${toPlatformFileString(reactNativeRootDir.path)}",
                         "-DJS_RUNTIME=${JS_RUNTIME}",
                         "-DJS_RUNTIME_DIR=${jsRuntimeDir}",
-                        "-DCLIENT_SIDE_BUILD=${CLIENT_SIDE_BUILD}",
-                        "-DIS_NEW_ARCHITECTURE_ENABLED=${isNewArchitectureEnabled()}",
+                        "-DIS_NEW_ARCHITECTURE_ENABLED=${IS_NEW_ARCHITECTURE_ENABLED}",
                         "-DIS_REANIMATED_EXAMPLE_APP=${isReanimatedExampleApp()}",
-                        "-DPLAYGROUND_APP_NAME=${getPlaygroundAppName()}",
-                        "-DREANIMATED_PACKAGE_BUILD=${REANIMATED_PACKAGE_BUILD}",
                         "-DREANIMATED_VERSION=${REANIMATED_VERSION}"
                 abiFilters (*reactNativeArchitectures())
             }
@@ -453,7 +294,7 @@ android {
         debug {
             externalNativeBuild {
                 cmake {
-                    if (JS_RUNTIME == "hermes" && !REANIMATED_PACKAGE_BUILD) {
+                    if (JS_RUNTIME == "hermes") {
                         arguments "-DHERMES_ENABLE_DEBUGGER=1"
                     } else {
                         arguments "-DHERMES_ENABLE_DEBUGGER=0"
@@ -515,7 +356,7 @@ android {
     }
     sourceSets.main {
         java {
-            if (isNewArchitectureEnabled()) {
+            if (IS_NEW_ARCHITECTURE_ENABLED) {
                 srcDirs += "src/fabric/java"
             } else {
                 srcDirs += "src/paper/java"
@@ -525,16 +366,11 @@ android {
             if (REANIMATED_MAJOR_VERSION > 2) {
                 if (REACT_NATIVE_MINOR_VERSION <= 67) {
                     srcDirs += "src/reactNativeVersionPatch/messageQueueThread/67"
+                } else if (REACT_NATIVE_MINOR_VERSION <= 72) {
+                    srcDirs += "src/reactNativeVersionPatch/messageQueueThread/72"
                 } else {
                     srcDirs += "src/reactNativeVersionPatch/messageQueueThread/latest"
                 }
-            }
-
-            // UIImplementation
-            if (REACT_NATIVE_MINOR_VERSION <= 64) {
-                srcDirs += "src/reactNativeVersionPatch/UIImplementation/64"
-            } else {
-                srcDirs += "src/reactNativeVersionPatch/UIImplementation/latest"
             }
 
             // ReanimatedUIManager & ReanimatedUIImplementation 
@@ -544,96 +380,52 @@ android {
                 srcDirs += "src/reactNativeVersionPatch/ReanimatedUIManager/latest"
             }
 
-            // nativeHierarchyManager
-            if (REACT_NATIVE_MINOR_VERSION <= 62) {
-                srcDirs += "src/reactNativeVersionPatch/nativeHierarchyManager/62"
-            } else {
-                srcDirs += "src/reactNativeVersionPatch/nativeHierarchyManager/latest"
+            // ReactFeatureFlags 
+            if (IS_NEW_ARCHITECTURE_ENABLED) {
+                if (REACT_NATIVE_MINOR_VERSION <= 72) {
+                    srcDirs += "src/reactNativeVersionPatch/ReactFeatureFlagsWrapper/72"
+                } else {
+                    srcDirs += "src/reactNativeVersionPatch/ReactFeatureFlagsWrapper/latest"
+                }
             }
         }
-    }
-}
-
-abstract class NoMultipleInstancesAssertionTask extends DefaultTask {
-    @Inject abstract ObjectFactory getObjectFactory()
-
-    @Input abstract Property<File> getProjectDirFile()
-    @Input abstract Property<File> getRootDirFile()
-    @Input abstract Property<Boolean> getShouldCheck()
-
-    def findReanimatedInstancesForPath(String path) {
-        return objectFactory.fileTree().from(path)
-                .include("**/react-native-reanimated/package.json")
-                .exclude("**/.yarn/**")
-                .exclude({ Files.isSymbolicLink(it.getFile().toPath()) })
-                .findAll()
-    }
-
-    @TaskAction
-    def check() {
-        if (shouldCheck.get()) {
-            // Assert there are no multiple installations of Reanimated
-            Set<File> files
-
-            if (projectDirFile.get().parent.contains(rootDirFile.get().parent)) {
-                // standard app
-                files = findReanimatedInstancesForPath(rootDirFile.get().parent + "/node_modules")
-            } else {
-                // monorepo
-                files = findReanimatedInstancesForPath(rootDirFile.get().parent + "/node_modules")
-                files.addAll(
-                    findReanimatedInstancesForPath(projectDirFile.get().parentFile.parent)
-                )
-            }
-
-            if (files.size() > 1) {
-                String parsedLocation = files.stream().map({
-                    File file -> "- " + file.toString().replace("/package.json", "")
-                }).collect().join("\n")
-                String exceptionMessage = "\n[react-native-reanimated] Multiple versions of Reanimated " +
-                        "were detected. Only one instance of react-native-reanimated can be installed in a " +
-                        "project. You need to resolve the conflict manually. Check out the documentation: " +
-                        "https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/" +
-                        "troubleshooting#multiple-versions-of-reanimated-were-detected \n\nConflict " +
-                        "between: \n" + parsedLocation + "\n"
-                throw new GradleException(exceptionMessage)
-            }
-        }
-    }
-}
-
-tasks.register('assertNoMultipleInstances', NoMultipleInstancesAssertionTask) {
-    shouldCheck = shouldAssertNoMultipleInstances()
-    rootDirFile = rootDir
-    projectDirFile = projectDir
-}
-
-def NEW_ARCH_ENABLED = isNewArchitectureEnabled()
-
-def assertNoReanimated2WithNewArchitecture = task assertNoReanimated2WithNewArchitectureTask {
-    onlyIf { NEW_ARCH_ENABLED && REANIMATED_MAJOR_VERSION == 2 }
-    doFirst {
-        throw new GradleException(
-            "\n[react-native-reanimated] Reanimated 2.x does not support Fabric. " +
-            "Please upgrade to 3.x to use Reanimated with the New Architecture. " +
-            "For details, see https://blog.swmansion.com/announcing-reanimated-3-16167428c5f7"
-        )
     }
 }
 
 def assertLatestReactNativeWithNewArchitecture = task assertLatestReactNativeWithNewArchitectureTask {
-    onlyIf { NEW_ARCH_ENABLED && REANIMATED_MAJOR_VERSION == 3 && REACT_NATIVE_MINOR_VERSION < 72 }
+    onlyIf { IS_NEW_ARCHITECTURE_ENABLED && REANIMATED_MAJOR_VERSION == 3 && REACT_NATIVE_MINOR_VERSION < 72 }
     doFirst {
+        // If you change the minimal React Native version remember to update Compatibility Table in docs
         throw new GradleException(
-            "\n[react-native-reanimated] Reanimated " + REANIMATED_VERSION + " supports the New Architecture " +
-            "only on the latest minor release of React Native. Please upgrade to React Native 0.72.0+ " +
-            "or downgrade to an older version of Reanimated v3."
+            "[Reanimated] Outdated version of React Native for New Architecture. Reanimated " + REANIMATED_VERSION + " supports the New Architecture on React Native 0.72.0+. See https://docs.swmansion.com/react-native-reanimated/docs/guides/troubleshooting#outdated-version-of-react-native-for-new-architecture for more information."
         )
     }
 }
 
+def assertMinimalReactNativeVersion = task assertMinimalReactNativeVersionTask {
+    onlyIf { REACT_NATIVE_MINOR_VERSION < 66 }
+    doFirst {
+        // If you change the minimal React Native version remember to update Compatibility Table in docs
+        throw new GradleException("[Reanimated] Unsupported React Native version. Please use 0.66 or newer.")
+    }
+}
+
+task prepareHeadersForPrefab(type: Copy) {
+    from("$projectDir/src/main/cpp")
+    from("$projectDir/../Common/cpp/AnimatedSensor")
+    from("$projectDir/../Common/cpp/Fabric")
+    from("$projectDir/../Common/cpp/LayoutAnimations")
+    from("$projectDir/../Common/cpp/NativeModules")
+    from("$projectDir/../Common/cpp/ReanimatedRuntime")
+    from("$projectDir/../Common/cpp/Registries")
+    from("$projectDir/../Common/cpp/SharedItems")
+    from("$projectDir/../Common/cpp/Tools")
+    include("*.h")
+    into(prefabHeadersDir)
+}
+
 tasks.preBuild {
-    dependsOn assertNoMultipleInstances, assertNoReanimated2WithNewArchitecture, assertLatestReactNativeWithNewArchitecture
+    dependsOn assertLatestReactNativeWithNewArchitecture, assertMinimalReactNativeVersion
 }
 
 task cleanCmakeCache() {
@@ -651,6 +443,7 @@ task printVersions {
 task createNativeDepsDirectories() {
     downloadsDir.mkdirs()
     thirdPartyNdkDir.mkdirs()
+    prefabHeadersDir.mkdirs()
 }
 
 def resolveTaskFactory(String taskName, String artifactLocalName, File reactNativeAndroidDownloadDir, File reanimatedDownloadDir) {
@@ -685,7 +478,7 @@ as well as unzip Hermes AAR in order to obtain `libhermes.so` shared library.
 For more details, see https://reactnative.dev/architecture/bundled-hermes
 or https://github.com/reactwg/react-native-new-architecture/discussions/4
 */
-if (REACT_NATIVE_MINOR_VERSION in [69, 70] && !isNewArchitectureEnabled()) {
+if (REACT_NATIVE_MINOR_VERSION in [69, 70] && !IS_NEW_ARCHITECTURE_ENABLED) {
     // copied from `react-native/ReactAndroid/hermes-engine/build.gradle`
 
     def downloadDir = customDownloadsDir ? new File(customDownloadsDir) : new File(reactNativeRootDir, "sdks/download")
@@ -752,7 +545,7 @@ if (REACT_NATIVE_MINOR_VERSION < 71) {
     Task resolveFolly = resolveTaskFactory("resolveFolly", "folly-${FOLLY_VERSION}.tar.gz", reactNativeAndroidDownloadDir, downloadsDir)
     Task resolveGlog = resolveTaskFactory("resolveGlog", "glog-${GLOG_VERSION}.tar.gz", reactNativeAndroidDownloadDir, downloadsDir)
 
-    if (isNewArchitectureEnabled()) {
+    if (IS_NEW_ARCHITECTURE_ENABLED) {
         def reactNativeAndroidProject = findProject(":packages:react-native::ReactAndroid")
         if (reactNativeAndroidProject != null) {
             reactNativeAndroidProject.afterEvaluate {
@@ -776,9 +569,9 @@ if (REACT_NATIVE_MINOR_VERSION < 71) {
     task downloadBoost(dependsOn: resolveBoost, type: Download) {
         def transformedVersion = BOOST_VERSION.replace("_", ".")
         def artifactLocalName = "boost_${BOOST_VERSION}.tar.gz"
-        def srcUrl = "https://boostorg.jfrog.io/artifactory/main/release/${transformedVersion}/source/boost_${BOOST_VERSION}.tar.gz"
+        def srcUrl = "https://boostorg.jfrog.io/artifactory/main/release/${transformedVersion}/source/${artifactLocalName}"
         if (REACT_NATIVE_MINOR_VERSION < 69) {
-            srcUrl = "https://github.com/react-native-community/boost-for-react-native/releases/download/v${transformedVersion}-0/boost_${BOOST_VERSION}.tar.gz"
+            srcUrl = "https://github.com/react-native-community/boost-for-react-native/releases/download/v${transformedVersion}-0/${artifactLocalName}"
         }
         src(srcUrl)
         onlyIfNewer(true)
@@ -881,7 +674,7 @@ if (REACT_NATIVE_MINOR_VERSION < 71) {
     task prepareHermes {
     return
         if (REACT_NATIVE_MINOR_VERSION >= 69) {
-            if (!isNewArchitectureEnabled()) {
+            if (!IS_NEW_ARCHITECTURE_ENABLED) {
                 dependsOn(unzipHermes)
             }
 
@@ -893,7 +686,7 @@ if (REACT_NATIVE_MINOR_VERSION < 71) {
                     "${resolveBuildType()}.aar"
                 )
                 if (!hermesAAR.exists()) {
-                    throw new GradleException("Could not find hermes-engine AAR", null)
+                    throw new GradleException("[Reanimated] Could not find hermes-engine AAR.", null)
                 }
 
                 def soFiles = zipTree(hermesAAR).matching({ it.include "**/*.so" })
@@ -908,12 +701,12 @@ if (REACT_NATIVE_MINOR_VERSION < 71) {
             doLast {
                 def hermesPackagePath = findNodeModulePath(projectDir, "hermes-engine")
                 if (!hermesPackagePath) {
-                    throw new GradleException("Could not find the hermes-engine npm package", null)
+                    throw new GradleException("[Reanimated] Could not find the hermes-engine npm package.", null)
                 }
 
                 def hermesAAR = file("$hermesPackagePath/android/hermes-${resolveBuildType()}.aar") // e.g. hermes-debug.aar
                 if (!hermesAAR.exists()) {
-                    throw new GradleException("The hermes-engine npm package is missing \"android/hermes-${resolveBuildType()}.aar\"", null)
+                    throw new GradleException("[Reanimated] The hermes-engine npm package is missing \"android/hermes-${resolveBuildType()}.aar\".", null)
                 }
 
                 def soFiles = zipTree(hermesAAR).matching({ it.include "**/*.so" })
@@ -934,12 +727,12 @@ if (REACT_NATIVE_MINOR_VERSION < 71) {
             doLast {
                 def jscPackagePath = findNodeModulePath(projectDir, "jsc-android")
                 if (!jscPackagePath) {
-                    throw new GradleException("Could not find the jsc-android npm package", null)
+                    throw new GradleException("[Reanimated] Could not find the jsc-android npm package.", null)
                 }
 
                 def jscDist = file("$jscPackagePath/dist")
                 if (!jscDist.exists()) {
-                    throw new GradleException("The jsc-android npm package is missing its \"dist\" directory", null)
+                    throw new GradleException("[Reanimated] The jsc-android npm package is missing its \"dist\" directory.", null)
                 }
 
                 def jscAAR = fileTree(jscDist).matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
@@ -1028,9 +821,6 @@ if (REACT_NATIVE_MINOR_VERSION < 71) {
 task packageNdkLibs(type: Copy) {
     from("$buildDir/reanimated-ndk/all")
     include("**/libreanimated.so")
-    if(REACT_NATIVE_MINOR_VERSION < 64) {
-        include("**/libturbomodulejsijni.so")
-    }
     into("$projectDir/src/main/jniLibs")
 }
 
@@ -1049,7 +839,6 @@ repositories {
 }
 
 dependencies {
-    // noinspection GradleDynamicVersion
     implementation "com.facebook.yoga:proguard-annotations:1.19.0"
     implementation "androidx.transition:transition:1.1.0"
     implementation "androidx.core:core:1.6.0"
@@ -1060,13 +849,9 @@ dependencies {
             compileOnly "com.facebook.react:hermes-android:${REACT_NATIVE_VERSION}"
         }
     } else {
+        // noinspection GradleDynamicVersion
         implementation "com.facebook.react:react-native:+" // From node_modules
-        if (isDeveloperMode() && !isNewArchitectureEnabled()) {
-            implementation "com.facebook.fbjni:fbjni:" + FBJNI_VERSION
-        }
-        else {
-            implementation "com.facebook.fbjni:fbjni-java-only:" + FBJNI_VERSION
-        }
+        implementation "com.facebook.fbjni:fbjni-java-only:" + FBJNI_VERSION
 
         extractHeaders("com.facebook.fbjni:fbjni:" + FBJNI_VERSION + ":headers")
         extractSO("com.facebook.fbjni:fbjni:" + FBJNI_VERSION)
@@ -1097,6 +882,8 @@ afterEvaluate {
         nativeBuildDependsOn(extractSOFiles)
     }
 
+    preBuild.dependsOn(prepareHeadersForPrefab)
+
     tasks.forEach({ task ->
         if (task.name.contains("JniLibFolders")) {
             task.dependsOn(packageNdkLibs)
@@ -1121,15 +908,6 @@ afterEvaluate {
             extractSOFiles.dependsOn(prepareJSC)
         }
     } else {
-      throw GradleScriptException("Unknown JS runtime ${JS_RUNTIME}.")
+      throw GradleScriptException("[Reanimated] Unknown JS runtime ${JS_RUNTIME}.")
     }
-}
-
-if (CLIENT_SIDE_BUILD) {
-    def aarDir = "${buildDir}/outputs"
-    aar = file("${aarDir}/android-${resolveBuildType()}.aar") // e.g. android-debug.aar
-    if (aar == null) {
-        throw GradleScriptException("AAR build failed. No AAR found in ${aarDir}.")
-    }
-    artifacts.add("default", aar)
 }

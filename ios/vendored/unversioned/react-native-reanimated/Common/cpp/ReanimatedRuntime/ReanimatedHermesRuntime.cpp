@@ -18,22 +18,25 @@
 #include <hermes/hermes.h>
 #endif
 
-#include <hermes/inspector/RuntimeAdapter.h>
-#include <hermes/inspector/chrome/Registration.h>
-
 namespace reanimated {
 
 using namespace facebook;
 using namespace react;
+#if HERMES_ENABLE_DEBUGGER
+#if REACT_NATIVE_MINOR_VERSION >= 73
+using namespace facebook::hermes::inspector_modern;
+#else
+using namespace facebook::hermes::inspector;
+#endif
+#endif // HERMES_ENABLE_DEBUGGER
 
 #if HERMES_ENABLE_DEBUGGER
 
-class HermesExecutorRuntimeAdapter
-    : public facebook::hermes::inspector::RuntimeAdapter {
+class HermesExecutorRuntimeAdapter : public RuntimeAdapter {
  public:
-  HermesExecutorRuntimeAdapter(
+  explicit HermesExecutorRuntimeAdapter(
       facebook::hermes::HermesRuntime &hermesRuntime,
-      std::shared_ptr<MessageQueueThread> thread)
+      const std::shared_ptr<MessageQueueThread> &thread)
       : hermesRuntime_(hermesRuntime), thread_(std::move(thread)) {}
 
   virtual ~HermesExecutorRuntimeAdapter() {
@@ -71,7 +74,8 @@ class HermesExecutorRuntimeAdapter
 
 ReanimatedHermesRuntime::ReanimatedHermesRuntime(
     std::unique_ptr<facebook::hermes::HermesRuntime> runtime,
-    std::shared_ptr<MessageQueueThread> jsQueue)
+    const std::shared_ptr<MessageQueueThread> &jsQueue,
+    const std::string &name)
     : jsi::WithRuntimeDecorator<ReanimatedReentrancyCheck>(
           *runtime,
           reentrancyCheck_),
@@ -80,19 +84,17 @@ ReanimatedHermesRuntime::ReanimatedHermesRuntime(
   auto adapter =
       std::make_unique<HermesExecutorRuntimeAdapter>(*runtime_, jsQueue);
 #if REACT_NATIVE_MINOR_VERSION >= 71
-  debugToken_ = facebook::hermes::inspector::chrome::enableDebugging(
-      std::move(adapter), "Reanimated Runtime");
+  debugToken_ = chrome::enableDebugging(std::move(adapter), name);
 #else
-  facebook::hermes::inspector::chrome::enableDebugging(
-      std::move(adapter), "Reanimated Runtime");
+  chrome::enableDebugging(std::move(adapter), name);
 #endif // REACT_NATIVE_MINOR_VERSION
 #else
   // This is required by iOS, because there is an assertion in the destructor
   // that the thread was indeed `quit` before
   jsQueue->quitSynchronous();
-#endif
+#endif // HERMES_ENABLE_DEBUGGER
 
-#ifdef DEBUG
+#ifndef NDEBUG
   facebook::hermes::HermesRuntime *wrappedRuntime = runtime_.get();
   jsi::Value evalWithSourceMap = jsi::Function::createFromHostFunction(
       *runtime_,
@@ -114,25 +116,21 @@ ReanimatedHermesRuntime::ReanimatedHermesRuntime(
           sourceMap = std::make_shared<const jsi::StringBuffer>(
               args[2].asString(rt).utf8(rt));
         }
-#if REACT_NATIVE_MINOR_VERSION >= 65
         return wrappedRuntime->evaluateJavaScriptWithSourceMap(
             code, sourceMap, sourceURL);
-#else
-        return wrappedRuntime->evaluateJavaScript(code, sourceURL);
-#endif
       });
   runtime_->global().setProperty(
       *runtime_, "evalWithSourceMap", evalWithSourceMap);
-#endif // DEBUG
+#endif // NDEBUG
 }
 
 ReanimatedHermesRuntime::~ReanimatedHermesRuntime() {
 #if HERMES_ENABLE_DEBUGGER
   // We have to disable debugging before the runtime is destroyed.
 #if REACT_NATIVE_MINOR_VERSION >= 71
-  facebook::hermes::inspector::chrome::disableDebugging(debugToken_);
+  chrome::disableDebugging(debugToken_);
 #else
-  facebook::hermes::inspector::chrome::disableDebugging(*runtime_);
+  chrome::disableDebugging(*runtime_);
 #endif // REACT_NATIVE_MINOR_VERSION
 #endif // HERMES_ENABLE_DEBUGGER
 }

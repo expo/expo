@@ -1,21 +1,25 @@
 package com.swmansion.reanimated.nativeProxy;
 
+import android.content.ContentResolver;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.util.Log;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeArray;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.soloader.SoLoader;
 import com.swmansion.common.GestureHandlerStateManager;
+import com.swmansion.reanimated.AndroidUIScheduler;
+import com.swmansion.reanimated.BuildConfig;
 import com.swmansion.reanimated.NativeProxy;
 import com.swmansion.reanimated.NodesManager;
 import com.swmansion.reanimated.ReanimatedModule;
-import com.swmansion.reanimated.Scheduler;
 import com.swmansion.reanimated.Utils;
 import com.swmansion.reanimated.keyboardObserver.ReanimatedKeyboardEventListener;
 import com.swmansion.reanimated.layoutReanimation.AnimationsManager;
@@ -35,15 +39,16 @@ public abstract class NativeProxyCommon {
 
   protected NodesManager mNodesManager;
   protected final WeakReference<ReactApplicationContext> mContext;
-  protected Scheduler mScheduler;
+  protected AndroidUIScheduler mAndroidUIScheduler;
   private ReanimatedSensorContainer reanimatedSensorContainer;
   private final GestureHandlerStateManager gestureHandlerStateManager;
   private ReanimatedKeyboardEventListener reanimatedKeyboardEventListener;
   private Long firstUptime = SystemClock.uptimeMillis();
   private boolean slowAnimationsEnabled = false;
+  protected String cppVersion = null;
 
   protected NativeProxyCommon(ReactApplicationContext context) {
-    mScheduler = new Scheduler(context);
+    mAndroidUIScheduler = new AndroidUIScheduler(context);
     mContext = new WeakReference<>(context);
     reanimatedSensorContainer = new ReanimatedSensorContainer(mContext);
     reanimatedKeyboardEventListener = new ReanimatedKeyboardEventListener(mContext);
@@ -62,8 +67,10 @@ public abstract class NativeProxyCommon {
     gestureHandlerStateManager = tempHandlerStateManager;
   }
 
-  public Scheduler getScheduler() {
-    return mScheduler;
+  protected native void installJSIBindings();
+
+  public AndroidUIScheduler getAndroidUIScheduler() {
+    return mAndroidUIScheduler;
   }
 
   private void toggleSlowAnimations() {
@@ -93,6 +100,37 @@ public abstract class NativeProxyCommon {
   }
 
   @DoNotStrip
+  public String getReanimatedJavaVersion() {
+    return BuildConfig.REANIMATED_VERSION_JAVA;
+  }
+
+  @DoNotStrip
+  @SuppressWarnings("unused")
+  // It turns out it's pretty difficult to set a member of a class
+  // instance through JNI so we decided to use a setter instead.
+  protected void setCppVersion(String version) {
+    cppVersion = version;
+  }
+
+  protected void checkCppVersion() {
+    if (cppVersion == null) {
+      throw new RuntimeException(
+          "[Reanimated] Java side failed to resolve C++ code version. "
+              + "See https://docs.swmansion.com/react-native-reanimated/docs/guides/troubleshooting#java-side-failed-to-resolve-c-code-version for more information.");
+    }
+    String javaVersion = getReanimatedJavaVersion();
+    if (!cppVersion.equals(javaVersion)) {
+      throw new RuntimeException(
+          "[Reanimated] Mismatch between Java code version and C++ code version ("
+              + javaVersion
+              + " vs. "
+              + cppVersion
+              + " respectively). See "
+              + "https://docs.swmansion.com/react-native-reanimated/docs/guides/troubleshooting#mismatch-between-java-code-version-and-c-code-version for more information.");
+    }
+  }
+
+  @DoNotStrip
   public void updateProps(int viewTag, Map<String, Object> props) {
     mNodesManager.updateProps(viewTag, props);
   }
@@ -113,6 +151,11 @@ public abstract class NativeProxyCommon {
   }
 
   @DoNotStrip
+  public void dispatchCommand(int viewTag, String commandId, ReadableArray commandArgs) {
+    mNodesManager.dispatchCommand(viewTag, commandId, commandArgs);
+  }
+
+  @DoNotStrip
   public void setGestureState(int handlerTag, int newState) {
     if (gestureHandlerStateManager != null) {
       gestureHandlerStateManager.setGestureHandlerState(handlerTag, newState);
@@ -120,7 +163,7 @@ public abstract class NativeProxyCommon {
   }
 
   @DoNotStrip
-  public long getCurrentTime() {
+  public long getAnimationTimestamp() {
     if (slowAnimationsEnabled) {
       final long ANIMATIONS_DRAG_FACTOR = 10;
       return this.firstUptime
@@ -183,7 +226,7 @@ public abstract class NativeProxyCommon {
   protected abstract HybridData getHybridData();
 
   public void onCatalystInstanceDestroy() {
-    mScheduler.deactivate();
+    mAndroidUIScheduler.deactivate();
     getHybridData().resetNative();
   }
 
@@ -202,6 +245,15 @@ public abstract class NativeProxyCommon {
             .getAnimationsManager();
 
     animationsManager.setNativeMethods(NativeProxy.createNativeMethodsHolder(layoutAnimations));
+  }
+
+  @DoNotStrip
+  public boolean getIsReducedMotion() {
+    ContentResolver mContentResolver = mContext.get().getContentResolver();
+    String rawValue =
+        Settings.Global.getString(mContentResolver, Settings.Global.TRANSITION_ANIMATION_SCALE);
+    float parsedValue = rawValue != null ? Float.parseFloat(rawValue) : 1f;
+    return parsedValue == 0f;
   }
 
   @DoNotStrip

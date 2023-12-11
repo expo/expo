@@ -6,9 +6,23 @@
 
 ### 🎉 New features
 
+- Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.8.0 — 2023-11-14
+
+### 💡 Others
+
+- Migrate to use non-deprecated `react-native-web` props. ([#24930](https://github.com/expo/expo/pull/24930) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.7.0 — 2023-10-17
+
+### 💡 Others
+
+- Ship untranspiled JSX to support custom handling of `jsx` and `createElement`. ([#24889](https://github.com/expo/expo/pull/24889) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.6.2 — 2023-09-04
 

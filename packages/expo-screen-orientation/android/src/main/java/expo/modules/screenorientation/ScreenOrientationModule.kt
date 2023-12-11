@@ -32,6 +32,9 @@ class ScreenOrientationModule : Module(), LifecycleEventListener {
   override fun definition() = ModuleDefinition {
     Name("ExpoScreenOrientation")
 
+    // This is unused on Android. It is only here to suppress the native event emitter warning
+    Events("expoDidUpdateDimensions")
+
     AsyncFunction("lockAsync") { orientationLock: OrientationLock ->
       try {
         currentActivity.requestedOrientation = orientationLock.toPlatformInt()

@@ -86,6 +86,11 @@ const Container = create(AnimatedPressable, {
       button: shadows.button,
     },
 
+    flex: {
+      '1': { flex: 1 },
+      '0': { flex: 0 },
+    },
+
     ...rounded,
     ...padding,
     ...margin,

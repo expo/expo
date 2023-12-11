@@ -5,7 +5,7 @@ import type { RouterStore } from './router-store';
 import { ResultState } from '../fork/getStateFromPath';
 import { Href, resolveHref } from '../link/href';
 import { resolve } from '../link/path';
-import { hasUrlProtocolPrefix } from '../utils/url';
+import { shouldLinkExternally } from '../utils/url';
 
 function assertIsReady(store: RouterStore) {
   if (!store.navigationRef.isReady()) {
@@ -46,7 +46,7 @@ export function setParams(this: RouterStore, params: Record<string, string | num
 }
 
 export function linkTo(this: RouterStore, href: string, event?: string) {
-  if (hasUrlProtocolPrefix(href)) {
+  if (shouldLinkExternally(href)) {
     Linking.openURL(href);
     return;
   }
@@ -72,15 +72,32 @@ export function linkTo(this: RouterStore, href: string, event?: string) {
   const rootState = navigationRef.getRootState();
 
   if (href.startsWith('.')) {
+    // Resolve base path by merging the current segments with the params
     let base =
-      this.linking.getPathFromState?.(rootState, {
-        screens: [],
-        preserveGroups: true,
-      }) ?? '';
+      this.routeInfo?.segments
+        ?.map((segment) => {
+          if (!segment.startsWith('[')) return segment;
 
-    if (base && !base.endsWith('/')) {
+          if (segment.startsWith('[...')) {
+            segment = segment.slice(4, -1);
+            const params = this.routeInfo?.params?.[segment];
+            if (Array.isArray(params)) {
+              return params.join('/');
+            } else {
+              return params?.split(',')?.join('/') ?? '';
+            }
+          } else {
+            segment = segment.slice(1, -1);
+            return this.routeInfo?.params?.[segment];
+          }
+        })
+        .filter(Boolean)
+        .join('/') ?? '/';
+
+    if (!this.routeInfo?.isIndex) {
       base += '/..';
     }
+
     href = resolve(base, href);
   }
 
@@ -110,7 +127,7 @@ function rewriteNavigationStateToParams(
 ) {
   if (!state) return params;
   // We Should always have at least one route in the state
-  const lastRoute = state.routes.at(-1)!;
+  const lastRoute = state.routes[state.routes.length - 1]!;
   params.screen = lastRoute.name;
   // Weirdly, this always needs to be an object. If it's undefined, it won't work.
   params.params = lastRoute.params ? JSON.parse(JSON.stringify(lastRoute.params)) : {};
@@ -140,7 +157,7 @@ function getNavigateReplaceAction(
   lastNavigatorSupportingReplace: NavigationState = parentState
 ): NavigationAction {
   // We should always have at least one route in the state
-  const route = state.routes.at(-1)!;
+  const route = state.routes[state.routes.length - 1]!;
 
   // Only these navigators support replace
   if (parentState.type === 'stack' || parentState.type === 'tab') {

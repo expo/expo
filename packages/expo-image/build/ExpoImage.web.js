@@ -6,11 +6,21 @@ import loadStyle from './web/imageStyles';
 import useSourceSelection from './web/useSourceSelection';
 loadStyle();
 export const ExpoImageModule = {
-    prefetch(urls) {
+    async prefetch(urls, _) {
         const urlsArray = Array.isArray(urls) ? urls : [urls];
-        urlsArray.forEach((url) => {
-            const img = new Image();
-            img.src = url;
+        return new Promise((resolve) => {
+            let imagesLoaded = 0;
+            urlsArray.forEach((url) => {
+                const img = new Image();
+                img.src = url;
+                img.onload = () => {
+                    imagesLoaded++;
+                    if (imagesLoaded === urlsArray.length) {
+                        resolve(true);
+                    }
+                };
+                img.onerror = () => resolve(false);
+            });
         });
     },
     async clearMemoryCache() {
@@ -56,13 +66,13 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
     const initialNode = placeholder?.[0]?.uri
         ? [
             initialNodeAnimationKey,
-            ({ onAnimationFinished }) => (className, style) => (React.createElement(ImageWrapper, { ...props, source: placeholder?.[0], style: {
+            ({ onAnimationFinished }) => (className, style) => (<ImageWrapper {...props} source={placeholder?.[0]} style={{
                     objectFit: imagePlaceholderContentFit,
                     ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
                     ...style,
-                }, className: className, events: {
+                }} className={className} events={{
                     onTransitionEnd: [onAnimationFinished],
-                }, contentPosition: { left: '50%', top: '50%' }, hashPlaceholderContentPosition: contentPosition, hashPlaceholderStyle: imageHashStyle })),
+                }} contentPosition={{ left: '50%', top: '50%' }} hashPlaceholderContentPosition={contentPosition} hashPlaceholderStyle={imageHashStyle}/>),
         ]
         : null;
     const currentNodeAnimationKey = (recyclingKey
@@ -70,18 +80,21 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
         : selectedSource?.uri ?? placeholder?.[0]?.uri) ?? '';
     const currentNode = [
         currentNodeAnimationKey,
-        ({ onAnimationFinished, onReady, onMount, onError: onErrorInner }) => (className, style) => (React.createElement(ImageWrapper, { ...props, source: selectedSource || placeholder?.[0], events: {
+        ({ onAnimationFinished, onReady, onMount, onError: onErrorInner }) => (className, style) => (<ImageWrapper {...props} source={selectedSource || placeholder?.[0]} events={{
                 onError: [onErrorAdapter(onError), onLoadEnd, onErrorInner],
                 onLoad: [onLoadAdapter(onLoad), onLoadEnd, onReady],
                 onMount: [onMount],
                 onTransitionEnd: [onAnimationFinished],
-            }, style: {
+            }} style={{
                 objectFit: selectedSource ? contentFit : imagePlaceholderContentFit,
                 ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
                 ...style,
-            }, className: className, cachePolicy: cachePolicy, priority: priority, contentPosition: selectedSource ? contentPosition : { top: '50%', left: '50%' }, hashPlaceholderContentPosition: contentPosition, hashPlaceholderStyle: imageHashStyle, accessibilityLabel: props.accessibilityLabel })),
+            }} className={className} cachePolicy={cachePolicy} priority={priority} contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }} hashPlaceholderContentPosition={contentPosition} hashPlaceholderStyle={imageHashStyle} accessibilityLabel={props.accessibilityLabel}/>),
     ];
-    return (React.createElement(View, { ref: containerRef, dataSet: { expoimage: true }, style: [{ overflow: 'hidden' }, style] },
-        React.createElement(AnimationManager, { transition: transition, recyclingKey: recyclingKey, initial: initialNode }, currentNode)));
+    return (<View ref={containerRef} dataSet={{ expoimage: true }} style={[{ overflow: 'hidden' }, style]}>
+      <AnimationManager transition={transition} recyclingKey={recyclingKey} initial={initialNode}>
+        {currentNode}
+      </AnimationManager>
+    </View>);
 }
 //# sourceMappingURL=ExpoImage.web.js.map

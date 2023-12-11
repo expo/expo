@@ -5,6 +5,7 @@ import { getServerManifest } from './getServerManifest';
 import { RequireContext } from './types';
 
 export type RouteInfo<TRegex = string> = {
+  file: string;
   page: string;
   namedRegex: TRegex;
   routeKeys: { [named: string]: string };
@@ -31,6 +32,7 @@ export function createRoutesManifest(paths: string[]): ExpoRoutesManifestV1 | nu
   const routeTree = getRoutes(createMockContextModule(paths), {
     preserveApiRoutes: true,
     ignoreRequireErrors: true,
+    ignoreEntryPoints: true,
   });
 
   if (!routeTree) {

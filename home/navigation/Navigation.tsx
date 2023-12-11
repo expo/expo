@@ -8,7 +8,6 @@ import {
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import * as React from 'react';
 import { Platform, StyleSheet, Linking } from 'react-native';
-import { DiagnosticsStackScreen } from 'screens/DiagnosticsScreen';
 
 import BottomTab, { getNavigatorProps } from './BottomTabNavigator';
 import { HomeStackRoutes, SettingsStackRoutes, ModalStackRoutes } from './Navigation.types';
@@ -30,6 +29,9 @@ import {
   alertWithCameraPermissionInstructions,
   requestCameraPermissionsAsync,
 } from '../utils/PermissionUtils';
+
+import { DiagnosticsStackScreen } from '@/screens/DiagnosticsScreen';
+import { FeedbackFormScreen } from '@/screens/FeedbackFormScreen';
 
 // TODO(Bacon): Do we need to create a new one each time?
 const HomeStack = createStackNavigator<HomeStackRoutes>();
@@ -92,6 +94,13 @@ function HomeStackScreen() {
         component={BranchDetailsScreen}
         options={{
           title: 'Branch',
+        }}
+      />
+      <HomeStack.Screen
+        name="FeedbackForm"
+        component={FeedbackFormScreen}
+        options={{
+          title: 'Share your feedback',
         }}
       />
     </HomeStack.Navigator>

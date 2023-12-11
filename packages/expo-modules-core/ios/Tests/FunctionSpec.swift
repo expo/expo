@@ -3,7 +3,7 @@ import ExpoModulesTestCore
 @testable import ExpoModulesCore
 
 class FunctionSpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
     let appContext = AppContext.create()
     let functionName = "test function name"
 
@@ -103,7 +103,7 @@ class FunctionSpec: ExpoSpec {
 
               expect(value).notTo(beNil())
               expect(value).to(beAKindOf(String.self))
-              expect(value).to(be(dict["property"]))
+              expect(value as? String).to(equal(dict["property"]!))
               done()
             }
           }
@@ -120,7 +120,7 @@ class FunctionSpec: ExpoSpec {
               let value = try! result.get()
               expect(value).notTo(beNil())
               expect(value).to(beAKindOf(String.self))
-              expect(value).to(be(dict["propertyWithCustomKey"]))
+              expect(value as? String).to(equal(dict["propertyWithCustomKey"]))
               done()
             }
           }
@@ -190,13 +190,13 @@ class FunctionSpec: ExpoSpec {
           return returnedValue
         }
 
-        expect({ try fn.call(by: nil, withArguments: ["test"], appContext: appContext) })
+        expect({ (try fn.call(by: nil, withArguments: ["test"], appContext: appContext)) as? String })
           .notTo(throwError())
-          .to(be(returnedValue))
+          .to(equal(returnedValue))
 
-        expect({ try fn.call(by: nil, withArguments: ["test", 3], appContext: appContext) })
+        expect({ (try fn.call(by: nil, withArguments: ["test", 3], appContext: appContext)) as? String })
           .notTo(throwError())
-          .to(be(returnedValue))
+          .to(equal(returnedValue))
       }
 
       it("throws when called without required arguments") {
@@ -269,6 +269,10 @@ class FunctionSpec: ExpoSpec {
           Function("withFunction") { (fn: JavaScriptFunction<String>) -> String in
             return try fn.call("foo", "bar")
           }
+
+          Function("withCGFloat") { (f: CGFloat) in
+            return "\(f)"
+          }
         })
       }
 
@@ -300,6 +304,10 @@ class FunctionSpec: ExpoSpec {
 
         expect(value.kind) == .string
         expect(value.getString()) == "foobar"
+      }
+
+      it("accepts CGFloat argument") {
+        expect(try runtime.eval("expo.modules.TestModule.withCGFloat(20.23)").asString()) == "20.23"
       }
     }
   }

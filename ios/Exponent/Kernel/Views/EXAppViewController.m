@@ -10,6 +10,7 @@
 #import "EXManagedAppSplashScreenConfigurationBuilder.h"
 #import "EXManagedAppSplashScreenViewController.h"
 #import "EXHomeAppSplashScreenViewProvider.h"
+#import "EXHomeModule.h"
 #import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXErrorView.h"
@@ -28,12 +29,6 @@
 #import <React/RCTAppearance.h>
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI49_0_0React/ABI49_0_0RCTAppearance.h>)
 #import <ABI49_0_0React/ABI49_0_0RCTAppearance.h>
-#endif
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI48_0_0React/ABI48_0_0RCTAppearance.h>)
-#import <ABI48_0_0React/ABI48_0_0RCTAppearance.h>
-#endif
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI47_0_0React/ABI47_0_0RCTAppearance.h>)
-#import <ABI47_0_0React/ABI47_0_0RCTAppearance.h>
 #endif
 
 #import "Expo_Go-Swift.h"
@@ -654,12 +649,6 @@ NS_ASSUME_NONNULL_BEGIN
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI49_0_0React/ABI49_0_0RCTAppearance.h>)
   ABI49_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI48_0_0React/ABI48_0_0RCTAppearance.h>)
-  ABI48_0_0RCTOverrideAppearancePreference(appearancePreference);
-#endif
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI47_0_0React/ABI47_0_0RCTAppearance.h>)
-  ABI47_0_0RCTOverrideAppearancePreference(appearancePreference);
-#endif
 
 }
 
@@ -737,12 +726,19 @@ NS_ASSUME_NONNULL_BEGIN
   return [[[UIApplication sharedApplication].windows firstObject].windowScene interfaceOrientation];
 }
 
+- (void)_storeLastFatalErrorDate:(NSDate *)date
+{
+  [[NSUserDefaults standardUserDefaults] setObject:date forKey:kEXLastFatalErrorDateDefaultsKey];
+  [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
 #pragma mark - Internal
 
 - (void)_showErrorWithType:(EXFatalErrorType)type error:(nullable NSError *)error
 {
   EXAssertMainThread();
   _dtmLastFatalErrorShown = [NSDate date];
+  [self _storeLastFatalErrorDate:_dtmLastFatalErrorShown];
   if (_errorView && _contentView == _errorView) {
     // already showing, just update
     _errorView.type = type;

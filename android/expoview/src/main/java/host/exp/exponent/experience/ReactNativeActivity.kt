@@ -105,7 +105,7 @@ abstract class ReactNativeActivity :
   private val handler = Handler()
 
   protected open fun shouldCreateLoadingView(): Boolean {
-    return !Constants.isStandaloneApp() || Constants.SHOW_LOADING_VIEW_IN_SHELL_APP
+    return true
   }
 
   val rootView: View?
@@ -205,12 +205,6 @@ abstract class ReactNativeActivity :
    * Waits for JS side of React to be launched and then performs final launching actions.
    */
   private fun waitForReactAndFinishLoading() {
-    if (Constants.isStandaloneApp() && Constants.SHOW_LOADING_VIEW_IN_SHELL_APP) {
-      val layoutParams = containerView.layoutParams
-      layoutParams.height = FrameLayout.LayoutParams.MATCH_PARENT
-      containerView.layoutParams = layoutParams
-    }
-
     try {
       // NOTE(evanbacon): Use the same view as the `expo-system-ui` module.
       // Set before the application code runs to ensure immediate SystemUI calls overwrite the app.json value.
@@ -248,10 +242,9 @@ abstract class ReactNativeActivity :
       return reactRootViewRNClass as Class<out ViewGroup>
     }
     var sdkVersion = manifest.getExpoGoSDKVersion()
-    if (Constants.TEMPORARY_ABI_VERSION != null && Constants.TEMPORARY_ABI_VERSION == this.sdkVersion) {
+    if (Constants.TEMPORARY_SDK_VERSION == sdkVersion) {
       sdkVersion = RNObject.UNVERSIONED
     }
-    sdkVersion = if (Constants.isStandaloneApp()) RNObject.UNVERSIONED else sdkVersion
     return RNObject("com.facebook.react.ReactRootView").loadVersion(sdkVersion!!).rnClass() as Class<out ViewGroup>
   }
 
@@ -352,7 +345,6 @@ abstract class ReactNativeActivity :
     intentUri: String?,
     sdkVersion: String?,
     notification: ExponentNotification?,
-    isShellApp: Boolean,
     extraNativeModules: List<Any>?,
     extraExpoPackages: List<Package>?,
     progressListener: DevBundleDownloadProgressListener
@@ -431,7 +423,7 @@ abstract class ReactNativeActivity :
 
     try {
       exponentProps.put("manifestString", manifest.toString())
-      exponentProps.put("shell", isShellApp)
+      exponentProps.put("shell", false)
       exponentProps.put("initialUri", intentUri)
     } catch (e: JSONException) {
       EXL.e(TAG, e)
@@ -469,7 +461,11 @@ abstract class ReactNativeActivity :
     val devSettings =
       mReactInstanceManager.callRecursive("getDevSupportManager")!!.callRecursive("getDevSettings")
     if (devSettings != null) {
-      devSettings.setField("exponentActivityId", activityId)
+      if (sdkVersion.startsWith("49.")) {
+        devSettings.setField("exponentActivityId", activityId)
+      } else {
+        devSettings.call("setExponentActivityId", activityId)
+      }
       if (devSettings.call("isRemoteJSDebugEnabled") as Boolean) {
         if (manifest?.jsEngine == "hermes") {
           // Disable remote debugging when running on Hermes
@@ -578,7 +574,7 @@ abstract class ReactNativeActivity :
 
   override fun shouldShowRequestPermissionRationale(permission: String): Boolean {
     // in scoped application we don't have `don't ask again` button
-    return if (!Constants.isStandaloneApp() && checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {
+    return if (checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {
       true
     } else super.shouldShowRequestPermissionRationale(permission)
   }
@@ -633,12 +629,10 @@ abstract class ReactNativeActivity :
   // deprecated in favor of Expo.Linking.makeUrl
   // TODO: remove this
   private val linkingUri: String?
-    get() = if (Constants.SHELL_APP_SCHEME != null) {
-      Constants.SHELL_APP_SCHEME + "://"
-    } else {
+    get() {
       val uri = Uri.parse(manifestUrl)
       val host = uri.host
-      if (host != null && (
+      return if (host != null && (
         host == "exp.host" || host == "expo.io" || host == "exp.direct" || host == "expo.test" ||
           host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(
             ".expo.test"

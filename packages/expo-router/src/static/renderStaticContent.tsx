@@ -9,14 +9,15 @@ import '@expo/metro-runtime';
 import { ServerContainer, ServerContainerRef } from '@react-navigation/native';
 import * as Font from 'expo-font/build/server';
 import React from 'react';
-import ReactDOMServer from 'react-dom/server';
+import ReactDOMServer from 'react-dom/server.node';
 import { AppRegistry } from 'react-native-web';
 
 import { getRootComponent } from './getRootComponent';
 import { ctx } from '../../_ctx';
 import { ExpoRoot } from '../ExpoRoot';
-import { getNavigationConfig } from '../getLinkingConfig';
+import { getReactNavigationConfig } from '../getReactNavigationConfig';
 import { getRoutes } from '../getRoutes';
+import { ExpoRouterServerManifestV1, getServerManifest } from '../getServerManifest';
 import { Head } from '../head';
 import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
 
@@ -25,7 +26,7 @@ const debug = require('debug')('expo:router:renderStaticContent');
 AppRegistry.registerComponent('App', () => ExpoRoot);
 
 /** Get the linking manifest from a Node.js process. */
-async function getManifest(options: any) {
+async function getManifest(options: Parameters<typeof getRoutes>[1] = {}) {
   const routeTree = getRoutes(ctx, { preserveApiRoutes: true, ...options });
 
   if (!routeTree) {
@@ -35,7 +36,29 @@ async function getManifest(options: any) {
   // Evaluate all static params
   await loadStaticParamsAsync(routeTree);
 
-  return getNavigationConfig(routeTree);
+  return getReactNavigationConfig(routeTree, false);
+}
+
+/**
+ * Get the server manifest with all dynamic routes loaded with `generateStaticParams`.
+ * Unlike the `expo-router/src/routes-manifest.ts` method, this requires loading the entire app in-memory, which
+ * takes substantially longer and requires Metro bundling.
+ *
+ * This is used for the production manifest where we pre-render certain pages and should no longer treat them as dynamic.
+ */
+async function getBuildTimeServerManifestAsync(
+  options: Parameters<typeof getRoutes>[1] = {}
+): Promise<ExpoRouterServerManifestV1> {
+  const routeTree = getRoutes(ctx, options);
+
+  if (!routeTree) {
+    throw new Error('No routes found');
+  }
+
+  // Evaluate all static params
+  await loadStaticParamsAsync(routeTree);
+
+  return getServerManifest(routeTree);
 }
 
 function resetReactNavigationContexts() {
@@ -48,7 +71,7 @@ function resetReactNavigationContexts() {
   global[contexts] = new Map<string, React.Context<any>>();
 }
 
-export function getStaticContent(location: URL): string {
+export async function getStaticContent(location: URL): Promise<string> {
   const headContext: { helmet?: any } = {};
 
   const ref = React.createRef<ServerContainerRef>();
@@ -80,11 +103,17 @@ export function getStaticContent(location: URL): string {
   // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
   resetReactNavigationContexts();
 
-  const html = ReactDOMServer.renderToString(
+  const stream = await ReactDOMServer.renderToStaticNodeStream(
     <Head.Provider context={headContext}>
       <ServerContainer ref={ref}>{element}</ServerContainer>
     </Head.Provider>
   );
+
+  let html = '';
+
+  for await (const chunk of stream) {
+    html += chunk;
+  }
 
   // Eval the CSS after the HTML is rendered so that the CSS is in the same order
   const css = ReactDOMServer.renderToStaticMarkup(getStyleElement());
@@ -119,4 +148,4 @@ function mixHeadComponentsWithStaticResults(helmet: any, html: string) {
 }
 
 // Re-export for use in server
-export { getManifest };
+export { getManifest, getBuildTimeServerManifestAsync };

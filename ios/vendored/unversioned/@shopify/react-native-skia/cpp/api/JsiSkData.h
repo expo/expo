@@ -24,7 +24,7 @@ public:
   JsiSkData(std::shared_ptr<RNSkPlatformContext> context, sk_sp<SkData> asset)
       : JsiSkWrappingSkPtrHostObject(std::move(context), std::move(asset)) {}
 
-  EXPORT_JSI_API_TYPENAME(JsiSkData, "Data")
+  EXPORT_JSI_API_TYPENAME(JsiSkData, Data)
   JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkData, dispose))
 };
 } // namespace RNSkia

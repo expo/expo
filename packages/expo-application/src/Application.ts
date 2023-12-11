@@ -1,5 +1,6 @@
 import { Platform, UnavailabilityError } from 'expo-modules-core';
 
+import { ApplicationReleaseType, PushNotificationServiceEnvironment } from './Application.types';
 import ExpoApplication from './ExpoApplication';
 
 // @needsAudit
@@ -114,17 +115,7 @@ export async function getIosIdForVendorAsync(): Promise<string | null> {
   if (!ExpoApplication.getIosIdForVendorAsync) {
     throw new UnavailabilityError('expo-application', 'getIosIdForVendorAsync');
   }
-  return (await ExpoApplication.getIosIdForVendorAsync()) ?? null;
-}
-
-// @docsMissing
-export enum ApplicationReleaseType {
-  UNKNOWN = 0,
-  SIMULATOR = 1,
-  ENTERPRISE = 2,
-  DEVELOPMENT = 3,
-  AD_HOC = 4,
-  APP_STORE = 5,
+  return await ExpoApplication.getIosIdForVendorAsync();
 }
 
 // @needsAudit
@@ -139,9 +130,6 @@ export async function getIosApplicationReleaseTypeAsync(): Promise<ApplicationRe
   }
   return await ExpoApplication.getApplicationReleaseTypeAsync();
 }
-
-// @docsMissing
-export type PushNotificationServiceEnvironment = 'development' | 'production' | null;
 
 // @needsAudit
 /**
@@ -204,3 +192,5 @@ export async function getLastUpdateTimeAsync(): Promise<Date> {
   const lastUpdateTime = await ExpoApplication.getLastUpdateTimeAsync();
   return new Date(lastUpdateTime);
 }
+
+export { ApplicationReleaseType, PushNotificationServiceEnvironment };

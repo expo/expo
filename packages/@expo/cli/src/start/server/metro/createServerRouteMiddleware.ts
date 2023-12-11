@@ -28,7 +28,9 @@ export function createRouteHandlerMiddleware(
   options: {
     mode?: string;
     appDir: string;
+    routerRoot: string;
     port?: number;
+    baseUrl: string;
     getWebBundleUrl: () => string;
     getStaticPageAsync: (pathname: string) => Promise<{ content: string }>;
   }
@@ -41,7 +43,21 @@ export function createRouteHandlerMiddleware(
         debug('manifest', manifest);
         // NOTE: no app dir if null
         // TODO: Redirect to 404 page
-        return manifest;
+        return (
+          manifest ?? {
+            // Support the onboarding screen if there's no manifest
+            htmlRoutes: [
+              {
+                file: 'index.js',
+                page: '/index',
+                routeKeys: {},
+                namedRegex: /^\/(?:index)?\/?$/i,
+              },
+            ],
+            apiRoutes: [],
+            notFoundRoutes: [],
+          }
+        );
       },
       async getHtml(request) {
         try {
@@ -63,6 +79,7 @@ export function createRouteHandlerMiddleware(
               await getErrorOverlayHtmlAsync({
                 error,
                 projectRoot,
+                routerRoot: options.routerRoot,
               }),
               {
                 status: 500,

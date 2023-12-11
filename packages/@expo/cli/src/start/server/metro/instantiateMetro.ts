@@ -1,4 +1,5 @@
 import { ExpoConfig, getConfig } from '@expo/config';
+import * as ExpoMetroConfig from '@expo/metro-config';
 import type { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import { Server as ConnectServer } from 'connect';
@@ -10,8 +11,7 @@ import { URL } from 'url';
 
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
-import { importCliServerApiFromProject, importExpoMetroConfig } from './resolveFromProject';
-import { getRouterDirectoryModuleIdWithManifest } from './router';
+import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 import { MetroDevServerOptions } from '../../../export/fork-bundleAsync';
@@ -21,7 +21,6 @@ import { createDebuggerTelemetryMiddleware } from '../../../utils/analytics/metr
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { env } from '../../../utils/env';
 import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
-import createJsInspectorMiddleware from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware, replaceMiddlewareWith } from '../middleware/mutations';
 import { remoteDevtoolsCorsMiddleware } from '../middleware/remoteDevtoolsCorsMiddleware';
 import { remoteDevtoolsSecurityHeadersMiddleware } from '../middleware/remoteDevtoolsSecurityHeadersMiddleware';
@@ -73,7 +72,6 @@ export async function loadMetroConfigAsync(
     },
   };
 
-  const ExpoMetroConfig = importExpoMetroConfig(projectRoot);
   let config = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
 
   if (
@@ -85,32 +83,34 @@ export async function loadMetroConfigAsync(
       // This token will be used in the asset plugin to ensure the path is correct for writing locally.
       // @ts-expect-error: typed as readonly.
       config.transformer.publicPath = `/assets?export_path=${
-        (exp.experiments?.basePath ?? '') + '/assets'
+        (exp.experiments?.baseUrl ?? '') + '/assets'
       }`;
     } else {
       // @ts-expect-error: typed as readonly
       config.transformer.publicPath = '/assets/?unstable_path=.';
     }
   } else {
-    if (isExporting && exp.experiments?.basePath) {
+    if (isExporting && exp.experiments?.baseUrl) {
       // This token will be used in the asset plugin to ensure the path is correct for writing locally.
       // @ts-expect-error: typed as readonly.
-      config.transformer.publicPath = exp.experiments?.basePath;
+      config.transformer.publicPath = exp.experiments?.baseUrl;
     }
   }
 
   const platformBundlers = getPlatformBundlers(exp);
 
   config = await withMetroMultiPlatformAsync(projectRoot, {
-    routerDirectory: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
     config,
     platformBundlers,
     isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
     webOutput: exp.web?.output ?? 'single',
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
+    isExporting,
   });
 
-  logEventAsync('metro config', getMetroProperties(projectRoot, exp, config));
+  if (process.env.NODE_ENV !== 'test') {
+    logEventAsync('metro config', getMetroProperties(projectRoot, exp, config));
+  }
 
   return {
     config,
@@ -144,7 +144,7 @@ export async function instantiateMetroAsync(
   );
 
   const { createDevServerMiddleware, securityHeadersMiddleware } =
-    importCliServerApiFromProject(projectRoot);
+    require('@react-native-community/cli-server-api') as typeof import('@react-native-community/cli-server-api');
 
   const { middleware, messageSocketEndpoint, eventsSocketEndpoint, websocketEndpoints } =
     createDevServerMiddleware({
@@ -164,8 +164,6 @@ export async function instantiateMetroAsync(
 
   prependMiddleware(middleware, suppressRemoteDebuggingErrorMiddleware);
 
-  middleware.use('/inspector', createJsInspectorMiddleware());
-
   // TODO: We can probably drop this now.
   const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware;
   // @ts-expect-error: can't mutate readonly config
@@ -178,11 +176,17 @@ export async function instantiateMetroAsync(
 
   middleware.use(createDebuggerTelemetryMiddleware(projectRoot, exp));
 
+  // Initialize all React Native debug features
+  const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware(metroBundler);
+  prependMiddleware(middleware, debugMiddleware);
+
   const { server, metro } = await runServer(metroBundler, metroConfig, {
-    hmrEnabled: true,
     // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
-    websocketEndpoints,
-    watch: isWatchEnabled(),
+    websocketEndpoints: {
+      ...websocketEndpoints,
+      ...debugWebsocketEndpoints,
+    },
+    watch: !isExporting && isWatchEnabled(),
   });
 
   prependMiddleware(middleware, (req: ServerRequest, res: ServerResponse, next: ServerNext) => {

@@ -7,7 +7,7 @@ boost_compiler_flags = '-Wno-documentation'
 
 Pod::Spec.new do |s|
   s.name = "ExpoKit"
-  s.version = "49.0.0"
+  s.version = "50.0.0"
   s.summary = 'ExpoKit'
   s.description = 'ExpoKit allows native projects to integrate with the Expo SDK.'
   s.homepage = 'http://docs.expo.io'
@@ -21,7 +21,7 @@ Pod::Spec.new do |s|
   s.compiler_flags = folly_compiler_flags + ' ' + boost_compiler_flags
 
   s.pod_target_xcconfig = {
-    'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
+    'CLANG_CXX_LANGUAGE_STANDARD' => 'c++20',
     'USE_HEADERMAP' => 'YES',
     'DEFINES_MODULE' => 'YES',
   }
@@ -35,7 +35,7 @@ Pod::Spec.new do |s|
     ss.dependency 'CocoaLumberjack', '~> 3.5.3'
     ss.dependency 'GoogleMaps', '~> 3.3'
     ss.dependency 'Google-Maps-iOS-Utils', '~> 2.1.0'
-    ss.dependency 'lottie-ios', '~> 3.2.3'
+    ss.dependency 'lottie-ios', '~> 4.3.3'
     ss.dependency 'JKBigInteger', '0.0.6'
     ss.dependency 'MBProgressHUD', '~> 1.2.0'
     ss.dependency 'React-Core' # explicit dependency required for CocoaPods >= 1.5.0

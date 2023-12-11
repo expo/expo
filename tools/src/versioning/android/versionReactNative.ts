@@ -73,12 +73,21 @@ async function versionHermesAsync(versionedReactNativeMonorepoRoot: string, abiV
     ),
     hermesTransforms(abiVersion)
   );
+  await transformFileAsync(
+    path.join(
+      versionedReactNativeMonorepoRoot,
+      'packages/react-native',
+      'sdks/hermes/API/hermes/inspector/CMakeLists.txt'
+    ),
+    hermesTransforms(abiVersion)
+  );
 }
 
 async function versionReactNativeAsync(versionedReactNativeRoot: string, abiVersion: string) {
   const files = await searchFilesAsync(REACT_NATIVE_SUBMODULE_DIR, [
     './ReactAndroid/**',
     './ReactCommon/**',
+    './gradle/**',
   ]);
   for (const file of files) {
     if ((file.match(/\/build\//) && !file.match(/src.*\/build\//)) || file.match(/\/\.cxx\//)) {

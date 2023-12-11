@@ -37,11 +37,9 @@ function renderRouter(context = './app', { initialUrl = '/', ...options } = {}) 
     jest.useFakeTimers();
     let ctx;
     // Reset the initial URL
-    mocks_1.initialUrlRef.value = initialUrl;
+    (0, mocks_1.setInitialUrl)(initialUrl);
     // Force the render to be synchronous
-    process.env.EXPO_ROUTER_IMPORT_MODE_WEB = 'sync';
-    process.env.EXPO_ROUTER_IMPORT_MODE_IOS = 'sync';
-    process.env.EXPO_ROUTER_IMPORT_MODE_ANDROID = 'sync';
+    process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
     if (typeof context === 'string') {
         ctx = (0, context_stubs_1.requireContext)(path_1.default.resolve(process.cwd(), context));
     }
@@ -59,7 +57,7 @@ function renderRouter(context = './app', { initialUrl = '/', ...options } = {}) 
     else if (initialUrl instanceof URL) {
         location = initialUrl;
     }
-    const result = (0, react_native_1.render)(react_1.default.createElement(ExpoRoot_1.ExpoRoot, { context: ctx, location: location }), {
+    const result = (0, react_native_1.render)(<ExpoRoot_1.ExpoRoot context={ctx} location={location}/>, {
         ...options,
     });
     return Object.assign(result, {

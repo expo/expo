@@ -6,13 +6,13 @@ import android.content.res.Configuration
 import android.os.Bundle
 import com.facebook.drawee.backends.pipeline.Fresco
 import de.greenrobot.event.EventBus
-import host.exp.exponent.Constants
 import host.exp.exponent.RNObject
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.kernel.*
 import host.exp.exponent.kernel.ExponentErrorMessage.Companion.developerErrorMessage
 import host.exp.exponent.utils.AsyncCondition
 import host.exp.exponent.utils.AsyncCondition.AsyncConditionListener
+import host.exp.exponent.storage.ExponentSharedPreferences
 import host.exp.expoview.Exponent
 import javax.inject.Inject
 
@@ -136,6 +136,7 @@ abstract class BaseExperienceActivity : MultipleVersionReactNativeActivity() {
       if (errorQueue.isEmpty()) {
         return@runOnUiThread
       }
+      kernel.exponentSharedPreferences.setLong(ExponentSharedPreferences.ExponentSharedPreferencesKey.LAST_FATAL_ERROR_DATE_KEY, System.currentTimeMillis())
       val (isFatal, errorMessage, errorHeader) = sendErrorsToErrorActivity()
       if (!shouldShowErrorScreen(errorMessage)) {
         return@runOnUiThread
@@ -144,11 +145,6 @@ abstract class BaseExperienceActivity : MultipleVersionReactNativeActivity() {
         return@runOnUiThread
       }
 
-      // we don't ever want to show any Expo UI in a production standalone app
-      // so hard crash in this case
-      if (Constants.isStandaloneApp() && !isDebugModeEnabled) {
-        throw RuntimeException("Expo encountered a fatal error: " + errorMessage.developerErrorMessage())
-      }
       if (!isDebugModeEnabled) {
         removeAllViewsFromContainer()
         reactInstanceManager.assign(null)

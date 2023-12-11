@@ -7,5 +7,8 @@ export type SerialAsset = {
   source: string;
   type: 'css' | 'js' | 'map';
 
-  metadata: Record<string, string>;
+  metadata: {
+    isAsync?: boolean;
+    modulePaths?: string[];
+  } & Record<string, boolean | string | string[]>;
 };

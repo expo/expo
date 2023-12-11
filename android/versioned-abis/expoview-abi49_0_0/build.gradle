@@ -37,6 +37,8 @@ repositories {
 }
 
 android {
+  namespace "abi49_0_0.host.exp.expoview"
+
   compileSdkVersion safeExtGet("compileSdkVersion", 33)
 
   // Used to override the NDK path/version on internal CI or by allowing
@@ -200,7 +202,6 @@ dependencies {
 
   // expo-image
   def GLIDE_VERSION = "4.13.2"
-  implementation "com.github.zjupure:webpdecoder:2.1.${GLIDE_VERSION}"
   api "com.github.bumptech.glide:glide:${GLIDE_VERSION}"
   kapt "com.github.bumptech.glide:compiler:${GLIDE_VERSION}"
   implementation "com.github.bumptech.glide:avif-integration:${GLIDE_VERSION}"
@@ -217,8 +218,8 @@ dependencies {
   api 'com.github.troZee:ViewPager2:v1.0.6'
 
   // stripe-react-native
-  implementation('com.stripe:stripe-android:20.25.+')
-  implementation('com.stripe:financial-connections:20.25.+')
+  implementation('com.stripe:stripe-android:20.34.+')
+  implementation('com.stripe:financial-connections:20.34.+')
   compileOnly 'com.stripe:stripe-android-issuing-push-provisioning:1.1.0'
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0'
   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"

@@ -1,5 +1,5 @@
 import { ExpoModuleConfig } from './ExpoModuleConfig';
-export type SupportedPlatform = 'ios' | 'android' | 'web';
+export type SupportedPlatform = 'ios' | 'android' | 'web' | 'devtools';
 export interface SearchOptions {
     searchPaths: string[];
     ignorePaths?: string[] | null;
@@ -7,6 +7,13 @@ export interface SearchOptions {
     platform: SupportedPlatform;
     silent?: boolean;
     nativeModulesDir?: string | null;
+    projectRoot: string;
+    /**
+     * Filter the search results to only include the project dependencies.
+     * In a monorepo, you may like to set this to false and link all modules from the monorepo.
+     * @default true
+     */
+    onlyProjectDeps?: boolean;
     flags?: Record<string, any>;
 }
 export interface ResolveOptions extends SearchOptions {
@@ -58,7 +65,12 @@ export interface ModuleDescriptorIos {
     reactDelegateHandlers: string[];
     debugOnly: boolean;
 }
-export type ModuleDescriptor = ModuleDescriptorAndroid | ModuleDescriptorIos;
+export interface ModuleDescriptorDevTools {
+    packageName: string;
+    packageRoot: string;
+    webpageRoot: string;
+}
+export type ModuleDescriptor = ModuleDescriptorAndroid | ModuleDescriptorIos | ModuleDescriptorDevTools;
 export interface AndroidGradlePluginDescriptor {
     /**
      * Gradle plugin ID
@@ -140,5 +152,14 @@ export interface RawExpoModuleConfig {
          * Gradle plugins.
          */
         gradlePlugins?: AndroidGradlePluginDescriptor[];
+    };
+    /**
+     * DevTools-specific config.
+     */
+    devtools?: {
+        /**
+         * The webpage root directory for Expo CLI DevTools to serve the web resources.
+         */
+        webpageRoot: string;
     };
 }

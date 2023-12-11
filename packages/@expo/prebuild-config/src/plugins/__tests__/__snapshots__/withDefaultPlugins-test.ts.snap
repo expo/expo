@@ -279,10 +279,6 @@ exports[`built-in plugins compiles mods 1`] = `
         "name": "expo-apple-authentication",
         "version": "UNVERSIONED",
       },
-      "expo-branch": {
-        "name": "expo-branch",
-        "version": "UNVERSIONED",
-      },
       "expo-contacts": {
         "name": "expo-contacts",
         "version": "UNVERSIONED",
@@ -403,9 +399,6 @@ exports[`built-in plugins compiles mods 1`] = `
     "buildNumber": "6.5.0",
     "bundleIdentifier": "com.bacon.todo",
     "config": {
-      "branch": {
-        "apiKey": "MY_BRANCH_KEY",
-      },
       "googleMapsApiKey": "TEST_googleMapsApiKey",
       "googleMobileAdsAppId": "TEST_googleMobileAdsAppId",
       "googleMobileAdsAutoInit": true,
@@ -450,12 +443,8 @@ exports[`built-in plugins compiles mods 1`] = `
       "ITSAppUsesNonExemptEncryption": true,
       "LSRequiresIPhoneOS": true,
       "NSAppTransportSecurity": {
-        "NSAllowsArbitraryLoads": true,
-        "NSExceptionDomains": {
-          "localhost": {
-            "NSExceptionAllowsInsecureHTTPLoads": true,
-          },
-        },
+        "NSAllowsArbitraryLoads": false,
+        "NSAllowsLocalNetworking": true,
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
       "UILaunchStoryboardName": "SplashScreen",
@@ -476,9 +465,6 @@ exports[`built-in plugins compiles mods 1`] = `
         "val": [
           "foo",
         ],
-      },
-      "branch_key": {
-        "live": "MY_BRANCH_KEY",
       },
     },
     "isTabletOnly": false,
@@ -687,18 +673,6 @@ exports[`built-in plugins introspects mods 1`] = `
             "key": "android.enableJetifier",
             "type": "property",
             "value": "true",
-          },
-          {
-            "type": "empty",
-          },
-          {
-            "type": "comment",
-            "value": "Version of flipper SDK to use with React Native",
-          },
-          {
-            "key": "FLIPPER_VERSION",
-            "type": "property",
-            "value": "0.182.0",
           },
           {
             "type": "empty",
@@ -935,12 +909,6 @@ exports[`built-in plugins introspects mods 1`] = `
                   },
                 ],
                 "meta-data": [
-                  {
-                    "$": {
-                      "android:name": "io.branch.sdk.BranchKey",
-                      "android:value": "MY_BRANCH_ANDROID_KEY",
-                    },
-                  },
                   {
                     "$": {
                       "android:name": "expo.modules.updates.ENABLED",
@@ -1267,12 +1235,8 @@ exports[`built-in plugins introspects mods 1`] = `
           "ITSAppUsesNonExemptEncryption": true,
           "LSRequiresIPhoneOS": true,
           "NSAppTransportSecurity": {
-            "NSAllowsArbitraryLoads": true,
-            "NSExceptionDomains": {
-              "localhost": {
-                "NSExceptionAllowsInsecureHTTPLoads": true,
-              },
-            },
+            "NSAllowsArbitraryLoads": false,
+            "NSAllowsLocalNetworking": true,
           },
           "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
           "UILaunchStoryboardName": "SplashScreen",
@@ -1293,9 +1257,6 @@ exports[`built-in plugins introspects mods 1`] = `
             "val": [
               "foo",
             ],
-          },
-          "branch_key": {
-            "live": "MY_BRANCH_KEY",
           },
         },
         "podfileProperties": {
@@ -1576,10 +1537,6 @@ exports[`built-in plugins introspects mods 1`] = `
         "name": "expo-apple-authentication",
         "version": "UNVERSIONED",
       },
-      "expo-branch": {
-        "name": "expo-branch",
-        "version": "UNVERSIONED",
-      },
       "expo-contacts": {
         "name": "expo-contacts",
         "version": "UNVERSIONED",
@@ -1700,9 +1657,6 @@ exports[`built-in plugins introspects mods 1`] = `
     "buildNumber": "6.5.0",
     "bundleIdentifier": "com.bacon.todo",
     "config": {
-      "branch": {
-        "apiKey": "MY_BRANCH_KEY",
-      },
       "googleMapsApiKey": "TEST_googleMapsApiKey",
       "googleMobileAdsAppId": "TEST_googleMobileAdsAppId",
       "googleMobileAdsAutoInit": true,
@@ -1747,12 +1701,8 @@ exports[`built-in plugins introspects mods 1`] = `
       "ITSAppUsesNonExemptEncryption": true,
       "LSRequiresIPhoneOS": true,
       "NSAppTransportSecurity": {
-        "NSAllowsArbitraryLoads": true,
-        "NSExceptionDomains": {
-          "localhost": {
-            "NSExceptionAllowsInsecureHTTPLoads": true,
-          },
-        },
+        "NSAllowsArbitraryLoads": false,
+        "NSAllowsLocalNetworking": true,
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
       "UILaunchStoryboardName": "SplashScreen",
@@ -1773,9 +1723,6 @@ exports[`built-in plugins introspects mods 1`] = `
         "val": [
           "foo",
         ],
-      },
-      "branch_key": {
-        "live": "MY_BRANCH_KEY",
       },
     },
     "isTabletOnly": false,
@@ -2011,12 +1958,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                   },
                 ],
                 "meta-data": [
-                  {
-                    "$": {
-                      "android:name": "io.branch.sdk.BranchKey",
-                      "android:value": "MY_BRANCH_ANDROID_KEY",
-                    },
-                  },
                   {
                     "$": {
                       "android:name": "expo.modules.updates.ENABLED",
@@ -2321,9 +2262,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
               "foo",
             ],
           },
-          "branch_key": {
-            "live": "MY_BRANCH_KEY",
-          },
         },
         "podfileProperties": {
           "expo.jsEngine": "hermes",
@@ -2556,10 +2494,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         "name": "expo-apple-authentication",
         "version": "UNVERSIONED",
       },
-      "expo-branch": {
-        "name": "expo-branch",
-        "version": "UNVERSIONED",
-      },
       "expo-contacts": {
         "name": "expo-contacts",
         "version": "UNVERSIONED",
@@ -2680,9 +2614,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
     "buildNumber": "6.5.0",
     "bundleIdentifier": "com.bacon.todo",
     "config": {
-      "branch": {
-        "apiKey": "MY_BRANCH_KEY",
-      },
       "googleMapsApiKey": "TEST_googleMapsApiKey",
       "googleMobileAdsAppId": "TEST_googleMobileAdsAppId",
       "googleMobileAdsAutoInit": true,
@@ -2753,9 +2684,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         "val": [
           "foo",
         ],
-      },
-      "branch_key": {
-        "live": "MY_BRANCH_KEY",
       },
     },
     "isTabletOnly": false,

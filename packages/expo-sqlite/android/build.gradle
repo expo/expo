@@ -1,9 +1,10 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
+apply plugin: 'de.undercouch.download'
 
 group = 'host.exp.exponent'
-version = '11.7.1'
+version = '12.2.1'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 if (expoModulesCorePlugin.exists()) {
@@ -15,6 +16,11 @@ if (expoModulesCorePlugin.exists()) {
     useCoreDependencies()
   }
 }
+
+def SQLITE_VERSION = '3420000'
+def customDownloadsDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
+def downloadsDir = customDownloadsDir ? new File(customDownloadsDir) : new File("$buildDir/downloads")
+def SQLITE3_SRC_DIR = new File("$buildDir/sqlite3_src")
 
 def reactNativeArchitectures() {
   def value = project.getProperties().get("reactNativeArchitectures")
@@ -42,6 +48,7 @@ buildscript {
 
   dependencies {
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${getKotlinVersion()}")
+    classpath("de.undercouch:gradle-download-task:5.5.0")
   }
 }
 
@@ -66,11 +73,11 @@ if (!safeExtGet("expoProvidesDefaultConfig", false)) {
 android {
   // Remove this if and it's contents, when support for SDK49 is dropped
   if (!safeExtGet("expoProvidesDefaultConfig", false)) {
-    compileSdkVersion safeExtGet("compileSdkVersion", 33)
+    compileSdkVersion safeExtGet("compileSdkVersion", 34)
 
     defaultConfig {
       minSdkVersion safeExtGet("minSdkVersion", 23)
-      targetSdkVersion safeExtGet("targetSdkVersion", 33)
+      targetSdkVersion safeExtGet("targetSdkVersion", 34)
     }
 
     publishing {
@@ -99,12 +106,13 @@ android {
   namespace "expo.modules.sqlite"
   defaultConfig {
     versionCode 18
-    versionName "11.7.1"
+    versionName "12.2.1"
 
     externalNativeBuild {
       cmake {
         abiFilters (*reactNativeArchitectures())
-        arguments "-DANDROID_STL=c++_shared"
+        arguments "-DANDROID_STL=c++_shared",
+          "-DSQLITE3_SRC_DIR=${SQLITE3_SRC_DIR}"
       }
     }
   }
@@ -126,4 +134,43 @@ dependencies {
   }
 
   compileOnly 'com.facebook.fbjni:fbjni:0.3.0'
+}
+
+def createNativeDepsDirectories = tasks.register('createNativeDepsDirectories') {
+  downloadsDir.mkdirs()
+  SQLITE3_SRC_DIR.mkdirs()
+}
+
+def downloadSQLite = tasks.create('downloadSQLite', Download) {
+  dependsOn(createNativeDepsDirectories)
+  src("https://www.sqlite.org/2023/sqlite-amalgamation-${SQLITE_VERSION}.zip")
+  onlyIfNewer(true)
+  overwrite(false)
+  dest(new File(downloadsDir, "sqlite-amalgamation-${SQLITE_VERSION}.zip"))
+}
+
+def prepareSQLite = tasks.register('prepareSQLite', Copy) {
+  dependsOn(downloadSQLite)
+  from(zipTree(downloadSQLite.dest))
+  into(SQLITE3_SRC_DIR)
+  eachFile {
+    // flatten files
+    path = name
+  }
+}
+
+void nativeBuildDependsOn(project, dependsOnTask) {
+  def buildTasks = project.tasks.findAll { task ->
+    def taskName = task.name
+    if (taskName.contains("Clean")) { return false }
+    if (taskName.contains("externalNative") || taskName.contains("CMake") || taskName.contains("generateJsonModel")) {
+      return true
+    }
+    return false
+  }
+  buildTasks.forEach { task -> task.dependsOn(dependsOnTask) }
+}
+
+afterEvaluate {
+  nativeBuildDependsOn(project, prepareSQLite)
 }

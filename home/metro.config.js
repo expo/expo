@@ -1,10 +1,18 @@
 const { createMetroConfiguration } = require('expo-yarn-workspaces');
 const path = require('path');
 
+/* global __dirname */
 const baseConfig = createMetroConfiguration(__dirname);
 
 // To test home from Expo Go, the react-native js source is from our fork.
-const reactNativeRoot = path.join(__dirname, '..', 'react-native-lab', 'react-native', 'packages', 'react-native');
+const reactNativeRoot = path.join(
+  __dirname,
+  '..',
+  'react-native-lab',
+  'react-native',
+  'packages',
+  'react-native'
+);
 
 module.exports = {
   ...baseConfig,
@@ -39,15 +47,11 @@ module.exports = {
       // That is not ideal but should work for most cases if the two react-native versions do not have too much difference.
       // For example, `react-native-lab/react-native/node_modules/@react-native/polyfills` and `node_modules/@react-native/polyfills` may be different,
       // the metro config will use the transitive dependency from `node_modules/@react-native/polyfills`.
-      /\bnode_modules\/react-native\//,
       /\breact-native-lab\/react-native\/node_modules\b/,
     ],
   },
   serializer: {
     ...baseConfig.serializer,
-    getModulesRunBeforeMainModule: () => [
-      require.resolve(path.join(reactNativeRoot, 'Libraries/Core/InitializeCore')),
-    ],
     getPolyfills: () => require(path.join(reactNativeRoot, 'rn-get-polyfills'))(),
   },
 };

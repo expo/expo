@@ -70,7 +70,14 @@
 
 - (NSArray<Class> *)filterModuleList:(NSArray<Class> *)modules
 {
-  NSArray<NSString *> *allowedModules = @[@"RCT", @"ExpoBridgeModule", @"EXNativeModulesProxy", @"EXReactNativeEventEmitter"];
+  NSArray<NSString *> *allowedModules = @[
+    @"RCT",
+    @"ExpoBridgeModule",
+    @"EXNativeModulesProxy",
+    @"EXReactNativeEventEmitter",
+    @"ExpoModulesCore",
+    @"ViewManagerAdapter_"
+  ];
   NSArray<Class> *filteredModuleList = [modules filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable clazz, NSDictionary<NSString *,id> * _Nullable bindings) {
     NSString* clazzName = NSStringFromClass(clazz);
 

@@ -1,6 +1,5 @@
 import { getConfig } from '@expo/config';
 
-import { asMock } from '../../__tests__/asMock';
 import { resolveOptionsAsync } from '../resolveOptions';
 
 jest.mock('@expo/config', () => ({
@@ -59,7 +58,7 @@ describe(resolveOptionsAsync, () => {
         '--clear': true,
         '--dev': true,
         '--dump-assetmap': true,
-        '--dump-sourcemap': true,
+        '--source-maps': true,
         '--max-workers': 2,
       })
     ).resolves.toEqual({
@@ -67,7 +66,7 @@ describe(resolveOptionsAsync, () => {
       dev: true,
       minify: true,
       dumpAssetmap: true,
-      dumpSourcemap: true,
+      sourceMaps: true,
       maxWorkers: 2,
       outputDir: 'foobar',
       platforms: ['android'],
@@ -80,14 +79,14 @@ describe(resolveOptionsAsync, () => {
       dev: false,
       minify: true,
       dumpAssetmap: false,
-      dumpSourcemap: false,
+      sourceMaps: false,
       maxWorkers: undefined,
       outputDir: 'dist',
       platforms: ['ios', 'android'],
     });
   });
   it(`parses default options with web enabled`, async () => {
-    asMock(getConfig).mockReturnValueOnce({
+    jest.mocked(getConfig).mockReturnValueOnce({
       // @ts-expect-error
       exp: { web: { bundler: 'metro' } },
     });

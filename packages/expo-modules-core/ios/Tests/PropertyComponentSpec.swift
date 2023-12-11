@@ -3,7 +3,7 @@ import ExpoModulesTestCore
 @testable import ExpoModulesCore
 
 class PropertyComponentSpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
     describe("property") {
       let appContext = AppContext.create()
       let runtime = try! appContext.runtime

@@ -11,7 +11,6 @@ import expo.modules.notifications.notifications.model.triggers.FirebaseNotificat
 import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder
 import expo.modules.notifications.service.delegates.ExpoPresentationDelegate
 import expo.modules.notifications.service.delegates.SharedPreferencesNotificationCategoriesStore
-import host.exp.exponent.Constants
 import host.exp.exponent.notifications.ScopedCategoryAwareNotificationBuilder
 import host.exp.exponent.notifications.model.ScopedNotificationRequest
 import java.util.*
@@ -51,7 +50,7 @@ class ScopedExpoPresentationDelegate(context: Context) : ExpoPresentationDelegat
    * service, or a local notification.
    */
   override fun getNotifyId(request: NotificationRequest?): Int {
-    if (Constants.isStandaloneApp() || request == null) {
+    if (request == null) {
       return super.getNotifyId(request)
     }
     val experienceId = if (request.trigger is FirebaseNotificationTrigger) {

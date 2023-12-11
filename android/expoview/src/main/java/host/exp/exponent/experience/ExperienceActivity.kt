@@ -75,7 +75,6 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
   private var nuxOverlayView: ReactUnthemedRootView? = null
   private var notification: ExponentNotification? = null
   private var tempNotification: ExponentNotification? = null
-  private var isShellApp = false
   protected var intentUri: String? = null
   private var isReadyForBundle = false
   private var notificationRemoteViews: RemoteViews? = null
@@ -308,20 +307,18 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
       loadingProgressPopupController.hide()
     }
 
-    if (!Constants.isStandaloneApp()) {
-      val appLoader = kernel.getAppLoaderForManifestUrl(manifestUrl)
-      if (appLoader != null && !appLoader.isUpToDate && appLoader.shouldShowAppLoaderStatus) {
-        AlertDialog.Builder(this@ExperienceActivity)
-          .setTitle("Using a cached project")
-          .setMessage("Expo was unable to fetch the latest update to this app. A previously downloaded version has been launched. If you did not intend to use a cached project, check your network connection and reload the app.")
-          .setPositiveButton("Use cache", null)
-          .setNegativeButton("Reload") { _, _ ->
-            kernel.reloadVisibleExperience(
-              manifestUrl!!, false
-            )
-          }
-          .show()
-      }
+    val appLoader = kernel.getAppLoaderForManifestUrl(manifestUrl)
+    if (appLoader != null && !appLoader.isUpToDate && appLoader.shouldShowAppLoaderStatus) {
+      AlertDialog.Builder(this@ExperienceActivity)
+        .setTitle("Using a cached project")
+        .setMessage("Expo was unable to fetch the latest update to this app. A previously downloaded version has been launched. If you did not intend to use a cached project, check your network connection and reload the app.")
+        .setPositiveButton("Use cache", null)
+        .setNegativeButton("Reload") { _, _ ->
+          kernel.reloadVisibleExperience(
+            manifestUrl!!, false
+          )
+        }
+        .show()
     }
   }
 
@@ -374,9 +371,6 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
   }
 
   fun setLoadingProgressStatusIfEnabled(status: AppLoaderStatus?) {
-    if (Constants.isStandaloneApp()) {
-      return
-    }
     if (status == null) {
       return
     }
@@ -444,16 +438,15 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     task.bundleUrl = bundleUrl
 
     sdkVersion = manifest.getExpoGoSDKVersion()
-    isShellApp = this.manifestUrl == Constants.INITIAL_URL
 
-    // Sometime we want to release a new version without adding a new .aar. Use TEMPORARY_ABI_VERSION
+    // Sometime we want to release a new version without adding a new .aar. Use TEMPORARY_SDK_VERSION
     // to point to the unversioned code in ReactAndroid.
-    if (Constants.TEMPORARY_ABI_VERSION != null && Constants.TEMPORARY_ABI_VERSION == sdkVersion) {
+    if (Constants.TEMPORARY_SDK_VERSION == sdkVersion) {
       sdkVersion = RNObject.UNVERSIONED
     }
 
     // In detach/shell, we always use UNVERSIONED as the ABI.
-    detachSdkVersion = if (Constants.isStandaloneApp()) RNObject.UNVERSIONED else sdkVersion
+    detachSdkVersion = sdkVersion
 
     if (RNObject.UNVERSIONED != sdkVersion) {
       var isValidVersion = false
@@ -640,7 +633,6 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
               intentUri,
               detachSdkVersion,
               notification,
-              isShellApp,
               reactPackages(),
               expoPackages(),
               devBundleDownloadProgressListener
@@ -664,7 +656,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
    *
    */
   private fun addNotification() {
-    if (isShellApp || manifestUrl == null || manifest == null) {
+    if (manifestUrl == null || manifest == null) {
       return
     }
 

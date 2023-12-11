@@ -1,7 +1,5 @@
 package com.swmansion.reanimated;
 
-import android.util.Log;
-
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -10,12 +8,10 @@ import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.common.UIManagerType;
-import com.swmansion.reanimated.layoutReanimation.AnimationsManager;
 import com.swmansion.reanimated.layoutReanimation.LayoutAnimations;
 import com.swmansion.reanimated.layoutReanimation.NativeMethodsHolder;
 import com.swmansion.reanimated.nativeProxy.NativeProxyCommon;
 
-import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
 public class NativeProxy extends NativeProxyCommon {
@@ -25,7 +21,7 @@ public class NativeProxy extends NativeProxyCommon {
 
     public NativeProxy(ReactApplicationContext context) {
         super(context);
-
+        ReactFeatureFlagsWrapper.enableMountHooks();
         CallInvokerHolderImpl holder =
                 (CallInvokerHolderImpl) context.getCatalystInstance().getJSCallInvokerHolder();
 
@@ -34,30 +30,32 @@ public class NativeProxy extends NativeProxyCommon {
 
         LayoutAnimations LayoutAnimations = new LayoutAnimations(context);
 
+        ReanimatedMessageQueueThread messageQueueThread = new ReanimatedMessageQueueThread();
+
         mHybridData =
                 initHybrid(
                         context.getJavaScriptContextHolder().get(),
                         holder,
-                        mScheduler,
+                        mAndroidUIScheduler,
                         LayoutAnimations,
+                        messageQueueThread,
                         fabricUIManager);
         prepareLayoutAnimations(LayoutAnimations);
-        ReanimatedMessageQueueThread messageQueueThread = new ReanimatedMessageQueueThread();
-        installJSIBindings(messageQueueThread, fabricUIManager);
+        installJSIBindings();
+        if (BuildConfig.DEBUG) {
+            checkCppVersion();
+        }
     }
 
     private native HybridData initHybrid(
             long jsContext,
             CallInvokerHolderImpl jsCallInvokerHolder,
-            Scheduler scheduler,
+            AndroidUIScheduler androidUIScheduler,
             LayoutAnimations LayoutAnimations,
-            FabricUIManager fabricUIManager);
-
-    private native void installJSIBindings(
             MessageQueueThread messageQueueThread,
             FabricUIManager fabricUIManager);
 
-    public native boolean isAnyHandlerWaitingForEvent(String eventName);
+    public native boolean isAnyHandlerWaitingForEvent(String eventName, int emitterReactTag);
 
     public native void performOperations();
 
@@ -82,6 +80,11 @@ public class NativeProxy extends NativeProxyCommon {
             }
 
             @Override
+            public boolean shouldAnimateExiting(int tag, boolean shouldAnimate) {
+                return false;
+            }
+
+            @Override
             public boolean hasAnimation(int tag, int type) {
                 return false;
             }
@@ -90,7 +93,10 @@ public class NativeProxy extends NativeProxyCommon {
             public void clearAnimationConfig(int tag) {}
 
             @Override
-            public void cancelAnimation(int tag, int type, boolean cancelled, boolean removeView) {}
+            public void cancelAnimation(int tag) {}
+
+            @Override
+            public void checkDuplicateSharedTag(int viewTag, int screenTag) {}
         };
     }
 }

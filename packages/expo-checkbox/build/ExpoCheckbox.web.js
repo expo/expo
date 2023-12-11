@@ -19,14 +19,14 @@ export default class ExpoCheckbox extends React.PureComponent {
     };
     render() {
         const { color, disabled, onChange, onValueChange, style, value, ...other } = this.props;
-        const fakeControl = (React.createElement(View, { pointerEvents: "none", style: [
+        const fakeControl = (<View style={[
                 styles.fakeControl,
                 value && styles.fakeControlChecked,
                 // custom color
                 !!color && { backgroundColor: value ? color : undefined, borderColor: color },
                 disabled && styles.fakeControlDisabled,
                 value && disabled && styles.fakeControlCheckedAndDisabled,
-            ] }));
+            ]}/>);
         const nativeControl = createElement('input', {
             accessibilityChecked: value,
             accessibilityDisabled: disabled,
@@ -36,9 +36,10 @@ export default class ExpoCheckbox extends React.PureComponent {
             style: [styles.nativeControl, styles.cursorInherit],
             type: 'checkbox',
         });
-        return (React.createElement(View, { ...other, style: [styles.root, style, disabled && styles.cursorDefault] },
-            nativeControl,
-            fakeControl));
+        return (<View {...other} style={[styles.root, style, disabled && styles.cursorDefault]}>
+        {nativeControl}
+        {fakeControl}
+      </View>);
     }
 }
 const styles = StyleSheet.create({
@@ -59,6 +60,7 @@ const styles = StyleSheet.create({
     },
     fakeControl: {
         ...StyleSheet.absoluteFillObject,
+        pointerEvents: 'none',
         alignItems: 'center',
         backgroundColor: '#fff',
         borderColor: '#657786',

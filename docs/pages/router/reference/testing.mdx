@@ -9,13 +9,13 @@ Expo Router relies on your file system, which can present challenges when settin
 
 ## Configuration
 
-Before you proceed, ensure you've set up `jest-expo` according to the [Unit Testing](/develop/unit-testing/) and [`@testing-library/react-native`](https://callstack.github.io/react-native-testing-library/docs/getting-started).
+Before you proceed, ensure you have set up `jest-expo` according to the [Unit Testing](/develop/unit-testing/) and [`@testing-library/react-native`](https://callstack.github.io/react-native-testing-library/docs/getting-started).
 
 ## `renderRouter`
 
 `renderRouter` extends the functionality of [`render`](https://callstack.github.io/react-native-testing-library/docs/api#render) to simplify testing with Expo Router. It returns the same query object as [`render`](https://callstack.github.io/react-native-testing-library/docs/api#render), and is compatible with [`screen`](https://callstack.github.io/react-native-testing-library/docs/api#screen), allowing you to use the standard [query API](https://callstack.github.io/react-native-testing-library/docs/api-queries) to locate components.
 
-`renderRouter` accepts the same [options](https://callstack.github.io/react-native-testing-library/docs/api#render-options) as `render` and introduces an additional option `initialRoute`, which sets an initial route for simulating deep-linking.
+`renderRouter` accepts the same [options](https://callstack.github.io/react-native-testing-library/docs/api#render-options) as `render` and introduces an additional option `initialUrl`, which sets an initial route for simulating deep-linking.
 
 <APIBox header="Inline file system">
 
@@ -36,7 +36,7 @@ it('my-test', async () => {
       '(group)/b': MockComponent,
     },
     {
-      initialRoute: '/folder/a',
+      initialUrl: '/folder/a',
     }
   );
 

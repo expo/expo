@@ -5,6 +5,7 @@ import android.view.ViewGroup;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.ViewManager;
+import com.swmansion.reanimated.ReactNativeUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ public class Snapshot {
   public static final String TRANSFORM_MATRIX = "transformMatrix";
   public static final String GLOBAL_ORIGIN_X = "globalOriginX";
   public static final String GLOBAL_ORIGIN_Y = "globalOriginY";
+  public static final String BORDER_RADIUS = "borderRadius";
 
   public static final String CURRENT_WIDTH = "currentWidth";
   public static final String CURRENT_HEIGHT = "currentHeight";
@@ -26,6 +28,7 @@ public class Snapshot {
   public static final String CURRENT_TRANSFORM_MATRIX = "currentTransformMatrix";
   public static final String CURRENT_GLOBAL_ORIGIN_X = "currentGlobalOriginX";
   public static final String CURRENT_GLOBAL_ORIGIN_Y = "currentGlobalOriginY";
+  public static final String CURRENT_BORDER_RADIUS = "currentBorderRadius";
 
   public static final String TARGET_WIDTH = "targetWidth";
   public static final String TARGET_HEIGHT = "targetHeight";
@@ -34,6 +37,7 @@ public class Snapshot {
   public static final String TARGET_TRANSFORM_MATRIX = "targetTransformMatrix";
   public static final String TARGET_GLOBAL_ORIGIN_X = "targetGlobalOriginX";
   public static final String TARGET_GLOBAL_ORIGIN_Y = "targetGlobalOriginY";
+  public static final String TARGET_BORDER_RADIUS = "targetBorderRadius";
 
   public View view;
   public ViewGroup parent;
@@ -49,6 +53,7 @@ public class Snapshot {
       new ArrayList<>(Arrays.asList(1f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 1f));
   public int originXByParent;
   public int originYByParent;
+  public float borderRadius;
   private float[] identityMatrix = {1, 0, 0, 0, 1, 0, 0, 0, 1};
 
   public static ArrayList<String> targetKeysToTransform =
@@ -59,7 +64,8 @@ public class Snapshot {
               Snapshot.TARGET_ORIGIN_X,
               Snapshot.TARGET_ORIGIN_Y,
               Snapshot.TARGET_GLOBAL_ORIGIN_X,
-              Snapshot.TARGET_GLOBAL_ORIGIN_Y));
+              Snapshot.TARGET_GLOBAL_ORIGIN_Y,
+              Snapshot.TARGET_BORDER_RADIUS));
   public static ArrayList<String> currentKeysToTransform =
       new ArrayList<>(
           Arrays.asList(
@@ -68,7 +74,8 @@ public class Snapshot {
               Snapshot.CURRENT_ORIGIN_X,
               Snapshot.CURRENT_ORIGIN_Y,
               Snapshot.CURRENT_GLOBAL_ORIGIN_X,
-              Snapshot.CURRENT_GLOBAL_ORIGIN_Y));
+              Snapshot.CURRENT_GLOBAL_ORIGIN_Y,
+              Snapshot.CURRENT_BORDER_RADIUS));
 
   Snapshot(View view, NativeViewHierarchyManager viewHierarchyManager) {
     parent = (ViewGroup) view.getParent();
@@ -115,6 +122,7 @@ public class Snapshot {
     }
     originXByParent = view.getLeft();
     originYByParent = view.getTop();
+    borderRadius = ReactNativeUtils.getBorderRadius(view);
   }
 
   private void addTargetConfig(HashMap<String, Object> data) {
@@ -125,6 +133,7 @@ public class Snapshot {
     data.put(Snapshot.TARGET_HEIGHT, height);
     data.put(Snapshot.TARGET_WIDTH, width);
     data.put(Snapshot.TARGET_TRANSFORM_MATRIX, transformMatrix);
+    data.put(Snapshot.TARGET_BORDER_RADIUS, borderRadius);
   }
 
   private void addCurrentConfig(HashMap<String, Object> data) {
@@ -135,6 +144,7 @@ public class Snapshot {
     data.put(Snapshot.CURRENT_HEIGHT, height);
     data.put(Snapshot.CURRENT_WIDTH, width);
     data.put(Snapshot.CURRENT_TRANSFORM_MATRIX, transformMatrix);
+    data.put(Snapshot.CURRENT_BORDER_RADIUS, borderRadius);
   }
 
   private void addBasicConfig(HashMap<String, Object> data) {
@@ -145,6 +155,7 @@ public class Snapshot {
     data.put(Snapshot.HEIGHT, height);
     data.put(Snapshot.WIDTH, width);
     data.put(Snapshot.TRANSFORM_MATRIX, transformMatrix);
+    data.put(Snapshot.BORDER_RADIUS, borderRadius);
   }
 
   public HashMap<String, Object> toTargetMap() {

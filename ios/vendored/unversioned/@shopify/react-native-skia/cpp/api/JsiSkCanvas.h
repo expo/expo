@@ -7,6 +7,7 @@
 #include "JsiSkFont.h"
 #include "JsiSkHostObjects.h"
 #include "JsiSkImage.h"
+#include "JsiSkImageInfo.h"
 #include "JsiSkMatrix.h"
 #include "JsiSkPaint.h"
 #include "JsiSkPath.h"
@@ -16,6 +17,8 @@
 #include "JsiSkSVG.h"
 #include "JsiSkTextBlob.h"
 #include "JsiSkVertices.h"
+
+#include "RNSkTypedArray.h"
 
 #include <jsi/jsi.h>
 
@@ -491,6 +494,39 @@ public:
     return jsi::Value::undefined();
   }
 
+  JSI_HOST_FUNCTION(readPixels) {
+    auto srcX = static_cast<int>(arguments[0].asNumber());
+    auto srcY = static_cast<int>(arguments[1].asNumber());
+    auto info = JsiSkImageInfo::fromValue(runtime, arguments[2]);
+    if (!info) {
+      return jsi::Value::null();
+    }
+    size_t bytesPerRow = 0;
+    if (count > 4 && !arguments[4].isUndefined()) {
+      bytesPerRow = static_cast<size_t>(arguments[4].asNumber());
+    } else {
+      bytesPerRow = info->minRowBytes();
+    }
+    auto dest =
+        count > 3
+            ? RNSkTypedArray::getTypedArray(runtime, arguments[3], *info)
+            : RNSkTypedArray::getTypedArray(runtime, jsi::Value::null(), *info);
+    if (!dest.isObject()) {
+      return jsi::Value::null();
+    }
+    jsi::ArrayBuffer buffer =
+        dest.asObject(runtime)
+            .getProperty(runtime, jsi::PropNameID::forAscii(runtime, "buffer"))
+            .asObject(runtime)
+            .getArrayBuffer(runtime);
+    auto bfrPtr = reinterpret_cast<void *>(buffer.data(runtime));
+
+    if (!_canvas->readPixels(*info, bfrPtr, bytesPerRow, srcX, srcY)) {
+      return jsi::Value::null();
+    }
+    return std::move(dest);
+  }
+
   JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkCanvas, drawPaint),
                        JSI_EXPORT_FUNC(JsiSkCanvas, drawLine),
                        JSI_EXPORT_FUNC(JsiSkCanvas, drawRect),
@@ -529,7 +565,8 @@ public:
                        JSI_EXPORT_FUNC(JsiSkCanvas, drawColor),
                        JSI_EXPORT_FUNC(JsiSkCanvas, clear),
                        JSI_EXPORT_FUNC(JsiSkCanvas, concat),
-                       JSI_EXPORT_FUNC(JsiSkCanvas, drawPicture))
+                       JSI_EXPORT_FUNC(JsiSkCanvas, drawPicture),
+                       JSI_EXPORT_FUNC(JsiSkCanvas, readPixels))
 
   explicit JsiSkCanvas(std::shared_ptr<RNSkPlatformContext> context)
       : JsiSkHostObject(std::move(context)) {}

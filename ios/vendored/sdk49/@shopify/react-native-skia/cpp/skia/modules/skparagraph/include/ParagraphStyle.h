@@ -124,6 +124,9 @@ struct ParagraphStyle {
     bool getReplaceTabCharacters() const { return fReplaceTabCharacters; }
     void setReplaceTabCharacters(bool value) { fReplaceTabCharacters = value; }
 
+    bool getApplyRoundingHack() const { return fApplyRoundingHack; }
+    void setApplyRoundingHack(bool value) { fApplyRoundingHack = value; }
+
 private:
     StrutStyle fStrutStyle;
     TextStyle fDefaultTextStyle;
@@ -136,6 +139,7 @@ private:
     TextHeightBehavior fTextHeightBehavior;
     bool fHintingIsOn;
     bool fReplaceTabCharacters;
+    bool fApplyRoundingHack = true;
 };
 }  // namespace textlayout
 }  // namespace skia

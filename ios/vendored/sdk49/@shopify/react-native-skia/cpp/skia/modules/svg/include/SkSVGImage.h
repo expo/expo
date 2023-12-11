@@ -15,7 +15,7 @@ namespace skresources {
 class ResourceProvider;
 }
 
-class SkSVGImage final : public SkSVGTransformableNode {
+class SK_API SkSVGImage final : public SkSVGTransformableNode {
 public:
     static sk_sp<SkSVGImage> Make() {
         return sk_sp<SkSVGImage>(new SkSVGImage());

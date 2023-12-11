@@ -4,7 +4,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '0.21.1'
+version = '0.23.0'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 if (expoModulesCorePlugin.exists()) {
@@ -89,11 +89,11 @@ if (!safeExtGet("expoProvidesDefaultConfig", false)) {
 android {
   // Remove this if and it's contents, when support for SDK49 is dropped
   if (!safeExtGet("expoProvidesDefaultConfig", false)) {
-    compileSdkVersion safeExtGet("compileSdkVersion", 33)
+    compileSdkVersion safeExtGet("compileSdkVersion", 34)
 
     defaultConfig {
       minSdkVersion safeExtGet("minSdkVersion", 23)
-      targetSdkVersion safeExtGet("targetSdkVersion", 33)
+      targetSdkVersion safeExtGet("targetSdkVersion", 34)
     }
 
     publishing {
@@ -122,7 +122,7 @@ android {
   namespace "expo.modules.updates"
   defaultConfig {
     versionCode 31
-    versionName '0.21.1'
+    versionName '0.23.0'
     consumerProguardFiles("proguard-rules.pro")
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -174,6 +174,8 @@ dependencies {
   implementation("commons-codec:commons-codec:1.10")
   implementation("commons-io:commons-io:2.6")
   implementation("commons-fileupload:commons-fileupload:1.4")
+  implementation("javax.portlet:portlet-api:3.0.1")
+  implementation("javax.servlet:javax.servlet-api:4.0.1")
   implementation("org.apache.commons:commons-lang3:3.9")
   implementation("org.bouncycastle:bcutil-jdk15to18:1.70")
 

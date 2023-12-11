@@ -1,6 +1,4 @@
 import Constants from 'expo-constants';
-import qs from 'qs';
-import URL from 'url-parse';
 
 import { CreateURLOptions, ParsedURL } from './Linking.types';
 import { hasCustomScheme, resolveScheme } from './Schemes';
@@ -58,16 +56,20 @@ function ensureLeadingSlash(input: string, shouldAppend: boolean): string {
  * Helper method for constructing a deep link into your app, given an optional path and set of query
  * parameters. Creates a URI scheme with two slashes by default.
  *
- * The scheme in bare and standalone must be defined in the Expo config (`app.config.js` or `app.json`)
- * under `expo.scheme`.
+ * The scheme must be defined in the Expo config (`app.config.js` or `app.json`) under `expo.scheme`
+ * or `expo.{android,ios}.scheme`. Platform-specific schemes defined under `expo.{android,ios}.scheme`
+ * take precedence over universal schemes defined under `expo.scheme`.
  *
  * # Examples
- * - Bare: `<scheme>://path` - uses provided scheme or scheme from Expo config `scheme`.
- * - Standalone, Custom: `yourscheme://path`
+ * - Development and production builds: `<scheme>://path` - uses the optional `scheme` property if provided, and otherwise uses the first scheme defined by your Expo config
  * - Web (dev): `https://localhost:19006/path`
  * - Web (prod): `https://myapp.com/path`
- * - Expo Client (dev): `exp://128.0.0.1:8081/--/path`
- * - Expo Client (prod): `exp://exp.host/@yourname/your-app/--/path`
+ * - Expo Go (dev): `exp://128.0.0.1:8081/--/path`
+ *
+ * The behavior of this method in Expo Go for published updates is undefined and should not be relied upon.
+ * The created URL in this case is neither stable nor predictable during the lifetime of the app.
+ * If a stable URL is needed, for example in authorization callbacks, a build (or development build)
+ * of your application should be used and the scheme provided.
  *
  * @param path Addition path components to append to the base URL.
  * @param namedParameters Additional options object.
@@ -105,17 +107,22 @@ export function createURL(
     queryString = queryStringMatchResult[2];
     let paramsFromHostUri = {};
     try {
-      const parsedParams = qs.parse(queryString);
-      if (typeof parsedParams === 'object') {
-        paramsFromHostUri = parsedParams;
-      }
+      paramsFromHostUri = Object.fromEntries(
+        // @ts-ignore: [Symbol.iterator] is indeed, available on every platform.
+        new URLSearchParams(queryString)
+      );
     } catch {}
     queryParams = {
       ...queryParams,
       ...paramsFromHostUri,
     };
   }
-  queryString = qs.stringify(queryParams);
+  queryString = new URLSearchParams(
+    // For legacy purposes, we'll strip out the nullish values before creating the URL.
+    Object.fromEntries(
+      Object.entries(queryParams).filter(([, value]) => value != null) as [string, string][]
+    )
+  ).toString();
   if (queryString) {
     queryString = `?${queryString}`;
   }
@@ -136,19 +143,26 @@ export function createURL(
 export function parse(url: string): ParsedURL {
   validateURL(url);
 
-  const parsed = URL(url, /* parseQueryString */ true);
+  const queryParams: Record<string, string> = {};
+  let path: string | null = null;
+  let hostname: string | null = null;
+  let scheme: string | null = null;
 
-  for (const param in parsed.query) {
-    parsed.query[param] = decodeURIComponent(parsed.query[param]!);
+  try {
+    const parsed = new URL(url);
+
+    parsed.searchParams.forEach((value, key) => {
+      queryParams[key] = decodeURIComponent(value);
+    });
+    path = parsed.pathname || null;
+    hostname = parsed.hostname || null;
+    scheme = parsed.protocol || null;
+  } catch {
+    path = url;
   }
-  const queryParams = parsed.query;
 
   const hostUri = getHostUri() || '';
   const hostUriStripped = removePort(removeTrailingSlashAndQueryString(hostUri));
-
-  let path = parsed.pathname || null;
-  let hostname = parsed.hostname || null;
-  let scheme = parsed.protocol || null;
 
   if (scheme) {
     // Remove colon at end

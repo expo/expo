@@ -18,6 +18,7 @@ export type Command = (argv?: string[]) => void;
 const commands: { [command: string]: () => Promise<Command> } = {
   // Add a new command here
   // NOTE(EvanBacon): Ensure every bundler-related command sets `NODE_ENV` as expected for the command.
+  run: () => import('../src/run/index.js').then((i) => i.expoRun),
   'run:ios': () => import('../src/run/ios/index.js').then((i) => i.expoRunIos),
   'run:android': () => import('../src/run/android/index.js').then((i) => i.expoRunAndroid),
   start: () => import('../src/start/index.js').then((i) => i.expoStart),
@@ -90,6 +91,9 @@ if (!isSubcommand && args['--help']) {
     // workaround until we can use `expo export` for all production bundling.
     // https://github.com/expo/expo/pull/21396/files#r1121025873
     'export:embed': exportEmbed_unused,
+    // Other ignored commands, these are intentially not listed in the `--help` output
+    run: _run,
+    // All other commands
     ...others
   } = commands;
 
@@ -127,7 +131,7 @@ if (!isSubcommand) {
     'client:install:ios': 'npx expo start --ios',
     'client:install:android': 'npx expo start --android',
     doctor: 'npx expo-doctor',
-    upgrade: 'expo-cli upgrade',
+    upgrade: 'https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/',
     'customize:web': 'npx expo customize',
 
     publish: 'eas update',
@@ -164,8 +168,9 @@ if (!isSubcommand) {
   if (subcommand in migrationMap) {
     const replacement = migrationMap[subcommand];
     console.log();
+    const instruction = subcommand === 'upgrade' ? 'follow this guide' : 'use'
     console.log(
-      chalk.yellow`  {gray $} {bold expo ${subcommand}} is not supported in the local CLI, please use {bold ${replacement}} instead`
+      chalk.yellow`  {gray $} {bold expo ${subcommand}} is not supported in the local CLI, please ${instruction} {bold ${replacement}} instead`
     );
     console.log();
     process.exit(1);
@@ -194,14 +199,16 @@ process.on('SIGTERM', () => process.exit(0));
 commands[command]().then((exec) => {
   exec(commandArgs);
 
-  // NOTE(EvanBacon): Track some basic telemetry events indicating the command
-  // that was run. This can be disabled with the $EXPO_NO_TELEMETRY environment variable.
-  // We do this to determine how well deprecations are going before removing a command.
-  const { logEventAsync } =
-    require('../src/utils/analytics/rudderstackClient') as typeof import('../src/utils/analytics/rudderstackClient');
-  logEventAsync('action', {
-    action: `expo ${command}`,
-    source: 'expo/cli',
-    source_version: process.env.__EXPO_VERSION,
-  });
+  if (!boolish('EXPO_NO_TELEMETRY', false)) {
+    // NOTE(EvanBacon): Track some basic telemetry events indicating the command
+    // that was run. This can be disabled with the $EXPO_NO_TELEMETRY environment variable.
+    // We do this to determine how well deprecations are going before removing a command.
+    const { logEventAsync } =
+      require('../src/utils/analytics/rudderstackClient') as typeof import('../src/utils/analytics/rudderstackClient');
+    logEventAsync('action', {
+      action: `expo ${command}`,
+      source: 'expo/cli',
+      source_version: process.env.__EXPO_VERSION,
+    });
+  }
 });

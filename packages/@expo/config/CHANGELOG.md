@@ -4,10 +4,22 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Replace `@expo/babel-preset-cli` with `expo-module-scripts`. ([#25416](https://github.com/expo/expo/pull/25416) by [@byCedric](https://github.com/byCedric))
+
+## 8.4.0 — 2023-10-17
+
+- Warn when dynamic config doesn't use static config present in project. ([#24308](https://github.com/expo/expo/pull/24308) by [@keith-kurak](https://github.com/keith-kurak))
+
+### 🛠 Breaking changes
+
 - Remove `getEntryPoint`, `getEntryPointWithExtensions`, `resolveFromSilentWithExtensions` functions from `@expo/config/paths`. ([#24688](https://github.com/expo/expo/pull/24688) by [@EvanBacon](https://github.com/EvanBacon))
 - Fully drop support for `expo.entryFile` in the `app.json`. ([#24688](https://github.com/expo/expo/pull/24688) by [@EvanBacon](https://github.com/EvanBacon))
-
-### 🎉 New features
 
 ### 🐛 Bug fixes
 

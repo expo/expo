@@ -116,7 +116,7 @@ export class GLView extends React.Component {
         const { onContextCreate, onContextRestored, onContextLost, webglContextAttributes, msaaSamples, nativeRef_EXPERIMENTAL, 
         // @ts-ignore: ref does not exist
         ref, ...domProps } = this.props;
-        return React.createElement(Canvas, { ...domProps, canvasRef: this.setCanvasRef });
+        return <Canvas {...domProps} canvasRef={this.setCanvasRef}/>;
     }
     componentDidUpdate(prevProps) {
         const { webglContextAttributes } = this.props;

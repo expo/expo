@@ -1,14 +1,14 @@
 import chalk from 'chalk';
 import path from 'path';
 
-import { PackageRevision, SearchResults } from '../types';
+import { PackageRevision, SearchOptions, SearchResults } from '../types';
 
 /**
  * Verifies the search results by checking whether there are no duplicates.
  */
-export function verifySearchResults(searchResults: SearchResults): number {
-  const cwd = process.cwd();
-  const relativePath: (pkg: PackageRevision) => string = (pkg) => path.relative(cwd, pkg.path);
+export function verifySearchResults(searchResults: SearchResults, options: SearchOptions): number {
+  const relativePath: (pkg: PackageRevision) => string = (pkg) =>
+    path.relative(options.projectRoot, pkg.path);
   let counter = 0;
 
   for (const moduleName in searchResults) {

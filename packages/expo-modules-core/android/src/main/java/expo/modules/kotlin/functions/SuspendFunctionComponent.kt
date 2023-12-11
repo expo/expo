@@ -22,7 +22,7 @@ class SuspendFunctionComponent(
   private val body: suspend CoroutineScope.(args: Array<out Any?>) -> Any?
 ) : BaseAsyncFunctionComponent(name, desiredArgsTypes) {
 
-  override fun call(holder: ModuleHolder, args: ReadableArray, promise: Promise) {
+  override fun call(holder: ModuleHolder<*>, args: ReadableArray, promise: Promise) {
     val appContext = holder.module.appContext
     val queue = when (queue) {
       Queues.MAIN -> appContext.mainQueue

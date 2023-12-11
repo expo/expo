@@ -5,10 +5,6 @@ import { getDefaultConfig, loadAsync } from '../ExpoMetroConfig';
 const projectRoot = '/';
 const consoleError = console.error;
 
-beforeEach(() => {
-  delete process.env.EXPO_USE_EXOTIC;
-});
-
 function mockProject() {
   vol.fromJSON(
     {
@@ -18,6 +14,8 @@ function mockProject() {
       }),
       'node_modules/expo-asset/tools/hashAssetFiles.js': '',
       'node_modules/react-native/package.json': '',
+      'node_modules/react-native/node_modules/metro-runtime/package.json': '',
+      'node_modules/react-native/node_modules/metro-runtime/src/modules/asyncRequire.js': '',
       'node_modules/babel-preset-fbjs/package.json': '',
       'node_modules/metro-react-native-babel-transformer/package.json': '',
     },
@@ -45,18 +43,6 @@ describe(getDefaultConfig, () => {
             expect.not.arrayContaining(['expo.ts', 'expo.tsx', 'expo.js', 'expo.jsx', 'jsx']) &&
             expect.arrayContaining(['json']),
           assetExts: expect.not.arrayContaining(['json']),
-        }),
-      })
-    );
-  });
-
-  it('loads exotic configuration', () => {
-    expect(getDefaultConfig(projectRoot, { mode: 'exotic' })).toEqual(
-      expect.objectContaining({
-        projectRoot,
-        resolver: expect.objectContaining({
-          resolverMainFields: ['react-native', 'browser', 'main'],
-          sourceExts: expect.arrayContaining(['cjs']),
         }),
       })
     );
