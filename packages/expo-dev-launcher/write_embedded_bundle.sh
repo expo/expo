@@ -14,6 +14,9 @@ EOF
 
 # iOS
 
+# Remove assets from previous build.
+rm -rf ios/assets/
+
 EXPO_BUNDLE_APP=1 npx expo export:embed \
     --platform ios \
     --dev false \
@@ -27,6 +30,9 @@ rm ios/assets/__react-native-lab/react-native/package.json
 rm ios/assets/__node_modules/css-tree/package.json
 
 # Android
+
+# Remove assets from previous build.
+rm -rf android/src/debug/res/
 
 EXPO_BUNDLE_APP=1 npx expo export:embed \
     --platform android \
