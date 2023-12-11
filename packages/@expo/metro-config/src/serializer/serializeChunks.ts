@@ -167,16 +167,22 @@ export const createChunkSerializer = () => {
     if (!deps) {
       throw new Error('uh oh, you need to wrap the expo serializer');
     }
-    const jsSplitBundle = baseJSBundleWithDependencies(
+    let jsSplitBundle = baseJSBundleWithDependencies(
       entryFile,
       preModules,
       [...deps],
       innerSerializerOptions
     );
 
+    const shouldBuildMap = includeSourceMaps && !inlineSourceMap && sourceMapUrl;
+
+    // TODO: hack to get sentry working
+    if ('sentryBundleCallback' in options && shouldBuildMap) {
+      jsSplitBundle = (options as any)['sentryBundleCallback'](jsSplitBundle);
+    }
+
     const code = bundleToString(jsSplitBundle).code;
 
-    const shouldBuildMap = includeSourceMaps && !inlineSourceMap && sourceMapUrl;
     if (!shouldBuildMap) {
       return { code };
     }
@@ -369,14 +375,6 @@ class Chunk {
     }
   }
 
-  /*   private serializeToCode(serializerConfig: Partial<SerializerConfigT>, chunks: Chunk[]) {
-    return this.serializeToCodeWithTemplates(serializerConfig, {
-      skipWrapping: false,
-      sourceMapUrl: this.getAdjustedSourceMapUrl(serializerConfig) ?? undefined,
-      computedAsyncModulePaths: this.getComputedPathsForAsyncDependencies(serializerConfig, chunks),
-    });
-  } */
-
   private getChunkSerializerOptions(
     serializerConfig: Partial<SerializerConfigT>,
     chunks: Chunk[],
@@ -385,11 +383,9 @@ class Chunk {
     const entryFile = this.name;
     return {
       ...this.options,
-      // serializeCodeToTemplate args
       skipWrapping: false,
       sourceMapUrl: this.getAdjustedSourceMapUrl(serializerConfig) ?? undefined,
       computedAsyncModulePaths: this.getComputedPathsForAsyncDependencies(serializerConfig, chunks),
-      // serializeCodeToTemplate invocation
       runBeforeMainModule:
         serializerConfig?.getModulesRunBeforeMainModule?.(
           path.relative(this.options.projectRoot, entryFile)
@@ -399,8 +395,6 @@ class Chunk {
       platform: this.getPlatform(),
       baseUrl: getBaseUrlOption(this.graph, this.options),
       splitChunks: getSplitChunksOption(this.graph, this.options),
-      ///skipWrapping: true, // TODO: this resolves to the original options in the original implementation
-      // computedAsyncModulePaths: null, // TODO: this resolves to the original options in the original implementation
       includeSourceMaps,
       deps: this.deps,
     };
@@ -440,7 +434,6 @@ class Chunk {
     chunks: Chunk[],
     { includeSourceMaps, includeBytecode, fallbackSerializer }: SerializeChunkOptions
   ): Promise<SerialAsset[]> {
-    //const jsCode = this.serializeToCode(serializerConfig, chunks);
     const { code: jsCode, map } = await this.serializeToCodeAndMapAsync(serializerConfig, chunks, {
       includeSourceMaps,
       includeBytecode,
@@ -505,15 +498,11 @@ class Chunk {
       if (hermesBundleOutput.hbc) {
         // TODO: Unclear if we should add multiple assets, link the assets, or mutate the first asset.
         // jsAsset.metadata.hbc = hermesBundleOutput.hbc;
-        // DEBUG Push the js bundle for debugging purposes
-        assets.push({ ...assets[0] });
         // @ts-expect-error: TODO
         jsAsset.source = hermesBundleOutput.hbc;
         jsAsset.filename = jsAsset.filename.replace(/\.js$/, '.hbc');
       }
       if (assets[1] && hermesBundleOutput.sourcemap) {
-        // DEBUG Push the js source map for debugging purposes
-        assets.push({ ...assets[1] });
         assets[1].source = hermesBundleOutput.sourcemap;
         assets[1].filename = assets[1].filename.replace(/\.js\.map$/, '.hbc.map');
       }
