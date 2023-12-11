@@ -78,10 +78,11 @@ describe('server', () => {
     async () => {
       const projectRoot = await setupTestProjectAsync('basic-export', 'with-assets');
       // `npx expo export`
-      await execa('node', [bin, 'export', '--dump-sourcemap', '--dump-assetmap'], {
+      await execa('node', [bin, 'export', '--source-maps', '--dump-assetmap'], {
         cwd: projectRoot,
         env: {
           NODE_ENV: 'production',
+          TEST_BABEL_PRESET_EXPO_MODULE_ID: require.resolve('babel-preset-expo'),
           EXPO_USE_FAST_RESOLVER: 'false',
         },
       });
@@ -197,9 +198,9 @@ describe('server', () => {
         'assets/2f334f6c7ca5b2a504bdf8acdee104f3',
         'assets/3858f62230ac3c915f300c664312c63f',
         'assets/9ce7db807e4147e00df372d053c154c2',
-        'assets/assets/font.ttf',
-        'assets/assets/icon.png',
-        'assets/assets/icon@2x.png',
+        'assets/assets/font.3858f62230ac3c915f300c664312c63f.ttf',
+        'assets/assets/icon.8034d8318b239108719ff3f22f31ef15.png',
+        'assets/assets/icon.8034d8318b239108719ff3f22f31ef15@2x.png',
 
         'assets/fb960eb5e4eb49ec8786c7f6c4a57ce2',
         'debug.html',

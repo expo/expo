@@ -7,7 +7,7 @@ import androidx.core.content.ContextCompat
 /* ktlint-disable no-unused-imports */
 import expo.modules.splashscreen.SplashScreenImageResizeMode
 import expo.modules.splashscreen.SplashScreenViewProvider
-// EXPO_VERSIONING_NEEDS_EXPOVIEW_R
+// EXPO_VERSIONING_NEEDS_PACKAGE_R
 /* ktlint-enable no-unused-imports */
 
 /**

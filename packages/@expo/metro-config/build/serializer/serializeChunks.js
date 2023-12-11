@@ -11,13 +11,6 @@ function _assert() {
   };
   return data;
 }
-function _getAssets() {
-  const data = _interopRequireDefault(require("metro/src/DeltaBundler/Serializers/getAssets"));
-  _getAssets = function () {
-    return data;
-  };
-  return data;
-}
 function _sourceMapString() {
   const data = _interopRequireDefault(require("metro/src/DeltaBundler/Serializers/sourceMapString"));
   _sourceMapString = function () {
@@ -74,6 +67,13 @@ function _getCssDeps() {
   };
   return data;
 }
+function _getAssets() {
+  const data = _interopRequireDefault(require("../transform-worker/getAssets"));
+  _getAssets = function () {
+    return data;
+  };
+  return data;
+}
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 /**
  * Copyright © 2023 650 Industries.
@@ -83,7 +83,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 
 async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props) {
-  var _config$serializer, _config$transformer$a, _config$transformer, _getPlatformOption, _config$transformer$p, _config$transformer2;
+  var _config$serializer, _baseUrl$replace, _config$transformer$a, _config$transformer, _getPlatformOption;
   const [entryFile, preModules, graph, options] = props;
   const cssDeps = (0, _getCssDeps().getCssSerialAssets)(graph.dependencies, {
     projectRoot: options.projectRoot,
@@ -125,15 +125,35 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
       }
     }
 
-    // Add common chunk if one exists.
+    // If common dependencies were found, extract them to the entry chunk.
+    // TODO: Extract the metro-runtime to a common chunk apart from the entry chunk then load the common dependencies before the entry chunk.
     if (commonDependencies.length) {
-      const commonDependenciesUnique = [...new Set(commonDependencies)];
-      const commonChunk = new Chunk(chunkIdForModules(commonDependenciesUnique), commonDependenciesUnique, graph, options, false, true);
-      entryChunk.requiredChunks.add(commonChunk);
-      chunks.add(commonChunk);
+      for (const dep of commonDependencies) {
+        entryChunk.deps.add(dep);
+      }
+      // const commonDependenciesUnique = [...new Set(commonDependencies)];
+      // const commonChunk = new Chunk(
+      //   chunkIdForModules(commonDependenciesUnique),
+      //   commonDependenciesUnique,
+      //   graph,
+      //   options,
+      //   false,
+      //   true
+      // );
+      // entryChunk.requiredChunks.add(commonChunk);
+      // chunks.add(commonChunk);
     }
   }
+
   const jsAssets = await serializeChunksAsync(chunks, (_config$serializer = config.serializer) !== null && _config$serializer !== void 0 ? _config$serializer : {}, serializeChunkOptions);
+
+  // TODO: Can this be anything besides true?
+  const isExporting = true;
+  const baseUrl = (0, _baseJSBundle().getBaseUrlOption)(graph, {
+    serializerOptions: serializeChunkOptions
+  });
+  const assetPublicUrl = ((_baseUrl$replace = baseUrl.replace(/\/+$/, '')) !== null && _baseUrl$replace !== void 0 ? _baseUrl$replace : '') + '/assets';
+  const publicPath = isExporting ? graph.transformOptions.platform === 'web' ? `/assets?export_path=${assetPublicUrl}` : assetPublicUrl : '/assets/?unstable_path=.';
 
   // TODO: Convert to serial assets
   // TODO: Disable this call dynamically in development since assets are fetched differently.
@@ -143,7 +163,7 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
     platform: (_getPlatformOption = (0, _baseJSBundle().getPlatformOption)(graph, options)) !== null && _getPlatformOption !== void 0 ? _getPlatformOption : 'web',
     projectRoot: options.projectRoot,
     // this._getServerRootDir(),
-    publicPath: (_config$transformer$p = (_config$transformer2 = config.transformer) === null || _config$transformer2 === void 0 ? void 0 : _config$transformer2.publicPath) !== null && _config$transformer$p !== void 0 ? _config$transformer$p : '/'
+    publicPath
   });
   return {
     artifacts: [...jsAssets, ...cssDeps],

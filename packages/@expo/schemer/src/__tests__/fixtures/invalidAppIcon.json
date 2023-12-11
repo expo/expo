@@ -1,0 +1,10 @@
+{
+  "name": "test app",
+  "slug": "asdfasdf",
+  "sdkVersion": "17.0.0",
+  "orientation": "portrait",
+  "android": {
+    "package": "com.yourcompany.yourappname"
+  },
+  "icon": "./unknown/path.png"
+}

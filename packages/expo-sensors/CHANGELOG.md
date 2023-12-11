@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix pedometer not working due to lack of permissions. ([#25815](https://github.com/expo/expo/pull/25815) by [@omegascorp](https://github.com/omegascorp) and [@behenate](https://github.com/behenate))
+- On iOS, fix an issue where permissions were requested on reload. ([#25827](https://github.com/expo/expo/pull/25827) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

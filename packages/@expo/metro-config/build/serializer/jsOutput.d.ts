@@ -12,6 +12,12 @@ export type JsOutput = {
         lineCount: number;
         map: MetroSourceMapSegmentTuple[];
         functionMap: FBSourceFunctionMap | null;
+        css?: {
+            code: string;
+            lineCount: number;
+            map: MetroSourceMapSegmentTuple[];
+            functionMap: FBSourceFunctionMap | null;
+        };
     };
     type: JSFileType;
 };

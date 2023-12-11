@@ -220,7 +220,7 @@ class Kernel : KernelInterface() {
   private fun kernelBundleListener(): BundleListener {
     return object : BundleListener {
       override fun onBundleLoaded(localBundlePath: String) {
-        if (!ExpoViewBuildConfig.DEBUG) {
+        if (!exponentSharedPreferences.shouldUseEmbeddedKernel() && !ExpoViewBuildConfig.DEBUG) {
           exponentSharedPreferences.setString(
             ExponentSharedPreferences.ExponentSharedPreferencesKey.KERNEL_REVISION_ID,
             kernelRevisionId
@@ -740,21 +740,6 @@ class Kernel : KernelInterface() {
       }
     )
     killOrphanedLauncherActivities()
-  }
-
-  fun dispatchForegroundHomeEvent() {
-    queueEvent(
-      "ExponentKernel.foregroundHome", Arguments.createMap(),
-      object : KernelEventCallback {
-        override fun onEventSuccess(result: ReadableMap) {
-          EXL.d(TAG, "Successfully called ExponentKernel.foregroundHome in kernel JS.")
-        }
-
-        override fun onEventFailure(errorMessage: String?) {
-          EXL.e(TAG, "Error calling ExponentKernel.foregroundHome in kernel JS: $errorMessage")
-        }
-      }
-    )
   }
 
   /*
