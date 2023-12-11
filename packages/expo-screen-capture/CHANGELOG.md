@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added `getPermissionsAsync` and `requestPermissionsAsync` methods.
+- Added `getPermissionsAsync` and `requestPermissionsAsync` methods. ([#25849](https://github.com/expo/expo/pull/25849) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
