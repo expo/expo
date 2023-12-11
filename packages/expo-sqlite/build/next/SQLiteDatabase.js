@@ -36,7 +36,7 @@ export class SQLiteDatabase {
         return this.nativeDatabase.execAsync(source);
     }
     /**
-     * Prepare a SQL statement.
+     * Create a [prepared SQLite statement](https://www.sqlite.org/c3ref/prepare.html).
      *
      * @param source A string containing the SQL query.
      */
@@ -87,7 +87,7 @@ export class SQLiteDatabase {
      * the other async write queries will abort with `database is locked` error.
      *
      * @param task An async function to execute within a transaction. Any queries inside the transaction must be executed on the `txn` object.
-     * The `txn` object has the same interfaces as the `Database` object. You can use `txn` like a `Database` object.
+     * The `txn` object has the same interfaces as the [`SQLiteDatabase`](#sqlitedatabase) object. You can use `txn` like a [`SQLiteDatabase`](#sqlitedatabase) object.
      *
      * @example
      * ```ts
@@ -140,7 +140,7 @@ export class SQLiteDatabase {
         return this.nativeDatabase.execSync(source);
     }
     /**
-     * Prepare a SQL statement.
+     * Create a [prepared SQLite statement](https://www.sqlite.org/c3ref/prepare.html).
      *
      * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
      *
@@ -173,85 +173,95 @@ export class SQLiteDatabase {
         const statement = await this.prepareAsync(source);
         let result;
         try {
-            result = await statement.runAsync(...params);
+            result = await statement.executeAsync(...params);
         }
         finally {
             await statement.finalizeAsync();
         }
         return result;
     }
-    async getAsync(source, ...params) {
+    async getFirstAsync(source, ...params) {
         const statement = await this.prepareAsync(source);
-        let result;
+        let firstRow;
         try {
-            result = await statement.getAsync(...params);
+            const result = await statement.executeAsync(...params);
+            firstRow = await result.getFirstAsync();
         }
         finally {
             await statement.finalizeAsync();
         }
-        return result;
+        return firstRow;
     }
-    async *eachAsync(source, ...params) {
+    async *getEachAsync(source, ...params) {
         const statement = await this.prepareAsync(source);
         try {
-            yield* await statement.eachAsync(...params);
+            const result = await statement.executeAsync(...params);
+            for await (const row of result) {
+                yield row;
+            }
         }
         finally {
             await statement.finalizeAsync();
         }
     }
-    async allAsync(source, ...params) {
+    async getAllAsync(source, ...params) {
         const statement = await this.prepareAsync(source);
-        let result;
+        let allRows;
         try {
-            result = await statement.allAsync(...params);
+            const result = await statement.executeAsync(...params);
+            allRows = await result.getAllAsync();
         }
         finally {
             await statement.finalizeAsync();
         }
-        return result;
+        return allRows;
     }
     runSync(source, ...params) {
         const statement = this.prepareSync(source);
         let result;
         try {
-            result = statement.runSync(...params);
+            result = statement.executeSync(...params);
         }
         finally {
             statement.finalizeSync();
         }
         return result;
     }
-    getSync(source, ...params) {
+    getFirstSync(source, ...params) {
         const statement = this.prepareSync(source);
-        let result;
+        let firstRow;
         try {
-            result = statement.getSync(...params);
+            const result = statement.executeSync(...params);
+            firstRow = result.getFirstSync();
         }
         finally {
             statement.finalizeSync();
         }
-        return result;
+        return firstRow;
     }
-    *eachSync(source, ...params) {
+    *getEachSync(source, ...params) {
         const statement = this.prepareSync(source);
         try {
-            yield* statement.eachSync(...params);
+            const result = statement.executeSync(...params);
+            for (const row of result) {
+                yield row;
+            }
         }
         finally {
             statement.finalizeSync();
         }
     }
-    allSync(source, ...params) {
+    getAllSync(source, ...params) {
         const statement = this.prepareSync(source);
-        let result;
+        let allRows;
         try {
-            result = statement.allSync(...params);
+            const result = statement.executeSync(...params);
+            allRows = result.getAllSync();
         }
         finally {
             statement.finalizeSync();
         }
-        return result;
+        return allRows;
     }
 }
 /**

@@ -1,57 +1,22 @@
 import { NativeDatabase } from './NativeDatabase';
-import { SQLiteBindBlobParams, SQLiteBindParams, SQLiteBindPrimitiveParams, SQLiteBindValue, NativeStatement, SQLiteRunResult, SQLiteVariadicBindParams, type SQLiteColumnNames, type SQLiteColumnValues } from './NativeStatement';
+import { SQLiteBindParams, SQLiteBindValue, NativeStatement, SQLiteVariadicBindParams, type SQLiteRunResult } from './NativeStatement';
 export { SQLiteBindParams, SQLiteBindValue, SQLiteRunResult, SQLiteVariadicBindParams };
 /**
- * A prepared statement returned by [`Database.prepareAsync()`](#prepareasyncsource) or [`Database.prepareSync()`](#preparesyncsource) that can be binded with parameters and executed.
+ * A prepared statement returned by [`SQLiteDatabase.prepareAsync()`](#prepareasyncsource) or [`SQLiteDatabase.prepareSync()`](#preparesyncsource) that can be binded with parameters and executed.
  */
 export declare class SQLiteStatement {
     private readonly nativeDatabase;
     private readonly nativeStatement;
     constructor(nativeDatabase: NativeDatabase, nativeStatement: NativeStatement);
     /**
-     * Run the prepared statement and return the result.
+     * Run the prepared statement and return the [`SQLiteExecuteAsyncResult`](#sqliteexecuteasyncresult) instance.
      * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
      */
-    runAsync(params: SQLiteBindParams): Promise<SQLiteRunResult>;
+    executeAsync<T>(params: SQLiteBindParams): Promise<SQLiteExecuteAsyncResult<T>>;
     /**
      * @hidden
      */
-    runAsync(...params: SQLiteVariadicBindParams): Promise<SQLiteRunResult>;
-    /**
-     * Iterate the prepared statement and return results as an async iterable.
-     * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
-     * @example
-     * ```ts
-     * const statement = await db.prepareAsync('SELECT * FROM test');
-     * for await (const row of statement.eachAsync<any>()) {
-     *   console.log(row);
-     * }
-     * await statement.finalizeAsync();
-     * ```
-     */
-    eachAsync<T>(params: SQLiteBindParams): AsyncGenerator<T>;
-    /**
-     * @hidden
-     */
-    eachAsync<T>(...params: SQLiteVariadicBindParams): AsyncGenerator<T>;
-    /**
-     * Get one row from the prepared statement.
-     * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
-     */
-    getAsync<T>(params: SQLiteBindParams): Promise<T | null>;
-    /**
-     * @hidden
-     */
-    getAsync<T>(...params: SQLiteVariadicBindParams): Promise<T | null>;
-    /**
-     * Get all rows from the prepared statement.
-     * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
-     */
-    allAsync<T>(params: SQLiteBindParams): Promise<T[]>;
-    /**
-     * @hidden
-     */
-    allAsync<T>(...params: SQLiteVariadicBindParams): Promise<T[]>;
+    executeAsync<T>(...params: SQLiteVariadicBindParams): Promise<SQLiteExecuteAsyncResult<T>>;
     /**
      * Get the column names of the prepared statement.
      */
@@ -66,45 +31,15 @@ export declare class SQLiteStatement {
      */
     finalizeAsync(): Promise<void>;
     /**
-     * Run the prepared statement and return the result.
+     * Run the prepared statement and return the [`SQLiteExecuteSyncResult`](#sqliteexecutesyncresult) instance.
      * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
      * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
      */
-    runSync(params: SQLiteBindParams): SQLiteRunResult;
+    executeSync<T>(params: SQLiteBindParams): SQLiteExecuteSyncResult<T>;
     /**
      * @hidden
      */
-    runSync(...params: SQLiteVariadicBindParams): SQLiteRunResult;
-    /**
-     * Iterate the prepared statement and return results as an iterable.
-     * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
-     * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
-     */
-    eachSync<T>(params: SQLiteBindParams): Generator<T>;
-    /**
-     * @hidden
-     */
-    eachSync<T>(...params: SQLiteVariadicBindParams): Generator<T>;
-    /**
-     * Get one row from the prepared statement.
-     * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
-     * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
-     */
-    getSync<T>(params: SQLiteBindParams): T | null;
-    /**
-     * @hidden
-     */
-    getSync<T>(...params: SQLiteVariadicBindParams): T | null;
-    /**
-     * Get all rows from the prepared statement.
-     * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
-     * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
-     */
-    allSync<T>(params: SQLiteBindParams): T[];
-    /**
-     * @hidden
-     */
-    allSync<T>(...params: SQLiteVariadicBindParams): T[];
+    executeSync<T>(...params: SQLiteVariadicBindParams): SQLiteExecuteSyncResult<T>;
     /**
      * Get the column names of the prepared statement.
      */
@@ -122,19 +57,108 @@ export declare class SQLiteStatement {
     finalizeSync(): void;
 }
 /**
- * Normalize the bind params to data structure that can be passed to native module.
- * The data structure is a tuple of [primitiveParams, blobParams, shouldPassAsArray].
- * @hidden
+ * A result returned by [`SQLiteStatement.executeAsync()`](#executeasyncparams).
+ *
+ * @example
+ * The result includes the [`lastInsertRowId`](https://www.sqlite.org/c3ref/last_insert_rowid.html) and [`changes`](https://www.sqlite.org/c3ref/changes.html) properties. You can get the information from the write operations.
+ * ```ts
+ * const statement = await db.prepareAsync('INSERT INTO Tests (value) VALUES (?)');
+ * const result = await statement.executeAsync(101);
+ * console.log('lastInsertRowId:', result.lastInsertRowId);
+ * console.log('changes:', result.changes);
+ * ```
+ *
+ * @example
+ * The result implements the [`AsyncIterator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/asyncIterator) interface, so you can use it in `for await...of` loops.
+ * ```ts
+ * const statement = await db.prepareAsync('SELECT value FROM Tests WHERE value > ?');
+ * const result = await statement.executeAsync<{ value: number }>(100);
+ * for await (const row of result) {
+ *   console.log('row value:', row.value);
+ * }
+ * ```
+ *
+ * @example
+ * If your write operations also return values, you can mix all of them together.
+ * ```ts
+ * const statement = await db.prepareAsync('INSERT INTO Tests (name, value) VALUES (?, ?) RETURNING name');
+ * const result = await statement.executeAsync<{ name: string }>('John Doe', 101);
+ * console.log('lastInsertRowId:', result.lastInsertRowId);
+ * console.log('changes:', result.changes);
+ * for await (const row of result) {
+ *   console.log('name:', row.name);
+ * }
+ * ```
  */
-export declare function normalizeParams(...params: any[]): [SQLiteBindPrimitiveParams, SQLiteBindBlobParams, boolean];
+export interface SQLiteExecuteAsyncResult<T> extends AsyncIterableIterator<T> {
+    /**
+     * The last inserted row ID. Returned from the [`sqlite3_last_insert_rowid()`](https://www.sqlite.org/c3ref/last_insert_rowid.html) function.
+     */
+    readonly lastInsertRowId: number;
+    /**
+     * The number of rows affected. Returned from the [`sqlite3_changes()`](https://www.sqlite.org/c3ref/changes.html) function.
+     */
+    readonly changes: number;
+    /**
+     * Get the first row of the result set.
+     */
+    getFirstAsync(): Promise<T | null>;
+    /**
+     * Get all rows of the result set.
+     */
+    getAllAsync(): Promise<T[]>;
+}
 /**
- * Compose `columnNames` and `columnValues` to an row object.
- * @hidden
+ * A result returned by [`SQLiteStatement.executeSync()`](#executesyncparams).
+ * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
+
+ * @example
+ * The result includes the [`lastInsertRowId`](https://www.sqlite.org/c3ref/last_insert_rowid.html) and [`changes`](https://www.sqlite.org/c3ref/changes.html) properties. You can get the information from the write operations.
+ * ```ts
+ * const statement = db.prepareSync('INSERT INTO Tests (value) VALUES (?)');
+ * const result = statement.executeSync(101);
+ * console.log('lastInsertRowId:', result.lastInsertRowId);
+ * console.log('changes:', result.changes);
+ * ```
+ *
+ * @example
+ * The result implements the [`Iterator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator) interface, so you can use it in `for...of` loops.
+ * ```ts
+ * const statement = db.prepareSync('SELECT value FROM Tests WHERE value > ?');
+ * const result = statement.executeSync<{ value: number }>(100);
+ * for (const row of result) {
+ *   console.log('row value:', row.value);
+ * }
+ * ```
+ *
+ * @example
+ * If your write operations also return values, you can mix all of them together.
+ * ```ts
+ * const statement = db.prepareSync('INSERT INTO Tests (name, value) VALUES (?, ?) RETURNING name');
+ * const result = statement.executeSync<{ name: string }>('John Doe', 101);
+ * console.log('lastInsertRowId:', result.lastInsertRowId);
+ * console.log('changes:', result.changes);
+ * for (const row of result) {
+ *   console.log('name:', row.name);
+ * }
+ * ```
  */
-export declare function composeRow<T>(columnNames: SQLiteColumnNames, columnValues: SQLiteColumnValues): T;
-/**
- * Compose `columnNames` and `columnValuesList` to an array of row objects.
- * @hidden
- */
-export declare function composeRows<T>(columnNames: SQLiteColumnNames, columnValuesList: SQLiteColumnValues[]): T[];
+export interface SQLiteExecuteSyncResult<T> extends IterableIterator<T> {
+    /**
+     * The last inserted row ID. Returned from the [`sqlite3_last_insert_rowid()`](https://www.sqlite.org/c3ref/last_insert_rowid.html) function.
+     */
+    readonly lastInsertRowId: number;
+    /**
+     * The number of rows affected. Returned from the [`sqlite3_changes()`](https://www.sqlite.org/c3ref/changes.html) function.
+     */
+    readonly changes: number;
+    /**
+     * Get the first row of the result set.
+     */
+    getFirstSync(): T | null;
+    /**
+     * Get all rows of the result set.
+     */
+    getAllSync(): T[];
+}
 //# sourceMappingURL=SQLiteStatement.d.ts.map
