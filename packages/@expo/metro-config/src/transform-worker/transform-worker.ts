@@ -5,7 +5,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import worker, {
+import countLines from 'metro/src/lib/countLines';
+import type {
   JsTransformerConfig,
   JsTransformOptions,
   TransformResponse,
@@ -13,11 +14,10 @@ import worker, {
 
 import { wrapDevelopmentCSS } from './css';
 import { matchCssModule, transformCssModuleWeb } from './css-modules';
+import * as worker from './metro-transform-worker';
 import { transformPostCssModule } from './postcss';
 import { compileSass, matchSass } from './sass';
 import { ExpoJsOutput, JsOutput } from '../serializer/jsOutput';
-
-const countLines = require('metro/src/lib/countLines') as (string: string) => number;
 
 export async function transform(
   config: JsTransformerConfig,
@@ -125,7 +125,6 @@ export async function transform(
       {
         type: 'js/module',
         data: {
-          // @ts-expect-error
           ...jsModuleResults.output[0]?.data,
 
           // Append additional css metadata for static extraction.

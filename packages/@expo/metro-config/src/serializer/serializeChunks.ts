@@ -13,7 +13,6 @@ import {
   ReadOnlyGraph,
   SerializerOptions,
 } from 'metro';
-import getMetroAssets from 'metro/src/DeltaBundler/Serializers/getAssets';
 import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString';
 import bundleToString from 'metro/src/lib/bundleToString';
 import { ConfigT, SerializerConfigT } from 'metro-config';
@@ -31,6 +30,7 @@ import {
 } from './fork/baseJSBundle';
 import { getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
+import getMetroAssets from '../transform-worker/getAssets';
 
 type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 
@@ -129,6 +129,16 @@ export async function graphToSerialAssetsAsync(
     serializeChunkOptions
   );
 
+  // TODO: Can this be anything besides true?
+  const isExporting = true;
+  const baseUrl = getBaseUrlOption(graph, { serializerOptions: serializeChunkOptions });
+  const assetPublicUrl = (baseUrl.replace(/\/+$/, '') ?? '') + '/assets';
+  const publicPath = isExporting
+    ? graph.transformOptions.platform === 'web'
+      ? `/assets?export_path=${assetPublicUrl}`
+      : assetPublicUrl
+    : '/assets/?unstable_path=.';
+
   // TODO: Convert to serial assets
   // TODO: Disable this call dynamically in development since assets are fetched differently.
   const metroAssets = (await getMetroAssets(graph.dependencies, {
@@ -136,7 +146,7 @@ export async function graphToSerialAssetsAsync(
     assetPlugins: config.transformer?.assetPlugins ?? [],
     platform: getPlatformOption(graph, options) ?? 'web',
     projectRoot: options.projectRoot, // this._getServerRootDir(),
-    publicPath: config.transformer?.publicPath ?? '/',
+    publicPath,
   })) as AssetData[];
 
   return { artifacts: [...jsAssets, ...cssDeps], assets: metroAssets };
