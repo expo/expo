@@ -6,6 +6,7 @@ description: Learn how to develop your app for the web so you can build a univer
 import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { CODE } from '~/ui/components/Text';
 
 If you build your native app with the Expo SDK, then you can also run it directly in the browser with [Expo CLI](/more/expo-cli/#develop). On web, your app is rendered with [React Native for web](https://github.com/necolas/react-native-web) which powers massive websites and progressive web apps like [Twitter](https://mobile.twitter.com/), and [Major League Soccer](https://matchcenter.mlssoccer.com/). The Expo SDK also utilizes native browser functionality like Video, Camera, and Gestures without the need for a custom native browser.
 
@@ -15,7 +16,7 @@ If you build your native app with the Expo SDK, then you can also run it directl
 
 <Terminal cmd={['$ npx expo install react-dom react-native-web @expo/webpack-config']} />
 
-<Collapsible summary="Not using the 'expo' package in your app yet?">
+<Collapsible summary={<>Not using the <CODE>expo</CODE> package in your app yet?</>}>
 
 If you have a bare React Native app that doesn't use Expo modules, you can either [install Expo modules](/bare/installing-expo-modules/) (recommended) or just install the `expo` package and configure the app entry file. This will allow you to target web, but it will not include support for Expo modules.
 
