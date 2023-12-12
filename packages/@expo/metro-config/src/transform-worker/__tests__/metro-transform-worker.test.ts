@@ -156,14 +156,32 @@ it('transforms a simple script', async () => {
 
   const trace = toTraceMap(result.output[0], contents);
 
-  expect(
-    generatedPositionFor(trace, { source: '', line: 1, column: 0 })
-  ).toMatchObject({ line: 2, column: 2 });
+  expect(generatedPositionFor(trace, { source: '', line: 1, column: 0 })).toMatchObject({
+    line: 2,
+    column: 2,
+  });
 
   expect(originalPositionFor(trace, { line: 2, column: 2 })).toMatchObject({
     line: 1,
     column: 0,
     name: 'someReallyArbitrary',
+  });
+
+  // NOTE: If downgraded below @babel/generator@7.21.0, names will be missing here
+  expect(originalPositionFor(trace, { line: 3, column: 10 })).toMatchObject({
+    line: 1,
+    column: 25,
+    name: 'globalThis',
+  });
+  expect(originalPositionFor(trace, { line: 3, column: 59 })).toMatchObject({
+    line: 1,
+    column: 25,
+    name: 'global',
+  });
+  expect(originalPositionFor(trace, { line: 3, column: 100 })).toMatchObject({
+    line: 1,
+    column: 25,
+    name: 'window',
   });
 
   expect(result.dependencies).toEqual([]);
@@ -370,6 +388,18 @@ it('transforms import/export syntax when experimental flag is on', async () => {
     line: 1,
     column: 7,
     name: 'c',
+  });
+
+  // NOTE: If downgraded below @babel/generator@7.21.0, names will be missing here
+  expect(originalPositionFor(trace, { line: 4, column: 10 })).toMatchObject({
+    line: 1,
+    column: 8,
+    name: '_$$_IMPORT_DEFAULT',
+  });
+  expect(originalPositionFor(trace, { line: 4, column: 29 })).toMatchObject({
+    line: 1,
+    column: 8,
+    name: '_dependencyMap',
   });
 
   expect(result.dependencies).toEqual([
