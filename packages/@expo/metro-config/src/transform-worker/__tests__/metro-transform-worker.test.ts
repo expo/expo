@@ -8,11 +8,41 @@
  * Fork of the Metro transformer worker, but with additional transforms moved to `babel-preset-expo` and modifications made for web support.
  * https://github.com/facebook/metro/blob/412771475c540b6f85d75d9dcd5a39a6e0753582/packages/metro-transform-worker/src/index.js#L1
  */
+
+import {
+  TraceMap,
+  EncodedSourceMap,
+  originalPositionFor,
+  generatedPositionFor,
+} from '@jridgewell/trace-mapping';
 import { Buffer } from 'buffer';
 import * as fs from 'fs';
 import { vol } from 'memfs';
-import { JsTransformerConfig, JsTransformOptions } from 'metro-transform-worker';
+import { fromRawMappings } from 'metro-source-map';
+import type { JsTransformerConfig, JsTransformOptions, JsOutput } from 'metro-transform-worker';
 import * as path from 'path';
+
+// NOTE(kitten): metro-source-map does not provide typings for its exported functions
+declare module 'metro-source-map' {
+  export function fromRawMappings(
+    modules: {
+      code: string;
+      lineCount: number;
+      map: MetroSourceMapSegmentTuple[];
+      functionMap: FBSourceFunctionMap | null;
+    }[]
+  ): { toMap(): EncodedSourceMap };
+}
+
+const toTraceMap = (output: JsOutput, contents: string) => {
+  const map = fromRawMappings([output.data]).toMap();
+  return new TraceMap({
+    ...map,
+    file: output.data.code,
+    sources: [null],
+    sourcesContent: [contents || null],
+  });
+};
 
 const originalWarn = console.warn;
 
@@ -173,8 +203,51 @@ it('transforms a module with dependencies', async () => {
       '});',
     ].join('\n')
   );
-  expect(result.output[0].data.map).toMatchSnapshot();
-  expect(result.output[0].data.functionMap).toMatchSnapshot();
+
+  const trace = toTraceMap(result.output[0], contents);
+
+  expect(
+    generatedPositionFor(trace, { source: '', line: 2, column: 0 } /* require("./a") */)
+  ).toMatchObject({ line: 6, column: 2 });
+
+  expect(originalPositionFor(trace, { line: 7, column: 2 })).toMatchObject({
+    line: 3,
+    column: 0,
+    name: 'arbitrary',
+  });
+  expect(originalPositionFor(trace, { line: 8, column: 6 })).toMatchObject({
+    line: 4,
+    column: 6,
+    name: 'b',
+  });
+  expect(originalPositionFor(trace, { line: 8, column: 6 })).toMatchObject({
+    line: 4,
+    column: 6,
+    name: 'b',
+  });
+
+  // NOTE: If downgraded below @babel/generator@7.21.0, names will be missing here
+  expect(originalPositionFor(trace, { line: 5, column: 6 })).toMatchObject({
+    line: 5,
+    column: 0,
+    name: '_c',
+  });
+  expect(originalPositionFor(trace, { line: 4, column: 6 })).toMatchObject({
+    line: 1,
+    column: 13,
+    name: '_interopRequireDefault',
+  });
+  expect(originalPositionFor(trace, { line: 4, column: 31 })).toMatchObject({
+    line: 1,
+    column: 13,
+    name: '_$$_REQUIRE',
+  });
+  expect(originalPositionFor(trace, { line: 4, column: 43 })).toMatchObject({
+    line: 1,
+    column: 13,
+    name: '_dependencyMap',
+  });
+
   expect(result.dependencies).toEqual([
     {
       data: expect.objectContaining({ asyncType: null }),
