@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 13.10.0 — 2023-12-12
+
+### 🐛 Bug fixes
+
 - [iOS] Fix base64 audio playback on iOS 17. ([#25414](https://github.com/expo/expo/pull/25414) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others

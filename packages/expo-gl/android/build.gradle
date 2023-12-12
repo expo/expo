@@ -5,7 +5,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '13.5.0'
+version = '13.6.0'
 
 def reactNativeArchitectures() {
     def value = project.getProperties().get("reactNativeArchitectures")
@@ -108,7 +108,7 @@ android {
   namespace "expo.modules.gl"
   defaultConfig {
     versionCode 31
-    versionName "13.5.0"
+    versionName "13.6.0"
 
     externalNativeBuild {
       cmake {

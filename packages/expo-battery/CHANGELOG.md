@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 7.7.1 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
 ## 7.7.0 — 2023-11-14
 
 ### 🛠 Breaking changes

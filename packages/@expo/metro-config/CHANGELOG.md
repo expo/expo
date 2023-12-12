@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.16.0 — 2023-12-12
+
+### 🛠 Breaking changes
+
 - Moved `react-refresh` babel plugin from Metro to `babel-preset-expo`. ([#25461](https://github.com/expo/expo/pull/25461) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
