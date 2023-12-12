@@ -1,12 +1,11 @@
 import { InstalledDependencyVersionCheck } from '../checks/InstalledDependencyVersionCheck';
 import { DoctorCheck } from '../checks/checks.types';
 import {
-  getChecks,
+  getChecksInScopeForProject,
   printCheckResultSummaryOnComplete,
   printFailedCheckIssueAndAdvice,
   runChecksAsync,
 } from '../doctor';
-import { env } from '../utils/env';
 import { Log } from '../utils/log';
 
 jest.mock(`../utils/log`);
@@ -48,29 +47,38 @@ class MockUnexpectedThrowCheck implements DoctorCheck {
   runAsync = jest.fn(() => Promise.reject(new Error('Unexpected error thrown from check.')));
 }
 
-describe(getChecks, () => {
+describe(getChecksInScopeForProject, () => {
+  beforeEach(() => {
+    delete process.env.EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK;
+  });
+
   it('skips the InstalledDependencyVersionCheck if environment variable is set', async () => {
-    const mock = jest
-      .spyOn(env, 'EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK', 'get')
-      .mockImplementation(() => true);
-    const checks = getChecks();
-    expect(mock).toHaveBeenCalled();
+    process.env.EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK = '1';
+    jest.mocked(Log.log).mockReset();
+    const checks = getChecksInScopeForProject({
+      name: 'foo',
+      slug: 'foo',
+      sdkVersion: 'UNVERSIONED',
+    });
     expect(
       checks.find((check) => check instanceof InstalledDependencyVersionCheck)
     ).toBeUndefined();
-    mock.mockRestore();
+    expect(jest.mocked(Log.log)).toHaveBeenCalledWith(
+      expect.stringMatching(
+        'Checking dependencies for compatibility with the installed Expo SDK version is disabled'
+      )
+    );
   });
 
   it('includes the InstalledDependencyVersionCheck if environment variable is not set', async () => {
-    const mock = jest
-      .spyOn(env, 'EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK', 'get')
-      .mockImplementation(() => false);
-    const checks = getChecks();
-    expect(mock).toHaveBeenCalled();
+    const checks = getChecksInScopeForProject({
+      name: 'foo',
+      slug: 'foo',
+      sdkVersion: 'UNVERSIONED',
+    });
     expect(
       checks.find((check) => check instanceof InstalledDependencyVersionCheck)
     ).not.toBeUndefined();
-    mock.mockRestore();
   });
 });
 
