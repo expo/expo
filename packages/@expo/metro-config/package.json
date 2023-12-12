@@ -35,7 +35,7 @@
   ],
   "dependencies": {
     "@babel/core": "^7.20.0",
-    "@babel/generator": "~7.20.5",
+    "@babel/generator": "^7.20.5",
     "@babel/parser": "^7.20.0",
     "@babel/types": "^7.20.0",
     "@expo/config": "~8.5.0",
