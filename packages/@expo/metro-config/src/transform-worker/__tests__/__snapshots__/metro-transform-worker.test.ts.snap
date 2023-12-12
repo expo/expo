@@ -2,6 +2,33 @@
 
 exports[`reports filename when encountering unsupported dynamic dependency 1`] = `"local/file.js:Invalid call at line 3: require(a)"`;
 
+exports[`transforms a module with dependencies 1`] = `
+{
+  "mappings": "AAA",
+  "names": [
+    "<global>",
+  ],
+}
+`;
+
+exports[`transforms a simple module 1`] = `
+{
+  "mappings": "AAA",
+  "names": [
+    "<global>",
+  ],
+}
+`;
+
+exports[`transforms a simple script 1`] = `
+{
+  "mappings": "AAA",
+  "names": [
+    "<global>",
+  ],
+}
+`;
+
 exports[`transforms an es module with asyncToGenerator 1`] = `
 "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
   var _interopRequireDefault = _$$_REQUIRE(_dependencyMap[0], "@babel/runtime/helpers/interopRequireDefault");
@@ -18,6 +45,16 @@ exports[`transforms an es module with asyncToGenerator 1`] = `
     return _test.apply(this, arguments);
   }
 });"
+`;
+
+exports[`transforms an es module with asyncToGenerator 2`] = `
+{
+  "mappings": "AAA,OC",
+  "names": [
+    "<global>",
+    "test",
+  ],
+}
 `;
 
 exports[`transforms async generators 1`] = `
@@ -39,4 +76,13 @@ exports[`transforms async generators 1`] = `
     return _test.apply(this, arguments);
   }
 });"
+`;
+
+exports[`transforms import/export syntax when experimental flag is on 1`] = `
+{
+  "mappings": "AAA",
+  "names": [
+    "<global>",
+  ],
+}
 `;

@@ -168,6 +168,7 @@ it('transforms a simple script', async () => {
     name: 'window',
   });
 
+  expect(result.output[0].data.functionMap).toMatchSnapshot();
   expect(result.dependencies).toEqual([]);
 });
 
@@ -206,6 +207,7 @@ it('transforms a simple module', async () => {
 
   expect(result.output[0].type).toBe('js/module');
   expect(result.output[0].data.code).toBe([HEADER_DEV, '  arbitrary(code);', '});'].join('\n'));
+  expect(result.output[0].data.functionMap).toMatchSnapshot();
   expect(result.dependencies).toEqual([]);
 });
 
@@ -285,6 +287,8 @@ it('transforms a module with dependencies', async () => {
     name: '_dependencyMap',
   });
 
+  expect(result.output[0].data.functionMap).toMatchSnapshot();
+
   expect(result.dependencies).toEqual([
     {
       data: expect.objectContaining({ asyncType: null }),
@@ -322,6 +326,8 @@ it('transforms an es module with asyncToGenerator', async () => {
     column: 22,
     name: 'test',
   });
+
+  expect(result.output[0].data.functionMap).toMatchSnapshot();
 
   expect(result.dependencies).toEqual([
     {
@@ -407,6 +413,8 @@ it('transforms import/export syntax when experimental flag is on', async () => {
     column: 8,
     name: '_dependencyMap',
   });
+
+  expect(result.output[0].data.functionMap).toMatchSnapshot();
 
   expect(result.dependencies).toEqual([
     {
