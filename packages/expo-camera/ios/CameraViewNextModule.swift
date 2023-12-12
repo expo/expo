@@ -7,6 +7,7 @@ import VisionKit
 let cameraNextEvents = ["onCameraReady", "onMountError", "onPictureSaved", "onBarcodeScanned", "onResponsiveOrientationChanged"]
 
 struct ScannerContext {
+  var controller: Any?
   var delegate: Any?
 }
 
@@ -116,12 +117,20 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
       }.runOnQueue(.main)
     }
 
-    AsyncFunction("launchModernScanner") { (options: VisionScannerOptions?) in
+    AsyncFunction("launchScanner") { (options: VisionScannerOptions?) in
       if #available(iOS 16.0, *) {
         try await MainActor.run {
           let delegate = VisionScannerDelegate(handler: self)
           scannerContext = ScannerContext(delegate: delegate)
-          launchModernScanner(with: options)
+          launchScanner(with: options)
+        }
+      }
+    }
+
+    AsyncFunction("dismissScanner") {
+      if #available(iOS 16.0, *) {
+        await MainActor.run {
+          dismissScanner()
         }
       }
     }
@@ -169,7 +178,7 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
 
   @available(iOS 16.0, *)
   @MainActor
-  private func launchModernScanner(with options: VisionScannerOptions?) {
+  private func launchScanner(with options: VisionScannerOptions?) {
     let symbologies = options?.toSymbology() ?? [.qr]
     let controller = DataScannerViewController(
       recognizedDataTypes: [.barcode(symbologies: symbologies)],
@@ -178,6 +187,7 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
       isHighlightingEnabled: options?.isHighlightingEnabled ?? false
     )
 
+    scannerContext?.controller = controller
     if let delegate = scannerContext?.delegate as? VisionScannerDelegate {
       controller.delegate = delegate
     }
@@ -185,6 +195,16 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
     appContext?.utilities?.currentViewController()?.present(controller, animated: true) {
       try? controller.startScanning()
     }
+  }
+
+  @available(iOS 16.0, *)
+  @MainActor
+  private func dismissScanner() {
+    guard let controller = scannerContext?.controller as? DataScannerViewController else {
+      return
+    }
+    controller.stopScanning()
+    controller.dismiss(animated: true)
   }
 
   func onItemScanned(result: [String: Any]) {
@@ -244,13 +264,12 @@ private func generatePictureForSimulator(
   appContext: AppContext?,
   options: TakePictureOptionsNext
 ) throws -> [String: Any?] {
-  guard let fileSystem = appContext?.fileSystem else {
-    throw Exceptions.FileSystemModuleNotFound()
-  }
-  let path = fileSystem.generatePath(
-    inDirectory: fileSystem.cachesDirectory.appending("/Camera"),
-    withExtension: ".jpg"
+  let path = FileSystemUtilities.generatePathInCache(
+    appContext,
+    in: "Camera",
+    extension: ".jpg"
   )
+
   let generatedPhoto = ExpoCameraUtilsNext.generatePhoto(of: CGSize(width: 200, height: 200))
   guard let photoData = generatedPhoto.jpegData(compressionQuality: options.quality) else {
     throw CameraInvalidPhotoData()

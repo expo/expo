@@ -41,7 +41,7 @@ using namespace facebook::react;
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  const auto &newProps = *std::static_pointer_cast<const RNSVGPathProps>(props);
+  const auto &newProps = static_cast<const RNSVGPathProps &>(*props);
   self.d = [[RNSVGPathParser alloc] initWithPathString:RCTNSStringFromString(newProps.d)];
 
   setCommonRenderableProps(newProps, self);

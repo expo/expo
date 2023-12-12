@@ -2,6 +2,7 @@ import { PackageJSONConfig } from '@expo/config';
 import npmPackageArg from 'npm-package-arg';
 
 import { getVersionedNativeModulesAsync } from './bundledNativeModules';
+import { hasExpoCanaryAsync } from './resolvePackages';
 import { getVersionsAsync, SDKVersion } from '../../../api/getVersions';
 import { Log } from '../../../log';
 import { env } from '../../../utils/env';
@@ -48,10 +49,17 @@ export async function getCombinedKnownVersionsAsync({
   sdkVersion?: string;
   skipCache?: boolean;
 }) {
+  const skipRemoteVersions = await hasExpoCanaryAsync(projectRoot);
+  if (skipRemoteVersions) {
+    Log.warn('Dependency validation might be unreliable when using canary SDK versions');
+  }
+
   const bundledNativeModules = sdkVersion
-    ? await getVersionedNativeModulesAsync(projectRoot, sdkVersion)
+    ? await getVersionedNativeModulesAsync(projectRoot, sdkVersion, { skipRemoteVersions })
     : {};
-  const versionsForSdk = await getRemoteVersionsForSdkAsync({ sdkVersion, skipCache });
+  const versionsForSdk = !skipRemoteVersions
+    ? await getRemoteVersionsForSdkAsync({ sdkVersion, skipCache })
+    : {};
   return {
     ...bundledNativeModules,
     // Prefer the remote versions over the bundled versions, this enables us to push

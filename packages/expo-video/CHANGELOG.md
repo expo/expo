@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 0.3.1 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
+## 0.3.0 — 2023-12-12
+
+### 🎉 New features
+
+- [iOS] Add Picture in Picture support. ([#25522](https://github.com/expo/expo/pull/25522) by [@behenate](https://github.com/behenate))
+
 ## 0.2.0 — 2023-11-14
 
 ### 🛠 Breaking changes

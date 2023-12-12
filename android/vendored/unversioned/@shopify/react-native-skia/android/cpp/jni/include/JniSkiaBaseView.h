@@ -10,6 +10,8 @@
 #include <JniSkiaManager.h>
 #include <RNSkAndroidView.h>
 
+#include <android/bitmap.h>
+
 namespace RNSkia {
 
 namespace jsi = facebook::jsi;
@@ -18,7 +20,7 @@ class JniSkiaBaseView {
 public:
   JniSkiaBaseView(jni::alias_ref<JniSkiaManager::javaobject> skiaManager,
                   std::shared_ptr<RNSkBaseAndroidView> skiaView)
-      : _manager(skiaManager->cthis()), _skiaView(skiaView) {}
+      : _manager(skiaManager->cthis()), _skiaAndroidView(skiaView) {}
 
   ~JniSkiaBaseView() {}
 
@@ -28,38 +30,41 @@ public:
 
 protected:
   virtual void updateTouchPoints(jni::JArrayDouble touches) {
-    _skiaView->updateTouchPoints(touches);
+    _skiaAndroidView->updateTouchPoints(touches);
   }
 
   virtual void surfaceAvailable(jobject surface, int width, int height) {
-    _skiaView->surfaceAvailable(surface, width, height);
+    _skiaAndroidView->surfaceAvailable(surface, width, height);
   }
 
   virtual void surfaceSizeChanged(int width, int height) {
-    _skiaView->surfaceSizeChanged(width, height);
+    _skiaAndroidView->surfaceSizeChanged(width, height);
   }
 
-  virtual void surfaceDestroyed() { _skiaView->surfaceDestroyed(); }
+  virtual void surfaceDestroyed() { _skiaAndroidView->surfaceDestroyed(); }
 
-  virtual void setMode(std::string mode) { _skiaView->setMode(mode); }
+  virtual void setMode(std::string mode) { _skiaAndroidView->setMode(mode); }
 
-  virtual void setDebugMode(bool show) { _skiaView->setShowDebugInfo(show); }
+  virtual void setDebugMode(bool show) {
+    _skiaAndroidView->setShowDebugInfo(show);
+  }
 
   virtual void registerView(int nativeId) {
-    getSkiaManager()->registerSkiaView(nativeId, _skiaView->getSkiaView());
+    getSkiaManager()->registerSkiaView(nativeId,
+                                       _skiaAndroidView->getSkiaView());
   }
 
   virtual void unregisterView() {
-    getSkiaManager()->setSkiaView(_skiaView->getSkiaView()->getNativeId(),
-                                  nullptr);
+    getSkiaManager()->setSkiaView(
+        _skiaAndroidView->getSkiaView()->getNativeId(), nullptr);
     getSkiaManager()->unregisterSkiaView(
-        _skiaView->getSkiaView()->getNativeId());
-    _skiaView->viewDidUnmount();
+        _skiaAndroidView->getSkiaView()->getNativeId());
+    _skiaAndroidView->viewDidUnmount();
   }
 
 private:
   JniSkiaManager *_manager;
-  std::shared_ptr<RNSkBaseAndroidView> _skiaView;
+  std::shared_ptr<RNSkBaseAndroidView> _skiaAndroidView;
 };
 
 } // namespace RNSkia

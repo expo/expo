@@ -110,11 +110,21 @@ class UpdatesDevLauncherController(
       return
     }
 
-    if (!UpdatesConfiguration.canCreateValidConfiguration(context, configuration)) {
-      callback.onFailure(Exception("Failed to load update: UpdatesConfiguration object must include a valid update URL"))
-      return
+    val newUpdatesConfiguration = when (UpdatesConfiguration.getUpdatesConfigurationValidationResult(context, configuration)) {
+      UpdatesConfigurationValidationResult.VALID -> UpdatesConfiguration(context, configuration)
+      UpdatesConfigurationValidationResult.INVALID_NOT_ENABLED -> {
+        callback.onFailure(Exception("Failed to load update: UpdatesConfiguration object is not enabled"))
+        return
+      }
+      UpdatesConfigurationValidationResult.INVALID_MISSING_URL -> {
+        callback.onFailure(Exception("Failed to load update: UpdatesConfiguration object must include a valid update URL"))
+        return
+      }
+      UpdatesConfigurationValidationResult.INVALID_MISSING_RUNTIME_VERSION -> {
+        callback.onFailure(Exception("Failed to load update: UpdatesConfiguration object must include a valid runtime version"))
+        return
+      }
     }
-    val newUpdatesConfiguration = UpdatesConfiguration(context, configuration)
 
     // since controller is a singleton, save its config so we can reset to it if our request fails
     previousUpdatesConfiguration = updatesConfiguration
@@ -283,7 +293,7 @@ class UpdatesDevLauncherController(
   override fun relaunchReactApplicationForModule(
     callback: IUpdatesController.ModuleCallback<Unit>
   ) {
-    callback.onFailure(NotAvailableInDevClientException("Cannot reload update in a development client"))
+    callback.onFailure(NotAvailableInDevClientException("Cannot reload update in a development client. A non-development build should be used to test this functionality."))
   }
 
   override fun getNativeStateMachineContext(callback: IUpdatesController.ModuleCallback<UpdatesStateContext>) {
@@ -293,17 +303,17 @@ class UpdatesDevLauncherController(
   override fun checkForUpdate(
     callback: IUpdatesController.ModuleCallback<IUpdatesController.CheckForUpdateResult>
   ) {
-    callback.onFailure(NotAvailableInDevClientException("Cannot check for update in a development client"))
+    callback.onFailure(NotAvailableInDevClientException("Cannot check for update in a development client. A non-development build should be used to test this functionality."))
   }
 
   override fun fetchUpdate(
     callback: IUpdatesController.ModuleCallback<IUpdatesController.FetchUpdateResult>
   ) {
-    callback.onFailure(NotAvailableInDevClientException("Cannot fetch update in a development client"))
+    callback.onFailure(NotAvailableInDevClientException("Cannot fetch update in a development client. A non-development build should be used to test this functionality."))
   }
 
   override fun getExtraParams(callback: IUpdatesController.ModuleCallback<Bundle>) {
-    callback.onFailure(NotAvailableInDevClientException("Cannot get extra params in a development client"))
+    callback.onFailure(NotAvailableInDevClientException("Cannot get extra params in a development client. A non-development build should be used to test this functionality."))
   }
 
   override fun setExtraParam(
@@ -311,6 +321,6 @@ class UpdatesDevLauncherController(
     value: String?,
     callback: IUpdatesController.ModuleCallback<Unit>
   ) {
-    callback.onFailure(NotAvailableInDevClientException("Cannot set extra params in a development client"))
+    callback.onFailure(NotAvailableInDevClientException("Cannot set extra params in a development client. A non-development build should be used to test this functionality."))
   }
 }

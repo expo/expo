@@ -18,7 +18,9 @@ import java.util.Date
 
 // these unused imports must stay because of versioning
 /* ktlint-disable no-unused-imports */
-
+import expo.modules.updates.IUpdatesController
+import expo.modules.updates.UpdatesConfiguration
+import expo.modules.updates.UpdatesController
 /* ktlint-enable no-unused-imports */
 
 /**

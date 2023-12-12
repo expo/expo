@@ -5,22 +5,26 @@ description: Learn how to develop your app for the web so you can build a univer
 
 import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { CODE } from '~/ui/components/Text';
 
 If you build your native app with the Expo SDK, then you can also run it directly in the browser with [Expo CLI](/more/expo-cli/#develop). On web, your app is rendered with [React Native for web](https://github.com/necolas/react-native-web) which powers massive websites and progressive web apps like [Twitter](https://mobile.twitter.com/), and [Major League Soccer](https://matchcenter.mlssoccer.com/). The Expo SDK also utilizes native browser functionality like Video, Camera, and Gestures without the need for a custom native browser.
 
 ## Getting started
 
-Install the `expo` package which contains the [Expo CLI](/more/expo-cli/) used for starting the dev server:
-
-<Terminal cmd={['$ yarn add expo']} />
-
-Then you can use Expo CLI to install the web dependencies in your project:
+### Install web dependencies
 
 <Terminal cmd={['$ npx expo install react-dom react-native-web @expo/webpack-config']} />
 
-### Update the entry file
+<Collapsible summary={<>Not using the <CODE>expo</CODE> package in your app yet?</>}>
 
-Modify the entry file to use [`registerRootComponent`](/versions/latest/sdk/register-root-component) instead of `AppRegistry.registerComponent`:
+If you have a bare React Native app that doesn't use Expo modules, you can either [install Expo modules](/bare/installing-expo-modules/) (recommended) or just install the `expo` package and configure the app entry file. This will allow you to target web, but it will not include support for Expo modules.
+
+1. Install the `expo` package which contains the [Expo CLI](/more/expo-cli/) used for starting the dev server:
+
+<Terminal cmd={['$ npm install expo']} />
+
+2. Modify the entry file to use [`registerRootComponent`](/versions/latest/sdk/register-root-component) instead of `AppRegistry.registerComponent`:
 
 ```diff
 + import {registerRootComponent} from 'expo';
@@ -34,6 +38,8 @@ import App from './App';
 ```
 
 > Learn more about [`registerRootComponent`](/versions/latest/sdk/register-root-component#registerrootcomponentcomponent).
+
+</Collapsible>
 
 ### Start the dev server
 

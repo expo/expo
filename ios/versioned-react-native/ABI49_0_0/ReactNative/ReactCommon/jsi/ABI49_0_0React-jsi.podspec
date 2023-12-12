@@ -18,8 +18,6 @@ folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 
 folly_version = '2022.05.16.00'
 boost_compiler_flags = '-Wno-documentation'
 
-# using jsc to expose jsi.h
-js_engine = :jsc
 Pod::Spec.new do |s|
   s.name                   = "ABI49_0_0React-jsi"
   s.version                = version
@@ -50,7 +48,7 @@ Pod::Spec.new do |s|
   elsif js_engine == :hermes
     # JSI is provided by hermes-engine when Hermes is enabled
     # Just need to provide JSIDynamic in this case.
-    s.source_files = "jsi/JSIDynamic.{cpp,h}"
+    s.source_files = "jsi/ABI49_0_0JSIDynamic.{cpp,h}"
     s.dependency "ABI49_0_0hermes-engine"
   end
 end

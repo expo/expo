@@ -162,7 +162,7 @@ export async function androidNativeUnitTests({
 
     console.log(chalk.green('Finished android unit tests successfully.'));
   } finally {
-    restoreBareExpoPackageJson(packageJsonOriginalText);
+    await restoreBareExpoPackageJson(packageJsonOriginalText);
   }
 }
 

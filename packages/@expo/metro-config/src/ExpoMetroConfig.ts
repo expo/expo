@@ -244,12 +244,16 @@ export function getDefaultConfig(
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,
       babelTransformerPath: require.resolve('./babel-transformer'),
+      // See: https://github.com/facebook/react-native/blob/v0.73.0/packages/metro-config/index.js#L72-L74
+      asyncRequireModulePath:
+        resolveFrom.silent(projectRoot, '@expo/metro-runtime/async-require') ||
+        resolveFrom(reactNativePath, metroDefaultValues.transformer.asyncRequireModulePath),
       assetRegistryPath: '@react-native/assets-registry/registry',
       assetPlugins: getAssetPlugins(projectRoot),
       getTransformOptions: async () => ({
         transform: {
           experimentalImportSupport: false,
-          inlineRequires: true,
+          inlineRequires: false,
         },
       }),
     },

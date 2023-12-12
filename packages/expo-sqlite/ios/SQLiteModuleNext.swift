@@ -6,6 +6,7 @@ import sqlite3
 private typealias ColumnNames = [String]
 private typealias ColumnValues = [Any]
 private let SQLITE_TRANSIENT = unsafeBitCast(OpaquePointer(bitPattern: -1), to: sqlite3_destructor_type.self)
+private let MEMORY_DB_NAME = ":memory:"
 
 public final class SQLiteModuleNext: Module {
   // Store unmanaged (SQLiteModuleNext, Database) pairs for sqlite callbacks,
@@ -68,16 +69,18 @@ public final class SQLiteModuleNext: Module {
       }
 
       AsyncFunction("initAsync") { (database: NativeDatabase) in
-        initDb(database: database)
+        try initDb(database: database)
       }
       Function("initSync") { (database: NativeDatabase) in
-        initDb(database: database)
+        try initDb(database: database)
       }
 
       AsyncFunction("isInTransactionAsync") { (database: NativeDatabase) -> Bool in
+        try maybeThrowForClosedDatabase(database)
         return sqlite3_get_autocommit(database.pointer) == 0
       }
       Function("isInTransactionSync") { (database: NativeDatabase) -> Bool in
+        try maybeThrowForClosedDatabase(database)
         return sqlite3_get_autocommit(database.pointer) == 0
       }
 
@@ -111,53 +114,36 @@ public final class SQLiteModuleNext: Module {
         return NativeStatement()
       }
 
-      AsyncFunction("arrayRunAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [Any]) -> [String: Int] in
-        return try arrayRun(statement: statement, database: database, bindParams: bindParams)
+      // swiftlint:disable line_length
+
+      AsyncFunction("runAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) -> [String: Any] in
+        return try run(statement: statement, database: database, bindParams: bindParams, bindBlobParams: bindBlobParams, shouldPassAsArray: shouldPassAsArray)
       }
-      Function("arrayRunSync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [Any]) -> [String: Int] in
-        return try arrayRun(statement: statement, database: database, bindParams: bindParams)
+      Function("runSync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) -> [String: Int] in
+        return try run(statement: statement, database: database, bindParams: bindParams, bindBlobParams: bindBlobParams, shouldPassAsArray: shouldPassAsArray)
       }
 
-      AsyncFunction("objectRunAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any]) -> [String: Int] in
-        return try objectRun(statement: statement, database: database, bindParams: bindParams)
+      AsyncFunction("getAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) -> ColumnValues? in
+        return try get(statement: statement, database: database, bindParams: bindParams, bindBlobParams: bindBlobParams, shouldPassAsArray: shouldPassAsArray)
       }
-      Function("objectRunSync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any]) -> [String: Int] in
-        return try objectRun(statement: statement, database: database, bindParams: bindParams)
-      }
-
-      AsyncFunction("arrayGetAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [Any]) -> ColumnValues? in
-        return try arrayGet(statement: statement, database: database, bindParams: bindParams)
-      }
-      Function("arrayGetSync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [Any]) -> ColumnValues? in
-        return try arrayGet(statement: statement, database: database, bindParams: bindParams)
+      Function("getSync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) -> ColumnValues? in
+        return try get(statement: statement, database: database, bindParams: bindParams, bindBlobParams: bindBlobParams, shouldPassAsArray: shouldPassAsArray)
       }
 
-      AsyncFunction("objectGetAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any]) -> ColumnValues? in
-        return try objectGet(statement: statement, database: database, bindParams: bindParams)
+      AsyncFunction("getAllAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) -> [ColumnValues] in
+        return try getAll(statement: statement, database: database, bindParams: bindParams, bindBlobParams: bindBlobParams, shouldPassAsArray: shouldPassAsArray)
       }
-      Function("objectGetSync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any]) -> ColumnValues? in
-        return try objectGet(statement: statement, database: database, bindParams: bindParams)
-      }
-
-      AsyncFunction("arrayGetAllAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [Any]) -> [ColumnValues] in
-        return try arrayGetAll(statement: statement, database: database, bindParams: bindParams)
-      }
-      Function("arrayGetAllSync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [Any]) -> [ColumnValues] in
-        return try arrayGetAll(statement: statement, database: database, bindParams: bindParams)
+      Function("getAllSync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) -> [ColumnValues] in
+        return try getAll(statement: statement, database: database, bindParams: bindParams, bindBlobParams: bindBlobParams, shouldPassAsArray: shouldPassAsArray)
       }
 
-      AsyncFunction("objectGetAllAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any]) -> [ColumnValues] in
-        return try objectGetAll(statement: statement, database: database, bindParams: bindParams)
-      }
-      Function("objectGetAllSync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any]) -> [ColumnValues] in
-        return try objectGetAll(statement: statement, database: database, bindParams: bindParams)
-      }
+      // swiftlint:enable line_length
 
       AsyncFunction("getColumnNamesAsync") { (statement: NativeStatement) -> ColumnNames in
-        return getColumnNames(statement: statement)
+        return try getColumnNames(statement: statement)
       }
       Function("getColumnNamesSync") { (statement: NativeStatement) -> ColumnNames in
-        return getColumnNames(statement: statement)
+        return try getColumnNames(statement: statement)
       }
 
       AsyncFunction("resetAsync") { (statement: NativeStatement, database: NativeDatabase) in
@@ -177,6 +163,9 @@ public final class SQLiteModuleNext: Module {
   }
 
   private func pathForDatabaseName(name: String) -> URL? {
+    if name == MEMORY_DB_NAME {
+      return URL(string: name)
+    }
     guard let fileSystem = appContext?.fileSystem else {
       return nil
     }
@@ -187,7 +176,8 @@ public final class SQLiteModuleNext: Module {
     return directory?.appendingPathComponent(name)
   }
 
-  private func initDb(database: NativeDatabase) {
+  private func initDb(database: NativeDatabase) throws {
+    try maybeThrowForClosedDatabase(database)
     if database.openOptions.enableCRSQLite {
       crsqlite_init_from_swift(database.pointer)
     }
@@ -197,6 +187,7 @@ public final class SQLiteModuleNext: Module {
   }
 
   private func exec(database: NativeDatabase, source: String) throws {
+    try maybeThrowForClosedDatabase(database)
     var error: UnsafeMutablePointer<CChar>?
     let ret = sqlite3_exec(database.pointer, source, nil, nil, &error)
     if ret != SQLITE_OK, let error = error {
@@ -207,16 +198,32 @@ public final class SQLiteModuleNext: Module {
   }
 
   private func prepareStatement(database: NativeDatabase, statement: NativeStatement, source: String) throws {
+    try maybeThrowForClosedDatabase(database)
+    try maybeThrowForFinalizedStatement(statement)
     if sqlite3_prepare_v2(database.pointer, source, Int32(source.count), &statement.pointer, nil) != SQLITE_OK {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
     maybeAddCachedStatement(database: database, statement: statement)
   }
 
-  private func arrayRun(statement: NativeStatement, database: NativeDatabase, bindParams: [Any]) throws -> [String: Int] {
-    for (index, param) in bindParams.enumerated() {
-      try bindStatementParam(statement: statement, with: param, at: Int32(index + 1))
+  // swiftlint:disable line_length
+
+  private func run(statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) throws -> [String: Int] {
+    try maybeThrowForClosedDatabase(database)
+    try maybeThrowForFinalizedStatement(statement)
+    for (key, param) in bindParams {
+      let index = try getBindParamIndex(statement: statement, key: key, shouldPassAsArray: shouldPassAsArray)
+      if index > 0 {
+        try bindStatementParam(statement: statement, with: param, at: index)
+      }
     }
+    for (key, param) in bindBlobParams {
+      let index = try getBindParamIndex(statement: statement, key: key, shouldPassAsArray: shouldPassAsArray)
+      if index > 0 {
+        try bindStatementParam(statement: statement, with: param, at: index)
+      }
+    }
+
     let ret = sqlite3_step(statement.pointer)
     if ret != SQLITE_ROW && ret != SQLITE_DONE {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
@@ -227,27 +234,22 @@ public final class SQLiteModuleNext: Module {
     ]
   }
 
-  private func objectRun(statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any]) throws -> [String: Int] {
-    for (name, param) in bindParams {
-      let index = sqlite3_bind_parameter_index(statement.pointer, name.cString(using: .utf8))
+  private func get(statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) throws -> ColumnValues? {
+    try maybeThrowForClosedDatabase(database)
+    try maybeThrowForFinalizedStatement(statement)
+    for (key, param) in bindParams {
+      let index = try getBindParamIndex(statement: statement, key: key, shouldPassAsArray: shouldPassAsArray)
       if index > 0 {
         try bindStatementParam(statement: statement, with: param, at: index)
       }
     }
-    let ret = sqlite3_step(statement.pointer)
-    if ret != SQLITE_ROW && ret != SQLITE_DONE {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+    for (key, param) in bindBlobParams {
+      let index = try getBindParamIndex(statement: statement, key: key, shouldPassAsArray: shouldPassAsArray)
+      if index > 0 {
+        try bindStatementParam(statement: statement, with: param, at: index)
+      }
     }
-    return [
-      "lastInsertRowid": Int(sqlite3_last_insert_rowid(database.pointer)),
-      "changes": Int(sqlite3_changes(database.pointer))
-    ]
-  }
 
-  private func arrayGet(statement: NativeStatement, database: NativeDatabase, bindParams: [Any]) throws -> ColumnValues? {
-    for (index, param) in bindParams.enumerated() {
-      try bindStatementParam(statement: statement, with: param, at: Int32(index + 1))
-    }
     let ret = sqlite3_step(statement.pointer)
     if ret == SQLITE_ROW {
       return try getColumnValues(statement: statement)
@@ -258,27 +260,22 @@ public final class SQLiteModuleNext: Module {
     return nil
   }
 
-  private func objectGet(statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any]) throws -> ColumnValues? {
-    for (name, param) in bindParams {
-      let index = sqlite3_bind_parameter_index(statement.pointer, name.cString(using: .utf8))
+  private func getAll(statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) throws -> [ColumnValues] {
+    try maybeThrowForClosedDatabase(database)
+    try maybeThrowForFinalizedStatement(statement)
+    for (key, param) in bindParams {
+      let index = try getBindParamIndex(statement: statement, key: key, shouldPassAsArray: shouldPassAsArray)
       if index > 0 {
         try bindStatementParam(statement: statement, with: param, at: index)
       }
     }
-    let ret = sqlite3_step(statement.pointer)
-    if ret == SQLITE_ROW {
-      return try getColumnValues(statement: statement)
+    for (key, param) in bindBlobParams {
+      let index = try getBindParamIndex(statement: statement, key: key, shouldPassAsArray: shouldPassAsArray)
+      if index > 0 {
+        try bindStatementParam(statement: statement, with: param, at: index)
+      }
     }
-    if ret != SQLITE_DONE {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
-    }
-    return nil
-  }
 
-  private func arrayGetAll(statement: NativeStatement, database: NativeDatabase, bindParams: [Any]) throws -> [ColumnValues] {
-    for (index, param) in bindParams.enumerated() {
-      try bindStatementParam(statement: statement, with: param, at: Int32(index + 1))
-    }
     var columnValuesList: [ColumnValues] = []
     while true {
       let ret = sqlite3_step(statement.pointer)
@@ -293,38 +290,24 @@ public final class SQLiteModuleNext: Module {
     return columnValuesList
   }
 
-  private func objectGetAll(statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any]) throws -> [ColumnValues] {
-    for (name, param) in bindParams {
-      let index = sqlite3_bind_parameter_index(statement.pointer, name.cString(using: .utf8))
-      if index > 0 {
-        try bindStatementParam(statement: statement, with: param, at: index)
-      }
-    }
-    var columnValuesList: [ColumnValues] = []
-    while true {
-      let ret = sqlite3_step(statement.pointer)
-      if ret == SQLITE_ROW {
-        columnValuesList.append(try getColumnValues(statement: statement))
-        continue
-      } else if ret == SQLITE_DONE {
-        break
-      }
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
-    }
-    return columnValuesList
-  }
+  // swiftlint:enable line_length
 
   private func reset(statement: NativeStatement, database: NativeDatabase) throws {
+    try maybeThrowForClosedDatabase(database)
+    try maybeThrowForFinalizedStatement(statement)
     if sqlite3_reset(statement.pointer) != SQLITE_OK {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
   }
 
   private func finalize(statement: NativeStatement, database: NativeDatabase) throws {
+    try maybeThrowForClosedDatabase(database)
+    try maybeThrowForFinalizedStatement(statement)
     maybeRemoveCachedStatement(database: database, statement: statement)
     if sqlite3_finalize(statement.pointer) != SQLITE_OK {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
+    statement.isFinalized = true
   }
 
   private func convertSqlLiteErrorToString(_ db: NativeDatabase) -> String {
@@ -334,6 +317,7 @@ public final class SQLiteModuleNext: Module {
   }
 
   private func closeDatabase(_ db: NativeDatabase) throws {
+    try maybeThrowForClosedDatabase(db)
     for removedStatement in maybeRemoveAllCachedStatements(database: db) {
       sqlite3_finalize(removedStatement.pointer)
     }
@@ -342,6 +326,7 @@ public final class SQLiteModuleNext: Module {
       sqlite3_exec(db.pointer, "SELECT crsql_finalize()", nil, nil, nil)
     }
     let ret = sqlite3_close(db.pointer)
+    db.isClosed = true
 
     if let index = contextPairs.firstIndex(where: {
       guard let pair = $0.takeUnretainedValue() as? (SQLiteModuleNext, NativeDatabase) else {
@@ -366,6 +351,9 @@ public final class SQLiteModuleNext: Module {
       throw DeleteDatabaseException(dbName)
     }
 
+    if dbName == MEMORY_DB_NAME {
+      return
+    }
     guard let path = pathForDatabaseName(name: dbName) else {
       throw Exceptions.FileSystemModuleNotFound()
     }
@@ -407,7 +395,8 @@ public final class SQLiteModuleNext: Module {
     contextPair.toOpaque())
   }
 
-  private func getColumnNames(statement: NativeStatement) -> ColumnNames {
+  private func getColumnNames(statement: NativeStatement) throws -> ColumnNames {
+    try maybeThrowForFinalizedStatement(statement)
     let columnCount = Int(sqlite3_column_count(statement.pointer))
     var columnNames: ColumnNames = Array(repeating: "", count: columnCount)
     for i in 0..<columnCount {
@@ -417,6 +406,7 @@ public final class SQLiteModuleNext: Module {
   }
 
   private func getColumnValues(statement: NativeStatement) throws -> ColumnValues {
+    try maybeThrowForFinalizedStatement(statement)
     let columnCount = Int(sqlite3_column_count(statement.pointer))
     var columnValues: ColumnValues = Array(repeating: 0, count: columnCount)
     for i in 0..<columnCount {
@@ -465,7 +455,7 @@ public final class SQLiteModuleNext: Module {
     case let param as Double:
       sqlite3_bind_double(instance, index, param)
     case let param as String:
-      sqlite3_bind_text(instance, index, param, Int32(param.count), SQLITE_TRANSIENT)
+      sqlite3_bind_text(instance, index, param, -1, SQLITE_TRANSIENT)
     case let param as Data:
       _ = param.withUnsafeBytes {
         sqlite3_bind_blob(instance, index, $0.baseAddress, Int32(param.count), SQLITE_TRANSIENT)
@@ -475,6 +465,32 @@ public final class SQLiteModuleNext: Module {
     default:
       throw InvalidConvertibleException("Unsupported parameter type: \(type(of: param))")
     }
+  }
+
+  private func maybeThrowForClosedDatabase(_ database: NativeDatabase) throws {
+    if database.isClosed {
+      throw AccessClosedResourceException()
+    }
+  }
+
+  private func maybeThrowForFinalizedStatement(_ statement: NativeStatement) throws {
+    if statement.isFinalized {
+      throw AccessClosedResourceException()
+    }
+  }
+
+  @inline(__always)
+  private func getBindParamIndex(statement: NativeStatement, key: String, shouldPassAsArray: Bool) throws -> Int32 {
+    let index: Int32
+    if shouldPassAsArray {
+      guard let intKey = Int32(key) else {
+        throw InvalidBindParameterException()
+      }
+      index = intKey + 1
+    } else {
+      index = sqlite3_bind_parameter_index(statement.pointer, key.cString(using: .utf8))
+    }
+    return index
   }
 
   // MARK: - cachedDatabases managements

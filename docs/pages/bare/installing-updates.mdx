@@ -151,16 +151,27 @@ Modify **android/app/src/main/AndroidManifest.xml** to add the `expo-updates` co
          android:label="@string/app_name"
 ```
 
+If using the updates server URL shown above (a custom non-HTTPS update server running on the same machine), you will need to modify **android/app/src/main/AndroidManifest.xml** as shown below:
+
+```diff android/app/src/main/AndroidManifest.xml
+ <application
+  android:name=".MainApplication"
+  android:label="@string/app_name"
+  android:icon="@mipmap/ic_launcher"
+  android:roundIcon="@mipmap/ic_launcher_round"
+  android:allowBackup="false"
+  android:theme="@style/AppTheme"
++ android:usesCleartextTraffic="true"
+ >
+```
+
 Add the Expo runtime version string key to **android/app/src/main/res/values/strings.xml**:
 
 <DiffBlock source="/static/diffs/expo-update-strings-xml.diff" />
 
 ## Next steps
 
-See more information about usage in the [`expo-updates` README](https://github.com/expo/expo/tree/main/packages/expo-updates/README.md).
-
-See [this guide](/eas-update/build-locally/) for trying out EAS Update with a local build.
-
-To start trying out EAS Update with EAS Build, see the [EAS Update "Getting Started" guide](/eas-update/getting-started/).
-
-It is also possible to use `expo-updates` with a custom server that implements the [Expo Updates protocol](/technical-specs/expo-updates-1/); see the [`custom-expo-updates-server` README](https://github.com/expo/custom-expo-updates-server#readme).
+- To start trying out EAS Update with EAS Build, see the EAS Update [Getting Started](/eas-update/getting-started/).
+- See more information about usage in the [`expo-updates` README](https://github.com/expo/expo/tree/main/packages/expo-updates/README.md).
+- See [EAS Update with a local build](/eas-update/build-locally/).
+- It is also possible to use `expo-updates` with a custom server that implements the [Expo Updates protocol](/technical-specs/expo-updates-1/); see the [`custom-expo-updates-server` README](https://github.com/expo/custom-expo-updates-server#readme).

@@ -13,7 +13,7 @@
 #include "include/core/SkTypes.h"
 
 #include <cstddef>
-#include <string>
+#include <cstring>
 
 class SkCanvas;
 class SkFont;

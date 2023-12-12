@@ -10,6 +10,7 @@ import { ElementType, PageMetadata, RemarkHeading } from '../types/common';
 export enum HeadingType {
   Text = 'text',
   InlineCode = 'inlineCode',
+  CodeFilePath = 'codeFilePath',
 }
 
 /**
@@ -42,6 +43,7 @@ export type AdditionalProps = {
   sidebarType?: HeadingType;
   tags?: string[];
   style?: React.CSSProperties;
+  className?: string;
 };
 
 type Metadata = Partial<PageMetadata> & { headings: (RemarkHeading & { _processed?: boolean })[] };

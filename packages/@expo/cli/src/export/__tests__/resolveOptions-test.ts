@@ -1,6 +1,5 @@
 import { getConfig } from '@expo/config';
 
-import { asMock } from '../../__tests__/asMock';
 import { resolveOptionsAsync } from '../resolveOptions';
 
 jest.mock('@expo/config', () => ({
@@ -87,7 +86,7 @@ describe(resolveOptionsAsync, () => {
     });
   });
   it(`parses default options with web enabled`, async () => {
-    asMock(getConfig).mockReturnValueOnce({
+    jest.mocked(getConfig).mockReturnValueOnce({
       // @ts-expect-error
       exp: { web: { bundler: 'metro' } },
     });

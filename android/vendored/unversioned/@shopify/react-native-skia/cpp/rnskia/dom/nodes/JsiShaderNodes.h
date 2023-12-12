@@ -256,7 +256,7 @@ public:
     SkISize size = SkISize::Make(_tileWidthProp->value().getAsNumber(),
                                  _tileHeightProp->value().getAsNumber());
 
-    context->getShaders()->push(SkPerlinNoiseShader::MakeTurbulence(
+    context->getShaders()->push(SkShaders::MakeTurbulence(
         _freqXProp->value().getAsNumber(), _freqYProp->value().getAsNumber(),
         _octavesProp->value().getAsNumber(), _seedProp->value().getAsNumber(),
         &size));
@@ -274,7 +274,7 @@ public:
     SkISize size = SkISize::Make(_tileWidthProp->value().getAsNumber(),
                                  _tileHeightProp->value().getAsNumber());
 
-    context->getShaders()->push(SkPerlinNoiseShader::MakeFractalNoise(
+    context->getShaders()->push(SkShaders::MakeFractalNoise(
         _freqXProp->value().getAsNumber(), _freqYProp->value().getAsNumber(),
         _octavesProp->value().getAsNumber(), _seedProp->value().getAsNumber(),
         &size));

@@ -11,7 +11,7 @@ import { URL } from 'url';
 
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
-import { getRouterDirectoryModuleIdWithManifest } from './router';
+import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 import { MetroDevServerOptions } from '../../../export/fork-bundleAsync';
@@ -21,7 +21,7 @@ import { createDebuggerTelemetryMiddleware } from '../../../utils/analytics/metr
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { env } from '../../../utils/env';
 import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
-import createJsInspectorMiddleware from '../middleware/inspector/createJsInspectorMiddleware';
+import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware, replaceMiddlewareWith } from '../middleware/mutations';
 import { remoteDevtoolsCorsMiddleware } from '../middleware/remoteDevtoolsCorsMiddleware';
 import { remoteDevtoolsSecurityHeadersMiddleware } from '../middleware/remoteDevtoolsSecurityHeadersMiddleware';
@@ -101,7 +101,6 @@ export async function loadMetroConfigAsync(
   const platformBundlers = getPlatformBundlers(exp);
 
   config = await withMetroMultiPlatformAsync(projectRoot, {
-    routerDirectory: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
     config,
     platformBundlers,
     isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
@@ -166,8 +165,6 @@ export async function instantiateMetroAsync(
 
   prependMiddleware(middleware, suppressRemoteDebuggingErrorMiddleware);
 
-  middleware.use('/inspector', createJsInspectorMiddleware());
-
   // TODO: We can probably drop this now.
   const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware;
   // @ts-expect-error: can't mutate readonly config
@@ -180,9 +177,17 @@ export async function instantiateMetroAsync(
 
   middleware.use(createDebuggerTelemetryMiddleware(projectRoot, exp));
 
+  // Initialize all React Native debug features
+  const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware(metroBundler);
+  prependMiddleware(middleware, debugMiddleware);
+  middleware.use('/_expo/debugger', createJsInspectorMiddleware());
+
   const { server, metro } = await runServer(metroBundler, metroConfig, {
     // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
-    websocketEndpoints,
+    websocketEndpoints: {
+      ...websocketEndpoints,
+      ...debugWebsocketEndpoints,
+    },
     watch: !isExporting && isWatchEnabled(),
   });
 

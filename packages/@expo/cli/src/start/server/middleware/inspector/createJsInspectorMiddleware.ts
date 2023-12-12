@@ -7,16 +7,20 @@ import { URL } from 'url';
 
 import { openJsInspector, queryInspectorAppAsync } from './JsInspector';
 
-export default function createJsInspectorMiddleware(): NextHandleFunction {
+/**
+ * Create a middleware that handles new requests to open the debugger from the dev menu.
+ * @todo(cedric): delete this middleware once we fully swap over to the new React Native JS Inspector.
+ */
+export function createJsInspectorMiddleware(): NextHandleFunction {
   return async function (req: IncomingMessage, res: ServerResponse, next: (err?: Error) => void) {
     const { origin, searchParams } = new URL(req.url ?? '/', getServerBase(req));
-    const applicationId = searchParams.get('applicationId');
-    if (!applicationId) {
-      res.writeHead(400).end('Missing applicationId');
+    const appId = searchParams.get('appId') || searchParams.get('applicationId');
+    if (!appId) {
+      res.writeHead(400).end('Missing application identifier ("?appId=...")');
       return;
     }
 
-    const app = await queryInspectorAppAsync(origin, applicationId);
+    const app = await queryInspectorAppAsync(origin, appId);
     if (!app) {
       res.writeHead(404).end('Unable to find inspector target from @react-native/dev-middleware');
       console.warn(
@@ -37,7 +41,7 @@ export default function createJsInspectorMiddleware(): NextHandleFunction {
       res.end(data);
     } else if (req.method === 'POST' || req.method === 'PUT') {
       try {
-        await openJsInspector(app);
+        await openJsInspector(origin, app);
       } catch (error: any) {
         // abort(Error: Command failed: osascript -e POSIX path of (path to application "google chrome")
         // 15:50: execution error: Google Chrome got an error: Application isn’t running. (-600)
