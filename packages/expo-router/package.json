@@ -64,11 +64,10 @@
   ],
   "peerDependencies": {
     "@react-navigation/drawer": "^6.5.8",
-    "expo": "^49.0.0",
+    "expo": "*",
     "expo-constants": "*",
     "expo-linking": "*",
     "expo-status-bar": "*",
-    "metro": "~0.76.7",
     "react-native-reanimated": "*",
     "react-native-safe-area-context": "*",
     "react-native-screens": "*"
