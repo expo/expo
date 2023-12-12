@@ -9,30 +9,13 @@
  * https://github.com/facebook/metro/blob/412771475c540b6f85d75d9dcd5a39a6e0753582/packages/metro-transform-worker/src/index.js#L1
  */
 
-import {
-  TraceMap,
-  EncodedSourceMap,
-  originalPositionFor,
-  generatedPositionFor,
-} from '@jridgewell/trace-mapping';
+import { TraceMap, originalPositionFor, generatedPositionFor } from '@jridgewell/trace-mapping';
 import { Buffer } from 'buffer';
 import * as fs from 'fs';
 import { vol } from 'memfs';
 import { fromRawMappings } from 'metro-source-map';
 import type { JsTransformerConfig, JsTransformOptions, JsOutput } from 'metro-transform-worker';
 import * as path from 'path';
-
-// NOTE(kitten): metro-source-map does not provide typings for its exported functions
-declare module 'metro-source-map' {
-  export function fromRawMappings(
-    modules: {
-      code: string;
-      lineCount: number;
-      map: MetroSourceMapSegmentTuple[];
-      functionMap: FBSourceFunctionMap | null;
-    }[]
-  ): { toMap(): EncodedSourceMap };
-}
 
 /** Converts source mappings from Metro to a “TraceMap”, which is similar to source-map’s SourceMapConsumer */
 const toTraceMap = (output: JsOutput, contents: string) => {
