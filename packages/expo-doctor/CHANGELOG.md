@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 1.2.0 — 2023-12-12
+
+### 💡 Others
+
 - Report if project has unused static config. ([#25674](https://github.com/expo/expo/pull/25674) by [@keith-kurak](https://github.com/keith-kurak))
 
 ## 1.1.6 — 2023-12-12
