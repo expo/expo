@@ -128,6 +128,10 @@ class KotlinInteropModuleRegistry(
     appContext.installJSIInterop()
   }
 
+  fun emitOnCreate() {
+    appContext.onCreate()
+  }
+
   fun setLegacyModulesProxy(proxyModule: NativeModulesProxy) {
     appContext.legacyModulesProxyHolder = WeakReference(proxyModule)
   }
