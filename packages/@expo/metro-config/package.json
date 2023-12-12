@@ -57,6 +57,7 @@
     "@react-native/babel-preset": "*"
   },
   "devDependencies": {
+    "@jridgewell/trace-mapping": "^0.3.20",
     "@types/path-to-regexp": "^1.7.0",
     "expo-module-scripts": "^3.3.0",
     "sass": "^1.60.0"
