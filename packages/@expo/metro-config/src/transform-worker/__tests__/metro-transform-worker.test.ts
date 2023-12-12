@@ -188,18 +188,40 @@ it('transforms a simple script', async () => {
 });
 
 it('transforms a simple module', async () => {
+  const contents = 'arbitrary(code)';
+
   const result = await Transformer.transform(
     baseConfig,
     '/root',
     'local/file.js',
-    Buffer.from('arbitrary(code)', 'utf8'),
+    Buffer.from(contents, 'utf8'),
     baseTransformOptions
   );
 
+  const trace = toTraceMap(result.output[0], contents);
+
+  expect(generatedPositionFor(trace, { source: '', line: 1, column: 0 })).toMatchObject({
+    line: 2,
+    column: 2,
+  });
+  expect(generatedPositionFor(trace, { source: '', line: 1, column: 10 })).toMatchObject({
+    line: 2,
+    column: 12,
+  });
+
+  expect(originalPositionFor(trace, { line: 2, column: 2 })).toMatchObject({
+    line: 1,
+    column: 0,
+    name: 'arbitrary',
+  });
+  expect(originalPositionFor(trace, { line: 2, column: 12 })).toMatchObject({
+    line: 1,
+    column: 10,
+    name: 'code',
+  });
+
   expect(result.output[0].type).toBe('js/module');
   expect(result.output[0].data.code).toBe([HEADER_DEV, '  arbitrary(code);', '});'].join('\n'));
-  expect(result.output[0].data.map).toMatchSnapshot();
-  expect(result.output[0].data.functionMap).toMatchSnapshot();
   expect(result.dependencies).toEqual([]);
 });
 

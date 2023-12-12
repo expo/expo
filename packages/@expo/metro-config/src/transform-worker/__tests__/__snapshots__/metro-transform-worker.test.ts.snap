@@ -2,58 +2,6 @@
 
 exports[`reports filename when encountering unsupported dynamic dependency 1`] = `"local/file.js:Invalid call at line 3: require(a)"`;
 
-exports[`transforms a simple module 1`] = `
-[
-  [
-    2,
-    2,
-    1,
-    0,
-    "arbitrary",
-  ],
-  [
-    2,
-    11,
-    1,
-    9,
-  ],
-  [
-    2,
-    12,
-    1,
-    10,
-    "code",
-  ],
-  [
-    2,
-    16,
-    1,
-    14,
-  ],
-  [
-    2,
-    17,
-    1,
-    15,
-  ],
-  [
-    3,
-    0,
-    1,
-    15,
-  ],
-]
-`;
-
-exports[`transforms a simple module 2`] = `
-{
-  "mappings": "AAA",
-  "names": [
-    "<global>",
-  ],
-}
-`;
-
 exports[`transforms an es module with asyncToGenerator 1`] = `
 "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
   var _interopRequireDefault = _$$_REQUIRE(_dependencyMap[0], "@babel/runtime/helpers/interopRequireDefault");
