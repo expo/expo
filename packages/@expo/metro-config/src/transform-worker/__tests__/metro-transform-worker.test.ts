@@ -260,18 +260,32 @@ it('transforms a module with dependencies', async () => {
 });
 
 it('transforms an es module with asyncToGenerator', async () => {
+  const contents = 'export async function test() {}';
+
   const result = await Transformer.transform(
     baseConfig,
     '/root',
     'local/file.js',
-    Buffer.from('export async function test() {}', 'utf8'),
+    Buffer.from(contents, 'utf8'),
     baseTransformOptions
   );
 
   expect(result.output[0].type).toBe('js/module');
   expect(result.output[0].data.code).toMatchSnapshot();
-  expect(result.output[0].data.map).toHaveLength(13);
-  expect(result.output[0].data.functionMap).toMatchSnapshot();
+
+  const trace = toTraceMap(result.output[0], contents);
+
+  expect(generatedPositionFor(trace, { source: '', line: 1, column: 12 })).toMatchObject({
+    line: 12,
+    column: 44,
+  });
+
+  expect(originalPositionFor(trace, { line: 8, column: 11 })).toMatchObject({
+    line: 1,
+    column: 22,
+    name: 'test',
+  });
+
   expect(result.dependencies).toEqual([
     {
       data: expect.objectContaining({ asyncType: null }),

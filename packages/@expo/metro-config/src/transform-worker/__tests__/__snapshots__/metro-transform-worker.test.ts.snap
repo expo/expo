@@ -124,16 +124,6 @@ exports[`transforms an es module with asyncToGenerator 1`] = `
 });"
 `;
 
-exports[`transforms an es module with asyncToGenerator 2`] = `
-{
-  "mappings": "AAA,OC",
-  "names": [
-    "<global>",
-    "test",
-  ],
-}
-`;
-
 exports[`transforms async generators 1`] = `
 "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
   var _interopRequireDefault = _$$_REQUIRE(_dependencyMap[0], "@babel/runtime/helpers/interopRequireDefault");
