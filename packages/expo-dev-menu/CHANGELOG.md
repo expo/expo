@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix opening JS debugger from dev menu ([#25881](https://github.com/expo/expo/pull/25881) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 💡 Others
+
+## 4.5.1 — 2023-12-12
+
+### 🐛 Bug fixes
+
+- Fix opening JS debugger from dev menu ([#25881](https://github.com/expo/expo/pull/25881) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 4.5.0 — 2023-12-12
 
