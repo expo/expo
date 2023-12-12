@@ -14,7 +14,7 @@ interface UserEntity {
   j: number;
 }
 
-export function test({ describe, expect, it, beforeEach, afterEach, ...t }) {
+export function test({ describe, expect, it, beforeAll, beforeEach, afterEach, ...t }) {
   describe('Basic tests', () => {
     it('should be able to drop + create a table, insert, query', async () => {
       const db = await SQLite.openDatabaseAsync(':memory:');
@@ -82,9 +82,31 @@ CREATE TABLE IF NOT EXISTS SomeTable (id INTEGER PRIMARY KEY NOT NULL, name VARC
 
       await db.closeAsync();
     });
+
+    it('should support utf-8', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      await db.execAsync(
+        'CREATE TABLE translations (id INTEGER PRIMARY KEY NOT NULL, key TEXT, value TEXT);'
+      );
+      const statement = await db.prepareAsync(
+        'INSERT INTO translations (key, value) VALUES (?, ?)'
+      );
+      await statement.runAsync('hello', '哈囉');
+      await statement.finalizeAsync();
+
+      const result = await db.getAsync<any>('SELECT * FROM translations');
+      expect(result.key).toBe('hello');
+      expect(result.value).toBe('哈囉');
+    });
   });
 
   describe('File system tests', () => {
+    beforeAll(async () => {
+      if (!(await FS.getInfoAsync(FS.documentDirectory + 'SQLite')).exists) {
+        await FS.makeDirectoryAsync(FS.documentDirectory + 'SQLite');
+      }
+    });
+
     it('should work with a downloaded .db file', async () => {
       await FS.downloadAsync(
         Asset.fromModule(require('../assets/asset-db.db')).uri,
@@ -272,6 +294,24 @@ CREATE TABLE IF NOT EXISTS Posts (post_id INTEGER PRIMARY KEY NOT NULL, content 
       await db.runAsync('PRAGMA foreign_keys = OFF');
       await db.closeAsync();
     });
+
+    it('should throw when accessing a finalized statement', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      await db.execAsync(`
+DROP TABLE IF EXISTS Users;
+CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
+`);
+
+      const statement = await db.prepareAsync('INSERT INTO Users (user_id, name) VALUES (?, ?)');
+      await statement.finalizeAsync();
+      let error = null;
+      try {
+        await statement.runAsync(null, null);
+      } catch (e) {
+        error = e;
+      }
+      expect(error.toString()).toMatch(/Access to closed resource/);
+    });
   });
 
   describe('Statement parameters bindings', () => {
@@ -341,6 +381,22 @@ INSERT INTO Users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.1
       ).not.toBeNull();
       expect(await statement.getAsync<UserEntity>({ '@name': 'Tim Duncan', '@k': -1 })).toBeNull();
       await statement.finalizeAsync();
+    });
+
+    it('should support blob data with Uint8Array', async () => {
+      await db.execAsync(`
+  DROP TABLE IF EXISTS Blobs;
+  CREATE TABLE IF NOT EXISTS Blobs (id INTEGER PRIMARY KEY NOT NULL, data BLOB);`);
+
+      const blob = new Uint8Array([0x00, 0x01, 0x02, 0x03, 0x04, 0x05]);
+      await db.runAsync('INSERT INTO Blobs (data) VALUES (?)', blob);
+
+      const statement = await db.prepareAsync('SELECT * FROM Blobs');
+      const row = await statement.getAsync<{ data: Uint8Array }>();
+      await statement.finalizeAsync();
+      expect(row.data).toEqual(blob);
+      const row2 = db.getSync<{ data: Uint8Array }>('SELECT * FROM Blobs');
+      expect(row2.data).toEqual(blob);
     });
   });
 

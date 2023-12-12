@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- Delete custom `resolver.extraNodeModules` in favor of the default symlinks support in Metro v0.79.0. ([#25506](https://github.com/expo/expo/pull/25506) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 2.3.0 — 2023-12-12
+
+### 🎉 New features
+
+- Delete custom `resolver.extraNodeModules` in favor of the default symlinks support in Metro v0.79.0. ([#25506](https://github.com/expo/expo/pull/25506) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 

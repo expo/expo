@@ -9,19 +9,27 @@
 #define GrTypesPriv_DEFINED
 
 #include "include/core/SkColor.h"
-#include "include/core/SkImageInfo.h"
+#include "include/core/SkColorType.h"
+#include "include/core/SkData.h"
 #include "include/core/SkPath.h"
+#include "include/core/SkPathTypes.h"
 #include "include/core/SkRefCnt.h"
 #include "include/core/SkTextureCompressionType.h"
 #include "include/gpu/GrTypes.h"
+#include "include/private/base/SkAssert.h"
 #include "include/private/base/SkMacros.h"
 #include "include/private/base/SkTypeTraits.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <functional>
+#include <type_traits>
 
-class GrBackendFormat;
-class GrCaps;
 class GrSurfaceProxy;
+
+namespace skgpu {
+enum class Mipmapped : bool;
+}
 
 /**
  *  divide, rounding up
@@ -269,9 +277,9 @@ enum GrShaderType {
     kVertex_GrShaderType,
     kFragment_GrShaderType,
 
-    kLastkFragment_GrShaderType = kFragment_GrShaderType
+    kLast_GrShaderType = kFragment_GrShaderType
 };
-static const int kGrShaderTypeCount = kLastkFragment_GrShaderType + 1;
+static const int kGrShaderTypeCount = kLast_GrShaderType + 1;
 
 enum GrShaderFlags {
     kNone_GrShaderFlags          = 0,
@@ -465,7 +473,7 @@ constexpr static int kGrInternalTextureFlagsMask = static_cast<int>(
 // require that both the surface and proxy have matching values for this flag. Instead we require
 // if the proxy has it set then the surface must also have it set. All other flags listed here must
 // match on the proxy and surface.
-// TODO: Add back kFramebufferOnly flag here once we update SkSurfaceCharacterization to take it
+// TODO: Add back kFramebufferOnly flag here once we update GrSurfaceCharacterization to take it
 // as a flag. skbug.com/10672
 constexpr static int kGrInternalRenderTargetFlagsMask = static_cast<int>(
         GrInternalSurfaceFlags::kGLRTFBOIDIs0 |
@@ -546,6 +554,7 @@ enum class GrColorType {
     kBGRA_8888,
     kRGBA_1010102,
     kBGRA_1010102,
+    kRGBA_10x6,
     kGray_8,
     kGrayAlpha_88,
     kAlpha_F16,
@@ -594,6 +603,7 @@ static constexpr SkColorType GrColorTypeToSkColorType(GrColorType ct) {
         case GrColorType::kBGRA_8888:        return kBGRA_8888_SkColorType;
         case GrColorType::kRGBA_1010102:     return kRGBA_1010102_SkColorType;
         case GrColorType::kBGRA_1010102:     return kBGRA_1010102_SkColorType;
+        case GrColorType::kRGBA_10x6:        return kRGBA_10x6_SkColorType;
         case GrColorType::kGray_8:           return kGray_8_SkColorType;
         case GrColorType::kGrayAlpha_88:     return kUnknown_SkColorType;
         case GrColorType::kAlpha_F16:        return kA16_float_SkColorType;
@@ -637,6 +647,7 @@ static constexpr GrColorType SkColorTypeToGrColorType(SkColorType ct) {
         case kBGRA_1010102_SkColorType:       return GrColorType::kBGRA_1010102;
         case kBGR_101010x_SkColorType:        return GrColorType::kUnknown;
         case kBGR_101010x_XR_SkColorType:     return GrColorType::kUnknown;
+        case kRGBA_10x6_SkColorType:          return GrColorType::kRGBA_10x6;
         case kRGBA_F32_SkColorType:           return GrColorType::kRGBA_F32;
         case kR8G8_unorm_SkColorType:         return GrColorType::kRG_88;
         case kA16_unorm_SkColorType:          return GrColorType::kAlpha_16;
@@ -662,6 +673,7 @@ static constexpr uint32_t GrColorTypeChannelFlags(GrColorType ct) {
         case GrColorType::kBGRA_8888:        return kRGBA_SkColorChannelFlags;
         case GrColorType::kRGBA_1010102:     return kRGBA_SkColorChannelFlags;
         case GrColorType::kBGRA_1010102:     return kRGBA_SkColorChannelFlags;
+        case GrColorType::kRGBA_10x6:        return kRGBA_SkColorChannelFlags;
         case GrColorType::kGray_8:           return kGray_SkColorChannelFlag;
         case GrColorType::kGrayAlpha_88:     return kGrayAlpha_SkColorChannelFlags;
         case GrColorType::kAlpha_F16:        return kAlpha_SkColorChannelFlag;
@@ -804,6 +816,8 @@ static constexpr GrColorFormatDesc GrGetColorTypeDesc(GrColorType ct) {
             return GrColorFormatDesc::MakeRGBA(10, 2, GrColorTypeEncoding::kUnorm);
         case GrColorType::kBGRA_1010102:
             return GrColorFormatDesc::MakeRGBA(10, 2, GrColorTypeEncoding::kUnorm);
+        case GrColorType::kRGBA_10x6:
+            return GrColorFormatDesc::MakeRGBA(10, GrColorTypeEncoding::kUnorm);
         case GrColorType::kGray_8:
             return GrColorFormatDesc::MakeGray(8, GrColorTypeEncoding::kUnorm);
         case GrColorType::kGrayAlpha_88:
@@ -891,6 +905,7 @@ static constexpr size_t GrColorTypeBytesPerPixel(GrColorType ct) {
         case GrColorType::kBGRA_8888:        return 4;
         case GrColorType::kRGBA_1010102:     return 4;
         case GrColorType::kBGRA_1010102:     return 4;
+        case GrColorType::kRGBA_10x6:        return 8;
         case GrColorType::kGray_8:           return 1;
         case GrColorType::kGrayAlpha_88:     return 2;
         case GrColorType::kAlpha_F16:        return 2;
@@ -936,17 +951,17 @@ enum class GrDstSampleFlags {
 };
 GR_MAKE_BITFIELD_CLASS_OPS(GrDstSampleFlags)
 
-using GrVisitProxyFunc = std::function<void(GrSurfaceProxy*, GrMipmapped)>;
+using GrVisitProxyFunc = std::function<void(GrSurfaceProxy*, skgpu::Mipmapped)>;
 
-#if defined(SK_DEBUG) || GR_TEST_UTILS || defined(SK_ENABLE_DUMP_GPU)
+#if defined(SK_DEBUG) || defined(GR_TEST_UTILS) || defined(SK_ENABLE_DUMP_GPU)
 static constexpr const char* GrBackendApiToStr(GrBackendApi api) {
     switch (api) {
-        case GrBackendApi::kOpenGL:   return "OpenGL";
-        case GrBackendApi::kVulkan:   return "Vulkan";
-        case GrBackendApi::kMetal:    return "Metal";
-        case GrBackendApi::kDirect3D: return "Direct3D";
-        case GrBackendApi::kDawn:     return "Dawn";
-        case GrBackendApi::kMock:     return "Mock";
+        case GrBackendApi::kOpenGL:      return "OpenGL";
+        case GrBackendApi::kVulkan:      return "Vulkan";
+        case GrBackendApi::kMetal:       return "Metal";
+        case GrBackendApi::kDirect3D:    return "Direct3D";
+        case GrBackendApi::kMock:        return "Mock";
+        case GrBackendApi::kUnsupported: return "Unsupported";
     }
     SkUNREACHABLE;
 }
@@ -964,6 +979,7 @@ static constexpr const char* GrColorTypeToStr(GrColorType ct) {
         case GrColorType::kBGRA_8888:        return "kBGRA_8888";
         case GrColorType::kRGBA_1010102:     return "kRGBA_1010102";
         case GrColorType::kBGRA_1010102:     return "kBGRA_1010102";
+        case GrColorType::kRGBA_10x6:        return "kBGRA_10x6";
         case GrColorType::kGray_8:           return "kGray_8";
         case GrColorType::kGrayAlpha_88:     return "kGrayAlpha_88";
         case GrColorType::kAlpha_F16:        return "kAlpha_F16";

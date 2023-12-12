@@ -8,6 +8,20 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.6.0 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
+## 0.5.0 — 2023-11-27
+
+### 🎉 New features
+
+- Add CLI parameter for diffing with an existing fingerprint file. ([#25565](https://github.com/expo/expo/pull/25565) by [@brentvatne](https://github.com/brentvatne))
+
+### 🐛 Bug fixes
+
 - Fixed an issue that the whole react-native-community autolinking sources are missing when one library does not enable autolinking on a platform. ([#25542](https://github.com/expo/expo/pull/25542) by [@alfonsocj](https://github.com/alfonsocj))
 
 ### 💡 Others

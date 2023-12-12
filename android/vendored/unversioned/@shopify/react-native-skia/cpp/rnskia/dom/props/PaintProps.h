@@ -100,6 +100,7 @@ public:
     _strokeCap = defineProperty<StrokeCapProp>("strokeCap");
     _strokeMiter = defineProperty<NodeProp>("strokeMiter");
     _antiAlias = defineProperty<NodeProp>("antiAlias");
+    _dither = defineProperty<NodeProp>("dither");
     _opacity = defineProperty<NodeProp>("opacity");
   }
 
@@ -113,6 +114,7 @@ public:
   StrokeCapProp *getStrokeCap() { return _strokeCap; }
   NodeProp *getStrokeMiter() { return _strokeMiter; }
   NodeProp *getAntiAlias() { return _antiAlias; }
+  NodeProp *getDither() { return _dither; }
   NodeProp *getOpacity() { return _opacity; }
 
 private:
@@ -124,6 +126,7 @@ private:
   StrokeCapProp *_strokeCap;
   NodeProp *_strokeMiter;
   NodeProp *_antiAlias;
+  NodeProp *_dither;
   NodeProp *_opacity;
 };
 

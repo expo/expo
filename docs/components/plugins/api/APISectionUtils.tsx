@@ -432,15 +432,21 @@ function createInheritPermalink(baseNestingLevel: number) {
 export const BoxSectionHeader = ({
   text,
   exposeInSidebar,
+  className,
   baseNestingLevel = DEFAULT_BASE_NESTING_LEVEL,
 }: {
   text: string;
   exposeInSidebar?: boolean;
+  className?: string;
   baseNestingLevel?: number;
 }) => {
   const TextWrapper = exposeInSidebar ? createInheritPermalink(baseNestingLevel) : Fragment;
   return (
-    <CALLOUT theme="secondary" weight="medium" css={STYLES_NESTED_SECTION_HEADER}>
+    <CALLOUT
+      theme="secondary"
+      weight="medium"
+      css={STYLES_NESTED_SECTION_HEADER}
+      className={className}>
       <TextWrapper>{text}</TextWrapper>
     </CALLOUT>
   );
@@ -574,16 +580,11 @@ const getParamTags = (shortText?: string) => {
   return Array.from(shortText.matchAll(PARAM_TAGS_REGEX), match => match[0]);
 };
 
-export const getCommentContent = (content: CommentContentData[], ignoreCodeBlock = false) => {
-  const commentText = content
+export const getCommentContent = (content: CommentContentData[]) => {
+  return content
     .map(entry => entry.text)
     .join('')
     .trim();
-
-  if (ignoreCodeBlock) {
-    return commentText.replace(/```.+\n/, '').replace(/\n```/, '');
-  }
-  return commentText;
 };
 
 export const CommentTextBlock = ({

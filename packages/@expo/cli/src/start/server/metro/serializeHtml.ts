@@ -1,4 +1,7 @@
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import { RouteNode } from 'expo-router/build/Route';
+
+const debug = require('debug')('expo:metro:html') as typeof console.log;
 
 export function serializeHtmlWithAssets({
   mode,
@@ -6,6 +9,7 @@ export function serializeHtmlWithAssets({
   template,
   devBundleUrl,
   baseUrl,
+  route,
 }: {
   mode: 'development' | 'production';
   resources: SerialAsset[];
@@ -13,6 +17,7 @@ export function serializeHtmlWithAssets({
   /** asset prefix used for deploying to non-standard origins like GitHub pages. */
   baseUrl: string;
   devBundleUrl?: string;
+  route?: RouteNode;
 }): string {
   if (!resources) {
     return '';
@@ -23,6 +28,7 @@ export function serializeHtmlWithAssets({
     template,
     baseUrl,
     bundleUrl: isDev ? devBundleUrl : undefined,
+    route,
   });
 }
 
@@ -33,12 +39,14 @@ function htmlFromSerialAssets(
     template,
     baseUrl,
     bundleUrl,
+    route,
   }: {
     dev: boolean;
     template: string;
     baseUrl: string;
     /** This is dev-only. */
     bundleUrl?: string;
+    route?: RouteNode;
   }
 ) {
   // Combine the CSS modules into tags that have hot refresh data attributes.
@@ -64,7 +72,27 @@ function htmlFromSerialAssets(
         .map(({ filename, metadata }) => {
           // TODO: Mark dependencies of the HTML and include them to prevent waterfalls.
           if (metadata.isAsync) {
-            return '';
+            // We have the data required to match async chunks to the route's HTML file.
+            if (
+              route?.entryPoints &&
+              metadata.modulePaths &&
+              Array.isArray(route.entryPoints) &&
+              Array.isArray(metadata.modulePaths)
+            ) {
+              // TODO: Handle module IDs like `expo-router/build/views/Unmatched.js`
+              const doesAsyncChunkContainRouteEntryPoint = route.entryPoints.some((entryPoint) =>
+                (metadata.modulePaths as string[]).includes(entryPoint)
+              );
+              if (!doesAsyncChunkContainRouteEntryPoint) {
+                return '';
+              }
+              debug('Linking async chunk %s to HTML for route %s', filename, route.contextKey);
+              // Pass through to the next condition.
+            } else {
+              return '';
+            }
+            // Mark async chunks as defer so they don't block the page load.
+            // return `<script src="${baseUrl}/${filename}" defer></script>`;
           }
 
           return `<script src="${baseUrl}/${filename}" defer></script>`;

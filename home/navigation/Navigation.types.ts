@@ -12,6 +12,7 @@ export type HomeStackRoutes = {
   BranchDetails: { appId: string; branchName: string };
   Account: undefined;
   Project: { id: string };
+  FeedbackForm: undefined;
 };
 
 export type SettingsStackRoutes = {

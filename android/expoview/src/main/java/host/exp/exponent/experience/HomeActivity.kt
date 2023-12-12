@@ -36,7 +36,9 @@ import expo.modules.splashscreen.SplashScreenImageResizeMode
 import expo.modules.splashscreen.SplashScreenModule
 import expo.modules.splashscreen.SplashScreenPackage
 import expo.modules.splashscreen.singletons.SplashScreen
+import expo.modules.storereview.StoreReviewModule
 import expo.modules.taskManager.TaskManagerPackage
+import expo.modules.trackingtransparency.TrackingTransparencyModule
 import expo.modules.webbrowser.WebBrowserModule
 import host.exp.exponent.Constants
 import host.exp.exponent.ExponentManifest
@@ -172,6 +174,8 @@ open class HomeActivity : BaseExperienceActivity() {
         KeepAwakeModule::class.java,
         LinearGradientModule::class.java,
         SplashScreenModule::class.java,
+        TrackingTransparencyModule::class.java,
+        StoreReviewModule::class.java,
         WebBrowserModule::class.java,
       )
     }

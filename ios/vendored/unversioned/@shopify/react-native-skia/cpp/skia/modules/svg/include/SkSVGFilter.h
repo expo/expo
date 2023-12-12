@@ -11,7 +11,7 @@
 #include "modules/svg/include/SkSVGHiddenContainer.h"
 #include "modules/svg/include/SkSVGTypes.h"
 
-class SkSVGFilter final : public SkSVGHiddenContainer {
+class SK_API SkSVGFilter final : public SkSVGHiddenContainer {
 public:
     static sk_sp<SkSVGFilter> Make() { return sk_sp<SkSVGFilter>(new SkSVGFilter()); }
 

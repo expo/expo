@@ -67,6 +67,10 @@ public:
       paint->setAntiAlias(_paintProps->getAntiAlias()->value().getAsBool());
     }
 
+    if (_paintProps->getDither()->isSet()) {
+      paint->setDither(_paintProps->getDither()->value().getAsBool());
+    }
+
     context->save();
     decorateChildren(context);
 

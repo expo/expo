@@ -414,7 +414,9 @@ const config: VendoringTargetConfig = {
               framework
             );
             const sharedFrameworkPath = path.join(vendoredCommonDir, path.basename(framework));
-            await fs.unlink(sharedFrameworkPath);
+            try {
+              await fs.unlink(sharedFrameworkPath);
+            } catch {}
             await fs.symlink(
               path.relative(path.dirname(sharedFrameworkPath), sourceFrameworkPath),
               sharedFrameworkPath
@@ -441,7 +443,13 @@ const config: VendoringTargetConfig = {
         includeFiles: ['android/**', 'cpp/**'],
         async postCopyFilesHookAsync(sourceDirectory, targetDirectory) {
           // create symlink from node_modules/@shopify/react-native-skia to common lib dir
-          const libs = ['libskia.a', 'libskshaper.a', 'libsvg.a'];
+          const libs = [
+            'libskia.a',
+            'libskparagraph.a',
+            'libskshaper.a',
+            'libsvg.a',
+            'libskunicode.a',
+          ];
           const archs = ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'];
           for (const lib of libs) {
             for (const arch of archs) {
@@ -453,7 +461,9 @@ const config: VendoringTargetConfig = {
               );
               const commonLibPath = path.join(targetDirectory, '../../../common/libs', arch, lib);
               await fs.ensureDir(path.dirname(commonLibPath));
-              await fs.unlink(commonLibPath);
+              try {
+                await fs.unlink(commonLibPath);
+              } catch {}
               await fs.symlink(
                 path.relative(path.dirname(commonLibPath), sourceLibPath),
                 commonLibPath

@@ -11,20 +11,25 @@
 #include "include/core/SkFontArguments.h"
 #include "include/core/SkFontParameters.h"
 #include "include/core/SkFontStyle.h"
-#include "include/core/SkFontTypes.h"
 #include "include/core/SkRect.h"
+#include "include/core/SkRefCnt.h"
 #include "include/core/SkString.h"
+#include "include/core/SkTypes.h"
 #include "include/private/SkWeakRefCnt.h"
 #include "include/private/base/SkOnce.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+
 class SkData;
 class SkDescriptor;
-class SkFontData;
 class SkFontDescriptor;
 class SkScalerContext;
 class SkStream;
 class SkStreamAsset;
 class SkWStream;
+enum class SkTextEncoding;
 struct SkAdvancedTypefaceMetrics;
 struct SkScalerContextEffects;
 struct SkScalerContextRec;

@@ -32,6 +32,11 @@ import expo.modules.updates.statemachine.UpdatesStateMachine
 import java.io.File
 import java.lang.ref.WeakReference
 
+// this needs to stay for versioning to work
+/* ktlint-disable no-unused-imports */
+import expo.modules.updates.UpdatesConfiguration
+/* ktlint-enable no-unused-imports */
+
 /**
  * Updates controller for applications that have updates enabled and properly-configured.
  */
@@ -65,6 +70,12 @@ class EnabledUpdatesController(
 
   private var isStartupFinished = false
 
+  @Synchronized
+  private fun onStartupProcedureFinished() {
+    isStartupFinished = true
+    (this@EnabledUpdatesController as java.lang.Object).notify()
+  }
+
   private val startupProcedure = StartupProcedure(
     context,
     updatesConfiguration,
@@ -74,10 +85,8 @@ class EnabledUpdatesController(
     selectionPolicy,
     logger,
     object : StartupProcedure.StartupProcedureCallback {
-      @Synchronized
       override fun onFinished() {
-        isStartupFinished = true
-        (this as java.lang.Object).notify()
+        onStartupProcedureFinished()
       }
 
       override fun onLegacyJSEvent(event: StartupProcedure.StartupProcedureCallback.LegacyJSEvent) {

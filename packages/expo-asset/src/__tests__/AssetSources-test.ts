@@ -31,14 +31,12 @@ describe('selectAssetSource', () => {
     jest.resetModules();
   });
 
-  it(`returns a production CDN URI using the asset file hash`, () => {
+  it(`returns an asset source object with an invalid dummy remote URL if the asset metadata does not specify an absolute URL in production`, () => {
     const AssetSources = require('../AssetSources');
-
-    const source = AssetSources.selectAssetSource(mockFontMetadata);
-    expect(source.uri).toBe(
-      'https://classic-assets.eascdn.net/~assets/cafecafecafecafecafecafecafecafe'
-    );
-    expect(source.hash).toBe('cafecafecafecafecafecafecafecafe');
+    expect(AssetSources.selectAssetSource(mockFontMetadata)).toEqual({
+      hash: 'cafecafecafecafecafecafecafecafe',
+      uri: '',
+    });
   });
 
   if (Platform.OS !== 'web') {
@@ -58,6 +56,7 @@ describe('selectAssetSource', () => {
       );
       expect(source.hash).toBe('cafecafecafecafecafecafecafecafe');
     });
+
     it(`returns a manifest2 URI based on the bundle's URL in development`, () => {
       _mockConstants({
         __unsafeNoWarnManifest2: {
@@ -118,6 +117,11 @@ describe('selectAssetSource', () => {
       name: 'test',
       type: 'png',
       scales: [1, 2, 100],
+      fileUris: [
+        'https://example.com/icon.png',
+        'https://example.com/icon@2x.png',
+        'https://example.com/icon@100x.png',
+      ],
       fileHashes: [
         'facefacefacefacefacefacefaceface',
         'c0dec0dec0dec0dec0dec0dec0dec0de',
@@ -126,12 +130,16 @@ describe('selectAssetSource', () => {
       httpServerLocation: '/assets',
     });
 
+    const uri = Platform.select({
+      web: 'https://example.com/icon.png',
+      default: 'https://example.com/icon@2x.png',
+    });
     const hash = Platform.select({
       web: 'facefacefacefacefacefacefaceface',
       default: 'c0dec0dec0dec0dec0dec0dec0dec0de',
     });
 
-    expect(source.uri).toBe('https://classic-assets.eascdn.net/~assets/' + hash);
+    expect(source.uri).toBe(uri);
     expect(source.hash).toBe(hash);
   });
 

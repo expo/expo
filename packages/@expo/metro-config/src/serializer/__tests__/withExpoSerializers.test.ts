@@ -66,7 +66,7 @@ describe('serializes', () => {
         ...options,
       })
     )) as any;
-    if (options.options.output === 'static') {
+    if (options.options?.output === 'static') {
       assert('artifacts' in output && Array.isArray(output.artifacts));
       return output.artifacts;
     } else {
@@ -378,6 +378,9 @@ describe('serializes', () => {
           "filename": "_expo/static/js/web/index-f0606e9a7a39437c8958b4d8e3e9ff34.js",
           "metadata": {
             "isAsync": false,
+            "modulePaths": [
+              "/app/index.js",
+            ],
             "requires": [],
           },
           "originFilename": "index.js",
@@ -391,6 +394,9 @@ describe('serializes', () => {
           "filename": "_expo/static/js/web/foo-c054379d08b2cfa157d6fc1caa8f4802.js",
           "metadata": {
             "isAsync": true,
+            "modulePaths": [
+              "/app/foo.js",
+            ],
             "requires": [],
           },
           "originFilename": "foo.js",
@@ -408,7 +414,11 @@ describe('serializes', () => {
 
     // Split bundle
     expect(artifacts.length).toBe(2);
-    expect(artifacts[1].metadata).toEqual({ isAsync: true, requires: [] });
+    expect(artifacts[1].metadata).toEqual({
+      isAsync: true,
+      modulePaths: ['/app/foo.js'],
+      requires: [],
+    });
   });
 
   it(`imports async bundles in second module`, async () => {
@@ -437,6 +447,10 @@ describe('serializes', () => {
           "filename": "_expo/static/js/web/index-b0f278bb5fc494c16eecc93bd05c55c6.js",
           "metadata": {
             "isAsync": false,
+            "modulePaths": [
+              "/app/index.js",
+              "/app/two.js",
+            ],
             "requires": [],
           },
           "originFilename": "index.js",
@@ -453,6 +467,9 @@ describe('serializes', () => {
           "filename": "_expo/static/js/web/foo-c054379d08b2cfa157d6fc1caa8f4802.js",
           "metadata": {
             "isAsync": true,
+            "modulePaths": [
+              "/app/foo.js",
+            ],
             "requires": [],
           },
           "originFilename": "foo.js",
@@ -470,9 +487,14 @@ describe('serializes', () => {
 
     // Split bundle
     expect(artifacts.length).toBe(2);
-    expect(artifacts[1].metadata).toEqual({ isAsync: true, requires: [] });
+    expect(artifacts[1].metadata).toEqual({
+      isAsync: true,
+      modulePaths: ['/app/foo.js'],
+      requires: [],
+    });
   });
 
+  // NOTE: This has been disabled pending a shared runtime chunk.
   it(`dedupes shared module in async imports`, async () => {
     const artifacts = await serializeSplitAsync({
       'index.js': `
@@ -494,28 +516,36 @@ describe('serializes', () => {
 
     expect(artifacts.map((art) => art.filename)).toMatchInlineSnapshot(`
       [
-        "_expo/static/js/web/index-2886bcb99609bebf6f5d5b3a6fef2aca.js",
+        "_expo/static/js/web/index-bd9fb82a51c035b74188cf502f39f808.js",
         "_expo/static/js/web/math-b278c4815cd8b12f59e193dbc2a4d19b.js",
         "_expo/static/js/web/shapes-405334a7946b0b9fb76331cda92fa85a.js",
-        "_expo/static/js/web/colors-f0d273187f9a6fb9aa2b039462d8aa07.js",
       ]
     `);
 
     expect(artifacts).toMatchInlineSnapshot(`
       [
         {
-          "filename": "_expo/static/js/web/index-2886bcb99609bebf6f5d5b3a6fef2aca.js",
+          "filename": "_expo/static/js/web/index-bd9fb82a51c035b74188cf502f39f808.js",
           "metadata": {
             "isAsync": false,
-            "requires": [
-              "_expo/static/js/web/colors-f0d273187f9a6fb9aa2b039462d8aa07.js",
+            "modulePaths": [
+              "/app/index.js",
+              "/app/colors.js",
             ],
+            "requires": [],
           },
           "originFilename": "index.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
         _$$_REQUIRE(dependencyMap[1], "expo-mock/async-require")(dependencyMap[0], dependencyMap.paths, "./math");
         _$$_REQUIRE(dependencyMap[1], "expo-mock/async-require")(dependencyMap[2], dependencyMap.paths, "./shapes");
       },"/app/index.js",{"0":"/app/math.js","1":"/app/node_modules/expo-mock/async-require/index.js","2":"/app/shapes.js","paths":{"/app/math.js":"/_expo/static/js/web/math-b278c4815cd8b12f59e193dbc2a4d19b.js","/app/shapes.js":"/_expo/static/js/web/shapes-405334a7946b0b9fb76331cda92fa85a.js"}});
+      __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
+        Object.defineProperty(exports, '__esModule', {
+          value: true
+        });
+        const orange = 'orange';
+        exports.orange = orange;
+      },"/app/colors.js",[]);
       TEST_RUN_MODULE("/app/index.js");",
           "type": "js",
         },
@@ -523,6 +553,9 @@ describe('serializes', () => {
           "filename": "_expo/static/js/web/math-b278c4815cd8b12f59e193dbc2a4d19b.js",
           "metadata": {
             "isAsync": true,
+            "modulePaths": [
+              "/app/math.js",
+            ],
             "requires": [],
           },
           "originFilename": "math.js",
@@ -540,6 +573,9 @@ describe('serializes', () => {
           "filename": "_expo/static/js/web/shapes-405334a7946b0b9fb76331cda92fa85a.js",
           "metadata": {
             "isAsync": true,
+            "modulePaths": [
+              "/app/shapes.js",
+            ],
             "requires": [],
           },
           "originFilename": "shapes.js",
@@ -553,37 +589,33 @@ describe('serializes', () => {
       },"/app/shapes.js",["/app/colors.js"]);",
           "type": "js",
         },
-        {
-          "filename": "_expo/static/js/web/colors-f0d273187f9a6fb9aa2b039462d8aa07.js",
-          "metadata": {
-            "isAsync": false,
-            "requires": [],
-          },
-          "originFilename": "colors.js",
-          "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
-        Object.defineProperty(exports, '__esModule', {
-          value: true
-        });
-        const orange = 'orange';
-        exports.orange = orange;
-      },"/app/colors.js",[]);",
-          "type": "js",
-        },
       ]
     `);
 
     // Split bundle
-    expect(artifacts.length).toBe(4);
-    expect(artifacts[1].metadata).toEqual({ isAsync: true, requires: [] });
-    expect(artifacts[2].metadata).toEqual({ isAsync: true, requires: [] });
+    expect(artifacts.length).toBe(3);
+    expect(artifacts[1].metadata).toEqual({
+      isAsync: true,
+      modulePaths: ['/app/math.js'],
+      requires: [],
+    });
+    expect(artifacts[2].metadata).toEqual({
+      isAsync: true,
+      modulePaths: ['/app/shapes.js'],
+      requires: [],
+    });
 
-    // The shared sync import is deduped and added to a common chunk.
-    // This will be loaded in the index.html before the other bundles.
-    expect(artifacts[3].filename).toEqual(
-      expect.stringMatching(/_expo\/static\/js\/web\/colors-.*\.js/)
-    );
-    expect(artifacts[3].metadata).toEqual({ isAsync: false, requires: [] });
-    // Ensure the dedupe chunk isn't run, just loaded.
-    expect(artifacts[3].source).not.toMatch(/TEST_RUN_MODULE/);
+    // // The shared sync import is deduped and added to a common chunk.
+    // // This will be loaded in the index.html before the other bundles.
+    // expect(artifacts[3].filename).toEqual(
+    //   expect.stringMatching(/_expo\/static\/js\/web\/colors-.*\.js/)
+    // );
+    // expect(artifacts[3].metadata).toEqual({
+    //   isAsync: false,
+    //   modulePaths: ['/app/colors.js'],
+    //   requires: [],
+    // });
+    // // Ensure the dedupe chunk isn't run, just loaded.
+    // expect(artifacts[3].source).not.toMatch(/TEST_RUN_MODULE/);
   });
 });

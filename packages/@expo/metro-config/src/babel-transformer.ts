@@ -25,9 +25,37 @@ function isCustomTruthy(value: any): boolean {
   return value === true || value === 'true';
 }
 
+function memoize<T extends (...args: any[]) => any>(fn: T): T {
+  const cache = new Map<string, ReturnType<T>>();
+  return ((...args: any[]) => {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) {
+      return cache.get(key);
+    }
+    const result = fn(...args);
+    cache.set(key, result);
+    return result;
+  }) as T;
+}
+
+const memoizeWarning = memoize((message: string) => {
+  console.warn(message);
+});
+
 function getBabelCaller({ filename, options }: Pick<BabelTransformerArgs, 'filename' | 'options'>) {
   const isNodeModule = filename.includes('node_modules');
   const isServer = options.customTransformOptions?.environment === 'node';
+
+  const routerRoot =
+    typeof options.customTransformOptions?.routerRoot === 'string'
+      ? decodeURI(options.customTransformOptions.routerRoot)
+      : undefined;
+
+  if (routerRoot == null) {
+    memoizeWarning(
+      'Missing transform.routerRoot option in Metro bundling request, falling back to `app` as routes directory.'
+    );
+  }
 
   return {
     name: 'metro',
@@ -43,6 +71,9 @@ function getBabelCaller({ filename, options }: Pick<BabelTransformerArgs, 'filen
         ? decodeURI(options.customTransformOptions.baseUrl)
         : '',
 
+    // Ensure we always use a mostly-valid router root.
+    routerRoot: routerRoot ?? 'app',
+
     isDev: options.dev,
 
     // This value indicates if the user has disabled the feature or not.
@@ -51,6 +82,7 @@ function getBabelCaller({ filename, options }: Pick<BabelTransformerArgs, 'filen
     preserveEnvVars: isCustomTruthy(options.customTransformOptions?.preserveEnvVars)
       ? true
       : undefined,
+    asyncRoutes: isCustomTruthy(options.customTransformOptions?.asyncRoutes) ? true : undefined,
     // Pass the engine to babel so we can automatically transpile for the correct
     // target environment.
     engine: options.customTransformOptions?.engine,
@@ -61,6 +93,9 @@ function getBabelCaller({ filename, options }: Pick<BabelTransformerArgs, 'filen
     isNodeModule,
 
     isHMREnabled: options.hot,
+
+    // Set the standard Babel flag to disable ESM transformations.
+    supportsStaticESM: options.experimentalImportSupport,
   };
 }
 

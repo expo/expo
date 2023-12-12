@@ -50,13 +50,32 @@ const cacheKeyParts = [_nodeFs().default.readFileSync(__filename), require('babe
 function isCustomTruthy(value) {
   return value === true || value === 'true';
 }
+function memoize(fn) {
+  const cache = new Map();
+  return (...args) => {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) {
+      return cache.get(key);
+    }
+    const result = fn(...args);
+    cache.set(key, result);
+    return result;
+  };
+}
+const memoizeWarning = memoize(message => {
+  console.warn(message);
+});
 function getBabelCaller({
   filename,
   options
 }) {
-  var _options$customTransf, _options$customTransf2, _options$customTransf3, _options$customTransf4;
+  var _options$customTransf, _options$customTransf2, _options$customTransf3, _options$customTransf4, _options$customTransf5, _options$customTransf6;
   const isNodeModule = filename.includes('node_modules');
   const isServer = ((_options$customTransf = options.customTransformOptions) === null || _options$customTransf === void 0 ? void 0 : _options$customTransf.environment) === 'node';
+  const routerRoot = typeof ((_options$customTransf2 = options.customTransformOptions) === null || _options$customTransf2 === void 0 ? void 0 : _options$customTransf2.routerRoot) === 'string' ? decodeURI(options.customTransformOptions.routerRoot) : undefined;
+  if (routerRoot == null) {
+    memoizeWarning('Missing transform.routerRoot option in Metro bundling request, falling back to `app` as routes directory.');
+  }
   return {
     name: 'metro',
     bundler: 'metro',
@@ -65,19 +84,24 @@ function getBabelCaller({
     // Metro automatically updates the cache to account for the custom transform options.
     isServer,
     // The base url to make requests from, used for hosting from non-standard locations.
-    baseUrl: typeof ((_options$customTransf2 = options.customTransformOptions) === null || _options$customTransf2 === void 0 ? void 0 : _options$customTransf2.baseUrl) === 'string' ? decodeURI(options.customTransformOptions.baseUrl) : '',
+    baseUrl: typeof ((_options$customTransf3 = options.customTransformOptions) === null || _options$customTransf3 === void 0 ? void 0 : _options$customTransf3.baseUrl) === 'string' ? decodeURI(options.customTransformOptions.baseUrl) : '',
+    // Ensure we always use a mostly-valid router root.
+    routerRoot: routerRoot !== null && routerRoot !== void 0 ? routerRoot : 'app',
     isDev: options.dev,
     // This value indicates if the user has disabled the feature or not.
     // Other criteria may still cause the feature to be disabled, but all inputs used are
     // already considered in the cache key.
-    preserveEnvVars: isCustomTruthy((_options$customTransf3 = options.customTransformOptions) === null || _options$customTransf3 === void 0 ? void 0 : _options$customTransf3.preserveEnvVars) ? true : undefined,
+    preserveEnvVars: isCustomTruthy((_options$customTransf4 = options.customTransformOptions) === null || _options$customTransf4 === void 0 ? void 0 : _options$customTransf4.preserveEnvVars) ? true : undefined,
+    asyncRoutes: isCustomTruthy((_options$customTransf5 = options.customTransformOptions) === null || _options$customTransf5 === void 0 ? void 0 : _options$customTransf5.asyncRoutes) ? true : undefined,
     // Pass the engine to babel so we can automatically transpile for the correct
     // target environment.
-    engine: (_options$customTransf4 = options.customTransformOptions) === null || _options$customTransf4 === void 0 ? void 0 : _options$customTransf4.engine,
+    engine: (_options$customTransf6 = options.customTransformOptions) === null || _options$customTransf6 === void 0 ? void 0 : _options$customTransf6.engine,
     // Provide the project root for accurately reading the Expo config.
     projectRoot: options.projectRoot,
     isNodeModule,
-    isHMREnabled: options.hot
+    isHMREnabled: options.hot,
+    // Set the standard Babel flag to disable ESM transformations.
+    supportsStaticESM: options.experimentalImportSupport
   };
 }
 const transform = ({
