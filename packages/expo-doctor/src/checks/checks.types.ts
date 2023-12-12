@@ -18,6 +18,11 @@ export interface DoctorCheckResult {
 
 export interface DoctorCheckParams {
   projectRoot: string;
+
+  // from ProjectConfig in @expo/config
   exp: ExpoConfig;
   pkg: PackageJSONConfig;
+  hasUnusedStaticConfig: boolean;
+  staticConfigPath: string | null;
+  dynamicConfigPath: string | null;
 }

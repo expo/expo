@@ -13,6 +13,9 @@ const additionalProjectProps = {
     slug: 'slug',
   },
   projectRoot,
+  hasUnusedStaticConfig: false,
+  staticConfigPath: null,
+  dynamicConfigPath: null,
 };
 
 describe('runAsync', () => {
