@@ -12,6 +12,10 @@
 
 - Report if project has unused static config. ([#25674](https://github.com/expo/expo/pull/25674) by [@keith-kurak](https://github.com/keith-kurak))
 
+## 1.1.6 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
 ## 1.1.5 — 2023-12-06
 
 ### 🐛 Bug fixes

@@ -35,10 +35,22 @@ function getNormalizedStatePath({ path: statePath, params, }, baseUrl) {
         // of converting to string then back to object
         params: Object.entries(params).reduce((prev, [key, value]) => {
             if (Array.isArray(value)) {
-                prev[key] = value.map(decodeURIComponent);
+                prev[key] = value.map((v) => {
+                    try {
+                        return decodeURIComponent(v);
+                    }
+                    catch {
+                        return v;
+                    }
+                });
             }
             else {
-                prev[key] = decodeURIComponent(value);
+                try {
+                    prev[key] = decodeURIComponent(value);
+                }
+                catch {
+                    prev[key] = value;
+                }
             }
             return prev;
         }, {}),

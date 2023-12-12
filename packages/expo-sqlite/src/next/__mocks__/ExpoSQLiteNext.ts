@@ -2,7 +2,13 @@ import assert from 'assert';
 import sqlite3 from 'better-sqlite3';
 
 import { OpenOptions } from '../NativeDatabase';
-import { BindParams, ColumnValues, RunResult } from '../NativeStatement';
+import {
+  BindBlobParams,
+  BindParams,
+  BindPrimitiveParams,
+  ColumnValues,
+  RunResult,
+} from '../NativeStatement';
 
 export default {
   get name(): string {
@@ -73,53 +79,51 @@ class NativeStatement {
 
   //#region Asynchronous API
 
-  public arrayRunAsync = jest
+  public runAsync = jest
     .fn()
     .mockImplementation(
-      (database: NativeDatabase, params: BindParams): Promise<RunResult> =>
-        Promise.resolve(this._run(normalizeParams(params)))
+      (
+        database: NativeDatabase,
+        bindParams: BindPrimitiveParams,
+        bindBlobParams: BindBlobParams,
+        shouldPassAsArray: boolean
+      ): Promise<RunResult> =>
+        Promise.resolve(
+          this._run(normalizeSQLite3Args(bindParams, bindBlobParams, shouldPassAsArray))
+        )
     );
-  public objectRunAsync = jest
+  public getAsync = jest
     .fn()
     .mockImplementation(
-      (database: NativeDatabase, params: BindParams): Promise<RunResult> =>
-        Promise.resolve(this._run(normalizeParams(params)))
-    );
-  public arrayGetAsync = jest
-    .fn()
-    .mockImplementation((database: NativeDatabase, params: BindParams): Promise<any> => {
-      assert(this.sqlite3Stmt);
-      if (this.iterator == null) {
-        this.iteratorParams = normalizeParams(params);
-        this.iterator = this.sqlite3Stmt.iterate(this.iteratorParams);
+      (
+        database: NativeDatabase,
+        bindParams: BindPrimitiveParams,
+        bindBlobParams: BindBlobParams,
+        shouldPassAsArray: boolean
+      ): Promise<any> => {
+        assert(this.sqlite3Stmt);
+        if (this.iterator == null) {
+          this.iteratorParams = normalizeSQLite3Args(bindParams, bindBlobParams, shouldPassAsArray);
+          this.iterator = this.sqlite3Stmt.iterate(this.iteratorParams);
+        }
+        const result = this.iterator.next();
+        const columnValues =
+          result.done === false ? Object.values(result.value as Record<string, any>) : null;
+        return Promise.resolve(columnValues);
       }
-      const result = this.iterator.next();
-      const columnValues =
-        result.done === false ? Object.values(result.value as Record<string, any>) : null;
-      return Promise.resolve(columnValues);
-    });
-  public objectGetAsync = jest
-    .fn()
-    .mockImplementation((database: NativeDatabase, params: BindParams): Promise<any> => {
-      assert(this.sqlite3Stmt);
-      if (this.iterator == null) {
-        this.iteratorParams = normalizeParams(params);
-        this.iterator = this.sqlite3Stmt.iterate(this.iteratorParams);
-      }
-      const result = this.iterator.next();
-      const columnValues =
-        result.done === false ? Object.values(result.value as Record<string, any>) : null;
-      return Promise.resolve(columnValues);
-    });
-  public arrayGetAllAsync = jest
-    .fn()
-    .mockImplementation((database: NativeDatabase, params: BindParams) =>
-      Promise.resolve(this._allValues(normalizeParams(params)))
     );
-  public objectGetAllAsync = jest
+  public getAllAsync = jest
     .fn()
-    .mockImplementation((database: NativeDatabase, params: BindParams) =>
-      Promise.resolve(this._allValues(normalizeParams(params)))
+    .mockImplementation(
+      (
+        database: NativeDatabase,
+        bindParams: BindPrimitiveParams,
+        bindBlobParams: BindBlobParams,
+        shouldPassAsArray: boolean
+      ) =>
+        Promise.resolve(
+          this._allValues(normalizeSQLite3Args(bindParams, bindBlobParams, shouldPassAsArray))
+        )
     );
   public getColumnNamesAsync = jest.fn().mockImplementation(async (database: NativeDatabase) => {
     assert(this.sqlite3Stmt);
@@ -136,53 +140,45 @@ class NativeStatement {
 
   //#region Synchronous API
 
-  public arrayRunSync = jest
+  public runSync = jest
     .fn()
     .mockImplementation(
-      (database: NativeDatabase, params: BindParams): RunResult =>
-        this._run(normalizeParams(params))
+      (
+        database: NativeDatabase,
+        bindParams: BindPrimitiveParams,
+        bindBlobParams: BindBlobParams,
+        shouldPassAsArray: boolean
+      ): RunResult => this._run(normalizeSQLite3Args(bindParams, bindBlobParams, shouldPassAsArray))
     );
-  public objectRunSync = jest
+  public getSync = jest
     .fn()
     .mockImplementation(
-      (database: NativeDatabase, params: BindParams): RunResult =>
-        this._run(normalizeParams(params))
-    );
-  public arrayGetSync = jest
-    .fn()
-    .mockImplementation((database: NativeDatabase, params: BindParams): any => {
-      assert(this.sqlite3Stmt);
-      if (this.iterator == null) {
-        this.iteratorParams = normalizeParams(params);
-        this.iterator = this.sqlite3Stmt.iterate(this.iteratorParams);
+      (
+        database: NativeDatabase,
+        bindParams: BindPrimitiveParams,
+        bindBlobParams: BindBlobParams,
+        shouldPassAsArray: boolean
+      ): any => {
+        assert(this.sqlite3Stmt);
+        if (this.iterator == null) {
+          this.iteratorParams = normalizeSQLite3Args(bindParams, bindBlobParams, shouldPassAsArray);
+          this.iterator = this.sqlite3Stmt.iterate(this.iteratorParams);
+        }
+        const result = this.iterator.next();
+        const columnValues =
+          result.done === false ? Object.values(result.value as Record<string, any>) : null;
+        return columnValues;
       }
-      const result = this.iterator.next();
-      const columnValues =
-        result.done === false ? Object.values(result.value as Record<string, any>) : null;
-      return columnValues;
-    });
-  public objectGetSync = jest
-    .fn()
-    .mockImplementation((database: NativeDatabase, params: BindParams): any => {
-      assert(this.sqlite3Stmt);
-      if (this.iterator == null) {
-        this.iteratorParams = normalizeParams(params);
-        this.iterator = this.sqlite3Stmt.iterate(this.iteratorParams);
-      }
-      const result = this.iterator.next();
-      const columnValues =
-        result.done === false ? Object.values(result.value as Record<string, any>) : null;
-      return columnValues;
-    });
-  public arrayGetAllSync = jest
-    .fn()
-    .mockImplementation((database: NativeDatabase, params: BindParams) =>
-      this._allValues(normalizeParams(params))
     );
-  public objectGetAllSync = jest
+  public getAllSync = jest
     .fn()
-    .mockImplementation((database: NativeDatabase, params: BindParams) =>
-      this._allValues(normalizeParams(params))
+    .mockImplementation(
+      (
+        database: NativeDatabase,
+        bindParams: BindPrimitiveParams,
+        bindBlobParams: BindBlobParams,
+        shouldPassAsArray: boolean
+      ) => this._allValues(normalizeSQLite3Args(bindParams, bindBlobParams, shouldPassAsArray))
     );
   public getColumnNamesSync = jest.fn().mockImplementation((database: NativeDatabase) => {
     assert(this.sqlite3Stmt);
@@ -227,21 +223,31 @@ class NativeStatement {
 
 //#endregion
 
-function normalizeParams(params: BindParams): BindParams {
-  const isArray = Array.isArray(params);
-
-  if (isArray && params.length === 1 && params[0] === undefined) {
-    return [];
-  }
-
-  if (!isArray && typeof params === 'object') {
-    const result: BindParams = {};
-    for (const [key, value] of Object.entries(params)) {
-      const normalizedKey = key.replace(/^[:@$]/, '');
-      result[normalizedKey] = value;
+function normalizeSQLite3Args(
+  bindParams: BindPrimitiveParams,
+  bindBlobParams: BindBlobParams,
+  shouldPassAsArray: boolean
+): BindParams {
+  if (shouldPassAsArray) {
+    const result: BindParams = [];
+    for (const [key, value] of Object.entries(bindParams)) {
+      result[Number(key)] = value;
+    }
+    for (const [key, value] of Object.entries(bindBlobParams)) {
+      result[Number(key)] = value;
     }
     return result;
   }
 
-  return params;
+  const replaceRegexp = /^[:@$]/;
+  const result: BindParams = {};
+  for (const [key, value] of Object.entries(bindParams)) {
+    const normalizedKey = key.replace(replaceRegexp, '');
+    result[normalizedKey] = value;
+  }
+  for (const [key, value] of Object.entries(bindBlobParams)) {
+    const normalizedKey = key.replace(replaceRegexp, '');
+    result[normalizedKey] = value;
+  }
+  return result;
 }

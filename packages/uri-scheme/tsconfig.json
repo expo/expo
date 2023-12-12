@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.node",
+  "include": ["./src"],
+  "exclude": ["**/__mocks__/*", "**/__tests__/*"],
+  "compilerOptions": {
+    "resolveJsonModule": true,
+    "rootDir": "src",
+    "declaration": false,
+    "composite": false,
+  },
+}

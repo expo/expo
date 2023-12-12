@@ -54,30 +54,43 @@ You can also [learn more](/guides/customizing-metro/) about customizing Metro.
 </Step>
 
 <Step label="3">
-  Expo Router requires at least `react-refresh@0.14.0`. React Native hasn't upgraded yet, so you need to force upgrade your `react-refresh` version by setting a Yarn resolution or npm override.
+  Ensure Fast Refresh is configured.
 
   <Tabs>
-    <Tab label="Yarn">
-        ```json package.json
-        {
-          /* @hide ... */
-          /* @end */
-          "resolutions": {
-            "react-refresh": "~0.14.0"
-          }
-        }
-        ```
+    <Tab label="Expo Router v3">
+
+        Expo Router requires at least `react-refresh@0.14.0` this is available in SDK 50. Ensure you **do not** have any overrides or resolutions for `react-refresh` in your **package.json**.
+
     </Tab>
-    <Tab label="npm">
-        ```json package.json
-        {
-          /* @hide ... */
-          /* @end */
-          "overrides": {
-            "react-refresh": "~0.14.0"
+    <Tab label="Expo Router v2">
+
+    Expo Router requires at least `react-refresh@0.14.0`. React Native hasn't upgraded as of SDK 49 / Expo Router v2, so you need to force upgrade your `react-refresh` version by setting a Yarn resolution or npm override.
+
+    <Tabs>
+      <Tab label="Yarn">
+          ```json package.json
+          {
+            /* @hide ... */
+            /* @end */
+            "resolutions": {
+              "react-refresh": "~0.14.0"
+            }
           }
-        }
-        ```
+          ```
+      </Tab>
+      <Tab label="npm">
+          ```json package.json
+          {
+            /* @hide ... */
+            /* @end */
+            "overrides": {
+              "react-refresh": "~0.14.0"
+            }
+          }
+          ```
+      </Tab>
+    </Tabs>
+
     </Tab>
   </Tabs>
 </Step>

@@ -186,6 +186,7 @@ const general = [
       makePage('router/reference/redirects.mdx'),
       makePage('router/reference/static-rendering.mdx'),
       makePage('router/reference/async-routes.mdx'),
+      makePage('router/reference/api-routes.mdx'),
       makePage('router/reference/sitemap.mdx'),
       makePage('router/reference/typed-routes.mdx'),
       makePage('router/reference/authentication.mdx'),
@@ -233,6 +234,7 @@ const general = [
     makePage('build/updates.mdx'),
     makePage('build/building-on-ci.mdx'),
     makePage('build/building-from-github.mdx'),
+    makePage('build/orbit.mdx'),
     makeGroup(
       'App Signing',
       [
@@ -311,6 +313,8 @@ const general = [
       makePage('eas-update/environment-variables.mdx'),
       makePage('eas-update/code-signing.mdx'),
       makePage('eas-update/rollouts.mdx'),
+      makePage('eas-update/rollbacks.mdx'),
+      makePage('eas-update/asset-selection.mdx'),
     ]),
     makeGroup('Reference', [
       makePage('eas-update/migrate-from-classic-updates.mdx'),
@@ -400,6 +404,7 @@ const general = [
         makePage('bare/using-expo-client.mdx'),
         makePage('bare/install-dev-builds-in-bare.mdx'),
         makePage('bare/error-recovery.mdx'),
+        makePage('bare/upgrade.mdx'),
       ]),
     ],
     { expanded: true }
@@ -451,7 +456,6 @@ const preview = [
     makePage('preview/support.mdx'),
     makePage('router/reference/not-found.mdx'),
     { expanded: true },
-    makeSection('Expo Router', [makePage('preview/api-routes.mdx')]),
   ]),
 ];
 

@@ -3,7 +3,13 @@ import { Terminal } from 'metro-core';
 import path from 'path';
 
 import { logWarning, TerminalReporter } from './TerminalReporter';
-import { BuildPhase, BundleDetails, BundleProgress, SnippetError } from './TerminalReporter.types';
+import {
+  BuildPhase,
+  BundleDetails,
+  BundleProgress,
+  SnippetError,
+  TerminalReportableEvent,
+} from './TerminalReporter.types';
 import { NODE_STDLIB_MODULES } from './externals';
 import { learnMore } from '../../../utils/link';
 
@@ -83,6 +89,10 @@ export class MetroTerminalReporter extends TerminalReporter {
     data: unknown[];
   }): boolean {
     return isAppRegistryStartupMessage(event.data);
+  }
+
+  shouldFilterBundleEvent(event: TerminalReportableEvent): boolean {
+    return 'bundleDetails' in event && event.bundleDetails?.bundleType === 'map';
   }
 
   /** Print the cache clear message. */

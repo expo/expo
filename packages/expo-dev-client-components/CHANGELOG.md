@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 1.8.0 — 2023-12-12
+
+### 🎉 New features
+
+- Add flex prop to Button component. ([#25699](https://github.com/expo/expo/pull/25699) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 1.7.0 — 2023-11-14
 
 ### 💡 Others
