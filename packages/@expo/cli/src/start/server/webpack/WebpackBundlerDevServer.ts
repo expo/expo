@@ -32,8 +32,17 @@ export type WebpackConfiguration = webpack.Configuration & {
   };
 };
 
+// Websocket messaging API has changed for both 3.x and 4.x.
+//   - `webpack-dev-server@3`: `server.sockWrite`
+//   - `webpack-dev-server@4`: `server.sendMessage`
+// See: https://github.com/webpack/webpack-dev-server/pull/3381
+// See: https://github.com/webpack/webpack-dev-server/compare/v4.0.0-beta.3...v4.0.0-rc.0#diff-b706bbadb3d2315d99678f05e1f4bfd78a4bb4a7a6c65f3e81f1386fee3c883aL111
+type WebpackDevServerV4 = InstanceType<typeof WebpackDevServer> & {
+  sendMessage: InstanceType<typeof WebpackDevServer>['sockWrite'];
+};
+
 function assertIsWebpackDevServer(value: any): asserts value is WebpackDevServer {
-  if (!value?.sockWrite) {
+  if (!value?.sockWrite && !value?.sendMessage) {
     throw new CommandError(
       'WEBPACK',
       value
@@ -78,7 +87,20 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     // For now, just manually convert the value so our CLI interface can be unified.
     const hackyConvertedMessage = method === 'reload' ? 'content-changed' : method;
 
-    this.instance.server.sockWrite(this.instance.server.sockets, hackyConvertedMessage, params);
+    // Websocket messaging API has changed for both 3.x and 4.x.
+    //   - `webpack-dev-server@3`: `server.sockWrite`
+    //   - `webpack-dev-server@4`: `server.sendMessage`
+    // See: https://github.com/webpack/webpack-dev-server/pull/3381
+    // See: https://github.com/webpack/webpack-dev-server/compare/v4.0.0-beta.3...v4.0.0-rc.0#diff-b706bbadb3d2315d99678f05e1f4bfd78a4bb4a7a6c65f3e81f1386fee3c883aL111
+    if (typeof this.instance.server.sockWrite === 'function') {
+      this.instance.server.sockWrite(this.instance.server.sockets, hackyConvertedMessage, params);
+    } else {
+      (this.instance.server as WebpackDevServerV4).sendMessage(
+        this.instance.server.sockets,
+        hackyConvertedMessage,
+        params
+      );
+    }
   }
 
   private async attachNativeDevServerMiddlewareToDevServer({
