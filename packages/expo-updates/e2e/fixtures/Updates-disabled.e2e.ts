@@ -3,7 +3,6 @@ import jestExpect from 'expect';
 import { setTimeout } from 'timers/promises';
 
 const platform = device.getPlatform();
-const TIMEOUT_BIAS = process.env.CI ? 10 : 1;
 
 const testElementValueAsync = async (testID: string) => {
   const attributes: any = await element(by.id(testID)).getAttributes();
@@ -25,7 +24,6 @@ describe('Basic tests', () => {
 
   it('starts app, shows info when updates are disabled', async () => {
     console.warn(`Platform = ${platform}`);
-    jest.setTimeout(300000 * TIMEOUT_BIAS);
     await device.installApp();
     await device.launchApp({
       newInstance: true,
