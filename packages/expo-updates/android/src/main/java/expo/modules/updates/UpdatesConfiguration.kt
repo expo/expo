@@ -7,6 +7,13 @@ import android.util.Log
 import expo.modules.core.errors.InvalidArgumentException
 import expo.modules.updates.codesigning.CodeSigningConfiguration
 
+enum class UpdatesConfigurationValidationResult {
+  VALID,
+  INVALID_NOT_ENABLED,
+  INVALID_MISSING_URL,
+  INVALID_MISSING_RUNTIME_VERSION
+}
+
 /**
  * Holds global, immutable configuration values for updates, as well as doing some rudimentary
  * validation.
@@ -162,18 +169,18 @@ data class UpdatesConfiguration(
       return sdkVersion.isNullOrEmpty() && runtimeVersion.isNullOrEmpty()
     }
 
-    fun canCreateValidConfiguration(context: Context?, overrideMap: Map<String, Any>?): Boolean {
+    fun getUpdatesConfigurationValidationResult(context: Context?, overrideMap: Map<String, Any>?): UpdatesConfigurationValidationResult {
       val isEnabledConfigSetting = getIsEnabled(context, overrideMap)
       if (!isEnabledConfigSetting) {
-        return false
+        return UpdatesConfigurationValidationResult.INVALID_NOT_ENABLED
       }
-      getUpdatesUrl(context, overrideMap) ?: return false
+      getUpdatesUrl(context, overrideMap) ?: return UpdatesConfigurationValidationResult.INVALID_MISSING_URL
 
       if (isMissingRuntimeVersion(context, overrideMap)) {
-        return false
+        return UpdatesConfigurationValidationResult.INVALID_MISSING_RUNTIME_VERSION
       }
 
-      return true
+      return UpdatesConfigurationValidationResult.VALID
     }
   }
 }

@@ -32,6 +32,14 @@ public enum UpdatesConfigError: Int, Error {
   case ExpoUpdatesMissingRuntimeVersionError
 }
 
+public enum UpdatesConfigurationValidationResult {
+  case Valid
+  case InvalidNotEnabled
+  case InvalidPlistError
+  case InvalidMissingURL
+  case InvalidMissingRuntimeVersion
+}
+
 /**
  * Holds global, immutable configuration values for updates, as well as doing some rudimentary
  * validation.
@@ -150,27 +158,27 @@ public final class UpdatesConfig: NSObject {
     return (sdkVersion?.isEmpty ?? true) && (runtimeVersion?.isEmpty ?? true)
   }
 
-  public static func canCreateValidConfiguration(mergingOtherDictionary: [String: Any]?) -> Bool {
+  public static func getUpdatesConfigurationValidationResult(mergingOtherDictionary: [String: Any]?) -> UpdatesConfigurationValidationResult {
     guard let dictionary = try? configDictionaryWithExpoPlist(mergingOtherDictionary: mergingOtherDictionary) else {
-      return false
+      return UpdatesConfigurationValidationResult.InvalidPlistError
     }
 
     guard dictionary.optionalValue(forKey: EXUpdatesConfigEnabledKey) ?? true else {
-      return false
+      return UpdatesConfigurationValidationResult.InvalidNotEnabled
     }
 
     let updateUrl: URL? = dictionary.optionalValue(forKey: EXUpdatesConfigUpdateUrlKey).let { it in
       URL(string: it)
     }
     guard updateUrl != nil else {
-      return false
+      return UpdatesConfigurationValidationResult.InvalidMissingURL
     }
 
     if isMissingRuntimeVersion(mergingOtherDictionary: mergingOtherDictionary) {
-      return false
+      return UpdatesConfigurationValidationResult.InvalidMissingRuntimeVersion
     }
 
-    return true
+    return UpdatesConfigurationValidationResult.Valid
   }
 
   public static func configWithExpoPlist(mergingOtherDictionary: [String: Any]?) throws -> UpdatesConfig {

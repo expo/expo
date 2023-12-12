@@ -110,12 +110,44 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
       return
     }
 
-    if !UpdatesConfig.canCreateValidConfiguration(mergingOtherDictionary: configuration) {
+    // swiftlint:disable:next identifier_name
+    let updatesConfigurationValidationResult = UpdatesConfig.getUpdatesConfigurationValidationResult(mergingOtherDictionary: configuration)
+    switch updatesConfigurationValidationResult {
+    case .Valid:
+      break
+    case .InvalidNotEnabled:
+      errorBlock(NSError(
+        domain: DevLauncherAppController.ErrorDomain,
+        code: ErrorCode.invalidUpdateURL.rawValue,
+        userInfo: [
+          NSLocalizedDescriptionKey: "Failed to read stored updates: configuration object is not enabled"
+        ]
+      ))
+      return
+    case .InvalidPlistError:
+      errorBlock(NSError(
+        domain: DevLauncherAppController.ErrorDomain,
+        code: ErrorCode.invalidUpdateURL.rawValue,
+        userInfo: [
+          NSLocalizedDescriptionKey: "Failed to read stored updates: invalid Expo.plist"
+        ]
+      ))
+      return
+    case .InvalidMissingURL:
       errorBlock(NSError(
         domain: DevLauncherAppController.ErrorDomain,
         code: ErrorCode.invalidUpdateURL.rawValue,
         userInfo: [
           NSLocalizedDescriptionKey: "Failed to read stored updates: configuration object must include a valid update URL"
+        ]
+      ))
+      return
+    case .InvalidMissingRuntimeVersion:
+      errorBlock(NSError(
+        domain: DevLauncherAppController.ErrorDomain,
+        code: ErrorCode.invalidUpdateURL.rawValue,
+        userInfo: [
+          NSLocalizedDescriptionKey: "Failed to read stored updates: configuration object must include a valid runtime version"
         ]
       ))
       return

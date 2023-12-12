@@ -13,5 +13,6 @@ enum class UpdatesErrorCode(val code: String) {
   UpdateFailedToLoad("UpdateFailedToLoad"),
   AssetsFailedToLoad("AssetsFailedToLoad"),
   JSRuntimeError("JSRuntimeError"),
+  InitializationError("InitializationError"),
   Unknown("Unknown")
 }

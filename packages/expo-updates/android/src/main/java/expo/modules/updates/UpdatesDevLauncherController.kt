@@ -110,11 +110,21 @@ class UpdatesDevLauncherController(
       return
     }
 
-    if (!UpdatesConfiguration.canCreateValidConfiguration(context, configuration)) {
-      callback.onFailure(Exception("Failed to load update: UpdatesConfiguration object must include a valid update URL"))
-      return
+    val newUpdatesConfiguration = when (UpdatesConfiguration.getUpdatesConfigurationValidationResult(context, configuration)) {
+      UpdatesConfigurationValidationResult.VALID -> UpdatesConfiguration(context, configuration)
+      UpdatesConfigurationValidationResult.INVALID_NOT_ENABLED -> {
+        callback.onFailure(Exception("Failed to load update: UpdatesConfiguration object is not enabled"))
+        return
+      }
+      UpdatesConfigurationValidationResult.INVALID_MISSING_URL -> {
+        callback.onFailure(Exception("Failed to load update: UpdatesConfiguration object must include a valid update URL"))
+        return
+      }
+      UpdatesConfigurationValidationResult.INVALID_MISSING_RUNTIME_VERSION -> {
+        callback.onFailure(Exception("Failed to load update: UpdatesConfiguration object must include a valid runtime version"))
+        return
+      }
     }
-    val newUpdatesConfiguration = UpdatesConfiguration(context, configuration)
 
     // since controller is a singleton, save its config so we can reset to it if our request fails
     previousUpdatesConfiguration = updatesConfiguration
