@@ -44,7 +44,7 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
           isActive={sidebarActiveGroup === 'home'}
         />
         <SidebarSingleEntry
-          href="/guides/overview"
+          href="/guides/overview/"
           title="Guides"
           Icon={BookOpen02DuotoneIcon}
           isActive={sidebarActiveGroup === 'general'}
