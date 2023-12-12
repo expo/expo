@@ -132,7 +132,9 @@ class AppContext(
   }
 
   fun onCreate() = trace("AppContext.onCreate") {
+    registry.readyForPostingEvents()
     registry.post(EventName.MODULE_CREATE)
+    registry.flushTheEventQueue()
   }
 
   /**

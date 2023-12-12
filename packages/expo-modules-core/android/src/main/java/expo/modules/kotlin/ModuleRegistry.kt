@@ -16,9 +16,9 @@ class ModuleRegistry(
   @PublishedApi
   internal val registry = mutableMapOf<String, ModuleHolder<*>>()
 
-  private val postponedEvents = mutableListOf<PostponedEvent>()
+  private val eventQueue = mutableListOf<PostponedEvent>()
 
-  private var onCreateEventWasEmitted = false
+  private var isReadyForPostingEvents = false
 
   fun <T : Module> register(module: T) = trace("ModuleRegistry.register(${module.javaClass})") {
     module._appContext = requireNotNull(appContext.get()) { "Cannot create a module for invalid app context." }
@@ -76,7 +76,7 @@ class ModuleRegistry(
   }
 
   fun post(eventName: EventName) {
-    if (postponeEvent(eventName)) {
+    if (addToQueueIfNeeded(eventName)) {
       return
     }
 
@@ -86,7 +86,7 @@ class ModuleRegistry(
   }
 
   fun <Sender> post(eventName: EventName, sender: Sender) {
-    if (postponeEvent(eventName)) {
+    if (addToQueueIfNeeded(eventName, sender)) {
       return
     }
 
@@ -96,7 +96,7 @@ class ModuleRegistry(
   }
 
   fun <Sender, Payload> post(eventName: EventName, sender: Sender, payload: Payload) {
-    if (postponeEvent(eventName)) {
+    if (addToQueueIfNeeded(eventName, sender, payload)) {
       return
     }
 
@@ -113,40 +113,38 @@ class ModuleRegistry(
   }
 
   /**
+   * Tell the modules registry it can handle events as they come, without adding them to the event queue.
+   */
+  fun readyForPostingEvents() = synchronized(this) {
+    isReadyForPostingEvents = true
+  }
+
+  fun flushTheEventQueue() = synchronized(this) {
+    eventQueue.forEach { event ->
+      forEach {
+        event.post(it)
+      }
+    }
+    eventQueue.clear()
+  }
+
+  /**
    * It’s important that the [EventName.MODULE_CREATE] event is emitted first by the registry.
    * However, some events like [EventName.ACTIVITY_ENTERS_FOREGROUND] are automatically emitted when the catalyst instance is created.
    * To ensure the correct order of events, we capture all events that are emitted
    * during the initialization phase and send them back to the modules later.
    * This way, we can ensure that the order of events is correct.
    */
-  private fun postponeEvent(
+  private fun addToQueueIfNeeded(
     eventName: EventName,
     sender: Any? = null,
     payload: Any? = null
   ): Boolean = synchronized(this) {
-    if (onCreateEventWasEmitted) {
+    if (isReadyForPostingEvents) {
       return false
     }
 
-    if (eventName == EventName.MODULE_CREATE) {
-      onCreateEventWasEmitted = true
-      val onCrete = PostponedEvent(eventName, sender, payload)
-      forEach {
-        onCrete.post(it)
-      }
-
-      postponedEvents.forEach { event ->
-        forEach {
-          event.post(it)
-        }
-      }
-
-      postponedEvents.clear()
-
-      return true
-    }
-
-    postponedEvents.add(PostponedEvent(eventName, sender, payload))
+    eventQueue.add(PostponedEvent(eventName, sender, payload))
     return true
   }
 

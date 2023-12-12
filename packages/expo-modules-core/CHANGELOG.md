@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed `OnCrete` was called before the `React` instance was ready.
+
 ### 💡 Others
 
 ## 1.11.0 — 2023-12-12
