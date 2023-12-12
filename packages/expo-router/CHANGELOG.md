@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Change `peerDependencies` for `expo` and remove `metro`.
+- Change `peerDependencies` for `expo` and remove `metro`. ([#25886](https://github.com/expo/expo/pull/25886) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.3.0 — 2023-12-12
 
