@@ -12,6 +12,7 @@
 
 - [Android] Fixed `concurrentRoot` is missing from intialProps when running on New Architecture mode. ([#25415](https://github.com/expo/expo/pull/25415) by [@kudo](https://github.com/kudo))
 - Use explicit `@expo/metro-config` dependendecy to avoid unexpected versions in monorepos. ([#25804](https://github.com/expo/expo/pull/25804) by [@byCedric](https://github.com/byCedric))
+- Fixed `Unable to resolve "fbemitter"` issue when using DevTools Plugins. ([#25856](https://github.com/expo/expo/pull/25856) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
