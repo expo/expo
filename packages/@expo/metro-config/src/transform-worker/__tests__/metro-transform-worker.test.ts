@@ -345,8 +345,20 @@ it('transforms import/export syntax when experimental flag is on', async () => {
       '});',
     ].join('\n')
   );
-  expect(result.output[0].data.map).toMatchSnapshot();
-  expect(result.output[0].data.functionMap).toMatchSnapshot();
+
+  const trace = toTraceMap(result.output[0], contents);
+
+  expect(generatedPositionFor(trace, { source: '', line: 1, column: 7 })).toMatchObject({
+    line: 4,
+    column: 6,
+  });
+
+  expect(originalPositionFor(trace, { line: 4, column: 6 })).toMatchObject({
+    line: 1,
+    column: 7,
+    name: 'c',
+  });
+
   expect(result.dependencies).toEqual([
     {
       data: expect.objectContaining({
