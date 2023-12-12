@@ -34,6 +34,7 @@ declare module 'metro-source-map' {
   ): { toMap(): EncodedSourceMap };
 }
 
+/** Converts source mappings from Metro to a “TraceMap”, which is similar to source-map’s SourceMapConsumer */
 const toTraceMap = (output: JsOutput, contents: string) => {
   const map = fromRawMappings([output.data]).toMap();
   return new TraceMap({
