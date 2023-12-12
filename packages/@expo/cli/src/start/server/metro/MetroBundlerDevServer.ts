@@ -399,10 +399,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       port: options.port,
       maxWorkers: options.maxWorkers,
       resetCache: options.resetDevServer,
-
-      // Use the unversioned metro config.
-      // TODO: Deprecate this property when expo-cli goes away.
-      unversioned: false,
     };
 
     // Required for symbolication:
