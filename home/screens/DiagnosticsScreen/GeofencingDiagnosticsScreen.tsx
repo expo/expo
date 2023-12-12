@@ -9,13 +9,14 @@ import {
   NativeEventSubscription,
   Platform,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
 import MapView, { Circle, MapPressEvent } from 'react-native-maps';
 
 import NavigationEvents from '../../components/NavigationEvents';
 import Button from '../../components/PrimaryButton';
+
+import { StyledText } from '@/components/Text';
 
 const GEOFENCING_TASK = 'geofencing';
 const REGION_RADIUSES = [30, 50, 75, 100, 150, 200];
@@ -199,7 +200,7 @@ export default class GeofencingScreen extends React.Component<Props, State> {
 
   render() {
     if (this.state.error) {
-      return <Text style={styles.errorText}>{this.state.error}</Text>;
+      return <StyledText style={styles.errorText}>{this.state.error}</StyledText>;
     }
 
     if (!this.state.initialRegion) {
