@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.24.0 — 2023-12-12
+
+### 🛠 Breaking changes
+
 - Add state machine procedure serial runner. ([#25386](https://github.com/expo/expo/pull/25386), [#25431](https://github.com/expo/expo/pull/25431) by [@wschurman](https://github.com/wschurman))
 
 ### 🎉 New features
@@ -15,7 +25,6 @@
 
 - [Android] Fix interaction between reload JS API and ErrorRecovery. ([#25651](https://github.com/expo/expo/pull/25651) by [@wschurman](https://github.com/wschurman))
 - [Android] Fix wait notify bug in launch asset when enabled. ([#25676](https://github.com/expo/expo/pull/25676) by [@wschurman](https://github.com/wschurman))
-
 
 ### 💡 Others
 

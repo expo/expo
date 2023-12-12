@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 13.0.0 — 2023-12-12
+
+### 🎉 New features
+
 - Added binary data support to the `expo-sqlite/next` API through the `Uint8Array`. ([#25787](https://github.com/expo/expo/pull/25787) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes

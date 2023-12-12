@@ -6,10 +6,16 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 3.5.0 — 2023-12-12
+
+### 🎉 New features
+
 - Launch directly into the previously opened project by default. ([#25500](https://github.com/expo/expo/pull/25500) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
-### 🐛 Bug fixes
 
 ### 💡 Others
 

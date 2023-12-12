@@ -1,6 +1,6 @@
 {
   "name": "@expo/osascript",
-  "version": "2.0.33",
+  "version": "2.1.0",
   "description": "Tools for running an osascripts in Node",
   "license": "MIT",
   "keywords": [
