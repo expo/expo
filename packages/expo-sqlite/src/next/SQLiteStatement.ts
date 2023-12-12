@@ -54,13 +54,6 @@ export class SQLiteStatement {
   }
 
   /**
-   * Reset the prepared statement cursor. This will call the [`sqlite3_reset()`](https://www.sqlite.org/c3ref/reset.html) C function under the hood.
-   */
-  public async resetAsync(): Promise<void> {
-    await this.nativeStatement.resetAsync(this.nativeDatabase);
-  }
-
-  /**
    * Finalize the prepared statement. This will call the [`sqlite3_finalize()`](https://www.sqlite.org/c3ref/finalize.html) C function under the hood.
    *
    * Attempting to access a finalized statement will result in an error.
@@ -103,13 +96,6 @@ export class SQLiteStatement {
    */
   public getColumnNamesSync(): string[] {
     return this.nativeStatement.getColumnNamesSync();
-  }
-
-  /**
-   * Reset the prepared statement cursor. This will call the [`sqlite3_reset()`](https://www.sqlite.org/c3ref/reset.html) C function under the hood.
-   */
-  public resetSync(): void {
-    this.nativeStatement.resetSync(this.nativeDatabase);
   }
 
   /**
@@ -183,14 +169,19 @@ export interface SQLiteExecuteAsyncResult<T> extends AsyncIterableIterator<T> {
   readonly changes: number;
 
   /**
-   * Get the first row of the result set.
+   * Get the first row of the result set. This requires the SQLite cursor to be in its initial state. If you have already retrieved rows from the result set, you need to reset the cursor first by calling [`resetAsync()`](#resetasync). Otherwise, an error will be thrown.
    */
   getFirstAsync(): Promise<T | null>;
 
   /**
-   * Get all rows of the result set.
+   * Get all rows of the result set. This requires the SQLite cursor to be in its initial state. If you have already retrieved rows from the result set, you need to reset the cursor first by calling [`resetAsync()`](#resetasync). Otherwise, an error will be thrown.
    */
   getAllAsync(): Promise<T[]>;
+
+  /**
+   * Reset the prepared statement cursor. This will call the [`sqlite3_reset()`](https://www.sqlite.org/c3ref/reset.html) C function under the hood.
+   */
+  resetAsync(): Promise<void>;
 }
 
 /**
@@ -252,14 +243,19 @@ export interface SQLiteExecuteSyncResult<T> extends IterableIterator<T> {
   readonly changes: number;
 
   /**
-   * Get the first row of the result set.
+   * Get the first row of the result set. This requires the SQLite cursor to be in its initial state. If you have already retrieved rows from the result set, you need to reset the cursor first by calling [`resetSync()`](#resetsync). Otherwise, an error will be thrown.
    */
   getFirstSync(): T | null;
 
   /**
-   * Get all rows of the result set.
+   * Get all rows of the result set. This requires the SQLite cursor to be in its initial state. If you have already retrieved rows from the result set, you need to reset the cursor first by calling [`resetSync()`](#resetsync). Otherwise, an error will be thrown.
    */
   getAllSync(): T[];
+
+  /**
+   * Reset the prepared statement cursor. This will call the [`sqlite3_reset()`](https://www.sqlite.org/c3ref/reset.html) C function under the hood.
+   */
+  resetSync(): void;
 }
 
 //#region Internals for SQLiteExecuteAsyncResult and SQLiteExecuteSyncResult
@@ -301,6 +297,12 @@ async function createSQLiteExecuteAsyncResult<T>(
     },
     getAllAsync: {
       value: instance.getAllAsync.bind(instance),
+      enumerable: true,
+      writable: false,
+      configurable: true,
+    },
+    resetAsync: {
+      value: instance.resetAsync.bind(instance),
       enumerable: true,
       writable: false,
       configurable: true,
@@ -348,6 +350,12 @@ function createSQLiteExecuteSyncResult<T>(
       writable: false,
       configurable: true,
     },
+    resetSync: {
+      value: instance.resetSync.bind(instance),
+      enumerable: true,
+      writable: false,
+      configurable: true,
+    },
   });
 
   return generator as SQLiteExecuteSyncResult<T>;
@@ -355,6 +363,7 @@ function createSQLiteExecuteSyncResult<T>(
 
 class SQLiteExecuteAsyncResultImpl<T> {
   private columnNames: string[] | null = null;
+  private isStepCalled = false;
 
   constructor(
     private readonly database: SQLiteAnyDatabase,
@@ -365,6 +374,12 @@ class SQLiteExecuteAsyncResultImpl<T> {
   ) {}
 
   async getFirstAsync(): Promise<T | null> {
+    if (this.isStepCalled) {
+      throw new Error(
+        'The SQLite cursor has been shifted and is unable to retrieve the first row without being reset. Invoke `resetAsync()` to reset the cursor first if you want to retrieve the first row.'
+      );
+    }
+    this.isStepCalled = true;
     const columnNames = await this.getColumnNamesAsync();
     const firstRowValues = this.popFirstRowValues();
     if (firstRowValues != null) {
@@ -375,6 +390,12 @@ class SQLiteExecuteAsyncResultImpl<T> {
   }
 
   async getAllAsync(): Promise<T[]> {
+    if (this.isStepCalled) {
+      throw new Error(
+        'The SQLite cursor has been shifted and is unable to retrieve all rows without being reset. Invoke `resetAsync()` to reset the cursor first if you want to retrieve all rows.'
+      );
+    }
+    this.isStepCalled = true;
     const columnNames = await this.getColumnNamesAsync();
     const allRows = await this.statement.getAllAsync(this.database);
     const firstRowValues = this.popFirstRowValues();
@@ -385,6 +406,7 @@ class SQLiteExecuteAsyncResultImpl<T> {
   }
 
   async *generatorAsync(): AsyncIterableIterator<T> {
+    this.isStepCalled = true;
     const columnNames = await this.getColumnNamesAsync();
     const firstRowValues = this.popFirstRowValues();
     if (firstRowValues != null) {
@@ -398,6 +420,12 @@ class SQLiteExecuteAsyncResultImpl<T> {
         yield composeRow<T>(columnNames, result);
       }
     } while (result != null);
+  }
+
+  resetAsync(): Promise<void> {
+    const result = this.statement.resetAsync(this.database);
+    this.isStepCalled = false;
+    return result;
   }
 
   private popFirstRowValues(): SQLiteColumnValues | null {
@@ -419,6 +447,7 @@ class SQLiteExecuteAsyncResultImpl<T> {
 
 class SQLiteExecuteSyncResultImpl<T> {
   private columnNames: string[] | null = null;
+  private isStepCalled = false;
 
   constructor(
     private readonly database: SQLiteAnyDatabase,
@@ -429,6 +458,11 @@ class SQLiteExecuteSyncResultImpl<T> {
   ) {}
 
   getFirstSync(): T | null {
+    if (this.isStepCalled) {
+      throw new Error(
+        'The SQLite cursor has been shifted and is unable to retrieve the first row without being reset. Invoke `resetSync()` to reset the cursor first if you want to retrieve the first row.'
+      );
+    }
     const columnNames = this.getColumnNamesSync();
     const firstRowValues = this.popFirstRowValues();
     if (firstRowValues != null) {
@@ -439,6 +473,11 @@ class SQLiteExecuteSyncResultImpl<T> {
   }
 
   getAllSync(): T[] {
+    if (this.isStepCalled) {
+      throw new Error(
+        'The SQLite cursor has been shifted and is unable to retrieve all rows without being reset. Invoke `resetSync()` to reset the cursor first if you want to retrieve all rows.'
+      );
+    }
     const columnNames = this.getColumnNamesSync();
     const allRows = this.statement.getAllSync(this.database);
     const firstRowValues = this.popFirstRowValues();
@@ -461,6 +500,12 @@ class SQLiteExecuteSyncResultImpl<T> {
         yield composeRow<T>(columnNames, result);
       }
     } while (result != null);
+  }
+
+  resetSync(): void {
+    const result = this.statement.resetSync(this.database);
+    this.isStepCalled = false;
+    return result;
   }
 
   private popFirstRowValues(): SQLiteColumnValues | null {

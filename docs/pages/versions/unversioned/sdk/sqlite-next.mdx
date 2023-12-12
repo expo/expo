@@ -96,7 +96,7 @@ try {
   console.log(firstRow.id, firstRow.value, firstRow.intValue);
 
   // Reset the SQLite query cursor to the beginning for the next `getAllAsync()` call.
-  await statement2.resetAsync();
+  await result.resetAsync();
 
   // `getAllAsync()` is useful when you want to get all results as an array of objects.
   const allRows = await result.getAllAsync();
@@ -105,7 +105,7 @@ try {
   }
 
   // Reset the SQLite query cursor to the beginning for the next `for-await-of` loop.
-  await statement2.resetAsync();
+  await result.resetAsync();
 
   // The result object is also an async iterable. You can use it in `for-await-of` loop to iterate SQLite query cursor.
   for await (const row of result) {

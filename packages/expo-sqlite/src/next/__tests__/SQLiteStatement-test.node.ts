@@ -115,7 +115,7 @@ describe(SQLiteStatement, () => {
     expect(row?.intValue).toBe(123);
     row = (await result.next()).value;
     expect(row?.intValue).toBe(456);
-    await statement.resetAsync();
+    await result.resetAsync();
     row = (await result.next()).value;
     expect(row?.intValue).toBe(123);
     await statement.finalizeAsync();

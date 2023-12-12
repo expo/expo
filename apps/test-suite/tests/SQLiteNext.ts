@@ -316,6 +316,46 @@ CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
       }
       expect(error.toString()).toMatch(/Access to closed resource/);
     });
+
+    it('should throw from getFirstAsync()/getAllAsync() if the cursor is not at the beginning', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      await db.execAsync(`
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL);
+INSERT INTO users (user_id, name, k, j) VALUES (1, 'Tim Duncan', 1, 23.4);
+INSERT INTO users (user_id, name, k, j) VALUES (2, 'Manu Ginobili', 5, 72.8);
+INSERT INTO users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.14);
+`);
+
+      for (const method of ['getFirstAsync', 'getAllAsync']) {
+        const statement = await db.prepareAsync('SELECT * FROM users ORDER BY j ASC');
+        let error = null;
+        try {
+          const result = await statement.executeAsync<UserEntity>();
+          await result.next();
+          await result[method]();
+        } catch (e) {
+          error = e;
+        } finally {
+          await statement.finalizeAsync();
+        }
+        expect(error.toString()).toMatch(/The SQLite cursor has been shifted/);
+
+        const statement2 = await db.prepareAsync('SELECT * FROM users ORDER BY j ASC');
+        error = null;
+        try {
+          const result2 = await statement2.executeAsync<UserEntity>();
+          await result2.next();
+          await result2.resetAsync();
+          await result2[method]();
+        } catch (e) {
+          error = e;
+        } finally {
+          await statement2.finalizeAsync();
+        }
+        expect(error).toBeNull();
+      }
+    });
   });
 
   describe('Statement parameters bindings', () => {
