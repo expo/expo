@@ -50,6 +50,7 @@ export function setParams(this: RouterStore, params: Record<string, string | num
 }
 
 export function linkTo(this: RouterStore, href: string, event?: string) {
+  debugger;
   if (shouldLinkExternally(href)) {
     Linking.openURL(href);
     return;
@@ -112,12 +113,7 @@ export function linkTo(this: RouterStore, href: string, event?: string) {
     return;
   }
 
-  switch (event) {
-    case 'REPLACE':
-      return navigationRef.dispatch(getNavigateReplaceAction(state, rootState));
-    default:
-      return navigationRef.dispatch(getNavigateAction(state, rootState, event));
-  }
+  return navigationRef.dispatch(getNavigateAction(state, rootState, event));
 }
 
 type NavigationParams = Partial<{
@@ -143,29 +139,17 @@ function rewriteNavigationStateToParams(
   return JSON.parse(JSON.stringify(params));
 }
 
-function getNavigateAction(state: ResultState, rootState: NavigationState, type = 'NAVIGATE') {
-  const { screen, params } = rewriteNavigationStateToParams(state);
-  return {
-    type,
-    target: rootState.key,
-    payload: {
-      name: screen,
-      params,
-    },
-  };
-}
-
-function getNavigateReplaceAction(
+function getNavigateAction(
   state: ResultState,
   parentState: NavigationState,
-  lastNavigatorSupportingReplace: NavigationState = parentState
-): NavigationAction {
-  // We should always have at least one route in the state
-  const route = state.routes.at(-1)!;
+  type = 'NAVIGATE',
+  lastCommonNavigator: NavigationState = parentState
+) {
+  const route = state.routes[state.routes.length - 1]!;
 
   // Only these navigators support replace
   if (parentState.type === 'stack' || parentState.type === 'tab') {
-    lastNavigatorSupportingReplace = parentState;
+    lastCommonNavigator = parentState;
   }
 
   const currentRoute = parentState.routes.find((parentRoute) => parentRoute.name === route.name);
@@ -173,19 +157,25 @@ function getNavigateReplaceAction(
 
   // If there is nested state and the routes are equal, we should keep going down the tree
   if (route.state && routesAreEqual && currentRoute.state) {
-    return getNavigateReplaceAction(
-      route.state,
-      currentRoute.state as any,
-      lastNavigatorSupportingReplace
-    );
+    return getNavigateAction(route.state, currentRoute.state as any, type, lastCommonNavigator);
   }
 
   // Either we reached the bottom of the state or the point where the routes diverged
   const { screen, params } = rewriteNavigationStateToParams(state);
 
+  if (type === 'PUSH') {
+    if (lastCommonNavigator.type !== 'stack') {
+      type = 'NAVIGATE';
+    }
+  } else if (type === 'REPLACE') {
+    if (lastCommonNavigator.type === 'tab') {
+      type = 'JUMP_TO';
+    }
+  }
+
   return {
-    type: lastNavigatorSupportingReplace.type === 'stack' ? 'REPLACE' : 'JUMP_TO',
-    target: lastNavigatorSupportingReplace?.key,
+    type,
+    target: lastCommonNavigator.key,
     payload: {
       name: screen,
       params,

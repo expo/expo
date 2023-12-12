@@ -686,22 +686,18 @@ it('can replace across groups', async () => {
 
   expect(screen).toHavePathname('/');
 
-  act(() => router.push('/two/screen'));
-  expect(screen).toHavePathname('/two/screen');
-  expect(screen.getByTestId('two/screen')).toBeOnTheScreen();
-
+  // Go to one
   act(() => router.push('/one/screen'));
   expect(screen).toHavePathname('/one/screen');
   expect(screen.getByTestId('one/screen')).toBeOnTheScreen();
 
-  // Should replace at the top Tabs
-  act(() => router.replace('/two/screen'));
+  // Push to two
+  act(() => router.push('/two/screen'));
   expect(screen).toHavePathname('/two/screen');
   expect(screen.getByTestId('two/screen')).toBeOnTheScreen();
 
-  act(() => router.back());
-
-  act(() => router.push('/one/screen'));
+  // Replace with one. This will create a history of ['one', 'one']
+  act(() => router.replace('/one/screen'));
   expect(screen).toHavePathname('/one/screen');
   expect(screen.getByTestId('one/screen')).toBeOnTheScreen();
 
@@ -736,7 +732,7 @@ it('can push nested stacks with initial route names without creating circular re
   expect(screen).toHavePathname('/menu/123');
 });
 
-it.only('can push & replace with nested Slots', async () => {
+it('can push & replace with nested Slots', async () => {
   renderRouter({
     _layout: () => <Slot />,
     index: () => <Text testID="index" />,

@@ -124,7 +124,7 @@ it('nested layouts', async () => {
   expect(HomeNested).toHaveBeenCalledTimes(1);
 });
 
-it.only('deep linking nested groups', async () => {
+it('deep linking nested groups', async () => {
   const RootLayout = jest.fn(() => <Slot />);
   const AppLayout = jest.fn(() => <Stack />);
   const TabsLayout = jest.fn(() => <Tabs />);
