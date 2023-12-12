@@ -1,4 +1,4 @@
-import { Subscription, PermissionResponse, PermissionStatus } from 'expo-modules-core';
+import { Subscription, PermissionResponse, PermissionStatus, PermissionHookOptions } from 'expo-modules-core';
 /**
  * Returns whether the Screen Capture API is available on the current device.
  *
@@ -80,5 +80,15 @@ export declare function getPermissionsAsync(): Promise<PermissionResponse>;
  * @return A promise that resolves to a [PermissionResponse](#permissionresponse) object.
  * */
 export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
-export { Subscription, PermissionResponse, PermissionStatus };
+/**
+ * Check or request permissions necessary for detecting when a screenshot is taken.
+ * This uses both [`requestPermissionsAsync`](#screencapturerequestpermissionsasync) and [`getPermissionsAsync`](#screencapturegetpermissionsasync) to interact with the permissions.
+ *
+ * @example
+ * ```js
+ * const [status, requestPermission] = ScreenCapture.useScreenCapturePermissions();
+ * ```
+ */
+export declare const usePermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
+export { Subscription, PermissionResponse, PermissionStatus, PermissionHookOptions };
 //# sourceMappingURL=ScreenCapture.d.ts.map

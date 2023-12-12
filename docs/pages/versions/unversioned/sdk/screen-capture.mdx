@@ -65,7 +65,7 @@ export default function ScreenCaptureExample() {
   };
 
   useEffect(() => {
-    let subscription: ScreenCapture.Subscription | undefined;
+    let subscription;
 
     const addListenerAsync = async () => {
       if (await hasPermissions()) {

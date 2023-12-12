@@ -1,4 +1,4 @@
-import { EventEmitter, UnavailabilityError, PermissionStatus, } from 'expo-modules-core';
+import { EventEmitter, UnavailabilityError, PermissionStatus, createPermissionHook, } from 'expo-modules-core';
 import { useEffect } from 'react';
 import ExpoScreenCapture from './ExpoScreenCapture';
 const activeTags = new Set();
@@ -130,6 +130,19 @@ export async function requestPermissionsAsync() {
     }
     return defaultPermissionsResponse;
 }
+/**
+ * Check or request permissions necessary for detecting when a screenshot is taken.
+ * This uses both [`requestPermissionsAsync`](#screencapturerequestpermissionsasync) and [`getPermissionsAsync`](#screencapturegetpermissionsasync) to interact with the permissions.
+ *
+ * @example
+ * ```js
+ * const [status, requestPermission] = ScreenCapture.useScreenCapturePermissions();
+ * ```
+ */
+export const usePermissions = createPermissionHook({
+    getMethod: getPermissionsAsync,
+    requestMethod: requestPermissionsAsync,
+});
 const defaultPermissionsResponse = {
     granted: true,
     expires: 'never',

@@ -66,7 +66,7 @@ class ScreenshotEventEmitter(val context: Context, moduleRegistry: ModuleRegistr
   private fun hasPermissions(context: Context): Boolean {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
       return ContextCompat.checkSelfPermission(context, permission.DETECT_SCREEN_CAPTURE) == PackageManager.PERMISSION_GRANTED
-    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
       return ContextCompat.checkSelfPermission(context, permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED
     }
     return ContextCompat.checkSelfPermission(context, permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED

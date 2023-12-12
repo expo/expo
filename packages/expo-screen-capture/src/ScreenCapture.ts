@@ -4,6 +4,8 @@ import {
   UnavailabilityError,
   PermissionResponse,
   PermissionStatus,
+  createPermissionHook,
+  PermissionHookOptions,
 } from 'expo-modules-core';
 import { useEffect } from 'react';
 
@@ -151,6 +153,20 @@ export async function requestPermissionsAsync(): Promise<PermissionResponse> {
   return defaultPermissionsResponse;
 }
 
+/**
+ * Check or request permissions necessary for detecting when a screenshot is taken.
+ * This uses both [`requestPermissionsAsync`](#screencapturerequestpermissionsasync) and [`getPermissionsAsync`](#screencapturegetpermissionsasync) to interact with the permissions.
+ *
+ * @example
+ * ```js
+ * const [status, requestPermission] = ScreenCapture.useScreenCapturePermissions();
+ * ```
+ */
+export const usePermissions = createPermissionHook({
+  getMethod: getPermissionsAsync,
+  requestMethod: requestPermissionsAsync,
+});
+
 const defaultPermissionsResponse: PermissionResponse = {
   granted: true,
   expires: 'never',
@@ -158,4 +174,4 @@ const defaultPermissionsResponse: PermissionResponse = {
   status: PermissionStatus.GRANTED,
 };
 
-export { Subscription, PermissionResponse, PermissionStatus };
+export { Subscription, PermissionResponse, PermissionStatus, PermissionHookOptions };
