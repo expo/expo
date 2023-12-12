@@ -3,6 +3,7 @@ title: Work with monorepos
 description: Learn about setting up Expo projects in a monorepo with Yarn v1 workspaces.
 ---
 
+import { Callout } from '~/ui/components/Callout';
 import { Terminal } from '~/ui/components/Snippet';
 import { Collapsible } from '~/ui/components/Collapsible';
 
@@ -38,7 +39,10 @@ Yarn and other tooling have a concept called _"workspaces"_. Every package and a
   "private": true,
   "name": "monorepo",
   "version": "1.0.0",
-  "workspaces": ["apps/*", "packages/*"]
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
 }
 ```
 
@@ -50,7 +54,7 @@ Now that we have the basic monorepo structure set up, let's add our first app.
 
 Before we can create our app, we have to create the **apps/** folder. This folder can contain all separate apps or websites that belong to this monorepo. Inside this **apps/** folder, we can create a subfolder that contains the React Native app.
 
-<Terminal cmd={['$ yarn create expo-app apps/cool-app']} />
+<Terminal cmd={['$ yarn create expo apps/cool-app']} />
 
 > If you have an existing app, you can copy all those files inside a subfolder.
 
@@ -84,8 +88,10 @@ config.resolver.nodeModulesPaths = [
   path.resolve(projectRoot, 'node_modules'),
   path.resolve(workspaceRoot, 'node_modules'),
 ];
+/* @info Starting from Expo SDK 50, you no longer should disable the hierarchical lookup by default. Learn more in the section below. */
 // 3. Force Metro to resolve (sub)dependencies only from the `nodeModulesPaths`
-config.resolver.disableHierarchicalLookup = true;
+// config.resolver.disableHierarchicalLookup = true;
+/* @end */
 
 module.exports = config;
 ```
@@ -100,7 +106,7 @@ When using monorepos, your app dependencies splits up into different directories
 
 As your monorepo increases in size, watching all files within the monorepo becomes slower. You can speed things up by only watching the packages your app uses. Typically, these are the ones that are installed with an asterisk (\*) in your **package.json**. For example:
 
-```js
+```js metro.config.js
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
 
@@ -132,8 +138,10 @@ config.resolver.nodeModulesPaths = [
   path.resolve(projectRoot, 'node_modules'),
   path.resolve(workspaceRoot, 'node_modules'),
 ];
+/* @info Starting from Expo SDK 50, you no longer should disable the hierarchical lookup by default. Learn more in the section below. */
 // 3. Force Metro to resolve (sub)dependencies only from the `nodeModulesPaths`
-config.resolver.disableHierarchicalLookup = true;
+// config.resolver.disableHierarchicalLookup = true;
+/* @end */
 ```
 
 </Collapsible>
@@ -152,6 +160,10 @@ We have to tell Metro to look in these two folders. The order is important here 
 </Collapsible>
 
 <Collapsible summary="3. Why do we need to disable the hierarchical lookup?">
+
+<Callout type="warning">
+  Starting from Expo SDK 50, the hierarchical lookup should no longer be disabled by default. Both React Native and Expo have improved general monorepo support, and disabling this option can cause other issues.
+</Callout>
 
 This option is important for certain edge cases, such as a monorepo that includes multiple versions of the `react` package. For example, let's say you have the following monorepo:
 
@@ -245,15 +257,15 @@ Like standard packages, we need to add our **cool-package** as a dependency to o
   },
   "dependencies": {
     "cool-package": "*",
-    "expo": "~43.0.2",
-    "expo-status-bar": "~1.1.0",
-    "react": "17.0.1",
-    "react-dom": "17.0.1",
-    "react-native": "0.64.3",
-    "react-native-web": "0.17.1"
+    "expo": "~50.0.0",
+    "expo-status-bar": "~1.10.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-native": "0.73.0",
+    "react-native-web": "~0.19.6"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.9"
+    "@babel/core": "^7.20.0"
   }
 }
 ```
@@ -281,6 +293,30 @@ export default function App() {
 ## Common issues
 
 As mentioned earlier, using monorepos is not for everyone. You take on increased complexity and need to solve issues you most likely will run into. Here are a couple of common issues you might encounter.
+
+### Multiple React Native versions within the monorepo
+
+Expo SDK 50 and higher has improved support for more complete **node_modules** patterns, such as isolated modules. Unfortunately, React Native can still cause issues when installing multiple versions inside a single monorepo. Because of that, it's recommended to only use a single version of React Native.
+
+You can check if your monorepo has multiple React Native versions and why they are installed through the package manager you use.
+
+<Terminal cmd={[
+  '# Bun does not support `bun why` yet, but you can use `yarn why`',
+  '$ bun install --yarn && yarn why react-native',
+  '',
+  '# npm supports the `npm explain` command, aliased to `npm why`',
+  '# https://docs.npmjs.com/cli/v10/commands/npm-explain',
+  '$ npm why react-native',
+  '',
+  '# pnpm only iterates the full monorepo with the `--recursive` flag',
+  '# https://pnpm.io/cli/why',
+  '$ pnpm why --recursive react-native',
+  '',
+  '# yarn supports the `yarn why` command',
+  '# https://classic.yarnpkg.com/en/docs/cli/why',
+  '$ yarn why react-native',
+]} />
+
 
 ### Can I use another monorepo tool instead of Yarn workspaces?
 
