@@ -16,9 +16,10 @@ import {
 } from 'react-native';
 import MapView, { Polyline } from 'react-native-maps';
 
-import NavigationEvents from '../../components/NavigationEvents';
-import Button from '../../components/PrimaryButton';
-import Colors from '../../constants/Colors';
+import NavigationEvents from '@/components/NavigationEvents';
+import Button from '@/components/PrimaryButton';
+import { StyledText } from '@/components/Text';
+import Colors from '@/constants/Colors';
 
 const STORAGE_KEY = 'expo-home-locations';
 const LOCATION_UPDATES_TASK = 'location-updates';
@@ -82,11 +83,9 @@ export default class LocationDiagnosticsScreen extends React.Component<Props, St
       this.appStateSubscription = AppState.addEventListener('change', this.handleAppStateChange);
       this.setState({
         error:
-          'Location permissions are required in order to use this feature. You can manually enable them at any time in the "Location Services" section of the Settings app.',
+          'Location access is required to be set to `Always` in order to use this feature. You can manually enable them at any time in the "Location Services" section of the Settings app.',
       });
       return;
-    } else {
-      this.setState({ error: null });
     }
 
     const { coords } = await Location.getCurrentPositionAsync();
@@ -114,6 +113,7 @@ export default class LocationDiagnosticsScreen extends React.Component<Props, St
         latitudeDelta: 0.004,
         longitudeDelta: 0.002,
       },
+      error: null,
     }));
   };
 
@@ -231,7 +231,7 @@ export default class LocationDiagnosticsScreen extends React.Component<Props, St
 
   render() {
     if (this.state.error) {
-      return <Text style={styles.errorText}>{this.state.error}</Text>;
+      return <StyledText style={styles.errorText}>{this.state.error}</StyledText>;
     }
 
     if (!this.state.initialRegion) {
@@ -348,7 +348,6 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 15,
-    color: 'rgba(0,0,0,0.7)',
     margin: 20,
   },
 });
