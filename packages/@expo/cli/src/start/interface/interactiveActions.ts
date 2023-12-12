@@ -102,8 +102,8 @@ export class DevServerManagerActions {
       app = apps[0];
     } else {
       const choices = apps.map((app) => ({
-        title: app.title,
-        value: app.deviceName ?? 'Unknown device',
+        title: app.deviceName ?? 'Unknown device',
+        value: app.id,
         app,
       }));
 
