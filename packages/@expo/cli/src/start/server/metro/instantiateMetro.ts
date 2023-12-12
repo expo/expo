@@ -1,10 +1,10 @@
 import { ExpoConfig, getConfig } from '@expo/config';
-import type { LoadOptions } from '@expo/metro-config';
+import { getDefaultConfig, LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import { Server as ConnectServer } from 'connect';
 import http from 'http';
 import type Metro from 'metro';
-import { loadConfig, ConfigT } from 'metro-config';
+import { loadConfig, resolveConfig, ConfigT } from 'metro-config';
 import { Terminal } from 'metro-core';
 import semver from 'semver';
 import { URL } from 'url';
@@ -63,8 +63,13 @@ export async function loadMetroConfigAsync(
   const terminal = new Terminal(process.stdout);
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
 
+  const hasConfig = await resolveConfig(options.config, projectRoot);
   let config: ConfigT = {
-    ...(await loadConfig({ cwd: projectRoot, projectRoot, ...options })),
+    ...(await loadConfig(
+      { cwd: projectRoot, projectRoot, ...options },
+      // If the project does not have a metro.config.js, then we use the default config.
+      hasConfig.isEmpty ? getDefaultConfig(projectRoot) : undefined
+    )),
     reporter: {
       update(event: any) {
         terminalReporter.update(event);
