@@ -141,6 +141,8 @@ class ModuleRegistry(
         }
       }
 
+      postponedEvents.clear()
+
       return true
     }
 
