@@ -118,11 +118,11 @@ export async function runChecksAsync(
 export async function actionAsync(projectRoot: string) {
   await warnUponCmdExe();
 
-  const { exp, pkg } = getConfig(projectRoot);
+  const projectConfig = getConfig(projectRoot);
 
   // expo-doctor relies on versioned CLI, which is only available for 44+
   try {
-    if (ltSdkVersion(exp, '46.0.0')) {
+    if (ltSdkVersion(projectConfig.exp, '46.0.0')) {
       Log.exit(
         chalk.red(`expo-doctor supports Expo SDK 46+. Use 'expo-cli doctor' for SDK 45 and lower.`)
       );
@@ -147,15 +147,15 @@ export async function actionAsync(projectRoot: string) {
     new ProjectSetupCheck(),
   ];
 
-  const checkParams = { exp, pkg, projectRoot };
-
   const filteredChecks = checks.filter(
     (check) =>
-      checkParams.exp.sdkVersion === 'UNVERSIONED' ||
-      semver.satisfies(checkParams.exp.sdkVersion!, check.sdkVersionRange)
+      projectConfig.exp.sdkVersion === 'UNVERSIONED' ||
+      semver.satisfies(projectConfig.exp.sdkVersion!, check.sdkVersionRange)
   );
 
   const spinner = startSpinner(`Running ${filteredChecks.length} checks on your project...`);
+
+  const checkParams = { projectRoot, ...projectConfig };
 
   const jobs = await runChecksAsync(filteredChecks, checkParams, printCheckResultSummaryOnComplete);
 
