@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Remove `loadAsync` method and prevent loading default config twice.
+- Remove `loadAsync` method and prevent loading default config twice. ([#25861](https://github.com/expo/expo/pull/25861) by [@EvanBacon](https://github.com/EvanBacon))
 - Moved `react-refresh` babel plugin from Metro to `babel-preset-expo`. ([#25461](https://github.com/expo/expo/pull/25461) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features

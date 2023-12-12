@@ -24,7 +24,7 @@
 
 ### 🐛 Bug fixes
 
-- Remove extraneous metro config reads.
+- Remove extraneous metro config reads. ([#25861](https://github.com/expo/expo/pull/25861) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix common chunks with cyclic dependencies being linked in async routes. ([#25831](https://github.com/expo/expo/pull/25831) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix `--max-workers` flag in `npx expo export`. ([#25710](https://github.com/expo/expo/pull/25710) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix test resolver for SDK 50. ([#25473](https://github.com/expo/expo/pull/25473) by [@EvanBacon](https://github.com/EvanBacon))
