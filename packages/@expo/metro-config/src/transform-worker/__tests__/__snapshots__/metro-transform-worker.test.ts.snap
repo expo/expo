@@ -54,58 +54,6 @@ exports[`transforms a simple module 2`] = `
 }
 `;
 
-exports[`transforms a simple script 1`] = `
-[
-  [
-    2,
-    2,
-    1,
-    0,
-    "someReallyArbitrary",
-  ],
-  [
-    2,
-    21,
-    1,
-    19,
-  ],
-  [
-    2,
-    22,
-    1,
-    20,
-    "code",
-  ],
-  [
-    2,
-    26,
-    1,
-    24,
-  ],
-  [
-    2,
-    27,
-    1,
-    25,
-  ],
-  [
-    3,
-    0,
-    1,
-    25,
-  ],
-]
-`;
-
-exports[`transforms a simple script 2`] = `
-{
-  "mappings": "AAA",
-  "names": [
-    "<global>",
-  ],
-}
-`;
-
 exports[`transforms an es module with asyncToGenerator 1`] = `
 "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
   var _interopRequireDefault = _$$_REQUIRE(_dependencyMap[0], "@babel/runtime/helpers/interopRequireDefault");

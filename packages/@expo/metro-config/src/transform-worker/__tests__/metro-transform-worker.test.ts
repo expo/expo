@@ -135,11 +135,13 @@ beforeEach(() => {
 });
 
 it('transforms a simple script', async () => {
+  const contents = 'someReallyArbitrary(code)';
+
   const result = await Transformer.transform(
     baseConfig,
     '/root',
     'local/file.js',
-    Buffer.from('someReallyArbitrary(code)', 'utf8'),
+    Buffer.from(contents, 'utf8'),
     { ...baseTransformOptions, type: 'script' }
   );
 
@@ -151,8 +153,19 @@ it('transforms a simple script', async () => {
       "})(typeof globalThis !== 'undefined' ? globalThis : typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : this);",
     ].join('\n')
   );
-  expect(result.output[0].data.map).toMatchSnapshot();
-  expect(result.output[0].data.functionMap).toMatchSnapshot();
+
+  const trace = toTraceMap(result.output[0], contents);
+
+  expect(
+    generatedPositionFor(trace, { source: '', line: 1, column: 0 })
+  ).toMatchObject({ line: 2, column: 2 });
+
+  expect(originalPositionFor(trace, { line: 2, column: 2 })).toMatchObject({
+    line: 1,
+    column: 0,
+    name: 'someReallyArbitrary',
+  });
+
   expect(result.dependencies).toEqual([]);
 });
 
