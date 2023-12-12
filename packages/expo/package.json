@@ -72,6 +72,7 @@
     "expo-keep-awake": "~12.8.0",
     "expo-modules-autolinking": "1.8.0",
     "expo-modules-core": "1.10.0",
+    "fbemitter": "^3.0.0",
     "whatwg-url-without-unicode": "8.0.0-3"
   },
   "devDependencies": {
