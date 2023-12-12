@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add back legacy inspector js middleware for dev menu. ([#25881](https://github.com/expo/expo/pull/25881) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 0.16.0 — 2023-12-12

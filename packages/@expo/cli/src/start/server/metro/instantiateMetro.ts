@@ -21,6 +21,7 @@ import { createDebuggerTelemetryMiddleware } from '../../../utils/analytics/metr
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { env } from '../../../utils/env';
 import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
+import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware, replaceMiddlewareWith } from '../middleware/mutations';
 import { remoteDevtoolsCorsMiddleware } from '../middleware/remoteDevtoolsCorsMiddleware';
 import { remoteDevtoolsSecurityHeadersMiddleware } from '../middleware/remoteDevtoolsSecurityHeadersMiddleware';
@@ -179,6 +180,7 @@ export async function instantiateMetroAsync(
   // Initialize all React Native debug features
   const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware(metroBundler);
   prependMiddleware(middleware, debugMiddleware);
+  middleware.use('/_expo/debugger', createJsInspectorMiddleware());
 
   const { server, metro } = await runServer(metroBundler, metroConfig, {
     // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api

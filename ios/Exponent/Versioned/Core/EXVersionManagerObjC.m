@@ -326,7 +326,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   NSInteger port = [[[bridge bundleURL] port] integerValue] ?: RCT_METRO_PORT;
   NSString *host = [[bridge bundleURL] host] ?: @"localhost";
   NSString *url =
-      [NSString stringWithFormat:@"http://%@:%lld/inspector?applicationId=%@", host, (long long)port, NSBundle.mainBundle.bundleIdentifier];
+      [NSString stringWithFormat:@"http://%@:%lld/_expo/debugger?applicationId=%@", host, (long long)port, NSBundle.mainBundle.bundleIdentifier];
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
   request.HTTPMethod = @"PUT";
   [[[NSURLSession sharedSession] dataTaskWithRequest:request] resume];
