@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On `Android`, make `tokenManager` nullable to prevent crash if we can't find it. ([#25860](https://github.com/expo/expo/pull/25860) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 0.26.0 — 2023-11-14
