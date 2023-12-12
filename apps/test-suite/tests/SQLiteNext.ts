@@ -19,15 +19,15 @@ export function test({ describe, expect, it, beforeAll, beforeEach, afterEach, .
     it('should be able to drop + create a table, insert, query', async () => {
       const db = await SQLite.openDatabaseAsync(':memory:');
       await db.execAsync(`
-DROP TABLE IF EXISTS Users;
-CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL);
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL);
 `);
-      const statement = await db.prepareAsync('INSERT INTO Users (name, k, j) VALUES (?, ?, ?)');
+      const statement = await db.prepareAsync('INSERT INTO users (name, k, j) VALUES (?, ?, ?)');
       await statement.executeAsync('Tim Duncan', 1, 23.4);
       await statement.executeAsync(['Manu Ginobili', 5, 72.8]);
       await statement.executeAsync(['Nikhilesh Sigatapu', 7, 42.14]);
 
-      const results = await db.getAllAsync<UserEntity>('SELECT * FROM Users');
+      const results = await db.getAllAsync<UserEntity>('SELECT * FROM users');
       expect(results.length).toBe(3);
       expect(results[0].j).toBeCloseTo(23.4);
       await statement.finalizeAsync();
@@ -63,11 +63,11 @@ CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
     it('should support PRAGMA statements', async () => {
       const db = await SQLite.openDatabaseAsync(':memory:');
       await db.execAsync(`
-DROP TABLE IF EXISTS SomeTable;
-CREATE TABLE IF NOT EXISTS SomeTable (id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
+DROP TABLE IF EXISTS test;
+CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
 `);
 
-      const results = await db.getAllAsync<any>('PRAGMA table_info(SomeTable)');
+      const results = await db.getAllAsync<any>('PRAGMA table_info(test)');
       expect(results.length).toBe(2);
       expect(results[0].name).toBe('id');
       expect(results[1].name).toBe('name');
@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS SomeTable (id INTEGER PRIMARY KEY NOT NULL, name VARC
       );
 
       const db = await SQLite.openDatabaseAsync('downloaded.db');
-      const results = await db.getAllAsync<UserEntity>('SELECT * FROM Users');
+      const results = await db.getAllAsync<UserEntity>('SELECT * FROM users');
       expect(results.length).toEqual(3);
       expect(results[0].j).toBeCloseTo(23.4);
       await db.closeAsync();
@@ -123,8 +123,8 @@ CREATE TABLE IF NOT EXISTS SomeTable (id INTEGER PRIMARY KEY NOT NULL, name VARC
     it('should create and delete a database in file system', async () => {
       const db = await SQLite.openDatabaseAsync('test.db');
       await db.execAsync(`
-DROP TABLE IF EXISTS Users;
-CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL);
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL);
 `);
       await db.closeAsync();
 
@@ -139,11 +139,11 @@ CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
     it('should be able to recreate db from scratch by deleting file', async () => {
       let db = await SQLite.openDatabaseAsync('test.db');
       await db.execAsync(`
-DROP TABLE IF EXISTS Users;
-CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL);
-INSERT INTO Users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL);
+INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
 `);
-      let results = await db.getAllAsync<UserEntity>('SELECT * FROM Users');
+      let results = await db.getAllAsync<UserEntity>('SELECT * FROM users');
       expect(results.length).toBe(1);
       await db.closeAsync();
 
@@ -155,13 +155,13 @@ INSERT INTO Users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
 
       db = await SQLite.openDatabaseAsync('test.db');
       await db.execAsync(`
-      DROP TABLE IF EXISTS Users;
-      CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL);
+      DROP TABLE IF EXISTS users;
+      CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL);
       `);
-      results = await db.getAllAsync<UserEntity>('SELECT * FROM Users');
+      results = await db.getAllAsync<UserEntity>('SELECT * FROM users');
       expect(results.length).toBe(0);
-      await db.runAsync('INSERT INTO Users (name, k, j) VALUES (?, ?, ?)', 'Tim Duncan', 1, 23.4);
-      results = await db.getAllAsync<UserEntity>('SELECT * FROM Users');
+      await db.runAsync('INSERT INTO users (name, k, j) VALUES (?, ?, ?)', 'Tim Duncan', 1, 23.4);
+      results = await db.getAllAsync<UserEntity>('SELECT * FROM users');
       expect(results.length).toBe(1);
 
       await db.closeAsync();
@@ -172,16 +172,16 @@ INSERT INTO Users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
     it('should maintain correct type of potentialy null bind parameters', async () => {
       const db = await SQLite.openDatabaseAsync(':memory:');
       await db.execAsync(`
-DROP TABLE IF EXISTS Nulling;
-CREATE TABLE IF NOT EXISTS Nulling (id INTEGER PRIMARY KEY NOT NULL, x NUMERIC, y NUMERIC);
+DROP TABLE IF EXISTS nulling;
+CREATE TABLE IF NOT EXISTS nulling (id INTEGER PRIMARY KEY NOT NULL, x NUMERIC, y NUMERIC);
 `);
-      await db.runAsync('INSERT INTO Nulling (x, y) VALUES (?, ?)', [null, null]);
-      const statement = await db.prepareAsync('INSERT INTO Nulling (x, y) VALUES (?, ?)');
+      await db.runAsync('INSERT INTO nulling (x, y) VALUES (?, ?)', [null, null]);
+      const statement = await db.prepareAsync('INSERT INTO nulling (x, y) VALUES (?, ?)');
       statement.executeAsync(null, null);
       statement.finalizeAsync();
 
       const results = await db.getAllAsync<{ x: number | null; y: number | null }>(
-        'SELECT * FROM Nulling'
+        'SELECT * FROM nulling'
       );
       expect(results[0].x).toBeNull();
       expect(results[0].y).toBeNull();
@@ -232,27 +232,27 @@ CREATE TABLE customers (id PRIMARY KEY NOT NULL, name VARCHAR(255),email VARCHAR
     it('runAsync should return changes in RunResult', async () => {
       const db = await SQLite.openDatabaseAsync(':memory:');
       await db.execAsync(`
-DROP TABLE IF EXISTS Users;
-CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
 `);
 
-      await db.runAsync('INSERT INTO Users (name) VALUES (?), (?), (?)', [
+      await db.runAsync('INSERT INTO users (name) VALUES (?), (?), (?)', [
         'name1',
         'name2',
         'name3',
       ]);
-      let statement = await db.prepareAsync('DELETE FROM Users WHERE name=?');
+      let statement = await db.prepareAsync('DELETE FROM users WHERE name=?');
       let result = await statement.executeAsync('name1');
       expect(result.changes).toBe(1);
       await statement.finalizeAsync();
 
-      statement = await db.prepareAsync('DELETE FROM Users WHERE name=? OR name=?');
+      statement = await db.prepareAsync('DELETE FROM users WHERE name=? OR name=?');
       result = await statement.executeAsync(['name2', 'name3']);
       expect(result.changes).toBe(2);
       await statement.finalizeAsync();
 
       // ensure deletion succeedeed
-      expect((await db.getAllAsync('SELECT * FROM Users')).length).toBe(0);
+      expect((await db.getAllAsync('SELECT * FROM users')).length).toBe(0);
 
       await db.closeAsync();
     });
@@ -261,18 +261,18 @@ CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
       const db = await SQLite.openDatabaseAsync(':memory:');
       await db.runAsync('PRAGMA foreign_keys = ON');
       await db.execAsync(`
-DROP TABLE IF EXISTS Users;
-DROP TABLE IF EXISTS Posts;
-CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
-CREATE TABLE IF NOT EXISTS Posts (post_id INTEGER PRIMARY KEY NOT NULL, content VARCHAR(64), userposted INTEGER, FOREIGN KEY(userposted) REFERENCES Users(user_id) ON DELETE CASCADE);
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS posts;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
+CREATE TABLE IF NOT EXISTS posts (post_id INTEGER PRIMARY KEY NOT NULL, content VARCHAR(64), userposted INTEGER, FOREIGN KEY(userposted) REFERENCES users(user_id) ON DELETE CASCADE);
 `);
 
-      await db.runAsync('INSERT INTO Users (name) VALUES (?), (?), (?)', [
+      await db.runAsync('INSERT INTO users (name) VALUES (?), (?), (?)', [
         'name1',
         'name2',
         'name3',
       ]);
-      await db.runAsync('INSERT INTO Posts (content, userposted) VALUES (?, ?), (?, ?), (?, ?)', [
+      await db.runAsync('INSERT INTO posts (content, userposted) VALUES (?, ?), (?, ?), (?, ?)', [
         'post1',
         1,
         'post2',
@@ -281,19 +281,19 @@ CREATE TABLE IF NOT EXISTS Posts (post_id INTEGER PRIMARY KEY NOT NULL, content 
         2,
       ]);
 
-      let statement = await db.prepareAsync('DELETE FROM Users WHERE name=?');
+      let statement = await db.prepareAsync('DELETE FROM users WHERE name=?');
       let result = await statement.executeAsync('name1');
       expect(result.changes).toBe(1);
       await statement.finalizeAsync();
 
-      statement = await db.prepareAsync('DELETE FROM Users WHERE name=? OR name=?');
+      statement = await db.prepareAsync('DELETE FROM users WHERE name=? OR name=?');
       result = await statement.executeAsync(['name2', 'name3']);
       expect(result.changes).toBe(2);
       await statement.finalizeAsync();
 
       // ensure deletion succeedeed
-      expect((await db.getAllAsync('SELECT * FROM Users')).length).toBe(0);
-      expect((await db.getAllAsync('SELECT * FROM Posts')).length).toBe(0);
+      expect((await db.getAllAsync('SELECT * FROM users')).length).toBe(0);
+      expect((await db.getAllAsync('SELECT * FROM posts')).length).toBe(0);
 
       await db.runAsync('PRAGMA foreign_keys = OFF');
       await db.closeAsync();
@@ -302,11 +302,11 @@ CREATE TABLE IF NOT EXISTS Posts (post_id INTEGER PRIMARY KEY NOT NULL, content 
     it('should throw when accessing a finalized statement', async () => {
       const db = await SQLite.openDatabaseAsync(':memory:');
       await db.execAsync(`
-DROP TABLE IF EXISTS Users;
-CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
 `);
 
-      const statement = await db.prepareAsync('INSERT INTO Users (user_id, name) VALUES (?, ?)');
+      const statement = await db.prepareAsync('INSERT INTO users (user_id, name) VALUES (?, ?)');
       await statement.finalizeAsync();
       let error = null;
       try {
@@ -324,11 +324,11 @@ CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
     beforeEach(async () => {
       db = await SQLite.openDatabaseAsync(':memory:');
       await db.execAsync(`
-DROP TABLE IF EXISTS Users;
-CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL);
-INSERT INTO Users (user_id, name, k, j) VALUES (1, 'Tim Duncan', 1, 23.4);
-INSERT INTO Users (user_id, name, k, j) VALUES (2, 'Manu Ginobili', 5, 72.8);
-INSERT INTO Users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.14);
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL);
+INSERT INTO users (user_id, name, k, j) VALUES (1, 'Tim Duncan', 1, 23.4);
+INSERT INTO users (user_id, name, k, j) VALUES (2, 'Manu Ginobili', 5, 72.8);
+INSERT INTO users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.14);
 `);
     });
     afterEach(async () => {
@@ -337,7 +337,7 @@ INSERT INTO Users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.1
 
     it('should support async iterator', async () => {
       const results: UserEntity[] = [];
-      const statement = await db.prepareAsync('SELECT * FROM Users ORDER BY user_id DESC');
+      const statement = await db.prepareAsync('SELECT * FROM users ORDER BY user_id DESC');
       const result = await statement.executeAsync<UserEntity>();
       for await (const row of result) {
         results.push(row);
@@ -350,7 +350,7 @@ INSERT INTO Users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.1
     });
 
     it('should support variadic unnamed parameter binding', async () => {
-      const statement = await db.prepareAsync('SELECT * FROM Users WHERE name = ? AND k = ?');
+      const statement = await db.prepareAsync('SELECT * FROM users WHERE name = ? AND k = ?');
       let result = await (
         await statement.executeAsync<UserEntity>('Tim Duncan', 1)
       ).getFirstAsync();
@@ -361,7 +361,7 @@ INSERT INTO Users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.1
     });
 
     it('should support array unnamed parameter binding', async () => {
-      const statement = await db.prepareAsync('SELECT * FROM Users WHERE name = ? AND k = ?');
+      const statement = await db.prepareAsync('SELECT * FROM users WHERE name = ? AND k = ?');
       let result = await (
         await statement.executeAsync<UserEntity>(['Tim Duncan', 1])
       ).getFirstAsync();
@@ -373,7 +373,7 @@ INSERT INTO Users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.1
     });
 
     it('should support array named parameter binding - $VVV', async () => {
-      const statement = await db.prepareAsync('SELECT * FROM Users WHERE name = $name AND k = $k');
+      const statement = await db.prepareAsync('SELECT * FROM users WHERE name = $name AND k = $k');
       let result = await (
         await statement.executeAsync<UserEntity>({ $name: 'Tim Duncan', $k: 1 })
       ).getFirstAsync();
@@ -386,7 +386,7 @@ INSERT INTO Users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.1
     });
 
     it('should support array named parameter binding - :VVV', async () => {
-      const statement = await db.prepareAsync('SELECT * FROM Users WHERE name = :name AND k = :k');
+      const statement = await db.prepareAsync('SELECT * FROM users WHERE name = :name AND k = :k');
       let result = await (
         await statement.executeAsync<UserEntity>({ ':name': 'Tim Duncan', ':k': 1 })
       ).getFirstAsync();
@@ -399,7 +399,7 @@ INSERT INTO Users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.1
     });
 
     it('should support array named parameter binding - @VVV', async () => {
-      const statement = await db.prepareAsync('SELECT * FROM Users WHERE name = @name AND k = @k');
+      const statement = await db.prepareAsync('SELECT * FROM users WHERE name = @name AND k = @k');
       let result = await (
         await statement.executeAsync<UserEntity>({ '@name': 'Tim Duncan', '@k': 1 })
       ).getFirstAsync();
@@ -413,17 +413,17 @@ INSERT INTO Users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.1
 
     it('should support blob data with Uint8Array', async () => {
       await db.execAsync(`
-  DROP TABLE IF EXISTS Blobs;
-  CREATE TABLE IF NOT EXISTS Blobs (id INTEGER PRIMARY KEY NOT NULL, data BLOB);`);
+  DROP TABLE IF EXISTS blobs;
+  CREATE TABLE IF NOT EXISTS blobs (id INTEGER PRIMARY KEY NOT NULL, data BLOB);`);
 
       const blob = new Uint8Array([0x00, 0x01, 0x02, 0x03, 0x04, 0x05]);
-      await db.runAsync('INSERT INTO Blobs (data) VALUES (?)', blob);
+      await db.runAsync('INSERT INTO blobs (data) VALUES (?)', blob);
 
-      const statement = await db.prepareAsync('SELECT * FROM Blobs');
+      const statement = await db.prepareAsync('SELECT * FROM blobs');
       const row = await (await statement.executeAsync<{ data: Uint8Array }>()).getFirstAsync();
       await statement.finalizeAsync();
       expect(row.data).toEqual(blob);
-      const row2 = db.getFirstSync<{ data: Uint8Array }>('SELECT * FROM Blobs');
+      const row2 = db.getFirstSync<{ data: Uint8Array }>('SELECT * FROM blobs');
       expect(row2.data).toEqual(blob);
     });
   });
@@ -438,8 +438,8 @@ INSERT INTO Users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.1
     it('should support async transaction', async () => {
       db = await SQLite.openDatabaseAsync(':memory:');
       await db.execAsync(`
-DROP TABLE IF EXISTS Users;
-CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
 `);
 
       async function fakeUserFetcher(userID) {
@@ -461,8 +461,8 @@ CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
 
       const userName = await fakeUserFetcher(1);
       await db.withTransactionAsync(async () => {
-        await db.runAsync('INSERT INTO Users (name) VALUES (?)', [userName]);
-        const result = await db.getFirstAsync<UserEntity>('SELECT * FROM Users LIMIT 1');
+        await db.runAsync('INSERT INTO users (name) VALUES (?)', [userName]);
+        const result = await db.getFirstAsync<UserEntity>('SELECT * FROM users LIMIT 1');
         expect(result.name).toEqual('Tim Duncan');
       });
     });
@@ -470,12 +470,12 @@ CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
     it('should support Promise.all', async () => {
       db = await SQLite.openDatabaseAsync(':memory:');
       await db.execAsync(`
-DROP TABLE IF EXISTS Users;
-CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
 `);
 
       await db.withTransactionAsync(async () => {
-        const statement = await db.prepareAsync('INSERT INTO Users (name) VALUES (?)');
+        const statement = await db.prepareAsync('INSERT INTO users (name) VALUES (?)');
         await Promise.all([
           statement.executeAsync('aaa'),
           statement.executeAsync(['bbb']),
@@ -483,7 +483,7 @@ CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
         ]);
 
         await statement.finalizeAsync();
-        const result = await db.getFirstAsync<any>('SELECT COUNT(*) FROM Users');
+        const result = await db.getFirstAsync<any>('SELECT COUNT(*) FROM users');
         expect(result['COUNT(*)']).toEqual(3);
       });
     });
@@ -491,18 +491,18 @@ CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
     it('should rollback transaction when exception happens inside a transaction', async () => {
       db = await SQLite.openDatabaseAsync(':memory:');
       await db.execAsync(`
-DROP TABLE IF EXISTS Users;
-CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
 `);
 
-      await db.runAsync('INSERT INTO Users (name) VALUES (?)', ['aaa']);
-      expect((await db.getFirstAsync<any>('SELECT COUNT(*) FROM Users'))['COUNT(*)']).toBe(1);
+      await db.runAsync('INSERT INTO users (name) VALUES (?)', ['aaa']);
+      expect((await db.getFirstAsync<any>('SELECT COUNT(*) FROM users'))['COUNT(*)']).toBe(1);
 
       let error = null;
       try {
         await db.withTransactionAsync(async () => {
-          await db.runAsync('INSERT INTO Users (name) VALUES (?)', ['bbb']);
-          await db.runAsync('INSERT INTO Users (name) VALUES (?)', ['ccc']);
+          await db.runAsync('INSERT INTO users (name) VALUES (?)', ['bbb']);
+          await db.runAsync('INSERT INTO users (name) VALUES (?)', ['ccc']);
           // exeuting invalid sql statement will throw an exception
           await db.runAsync('INSERT2');
         });
@@ -511,24 +511,24 @@ CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
       }
       expect(error).not.toBeNull();
 
-      expect((await db.getFirstAsync<any>('SELECT COUNT(*) FROM Users'))['COUNT(*)']).toBe(1);
+      expect((await db.getFirstAsync<any>('SELECT COUNT(*) FROM users'))['COUNT(*)']).toBe(1);
     });
 
     it('withTransactionAsync could possibly have other async queries interrupted inside the transaction', async () => {
       db = await SQLite.openDatabaseAsync('test.db');
       await db.execAsync(`
-DROP TABLE IF EXISTS Users;
-CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
-INSERT INTO Users (name) VALUES ('aaa');
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
+INSERT INTO users (name) VALUES ('aaa');
   `);
 
       const promise1 = db.withTransactionAsync(async () => {
         for (let i = 0; i < 10; ++i) {
-          const result = await db?.getFirstAsync<{ name: string }>('SELECT name FROM Users');
+          const result = await db?.getFirstAsync<{ name: string }>('SELECT name FROM users');
           if (result?.name !== 'aaa') {
             throw new Error(`Exception from promise1: Expected aaa but received ${result?.name}}`);
           }
-          await db?.runAsync('UPDATE Users SET name = ?', 'aaa');
+          await db?.runAsync('UPDATE users SET name = ?', 'aaa');
           await delayAsync(200);
         }
       });
@@ -536,8 +536,8 @@ INSERT INTO Users (name) VALUES ('aaa');
       const promise2 = new Promise(async (resolve, reject) => {
         try {
           await delayAsync(100);
-          await db?.runAsync('UPDATE Users SET name = ?', 'bbb');
-          const result = await db?.getFirstAsync<{ name: string }>('SELECT name FROM Users');
+          await db?.runAsync('UPDATE users SET name = ?', 'bbb');
+          const result = await db?.getFirstAsync<{ name: string }>('SELECT name FROM users');
           if (result?.name !== 'bbb') {
             throw new Error(`Exception from promise2: Expected bbb but received ${result?.name}}`);
           }
@@ -557,18 +557,18 @@ INSERT INTO Users (name) VALUES ('aaa');
     it('withExclusiveTransactionAsync should execute a transaction atomically and abort other write query', async () => {
       db = await SQLite.openDatabaseAsync('test.db');
       await db.execAsync(`
-DROP TABLE IF EXISTS Users;
-CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
-INSERT INTO Users (name) VALUES ('aaa');
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
+INSERT INTO users (name) VALUES ('aaa');
   `);
 
       const promise1 = db.withExclusiveTransactionAsync(async (txn) => {
         for (let i = 0; i < 10; ++i) {
-          const result = await txn.getFirstAsync<{ name: string }>('SELECT name FROM Users');
+          const result = await txn.getFirstAsync<{ name: string }>('SELECT name FROM users');
           if (result?.name !== 'aaa') {
             throw new Error(`Exception from promise1: Expected aaa but received ${result?.name}}`);
           }
-          await txn.runAsync('UPDATE Users SET name = ?', 'aaa');
+          await txn.runAsync('UPDATE users SET name = ?', 'aaa');
           await delayAsync(200);
         }
       });
@@ -576,8 +576,8 @@ INSERT INTO Users (name) VALUES ('aaa');
       const promise2 = new Promise(async (resolve, reject) => {
         try {
           await delayAsync(100);
-          await db?.runAsync('UPDATE Users SET name = ?', 'bbb');
-          const result = await db?.getFirstAsync<{ name: string }>('SELECT name FROM Users');
+          await db?.runAsync('UPDATE users SET name = ?', 'bbb');
+          const result = await db?.getFirstAsync<{ name: string }>('SELECT name FROM users');
           if (result?.name !== 'bbb') {
             throw new Error(`Exception from promise2: Expected bbb but received ${result?.name}}`);
           }
@@ -601,11 +601,11 @@ INSERT INTO Users (name) VALUES ('aaa');
     beforeEach(() => {
       db = SQLite.openDatabaseSync(':memory:');
       db.execSync(`
-DROP TABLE IF EXISTS Users;
-CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL);
-INSERT INTO Users (user_id, name, k, j) VALUES (1, 'Tim Duncan', 1, 23.4);
-INSERT INTO Users (user_id, name, k, j) VALUES (2, 'Manu Ginobili', 5, 72.8);
-INSERT INTO Users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.14);
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL);
+INSERT INTO users (user_id, name, k, j) VALUES (1, 'Tim Duncan', 1, 23.4);
+INSERT INTO users (user_id, name, k, j) VALUES (2, 'Manu Ginobili', 5, 72.8);
+INSERT INTO users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.14);
 `);
     });
 
@@ -614,28 +614,28 @@ INSERT INTO Users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.1
     });
 
     it('Basic CRUD', () => {
-      const result = db.runSync('INSERT INTO Users (name, k, j) VALUES (?, ?, ?)', 'aaa', 1, 2.3);
+      const result = db.runSync('INSERT INTO users (name, k, j) VALUES (?, ?, ?)', 'aaa', 1, 2.3);
       expect(result.changes).toBe(1);
       expect(result.lastInsertRowId > 0).toBeTruthy();
-      expect(db.getAllSync<UserEntity>('SELECT * FROM Users').length).toBe(4);
+      expect(db.getAllSync<UserEntity>('SELECT * FROM users').length).toBe(4);
       expect(
-        db.getFirstSync<UserEntity>('SELECT * FROM Users WHERE name = ?', 'aaa')
+        db.getFirstSync<UserEntity>('SELECT * FROM users WHERE name = ?', 'aaa')
       ).not.toBeNull();
 
-      db.runSync('UPDATE Users SET name = ? WHERE name = ?', 'bbb', 'aaa');
-      expect(db.getFirstSync<UserEntity>('SELECT * FROM Users WHERE name = ?', 'aaa')).toBeNull();
+      db.runSync('UPDATE users SET name = ? WHERE name = ?', 'bbb', 'aaa');
+      expect(db.getFirstSync<UserEntity>('SELECT * FROM users WHERE name = ?', 'aaa')).toBeNull();
       expect(
-        db.getFirstSync<UserEntity>('SELECT * FROM Users WHERE name = ?', 'bbb')
+        db.getFirstSync<UserEntity>('SELECT * FROM users WHERE name = ?', 'bbb')
       ).not.toBeNull();
 
-      db.runSync('DELETE FROM Users WHERE name = ?', 'bbb');
-      expect(db.getFirstSync<UserEntity>('SELECT * FROM Users WHERE name = ?', 'bbb')).toBeNull();
-      expect(db.getAllSync<UserEntity>('SELECT * FROM Users').length).toBe(3);
+      db.runSync('DELETE FROM users WHERE name = ?', 'bbb');
+      expect(db.getFirstSync<UserEntity>('SELECT * FROM users WHERE name = ?', 'bbb')).toBeNull();
+      expect(db.getAllSync<UserEntity>('SELECT * FROM users').length).toBe(3);
     });
 
     it('eachSync should return iterable', () => {
       const results: UserEntity[] = [];
-      const statement = db.prepareSync('SELECT * FROM Users ORDER BY user_id DESC');
+      const statement = db.prepareSync('SELECT * FROM users ORDER BY user_id DESC');
       const result = statement.executeSync<UserEntity>();
       for (const row of result) {
         results.push(row);
@@ -649,21 +649,21 @@ INSERT INTO Users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.1
 
     it('withTransactionSync should commit changes', () => {
       db.withTransactionSync(() => {
-        db?.runSync('INSERT INTO Users (name, k, j) VALUES (?, ?, ?)', 'aaa', 1, 2.3);
+        db?.runSync('INSERT INTO users (name, k, j) VALUES (?, ?, ?)', 'aaa', 1, 2.3);
       });
-      const results = db.getAllSync<UserEntity>('SELECT * FROM Users');
+      const results = db.getAllSync<UserEntity>('SELECT * FROM users');
       expect(results.length).toBe(4);
     });
 
     it('withTransactionSync should rollback changes when exceptions happen', () => {
       expect(() => {
         db?.withTransactionSync(() => {
-          db?.runSync('DELETE FROM Users');
+          db?.runSync('DELETE FROM users');
           throw new Error('Exception inside transaction');
         });
       }).toThrow();
 
-      const results = db.getAllSync<UserEntity>('SELECT * FROM Users');
+      const results = db.getAllSync<UserEntity>('SELECT * FROM users');
       expect(results.length > 0).toBe(true);
     });
   });

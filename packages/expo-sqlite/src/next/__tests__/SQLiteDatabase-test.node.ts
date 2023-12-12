@@ -164,18 +164,18 @@ describe('Database', () => {
   it('withTransactionAsync could possibly have other async queries interrupted inside the transaction', async () => {
     db = await openDatabaseAsync('test.db');
     await db.execAsync(`
-DROP TABLE IF EXISTS Users;
-CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
-INSERT INTO Users (name) VALUES ('aaa');
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
+INSERT INTO users (name) VALUES ('aaa');
   `);
 
     const promise1 = db.withTransactionAsync(async () => {
       for (let i = 0; i < 10; ++i) {
-        const result = await db?.getFirstAsync<{ name: string }>('SELECT name FROM Users');
+        const result = await db?.getFirstAsync<{ name: string }>('SELECT name FROM users');
         if (result?.name !== 'aaa') {
           throw new Error(`Exception from promise1: Expected aaa but received ${result?.name}}`);
         }
-        await db?.runAsync('UPDATE Users SET name = ?', 'aaa');
+        await db?.runAsync('UPDATE users SET name = ?', 'aaa');
         await delayAsync(200);
       }
     });
@@ -183,8 +183,8 @@ INSERT INTO Users (name) VALUES ('aaa');
     const promise2 = new Promise(async (resolve, reject) => {
       try {
         await delayAsync(100);
-        await db?.runAsync('UPDATE Users SET name = ?', 'bbb');
-        const result = await db?.getFirstAsync<{ name: string }>('SELECT name FROM Users');
+        await db?.runAsync('UPDATE users SET name = ?', 'bbb');
+        const result = await db?.getFirstAsync<{ name: string }>('SELECT name FROM users');
         if (result?.name !== 'bbb') {
           throw new Error(`Exception from promise2: Expected bbb but received ${result?.name}}`);
         }
@@ -202,18 +202,18 @@ INSERT INTO Users (name) VALUES ('aaa');
   it('withExclusiveTransactionAsync should execute a transaction atomically and abort other write query', async () => {
     db = await openDatabaseAsync('test.db');
     await db.execAsync(`
-DROP TABLE IF EXISTS Users;
-CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
-INSERT INTO Users (name) VALUES ('aaa');
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
+INSERT INTO users (name) VALUES ('aaa');
   `);
 
     const promise1 = db.withExclusiveTransactionAsync(async (txn) => {
       for (let i = 0; i < 10; ++i) {
-        const result = await txn.getFirstAsync<{ name: string }>('SELECT name FROM Users');
+        const result = await txn.getFirstAsync<{ name: string }>('SELECT name FROM users');
         if (result?.name !== 'aaa') {
           throw new Error(`Exception from promise1: Expected aaa but received ${result?.name}}`);
         }
-        await txn.runAsync('UPDATE Users SET name = ?', 'aaa');
+        await txn.runAsync('UPDATE users SET name = ?', 'aaa');
         await delayAsync(200);
       }
     });
@@ -221,8 +221,8 @@ INSERT INTO Users (name) VALUES ('aaa');
     const promise2 = new Promise(async (resolve, reject) => {
       try {
         await delayAsync(100);
-        await db?.runAsync('UPDATE Users SET name = ?', 'bbb');
-        const result = await db?.getFirstAsync<{ name: string }>('SELECT name FROM Users');
+        await db?.runAsync('UPDATE users SET name = ?', 'bbb');
+        const result = await db?.getFirstAsync<{ name: string }>('SELECT name FROM users');
         if (result?.name !== 'bbb') {
           throw new Error(`Exception from promise2: Expected bbb but received ${result?.name}}`);
         }

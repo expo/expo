@@ -131,31 +131,43 @@ export class SQLiteStatement {
  * @example
  * The result includes the [`lastInsertRowId`](https://www.sqlite.org/c3ref/last_insert_rowid.html) and [`changes`](https://www.sqlite.org/c3ref/changes.html) properties. You can get the information from the write operations.
  * ```ts
- * const statement = await db.prepareAsync('INSERT INTO Tests (value) VALUES (?)');
- * const result = await statement.executeAsync(101);
- * console.log('lastInsertRowId:', result.lastInsertRowId);
- * console.log('changes:', result.changes);
+ * const statement = await db.prepareAsync('INSERT INTO test (value) VALUES (?)');
+ * try {
+ *   const result = await statement.executeAsync(101);
+ *   console.log('lastInsertRowId:', result.lastInsertRowId);
+ *   console.log('changes:', result.changes);
+ * } finally {
+ *   await statement.finalizeAsync();
+ * }
  * ```
  *
  * @example
  * The result implements the [`AsyncIterator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/asyncIterator) interface, so you can use it in `for await...of` loops.
  * ```ts
- * const statement = await db.prepareAsync('SELECT value FROM Tests WHERE value > ?');
- * const result = await statement.executeAsync<{ value: number }>(100);
- * for await (const row of result) {
- *   console.log('row value:', row.value);
+ * const statement = await db.prepareAsync('SELECT value FROM test WHERE value > ?');
+ * try {
+ *   const result = await statement.executeAsync<{ value: number }>(100);
+ *   for await (const row of result) {
+ *     console.log('row value:', row.value);
+ *   }
+ * } finally {
+ *   await statement.finalizeAsync();
  * }
  * ```
  *
  * @example
  * If your write operations also return values, you can mix all of them together.
  * ```ts
- * const statement = await db.prepareAsync('INSERT INTO Tests (name, value) VALUES (?, ?) RETURNING name');
- * const result = await statement.executeAsync<{ name: string }>('John Doe', 101);
- * console.log('lastInsertRowId:', result.lastInsertRowId);
- * console.log('changes:', result.changes);
- * for await (const row of result) {
- *   console.log('name:', row.name);
+ * const statement = await db.prepareAsync('INSERT INTO test (name, value) VALUES (?, ?) RETURNING name');
+ * try {
+ *   const result = await statement.executeAsync<{ name: string }>('John Doe', 101);
+ *   console.log('lastInsertRowId:', result.lastInsertRowId);
+ *   console.log('changes:', result.changes);
+ *   for await (const row of result) {
+ *     console.log('name:', row.name);
+ *   }
+ * } finally {
+ *   await statement.finalizeAsync();
  * }
  * ```
  */
@@ -188,31 +200,43 @@ export interface SQLiteExecuteAsyncResult<T> extends AsyncIterableIterator<T> {
  * @example
  * The result includes the [`lastInsertRowId`](https://www.sqlite.org/c3ref/last_insert_rowid.html) and [`changes`](https://www.sqlite.org/c3ref/changes.html) properties. You can get the information from the write operations.
  * ```ts
- * const statement = db.prepareSync('INSERT INTO Tests (value) VALUES (?)');
- * const result = statement.executeSync(101);
- * console.log('lastInsertRowId:', result.lastInsertRowId);
- * console.log('changes:', result.changes);
+ * const statement = db.prepareSync('INSERT INTO test (value) VALUES (?)');
+ * try {
+ *   const result = statement.executeSync(101);
+ *   console.log('lastInsertRowId:', result.lastInsertRowId);
+ *   console.log('changes:', result.changes);
+ * } finally {
+ *   statement.finalizeSync();
+ * }
  * ```
  *
  * @example
  * The result implements the [`Iterator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator) interface, so you can use it in `for...of` loops.
  * ```ts
- * const statement = db.prepareSync('SELECT value FROM Tests WHERE value > ?');
- * const result = statement.executeSync<{ value: number }>(100);
- * for (const row of result) {
- *   console.log('row value:', row.value);
+ * const statement = db.prepareSync('SELECT value FROM test WHERE value > ?');
+ * try {
+ *   const result = statement.executeSync<{ value: number }>(100);
+ *   for (const row of result) {
+ *     console.log('row value:', row.value);
+ *   }
+ * } finally {
+ *   statement.finalizeSync();
  * }
  * ```
  *
  * @example
  * If your write operations also return values, you can mix all of them together.
  * ```ts
- * const statement = db.prepareSync('INSERT INTO Tests (name, value) VALUES (?, ?) RETURNING name');
- * const result = statement.executeSync<{ name: string }>('John Doe', 101);
- * console.log('lastInsertRowId:', result.lastInsertRowId);
- * console.log('changes:', result.changes);
- * for (const row of result) {
- *   console.log('name:', row.name);
+ * const statement = db.prepareSync('INSERT INTO test (name, value) VALUES (?, ?) RETURNING name');
+ * try {
+ *   const result = statement.executeSync<{ name: string }>('John Doe', 101);
+ *   console.log('lastInsertRowId:', result.lastInsertRowId);
+ *   console.log('changes:', result.changes);
+ *   for (const row of result) {
+ *     console.log('name:', row.name);
+ *   }
+ * } finally {
+ *   statement.finalizeSync();
  * }
  * ```
  */
@@ -262,19 +286,24 @@ async function createSQLiteExecuteAsyncResult<T>(
   );
   const generator = instance.generatorAsync();
   Object.defineProperties(generator, {
-    lastInsertRowId: { value: lastInsertRowId, enumerable: true, writable: false },
-    changes: { value: changes, enumerable: true, writable: false },
+    lastInsertRowId: {
+      value: lastInsertRowId,
+      enumerable: true,
+      writable: false,
+      configurable: true,
+    },
+    changes: { value: changes, enumerable: true, writable: false, configurable: true },
     getFirstAsync: {
       value: instance.getFirstAsync.bind(instance),
       enumerable: true,
       writable: false,
-      configurable: false,
+      configurable: true,
     },
     getAllAsync: {
       value: instance.getAllAsync.bind(instance),
       enumerable: true,
       writable: false,
-      configurable: false,
+      configurable: true,
     },
   });
 
@@ -300,19 +329,24 @@ function createSQLiteExecuteSyncResult<T>(
   );
   const generator = instance.generatorSync();
   Object.defineProperties(generator, {
-    lastInsertRowId: { value: lastInsertRowId, enumerable: true, writable: false },
-    changes: { value: changes, enumerable: true, writable: false },
+    lastInsertRowId: {
+      value: lastInsertRowId,
+      enumerable: true,
+      writable: false,
+      configurable: true,
+    },
+    changes: { value: changes, enumerable: true, writable: false, configurable: true },
     getFirstSync: {
       value: instance.getFirstSync.bind(instance),
       enumerable: true,
       writable: false,
-      configurable: false,
+      configurable: true,
     },
     getAllSync: {
       value: instance.getAllSync.bind(instance),
       enumerable: true,
       writable: false,
-      configurable: false,
+      configurable: true,
     },
   });
 
