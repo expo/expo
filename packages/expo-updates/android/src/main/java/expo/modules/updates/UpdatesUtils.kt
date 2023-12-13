@@ -131,7 +131,7 @@ object UpdatesUtils {
       // only rename after the hash has been verified
       // Since renameTo() does not expose detailed errors, and can fail if source and destination
       // are not on the same mount point, we do a copyTo followed by delete
-      // ENG-10888: if there are two assets with identical content, they will be written to the same file path,
+      // if there are two assets with identical content, they will be written to the same file path,
       // so we allow overwrites
       try {
         tmpFile.copyTo(destination, true)
