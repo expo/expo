@@ -39,10 +39,10 @@ export const NewsletterSignUp = () => {
   }
 
   return (
-    <div className="flex-1 max-w-[400px] max-md-gutters:max-w-full">
+    <div className="flex-1 max-w-[350px] max-md-gutters:max-w-full">
       <CALLOUT theme="secondary" weight="medium" className="flex gap-2 items-center">
-        <Mail01Icon className="text-icon-tertiary" />
-        Sign up for developer updates
+        <Mail01Icon className="text-icon-tertiary shrink-0" />
+        Sign up for the Expo Newsletter
       </CALLOUT>
       <form
         className="relative"
@@ -63,7 +63,7 @@ export const NewsletterSignUp = () => {
             value={email}
             className={mergeClasses('pr-[68px]', error && 'border-danger text-danger')}
             type="email"
-            placeholder="your@email.com"
+            placeholder="reader@email.com"
           />
         )}
         {!userSignedUp ? (
