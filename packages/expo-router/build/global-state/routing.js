@@ -136,7 +136,7 @@ function rewriteNavigationStateToParams(state, params = {}) {
 }
 function getNavigateAction(state, parentState, type = 'NAVIGATE', lastCommonNavigator = parentState) {
     const route = state.routes[state.routes.length - 1];
-    if (parentState.type === 'stack') {
+    if (parentState.type === 'stack' || parentState.type === 'tab') {
         lastCommonNavigator = parentState;
     }
     const currentRoute = parentState.routes.find((parentRoute) => parentRoute.name === route.name);
@@ -150,7 +150,9 @@ function getNavigateAction(state, parentState, type = 'NAVIGATE', lastCommonNavi
     if (type === 'PUSH' && lastCommonNavigator.type !== 'stack') {
         type = 'NAVIGATE';
     }
-    console.log(type);
+    else if (type === 'REPLACE' && lastCommonNavigator.type === 'tab') {
+        type = 'JUMP_TO';
+    }
     return {
         type,
         target: lastCommonNavigator.key,

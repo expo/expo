@@ -146,7 +146,7 @@ function getNavigateAction(
 ) {
   const route = state.routes[state.routes.length - 1]!;
 
-  if (parentState.type === 'stack') {
+  if (parentState.type === 'stack' || parentState.type === 'tab') {
     lastCommonNavigator = parentState;
   }
   const currentRoute = parentState.routes.find((parentRoute) => parentRoute.name === route.name);
@@ -162,9 +162,9 @@ function getNavigateAction(
 
   if (type === 'PUSH' && lastCommonNavigator.type !== 'stack') {
     type = 'NAVIGATE';
+  } else if (type === 'REPLACE' && lastCommonNavigator.type === 'tab') {
+    type = 'JUMP_TO';
   }
-
-  console.log(type);
 
   return {
     type,
