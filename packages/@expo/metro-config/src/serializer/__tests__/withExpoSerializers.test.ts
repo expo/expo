@@ -2,6 +2,7 @@ import assert from 'assert';
 
 import { microBundle, projectRoot } from '../fork/__tests__/mini-metro';
 import {
+  SerialAsset,
   SerializerPlugin,
   createSerializerFromSerialProcessors,
   withSerializerPlugins,
@@ -68,7 +69,7 @@ describe('serializes', () => {
     )) as any;
     if (options.options?.output === 'static') {
       assert('artifacts' in output && Array.isArray(output.artifacts));
-      return output.artifacts;
+      return output.artifacts as SerialAsset[];
     } else {
       return output;
     }
@@ -81,6 +82,114 @@ describe('serializes', () => {
       options: { platform: 'web', dev: false, output: 'static' },
     });
   }
+
+  describe('debugId', () => {
+    it(`serializes with debugId annotation`, async () => {
+      const artifacts = await serializeTo({
+        options: {
+          dev: false,
+          platform: 'web',
+          hermes: false,
+          output: 'static',
+          
+          // Source maps must be enabled otherwise the feature is disabled.
+          sourceMaps: true,
+        },
+      });
+
+      const filenames = artifacts.map(({ filename }) => filename)
+
+
+      expect(filenames).toEqual([
+        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js/),
+        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js\.map/),
+      ]);
+
+      // Ensure no directive to include them is added.
+      expect(artifacts[0].source).toMatch(
+        /\/\/# sourceMappingURL=\/_expo\/static\/js\/web\/index-[\w\d]{32}\.js\.map/
+      );
+      // Debug ID annotation is included at the end.
+      expect(artifacts[0].source).toMatch(/\/\/# debugId=index-[\w\d]{32}/);
+
+
+      // Test that the debugId is added to the source map and matches the annotation.
+      const debugId = 'index-a25d550d891e67e5720dc40df718f808';
+      expect(artifacts[0].source).toContain(debugId);
+
+      const mapArtifact = artifacts.find(({ filename }) => filename.endsWith('.map')) as SerialAsset
+
+      expect(JSON.parse(mapArtifact.source)).toEqual(expect.objectContaining({
+        "debugId": debugId,
+      }));
+    });
+    
+    it(`serializes with debugId annotation and (mock) hermes generation`, async () => {
+      const artifacts = await serializeTo({
+        options: {
+          dev: false,
+          platform: 'ios',
+          hermes: true,
+          output: 'static',
+          // Source maps must be enabled otherwise the feature is disabled.
+          sourceMaps: true,
+        },
+      });
+
+      const filenames = artifacts.map(({ filename }) => filename)
+
+
+      expect(filenames).toEqual([
+        expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.hbc/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.hbc\.map/),
+      ]);
+
+      // Ensure no directive to include them is added.
+      expect(artifacts[0].source).toMatch(
+        /\/\/# sourceMappingURL=https:\/\/localhost:8081\/_expo\/static\/js\/ios\/index-[\w\d]{32}\.hbc\.map/
+      );
+      // Debug ID annotation is included at the end.
+      expect(artifacts[0].source).toMatch(/\/\/# debugId=index-[\w\d]{32}/);
+
+
+      // Test that the debugId is added to the source map and matches the annotation.
+      const debugId = 'index-a25d550d891e67e5720dc40df718f808';
+      expect(artifacts[0].source).toContain(debugId);
+
+      const mapArtifact = artifacts.find(({ filename }) => filename.endsWith('.hbc.map')) as SerialAsset
+
+      expect(JSON.parse(mapArtifact.source)).toEqual(expect.objectContaining({
+        "debugId": debugId,
+      }));
+    });
+
+    it(`skips debugId annotation if inline source maps are enabled`, async () => {
+      const artifacts = await serializeTo({
+        options: {
+          dev: false,
+          platform: 'web',
+          hermes: false,
+          output: 'static',
+          // Inline source maps will disable the feature.
+          inlineSourceMaps: true,
+        },
+      });
+
+      const filenames = artifacts.map(({ filename }) => filename)
+
+
+      expect(filenames).toEqual([
+        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js/),
+      ]);
+
+      // Ensure no directive to include them is added.
+      expect(artifacts[0].source).toMatch(
+        /\/\/# sourceMappingURL=data:application/
+      );
+      // Debug ID annotation is NOT included at the end.
+      expect(artifacts[0].source).not.toMatch(/\/\/# debugId=/);
+    });
+  })
 
   describe('source maps', () => {
     it(`serializes with source maps disabled in production using classic serializer`, async () => {

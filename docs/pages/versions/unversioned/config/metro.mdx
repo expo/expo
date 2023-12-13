@@ -563,6 +563,27 @@ import('./math').then(math => {
 
 When you run `npx expo export -p web`, the bundles are split into multiple files, and the entry bundle is added to the main HTML file.
 
+
+## Source map debug ID
+
+> First available in SDK 50, on all platforms.
+
+If a bundle is exported with an external source map, a [**Debug ID**](https://sentry.engineering/blog/the-case-for-debug-ids) annotation will be added to the end of the file, along with a matching `debugId` in the source map for corresponding the files together. If no source maps are exported, or inline source maps are used then this annotation will not be added.
+
+```js
+// <all source code>
+
+//# debugId=<deterministic chunk hash>
+```
+
+The associated `*.js.map` or `*.hbc.map` source map will be a JSON file containing an equivalent `debugId` property. The `debugId` will be injected before hermes bytecode generation to ensure matching in all cases.
+
+The `debugId` is a deterministic hash of the bundle's contents without the external bundle splitting references. This is effectively the same value used to create a chunks filename.
+
+`@expo/metro-config` only injects `debugId` during `npx expo export`, which is currently used for web build, and EAS Update. The initial native build however, is performed with the `npx expo export:embed` command which does not currently inject a `debugId`.
+
+`debugId` can be used with services like [Sentry](https://sentry.io/welcome/) for error reporting.
+
 ## Bare workflow setup
 
 > This guide is versioned and will need to be revisited when upgrading/downgrading Expo. Alternatively, use [Expo Prebuild](/workflow/prebuild) for fully automated setup.

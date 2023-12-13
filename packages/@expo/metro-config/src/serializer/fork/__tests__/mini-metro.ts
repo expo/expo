@@ -50,6 +50,7 @@ export function microBundle({
     output?: 'static';
     hermes?: boolean;
     sourceMaps?: boolean;
+    inlineSourceMaps?: boolean;
   };
 }): [
   string,
@@ -135,6 +136,7 @@ export function microBundle({
             }
           : undefined,
 
+      inlineSourceMap: options.inlineSourceMaps,
       sourceMapUrl: options.sourceMaps
         ? 'https://localhost:8081/indedx.bundle?dev=false'
         : undefined,
