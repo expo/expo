@@ -33,11 +33,7 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "dependencies": {
-    "uuid": "^3.4.0"
-  },
   "devDependencies": {
-    "@types/uuid": "^3.4.7",
     "expo-module-scripts": "^3.0.0"
   },
   "peerDependencies": {
