@@ -58,9 +58,8 @@ export default class GeofencingScreen extends React.Component<Props, State> {
 
   didFocus = async () => {
     const { status: foregroundStatus } = await Location.requestForegroundPermissionsAsync();
-    const { status: backgroundStatus } = await Location.requestBackgroundPermissionsAsync();
 
-    if (foregroundStatus !== 'granted' || backgroundStatus !== 'granted') {
+    if (foregroundStatus !== 'granted') {
       this.appStateSubscription = AppState.addEventListener('change', this.handleAppStateChange);
       this.setState({
         error:
