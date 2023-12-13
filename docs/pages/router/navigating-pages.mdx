@@ -55,6 +55,17 @@ export default function Page() {
 }
 ```
 
+## Understanding native navigation
+
+Expo Router employs a stack-based navigation approach. This means that each new route you navigate to is added to a stack. If you navigate to a route that's already in the stack, the stack is unwound back to that existing route.
+
+For example, if you navigate from `/feed` to `/profile`, the stack will contain `/feed` and `/profile`. If you then navigate to `/settings`, the stack will contain `/feed`, `/profile`, and `/settings`. If you then navigate to `/feed`, the stack will unwind back to `/feed`.
+
+If you wish to navigate to a route without the stack unwinding, you can use the `push` prop on the `<Link>` component. This will always push the route onto the stack, even if it already exists.
+
+In contrast, the `replace` method substitutes the current route in the navigation stack with a new one, effectively replacing the current screen with the new one without adding to the stack.
+
+
 ## Imperative navigation
 
 You may want to navigate from a global store when a user logs in or out. You can use the `router` object or `useRouter` hook to navigate imperatively (outside of React).
@@ -71,8 +82,9 @@ export function logout() {
 
 The `router` object is immutable and contains the following functions:
 
-- **push**: `(href: Href) => void` Navigate to a route. You can provide a full path like **/profile/settings** or a relative path like **../settings**. Navigate to dynamic routes by passing an object like `{ pathname: 'profile', params: { id: '123' } }`.
-- **replace**: `(href: Href) => void` Same API as push but replaces the current route in the history instead of pushing a new one. This is useful for redirects.
+- **naviate**: `(href: Href) => void` Navigate to a route using the default behaviour. You can provide a full path like **/profile/settings** or a relative path like **../settings**. Navigate to dynamic routes by passing an object like `{ pathname: 'profile', params: { id: '123' } }`.
+- **push**: `(href: Href) => void` Navigate to a route by always pushing onto the stack. You can provide a full path like **/profile/settings** or a relative path like **../settings**. Navigate to dynamic routes by passing an object like `{ pathname: 'profile', params: { id: '123' } }`.
+- **replace**: `(href: Href) => void` Navigate to a route by substituting the current route with a new one. This is useful for redirects.
 - **back**: `() => void` Navigate back to previous route.
 - **canGoBack**: `() => boolean` Returns `true` if a valid history stack exists and the `back()` function can pop back.
 - **setParams**: `(params: Record<string, string>) => void` Update the query params for the currently selected route.
@@ -99,6 +111,29 @@ export default function Page() {
         }}>
           View user
         </Link>
+    </View>
+  );
+}
+```
+
+## Pushing screens
+
+By default, links "push" new routes onto the navigation stack or unwind to a existing route. You can use the `push` prop to always push the route onto the stack.
+
+{/* prettier-ignore */}
+```js app/index.js
+import { Link } from 'expo-router';
+
+export default function Page() {
+  return (
+    <View>
+      <Link
+        /* @info Navigate to <b>/feed</b> and always add it to the stack. */
+        push
+      /* @end */
+        href="/feed">
+        Login
+      </Link>
     </View>
   );
 }

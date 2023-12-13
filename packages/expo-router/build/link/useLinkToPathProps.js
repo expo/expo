@@ -35,7 +35,7 @@ function useLinkToPathProps(props) {
             shouldHandle = true;
         }
         if (shouldHandle) {
-            linkTo(props.href, props.replace ? 'REPLACE' : undefined);
+            linkTo(props.href, props.event);
         }
     };
     return {

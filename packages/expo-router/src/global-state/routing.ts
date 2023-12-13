@@ -1,4 +1,4 @@
-import { type NavigationAction, type NavigationState } from '@react-navigation/native';
+import { type NavigationState } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
 
 import type { RouterStore } from './router-store';
@@ -15,8 +15,8 @@ function assertIsReady(store: RouterStore) {
   }
 }
 
-export function pushOrPop(this: RouterStore, url: Href) {
-  return this.linkTo(resolveHref(url));
+export function navigate(this: RouterStore, url: Href) {
+  return this.linkTo(resolveHref(url), 'NAVIGATE');
 }
 
 export function push(this: RouterStore, url: Href) {
@@ -50,7 +50,6 @@ export function setParams(this: RouterStore, params: Record<string, string | num
 }
 
 export function linkTo(this: RouterStore, href: string, event?: string) {
-  debugger;
   if (shouldLinkExternally(href)) {
     Linking.openURL(href);
     return;
@@ -147,11 +146,9 @@ function getNavigateAction(
 ) {
   const route = state.routes[state.routes.length - 1]!;
 
-  // Only these navigators support replace
-  if (parentState.type === 'stack' || parentState.type === 'tab') {
+  if (parentState.type === 'stack') {
     lastCommonNavigator = parentState;
   }
-
   const currentRoute = parentState.routes.find((parentRoute) => parentRoute.name === route.name);
   const routesAreEqual = parentState.routes[parentState.index] === currentRoute;
 
@@ -163,15 +160,11 @@ function getNavigateAction(
   // Either we reached the bottom of the state or the point where the routes diverged
   const { screen, params } = rewriteNavigationStateToParams(state);
 
-  if (type === 'PUSH') {
-    if (lastCommonNavigator.type !== 'stack') {
-      type = 'NAVIGATE';
-    }
-  } else if (type === 'REPLACE') {
-    if (lastCommonNavigator.type === 'tab') {
-      type = 'JUMP_TO';
-    }
+  if (type === 'PUSH' && lastCommonNavigator.type !== 'stack') {
+    type = 'NAVIGATE';
   }
+
+  console.log(type);
 
   return {
     type,

@@ -26,7 +26,7 @@ function useRouter() {
         replace: router_store_1.store.replace,
         setParams: router_store_1.store.setParams,
         canGoBack: router_store_1.store.canGoBack,
-        pushOrPop: router_store_1.store.pushOrPop,
+        navigate: router_store_1.store.navigate,
         // TODO(EvanBacon): add `reload`
     }), []);
 }

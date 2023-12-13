@@ -113,7 +113,6 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
             focused: boolean;
             color: string;
             position: import("@react-navigation/bottom-tabs/lib/typescript/src/types").LabelPosition;
-            children: string;
         }) => React.ReactNode) | undefined;
         tabBarShowLabel?: boolean | undefined;
         tabBarLabelPosition?: import("@react-navigation/bottom-tabs/lib/typescript/src/types").LabelPosition | undefined;
