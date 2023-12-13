@@ -57,7 +57,7 @@ export default function Page() {
 
 ## Understanding native navigation
 
-Expo Router employs a stack-based navigation approach. This means that each new route you navigate to is added to a stack. If you navigate to a route that's already in the stack, the stack is unwound back to that existing route.
+Expo Router uses a stack-based navigation approach. Each new route you navigate to gets added to a stack. If you navigate a route already in the stack, the stack unwinds back to that existing route.
 
 For example, if you navigate from `/feed` to `/profile`, the stack will contain `/feed` and `/profile`. If you then navigate to `/settings`, the stack will contain `/feed`, `/profile`, and `/settings`. If you then navigate to `/feed`, the stack will unwind back to `/feed`.
 
