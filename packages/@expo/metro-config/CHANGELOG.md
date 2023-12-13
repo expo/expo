@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix bundle splitting and async routes.
+- Fix bundle splitting and async routes. ([#25901](https://github.com/expo/expo/pull/25901) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
