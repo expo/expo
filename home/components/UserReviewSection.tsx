@@ -20,7 +20,7 @@ export default function UserReviewSection({ snacks, apps }: Props) {
     });
   const theme = useExpoTheme();
 
-  if (!isDevice || !shouldShowReviewSection) {
+  if ((!isDevice && !__DEV__) || !shouldShowReviewSection) {
     return null;
   }
 

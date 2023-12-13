@@ -95,7 +95,15 @@ export const useUserReviewCheck = ({ apps, snacks }: UseUserReviewCheckParams) =
   useEffect(() => {
     StoreReview.isAvailableAsync().then(setIsStoreReviewAvailable);
     AsyncStorage.getItem('userReviewInfo').then((info) => {
-      const userReviewInfo: UserReviewInfo = info ? JSON.parse(info) : {};
+      const userReviewInfo: UserReviewInfo = info
+        ? JSON.parse(info, (key, value) => {
+            // Convert string representations back to Date objects
+            if (key.endsWith('Date') && typeof value === 'string') {
+              return new Date(value);
+            }
+            return value;
+          })
+        : {};
       userReviewInfo.appOpenedCounter = Number(userReviewInfo.appOpenedCounter || 0) + 1;
       updateUserReviewInfo(userReviewInfo);
     });
