@@ -156,6 +156,7 @@ export function getDefaultConfig(
     console.log(`- Reanimated: ${reanimatedVersion}`);
     console.log();
   }
+
   const {
     // Remove the default reporter which metro always resolves to be the react-native-community/cli reporter.
     // This prints a giant React logo which is less accessible to users on smaller terminals.
@@ -260,20 +261,6 @@ export function getDefaultConfig(
   });
 
   return withExpoSerializers(metroConfig);
-}
-
-export async function loadAsync(
-  projectRoot: string,
-  { reporter, ...metroOptions }: LoadOptions = {}
-): Promise<MetroConfig> {
-  let defaultConfig = getDefaultConfig(projectRoot);
-  if (reporter) {
-    defaultConfig = { ...defaultConfig, reporter };
-  }
-
-  const { loadConfig } = importMetroConfig(projectRoot);
-
-  return await loadConfig({ cwd: projectRoot, projectRoot, ...metroOptions }, defaultConfig);
 }
 
 // re-export for use in config files.
