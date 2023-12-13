@@ -4,13 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Refactor `expo-sqlite/next` API to be more React idiomatic. ([#25657](https://github.com/expo/expo/pull/25657) by [@kudo](https://github.com/kudo))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 13.1.0 — 2023-12-13
+
+### 🛠 Breaking changes
+
+- Refactor `expo-sqlite/next` API to be more React idiomatic. ([#25657](https://github.com/expo/expo/pull/25657) by [@kudo](https://github.com/kudo))
 
 ## 13.0.0 — 2023-12-12
 

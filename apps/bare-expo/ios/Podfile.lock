@@ -43,17 +43,17 @@ PODS:
     - React-Core
   - EXNotifications (0.27.0):
     - ExpoModulesCore
-  - Expo (50.0.0-preview.0):
+  - Expo (50.0.0-preview.1):
     - ExpoModulesCore
-  - expo-dev-client (3.3.1):
+  - expo-dev-client (3.3.2):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (3.5.0):
+  - expo-dev-launcher (3.5.1):
     - EXManifests
-    - expo-dev-launcher/Main (= 3.5.0)
+    - expo-dev-launcher/Main (= 3.5.1)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -62,7 +62,7 @@ PODS:
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
     - React-RCTAppDelegate
-  - expo-dev-launcher/Main (3.5.0):
+  - expo-dev-launcher/Main (3.5.1):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu
@@ -73,7 +73,7 @@ PODS:
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
     - React-RCTAppDelegate
-  - expo-dev-launcher/Tests (3.5.0):
+  - expo-dev-launcher/Tests (3.5.1):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -88,7 +88,7 @@ PODS:
     - React-Core
     - React-CoreModules
     - React-RCTAppDelegate
-  - expo-dev-launcher/Unsafe (3.5.0):
+  - expo-dev-launcher/Unsafe (3.5.1):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -98,9 +98,9 @@ PODS:
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
     - React-RCTAppDelegate
-  - expo-dev-menu (4.5.0):
-    - expo-dev-menu/Main (= 4.5.0)
-    - expo-dev-menu/ReactNativeCompatibles (= 4.5.0)
+  - expo-dev-menu (4.5.1):
+    - expo-dev-menu/Main (= 4.5.1)
+    - expo-dev-menu/ReactNativeCompatibles (= 4.5.1)
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
@@ -108,7 +108,7 @@ PODS:
   - expo-dev-menu-interface/Tests (1.7.0):
     - Nimble
     - Quick
-  - expo-dev-menu/Main (4.5.0):
+  - expo-dev-menu/Main (4.5.1):
     - EXManifests
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
@@ -116,16 +116,16 @@ PODS:
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
-  - expo-dev-menu/ReactNativeCompatibles (4.5.0):
+  - expo-dev-menu/ReactNativeCompatibles (4.5.1):
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
-  - expo-dev-menu/SafeAreaView (4.5.0):
+  - expo-dev-menu/SafeAreaView (4.5.1):
     - ExpoModulesCore
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
-  - expo-dev-menu/Tests (4.5.0):
+  - expo-dev-menu/Tests (4.5.1):
     - ExpoModulesTestCore
     - glog
     - Nimble
@@ -133,13 +133,13 @@ PODS:
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
     - React-CoreModules
-  - expo-dev-menu/UITests (4.5.0):
+  - expo-dev-menu/UITests (4.5.1):
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React
     - React-Core
     - React-CoreModules
-  - expo-dev-menu/Vendored (4.5.0):
+  - expo-dev-menu/Vendored (4.5.1):
     - expo-dev-menu/SafeAreaView
     - glog
     - RCT-Folly (= 2022.05.16.00)
@@ -209,14 +209,14 @@ PODS:
     - ExpoModulesCore
     - GoogleMaps (= 7.3.0)
     - GooglePlaces (= 7.3.0)
-  - ExpoModulesCore (1.11.0):
+  - ExpoModulesCore (1.11.1):
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
     - React-NativeModulesApple
     - React-RCTAppDelegate
     - ReactCommon/turbomodule/core
-  - ExpoModulesCore/Tests (1.11.0):
+  - ExpoModulesCore/Tests (1.11.1):
     - ExpoModulesTestCore
     - glog
     - RCT-Folly (= 2022.05.16.00)
@@ -250,7 +250,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSpeech (11.7.0):
     - ExpoModulesCore
-  - ExpoSQLite (13.0.0):
+  - ExpoSQLite (13.1.0):
     - ExpoModulesCore
     - sqlite3 (~> 3.42.0)
   - ExpoStoreReview (6.8.0):
@@ -259,7 +259,7 @@ PODS:
     - ExpoModulesCore
   - ExpoTrackingTransparency (3.3.0):
     - ExpoModulesCore
-  - ExpoVideo (0.3.0):
+  - ExpoVideo (0.3.1):
     - ExpoModulesCore
   - ExpoVideoThumbnails (7.9.0):
     - ExpoModulesCore
@@ -1949,10 +1949,10 @@ SPEC CHECKSUMS:
   EXManifests: 2355abd4aeacfb75eec5b43393c0aef9c2789fcf
   EXMediaLibrary: 9ca30a11319813904316ac3910bc4beef6af5b8a
   EXNotifications: 4c22233f3be3bdcc2e935adccd961cf20053952f
-  Expo: 848e319eaa72f1e2b16e3ab070fe49df8cb5ebe4
-  expo-dev-client: a63c93ade434e7a381f516bcc03803843341cd7f
-  expo-dev-launcher: 7c1eb84c208aa585855683abe35b2646a9639574
-  expo-dev-menu: f751ca704ad23480ef79f8af460aff084b2dd036
+  Expo: 7abd55a749c0841bd359ed53260d6aa01d14971d
+  expo-dev-client: 62325d7ddd0b339eb2e50e472b2e058e222c1c2d
+  expo-dev-launcher: 89dadecac78ee45ca9f196d3ceac02a62a8f2c2a
+  expo-dev-menu: 0898881a6e3a546d1c933044c1d912920e3bf4e4
   expo-dev-menu-interface: 3c36b4d5032397e022958a2041afe91a130ea74c
   ExpoAppleAuthentication: 4fc9972356977f009911f2f3a5f56319c2a5b11b
   ExpoBackgroundFetch: 094377b73648adb55032a440f50cad1a5d3c3a89
@@ -1978,7 +1978,7 @@ SPEC CHECKSUMS:
   ExpoLocalization: b3b77d35b8c7653700ae3045bf6d8175ab91d042
   ExpoMailComposer: 1f980bbdd0647500178625f453e509cef1282d43
   ExpoMaps: e9e83d84c3af7c25fc4a139917239881e319e08a
-  ExpoModulesCore: 0fcf4d6d8c18a013de78ea4ab96e4f339e050f23
+  ExpoModulesCore: 728e40eb26952d75a78979b317acb410a6403921
   ExpoModulesTestCore: 0fe626daae71122fbc305d7fbb87b1afd283e4c5
   ExpoNetwork: 97d7774ab8f62e35f08db77fbef0388d5e1f2c76
   ExpoPrint: e7ecdd682436eb5a74b744c4ce36dc490df851b7
@@ -1989,11 +1989,11 @@ SPEC CHECKSUMS:
   ExpoSharing: 752ad6ae2b693de9cd4e7fddb78297bdc658b815
   ExpoSMS: aca5b62dbfef73670cb35d0ebd9a2017899bbb2d
   ExpoSpeech: 5e108798facd5e77e0ff040bdae6907aebeed6c5
-  ExpoSQLite: faef97b8091da7d0e23f4e7efee86696bd274093
+  ExpoSQLite: d94fa32e0c3c0038f6bd345530f4816abb0b89fb
   ExpoStoreReview: 32f07e415ae739d2db51693c3befa1d6c0151562
   ExpoSystemUI: 7bf1f529a4c3d2dfc6b681d770a7babf68c11a7e
   ExpoTrackingTransparency: bbae3e495bc58c79b9430cfbc217a56c2ddc9354
-  ExpoVideo: 47be0f06e040977ff550071c832dc2ef55142bfd
+  ExpoVideo: 5c7f090a003df15ab6a0e73184995cc22529b4dd
   ExpoVideoThumbnails: 9b6c0dada0b3240dd3527e0dc688711e17842c88
   ExpoWebBrowser: 2b660d423b818c4c45b6b3d22a3c0652153fb176
   EXScreenCapture: b5be31ba5b35aed400d325b85b335da6a2e547ac
