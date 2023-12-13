@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `expo-router` to list of packages.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
