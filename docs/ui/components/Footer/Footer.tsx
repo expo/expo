@@ -77,8 +77,9 @@ export const Footer = ({ title, sourceCodeUrl, packageName, previousPage, nextPa
       )}
       <div
         className={mergeClasses(
-          'flex flex-row max-md-gutters:flex-col max-md-gutters:gap-4',
-          title ? 'justify-between' : 'justify-center'
+          'flex flex-row gap-4',
+          title ? 'justify-between' : 'justify-center',
+          'max-md-gutters:flex-col'
         )}>
         {title && (
           <div>
