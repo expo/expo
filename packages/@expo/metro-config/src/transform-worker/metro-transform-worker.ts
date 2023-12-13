@@ -275,7 +275,7 @@ async function transformJS(
         filename: file.filename,
         plugins: [
           clearProgramScopePlugin,
-          [metroTransformPlugins.constantFoldingPlugin, babelPluginOpts]
+          [metroTransformPlugins.constantFoldingPlugin, babelPluginOpts],
         ],
         sourceMaps: false,
 

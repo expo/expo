@@ -724,10 +724,7 @@ it('allows the constantFoldingPlugin to not remove used helpers when `dev: false
     constantFoldingPlugin: jest.requireActual('metro-transform-plugins').constantFoldingPlugin,
   }));
 
-  const contents = [
-    'import * as test from "test-module";',
-    'export { test };'
-  ].join('\n');
+  const contents = ['import * as test from "test-module";', 'export { test };'].join('\n');
 
   const result = await Transformer.transform(
     baseConfig,
@@ -738,4 +735,3 @@ it('allows the constantFoldingPlugin to not remove used helpers when `dev: false
   );
   expect(result.output[0].data.code).toMatchSnapshot();
 });
-
