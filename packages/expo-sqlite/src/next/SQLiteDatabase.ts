@@ -474,7 +474,7 @@ export function addDatabaseChangeListener(
 }
 
 /**
- * A new connection specific used for [`withExclusiveTransactionAsync`](#withExclusiveTransactionasynctask).
+ * A new connection specific used for [`withExclusiveTransactionAsync`](#withexclusivetransactionasynctask).
  * @hidden not going to pull all the database methods to the document.
  */
 class Transaction extends SQLiteDatabase {

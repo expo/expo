@@ -257,7 +257,7 @@ export type DatabaseChangeEvent = {
  */
 export declare function addDatabaseChangeListener(listener: (event: DatabaseChangeEvent) => void): Subscription;
 /**
- * A new connection specific used for [`withExclusiveTransactionAsync`](#withExclusiveTransactionasynctask).
+ * A new connection specific used for [`withExclusiveTransactionAsync`](#withexclusivetransactionasynctask).
  * @hidden not going to pull all the database methods to the document.
  */
 declare class Transaction extends SQLiteDatabase {
