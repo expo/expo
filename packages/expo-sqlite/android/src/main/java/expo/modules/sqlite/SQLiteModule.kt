@@ -19,36 +19,36 @@ class SQLiteModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoSQLite")
 
-    AsyncFunction("exec") { dbName: String, queries: List<Query>, readOnly: Boolean ->
-      return@AsyncFunction execute(dbName, queries, readOnly)
+    AsyncFunction("exec") { databaseName: String, queries: List<Query>, readOnly: Boolean ->
+      return@AsyncFunction execute(databaseName, queries, readOnly)
     }
 
-    AsyncFunction("execRawQuery") { dbName: String, queries: List<Query>, readOnly: Boolean ->
-      return@AsyncFunction execute(dbName, queries, readOnly)
+    AsyncFunction("execRawQuery") { databaseName: String, queries: List<Query>, readOnly: Boolean ->
+      return@AsyncFunction execute(databaseName, queries, readOnly)
     }
 
-    AsyncFunction("close") { dbName: String ->
+    AsyncFunction("close") { databaseName: String ->
       cachedDatabase
-        .remove(dbName)
+        .remove(databaseName)
         ?.sqlite3_close()
     }
 
-    Function("closeSync") { dbName: String ->
+    Function("closeSync") { databaseName: String ->
       cachedDatabase
-        .remove(dbName)
+        .remove(databaseName)
         ?.sqlite3_close()
     }
 
-    AsyncFunction("deleteAsync") { dbName: String ->
-      if (cachedDatabase[dbName] != null) {
-        throw DeleteDatabaseException(dbName)
+    AsyncFunction("deleteAsync") { databaseName: String ->
+      if (cachedDatabase[databaseName] != null) {
+        throw DeleteDatabaseException(databaseName)
       }
-      val dbFile = File(pathForDatabaseName(dbName))
+      val dbFile = File(pathForDatabaseName(databaseName))
       if (!dbFile.exists()) {
-        throw DatabaseNotFoundException(dbName)
+        throw DatabaseNotFoundException(databaseName)
       }
       if (!dbFile.delete()) {
-        throw DeleteDatabaseFileException(dbName)
+        throw DeleteDatabaseFileException(databaseName)
       }
     }
 
@@ -66,28 +66,28 @@ class SQLiteModule : Module() {
     return "$directory${File.separator}$name"
   }
 
-  private fun openDatabase(dbName: String): SQLite3Wrapper? {
+  private fun openDatabase(databaseName: String): SQLite3Wrapper? {
     val path: String
     try {
-      path = pathForDatabaseName(dbName)
+      path = pathForDatabaseName(databaseName)
     } catch (_: IOException) {
       return null
     }
 
     if (File(path).exists()) {
-      cachedDatabase[dbName]?.let {
+      cachedDatabase[databaseName]?.let {
         return it
       }
     }
 
-    cachedDatabase.remove(dbName)
+    cachedDatabase.remove(databaseName)
     val db = SQLite3Wrapper.open(path) ?: return null
-    cachedDatabase[dbName] = db
+    cachedDatabase[databaseName] = db
     return db
   }
 
-  private fun execute(dbName: String, queries: List<Query>, readOnly: Boolean): List<Any> {
-    val db = openDatabase(dbName) ?: throw OpenDatabaseException(dbName)
+  private fun execute(databaseName: String, queries: List<Query>, readOnly: Boolean): List<Any> {
+    val db = openDatabase(databaseName) ?: throw OpenDatabaseException(databaseName)
     return queries.map { db.executeSql(it.sql, it.args, readOnly) }
   }
 

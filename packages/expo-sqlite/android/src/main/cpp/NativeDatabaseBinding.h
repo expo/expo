@@ -22,7 +22,7 @@ public:
   // sqlite3 bindings
   int sqlite3_changes();
   int sqlite3_close();
-  std::string sqlite3_db_filename(const std::string &dbName);
+  std::string sqlite3_db_filename(const std::string &databaseName);
   int sqlite3_enable_load_extension(int onoff);
   int sqlite3_exec(const std::string &source);
   int sqlite3_get_autocommit();
@@ -47,7 +47,7 @@ private:
   static jni::local_ref<jhybriddata>
   initHybrid(jni::alias_ref<jhybridobject> jThis);
 
-  static void OnUpdateHook(void *arg, int action, char const *dbName,
+  static void OnUpdateHook(void *arg, int action, char const *databaseName,
                            char const *tableName, sqlite3_int64 rowId);
 
 private:

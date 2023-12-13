@@ -1,15 +1,15 @@
 import React from 'react';
-import { type Database } from './Database';
-import type { OpenOptions } from './NativeDatabase';
+import type { SQLiteOpenOptions } from './NativeDatabase';
+import { type SQLiteDatabase } from './SQLiteDatabase';
 export interface SQLiteProviderProps {
     /**
      * The name of the database file to open.
      */
-    dbName: string;
+    databaseName: string;
     /**
      * Open options.
      */
-    options?: OpenOptions;
+    options?: SQLiteOpenOptions;
     /**
      * The children to render.
      */
@@ -18,23 +18,35 @@ export interface SQLiteProviderProps {
      * A custom initialization handler to run before rendering the children.
      * You can use this to run database migrations or other setup tasks.
      */
-    initHandler?: (db: Database) => Promise<void>;
-    /**
-     * A custom loading fallback to render before the database is ready.
-     * @default null
-     */
-    loadingFallback?: React.ReactNode;
+    onInit?: (db: SQLiteDatabase) => Promise<void>;
     /**
      * Handle errors from SQLiteProvider.
      * @default rethrow the error
      */
-    errorHandler?: (error: Error) => void;
+    onError?: (error: Error) => void;
+    /**
+     * Enable [`React.Suspense`](https://react.dev/reference/react/Suspense) integration.
+     * @default false
+     * @example
+     * ```tsx
+     * export default function App() {
+     *   return (
+     *     <Suspense fallback={<Text>Loading...</Text>}>
+     *       <SQLiteProvider databaseName="test.db" useSuspense={true}>
+     *         <Main />
+     *       </SQLiteProvider>
+     *     </Suspense>
+     *   );
+     * }
+     * ```
+     */
+    useSuspense?: boolean;
 }
 /**
  * Context.Provider component that provides a SQLite database to all children.
  * All descendants of this component will be able to access the database using the [`useSQLiteContext`](#usesqlitecontext) hook.
  */
-export declare function SQLiteProvider({ dbName, options, children, initHandler, loadingFallback, errorHandler, }: SQLiteProviderProps): JSX.Element | null;
+export declare function SQLiteProvider({ children, onError, useSuspense, ...props }: SQLiteProviderProps): JSX.Element;
 /**
  * A global hook for accessing the SQLite database across components.
  * This hook should only be used within a [`<SQLiteProvider>`](#sqliteprovider) component.
@@ -43,7 +55,7 @@ export declare function SQLiteProvider({ dbName, options, children, initHandler,
  * ```tsx
  * export default function App() {
  *   return (
- *     <SQLiteProvider dbName="test.db">
+ *     <SQLiteProvider databaseName="test.db">
  *       <Main />
  *     </SQLiteProvider>
  *   );
@@ -56,5 +68,5 @@ export declare function SQLiteProvider({ dbName, options, children, initHandler,
  * }
  * ```
  */
-export declare function useSQLiteContext(): Database;
+export declare function useSQLiteContext(): SQLiteDatabase;
 //# sourceMappingURL=hooks.d.ts.map
