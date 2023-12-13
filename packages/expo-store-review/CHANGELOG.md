@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- `StoreReview.isAvailableAsync()` on iOS now resolves to `false` for apps distributed through TestFlight. ([#25900](https://github.com/expo/expo/pull/25900) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
