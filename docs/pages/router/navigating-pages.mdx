@@ -118,7 +118,7 @@ export default function Page() {
 
 ## Pushing screens
 
-By default, links "push" new routes onto the navigation stack or unwind to a existing route. You can use the `push` prop to always push the route onto the stack.
+By default, links `navigate` to the nearest route in the navigation stack, either by pushing a new route or unwinding to an existing route. You can use the `push` prop to always push the route onto the stack.
 
 {/* prettier-ignore */}
 ```js app/index.js
