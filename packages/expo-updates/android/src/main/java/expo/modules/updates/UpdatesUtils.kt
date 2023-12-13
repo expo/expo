@@ -139,7 +139,10 @@ object UpdatesUtils {
       } catch (e: NoSuchFileException) {
         throw IOException("File download was successful, but temp file ${tmpFile.absolutePath} does not exist")
       } catch (e: FileAlreadyExistsException) {
-        throw IOException("File download was successful, but file already exists at ${destination.absolutePath}")
+        // ENG-10888: this will happen any time there are two assets with identical content
+        // (and therefore the same hash). Log this condition, but do not throw an exception.
+        // throw IOException("File download was successful, but file already exists at ${destination.absolutePath}")
+        Log.w(TAG, "File download was successful, but file already exists at ${destination.absolutePath}")
       } catch (e: Exception) {
         throw IOException("File download was successful, but an exception occurred: $e")
       } finally {
