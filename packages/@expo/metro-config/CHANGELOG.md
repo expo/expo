@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix bundle splitting and async routes.
+
 ### 💡 Others
 
 ## 0.16.0 — 2023-12-12
