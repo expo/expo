@@ -212,6 +212,16 @@ describe(useGlobalSearchParams, () => {
       },
     ]);
   });
+
+  it(`does not have the param 'not-found' on +not-found routes`, () => {
+    const {
+      result: { current: params },
+    } = renderHook(() => useGlobalSearchParams(), ['+not-found'], {
+      initialUrl: '/invalid-url',
+    });
+
+    expect(params['not-found']).toBeUndefined();
+  });
 });
 
 describe(useLocalSearchParams, () => {
@@ -243,6 +253,15 @@ describe(useLocalSearchParams, () => {
     const params = renderHookOnce(() => useLocalSearchParams<{ a: string }>());
     expectType<{ a?: string }>(params);
     expectType<string | undefined>(params.a);
+  });
+  it(`does not have the param 'not-found' on +not-found routes`, () => {
+    const {
+      result: { current: params },
+    } = renderHook(() => useLocalSearchParams(), ['+not-found'], {
+      initialUrl: '/invalid-url',
+    });
+
+    expect(params['not-found']).toBeUndefined();
   });
 });
 

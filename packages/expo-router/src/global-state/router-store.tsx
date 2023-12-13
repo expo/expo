@@ -159,7 +159,7 @@ export class RouterStore {
   }
 
   getRouteInfo(state: ResultState) {
-    return getRouteInfoFromState(
+    const routeInfo = getRouteInfoFromState(
       (state: Parameters<typeof getPathFromState>[0], asPath: boolean) => {
         return getPathDataFromState(state, {
           screens: [],
@@ -170,6 +170,12 @@ export class RouterStore {
       },
       state
     );
+
+    if (routeInfo.segments.includes('+not-found')) {
+      delete routeInfo.params['not-found'];
+    }
+
+    return routeInfo;
   }
 
   // This is only used in development, to show the onboarding screen

@@ -146,7 +146,7 @@ class RouterStore {
         }
     }
     getRouteInfo(state) {
-        return (0, LocationProvider_1.getRouteInfoFromState)((state, asPath) => {
+        const routeInfo = (0, LocationProvider_1.getRouteInfoFromState)((state, asPath) => {
             return (0, getPathFromState_1.getPathDataFromState)(state, {
                 screens: [],
                 ...this.linking?.config,
@@ -154,6 +154,10 @@ class RouterStore {
                 preserveGroups: asPath,
             });
         }, state);
+        if (routeInfo.segments.includes('+not-found')) {
+            delete routeInfo.params['not-found'];
+        }
+        return routeInfo;
     }
     // This is only used in development, to show the onboarding screen
     // In production we should have errored during the initialization

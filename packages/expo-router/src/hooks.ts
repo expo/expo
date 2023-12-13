@@ -92,7 +92,13 @@ export function useGlobalSearchParams<
 export function useLocalSearchParams<
   TParams extends SearchParams = SearchParams,
 >(): Partial<TParams> {
-  const params = React.useContext(NavigationRouteContext)?.params ?? {};
+  const routeInfo = React.useContext(NavigationRouteContext);
+  const params = routeInfo?.params ?? {};
+
+  if (routeInfo?.name === '+not-found') {
+    delete params['not-found'];
+  }
+
   return Object.fromEntries(
     Object.entries(params).map(([key, value]) => {
       if (Array.isArray(value)) {

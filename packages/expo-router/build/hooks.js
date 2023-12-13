@@ -86,7 +86,11 @@ exports.useGlobalSearchParams = useGlobalSearchParams;
  * To observe updates even when the invoking route is not focused, use `useGlobalSearchParams()`.
  */
 function useLocalSearchParams() {
-    const params = react_1.default.useContext(native_1.NavigationRouteContext)?.params ?? {};
+    const routeInfo = react_1.default.useContext(native_1.NavigationRouteContext);
+    const params = routeInfo?.params ?? {};
+    if (routeInfo?.name === '+not-found') {
+        delete params['not-found'];
+    }
     return Object.fromEntries(Object.entries(params).map(([key, value]) => {
         if (Array.isArray(value)) {
             return [
