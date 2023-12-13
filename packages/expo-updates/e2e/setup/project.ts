@@ -767,7 +767,7 @@ export async function setupManualTestAppAsync(projectRoot: string, repoRoot: str
     'com',
     'douglowderexpo',
     'MyUpdateableApp',
-    'MainApplication.java'
+    'MainApplication.kt'
   );
   const mainApplicationText = await fs.readFile(mainApplicationPath, { encoding: 'utf-8' });
   const mainApplicationTextModified = mainApplicationText.replace('BuildConfig.DEBUG', 'false');
