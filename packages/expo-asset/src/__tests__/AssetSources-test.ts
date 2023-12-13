@@ -32,6 +32,7 @@ describe('selectAssetSource', () => {
   });
 
   it(`returns an asset source object with an invalid dummy remote URL if the asset metadata does not specify an absolute URL in production`, () => {
+    _mockNativeModulesWithoutExponentKernel();
     const AssetSources = require('../AssetSources');
     expect(AssetSources.selectAssetSource(mockFontMetadata)).toEqual({
       hash: 'cafecafecafecafecafecafecafecafe',
@@ -271,5 +272,14 @@ function _mockConstants(constants: { [key: string]: any }): void {
       ...constants,
       manifest: { ...Constants.manifest, ...constants.manifest },
     };
+  });
+}
+
+function _mockNativeModulesWithoutExponentKernel(): void {
+  jest.doMock('react-native', () => {
+    const RN = jest.requireActual('react-native');
+
+    delete RN.NativeModules.ExponentKernel;
+    return RN;
   });
 }
