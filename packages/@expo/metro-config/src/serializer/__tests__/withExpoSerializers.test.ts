@@ -110,11 +110,11 @@ describe('serializes', () => {
         /\/\/# sourceMappingURL=\/_expo\/static\/js\/web\/index-[\w\d]{32}\.js\.map/
       );
       // Debug ID annotation is included at the end.
-      expect(artifacts[0].source).toMatch(/\/\/# debugId=index-[\w\d]{32}/);
+      expect(artifacts[0].source).toMatch(/\/\/# debugId=431b98e2-c997-4975-a3d9-2987710abd44/);
 
 
       // Test that the debugId is added to the source map and matches the annotation.
-      const debugId = 'index-a25d550d891e67e5720dc40df718f808';
+      const debugId = '431b98e2-c997-4975-a3d9-2987710abd44';
       expect(artifacts[0].source).toContain(debugId);
 
       const mapArtifact = artifacts.find(({ filename }) => filename.endsWith('.map')) as SerialAsset
@@ -149,11 +149,11 @@ describe('serializes', () => {
         /\/\/# sourceMappingURL=https:\/\/localhost:8081\/_expo\/static\/js\/ios\/index-[\w\d]{32}\.hbc\.map/
       );
       // Debug ID annotation is included at the end.
-      expect(artifacts[0].source).toMatch(/\/\/# debugId=index-[\w\d]{32}/);
+      expect(artifacts[0].source).toMatch(/\/\/# debugId=431b98e2-c997-4975-a3d9-2987710abd44/);
 
 
       // Test that the debugId is added to the source map and matches the annotation.
-      const debugId = 'index-a25d550d891e67e5720dc40df718f808';
+      const debugId = '431b98e2-c997-4975-a3d9-2987710abd44';
       expect(artifacts[0].source).toContain(debugId);
 
       const mapArtifact = artifacts.find(({ filename }) => filename.endsWith('.hbc.map')) as SerialAsset

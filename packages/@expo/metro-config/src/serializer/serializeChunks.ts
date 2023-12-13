@@ -32,6 +32,7 @@ import { getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
 import getMetroAssets from '../transform-worker/getAssets';
 import { SerializerPlugin } from './withExpoSerializers';
+import { stringToUUID } from './debugId';
 
 type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 
@@ -342,7 +343,7 @@ export class Chunk {
     // Create hash without wrapping to prevent it changing when the wrapping changes.
     const outputFile = this.getFilenameForConfig(serializerConfig);
     // We already use a stable hash for the output filename, so we'll reuse that for the debugId.
-    const debugId = path.basename(outputFile, path.extname(outputFile));
+    const debugId = stringToUUID(path.basename(outputFile, path.extname(outputFile)));
     const jsCode = this.serializeToCode(serializerConfig, { chunks, debugId });
 
     const relativeEntry = path.relative(this.options.projectRoot, this.name);
