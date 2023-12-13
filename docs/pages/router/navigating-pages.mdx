@@ -59,7 +59,7 @@ export default function Page() {
 
 Expo Router uses a stack-based navigation approach. Each new route you navigate to gets added to a stack. If you navigate a route already in the stack, the stack unwinds back to that existing route.
 
-For example, if you navigate from `/feed` to `/profile`, the stack will contain `/feed` and `/profile`. If you then navigate to `/settings`, the stack will contain `/feed`, `/profile`, and `/settings`. If you then navigate to `/feed`, the stack will unwind back to `/feed`.
+For example, when you navigate from `/feed` to `/profile`, the stack contains `/feed` and `/profile`. If you then navigate to `/settings`, the stack contains `/feed`, `/profile`, and `/settings`. If you then navigate back to `/feed`, the stack unwinds back to `/feed`.
 
 If you wish to navigate to a route without the stack unwinding, you can use the `push` prop on the `<Link>` component. This will always push the route onto the stack, even if it already exists.
 
