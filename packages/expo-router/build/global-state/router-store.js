@@ -100,7 +100,7 @@ class RouterStore {
             };
         }
         /**
-         * Counter intuitively - this fires AFTER both React Navigation state change and the subsequent paint.
+         * Counter intuitively - this fires AFTER both React Navigation's state changes and the subsequent paint.
          * This poses a couple of issues for Expo Router,
          *   - Ensuring hooks (e.g. useSearchParams()) have data in the initial render
          *   - Reacting to state changes after a navigation event
