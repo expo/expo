@@ -20,6 +20,8 @@ void NativeStatementBinding::registerNatives() {
       makeNativeMethod("initHybrid", NativeStatementBinding::initHybrid),
       makeNativeMethod("sqlite3_bind_parameter_index",
                        NativeStatementBinding::sqlite3_bind_parameter_index),
+      makeNativeMethod("sqlite3_clear_bindings",
+                       NativeStatementBinding::sqlite3_clear_bindings),
       makeNativeMethod("sqlite3_column_count",
                        NativeStatementBinding::sqlite3_column_count),
       makeNativeMethod("sqlite3_column_name",
@@ -40,6 +42,10 @@ void NativeStatementBinding::registerNatives() {
 int NativeStatementBinding::sqlite3_bind_parameter_index(
     const std::string &name) {
   return ::sqlite3_bind_parameter_index(stmt, name.c_str());
+}
+
+int NativeStatementBinding::sqlite3_clear_bindings() {
+  return ::sqlite3_clear_bindings(stmt);
 }
 
 int NativeStatementBinding::sqlite3_column_count() {
