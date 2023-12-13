@@ -3,8 +3,8 @@ Object.defineProperty(RN.NativeModules, 'ExponentKernel', {
   configurable: true,
   enumerable: true,
   get: () => ({
-    getSessionAsync: jest.fn(),
-    setSessionAsync: jest.fn(),
+    getSessionAsync: jest.fn(async () => {}),
+    setSessionAsync: jest.fn(async () => {}),
   }),
 });
 
