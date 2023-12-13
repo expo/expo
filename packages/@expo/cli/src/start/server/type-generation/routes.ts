@@ -133,7 +133,7 @@ export function getTemplateString(
  *
  * These are extracted for easier testing
  */
-export function getTypedRoutesUtils(appRoot: string, filePathSeparator = path.sep) {
+export function getTypedRoutesUtils(appRoot: string, filePathSeperator = path.sep) {
   /*
    * staticRoutes are a map where the key if the route without groups and the value
    *   is another set of all group versions of the route. e.g,
@@ -155,7 +155,7 @@ export function getTypedRoutesUtils(appRoot: string, filePathSeparator = path.se
   const dynamicRoutes = new Map<string, Set<string>>();
 
   function normalizedFilePath(filePath: string) {
-    return filePath.replaceAll(filePathSeparator, '/');
+    return filePath.replaceAll(filePathSeperator, '/');
   }
 
   const normalizedAppRoot = normalizedFilePath(appRoot);
@@ -483,10 +483,6 @@ declare module "expo-router" {
     push: <T>(href: Href<T>) => void;
     /** Navigate to route without appending to the history. */
     replace: <T>(href: Href<T>) => void;
-    /** Navigate to the provided href. */
-    pushOrPop: <T>(href: Href<T>) => void;
-    /** If there's history that supports invoking the \`back\` function. */
-    canGoBack: () => boolean;
     /** Update the current route query params. */
     setParams: <T = ''>(params?: T extends '' ? Record<string, string> : InputRouteParams<T>) => void;
   };
