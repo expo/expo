@@ -1,10 +1,9 @@
 import { Button, mergeClasses } from '@expo/styleguide';
 import { Mail01Icon } from '@expo/styleguide-icons';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
-import { useLocalStorage } from '~/common/useLocalStorage';
 import { Input } from '~/ui/components/Form';
-import { A, CALLOUT, FOOTNOTE } from '~/ui/components/Text';
+import { A, CALLOUT, FOOTNOTE, LABEL } from '~/ui/components/Text';
 
 const isDev = process.env.NODE_ENV === 'development';
 const URL = isDev
@@ -12,16 +11,9 @@ const URL = isDev
   : `https://api.expo.dev/v2/mailchimp-mailing-list/subscribe`;
 
 export const NewsletterSignUp = () => {
-  const [hasSubscribed, setHasSubscribed] = useLocalStorage({
-    defaultValue: false,
-    name: 'SUBSCRIBED_TO_NEWSLETTER',
-  });
-
   const [email, setEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [userSignedUp, setUserSignedUp] = useState(hasSubscribed);
-
-  useEffect(() => setUserSignedUp(hasSubscribed), [hasSubscribed]);
+  const [userSignedUp, setUserSignedUp] = useState(false);
 
   function signUp() {
     if (email.length > 3) {
@@ -40,7 +32,6 @@ export const NewsletterSignUp = () => {
             setError(null);
             setEmail('');
             setUserSignedUp(true);
-            setHasSubscribed(true);
           }
         })
         .catch(setError);
@@ -48,10 +39,10 @@ export const NewsletterSignUp = () => {
   }
 
   return (
-    <div className="flex-1 max-w-[400px] max-md-gutters:max-w-full">
+    <div className="flex-1 max-w-[350px] max-md-gutters:max-w-full">
       <CALLOUT theme="secondary" weight="medium" className="flex gap-2 items-center">
-        <Mail01Icon className="text-icon-tertiary" />
-        Sign up for developer updates
+        <Mail01Icon className="text-icon-tertiary shrink-0" />
+        Sign up for the Expo's Newsletter
       </CALLOUT>
       <form
         className="relative"
@@ -59,19 +50,22 @@ export const NewsletterSignUp = () => {
           event.preventDefault();
           signUp();
         }}>
-        <Input
-          onChange={event => {
-            setEmail(event.target.value);
-            if (event.target.value.length === 0) {
-              setError(null);
-            }
-          }}
-          value={email}
-          className={mergeClasses('pr-[68px]', error && 'border-danger text-danger')}
-          type="email"
-          placeholder={userSignedUp ? 'Thank you for the sign up!' : 'your@email.com'}
-          disabled={userSignedUp}
-        />
+        {userSignedUp ? (
+          <LABEL className="flex items-center my-2.5 h-12">Thank you for the sign up! 💙</LABEL>
+        ) : (
+          <Input
+            onChange={event => {
+              setEmail(event.target.value);
+              if (event.target.value.length === 0) {
+                setError(null);
+              }
+            }}
+            value={email}
+            className={mergeClasses('pr-[68px]', error && 'border-danger text-danger')}
+            type="email"
+            placeholder="reader@email.com"
+          />
+        )}
         {!userSignedUp ? (
           <Button
             size="xs"
