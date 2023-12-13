@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] overwrite duplicates when copying assets. ([#25898](https://github.com/expo/expo/pull/25898) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 0.18.17 — 2023-10-25
