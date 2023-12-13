@@ -17,6 +17,7 @@ import { ExpoSerializerOptions, baseJSBundle } from './fork/baseJSBundle';
 import { graphToSerialAssetsAsync } from './serializeChunks';
 import { SerialAsset } from './serializerAssets';
 import { env } from '../env';
+import { stringToUUID } from './debugId';
 
 export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 
@@ -69,9 +70,22 @@ function getDefaultSerializer(
   const defaultSerializer =
     fallbackSerializer ??
     (async (...params: SerializerParameters) => {
-      const bundle = baseJSBundle(...params);
+      const isPossiblyDev = params[2].transformOptions.hot;
+      // TODO: This is a temporary solution until we've converged on using the new serializer everywhere.
+      const enableDebugId = params[3].inlineSourceMap !== true && !isPossiblyDev;
+      const templateDebugId = `__EXPO_REPLACE_TEMPLATE_DEBUG_ID__`;
+      const bundle = baseJSBundle(params[0], params[1], params[2], {
+        ...params[3],
+        debugId: enableDebugId ? templateDebugId : undefined,
+      });
       const outputCode = bundleToString(bundle).code;
-      return outputCode;
+
+      if (enableDebugId) {
+        const debugId = stringToUUID(outputCode);
+        return outputCode.replace(templateDebugId, debugId);
+      } else {
+        return outputCode;
+      }
     });
   return async (
     ...props: SerializerParameters
