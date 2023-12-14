@@ -26,34 +26,34 @@ class YarnPackageManager extends BasePackageManager_1.BasePackageManager {
         return null;
     }
     installAsync(flags = []) {
-        return (0, spawn_1.createPendingSpawnAsync)(() => this.withOfflineFlagAsync(['install']), (args) => this.runAsync([...args, ...flags]));
+        return (0, spawn_1.createPendingSpawnAsync)(() => this.withOfflineFlagAsync(['install']), (args) => this.spawnAsync([...args, ...flags]));
     }
     addAsync(namesOrFlags = []) {
         if (!namesOrFlags.length) {
             return this.installAsync();
         }
-        return (0, spawn_1.createPendingSpawnAsync)(() => this.withOfflineFlagAsync(['add', ...namesOrFlags]), (args) => this.runAsync(args));
+        return (0, spawn_1.createPendingSpawnAsync)(() => this.withOfflineFlagAsync(['add', ...namesOrFlags]), (args) => this.spawnAsync(args));
     }
     addDevAsync(namesOrFlags = []) {
         if (!namesOrFlags.length) {
             return this.installAsync();
         }
-        return (0, spawn_1.createPendingSpawnAsync)(() => this.withOfflineFlagAsync(['add', '--dev', ...namesOrFlags]), (args) => this.runAsync(args));
+        return (0, spawn_1.createPendingSpawnAsync)(() => this.withOfflineFlagAsync(['add', '--dev', ...namesOrFlags]), (args) => this.spawnAsync(args));
     }
     addGlobalAsync(namesOrFlags = []) {
         if (!namesOrFlags.length) {
             return this.installAsync();
         }
-        return (0, spawn_1.createPendingSpawnAsync)(() => this.withOfflineFlagAsync(['global', 'add', ...namesOrFlags]), (args) => this.runAsync(args));
+        return (0, spawn_1.createPendingSpawnAsync)(() => this.withOfflineFlagAsync(['global', 'add', ...namesOrFlags]), (args) => this.spawnAsync(args));
     }
     removeAsync(namesOrFlags) {
-        return this.runAsync(['remove', ...namesOrFlags]);
+        return this.spawnAsync(['remove', ...namesOrFlags]);
     }
     removeDevAsync(namesOrFlags) {
-        return this.runAsync(['remove', ...namesOrFlags]);
+        return this.spawnAsync(['remove', ...namesOrFlags]);
     }
     removeGlobalAsync(namesOrFlags) {
-        return this.runAsync(['global', 'remove', ...namesOrFlags]);
+        return this.spawnAsync(['global', 'remove', ...namesOrFlags]);
     }
 }
 exports.YarnPackageManager = YarnPackageManager;

@@ -36,15 +36,18 @@ class BasePackageManager {
         (0, assert_1.default)(cwd, `cwd is required for ${className}${methodName}`);
         return cwd;
     }
-    runAsync(command) {
+    spawnAsync(command) {
         this.log?.(`> ${this.name} ${command.join(' ')}`);
         return (0, spawn_async_1.default)(this.bin, command, this.options);
     }
+    async runAsync(scriptAndFlags) {
+        return await this.spawnAsync(['run', ...scriptAndFlags]);
+    }
     async versionAsync() {
-        return await this.runAsync(['--version']).then(({ stdout }) => stdout.trim());
+        return await this.spawnAsync(['--version']).then(({ stdout }) => stdout.trim());
     }
     async getConfigAsync(key) {
-        return await this.runAsync(['config', 'get', key]).then(({ stdout }) => stdout.trim());
+        return await this.spawnAsync(['config', 'get', key]).then(({ stdout }) => stdout.trim());
     }
     async removeLockfileAsync() {
         const cwd = this.ensureCwdDefined('removeLockFile');
@@ -52,7 +55,7 @@ class BasePackageManager {
         await fs_1.default.promises.rm(filePath, { force: true });
     }
     installAsync(flags = []) {
-        return this.runAsync(['install', ...flags]);
+        return this.spawnAsync(['install', ...flags]);
     }
     async uninstallAsync() {
         const cwd = this.ensureCwdDefined('uninstallAsync');

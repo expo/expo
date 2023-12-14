@@ -25,6 +25,16 @@ export class NpmPackageManager extends BasePackageManager {
     return null;
   }
 
+  runAsync(scriptAndFlags: string[]) {
+    const [script, ...flags] = scriptAndFlags;
+
+    // Npm requires -- to pass flags to the script
+    // See: https://docs.npmjs.com/cli/v10/commands/npm-run-script#description
+    return flags.length
+      ? this.spawnAsync(['run', script, '--', ...flags])
+      : this.spawnAsync(['run', script]);
+  }
+
   addAsync(namesOrFlags: string[] = []) {
     if (!namesOrFlags.length) {
       return this.installAsync();
@@ -36,8 +46,8 @@ export class NpmPackageManager extends BasePackageManager {
       () => this.updatePackageFileAsync(versioned, 'dependencies'),
       () =>
         !unversioned.length
-          ? this.runAsync(['install', ...flags])
-          : this.runAsync(['install', '--save', ...flags, ...unversioned.map((spec) => spec.raw)])
+          ? this.spawnAsync(['install', ...flags])
+          : this.spawnAsync(['install', '--save', ...flags, ...unversioned.map((spec) => spec.raw)])
     );
   }
 
@@ -52,8 +62,8 @@ export class NpmPackageManager extends BasePackageManager {
       () => this.updatePackageFileAsync(versioned, 'devDependencies'),
       () =>
         !unversioned.length
-          ? this.runAsync(['install', ...flags])
-          : this.runAsync([
+          ? this.spawnAsync(['install', ...flags])
+          : this.spawnAsync([
               'install',
               '--save-dev',
               ...flags,
@@ -67,19 +77,19 @@ export class NpmPackageManager extends BasePackageManager {
       return this.installAsync();
     }
 
-    return this.runAsync(['install', '--global', ...namesOrFlags]);
+    return this.spawnAsync(['install', '--global', ...namesOrFlags]);
   }
 
   removeAsync(namesOrFlags: string[]) {
-    return this.runAsync(['uninstall', ...namesOrFlags]);
+    return this.spawnAsync(['uninstall', ...namesOrFlags]);
   }
 
   removeDevAsync(namesOrFlags: string[]) {
-    return this.runAsync(['uninstall', '--save-dev', ...namesOrFlags]);
+    return this.spawnAsync(['uninstall', '--save-dev', ...namesOrFlags]);
   }
 
   removeGlobalAsync(namesOrFlags: string[]) {
-    return this.runAsync(['uninstall', '--global', ...namesOrFlags]);
+    return this.spawnAsync(['uninstall', '--global', ...namesOrFlags]);
   }
 
   /**

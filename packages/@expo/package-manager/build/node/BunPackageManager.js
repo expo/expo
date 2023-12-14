@@ -20,34 +20,34 @@ class BunPackageManager extends BasePackageManager_1.BasePackageManager {
         return null;
     }
     installAsync(namesOrFlags = []) {
-        return this.runAsync(['install', ...namesOrFlags]);
+        return this.spawnAsync(['install', ...namesOrFlags]);
     }
     addAsync(namesOrFlags = []) {
         if (!namesOrFlags.length) {
             return this.installAsync();
         }
-        return this.runAsync(['add', ...namesOrFlags]);
+        return this.spawnAsync(['add', ...namesOrFlags]);
     }
     addDevAsync(namesOrFlags = []) {
         if (!namesOrFlags.length) {
             return this.installAsync();
         }
-        return this.runAsync(['add', '--dev', ...namesOrFlags]);
+        return this.spawnAsync(['add', '--dev', ...namesOrFlags]);
     }
     addGlobalAsync(namesOrFlags = []) {
         if (!namesOrFlags.length) {
             return this.installAsync();
         }
-        return this.runAsync(['add', '--global', ...namesOrFlags]);
+        return this.spawnAsync(['add', '--global', ...namesOrFlags]);
     }
     removeAsync(namesOrFlags) {
-        return this.runAsync(['remove', ...namesOrFlags]);
+        return this.spawnAsync(['remove', ...namesOrFlags]);
     }
     removeDevAsync(namesOrFlags) {
-        return this.runAsync(['remove', ...namesOrFlags]);
+        return this.spawnAsync(['remove', ...namesOrFlags]);
     }
     removeGlobalAsync(namesOrFlags) {
-        return this.runAsync(['remove', '--global', ...namesOrFlags]);
+        return this.spawnAsync(['remove', '--global', ...namesOrFlags]);
     }
 }
 exports.BunPackageManager = BunPackageManager;

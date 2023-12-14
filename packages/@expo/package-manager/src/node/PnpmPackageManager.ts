@@ -26,7 +26,7 @@ export class PnpmPackageManager extends BasePackageManager {
       namesOrFlags.unshift('--no-frozen-lockfile');
     }
 
-    return this.runAsync(['install', ...namesOrFlags]);
+    return this.spawnAsync(['install', ...namesOrFlags]);
   }
 
   addAsync(namesOrFlags: string[] = []) {
@@ -34,7 +34,7 @@ export class PnpmPackageManager extends BasePackageManager {
       return this.installAsync();
     }
 
-    return this.runAsync(['add', ...namesOrFlags]);
+    return this.spawnAsync(['add', ...namesOrFlags]);
   }
 
   addDevAsync(namesOrFlags: string[] = []) {
@@ -42,7 +42,7 @@ export class PnpmPackageManager extends BasePackageManager {
       return this.installAsync();
     }
 
-    return this.runAsync(['add', '--save-dev', ...namesOrFlags]);
+    return this.spawnAsync(['add', '--save-dev', ...namesOrFlags]);
   }
 
   addGlobalAsync(namesOrFlags: string[] = []) {
@@ -50,18 +50,18 @@ export class PnpmPackageManager extends BasePackageManager {
       return this.installAsync();
     }
 
-    return this.runAsync(['add', '--global', ...namesOrFlags]);
+    return this.spawnAsync(['add', '--global', ...namesOrFlags]);
   }
 
   removeAsync(namesOrFlags: string[]) {
-    return this.runAsync(['remove', ...namesOrFlags]);
+    return this.spawnAsync(['remove', ...namesOrFlags]);
   }
 
   removeDevAsync(namesOrFlags: string[]) {
-    return this.runAsync(['remove', '--save-dev', ...namesOrFlags]);
+    return this.spawnAsync(['remove', '--save-dev', ...namesOrFlags]);
   }
 
   removeGlobalAsync(namesOrFlags: string[]) {
-    return this.runAsync(['remove', '--global', ...namesOrFlags]);
+    return this.spawnAsync(['remove', '--global', ...namesOrFlags]);
   }
 }

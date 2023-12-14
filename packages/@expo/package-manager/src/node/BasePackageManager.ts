@@ -67,17 +67,21 @@ export abstract class BasePackageManager implements PackageManager {
     return cwd;
   }
 
-  runAsync(command: string[]) {
+  spawnAsync(command: string[]) {
     this.log?.(`> ${this.name} ${command.join(' ')}`);
     return spawnAsync(this.bin, command, this.options);
   }
 
+  async runAsync(scriptAndFlags: string[]) {
+    return await this.spawnAsync(['run', ...scriptAndFlags]);
+  }
+
   async versionAsync() {
-    return await this.runAsync(['--version']).then(({ stdout }) => stdout.trim());
+    return await this.spawnAsync(['--version']).then(({ stdout }) => stdout.trim());
   }
 
   async getConfigAsync(key: string) {
-    return await this.runAsync(['config', 'get', key]).then(({ stdout }) => stdout.trim());
+    return await this.spawnAsync(['config', 'get', key]).then(({ stdout }) => stdout.trim());
   }
 
   async removeLockfileAsync() {
@@ -87,7 +91,7 @@ export abstract class BasePackageManager implements PackageManager {
   }
 
   installAsync(flags: string[] = []): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult> {
-    return this.runAsync(['install', ...flags]);
+    return this.spawnAsync(['install', ...flags]);
   }
 
   async uninstallAsync() {

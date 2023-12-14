@@ -63,17 +63,18 @@ describe('PnpmPackageManager', () => {
     });
   });
 
-  describe('runAsync', () => {
+  describe('spawnAsync', () => {
     it('logs executed command', async () => {
       const log = jest.fn();
       const pnpm = new PnpmPackageManager({ cwd: projectRoot, log });
-      await pnpm.runAsync(['install', '--some-flag']);
+      await pnpm.spawnAsync(['install', '--some-flag']);
+
       expect(log).toHaveBeenCalledWith('> pnpm install --some-flag');
     });
 
     it('inherits stdio output without silent', async () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
-      await pnpm.runAsync(['install']);
+      await pnpm.spawnAsync(['install']);
 
       expect(spawnAsync).toBeCalledWith(
         expect.anything(),
@@ -84,7 +85,7 @@ describe('PnpmPackageManager', () => {
 
     it('does not inherit stdio with silent', async () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot, silent: true });
-      await pnpm.runAsync(['install']);
+      await pnpm.spawnAsync(['install']);
 
       expect(spawnAsync).toBeCalledWith(
         expect.anything(),
@@ -95,7 +96,7 @@ describe('PnpmPackageManager', () => {
 
     it('adds a single package with custom parameters', async () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
-      await pnpm.runAsync(['add', '--save-peer', '@babel/core']);
+      await pnpm.spawnAsync(['add', '--save-peer', '@babel/core']);
 
       expect(spawnAsync).toBeCalledWith(
         'pnpm',
@@ -106,12 +107,32 @@ describe('PnpmPackageManager', () => {
 
     it('adds multiple packages with custom parameters', async () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
-      await pnpm.runAsync(['add', '--save-peer', '@babel/core', '@babel/runtime']);
+      await pnpm.spawnAsync(['add', '--save-peer', '@babel/core', '@babel/runtime']);
 
       expect(spawnAsync).toBeCalledWith(
         'pnpm',
         ['add', '--save-peer', '@babel/core', '@babel/runtime'],
         expect.objectContaining({ cwd: projectRoot })
+      );
+    });
+  });
+
+  describe('runAsync', () => {
+    it('runs a package script by name', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      await pnpm.runAsync(['test']);
+
+      expect(spawnAsync).toBeCalledWith('pnpm', ['run', 'test'], expect.anything());
+    });
+
+    it('runs a package script with name and flags', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      await pnpm.runAsync(['lint', '--max-warnings', '0']);
+
+      expect(spawnAsync).toBeCalledWith(
+        'pnpm',
+        ['run', 'lint', '--max-warnings', '0'],
+        expect.anything()
       );
     });
   });
@@ -447,6 +468,7 @@ describe('PnpmPackageManager', () => {
 
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
       const root = pnpm.workspaceRoot();
+
       expect(root).toBeInstanceOf(PnpmPackageManager);
       expect(root).not.toBe(pnpm);
     });
