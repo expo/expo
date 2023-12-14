@@ -7,10 +7,26 @@ import MonoText from '../components/MonoText';
 import TitleSwitch from '../components/TitledSwitch';
 
 function useScreenCapture(onCapture: () => void) {
+  const hasPermissions = async () => {
+    const { status } = await ScreenCapture.requestPermissionsAsync();
+    return status === 'granted';
+  };
+
   React.useEffect(() => {
-    const listener = ScreenCapture.addScreenshotListener(onCapture);
+    let listener: ScreenCapture.Subscription;
+
+    const addListenerAsync = async () => {
+      if (await hasPermissions()) {
+        listener = ScreenCapture.addScreenshotListener(onCapture);
+      } else {
+        alert('Permissions needed to capture screenshot events are missing!');
+      }
+    };
+
+    addListenerAsync();
+
     return () => {
-      listener.remove();
+      listener?.remove();
     };
   }, []);
 }
@@ -31,7 +47,7 @@ export default function ScreenCaptureScreen() {
 
   return (
     <View style={styles.container}>
-      <TitleSwitch title="Screen Capture Enabled" value={isEnabled} setValue={setEnabled} />
+      <TitleSwitch title="Screen Capture Allowed" value={isEnabled} setValue={setEnabled} />
       <Text style={{ padding: 8 }}>
         Take a screenshot or attempt to record the screen to test that the image is/isn't obscured.
       </Text>
