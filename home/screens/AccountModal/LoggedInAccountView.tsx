@@ -5,12 +5,11 @@ import React from 'react';
 import { FlatList } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
+import { SectionHeader } from '../../components/SectionHeader';
 import { Home_CurrentUserActorQuery } from '../../graphql/types';
 import { useDispatch } from '../../redux/Hooks';
 import SessionActions from '../../redux/SessionActions';
 import { useAccountName } from '../../utils/AccountNameContext';
-
-import { SectionHeader } from '@/components/SectionHeader';
 
 type Props = {
   accounts: Exclude<Home_CurrentUserActorQuery['meUserActor'], undefined | null>['accounts'];

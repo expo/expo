@@ -6,9 +6,8 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { DevelopmentServersOpenQR } from './DevelopmentServersOpenQR';
 import { DevelopmentServersOpenURL } from './DevelopmentServersOpenURL';
+import FeatureFlags from '../../FeatureFlags';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
-
-import FeatureFlags from '@/FeatureFlags';
 
 type Props = {
   isAuthenticated: boolean;

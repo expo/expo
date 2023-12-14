@@ -19,6 +19,8 @@ import { AccountModal } from '../screens/AccountModal';
 import { BranchDetailsScreen } from '../screens/BranchDetailsScreen';
 import { BranchListScreen } from '../screens/BranchListScreen';
 import { DeleteAccountScreen } from '../screens/DeleteAccountScreen';
+import { DiagnosticsStackScreen } from '../screens/DiagnosticsScreen';
+import { FeedbackFormScreen } from '../screens/FeedbackFormScreen';
 import { HomeScreen } from '../screens/HomeScreen';
 import { ProjectScreen } from '../screens/ProjectScreen';
 import { ProjectsListScreen } from '../screens/ProjectsListScreen';
@@ -29,9 +31,6 @@ import {
   alertWithCameraPermissionInstructions,
   requestCameraPermissionsAsync,
 } from '../utils/PermissionUtils';
-
-import { DiagnosticsStackScreen } from '@/screens/DiagnosticsScreen';
-import { FeedbackFormScreen } from '@/screens/FeedbackFormScreen';
 
 // TODO(Bacon): Do we need to create a new one each time?
 const HomeStack = createStackNavigator<HomeStackRoutes>();
