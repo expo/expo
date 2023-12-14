@@ -196,7 +196,8 @@ class EnabledUpdatesController(
       checkOnLaunch = updatesConfiguration.checkOnLaunch,
       requestHeaders = updatesConfiguration.requestHeaders,
       localAssetFiles = localAssetFiles,
-      isMissingRuntimeVersion = false
+      isMissingRuntimeVersion = false,
+      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = false
     )
   }
 
@@ -289,7 +290,7 @@ class EnabledUpdatesController(
     private const val UPDATE_NO_UPDATE_AVAILABLE_EVENT = "noUpdateAvailable"
     private const val UPDATE_ERROR_EVENT = "error"
 
-    private const val UPDATES_EVENT_NAME = "Expo.nativeUpdatesEvent"
-    private const val UPDATES_STATE_CHANGE_EVENT_NAME = "Expo.nativeUpdatesStateChangeEvent"
+    const val UPDATES_EVENT_NAME = "Expo.nativeUpdatesEvent"
+    const val UPDATES_STATE_CHANGE_EVENT_NAME = "Expo.nativeUpdatesStateChangeEvent"
   }
 }

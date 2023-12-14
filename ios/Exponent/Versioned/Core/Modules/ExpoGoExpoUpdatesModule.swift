@@ -51,7 +51,9 @@ final class ExpoGoExpoUpdatesModule: Module {
           "releaseChannel": releaseChannel,
           "runtimeVersion": runtimeVersion,
           "checkAutomatically": checkAutomatically,
-          "channel": channel
+          "channel": channel,
+          "shouldDeferToNativeForAPIMethodAvailabilityInDevelopment": true,
+          "nativeDebug": false
         ]
       }
 
@@ -70,6 +72,7 @@ final class ExpoGoExpoUpdatesModule: Module {
         "checkAutomatically": checkAutomatically,
         "channel": channel,
         "commitTime": commitTime,
+        "shouldDeferToNativeForAPIMethodAvailabilityInDevelopment": true,
         "nativeDebug": false
       ]
     }

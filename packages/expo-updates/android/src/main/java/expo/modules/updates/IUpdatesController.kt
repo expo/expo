@@ -77,7 +77,16 @@ interface IUpdatesController {
      * Whether there is no runtime version (or sdkVersion) provided in configuration. If it is missing,
      * updates will be disabled and a warning will be logged.
      */
-    val isMissingRuntimeVersion: Boolean
+    val isMissingRuntimeVersion: Boolean,
+
+    /**
+     * Whether the JS API methods should allow calling the native module methods and thus the methods
+     * on the controller in development. For normal development (i.e. expo start) we want to throw
+     * at the JS layer since there isn't a controller set up. But for development within Expo Go
+     * or a Dev Client, which have their own controller/JS API implementations, we want the JS API
+     * calls to go through.
+     */
+    val shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: Boolean
   )
   fun getConstantsForModule(): UpdatesModuleConstants
 
