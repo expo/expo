@@ -35,6 +35,19 @@ describe(setModulesMainActivity, () => {
     expect(nextContents).toEqual(expectContents);
   });
 
+  it(`should be able to update from react-native@>=0.73.0 kotlin template`, async () => {
+    const [rawContents, expectContents] = await Promise.all([
+      fs.promises.readFile(path.join(fixturesPath, 'MainActivity-rn073.kt'), 'utf8'),
+      fs.promises.readFile(path.join(fixturesPath, 'MainActivity-rn073-updated.kt'), 'utf8'),
+    ]);
+
+    const contents = setModulesMainActivity(rawContents, 'kt');
+    expect(contents).toEqual(expectContents);
+    // Try it twice...
+    const nextContents = setModulesMainActivity(contents, 'kt');
+    expect(nextContents).toEqual(expectContents);
+  });
+
   it(`should add ReactActivityDelegateWrapper for react-native@>=0.71.0 - java`, async () => {
     const [rawContents, expectContents] = await Promise.all([
       fs.promises.readFile(path.join(fixturesPath, 'MainActivity-rn071.java'), 'utf8'),

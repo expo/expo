@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added Expo SDK 50 and React Native 0.73 support. ([#25907](https://github.com/expo/expo/pull/25907) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
