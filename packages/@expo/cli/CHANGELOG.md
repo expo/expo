@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Move `@expo/server` to be a dependency of `expo-router`.
+- Move `@expo/server` to be a dependency of `expo-router`. ([#25937](https://github.com/expo/expo/pull/25937) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.16.2 — 2023-12-14
 
