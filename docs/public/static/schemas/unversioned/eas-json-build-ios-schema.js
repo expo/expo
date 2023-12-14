@@ -47,8 +47,6 @@ export default [
     enum: ['default', 'medium', ...iosResourceClasses],
     description: [
       'The iOS-specific resource class that will be used to run this build.',
-      '`m-medium`',
-      '`m-medium`',
       '',
       'Build resources:',
       ...iosResourcesList,

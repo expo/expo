@@ -30,7 +30,7 @@ function formatVMs(hardwares: HardwareRSpec) {
     .map(([hardware, { vm, extra }]) => {
       const { cpu, memory } = vmSpecs[vm];
       if (size(hardwares) === 1) return `${cpu}, ${memory}, ${extra}`;
-      return `${cpu}, ${memory}, ${extra} (for builds runnning on ${hardwareSpecs[hardware].name})`;
+      return `${cpu}, ${memory}, ${extra} (for builds running on ${hardwareSpecs[hardware].name})`;
     })
     .join(' or ');
 }
