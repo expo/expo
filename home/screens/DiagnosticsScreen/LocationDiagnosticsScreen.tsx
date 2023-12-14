@@ -16,10 +16,10 @@ import {
 } from 'react-native';
 import MapView, { Polyline } from 'react-native-maps';
 
-import NavigationEvents from '@/components/NavigationEvents';
-import Button from '@/components/PrimaryButton';
-import { StyledText } from '@/components/Text';
-import Colors from '@/constants/Colors';
+import NavigationEvents from '../../components/NavigationEvents';
+import Button from '../../components/PrimaryButton';
+import { StyledText } from '../../components/Text';
+import Colors from '../../constants/Colors';
 
 const STORAGE_KEY = 'expo-home-locations';
 const LOCATION_UPDATES_TASK = 'location-updates';
