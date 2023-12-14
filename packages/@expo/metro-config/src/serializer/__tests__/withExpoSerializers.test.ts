@@ -6,6 +6,7 @@ import {
   SerializerPlugin,
   createSerializerFromSerialProcessors,
   withSerializerPlugins,
+  createDefaultExportCustomSerializer,
 } from '../withExpoSerializers';
 
 describe(withSerializerPlugins, () => {
@@ -43,6 +44,7 @@ jest.mock('../exportHermes', () => {
   };
 });
 
+
 describe('serializes', () => {
   // General helper to reduce boilerplate
   async function serializeTo(
@@ -74,6 +76,7 @@ describe('serializes', () => {
       return output;
     }
   }
+  
 
   // Serialize to a split bundle
   async function serializeSplitAsync(fs: Record<string, string>) {
@@ -84,6 +87,71 @@ describe('serializes', () => {
   }
 
   describe('debugId', () => {
+
+    describe('legacy serializer', () => {
+      it(`serializes with debugId annotation`, async () => {
+        const artifacts = await serializeTo({
+          options: {
+            dev: false,
+            platform: 'ios',
+            hermes: false,
+            // Source maps must be enabled otherwise the feature is disabled.
+            sourceMaps: true,
+          },
+        });
+  
+        if (typeof artifacts === 'string') {
+          throw new Error('wrong type')
+        }
+        
+        
+  
+        // Ensure no directive to include them is added.
+        expect(artifacts.code).toMatch(
+          /\/\/# sourceMappingURL=https:\/\/localhost:8081\/indedx\.bundle\?dev=false/
+        );
+        // Debug ID annotation is included at the end.
+        expect(artifacts.code).toMatch(/\/\/# debugId=6f769d4c-1534-40a6-adc8-eaeb61664424/);
+  
+  
+        // Test that the debugId is added to the source map and matches the annotation.
+        const debugId = '6f769d4c-1534-40a6-adc8-eaeb61664424';
+        expect(artifacts.code).toContain(debugId);
+  
+        
+  
+        expect(JSON.parse(artifacts.map)).toEqual(expect.objectContaining({
+          "debugId": debugId,
+        }));
+      })
+
+
+    it(`skips debugId annotation if inline source maps are enabled`, async () => {
+      const artifacts = await serializeTo({
+        options: {
+          dev: false,
+          platform: 'android',
+          hermes: false,
+          // Inline source maps will disable the feature.
+          inlineSourceMaps: true,
+        },
+      });
+      if (typeof artifacts === 'string') {
+        throw new Error('wrong type')
+      }
+      
+
+
+      // Ensure no directive to include them is added.
+      expect(artifacts.code).toMatch(
+          /\/\/# sourceMappingURL=data:application/
+        );
+         // Debug ID annotation is NOT included at the end.
+         expect(artifacts.map).not.toMatch(/\/\/# debugId=/);
+    });
+    })
+
+
     it(`serializes with debugId annotation`, async () => {
       const artifacts = await serializeTo({
         options: {

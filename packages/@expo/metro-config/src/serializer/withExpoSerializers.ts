@@ -75,18 +75,24 @@ export function createDefaultExportCustomSerializer(config: Partial<MetroConfig>
     // TODO: This is a temporary solution until we've converged on using the new serializer everywhere.
     const enableDebugId = options.inlineSourceMap !== true && !isPossiblyDev;
 
-    const templateDebugId = `__EXPO_REPLACE_TEMPLATE_DEBUG_ID__`;
+    let debugId: string | undefined;
+    const loadDebugId = () => {
+      if (!enableDebugId || debugId) {
+        return debugId;
+      }
 
-    const bundle = baseJSBundle(entryPoint, preModules, graph, {
-      ...options,
-      debugId: enableDebugId ? templateDebugId : undefined,
-    });
-    const outputCode = bundleToString(bundle).code;
+      // TODO: Perform this cheaper.
+      const bundle = baseJSBundle(entryPoint, preModules, graph, {
+        ...options,
+        debugId: undefined,
+      });
+      const outputCode = bundleToString(bundle).code;
+      debugId = stringToUUID(outputCode);
+      return debugId;
+    };
 
-    const modules = [...graph.dependencies.values()];
-
-    let bundleCode = null;
-    let bundleMap = null;
+    let bundleCode: string | null = null;
+    let bundleMap: string | null = null;
 
     if (config.serializer?.customSerializer) {
       const bundle = await config.serializer?.customSerializer(
@@ -102,7 +108,12 @@ export function createDefaultExportCustomSerializer(config: Partial<MetroConfig>
         bundleMap = bundle.map;
       }
     } else {
-      bundleCode = bundleToString(baseJSBundle(entryPoint, preModules, graph, options)).code;
+      bundleCode = bundleToString(
+        baseJSBundle(entryPoint, preModules, graph, {
+          ...options,
+          debugId: loadDebugId(),
+        })
+      ).code;
     }
 
     if (isPossiblyDev) {
@@ -118,30 +129,31 @@ export function createDefaultExportCustomSerializer(config: Partial<MetroConfig>
     // Exports....
 
     if (!bundleMap) {
-      bundleMap = sourceMapString([...preModules, ...getSortedModules(modules, options)], {
-        // TODO: Surface this somehow.
-        excludeSource: false,
-        // excludeSource: options.serializerOptions?.excludeSource,
-        processModuleFilter: options.processModuleFilter,
-        shouldAddToIgnoreList: options.shouldAddToIgnoreList,
-      });
+      bundleMap = sourceMapString(
+        [...preModules, ...getSortedModules([...graph.dependencies.values()], options)],
+        {
+          // TODO: Surface this somehow.
+          excludeSource: false,
+          // excludeSource: options.serializerOptions?.excludeSource,
+          processModuleFilter: options.processModuleFilter,
+          shouldAddToIgnoreList: options.shouldAddToIgnoreList,
+        }
+      );
     }
 
     if (enableDebugId) {
-      const debugId = stringToUUID(outputCode);
-
       const mutateSourceMapWithDebugId = (sourceMap: string) => {
         // NOTE: debugId isn't required for inline source maps because the source map is included in the same file, therefore
         // we don't need to disambiguate between multiple source maps.
         const sourceMapObject = JSON.parse(sourceMap);
-        sourceMapObject.debugId = debugId;
+        sourceMapObject.debugId = loadDebugId();
         // NOTE: Sentry does this, but bun does not.
         // sourceMapObject.debug_id = debugId;
         return JSON.stringify(sourceMapObject);
       };
 
       return {
-        code: outputCode.replace(templateDebugId, debugId),
+        code: bundleCode,
         map: mutateSourceMapWithDebugId(bundleMap),
       };
     }
