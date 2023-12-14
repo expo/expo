@@ -8,7 +8,7 @@
 
 ### 🎉 New features
 
-- Add `debugId` annotations automatically.
+- Add `debugId` annotations automatically. ([#25935](https://github.com/expo/expo/pull/25935) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
