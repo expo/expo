@@ -1,4 +1,4 @@
-import { Subscription } from 'expo-modules-core';
+import { Subscription, PermissionResponse, PermissionStatus, PermissionHookOptions } from 'expo-modules-core';
 /**
  * Returns whether the Screen Capture API is available on the current device.
  *
@@ -68,5 +68,27 @@ export declare function addScreenshotListener(listener: () => void): Subscriptio
  * @param subscription Subscription returned by `addScreenshotListener`.
  */
 export declare function removeScreenshotListener(subscription: Subscription): void;
-export { Subscription };
+/**
+ * Checks user's permissions for detecting when a screenshot is taken.
+ * > Only Android requires additional permissions to detect screenshots. On iOS devices, this method will always resolve to a `granted` permission response.
+ * @return A promise that resolves to a [PermissionResponse](#permissionresponse) object.
+ */
+export declare function getPermissionsAsync(): Promise<PermissionResponse>;
+/**
+ * Asks the user to grant permissions necessary for detecting when a screenshot is taken.
+ * > Only Android requires additional permissions to detect screenshots. On iOS devices, this method will always resolve to a `granted` permission response.
+ * @return A promise that resolves to a [PermissionResponse](#permissionresponse) object.
+ * */
+export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
+/**
+ * Check or request permissions necessary for detecting when a screenshot is taken.
+ * This uses both [`requestPermissionsAsync`](#screencapturerequestpermissionsasync) and [`getPermissionsAsync`](#screencapturegetpermissionsasync) to interact with the permissions.
+ *
+ * @example
+ * ```js
+ * const [status, requestPermission] = ScreenCapture.useScreenCapturePermissions();
+ * ```
+ */
+export declare const usePermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
+export { Subscription, PermissionResponse, PermissionStatus, PermissionHookOptions };
 //# sourceMappingURL=ScreenCapture.d.ts.map

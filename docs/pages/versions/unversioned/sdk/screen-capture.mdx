@@ -54,25 +54,34 @@ export default function ScreenCaptureExample() {
 <SnackInline label="Screen Capture functions" dependencies={["expo-screen-capture", "expo-media-library"]}>
 
 ```js
+import * as ScreenCapture from 'expo-screen-capture';
 import { useEffect } from 'react';
 import { Button, StyleSheet, View } from 'react-native';
-import * as ScreenCapture from 'expo-screen-capture';
-import * as MediaLibrary from 'expo-media-library';
 
 export default function ScreenCaptureExample() {
-  useEffect(() => {
-    if (hasPermissions()) {
-      const subscription = ScreenCapture.addScreenshotListener(() => {
-        alert('Thanks for screenshotting my beautiful app 😊');
-      });
-      return () => subscription.remove();
-    }
-  }, []);
-
   const hasPermissions = async () => {
-    const { status } = await MediaLibrary.requestPermissionsAsync();
+    const { status } = await ScreenCapture.requestPermissionsAsync();
     return status === 'granted';
   };
+
+  useEffect(() => {
+    let subscription;
+
+    const addListenerAsync = async () => {
+      if (await hasPermissions()) {
+        subscription = ScreenCapture.addScreenshotListener(() => {
+          alert('Thanks for screenshotting my beautiful app 😊');
+        });
+      } else {
+        console.error('Permissions needed to subscribe to screenshot events are missing!');
+      }
+    };
+    addListenerAsync();
+
+    return () => {
+      subscription?.remove();
+    };
+  }, []);
 
   const activate = async () => {
     await ScreenCapture.preventScreenCaptureAsync();
