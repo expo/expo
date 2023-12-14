@@ -2,7 +2,7 @@
  * Determines if the platform has the capabilities to use `StoreReview.requestReview()`.
  * @return
  * This returns a promise fulfills with `boolean`, depending on the platform:
- * - On iOS, it will always resolve to `true`.
+ * - On iOS, it will resolve to `true` unless the app is distributed through TestFlight.
  * - On Android, it will resolve to `true` if the device is running Android 5.0+.
  * - On Web, it will resolve to `false`.
  */
