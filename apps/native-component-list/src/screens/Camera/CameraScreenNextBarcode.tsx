@@ -25,7 +25,7 @@ export default function CameraScreenNextBarcode() {
 
   async function launchScanner() {
     if (CameraView.isModernBarcodeScannerAvailable) {
-      await CameraView.launchModernScanner(options);
+      await CameraView.launchScanner(options);
     }
   }
 

@@ -21,8 +21,8 @@ export default class CameraView extends React.Component<CameraProps> {
      */
     static getAvailableVideoCodecsAsync(): Promise<VideoCodec[]>;
     static ConversionTables: {
-        type: Record<number | typeof Symbol.iterator | "link" | "search" | "charAt" | "charCodeAt" | "concat" | "indexOf" | "lastIndexOf" | "localeCompare" | "match" | "replace" | "slice" | "split" | "substring" | "toLowerCase" | "toLocaleLowerCase" | "toUpperCase" | "toLocaleUpperCase" | "trim" | "length" | "substr" | "codePointAt" | "includes" | "endsWith" | "normalize" | "repeat" | "startsWith" | "anchor" | "big" | "blink" | "bold" | "fixed" | "fontcolor" | "fontsize" | "italics" | "small" | "strike" | "sub" | "sup" | "padStart" | "padEnd" | "trimEnd" | "trimStart" | "trimLeft" | "trimRight" | "matchAll" | "replaceAll" | "at" | "toString" | "valueOf", string | undefined>;
-        flashMode: Record<number | typeof Symbol.iterator | "link" | "search" | "charAt" | "charCodeAt" | "concat" | "indexOf" | "lastIndexOf" | "localeCompare" | "match" | "replace" | "slice" | "split" | "substring" | "toLowerCase" | "toLocaleLowerCase" | "toUpperCase" | "toLocaleUpperCase" | "trim" | "length" | "substr" | "codePointAt" | "includes" | "endsWith" | "normalize" | "repeat" | "startsWith" | "anchor" | "big" | "blink" | "bold" | "fixed" | "fontcolor" | "fontsize" | "italics" | "small" | "strike" | "sub" | "sup" | "padStart" | "padEnd" | "trimEnd" | "trimStart" | "trimLeft" | "trimRight" | "matchAll" | "replaceAll" | "at" | "toString" | "valueOf", string | undefined>;
+        type: Record<number | typeof Symbol.iterator | "toString" | "charAt" | "charCodeAt" | "concat" | "indexOf" | "lastIndexOf" | "localeCompare" | "match" | "replace" | "search" | "slice" | "split" | "substring" | "toLowerCase" | "toLocaleLowerCase" | "toUpperCase" | "toLocaleUpperCase" | "trim" | "length" | "substr" | "valueOf" | "codePointAt" | "includes" | "endsWith" | "normalize" | "repeat" | "startsWith" | "anchor" | "big" | "blink" | "bold" | "fixed" | "fontcolor" | "fontsize" | "italics" | "link" | "small" | "strike" | "sub" | "sup" | "padStart" | "padEnd" | "trimEnd" | "trimStart" | "trimLeft" | "trimRight" | "matchAll" | "replaceAll" | "at", string | undefined>;
+        flash: Record<number | typeof Symbol.iterator | "toString" | "charAt" | "charCodeAt" | "concat" | "indexOf" | "lastIndexOf" | "localeCompare" | "match" | "replace" | "search" | "slice" | "split" | "substring" | "toLowerCase" | "toLocaleLowerCase" | "toUpperCase" | "toLocaleUpperCase" | "trim" | "length" | "substr" | "valueOf" | "codePointAt" | "includes" | "endsWith" | "normalize" | "repeat" | "startsWith" | "anchor" | "big" | "blink" | "bold" | "fixed" | "fontcolor" | "fontsize" | "italics" | "link" | "small" | "strike" | "sub" | "sup" | "padStart" | "padEnd" | "trimEnd" | "trimStart" | "trimLeft" | "trimRight" | "matchAll" | "replaceAll" | "at", string | undefined>;
     };
     static defaultProps: CameraProps;
     _cameraHandle?: number | null;
@@ -51,13 +51,26 @@ export default class CameraView extends React.Component<CameraProps> {
      */
     takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture | undefined>;
     /**
-     * Presents a modal view controller that uses the `DataScannerViewController` available on iOS 16+.
+     * Presents a modal view controller that uses the [`DataScannerViewController`](https://developer.apple.com/documentation/visionkit/scanning_data_with_the_camera) available on iOS 16+.
+     * @platform ios
      */
-    static launchModernScanner(options?: ModernScanningOptions): Promise<void>;
+    static launchScanner(options?: ModernScanningOptions): Promise<void>;
     /**
-     * Dimiss `DataScannerViewController`
+     * Dimiss the scanner presented by `launchScanner`.
+     * @platform ios
      */
     static dismissScanner(): Promise<void>;
+    /**
+     *
+     * Callback that is invoked when a bar code has been successfully scanned. The callback is provided with
+     * an object of the `ModernBarcodeScanningResult` shape, where the `type`
+     * refers to the bar code type that was scanned and the `data` is the information encoded in the bar code
+     * (in this case of QR codes, this is often a URL). See `BarCodeType` for supported values.
+     * for supported values.
+     * @param listener
+     *
+     * @platform ios
+     */
     static onModernBarcodeScanned(listener: (event: ModernBarcodeScanningResult) => void): Subscription;
     /**
      * Starts recording a video that will be saved to cache directory. Videos are rotated to match device's orientation.

@@ -269,17 +269,6 @@ export type BarcodeScanningResult = {
 
 export type ModernBarcodeScanningResult = Omit<BarcodeScanningResult, 'bounds'>;
 
-/**
- * @hidden
- */
-export type ConstantsType = {
-  Type: CameraType;
-  FlashMode: FlashMode;
-  VideoQuality: VideoQuality;
-  VideoStabilization: VideoStabilization;
-  VideoCodec: VideoCodec;
-};
-
 // @needsAudit
 export type CameraProps = ViewProps & {
   /**
@@ -287,14 +276,13 @@ export type CameraProps = ViewProps & {
    * When `back`, use the back-facing camera.
    * @default 'back'
    */
-  type?: CameraType;
+  facing?: CameraType;
   /**
-   * Camera flash mode. Use one of [`FlashMode.<value>`](#flashmode-1). When `FlashMode.on`, the flash on your device will
-   * turn on when taking a picture, when `FlashMode.off`, it won't. Setting to `FlashMode.auto` will fire flash if required,
-   * `FlashMode.torch` turns on flash during the preview.
+   * Camera flash mode. Use one of `FlashMode`. When `on`, the flash on your device will
+   * turn on when taking a picture, when `off`, it won't. Setting to `auto` will fire flash if required.
    * @default 'off'
    */
-  flashMode?: FlashMode;
+  flash?: FlashMode;
   /**
    * A value between `0` and `1` being a percentage of device's max zoom. `0` - not zoomed, `1` - maximum zoom.
    * @default 0
@@ -311,7 +299,7 @@ export type CameraProps = ViewProps & {
    */
   mute?: boolean;
   /**
-   * Specify the quality of recorded video. Use one of [`VideoQuality.<value>`](#videoquality).
+   * Specify the quality of recorded video. Use one of `VideoQuality`.
    * Possible values: for 16:9 resolution `2160p`, `1080p`, `720p`, `480p` : `Android only` and for 4:3 `4:3` (the size is 640x480).
    * If the chosen quality is not available for a device, the highest available is chosen.
    */
@@ -337,12 +325,11 @@ export type CameraProps = ViewProps & {
    */
   onMountError?: (event: CameraMountError) => void;
   /**
-   * Settings exposed by [`BarCodeScanner`](bar-code-scanner) module. Supported settings: **barCodeTypes**.
    * @example
    * ```tsx
    * <Camera
    *   barCodeScannerSettings={{
-   *     barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
+   *     barCodeTypes: ["qr"],
    *   }}
    * />
    * ```
@@ -352,7 +339,7 @@ export type CameraProps = ViewProps & {
    * Callback that is invoked when a bar code has been successfully scanned. The callback is provided with
    * an object of the [`BarCodeScanningResult`](#barcodescanningresult) shape, where the `type`
    * refers to the bar code type that was scanned and the `data` is the information encoded in the bar code
-   * (in this case of QR codes, this is often a URL). See [`BarCodeScanner.Constants.BarCodeType`](bar-code-scanner#supported-formats)
+   * (in this case of QR codes, this is often a URL). See [`BarCodeType`](#barcodetype) for supported values.
    * for supported values.
    * @param scanningResult
    */
@@ -376,6 +363,9 @@ export type CameraProps = ViewProps & {
   onResponsiveOrientationChanged?: (event: ResponsiveOrientationChanged) => void;
 };
 
+/**
+ * @hidden
+ */
 export interface CameraViewRef {
   readonly takePicture: (options: CameraPictureOptions) => Promise<CameraCapturedPicture>;
   readonly record: (options?: CameraRecordingOptions) => Promise<{ uri: string }>;
@@ -395,7 +385,7 @@ export type CameraNativeProps = {
   onBarcodeScanned?: (event: { nativeEvent: BarcodeScanningResult }) => void;
   onPictureSaved?: PictureSavedListener;
   onResponsiveOrientationChanged?: ResponsiveOrientationChangedListener;
-  type?: string;
+  facing?: string;
   flashMode?: string;
   enableTorch?: boolean;
   zoom?: number;
@@ -411,32 +401,34 @@ export type BarcodeSettings = {
   interval?: number;
 };
 
+/**
+ * @platform ios
+ */
 export type ModernScanningOptions = {
   /**
    * The type of codes to scan for.
-   * @platform ios
    */
   barCodeTypes: BarCodeType[];
   /**
    * Indicates whether people can use a two-finger pinch-to-zoom gesture.
-   * @platform ios
    * @default true
    */
   isPinchToZoomEnabled?: boolean;
   /**
    * Guidance text, such as “Slow Down,” appears over the live video.
-   * @platform ios
    * @default true
    */
   isGuidanceEnabled?: boolean;
   /**
    * Indicates whether the scanner displays highlights around recognized items.
-   * @platform ios
    * @default false
    */
   isHighlightingEnabled?: boolean;
 };
 
+/**
+ * The available bar code types that can be scanned.
+ */
 export type BarCodeType =
   | 'aztec'
   | 'ean13'
