@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Invalidate API Route cache whenever any file in the repo changes. ([#25936](https://github.com/expo/expo/pull/25936) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.16.2 — 2023-12-14
