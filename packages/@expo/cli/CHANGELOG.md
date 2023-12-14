@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Invalidate API Route cache whenever any file in the repo changes.
+
 ### 💡 Others
 
 ## 0.16.2 — 2023-12-14
