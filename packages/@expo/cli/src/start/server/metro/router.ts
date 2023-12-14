@@ -62,10 +62,6 @@ export function getRouterDirectory(projectRoot: string): string {
   return 'app';
 }
 
-export function isApiRouteConvention(name: string): boolean {
-  return /\+api\.[tj]sx?$/.test(name);
-}
-
 export function getApiRoutesForDirectory(cwd: string) {
   return globSync('**/*+api.@(ts|tsx|js|jsx)', {
     cwd,

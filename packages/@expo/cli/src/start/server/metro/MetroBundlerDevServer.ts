@@ -12,14 +12,14 @@ import { AssetData } from 'metro';
 import fetch from 'node-fetch';
 import path from 'path';
 
-import { bundleApiRoute, rebundleApiRoute } from './bundleApiRoutes';
+import { bundleApiRoute, invalidateApiRouteCache } from './bundleApiRoutes';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
-import { getRouterDirectoryModuleIdWithManifest, isApiRouteConvention } from './router';
+import { getRouterDirectoryModuleIdWithManifest } from './router';
 import { serializeHtmlWithAssets } from './serializeHtml';
-import { observeApiRouteChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
+import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 import { ExportAssetMap } from '../../../export/saveAssets';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
@@ -489,28 +489,18 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         );
 
         if (exp.web?.output === 'server') {
-          // Cache observation for API Routes...
-          observeApiRouteChanges(
-            appDir,
+          // NOTE(EvanBacon): We aren't sure what files the API routes are using so we'll just invalidate
+          // aggressively to ensure we always have the latest. The only caching we really get here is for
+          // cases where the user is making subsequent requests to the same API route without changing anything.
+          // This is useful for testing but pretty suboptimal. Luckily our caching is pretty aggressive so it makes
+          // up for a lot of the overhead.
+          observeAnyFileChanges(
             {
               metro,
               server,
             },
-            async (filepath, op) => {
-              if (isApiRouteConvention(filepath)) {
-                debug(`[expo-cli] ${op} ${filepath}`);
-                if (op === 'change' || op === 'add') {
-                  rebundleApiRoute(this.projectRoot, filepath, {
-                    ...options,
-                    routerRoot,
-                    baseUrl,
-                  });
-                }
-
-                if (op === 'delete') {
-                  // TODO: Cancel the bundling of the deleted route.
-                }
-              }
+            () => {
+              invalidateApiRouteCache();
             }
           );
         }
