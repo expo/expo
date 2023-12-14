@@ -54,10 +54,12 @@ Now that we're authenticated with Expo CLI, we can create the build step.
 To trigger new builds, we will add this script to our configuration:
 
 ```sh
-npx eas-cli build --platform all --non-interactive
+npx eas-cli build --platform all --non-interactive --no-wait
 ```
 
-This will trigger a new build on EAS and print the URLs for the built files after the build completes.
+This will trigger a new build on EAS. A URL will be printed, linking to the build's progress in the EAS dashboard.
+
+> **info** The `--no-wait` flag will exit the step once the build has been triggered, meaning that you are not billed for CI execution time whilst EAS performs the build. If you need to add another CI step to run once the build has completed, you'll need to remove this flag.
 
 <Collapsible summary="Travis CI">
 
@@ -81,7 +83,7 @@ jobs:
       node_js: lts/*
       script:
         - npm ci
-        - npx eas-cli build --platform all --non-interactive
+        - npx eas-cli build --platform all --non-interactive --no-wait
 ```
 
 </Collapsible>
@@ -112,7 +114,7 @@ eas-build:
   stage: build
   script:
     - apk add --no-cache bash
-    - npx eas-cli build --platform all --non-interactive
+    - npx eas-cli build --platform all --non-interactive --no-wait
 ```
 
 </Collapsible>
@@ -138,7 +140,7 @@ pipelines:
         script:
           - apk add --no-cache bash
           - npm ci
-          - npx eas-cli build --platform all --non-interactive
+          - npx eas-cli build --platform all --non-interactive --no-wait
 ```
 
 </Collapsible>
@@ -166,7 +168,7 @@ jobs:
           command: npm ci
       - run:
           name: Trigger build
-          command: npx eas-cli build --platform all --non-interactive
+          command: npx eas-cli build --platform all --non-interactive --no-wait
 
 workflows:
   build_app:
@@ -208,7 +210,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Build on EAS
-        run: eas build --platform all --non-interactive
+        run: eas build --platform all --non-interactive --no-wait
 ```
 
 </Collapsible>
