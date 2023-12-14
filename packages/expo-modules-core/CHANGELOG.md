@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Android] Bump Kotlin version from `1.8.10` to `1.8.22`.
+
 ## 1.11.1 — 2023-12-12
 
 ### 🐛 Bug fixes
