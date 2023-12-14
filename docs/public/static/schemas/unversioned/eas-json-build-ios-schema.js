@@ -44,7 +44,7 @@ export default [
   },
   {
     name: 'resourceClass',
-    enum: ['default', 'medium', ...iosResourceClasses],
+    enum: ['default', ...iosResourceClasses],
     description: [
       'The iOS-specific resource class that will be used to run this build.',
       '',

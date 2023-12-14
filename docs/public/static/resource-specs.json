@@ -32,15 +32,15 @@
         }
     },
     "vm": {
-        "apple-1": {
+        "medium": {
             "cpu": "3 cores",
             "memory": "8 GB RAM"
         },
-        "apple-2": {
+        "large-pro-medium": {
             "cpu": "4 cores",
             "memory": "12 GB RAM"
         },
-        "apple-3": {
+        "large": {
             "cpu": "4 cores",
             "memory": "22 GB RAM"
         }
@@ -52,7 +52,7 @@
                 "symbol": "medium",
                 "hardware": {
                     "apple-m1": {
-                        "vm": "apple-1",
+                        "vm": "medium",
                         "extra": "2 builder VMs per host"
                     }
                 }
@@ -61,13 +61,17 @@
                 "name": "Large",
                 "symbol": "large",
                 "hardware": {
+                    "apple-m1": {
+                        "vm": "large-pro-medium",
+                        "extra": "1 builder VM per host"
+                    },
                     "apple-m2": {
-                        "vm": "apple-2",
-                        "extra": "2 builder VMs per host"
+                        "vm": "large",
+                        "extra": "1 builder VM per host"
                     },
                     "apple-m2-pro": {
-                        "vm": "apple-3",
-                        "extra": "1 builder VM per host"
+                        "vm": "large-pro-medium",
+                        "extra": "2 builder VMs per host"
                     }
                 }
             }
