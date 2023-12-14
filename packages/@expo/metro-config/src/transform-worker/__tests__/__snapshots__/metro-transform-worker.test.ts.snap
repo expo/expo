@@ -3,130 +3,6 @@
 exports[`reports filename when encountering unsupported dynamic dependency 1`] = `"local/file.js:Invalid call at line 3: require(a)"`;
 
 exports[`transforms a module with dependencies 1`] = `
-[
-  [
-    2,
-    2,
-    1,
-    0,
-  ],
-  [
-    2,
-    14,
-    1,
-    12,
-  ],
-  [
-    4,
-    2,
-    1,
-    13,
-  ],
-  [
-    5,
-    2,
-    5,
-    0,
-  ],
-  [
-    6,
-    2,
-    2,
-    0,
-    "require",
-  ],
-  [
-    6,
-    13,
-    2,
-    7,
-  ],
-  [
-    6,
-    39,
-    2,
-    14,
-  ],
-  [
-    7,
-    2,
-    3,
-    0,
-    "arbitrary",
-  ],
-  [
-    7,
-    11,
-    3,
-    9,
-  ],
-  [
-    7,
-    12,
-    3,
-    10,
-    "code",
-  ],
-  [
-    7,
-    16,
-    3,
-    14,
-  ],
-  [
-    7,
-    17,
-    3,
-    15,
-  ],
-  [
-    8,
-    2,
-    4,
-    0,
-  ],
-  [
-    8,
-    6,
-    4,
-    6,
-    "b",
-  ],
-  [
-    8,
-    7,
-    4,
-    7,
-  ],
-  [
-    8,
-    10,
-    4,
-    10,
-    "require",
-  ],
-  [
-    8,
-    21,
-    4,
-    17,
-  ],
-  [
-    8,
-    45,
-    4,
-    22,
-  ],
-  [
-    9,
-    0,
-    4,
-    23,
-  ],
-]
-`;
-
-exports[`transforms a module with dependencies 2`] = `
 {
   "mappings": "AAA",
   "names": [
@@ -136,49 +12,6 @@ exports[`transforms a module with dependencies 2`] = `
 `;
 
 exports[`transforms a simple module 1`] = `
-[
-  [
-    2,
-    2,
-    1,
-    0,
-    "arbitrary",
-  ],
-  [
-    2,
-    11,
-    1,
-    9,
-  ],
-  [
-    2,
-    12,
-    1,
-    10,
-    "code",
-  ],
-  [
-    2,
-    16,
-    1,
-    14,
-  ],
-  [
-    2,
-    17,
-    1,
-    15,
-  ],
-  [
-    3,
-    0,
-    1,
-    15,
-  ],
-]
-`;
-
-exports[`transforms a simple module 2`] = `
 {
   "mappings": "AAA",
   "names": [
@@ -188,49 +21,6 @@ exports[`transforms a simple module 2`] = `
 `;
 
 exports[`transforms a simple script 1`] = `
-[
-  [
-    2,
-    2,
-    1,
-    0,
-    "someReallyArbitrary",
-  ],
-  [
-    2,
-    21,
-    1,
-    19,
-  ],
-  [
-    2,
-    22,
-    1,
-    20,
-    "code",
-  ],
-  [
-    2,
-    26,
-    1,
-    24,
-  ],
-  [
-    2,
-    27,
-    1,
-    25,
-  ],
-  [
-    3,
-    0,
-    1,
-    25,
-  ],
-]
-`;
-
-exports[`transforms a simple script 2`] = `
 {
   "mappings": "AAA",
   "names": [
@@ -289,36 +79,6 @@ exports[`transforms async generators 1`] = `
 `;
 
 exports[`transforms import/export syntax when experimental flag is on 1`] = `
-[
-  [
-    4,
-    2,
-    1,
-    0,
-  ],
-  [
-    4,
-    6,
-    1,
-    7,
-    "c",
-  ],
-  [
-    4,
-    7,
-    1,
-    8,
-  ],
-  [
-    5,
-    0,
-    1,
-    20,
-  ],
-]
-`;
-
-exports[`transforms import/export syntax when experimental flag is on 2`] = `
 {
   "mappings": "AAA",
   "names": [

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Unpin minor upgrades for `@babel/generator` to `^7.20.5`. ([#25872](https://github.com/expo/expo/pull/25872) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 0.16.1 — 2023-12-13
