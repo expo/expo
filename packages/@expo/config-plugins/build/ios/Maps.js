@@ -169,7 +169,6 @@ function isReactNativeMapsAutolinked(config) {
   //   config._internal.autolinkedModules.includes('react-native-maps')
   // );
 }
-
 const withMapsCocoaPods = (config, {
   useGoogleMaps
 }) => {
