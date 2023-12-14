@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed the unclear `ENOENT: no such file or directory` error when running on a CNG project. ([#25913](https://github.com/expo/expo/pull/25913) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.7.0 — 2023-12-12
