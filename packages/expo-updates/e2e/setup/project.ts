@@ -467,7 +467,7 @@ export function transformAppJsonForE2EWithFallbackToCacheTimeout(
       ...transformedForE2E.expo,
       updates: {
         ...transformedForE2E.expo.updates,
-        fallbackToCacheTimeout: 3000,
+        fallbackToCacheTimeout: 5000,
       },
     },
   };
