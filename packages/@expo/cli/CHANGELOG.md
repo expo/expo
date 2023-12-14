@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Move `@expo/server` to be a dependency of `expo-router`.
+
 ## 0.16.2 — 2023-12-14
 
 _This version does not introduce any user-facing changes._

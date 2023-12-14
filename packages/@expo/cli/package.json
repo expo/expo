@@ -50,7 +50,6 @@
     "@expo/plist": "^0.1.0",
     "@expo/prebuild-config": "6.7.0",
     "@expo/rudder-sdk-node": "1.1.1",
-    "@expo/server": "^0.3.0",
     "@expo/spawn-async": "1.5.0",
     "@expo/xcpretty": "^4.2.1",
     "@urql/core": "2.3.6",
