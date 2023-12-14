@@ -17,6 +17,7 @@ export declare enum Config {
 }
 export declare const withUpdates: ConfigPlugin;
 export declare function applyRuntimeVersionFromConfigAsync(config: ExportedConfigWithProps<Resources.ResourceXML>, stringsJSON: ResourceXML): Promise<ResourceXML>;
+export declare function applyRuntimeVersionFromConfigForProjectRootAsync(projectRoot: string, config: ExpoConfigUpdates, stringsJSON: ResourceXML): Promise<ResourceXML>;
 export declare function setUpdatesConfigAsync(projectRoot: string, config: ExpoConfigUpdates, androidManifest: AndroidManifest, expoUpdatesPackageVersion?: string | null): Promise<AndroidManifest>;
 export declare function setVersionsConfigAsync(projectRoot: string, config: Pick<ExpoConfigUpdates, 'sdkVersion' | 'runtimeVersion'>, androidManifest: AndroidManifest): Promise<AndroidManifest>;
 export declare function ensureBuildGradleContainsConfigurationScript(projectRoot: string, buildGradleContents: string): string;
