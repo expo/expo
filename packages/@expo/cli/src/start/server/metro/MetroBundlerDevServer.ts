@@ -17,13 +17,14 @@ import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
-import { getRouterDirectoryModuleIdWithManifest } from './router';
+import { getRouterDirectoryModuleIdWithManifest, isApiRouteConvention } from './router';
 import { serializeHtmlWithAssets } from './serializeHtml';
 import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 import { ExportAssetMap } from '../../../export/saveAssets';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
+import { warnInvalidWebOutput } from '../../../utils/api-routes';
 import { CommandError } from '../../../utils/errors';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
@@ -501,6 +502,23 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             },
             () => {
               invalidateApiRouteCache();
+              // if (isApiRouteConvention(filepath) && exp.web?.output !== 'server') {
+              //   warnInvalidWebOutput();
+              // }
+            }
+          );
+        } else {
+          observeAnyFileChanges(
+            {
+              metro,
+              server,
+            },
+            (events) => {
+              for (const event of events) {
+                if (isApiRouteConvention(event.filePath)) {
+                  warnInvalidWebOutput();
+                }
+              }
             }
           );
         }

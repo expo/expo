@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { getConfig } from '@expo/config';
 import { ExpoResponse } from '@expo/server';
 import { createRequestHandler } from '@expo/server/build/vendor/http';
 import requireString from 'require-from-string';
@@ -15,6 +16,7 @@ import { bundleApiRoute } from './bundleApiRoutes';
 import { fetchManifest } from './fetchRouterManifest';
 import { getErrorOverlayHtmlAsync, logMetroError, logMetroErrorAsync } from './metroErrorInterface';
 import { Log } from '../../../log';
+import { warnInvalidWebOutput } from '../../../utils/api-routes';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
@@ -110,6 +112,11 @@ export function createRouteHandlerMiddleware(
         logMetroError(projectRoot, { error });
       },
       async getApiRoute(route) {
+        const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
+        if (exp.web?.output !== 'server') {
+          warnInvalidWebOutput();
+        }
+
         const resolvedFunctionPath = await resolveAsync(route.page, {
           extensions: ['.js', '.jsx', '.ts', '.tsx'],
           basedir: options.appDir,
