@@ -5,19 +5,20 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
-import { MetroConfig, Module, ReadOnlyGraph } from 'metro';
+import { MetroConfig, MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
+import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString';
 import bundleToString from 'metro/src/lib/bundleToString';
 import { ConfigT, InputConfigT } from 'metro-config';
 
+import { stringToUUID } from './debugId';
 import {
   environmentVariableSerializerPlugin,
   serverPreludeSerializerPlugin,
 } from './environmentVariableSerializerPlugin';
 import { ExpoSerializerOptions, baseJSBundle } from './fork/baseJSBundle';
-import { graphToSerialAssetsAsync } from './serializeChunks';
+import { getSortedModules, graphToSerialAssetsAsync } from './serializeChunks';
 import { SerialAsset } from './serializerAssets';
 import { env } from '../env';
-import { stringToUUID } from './debugId';
 
 export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 
@@ -63,30 +64,101 @@ export function withSerializerPlugins(
   };
 }
 
+export function createDefaultExportCustomSerializer(config: Partial<MetroConfig>): Serializer {
+  return async (
+    entryPoint: string,
+    preModules: readonly Module<MixedOutput>[],
+    graph: ReadOnlyGraph<MixedOutput>,
+    options: SerializerOptions<MixedOutput>
+  ): Promise<string | { code: string; map: string }> => {
+    const isPossiblyDev = graph.transformOptions.hot;
+    // TODO: This is a temporary solution until we've converged on using the new serializer everywhere.
+    const enableDebugId = options.inlineSourceMap !== true && !isPossiblyDev;
+
+    const templateDebugId = `__EXPO_REPLACE_TEMPLATE_DEBUG_ID__`;
+
+    const bundle = baseJSBundle(entryPoint, preModules, graph, {
+      ...options,
+      debugId: enableDebugId ? templateDebugId : undefined,
+    });
+    const outputCode = bundleToString(bundle).code;
+
+    const modules = [...graph.dependencies.values()];
+
+    let bundleCode = null;
+    let bundleMap = null;
+
+    if (config.serializer?.customSerializer) {
+      const bundle = await config.serializer?.customSerializer(
+        entryPoint,
+        preModules,
+        graph,
+        options
+      );
+      if (typeof bundle === 'string') {
+        bundleCode = bundle;
+      } else {
+        bundleCode = bundle.code;
+        bundleMap = bundle.map;
+      }
+    } else {
+      bundleCode = bundleToString(baseJSBundle(entryPoint, preModules, graph, options)).code;
+    }
+
+    if (isPossiblyDev) {
+      if (bundleMap == null) {
+        return bundleCode;
+      }
+      return {
+        code: bundleCode,
+        map: bundleMap,
+      };
+    }
+
+    // Exports....
+
+    if (!bundleMap) {
+      bundleMap = sourceMapString([...preModules, ...getSortedModules(modules, options)], {
+        // TODO: Surface this somehow.
+        excludeSource: false,
+        // excludeSource: options.serializerOptions?.excludeSource,
+        processModuleFilter: options.processModuleFilter,
+        shouldAddToIgnoreList: options.shouldAddToIgnoreList,
+      });
+    }
+
+    if (enableDebugId) {
+      const debugId = stringToUUID(outputCode);
+
+      const mutateSourceMapWithDebugId = (sourceMap: string) => {
+        // NOTE: debugId isn't required for inline source maps because the source map is included in the same file, therefore
+        // we don't need to disambiguate between multiple source maps.
+        const sourceMapObject = JSON.parse(sourceMap);
+        sourceMapObject.debugId = debugId;
+        // NOTE: Sentry does this, but bun does not.
+        // sourceMapObject.debug_id = debugId;
+        return JSON.stringify(sourceMapObject);
+      };
+
+      return {
+        code: outputCode.replace(templateDebugId, debugId),
+        map: mutateSourceMapWithDebugId(bundleMap),
+      };
+    }
+
+    return {
+      code: bundleCode,
+      map: bundleMap,
+    };
+  };
+}
+
 function getDefaultSerializer(
   config: MetroConfig,
   fallbackSerializer?: Serializer | null
 ): Serializer {
-  const defaultSerializer =
-    fallbackSerializer ??
-    (async (...params: SerializerParameters) => {
-      const isPossiblyDev = params[2].transformOptions.hot;
-      // TODO: This is a temporary solution until we've converged on using the new serializer everywhere.
-      const enableDebugId = params[3].inlineSourceMap !== true && !isPossiblyDev;
-      const templateDebugId = `__EXPO_REPLACE_TEMPLATE_DEBUG_ID__`;
-      const bundle = baseJSBundle(params[0], params[1], params[2], {
-        ...params[3],
-        debugId: enableDebugId ? templateDebugId : undefined,
-      });
-      const outputCode = bundleToString(bundle).code;
+  const defaultSerializer = fallbackSerializer ?? createDefaultExportCustomSerializer(config);
 
-      if (enableDebugId) {
-        const debugId = stringToUUID(outputCode);
-        return outputCode.replace(templateDebugId, debugId);
-      } else {
-        return outputCode;
-      }
-    });
   return async (
     ...props: SerializerParameters
   ): Promise<string | { code: string; map: string }> => {

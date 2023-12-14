@@ -586,7 +586,7 @@ async function serializeChunksAsync(
   return jsAssets;
 }
 
-function getSortedModules(
+export function getSortedModules(
   modules: Module<MixedOutput>[],
   {
     createModuleId,
