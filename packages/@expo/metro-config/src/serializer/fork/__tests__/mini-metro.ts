@@ -51,6 +51,7 @@ export function microBundle({
     hermes?: boolean;
     sourceMaps?: boolean;
     inlineSourceMaps?: boolean;
+    hot?: boolean;
   };
 }): [
   string,
@@ -111,7 +112,7 @@ export function microBundle({
       dependencies: modules,
       entryPoints: new Set([absEntry]),
       transformOptions: {
-        hot: false,
+        hot: options.hot ?? false,
         minify: false,
         dev,
         type: 'module',

@@ -19,6 +19,7 @@ import { ConfigT, SerializerConfigT } from 'metro-config';
 import path from 'path';
 import pathToRegExp from 'path-to-regexp';
 
+import { stringToUUID } from './debugId';
 import { buildHermesBundleAsync } from './exportHermes';
 import { getExportPathForDependencyWithOptions } from './exportPath';
 import {
@@ -31,8 +32,6 @@ import {
 import { getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
 import getMetroAssets from '../transform-worker/getAssets';
-import { SerializerPlugin } from './withExpoSerializers';
-import { stringToUUID } from './debugId';
 
 type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 

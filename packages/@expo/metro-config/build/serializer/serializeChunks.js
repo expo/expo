@@ -3,6 +3,8 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.Chunk = void 0;
+exports.getSortedModules = getSortedModules;
 exports.graphToSerialAssetsAsync = graphToSerialAssetsAsync;
 function _assert() {
   const data = _interopRequireDefault(require("assert"));
@@ -35,6 +37,13 @@ function _path() {
 function _pathToRegexp() {
   const data = _interopRequireDefault(require("path-to-regexp"));
   _pathToRegexp = function () {
+    return data;
+  };
+  return data;
+}
+function _debugId() {
+  const data = require("./debugId");
+  _debugId = function () {
     return data;
   };
   return data;
@@ -197,20 +206,29 @@ class Chunk {
       serverRoot: this.options.serverRoot
     });
   }
-  getFilenameForConfig(serializerConfig) {
-    return this.getFilename(this.options.dev ? '' : this.serializeToCodeWithTemplates(serializerConfig, {
+  getStableChunkSource(serializerConfig) {
+    return this.options.dev ? '' : this.serializeToCodeWithTemplates(serializerConfig, {
       // Disable source maps when creating a sha to reduce the number of possible changes that could
       // influence the cache hit.
       serializerOptions: {
         includeSourceMaps: false
       },
-      sourceMapUrl: undefined
-    }));
+      sourceMapUrl: undefined,
+      debugId: undefined
+    });
+  }
+  getFilenameForConfig(serializerConfig) {
+    return this.getFilename(this.getStableChunkSource(serializerConfig));
   }
   serializeToCodeWithTemplates(serializerConfig, options = {}) {
     var _serializerConfig$get, _serializerConfig$get2;
     const entryFile = this.name;
-    const jsSplitBundle = (0, _baseJSBundle().baseJSBundleWithDependencies)(entryFile, [...this.preModules.values()], [...this.deps], {
+
+    // TODO: Disable all debugId steps when a dev server is enabled. This is an export-only feature.
+
+    const preModules = [...this.preModules.values()];
+    const dependencies = [...this.deps];
+    const jsSplitBundle = (0, _baseJSBundle().baseJSBundleWithDependencies)(entryFile, preModules, dependencies, {
       ...this.options,
       runBeforeMainModule: (_serializerConfig$get = serializerConfig === null || serializerConfig === void 0 ? void 0 : (_serializerConfig$get2 = serializerConfig.getModulesRunBeforeMainModule) === null || _serializerConfig$get2 === void 0 ? void 0 : _serializerConfig$get2.call(serializerConfig, _path().default.relative(this.options.projectRoot, entryFile))) !== null && _serializerConfig$get !== void 0 ? _serializerConfig$get : [],
       runModule: !this.isVendor && !this.isAsync,
@@ -281,23 +299,31 @@ class Chunk {
       return null;
     }
   }
-  serializeToCode(serializerConfig, chunks) {
+  serializeToCode(serializerConfig, {
+    debugId,
+    chunks
+  }) {
     var _this$getAdjustedSour;
     return this.serializeToCodeWithTemplates(serializerConfig, {
       skipWrapping: false,
       sourceMapUrl: (_this$getAdjustedSour = this.getAdjustedSourceMapUrl(serializerConfig)) !== null && _this$getAdjustedSour !== void 0 ? _this$getAdjustedSour : undefined,
-      computedAsyncModulePaths: this.getComputedPathsForAsyncDependencies(serializerConfig, chunks)
+      computedAsyncModulePaths: this.getComputedPathsForAsyncDependencies(serializerConfig, chunks),
+      debugId
     });
   }
   async serializeToAssetsAsync(serializerConfig, chunks, {
     includeSourceMaps,
     includeBytecode
   }) {
-    const jsCode = this.serializeToCode(serializerConfig, chunks);
-    const relativeEntry = _path().default.relative(this.options.projectRoot, this.name);
-    const outputFile = this.getFilenameForConfig(
     // Create hash without wrapping to prevent it changing when the wrapping changes.
-    serializerConfig);
+    const outputFile = this.getFilenameForConfig(serializerConfig);
+    // We already use a stable hash for the output filename, so we'll reuse that for the debugId.
+    const debugId = (0, _debugId().stringToUUID)(_path().default.basename(outputFile, _path().default.extname(outputFile)));
+    const jsCode = this.serializeToCode(serializerConfig, {
+      chunks,
+      debugId
+    });
+    const relativeEntry = _path().default.relative(this.options.projectRoot, this.name);
     const jsAsset = {
       filename: outputFile,
       originFilename: relativeEntry,
@@ -312,6 +338,19 @@ class Chunk {
       source: jsCode
     };
     const assets = [jsAsset];
+    const mutateSourceMapWithDebugId = sourceMap => {
+      // TODO: Upstream this so we don't have to parse the source map back and forth.
+      if (!debugId) {
+        return sourceMap;
+      }
+      // NOTE: debugId isn't required for inline source maps because the source map is included in the same file, therefore
+      // we don't need to disambiguate between multiple source maps.
+      const sourceMapObject = JSON.parse(sourceMap);
+      sourceMapObject.debugId = debugId;
+      // NOTE: Sentry does this, but bun does not.
+      // sourceMapObject.debug_id = debugId;
+      return JSON.stringify(sourceMapObject);
+    };
     if (
     // Only include the source map if the `options.sourceMapUrl` option is provided and we are exporting a static build.
     includeSourceMaps && !this.options.inlineSourceMap && this.options.sourceMapUrl) {
@@ -330,10 +369,12 @@ class Chunk {
         }
         return module;
       });
-      const sourceMap = (0, _sourceMapString().default)(modules, {
+
+      // TODO: We may not need to mutate the original source map with a `debugId` when hermes is enabled since we'll have different source maps.
+      const sourceMap = mutateSourceMapWithDebugId((0, _sourceMapString().default)(modules, {
         excludeSource: false,
         ...this.options
-      });
+      }));
       assets.push({
         filename: this.options.dev ? jsAsset.filename + '.map' : outputFile + '.map',
         originFilename: jsAsset.originFilename,
@@ -368,7 +409,7 @@ class Chunk {
         jsAsset.filename = jsAsset.filename.replace(/\.js$/, '.hbc');
       }
       if (assets[1] && hermesBundleOutput.sourcemap) {
-        assets[1].source = hermesBundleOutput.sourcemap;
+        assets[1].source = mutateSourceMapWithDebugId(hermesBundleOutput.sourcemap);
         assets[1].filename = assets[1].filename.replace(/\.js\.map$/, '.hbc.map');
       }
     }
@@ -385,6 +426,7 @@ class Chunk {
     return !this.options.dev && this.supportsBytecode() && ((_this$graph$transform = this.graph.transformOptions.customTransformOptions) === null || _this$graph$transform === void 0 ? void 0 : _this$graph$transform.engine) === 'hermes';
   }
 }
+exports.Chunk = Chunk;
 function getEntryModulesForChunkSettings(graph, settings) {
   return [...graph.dependencies.entries()].filter(([path]) => settings.test.test(path)).map(([, module]) => module);
 }
