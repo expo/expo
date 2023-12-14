@@ -27,6 +27,9 @@ yarn-error.log
 .*.swn
 .*.swm
 
+# VS Code
+.vscode/launch.json
+
 # Sublime Text
 *.sublime-project
 *.sublime-workspace
