@@ -145,7 +145,6 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
   }
 
   _avAsset = [AVURLAsset URLAssetWithURL:assetUrl options:@{AVURLAssetHTTPCookiesKey : cookies, @"AVURLAssetHTTPHeaderFieldsKey": _headers}];
-  _avAsset = [AVURLAsset URLAssetWithURL:_url options:@{AVURLAssetHTTPCookiesKey : cookies, @"AVURLAssetHTTPHeaderFieldsKey": _headers}];
     NSLog(@"DRM Dictionary: %@", _drmConfigs);
     if ([_drmConfigs count] > 0) {
         NSLog(@"The dictionary has data");
