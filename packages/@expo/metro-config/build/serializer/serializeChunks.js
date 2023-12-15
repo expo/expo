@@ -153,7 +153,6 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
       // chunks.add(commonChunk);
     }
   }
-
   const jsAssets = await serializeChunksAsync(chunks, (_config$serializer = config.serializer) !== null && _config$serializer !== void 0 ? _config$serializer : {}, serializeChunkOptions);
 
   // TODO: Can this be anything besides true?
@@ -400,7 +399,6 @@ class Chunk {
         // TODO: Maybe allow prod + no minify.
         minify: true //!this.options.dev,
       });
-
       if (hermesBundleOutput.hbc) {
         // TODO: Unclear if we should add multiple assets, link the assets, or mutate the first asset.
         // jsAsset.metadata.hbc = hermesBundleOutput.hbc;

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Separate out runtime version setting method for eas-cli. ([#25874](https://github.com/expo/expo/pull/25874) by [@wschurman](https://github.com/wschurman))
+
 ### 💡 Others
 
 ## 7.8.0 — 2023-12-12

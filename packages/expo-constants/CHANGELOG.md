@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 15.4.1 — 2023-12-13
+
+_This version does not introduce any user-facing changes._
+
 ## 15.4.0 — 2023-12-12
 
 ### 💡 Others

@@ -8,11 +8,25 @@
  * Fork of the Metro transformer worker, but with additional transforms moved to `babel-preset-expo` and modifications made for web support.
  * https://github.com/facebook/metro/blob/412771475c540b6f85d75d9dcd5a39a6e0753582/packages/metro-transform-worker/src/index.js#L1
  */
+
+import { TraceMap, originalPositionFor, generatedPositionFor } from '@jridgewell/trace-mapping';
 import { Buffer } from 'buffer';
 import * as fs from 'fs';
 import { vol } from 'memfs';
-import { JsTransformerConfig, JsTransformOptions } from 'metro-transform-worker';
+import { fromRawMappings } from 'metro-source-map';
+import type { JsTransformerConfig, JsTransformOptions, JsOutput } from 'metro-transform-worker';
 import * as path from 'path';
+
+/** Converts source mappings from Metro to a “TraceMap”, which is similar to source-map’s SourceMapConsumer */
+const toTraceMap = (output: JsOutput, contents: string) => {
+  const map = fromRawMappings([output.data]).toMap();
+  return new TraceMap({
+    ...map,
+    file: output.data.code,
+    sources: [null],
+    sourcesContent: [contents || null],
+  });
+};
 
 const originalWarn = console.warn;
 
@@ -105,11 +119,13 @@ beforeEach(() => {
 });
 
 it('transforms a simple script', async () => {
+  const contents = 'someReallyArbitrary(code)';
+
   const result = await Transformer.transform(
     baseConfig,
     '/root',
     'local/file.js',
-    Buffer.from('someReallyArbitrary(code)', 'utf8'),
+    Buffer.from(contents, 'utf8'),
     { ...baseTransformOptions, type: 'script' }
   );
 
@@ -121,23 +137,76 @@ it('transforms a simple script', async () => {
       "})(typeof globalThis !== 'undefined' ? globalThis : typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : this);",
     ].join('\n')
   );
-  expect(result.output[0].data.map).toMatchSnapshot();
+
+  const trace = toTraceMap(result.output[0], contents);
+
+  expect(generatedPositionFor(trace, { source: '', line: 1, column: 0 })).toMatchObject({
+    line: 2,
+    column: 2,
+  });
+
+  expect(originalPositionFor(trace, { line: 2, column: 2 })).toMatchObject({
+    line: 1,
+    column: 0,
+    name: 'someReallyArbitrary',
+  });
+
+  // NOTE: If downgraded below @babel/generator@7.21.0, names will be missing here
+  expect(originalPositionFor(trace, { line: 3, column: 10 })).toMatchObject({
+    line: 1,
+    column: 25,
+    name: 'globalThis',
+  });
+  expect(originalPositionFor(trace, { line: 3, column: 59 })).toMatchObject({
+    line: 1,
+    column: 25,
+    name: 'global',
+  });
+  expect(originalPositionFor(trace, { line: 3, column: 100 })).toMatchObject({
+    line: 1,
+    column: 25,
+    name: 'window',
+  });
+
   expect(result.output[0].data.functionMap).toMatchSnapshot();
   expect(result.dependencies).toEqual([]);
 });
 
 it('transforms a simple module', async () => {
+  const contents = 'arbitrary(code)';
+
   const result = await Transformer.transform(
     baseConfig,
     '/root',
     'local/file.js',
-    Buffer.from('arbitrary(code)', 'utf8'),
+    Buffer.from(contents, 'utf8'),
     baseTransformOptions
   );
 
+  const trace = toTraceMap(result.output[0], contents);
+
+  expect(generatedPositionFor(trace, { source: '', line: 1, column: 0 })).toMatchObject({
+    line: 2,
+    column: 2,
+  });
+  expect(generatedPositionFor(trace, { source: '', line: 1, column: 10 })).toMatchObject({
+    line: 2,
+    column: 12,
+  });
+
+  expect(originalPositionFor(trace, { line: 2, column: 2 })).toMatchObject({
+    line: 1,
+    column: 0,
+    name: 'arbitrary',
+  });
+  expect(originalPositionFor(trace, { line: 2, column: 12 })).toMatchObject({
+    line: 1,
+    column: 10,
+    name: 'code',
+  });
+
   expect(result.output[0].type).toBe('js/module');
   expect(result.output[0].data.code).toBe([HEADER_DEV, '  arbitrary(code);', '});'].join('\n'));
-  expect(result.output[0].data.map).toMatchSnapshot();
   expect(result.output[0].data.functionMap).toMatchSnapshot();
   expect(result.dependencies).toEqual([]);
 });
@@ -173,8 +242,53 @@ it('transforms a module with dependencies', async () => {
       '});',
     ].join('\n')
   );
-  expect(result.output[0].data.map).toMatchSnapshot();
+
+  const trace = toTraceMap(result.output[0], contents);
+
+  expect(
+    generatedPositionFor(trace, { source: '', line: 2, column: 0 } /* require("./a") */)
+  ).toMatchObject({ line: 6, column: 2 });
+
+  expect(originalPositionFor(trace, { line: 7, column: 2 })).toMatchObject({
+    line: 3,
+    column: 0,
+    name: 'arbitrary',
+  });
+  expect(originalPositionFor(trace, { line: 8, column: 6 })).toMatchObject({
+    line: 4,
+    column: 6,
+    name: 'b',
+  });
+  expect(originalPositionFor(trace, { line: 8, column: 6 })).toMatchObject({
+    line: 4,
+    column: 6,
+    name: 'b',
+  });
+
+  // NOTE: If downgraded below @babel/generator@7.21.0, names will be missing here
+  expect(originalPositionFor(trace, { line: 5, column: 6 })).toMatchObject({
+    line: 5,
+    column: 0,
+    name: '_c',
+  });
+  expect(originalPositionFor(trace, { line: 4, column: 6 })).toMatchObject({
+    line: 1,
+    column: 13,
+    name: '_interopRequireDefault',
+  });
+  expect(originalPositionFor(trace, { line: 4, column: 31 })).toMatchObject({
+    line: 1,
+    column: 13,
+    name: '_$$_REQUIRE',
+  });
+  expect(originalPositionFor(trace, { line: 4, column: 43 })).toMatchObject({
+    line: 1,
+    column: 13,
+    name: '_dependencyMap',
+  });
+
   expect(result.output[0].data.functionMap).toMatchSnapshot();
+
   expect(result.dependencies).toEqual([
     {
       data: expect.objectContaining({ asyncType: null }),
@@ -187,18 +301,34 @@ it('transforms a module with dependencies', async () => {
 });
 
 it('transforms an es module with asyncToGenerator', async () => {
+  const contents = 'export async function test() {}';
+
   const result = await Transformer.transform(
     baseConfig,
     '/root',
     'local/file.js',
-    Buffer.from('export async function test() {}', 'utf8'),
+    Buffer.from(contents, 'utf8'),
     baseTransformOptions
   );
 
   expect(result.output[0].type).toBe('js/module');
   expect(result.output[0].data.code).toMatchSnapshot();
-  expect(result.output[0].data.map).toHaveLength(13);
+
+  const trace = toTraceMap(result.output[0], contents);
+
+  expect(generatedPositionFor(trace, { source: '', line: 1, column: 12 })).toMatchObject({
+    line: 12,
+    column: 44,
+  });
+
+  expect(originalPositionFor(trace, { line: 8, column: 11 })).toMatchObject({
+    line: 1,
+    column: 22,
+    name: 'test',
+  });
+
   expect(result.output[0].data.functionMap).toMatchSnapshot();
+
   expect(result.dependencies).toEqual([
     {
       data: expect.objectContaining({ asyncType: null }),
@@ -258,8 +388,34 @@ it('transforms import/export syntax when experimental flag is on', async () => {
       '});',
     ].join('\n')
   );
-  expect(result.output[0].data.map).toMatchSnapshot();
+
+  const trace = toTraceMap(result.output[0], contents);
+
+  expect(generatedPositionFor(trace, { source: '', line: 1, column: 7 })).toMatchObject({
+    line: 4,
+    column: 6,
+  });
+
+  expect(originalPositionFor(trace, { line: 4, column: 6 })).toMatchObject({
+    line: 1,
+    column: 7,
+    name: 'c',
+  });
+
+  // NOTE: If downgraded below @babel/generator@7.21.0, names will be missing here
+  expect(originalPositionFor(trace, { line: 4, column: 10 })).toMatchObject({
+    line: 1,
+    column: 8,
+    name: '_$$_IMPORT_DEFAULT',
+  });
+  expect(originalPositionFor(trace, { line: 4, column: 29 })).toMatchObject({
+    line: 1,
+    column: 8,
+    name: '_dependencyMap',
+  });
+
   expect(result.output[0].data.functionMap).toMatchSnapshot();
+
   expect(result.dependencies).toEqual([
     {
       data: expect.objectContaining({

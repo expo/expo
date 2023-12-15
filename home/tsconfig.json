@@ -7,10 +7,7 @@
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noImplicitAny": true,
-    "paths": {
-      "@/*": ["./*"]
-    }
+    "noImplicitAny": true
   },
   "exclude": ["**/__mocks__/*"]
 }

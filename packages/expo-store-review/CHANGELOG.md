@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- `StoreReview.isAvailableAsync()` on iOS now resolves to `false` for apps distributed through TestFlight. ([#25900](https://github.com/expo/expo/pull/25900) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 6.8.1 — 2023-12-13
+
+### 🎉 New features
+
+- `StoreReview.isAvailableAsync()` on iOS now resolves to `false` for apps distributed through TestFlight. ([#25900](https://github.com/expo/expo/pull/25900) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 6.8.0 — 2023-11-14
 

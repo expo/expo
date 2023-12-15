@@ -74,7 +74,7 @@ describe('Basic tests', () => {
       projectRoot
     );
 
-    Server.start(Update.serverPort, protocolVersion, 5000);
+    Server.start(Update.serverPort, protocolVersion, 7000);
     await Server.serveSignedManifest(manifest, projectRoot);
     await device.installApp();
     await device.launchApp({

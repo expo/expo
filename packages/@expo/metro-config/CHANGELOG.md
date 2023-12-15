@@ -4,17 +4,25 @@
 
 ### 🛠 Breaking changes
 
-- Remove `loadAsync` method and prevent loading default config twice. ([#25861](https://github.com/expo/expo/pull/25861) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🎉 New features
 
 - Add `debugId` annotations automatically. ([#25935](https://github.com/expo/expo/pull/25935) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
-- Fix bundle splitting and async routes. ([#25901](https://github.com/expo/expo/pull/25901) by [@EvanBacon](https://github.com/EvanBacon))
+- Unpin minor upgrades for `@babel/generator` to `^7.20.5`. ([#25872](https://github.com/expo/expo/pull/25872) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
+
+## 0.16.1 — 2023-12-13
+
+### 🛠 Breaking changes
+
+- Remove `loadAsync` method and prevent loading default config twice. ([#25861](https://github.com/expo/expo/pull/25861) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+- Fix bundle splitting and async routes. ([#25901](https://github.com/expo/expo/pull/25901) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.16.0 — 2023-12-12
 
