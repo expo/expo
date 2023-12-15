@@ -57,7 +57,7 @@ In the example above, the `scheme` is `exp+app-slug`, and the `manifestUrl` is a
 
 When testing deep links in your development build, such as when navigating to a specific screen in an Expo Router app or testing redirecting back to your app during an Oauth login flow, construct the URL exactly as you would if you were deep-linking into a standalone build of your app (for example, `myscheme://path/to/screen`).
 
-Your project must be already open in the development build in order for an app-specific deep link to work. Cold-launching a development build with an app-specific deep link is not currently supported. In your app-specific deep links, avoid using `expo-development-client` in the path, as this is a reseved path used for launching an updates URL.
+Your project must be already open in the development build for an app-specific deep link to work. Cold-launching a development build with an app-specific deep link is not currently supported. Avoid using `expo-development-client` in your app-specific deep links in the path, as it is a reserved path used for launching an updated URL.
 
 ### QR codes
 
