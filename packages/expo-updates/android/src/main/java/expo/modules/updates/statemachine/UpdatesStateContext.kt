@@ -22,7 +22,7 @@ data class UpdatesStateContext(
   val rollback: UpdatesStateContextRollback? = null,
   val checkError: UpdatesStateError? = null,
   val downloadError: UpdatesStateError? = null,
-  val lastCheckForUpdateTime: Date? = null,
+  val lastCheckForUpdateTime: Date? = null
 ) {
 
   val json: Map<String, Any>

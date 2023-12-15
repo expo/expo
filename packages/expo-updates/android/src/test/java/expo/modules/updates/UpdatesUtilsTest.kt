@@ -55,7 +55,7 @@ class UpdatesUtilsTest : TestCase() {
       codeSigningMetadata = null,
       codeSigningIncludeManifestResponseCertificateChain = true,
       codeSigningAllowUnsignedManifests = true,
-      enableExpoUpdatesProtocolV0CompatibilityMode = true,
+      enableExpoUpdatesProtocolV0CompatibilityMode = true
     )
 
     val sdkOnlyConfig = baseConfig.copy(runtimeVersionRaw = null)

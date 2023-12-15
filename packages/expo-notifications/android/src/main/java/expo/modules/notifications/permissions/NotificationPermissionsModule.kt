@@ -56,7 +56,7 @@ class NotificationPermissionsModule : Module() {
         val managerCompat = NotificationManagerCompat.from(context)
         val areEnabled = managerCompat.areNotificationsEnabled()
         val platformBundle = bundleOf(
-          IMPORTANCE_KEY to managerCompat.importance,
+          IMPORTANCE_KEY to managerCompat.importance
         ).apply {
           val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
           if (notificationManager != null) {
@@ -80,7 +80,7 @@ class NotificationPermissionsModule : Module() {
             PermissionsResponse.STATUS_KEY to status,
             PermissionsResponse.CAN_ASK_AGAIN_KEY to canAskAgain,
             PermissionsResponse.GRANTED_KEY to areAllGranted,
-            ANDROID_RESPONSE_KEY to platformBundle,
+            ANDROID_RESPONSE_KEY to platformBundle
           )
         )
       },
@@ -93,7 +93,7 @@ class NotificationPermissionsModule : Module() {
     val areEnabled = managerCompat.areNotificationsEnabled()
     val status = if (areEnabled) PermissionsStatus.GRANTED else PermissionsStatus.DENIED
     val platformBundle = bundleOf(
-      IMPORTANCE_KEY to managerCompat.importance,
+      IMPORTANCE_KEY to managerCompat.importance
     ).apply {
       val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
       if (notificationManager != null) {
@@ -107,7 +107,7 @@ class NotificationPermissionsModule : Module() {
         PermissionsResponse.STATUS_KEY to status.status,
         PermissionsResponse.CAN_ASK_AGAIN_KEY to areEnabled,
         PermissionsResponse.GRANTED_KEY to (status == PermissionsStatus.GRANTED),
-        ANDROID_RESPONSE_KEY to platformBundle,
+        ANDROID_RESPONSE_KEY to platformBundle
       )
     )
   }

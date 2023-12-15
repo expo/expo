@@ -39,7 +39,6 @@ object SplashScreen : SingletonModule {
     successCallback: () -> Unit = {},
     failureCallback: (reason: String) -> Unit = { Log.w(TAG, it) }
   ) {
-
     SplashScreenStatusBar.configureTranslucent(activity, statusBarTranslucent)
 
     val splashView = splashScreenViewProvider.createSplashScreenView(activity)

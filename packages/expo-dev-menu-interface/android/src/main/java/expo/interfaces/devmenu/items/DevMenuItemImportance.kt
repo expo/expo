@@ -8,5 +8,5 @@ enum class DevMenuItemImportance(val value: Int) {
   LOW(-100),
   MEDIUM(0),
   HIGH(100),
-  HIGHEST(200);
+  HIGHEST(200)
 }

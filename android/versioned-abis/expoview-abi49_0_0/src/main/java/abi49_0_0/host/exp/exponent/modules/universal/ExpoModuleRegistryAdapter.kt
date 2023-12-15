@@ -82,7 +82,7 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
       moduleRegistry
     ) { appContext ->
       appContext.registry.register(
-        ExpoGoUpdatesModule(experienceProperties),
+        ExpoGoUpdatesModule(experienceProperties)
       )
     }
   }

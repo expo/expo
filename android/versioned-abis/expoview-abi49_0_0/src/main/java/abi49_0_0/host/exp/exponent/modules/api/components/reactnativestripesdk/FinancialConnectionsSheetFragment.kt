@@ -19,7 +19,8 @@ import com.stripe.android.financialconnections.model.*
 
 class FinancialConnectionsSheetFragment : Fragment() {
   enum class Mode {
-    ForToken, ForSession
+    ForToken,
+    ForSession
   }
 
   private lateinit var promise: Promise
@@ -107,7 +108,7 @@ class FinancialConnectionsSheetFragment : Fragment() {
     this.configuration = FinancialConnectionsSheet.Configuration(
       financialConnectionsSessionClientSecret = clientSecret,
       publishableKey = publishableKey,
-      stripeAccountId = stripeAccountId,
+      stripeAccountId = stripeAccountId
     )
 
     (context.currentActivity as? FragmentActivity)?.let {

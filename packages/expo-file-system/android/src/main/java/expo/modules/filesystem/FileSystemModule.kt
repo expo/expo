@@ -471,7 +471,9 @@ open class FileSystemModule : Module() {
 
     AsyncFunction("uploadAsync") { url: String, fileUriString: String, options: FileSystemUploadOptions, promise: Promise ->
       val request = createUploadRequest(
-        url, fileUriString, options
+        url,
+        fileUriString,
+        options
       ) { requestBody -> requestBody }
 
       okHttpClient?.let {
@@ -519,7 +521,7 @@ open class FileSystemModule : Module() {
       val request = createUploadRequest(
         url,
         fileUriString,
-        options,
+        options
       ) { requestBody -> CountingRequestBody(requestBody, progressListener) }
 
       val call = okHttpClient!!.newCall(request)
@@ -669,7 +671,11 @@ open class FileSystemModule : Module() {
       val call = client.newCall(request)
       taskHandlers[uuid] = DownloadTaskHandler(fileUri, call)
       val params = DownloadResumableTaskParams(
-        options, call, fileUri.toFile(), resumeData != null, promise
+        options,
+        call,
+        fileUri.toFile(),
+        resumeData != null,
+        promise
       )
       moduleCoroutineScope.launch {
         downloadResumableTask(params)
@@ -1065,7 +1071,9 @@ open class FileSystemModule : Module() {
     val file = DocumentFile.fromSingleUri(context, uri)
     return if (file != null && file.isFile) {
       file
-    } else DocumentFile.fromTreeUri(context, uri)
+    } else {
+      DocumentFile.fromTreeUri(context, uri)
+    }
   }
 
   // extension functions of Uri class

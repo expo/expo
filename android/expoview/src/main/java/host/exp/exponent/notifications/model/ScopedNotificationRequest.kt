@@ -27,7 +27,9 @@ class ScopedNotificationRequest : NotificationRequest {
   fun checkIfBelongsToExperience(experienceKey: ExperienceKey): Boolean {
     return if (experienceScopeKeyString == null) {
       true
-    } else experienceScopeKeyString == experienceKey.scopeKey
+    } else {
+      experienceScopeKeyString == experienceKey.scopeKey
+    }
   }
 
   override fun writeToParcel(dest: Parcel, flags: Int) {

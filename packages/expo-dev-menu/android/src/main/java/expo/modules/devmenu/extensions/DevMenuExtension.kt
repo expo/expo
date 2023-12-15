@@ -91,17 +91,17 @@ class DevMenuExtension(reactContext: ReactApplicationContext) :
         val nextEnabled = !devInternalSettings.isHotModuleReplacementEnabled
         devInternalSettings.isHotModuleReplacementEnabled = nextEnabled
 
-       if (reactApplicationContext != null) {
-         if (nextEnabled) {
-           reactApplicationContext.getJSModule(HMRClient::class.java).enable()
-         } else {
-           reactApplicationContext.getJSModule(HMRClient::class.java).disable()
-         }
-       }
-       if (nextEnabled && !devInternalSettings.isJSDevModeEnabled) {
-         devInternalSettings.isJSDevModeEnabled = true
-         reactDevManager.handleReloadJS()
-       }
+        if (reactApplicationContext != null) {
+          if (nextEnabled) {
+            reactApplicationContext.getJSModule(HMRClient::class.java).enable()
+          } else {
+            reactApplicationContext.getJSModule(HMRClient::class.java).disable()
+          }
+        }
+        if (nextEnabled && !devInternalSettings.isJSDevModeEnabled) {
+          devInternalSettings.isJSDevModeEnabled = true
+          reactDevManager.handleReloadJS()
+        }
       }
 
       action("fast-refresh", fastRefreshAction) {

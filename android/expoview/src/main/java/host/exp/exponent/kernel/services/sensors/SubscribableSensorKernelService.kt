@@ -114,7 +114,9 @@ abstract class SubscribableSensorKernelService internal constructor(reactContext
     val mapKey = experienceKey?.scopeKey
     return if (experienceScopeKeyListenersCountMap.containsKey(mapKey)) {
       experienceScopeKeyListenersCountMap[mapKey]!!
-    } else 0
+    } else {
+      0
+    }
   }
 
   private fun cleanWeakSubscriptionsList(experienceKey: ExperienceKey?) {

@@ -21,11 +21,8 @@ import java.util.Date
 import expo.modules.updates.UpdatesController
 
 // these unused imports must stay because of versioning
-/* ktlint-disable no-unused-imports */
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.statemachine.UpdatesStateContext
-
-/* ktlint-enable no-unused-imports */
 
 /**
  * Exported module which provides to the JS runtime information about the currently running update
@@ -225,7 +222,8 @@ class UpdatesModule : Module() {
     AsyncFunction("setExtraParamAsync") { key: String, value: String?, promise: Promise ->
       logger.debug("Called setExtraParamAsync with key = $key, value = $value")
       UpdatesController.instance.setExtraParam(
-        key, value,
+        key,
+        value,
         object : IUpdatesController.ModuleCallback<Unit> {
           override fun onSuccess(result: Unit) {
             promise.resolve(null)

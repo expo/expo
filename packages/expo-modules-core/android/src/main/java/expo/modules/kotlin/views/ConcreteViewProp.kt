@@ -10,7 +10,7 @@ import expo.modules.kotlin.types.AnyType
 class ConcreteViewProp<ViewType : View, PropType>(
   name: String,
   propType: AnyType,
-  private val setter: (view: ViewType, prop: PropType) -> Unit,
+  private val setter: (view: ViewType, prop: PropType) -> Unit
 ) : AnyViewProp(name, propType) {
 
   @Suppress("UNCHECKED_CAST")

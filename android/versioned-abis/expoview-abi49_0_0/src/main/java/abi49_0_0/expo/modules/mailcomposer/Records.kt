@@ -17,5 +17,5 @@ data class MailComposerOptions(
   @Field
   val isHtml: Boolean?,
   @Field
-  val attachments: List<String>?,
+  val attachments: List<String>?
 ) : Record

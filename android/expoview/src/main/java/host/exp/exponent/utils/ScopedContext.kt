@@ -17,7 +17,9 @@ import java.io.UnsupportedEncodingException
 import java.lang.Exception
 import kotlin.jvm.Throws
 
-class ScopedContext @Throws(UnsupportedEncodingException::class) constructor(context: Context?, experienceKey: ExperienceKey) : ContextWrapper(context) {
+class ScopedContext
+@Throws(UnsupportedEncodingException::class)
+constructor(context: Context?, experienceKey: ExperienceKey) : ContextWrapper(context) {
   private val scope: String
   private var filesDir: File
   private var noBackupDir: File

@@ -22,7 +22,7 @@ internal open class LocationOptions(
   @Field var accuracy: Int = ACCURACY_BALANCED,
   @Field var distanceInterval: Int? = null,
   @Field var mayShowUserSettingsDialog: Boolean = true,
-  @Field var timeInterval: Long? = null,
+  @Field var timeInterval: Long? = null
 ) : Record, Serializable {
   constructor(map: Map<String, Any?>) : this(
     accuracy = map["accuracy"] as? Int ?: ACCURACY_BALANCED,
@@ -36,7 +36,7 @@ internal class ReverseGeocodeLocation(
   @Field var latitude: Double,
   @Field var longitude: Double,
   @Field var accuracy: Float? = null,
-  @Field var altitude: Double? = null,
+  @Field var altitude: Double? = null
 ) : Record, Serializable
 
 internal class LocationTaskOptions(
@@ -61,14 +61,14 @@ internal class LocationTaskServiceOptions(
   @Field var notificationTitle: String? = null,
   @Field var notificationBody: String? = null,
   @Field var killServiceOnDestroy: Boolean? = null,
-  @Field var notificationColor: String? = null,
+  @Field var notificationColor: String? = null
 ) : Record, Serializable {
 
   internal fun toMutableMap() = mutableMapOf(
     "notificationTitle" to notificationTitle,
     "notificationBody" to notificationBody,
     "killServiceOnDestroy" to killServiceOnDestroy,
-    "notificationColor" to notificationColor,
+    "notificationColor" to notificationColor
   )
 }
 
@@ -96,6 +96,6 @@ internal class Region(
     "notifyOnEnter" to notifyOnEnter,
     "notifyOnExit" to notifyOnExit,
     "radius" to radius,
-    "state" to state,
+    "state" to state
   )
 }
