@@ -25,6 +25,9 @@ const additionalProjectProps = {
     sdkVersion: '46.0.0',
   },
   pkg: {},
+  hasUnusedStaticConfig: false,
+  staticConfigPath: null,
+  dynamicConfigPath: null,
 };
 
 class MockSuccessfulCheck implements DoctorCheck {
