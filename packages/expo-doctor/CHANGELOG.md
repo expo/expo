@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Allow skipping dependency version check. ([#25822](https://github.com/expo/expo/pull/25822) by [@floatplane](https://github.com/floatplane))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
