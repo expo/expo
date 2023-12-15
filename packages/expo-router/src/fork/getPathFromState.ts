@@ -525,7 +525,8 @@ function getParamsWithConventionsCollapsed({
   // Deep Dynamic Routes
   if (segments.some((segment) => segment.startsWith('*'))) {
     // NOTE(EvanBacon): Drop the param name matching the wildcard route name -- this is specific to Expo Router.
-    const name = matchDeepDynamicRouteName(routeName) ?? routeName;
+    const name =
+      routeName === '+not-found' ? 'not-found' : matchDeepDynamicRouteName(routeName) ?? routeName;
     delete processedParams[name];
   }
 
