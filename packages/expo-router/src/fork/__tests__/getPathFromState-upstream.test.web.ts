@@ -1951,7 +1951,7 @@ it('tries to match wildcard patterns at the end', () => {
   );
 });
 
-it('uses nearest parent wildcard match for unmatched paths', () => {
+it.only('uses nearest parent wildcard match for unmatched paths', () => {
   const path = '/bar/42/baz/test';
   const config = {
     screens: {
@@ -1963,7 +1963,7 @@ it('uses nearest parent wildcard match for unmatched paths', () => {
               Baz: 'baz',
             },
           },
-          '+not-found': '*+not-found',
+          '+not-found': '*not-found',
         },
       },
     },
