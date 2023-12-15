@@ -36,8 +36,8 @@ return(
 (0,_jsxRuntime.jsxs)(_reactNative.View,{children:[
 (0,_jsxRuntime.jsx)(_expoAppLoading.default,{}),
 (0,_jsxRuntime.jsx)(_vectorIcons.Ionicons,{name:"md-options",size:28}),
-(0,_jsxRuntime.jsx)(_fooView.default,{})]}));
-
+(0,_jsxRuntime.jsx)(_fooView.default,{})]}
+));
 
 }},{key:"unusedFunction",value:
 
@@ -85,8 +85,8 @@ return(
 (0,_jsxRuntime().jsxs)(_reactNative().View,{children:[
 (0,_jsxRuntime().jsx)(_expoAppLoading().default,{}),
 (0,_jsxRuntime().jsx)(_vectorIcons().Ionicons,{name:"md-options",size:28}),
-(0,_jsxRuntime().jsx)(_fooView().default,{})]}));
-
+(0,_jsxRuntime().jsx)(_fooView().default,{})]}
+));
 
 }},{key:"unusedFunction",value:
 
@@ -134,8 +134,8 @@ return(
 (0,_jsxRuntime.jsxs)(_reactNative.View,{children:[
 (0,_jsxRuntime.jsx)(_expoAppLoading.default,{}),
 (0,_jsxRuntime.jsx)(_vectorIcons.Ionicons,{name:"md-options",size:28}),
-(0,_jsxRuntime.jsx)(_fooView.default,{})]}));
-
+(0,_jsxRuntime.jsx)(_fooView.default,{})]}
+));
 
 }},{key:"unusedFunction",value:
 
@@ -183,8 +183,8 @@ return(
 (0,_jsxRuntime.jsxs)(_reactNative.View,{children:[
 (0,_jsxRuntime.jsx)(_expoAppLoading.default,{}),
 (0,_jsxRuntime.jsx)(_vectorIcons.Ionicons,{name:"md-options",size:28}),
-(0,_jsxRuntime.jsx)(_fooView.default,{})]}));
-
+(0,_jsxRuntime.jsx)(_fooView.default,{})]}
+));
 
 }},{key:"unusedFunction",value:
 
@@ -232,8 +232,8 @@ return(
 (0,_jsxRuntime().jsxs)(_reactNative().View,{children:[
 (0,_jsxRuntime().jsx)(_expoAppLoading().default,{}),
 (0,_jsxRuntime().jsx)(_vectorIcons().Ionicons,{name:"md-options",size:28}),
-(0,_jsxRuntime().jsx)(_fooView().default,{})]}));
-
+(0,_jsxRuntime().jsx)(_fooView().default,{})]}
+));
 
 }},{key:"unusedFunction",value:
 
