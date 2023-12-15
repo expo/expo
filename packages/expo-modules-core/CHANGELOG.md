@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Android] Bump Kotlin version from `1.8.10` to `1.8.22`. ([#25945](https://github.com/expo/expo/pull/25945) by [@lukmccall](https://github.com/lukmccall))
+
 ## 1.11.1 — 2023-12-12
 
 ### 🐛 Bug fixes
