@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions } from 'expo-modules-core';
+import { type PermissionResponse, PermissionStatus, type PermissionExpiration, type PermissionHookOptions } from 'expo-modules-core';
 import { Ref } from 'react';
 import type { ViewProps } from 'react-native';
 export type CameraType = 'front' | 'back';
@@ -400,5 +400,5 @@ export type ModernScanningOptions = {
     isHighlightingEnabled?: boolean;
 };
 export type BarCodeType = 'aztec' | 'ean13' | 'ean8' | 'qr' | 'pdf417' | 'upc_e' | 'datamatrix' | 'code39' | 'code93' | 'itf14' | 'codabar' | 'code128' | 'upc_a';
-export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };
+export { type PermissionResponse, PermissionStatus, type PermissionExpiration, type PermissionHookOptions };
 //# sourceMappingURL=Camera.types.d.ts.map

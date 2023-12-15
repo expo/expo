@@ -1,6 +1,6 @@
 import { EventEmitter } from 'expo-modules-core';
 import { useEffect, useState } from 'react';
-import { BatteryState, } from './Battery.types';
+import { BatteryState } from './Battery.types';
 import ExpoBattery from './ExpoBattery';
 const BatteryEventEmitter = new EventEmitter(ExpoBattery);
 // @needsAudit
@@ -251,5 +251,5 @@ export function usePowerState() {
     }, []);
     return { lowPowerMode, batteryLevel, batteryState };
 }
-export { BatteryState, };
+export { BatteryState };
 //# sourceMappingURL=Battery.js.map

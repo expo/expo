@@ -1,9 +1,10 @@
-import { EventEmitter, Subscription } from 'expo-modules-core';
+import { EventEmitter } from 'expo-modules-core';
+import type { Subscription } from 'expo-modules-core';
 import { useEffect, useState } from 'react';
 
-import {
+import { BatteryState } from './Battery.types';
+import type {
   BatteryLevelEvent,
-  BatteryState,
   BatteryStateEvent,
   PowerModeEvent,
   PowerState,
@@ -285,11 +286,5 @@ export function usePowerState(): PowerState {
   return { lowPowerMode, batteryLevel, batteryState };
 }
 
-export {
-  BatteryLevelEvent,
-  BatteryState,
-  BatteryStateEvent,
-  PowerModeEvent,
-  PowerState,
-  Subscription,
-};
+export { BatteryState };
+export type { BatteryLevelEvent, BatteryStateEvent, PowerModeEvent, PowerState, Subscription };

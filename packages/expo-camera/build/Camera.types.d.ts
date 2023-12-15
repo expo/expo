@@ -1,4 +1,5 @@
-import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions } from 'expo-modules-core';
+import { PermissionStatus } from 'expo-modules-core';
+import type { PermissionResponse, PermissionExpiration, PermissionHookOptions } from 'expo-modules-core';
 import type { ViewProps } from 'react-native';
 export declare enum CameraType {
     front = "front",
@@ -506,5 +507,6 @@ export type BarCodeSettings = {
     barCodeTypes: string[];
     interval?: number;
 };
-export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };
+export { PermissionStatus };
+export type { PermissionResponse, PermissionExpiration, PermissionHookOptions };
 //# sourceMappingURL=Camera.types.d.ts.map

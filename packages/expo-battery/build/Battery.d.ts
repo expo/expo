@@ -1,5 +1,6 @@
-import { Subscription } from 'expo-modules-core';
-import { BatteryLevelEvent, BatteryState, BatteryStateEvent, PowerModeEvent, PowerState } from './Battery.types';
+import type { Subscription } from 'expo-modules-core';
+import { BatteryState } from './Battery.types';
+import type { BatteryLevelEvent, BatteryStateEvent, PowerModeEvent, PowerState } from './Battery.types';
 /**
  * Resolves with whether the battery API is available on the current device. The value of this
  * property is `true` on Android and physical iOS devices and `false` on iOS simulators. On web,
@@ -155,5 +156,6 @@ export declare function useLowPowerMode(): boolean;
  * @return Returns power state information.
  */
 export declare function usePowerState(): PowerState;
-export { BatteryLevelEvent, BatteryState, BatteryStateEvent, PowerModeEvent, PowerState, Subscription, };
+export { BatteryState };
+export type { BatteryLevelEvent, BatteryStateEvent, PowerModeEvent, PowerState, Subscription };
 //# sourceMappingURL=Battery.d.ts.map

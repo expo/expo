@@ -1,4 +1,4 @@
-import { PermissionStatus, } from 'expo-modules-core';
+import { PermissionStatus } from 'expo-modules-core';
 export var CameraType;
 (function (CameraType) {
     CameraType["front"] = "front";

@@ -1,6 +1,6 @@
-import {
+import { PermissionStatus } from 'expo-modules-core';
+import type {
   PermissionResponse,
-  PermissionStatus,
   PermissionExpiration,
   PermissionHookOptions,
 } from 'expo-modules-core';
@@ -537,4 +537,5 @@ export type BarCodeSettings = {
   interval?: number;
 };
 
-export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };
+export { PermissionStatus };
+export type { PermissionResponse, PermissionExpiration, PermissionHookOptions };
