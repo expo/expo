@@ -15,6 +15,11 @@ class Env {
   get EXPO_STAGING() {
     return boolish('EXPO_STAGING', false);
   }
+
+  /** Allow disabling InstalledDependencyVersionCheck */
+  get EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK() {
+    return boolish('EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK', false);
+  }
 }
 
 export const env = new Env();
