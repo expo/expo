@@ -21,7 +21,7 @@ export default [
     description: [
       `The Android-specific resource class that will be used to run this build. Defaults to \`${ResourceClasses.android[0]}\`.`,
       '',
-      'To learn more about what build resources are available to each resource class, check out [iOS build server configurations](../../build-reference/infrastructure#android-build-server-configurations).',
+      'To learn more about what build resources are available to each resource class, check out [Android build server configurations](../../build-reference/infrastructure#android-build-server-configurations).',
       '',
       'The `large` resource class is not available on the free plan.',
     ],
