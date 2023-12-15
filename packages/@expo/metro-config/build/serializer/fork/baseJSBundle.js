@@ -15,6 +15,20 @@ function _jscSafeUrl() {
   };
   return data;
 }
+function _CountingSet() {
+  const data = _interopRequireDefault(require("metro/src/lib/CountingSet"));
+  _CountingSet = function () {
+    return data;
+  };
+  return data;
+}
+function _countLines() {
+  const data = _interopRequireDefault(require("metro/src/lib/countLines"));
+  _countLines = function () {
+    return data;
+  };
+  return data;
+}
 function _getAppendScripts() {
   const data = _interopRequireDefault(require("metro/src/lib/getAppendScripts"));
   _getAppendScripts = function () {
@@ -109,7 +123,8 @@ function baseJSBundleWithDependencies(entryPoint, preModules, dependencies, opti
   }
   const preCode = (0, _processModules().processModules)(preModules, processModulesOptions).map(([, code]) => code.src).join('\n');
   const modules = [...dependencies].sort((a, b) => options.createModuleId(a.path) - options.createModuleId(b.path));
-  const postCode = (0, _processModules().processModules)((0, _getAppendScripts().default)(entryPoint, [...preModules, ...modules], {
+  const sourceMapUrl = ((_options$serializerOp2 = options.serializerOptions) === null || _options$serializerOp2 === void 0 ? void 0 : _options$serializerOp2.includeSourceMaps) === false ? undefined : options.sourceMapUrl;
+  const modulesWithAnnotations = (0, _getAppendScripts().default)(entryPoint, [...preModules, ...modules], {
     asyncRequireModulePath: options.asyncRequireModulePath,
     createModuleId: options.createModuleId,
     getRunModuleStatement: options.getRunModuleStatement,
@@ -117,12 +132,34 @@ function baseJSBundleWithDependencies(entryPoint, preModules, dependencies, opti
     runBeforeMainModule: options.runBeforeMainModule,
     runModule: options.runModule,
     shouldAddToIgnoreList: options.shouldAddToIgnoreList,
-    sourceMapUrl: ((_options$serializerOp2 = options.serializerOptions) === null || _options$serializerOp2 === void 0 ? void 0 : _options$serializerOp2.includeSourceMaps) === false ? undefined : options.sourceMapUrl,
+    sourceMapUrl,
     // This directive doesn't make a lot of sense in the context of a large single bundle that represent
     // multiple files. It's usually used for things like TypeScript where you want the file name to appear with a
     // different extension. Since it's unclear to me (Bacon) how it is used on native, I'm only disabling in web.
     sourceUrl: options.platform === 'web' ? undefined : options.sourceUrl
-  }), processModulesOptions).map(([, code]) => code.src).join('\n');
+  });
+
+  // If the `debugId` annotation is available and we aren't inlining the source map, add it to the bundle.
+  // NOTE: We may want to move this assertion up further.
+  const hasExternalMaps = !options.inlineSourceMap && !!sourceMapUrl;
+  if (hasExternalMaps && options.debugId != null) {
+    const code = `//# debugId=${options.debugId}`;
+    modulesWithAnnotations.push({
+      path: 'debug-id-annotation',
+      dependencies: new Map(),
+      getSource: () => Buffer.from(''),
+      inverseDependencies: new (_CountingSet().default)(),
+      output: [{
+        type: 'js/script/virtual',
+        data: {
+          code,
+          lineCount: (0, _countLines().default)(code),
+          map: []
+        }
+      }]
+    });
+  }
+  const postCode = (0, _processModules().processModules)(modulesWithAnnotations, processModulesOptions).map(([, code]) => code.src).join('\n');
   const mods = (0, _processModules().processModules)([...dependencies], processModulesOptions).map(([module, code]) => [options.createModuleId(module.path), code]);
   return {
     pre: preCode,

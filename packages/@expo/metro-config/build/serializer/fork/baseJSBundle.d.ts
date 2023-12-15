@@ -23,6 +23,7 @@ export type ExpoSerializerOptions = SerializerOptions & {
         includeBytecode?: boolean;
         includeSourceMaps?: boolean;
     };
+    debugId?: string;
 };
 export declare function getPlatformOption(graph: Pick<ReadOnlyGraph, 'transformOptions'>, options: Pick<SerializerOptions, 'sourceUrl'>): string | null;
 export declare function getSplitChunksOption(graph: Pick<ReadOnlyGraph, 'transformOptions'>, options: Pick<SerializerOptions, 'includeAsyncPaths' | 'sourceUrl'>): boolean;
@@ -34,4 +35,5 @@ export declare function baseJSBundleWithDependencies(entryPoint: string, preModu
     splitChunks: boolean;
     skipWrapping: boolean;
     computedAsyncModulePaths: Record<string, string> | null;
+    debugId?: string;
 }): Bundle;

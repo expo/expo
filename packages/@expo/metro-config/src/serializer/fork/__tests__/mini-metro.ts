@@ -50,6 +50,8 @@ export function microBundle({
     output?: 'static';
     hermes?: boolean;
     sourceMaps?: boolean;
+    inlineSourceMaps?: boolean;
+    hot?: boolean;
   };
 }): [
   string,
@@ -110,7 +112,7 @@ export function microBundle({
       dependencies: modules,
       entryPoints: new Set([absEntry]),
       transformOptions: {
-        hot: false,
+        hot: options.hot ?? false,
         minify: false,
         dev,
         type: 'module',
@@ -135,6 +137,7 @@ export function microBundle({
             }
           : undefined,
 
+      inlineSourceMap: options.inlineSourceMaps,
       sourceMapUrl: options.sourceMaps
         ? 'https://localhost:8081/indedx.bundle?dev=false'
         : undefined,

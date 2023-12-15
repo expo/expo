@@ -2,6 +2,7 @@ import assert from 'assert';
 
 import { microBundle, projectRoot } from '../fork/__tests__/mini-metro';
 import {
+  SerialAsset,
   SerializerPlugin,
   createSerializerFromSerialProcessors,
   withSerializerPlugins,
@@ -68,7 +69,7 @@ describe('serializes', () => {
     )) as any;
     if (options.options?.output === 'static') {
       assert('artifacts' in output && Array.isArray(output.artifacts));
-      return output.artifacts;
+      return output.artifacts as SerialAsset[];
     } else {
       return output;
     }
@@ -81,6 +82,170 @@ describe('serializes', () => {
       options: { platform: 'web', dev: false, output: 'static' },
     });
   }
+
+  describe('debugId', () => {
+    describe('legacy serializer', () => {
+      it(`serializes with debugId annotation`, async () => {
+        const artifacts = await serializeTo({
+          options: {
+            dev: false,
+            platform: 'ios',
+            hermes: false,
+            // Source maps must be enabled otherwise the feature is disabled.
+            sourceMaps: true,
+          },
+        });
+
+        if (typeof artifacts === 'string') {
+          throw new Error('wrong type');
+        }
+
+        // Ensure no directive to include them is added.
+        expect(artifacts.code).toMatch(
+          /\/\/# sourceMappingURL=https:\/\/localhost:8081\/indedx\.bundle\?dev=false/
+        );
+        // Debug ID annotation is included at the end.
+        expect(artifacts.code).toMatch(/\/\/# debugId=6f769d4c-1534-40a6-adc8-eaeb61664424/);
+
+        // Test that the debugId is added to the source map and matches the annotation.
+        const debugId = '6f769d4c-1534-40a6-adc8-eaeb61664424';
+        expect(artifacts.code).toContain(debugId);
+
+        expect(JSON.parse(artifacts.map)).toEqual(
+          expect.objectContaining({
+            debugId,
+          })
+        );
+      });
+
+      it(`skips debugId annotation if inline source maps are enabled`, async () => {
+        const artifacts = await serializeTo({
+          options: {
+            dev: false,
+            platform: 'android',
+            hermes: false,
+            // Inline source maps will disable the feature.
+            inlineSourceMaps: true,
+          },
+        });
+        if (typeof artifacts === 'string') {
+          throw new Error('wrong type');
+        }
+
+        // Ensure no directive to include them is added.
+        expect(artifacts.code).toMatch(/\/\/# sourceMappingURL=data:application/);
+        // Debug ID annotation is NOT included at the end.
+        expect(artifacts.map).not.toMatch(/\/\/# debugId=/);
+      });
+    });
+
+    it(`serializes with debugId annotation`, async () => {
+      const artifacts = await serializeTo({
+        options: {
+          dev: false,
+          platform: 'web',
+          hermes: false,
+          output: 'static',
+
+          // Source maps must be enabled otherwise the feature is disabled.
+          sourceMaps: true,
+        },
+      });
+
+      const filenames = artifacts.map(({ filename }) => filename);
+
+      expect(filenames).toEqual([
+        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js/),
+        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js\.map/),
+      ]);
+
+      // Ensure no directive to include them is added.
+      expect(artifacts[0].source).toMatch(
+        /\/\/# sourceMappingURL=\/_expo\/static\/js\/web\/index-[\w\d]{32}\.js\.map/
+      );
+      // Debug ID annotation is included at the end.
+      expect(artifacts[0].source).toMatch(/\/\/# debugId=431b98e2-c997-4975-a3d9-2987710abd44/);
+
+      // Test that the debugId is added to the source map and matches the annotation.
+      const debugId = '431b98e2-c997-4975-a3d9-2987710abd44';
+      expect(artifacts[0].source).toContain(debugId);
+
+      const mapArtifact = artifacts.find(({ filename }) =>
+        filename.endsWith('.map')
+      ) as SerialAsset;
+
+      expect(JSON.parse(mapArtifact.source)).toEqual(
+        expect.objectContaining({
+          debugId,
+        })
+      );
+    });
+
+    it(`serializes with debugId annotation and (mock) hermes generation`, async () => {
+      const artifacts = await serializeTo({
+        options: {
+          dev: false,
+          platform: 'ios',
+          hermes: true,
+          output: 'static',
+          // Source maps must be enabled otherwise the feature is disabled.
+          sourceMaps: true,
+        },
+      });
+
+      const filenames = artifacts.map(({ filename }) => filename);
+
+      expect(filenames).toEqual([
+        expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.hbc/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.hbc\.map/),
+      ]);
+
+      // Ensure no directive to include them is added.
+      expect(artifacts[0].source).toMatch(
+        /\/\/# sourceMappingURL=https:\/\/localhost:8081\/_expo\/static\/js\/ios\/index-[\w\d]{32}\.hbc\.map/
+      );
+      // Debug ID annotation is included at the end.
+      expect(artifacts[0].source).toMatch(/\/\/# debugId=431b98e2-c997-4975-a3d9-2987710abd44/);
+
+      // Test that the debugId is added to the source map and matches the annotation.
+      const debugId = '431b98e2-c997-4975-a3d9-2987710abd44';
+      expect(artifacts[0].source).toContain(debugId);
+
+      const mapArtifact = artifacts.find(({ filename }) =>
+        filename.endsWith('.hbc.map')
+      ) as SerialAsset;
+
+      expect(JSON.parse(mapArtifact.source)).toEqual(
+        expect.objectContaining({
+          debugId,
+        })
+      );
+    });
+
+    it(`skips debugId annotation if inline source maps are enabled`, async () => {
+      const artifacts = await serializeTo({
+        options: {
+          dev: false,
+          platform: 'web',
+          hermes: false,
+          output: 'static',
+          // Inline source maps will disable the feature.
+          inlineSourceMaps: true,
+        },
+      });
+
+      const filenames = artifacts.map(({ filename }) => filename);
+
+      expect(filenames).toEqual([
+        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js/),
+      ]);
+
+      // Ensure no directive to include them is added.
+      expect(artifacts[0].source).toMatch(/\/\/# sourceMappingURL=data:application/);
+      // Debug ID annotation is NOT included at the end.
+      expect(artifacts[0].source).not.toMatch(/\/\/# debugId=/);
+    });
+  });
 
   describe('source maps', () => {
     it(`serializes with source maps disabled in production using classic serializer`, async () => {
@@ -96,7 +261,7 @@ describe('serializes', () => {
         });
 
         // Ensure no directive to include them is added.
-        expect(bundle).not.toMatch(/\/\/# sourceMappingURL=/);
+        expect(bundle.code).not.toMatch(/\/\/# sourceMappingURL=/);
       }
     });
     it(`serializes with source maps disabled in production for web`, async () => {
@@ -301,7 +466,7 @@ describe('serializes', () => {
       `,
     };
 
-    expect(await serializer(...microBundle({ fs }))).toMatchInlineSnapshot(`
+    expect((await serializer(...microBundle({ fs }))).code).toMatchInlineSnapshot(`
       "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
         var foo = _$$_REQUIRE(dependencyMap[0], "./foo").foo;
         console.log(foo);
@@ -317,10 +482,11 @@ describe('serializes', () => {
     `);
   });
 
-  it(`bundles basic production native using string output`, async () => {
+  it(`bundles basic development native using string output`, async () => {
     const str = await serializeTo({
       options: {
-        dev: false,
+        dev: true,
+        hot: true,
         platform: 'ios',
         hermes: false,
         sourceMaps: false,
@@ -330,10 +496,23 @@ describe('serializes', () => {
     // Ensure the module is run.
     expect(str).toMatch(/TEST_RUN_MODULE\("\/app\/index\.js"\);/);
   });
+  it(`bundles basic production native using object output`, async () => {
+    const bundle = await serializeTo({
+      options: {
+        dev: false,
+        platform: 'ios',
+        hermes: false,
+        sourceMaps: false,
+      },
+    });
+    expect(typeof bundle).toBe('object');
+    // Ensure the module is run.
+    expect(bundle.code).toMatch(/TEST_RUN_MODULE\("\/app\/index\.js"\);/);
+  });
 
   // This is how most people will be bundling for production.
   it(`bundles basic production native with async imports`, async () => {
-    const str = await serializeTo({
+    const bundle = await serializeTo({
       fs: {
         'index.js': `
           import('./foo')          
@@ -349,10 +528,11 @@ describe('serializes', () => {
         sourceMaps: false,
       },
     });
-    expect(typeof str).toBe('string');
+    expect(typeof bundle).toBe('object');
     // Ensure the module is run.
-    expect(str).toMatch(/TEST_RUN_MODULE\("\/app\/index\.js"\);/);
-    expect(str).toMatch(/expo-mock\/async-require/);
+    expect(bundle.code).toMatch(/TEST_RUN_MODULE\("\/app\/index\.js"\);/);
+    expect(bundle.code).toMatch(/expo-mock\/async-require/);
+    expect(bundle.map).toMatch(/debugId/);
   });
 
   it(`bundle splits an async import`, async () => {
