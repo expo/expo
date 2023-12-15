@@ -10,7 +10,7 @@ function getGeneratedSectionIndexes(
   tag: string
 ): { contents: string[]; start: number; end: number } {
   const contents = src.split('\n');
-  const start = contents.findIndex((line) => RegExp(`@generated begin ${tag}$`).test(line));
+  const start = contents.findIndex((line) => RegExp(`@generated begin ${tag} -`).test(line));
   const end = contents.findIndex((line) => RegExp(`@generated end ${tag}$`).test(line));
 
   return { contents, start, end };
