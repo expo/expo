@@ -187,7 +187,7 @@ async function iosBuildAndSubmitAsync() {
       [
         'pkcs12',
         '-export',
-        ...(isDarwin ? [] : ['-legacy']),
+        '-legacy',
         '-out',
         p12KeystorePath,
         '-inkey',
