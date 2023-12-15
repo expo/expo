@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed custom `backgroundColor` is broken on iOS. ([#25946](https://github.com/expo/expo/pull/25946) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 2.9.0 — 2023-12-12
