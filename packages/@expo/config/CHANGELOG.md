@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 8.5.1 — 2023-12-15
+
+_This version does not introduce any user-facing changes._
+
 ## 8.5.0 — 2023-12-12
 
 ### 💡 Others
