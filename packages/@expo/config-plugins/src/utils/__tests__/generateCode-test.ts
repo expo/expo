@@ -2,23 +2,32 @@ import { removeGeneratedContents } from '../generateCode';
 
 describe(removeGeneratedContents, () => {
   it('should not remove contents from different tags', () => {
-    const barTagContent = [
-      '// @generated begin foo-bar - expo prebuild (DO NOT MODIFY)',
-      'some bar content',
-      '// @generated end foo-bar',
-    ].join('\n');
+    const content = `
+// @generated begin foo-bar - expo prebuild (DO NOT MODIFY)
+some bar content
+// @generated end foo-bar
 
-    const fooTagContent = [
-      '// @generated begin foo - expo prebuild (DO NOT MODIFY)',
-      'some foo content',
-      '// @generated end foo',
-    ].join('\n');
+after bar
 
-    const content = [barTagContent, 'after bar', fooTagContent, 'after foo'];
+// @generated begin foo - expo prebuild (DO NOT MODIFY)
+some bar content
+// @generated end foo
 
-    const result = removeGeneratedContents(content.join('\n'), 'foo');
+after foo
+`;
 
-    const contentWithoutFoo = [...content.slice(0, 2), ...content.slice(3)].join('\n');
+    const contentWithoutFoo = `
+// @generated begin foo-bar - expo prebuild (DO NOT MODIFY)
+some bar content
+// @generated end foo-bar
+
+after bar
+
+
+after foo
+`;
+
+    const result = removeGeneratedContents(content, 'foo');
     expect(result).toBe(contentWithoutFoo);
   });
 });
