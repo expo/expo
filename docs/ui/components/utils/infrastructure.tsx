@@ -25,7 +25,16 @@ const AndroidResourceClassToSpec: Record<(typeof ResourceClasses.android)[number
 
 const IosResourceClassToSpec: Record<(typeof ResourceClasses.ios)[number], JSX.Element> = {
   medium: <>3 vCPUs, 8 GB RAM</>,
-  large: <>4 vCPUs, 12 GB RAM (or 22 GB RAM if running on an M2 Mac)</>,
+  large: (
+    <>
+      <markdownComponents.ul>
+        <markdownComponents.li>6 vCPUs, 22 GB RAM if running on an M2 Mac</markdownComponents.li>
+        <markdownComponents.li>
+          5 vCPUs, 12 GB RAM if running on an M2 Pro Mac
+        </markdownComponents.li>
+      </markdownComponents.ul>
+    </>
+  ),
 };
 
 function ResourceClassSpecLink({
