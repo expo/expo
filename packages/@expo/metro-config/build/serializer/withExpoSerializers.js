@@ -9,6 +9,7 @@ Object.defineProperty(exports, "SerialAsset", {
     return _serializerAssets().SerialAsset;
   }
 });
+exports.createDefaultExportCustomSerializer = createDefaultExportCustomSerializer;
 exports.createSerializerFromSerialProcessors = createSerializerFromSerialProcessors;
 exports.withExpoSerializers = withExpoSerializers;
 exports.withSerializerPlugins = withSerializerPlugins;
@@ -19,9 +20,23 @@ function _jscSafeUrl() {
   };
   return data;
 }
+function _sourceMapString() {
+  const data = _interopRequireDefault(require("metro/src/DeltaBundler/Serializers/sourceMapString"));
+  _sourceMapString = function () {
+    return data;
+  };
+  return data;
+}
 function _bundleToString() {
   const data = _interopRequireDefault(require("metro/src/lib/bundleToString"));
   _bundleToString = function () {
+    return data;
+  };
+  return data;
+}
+function _debugId() {
+  const data = require("./debugId");
+  _debugId = function () {
     return data;
   };
   return data;
@@ -91,12 +106,88 @@ function withSerializerPlugins(config, processors) {
     }
   };
 }
-function getDefaultSerializer(config, fallbackSerializer) {
-  const defaultSerializer = fallbackSerializer !== null && fallbackSerializer !== void 0 ? fallbackSerializer : async (...params) => {
-    const bundle = (0, _baseJSBundle().baseJSBundle)(...params);
-    const outputCode = (0, _bundleToString().default)(bundle).code;
-    return outputCode;
+function createDefaultExportCustomSerializer(config) {
+  return async (entryPoint, preModules, graph, options) => {
+    var _config$serializer2;
+    const isPossiblyDev = graph.transformOptions.hot;
+    // TODO: This is a temporary solution until we've converged on using the new serializer everywhere.
+    const enableDebugId = options.inlineSourceMap !== true && !isPossiblyDev;
+    let debugId;
+    const loadDebugId = () => {
+      if (!enableDebugId || debugId) {
+        return debugId;
+      }
+
+      // TODO: Perform this cheaper.
+      const bundle = (0, _baseJSBundle().baseJSBundle)(entryPoint, preModules, graph, {
+        ...options,
+        debugId: undefined
+      });
+      const outputCode = (0, _bundleToString().default)(bundle).code;
+      debugId = (0, _debugId().stringToUUID)(outputCode);
+      return debugId;
+    };
+    let bundleCode = null;
+    let bundleMap = null;
+    if ((_config$serializer2 = config.serializer) !== null && _config$serializer2 !== void 0 && _config$serializer2.customSerializer) {
+      var _config$serializer3;
+      const bundle = await ((_config$serializer3 = config.serializer) === null || _config$serializer3 === void 0 ? void 0 : _config$serializer3.customSerializer(entryPoint, preModules, graph, options));
+      if (typeof bundle === 'string') {
+        bundleCode = bundle;
+      } else {
+        bundleCode = bundle.code;
+        bundleMap = bundle.map;
+      }
+    } else {
+      bundleCode = (0, _bundleToString().default)((0, _baseJSBundle().baseJSBundle)(entryPoint, preModules, graph, {
+        ...options,
+        debugId: loadDebugId()
+      })).code;
+    }
+    if (isPossiblyDev) {
+      if (bundleMap == null) {
+        return bundleCode;
+      }
+      return {
+        code: bundleCode,
+        map: bundleMap
+      };
+    }
+
+    // Exports....
+
+    if (!bundleMap) {
+      bundleMap = (0, _sourceMapString().default)([...preModules, ...(0, _serializeChunks().getSortedModules)([...graph.dependencies.values()], options)], {
+        // TODO: Surface this somehow.
+        excludeSource: false,
+        // excludeSource: options.serializerOptions?.excludeSource,
+        processModuleFilter: options.processModuleFilter,
+        shouldAddToIgnoreList: options.shouldAddToIgnoreList
+      });
+    }
+    if (enableDebugId) {
+      const mutateSourceMapWithDebugId = sourceMap => {
+        // NOTE: debugId isn't required for inline source maps because the source map is included in the same file, therefore
+        // we don't need to disambiguate between multiple source maps.
+        const sourceMapObject = JSON.parse(sourceMap);
+        sourceMapObject.debugId = loadDebugId();
+        // NOTE: Sentry does this, but bun does not.
+        // sourceMapObject.debug_id = debugId;
+        return JSON.stringify(sourceMapObject);
+      };
+      return {
+        code: bundleCode,
+        map: mutateSourceMapWithDebugId(bundleMap)
+      };
+    }
+    return {
+      code: bundleCode,
+      map: bundleMap
+    };
   };
+}
+function getDefaultSerializer(config, fallbackSerializer) {
+  const defaultSerializer = fallbackSerializer !== null && fallbackSerializer !== void 0 ? fallbackSerializer : createDefaultExportCustomSerializer(config);
   return async (...props) => {
     const [,,, options] = props;
     const customSerializerOptions = options.serializerOptions;
