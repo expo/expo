@@ -11,7 +11,7 @@
 ### 🐛 Bug fixes
 
 - Allow pushing to the same route multiple times. ([#24600](https://github.com/expo/expo/pull/24600) by [@marklawlor](https://github.com/marklawlor))
-- Remove `not-found` URL parameter on web `not-found` pages.
+- Remove `not-found` URL parameter on web `not-found` pages. ([#25955](https://github.com/expo/expo/pull/25955) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
