@@ -72,6 +72,9 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
   /** Should replace the current route without adding to the history. */
   replace?: boolean;
 
+  /** Should push the current route, always adding to the history. */
+  push?: boolean;
+
   /** On web, this sets the HTML `class` directly. On native, this can be used with CSS interop tools like Nativewind. */
   className?: string;
 
@@ -103,6 +106,7 @@ export interface LinkComponent {
  *
  * @param props.href Absolute path to route (e.g. `/feeds/hot`).
  * @param props.replace Should replace the current route without adding to the history.
+ * @param props.push Should push the current route, always adding to the history.
  * @param props.asChild Forward props to child component. Useful for custom buttons.
  * @param props.children Child elements to render the content.
  * @param props.className On web, this sets the HTML `class` directly. On native, this can be used with CSS interop tools like Nativewind.
@@ -161,6 +165,7 @@ function ExpoRouterLink(
   {
     href,
     replace,
+    push,
     // TODO: This does not prevent default on the anchor tag.
     asChild,
     rel,
@@ -183,7 +188,11 @@ function ExpoRouterLink(
     return resolveHref(href);
   }, [href]);
 
-  const props = useLinkToPathProps({ href: resolvedHref, replace });
+  let event;
+  if (push) event = 'PUSH';
+  if (replace) event = 'REPLACE';
+
+  const props = useLinkToPathProps({ href: resolvedHref, event });
 
   const onPress = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent) => {
     if ('onPress' in rest) {

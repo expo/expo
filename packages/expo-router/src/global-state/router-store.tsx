@@ -6,7 +6,7 @@ import {
 import * as SplashScreen from 'expo-splash-screen';
 import { useSyncExternalStore, useMemo, ComponentType, Fragment } from 'react';
 
-import { canGoBack, goBack, linkTo, push, replace, setParams } from './routing';
+import { canGoBack, goBack, linkTo, navigate, push, replace, setParams } from './routing';
 import { getSortedRoutes } from './sort-routes';
 import { UrlObject, getRouteInfoFromState } from '../LocationProvider';
 import { RouteNode } from '../Route';
@@ -46,6 +46,7 @@ export class RouterStore {
   push = push.bind(this);
   replace = replace.bind(this);
   setParams = setParams.bind(this);
+  navigate = navigate.bind(this);
 
   initialize(
     context: RequireContext,
@@ -101,7 +102,7 @@ export class RouterStore {
     }
 
     /**
-     * Counter intuitively - this fires AFTER both React Navigations state change and the subsequent paint.
+     * Counter intuitively - this fires AFTER both React Navigation's state changes and the subsequent paint.
      * This poses a couple of issues for Expo Router,
      *   - Ensuring hooks (e.g. useSearchParams()) have data in the initial render
      *   - Reacting to state changes after a navigation event

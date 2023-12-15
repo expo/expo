@@ -153,11 +153,11 @@ it('deep linking nested groups', async () => {
   );
 
   // Start in a deeply nested navigator
-  expect(await screen.getByTestId('OtherTabsHome')).toBeOnTheScreen();
+  expect(screen.getByTestId('OtherTabsHome')).toBeOnTheScreen();
 
   act(() => router.replace('/(app)/(tabs)/home'));
 
-  expect(await screen.getByTestId('Home')).toBeOnTheScreen();
+  expect(screen.getByTestId('Home')).toBeOnTheScreen();
 
   expect(RootLayout).toHaveBeenCalledTimes(1);
   expect(AppLayout).toHaveBeenCalledTimes(2);

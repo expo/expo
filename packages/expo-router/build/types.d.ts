@@ -12,8 +12,10 @@ export interface RequireContext {
 /** The list of input keys will become optional, everything else will remain the same. */
 export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 export type Router = {
-    /** Navigate to the provided href. */
+    /** Navigate to the provided href using a push operation if possible. */
     push: (href: Href) => void;
+    /** Navigate to the provided href. */
+    navigate: (href: Href) => void;
     /** Navigate to route without appending to the history. */
     replace: (href: Href) => void;
     /** Go back in the history. */

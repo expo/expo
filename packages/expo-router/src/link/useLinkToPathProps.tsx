@@ -29,7 +29,7 @@ function eventShouldPreventDefault(
   return false;
 }
 
-export default function useLinkToPathProps(props: { href: string; replace?: boolean }) {
+export default function useLinkToPathProps(props: { href: string; event?: string }) {
   const { linkTo } = useExpoRouter();
 
   const onPress = (e?: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent) => {
@@ -43,7 +43,7 @@ export default function useLinkToPathProps(props: { href: string; replace?: bool
     }
 
     if (shouldHandle) {
-      linkTo(props.href, props.replace ? 'REPLACE' : undefined);
+      linkTo(props.href, props.event);
     }
   };
 
