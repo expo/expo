@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.linkTo = exports.setParams = exports.canGoBack = exports.goBack = exports.replace = exports.push = void 0;
+exports.linkTo = exports.setParams = exports.canGoBack = exports.goBack = exports.replace = exports.push = exports.navigate = void 0;
 const Linking = __importStar(require("expo-linking"));
 const href_1 = require("../link/href");
 const path_1 = require("../link/path");
@@ -33,8 +33,12 @@ function assertIsReady(store) {
         throw new Error('Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.');
     }
 }
+function navigate(url) {
+    return this.linkTo((0, href_1.resolveHref)(url), 'NAVIGATE');
+}
+exports.navigate = navigate;
 function push(url) {
-    return this.linkTo((0, href_1.resolveHref)(url));
+    return this.linkTo((0, href_1.resolveHref)(url), 'PUSH');
 }
 exports.push = push;
 function replace(url) {
@@ -114,12 +118,7 @@ function linkTo(href, event) {
         console.error('Could not generate a valid navigation state for the given path: ' + href);
         return;
     }
-    switch (event) {
-        case 'REPLACE':
-            return navigationRef.dispatch(getNavigateReplaceAction(state, rootState));
-        default:
-            return navigationRef.dispatch(getNavigatePushAction(state, rootState));
-    }
+    return navigationRef.dispatch(getNavigateAction(state, rootState, event));
 }
 exports.linkTo = linkTo;
 function rewriteNavigationStateToParams(state, params = {}) {
@@ -135,35 +134,28 @@ function rewriteNavigationStateToParams(state, params = {}) {
     }
     return JSON.parse(JSON.stringify(params));
 }
-function getNavigatePushAction(state, rootState) {
-    const { screen, params } = rewriteNavigationStateToParams(state);
-    return {
-        type: 'NAVIGATE',
-        target: rootState.key,
-        payload: {
-            name: screen,
-            params,
-        },
-    };
-}
-function getNavigateReplaceAction(state, parentState, lastNavigatorSupportingReplace = parentState) {
-    // We should always have at least one route in the state
+function getNavigateAction(state, parentState, type = 'NAVIGATE', lastCommonNavigator = parentState) {
     const route = state.routes[state.routes.length - 1];
-    // Only these navigators support replace
     if (parentState.type === 'stack' || parentState.type === 'tab') {
-        lastNavigatorSupportingReplace = parentState;
+        lastCommonNavigator = parentState;
     }
     const currentRoute = parentState.routes.find((parentRoute) => parentRoute.name === route.name);
     const routesAreEqual = parentState.routes[parentState.index] === currentRoute;
     // If there is nested state and the routes are equal, we should keep going down the tree
     if (route.state && routesAreEqual && currentRoute.state) {
-        return getNavigateReplaceAction(route.state, currentRoute.state, lastNavigatorSupportingReplace);
+        return getNavigateAction(route.state, currentRoute.state, type, lastCommonNavigator);
     }
     // Either we reached the bottom of the state or the point where the routes diverged
     const { screen, params } = rewriteNavigationStateToParams(state);
+    if (type === 'PUSH' && lastCommonNavigator.type !== 'stack') {
+        type = 'NAVIGATE';
+    }
+    else if (type === 'REPLACE' && lastCommonNavigator.type === 'tab') {
+        type = 'JUMP_TO';
+    }
     return {
-        type: lastNavigatorSupportingReplace.type === 'stack' ? 'REPLACE' : 'JUMP_TO',
-        target: lastNavigatorSupportingReplace?.key,
+        type,
+        target: lastCommonNavigator.key,
         payload: {
             name: screen,
             params,

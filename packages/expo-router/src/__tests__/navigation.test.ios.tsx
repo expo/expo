@@ -686,22 +686,18 @@ it('can replace across groups', async () => {
 
   expect(screen).toHavePathname('/');
 
-  act(() => router.push('/two/screen'));
-  expect(screen).toHavePathname('/two/screen');
-  expect(screen.getByTestId('two/screen')).toBeOnTheScreen();
-
+  // Go to one
   act(() => router.push('/one/screen'));
   expect(screen).toHavePathname('/one/screen');
   expect(screen.getByTestId('one/screen')).toBeOnTheScreen();
 
-  // Should replace at the top Tabs
-  act(() => router.replace('/two/screen'));
+  // Push to two
+  act(() => router.push('/two/screen'));
   expect(screen).toHavePathname('/two/screen');
   expect(screen.getByTestId('two/screen')).toBeOnTheScreen();
 
-  act(() => router.back());
-
-  act(() => router.push('/one/screen'));
+  // Replace with one. This will create a history of ['one', 'one']
+  act(() => router.replace('/one/screen'));
   expect(screen).toHavePathname('/one/screen');
   expect(screen.getByTestId('one/screen')).toBeOnTheScreen();
 
@@ -744,11 +740,7 @@ it('can push & replace with nested Slots', async () => {
     'one/index': () => <Text testID="one" />,
   });
 
-  expect(screen).toHavePathname('/');
-  expect(screen.getByTestId('index')).toBeOnTheScreen();
-
   // Push
-
   act(() => router.push('/one'));
   expect(screen).toHavePathname('/one');
   expect(screen.getByTestId('one')).toBeOnTheScreen();
@@ -758,13 +750,36 @@ it('can push & replace with nested Slots', async () => {
   expect(screen.getByTestId('index')).toBeOnTheScreen();
 
   // Replace
-
   act(() => router.replace('/one'));
   expect(screen).toHavePathname('/one');
   expect(screen.getByTestId('one')).toBeOnTheScreen();
 
   act(() => router.replace('/'));
   expect(screen).toHavePathname('/');
+});
+
+it('can push the same route multiple times', () => {
+  renderRouter({
+    index: () => <Text testID="index" />,
+    test: () => <Text testID="test" />,
+  });
+
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('index')).toBeOnTheScreen();
+
+  // // If we push once and go back, we are back to index
+  act(() => router.push('/test'));
+  expect(screen.getByTestId('test')).toBeOnTheScreen();
+  act(() => router.back());
+  expect(screen.getByTestId('index')).toBeOnTheScreen();
+
+  // If we push twice we will need to go back twice
+  act(() => router.push('/test'));
+  act(() => router.push('/test'));
+  expect(screen.getByTestId('test')).toBeOnTheScreen();
+  act(() => router.back());
+  expect(screen.getByTestId('test')).toBeOnTheScreen();
+  act(() => router.back());
   expect(screen.getByTestId('index')).toBeOnTheScreen();
 });
 
