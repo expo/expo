@@ -1,5 +1,7 @@
+import { InstalledDependencyVersionCheck } from '../checks/InstalledDependencyVersionCheck';
 import { DoctorCheck } from '../checks/checks.types';
 import {
+  getChecksInScopeForProject,
   printCheckResultSummaryOnComplete,
   printFailedCheckIssueAndAdvice,
   runChecksAsync,
@@ -23,6 +25,9 @@ const additionalProjectProps = {
     sdkVersion: '46.0.0',
   },
   pkg: {},
+  hasUnusedStaticConfig: false,
+  staticConfigPath: null,
+  dynamicConfigPath: null,
 };
 
 class MockSuccessfulCheck implements DoctorCheck {
@@ -44,6 +49,41 @@ class MockUnexpectedThrowCheck implements DoctorCheck {
   sdkVersionRange = '*';
   runAsync = jest.fn(() => Promise.reject(new Error('Unexpected error thrown from check.')));
 }
+
+describe(getChecksInScopeForProject, () => {
+  beforeEach(() => {
+    delete process.env.EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK;
+  });
+
+  it('skips the InstalledDependencyVersionCheck if environment variable is set', async () => {
+    process.env.EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK = '1';
+    jest.mocked(Log.log).mockReset();
+    const checks = getChecksInScopeForProject({
+      name: 'foo',
+      slug: 'foo',
+      sdkVersion: 'UNVERSIONED',
+    });
+    expect(
+      checks.find((check) => check instanceof InstalledDependencyVersionCheck)
+    ).toBeUndefined();
+    expect(jest.mocked(Log.log)).toHaveBeenCalledWith(
+      expect.stringMatching(
+        'Checking dependencies for compatibility with the installed Expo SDK version is disabled'
+      )
+    );
+  });
+
+  it('includes the InstalledDependencyVersionCheck if environment variable is not set', async () => {
+    const checks = getChecksInScopeForProject({
+      name: 'foo',
+      slug: 'foo',
+      sdkVersion: 'UNVERSIONED',
+    });
+    expect(
+      checks.find((check) => check instanceof InstalledDependencyVersionCheck)
+    ).not.toBeUndefined();
+  });
+});
 
 describe(runChecksAsync, () => {
   it(`returns a DoctorCheckRunnerJob for each check`, async () => {
