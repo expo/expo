@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.24.3 — 2023-12-15
+
+_This version does not introduce any user-facing changes._
+
 ## 0.18.18 — 2023-12-15
 
 ### 🐛 Bug fixes

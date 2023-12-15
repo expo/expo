@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed Error View colors on dark mode. ([#25974](https://github.com/expo/expo/pull/25974) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 💡 Others
+
+## 3.6.0 — 2023-12-15
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed Error View colors on dark mode. ([#25974](https://github.com/expo/expo/pull/25974) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 3.5.1 — 2023-12-12
 
