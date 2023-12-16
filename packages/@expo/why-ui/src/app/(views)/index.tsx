@@ -68,9 +68,10 @@ export default function DataTableDemo() {
   const data = useFilteredModules();
 
   const items = React.useMemo(() => {
-    const items = data
+    let items = data
       .map((m) => {
-        if (!m.output[0]?.data?.profiling) {
+        const profilingData = m.output[0]?.data?.profiling;
+        if (!profilingData) {
           return null;
         }
 
@@ -79,10 +80,12 @@ export default function DataTableDemo() {
           start: m.output[0].data.profiling.start,
           end: m.output[0].data.profiling.end,
           thread: m.output[0].data.profiling.pid,
-          color: 'bg-green-500',
         };
       })
       .filter(Boolean);
+
+    // For debugging, we'll sort by end time and then only use the first 50 items.
+    // items = items.sort((a, b) => b.end - a.end).slice(0, 50);
 
     // thread is in the format of random numbers like `20361`, `20356`, `20355`. We need to normalize them to be `0`, `1`, `2` etc.
     const threads = items.map((item) => item.thread);
@@ -111,18 +114,32 @@ export default function DataTableDemo() {
           },
           xaxis: {
             type: 'datetime',
+
+            axisBorder: {
+              show: false,
+              color: '#78909C',
+            },
             labels: {
-              formatter: function (val, options) {
+              style: {
+                fontSize: '8px',
+                colors: '#78909C',
+              },
+              formatter(val, options) {
                 if (typeof options === 'object' && 'dataPointIndex' in options) {
                   return items[options.dataPointIndex].name;
                 }
 
                 return '';
               },
+              show: true,
             },
+            // Adjust to maximize the space for the items
+            min: Math.min(...items.map((item) => item.start)),
+            max: Math.max(...items.map((item) => item.end)),
           },
           yaxis: {
             show: false,
+
             // labels: {
             //   // formatter: function (val) {
             //   //   console.log('ar', arguments);
@@ -160,11 +177,23 @@ export default function DataTableDemo() {
             },
           },
 
+          colors: [
+            '#008FFB',
+            '#fff',
+            '#546E7A',
+            '#26a69a',
+            // '#775DD0',
+          ],
+          markers: {
+            size: 0,
+          },
           plotOptions: {
             bar: {
+              borderRadius: 1,
               distributed: true,
               horizontal: true,
-              barHeight: '80%',
+              barHeight: '90%',
+
               rangeBarGroupRows: true,
               dataLabels: {
                 // TODO: Better labels
@@ -183,6 +212,7 @@ export default function DataTableDemo() {
               x: 'Thread: ' + String(item.thread),
               y: [item.start, item.end],
               meta: item.name,
+              columnWidthOffset: 0,
             })),
           },
         ]}

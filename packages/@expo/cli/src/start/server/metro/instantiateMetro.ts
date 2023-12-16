@@ -376,7 +376,7 @@ function toJson(
     return {
       ...graph,
 
-      dependencies: [...graph.dependencies.entries()].slice(0, 50).map(([key, value]) => {
+      dependencies: [...graph.dependencies.entries()].map(([key, value]) => {
         return modifyDep(value);
       }),
       entryPoints: [...graph.entryPoints.entries()],
