@@ -1,4 +1,12 @@
-import { EventEmitter, Subscription, UnavailabilityError } from 'expo-modules-core';
+import {
+  EventEmitter,
+  Subscription,
+  UnavailabilityError,
+  PermissionResponse,
+  PermissionStatus,
+  createPermissionHook,
+  PermissionHookOptions,
+} from 'expo-modules-core';
 import { useEffect } from 'react';
 
 import ExpoScreenCapture from './ExpoScreenCapture';
@@ -121,4 +129,49 @@ export function removeScreenshotListener(subscription: Subscription) {
   emitter.removeSubscription(subscription);
 }
 
-export { Subscription };
+/**
+ * Checks user's permissions for detecting when a screenshot is taken.
+ * > Only Android requires additional permissions to detect screenshots. On iOS devices, this method will always resolve to a `granted` permission response.
+ * @return A promise that resolves to a [PermissionResponse](#permissionresponse) object.
+ */
+export async function getPermissionsAsync(): Promise<PermissionResponse> {
+  if (ExpoScreenCapture.getPermissionsAsync) {
+    return ExpoScreenCapture.getPermissionsAsync();
+  }
+  return defaultPermissionsResponse;
+}
+
+/**
+ * Asks the user to grant permissions necessary for detecting when a screenshot is taken.
+ * > Only Android requires additional permissions to detect screenshots. On iOS devices, this method will always resolve to a `granted` permission response.
+ * @return A promise that resolves to a [PermissionResponse](#permissionresponse) object.
+ * */
+export async function requestPermissionsAsync(): Promise<PermissionResponse> {
+  if (ExpoScreenCapture.requestPermissionsAsync) {
+    return ExpoScreenCapture.requestPermissionsAsync();
+  }
+  return defaultPermissionsResponse;
+}
+
+/**
+ * Check or request permissions necessary for detecting when a screenshot is taken.
+ * This uses both [`requestPermissionsAsync`](#screencapturerequestpermissionsasync) and [`getPermissionsAsync`](#screencapturegetpermissionsasync) to interact with the permissions.
+ *
+ * @example
+ * ```js
+ * const [status, requestPermission] = ScreenCapture.useScreenCapturePermissions();
+ * ```
+ */
+export const usePermissions = createPermissionHook({
+  getMethod: getPermissionsAsync,
+  requestMethod: requestPermissionsAsync,
+});
+
+const defaultPermissionsResponse: PermissionResponse = {
+  granted: true,
+  expires: 'never',
+  canAskAgain: true,
+  status: PermissionStatus.GRANTED,
+};
+
+export { Subscription, PermissionResponse, PermissionStatus, PermissionHookOptions };

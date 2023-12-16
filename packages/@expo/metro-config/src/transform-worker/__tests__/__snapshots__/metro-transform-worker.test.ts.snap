@@ -1,0 +1,88 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`reports filename when encountering unsupported dynamic dependency 1`] = `"local/file.js:Invalid call at line 3: require(a)"`;
+
+exports[`transforms a module with dependencies 1`] = `
+{
+  "mappings": "AAA",
+  "names": [
+    "<global>",
+  ],
+}
+`;
+
+exports[`transforms a simple module 1`] = `
+{
+  "mappings": "AAA",
+  "names": [
+    "<global>",
+  ],
+}
+`;
+
+exports[`transforms a simple script 1`] = `
+{
+  "mappings": "AAA",
+  "names": [
+    "<global>",
+  ],
+}
+`;
+
+exports[`transforms an es module with asyncToGenerator 1`] = `
+"__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+  var _interopRequireDefault = _$$_REQUIRE(_dependencyMap[0], "@babel/runtime/helpers/interopRequireDefault");
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.test = test;
+  var _asyncToGenerator2 = _interopRequireDefault(_$$_REQUIRE(_dependencyMap[1], "@babel/runtime/helpers/asyncToGenerator"));
+  function test() {
+    return _test.apply(this, arguments);
+  }
+  function _test() {
+    _test = (0, _asyncToGenerator2.default)(function* () {});
+    return _test.apply(this, arguments);
+  }
+});"
+`;
+
+exports[`transforms an es module with asyncToGenerator 2`] = `
+{
+  "mappings": "AAA,OC",
+  "names": [
+    "<global>",
+    "test",
+  ],
+}
+`;
+
+exports[`transforms async generators 1`] = `
+"__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+  var _interopRequireDefault = _$$_REQUIRE(_dependencyMap[0], "@babel/runtime/helpers/interopRequireDefault");
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.test = test;
+  var _awaitAsyncGenerator2 = _interopRequireDefault(_$$_REQUIRE(_dependencyMap[1], "@babel/runtime/helpers/awaitAsyncGenerator"));
+  var _wrapAsyncGenerator2 = _interopRequireDefault(_$$_REQUIRE(_dependencyMap[2], "@babel/runtime/helpers/wrapAsyncGenerator"));
+  function test() {
+    return _test.apply(this, arguments);
+  }
+  function _test() {
+    _test = (0, _wrapAsyncGenerator2.default)(function* () {
+      yield "ok";
+    });
+    return _test.apply(this, arguments);
+  }
+});"
+`;
+
+exports[`transforms import/export syntax when experimental flag is on 1`] = `
+{
+  "mappings": "AAA",
+  "names": [
+    "<global>",
+  ],
+}
+`;

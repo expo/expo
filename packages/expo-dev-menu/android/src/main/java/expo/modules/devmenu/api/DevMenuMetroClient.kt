@@ -10,7 +10,7 @@ class DevMenuMetroClient {
   private val httpClient = OkHttpClient()
 
   suspend fun openJSInspector(metroHost: String, applicationId: String) {
-    val url = Uri.parse("$metroHost/inspector")
+    val url = Uri.parse("$metroHost/_expo/debugger")
       .buildUpon()
       .appendQueryParameter("applicationId", applicationId)
       .build()

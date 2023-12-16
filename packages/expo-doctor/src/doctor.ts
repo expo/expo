@@ -1,4 +1,4 @@
-import { getConfig } from '@expo/config';
+import { ExpoConfig, getConfig } from '@expo/config';
 import chalk from 'chalk';
 import semver from 'semver';
 
@@ -115,14 +115,42 @@ export async function runChecksAsync(
   );
 }
 
+export function getChecksInScopeForProject(exp: ExpoConfig) {
+  // add additional checks here
+  const checks = [
+    new GlobalPrereqsVersionCheck(),
+    new IllegalPackageCheck(),
+    new GlobalPackageInstalledCheck(),
+    new SupportPackageVersionCheck(),
+    new ExpoConfigSchemaCheck(),
+    new ExpoConfigCommonIssueCheck(),
+    new DirectPackageInstallCheck(),
+    new PackageJsonCheck(),
+    new ProjectSetupCheck(),
+  ];
+  if (env.EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK) {
+    Log.log(
+      chalk.yellow(
+        'Checking dependencies for compatibility with the installed Expo SDK version is disabled. Unset the EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK environment variable to re-enable this check.'
+      )
+    );
+  } else {
+    checks.push(new InstalledDependencyVersionCheck());
+  }
+  return checks.filter(
+    (check) =>
+      exp.sdkVersion === 'UNVERSIONED' || semver.satisfies(exp.sdkVersion!, check.sdkVersionRange)
+  );
+}
+
 export async function actionAsync(projectRoot: string) {
   await warnUponCmdExe();
 
-  const { exp, pkg } = getConfig(projectRoot);
+  const projectConfig = getConfig(projectRoot);
 
   // expo-doctor relies on versioned CLI, which is only available for 44+
   try {
-    if (ltSdkVersion(exp, '46.0.0')) {
+    if (ltSdkVersion(projectConfig.exp, '46.0.0')) {
       Log.exit(
         chalk.red(`expo-doctor supports Expo SDK 46+. Use 'expo-cli doctor' for SDK 45 and lower.`)
       );
@@ -133,29 +161,11 @@ export async function actionAsync(projectRoot: string) {
     return;
   }
 
-  // add additional checks here
-  const checks = [
-    new GlobalPrereqsVersionCheck(),
-    new IllegalPackageCheck(),
-    new GlobalPackageInstalledCheck(),
-    new SupportPackageVersionCheck(),
-    new InstalledDependencyVersionCheck(),
-    new ExpoConfigSchemaCheck(),
-    new ExpoConfigCommonIssueCheck(),
-    new DirectPackageInstallCheck(),
-    new PackageJsonCheck(),
-    new ProjectSetupCheck(),
-  ];
-
-  const checkParams = { exp, pkg, projectRoot };
-
-  const filteredChecks = checks.filter(
-    (check) =>
-      checkParams.exp.sdkVersion === 'UNVERSIONED' ||
-      semver.satisfies(checkParams.exp.sdkVersion!, check.sdkVersionRange)
-  );
+  const filteredChecks = getChecksInScopeForProject(projectConfig.exp);
 
   const spinner = startSpinner(`Running ${filteredChecks.length} checks on your project...`);
+
+  const checkParams = { projectRoot, ...projectConfig };
 
   const jobs = await runChecksAsync(filteredChecks, checkParams, printCheckResultSummaryOnComplete);
 

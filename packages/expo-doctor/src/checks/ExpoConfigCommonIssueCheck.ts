@@ -1,14 +1,22 @@
 import JsonFile from '@expo/json-file';
+import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import { learnMore } from '../utils/TerminalLink';
 
 export class ExpoConfigCommonIssueCheck implements DoctorCheck {
   description = 'Check Expo config for common issues';
 
   sdkVersionRange = '*';
 
-  async runAsync({ projectRoot, exp }: DoctorCheckParams): Promise<DoctorCheckResult> {
+  async runAsync({
+    projectRoot,
+    exp,
+    hasUnusedStaticConfig,
+    staticConfigPath,
+    dynamicConfigPath,
+  }: DoctorCheckParams): Promise<DoctorCheckResult> {
     const issues: string[] = [];
     let advice;
 
@@ -21,6 +29,23 @@ export class ExpoConfigCommonIssueCheck implements DoctorCheck {
         "It appears that expo.sdkVersion is defined in your app.json/ app.config.js. This can cause 'expo install' to install dependency versions for the wrong SDK. SDK version is determined by the version of the expo package installed in your project."
       );
       advice = 'Remove expo.sdkVersion from your app.json/ app.config.js.';
+    }
+
+    if (hasUnusedStaticConfig) {
+      // these should be populated if this flag is true, but technically paths could be null,
+      // don't want to crash.
+      const myStaticConfigPath = staticConfigPath ?? 'app.json';
+      const myDynamicConfigPath = dynamicConfigPath ?? 'app.config.js';
+
+      issues.push(
+        `You have an ${path.basename(
+          myStaticConfigPath
+        )} file in your project, but your ${path.basename(
+          myDynamicConfigPath
+        )} is not using the values from it. Remove the static app.json, or use its values in your dynamic app.config.js. ${learnMore(
+          'https://docs.expo.dev/workflow/configuration'
+        )}`
+      );
     }
 
     return {

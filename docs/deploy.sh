@@ -211,7 +211,6 @@ redirects[archive/expokit/eject/]=archive/glossary/
 redirects[archive/expokit/overview/]=archive/glossary/
 redirects[expokit/overview/]=archive/glossary/
 redirects[more/latest]=versions/latest/
-redirects[router/reference/api-routes]=preview/api-routes/
 redirects[versions/latest/sdk/error-recovery/]=versions/latest/
 redirects[eas-update/eas-update-with-local-build/]=eas-update/build-locally/
 redirects[bare/existing-apps/]=bare/installing-expo-modules/
@@ -312,6 +311,12 @@ redirects[eas/submit]=submit/introduction/
 redirects[development/tools/expo-dev-client/]=develop/development-builds/introduction/
 redirects[develop/user-interface/custom-fonts/]=develop/user-interface/fonts/
 redirects[workflow/snack/]=/more/glossary-of-terms/
+redirects[accounts/teams-and-accounts/]=accounts/account-types/
+redirects[push-notifications/fcm/]=push-notifications/sending-notifications-custom/
+redirects[troubleshooting/clear-cache-mac/]=troubleshooting/clear-cache-macos-linux/
+redirects[guides/using-preact/]=guides/overview/
+redirects[versions/latest/sdk/shared-element/]=versions/latest/
+redirects[workflow/hermes/]=guides/using-hermes/
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys

@@ -145,9 +145,8 @@ export function useStorageState(key: string): UseStateHook<string> {
   // Set
   const setValue = React.useCallback(
     (value: string | null) => {
-      setStorageItemAsync(key, value).then(() => {
-        setState(value);
-      });
+      setState(value);
+      setStorageItemAsync(key, value);
     },
     [key]
   );
@@ -304,8 +303,8 @@ export const unstable_settings = {
 export default function AppLayout() {
   return (
     <Stack>
-      <Stack name="(root)" />
-      <Stack
+      <Stack.Screen name="(root)" />
+      <Stack.Screen
         name="sign-in"
         options={{
           presentation: 'modal',

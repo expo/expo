@@ -30,10 +30,10 @@ For a project that has **android** and **ios** directories, EAS Build will not r
 
 If you troubleshoot your app by [compiling it locally](/guides/local-app-development/#local-app-compilation) (running `npx expo prebuild`, or `npx expo run:android` or `npx expo run:ios`), you can still use Prebuild with EAS Build to generate fresh native directories during the build process. In this scenario, add the **android** and **ios** directories to **.gitignore** or **.easignore** files:
 
-  ```diff .gitignore
-  + android
-  + ios
-  ```
+```diff .gitignore
++ android
++ ios
+```
 
 ### Usage with Expo CLI run commands
 
@@ -117,7 +117,7 @@ Everything offered by Expo including [EAS][eas], Expo CLI, and the libraries in 
 
 A single native project on its own is complicated to maintain, scale, and grow. In a cross-platform app, you have multiple native projects that you must maintain and keep up to date with the latest operating system releases to avoid falling too far behind in any third-party dependencies. We created the _optional_ Expo Prebuild system to streamline this process. Below are a few issues we've identified with native development in the context of React Native and some corresponding reasons we believe Expo Prebuild solves these issues.
 
-> Prebuild can be used in any React Native project. For more information, see [adopting prebuild](/guides/adopting-prebuild).
+> Prebuild can be used in any React Native project. For more information, see [Adopt prebuild](/guides/adopting-prebuild).
 
 ### Sensible upgrades
 

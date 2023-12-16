@@ -201,12 +201,6 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
     settingsGradle,
   ]);
 
-  // Modify temporarily
-  await _regexFileAsync(
-    constantsJava,
-    /TEMPORARY_ABI_VERSION\s*=\s*null/,
-    `TEMPORARY_ABI_VERSION = "${sdkVersion}"`
-  );
   await _uncommentWhenDistributing([appBuildGradle, expoViewBuildGradle]);
   await _commentWhenDistributing([
     constantsJava,

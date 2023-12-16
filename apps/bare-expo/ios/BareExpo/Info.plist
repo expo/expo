@@ -92,8 +92,13 @@
 	<string>Allow bare-expo to access your reminders</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>Allow Expo projects to use data for tracking the user or the device</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>icomoon.ttf</string>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>audio</string>
 		<string>fetch</string>
 	</array>
 	<key>UILaunchStoryboardName</key>

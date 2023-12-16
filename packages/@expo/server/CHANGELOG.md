@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add Vercel adapter. ([#25539](https://github.com/expo/expo/pull/25539) by [@kitten](https://github.com/kitten))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.3.0 — 2023-12-12
+
+### 🎉 New features
+
+- Add Vercel adapter. ([#25539](https://github.com/expo/expo/pull/25539) by [@kitten](https://github.com/kitten))
 
 ## 0.2.0 — 2023-10-17
 

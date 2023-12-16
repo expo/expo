@@ -1,11 +1,11 @@
 import { borderRadius, CheckIcon, iconSize, spacing, UsersIcon } from '@expo/styleguide-native';
 import { useNavigation } from '@react-navigation/native';
-import { SectionHeader } from 'components/SectionHeader';
 import { Text, View, Image, useExpoTheme, Row, Spacer, Divider } from 'expo-dev-client-components';
 import React from 'react';
 import { FlatList } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
+import { SectionHeader } from '../../components/SectionHeader';
 import { Home_CurrentUserActorQuery } from '../../graphql/types';
 import { useDispatch } from '../../redux/Hooks';
 import SessionActions from '../../redux/SessionActions';

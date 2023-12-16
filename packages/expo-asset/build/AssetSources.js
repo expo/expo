@@ -1,5 +1,5 @@
 import { Platform } from 'expo-modules-core';
-import { PixelRatio } from 'react-native';
+import { PixelRatio, NativeModules } from 'react-native';
 import AssetSourceResolver from './AssetSourceResolver';
 import { getManifest, getManifest2, manifestBaseUrl } from './PlatformUtils';
 // Fast lookup check if asset map has any overrides in the manifest.
@@ -62,7 +62,15 @@ export function selectAssetSource(meta) {
             hash,
         };
     }
-    throw new Error(`Asset "${meta.name}${meta.type ? `.${meta.type}` : ''}" must specify an absolute HTTP(S) URL in production or specify a development server URL in development.`);
+    // Temporary fallback for loading assets in Expo Go home
+    if (NativeModules.ExponentKernel) {
+        return { uri: `https://classic-assets.eascdn.net/~assets/${encodeURIComponent(hash)}`, hash };
+    }
+    // In correctly configured apps, we arrive here if the asset is locally available on disk due to
+    // being managed by expo-updates, and `getLocalAssetUri(hash)` must return a local URI for this
+    // hash. Since the asset is local, we don't have a remote URL and specify an invalid URL (an empty
+    // string) as a placeholder.
+    return { uri: '', hash };
 }
 /**
  * Resolves the given URI to an absolute URI. If the given URI is already an absolute URI, it is

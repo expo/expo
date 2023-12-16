@@ -261,6 +261,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/development/tools/expo-dev-client/':
     '/develop/development-builds/introduction/#what-is-expo-dev-client',
   '/develop/user-interface/custom-fonts/': '/develop/user-interface/fonts/#use-a-custom-font',
+  '/accounts/teams-and-accounts/': '/accounts/account-types/',
+  '/push-notifications/fcm/': '/push-notifications/sending-notifications-custom/',
+  '/troubleshooting/clear-cache-mac/': '/troubleshooting/clear-cache-macos-linux/',
 
   // Renaming a submit section
   '/submit/submit-ios': '/submit/ios/',
@@ -330,7 +333,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/setup-native-firebase/': '/guides/using-firebase/',
   '/development/installation/': '/develop/development-builds/create-a-build/',
   '/guides/routing-and-navigation/': '/routing/introduction/',
-  '/router/reference/api-routes': '/preview/api-routes/',
   '/build-reference/custom-build-config/': '/custom-builds/get-started/',
   '/eas-update/migrate-codepush-to-eas-update/': '/eas-update/codepush/',
   '/guides/testing-on-devices': '/build/internal-distribution/',
@@ -382,6 +384,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/v45.0.0/sdk/google-sign-in': '/guides/google-authentication/',
   '/versions/v44.0.0/sdk/google/': '/guides/google-authentication/',
   '/versions/latest/sdk/error-recovery/': '/versions/latest/',
+  '/guides/using-preact/': '/guides/overview/',
+  '/versions/latest/sdk/shared-element/': '/versions/latest/',
+  '/workflow/hermes/': '/guides/using-hermes/',
 
   // Push notifications
   '/config/app/': '/workflow/configuration/',

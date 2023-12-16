@@ -1,6 +1,7 @@
 {
   "name": "expo-docs",
   "version": "49.0.0",
+  "betaVersion": "50.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -24,10 +25,10 @@
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
-    "@expo/styleguide": "^8.1.1",
+    "@expo/styleguide": "^8.1.2",
     "@expo/styleguide-base": "^1.0.1",
     "@expo/styleguide-icons": "^1.0.3",
-    "@expo/styleguide-search-ui": "^1.0.0-alpha.7",
+    "@expo/styleguide-search-ui": "^1.0.0-alpha.8",
     "@mdx-js/loader": "^2.2.1",
     "@mdx-js/mdx": "^2.2.1",
     "@mdx-js/react": "^2.2.1",

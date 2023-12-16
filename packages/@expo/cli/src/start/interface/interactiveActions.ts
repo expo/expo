@@ -1,4 +1,3 @@
-import assert from 'assert';
 import chalk from 'chalk';
 
 import { BLT, printHelp, printItem, printQRCode, printUsage, StartOptions } from './commandsTable';
@@ -13,6 +12,7 @@ import {
   startReactDevToolsProxyAsync,
 } from '../server/ReactDevToolsProxy';
 import {
+  MetroInspectorProxyApp,
   openJsInspector,
   queryAllInspectorAppsAsync,
 } from '../server/middleware/inspector/JsInspector';
@@ -86,22 +86,42 @@ export class DevServerManagerActions {
   }
 
   async openJsInspectorAsync() {
-    Log.log('Opening JavaScript inspector in the browser...');
     const metroServerOrigin = this.devServerManager.getDefaultDevServer().getJsInspectorBaseUrl();
-    assert(metroServerOrigin, 'Metro dev server is not running');
     const apps = await queryAllInspectorAppsAsync(metroServerOrigin);
+    let app: MetroInspectorProxyApp | null = null;
+
     if (!apps.length) {
-      Log.warn(
-        `No compatible apps connected. JavaScript Debugging can only be used with the Hermes engine. ${learnMore(
+      return Log.warn(
+        chalk`{bold Debug:} No compatible apps connected. JavaScript Debugging can only be used with the Hermes engine. ${learnMore(
           'https://docs.expo.dev/guides/using-hermes/'
         )}`
       );
-      return;
     }
-    try {
-      for (const app of apps) {
-        await openJsInspector(app);
+
+    if (apps.length === 1) {
+      app = apps[0];
+    } else {
+      const choices = apps.map((app) => ({
+        title: app.deviceName ?? 'Unknown device',
+        value: app.id,
+        app,
+      }));
+
+      const value = await selectAsync(chalk`Debug target {dim (Hermes only)}`, choices);
+      const menuItem = choices.find((item) => item.value === value);
+      if (!menuItem) {
+        return Log.error(chalk`{bold Debug:} No device available for "${value}"`);
       }
+
+      app = menuItem.app;
+    }
+
+    if (!app) {
+      return Log.error(chalk`{bold Debug:} No device selected`);
+    }
+
+    try {
+      await openJsInspector(metroServerOrigin, app);
     } catch (error: any) {
       Log.error('Failed to open JavaScript inspector. This is often an issue with Google Chrome.');
       Log.exception(error);

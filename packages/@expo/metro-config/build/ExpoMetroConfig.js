@@ -17,7 +17,6 @@ Object.defineProperty(exports, "MetroConfig", {
   }
 });
 exports.getDefaultConfig = getDefaultConfig;
-exports.loadAsync = loadAsync;
 function _config() {
   const data = require("@expo/config");
   _config = function () {
@@ -341,6 +340,8 @@ function getDefaultConfig(projectRoot, {
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,
       babelTransformerPath: require.resolve('./babel-transformer'),
+      // See: https://github.com/facebook/react-native/blob/v0.73.0/packages/metro-config/index.js#L72-L74
+      asyncRequireModulePath: (0, _resolveFrom().default)(reactNativePath, metroDefaultValues.transformer.asyncRequireModulePath),
       assetRegistryPath: '@react-native/assets-registry/registry',
       assetPlugins: getAssetPlugins(projectRoot),
       getTransformOptions: async () => ({
@@ -352,26 +353,6 @@ function getDefaultConfig(projectRoot, {
     }
   });
   return (0, _withExpoSerializers().withExpoSerializers)(metroConfig);
-}
-async function loadAsync(projectRoot, {
-  reporter,
-  ...metroOptions
-} = {}) {
-  let defaultConfig = getDefaultConfig(projectRoot);
-  if (reporter) {
-    defaultConfig = {
-      ...defaultConfig,
-      reporter
-    };
-  }
-  const {
-    loadConfig
-  } = (0, _metroConfig2().importMetroConfig)(projectRoot);
-  return await loadConfig({
-    cwd: projectRoot,
-    projectRoot,
-    ...metroOptions
-  }, defaultConfig);
 }
 
 // re-export for use in config files.

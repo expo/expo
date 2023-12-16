@@ -680,6 +680,9 @@ module.exports = {
           totalMemory: { type: 'number', mock: 17179869184 },
         },
         ExpoDocumentPicker: {},
+        ExpoFontLoader: {
+          customNativeFonts: { type: 'array' },
+        },
         ExpoHaptics: {},
         ExpoImage: {},
         ExpoImageManipulator: {},

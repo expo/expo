@@ -1,13 +1,13 @@
 /**
- * Result of a `runAsync` call.
+ * A result returned by [`SQLiteDatabase.runAsync`](#runasyncsource-params) or [`SQLiteDatabase.runSync`](#runsyncsource-params).
  */
-export interface RunResult {
+export interface SQLiteRunResult {
     /**
-     * The last inserted row ID.
+     * The last inserted row ID. Returned from the [`sqlite3_last_insert_rowid()`](https://www.sqlite.org/c3ref/last_insert_rowid.html) function.
      */
-    lastInsertRowid: number;
+    lastInsertRowId: number;
     /**
-     * The number of rows affected.
+     * The number of rows affected. Returned from the [`sqlite3_changes()`](https://www.sqlite.org/c3ref/changes.html) function.
      */
     changes: number;
 }
@@ -16,56 +16,58 @@ export interface RunResult {
  * You can either pass the parameters in the following forms:
  *
  * @example
- * - A single array for unnamed parameters.
+ * A single array for unnamed parameters.
  * ```ts
  * const statement = await db.prepareAsync('SELECT * FROM test WHERE value = ? AND intValue = ?');
- * await statement.getAsync(['test1', 789]);
+ * const result = await statement.executeAsync(['test1', 789]);
+ * const firstRow = await result.getFirstAsync();
  * ```
  *
  * @example
- * - Variadic arguments for unnamed parameters.
+ * Variadic arguments for unnamed parameters.
  * ```ts
  * const statement = await db.prepareAsync('SELECT * FROM test WHERE value = ? AND intValue = ?');
- * await statement.getAsync('test1', 789);
+ * const result = await statement.executeAsync('test1', 789);
+ * const firstRow = await result.getFirstAsync();
  * ```
  *
  * @example
- * - A single object for [named parameters](https://www.sqlite.org/lang_expr.html)
+ * A single object for [named parameters](https://www.sqlite.org/lang_expr.html)
  *
  * We support multiple named parameter forms such as `:VVV`, `@VVV`, and `$VVV`. We recommend using `$VVV` because JavaScript allows using `$` in identifiers without escaping.
  * ```ts
  * const statement = await db.prepareAsync('SELECT * FROM test WHERE value = $value AND intValue = $intValue');
- * await statement.getAsync({ $value: 'test1', $intValue: 789 });
+ * const result = await statement.executeAsync({ $value: 'test1', $intValue: 789 });
+ * const firstRow = await result.getFirstAsync();
  * ```
  */
-export type BindValue = string | number | null | boolean;
-export type BindParams = Record<string, BindValue> | BindValue[];
-export type VariadicBindParams = BindValue[];
-export type ColumnNames = string[];
-export type ColumnValues = any[];
-type AnyDatabase = any;
+export type SQLiteBindValue = string | number | null | boolean | Uint8Array;
+export type SQLiteBindParams = Record<string, SQLiteBindValue> | SQLiteBindValue[];
+export type SQLiteVariadicBindParams = SQLiteBindValue[];
+export type SQLiteBindPrimitiveParams = Record<string, Exclude<SQLiteBindValue, Uint8Array>>;
+export type SQLiteBindBlobParams = Record<string, Uint8Array>;
+export type SQLiteColumnNames = string[];
+export type SQLiteColumnValues = any[];
+export type SQLiteAnyDatabase = any;
 /**
  * A class that represents an instance of the SQLite statement.
  */
 export declare class NativeStatement {
-    arrayRunAsync(database: AnyDatabase, params: BindParams): Promise<RunResult>;
-    objectRunAsync(database: AnyDatabase, params: BindParams): Promise<RunResult>;
-    arrayGetAsync(database: AnyDatabase, params: BindParams): Promise<ColumnValues | null | undefined>;
-    objectGetAsync(database: AnyDatabase, params: BindParams): Promise<ColumnValues | null | undefined>;
-    arrayGetAllAsync(database: AnyDatabase, params: BindParams): Promise<ColumnValues[]>;
-    objectGetAllAsync(database: AnyDatabase, params: BindParams): Promise<ColumnValues[]>;
-    getColumnNamesAsync(): Promise<ColumnNames>;
-    resetAsync(database: AnyDatabase): Promise<void>;
-    finalizeAsync(database: AnyDatabase): Promise<void>;
-    arrayRunSync(database: AnyDatabase, params: BindParams): RunResult;
-    objectRunSync(database: AnyDatabase, params: BindParams): RunResult;
-    arrayGetSync(database: AnyDatabase, params: BindParams): ColumnValues | null | undefined;
-    objectGetSync(database: AnyDatabase, params: BindParams): ColumnValues | null | undefined;
-    arrayGetAllSync(database: AnyDatabase, params: BindParams): ColumnValues[];
-    objectGetAllSync(database: AnyDatabase, params: BindParams): ColumnValues[];
+    runAsync(database: SQLiteAnyDatabase, bindParams: SQLiteBindPrimitiveParams, bindBlobParams: SQLiteBindBlobParams, shouldPassAsArray: boolean): Promise<SQLiteRunResult & {
+        firstRowValues: SQLiteColumnValues;
+    }>;
+    stepAsync(database: SQLiteAnyDatabase): Promise<SQLiteColumnValues | null | undefined>;
+    getAllAsync(database: SQLiteAnyDatabase): Promise<SQLiteColumnValues[]>;
+    resetAsync(database: SQLiteAnyDatabase): Promise<void>;
+    getColumnNamesAsync(): Promise<SQLiteColumnNames>;
+    finalizeAsync(database: SQLiteAnyDatabase): Promise<void>;
+    runSync(database: SQLiteAnyDatabase, bindParams: SQLiteBindPrimitiveParams, bindBlobParams: SQLiteBindBlobParams, shouldPassAsArray: boolean): SQLiteRunResult & {
+        firstRowValues: SQLiteColumnValues;
+    };
+    stepSync(database: SQLiteAnyDatabase): SQLiteColumnValues | null | undefined;
+    getAllSync(database: SQLiteAnyDatabase): SQLiteColumnValues[];
+    resetSync(database: SQLiteAnyDatabase): void;
     getColumnNamesSync(): string[];
-    resetSync(database: AnyDatabase): void;
-    finalizeSync(database: AnyDatabase): void;
+    finalizeSync(database: SQLiteAnyDatabase): void;
 }
-export {};
 //# sourceMappingURL=NativeStatement.d.ts.map

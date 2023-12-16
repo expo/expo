@@ -177,10 +177,17 @@ async function copyCommonFixturesToProject(
       ...easJson,
       build: {
         ...easJson.build,
-        updates_testing: {
-          ...easJson.build.updates_testing,
+        updates_testing_debug: {
+          ...easJson.build.updates_testing_debug,
           env: {
-            ...easJson.build.updates_testing.env,
+            ...easJson.build.updates_testing_debug.env,
+            TEST_TV_BUILD: '1',
+          },
+        },
+        updates_testing_release: {
+          ...easJson.build.updates_testing_release,
+          env: {
+            ...easJson.build.updates_testing_release.env,
             TEST_TV_BUILD: '1',
           },
         },
@@ -429,7 +436,7 @@ function transformAppJsonForE2E(
       android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
       updates: {
-        ...appJson.updates,
+        ...appJson.expo.updates,
         url: `http://${process.env.UPDATES_HOST}:${process.env.UPDATES_PORT}/update`,
       },
       extra: {
@@ -439,6 +446,28 @@ function transformAppJsonForE2E(
         eas: {
           projectId: '55685a57-9cf3-442d-9ba8-65c7b39849ef',
         },
+      },
+    },
+  };
+}
+
+/**
+ * Modifies app.json in the E2E test app to add the properties we need, plus a fallback to cache timeout for testing startup procedure
+ */
+export function transformAppJsonForE2EWithFallbackToCacheTimeout(
+  appJson: any,
+  projectName: string,
+  runtimeVersion: string,
+  isTV: boolean
+) {
+  const transformedForE2E = transformAppJsonForE2E(appJson, projectName, runtimeVersion, isTV);
+  return {
+    ...transformedForE2E,
+    expo: {
+      ...transformedForE2E.expo,
+      updates: {
+        ...transformedForE2E.expo.updates,
+        fallbackToCacheTimeout: 5000,
       },
     },
   };
@@ -738,7 +767,7 @@ export async function setupManualTestAppAsync(projectRoot: string, repoRoot: str
     'com',
     'douglowderexpo',
     'MyUpdateableApp',
-    'MainApplication.java'
+    'MainApplication.kt'
   );
   const mainApplicationText = await fs.readFile(mainApplicationPath, { encoding: 'utf-8' });
   const mainApplicationTextModified = mainApplicationText.replace('BuildConfig.DEBUG', 'false');
@@ -768,6 +797,29 @@ export async function setupUpdatesDisabledE2EAppAsync(
   // Copy Detox test file to e2e/tests directory
   await fs.copyFile(
     path.resolve(dirName, '..', 'fixtures', 'Updates-disabled.e2e.ts'),
+    path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
+  );
+}
+
+export async function setupUpdatesStartupE2EAppAsync(
+  projectRoot: string,
+  { localCliBin, repoRoot }: { localCliBin: string; repoRoot: string }
+) {
+  await copyCommonFixturesToProject(
+    projectRoot,
+    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'includedAssets', 'scripts'],
+    { appJsFileName: 'App.tsx', repoRoot, isTV: false }
+  );
+
+  // install extra fonts package
+  await spawnAsync(localCliBin, ['install', '@expo-google-fonts/inter'], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
+
+  // Copy Detox test file to e2e/tests directory
+  await fs.copyFile(
+    path.resolve(dirName, '..', 'fixtures', 'Updates-startup.e2e.ts'),
     path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
   );
 }

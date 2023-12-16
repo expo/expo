@@ -20,6 +20,8 @@ void NativeStatementBinding::registerNatives() {
       makeNativeMethod("initHybrid", NativeStatementBinding::initHybrid),
       makeNativeMethod("sqlite3_bind_parameter_index",
                        NativeStatementBinding::sqlite3_bind_parameter_index),
+      makeNativeMethod("sqlite3_clear_bindings",
+                       NativeStatementBinding::sqlite3_clear_bindings),
       makeNativeMethod("sqlite3_column_count",
                        NativeStatementBinding::sqlite3_column_count),
       makeNativeMethod("sqlite3_column_name",
@@ -42,6 +44,10 @@ int NativeStatementBinding::sqlite3_bind_parameter_index(
   return ::sqlite3_bind_parameter_index(stmt, name.c_str());
 }
 
+int NativeStatementBinding::sqlite3_clear_bindings() {
+  return ::sqlite3_clear_bindings(stmt);
+}
+
 int NativeStatementBinding::sqlite3_column_count() {
   return ::sqlite3_column_count(stmt);
 }
@@ -60,31 +66,30 @@ int NativeStatementBinding::sqlite3_step() { return ::sqlite3_step(stmt); }
 
 int NativeStatementBinding::bindStatementParam(
     int index, jni::alias_ref<jni::JObject> param) {
-  static const auto integerClass = jni::JInteger::javaClassStatic();
-  static const auto longClass = jni::JLong::javaClassStatic();
-  static const auto doubleClass = jni::JDouble::javaClassStatic();
-  static const auto stringClass = jni::JString::javaClassStatic();
-  static const auto booleanClass = jni::JBoolean::javaClassStatic();
-
   int ret = -1;
   if (param == nullptr) {
     ret = sqlite3_bind_null(stmt, index);
-  } else if (param->isInstanceOf(integerClass)) {
+  } else if (param->isInstanceOf(jni::JInteger::javaClassStatic())) {
     ret = sqlite3_bind_int(stmt, index,
                            jni::static_ref_cast<jni::JInteger>(param)->value());
-  } else if (param->isInstanceOf(longClass)) {
+  } else if (param->isInstanceOf(jni::JLong::javaClassStatic())) {
     ret = sqlite3_bind_int64(stmt, index,
                              jni::static_ref_cast<jni::JLong>(param)->value());
-  } else if (param->isInstanceOf(doubleClass)) {
+  } else if (param->isInstanceOf(jni::JDouble::javaClassStatic())) {
     ret = sqlite3_bind_double(
         stmt, index, jni::static_ref_cast<jni::JDouble>(param)->value());
-  } else if (param->isInstanceOf(booleanClass)) {
+  } else if (param->isInstanceOf(jni::JBoolean::javaClassStatic())) {
     ret = sqlite3_bind_int(
         stmt, index,
         jni::static_ref_cast<jni::JBoolean>(param)->value() ? 1 : 0);
+  } else if (param->isInstanceOf(jni::JArrayByte::javaClassStatic())) {
+    auto byteArray = jni::static_ref_cast<jni::JArrayByte>(param);
+    auto data = byteArray->getRegion(0, byteArray->size());
+    ret = sqlite3_bind_blob(stmt, index, data.get(), byteArray->size(),
+                            SQLITE_TRANSIENT);
   } else {
     std::string stringArg;
-    if (param->isInstanceOf(stringClass)) {
+    if (param->isInstanceOf(jni::JString::javaClassStatic())) {
       stringArg = jni::static_ref_cast<jni::JString>(param)->toStdString();
     } else {
       stringArg = param->toString();
@@ -137,10 +142,12 @@ jni::local_ref<jni::JObject> NativeStatementBinding::getColumnValue(int index) {
     return jni::make_jstring(text);
   }
   case SQLITE_BLOB: {
-    JNIEnv *env = jni::Environment::current();
-    return jni::adopt_local(env->NewString(
-        reinterpret_cast<const jchar *>(sqlite3_column_blob(stmt, index)),
-        static_cast<size_t>(sqlite3_column_bytes(stmt, index))));
+    size_t length = static_cast<size_t>(sqlite3_column_bytes(stmt, index));
+    auto byteArray = jni::JArrayByte::newArray(length);
+    byteArray->setRegion(
+        0, length,
+        static_cast<const signed char *>(sqlite3_column_blob(stmt, index)));
+    return byteArray;
   }
   case SQLITE_NULL: {
     return nullptr;

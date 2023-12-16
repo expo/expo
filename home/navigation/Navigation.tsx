@@ -8,7 +8,6 @@ import {
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import * as React from 'react';
 import { Platform, StyleSheet, Linking } from 'react-native';
-import { DiagnosticsStackScreen } from 'screens/DiagnosticsScreen';
 
 import BottomTab, { getNavigatorProps } from './BottomTabNavigator';
 import { HomeStackRoutes, SettingsStackRoutes, ModalStackRoutes } from './Navigation.types';
@@ -20,6 +19,8 @@ import { AccountModal } from '../screens/AccountModal';
 import { BranchDetailsScreen } from '../screens/BranchDetailsScreen';
 import { BranchListScreen } from '../screens/BranchListScreen';
 import { DeleteAccountScreen } from '../screens/DeleteAccountScreen';
+import { DiagnosticsStackScreen } from '../screens/DiagnosticsScreen';
+import { FeedbackFormScreen } from '../screens/FeedbackFormScreen';
 import { HomeScreen } from '../screens/HomeScreen';
 import { ProjectScreen } from '../screens/ProjectScreen';
 import { ProjectsListScreen } from '../screens/ProjectsListScreen';
@@ -92,6 +93,13 @@ function HomeStackScreen() {
         component={BranchDetailsScreen}
         options={{
           title: 'Branch',
+        }}
+      />
+      <HomeStack.Screen
+        name="FeedbackForm"
+        component={FeedbackFormScreen}
+        options={{
+          title: 'Share your feedback',
         }}
       />
     </HomeStack.Navigator>
