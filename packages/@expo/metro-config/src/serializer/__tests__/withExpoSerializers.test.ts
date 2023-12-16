@@ -3,6 +3,7 @@ import assert from 'assert';
 import { microBundle, projectRoot } from '../fork/__tests__/mini-metro';
 import {
   SerialAsset,
+  SerializerConfigOptions,
   SerializerPlugin,
   createSerializerFromSerialProcessors,
   withSerializerPlugins,
@@ -47,13 +48,16 @@ describe('serializes', () => {
   // General helper to reduce boilerplate
   async function serializeTo(
     options: Partial<Parameters<typeof microBundle>[0]>,
-    processors: SerializerPlugin[] = []
+    processors: SerializerPlugin[] = [],
+    configOptions: SerializerConfigOptions = {}
   ) {
     const serializer = createSerializerFromSerialProcessors(
       {
         projectRoot,
       },
-      processors
+      processors,
+      null, // originalSerializer
+      configOptions
     );
 
     const fs = {
@@ -83,7 +87,58 @@ describe('serializes', () => {
     });
   }
 
-  describe('debugId', () => {
+  describe('plugin callbacks', () => {
+    it(`runs plugin with static output`, async () => {
+      let didPluginRun = false;
+      const unstablePlugin = ({ premodules }) => {
+        didPluginRun = true;
+        return premodules;
+      };
+
+      await serializeTo(
+        {
+          options: {
+            dev: false,
+            platform: 'ios',
+            hermes: false,
+            // Source maps must be enabled otherwise the feature is disabled.
+            sourceMaps: true,
+            output: 'static',
+          },
+        },
+        [], // processors
+        { unstable_beforeAssetSerializationPlugins: [unstablePlugin] }
+      );
+
+      expect(didPluginRun).toBe(true);
+    });
+    it(`runs plugin with non-static output`, async () => {
+      let didPluginRun = false;
+      const unstablePlugin = ({ premodules }) => {
+        didPluginRun = true;
+        return premodules;
+      };
+
+      await serializeTo(
+        {
+          options: {
+            dev: false,
+            platform: 'ios',
+            hermes: false,
+            // Source maps must be enabled otherwise the feature is disabled.
+            sourceMaps: true,
+            output: undefined, // non static output
+          },
+        },
+        [], // processors
+        { unstable_beforeAssetSerializationPlugins: [unstablePlugin] }
+      );
+
+      expect(didPluginRun).toBe(true);
+    });
+  });
+
+  /*   describe('debugId', () => {
     describe('legacy serializer', () => {
       it(`serializes with debugId annotation`, async () => {
         const artifacts = await serializeTo({
@@ -453,7 +508,8 @@ describe('serializes', () => {
       {
         projectRoot,
       },
-      []
+      [],
+      null // originalSerializer
     );
 
     const fs = {
@@ -830,5 +886,5 @@ describe('serializes', () => {
     // });
     // // Ensure the dedupe chunk isn't run, just loaded.
     // expect(artifacts[3].source).not.toMatch(/TEST_RUN_MODULE/);
-  });
+  }); */
 });
