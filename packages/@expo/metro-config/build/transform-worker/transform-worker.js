@@ -67,6 +67,7 @@ async function transform(config, projectRoot, filename, data, options) {
   result.output[0].data.profiling = {
     start: startTime,
     end: endTime,
+    pid: process.pid,
     duration
   };
   return result;

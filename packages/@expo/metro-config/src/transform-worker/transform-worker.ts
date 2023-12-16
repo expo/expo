@@ -35,6 +35,7 @@ export async function transform(
   result.output[0].data.profiling = {
     start: startTime,
     end: endTime,
+    pid: process.pid,
     duration,
   };
   return result;
