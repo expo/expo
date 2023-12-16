@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Update `run:ios` build warning formatting for SDK 50.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
