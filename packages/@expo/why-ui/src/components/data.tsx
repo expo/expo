@@ -17,6 +17,7 @@ export type MetroJsonModule = {
       profiling: {
         start: number;
         end: number;
+        pid: number;
         duration: number;
       };
     };
@@ -56,8 +57,8 @@ const queryClient = new QueryClient({
 });
 
 export function useFetchedServerData() {
-  const url = '/fixture.json';
-  // const url = '/_expo/last-metro-stats';
+  // const url = '/fixture.json';
+  const url = '/_expo/last-metro-stats';
   return useQuery<ExpoServerResponse>({
     queryKey: ['graphs'],
     queryFn: async () => {
