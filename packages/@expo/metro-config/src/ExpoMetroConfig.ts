@@ -42,6 +42,12 @@ export interface DefaultConfigOptions {
    */
   isCSSEnabled?: boolean;
 
+  /**
+   * **Experimental:** Modify premodules before a code asset is serialized
+   *
+   * This is an experimental feature and may change in the future. The underlying implementation
+   * is subject to change.
+   */
   unstable_beforeAssetSerializationPlugins?: ((serializationInput: {
     graph: ReadOnlyGraph<MixedOutput>;
     premodules: Module[];
