@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add support for `webpack-dev-server@4`. ([#25863](https://github.com/expo/expo/pull/25863) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 0.10.16 — 2023-11-24
