@@ -140,6 +140,15 @@ export default function DataTableDemo() {
       backgroundColor: 'transparent',
 
       tooltip: {
+        // Reduce padding
+        padding: 4,
+        textStyle: {
+          fontSize: 10,
+        },
+        backgroundColor: 'rgba(0,0,0,0.9)',
+        borderWidth: 1,
+        borderColor: '#333',
+
         formatter(params) {
           return params.marker + params.name + ': ' + (params.value[2] - params.value[1]) + ' ms';
         },
@@ -172,9 +181,13 @@ export default function DataTableDemo() {
         },
       },
       yAxis: {
-        // boundaryGap: false,
-
         data: threads.map((thread: number) => 'Thread: ' + String(thread + 1)),
+        // Hide label
+        axisLabel: {
+          show: false,
+        },
+        // Add title "Threads"
+        name: 'Threads',
       },
       series: [
         {
