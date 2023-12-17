@@ -1,108 +1,159 @@
 import { MetroJsonModule } from '@/components/data';
-import { formatSize } from '@/app/(views)';
+
 import { useFilteredModules } from '@/components/deps-context';
-import { Tooltip } from '@/components/tree/tooltip';
-import FoamTree from '@carrotsearch/foamtree';
-import { router } from 'expo-router';
+
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-
-interface TreemapProps {
-  data: Dataset[]; // Replace with a more specific type as per your data structure
-  highlightGroups?: Set<any>; // Specify the type for the elements of the Set
-  onGroupSecondaryClick?: (event: any) => void; // Replace 'any' with a more specific type
-  onGroupHover?: (event: any) => void;
-  onMouseLeave?: (event: any) => void;
-  onResize?: () => void;
-}
-
-type Dataset = {
-  label: string;
-  absolutePath: string;
-  weight: number;
-  groups: Dataset[];
-  ratio: number;
-  tip: string;
-  moduleHref?: string;
-};
+import { useDynamicHeight } from '@/components/useDynamicHeight';
+import * as echarts from 'echarts';
+import ReactECharts from 'echarts-for-react';
+import { formatSize } from '@/components/table';
 
 // Given a list of modules with filepaths `{ absolutePath: string }[]`, create a recursive tree structure of modules `{ absolutePath: string, groups: T[] }[]`
-function createModuleTree(paths: MetroJsonModule[]): Dataset[] {
-  const root: Dataset = { absolutePath: '/', groups: [], label: '/', weight: 0, ratio: 0, tip: '' };
+function createModuleTree(paths: MetroJsonModule[]): {
+  data: EChartTreeMapDataItem[];
+  maxDepth: number;
+} {
+  const root: EChartTreeMapDataItem = {
+    path: '/',
+    children: [],
+    name: '/',
+    value: 0,
+    ratio: 0,
+    tip: '',
+  };
+
+  let maxDepth = 0;
 
   paths.forEach((pathObj) => {
     const parts = pathObj.absolutePath.split('/').filter(Boolean);
     let current = root;
 
+    maxDepth = Math.max(maxDepth, parts.length);
+
     parts.forEach((part, index) => {
       const isLast = index === parts.length - 1;
-      let next = current.groups.find((g) => g.absolutePath === part);
+      let next = current.children.find((g) => g.path === part);
 
       if (!next) {
-        next = { absolutePath: part, label: part, groups: [], weight: 0, ratio: 0, tip: '' };
-        current.groups.push(next);
+        next = { path: part, name: part, children: [], value: 0, ratio: 0, tip: '' };
+        current.children.push(next);
       }
 
       if (isLast) {
-        next.absolutePath = pathObj.absolutePath;
-        next.moduleHref = pathObj.path;
-        next.weight = pathObj.size;
+        next.path = pathObj.absolutePath;
+        next.moduleHref = pathObj.absolutePath;
+        next.value = 1; //pathObj.size;
       } else {
-        next.weight += pathObj.size;
+        next.value += 1; //pathObj.size;
       }
 
       current = next;
     });
   });
 
-  const foldSingleChildGroups = (group: Dataset) => {
-    if (group.groups.length === 1) {
-      const child = group.groups[0];
-      group.weight = child.weight;
-      group.label = group.label + '/' + child.label;
-      group.absolutePath = child.absolutePath;
-      group.groups = child.groups;
+  const foldSingleChildGroups = (group: EChartTreeMapDataItem) => {
+    if (group.children.length === 1) {
+      const child = group.children[0];
+      group.value = child.value;
+      group.name = group.name + '/' + child.name;
+      group.path = child.path;
+      group.children = child.children;
       group.moduleHref = child.moduleHref;
 
-      foldSingleChildGroups(group); // recursively fold single child groups
+      foldSingleChildGroups(group); // recursively fold single child children
     } else {
-      group.groups.forEach(foldSingleChildGroups);
+      group.children.forEach(foldSingleChildGroups);
     }
   };
   foldSingleChildGroups(root);
 
-  root.weight = root.groups.reduce((acc, g) => acc + g.weight, 0);
+  root.value = root.children.reduce((acc, g) => acc + g.value, 0);
 
   // Calculate the ratio of each group
-  const calculateRatio = (group: Dataset) => {
-    group.ratio = group.weight / root.weight;
-    group.groups.forEach(calculateRatio);
+  const calculateRatio = (group: EChartTreeMapDataItem) => {
+    group.ratio = group.value / root.value;
+    group.children.forEach(calculateRatio);
   };
   calculateRatio(root);
 
   // Calculate the ratio of each group
-  const calculateTooltip = (group: Dataset) => {
-    let percentage = group.ratio * 100;
+  const calculateTooltip = (group: EChartTreeMapDataItem) => {
+    const percentage = group.ratio * 100;
     let percetageString = percentage.toFixed(2) + '%';
     if (percentage <= 0.01) {
       percetageString = '< 0.01%';
     }
 
-    const size = formatSize(group.weight);
+    const size = formatSize(group.value);
     group.tip = percetageString + ' (' + size + ')';
-    group.groups.forEach(calculateTooltip);
+    group.children.forEach(calculateTooltip);
   };
   calculateTooltip(root);
 
-  return root.groups;
+  return { data: root.children, maxDepth };
 }
-export default function MetroTreemap() {
-  const [tooltip, setTooltip] = useState<null | {
-    content: string;
-  }>(null);
-  const [contextMenuGroup, setContextMenuGroup] = useState<null | Dataset>(null);
 
+export default function Treemap() {
   const modules = useFilteredModules();
-  const data = useMemo(
+  // const data = [
+  //   {
+  //     value: 10,
+  //     name: 'WidgetResources',
+  //     path: 'WidgetResources',
+  //     children: [
+  //       {
+  //         value: 16,
+  //         name: '.parsers',
+  //         path: 'WidgetResources/.parsers',
+  //       },
+  //       {
+  //         value: 172,
+  //         name: 'AppleClasses',
+  //         path: 'WidgetResources/AppleClasses',
+  //         children: [
+  //           {
+  //             value: 1,
+  //             name: 'Images',
+  //             path: 'WidgetResources/AppleClasses/Images',
+  //           },
+  //           {
+  //             value: 20,
+  //             name: 'Images',
+  //             path: 'WidgetResources/AppleClasses/Images',
+  //             children: [
+  //               {
+  //                 value: 10,
+  //                 name: 'Images3',
+  //                 path: 'WidgetResources/AppleClasses/Images2',
+  //               },
+  //               {
+  //                 value: 3,
+  //                 name: 'Images2',
+  //                 path: 'WidgetResources/AppleClasses/Images3',
+  //               },
+  //             ],
+  //           },
+  //         ],
+  //       },
+  //       {
+  //         value: 0,
+  //         name: 'AppleParser',
+  //         path: 'WidgetResources/AppleParser',
+  //       },
+  //       {
+  //         value: 48,
+  //         name: 'button',
+  //         path: 'WidgetResources/button',
+  //       },
+  //       {
+  //         value: 32,
+  //         name: 'ibutton',
+  //         path: 'WidgetResources/ibutton',
+  //       },
+  //     ],
+  //   },
+  // ];
+  const { data, maxDepth } = useMemo(
     () =>
       createModuleTree(
         modules.filter((v) =>
@@ -113,173 +164,193 @@ export default function MetroTreemap() {
     [modules]
   );
 
-  const tree = useMemo(
-    () => (
-      <Treemap
-        data={data}
-        onGroupHover={(event) => {
-          const { group } = event;
-          setTooltip({
-            content: group.tip,
-          });
+  // console.log('data', data, modules);
+
+  const container = React.useRef<HTMLDivElement>(null);
+
+  const containerHeight = useDynamicHeight(container, 300);
+
+  const formatUtil = echarts.format;
+
+  function getLevelOption() {
+    // return [
+    //   {
+    //     itemStyle: {
+    //       borderWidth: 0,
+    //       gapWidth: 5,
+    //     },
+    //   },
+    // ];
+    return [
+      // {
+      //   itemStyle: {
+      //     borderWidth: 3,
+      //     borderColor: '#333',
+      //     gapWidth: 3,
+      //   },
+      // },
+      // {},
+      // // {
+      // //   color: ['#942e38', '#aaa', '#269f3c'],
+      // //   colorMappingBy: 'value',
+      // //   itemStyle: {
+      // //     gapWidth: 1,
+      // //   },
+      // // },
+      // // {
+      // //   itemStyle: {
+      // //     borderColor: '#777',
+      // //     borderWidth: 0,
+      // //     gapWidth: 1,
+      // //   },
+      // //   upperLabel: {
+      // //     show: false,
+      // //   },
+      // // },
+      // {
+      //   upperLabel: {
+      //     show: false,
+      //   },
+      //   itemStyle: {
+      //     borderColor: '#555',
+      //     borderWidth: 5,
+      //     gapWidth: 1,
+      //   },
+      //   emphasis: {
+      //     itemStyle: {
+      //       borderColor: '#ddd',
+      //     },
+      //   },
+      // },
+      // {
+      //   label: {
+      //     show: true,
+      //     formatter: '{b}',
+      //   },
+      //   upperLabel: {
+      //     show: true,
+      //     height: 30,
+      //   },
+      //   // colorSaturation: [0.35, 0.5],
+      //   itemStyle: {
+      //     borderWidth: 5,
+      //     gapWidth: 1,
+      //     borderColorSaturation: 0.6,
+      //   },
+      // },
+    ];
+  }
+
+  return (
+    <div className="flex-1" ref={container}>
+      <ReactECharts
+        lazyUpdate
+        opts={{
+          // renderer: 'svg',
+          // width: containerHeight.width,
+          height: containerHeight.height,
         }}
-        onGroupSecondaryClick={(event) => {
-          const { group } = event;
-          console.log('open:', group.moduleHref);
-          setContextMenuGroup(group);
-          event.preventDefault();
-          router.push({
-            pathname: '/module/[id]',
-            params: { id: group.moduleHref },
-          });
+        theme="dark"
+        option={{
+          title: {
+            text: 'Size Tree',
+            // left: 'center',
+          },
+          backgroundColor: 'transparent',
+
+          tooltip: {
+            formatter(info) {
+              const value = formatSize(info.value);
+              const treePathInfo = info.treePathInfo;
+              const treePath = [];
+
+              for (let i = 1; i < treePathInfo.length; i++) {
+                treePath.push(treePathInfo[i].name);
+              }
+
+              return [
+                '<div class="tooltip-title">' +
+                  formatUtil.encodeHTML(treePath.join('/')) +
+                  '</div>',
+                'Size: ' + value,
+              ].join('');
+            },
+          },
+
+          series: [
+            {
+              name: 'Size Tree',
+              type: 'treemap',
+              zoomToNodeRatio: 1000,
+              leafDepth: 2,
+              // visibleMin: 300,
+
+              label: {
+                show: true,
+                // formatter: '{b}',
+
+                // normal: {
+                //   textStyle: {
+                //     ellipsis: true,
+                //   },
+                // },
+              },
+              upperLabel: {
+                show: true,
+                position: 'insideTop',
+                distance: 10,
+                emphasis: {
+                  position: 'insideTop',
+                  distance: 10,
+                },
+              },
+
+              levels: new Array(maxDepth).fill({}).map((_, index) => {
+                return {
+                  itemStyle: {
+                    borderColorSaturation: 0.1,
+                    borderColor: '#000',
+                    borderWidth: 1,
+                    gapWidth: 0,
+                    color: '#030816',
+                    // color: ['#942e38', '#aaa', '#269f3c'],
+                    // colorMappingBy: 'value',
+                  },
+                  // label: {
+                  //   show: index === maxDepth - 1,
+                  //   formatter: '{b}',
+                  // },
+                  // upperLabel: {
+                  //   show: index === maxDepth - 1,
+                  //   height: 30,
+                  // },
+                };
+              }),
+
+              itemStyle: {
+                borderColorSaturation: 0.1,
+                borderColor: '#000',
+                borderWidth: 1,
+                gapWidth: 0,
+              },
+              // levels: getLevelOption(),
+              data,
+            },
+          ],
         }}
       />
-    ),
-    [data]
-  );
-  return (
-    <div className="flex flex-1">
-      {/* <ContextMenu
-        modal
-        onOpenChange={(open) => {
-          if (!open) {
-            console.log('invalidate');
-            setContextMenuGroup(null);
-          }
-        }}> */}
-      {tree}
-
-      {/* <ContextMenuContent forceMount={true}>
-          <ContextMenuItem disabled={!contextMenuGroup?.moduleHref}>Inspect</ContextMenuItem>
-        </ContextMenuContent>
-      </ContextMenu> */}
-
-      <Tooltip visible={!!tooltip}>{tooltip?.content}</Tooltip>
     </div>
   );
 }
 
-export const Treemap: React.FC<TreemapProps> = (props) => {
-  const { highlightGroups, data, onGroupSecondaryClick, onGroupHover, onMouseLeave, onResize } =
-    props;
-
-  // return null;
-  const nodeRef = useRef<HTMLDivElement>(null);
-  const treemapRef = useRef<any>(null); // Replace 'any' with a more specific type
-  const zoomOutDisabled = useRef(false);
-
-  useEffect(() => {
-    if (nodeRef.current) {
-      treemapRef.current = createTreemap();
-    }
-
-    const resizeListener = () => {
-      treemapRef.current?.resize();
-      onResize?.();
-    };
-
-    window.addEventListener('resize', resizeListener);
-    return () => {
-      window.removeEventListener('resize', resizeListener);
-      treemapRef.current?.dispose();
-    };
-  }, []);
-
-  useEffect(() => {
-    treemapRef.current?.set({
-      dataObject: { groups: data },
-    });
-  }, [data]);
-
-  useEffect(() => {
-    setTimeout(() => treemapRef.current?.redraw(), 0);
-  }, [highlightGroups]);
-
-  const createTreemap = () => {
-    return new FoamTree({
-      element: nodeRef.current,
-      layout: 'squarified',
-      stacking: 'flattened',
-      pixelRatio: window.devicePixelRatio || 1,
-      maxGroups: Infinity,
-      maxGroupLevelsDrawn: Infinity,
-      maxGroupLabelLevelsDrawn: Infinity,
-      maxGroupLevelsAttached: Infinity,
-      wireframeLabelDrawing: 'always',
-      groupMinDiameter: 0,
-      groupLabelVerticalPadding: 0.2,
-      rolloutDuration: 0,
-      pullbackDuration: 0,
-      fadeDuration: 0,
-      groupExposureZoomMargin: 0.2,
-      zoomMouseWheelDuration: 300,
-      openCloseDuration: 200,
-      dataObject: { groups: data },
-      titleBarDecorator(opts, props, vars) {
-        vars.titleBarShown = false;
-      },
-      groupColorDecorator(options, properties, variables) {
-        variables.labelColor = '#fff';
-        variables.groupColor = {
-          model: 'hsla',
-          h: 0,
-          s: 0,
-          l: 20,
-          a: 0.9,
-        };
-      },
-      /**
-       * Handle Foamtree's "group clicked" event
-       * @param {FoamtreeEvent} event - Foamtree event object
-       *  (see https://get.carrotsearch.com/foamtree/demo/api/index.html#event-details)
-       * @returns {void}
-       */
-      onGroupClick(event) {
-        preventDefault(event);
-        if ((event.ctrlKey || event.secondary) && onGroupSecondaryClick) {
-          onGroupSecondaryClick(event);
-          return;
-        }
-
-        zoomOutDisabled.current = false;
-
-        this.zoom(event.group);
-      },
-      onGroupHover(event) {
-        // Ignoring hovering on `FoamTree` branding group and the root group
-        if (event.group && (event.group.attribution || event.group === this.get('dataObject'))) {
-          event.preventDefault();
-          if (onMouseLeave) {
-            onMouseLeave(event);
-          }
-          return;
-        }
-
-        if (onGroupHover) {
-          onGroupHover(event);
-        }
-      },
-      onGroupDoubleClick: preventDefault,
-      onGroupMouseWheel(event) {
-        const { scale } = this.get('viewport');
-        const isZoomOut = event.delta < 0;
-
-        if (isZoomOut) {
-          if (zoomOutDisabled.current) return preventDefault(event);
-          if (scale < 1) {
-            zoomOutDisabled.current = true;
-
-            preventDefault(event);
-          }
-        } else {
-          zoomOutDisabled.current = false;
-        }
-      },
-    });
-  };
-
-  const jsx = useMemo(() => <div className="flex flex-1" ref={nodeRef} />, []);
-  return jsx;
+type EChartTreeMapDataItem = {
+  name: string;
+  path: string;
+  value: number;
+  moduleHref?: string;
+  tip: string;
+  ratio: number;
+  children?: EChartTreeMapDataItem[];
 };
 
 const preventDefault = (event: any) => {
