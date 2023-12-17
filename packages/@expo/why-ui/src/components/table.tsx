@@ -206,7 +206,7 @@ export const columns: ColumnDef<MetroJsonModule>[] = [
   },
 ];
 
-export default function DataTableDemo() {
+export function WhyTable() {
   const data = useFilteredModules();
 
   const [sorting, setSorting] = React.useState<SortingState>([]);

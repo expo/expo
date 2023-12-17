@@ -1,12 +1,12 @@
 import * as React from 'react';
 
 export const useDynamicHeight = (ref, initialHeight = 300) => {
-  const [height, setHeight] = React.useState(initialHeight);
+  const [size, setSize] = React.useState({ height: initialHeight, width: 0 });
 
   React.useEffect(() => {
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        setHeight(entry.contentRect.height);
+        setSize(entry.contentRect);
       }
     });
 
@@ -21,5 +21,5 @@ export const useDynamicHeight = (ref, initialHeight = 300) => {
     };
   }, [ref]);
 
-  return height;
+  return size;
 };

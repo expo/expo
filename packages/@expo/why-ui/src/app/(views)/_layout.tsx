@@ -104,6 +104,12 @@ function Header() {
         <Button
           asChild
           variant="link"
+          className={classNames(useSelected('profile') ? 'font-bold underline' : '')}>
+          <Link href="/profile">Profile</Link>
+        </Button>
+        <Button
+          asChild
+          variant="link"
           className={classNames(treeSelected ? 'font-bold underline' : '')}>
           <Link href="/tree">Tree</Link>
         </Button>
