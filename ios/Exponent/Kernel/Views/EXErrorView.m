@@ -109,6 +109,7 @@
   UIFont *font = _txtErrorDetail.font;
   _txtErrorDetail.attributedText = attributedErrorString;
   _txtErrorDetail.font = font;
+  _txtErrorDetail.textColor = [UIColor colorNamed:@"textDefault"];
 
   [self _resetUIState];
 }
@@ -122,20 +123,9 @@
 - (void)layoutSubviews
 {
   [super layoutSubviews];
- 
-  if (@available(iOS 12.0, *)) {
-    switch (UIScreen.mainScreen.traitCollection.userInterfaceStyle) {
-      case UIUserInterfaceStyleDark:
-        self.backgroundColor = [EXUtil colorWithRGB:0x25292E];
-        break;
-      case UIUserInterfaceStyleLight:
-      case UIUserInterfaceStyleUnspecified:
-        break;
-      default:
-        break;
-    }
-  }
-  
+
+  self.backgroundColor = [UIColor colorNamed:@"backgroundDefault"];
+
   _vContainer.translatesAutoresizingMaskIntoConstraints = NO;
 
   UILayoutGuide *guide = self.safeAreaLayoutGuide;
@@ -143,12 +133,6 @@
   [_vContainer.trailingAnchor constraintEqualToAnchor:guide.trailingAnchor].active = YES;
   [_vContainer.topAnchor constraintEqualToAnchor:guide.topAnchor].active = YES;
   [_vContainer.bottomAnchor constraintEqualToAnchor:guide.bottomAnchor].active = YES;
-
-  UIImage *btnRetryBgImage = [self imageWithSize:_btnRetry.frame.size color:  [EXUtil colorWithRGB:0x25292E]];
-  [_btnRetry setBackgroundImage:btnRetryBgImage forState:UIControlStateNormal];
-  
-  UIImage *btnBackBgImage = [self imageWithSize:_btnBack.frame.size color:  [EXUtil colorWithRGB:0xF0F1F2]];
-  [_btnBack setBackgroundImage:btnBackBgImage forState:UIControlStateNormal];
 }
 
 #pragma mark - Internal
@@ -187,17 +171,6 @@
       [url rangeOfString:@"172."].length > 0
     )
   );
-}
-
-// for creating a filled button background in iOS < 15
-- (UIImage *)imageWithSize:(CGSize)size color:(UIColor *)color
-{
-  UIGraphicsBeginImageContextWithOptions(size, true, 0.0);
-  [color setFill];
-  UIRectFill(CGRectMake(0.0, 0.0, size.width, size.height));
-  UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return image;
 }
 
 @end
