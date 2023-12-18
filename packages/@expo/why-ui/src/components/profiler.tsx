@@ -115,6 +115,7 @@ export function Profiler() {
     };
   }
 
+  // TODO: We need to calculate the profile times outside of the cache to ensure we don't mix and match data.
   const { start, end, items, threads } = useProfileData();
 
   const container = React.useRef<HTMLDivElement>(null);

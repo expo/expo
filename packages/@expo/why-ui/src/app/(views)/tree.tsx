@@ -42,9 +42,9 @@ function createModuleTree(paths: MetroJsonModule[]): {
       if (isLast) {
         next.path = pathObj.absolutePath;
         next.moduleHref = pathObj.absolutePath;
-        next.value = 1; //pathObj.size;
+        next.value = pathObj.size;
       } else {
-        next.value += 1; //pathObj.size;
+        next.value += pathObj.size;
       }
 
       current = next;
@@ -281,7 +281,7 @@ export default function Treemap() {
             {
               name: 'Size Tree',
               type: 'treemap',
-              zoomToNodeRatio: 1000,
+              // zoomToNodeRatio: 1000,
               leafDepth: 3,
               // visibleMin: 300,
 
