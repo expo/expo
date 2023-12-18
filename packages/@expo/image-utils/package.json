@@ -36,7 +36,6 @@
     "fs-extra": "9.0.0",
     "getenv": "^1.0.0",
     "jimp-compact": "0.16.1",
-    "mime": "^2.4.4",
     "node-fetch": "^2.6.0",
     "parse-png": "^2.1.0",
     "resolve-from": "^5.0.0",
@@ -46,7 +45,6 @@
   "devDependencies": {
     "@types/fs-extra": "^9.0.1",
     "@types/getenv": "^0.7.0",
-    "@types/mime": "^2.0.3",
     "@types/node-fetch": "^2.6.5",
     "@types/semver": "^6.0.0",
     "expo-module-scripts": "^3.3.0"
