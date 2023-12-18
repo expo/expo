@@ -50,8 +50,9 @@ function useProfileData() {
       item.thread = threadMap[item.thread];
     });
     const start = items.reduce((acc, item) => Math.min(acc, item.start), Infinity);
+    const end = items.reduce((acc, item) => Math.max(acc, item.end), -Infinity);
 
-    return { start, threads: Object.values(threadMap).sort().reverse(), items };
+    return { start, end, threads: Object.values(threadMap).sort().reverse(), items };
   }, [data]);
 }
 
@@ -114,7 +115,7 @@ export function Profiler() {
     };
   }
 
-  const { start, items, threads } = useProfileData();
+  const { start, end, items, threads } = useProfileData();
 
   const container = React.useRef<HTMLDivElement>(null);
 
@@ -190,6 +191,7 @@ export function Profiler() {
 
       xAxis: {
         min: start,
+        max: end,
         scale: true,
         axisLabel: {
           formatter(val) {
