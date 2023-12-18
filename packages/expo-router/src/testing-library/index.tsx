@@ -98,16 +98,7 @@ export function renderRouter(
       return store.routeInfoSnapshot().params;
     },
     getPathnameWithParams(this: RenderResult): string {
-      const pathFromState = getPathFromState(store.rootState!, store.linking!.config);
-      const snapshotPathName = store.routeInfoSnapshot().pathname;
-      try {
-        expect(pathFromState).toBe(snapshotPathName);
-      } catch {
-        throw new Error(
-          `Internal pathname mismatch: ${pathFromState} !== ${snapshotPathName}. Please report this as an issue https://github.com/expo/expo/issues`
-        );
-      }
-      return snapshotPathName;
+      return getPathFromState(store.rootState!, store.linking!.config);
     },
   });
 }
