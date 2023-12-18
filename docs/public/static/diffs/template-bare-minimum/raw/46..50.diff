@@ -2214,7 +2214,7 @@ index a6e13e11ab..37d415b57d 100644
  #else
    return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
  #endif
-@@ -124,43 +59,4 @@ - (void)application:(UIApplication *)application didReceiveRemoteNotification:(N
+@@ -124,43 +59,4 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
    return [super application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
  }
  
@@ -2471,7 +2471,7 @@ index 9430b0f9b6..07c9fce65d 100644
 +
 +module.exports = config;
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index d5ca09a584..4b96471aba 100644
+index d5ca09a584..7a9b382c4a 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -2479,7 +2479,7 @@ index d5ca09a584..4b96471aba 100644
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "46.0.37",
-+  "version": "50.0.13",
++  "version": "50.0.16",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -2494,7 +2494,7 @@ index d5ca09a584..4b96471aba 100644
 -    "react-dom": "18.0.0",
 -    "react-native": "0.69.9",
 -    "react-native-web": "~0.18.7"
-+    "expo": "~50.0.0-preview.0",
++    "expo": "~50.0.0-preview.3",
 +    "expo-status-bar": "~1.11.0",
 +    "react": "18.2.0",
 +    "react-native": "0.73.0"
