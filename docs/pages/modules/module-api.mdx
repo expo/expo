@@ -130,12 +130,26 @@ It is recommended to use `AsyncFunction` over `Function` when it:
 AsyncFunction("asyncFunction") { (message: String) in
   return message
 }
+
+// or
+
+AsyncFunction("asyncFunction") { (message: String, promise: Promise) in
+  promise.resolve(message)
+}
+
 ```
 
 ```kotlin
 AsyncFunction("asyncFunction") { message: String ->
   return@AsyncFunction message
 }
+
+// or
+
+AsyncFunction("asyncFunction") { message: String, promise: Promise ->
+  promise.resolve(message)
+}
+
 ```
 
 </CodeBlocksTable>
