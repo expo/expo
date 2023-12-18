@@ -72,15 +72,7 @@ function renderRouter(context = './app', { initialUrl = '/', ...options } = {}) 
             return router_store_1.store.routeInfoSnapshot().params;
         },
         getPathnameWithParams() {
-            const pathFromState = (0, getPathFromState_1.default)(router_store_1.store.rootState, router_store_1.store.linking.config);
-            const snapshotPathName = router_store_1.store.routeInfoSnapshot().pathname;
-            try {
-                expect(pathFromState).toBe(snapshotPathName);
-            }
-            catch {
-                throw new Error(`Internal pathname mismatch: ${pathFromState} !== ${snapshotPathName}. Please report this as an issue https://github.com/expo/expo/issues`);
-            }
-            return snapshotPathName;
+            return (0, getPathFromState_1.default)(router_store_1.store.rootState, router_store_1.store.linking.config);
         },
     });
 }

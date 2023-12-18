@@ -291,7 +291,12 @@ function decodeParams(params) {
     const parsed = {};
     for (const [key, value] of Object.entries(params)) {
         try {
-            parsed[key] = decodeURIComponent(value);
+            if (Array.isArray(value)) {
+                parsed[key] = value.map((v) => decodeURIComponent(v));
+            }
+            else {
+                parsed[key] = decodeURIComponent(value);
+            }
         }
         catch {
             parsed[key] = value;
