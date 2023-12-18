@@ -1,5 +1,6 @@
 /// <reference types="node" />
 import { ImageOptions } from './Image.types';
+export declare function getMimeType(srcPath: string): string | null;
 export declare function generateImageAsync(options: {
     projectRoot: string;
     cacheType?: string;
