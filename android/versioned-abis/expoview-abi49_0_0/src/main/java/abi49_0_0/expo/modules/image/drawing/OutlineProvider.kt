@@ -15,11 +15,22 @@ import abi49_0_0.expo.modules.image.ifYogaUndefinedUse
 
 class OutlineProvider(private val mContext: Context) : ViewOutlineProvider() {
   enum class BorderRadiusConfig {
-    ALL, TOP_LEFT, TOP_RIGHT, BOTTOM_RIGHT, BOTTOM_LEFT, TOP_START, TOP_END, BOTTOM_START, BOTTOM_END
+    ALL,
+    TOP_LEFT,
+    TOP_RIGHT,
+    BOTTOM_RIGHT,
+    BOTTOM_LEFT,
+    TOP_START,
+    TOP_END,
+    BOTTOM_START,
+    BOTTOM_END
   }
 
   enum class CornerRadius {
-    TOP_LEFT, TOP_RIGHT, BOTTOM_RIGHT, BOTTOM_LEFT
+    TOP_LEFT,
+    TOP_RIGHT,
+    BOTTOM_RIGHT,
+    BOTTOM_LEFT
   }
 
   private var mLayoutDirection = View.LAYOUT_DIRECTION_LTR

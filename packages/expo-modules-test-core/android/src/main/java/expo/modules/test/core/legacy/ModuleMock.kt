@@ -102,7 +102,11 @@ data class ModuleMock<TestInterfaceType : Any, ModuleType : Module>(
       )
       val controller = mock as ModuleController
       val holder = ModuleMockHolder<TestInterfaceType, ModuleType>(
-        mock, controller, appContext, eventEmitter, moduleSpy
+        mock,
+        controller,
+        appContext,
+        eventEmitter,
+        moduleSpy
       )
 
       if (autoOnCreate) {

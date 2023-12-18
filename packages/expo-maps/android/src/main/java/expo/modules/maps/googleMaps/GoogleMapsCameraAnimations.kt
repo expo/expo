@@ -20,7 +20,6 @@ class GoogleMapsCameraAnimations(private val googleMap: GoogleMap) {
     )
 
     if (cameraMove.latLngDelta != null) {
-
       val x1 = target.latitude - cameraMove.latLngDelta!!.latitudeDelta / 2
       val y1 = target.longitude - cameraMove.latLngDelta!!.longitudeDelta / 2
       val bottomLeft = LatLng(x1, y1)

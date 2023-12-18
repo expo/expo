@@ -305,7 +305,7 @@ class GoogleMapsView(context: Context, appContext: AppContext) : LinearLayout(co
       After calling lambda the subscription is canceled.
       StateFlow holds the latest value so even if updateMap is called after
       OnMapReadyCallback, StateFlow emits the latest value letting provided lambda to be executed.
-  */
+   */
   private fun updateMap(update: () -> Unit) {
     CoroutineScope(Dispatchers.IO).launch {
       mapReady.collectLatest {

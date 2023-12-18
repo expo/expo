@@ -75,10 +75,11 @@ class CollectBankAccountLauncherFragment(
             promise.resolve(createError(ErrorType.Canceled.toString(), "Bank account collection was canceled."))
           } else if (intent.status === StripeIntent.Status.RequiresConfirmation) {
             promise.resolve(
-              if (isPaymentIntent)
+              if (isPaymentIntent) {
                 createResult("paymentIntent", mapFromPaymentIntentResult(intent as PaymentIntent))
-              else
+              } else {
                 createResult("setupIntent", mapFromSetupIntentResult(intent as SetupIntent))
+              }
             )
           }
         }

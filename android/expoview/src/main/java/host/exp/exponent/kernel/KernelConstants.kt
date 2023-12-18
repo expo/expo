@@ -39,7 +39,9 @@ object KernelConstants {
   class ExperienceOptions {
     val manifestUri: String
     val uri: String?
-    @Deprecated("deprecated") val notification: String?
+
+    @Deprecated("deprecated")
+    val notification: String?
     val notificationObject: ExponentNotification?
 
     constructor(manifestUri: String, uri: String?, notification: String?) {

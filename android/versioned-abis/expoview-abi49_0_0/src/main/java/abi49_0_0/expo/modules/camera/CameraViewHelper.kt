@@ -19,8 +19,11 @@ object CameraViewHelper {
   // Utilities
   @JvmStatic
   fun getCorrectCameraRotation(rotation: Int, facing: Int) =
-    if (facing == CameraView.FACING_FRONT) (rotation - 90 + 360) % 360
-    else (-rotation + 90 + 360) % 360
+    if (facing == CameraView.FACING_FRONT) {
+      (rotation - 90 + 360) % 360
+    } else {
+      (-rotation + 90 + 360) % 360
+    }
 
   @JvmStatic
   fun getCamcorderProfile(cameraId: Int, quality: Int): CamcorderProfile {

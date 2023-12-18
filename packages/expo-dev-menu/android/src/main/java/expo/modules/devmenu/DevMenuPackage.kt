@@ -39,7 +39,7 @@ object DevMenuPackageDelegate {
 class DevMenuPackage : Package, ReactPackage {
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
     return listOf(
-      DevMenuExtension(reactContext),
+      DevMenuExtension(reactContext)
     )
   }
 

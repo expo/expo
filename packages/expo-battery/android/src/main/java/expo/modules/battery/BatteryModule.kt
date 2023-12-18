@@ -19,7 +19,10 @@ internal const val POWER_MODE_EVENT_NAME = "Expo.powerModeDidChange"
 
 class BatteryModule : Module() {
   enum class BatteryState(val value: Int) : Enumerable {
-    UNKNOWN(0), UNPLUGGED(1), CHARGING(2), FULL(3);
+    UNKNOWN(0),
+    UNPLUGGED(1),
+    CHARGING(2),
+    FULL(3)
   }
 
   override fun definition() = ModuleDefinition {

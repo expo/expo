@@ -32,7 +32,7 @@ import abi49_0_0.host.exp.exponent.modules.internal.ExponentIntentModule
   nativeModules = [
     ExponentIntentModule::class,
     ReanimatedModule::class,
-    ReanimatedUIManager::class,
+    ReanimatedUIManager::class
   ]
 )
 class ExpoTurboPackage(
@@ -73,7 +73,7 @@ class ExpoTurboPackage(
       val moduleList: Array<Class<out NativeModule?>> = arrayOf(
         ExponentIntentModule::class.java,
         ReanimatedModule::class.java,
-        ReanimatedUIManager::class.java,
+        ReanimatedUIManager::class.java
       )
       val reactModuleInfoMap = mutableMapOf<String, ReactModuleInfo>()
       for (moduleClass in moduleList) {
@@ -99,11 +99,13 @@ class ExpoTurboPackage(
       ReactModuleInfoProvider { reactModuleInfoMap }
     } catch (e: InstantiationException) {
       throw RuntimeException(
-        "No ReactModuleInfoProvider for CoreModulesPackage$\$ReactModuleInfoProvider", e
+        "No ReactModuleInfoProvider for CoreModulesPackage$\$ReactModuleInfoProvider",
+        e
       )
     } catch (e: IllegalAccessException) {
       throw RuntimeException(
-        "No ReactModuleInfoProvider for CoreModulesPackage$\$ReactModuleInfoProvider", e
+        "No ReactModuleInfoProvider for CoreModulesPackage$\$ReactModuleInfoProvider",
+        e
       )
     }
   }
@@ -143,7 +145,7 @@ class ExpoTurboPackage(
     fun kernelExpoTurboPackage(manifest: Manifest, initialURL: String?): ExpoTurboPackage {
       val kernelExperienceProperties = mutableMapOf(
         KernelConstants.LINKING_URI_KEY to "exp://",
-        KernelConstants.IS_HEADLESS_KEY to false,
+        KernelConstants.IS_HEADLESS_KEY to false
       ).apply {
         if (initialURL != null) {
           this[KernelConstants.INTENT_URI_KEY] = initialURL

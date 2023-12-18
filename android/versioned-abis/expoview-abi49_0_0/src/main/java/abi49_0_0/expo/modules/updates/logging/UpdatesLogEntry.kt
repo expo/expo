@@ -16,7 +16,7 @@ data class UpdatesLogEntry(
   val level: String,
   val updateId: String?,
   val assetId: String?,
-  val stacktrace: List<String>?,
+  val stacktrace: List<String>?
 ) {
   fun asString(): String {
     return JSONObject(

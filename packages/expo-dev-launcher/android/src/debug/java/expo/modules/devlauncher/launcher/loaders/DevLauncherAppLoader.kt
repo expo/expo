@@ -109,7 +109,7 @@ abstract class DevLauncherAppLoader(
       /*
       We use reflection here to pick up the class that initializes Flipper,
       since Flipper library is not available in release mode
-      */
+       */
       val packageName = appContext.packageName
       val aClass = Class.forName("$packageName.ReactNativeFlipper")
       aClass

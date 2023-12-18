@@ -45,7 +45,6 @@ class JSIInteropModuleRegistryTest {
       Function("f2") { a: String -> return@Function a + a }
     }
   ) {
-
     val f1Value = evaluateScript("expo.modules.TestModule.f1()")
     val f2Value = evaluateScript("expo.modules.TestModule.f2(\"expo\")")
 
@@ -83,7 +82,6 @@ class JSIInteropModuleRegistryTest {
       )
     }
   ) {
-
     val c1Value = evaluateScript("expo.modules.TestModule.c1")
     val c2Value = evaluateScript("expo.modules.TestModule.c2")
     val i1Value = evaluateScript("expo.modules.TestModule.c3.i1")

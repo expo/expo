@@ -62,7 +62,8 @@ class ClipboardImageTest {
 
     verify {
       ClipboardFileProvider.getUriForFile(
-        context, any(),
+        context,
+        any(),
         match {
           it.isFile && it.parentFile == clipboardTmpDir
         }

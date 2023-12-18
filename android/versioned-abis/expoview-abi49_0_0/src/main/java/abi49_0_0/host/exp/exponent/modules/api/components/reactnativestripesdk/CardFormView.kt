@@ -146,7 +146,7 @@ class CardFormView(context: ThemedReactContext) : FrameLayout(context) {
       multilineWidgetBinding.tlExpiry,
       multilineWidgetBinding.tlCardNumber,
       multilineWidgetBinding.tlCvc,
-      cardFormViewBinding.postalCodeContainer,
+      cardFormViewBinding.postalCodeContainer
     )
 
     textColor?.let {

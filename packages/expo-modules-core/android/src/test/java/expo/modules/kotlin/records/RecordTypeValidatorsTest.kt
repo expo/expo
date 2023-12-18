@@ -160,7 +160,15 @@ class RecordTypeValidatorsTest {
 
     val testCases = listOf(
       TestCase(
-        jsObjectSetter = { putArray("value", JavaOnlyArray().apply { pushInt(5); pushInt(6) }) },
+        jsObjectSetter = {
+          putArray(
+            "value",
+            JavaOnlyArray().apply {
+              pushInt(5)
+              pushInt(6)
+            }
+          )
+        },
         recordClass = CollectionRecord::class,
         shouldThrow = false
       ),
@@ -170,7 +178,15 @@ class RecordTypeValidatorsTest {
         shouldThrow = true
       ),
       TestCase(
-        jsObjectSetter = { putArray("value", JavaOnlyArray().apply { pushInt(5); pushInt(6) }) },
+        jsObjectSetter = {
+          putArray(
+            "value",
+            JavaOnlyArray().apply {
+              pushInt(5)
+              pushInt(6)
+            }
+          )
+        },
         recordClass = ArrayRecord::class,
         shouldThrow = false
       ),

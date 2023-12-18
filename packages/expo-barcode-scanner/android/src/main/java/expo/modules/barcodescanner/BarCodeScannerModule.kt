@@ -44,7 +44,7 @@ class BarCodeScannerModule : Module() {
         "itf14" to Barcode.FORMAT_ITF,
         "codabar" to Barcode.FORMAT_CODABAR,
         "code128" to Barcode.FORMAT_CODE_128,
-        "upc_a" to Barcode.FORMAT_UPC_A,
+        "upc_a" to Barcode.FORMAT_UPC_A
       ),
       "Type" to mapOf(
         "front" to ExpoBarCodeScanner.CAMERA_TYPE_FRONT,

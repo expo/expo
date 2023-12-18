@@ -32,7 +32,7 @@ data class ImageResult(
     "size" to bundleOf(
       "width" to width,
       "height" to height
-    ),
+    )
   )
 }
 // endregion
@@ -93,7 +93,7 @@ internal suspend fun imageFromContentUri(
 internal suspend fun clipDataFromBase64Image(
   context: Context,
   base64Image: String,
-  clipboardCacheDir: File,
+  clipboardCacheDir: File
 ): ClipData {
   // 1. Get bitmap from base64 string
   val bitmap = bitmapFromBase64String(base64Image)

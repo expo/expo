@@ -2,7 +2,8 @@
 package host.exp.exponent.notifications
 
 object NotificationConstants {
-  @Deprecated(message = "") const val NOTIFICATION_MESSAGE_KEY = "message"
+  @Deprecated(message = "")
+  const val NOTIFICATION_MESSAGE_KEY = "message"
   const val NOTIFICATION_EXPERIENCE_ID_KEY = "experienceId"
   const val NOTIFICATION_EXPERIENCE_SCOPE_KEY_KEY = "scopeKey"
   const val NOTIFICATION_DATA_KEY = "data"

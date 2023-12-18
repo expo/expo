@@ -114,7 +114,8 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder<*>) {
       ?.names
       ?.forEach {
         builder.put(
-          normalizeEventName(it), MapBuilder.of<String, Any>("registrationName", it)
+          normalizeEventName(it),
+          MapBuilder.of<String, Any>("registrationName", it)
         )
       }
     return builder.build()

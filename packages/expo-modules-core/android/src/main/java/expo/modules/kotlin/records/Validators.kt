@@ -7,7 +7,7 @@ annotation class IntRange(
   val from: Int,
   val to: Int,
   val fromInclusive: Boolean = true,
-  val toInclusive: Boolean = true,
+  val toInclusive: Boolean = true
 )
 
 @Retention(AnnotationRetention.RUNTIME)

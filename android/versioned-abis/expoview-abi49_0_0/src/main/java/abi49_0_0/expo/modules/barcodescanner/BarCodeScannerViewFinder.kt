@@ -25,7 +25,7 @@ internal class BarCodeScannerViewFinder(
   context: Context,
   private var cameraType: Int,
   private var barCodeScannerView: BarCodeScannerView,
-  private val appContext: AppContext,
+  private val appContext: AppContext
 ) : TextureView(context), SurfaceTextureListener, PreviewCallback {
   private var finderSurfaceTexture: SurfaceTexture? = null
   private val coroutineScope = CoroutineScope(Dispatchers.Default)
@@ -198,8 +198,10 @@ internal class BarCodeScannerViewFinder(
           val height = size.height
           val properRotation = ExpoBarCodeScanner.instance.rotation
           val result = barCodeScanner?.scan(
-            mImageData, width,
-            height, properRotation
+            mImageData,
+            width,
+            height,
+            properRotation
           )
           if (result != null) {
             withContext(Dispatchers.Main) {

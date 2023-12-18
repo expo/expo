@@ -34,7 +34,7 @@ class ClassComponentBuilder<SharedObjectType : Any>(
     return ClassDefinitionData(
       name,
       constructor,
-      objectData,
+      objectData
     )
   }
 
