@@ -26,18 +26,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPngInfo = exports.compositeImagesAsync = exports.generateFaviconAsync = exports.generateImageAsync = void 0;
+exports.getPngInfo = exports.compositeImagesAsync = exports.generateFaviconAsync = exports.generateImageAsync = exports.getMimeType = void 0;
 const chalk_1 = __importDefault(require("chalk"));
 const fs_1 = __importDefault(require("fs"));
-const mime_1 = __importDefault(require("mime"));
 const parse_png_1 = __importDefault(require("parse-png"));
+const path_1 = __importDefault(require("path"));
 const Cache = __importStar(require("./Cache"));
 const Download = __importStar(require("./Download"));
 const Ico = __importStar(require("./Ico"));
 const env_1 = require("./env");
 const Jimp = __importStar(require("./jimp"));
 const Sharp = __importStar(require("./sharp"));
-const supportedMimeTypes = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
 let hasWarned = false;
 async function resizeImagesAsync(buffer, sizes) {
     const sharp = await getSharpAsync();
@@ -124,6 +123,33 @@ async function maybeWarnAboutInstallingSharpAsync() {
         console.warn(chalk_1.default.yellow(`Using node to generate images. This is much slower than using native packages.\n\u203A Optionally you can stop the process and try again after successfully running \`npm install -g sharp-cli\`.\n`));
     }
 }
+const types = {
+    png: 'image/png',
+    jpeg: 'image/jpeg',
+    jpg: 'image/jpeg',
+    jpe: 'image/jpeg',
+    webp: 'image/webp',
+    gif: 'image/gif',
+};
+const inverseMimeTypes = {
+    'image/png': 'png',
+    'image/jpeg': 'jpg',
+    'image/webp': 'webp',
+    'image/gif': 'gif',
+};
+function getMimeType(srcPath) {
+    if (typeof srcPath !== 'string')
+        return null;
+    try {
+        // If the path is a URL, use the pathname
+        const url = new URL(srcPath);
+        srcPath = url.pathname;
+    }
+    catch { }
+    const ext = path_1.default.extname(srcPath).replace(/^\./, '');
+    return types[ext] ?? null;
+}
+exports.getMimeType = getMimeType;
 async function ensureImageOptionsAsync(imageOptions) {
     const icon = {
         ...imageOptions,
@@ -133,15 +159,12 @@ async function ensureImageOptionsAsync(imageOptions) {
     if (!icon.resizeMode) {
         icon.resizeMode = 'contain';
     }
-    const mimeType = mime_1.default.getType(icon.src);
+    const mimeType = getMimeType(icon.src);
     if (!mimeType) {
         throw new Error(`Invalid mimeType for image with source: ${icon.src}`);
     }
-    if (!supportedMimeTypes.includes(mimeType)) {
-        throw new Error(`Supplied image is not a supported image type: ${imageOptions.src}`);
-    }
     if (!icon.name) {
-        icon.name = `icon_${getDimensionsId(imageOptions)}.${mime_1.default.getExtension(mimeType)}`;
+        icon.name = `icon_${getDimensionsId(imageOptions)}.${inverseMimeTypes[mimeType]}`;
     }
     return icon;
 }

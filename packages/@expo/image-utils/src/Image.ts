@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import fs from 'fs';
-import mime from 'mime';
 import parsePng from 'parse-png';
+import path from 'path';
 
 import * as Cache from './Cache';
 import * as Download from './Download';
@@ -10,8 +10,6 @@ import { ImageOptions } from './Image.types';
 import { env } from './env';
 import * as Jimp from './jimp';
 import * as Sharp from './sharp';
-
-const supportedMimeTypes = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
 
 let hasWarned: boolean = false;
 
@@ -118,6 +116,35 @@ async function maybeWarnAboutInstallingSharpAsync() {
   }
 }
 
+const types: Record<string, string> = {
+  png: 'image/png',
+  jpeg: 'image/jpeg',
+  jpg: 'image/jpeg',
+  jpe: 'image/jpeg',
+  webp: 'image/webp',
+  gif: 'image/gif',
+};
+
+const inverseMimeTypes: Record<string, string> = {
+  'image/png': 'png',
+  'image/jpeg': 'jpg',
+  'image/webp': 'webp',
+  'image/gif': 'gif',
+};
+
+export function getMimeType(srcPath: string): string | null {
+  if (typeof srcPath !== 'string') return null;
+
+  try {
+    // If the path is a URL, use the pathname
+    const url = new URL(srcPath);
+    srcPath = url.pathname;
+  } catch {}
+
+  const ext = path.extname(srcPath).replace(/^\./, '');
+  return types[ext] ?? null;
+}
+
 async function ensureImageOptionsAsync(imageOptions: ImageOptions): Promise<ImageOptions> {
   const icon = {
     ...imageOptions,
@@ -129,17 +156,13 @@ async function ensureImageOptionsAsync(imageOptions: ImageOptions): Promise<Imag
     icon.resizeMode = 'contain';
   }
 
-  const mimeType = mime.getType(icon.src);
-
+  const mimeType = getMimeType(icon.src);
   if (!mimeType) {
     throw new Error(`Invalid mimeType for image with source: ${icon.src}`);
   }
-  if (!supportedMimeTypes.includes(mimeType)) {
-    throw new Error(`Supplied image is not a supported image type: ${imageOptions.src}`);
-  }
 
   if (!icon.name) {
-    icon.name = `icon_${getDimensionsId(imageOptions)}.${mime.getExtension(mimeType)}`;
+    icon.name = `icon_${getDimensionsId(imageOptions)}.${inverseMimeTypes[mimeType]}`;
   }
 
   return icon;
