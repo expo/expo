@@ -4,12 +4,13 @@ package expo.modules.sqlite
 
 import com.facebook.jni.HybridData
 import expo.modules.core.interfaces.DoNotStrip
+import java.io.Closeable
 
 private typealias UpdateListener = (databaseName: String, tableName: String, operationType: Int, rowID: Long) -> Unit
 
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
-internal class NativeDatabaseBinding {
+internal class NativeDatabaseBinding : Closeable {
   @DoNotStrip
   private val mHybridData: HybridData
 
@@ -17,6 +18,10 @@ internal class NativeDatabaseBinding {
 
   init {
     mHybridData = initHybrid()
+  }
+
+  override fun close() {
+    mHybridData.resetNative()
   }
 
   /**
