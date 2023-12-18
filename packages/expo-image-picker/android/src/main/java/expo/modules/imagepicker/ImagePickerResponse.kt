@@ -27,5 +27,5 @@ internal class ImagePickerResponse(
 
 enum class MediaType(val value: String) : Enumerable {
   VIDEO("video"),
-  IMAGE("image"),
+  IMAGE("image")
 }

@@ -1,3 +1,5 @@
+@file:Suppress("UnusedImport") // this needs to stay for versioning to work
+
 package expo.modules.updates
 
 import android.content.Context
@@ -12,9 +14,6 @@ import expo.modules.updates.statemachine.UpdatesStateContext
 import java.io.File
 
 // this needs to stay for versioning to work
-/* ktlint-disable no-unused-imports */
-import expo.modules.updates.UpdatesConfiguration
-/* ktlint-enable no-unused-imports */
 
 /**
  * Updates controller for applications that either disable updates explicitly or have an error
@@ -81,7 +80,7 @@ class DisabledUpdatesController(
       checkOnLaunch = UpdatesConfiguration.CheckAutomaticallyConfiguration.NEVER,
       requestHeaders = mapOf(),
       localAssetFiles = launcher?.localAssetFiles,
-      isMissingRuntimeVersion = isMissingRuntimeVersion,
+      isMissingRuntimeVersion = isMissingRuntimeVersion
     )
   }
 

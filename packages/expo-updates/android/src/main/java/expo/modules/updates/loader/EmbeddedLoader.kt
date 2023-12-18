@@ -30,7 +30,11 @@ class EmbeddedLoader internal constructor(
   updatesDirectory: File,
   private val loaderFiles: LoaderFiles
 ) : Loader(
-  context, configuration, database, updatesDirectory, loaderFiles
+  context,
+  configuration,
+  database,
+  updatesDirectory,
+  loaderFiles
 ) {
 
   constructor(

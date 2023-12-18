@@ -67,7 +67,7 @@ import kotlin.math.roundToInt
 @SuppressLint("ViewConstructor")
 class ExpoCameraView(
   context: Context,
-  appContext: AppContext,
+  appContext: AppContext
 ) : ExpoView(context, appContext),
   CameraViewInterface {
   private val currentActivity

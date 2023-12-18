@@ -1,8 +1,8 @@
 package expo.modules.devlauncher.rncompatibility
 
 import android.content.Context
-import android.os.Handler;
-import android.os.Looper;
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import com.facebook.common.logging.FLog
@@ -48,7 +48,7 @@ class DevLauncherDevSupportManager(
   redBoxHandler: RedBoxHandler?,
   devBundleDownloadListener: DevBundleDownloadListener?,
   minNumShakes: Int,
-  customPackagerCommandHandlers: MutableMap<String, RequestHandler>?,
+  customPackagerCommandHandlers: MutableMap<String, RequestHandler>?
 ) : DevSupportManagerBase(
   applicationContext,
   reactInstanceManagerHelper,
@@ -63,6 +63,7 @@ class DevLauncherDevSupportManager(
 ),
   DevLauncherKoinComponent {
   private val controller: DevLauncherControllerInterface? by optInject()
+
   // copied from https://github.com/facebook/react-native/blob/aa4da248c12e3ba41ecc9f1c547b21c208d9a15f/ReactAndroid/src/main/java/com/facebook/react/devsupport/BridgeDevSupportManager.java#L65
   private var mIsSamplingProfilerEnabled = false
   private val devSettings: DevLauncherInternalSettingsWrapper = DevLauncherInternalSettingsWrapper(getDevSettings())
@@ -84,11 +85,15 @@ class DevLauncherDevSupportManager(
     }
 
     addCustomDevOption(
-      if (mIsSamplingProfilerEnabled) applicationContext!!.getString(
-        R.string.catalyst_sample_profiler_disable
-      ) else applicationContext!!.getString(
-        R.string.catalyst_sample_profiler_enable
-      )
+      if (mIsSamplingProfilerEnabled) {
+        applicationContext!!.getString(
+          R.string.catalyst_sample_profiler_disable
+        )
+      } else {
+        applicationContext!!.getString(
+          R.string.catalyst_sample_profiler_enable
+        )
+      }
     ) { toggleJSSamplingProfiler() }
   }
 
@@ -179,7 +184,8 @@ class DevLauncherDevSupportManager(
       val executor = WebsocketJavaScriptExecutor()
       val future = SimpleSettableFuture<Boolean>()
       executor.connect(
-        devServerHelper.websocketProxyURL, getExecutorConnectCallback(future)
+        devServerHelper.websocketProxyURL,
+        getExecutorConnectCallback(future)
       )
       // TODO(t9349129) Don't use timeout
       try {
@@ -247,7 +253,9 @@ class DevLauncherDevSupportManager(
     } else {
       try {
         val outputPath: String = File.createTempFile(
-          "sampling-profiler-trace", ".cpuprofile", applicationContext.cacheDir
+          "sampling-profiler-trace",
+          ".cpuprofile",
+          applicationContext.cacheDir
         ).path
         javaScriptExecutorFactory.stopSamplingProfiler(outputPath)
         handler.post {

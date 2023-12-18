@@ -12,14 +12,14 @@ import abi49_0_0.expo.modules.kotlin.providers.AppContextProvider
 import java.io.File
 
 internal class MediaHandler(
-  private val appContextProvider: AppContextProvider,
+  private val appContextProvider: AppContextProvider
 ) {
   private val context: Context
     get() = requireNotNull(appContextProvider.appContext.reactContext) { "React Application Context is null" }
 
   internal suspend fun readExtras(
     bareResult: List<Pair<MediaType, Uri>>,
-    options: ImagePickerOptions,
+    options: ImagePickerOptions
   ): ImagePickerResponse {
     val results = bareResult.map { (mediaType, uri) ->
       when (mediaType) {
@@ -39,7 +39,7 @@ internal class MediaHandler(
 
   private suspend fun handleImage(
     sourceUri: Uri,
-    options: ImagePickerOptions,
+    options: ImagePickerOptions
   ): ImagePickerAsset {
     val exporter: ImageExporter = if (options.quality == ImagePickerConstants.MAXIMUM_QUALITY) {
       RawImageExporter()
@@ -62,12 +62,12 @@ internal class MediaHandler(
       height = exportedImage.height,
       base64 = base64,
       exif = exif,
-      assetId = sourceUri.getMediaStoreAssetId(),
+      assetId = sourceUri.getMediaStoreAssetId()
     )
   }
 
   private suspend fun handleVideo(
-    sourceUri: Uri,
+    sourceUri: Uri
   ): ImagePickerAsset {
     val outputFile = createOutputFile(cacheDirectory, ".mp4")
     copyFile(sourceUri, outputFile, context.contentResolver)

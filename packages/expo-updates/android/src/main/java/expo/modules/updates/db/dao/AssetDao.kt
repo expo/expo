@@ -87,7 +87,9 @@ abstract class AssetDao {
     val assets = _loadAssetWithKey(key)
     return if (assets.isNotEmpty()) {
       assets[0]
-    } else null
+    } else {
+      null
+    }
   }
 
   fun mergeAndUpdateAsset(existingEntity: AssetEntity, newEntity: AssetEntity) {

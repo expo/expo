@@ -61,22 +61,24 @@ open class ExponentNotification(
     fun fromJSONObjectString(json: String?): ExponentNotification? {
       return if (json == null) {
         null
-      } else try {
-        val jsonObject = JSONObject(json)
-        val body = jsonObject.getNullable(NotificationConstants.NOTIFICATION_DATA_KEY)
-          ?: jsonObject.getString(NotificationConstants.NOTIFICATION_MESSAGE_KEY)
-        val experienceScopeKey = jsonObject.getNullable(NotificationConstants.NOTIFICATION_EXPERIENCE_SCOPE_KEY_KEY)
-          ?: jsonObject.getString(NotificationConstants.NOTIFICATION_EXPERIENCE_ID_KEY)
-        ExponentNotification(
-          experienceScopeKey,
-          body,
-          jsonObject.getInt(NotificationConstants.NOTIFICATION_ID_KEY),
-          jsonObject.getBoolean(NotificationConstants.NOTIFICATION_IS_MULTIPLE_KEY),
-          jsonObject.getBoolean(NotificationConstants.NOTIFICATION_REMOTE_KEY)
-        )
-      } catch (e: JSONException) {
-        e(TAG, e.toString())
-        null
+      } else {
+        try {
+          val jsonObject = JSONObject(json)
+          val body = jsonObject.getNullable(NotificationConstants.NOTIFICATION_DATA_KEY)
+            ?: jsonObject.getString(NotificationConstants.NOTIFICATION_MESSAGE_KEY)
+          val experienceScopeKey = jsonObject.getNullable(NotificationConstants.NOTIFICATION_EXPERIENCE_SCOPE_KEY_KEY)
+            ?: jsonObject.getString(NotificationConstants.NOTIFICATION_EXPERIENCE_ID_KEY)
+          ExponentNotification(
+            experienceScopeKey,
+            body,
+            jsonObject.getInt(NotificationConstants.NOTIFICATION_ID_KEY),
+            jsonObject.getBoolean(NotificationConstants.NOTIFICATION_IS_MULTIPLE_KEY),
+            jsonObject.getBoolean(NotificationConstants.NOTIFICATION_REMOTE_KEY)
+          )
+        } catch (e: JSONException) {
+          e(TAG, e.toString())
+          null
+        }
       }
     }
   }

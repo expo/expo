@@ -205,7 +205,9 @@ class RNObject {
       val name = clazz!!.name
       return if (name.startsWith("abi")) {
         name.substring(name.indexOf('.') + 1)
-      } else name
+      } else {
+        name
+      }
     }
 
     private fun objectsToJavaClassTypes(vararg objects: Any?): Array<Class<*>?> {

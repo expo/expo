@@ -89,7 +89,7 @@ internal class EnumNoSuchValueException(
 internal class MissingTypeConverter(
   forType: KType
 ) : CodedException(
-  message = "Cannot find type converter for '$forType'.",
+  message = "Cannot find type converter for '$forType'."
 )
 
 @DoNotStrip
@@ -128,7 +128,7 @@ internal class ValidationException(message: String) :
  */
 internal open class DecoratedException(
   message: String,
-  cause: CodedException,
+  cause: CodedException
 ) : CodedException(
   cause.code,
   message = "$message${System.lineSeparator()}→ Caused by: ${cause.localizedMessage ?: cause}",
@@ -141,7 +141,7 @@ internal class FunctionCallException(
   cause: CodedException
 ) : DecoratedException(
   message = "Call to function '$moduleName.$methodName' has been rejected.",
-  cause,
+  cause
 )
 
 internal class PropSetException(
@@ -150,7 +150,7 @@ internal class PropSetException(
   cause: CodedException
 ) : DecoratedException(
   message = "Cannot set prop '$propName' on view '$viewType'",
-  cause,
+  cause
 )
 
 internal class OnViewDidUpdatePropsException(
@@ -165,10 +165,10 @@ internal class ArgumentCastException(
   argDesiredType: KType,
   argIndex: Int,
   providedType: String,
-  cause: CodedException,
+  cause: CodedException
 ) : DecoratedException(
   message = "The ${formatOrdinalNumber(argIndex + 1)} argument cannot be cast to type $argDesiredType (received $providedType)",
-  cause,
+  cause
 ) {
   companion object {
     fun formatOrdinalNumber(number: Int) = "$number" + when {
@@ -182,7 +182,7 @@ internal class ArgumentCastException(
 }
 
 internal class InvalidSharedObjectException(
-  sharedType: KType,
+  sharedType: KType
 ) : CodedException(
   message = "Cannot convert provided JavaScriptObject to the '$sharedType', because it doesn't contain valid id"
 )
@@ -242,7 +242,7 @@ class JavaScriptEvaluateException(
 
 @PublishedApi
 internal class UnsupportedClass(
-  clazz: KClass<*>,
+  clazz: KClass<*>
 ) : CodedException(message = "Unsupported type: '$clazz'")
 
 internal class PromiseAlreadySettledException(functionName: String) : CodedException(

@@ -77,7 +77,7 @@ interface IUpdatesController {
      * Whether there is no runtime version (or sdkVersion) provided in configuration. If it is missing,
      * updates will be disabled and a warning will be logged.
      */
-    val isMissingRuntimeVersion: Boolean,
+    val isMissingRuntimeVersion: Boolean
   )
   fun getConstantsForModule(): UpdatesModuleConstants
 

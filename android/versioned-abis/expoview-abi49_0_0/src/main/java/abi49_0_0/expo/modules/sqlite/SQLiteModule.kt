@@ -156,7 +156,7 @@ class SQLiteModule : Module() {
   }
 
   private fun getRowsAffected(
-    db: SQLiteDatabase,
+    db: SQLiteDatabase
   ): Pair<Cursor, Int> {
     val cursor = db.rawQuery("SELECT changes() AS numRowsAffected", null)
     val rowsAffected = if (cursor.moveToFirst()) {
@@ -169,7 +169,7 @@ class SQLiteModule : Module() {
   }
 
   private fun getInsertId(
-    db: SQLiteDatabase,
+    db: SQLiteDatabase
   ): Pair<Cursor, Long> {
     val cursor = db.rawQuery("SELECT last_insert_rowid() AS insertId", null)
     val insertId = if (cursor.moveToFirst()) {

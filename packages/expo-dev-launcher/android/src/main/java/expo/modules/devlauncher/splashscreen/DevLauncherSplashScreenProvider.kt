@@ -9,7 +9,7 @@ class DevLauncherSplashScreenProvider {
       ?: return null
 
     val splashScreenView = DevLauncherSplashScreen(
-      activity,
+      activity
     )
 
     contentView.addView(splashScreenView)

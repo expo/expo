@@ -87,7 +87,8 @@ internal class PrintPDFRenderTask(private val context: Context, private val opti
       document = view.createPrintDocumentAdapter("Document")
       // layout the document with appropriate print attributes
       document.onLayout(null, printAttributes, null, object : PrintDocumentAdapterLayoutCallback() {}, null)
-      @SuppressLint("Range") val pageHeight = PIXELS_PER_MIL * printAttributes.mediaSize!!.heightMils
+      @SuppressLint("Range")
+      val pageHeight = PIXELS_PER_MIL * printAttributes.mediaSize!!.heightMils
       numberOfPages = 1 + (view.contentHeight / pageHeight).toInt()
 
       // Write to a file if file path was passed, otherwise invoke onRenderFinish callback

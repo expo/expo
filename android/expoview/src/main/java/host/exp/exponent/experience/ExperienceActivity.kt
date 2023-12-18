@@ -315,7 +315,8 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
         .setPositiveButton("Use cache", null)
         .setNegativeButton("Reload") { _, _ ->
           kernel.reloadVisibleExperience(
-            manifestUrl!!, false
+            manifestUrl!!,
+            false
           )
         }
         .show()
@@ -625,7 +626,8 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
   override fun startReactInstance() {
     Exponent.instance
       .testPackagerStatus(
-        isDebugModeEnabled, manifest!!,
+        isDebugModeEnabled,
+        manifest!!,
         object : Exponent.PackagerStatusCallback {
           override fun onSuccess() {
             reactInstanceManager = startReactInstance(
@@ -673,8 +675,10 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     remoteViews.setOnClickPendingIntent(
       R.id.home_image_button,
       PendingIntent.getActivity(
-        this, 0,
-        homeIntent, mutableFlag
+        this,
+        0,
+        homeIntent,
+        mutableFlag
       )
     )
 
@@ -682,8 +686,10 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     remoteViews.setOnClickPendingIntent(
       R.id.reload_button,
       PendingIntent.getService(
-        this, 0,
-        ExponentIntentService.getActionReloadExperience(this, manifestUrl!!), PendingIntent.FLAG_UPDATE_CURRENT or mutableFlag
+        this,
+        0,
+        ExponentIntentService.getActionReloadExperience(this, manifestUrl!!),
+        PendingIntent.FLAG_UPDATE_CURRENT or mutableFlag
       )
     )
 

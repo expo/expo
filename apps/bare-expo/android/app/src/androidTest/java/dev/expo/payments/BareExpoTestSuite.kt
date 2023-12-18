@@ -64,7 +64,7 @@ class BareExpoTestSuite(private val testCaseName: String) {
 
   @Test
   fun runTest() {
-    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("bareexpo://test-suite/run?tests=${testCaseName}"))
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("bareexpo://test-suite/run?tests=$testCaseName"))
     launch<MainActivity>(intent).use {
       onView(isRoot()).perform(waitForTestCompleted(testCaseName, TEST_TIMEOUT_MS))
     }
@@ -73,7 +73,7 @@ class BareExpoTestSuite(private val testCaseName: String) {
   private fun waitForTestCompleted(testCaseName: String, timeoutMs: Long): ViewAction {
     return object : ViewAction {
       override fun getDescription(): String {
-        return "wait for test completed - testCaseName[${testCaseName}]"
+        return "wait for test completed - testCaseName[$testCaseName]"
       }
 
       override fun getConstraints(): Matcher<View> {
@@ -86,7 +86,7 @@ class BareExpoTestSuite(private val testCaseName: String) {
         val endTime: Long = startTime + timeoutMs
         val viewMatcher: Matcher<View> = allOf(
           withTagKey(com.facebook.react.R.id.react_test_id),
-          withTagValue(`is`(TEST_RESULT_ID)),
+          withTagValue(`is`(TEST_RESULT_ID))
         )
 
         var matchedView: View? = null

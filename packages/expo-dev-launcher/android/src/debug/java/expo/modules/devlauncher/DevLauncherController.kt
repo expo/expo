@@ -79,7 +79,8 @@ class DevLauncherController private constructor() :
   var canLaunchDevMenuOnStart = false
 
   enum class Mode {
-    LAUNCHER, APP
+    LAUNCHER,
+    APP
   }
 
   override var mode = Mode.LAUNCHER
@@ -232,7 +233,7 @@ class DevLauncherController private constructor() :
             navigateToLauncher()
           }
         }
-        return true;
+        return true
       }
       return handleExternalIntent(it)
     }

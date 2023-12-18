@@ -35,7 +35,7 @@ enum class TintStyle(val value: String) : Enumerable {
 
       PROMINENT,
       DEFAULT,
-      SYSTEM_MATERIAL,
+      SYSTEM_MATERIAL
       -> DEFAULT.toColorInt(blurRadius)
 
       DARK,

@@ -8,7 +8,7 @@ import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
 
 class ReadableArgumentsTypeConverter(
-  isOptional: Boolean,
+  isOptional: Boolean
 ) : DynamicAwareTypeConverters<ReadableArguments>(isOptional) {
   override fun convertFromDynamic(value: Dynamic): ReadableArguments {
     return MapArguments(value.asMap().toHashMap())

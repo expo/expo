@@ -176,7 +176,7 @@ open class HomeActivity : BaseExperienceActivity() {
         SplashScreenModule::class.java,
         TrackingTransparencyModule::class.java,
         StoreReviewModule::class.java,
-        WebBrowserModule::class.java,
+        WebBrowserModule::class.java
       )
     }
   }

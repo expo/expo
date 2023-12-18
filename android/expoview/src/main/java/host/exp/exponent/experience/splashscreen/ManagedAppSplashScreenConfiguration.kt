@@ -54,7 +54,9 @@ class ManagedAppSplashScreenConfiguration private constructor() {
 
       return if (ColorParser.isValid(backgroundColor)) {
         Color.parseColor(backgroundColor)
-      } else null
+      } else {
+        null
+      }
     }
 
     /**
@@ -69,7 +71,11 @@ class ManagedAppSplashScreenConfiguration private constructor() {
         val dpiRelatedImageUrl = getStringFromJSONObject(
           androidSplash,
           *arrayOf(
-            "xxxhdpi", "xxhdpi", "xhdpi", "hdpi", "mdpi"
+            "xxxhdpi",
+            "xxhdpi",
+            "xhdpi",
+            "hdpi",
+            "mdpi"
           )
             .map { s -> "${s}Url" }
             .map { s -> arrayOf(s) }

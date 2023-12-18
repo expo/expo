@@ -50,8 +50,11 @@ class GooglePayRequestHelper {
     private fun buildShippingAddressParameters(params: ReadableMap?): GooglePayJsonFactory.ShippingAddressParameters {
       val isPhoneNumberRequired = params?.getBooleanOr("isPhoneNumberRequired", false)
       val isRequired = params?.getBooleanOr("isRequired", false)
-      val allowedCountryCodes = if (params?.hasKey("allowedCountryCodes") == true)
-        params.getArray("allowedCountryCodes")?.toArrayList()?.toSet() as? Set<String> else null
+      val allowedCountryCodes = if (params?.hasKey("allowedCountryCodes") == true) {
+        params.getArray("allowedCountryCodes")?.toArrayList()?.toSet() as? Set<String>
+      } else {
+        null
+      }
 
       return GooglePayJsonFactory.ShippingAddressParameters(
         isRequired = isRequired ?: false,

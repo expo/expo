@@ -16,7 +16,8 @@ import com.stripe.android.googlepaylauncher.GooglePayLauncher
 
 class GooglePayLauncherFragment : Fragment() {
   enum class Mode {
-    ForSetup, ForPayment
+    ForSetup,
+    ForPayment
   }
 
   private lateinit var launcher: GooglePayLauncher
@@ -57,7 +58,7 @@ class GooglePayLauncherFragment : Fragment() {
       isEmailRequired = googlePayParams.getBooleanOr("isEmailRequired", false),
       billingAddressConfig = buildBillingAddressParameters(googlePayParams.getMap("billingAddressConfig")),
       existingPaymentMethodRequired = googlePayParams.getBooleanOr("existingPaymentMethodRequired", false),
-      allowCreditCards = googlePayParams.getBooleanOr("allowCreditCards", true),
+      allowCreditCards = googlePayParams.getBooleanOr("allowCreditCards", true)
     )
 
     (context.currentActivity as? FragmentActivity)?.let {

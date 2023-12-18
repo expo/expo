@@ -29,7 +29,7 @@ class RelaunchProcedure(
   private val getCurrentLauncher: () -> Launcher,
   private val setCurrentLauncher: (launcher: Launcher) -> Unit,
   private val shouldRunReaper: Boolean,
-  private val callback: Launcher.LauncherCallback,
+  private val callback: Launcher.LauncherCallback
 ) : StateMachineProcedure() {
   override fun run(procedureContext: ProcedureContext) {
     val host = reactNativeHost?.get()

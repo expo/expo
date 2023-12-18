@@ -60,15 +60,19 @@ object ExperienceActivityUtils {
   private fun nightModeFromString(userInterfaceStyle: String?): Int {
     return if (userInterfaceStyle == null) {
       AppCompatDelegate.MODE_NIGHT_NO
-    } else when (userInterfaceStyle) {
-      "automatic" -> {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-          AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
-        } else AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+    } else {
+      when (userInterfaceStyle) {
+        "automatic" -> {
+          if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
+          } else {
+            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+          }
+        }
+        "dark" -> AppCompatDelegate.MODE_NIGHT_YES
+        "light" -> AppCompatDelegate.MODE_NIGHT_NO
+        else -> AppCompatDelegate.MODE_NIGHT_NO
       }
-      "dark" -> AppCompatDelegate.MODE_NIGHT_YES
-      "light" -> AppCompatDelegate.MODE_NIGHT_NO
-      else -> AppCompatDelegate.MODE_NIGHT_NO
     }
   }
 
@@ -143,7 +147,9 @@ object ExperienceActivityUtils {
     }
     return if (rgba.startsWith("#") && rgba.length == 9) {
       "#" + rgba.substring(7, 9) + rgba.substring(1, 7)
-    } else rgba
+    } else {
+      rgba
+    }
   }
 
   @UiThread

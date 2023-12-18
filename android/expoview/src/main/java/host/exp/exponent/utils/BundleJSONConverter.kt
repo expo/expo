@@ -101,9 +101,11 @@ object BundleJSONConverter {
   }
 
   interface Setter {
-    @Throws(JSONException::class) fun setOnBundle(bundle: Bundle, key: String, value: Any)
+    @Throws(JSONException::class)
+    fun setOnBundle(bundle: Bundle, key: String, value: Any)
 
-    @Throws(JSONException::class) fun setOnJSON(json: JSONObject, key: String, value: Any)
+    @Throws(JSONException::class)
+    fun setOnJSON(json: JSONObject, key: String, value: Any)
   }
 
   init {

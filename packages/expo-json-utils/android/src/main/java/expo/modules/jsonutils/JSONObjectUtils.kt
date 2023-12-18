@@ -21,5 +21,7 @@ inline fun <reified T : Any> JSONObject.require(key: String): T {
 inline fun <reified T : Any> JSONObject.getNullable(key: String): T? {
   return if (!this.has(key)) {
     null
-  } else this.require(key)
+  } else {
+    this.require(key)
+  }
 }

@@ -116,7 +116,7 @@ class AddressSheetView(private val context: ThemedReactContext) : FrameLayout(co
         name = bundle.getString("name"),
         address = buildAddress(bundle.getBundle("address")),
         phoneNumber = bundle.getString("phone"),
-        isCheckboxSelected = bundle.getBoolean("isCheckboxSelected"),
+        isCheckboxSelected = bundle.getBoolean("isCheckboxSelected")
       )
     }
 

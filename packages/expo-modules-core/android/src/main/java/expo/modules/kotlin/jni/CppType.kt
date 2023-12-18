@@ -32,5 +32,5 @@ enum class CppType(val clazz: KClass<*>, val value: Int = nextValue()) {
   VIEW_TAG(Int::class),
   SHARED_OBJECT_ID(Int::class),
   JS_FUNCTION(JavaScriptFunction::class),
-  ANY(Any::class);
+  ANY(Any::class)
 }

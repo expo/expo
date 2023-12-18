@@ -86,8 +86,11 @@ object TestContacts {
       while (it.moveToNext()) {
         val id = it.getString(it.getColumnIndex(ContactsContract.Contacts._ID))
         val cur1 = cr.query(
-          ContactsContract.CommonDataKinds.Email.CONTENT_URI, null,
-          ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?", arrayOf(id), null
+          ContactsContract.CommonDataKinds.Email.CONTENT_URI,
+          null,
+          ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?",
+          arrayOf(id),
+          null
         )
         var shouldDelete = false
         while (cur1!!.moveToNext()) {

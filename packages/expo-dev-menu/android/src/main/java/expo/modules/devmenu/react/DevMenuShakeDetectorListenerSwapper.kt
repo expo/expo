@@ -11,7 +11,7 @@ import expo.modules.devmenu.helpers.setPrivateDeclaredFieldValue
 class DevMenuShakeDetectorListenerSwapper {
   fun swapShakeDetectorListener(
     reactInstanceManager: ReactInstanceManager,
-    newListener: ShakeDetector.ShakeListener,
+    newListener: ShakeDetector.ShakeListener
   ) {
     try {
       val devSupportManager: DevSupportManager =

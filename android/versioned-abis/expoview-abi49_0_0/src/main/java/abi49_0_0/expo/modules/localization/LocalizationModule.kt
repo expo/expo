@@ -138,9 +138,13 @@ class LocalizationModule : Module() {
         else -> "metric"
       }
     } else {
-      if (getRegionCode(locale).equals("uk")) "uk"
-      else if (USES_IMPERIAL.contains(getRegionCode(locale))) "us"
-      else "metric"
+      if (getRegionCode(locale).equals("uk")) {
+        "uk"
+      } else if (USES_IMPERIAL.contains(getRegionCode(locale))) {
+        "us"
+      } else {
+        "metric"
+      }
     }
   }
 
@@ -166,7 +170,7 @@ class LocalizationModule : Module() {
             "currencyCode" to decimalFormat.currency.currencyCode,
 
             // currency symbol can be localized to display locale (1st on the list) or to the locale for the currency (as done here).
-            "currencySymbol" to Currency.getInstance(locale).getSymbol(locale),
+            "currencySymbol" to Currency.getInstance(locale).getSymbol(locale)
           )
         )
       } catch (e: Exception) {

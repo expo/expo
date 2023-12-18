@@ -73,8 +73,12 @@ class ConstantsBinding(
   init {
     NativeModuleDepsProvider.instance.inject(ConstantsBinding::class.java, this)
     val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-    statusBarHeightInternal = if (resourceId > 0) convertPixelsToDp(
-      context.resources.getDimensionPixelSize(resourceId).toFloat(), context
-    ) else 0
+    statusBarHeightInternal = if (resourceId > 0) {
+      convertPixelsToDp(
+        context.resources.getDimensionPixelSize(resourceId).toFloat(), context
+      )
+    } else {
+      0
+    }
   }
 }

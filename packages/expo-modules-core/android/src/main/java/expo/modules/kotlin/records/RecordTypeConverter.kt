@@ -24,7 +24,7 @@ import kotlin.reflect.jvm.javaField
 
 class RecordTypeConverter<T : Record>(
   private val converterProvider: TypeConverterProvider,
-  val type: KType,
+  val type: KType
 ) : DynamicAwareTypeConverters<T>(type.isMarkedNullable) {
   private val objectConstructorFactory = ObjectConstructorFactory()
   private val propertyDescriptors: Map<KProperty1<out Any, *>, PropertyDescriptor> by lazy {

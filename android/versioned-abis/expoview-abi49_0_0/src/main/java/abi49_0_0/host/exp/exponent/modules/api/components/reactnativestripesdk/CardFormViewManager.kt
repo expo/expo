@@ -14,8 +14,10 @@ class CardFormViewManager : SimpleViewManager<CardFormView>() {
 
   override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any> {
     return MapBuilder.of(
-      CardFocusEvent.EVENT_NAME, MapBuilder.of("registrationName", "onFocusChange"),
-      CardFormCompleteEvent.EVENT_NAME, MapBuilder.of("registrationName", "onFormComplete")
+      CardFocusEvent.EVENT_NAME,
+      MapBuilder.of("registrationName", "onFocusChange"),
+      CardFormCompleteEvent.EVENT_NAME,
+      MapBuilder.of("registrationName", "onFormComplete")
     )
   }
 

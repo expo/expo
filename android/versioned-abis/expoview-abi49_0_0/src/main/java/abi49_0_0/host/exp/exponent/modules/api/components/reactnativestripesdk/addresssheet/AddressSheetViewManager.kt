@@ -12,8 +12,10 @@ class AddressSheetViewManager : SimpleViewManager<AddressSheetView>() {
 
   override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any> {
     return MapBuilder.of(
-      AddressSheetEvent.ON_SUBMIT, MapBuilder.of("registrationName", "onSubmitAction"),
-      AddressSheetEvent.ON_ERROR, MapBuilder.of("registrationName", "onErrorAction")
+      AddressSheetEvent.ON_SUBMIT,
+      MapBuilder.of("registrationName", "onSubmitAction"),
+      AddressSheetEvent.ON_ERROR,
+      MapBuilder.of("registrationName", "onErrorAction")
     )
   }
 

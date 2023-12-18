@@ -20,6 +20,8 @@ class ScopedNotificationsHandler(context: Context, private val experienceKey: Ex
   override fun onNotificationResponseReceived(response: NotificationResponse): Boolean {
     return if (scopedNotificationsUtils.shouldHandleNotification(response.notification, experienceKey)) {
       super.onNotificationResponseReceived(response)
-    } else false
+    } else {
+      false
+    }
   }
 }

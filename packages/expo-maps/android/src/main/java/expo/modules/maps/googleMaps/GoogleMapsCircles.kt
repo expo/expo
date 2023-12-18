@@ -39,25 +39,25 @@ class GoogleMapsCircles(map: GoogleMap) : Circles {
         0xFF,
         Integer.decode("0x" + colorString[1] + colorString[1]),
         Integer.decode("0x" + colorString[2] + colorString[2]),
-        Integer.decode("0x" + colorString[3] + colorString[3]),
+        Integer.decode("0x" + colorString[3] + colorString[3])
       )
       5 -> Color.argb(
         Integer.decode("0x" + colorString[4] + colorString[4]),
         Integer.decode("0x" + colorString[1] + colorString[1]),
         Integer.decode("0x" + colorString[2] + colorString[2]),
-        Integer.decode("0x" + colorString[3] + colorString[3]),
+        Integer.decode("0x" + colorString[3] + colorString[3])
       )
       7 -> Color.argb(
         0xFF,
         Integer.decode("0x" + colorString.substring(1..2)),
         Integer.decode("0x" + colorString.substring(3..4)),
-        Integer.decode("0x" + colorString.substring(5..6)),
+        Integer.decode("0x" + colorString.substring(5..6))
       )
       9 -> Color.argb(
         Integer.decode("0x" + colorString.substring(7..8)),
         Integer.decode("0x" + colorString.substring(1..2)),
         Integer.decode("0x" + colorString.substring(3..4)),
-        Integer.decode("0x" + colorString.substring(5..6)),
+        Integer.decode("0x" + colorString.substring(5..6))
       )
       else -> throw IllegalArgumentException("String $colorString is not a valid color representation")
     }

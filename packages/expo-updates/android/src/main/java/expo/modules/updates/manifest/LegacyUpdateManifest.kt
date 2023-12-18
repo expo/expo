@@ -58,10 +58,14 @@ class LegacyUpdateManifest private constructor(
           val bundledAsset = mAssets.getString(i)
           val extensionIndex = bundledAsset.lastIndexOf('.')
           val prefixLength = "asset_".length
-          val hash = if (extensionIndex > 0) bundledAsset.substring(
-            prefixLength,
-            extensionIndex
-          ) else bundledAsset.substring(prefixLength)
+          val hash = if (extensionIndex > 0) {
+            bundledAsset.substring(
+              prefixLength,
+              extensionIndex
+            )
+          } else {
+            bundledAsset.substring(prefixLength)
+          }
           val type = if (extensionIndex > 0) bundledAsset.substring(extensionIndex + 1) else ""
           assetList.add(
             AssetEntity(hash, type).apply {

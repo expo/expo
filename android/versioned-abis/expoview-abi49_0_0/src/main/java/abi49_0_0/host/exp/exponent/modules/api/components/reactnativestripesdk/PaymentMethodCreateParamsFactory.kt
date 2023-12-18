@@ -11,7 +11,7 @@ class PaymentMethodCreateParamsFactory(
   private val paymentMethodData: ReadableMap?,
   private val options: ReadableMap,
   private val cardFieldView: CardFieldView?,
-  private val cardFormView: CardFormView?,
+  private val cardFormView: CardFormView?
 ) {
   private val billingDetailsParams = mapToBillingDetails(getMapOrNull(paymentMethodData, "billingDetails"), cardFieldView?.cardAddress ?: cardFormView?.cardAddress)
 
@@ -286,32 +286,34 @@ class PaymentMethodCreateParamsFactory(
         if (cvc != null) PaymentMethodOptionsParams.Card(cvc) else null
 
       return (
-        if (isPaymentIntent)
+        if (isPaymentIntent) {
           ConfirmPaymentIntentParams.createWithPaymentMethodId(
             paymentMethodId,
             paymentMethodOptions = paymentMethodOptionParams,
             clientSecret = clientSecret,
             setupFutureUsage = setupFutureUsage
           )
-        else
+        } else {
           ConfirmSetupIntentParams.create(
             paymentMethodId,
             clientSecret
           )
+        }
         )
     } else {
       val paymentMethodCreateParams = createCardPaymentMethodParams()
       return (
-        if (isPaymentIntent)
+        if (isPaymentIntent) {
           ConfirmPaymentIntentParams
             .createWithPaymentMethodCreateParams(
               paymentMethodCreateParams,
               clientSecret,
               setupFutureUsage = setupFutureUsage
             )
-        else
+        } else {
           ConfirmSetupIntentParams
             .create(paymentMethodCreateParams, clientSecret)
+        }
         )
     }
   }
@@ -332,7 +334,7 @@ class PaymentMethodCreateParamsFactory(
       } else {
         ConfirmSetupIntentParams.create(
           paymentMethodCreateParams = createUSBankAccountParams(paymentMethodData),
-          clientSecret = clientSecret,
+          clientSecret = clientSecret
         )
       }
     } ?: run {
@@ -412,7 +414,7 @@ class PaymentMethodCreateParamsFactory(
           return MandateDataParams(
             MandateDataParams.Type.Online(
               ipAddress = getValOr(onlineParams, "ipAddress", "") ?: "",
-              userAgent = getValOr(onlineParams, "userAgent", "") ?: "",
+              userAgent = getValOr(onlineParams, "userAgent", "") ?: ""
             )
           )
         }

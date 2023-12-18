@@ -105,7 +105,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
       protocolVersionRaw = responseHeaders["expo-protocol-version"],
       manifestFiltersRaw = responseHeaders["expo-manifest-filters"],
       serverDefinedHeadersRaw = responseHeaders["expo-server-defined-headers"],
-      manifestSignature = responseHeaders["expo-manifest-signature"],
+      manifestSignature = responseHeaders["expo-manifest-signature"]
     )
     val responseBody = response.body
 
@@ -378,7 +378,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
           val signatureValidationResult = codeSigningConfiguration.validateSignature(
             directiveResponsePartInfo.responsePartHeaderData.signature,
             body.toByteArray(),
-            certificateChainFromManifestResponse,
+            certificateChainFromManifestResponse
           )
           if (signatureValidationResult.validationResult == ValidationResult.INVALID) {
             throw IOException("Directive download was successful, but signature was incorrect")
@@ -658,7 +658,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
           val signatureValidationResult = codeSigningConfiguration.validateSignature(
             responsePartHeaderData.signature,
             bodyString.toByteArray(),
-            certificateChainFromManifestResponse,
+            certificateChainFromManifestResponse
           )
           if (signatureValidationResult.validationResult == ValidationResult.INVALID) {
             throw IOException("Manifest download was successful, but signature was incorrect")
@@ -746,7 +746,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
     internal fun createRequestForAsset(
       assetEntity: AssetEntity,
       configuration: UpdatesConfiguration,
-      context: Context,
+      context: Context
     ): Request {
       return Request.Builder()
         .url(assetEntity.url!!.toString())

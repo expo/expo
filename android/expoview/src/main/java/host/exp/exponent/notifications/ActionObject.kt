@@ -8,13 +8,22 @@ import com.raizlabs.android.dbflow.structure.BaseModel
 @Table(database = ActionDatabase::class)
 class ActionObject : BaseModel {
   @Column var categoryId: String? = null
-  @PrimaryKey @Column var actionId: String? = null
+
+  @PrimaryKey @Column
+  var actionId: String? = null
+
   @Column var buttonTitle: String? = null
+
   @Column var isDestructive: Boolean? = null
+
   @Column var isAuthenticationRequired: Boolean? = null
+
   @Column var submitButtonTitle: String? = null
+
   @Column var placeholder: String? = null
+
   @Column var isShouldShowTextInput: Boolean = false
+
   @Column var position: Int
 
   constructor() {

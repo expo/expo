@@ -280,8 +280,11 @@ class CardFieldView(context: ThemedReactContext) : FrameLayout(context) {
       isCardValid = isValid
       fun getCardValidationState(field: CardValidCallback.Fields, editTextField: StripeEditText): String {
         if (invalidFields.contains(field)) {
-          return if (editTextField.shouldShowError) "Invalid"
-          else "Incomplete"
+          return if (editTextField.shouldShowError) {
+            "Invalid"
+          } else {
+            "Incomplete"
+          }
         }
         return "Valid"
       }

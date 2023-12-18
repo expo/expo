@@ -18,11 +18,19 @@ import java.util.*
 
 @Table(database = SchedulersDatabase::class)
 class CalendarSchedulerModel : BaseModel(), SchedulerModel {
-  @Column @PrimaryKey(autoincrement = true) var id = 0
+  @Column
+  @PrimaryKey(autoincrement = true)
+  var id = 0
+
   @Column override var notificationId = 0
-  @Column(name = "experienceId") var experienceScopeKey: String? = null
+
+  @Column(name = "experienceId")
+  var experienceScopeKey: String? = null
+
   @Column var isRepeat = false
+
   @Column var serializedDetails: String? = null
+
   @Column var calendarData: String? = null
 
   override val idAsString: String

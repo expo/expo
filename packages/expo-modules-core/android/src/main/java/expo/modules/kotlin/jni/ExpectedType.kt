@@ -62,7 +62,8 @@ class ExpectedType(
 
   operator fun plus(other: ExpectedType): ExpectedType {
     return ExpectedType(
-      *this.innerPossibleTypes, *other.innerPossibleTypes
+      *this.innerPossibleTypes,
+      *other.innerPossibleTypes
     )
   }
 

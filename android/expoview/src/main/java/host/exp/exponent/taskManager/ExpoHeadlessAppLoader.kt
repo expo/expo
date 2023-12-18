@@ -35,7 +35,8 @@ class ExpoHeadlessAppLoader @DoNotStrip constructor(context: Context?) : Headles
           "Loading headless app '" + params.appScopeKey + "' with url '" + params.appUrl + "'."
         )
         val appRecord = appLoader.loadApp(
-          params.appUrl, mapOf(),
+          params.appUrl,
+          mapOf(),
           object : AppLoaderProvider.Callback() {
             override fun onComplete(success: Boolean, exception: Exception?) {
               if (exception != null) {

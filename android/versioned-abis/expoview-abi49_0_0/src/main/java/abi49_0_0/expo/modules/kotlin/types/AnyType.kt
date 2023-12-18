@@ -52,7 +52,7 @@ inline fun <reified T> (() -> KType).toAnyType() = AnyType(
 )
 
 class AnyType(
-  val kType: KType,
+  val kType: KType
 ) {
 
   private val converter: TypeConverter<*> by lazy {

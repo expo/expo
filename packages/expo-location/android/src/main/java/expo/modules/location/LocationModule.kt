@@ -522,7 +522,8 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       }
     }
     mSensorManager.registerListener(
-      this, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
+      this,
+      mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
       SensorManager.SENSOR_DELAY_NORMAL
     )
     mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL)
@@ -749,7 +750,9 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
         return it.isPermissionPresentInManifest(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
       }
       throw NoPermissionsModuleException()
-    } else true
+    } else {
+      true
+    }
   }
 
   /**

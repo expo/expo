@@ -75,7 +75,8 @@ class HybridAESEncryptor(private var mContext: Context, private val mAESEncrypto
     throw EncryptException(
       "HybridAESEncryption should not be used on Android SDK >= 23. This shouldn't happen. " +
         "If you see this message report an issue at https://github.com/expo/expo.",
-      "unknown", "unknown"
+      "unknown",
+      "unknown"
     )
   }
 
@@ -94,7 +95,9 @@ class HybridAESEncryptor(private var mContext: Context, private val mAESEncrypto
     cipher.init(Cipher.DECRYPT_MODE, keyStoreEntry.privateKey)
     val secretKeyBytes = cipher.doFinal(encryptedSecretKeyBytes)
     // constant value will be copied
-    @SuppressLint("InlinedApi") val secretKey: SecretKey = SecretKeySpec(secretKeyBytes, KeyProperties.KEY_ALGORITHM_AES)
+
+    @SuppressLint("InlinedApi")
+    val secretKey: SecretKey = SecretKeySpec(secretKeyBytes, KeyProperties.KEY_ALGORITHM_AES)
 
     // Decrypt the value with the symmetric key
     val secretKeyEntry = KeyStore.SecretKeyEntry(secretKey)

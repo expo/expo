@@ -22,7 +22,7 @@ interface AppContextActivityResultCaller {
   @MainThread
   suspend fun <I : Serializable, O> registerForActivityResult(
     contract: AppContextActivityResultContract<I, O>,
-    fallbackCallback: AppContextActivityResultFallbackCallback<I, O> = AppContextActivityResultFallbackCallback { _, _ -> /* NOOP */ },
+    fallbackCallback: AppContextActivityResultFallbackCallback<I, O> = AppContextActivityResultFallbackCallback { _, _ -> /* NOOP */ }
   ): AppContextActivityResultLauncher<I, O>
 }
 

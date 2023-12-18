@@ -58,7 +58,7 @@ class DevLauncherClientHost(
             )
         }
       ),
-      DevLauncherPackage(),
+      DevLauncherPackage()
     ) +
       devMenuRelatedPackages +
       additionalPackages

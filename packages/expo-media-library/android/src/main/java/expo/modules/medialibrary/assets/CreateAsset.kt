@@ -139,7 +139,8 @@ class CreateAsset @JvmOverloads constructor(
 
       val asset = createAssetFileLegacy()
       MediaScannerConnection.scanFile(
-        context, arrayOf(asset.path),
+        context,
+        arrayOf(asset.path),
         null
       ) { path: String, uri: Uri? ->
         if (uri == null) {
@@ -158,7 +159,8 @@ class CreateAsset @JvmOverloads constructor(
     } catch (e: SecurityException) {
       promise.reject(
         ERROR_UNABLE_TO_LOAD_PERMISSION,
-        "Could not get asset: need READ_EXTERNAL_STORAGE permission.", e
+        "Could not get asset: need READ_EXTERNAL_STORAGE permission.",
+        e
       )
     } catch (e: Exception) {
       promise.reject(ERROR_UNABLE_TO_SAVE, "Could not create asset.", e)

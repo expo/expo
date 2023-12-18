@@ -33,7 +33,7 @@ open class PropertyComponentBuilder(
 
 class PropertyComponentBuilderWithThis<ThisType>(
   val thisType: KType,
-  name: String,
+  name: String
 ) : PropertyComponentBuilder(name) {
 
   /**

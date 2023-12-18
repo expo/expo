@@ -51,14 +51,16 @@ open class ScopedExpoNotificationBuilder(
   override fun getNotificationsChannelManager(): NotificationsChannelManager {
     return if (experienceKey == null) {
       super.getNotificationsChannelManager()
-    } else ScopedNotificationsChannelManager(
-      context,
-      experienceKey,
-      ScopedNotificationsGroupManager(
+    } else {
+      ScopedNotificationsChannelManager(
         context,
-        experienceKey
+        experienceKey,
+        ScopedNotificationsGroupManager(
+          context,
+          experienceKey
+        )
       )
-    )
+    }
   }
 
   override fun getIcon(): Int {
@@ -72,7 +74,9 @@ open class ScopedExpoNotificationBuilder(
     }
     return if (manifest == null) {
       super.getColor()
-    } else NotificationHelper.getColor(null, manifest!!, exponentManifest)
+    } else {
+      NotificationHelper.getColor(null, manifest!!, exponentManifest)
+    }
   }
 
   init {

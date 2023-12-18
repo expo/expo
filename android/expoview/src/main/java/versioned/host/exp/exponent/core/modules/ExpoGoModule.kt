@@ -12,7 +12,7 @@ class ExpoGoModule(private val manifest: Manifest) : Module() {
     Constants {
       mapOf(
         "expoVersion" to ExpoViewKernel.instance.versionName,
-        "manifest" to manifest.toString(),
+        "manifest" to manifest.toString()
       )
     }
   }

@@ -33,7 +33,7 @@ data class ResponseHeaderData(
   /**
    * Classic updates Expo Go manifest signature
    */
-  val manifestSignature: String? = null,
+  val manifestSignature: String? = null
 ) {
   val protocolVersion = protocolVersionRaw?.let { Integer.valueOf(it) }
 

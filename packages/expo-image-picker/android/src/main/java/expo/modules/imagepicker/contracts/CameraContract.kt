@@ -22,7 +22,7 @@ import java.io.Serializable
  * @see [androidx.activity.result.contract.ActivityResultContracts.TakePicture] or [androidx.activity.result.contract.ActivityResultContracts.CaptureVideo]
  */
 internal class CameraContract(
-  private val appContextProvider: AppContextProvider,
+  private val appContextProvider: AppContextProvider
 ) : AppContextActivityResultContract<CameraContractOptions, ImagePickerContractResult> {
   private val contentResolver: ContentResolver
     get() = requireNotNull(appContextProvider.appContext.reactContext) {
@@ -62,5 +62,5 @@ internal data class CameraContractOptions(
    * Destination file in a form of content-[Uri] to save results coming from camera to.
    */
   val uri: String,
-  val options: ImagePickerOptions,
+  val options: ImagePickerOptions
 ) : Serializable

@@ -224,7 +224,8 @@ class UpdatesDevLauncherController(
       selectionPolicy
     )
     launcher.launch(
-      databaseHolder.database, context,
+      databaseHolder.database,
+      context,
       object : Launcher.LauncherCallback {
         override fun onFailure(e: Exception) {
           databaseHolder.releaseDatabase()
@@ -286,7 +287,7 @@ class UpdatesDevLauncherController(
       checkOnLaunch = updatesConfiguration?.checkOnLaunch ?: UpdatesConfiguration.CheckAutomaticallyConfiguration.ALWAYS,
       requestHeaders = updatesConfiguration?.requestHeaders ?: mapOf(),
       localAssetFiles = localAssetFiles,
-      isMissingRuntimeVersion = isMissingRuntimeVersion,
+      isMissingRuntimeVersion = isMissingRuntimeVersion
     )
   }
 

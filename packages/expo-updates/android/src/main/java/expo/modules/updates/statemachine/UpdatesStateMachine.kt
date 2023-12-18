@@ -129,7 +129,7 @@ class UpdatesStateMachine(
           latestManifest = null,
           rollback = null,
           isUpdateAvailable = false,
-          lastCheckForUpdateTime = Date(),
+          lastCheckForUpdateTime = Date()
         )
         is UpdatesStateEvent.CheckCompleteWithRollback -> context.copy(
           isChecking = false,
@@ -156,7 +156,7 @@ class UpdatesStateMachine(
         is UpdatesStateEvent.DownloadComplete -> context.copy(
           isDownloading = false,
           downloadError = null,
-          isUpdatePending = true,
+          isUpdatePending = true
         )
         is UpdatesStateEvent.DownloadCompleteWithRollback -> context.copy(
           isDownloading = false,

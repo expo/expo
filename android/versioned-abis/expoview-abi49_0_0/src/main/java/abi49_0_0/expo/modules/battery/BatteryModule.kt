@@ -18,7 +18,10 @@ class BatteryModule(context: Context) : ExportedModule(context), RegistryLifecyc
   private val NAME = "ExpoBattery"
 
   enum class BatteryState(val value: Int) : Enumerable {
-    UNKNOWN(0), UNPLUGGED(1), CHARGING(2), FULL(3);
+    UNKNOWN(0),
+    UNPLUGGED(1),
+    CHARGING(2),
+    FULL(3)
   }
 
   override fun getName(): String {
