@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove `mime` package.
+
 ## 0.4.0 — 2023-12-12
 
 ### 💡 Others

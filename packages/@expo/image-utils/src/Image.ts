@@ -11,8 +11,6 @@ import { env } from './env';
 import * as Jimp from './jimp';
 import * as Sharp from './sharp';
 
-const supportedMimeTypes = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
-
 let hasWarned: boolean = false;
 
 async function resizeImagesAsync(buffer: Buffer, sizes: number[]): Promise<Buffer[]> {
@@ -161,10 +159,6 @@ async function ensureImageOptionsAsync(imageOptions: ImageOptions): Promise<Imag
   const mimeType = getMimeType(icon.src);
   if (!mimeType) {
     throw new Error(`Invalid mimeType for image with source: ${icon.src}`);
-  }
-
-  if (!supportedMimeTypes.includes(mimeType)) {
-    throw new Error(`Supplied image is not a supported image type: ${imageOptions.src}`);
   }
 
   if (!icon.name) {

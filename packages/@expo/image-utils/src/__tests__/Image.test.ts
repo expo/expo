@@ -1,12 +1,20 @@
 import * as path from 'path';
 
-import { getMimeType } from '../Image';
-import { getPngInfo } from '..';
+import { getPngInfo, getMimeType } from '../Image';
 
 describe(getMimeType, () => {
-  it(`returns mime type for URL`, () => {
-    expect(getMimeType('https://example.com/image.png')).toBe('image/png');
-    expect(getMimeType('https://example.com/image.png?query=1')).toBe('image/png');
+  [
+    ['https://example.com/image.png?query=1', 'image/png'],
+    ['../foo.jpg', 'image/jpeg'],
+    ['more.ios.jpeg', 'image/jpeg'],
+    // Invalid
+    ['more.ios.jpeg?foo', null],
+    // Unsupported
+    ['more.ios.avif', null],
+  ].forEach(([url, mimeType]) => {
+    it(`returns mime type for URL: ${url}`, () => {
+      expect(getMimeType(url)).toBe(mimeType);
+    });
   });
 });
 
