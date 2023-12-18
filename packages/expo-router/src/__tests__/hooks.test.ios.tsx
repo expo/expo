@@ -70,12 +70,12 @@ describe(useGlobalSearchParams, () => {
       shape: 'square',
     });
 
-    act(() => router.push('/banana/circle/carrot'));
+    act(() => router.push('/banana/circle/carrot/beetroot'));
 
     expect(result.current).toEqual({
       fruit: 'banana',
       shape: 'circle',
-      veg: 'carrot',
+      veg: ['carrot', 'beetroot'],
     });
   });
 
@@ -109,7 +109,7 @@ describe(useGlobalSearchParams, () => {
       }
     );
 
-    act(() => router.push('/banana/circle/carrot'));
+    act(() => router.push('/banana/circle/carrot/beetroot'));
 
     expect(allHookValues).toEqual([
       // The initial render
@@ -126,16 +126,16 @@ describe(useGlobalSearchParams, () => {
       },
       // The new screen
       {
-        url: '/banana/circle/carrot',
+        url: '/banana/circle/carrot/beetroot',
         globalParams: {
           fruit: 'banana',
           shape: 'circle',
-          veg: 'carrot',
+          veg: ['carrot', 'beetroot'],
         },
         params: {
           fruit: 'banana',
           shape: 'circle',
-          veg: ['carrot'],
+          veg: ['carrot', 'beetroot'],
         },
       },
     ]);
@@ -189,7 +189,7 @@ describe(useGlobalSearchParams, () => {
         globalParams: {
           fruit: 'banana',
           shape: 'circle',
-          veg: 'carrot',
+          veg: ['carrot'],
         },
         params: {
           fruit: 'banana',
@@ -203,7 +203,7 @@ describe(useGlobalSearchParams, () => {
         globalParams: {
           fruit: 'banana',
           shape: 'circle',
-          veg: 'carrot',
+          veg: ['carrot'],
         },
         params: {
           fruit: 'apple',
@@ -230,7 +230,7 @@ describe(useLocalSearchParams, () => {
     expect(result.current).toEqual({
       fruit: 'banana',
       shape: 'circle',
-      veg: 'carrot',
+      veg: ['carrot'],
     });
   });
 

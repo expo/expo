@@ -94,6 +94,17 @@ expect(screen).toHavePathname('/my-router');
 ```
 
 </APIBox>
+
+<APIBox header="toHavePathnameWithParams()">
+
+Assert the current pathname, including URL parameters, against a given string. This is useful to assert the appearance of URL in a web browser.
+
+```tsx app.test.ts
+expect(screen).toHavePathnameWithParams('/my-router?hello=world');
+```
+
+</APIBox>
+
 <APIBox header="toHaveSegments()">
 
 Assert the current segments against an array of strings. The matcher uses the value of the [`useSegments`](/router/reference/hooks/#usesegments) hook on the current `screen`.
@@ -120,6 +131,18 @@ Assert the current global search parameters against an object. The matcher uses 
 
 ```tsx app.test.ts
 expect(screen).useGlobalSearchParams({ first: 'abc' });
+```
+
+</APIBox>
+
+<APIBox header="toHaveRouterState()">
+
+An advanced matcher that asserts the current router state against an object.
+
+```tsx app.test.ts
+expect(screen).toHaveRouterState({
+  routes: [{ name: 'index', path: '/' }],
+});
 ```
 
 </APIBox>
