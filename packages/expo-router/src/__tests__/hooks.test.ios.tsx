@@ -75,7 +75,7 @@ describe(useGlobalSearchParams, () => {
     expect(result.current).toEqual({
       fruit: 'banana',
       shape: 'circle',
-      veg: 'carrot',
+      veg: ['carrot'],
     });
   });
 
@@ -130,7 +130,7 @@ describe(useGlobalSearchParams, () => {
         globalParams: {
           fruit: 'banana',
           shape: 'circle',
-          veg: 'carrot',
+          veg: ['carrot'],
         },
         params: {
           fruit: 'banana',
@@ -189,7 +189,7 @@ describe(useGlobalSearchParams, () => {
         globalParams: {
           fruit: 'banana',
           shape: 'circle',
-          veg: 'carrot',
+          veg: ['carrot'],
         },
         params: {
           fruit: 'banana',
@@ -203,7 +203,7 @@ describe(useGlobalSearchParams, () => {
         globalParams: {
           fruit: 'banana',
           shape: 'circle',
-          veg: 'carrot',
+          veg: ['carrot'],
         },
         params: {
           fruit: 'apple',
@@ -230,7 +230,7 @@ describe(useLocalSearchParams, () => {
     expect(result.current).toEqual({
       fruit: 'banana',
       shape: 'circle',
-      veg: 'carrot',
+      veg: ['carrot'],
     });
   });
 
