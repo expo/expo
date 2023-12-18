@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Add `router.pushOrPop` and `navigate` to `pushOrPop` ([#24600](https://github.com/expo/expo/pull/24600) by [@marklawlor](https://github.com/marklawlor))
+- Add `toHavePathnameWithParams` matcher to `expo-router/testing-library`. ([#25955](https://github.com/expo/expo/pull/25955) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 

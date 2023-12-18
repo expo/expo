@@ -1,7 +1,12 @@
 import { PathConfig, PathConfigMap, validatePathConfig } from '@react-navigation/core';
 import type { NavigationState, PartialState, Route } from '@react-navigation/routers';
 
-import { matchDeepDynamicRouteName, matchDynamicName, matchGroupName } from '../matchers';
+import {
+  matchDeepDynamicRouteName,
+  matchDynamicName,
+  matchGroupName,
+  testNotFound,
+} from '../matchers';
 
 type Options<ParamList extends object> = {
   initialRouteName?: string;
@@ -525,8 +530,9 @@ function getParamsWithConventionsCollapsed({
   // Deep Dynamic Routes
   if (segments.some((segment) => segment.startsWith('*'))) {
     // NOTE(EvanBacon): Drop the param name matching the wildcard route name -- this is specific to Expo Router.
-    const name =
-      routeName === '+not-found' ? 'not-found' : matchDeepDynamicRouteName(routeName) ?? routeName;
+    const name = testNotFound(routeName)
+      ? 'not-found'
+      : matchDeepDynamicRouteName(routeName) ?? routeName;
     delete processedParams[name];
   }
 

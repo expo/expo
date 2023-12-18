@@ -552,16 +552,27 @@ it('supports multi-level 404s', async () => {
   renderRouter({
     index: () => <Text>found</Text>,
     '+not-found': () => <Text>404</Text>,
+    'nested/+not-found': () => <Text>Nested 404</Text>,
   });
 
-  expect(screen).toHavePathname('/');
+  expect(screen).toHavePathnameWithParams('/');
   expect(await screen.findByText('found')).toBeOnTheScreen();
 
   act(() => router.push('/123'));
   expect(await screen.findByText('404')).toBeOnTheScreen();
+  expect(screen).toHavePathnameWithParams('/123');
 
   act(() => router.push('/123/456'));
   expect(await screen.findByText('404')).toBeOnTheScreen();
+  expect(screen).toHavePathnameWithParams('/123/456');
+
+  act(() => router.push('/nested/123'));
+  expect(await screen.findByText('Nested 404')).toBeOnTheScreen();
+  expect(screen).toHavePathnameWithParams('/nested/123');
+
+  act(() => router.push('/nested/123/456'));
+  expect(await screen.findByText('Nested 404')).toBeOnTheScreen();
+  expect(screen).toHavePathnameWithParams('/nested/123/456');
 });
 
 it('supports dynamic 404s next to dynamic routes', async () => {
