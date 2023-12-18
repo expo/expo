@@ -558,9 +558,12 @@ it.only('supports multi-level 404s', async () => {
   expect(screen).toHavePathnameWithParams('/');
   expect(await screen.findByText('found')).toBeOnTheScreen();
 
-  // act(() => router.push('/123'));
-  // expect(await screen.findByText('404')).toBeOnTheScreen();
-  // expect(screen).toHavePathname('/123');
+  act(() => router.push('/123'));
+  expect(await screen.findByText('404')).toBeOnTheScreen();
+  expect(screen).toHavePathname('/123');
+  expect(screen).toHaveSearchParams({
+    'not-found': ['123'],
+  });
 
   act(() => router.push('/123/456?test=true'));
   expect(await screen.findByText('404')).toBeOnTheScreen();
@@ -571,21 +574,21 @@ it.only('supports multi-level 404s', async () => {
     'not-found': ['123', '456'],
   });
 
-  // act(() => router.push('/nested/123?test=true'));
-  // expect(await screen.findByText('Nested 404')).toBeOnTheScreen();
-  // expect(screen).toHavePathnameWithParams('/nested/123?test=true');
-  // expect(screen).toHaveSearchParams({
-  //   test: 'true',
-  //   'not-found': '123',
-  // });
+  act(() => router.push('/nested/123?test=true'));
+  expect(await screen.findByText('Nested 404')).toBeOnTheScreen();
+  expect(screen).toHavePathnameWithParams('/nested/123?test=true');
+  expect(screen).toHaveSearchParams({
+    test: 'true',
+    'not-found': ['123'],
+  });
 
-  // act(() => router.push('/nested/123/456?test=true'));
-  // expect(await screen.findByText('Nested 404')).toBeOnTheScreen();
-  // expect(screen).toHavePathnameWithParams('/nested/123/456?test=true');
-  // expect(screen).toHaveSearchParams({
-  //   test: 'true',
-  //   'not-found': '123,456',
-  // });
+  act(() => router.push('/nested/123/456?test=true'));
+  expect(await screen.findByText('Nested 404')).toBeOnTheScreen();
+  expect(screen).toHavePathnameWithParams('/nested/123/456?test=true');
+  expect(screen).toHaveSearchParams({
+    test: 'true',
+    'not-found': ['123', '456'],
+  });
 });
 
 it('supports dynamic 404s next to dynamic routes', async () => {
