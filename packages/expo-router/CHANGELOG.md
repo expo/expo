@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix `<Drawer />` navigator navigation.
+- Fix `<Drawer />` navigator navigation. ([#25985](https://github.com/expo/expo/pull/25985) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
