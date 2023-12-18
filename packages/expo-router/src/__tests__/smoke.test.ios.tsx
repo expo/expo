@@ -1,6 +1,7 @@
 import React, { Text } from 'react-native';
 
 import { Slot, router, useGlobalSearchParams } from '../exports';
+import { Drawer } from '../layouts/Drawer';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { Redirect } from '../link/Link';
@@ -166,4 +167,25 @@ it('deep linking nested groups', async () => {
   expect(OtherTabsLayout).toHaveBeenCalledTimes(1);
   expect(NestedTabsLayout).toHaveBeenCalledTimes(1);
   expect(OtherTabsIndex).toHaveBeenCalledTimes(1);
+});
+
+it('can navigate across the drawer navigator', () => {
+  renderRouter({
+    _layout: () => <Stack />,
+    index: () => <Text testID="index" />,
+    '(group)/_layout': () => <Drawer useLegacyImplementation={false} />,
+    '(group)/one': () => <Text testID="one" />,
+    '(group)/two': () => <Text testID="two" />,
+  });
+
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('index')).toBeOnTheScreen();
+
+  act(() => router.push('/one'));
+  expect(screen).toHavePathname('/one');
+  expect(screen.getByTestId('one')).toBeOnTheScreen();
+
+  act(() => router.push('/two'));
+  expect(screen).toHavePathname('/two');
+  expect(screen.getByTestId('two')).toBeOnTheScreen();
 });

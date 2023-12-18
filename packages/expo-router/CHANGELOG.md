@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `<Drawer />` navigator navigation.
+
 ### 💡 Others
 
 ## 3.4.0 — 2023-12-15
