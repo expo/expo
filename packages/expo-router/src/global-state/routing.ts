@@ -138,37 +138,29 @@ function rewriteNavigationStateToParams(
   return JSON.parse(JSON.stringify(params));
 }
 
-function getNavigateAction(
-  state: ResultState,
-  parentState: NavigationState,
-  type = 'NAVIGATE',
-  lastCommonNavigator: NavigationState = parentState
-) {
+function getNavigateAction(state: ResultState, parentState: NavigationState, type = 'NAVIGATE') {
   const route = state.routes[state.routes.length - 1]!;
 
-  if (parentState.type === 'stack' || parentState.type === 'tab') {
-    lastCommonNavigator = parentState;
-  }
   const currentRoute = parentState.routes.find((parentRoute) => parentRoute.name === route.name);
   const routesAreEqual = parentState.routes[parentState.index] === currentRoute;
 
   // If there is nested state and the routes are equal, we should keep going down the tree
   if (route.state && routesAreEqual && currentRoute.state) {
-    return getNavigateAction(route.state, currentRoute.state as any, type, lastCommonNavigator);
+    return getNavigateAction(route.state, currentRoute.state as any, type);
   }
 
   // Either we reached the bottom of the state or the point where the routes diverged
   const { screen, params } = rewriteNavigationStateToParams(state);
 
-  if (type === 'PUSH' && lastCommonNavigator.type !== 'stack') {
+  if (type === 'PUSH' && parentState.type !== 'stack') {
     type = 'NAVIGATE';
-  } else if (type === 'REPLACE' && lastCommonNavigator.type === 'tab') {
+  } else if (type === 'REPLACE' && parentState.type === 'tab') {
     type = 'JUMP_TO';
   }
 
   return {
     type,
-    target: lastCommonNavigator.key,
+    target: parentState.key,
     payload: {
       name: screen,
       params,

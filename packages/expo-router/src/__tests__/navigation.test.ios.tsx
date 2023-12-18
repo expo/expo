@@ -827,8 +827,8 @@ it('can push relative links from index routes', async () => {
   expect(screen.getByTestId('two')).toBeOnTheScreen();
 
   act(() => router.push('./bar'));
-  // expect(screen.getByTestId('three')).toBeOnTheScreen();
-  // expect(screen).toHavePathname('/test/bar');
+  expect(screen.getByTestId('three')).toBeOnTheScreen();
+  expect(screen).toHavePathname('/test/bar');
 });
 
 it('can navigation to a relative route without losing path params', async () => {
