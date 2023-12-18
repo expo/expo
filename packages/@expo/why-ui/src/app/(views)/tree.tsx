@@ -253,7 +253,7 @@ export default function Treemap() {
         theme="dark"
         option={{
           title: {
-            text: 'Size Tree',
+            // text: 'Size Tree',
             // left: 'center',
           },
           backgroundColor: 'transparent',
@@ -282,7 +282,7 @@ export default function Treemap() {
               name: 'Size Tree',
               type: 'treemap',
               zoomToNodeRatio: 1000,
-              leafDepth: 2,
+              leafDepth: 3,
               // visibleMin: 300,
 
               label: {

@@ -301,7 +301,7 @@ export function WhyTable() {
           </DropdownMenu>
         </div>
       </div>
-      <div className="rounded-md relative border overflow-auto h-[70vh]">
+      <div className="rounded-md relative border overflow-auto max-h-[65vh]">
         <Table>
           <TableHeader className="sticky top-0 z-10">
             {table.getHeaderGroups().map((headerGroup) => (
