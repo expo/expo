@@ -2,6 +2,7 @@
 import { ExpoConfig, getConfig, PackageJSONConfig } from '@expo/config';
 import JsonFile from '@expo/json-file';
 import mockedSpawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import { test as basePWTest } from '@playwright/test';
 import assert from 'assert';
 import execa from 'execa';
 import findProcess from 'find-process';
@@ -271,4 +272,33 @@ export function expectChunkPathMatching(name: string) {
       `_expo\\/static\\/js\\/web\\/${name.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}-.*\\.js`
     )
   );
+}
+
+export function getPlaywrightTest(directory: string, { single = true } = {}): typeof basePWTest {
+  // Extend the playwright context so it can also act as a static file server.
+  return basePWTest.extend({
+    context: async ({ context }, run) => {
+      await context.route('**/*', (route, request) => {
+        let file = path.join(directory, new URL(request.url()).pathname);
+        const ext = path.extname(file);
+
+        // If directory or the extension is missing, this is a html file
+        if (file.endsWith('/') || ext === '' || ext === '.html') {
+          if (single) {
+            // single always routes to `index.html`
+            file = path.join(directory, 'index.html');
+          } else if (file.endsWith('/')) {
+            // directories route to `index.html` within the directory
+            file += 'index.html';
+          } else if (ext === '') {
+            // paths with no extension are .html files
+            file += '.html';
+          }
+        }
+
+        return route.fulfill({ path: file });
+      });
+      await run(context);
+    },
+  });
 }
