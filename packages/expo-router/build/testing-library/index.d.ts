@@ -7,6 +7,7 @@ type RenderRouterOptions = Parameters<typeof render>[1] & {
 };
 type Result = ReturnType<typeof render> & {
     getPathname(): string;
+    getPathnameWithParams(): string;
     getSegments(): string[];
     getSearchParams(): Record<string, string | string[]>;
 };

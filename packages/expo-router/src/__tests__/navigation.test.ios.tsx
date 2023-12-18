@@ -548,20 +548,47 @@ it('can pop back from a nested modal to a nested sibling', async () => {
   expect(screen).toHavePathname('/slot');
 });
 
-it('supports multi-level 404s', async () => {
+it.only('supports multi-level 404s', async () => {
   renderRouter({
     index: () => <Text>found</Text>,
     '+not-found': () => <Text>404</Text>,
+    'nested/+not-found': () => <Text>Nested 404</Text>,
   });
 
-  expect(screen).toHavePathname('/');
+  expect(screen).toHavePathnameWithParams('/');
   expect(await screen.findByText('found')).toBeOnTheScreen();
 
   act(() => router.push('/123'));
   expect(await screen.findByText('404')).toBeOnTheScreen();
+  expect(screen).toHavePathname('/123');
+  expect(screen).toHaveSearchParams({
+    'not-found': ['123'],
+  });
 
-  act(() => router.push('/123/456'));
+  act(() => router.push('/123/456?test=true'));
   expect(await screen.findByText('404')).toBeOnTheScreen();
+  // Should only have `test` and not include `not-found`
+  expect(screen).toHavePathnameWithParams('/123/456?test=true');
+  expect(screen).toHaveSearchParams({
+    test: 'true',
+    'not-found': ['123', '456'],
+  });
+
+  act(() => router.push('/nested/123?test=true'));
+  expect(await screen.findByText('Nested 404')).toBeOnTheScreen();
+  expect(screen).toHavePathnameWithParams('/nested/123?test=true');
+  expect(screen).toHaveSearchParams({
+    test: 'true',
+    'not-found': ['123'],
+  });
+
+  act(() => router.push('/nested/123/456?test=true'));
+  expect(await screen.findByText('Nested 404')).toBeOnTheScreen();
+  expect(screen).toHavePathnameWithParams('/nested/123/456?test=true');
+  expect(screen).toHaveSearchParams({
+    test: 'true',
+    'not-found': ['123', '456'],
+  });
 });
 
 it('supports dynamic 404s next to dynamic routes', async () => {
