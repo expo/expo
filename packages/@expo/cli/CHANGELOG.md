@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing `@expo/image-utils` dependency. ([#25990](https://github.com/expo/expo/pull/25990) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 0.16.3 — 2023-12-15
