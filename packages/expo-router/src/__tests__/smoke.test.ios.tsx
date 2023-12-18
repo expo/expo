@@ -176,16 +176,37 @@ it('can navigate across the drawer navigator', () => {
     '(group)/_layout': () => <Drawer useLegacyImplementation={false} />,
     '(group)/one': () => <Text testID="one" />,
     '(group)/two': () => <Text testID="two" />,
+    '(group_two)/three': () => <Text testID="three" />,
+    '(group_two)/_layout': () => <Drawer useLegacyImplementation={false} />,
+    '(group_two)/nested/folder/_layout': () => <Drawer useLegacyImplementation={false} />,
+    '(group_two)/nested/folder/four': () => <Text testID="four" />,
   });
 
   expect(screen).toHavePathname('/');
   expect(screen.getByTestId('index')).toBeOnTheScreen();
 
+  // Navigate to a drawer screen
   act(() => router.push('/one'));
   expect(screen).toHavePathname('/one');
   expect(screen.getByTestId('one')).toBeOnTheScreen();
 
+  // Navigate within the drawer
   act(() => router.push('/two'));
   expect(screen).toHavePathname('/two');
   expect(screen.getByTestId('two')).toBeOnTheScreen();
+
+  // Navigate to a different drawer
+  act(() => router.push('/three'));
+  expect(screen).toHavePathname('/three');
+  expect(screen.getByTestId('three')).toBeOnTheScreen();
+
+  // Navigate to a nested folder
+  act(() => router.push('/nested/folder/four'));
+  expect(screen).toHavePathname('/nested/folder/four');
+  expect(screen.getByTestId('four')).toBeOnTheScreen();
+
+  // Navigate back to one
+  act(() => router.push('/one'));
+  expect(screen).toHavePathname('/one');
+  expect(screen.getByTestId('one')).toBeOnTheScreen();
 });
