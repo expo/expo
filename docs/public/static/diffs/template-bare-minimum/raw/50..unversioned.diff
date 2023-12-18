@@ -1,5 +1,5 @@
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 7a9b382c4a..865003b4f4 100644
+index 7a9b382c4a..a0b1b85c0a 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -11,7 +11,7 @@ index 7a9b382c4a..865003b4f4 100644
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
-@@ -10,7 +10,7 @@
+@@ -10,10 +10,10 @@
      "web": "expo start --web"
    },
    "dependencies": {
@@ -19,4 +19,8 @@ index 7a9b382c4a..865003b4f4 100644
 +    "expo": "~50.0.0-preview.4",
      "expo-status-bar": "~1.11.0",
      "react": "18.2.0",
-     "react-native": "0.73.0"
+-    "react-native": "0.73.0"
++    "react-native": "0.73.1"
+   },
+   "devDependencies": {
+     "@babel/core": "^7.20.0"
