@@ -16,7 +16,7 @@ it('404', async () => {
   expect(await screen.findByText('Unmatched Route')).toBeOnTheScreen();
   expect(screen).toHavePathname('/404');
   expect(screen).toHaveSegments(['+not-found']);
-  expect(screen).toHaveSearchParams({ 'not-found': '404' });
+  expect(screen).toHaveSearchParams({ 'not-found': ['404'] });
 });
 
 it('can render a route', async () => {
