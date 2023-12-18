@@ -1,6 +1,22 @@
 import * as path from 'path';
 
-import { getPngInfo } from '..';
+import { getPngInfo, getMimeType } from '../Image';
+
+describe(getMimeType, () => {
+  [
+    ['https://example.com/image.png?query=1', 'image/png'],
+    ['../foo.jpg', 'image/jpeg'],
+    ['more.ios.jpeg', 'image/jpeg'],
+    // Invalid
+    ['more.ios.jpeg?foo', null],
+    // Unsupported
+    ['more.ios.avif', null],
+  ].forEach(([url, mimeType]) => {
+    it(`returns mime type for URL: ${url}`, () => {
+      expect(getMimeType(url)).toBe(mimeType);
+    });
+  });
+});
 
 describe('Image #getPngInfo', () => {
   it('returns false if the file does not exist', async () => {
