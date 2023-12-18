@@ -56,7 +56,8 @@ export async function loadMetroConfigAsync(
   {
     exp = getConfig(projectRoot, { skipSDKVersionRequirement: true }).exp,
     isExporting,
-  }: { exp?: ExpoConfig; isExporting: boolean }
+    onStats,
+  }: { exp?: ExpoConfig; isExporting: boolean; onStats?: StatsCallback }
 ) {
   let reportEvent: ((event: any) => void) | undefined;
   const serverRoot = getMetroServerRoot(projectRoot);
@@ -119,18 +120,40 @@ export async function loadMetroConfigAsync(
     logEventAsync('metro config', getMetroProperties(projectRoot, exp, config));
   }
 
+  const original = config.serializer.customSerializer;
+
+  const stats: MetroRequestStats[] = [];
+
+  config.serializer.customSerializer = (
+    entryPoint: string,
+    preModules: any, //ReadonlyArray<Module>,
+    graph: any, // ReadOnlyGraph,
+    options: any // SerializerOptions,
+  ) => {
+    if (!isExporting || !!onStats) {
+      const statsJson = toJson(projectRoot, entryPoint, preModules, graph, options);
+      onStats?.(statsJson);
+      // console.log('push bundle', entryPoint);
+      stats.push(statsJson);
+    }
+    return original(entryPoint, preModules, graph, options);
+  };
+
   return {
     config,
     setEventReporter: (logger: (event: any) => void) => (reportEvent = logger),
     reporter: terminalReporter,
+    stats,
   };
 }
+
+export type StatsCallback = (stats: MetroRequestStats) => void;
 
 /** The most generic possible setup for Metro bundler. */
 export async function instantiateMetroAsync(
   metroBundler: MetroBundlerDevServer,
   options: Omit<MetroDevServerOptions, 'logger'>,
-  { isExporting }: { isExporting: boolean }
+  { isExporting, onStats }: { isExporting: boolean; onStats?: StatsCallback }
 ): Promise<{
   metro: Metro.Server;
   server: http.Server;
@@ -144,11 +167,11 @@ export async function instantiateMetroAsync(
     skipSDKVersionRequirement: true,
   });
 
-  const { config: metroConfig, setEventReporter } = await loadMetroConfigAsync(
-    projectRoot,
-    options,
-    { exp, isExporting }
-  );
+  const {
+    config: metroConfig,
+    setEventReporter,
+    stats,
+  } = await loadMetroConfigAsync(projectRoot, options, { exp, isExporting, onStats });
 
   const { createDevServerMiddleware, securityHeadersMiddleware } =
     require('@react-native-community/cli-server-api') as typeof import('@react-native-community/cli-server-api');
@@ -181,20 +204,6 @@ export async function instantiateMetroAsync(
     return middleware.use(metroMiddleware);
   };
 
-  const original = metroConfig.serializer.customSerializer;
-
-  const bundles: any[] = [];
-  metroConfig.serializer.customSerializer = (
-    entryPoint: string,
-    preModules: any, //ReadonlyArray<Module>,
-    graph: any, // ReadOnlyGraph,
-    options: any // SerializerOptions,
-  ) => {
-    // console.log('push bundle', entryPoint);
-    bundles.push(toJson(projectRoot, entryPoint, preModules, graph, options));
-    return original(entryPoint, preModules, graph, options);
-  };
-
   function allowCrossOrigin(req: ServerRequest, res: ServerResponse) {
     const origin = (() => {
       if (req.headers['origin']) {
@@ -221,7 +230,7 @@ export async function instantiateMetroAsync(
     // Current Metro stats for devtools endpoint
     '/_expo/last-metro-stats',
     async (req, res, next) => {
-      if (!bundles.length) {
+      if (!stats.length) {
         // Not found
         res.statusCode = 404;
 
@@ -235,7 +244,7 @@ export async function instantiateMetroAsync(
         const jsonResults = JSON.stringify(
           {
             version: 1,
-            graphs: bundles.slice(0, 1).map((bundle) => bundle),
+            graphs: stats.slice(0, 1).map((bundle) => bundle),
           },
           null,
           2
@@ -252,6 +261,56 @@ export async function instantiateMetroAsync(
       }
     }
   );
+
+  // middleware.use(
+  //   // Given a bundle ID and absolute path, return the full dependency object.
+  //   '/_expo/metro-dependency',
+  //   async (req, res, next) => {
+  //     if (!stats.length) {
+  //       // Not found
+  //       res.statusCode = 404;
+
+  //       res.end();
+  //       return;
+  //     }
+
+  //     const { bundleId, path } = req.query;
+  //     if (!bundleId || !path) {
+  //       res.statusCode = 400;
+  //       res.end();
+  //       return;
+  //     }
+
+  //     try {
+  //       allowCrossOrigin(req, res);
+
+  //       const bundle = stats.find((bundle) => bundle[0] === bundleId);
+  //       if (!bundle) {
+  //         res.statusCode = 404;
+  //         res.end();
+  //         return;
+  //       }
+
+  //       const dep = bundle[2].dependencies.find((dep) => dep.path === path) ?? bundle[1].find((dep) => dep.path === path);
+  //       if (!dep) {
+  //         res.statusCode = 404;
+  //         res.end();
+  //         return;
+  //       }
+
+  //       const jsonResults = JSON.stringify(dep, null, 2);
+  //       // console.log(jsonResults);
+  //       res.setHeader('Content-Type', 'application/json');
+  //       res.end(jsonResults);
+  //       return;
+  //     } catch (error) {
+  //       console.log('ERROR:', error);
+  //       res.statusCode = 500;
+  //       res.end();
+  //       return;
+  //     }
+  //   }
+  // );
 
   middleware.use(createDebuggerTelemetryMiddleware(projectRoot, exp));
 
@@ -308,7 +367,7 @@ export function isWatchEnabled() {
 
 const sourceMapString = require('metro/src/DeltaBundler/Serializers/sourceMapString');
 import path from 'path';
-import { Module, ReadOnlyGraph, SerializerOptions } from 'metro';
+import { Graph, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
 
 // function storeFixture(name: string, obj: any) {
 //   const filePath = path.join(
@@ -318,16 +377,51 @@ import { Module, ReadOnlyGraph, SerializerOptions } from 'metro';
 //   fs.writeFileSync(filePath, JSON.stringify(obj, null, 2));
 // }
 
+type MetroJsonDependencyStats = {
+  dependencies: string[];
+  getSource: string;
+  size: number;
+  inverseDependencies: string[];
+  path: string;
+  output: {
+    type: string;
+    data: {
+      map: any[];
+      code: string;
+      functionMap?: {};
+    };
+  }[];
+  absolutePath: string;
+  isNodeModule: boolean;
+  isEntry: boolean;
+};
+
+type MetroRequestStats = [
+  string,
+  MetroJsonDependencyStats[],
+  {
+    dependencies: MetroJsonDependencyStats[];
+    entryPoints: any[];
+    transformOptions: Graph['transformOptions'];
+  },
+  {
+    processModuleFilter: any;
+    createModuleId: any;
+    getRunModuleStatement: any;
+    shouldAddToIgnoreList: any;
+  },
+];
+
 function toJson(
   projectRoot: string,
   entryFile: string,
   preModules: Module[],
   graph: ReadOnlyGraph,
   options: SerializerOptions
-) {
+): MetroRequestStats {
   const dropSource = false;
 
-  function modifyDep(mod: Module) {
+  function modifyDep(mod: Module): MetroJsonDependencyStats {
     // if (!mod.path.match(/src\/app\/_layout/)) {
     //   return null;
     // }
@@ -366,13 +460,12 @@ function toJson(
 
       absolutePath: mod.path,
       isNodeModule: mod.path.match(/node_modules/) != null,
-      isEntry:
-        entryFile === mod.path || options.runBeforeMainModule.includes(mod.path) || undefined,
+      isEntry: entryFile === mod.path || options.runBeforeMainModule.includes(mod.path) || false,
     };
   }
 
   function simplifyGraph({ ...graph }) {
-    console.log('transformOptions', graph.transformOptions);
+    // console.log('transformOptions', graph.transformOptions);
     return {
       ...graph,
 

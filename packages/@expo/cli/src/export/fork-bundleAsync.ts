@@ -16,7 +16,7 @@ import { ConfigT } from 'metro-config';
 import path from 'path';
 
 import { isEnableHermesManaged, maybeThrowFromInconsistentEngineAsync } from './exportHermes';
-import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
+import { loadMetroConfigAsync, StatsCallback } from '../start/server/metro/instantiateMetro';
 import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
 import {
   ExpoMetroBundleOptions,
@@ -71,6 +71,7 @@ export async function createBundlesAsync(
     minify?: boolean;
     sourcemaps?: boolean;
     entryPoint?: string;
+    onStats?: StatsCallback;
   }
 ): Promise<Partial<Record<Platform, BundleOutput>>> {
   if (!bundleOptions.platforms.length) {
@@ -93,7 +94,8 @@ export async function createBundlesAsync(
       sourcemaps: bundleOptions.sourcemaps,
       minify: bundleOptions.minify,
       dev: bundleOptions.dev,
-    }))
+    })),
+    bundleOptions.onStats
   );
 
   // { ios: bundle, android: bundle }
@@ -110,7 +112,8 @@ async function bundleProductionMetroClientAsync(
   projectRoot: string,
   expoConfig: ExpoConfig,
   metroOptions: MetroDevServerOptions,
-  bundles: BundleOptions[]
+  bundles: BundleOptions[],
+  onStats?: StatsCallback
 ): Promise<BundleOutput[]> {
   // Assert early so the user doesn't have to wait until bundling is complete to find out that
   // Hermes won't be available.
@@ -121,6 +124,7 @@ async function bundleProductionMetroClientAsync(
   const { config, reporter } = await loadMetroConfigAsync(projectRoot, metroOptions, {
     exp: expoConfig,
     isExporting: true,
+    onStats,
   });
 
   const metroServer = await Metro.runMetro(config, {

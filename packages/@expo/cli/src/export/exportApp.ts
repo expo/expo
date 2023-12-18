@@ -22,6 +22,7 @@ import {
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { env } from '../utils/env';
 import { setNodeEnv } from '../utils/nodeEnv';
+import { StatsCallback } from '../start/server/metro/instantiateMetro';
 
 export async function exportAppAsync(
   projectRoot: string,
@@ -34,6 +35,7 @@ export async function exportAppAsync(
     sourceMaps,
     minify,
     maxWorkers,
+    ...options
   }: Pick<
     Options,
     | 'dumpAssetmap'
@@ -44,6 +46,7 @@ export async function exportAppAsync(
     | 'platforms'
     | 'minify'
     | 'maxWorkers'
+    | 'stats'
   >
 ): Promise<void> {
   setNodeEnv(dev ? 'development' : 'production');
@@ -77,6 +80,15 @@ export async function exportAppAsync(
   // split. Hence, there's another separate `copyPublicFolderAsync` call below for `web`
   await copyPublicFolderAsync(publicPath, outputPath);
 
+  const files: ExportAssetMap = new Map();
+  const allStats: Set<any> = new Set();
+
+  const onStats: StatsCallback | undefined = !options.stats
+    ? undefined
+    : (stats) => {
+        allStats.add(stats);
+      };
+
   // Run metro bundler and create the JS bundles/source maps.
   const bundles = await createBundlesAsync(projectRoot, projectConfig, {
     clear: !!clear,
@@ -85,11 +97,10 @@ export async function exportAppAsync(
     platforms: useServerRendering ? platforms.filter((platform) => platform !== 'web') : platforms,
     dev,
     maxWorkers,
+    onStats,
   });
 
   // Write the JS bundles to disk, and get the bundle file names (this could change with async chunk loading support).
-
-  const files: ExportAssetMap = new Map();
 
   Object.values(bundles).forEach((bundle) => {
     getFilesFromSerialAssets(bundle.artifacts, {
@@ -165,6 +176,7 @@ export async function exportAppAsync(
         routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
         exportServer,
         maxWorkers,
+        onStats,
       });
     } else {
       // TODO: Unify with exportStaticAsync
@@ -196,6 +208,16 @@ export async function exportAppAsync(
         targetDomain: 'client',
       });
     }
+  }
+
+  if (allStats.size) {
+    // TODO: If this gets too big, update to use references to other files.
+    files.set(`../.expo/stats.json`, {
+      contents: JSON.stringify({
+        version: 1,
+        graphs: Array.from(allStats),
+      }),
+    });
   }
 
   // Write all files at the end for unified logging.

@@ -26,6 +26,7 @@ import { getApiRoutesForDirectory } from '../start/server/metro/router';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import { learnMore } from '../utils/link';
 import { getFreePortAsync } from '../utils/port';
+import { StatsCallback } from '../start/server/metro/instantiateMetro';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
@@ -41,6 +42,7 @@ type Options = {
   asyncRoutes: boolean;
   routerRoot: string;
   maxWorkers?: number;
+  onStats?: StatsCallback;
 };
 
 type HtmlRequestLocation = {
@@ -70,6 +72,7 @@ export async function unstable_exportStaticAsync(projectRoot: string, options: O
     location: {},
     resetDevServer: options.clear,
     maxWorkers: options.maxWorkers,
+    onStats: options.onStats,
   });
   await devServerManager.startAsync([
     {
@@ -80,6 +83,7 @@ export async function unstable_exportStaticAsync(projectRoot: string, options: O
         isExporting: true,
         resetDevServer: options.clear,
         maxWorkers: options.maxWorkers,
+        onStats: options.onStats,
       },
     },
   ]);

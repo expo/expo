@@ -17,6 +17,7 @@ import {
   BaseResolveDeviceProps,
   PlatformManager,
 } from '../platforms/PlatformManager';
+import { StatsCallback } from './metro/instantiateMetro';
 
 const debug = require('debug')('expo:start:server:devServer') as typeof console.log;
 
@@ -69,6 +70,9 @@ export interface BundlerStartOptions {
 
   /** Will the bundler be used for exporting. NOTE: This is an odd option to pass to the dev server. */
   isExporting?: boolean;
+
+  /** Invoked with stats JSON for use with Expo-specific bundler dev tooling. Metro-only. */
+  onStats?: StatsCallback;
 
   // Webpack options
   /** Should modify and create PWA icons. */

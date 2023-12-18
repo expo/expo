@@ -411,6 +411,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       parsedOptions,
       {
         isExporting: !!options.isExporting,
+        onStats: options.onStats,
       }
     );
 
