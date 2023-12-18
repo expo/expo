@@ -1,6 +1,14 @@
 import * as path from 'path';
 
+import { getMimeType } from '../Image';
 import { getPngInfo } from '..';
+
+describe(getMimeType, () => {
+  it(`returns mime type for URL`, () => {
+    expect(getMimeType('https://example.com/image.png')).toBe('image/png');
+    expect(getMimeType('https://example.com/image.png?query=1')).toBe('image/png');
+  });
+});
 
 describe('Image #getPngInfo', () => {
   it('returns false if the file does not exist', async () => {
