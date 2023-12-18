@@ -251,15 +251,21 @@ class RecordTypeConverterTest {
   }
 
   enum class EnumWithoutParameter : Enumerable {
-    VALUE1, VALUE2, VALUE3
+    VALUE1,
+    VALUE2,
+    VALUE3
   }
 
   enum class EnumWithInt(val value: Int) : Enumerable {
-    VALUE1(1), VALUE2(2), VALUE3(3)
+    VALUE1(1),
+    VALUE2(2),
+    VALUE3(3)
   }
 
   enum class EnumWithString(val value: String) : Enumerable {
-    VALUE1("value1"), VALUE2("value2"), VALUE3("value3")
+    VALUE1("value1"),
+    VALUE2("value2"),
+    VALUE3("value3")
   }
 
   @Test

@@ -40,7 +40,7 @@ class JSIInteropModuleRegistry(appContext: AppContext) : Destructible {
    * Initializes the test runtime. Shouldn't be used in the production.
    */
   external fun installJSIForTests(
-    jniDeallocator: JNIDeallocator,
+    jniDeallocator: JNIDeallocator
   )
 
   fun installJSIForTests() = installJSIForTests(

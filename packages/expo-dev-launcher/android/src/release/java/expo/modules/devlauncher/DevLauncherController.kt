@@ -20,7 +20,8 @@ const val DEV_LAUNCHER_IS_NOT_AVAILABLE = "DevLauncher isn't available in releas
 
 class DevLauncherController private constructor() : DevLauncherControllerInterface {
   enum class Mode {
-    LAUNCHER, APP
+    LAUNCHER,
+    APP
   }
 
   override val latestLoadedApp: Uri? = null

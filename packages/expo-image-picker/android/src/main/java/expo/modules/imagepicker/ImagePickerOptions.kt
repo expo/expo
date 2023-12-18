@@ -89,5 +89,5 @@ internal enum class MediaTypes(val value: String) : Enumerable {
 
 internal enum class CameraType(val value: String) : Enumerable {
   BACK("back"),
-  FRONT("front"),
+  FRONT("front")
 }

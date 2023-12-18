@@ -10,5 +10,5 @@ data class SMSOptions(
 data class SMSAttachment(
   @Field val uri: String,
   @Field val mimeType: String,
-  @Field val filename: String,
+  @Field val filename: String
 ) : Record

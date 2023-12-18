@@ -54,7 +54,13 @@ class AuthenticationHelper(
       val requiresAuthentication = options.getBoolean(REQUIRE_AUTHENTICATION_PROPERTY, false)
 
       checkAuthentication(
-        promise, requiresAuthentication, cipher, gcmParameterSpec, options, encryptionCallback, postEncryptionCallback
+        promise,
+        requiresAuthentication,
+        cipher,
+        gcmParameterSpec,
+        options,
+        encryptionCallback,
+        postEncryptionCallback
       )
     }
 

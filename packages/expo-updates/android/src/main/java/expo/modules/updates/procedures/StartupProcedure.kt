@@ -265,8 +265,11 @@ class StartupProcedure(
 
           override fun onSuccess(loaderResult: Loader.LoaderResult) {
             setRemoteLoadStatus(
-              if (loaderResult.updateEntity != null || loaderResult.updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADED
-              else ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
+              if (loaderResult.updateEntity != null || loaderResult.updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
+                ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADED
+              } else {
+                ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
+              }
             )
             databaseHolder.releaseDatabase()
           }
@@ -290,8 +293,12 @@ class StartupProcedure(
         })
       }
 
-      override fun relaunch(callback: Launcher.LauncherCallback) { this@StartupProcedure.callback.onRequestRelaunch(shouldRunReaper = false, callback) }
-      override fun throwException(exception: Exception) { throw exception }
+      override fun relaunch(callback: Launcher.LauncherCallback) {
+        this@StartupProcedure.callback.onRequestRelaunch(shouldRunReaper = false, callback)
+      }
+      override fun throwException(exception: Exception) {
+        throw exception
+      }
 
       override fun markFailedLaunchForLaunchedUpdate() {
         if (isEmergencyLaunch) {

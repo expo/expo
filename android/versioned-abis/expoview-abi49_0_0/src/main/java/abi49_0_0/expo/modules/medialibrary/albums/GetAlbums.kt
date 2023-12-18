@@ -59,7 +59,8 @@ internal open class GetAlbums(
     } catch (e: SecurityException) {
       promise.reject(
         ERROR_UNABLE_TO_LOAD_PERMISSION,
-        "Could not get albums: need READ_EXTERNAL_STORAGE permission.", e
+        "Could not get albums: need READ_EXTERNAL_STORAGE permission.",
+        e
       )
     } catch (e: RuntimeException) {
       promise.reject(ERROR_UNABLE_TO_LOAD, "Could not get albums.", e)

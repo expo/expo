@@ -61,7 +61,8 @@ object ExponentDB {
 
   @WorkerThread
   @Throws(JSONException::class)
-  @JvmStatic fun experienceScopeKeyToExperienceSync(experienceScopeKeyString: String): ExponentDBObject? {
+  @JvmStatic
+  fun experienceScopeKeyToExperienceSync(experienceScopeKeyString: String): ExponentDBObject? {
     val experienceDBObject = SQLite.select()
       .from(ExperienceDBObject::class.java)
       .where(ExperienceDBObject_Table.id.`is`(experienceScopeKeyString))

@@ -30,7 +30,7 @@ import kotlin.math.max
  * of implementing the transition between bitmaps.
  */
 class ImageViewWrapperTarget(
-  private val imageViewHolder: WeakReference<ExpoImageViewWrapper>,
+  private val imageViewHolder: WeakReference<ExpoImageViewWrapper>
 ) : Target<Drawable> {
   /**
    * Whether the target has a main, non-placeholder source

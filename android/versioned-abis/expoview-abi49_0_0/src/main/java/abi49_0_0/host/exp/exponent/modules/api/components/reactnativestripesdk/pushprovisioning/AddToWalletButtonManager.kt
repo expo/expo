@@ -28,7 +28,8 @@ class AddToWalletButtonManager(applicationContext: Context) : SimpleViewManager<
 
   override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any> {
     return MapBuilder.of(
-      AddToWalletCompleteEvent.EVENT_NAME, MapBuilder.of("registrationName", "onCompleteAction")
+      AddToWalletCompleteEvent.EVENT_NAME,
+      MapBuilder.of("registrationName", "onCompleteAction")
     )
   }
 

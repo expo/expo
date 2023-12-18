@@ -178,7 +178,8 @@ internal class DevClientLoadLocalAppTest : DevLauncherKoinTest() {
 
     // TODO: create something similar to the RNClickAction from https://github.com/wix/Detox/blob/8c0e4b530e7cb326117f4d64cb56f0a1ee2392d6/detox/android/detox/src/full/java/com/wix/detox/espresso/action/RNClickAction.java
     Views.DevLauncher.loadAppButton.perform(
-      ViewActions.click(), ViewActions.click()
+      ViewActions.click(),
+      ViewActions.click()
     )
 
     Views.BundledApp.main.isDisplayed()

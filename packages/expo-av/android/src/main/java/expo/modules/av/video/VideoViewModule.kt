@@ -57,12 +57,13 @@ class VideoViewModule : Module() {
       "ScaleNone" to ScalableType.LEFT_TOP.ordinal.toString(),
       "ScaleToFill" to ScalableType.FIT_XY.ordinal.toString(),
       "ScaleAspectFit" to ScalableType.FIT_CENTER.ordinal.toString(),
-      "ScaleAspectFill" to ScalableType.CENTER_CROP.ordinal.toString(),
+      "ScaleAspectFill" to ScalableType.CENTER_CROP.ordinal.toString()
     )
 
     AsyncFunction("setFullscreen") { tag: Int, shouldBeFullscreen: Boolean, promise: Promise ->
       ViewUtils.tryRunWithVideoView(
-        appContext.legacyModuleRegistry, tag,
+        appContext.legacyModuleRegistry,
+        tag,
         object : ViewUtils.VideoViewCallback {
           override fun runWithVideoView(videoView: VideoView) {
             val listener = object : FullscreenVideoPlayerPresentationChangeProgressListener() {

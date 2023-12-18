@@ -87,9 +87,9 @@ class GoogleMapsCallbacks(private val map: GoogleMap, private val context: Conte
         context,
         Manifest.permission.ACCESS_FINE_LOCATION
       ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-          context,
-          Manifest.permission.ACCESS_COARSE_LOCATION
-        ) != PackageManager.PERMISSION_GRANTED
+        context,
+        Manifest.permission.ACCESS_COARSE_LOCATION
+      ) != PackageManager.PERMISSION_GRANTED
     ) {
       return
     }
@@ -99,7 +99,7 @@ class GoogleMapsCallbacks(private val map: GoogleMap, private val context: Conte
       Looper.getMainLooper()
     )
     /*On location button click listener is set here in order to get permission updates more often.
-    * In the future it should be called only when the permissions change */
+     * In the future it should be called only when the permissions change */
     map.setOnMyLocationButtonClickListener {
       locationProvider.lastLocation.addOnSuccessListener { location ->
         onLocationButtonPress?.let { it(UserLocationRecord(location)) }

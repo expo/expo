@@ -10,11 +10,15 @@ import com.stripe.android.model.PaymentIntent
 import com.stripe.android.model.SetupIntent
 
 enum class ErrorType {
-  Failed, Canceled, Unknown
+  Failed,
+  Canceled,
+  Unknown
 }
 
 enum class ConfirmPaymentErrorType {
-  Failed, Canceled, Unknown
+  Failed,
+  Canceled,
+  Unknown
 }
 
 enum class CreateTokenErrorType {
@@ -22,7 +26,9 @@ enum class CreateTokenErrorType {
 }
 
 enum class ConfirmSetupIntentErrorType {
-  Failed, Canceled, Unknown
+  Failed,
+  Canceled,
+  Unknown
 }
 
 enum class RetrievePaymentIntentErrorType {
@@ -34,11 +40,14 @@ enum class RetrieveSetupIntentErrorType {
 }
 
 enum class PaymentSheetErrorType {
-  Failed, Canceled, Timeout
+  Failed,
+  Canceled,
+  Timeout
 }
 
 enum class GooglePayErrorType {
-  Failed, Canceled
+  Failed,
+  Canceled
 }
 
 class PaymentSheetAppearanceException(message: String) : Exception(message)

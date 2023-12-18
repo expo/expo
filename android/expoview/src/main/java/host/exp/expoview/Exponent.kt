@@ -88,7 +88,7 @@ class Exponent private constructor(val context: Context, val application: Applic
     var expoPackages: List<Package>?,
     var exponentPackageDelegate: ExponentPackageDelegate?,
     var manifest: Manifest,
-    var singletonModules: List<SingletonModule>,
+    var singletonModules: List<SingletonModule>
   )
 
   fun addActivityResultListener(listener: ActivityResultListener) {

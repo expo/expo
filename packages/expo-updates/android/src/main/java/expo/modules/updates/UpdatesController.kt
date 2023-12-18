@@ -22,6 +22,7 @@ import expo.modules.updates.logging.UpdatesLogger
 class UpdatesController {
   companion object {
     private var singletonInstance: IUpdatesController? = null
+
     @JvmStatic val instance: IUpdatesController
       get() {
         return checkNotNull(singletonInstance) { "UpdatesController.instance was called before the module was initialized" }

@@ -104,7 +104,7 @@ private val DEFAULT_PROJECTION = listOf(
   CommonDataKinds.StructuredName.PHONETIC_FAMILY_NAME,
   CommonDataKinds.Organization.COMPANY,
   CommonDataKinds.Organization.TITLE,
-  CommonDataKinds.Organization.DEPARTMENT,
+  CommonDataKinds.Organization.DEPARTMENT
 )
 
 class ContactQuery : Record {

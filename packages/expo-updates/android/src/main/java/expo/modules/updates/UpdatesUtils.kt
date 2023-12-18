@@ -155,7 +155,9 @@ object UpdatesUtils {
     return if (asset.key == null) {
       // create a filename that's unlikely to collide with any other asset
       "asset-" + Date().time + "-" + Random().nextInt() + fileExtension
-    } else asset.key + fileExtension
+    } else {
+      asset.key + fileExtension
+    }
   }
 
   fun sendEventToReactNative(
