@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Change `@babel/plugin-proposal-object-rest-spread` to `@babel/plugin-transform-object-rest-spread`.
+
 ## 10.0.0 — 2023-12-12
 
 ### 🛠 Breaking changes
