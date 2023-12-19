@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix development status for modern updates. ([#26042](https://github.com/expo/expo/pull/26042) by [@wschurman](https://github.com/wschurman))
+
 ### 💡 Others
 
 - [ios] Remove unnecessary delegate from FileDownloader. ([#25783](https://github.com/expo/expo/pull/25783) by [@wschurman](https://github.com/wschurman))

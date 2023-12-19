@@ -10,6 +10,7 @@ import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.loader.EmbeddedLoader
 import expo.modules.manifests.core.NewManifest
+import expo.modules.updates.db.enums.UpdateStatus
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -31,7 +32,11 @@ class NewUpdateManifest private constructor(
   private val mExtensions: JSONObject?
 ) : UpdateManifest {
   override val updateEntity: UpdateEntity by lazy {
-    UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey, this@NewUpdateManifest.manifest.getRawJson())
+    UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey, this@NewUpdateManifest.manifest.getRawJson()).apply {
+      if (isDevelopmentMode) {
+        status = UpdateStatus.DEVELOPMENT
+      }
+    }
   }
 
   private val assetHeaders: Map<String, JSONObject> by lazy {
@@ -81,7 +86,9 @@ class NewUpdateManifest private constructor(
     assetList
   }
 
-  override val isDevelopmentMode: Boolean = false
+  override val isDevelopmentMode: Boolean by lazy {
+    manifest.isDevelopmentMode()
+  }
 
   companion object {
     private val TAG = UpdateManifest::class.java.simpleName
