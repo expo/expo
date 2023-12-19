@@ -250,7 +250,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
     // We only seek if the new position is different from _currentPosition by a whole number of milliseconds.
     mustSeek = currentPositionMillis.longValue != [self _getRoundedMillisFromCMTime:_currentPosition].longValue;
     if (mustSeek) {
-      newPosition = CMTimeMakeWithSeconds(currentPositionMillis.floatValue / 1000, NSEC_PER_SEC);
+      newPosition = CMTimeMakeWithSeconds(currentPositionMillis.doubleValue / 1000, NSEC_PER_SEC);
     }
   }
   
