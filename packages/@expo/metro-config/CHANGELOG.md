@@ -11,7 +11,7 @@
 ### 🐛 Bug fixes
 
 - Fix matching async chunks with special characters in the file names. ([#26008](https://github.com/expo/expo/pull/26008) by [@EvanBacon](https://github.com/EvanBacon))
-
+- Add missing `fs-extra` dependency. ([#26022](https://github.com/expo/expo/pull/26022) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
