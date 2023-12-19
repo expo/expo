@@ -79,14 +79,6 @@ describe('serializes', () => {
     }
   }
 
-  // Serialize to a split bundle
-  async function serializeSplitAsync(fs: Record<string, string>) {
-    return await serializeTo({
-      fs,
-      options: { platform: 'web', dev: false, output: 'static' },
-    });
-  }
-
   describe('plugin callbacks', () => {
     it(`runs plugin with static output`, async () => {
       let didPluginRun = false;
