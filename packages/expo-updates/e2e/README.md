@@ -52,8 +52,8 @@ yarn detox:ios:debug:test
   - Then run
 
 ```bash
-yarn detox:android:release:build
-yarn detox:android:release:test
+yarn detox:android:debug:build
+yarn detox:android:debug:test
 ```
 
 - Running in your own EAS space:
