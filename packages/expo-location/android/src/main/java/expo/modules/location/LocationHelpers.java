@@ -106,6 +106,13 @@ public class LocationHelpers {
     map.putString("isoCountryCode", address.getCountryCode());
     map.putString("timezone", null);
 
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
+      sb.append(address.getAddressLine(i));
+    }
+
+    map.putString("formattedAddress", sb.toString());
+
     return map;
   }
 

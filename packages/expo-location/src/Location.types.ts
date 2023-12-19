@@ -457,6 +457,10 @@ export type LocationGeocodedAddress = {
    * @platform ios
    */
   timezone: string | null;
+  /**
+   * TODO: Docs for formattedAddress
+   */
+  formattedAddress: string | null;
 };
 
 // @needsAudit
