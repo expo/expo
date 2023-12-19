@@ -4,7 +4,7 @@ import ExpoFaceDetector from './ExpoFaceDetector';
 
 declare const global: any;
 
-let warnAboutDeprecation = true;
+let warnedAboutDeprecation = false;
 
 // @docsMissing
 export type Point = { x: number; y: number };
@@ -187,11 +187,11 @@ export type DetectionOptions = {
   tracking?: boolean;
 };
 
-if (warnAboutDeprecation) {
+if (!warnedAboutDeprecation) {
   console.warn(
     'ExpoFaceDetector has been deprecated and will be removed in a future SDK version. We recommend using react-native-vision-camera for this functionality.'
   );
-  warnAboutDeprecation = false;
+  warnedAboutDeprecation = true;
 }
 
 // @needsAudit

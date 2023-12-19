@@ -1,6 +1,6 @@
 import { UnavailabilityError } from 'expo-modules-core';
 import ExpoFaceDetector from './ExpoFaceDetector';
-let warnAboutDeprecation = true;
+let warnedAboutDeprecation = false;
 // @docsMissing
 export var FaceDetectorMode;
 (function (FaceDetectorMode) {
@@ -19,9 +19,9 @@ export var FaceDetectorClassifications;
     FaceDetectorClassifications[FaceDetectorClassifications["none"] = 1] = "none";
     FaceDetectorClassifications[FaceDetectorClassifications["all"] = 2] = "all";
 })(FaceDetectorClassifications || (FaceDetectorClassifications = {}));
-if (warnAboutDeprecation) {
+if (!warnedAboutDeprecation) {
     console.warn('ExpoFaceDetector has been deprecated and will be removed in a future SDK version. We recommend using react-native-vision-camera for this functionality.');
-    warnAboutDeprecation = false;
+    warnedAboutDeprecation = true;
 }
 // @needsAudit
 /**
