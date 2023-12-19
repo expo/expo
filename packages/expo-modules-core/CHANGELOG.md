@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed splash screen view flickering in dark mode on iOS. ([#26015](https://github.com/expo/expo/pull/26015) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 1.11.2 — 2023-12-15
