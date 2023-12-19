@@ -48,6 +48,7 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
     if let sharedController = UpdatesControllerRegistry.sharedInstance.controller {
       // for some reason the swift compiler and bridge are having issues here
       EXDevLauncherController.sharedInstance().updatesInterface = sharedController
+      sharedController.updatesExternalInterfaceDelegate = EXDevLauncherController.sharedInstance()
     }
     return EXDevLauncherDeferredRCTBridge(delegate: self.bridgeDelegateHandler, launchOptions: launchOptions)
   }

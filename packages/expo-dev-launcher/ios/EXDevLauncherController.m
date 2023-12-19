@@ -801,4 +801,12 @@
   [userDefaults setObject:existingSettings forKey:kRCTDevSettingsUserDefaultsKey];
 }
 
+- (void)updatesExternalInterfaceDidRequestRelaunch:(id<EXUpdatesExternalInterface> _Nonnull)updatesExternalInterface {
+  NSURL * _Nullable appUrl = self.appManifestURLWithFallback;
+  if (!appUrl) {
+    return;
+  }
+  [self loadApp:appUrl onSuccess:nil onError:nil];
+}
+
 @end

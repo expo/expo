@@ -251,7 +251,8 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
       checkOnLaunch: self.config.checkOnLaunch,
       requestHeaders: self.config.requestHeaders,
       assetFilesMap: startupProcedure.assetFilesMap(),
-      isMissingRuntimeVersion: false
+      isMissingRuntimeVersion: false,
+      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: false
     )
   }
 

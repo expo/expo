@@ -21,7 +21,8 @@ import ExpoModulesCore
 public final class DevLauncherAppController: NSObject, InternalAppControllerInterface, UpdatesExternalInterface {
   public weak var bridge: AnyObject?
 
-  public var delegate: AppControllerDelegate?
+  public weak var delegate: AppControllerDelegate?
+  public weak var updatesExternalInterfaceDelegate: (any EXUpdatesInterface.UpdatesExternalInterfaceDelegate)?
 
   public func launchAssetUrl() -> URL? {
     return launcher?.launchAssetUrl
@@ -317,12 +318,15 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
       checkOnLaunch: self.config?.checkOnLaunch ?? CheckAutomaticallyConfig.Always,
       requestHeaders: self.config?.requestHeaders ?? [:],
       assetFilesMap: assetFilesMap(),
-      isMissingRuntimeVersion: self.isMissingRuntimeVersion
+      isMissingRuntimeVersion: self.isMissingRuntimeVersion,
+      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: true
     )
   }
 
   public func requestRelaunch(success successBlockArg: @escaping () -> Void, error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void) {
-    errorBlockArg(NotAvailableInDevClientException())
+    self.updatesExternalInterfaceDelegate.let { it in
+      it.updatesExternalInterfaceDidRequestRelaunch(_: self)
+    }
   }
 
   public func checkForUpdate(success successBlockArg: @escaping (CheckForUpdateResult) -> Void, error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void) {

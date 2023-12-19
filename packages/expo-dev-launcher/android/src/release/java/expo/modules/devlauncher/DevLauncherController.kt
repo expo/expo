@@ -45,6 +45,10 @@ class DevLauncherController private constructor() : DevLauncherControllerInterfa
     get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
     set(_) {}
 
+  override fun onRequestRelaunch() {
+    throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
+  }
+
   override val coroutineScope: CoroutineScope
     get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
 

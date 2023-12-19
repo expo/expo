@@ -53,7 +53,7 @@ class UpdatesModule : Module() {
         constants["runtimeVersion"] = constantsForModule.runtimeVersion ?: ""
         constants["checkAutomatically"] = constantsForModule.checkOnLaunch.toJSString()
         constants["channel"] = constantsForModule.requestHeaders["expo-channel-name"] ?: ""
-        constants["nativeDebug"] = BuildConfig.EX_UPDATES_NATIVE_DEBUG
+        constants["shouldDeferToNativeForAPIMethodAvailabilityInDevelopment"] = constantsForModule.shouldDeferToNativeForAPIMethodAvailabilityInDevelopment || BuildConfig.EX_UPDATES_NATIVE_DEBUG
 
         if (launchedUpdate != null) {
           constants["updateId"] = launchedUpdate.id.toString()

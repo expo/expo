@@ -1,7 +1,6 @@
 // Copyright 2019 650 Industries. All rights reserved.
 
 // swiftlint:disable closure_body_length
-// swiftlint:disable superfluous_else
 
 import ExpoModulesCore
 
@@ -15,7 +14,6 @@ import ExpoModulesCore
  * by EXUpdatesBinding, a scoped module, in Expo Go.
  */
 public final class UpdatesModule: Module {
-  // swiftlint:disable cyclomatic_complexity
   public func definition() -> ModuleDefinition {
     Name("ExpoUpdates")
 
@@ -37,7 +35,9 @@ public final class UpdatesModule: Module {
           "releaseChannel": releaseChannel,
           "runtimeVersion": runtimeVersion,
           "checkAutomatically": checkAutomatically,
-          "channel": channel
+          "channel": channel,
+          "shouldDeferToNativeForAPIMethodAvailabilityInDevelopment":
+            constantsForModule.shouldDeferToNativeForAPIMethodAvailabilityInDevelopment || UpdatesUtils.isNativeDebuggingEnabled()
         ]
       }
 
@@ -59,7 +59,8 @@ public final class UpdatesModule: Module {
         "checkAutomatically": checkAutomatically,
         "channel": channel,
         "commitTime": commitTime,
-        "nativeDebug": UpdatesUtils.isNativeDebuggingEnabled()
+        "shouldDeferToNativeForAPIMethodAvailabilityInDevelopment":
+          constantsForModule.shouldDeferToNativeForAPIMethodAvailabilityInDevelopment || UpdatesUtils.isNativeDebuggingEnabled()
       ]
     }
 
@@ -179,8 +180,6 @@ public final class UpdatesModule: Module {
       }
     }
   }
-  // swiftlint:enable cyclomatic_complexity
 }
 
 // swiftlint:enable closure_body_length
-// swiftlint:enable superfluous_else
