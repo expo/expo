@@ -11,6 +11,8 @@
 ### 🐛 Bug fixes
 
 - Add missing `@expo/image-utils` dependency. ([#25990](https://github.com/expo/expo/pull/25990) by [@byCedric](https://github.com/byCedric))
+- Add missing `find-yarn-workspace-root` dependency. ([#25991](https://github.com/expo/expo/pull/25991) by [@byCedric](https://github.com/byCedric))
+- Add missing `lodash.debounce` dependency. ([#25990](https://github.com/expo/expo/pull/25990) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 

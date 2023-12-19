@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Change `@babel/plugin-proposal-object-rest-spread` to `@babel/plugin-transform-object-rest-spread`. ([#26035](https://github.com/expo/expo/pull/26035) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 10.0.0 — 2023-12-12
 
 ### 🛠 Breaking changes

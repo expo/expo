@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Fix matching async chunks with special characters in the file names. ([#26008](https://github.com/expo/expo/pull/26008) by [@EvanBacon](https://github.com/EvanBacon))
+- Add missing `glob` dependency. ([#26020](https://github.com/expo/expo/pull/26020) by [@byCedric](https://github.com/byCedric))
 - Add missing `@expo/spawn-async` dependency. ([#26021](https://github.com/expo/expo/pull/26021) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
