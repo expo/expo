@@ -134,6 +134,18 @@ export async function graphToSerialAssetsAsync(
       // entryChunk.requiredChunks.add(commonChunk);
       // chunks.add(commonChunk);
     }
+
+    // TODO: Optimize this pass more.
+    // Remove all dependencies from async chunks that are already in the common chunk.
+    for (const chunk of [...chunks.values()]) {
+      if (chunk !== entryChunk) {
+        for (const dep of chunk.deps) {
+          if (entryChunk.deps.has(dep)) {
+            chunk.deps.delete(dep);
+          }
+        }
+      }
+    }
   }
 
   const jsAssets = await serializeChunksAsync(
