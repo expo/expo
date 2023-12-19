@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { getConfig } from '@expo/config';
+import type { ProjectConfig } from '@expo/config';
 import { ExpoResponse } from '@expo/server';
 import { createRequestHandler } from '@expo/server/build/vendor/http';
 import requireString from 'require-from-string';
@@ -35,6 +35,7 @@ export function createRouteHandlerMiddleware(
     baseUrl: string;
     getWebBundleUrl: () => string;
     getStaticPageAsync: (pathname: string) => Promise<{ content: string }>;
+    config: ProjectConfig;
   }
 ) {
   return createRequestHandler(
@@ -112,7 +113,7 @@ export function createRouteHandlerMiddleware(
         logMetroError(projectRoot, { error });
       },
       async getApiRoute(route) {
-        const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
+        const { exp } = options.config;
         if (exp.web?.output !== 'server') {
           warnInvalidWebOutput();
         }

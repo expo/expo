@@ -455,7 +455,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     // Append support for redirecting unhandled requests to the index.html page on web.
     if (this.isTargetingWeb()) {
-      const { exp } = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
+      const config = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
+      const { exp } = config;
       const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
 
       // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
@@ -475,6 +476,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             appDir,
             baseUrl,
             routerRoot,
+            config,
             getWebBundleUrl: manifestMiddleware.getWebBundleUrl.bind(manifestMiddleware),
             getStaticPageAsync: (pathname) => {
               return this.getStaticPageAsync(pathname, {
