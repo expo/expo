@@ -13,7 +13,7 @@
 
 ### 💡 Others
 
-- Improve bundle splitting by reducing duplicate dependencies.
+- Improve bundle splitting by reducing duplicate dependencies. ([#26010](https://github.com/expo/expo/pull/26010) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.17.0 — 2023-12-15
 
