@@ -29,25 +29,37 @@ export type SerializerParameters = [
   ExpoSerializerOptions,
 ];
 
+export type SerializerConfigOptions = {
+  unstable_beforeAssetSerializationPlugins?: ((serializationInput: {
+    graph: ReadOnlyGraph<MixedOutput>;
+    premodules: Module[];
+    debugId?: string;
+  }) => Module[])[];
+};
+
 // A serializer that processes the input and returns a modified version.
 // Unlike a serializer, these can be chained together.
 export type SerializerPlugin = (...props: SerializerParameters) => SerializerParameters;
 
-export function withExpoSerializers(config: InputConfigT): InputConfigT {
+export function withExpoSerializers(
+  config: InputConfigT,
+  options: SerializerConfigOptions = {}
+): InputConfigT {
   const processors: SerializerPlugin[] = [];
   processors.push(serverPreludeSerializerPlugin);
   if (!env.EXPO_NO_CLIENT_ENV_VARS) {
     processors.push(environmentVariableSerializerPlugin);
   }
 
-  return withSerializerPlugins(config, processors);
+  return withSerializerPlugins(config, processors, options);
 }
 
 // There can only be one custom serializer as the input doesn't match the output.
 // Here we simply run
 export function withSerializerPlugins(
   config: InputConfigT,
-  processors: SerializerPlugin[]
+  processors: SerializerPlugin[],
+  options: SerializerConfigOptions = {}
 ): InputConfigT {
   const originalSerializer = config.serializer?.customSerializer;
 
@@ -58,13 +70,17 @@ export function withSerializerPlugins(
       customSerializer: createSerializerFromSerialProcessors(
         config,
         processors,
-        originalSerializer
+        originalSerializer ?? null,
+        options
       ),
     },
   };
 }
 
-export function createDefaultExportCustomSerializer(config: Partial<MetroConfig>): Serializer {
+export function createDefaultExportCustomSerializer(
+  config: Partial<MetroConfig>,
+  configOptions: SerializerConfigOptions = {}
+): Serializer {
   return async (
     entryPoint: string,
     preModules: readonly Module<MixedOutput>[],
@@ -108,10 +124,17 @@ export function createDefaultExportCustomSerializer(config: Partial<MetroConfig>
         bundleMap = bundle.map;
       }
     } else {
+      const debugId = loadDebugId();
+      let premodulesToBundle = [...preModules];
+      if (configOptions.unstable_beforeAssetSerializationPlugins) {
+        for (const plugin of configOptions.unstable_beforeAssetSerializationPlugins) {
+          premodulesToBundle = plugin({ graph, premodules: [...premodulesToBundle], debugId });
+        }
+      }
       bundleCode = bundleToString(
-        baseJSBundle(entryPoint, preModules, graph, {
+        baseJSBundle(entryPoint, premodulesToBundle, graph, {
           ...options,
-          debugId: loadDebugId(),
+          debugId,
         })
       ).code;
     }
@@ -167,9 +190,11 @@ export function createDefaultExportCustomSerializer(config: Partial<MetroConfig>
 
 function getDefaultSerializer(
   config: MetroConfig,
-  fallbackSerializer?: Serializer | null
+  fallbackSerializer?: Serializer | null,
+  configOptions: SerializerConfigOptions = {}
 ): Serializer {
-  const defaultSerializer = fallbackSerializer ?? createDefaultExportCustomSerializer(config);
+  const defaultSerializer =
+    fallbackSerializer ?? createDefaultExportCustomSerializer(config, configOptions);
 
   return async (
     ...props: SerializerParameters
@@ -221,6 +246,7 @@ function getDefaultSerializer(
       {
         includeSourceMaps: !!serializerOptions.includeSourceMaps,
         includeBytecode: !!serializerOptions.includeBytecode,
+        ...configOptions,
       },
       ...props
     );
@@ -237,9 +263,10 @@ function getDefaultSerializer(
 export function createSerializerFromSerialProcessors(
   config: MetroConfig,
   processors: (SerializerPlugin | undefined)[],
-  originalSerializer?: Serializer | null
+  originalSerializer: Serializer | null,
+  options: SerializerConfigOptions = {}
 ): Serializer {
-  const finalSerializer = getDefaultSerializer(config, originalSerializer);
+  const finalSerializer = getDefaultSerializer(config, originalSerializer, options);
   return (...props: SerializerParameters): ReturnType<Serializer> => {
     for (const processor of processors) {
       if (processor) {

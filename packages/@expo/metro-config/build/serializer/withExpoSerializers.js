@@ -84,29 +84,29 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * LICENSE file in the root directory of this source tree.
  */
 
-function withExpoSerializers(config) {
+function withExpoSerializers(config, options = {}) {
   const processors = [];
   processors.push(_environmentVariableSerializerPlugin().serverPreludeSerializerPlugin);
   if (!_env().env.EXPO_NO_CLIENT_ENV_VARS) {
     processors.push(_environmentVariableSerializerPlugin().environmentVariableSerializerPlugin);
   }
-  return withSerializerPlugins(config, processors);
+  return withSerializerPlugins(config, processors, options);
 }
 
 // There can only be one custom serializer as the input doesn't match the output.
 // Here we simply run
-function withSerializerPlugins(config, processors) {
+function withSerializerPlugins(config, processors, options = {}) {
   var _config$serializer;
   const originalSerializer = (_config$serializer = config.serializer) === null || _config$serializer === void 0 ? void 0 : _config$serializer.customSerializer;
   return {
     ...config,
     serializer: {
       ...config.serializer,
-      customSerializer: createSerializerFromSerialProcessors(config, processors, originalSerializer)
+      customSerializer: createSerializerFromSerialProcessors(config, processors, originalSerializer !== null && originalSerializer !== void 0 ? originalSerializer : null, options)
     }
   };
 }
-function createDefaultExportCustomSerializer(config) {
+function createDefaultExportCustomSerializer(config, configOptions = {}) {
   return async (entryPoint, preModules, graph, options) => {
     var _config$serializer2;
     const isPossiblyDev = graph.transformOptions.hot;
@@ -139,9 +139,20 @@ function createDefaultExportCustomSerializer(config) {
         bundleMap = bundle.map;
       }
     } else {
-      bundleCode = (0, _bundleToString().default)((0, _baseJSBundle().baseJSBundle)(entryPoint, preModules, graph, {
+      const debugId = loadDebugId();
+      let premodulesToBundle = [...preModules];
+      if (configOptions.unstable_beforeAssetSerializationPlugins) {
+        for (const plugin of configOptions.unstable_beforeAssetSerializationPlugins) {
+          premodulesToBundle = plugin({
+            graph,
+            premodules: [...premodulesToBundle],
+            debugId
+          });
+        }
+      }
+      bundleCode = (0, _bundleToString().default)((0, _baseJSBundle().baseJSBundle)(entryPoint, premodulesToBundle, graph, {
         ...options,
-        debugId: loadDebugId()
+        debugId
       })).code;
     }
     if (isPossiblyDev) {
@@ -186,8 +197,8 @@ function createDefaultExportCustomSerializer(config) {
     };
   };
 }
-function getDefaultSerializer(config, fallbackSerializer) {
-  const defaultSerializer = fallbackSerializer !== null && fallbackSerializer !== void 0 ? fallbackSerializer : createDefaultExportCustomSerializer(config);
+function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
+  const defaultSerializer = fallbackSerializer !== null && fallbackSerializer !== void 0 ? fallbackSerializer : createDefaultExportCustomSerializer(config, configOptions);
   return async (...props) => {
     const [,,, options] = props;
     const customSerializerOptions = options.serializerOptions;
@@ -225,7 +236,8 @@ function getDefaultSerializer(config, fallbackSerializer) {
     };
     const assets = await (0, _serializeChunks().graphToSerialAssetsAsync)(config, {
       includeSourceMaps: !!serializerOptions.includeSourceMaps,
-      includeBytecode: !!serializerOptions.includeBytecode
+      includeBytecode: !!serializerOptions.includeBytecode,
+      ...configOptions
     }, ...props);
     if (supportsNonSerialReturn) {
       // @ts-expect-error: this is future proofing for adding assets to the output as well.
@@ -234,8 +246,8 @@ function getDefaultSerializer(config, fallbackSerializer) {
     return JSON.stringify(assets);
   };
 }
-function createSerializerFromSerialProcessors(config, processors, originalSerializer) {
-  const finalSerializer = getDefaultSerializer(config, originalSerializer);
+function createSerializerFromSerialProcessors(config, processors, originalSerializer, options = {}) {
+  const finalSerializer = getDefaultSerializer(config, originalSerializer, options);
   return (...props) => {
     for (const processor of processors) {
       if (processor) {

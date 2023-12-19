@@ -30,6 +30,7 @@ import {
 } from './fork/baseJSBundle';
 import { getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
+import { SerializerConfigOptions } from './withExpoSerializers';
 import getMetroAssets from '../transform-worker/getAssets';
 
 type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
@@ -44,7 +45,7 @@ type ChunkSettings = {
 export type SerializeChunkOptions = {
   includeSourceMaps: boolean;
   includeBytecode: boolean;
-};
+} & SerializerConfigOptions;
 
 // Convert file paths to regex matchers.
 function pathToRegex(path: string) {
@@ -348,12 +349,22 @@ export class Chunk {
     {
       includeSourceMaps,
       includeBytecode,
-    }: { includeSourceMaps?: boolean; includeBytecode?: boolean }
+      unstable_beforeAssetSerializationPlugins,
+    }: SerializeChunkOptions
   ): Promise<SerialAsset[]> {
     // Create hash without wrapping to prevent it changing when the wrapping changes.
     const outputFile = this.getFilenameForConfig(serializerConfig);
     // We already use a stable hash for the output filename, so we'll reuse that for the debugId.
     const debugId = stringToUUID(path.basename(outputFile, path.extname(outputFile)));
+
+    let premodules = [...this.preModules];
+    if (unstable_beforeAssetSerializationPlugins) {
+      for (const plugin of unstable_beforeAssetSerializationPlugins) {
+        premodules = plugin({ graph: this.graph, premodules, debugId });
+      }
+      this.preModules = new Set(premodules);
+    }
+
     const jsCode = this.serializeToCode(serializerConfig, { chunks, debugId });
 
     const relativeEntry = path.relative(this.options.projectRoot, this.name);
@@ -577,7 +588,7 @@ function gatherChunks(
 async function serializeChunksAsync(
   chunks: Set<Chunk>,
   serializerConfig: Partial<SerializerConfigT>,
-  { includeSourceMaps, includeBytecode }: SerializeChunkOptions
+  options: SerializeChunkOptions
 ) {
   const jsAssets: SerialAsset[] = [];
 
@@ -585,10 +596,7 @@ async function serializeChunksAsync(
   await Promise.all(
     chunksArray.map(async (chunk) => {
       jsAssets.push(
-        ...(await chunk.serializeToAssetsAsync(serializerConfig, chunksArray, {
-          includeSourceMaps,
-          includeBytecode,
-        }))
+        ...(await chunk.serializeToAssetsAsync(serializerConfig, chunksArray, options))
       );
     })
   );
