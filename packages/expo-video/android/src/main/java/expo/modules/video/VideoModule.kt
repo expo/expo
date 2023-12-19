@@ -4,9 +4,7 @@ import android.app.Activity
 import android.view.View
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackParameters
-import androidx.media3.exoplayer.SeekParameters
 import androidx.media3.ui.DefaultTimeBar
-import androidx.media3.ui.TimeBar
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -45,7 +43,7 @@ class VideoModule : Module() {
         if (progressBar is DefaultTimeBar) {
           progressBar.visibility = if (linearPlayback) View.GONE else View.VISIBLE
         }
-       view.videoPlayer?.requiresLinearPlayback = linearPlayback
+        view.videoPlayer?.requiresLinearPlayback = linearPlayback
       }
     }
 
@@ -63,24 +61,24 @@ class VideoModule : Module() {
         ref.isLoading
       }
 
-      Property("isMuted") {ref: VideoPlayer ->
+      Property("isMuted") { ref: VideoPlayer ->
         ref.isMuted
       }
-      .set { ref: VideoPlayer, isMuted: Boolean ->
-        appContext.mainQueue.launch {
-          ref.isMuted = isMuted
+        .set { ref: VideoPlayer, isMuted: Boolean ->
+          appContext.mainQueue.launch {
+            ref.isMuted = isMuted
+          }
         }
-      }
 
       Property("volume") { ref: VideoPlayer ->
         ref.volume
       }
-      .set{ref:VideoPlayer, volume: Float ->
-        appContext.mainQueue.launch {
-          ref.userVolume = volume
-          ref.volume = volume
+        .set { ref: VideoPlayer, volume: Float ->
+          appContext.mainQueue.launch {
+            ref.userVolume = volume
+            ref.volume = volume
+          }
         }
-      }
 
       AsyncFunction("getPlaybackSpeed") { ref: VideoPlayer ->
         appContext.mainQueue.launch {
