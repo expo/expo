@@ -105,9 +105,30 @@ Refer to the ["Prerequisites for Applications" section of the React Native docum
 
 </Collapsible>
 
-## Using the compatibility layer
+## Using the interop layer
 
-TODO: write about the compatibility layer here
+Not all libraries have been migrated to support the New Architecture yet. To use these libraries in your app, you can use the interop layer as described in the ["New Renderer Interop Layer" working group post](https://github.com/reactwg/react-native-new-architecture/discussions/135).
+
+To use the interop layer, you will need to add the following to your **react-native.config.js**:
+
+```js
+module.exports = {
+  project: {
+    android: {
+      unstable_reactLegacyComponentNames: ["NativeComponentName"]
+    },
+    ios: {
+      unstable_reactLegacyComponentNames: ["NativeComponentName"]
+    }
+  },
+};
+```
+
+Replace `"NativeComponentName"` with the name of the native component that you want to use. For example, the view component in [@react-native-segmented-control/segmented-control](https://github.com/react-native-segmented-control/segmented-control) is `RNCSegmentedControl`, so you would add `"RNCSegmentedControl"` to the list of `unstable_reactLegacyComponentNames`.
+
+You may need to look at the library source code to determine the name, it may be helpful to look for `requireNativeComponent` in the library to find the name ([example](https://github.com/react-native-segmented-control/segmented-control/blob/ca72237642499d9b06edd0d2adefb6bba7eaaea3/js/RNCSegmentedControlNativeComponent.js#L17-L19)).
+
+The interop layer is not perfect and may not work for all libraries. If you encounter issues, please file an issue with the library.
 
 ## Troubleshooting
 
@@ -115,13 +136,6 @@ Meta and Expo are working towards making the New Architecture the default for al
 
 <Collapsible summary="My build failed after enabling the New Architecture">
 
-TODO - any common problems we can address here?
+Create a [minimal reproducible example](https://stackoverflow.com/help/minimal-reproducible-example) and report the issue to the library author, if applicable, or to the React Native team.
 
 </Collapsible>
-
-<Collapsible summary="Still stuck? Ask for help!">
-
-TODO - instructions for submitting a good, actionable bug report or getting help (eg: on Discord?)
-
-</Collapsible>
-
