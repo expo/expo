@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [ios] Remove unnecessary delegate from FileDownloader. ([#25783](https://github.com/expo/expo/pull/25783) by [@wschurman](https://github.com/wschurman))
+
 ## 0.24.3 — 2023-12-15
 
 _This version does not introduce any user-facing changes._
