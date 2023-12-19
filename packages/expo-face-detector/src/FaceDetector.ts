@@ -4,6 +4,8 @@ import ExpoFaceDetector from './ExpoFaceDetector';
 
 declare const global: any;
 
+let warnedAboutDeprecation = false;
+
 // @docsMissing
 export type Point = { x: number; y: number };
 
@@ -185,6 +187,13 @@ export type DetectionOptions = {
   tracking?: boolean;
 };
 
+if (!warnedAboutDeprecation) {
+  console.warn(
+    'ExpoFaceDetector has been deprecated and will be removed in a future SDK version. We recommend using react-native-vision-camera for this functionality. See https://github.com/mrousavy/react-native-vision-camera'
+  );
+  warnedAboutDeprecation = true;
+}
+
 // @needsAudit
 export type DetectionResult = {
   /**
@@ -200,6 +209,7 @@ export type DetectionResult = {
  * @param uri `file://` URI to the image.
  * @param options A map of detection options.
  * @return Returns a Promise which fulfils with [`DetectionResult`](#detectionresult) object.
+ * @deprecated If you require this functionality, we recommend using [react-native-vision-camera](https://github.com/mrousavy/react-native-vision-camera)
  */
 export async function detectFacesAsync(
   uri: string,
