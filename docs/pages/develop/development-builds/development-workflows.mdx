@@ -36,7 +36,7 @@ To get your project's ID, use the URL in the [app config's `expo.updates.url`](/
 
 {/* TODO: @aman move this section out of this page -- make it part of the main path or a standalone guide, this is important part that should be searchable for eg: Deep linking URLs for Development builds/EAS Builds (when using expo-dev-client) */}
 
-### Deep linking URLs
+### Deep linking to an update's URL
 
 You can load your app on a device that has a compatible build of your custom client by opening a URL of the form `{scheme}://expo-development-client/?url={manifestUrl}`. You'll need to pass the following parameters:
 
@@ -52,6 +52,12 @@ exp+app-slug://expo-development-client/?url=https%3A%2F%2Fu.expo.dev%2F767ADF57-
 ```
 
 In the example above, the `scheme` is `exp+app-slug`, and the `manifestUrl` is a project with an ID of `F767ADF57-B487-4D8F-9522-85549C39F43F` and a channel of `main`.
+
+#### App-specific deep links
+
+When testing deep links in your development build, such as when navigating to a specific screen in an Expo Router app or testing redirecting back to your app during an Oauth login flow, construct the URL exactly as you would if you were deep-linking into a standalone build of your app (for example, `myscheme://path/to/screen`).
+
+Your project must be already open in the development build for an app-specific deep link to work. Cold-launching a development build with an app-specific deep link is not currently supported. Avoid using `expo-development-client` in your app-specific deep links in the path, as it is a reserved path used for launching an updated URL.
 
 ### QR codes
 
