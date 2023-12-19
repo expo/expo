@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Move `expo-module-scripts` to `devDependencies` instead of `peerDependencies`. ([#25994](https://github.com/expo/expo/pull/25994) by [@byCedric](https://github.com/byCedric))
-
 ### 💡 Others
+
+## 6.7.2 — 2023-12-19
+
+### 🐛 Bug fixes
+
+- Move `expo-module-scripts` to `devDependencies` instead of `peerDependencies`. ([#25994](https://github.com/expo/expo/pull/25994) by [@byCedric](https://github.com/byCedric))
 
 ## 6.7.1 — 2023-12-15
 

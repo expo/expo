@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Add relaunch to disabled and dev client controllers. ([#25973](https://github.com/expo/expo/pull/25973) by [@wschurman](https://github.com/wschurman))
-
 ### 💡 Others
+
+## 0.15.1 — 2023-12-19
+
+### 🐛 Bug fixes
+
+- Add relaunch to disabled and dev client controllers. ([#25973](https://github.com/expo/expo/pull/25973) by [@wschurman](https://github.com/wschurman))
 
 ## 0.15.0 — 2023-11-14
 

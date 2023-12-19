@@ -1,6 +1,6 @@
 {
   "name": "expo-dev-menu",
-  "version": "4.5.1",
+  "version": "4.5.2",
   "description": "Expo/React Native module with the developer menu.",
   "main": "build/DevMenu.js",
   "types": "build/DevMenu.d.ts",
@@ -47,7 +47,7 @@
     ]
   },
   "dependencies": {
-    "expo-dev-menu-interface": "1.7.0",
+    "expo-dev-menu-interface": "1.7.1",
     "semver": "^7.5.3"
   },
   "devDependencies": {

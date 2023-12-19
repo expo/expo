@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.16.4 — 2023-12-19
+
+### 🎉 New features
+
 - Update `run:ios` build warning formatting for SDK 50. ([#25978](https://github.com/expo/expo/pull/25978) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
@@ -14,8 +22,6 @@
 - Add missing `find-yarn-workspace-root` dependency. ([#25991](https://github.com/expo/expo/pull/25991) by [@byCedric](https://github.com/byCedric))
 - Add missing `lodash.debounce` dependency. ([#25990](https://github.com/expo/expo/pull/25990) by [@byCedric](https://github.com/byCedric))
 - Add missing `@react-native/dev-middleware` dependency. ([#26000](https://github.com/expo/expo/pull/26000) by [@byCedric](https://github.com/byCedric))
-
-### 💡 Others
 
 ## 0.16.3 — 2023-12-15
 
