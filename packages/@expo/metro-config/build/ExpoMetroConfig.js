@@ -200,7 +200,8 @@ function patchMetroGraphToSupportUncachedModules() {
 }
 function getDefaultConfig(projectRoot, {
   mode,
-  isCSSEnabled = true
+  isCSSEnabled = true,
+  unstable_beforeAssetSerializationPlugins
 } = {}) {
   const {
     getDefaultConfig: getDefaultMetroConfig,
@@ -352,7 +353,9 @@ function getDefaultConfig(projectRoot, {
       })
     }
   });
-  return (0, _withExpoSerializers().withExpoSerializers)(metroConfig);
+  return (0, _withExpoSerializers().withExpoSerializers)(metroConfig, {
+    unstable_beforeAssetSerializationPlugins
+  });
 }
 
 // re-export for use in config files.
