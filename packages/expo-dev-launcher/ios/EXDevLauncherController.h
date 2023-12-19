@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface EXDevLauncherController : NSObject <RCTBridgeDelegate>
+@interface EXDevLauncherController : NSObject <RCTBridgeDelegate, EXUpdatesExternalInterfaceDelegate>
 
 @property (nonatomic, weak) RCTBridge * _Nullable appBridge;
 @property (nonatomic, strong) RCTBridge *launcherBridge;
