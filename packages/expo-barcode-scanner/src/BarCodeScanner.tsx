@@ -149,7 +149,7 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
       console.warn(
         'BarCodeScanner has been deprecated and will be removed in a future SDK version. Please use `expo-camera` instead'
       );
-      warnedAboutDeprecation = false;
+      warnedAboutDeprecation = true;
     }
   }
 
