@@ -94,6 +94,16 @@ class DevLauncherController private constructor() :
     return url.host.equals("u.expo.dev") || url.host.equals("staging-u.expo.dev")
   }
 
+  override fun onRequestRelaunch() {
+    val latestLoadedApp = latestLoadedApp ?: return
+    coroutineScope.launch {
+      loadApp(
+        latestLoadedApp,
+        appHost.reactInstanceManager.currentReactContext?.currentActivity as? ReactActivity?
+      )
+    }
+  }
+
   override suspend fun loadApp(url: Uri, projectUrl: Uri?, mainActivity: ReactActivity?) {
     synchronized(this) {
       if (appIsLoading) {

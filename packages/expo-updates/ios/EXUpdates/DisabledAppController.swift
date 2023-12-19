@@ -10,11 +10,13 @@ import ExpoModulesCore
  * - Configuration errors (missing required configuration)
  */
 public class DisabledAppController: InternalAppControllerInterface {
-  public private(set) var isStarted: Bool = false // this is always false for disabled controllers
+  public private(set) var isStarted: Bool = false
 
   public weak var bridge: AnyObject?
 
   public weak var delegate: AppControllerDelegate?
+
+  private let stateMachine = UpdatesStateMachine()
 
   internal private(set) var isEmergencyLaunch: Bool = false
   private let initializationError: Error?
@@ -30,6 +32,10 @@ public class DisabledAppController: InternalAppControllerInterface {
   }
 
   public func start() {
+    precondition(!isStarted, "AppController:start should only be called once per instance")
+
+    isStarted = true
+
     let launcherNoDatabase = AppLauncherNoDatabase()
     launcher = launcherNoDatabase
     launcherNoDatabase.launchUpdate()
@@ -67,7 +73,8 @@ public class DisabledAppController: InternalAppControllerInterface {
       checkOnLaunch: CheckAutomaticallyConfig.Never,
       requestHeaders: [:],
       assetFilesMap: launcher?.assetFilesMap,
-      isMissingRuntimeVersion: self.isMissingRuntimeVersion
+      isMissingRuntimeVersion: self.isMissingRuntimeVersion,
+      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: false
     )
   }
 
@@ -75,7 +82,12 @@ public class DisabledAppController: InternalAppControllerInterface {
     success successBlockArg: @escaping () -> Void,
     error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void
   ) {
-    errorBlockArg(UpdatesDisabledException())
+    let procedure = RecreateReactContextProcedure(triggerReloadCommandListenersReason: "Requested by JavaScript - Updates.reloadAsync()") {
+      successBlockArg()
+    } errorBlock: { error in
+      errorBlockArg(error)
+    }
+    stateMachine.queueExecution(stateMachineProcedure: procedure)
   }
 
   public func checkForUpdate(
@@ -112,6 +124,6 @@ public class DisabledAppController: InternalAppControllerInterface {
     success successBlockArg: @escaping (UpdatesStateContext) -> Void,
     error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void
   ) {
-    errorBlockArg(UpdatesDisabledException())
+    successBlockArg(self.stateMachine.context)
   }
 }

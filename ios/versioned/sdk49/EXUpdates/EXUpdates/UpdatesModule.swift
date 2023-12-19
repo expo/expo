@@ -44,7 +44,8 @@ public final class UpdatesModule: Module {
           "releaseChannel": releaseChannel,
           "runtimeVersion": runtimeVersion,
           "checkAutomatically": checkAutomatically,
-          "channel": channel
+          "channel": channel,
+          "nativeDebug": UpdatesUtils.isNativeDebuggingEnabled()
         ]
       }
 

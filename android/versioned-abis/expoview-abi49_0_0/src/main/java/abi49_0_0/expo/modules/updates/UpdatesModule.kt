@@ -84,6 +84,7 @@ class UpdatesModule : Module() {
         // debug build.
         val isMissingRuntimeVersion = UpdatesConfiguration.isMissingRuntimeVersion(context, null)
         constants["isMissingRuntimeVersion"] = isMissingRuntimeVersion
+        constants["nativeDebug"] = BuildConfig.EX_UPDATES_NATIVE_DEBUG
       }
       constants
     }
