@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Improve bundle splitting by reducing duplicate dependencies.
+
 ## 0.17.0 — 2023-12-15
 
 ### 🎉 New features
