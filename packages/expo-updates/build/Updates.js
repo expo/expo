@@ -89,7 +89,7 @@ export const createdAt = ExpoUpdates.commitTime
     ? new Date(ExpoUpdates.commitTime)
     : null;
 /**
- * In normal development, we block accessing the updates API methods on the JS side, but when developing in
+ * During non-expo development we block accessing the updates API methods on the JS side, but when developing in
  * Expo Go or a development client build, the controllers should have control over which API methods should
  * be allowed.
  */
@@ -98,8 +98,8 @@ const shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = !!ExpoUpdates.s
  * Developer tool is set when a project is served by `expo start`.
  */
 const isUsingDeveloperTool = 'extra' in manifest ? !!manifest.extra?.expoGo?.developer?.tool : false;
-const manualUpdatesInstructions = 'To test usage of the expo-updates JS API in your app, make a release build with `npm run ios --configuration Release` or ' +
-    '`npm run android --variant Release`.';
+const manualUpdatesInstructions = 'To test usage of the expo-updates JS API in your app, make a release build with `npx expo run:ios --configuration Release` or ' +
+    '`npx expo run:android --variant Release`.';
 /**
  * Instructs the app to reload using the most recently downloaded version. This is useful for
  * triggering a newly downloaded update to launch without the user needing to manually restart the

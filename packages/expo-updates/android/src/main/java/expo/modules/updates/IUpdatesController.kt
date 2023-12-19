@@ -81,7 +81,7 @@ interface IUpdatesController {
 
     /**
      * Whether the JS API methods should allow calling the native module methods and thus the methods
-     * on the controller in development. For normal development (i.e. expo start) we want to throw
+     * on the controller in development. For non-expo development we want to throw
      * at the JS layer since there isn't a controller set up. But for development within Expo Go
      * or a Dev Client, which have their own controller/JS API implementations, we want the JS API
      * calls to go through.

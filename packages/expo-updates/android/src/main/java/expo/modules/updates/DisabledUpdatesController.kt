@@ -35,7 +35,7 @@ class DisabledUpdatesController(
   private val fatalException: Exception?,
   private val isMissingRuntimeVersion: Boolean
 ) : IUpdatesController, UpdatesStateChangeEventSender {
-  private var reactNativeHost: WeakReference<ReactNativeHost>? = if (context is ReactApplication) {
+  private val reactNativeHost: WeakReference<ReactNativeHost>? = if (context is ReactApplication) {
     WeakReference(context.reactNativeHost)
   } else {
     null

@@ -44,7 +44,7 @@ class EnabledUpdatesController(
   private val updatesConfiguration: UpdatesConfiguration,
   override val updatesDirectory: File
 ) : IUpdatesController, UpdatesStateChangeEventSender {
-  private var reactNativeHost: WeakReference<ReactNativeHost>? = if (context is ReactApplication) {
+  private val reactNativeHost: WeakReference<ReactNativeHost>? = if (context is ReactApplication) {
     WeakReference(context.reactNativeHost)
   } else {
     null
