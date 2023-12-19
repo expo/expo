@@ -5,6 +5,11 @@ import ExpoBarCodeScannerModule from './ExpoBarCodeScannerModule';
 import ExpoBarCodeScannerView from './ExpoBarCodeScannerView';
 const { BarCodeType, Type } = ExpoBarCodeScannerModule;
 const EVENT_THROTTLE_MS = 500;
+let warnAboutDeprecation = false;
+/**
+ * @deprecated
+ * BarCodeScanner is has been deprecated and will be removed in a future SDK version. Plesae use `expo-camera` instead.
+ */
 export class BarCodeScanner extends React.Component {
     lastEvents = {};
     lastEventsTimes = {};
@@ -19,6 +24,12 @@ export class BarCodeScanner extends React.Component {
         type: Type.back,
         barCodeTypes: Object.values(BarCodeType),
     };
+    componentDidMount() {
+        if (!warnAboutDeprecation) {
+            console.warn('BarCodeScanner has been deprecated and will be removed in a future SDK version. Please use `expo-camera` instead');
+            warnAboutDeprecation = true;
+        }
+    }
     // @needsAudit
     /**
      * Checks user's permissions for accessing the camera.
