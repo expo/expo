@@ -25,10 +25,7 @@ export function requireNativeModule(moduleName) {
  */
 export function requireOptionalNativeModule(moduleName) {
     ensureNativeModulesAreInstalled();
-    return (globalThis.expo?.modules?.[moduleName] ??
-        globalThis.ExpoModules?.[moduleName] ??
-        NativeModulesProxy[moduleName] ??
-        null);
+    return globalThis.expo?.modules?.[moduleName] ?? NativeModulesProxy[moduleName] ?? null;
 }
 /**
  * Ensures that the native modules are installed in the current runtime.

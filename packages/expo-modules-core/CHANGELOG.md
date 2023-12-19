@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Removed deprecated `global.ExpoModules`.
+
 ## 1.11.2 — 2023-12-15
 
 ### 💡 Others
