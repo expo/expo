@@ -17,7 +17,6 @@ import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString'
 import bundleToString from 'metro/src/lib/bundleToString';
 import { ConfigT, SerializerConfigT } from 'metro-config';
 import path from 'path';
-import pathToRegExp from 'path-to-regexp';
 
 import { stringToUUID } from './debugId';
 import { buildHermesBundleAsync } from './exportHermes';
@@ -47,6 +46,18 @@ export type SerializeChunkOptions = {
   includeBytecode: boolean;
 };
 
+// Convert file paths to regex matchers.
+function pathToRegex(path: string) {
+  // Escape regex special characters, except for '*'
+  let regexSafePath = path.replace(/[-[\]{}()+?.,\\^$|#\s]/g, '\\$&');
+
+  // Replace '*' with '.*' to act as a wildcard in regex
+  regexSafePath = regexSafePath.replace(/\*/g, '.*');
+
+  // Create a RegExp object with the modified string
+  return new RegExp('^' + regexSafePath + '$');
+}
+
 export async function graphToSerialAssetsAsync(
   config: MetroConfig,
   serializeChunkOptions: SerializeChunkOptions,
@@ -64,7 +75,7 @@ export async function graphToSerialAssetsAsync(
 
   [
     {
-      test: pathToRegExp(entryFile),
+      test: pathToRegex(entryFile),
     },
   ].map((chunkSettings) => gatherChunks(chunks, chunkSettings, preModules, graph, options, false));
 
@@ -549,7 +560,7 @@ function gatherChunks(
       ) {
         gatherChunks(
           chunks,
-          { test: pathToRegExp(dependency.absolutePath) },
+          { test: pathToRegex(dependency.absolutePath) },
           [],
           graph,
           options,

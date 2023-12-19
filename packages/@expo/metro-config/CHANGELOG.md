@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- Fix matching async chunks with special characters in the file names. ([#26008](https://github.com/expo/expo/pull/26008) by [@EvanBacon](https://github.com/EvanBacon))
+
+
 ### 💡 Others
 
 - Improve bundle splitting by reducing duplicate dependencies.
