@@ -1,5 +1,5 @@
 import fs from 'fs/promises';
-import { debounce } from 'lodash';
+import debounce from 'lodash.debounce';
 import { Server } from 'metro';
 import path from 'path';
 
@@ -514,7 +514,7 @@ declare module "expo-router" {
    * @param props.className On web, this sets the HTML \`class\` directly. On native, this can be used with CSS interop tools like Nativewind.
    */
   export const Link: LinkComponent;
-  
+
   /** Redirects to the href as soon as the component is mounted. */
   export const Redirect: <T>(
     props: React.PropsWithChildren<{ href: Href<T> }>
