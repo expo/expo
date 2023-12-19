@@ -189,7 +189,7 @@ export type DetectionOptions = {
 
 if (!warnedAboutDeprecation) {
   console.warn(
-    'ExpoFaceDetector has been deprecated and will be removed in a future SDK version. We recommend using react-native-vision-camera for this functionality.'
+    'ExpoFaceDetector has been deprecated and will be removed in a future SDK version. We recommend using react-native-vision-camera for this functionality. See https://github.com/mrousavy/react-native-vision-camera'
   );
   warnedAboutDeprecation = true;
 }
