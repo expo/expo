@@ -32,10 +32,17 @@ public final class SharedObjectRegistry {
   internal static var pairs = [SharedObjectId: SharedObjectPair]()
 
   /**
+   The lock queue to keep thread safety for internal data structures.
+   */
+  private static let lockQueue = DispatchQueue(label: "expo.modules.core.SharedObjectRegistry")
+
+  /**
    A number of all pairs stored in the registry.
    */
   internal static var size: Int {
-    return pairs.count
+    return Self.lockQueue.sync {
+      return pairs.count
+    }
   }
 
   /**
@@ -43,16 +50,20 @@ public final class SharedObjectRegistry {
    */
   @discardableResult
   internal static func pullNextId() -> SharedObjectId {
-    let id = nextId
-    nextId += 1
-    return id
+    return Self.lockQueue.sync {
+      let id = nextId
+      nextId += 1
+      return id
+    }
   }
 
   /**
    Returns a pair of shared objects with given ID or `nil` when there is no such pair in the registry.
    */
   internal static func get(_ id: SharedObjectId) -> SharedObjectPair? {
-    return pairs[id]
+    return Self.lockQueue.sync {
+      return pairs[id]
+    }
   }
 
   /**
@@ -70,7 +81,10 @@ public final class SharedObjectRegistry {
     jsObject.setObjectDeallocator { delete(id) }
 
     // Save the pair in the dictionary.
-    pairs[id] = (native: nativeObject, javaScript: jsObject.createWeak())
+    let jsWeakObject = jsObject.createWeak()
+    Self.lockQueue.async {
+      pairs[id] = (native: nativeObject, javaScript: jsWeakObject)
+    }
 
     return id
   }
@@ -79,12 +93,14 @@ public final class SharedObjectRegistry {
    Deletes the shared objects pair with a given ID.
    */
   internal static func delete(_ id: SharedObjectId) {
-    if let pair = pairs[id] {
-      // Reset an ID on the objects.
-      pair.native.sharedObjectId = 0
+    Self.lockQueue.async {
+      if let pair = pairs[id] {
+        // Reset an ID on the objects.
+        pair.native.sharedObjectId = 0
 
-      // Delete the pair from the dictionary.
-      pairs[id] = nil
+        // Delete the pair from the dictionary.
+        pairs[id] = nil
+      }
     }
   }
 
@@ -93,7 +109,9 @@ public final class SharedObjectRegistry {
    */
   internal static func toNativeObject(_ jsObject: JavaScriptObject) -> SharedObject? {
     if let objectId = try? jsObject.getProperty(sharedObjectIdPropertyName).asInt() {
-      return pairs[objectId]?.native
+      return Self.lockQueue.sync {
+        return pairs[objectId]?.native
+      }
     }
     return nil
   }
@@ -103,7 +121,9 @@ public final class SharedObjectRegistry {
    */
   internal static func toJavaScriptObject(_ nativeObject: SharedObject) -> JavaScriptObject? {
     let objectId = nativeObject.sharedObjectId
-    return pairs[objectId]?.javaScript.lock()
+    return Self.lockQueue.sync {
+      return pairs[objectId]?.javaScript.lock()
+    }
   }
 
   /**
@@ -127,6 +147,8 @@ public final class SharedObjectRegistry {
   }
 
   internal static func clear() {
-    pairs.removeAll()
+    Self.lockQueue.async {
+      pairs.removeAll()
+    }
   }
 }
