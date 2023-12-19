@@ -71,7 +71,7 @@ var i = [...h, "foo"];
 
 var j = foo(...h);
 
-// @babel/plugin-proposal-object-rest-spread
+// @babel/plugin-transform-object-rest-spread
 var y = {};
 var x = 1;
 var k = { x, ...y };

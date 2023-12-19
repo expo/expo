@@ -105,7 +105,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     // getters and setters in spread objects. We need to add this plugin ourself without that option.
     // @see https://github.com/expo/expo/pull/11960#issuecomment-887796455
     extraPlugins.push([
-      require.resolve('@babel/plugin-proposal-object-rest-spread'),
+      require.resolve('@babel/plugin-transform-object-rest-spread'),
       { loose: false },
     ]);
   } else {
