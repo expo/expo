@@ -1,0 +1,199 @@
+---
+title: Dev Tools Plugins
+description: Learn about using dev tools plugins to inspect and debug your Expo Project.
+---
+
+import { Tab, Tabs } from '~/ui/components/Tabs';
+import { Terminal } from '~/ui/components/Snippet';
+
+Dev tools plugins are tools available in your local development environment that help you to debug your app. They typically consist of a small amount of code your add to project that enables two-way communication between your app and an external Chrome window, which can then display tools for inspecting your app, triggering certain behaviors for testing, and more. Dev tools plugins are similar to Flipper plugins, but are available in Expo Go and Development Builds without adding any native modules or config plugins to your project.
+
+## Adding a dev tools plugin to your project
+
+Dev tools plugins are installed as packages in your project. A plugin will typically have a small amount of connecting code that you add to your app in order to enable two-way communication between your app and the plugin. This code will generally be invoked in your app's root component, especially if the plugin is inspecting a module that is available for the entire time your app is running. It is recommended that you wrap this code in a conditional that only runs in development mode, so that it is not included in production builds of your app:
+
+```jsx
+if (__DEV__) {
+  // initialize your DevTools plugin here
+}
+```
+
+In some cases, you may need to interact with a plugin directly. All plugins communicate through the `expo/devtools` package, and you can send and listen to messages through `connectPluginFromDevToolsAsync`:
+
+```jsx
+import { connectPluginFromDevToolsAsync } from 'expo/devtools';
+
+const client = await connectPluginFromDevToolsAsync();
+
+client.sendMessage('ping', { from: 'expo-plugin-helloworld' });
+client.addMessageListener('pong', (data) => {
+  console.log('receiving pong', data);
+});
+```
+
+### Compatibility with Expo Go and Development Builds
+
+Dev tools plugins themselves should only include JavaScript code, meaning they are generally compatible with both Expo Go and [Development Builds](development-builds/introduction/), and it should not require creating a new development build in order to add a dev tools plugin. If the underlying module that the plugin is inspecting is from a package that includes native code that is not already part of Expo Go, then you would need to create a new development build with that package included in order to use both the component and the plugin.
+
+For example, if you had a dev tools plugin that inspected [React Native Firebase](), that would not work with Expo Go, as React Native Firebase includes native code that is not already part of Expo Go. You would need to create a development build in order to use React Native Firebase, and then you could also use the dev tools plugin.
+
+## Using a dev tools plugin
+
+Once your dev tools plugin is installed and any required connecting code is added to your project. Start your dev server up with `npx expo start`, and then press <kbd>shift</kbd> + <kbd>m</kbd> to open the list of dev tools plugins. Select the plugin you want to use, and it will open in a new Chrome window.
+
+> When starting the a dev server with the Expo CLI, there is an option to press <kbd>?</kbd> to "show all commands". This will show additional commands, including the shortcut to open "more tools." Dev tools plugins can also be selected in this menu.
+
+## Expo dev tools Plugins
+
+Expo provides some dev tools plugins for common debugging tasks. Follow the directions below to start using them in your app.
+
+### React Navigation
+
+Inspired by [@react-navigation/devtools](https://github.com/react-navigation/react-navigation/tree/4797ace/packages/devtools) and [flipper-plugin-react-navigation](https://github.com/react-navigation/react-navigation/tree/4797ace/packages/flipper-plugin-react-navigation), the React Navigation Dev Tools Plugin allows you to view a history of [React Navigation](https://reactnavigation.org/) actions and state. Rewind to previous points in your navigation history and send deep links to your app. Since Expo Router is built upon React Navigation, this plugin is fully-compatible with [Expo Router](/router/introduction).
+
+To use the plugin, first install the package:
+
+<Terminal cmd={['$ npx expo install @dev-plugins/react-navigation']} />
+
+Then pass navigation root to the plugin in your app's entry point when running in development mode:
+
+<Tabs tabs={["Expo Router", "React Navigation"]}>
+  <Tab>
+  ```jsx app/_layout.js
+  import { useEffect, useRef } from 'react';
+  import { useRootNavigation, Slot } from 'expo-router';
+  import { useReactNavigationDevTools } from '@dev-plugins/react-navigation';
+
+  export default Layout() {
+    if (__DEV__) {
+      const navigationRef = useRef(null);
+      const rootNavigation = useRootNavigation();
+
+      useReactNavigationDevTools(navigationRef);
+
+      useEffect(() => {
+        navigationRef.current = rootNavigation;
+      }, [navigationRef.current]);
+    }
+
+    return <Slot />;
+  }
+
+  ```
+  </Tab>
+  <Tab>
+  ```jsx App.js
+  import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
+  import { useReactNavigationDevTools } from '@dev-plugins/react-navigation';
+
+  export default function App() {
+    const navigationRef = useNavigationContainerRef();
+
+    useReactNavigationDevTools(navigationRef);
+
+    return (
+      <NavigationContainer ref={navigationRef}>{/* ... */}</NavigationContainer>
+    );
+  }
+  ```
+  </Tab>
+</Tabs>
+
+Run `npx expo start`, press <kbd>shift</kbd> + <kbd>m</kbd> to open the list of dev tools, and then select the React Navigation plugin. This will open the plugin's web interface, which will show your navigation history as you navigate through your app.
+
+### Apollo Client
+
+Inspired by [react-native-apollo-devtools](https://github.com/razorpay/react-native-apollo-devtools), Apollo Client dev tools plugin lets you example cache, queries and mutations for the Apollo Client.
+
+To use the plugin, first install the package:
+
+<Terminal cmd={['$ npx expo install @dev-plugins/apollo-client']} />
+
+Then pass your client instance to the plugin in your app's root component, or wherever you wrap the rest of your app in the `ApolloProvider`:
+
+```jsx App.js
+import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client';
+import { useApolloClientDevTools } from '@dev-plugins/apollo-client';
+
+const client = new ApolloClient({
+  uri: 'https://demo.test.com/',
+  cache: new InMemoryCache(),
+});
+
+export default function App() {
+  if (__DEV__) {
+    useApolloClientDevTools(client);
+  }
+
+  return (
+    <ApolloProvider>
+      {/* ... */}
+    </ApolloProvider>
+  )
+}
+```
+
+Run `npx expo start`, press <kbd>shift</kbd> + <kbd>m</kbd> to open the list of dev tools, and then select the Apollo Client plugin. This will open the plugin's web interface, which will show your query history, cache, and mutations as your app performs Apollo Client operations.
+
+### React Query
+
+Inspired by [react-query-native-devtools](https://github.com/bgaleotti/react-query-native-devtools), the React Query Dev Tools Plugin lets you explore [TanStack Query](https://tanstack.com/query/latest/)'s data and queries, cache status, and refetch and remove queries from the cache.
+
+To use the plugin, first install the package:
+
+<Terminal cmd={['$ npx expo install @dev-plugins/react-query']} />
+
+Then pass your client instance to the plugin in your app's root component, or wherever you wrap the rest of your app in the `QueryClientProvider`:
+
+```jsx App.js
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useReactQueryDevTools } from '@dev-plugins/react-query';
+
+const queryClient = new QueryClient({});
+
+export default function App() {
+  if (__DEV__) {
+    useReactQueryDevTools(queryClient);
+  }
+
+  return (
+    <QueryClientProvider>
+      {/* ... */}
+    </QueryClientProvider>
+  )
+}
+```
+
+Run `npx expo start`, press <kbd>shift</kbd> + <kbd>m</kbd> to open the list of dev tools, and then select the React Query plugin. This will open the plugin's web interface, displaying queries as they are used in your app.
+
+### TinyBase
+
+The TinyBase Dev Tools Plugin connects the TinyBase Store Inspector to your app, allowing you to view and update the contents of your app's store.
+
+To use the plugin, first install the package:
+
+<Terminal cmd={['$ npx expo install @dev-plugins/tinybase']} />
+
+Then pass your client instance to the plugin in your app's root component, or wherever you wrap the rest of your app in `Provider`:
+
+```jsx App.js
+import { createStore } from 'tinybase';
+import { useValue, Provider } from 'tinybase/lib/ui-react';
+import { useTinyBaseDevTools } from '@dev-plugins/tinybase';
+
+const store = createStore().setValue('counter', 0);
+
+export default function App() {
+  if (__DEV__) {
+    useTinyBaseDevTools(store);
+  }
+
+  return (
+    <Provider store={store}>
+      {/* ... */}
+    </Provider>
+  )
+}
+```
+
+Run `npx expo start`, press <kbd>shift</kbd> + <kbd>m</kbd> to open the list of dev tools, and then select the Tinybase plugin. This will open the plugin's web interface, displaying the contents of your store as it is modified.
