@@ -316,12 +316,24 @@ class Chunk {
   }
   async serializeToAssetsAsync(serializerConfig, chunks, {
     includeSourceMaps,
-    includeBytecode
+    includeBytecode,
+    unstable_beforeAssetSerializationPlugins
   }) {
     // Create hash without wrapping to prevent it changing when the wrapping changes.
     const outputFile = this.getFilenameForConfig(serializerConfig);
     // We already use a stable hash for the output filename, so we'll reuse that for the debugId.
     const debugId = (0, _debugId().stringToUUID)(_path().default.basename(outputFile, _path().default.extname(outputFile)));
+    let premodules = [...this.preModules];
+    if (unstable_beforeAssetSerializationPlugins) {
+      for (const plugin of unstable_beforeAssetSerializationPlugins) {
+        premodules = plugin({
+          graph: this.graph,
+          premodules,
+          debugId
+        });
+      }
+      this.preModules = new Set(premodules);
+    }
     const jsCode = this.serializeToCode(serializerConfig, {
       chunks,
       debugId
@@ -482,17 +494,11 @@ function gatherChunks(chunks, settings, preModules, graph, options, isAsync = fa
   }
   return chunks;
 }
-async function serializeChunksAsync(chunks, serializerConfig, {
-  includeSourceMaps,
-  includeBytecode
-}) {
+async function serializeChunksAsync(chunks, serializerConfig, options) {
   const jsAssets = [];
   const chunksArray = [...chunks.values()];
   await Promise.all(chunksArray.map(async chunk => {
-    jsAssets.push(...(await chunk.serializeToAssetsAsync(serializerConfig, chunksArray, {
-      includeSourceMaps,
-      includeBytecode
-    })));
+    jsAssets.push(...(await chunk.serializeToAssetsAsync(serializerConfig, chunksArray, options)));
   }));
   return jsAssets;
 }

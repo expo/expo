@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add plugin callbacks that run before each code asset is serialized. ([#25859](https://github.com/expo/expo/pull/25859) by [@quinlanj](https://github.com/quinlanj))
+
 ### 🐛 Bug fixes
 
 - Fix matching async chunks with special characters in the file names. ([#26008](https://github.com/expo/expo/pull/26008) by [@EvanBacon](https://github.com/EvanBacon))
