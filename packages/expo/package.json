@@ -61,7 +61,7 @@
   "dependencies": {
     "@babel/runtime": "^7.20.0",
     "@expo/cli": "0.16.4",
-    "@expo/config": "8.5.1",
+    "@expo/config": "8.5.2",
     "@expo/config-plugins": "7.8.2",
     "@expo/metro-config": "0.17.1",
     "@expo/vector-icons": "^13.0.0",
