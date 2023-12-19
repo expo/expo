@@ -69,7 +69,9 @@
                                                        moduleName:moduleName
                                                 initialProperties:initProps
                                                     fabricEnabled:enableFabric];
+#if !TARGET_OS_TV
   rootView.backgroundColor = UIColor.systemBackgroundColor;
+#endif
   return rootView;
 }
 
