@@ -601,6 +601,39 @@ describe('serializes', () => {
     });
   });
 
+  it(`bundle splits an async import with parentheses in the name`, async () => {
+    const artifacts = await serializeSplitAsync({
+      'index.js': `
+          import('./(foo)/index.js')
+          import('./[foo].js')
+          import('./{foo}.js')
+          import('./+foo.js')
+        `,
+      '[foo].js': '//',
+      '{foo}.js': '//',
+      '+foo.js': '//',
+      '(foo)/index.js': `
+          export const foo = 'foo';
+        `,
+    });
+
+    expect(artifacts.map((art) => art.filename)).toEqual([
+      '_expo/static/js/web/index-7dc6e73b19cad01f360b7d820c351f6c.js',
+      '_expo/static/js/web/index-c054379d08b2cfa157d6fc1caa8f4802.js',
+      '_expo/static/js/web/[foo]-8da94e949dff8f4bf13e6e6c77d68d3f.js',
+      '_expo/static/js/web/{foo}-8da94e949dff8f4bf13e6e6c77d68d3f.js',
+      '_expo/static/js/web/+foo-8da94e949dff8f4bf13e6e6c77d68d3f.js',
+    ]);
+
+    // Split bundle
+    expect(artifacts.length).toBe(5);
+    expect(artifacts[1].metadata).toEqual({
+      isAsync: true,
+      modulePaths: ['/app/(foo)/index.js'],
+      requires: [],
+    });
+  });
+
   it(`imports async bundles in second module`, async () => {
     const artifacts = await serializeSplitAsync({
       'index.js': `

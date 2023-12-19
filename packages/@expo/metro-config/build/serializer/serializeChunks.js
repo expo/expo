@@ -34,13 +34,6 @@ function _path() {
   };
   return data;
 }
-function _pathToRegexp() {
-  const data = _interopRequireDefault(require("path-to-regexp"));
-  _pathToRegexp = function () {
-    return data;
-  };
-  return data;
-}
 function _debugId() {
   const data = require("./debugId");
   _debugId = function () {
@@ -91,6 +84,17 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * LICENSE file in the root directory of this source tree.
  */
 
+// Convert file paths to regex matchers.
+function pathToRegex(path) {
+  // Escape regex special characters, except for '*'
+  let regexSafePath = path.replace(/[-[\]{}()+?.,\\^$|#\s]/g, '\\$&');
+
+  // Replace '*' with '.*' to act as a wildcard in regex
+  regexSafePath = regexSafePath.replace(/\*/g, '.*');
+
+  // Create a RegExp object with the modified string
+  return new RegExp('^' + regexSafePath + '$');
+}
 async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props) {
   var _config$serializer, _baseUrl$replace, _config$transformer$a, _config$transformer, _getPlatformOption;
   const [entryFile, preModules, graph, options] = props;
@@ -102,7 +106,7 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
   // Create chunks for splitting.
   const chunks = new Set();
   [{
-    test: (0, _pathToRegexp().default)(entryFile)
+    test: pathToRegex(entryFile)
   }].map(chunkSettings => gatherChunks(chunks, chunkSettings, preModules, graph, options, false));
 
   // Get the common modules and extract them into a separate chunk.
@@ -459,7 +463,7 @@ function gatherChunks(chunks, settings, preModules, graph, options, isAsync = fa
       // Support disabling multiple chunks.
       splitChunks) {
         gatherChunks(chunks, {
-          test: (0, _pathToRegexp().default)(dependency.absolutePath)
+          test: pathToRegex(dependency.absolutePath)
         }, [], graph, options, true);
       } else {
         const module = graph.dependencies.get(dependency.absolutePath);
