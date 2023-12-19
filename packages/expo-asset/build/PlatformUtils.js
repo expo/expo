@@ -1,25 +1,26 @@
 import computeMd5 from 'blueimp-md5';
 import Constants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
-import { NativeModulesProxy } from 'expo-modules-core';
+import { requireOptionalNativeModule } from 'expo-modules-core';
 import { getManifestBaseUrl } from './AssetUris';
+const ExpoUpdates = requireOptionalNativeModule('ExpoUpdates');
 // Constants.appOwnership is only available in managed apps (Expo client and standalone)
 export const IS_MANAGED_ENV = !!Constants.appOwnership;
 // In the future (SDK38+) expo-updates is likely to be used in managed apps, so we decide
 // that you are in a bare app with updates if you're not in a managed app and you have
 // local assets available.
 export const IS_BARE_ENV_WITH_UPDATES = !IS_MANAGED_ENV &&
-    !!NativeModulesProxy.ExpoUpdates?.isEnabled &&
+    !!ExpoUpdates?.isEnabled &&
     // if expo-updates is installed but we're running directly from the embedded bundle, we don't want
     // to override the AssetSourceResolver
-    !NativeModulesProxy.ExpoUpdates?.isUsingEmbeddedAssets;
+    !ExpoUpdates?.isUsingEmbeddedAssets;
 export const IS_ENV_WITH_UPDATES_ENABLED = IS_MANAGED_ENV || IS_BARE_ENV_WITH_UPDATES;
 // If it's not managed or bare w/ updates, then it must be bare w/o updates!
 export const IS_BARE_ENV_WITHOUT_UPDATES = !IS_MANAGED_ENV && !IS_BARE_ENV_WITH_UPDATES;
 // Get the localAssets property from the ExpoUpdates native module so that we do
 // not need to include expo-updates as a dependency of expo-asset
 export function getLocalAssets() {
-    return NativeModulesProxy.ExpoUpdates?.localAssets ?? {};
+    return ExpoUpdates?.localAssets ?? {};
 }
 export function getManifest() {
     return Constants.__unsafeNoWarnManifest ?? {};

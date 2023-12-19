@@ -4110,6 +4110,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/blueimp-md5@^2.18.2":
+  version "2.18.2"
+  resolved "https://registry.yarnpkg.com/@types/blueimp-md5/-/blueimp-md5-2.18.2.tgz#4fd6fb720990b22229c30b3e06f61e6ec2ef92b8"
+  integrity sha512-dJ9yRry9Olt5GAWlgCtE5dK9d/Dfhn/V7hna86eEO2Pn76+E8Y0S0n61iEUEGhWXXgtKtHxtZLVNwL8X+vLHzg==
+
 "@types/body-parser@*":
   version "1.19.2"
   resolved "https://registry.yarnpkg.com/@types/body-parser/-/body-parser-1.19.2.tgz#aea2059e28b7658639081347ac4fab3de166e6f0"

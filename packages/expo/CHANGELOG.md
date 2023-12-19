@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [expo-updates] Migrate to requireNativeModule/requireOptionalNativeModule. ([#25648](https://github.com/expo/expo/pull/25648) by [@wschurman](https://github.com/wschurman))
+
 ## 50.0.0-preview.4 — 2023-12-15
 
 _This version does not introduce any user-facing changes._

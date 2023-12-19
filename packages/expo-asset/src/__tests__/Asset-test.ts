@@ -1,5 +1,3 @@
-const { Platform } = require('expo-modules-core');
-
 jest.mock('expo-file-system', () => {
   const FileSystem = jest.requireActual('expo-file-system');
   return {
@@ -10,18 +8,23 @@ jest.mock('expo-file-system', () => {
   };
 });
 
+const { Platform } = jest.requireActual('expo-modules-core');
+
 jest.mock('expo-modules-core', () => {
-  const ModulesCore = jest.requireActual('expo-modules-core');
+  const ExpoModulesCore = jest.requireActual('expo-modules-core');
   return {
-    ...ModulesCore,
-    NativeModulesProxy: {
-      ...ModulesCore.NativeModulesProxy,
-      ExpoUpdates: {
-        ...ModulesCore.NativeModulesProxy.ExpoUpdates,
+    ...ExpoModulesCore,
+    requireOptionalNativeModule: (moduleName) => {
+      if (moduleName !== 'ExpoUpdates') {
+        return jest.requireActual('expo-modules-core').requireOptionalNativeModule(moduleName);
+      }
+
+      return {
+        ...jest.requireActual('expo-modules-core').requireOptionalNativeModule('ExpoUpdates'),
         localAssets: {
           test1: 'file:///Expo.app/asset_test1.png',
         },
-      },
+      };
     },
   };
 });
