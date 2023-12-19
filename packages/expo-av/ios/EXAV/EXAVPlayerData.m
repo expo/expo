@@ -205,6 +205,27 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
   return _shouldPlay && ![_rate isEqualToNumber:@(0)];
 }
 
+- (BOOL)_hasZeroTolerance:(NSDictionary *)parameters
+{
+  if ([parameters objectForKey:EXAVPlayerDataStatusSeekMillisToleranceBeforeKeyPath] == nil) {
+    return NO;
+  }
+    
+  NSNumber *seekMillisToleranceBefore = parameters[EXAVPlayerDataStatusSeekMillisToleranceBeforeKeyPath];
+    
+  if (CMTimeCompare(CMTimeMakeWithSeconds(seekMillisToleranceBefore.floatValue / 1000, NSEC_PER_SEC), kCMTimeZero) != 0) {
+    return NO;
+  }
+    
+  if ([parameters objectForKey:EXAVPlayerDataStatusSeekMillisToleranceAfterKeyPath] == nil) {
+    return NO;
+  }
+
+  NSNumber *seekMillisToleranceAfter = parameters[EXAVPlayerDataStatusSeekMillisToleranceAfterKeyPath];
+    
+  return CMTimeCompare(CMTimeMakeWithSeconds(seekMillisToleranceAfter.floatValue / 1000, NSEC_PER_SEC), kCMTimeZero) == 0;
+}
+
 - (NSError *)_tryPlayPlayerWithRateAndMuteIfNecessary
 {
   if (_player && [self _shouldPlayerPlay]) {
@@ -248,7 +269,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
     NSNumber *currentPositionMillis = parameters[EXAVPlayerDataStatusPositionMillisKeyPath];
     
     // We only seek if the new position is different from _currentPosition by a whole number of milliseconds.
-    mustSeek = currentPositionMillis.longValue != [self _getRoundedMillisFromCMTime:_currentPosition].longValue;
+    mustSeek = [self _hasZeroTolerance:parameters] || currentPositionMillis.longValue != [self _getRoundedMillisFromCMTime:_currentPosition].longValue;
     if (mustSeek) {
       newPosition = CMTimeMakeWithSeconds(currentPositionMillis.doubleValue / 1000, NSEC_PER_SEC);
     }
