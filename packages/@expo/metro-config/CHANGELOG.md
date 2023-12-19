@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- Fix matching async chunks with special characters in the file names.
+
+
 ### 💡 Others
 
 ## 0.17.0 — 2023-12-15
