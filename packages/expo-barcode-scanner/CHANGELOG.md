@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- `expo-barcode-scanner` is now deprecated. Please use `expo-camera` instead.
+- `expo-barcode-scanner` is now deprecated. Please use `expo-camera` instead. ([#26025](https://github.com/expo/expo/pull/26025) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🎉 New features
 
