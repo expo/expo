@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Removed legacy splash screen configuration. ([#25798](https://github.com/expo/expo/pull/25798) by [@aleqsio](https://github.com/aleqsio))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
