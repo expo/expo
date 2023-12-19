@@ -2,12 +2,13 @@ import { AssetData, MetroConfig, MixedOutput, Module, ReadOnlyGraph } from 'metr
 import { ConfigT, SerializerConfigT } from 'metro-config';
 import { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { SerialAsset } from './serializerAssets';
+import { SerializerConfigOptions } from './withExpoSerializers';
 type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 type SerializerParameters = Parameters<Serializer>;
 export type SerializeChunkOptions = {
     includeSourceMaps: boolean;
     includeBytecode: boolean;
-};
+} & SerializerConfigOptions;
 export declare function graphToSerialAssetsAsync(config: MetroConfig, serializeChunkOptions: SerializeChunkOptions, ...props: SerializerParameters): Promise<{
     artifacts: SerialAsset[] | null;
     assets: AssetData[];
@@ -32,10 +33,7 @@ export declare class Chunk {
     private getComputedPathsForAsyncDependencies;
     private getAdjustedSourceMapUrl;
     private serializeToCode;
-    serializeToAssetsAsync(serializerConfig: Partial<SerializerConfigT>, chunks: Chunk[], { includeSourceMaps, includeBytecode, }: {
-        includeSourceMaps?: boolean;
-        includeBytecode?: boolean;
-    }): Promise<SerialAsset[]>;
+    serializeToAssetsAsync(serializerConfig: Partial<SerializerConfigT>, chunks: Chunk[], { includeSourceMaps, includeBytecode, unstable_beforeAssetSerializationPlugins, }: SerializeChunkOptions): Promise<SerialAsset[]>;
     private supportsBytecode;
     isHermesEnabled(): boolean;
 }
