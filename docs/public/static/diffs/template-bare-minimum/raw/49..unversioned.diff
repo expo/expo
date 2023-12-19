@@ -1,5 +1,5 @@
 diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
-index 7105aaaa3f..52d31e3c5e 100644
+index 7105aaaa3f..a265c80fa9 100644
 --- a/templates/expo-template-bare-minimum/android/app/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/app/build.gradle
 @@ -1,4 +1,5 @@
@@ -32,7 +32,32 @@ index 7105aaaa3f..52d31e3c5e 100644
  
      namespace "com.helloworld"
      defaultConfig {
-@@ -163,11 +165,7 @@ dependencies {
+@@ -141,33 +143,22 @@ dependencies {
+     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
+     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
+     def isWebpAnimatedEnabled = (findProperty('expo.webp.animated') ?: "") == "true";
+-    def frescoVersion = rootProject.ext.frescoVersion
+-
+-    // If your app supports Android versions before Ice Cream Sandwich (API level 14)
+-    if (isGifEnabled || isWebpEnabled) {
+-        implementation("com.facebook.fresco:fresco:${frescoVersion}")
+-        implementation("com.facebook.fresco:imagepipeline-okhttp3:${frescoVersion}")
+-    }
+ 
+     if (isGifEnabled) {
+         // For animated gif support
+-        implementation("com.facebook.fresco:animated-gif:${frescoVersion}")
++        implementation("com.facebook.fresco:animated-gif:${reactAndroidLibs.versions.fresco.get()}")
+     }
+ 
+     if (isWebpEnabled) {
+         // For webp support
+-        implementation("com.facebook.fresco:webpsupport:${frescoVersion}")
++        implementation("com.facebook.fresco:webpsupport:${reactAndroidLibs.versions.fresco.get()}")
+         if (isWebpAnimatedEnabled) {
+             // Animated webp support
+-            implementation("com.facebook.fresco:animated-webp:${frescoVersion}")
++            implementation("com.facebook.fresco:animated-webp:${reactAndroidLibs.versions.fresco.get()}")
          }
      }
  
@@ -45,7 +70,7 @@ index 7105aaaa3f..52d31e3c5e 100644
  
      if (hermesEnabled.toBoolean()) {
          implementation("com.facebook.react:hermes-android")
-@@ -176,5 +174,5 @@ dependencies {
+@@ -176,5 +167,5 @@ dependencies {
      }
  }
  
@@ -453,10 +478,10 @@ index b510364404..0000000000
 -  }
 -}
 diff --git a/templates/expo-template-bare-minimum/android/build.gradle b/templates/expo-template-bare-minimum/android/build.gradle
-index bf861dbf33..9da06cc296 100644
+index bf861dbf33..02a88dad0a 100644
 --- a/templates/expo-template-bare-minimum/android/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/build.gradle
-@@ -2,26 +2,27 @@
+@@ -2,26 +2,26 @@
  
  buildscript {
      ext {
@@ -468,7 +493,7 @@ index bf861dbf33..9da06cc296 100644
 +        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '34')
 +        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
          kotlinVersion = findProperty('android.kotlinVersion') ?: '1.8.10'
-         frescoVersion = findProperty('expo.frescoVersion') ?: '2.5.0'
+-        frescoVersion = findProperty('expo.frescoVersion') ?: '2.5.0'
  
 -        // We use NDK 23 which has both M1 support and is the side-by-side NDK version from AGP.
 -        ndkVersion = "23.1.7779620"
@@ -490,7 +515,7 @@ index bf861dbf33..9da06cc296 100644
  allprojects {
      repositories {
          maven {
-@@ -30,7 +31,7 @@ allprojects {
+@@ -30,7 +30,7 @@ allprojects {
          }
          maven {
              // Android JSC is installed from npm
@@ -613,10 +638,20 @@ index a69d9cb6c2..1aa94a4269 100755
  set -- \
          "-Dorg.gradle.appname=$APP_BASE_NAME" \
 diff --git a/templates/expo-template-bare-minimum/android/settings.gradle b/templates/expo-template-bare-minimum/android/settings.gradle
-index d172e59a6e..17ab7a41d7 100644
+index d172e59a6e..0fcba3d9bb 100644
 --- a/templates/expo-template-bare-minimum/android/settings.gradle
 +++ b/templates/expo-template-bare-minimum/android/settings.gradle
-@@ -3,8 +3,8 @@ rootProject.name = 'HelloWorld'
+@@ -1,10 +1,18 @@
+ rootProject.name = 'HelloWorld'
+ 
++dependencyResolutionManagement {
++  versionCatalogs {
++    reactAndroidLibs {
++      from(files(new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), "../gradle/libs.versions.toml")))
++    }
++  }
++}
++
  apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle");
  useExpoModules()
  
