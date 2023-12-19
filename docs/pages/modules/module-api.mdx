@@ -127,19 +127,29 @@ It is recommended to use `AsyncFunction` over `Function` when it:
 <CodeBlocksTable>
 
 ```swift
-AsyncFunction("asyncFunction") { (message: String, promise: Promise) in
-  DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-    promise.resolve(message)
-  }
+AsyncFunction("asyncFunction") { (message: String) in
+  return message
 }
+
+// or
+
+AsyncFunction("asyncFunction") { (message: String, promise: Promise) in
+  promise.resolve(message)
+}
+
 ```
 
 ```kotlin
-AsyncFunction("asyncFunction") { message: String, promise: Promise ->
-  launch(Dispatchers.Main) {
-    promise.resolve(message)
-  }
+AsyncFunction("asyncFunction") { message: String ->
+  return@AsyncFunction message
 }
+
+// or
+
+AsyncFunction("asyncFunction") { message: String, promise: Promise ->
+  promise.resolve(message)
+}
+
 ```
 
 </CodeBlocksTable>
@@ -154,6 +164,24 @@ async function getMessageAsync() {
   return await MyModule.asyncFunction('bar');
 }
 ```
+
+It is possible to change the native queue of `AsyncFunction` by calling the `.runOnQueue` function on the result of that component.
+
+<CodeBlocksTable>
+
+```swift
+AsyncFunction("asyncFunction") { (message: String) in
+  return message
+}.runOnQueue(.main)
+```
+
+```kotlin
+AsyncFunction("asyncFunction") { message: String ->
+  return@AsyncFunction message
+}.runOnQueue(Queues.MAIN)
+```
+
+</CodeBlocksTable>
 
 ---
 
