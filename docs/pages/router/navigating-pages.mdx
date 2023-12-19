@@ -61,7 +61,7 @@ Expo Router uses a stack-based navigation approach. Each new route you navigate 
 
 For example, when you navigate from `/feed` to `/profile`, the stack contains `/feed` and `/profile`. If you then navigate to `/settings`, the stack contains `/feed`, `/profile`, and `/settings`. If you then navigate back to `/feed`, the stack unwinds back to `/feed`.
 
-To navigate to a route without the stack unwinding, you can use the `push` prop on the `<Link>` component. This alwayss pushes the route onto the stack, even if it already exists.
+To navigate to a route without the stack unwinding, you can use the `push` prop on the `<Link>` component. This always pushes the route onto the stack, even if it already exists.
 
 In contrast, the `replace` method substitutes the current route in the navigation stack with a new one, effectively replacing the current screen with the new one without adding to the stack.
 
