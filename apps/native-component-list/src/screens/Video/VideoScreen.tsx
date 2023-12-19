@@ -12,6 +12,7 @@ export default function VideoScreen() {
   const [startPictureInPictureAutomatically, setStartPictureInPictureAutomatically] =
     React.useState(false);
   const [showNativeControls, setShowNativeControls] = React.useState(true);
+  const [requiresLinearPlayback, setRequiresLinearPlayback] = React.useState(false);
 
   const enterFullscreen = useCallback(() => {
     ref.current?.enterFullscreen();
@@ -70,7 +71,7 @@ export default function VideoScreen() {
         contentPosition={{ dx: 0, dy: 0 }}
         allowsFullscreen
         showsTimecodes={false}
-        requiresLinearPlayback
+        requiresLinearPlayback={requiresLinearPlayback}
         allowsPictureInPicture={allowPictureInPicture}
         startsPictureInPictureAutomatically={startPictureInPictureAutomatically}
         onPictureInPictureStart={() => {
@@ -82,7 +83,7 @@ export default function VideoScreen() {
           console.log('Exited Picture in Picture mode');
         }}
       />
-      <ScrollView contentContainerStyle={styles.buttons}>
+      <ScrollView>
         <Text>PictureInPicture Active: {isInPictureInPicture ? 'Yes' : 'No'}</Text>
         <Button style={styles.button} title="Toggle" onPress={togglePlayer} />
         <Button style={styles.button} title="Replace" onPress={replaceItem} />
@@ -111,13 +112,22 @@ export default function VideoScreen() {
             titleStyle={styles.switchTitle}
           />
         </View>
-        <TitledSwitch
-          title="Show native controls"
-          value={showNativeControls}
-          setValue={setShowNativeControls}
-          style={styles.switch}
-          titleStyle={styles.switchTitle}
-        />
+        <View style={styles.row}>
+          <TitledSwitch
+            title="Requires linear playback"
+            value={requiresLinearPlayback}
+            setValue={setRequiresLinearPlayback}
+            style={styles.switch}
+            titleStyle={styles.switchTitle}
+          />
+          <TitledSwitch
+            title="Show native controls"
+            value={showNativeControls}
+            setValue={setShowNativeControls}
+            style={styles.switch}
+            titleStyle={styles.switchTitle}
+          />
+        </View>
       </ScrollView>
     </View>
   );
@@ -137,6 +147,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   switchTitle: {
+    textAlign: 'center',
+    fontWeight: 'bold',
     opacity: 0.5,
     fontSize: 12,
   },
@@ -145,9 +157,6 @@ const styles = StyleSheet.create({
     height: 225,
     borderBottomWidth: 1.0 / PixelRatio.get(),
     borderBottomColor: '#cccccc',
-  },
-  buttons: {
-    flexDirection: 'column',
   },
   button: {
     margin: 5,

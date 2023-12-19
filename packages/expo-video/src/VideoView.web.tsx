@@ -12,6 +12,7 @@ class VideoPlayerWeb implements VideoPlayer {
   isPlaying: boolean = false;
   _isMuted: boolean = false;
   timestamp: number = 0;
+  volume: number = 1;
 
   set isMuted(value: boolean) {
     this.mountedVideos.forEach((video) => {

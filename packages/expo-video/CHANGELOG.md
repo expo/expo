@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Initial release for Android 🎉
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

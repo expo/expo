@@ -1,16 +1,16 @@
 package expo.modules.video
 
 import android.content.Context
-import android.util.DisplayMetrics
 import android.view.ViewGroup
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ExpoView
 
 
+// https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class VideoView(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
-  private val playerView = PlayerView(context.applicationContext)
+  val playerView = PlayerView(context.applicationContext)
 
   init {
     addView(playerView, ViewGroup.LayoutParams(
@@ -18,23 +18,9 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     ))
   }
 
-  var player: ExoPlayer? = null
-    set(player) {
-      playerView.player = player
-      field = player
+  var videoPlayer: VideoPlayer? = null
+    set(videoPlayer) {
+      playerView.player = videoPlayer?.player
+      field = videoPlayer
     }
-
-  fun enterFullScreen() {
-    // todo: make it work
-    val metrics = DisplayMetrics()
-    appContext.activityProvider?.currentActivity?.windowManager?.defaultDisplay?.getMetrics(metrics)
-    val params = playerView.layoutParams
-    params.width = metrics.widthPixels
-    params.height = metrics.heightPixels
-    playerView.layoutParams = params
-  }
-
-  fun setContentFit(contentFit: Any) {
-    TODO("Find function to modify the content fit")
-  }
 }

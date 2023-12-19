@@ -53,7 +53,7 @@ class SharedObjectRegistry {
     }
   }
 
-  internal fun toNativeObject(id: SharedObjectId): SharedObject? {
+  fun toNativeObject(id: SharedObjectId): SharedObject? {
     return pairs[id]?.first
   }
 
