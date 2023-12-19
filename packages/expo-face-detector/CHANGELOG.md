@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- `ExpoFaceDetector` is now deprecated. We recommed using [react-native-vision-camera](https://github.com/mrousavy/react-native-vision-camera) instead.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
