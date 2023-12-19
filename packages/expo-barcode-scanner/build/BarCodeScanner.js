@@ -8,7 +8,7 @@ const EVENT_THROTTLE_MS = 500;
 let warnAboutDeprecation = false;
 /**
  * @deprecated
- * BarCodeScanner is has been deprecated and will be removed in a future SDK version. Plesae use `expo-camera` instead.
+ * BarCodeScanner has been deprecated and will be removed in a future SDK version. Plesae use `expo-camera` instead.
  */
 export class BarCodeScanner extends React.Component {
     lastEvents = {};

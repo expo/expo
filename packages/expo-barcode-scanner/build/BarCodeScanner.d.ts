@@ -92,7 +92,7 @@ export type BarCodeScannerProps = ViewProps & {
 };
 /**
  * @deprecated
- * BarCodeScanner is has been deprecated and will be removed in a future SDK version. Plesae use `expo-camera` instead.
+ * BarCodeScanner has been deprecated and will be removed in a future SDK version. Plesae use `expo-camera` instead.
  */
 export declare class BarCodeScanner extends React.Component<BarCodeScannerProps> {
     lastEvents: {
