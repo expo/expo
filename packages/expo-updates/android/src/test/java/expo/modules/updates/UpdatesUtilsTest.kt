@@ -45,7 +45,6 @@ class UpdatesUtilsTest : TestCase() {
       scopeKey = "wat",
       updateUrl = mockk(),
       runtimeVersionRaw = "1.0",
-      releaseChannel = "default",
       launchWaitMs = 0,
       checkOnLaunch = UpdatesConfiguration.CheckAutomaticallyConfiguration.ALWAYS,
       hasEmbeddedUpdate = true,

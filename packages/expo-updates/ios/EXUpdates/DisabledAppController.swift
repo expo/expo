@@ -67,7 +67,6 @@ public class DisabledAppController: InternalAppControllerInterface {
       embeddedUpdate: nil,
       isEmergencyLaunch: self.isEmergencyLaunch,
       isEnabled: false,
-      releaseChannel: UpdatesConfig.ReleaseChannelDefaultValue,
       isUsingEmbeddedAssets: launcher?.isUsingEmbeddedAssets() ?? false,
       runtimeVersion: nil,
       checkOnLaunch: CheckAutomaticallyConfig.Never,

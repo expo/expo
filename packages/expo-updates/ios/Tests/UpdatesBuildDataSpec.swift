@@ -17,10 +17,6 @@ class UpdatesBuildDataSpec : ExpoSpec {
     var configChannelTest: UpdatesConfig!
     var configChannelTestTwoDictionary: [String: Any]!
     var configChannelTestTwo: UpdatesConfig!
-    var configReleaseChannelTestDictionary: [String: Any]!
-    var configReleaseChannelTest: UpdatesConfig!
-    var configReleaseChannelTestTwoDictionary: [String: Any]!
-    var configReleaseChannelTestTwo: UpdatesConfig!
     
     beforeEach {
       let applicationSupportDir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).last
@@ -59,22 +55,6 @@ class UpdatesBuildDataSpec : ExpoSpec {
         UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
       ]
       configChannelTestTwo = try! UpdatesConfig.config(fromDictionary: configChannelTestTwoDictionary)
-
-      configReleaseChannelTestDictionary = [
-        UpdatesConfig.EXUpdatesConfigScopeKeyKey: scopeKey,
-        UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
-        UpdatesConfig.EXUpdatesConfigReleaseChannelKey: "test",
-        UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
-      ]
-      configReleaseChannelTest = try! UpdatesConfig.config(fromDictionary: configReleaseChannelTestDictionary)
-
-      configReleaseChannelTestTwoDictionary = [
-        UpdatesConfig.EXUpdatesConfigScopeKeyKey: scopeKey,
-        UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
-        UpdatesConfig.EXUpdatesConfigReleaseChannelKey: "testTwo",
-        UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
-      ]
-      configReleaseChannelTestTwo = try! UpdatesConfig.config(fromDictionary: configReleaseChannelTestTwoDictionary)
 
       // start every test with an update
       db.databaseQueue.sync {
@@ -144,23 +124,6 @@ class UpdatesBuildDataSpec : ExpoSpec {
         }
       }
       
-      it("works when build data is consistent with releaseChannel") {
-        db.databaseQueue.sync {
-          expect(try! db.allUpdates(withConfig: configReleaseChannelTest).count) == 1
-          try! db.setStaticBuildData(UpdatesBuildData.getBuildDataFromConfig(configReleaseChannelTest), withScopeKey: configReleaseChannelTest.scopeKey)
-        }
-        
-        UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: db, config: configReleaseChannelTest)
-        
-        db.databaseQueue.sync {
-          let staticBuildData = try! db.staticBuildData(withScopeKey: scopeKey)
-          expect(
-            NSDictionary(dictionary: staticBuildData!).isEqual(to: UpdatesBuildData.getBuildDataFromConfig(configReleaseChannelTest))
-          ) == true
-          expect(try! db.allUpdates(withConfig: configReleaseChannelTest).count) == 1
-        }
-      }
-      
       it("updates are cleared and build data is set when build data is inconsistent with channel") {
         db.databaseQueue.sync {
           expect(try! db.allUpdates(withConfig: configChannelTest).count) == 1
@@ -175,23 +138,6 @@ class UpdatesBuildDataSpec : ExpoSpec {
             NSDictionary(dictionary: staticBuildData!).isEqual(to: UpdatesBuildData.getBuildDataFromConfig(configChannelTestTwo))
           ) == true
           expect(try! db.allUpdates(withConfig: configChannelTestTwo).count) == 0
-        }
-      }
-      
-      it("works build data is inconsistent release channel") {
-        db.databaseQueue.sync {
-          expect(try! db.allUpdates(withConfig: configReleaseChannelTest).count) == 1
-          try! db.setStaticBuildData(UpdatesBuildData.getBuildDataFromConfig(configReleaseChannelTest), withScopeKey: configChannelTest.scopeKey)
-        }
-        
-        UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: db, config: configReleaseChannelTestTwo)
-        
-        db.databaseQueue.sync {
-          let staticBuildData = try! db.staticBuildData(withScopeKey: scopeKey)
-          expect(
-            NSDictionary(dictionary: staticBuildData!).isEqual(to: UpdatesBuildData.getBuildDataFromConfig(configReleaseChannelTestTwo))
-          ) == true
-          expect(try! db.allUpdates(withConfig: configReleaseChannelTestTwo).count) == 0
         }
       }
     }

@@ -679,7 +679,6 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
             header("Expo-Runtime-Version", runtimeVersion)
           }
         }
-        .header("Expo-Release-Channel", configuration.releaseChannel)
         .apply {
           val previousFatalError = NoDatabaseLauncher.consumeErrorLog(context)
           if (previousFatalError != null) {
