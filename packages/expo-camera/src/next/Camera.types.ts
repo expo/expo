@@ -1,9 +1,9 @@
-import {
-  type PermissionResponse,
-  PermissionStatus,
-  type PermissionExpiration,
-  type PermissionHookOptions,
+import type {
+  PermissionResponse,
+  PermissionExpiration,
+  PermissionHookOptions,
 } from 'expo-modules-core';
+import { PermissionStatus } from 'expo-modules-core';
 import { Ref } from 'react';
 import type { ViewProps } from 'react-native';
 
@@ -452,4 +452,5 @@ export type BarCodeType =
   | 'code128'
   | 'upc_a';
 
-export { type PermissionResponse, PermissionStatus, type PermissionExpiration, type PermissionHookOptions };
+export type { PermissionResponse, PermissionExpiration, PermissionHookOptions };
+export { PermissionStatus };
