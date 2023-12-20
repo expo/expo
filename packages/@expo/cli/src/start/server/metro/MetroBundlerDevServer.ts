@@ -504,9 +504,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             },
             () => {
               invalidateApiRouteCache();
-              // if (isApiRouteConvention(filepath) && exp.web?.output !== 'server') {
-              //   warnInvalidWebOutput();
-              // }
             }
           );
         } else {
