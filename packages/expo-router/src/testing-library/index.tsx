@@ -16,7 +16,6 @@ import { ExpoRoot } from '../ExpoRoot';
 import getPathFromState from '../fork/getPathFromState';
 import { stateCache } from '../getLinkingConfig';
 import { store } from '../global-state/router-store';
-import { RequireContext } from '../types';
 
 // re-export everything
 export * from '@testing-library/react-native';
