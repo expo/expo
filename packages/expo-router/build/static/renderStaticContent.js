@@ -59,7 +59,7 @@ async function getManifest(options = {}) {
     const routeTree = getRoutes(_ctx_1.ctx, {
         preserveApiRoutes: true,
         ...options,
-        unstable_platformExtensions: Boolean(process.env.EXPO_ROUTER_UNSTABLE_PLATFORM_EXTENSIONS),
+        unstable_platform: process.env.EXPO_ROUTER_UNSTABLE_PLATFORM_EXTENSIONS ? 'web' : undefined,
     });
     if (!routeTree) {
         throw new Error('No routes found');
@@ -79,7 +79,7 @@ exports.getManifest = getManifest;
 async function getBuildTimeServerManifestAsync(options = {}) {
     const routeTree = getRoutes(_ctx_1.ctx, {
         ...options,
-        unstable_platformExtensions: Boolean(process.env.EXPO_ROUTER_UNSTABLE_PLATFORM_EXTENSIONS),
+        unstable_platform: process.env.EXPO_ROUTER_UNSTABLE_PLATFORM_EXTENSIONS ? 'web' : undefined,
     });
     if (!routeTree) {
         throw new Error('No routes found');

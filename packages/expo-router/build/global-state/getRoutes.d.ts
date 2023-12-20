@@ -1,3 +1,4 @@
+import type { Platform } from 'react-native';
 import { RouteNode } from '../Route';
 import { RequireContext } from '../types';
 export type Options = {
@@ -5,7 +6,7 @@ export type Options = {
     preserveApiRoutes?: boolean;
     ignoreRequireErrors?: boolean;
     ignoreEntryPoints?: boolean;
-    unstable_platformExtensions?: boolean;
+    unstable_platform?: typeof Platform.OS;
     unstable_stripLoadRoute?: boolean;
     unstable_improvedErrorMessages?: boolean;
 };

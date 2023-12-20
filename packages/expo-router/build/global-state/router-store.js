@@ -35,6 +35,7 @@ const getPathFromState_1 = require("../fork/getPathFromState");
 const getLinkingConfig_1 = require("../getLinkingConfig");
 const getRoutes_2 = require("../getRoutes");
 const useScreens_1 = require("../useScreens");
+const expo_modules_core_1 = require("expo-modules-core");
 /**
  * This is the global state for the router. It is used to keep track of the current route, and to provide a way to navigate to other routes.
  *
@@ -77,7 +78,9 @@ class RouterStore {
             : getRoutes_2.getRoutes;
         this.routeNode = getRoutes(context, {
             ignoreEntryPoints: true,
-            unstable_platformExtensions: Boolean(process.env.EXPO_ROUTER_UNSTABLE_PLATFORM_EXTENSIONS),
+            unstable_platform: process.env.EXPO_ROUTER_UNSTABLE_PLATFORM_EXTENSIONS
+                ? expo_modules_core_1.Platform.OS
+                : undefined,
         });
         this.rootComponent = this.routeNode ? (0, useScreens_1.getQualifiedRouteComponent)(this.routeNode) : react_1.Fragment;
         // Only error in production, in development we will show the onboarding screen

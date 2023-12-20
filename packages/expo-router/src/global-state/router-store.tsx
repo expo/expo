@@ -17,6 +17,7 @@ import { ExpoLinkingOptions, getLinkingConfig } from '../getLinkingConfig';
 import { getRoutes as old_getRoutes } from '../getRoutes';
 import { RequireContext } from '../types';
 import { getQualifiedRouteComponent } from '../useScreens';
+import { Platform } from 'expo-modules-core';
 
 /**
  * This is the global state for the router. It is used to keep track of the current route, and to provide a way to navigate to other routes.
@@ -72,7 +73,9 @@ export class RouterStore {
 
     this.routeNode = getRoutes(context, {
       ignoreEntryPoints: true,
-      unstable_platformExtensions: Boolean(process.env.EXPO_ROUTER_UNSTABLE_PLATFORM_EXTENSIONS),
+      unstable_platform: process.env.EXPO_ROUTER_UNSTABLE_PLATFORM_EXTENSIONS
+        ? Platform.OS
+        : undefined,
     });
 
     this.rootComponent = this.routeNode ? getQualifiedRouteComponent(this.routeNode) : Fragment;

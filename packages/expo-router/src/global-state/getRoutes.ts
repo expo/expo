@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import type { Platform } from 'react-native';
 
 import { DynamicConvention, RouteNode } from '../Route';
 import {
@@ -14,7 +14,7 @@ export type Options = {
   preserveApiRoutes?: boolean;
   ignoreRequireErrors?: boolean;
   ignoreEntryPoints?: boolean;
-  unstable_platformExtensions?: boolean;
+  unstable_platform?: typeof Platform.OS;
   /* Used using testing for easier comparison */
   unstable_stripLoadRoute?: boolean;
   unstable_improvedErrorMessages?: boolean;
@@ -159,7 +159,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
     directory.layout = [
       {
         loadRoute: () => ({
-          default: (require('./views/Navigator') as typeof import('../views/Navigator'))
+          default: (require('../views/Navigator') as typeof import('../views/Navigator'))
             .DefaultNavigator,
         }),
         // Generate a fake file name for the directory
@@ -196,7 +196,7 @@ function appendSitemapRoute(directory: DirectoryNode) {
   directory.files.set('_sitemap', [
     {
       loadRoute() {
-        const { Sitemap, getNavOptions } = require('./views/Sitemap');
+        const { Sitemap, getNavOptions } = require('../views/Sitemap');
         return { default: Sitemap, getNavOptions };
       },
       route: '_sitemap',
@@ -354,10 +354,10 @@ function getFileMeta(key: string, options: Options) {
   const hasPlatform = validPlatforms.has(platform);
 
   let specificity = 0;
-  if (options.unstable_platformExtensions && hasPlatform) {
-    if (platform === Platform.OS) {
+  if (options.unstable_platform && hasPlatform) {
+    if (platform === options.unstable_platform) {
       specificity = 2;
-    } else if (platform === 'native' && Platform.OS !== 'web') {
+    } else if (platform === 'native' && options.unstable_platform !== 'web') {
       specificity = 1;
     } else {
       specificity = -1;

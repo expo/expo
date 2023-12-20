@@ -23,7 +23,7 @@ function createRoutesManifest(paths) {
         preserveApiRoutes: true,
         ignoreRequireErrors: true,
         ignoreEntryPoints: true,
-        unstable_platformExtensions: Boolean(process.env.EXPO_ROUTER_UNSTABLE_PLATFORM_EXTENSIONS),
+        unstable_platform: process.env.EXPO_ROUTER_UNSTABLE_PLATFORM_EXTENSIONS ? 'web' : undefined,
     });
     if (!routeTree) {
         return null;

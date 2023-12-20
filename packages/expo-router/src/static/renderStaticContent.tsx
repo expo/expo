@@ -37,7 +37,7 @@ async function getManifest(options: Parameters<typeof getRoutes>[1] = {}) {
   const routeTree = getRoutes(ctx, {
     preserveApiRoutes: true,
     ...options,
-    unstable_platformExtensions: Boolean(process.env.EXPO_ROUTER_UNSTABLE_PLATFORM_EXTENSIONS),
+    unstable_platform: process.env.EXPO_ROUTER_UNSTABLE_PLATFORM_EXTENSIONS ? 'web' : undefined,
   });
 
   if (!routeTree) {
@@ -62,7 +62,7 @@ async function getBuildTimeServerManifestAsync(
 ): Promise<ExpoRouterServerManifestV1> {
   const routeTree = getRoutes(ctx, {
     ...options,
-    unstable_platformExtensions: Boolean(process.env.EXPO_ROUTER_UNSTABLE_PLATFORM_EXTENSIONS),
+    unstable_platform: process.env.EXPO_ROUTER_UNSTABLE_PLATFORM_EXTENSIONS ? 'web' : undefined,
   });
 
   if (!routeTree) {
