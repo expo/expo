@@ -66,6 +66,7 @@ it('runs `npx expo export --help`', async () => {
         -p, --platform <platform>  Options: android, ios, web, all. Default: all
         -s, --source-maps          Emit JavaScript source maps
         -c, --clear                Clear the bundler cache
+        -v, --verify-assets <path> Given a path to the build's embedded manifest, check for assets omitted from the export (android, ios)
         -h, --help                 Usage info
     "
   `);
