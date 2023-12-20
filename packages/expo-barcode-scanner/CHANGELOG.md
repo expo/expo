@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Add FYI link.
+
 ## 12.9.0 — 2023-11-14
 
 ### 🛠 Breaking changes
