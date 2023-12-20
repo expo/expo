@@ -15,14 +15,14 @@ export type Options = {
   ignoreRequireErrors?: boolean;
   ignoreEntryPoints?: boolean;
   unstable_platformExtensions?: boolean;
+  /* Used using testing for easier comparison */
   unstable_stripLoadRoute?: boolean;
-  unstable_alwaysIncludeSitemap?: boolean;
   unstable_improvedErrorMessages?: boolean;
 };
 
 type DirectoryNode = {
   layout?: RouteNode[];
-  views: Map<string, RouteNode[]>;
+  files: Map<string, RouteNode[]>;
   subdirectories: Map<string, DirectoryNode>;
 };
 
@@ -38,8 +38,7 @@ export function getRoutes(contextModule: RequireContext, options: Options = {}):
   }
 
   // Only include the sitemap if there are routes.
-  // TODO: Should we always include the sitemap?
-  if (hasRoutes || options.unstable_alwaysIncludeSitemap) {
+  if (hasRoutes) {
     appendSitemapRoute(directoryTree);
   }
 
@@ -53,7 +52,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
   let hasLayout = false;
 
   const directory: DirectoryNode = {
-    views: new Map(),
+    files: new Map(),
     subdirectories: new Map(),
   };
 
@@ -64,7 +63,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
 
     const meta = getFileMeta(filePath, options);
 
-    // This is a file that should be ignored
+    // This is a file that should be ignored. e.g maybe it has an invalid platform
     if (meta.specificity < 0) {
       continue;
     }
@@ -78,7 +77,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
         let child = node.subdirectories.get(part);
         if (!child) {
           child = {
-            views: new Map(),
+            files: new Map(),
             subdirectories: new Map(),
           };
           node.subdirectories.set(part, child);
@@ -101,10 +100,10 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
         }
       },
       contextKey: filePath,
+      entryPoints: [filePath],
       route: meta.name, // This is overwritten during hoisting
       dynamic: null, // This is calculated during hoisting
       children: [],
-      entryPoints: [filePath],
     };
 
     if (meta.isLayout) {
@@ -127,11 +126,11 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
     } else {
       hasRoutes ||= leaves.length > 0;
       for (const leaf of leaves) {
-        let nodes = leaf.views.get(meta.name);
+        let nodes = leaf.files.get(meta.name);
 
         if (!nodes) {
           nodes = [];
-          leaf.views.set(meta.name, nodes);
+          leaf.files.set(meta.name, nodes);
         }
 
         const existing = nodes[meta.specificity];
@@ -179,11 +178,11 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
 }
 
 function appendSitemapRoute(directory: DirectoryNode) {
-  if (directory.views.has('_sitemap')) {
+  if (directory.files.has('_sitemap')) {
     return;
   }
 
-  directory.views.set('_sitemap', [
+  directory.files.set('_sitemap', [
     {
       loadRoute() {
         const { Sitemap, getNavOptions } = require('./views/Sitemap');
@@ -201,11 +200,11 @@ function appendSitemapRoute(directory: DirectoryNode) {
 }
 
 function appendNotFoundRoute(directory: DirectoryNode) {
-  if (directory.views.has('+not-found')) {
+  if (directory.files.has('+not-found')) {
     return;
   }
 
-  directory.views.set('+not-found', [
+  directory.files.set('+not-found', [
     {
       loadRoute() {
         return { default: require('../views/Unmatched').Unmatched };
@@ -243,14 +242,10 @@ function hoistRoutesToNearestLayout(
 
     if (parent.entryPoints) {
       entryPoints = [...entryPoints, ...parent.entryPoints];
+      // Layouts never have entryPoints
       delete parent.entryPoints;
     }
 
-    if (options.ignoreEntryPoints) {
-      delete parent.entryPoints;
-    }
-
-    // This is only used for testing for easier comparison
     if (options.unstable_stripLoadRoute) {
       delete (parent as any).loadRoute;
     }
@@ -259,22 +254,26 @@ function hoistRoutesToNearestLayout(
   // This should never occur, but it makes the type system happy
   if (!parent) return null;
 
-  for (const routes of directory.views.values()) {
+  for (const routes of directory.files.values()) {
     const route = getMostSpecific(routes);
     const name = route.route.replace(pathToRemove, '');
+
+    const childEntryPoints = new Set(entryPoints);
+    if (route.entryPoints?.[0]) {
+      childEntryPoints.add(route.entryPoints[0]);
+    }
 
     const child = {
       ...route,
       route: name,
       dynamic: generateDynamic(name),
-      entryPoints: Array.from(new Set([...entryPoints, ...(route.entryPoints || [])])),
+      entryPoints: [...childEntryPoints],
     };
 
     if (options.ignoreEntryPoints) {
       delete (child as any).entryPoints;
     }
 
-    // This is only used for testing for easier comparison
     if (options.unstable_stripLoadRoute) {
       delete (child as any).loadRoute;
     }
@@ -293,7 +292,7 @@ function getMostSpecific(routes: RouteNode[]) {
   const route = routes[routes.length - 1];
 
   if (!routes[0]) {
-    throw new Error(`${route.contextKey} does not contain a fallback platform route`);
+    throw new Error(`${route.contextKey} does not contain a non-platform fallback route`);
   }
 
   return routes[routes.length - 1];
@@ -348,7 +347,6 @@ function getFileMeta(key: string, options: Options) {
     key,
     name,
     specificity,
-    parts,
     dirname,
     filename,
     isLayout,

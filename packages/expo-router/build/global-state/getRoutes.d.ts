@@ -7,7 +7,6 @@ export type Options = {
     ignoreEntryPoints?: boolean;
     unstable_platformExtensions?: boolean;
     unstable_stripLoadRoute?: boolean;
-    unstable_alwaysIncludeSitemap?: boolean;
     unstable_improvedErrorMessages?: boolean;
 };
 /** Given a Metro context module, return an array of nested routes. */
