@@ -4,7 +4,7 @@ import { BlurView } from 'expo-blur';
 import { Camera, CameraType } from 'expo-camera';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Button,
   SafeAreaView,
@@ -16,33 +16,43 @@ import {
   TouchableOpacity,
   Platform,
   Alert,
+  Appearance,
+  PlatformColor,
 } from 'react-native';
 
 function randomColor() {
   return '#' + ((Math.random() * 0xffffff) << 0).toString(16).padStart(6, '0');
 }
 
-export default class App extends React.PureComponent {
-  render() {
-    const isFabricEnabled = global.nativeFabricUIManager != null;
+export default function App() {
+  const [colorScheme, setColorScheme] = useState(Appearance.getColorScheme());
+  const isFabricEnabled = global.nativeFabricUIManager != null;
 
-    return (
-      <SafeAreaView style={styles.container}>
-        <ScrollView>
-          <Text style={[styles.text, { marginVertical: 10 }]}>
-            isFabricEnabled: {isFabricEnabled + ''}
-          </Text>
+  useEffect(() => {
+    const listener = Appearance.addChangeListener((preferences) => {
+      setColorScheme(preferences.colorScheme);
+    });
 
-          <ImageExample />
-          <LinearGradientExample />
-          {Platform.OS === 'ios' && <BlurExample />}
-          <VideoExample />
-          <CameraExample />
-          <AppleAuthenticationExample />
-        </ScrollView>
-      </SafeAreaView>
-    );
-  }
+    return listener.remove;
+  }, []);
+
+  return (
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colorScheme === 'light' ? '#fff' : '#161b22' }]}>
+      <ScrollView>
+        <Text style={[styles.text, { marginVertical: 10 }]}>
+          isFabricEnabled: {isFabricEnabled + ''}
+        </Text>
+
+        <ImageExample />
+        <LinearGradientExample />
+        {Platform.OS === 'ios' && <BlurExample />}
+        <VideoExample />
+        <CameraExample />
+        <AppleAuthenticationExample />
+      </ScrollView>
+    </SafeAreaView>
+  );
 }
 
 export function ImageExample() {
@@ -220,11 +230,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: StatusBar.currentHeight,
   },
-  scrollContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#fff',
-  },
   exampleContainer: {
     padding: 20,
     borderTopWidth: StyleSheet.hairlineWidth,
@@ -252,6 +257,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
+    color: PlatformColor('labelColor'),
   },
   videoExample: {
     justifyContent: 'center',
