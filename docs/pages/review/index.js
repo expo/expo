@@ -1,3 +1,3 @@
 import redirect from '~/common/redirect';
 
-export default redirect('/review/introduction/');
+export default redirect('/review/overview/');
