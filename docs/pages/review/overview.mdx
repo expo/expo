@@ -1,0 +1,65 @@
+---
+title: Overview of strategies for reviewing an app
+sidebar_title: Overview
+description: Learn about different strategies you can use for reviewing your app using internal distribution and EAS Update.
+---
+
+import { BoxLink } from '~/ui/components/BoxLink';
+
+Whether you have built a native app using EAS Build or locally, the next step in your app development journey is to release a preview version of your app so that you can share it with your testing team. Sharing a preview version of your app allows anyone to test it on a device or run it on multiple test devices. It also allows them to experience how the app is used in production.
+
+This page outlines different strategies to share a preview version of your app using internal distribution and EAS Update.
+
+## Internal distribution
+
+Internal distribution is a strategy for sharing an app with a limited audience. It is used for testing purposes within a team or organization or a selected group of testers. Android and iOS provide different ways to install a build of your application directly on a device.
+
+Google Play beta provides both closed and open tracks. You can invite specific users to test your app in the closed beta. In the open beta, you can make your app available to anyone participating in the beta program.
+
+Apple offers ad hoc provisioning profile to distribute your app to test on devices registered to your Apple Developer account. You can also use TestFlight to share your app with up to 10,000 external testers by [uploading your app](/submit/ios/).
+
+However, both of these methods are time-consuming and limiting. EAS Build can help you overcome these limitations by providing a shareable URL for your team to get it up and running.
+
+<BoxLink
+  title="How to set up an internal distribution build"
+  description="Learn how EAS Build provides shareable URLs for your builds with your team for internal distribution."
+  href="/build/internal-distribution/"
+/>
+
+## Using EAS Update with development builds
+
+Development builds are highly recommended for a robust and flexible solution, especially when planning to deploy your app to production. They provide a comprehensive development environment that can be further configured to generate previews for your app during the review stage.
+
+Even though Expo Go is an open-source sandbox that can be good for previewing isolated prototypes on Android and iOS, it is not intended for production apps. It should be avoided during the preview process of your app.
+
+You can use a development build with EAS Update and see the getting started guide for further instructions to set up the `expo-updates` library and learn how to create a link between a build and an update.
+
+<BoxLink
+  title="Get started with EAS Update"
+  description="Learn how to get started using expo-updates library and use EAS Update in your project."
+  href="/eas-update/expo-dev-client/"
+/>
+
+EAS Update allows you to push updates to iterate faster with your team. You can publish a new update for your team to preview. This process allows any team member or reviewer with a registered device to review the latest version of your app by scanning a QR code.
+
+<BoxLink
+  title="Develop with EAS Update"
+  description="Learn how to iterate faster locally or with your team."
+  href="/eas-update/develop-faster/"
+/>
+
+If you have the `expo-dev-client` library installed in your project, your team can launch different app versions and preview a published update inside the development build. It supports loading published EAS updates through channels.
+
+<BoxLink
+  title="Use expo-dev-client with EAS Update"
+  description="Learn how to use expo-dev-client library to preview a published EAS Update inside a development build."
+  href="/eas-update/expo-dev-client/"
+/>
+
+You can also use GitHub Actions to automate the process of publishing updates. It makes deploying updates consistent and fast, leaving you more time to develop your app.
+
+<BoxLink
+  title="Use GitHub Actions"
+  description="Learn how to use GitHub Actions to automate publishing updates with EAS Update."
+  href="/eas-update/github-actions/"
+/>
