@@ -28,7 +28,7 @@ export declare const Drawer: import("react").ForwardRefExoticComponent<Omit<Omit
     backBehavior?: import("@react-navigation/routers/lib/typescript/src/TabRouter").BackBehavior | undefined;
 } & {
     defaultStatus?: import("@react-navigation/native").DrawerStatus | undefined;
-} & import("@react-navigation/drawer/lib/typescript/src/types").DrawerNavigationConfig, "initialRouteName" | "children" | "id" | "screenListeners" | "screenOptions"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+} & import("@react-navigation/drawer/lib/typescript/src/types").DrawerNavigationConfig, "children" | "id" | "initialRouteName" | "screenListeners" | "screenOptions"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     id?: string | undefined;
     children: import("react").ReactNode;
     screenListeners?: Partial<{
@@ -78,7 +78,7 @@ export declare const Drawer: import("react").ForwardRefExoticComponent<Omit<Omit
     backBehavior?: import("@react-navigation/routers/lib/typescript/src/TabRouter").BackBehavior | undefined;
 } & {
     defaultStatus?: import("@react-navigation/native").DrawerStatus | undefined;
-} & import("@react-navigation/drawer/lib/typescript/src/types").DrawerNavigationConfig, "initialRouteName" | "children" | "id" | "screenListeners" | "screenOptions"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+} & import("@react-navigation/drawer/lib/typescript/src/types").DrawerNavigationConfig, "children" | "id" | "initialRouteName" | "screenListeners" | "screenOptions"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     id?: string | undefined;
     children: import("react").ReactNode;
     screenListeners?: Partial<{

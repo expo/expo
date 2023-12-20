@@ -29,7 +29,7 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
     }) => BottomTabNavigationOptions) | undefined;
 } & import("@react-navigation/native").DefaultRouterOptions & {
     backBehavior?: import("@react-navigation/routers/lib/typescript/src/TabRouter").BackBehavior | undefined;
-} & import("@react-navigation/bottom-tabs/lib/typescript/src/types").BottomTabNavigationConfig, "initialRouteName" | "children" | "id" | "screenListeners" | "screenOptions"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+} & import("@react-navigation/bottom-tabs/lib/typescript/src/types").BottomTabNavigationConfig, "children" | "id" | "initialRouteName" | "screenListeners" | "screenOptions"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     id?: string | undefined;
     children: React.ReactNode;
     screenListeners?: Partial<{
@@ -81,7 +81,7 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
     }) => BottomTabNavigationOptions) | undefined;
 } & import("@react-navigation/native").DefaultRouterOptions & {
     backBehavior?: import("@react-navigation/routers/lib/typescript/src/TabRouter").BackBehavior | undefined;
-} & import("@react-navigation/bottom-tabs/lib/typescript/src/types").BottomTabNavigationConfig, "initialRouteName" | "children" | "id" | "screenListeners" | "screenOptions"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+} & import("@react-navigation/bottom-tabs/lib/typescript/src/types").BottomTabNavigationConfig, "children" | "id" | "initialRouteName" | "screenListeners" | "screenOptions"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     id?: string | undefined;
     children: React.ReactNode;
     screenListeners?: Partial<{

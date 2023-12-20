@@ -16,8 +16,9 @@ import { getRootComponent } from './getRootComponent';
 import { ctx } from '../../_ctx';
 import { ExpoRoot } from '../ExpoRoot';
 import { getReactNavigationConfig } from '../getReactNavigationConfig';
-import { getRoutes } from '../getRoutes';
+import { getRoutes as old_getRoutes } from '../getRoutes';
 import { ExpoRouterServerManifestV1, getServerManifest } from '../getServerManifest';
+import { getRoutes as new_getRoutes } from '../global-state/getRoutes';
 import { Head } from '../head';
 import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
 
@@ -25,9 +26,19 @@ const debug = require('debug')('expo:router:renderStaticContent');
 
 AppRegistry.registerComponent('App', () => ExpoRoot);
 
+const getRoutes =
+  process.env.EXPO_ROUTER_UNSTABLE_GET_ROUTES ||
+  process.env.EXPO_ROUTER_UNSTABLE_PLATFORM_EXTENSIONS
+    ? new_getRoutes
+    : old_getRoutes;
+
 /** Get the linking manifest from a Node.js process. */
 async function getManifest(options: Parameters<typeof getRoutes>[1] = {}) {
-  const routeTree = getRoutes(ctx, { preserveApiRoutes: true, ...options });
+  const routeTree = getRoutes(ctx, {
+    preserveApiRoutes: true,
+    ...options,
+    unstable_platformExtensions: Boolean(process.env.EXPO_ROUTER_UNSTABLE_PLATFORM_EXTENSIONS),
+  });
 
   if (!routeTree) {
     throw new Error('No routes found');
@@ -49,7 +60,10 @@ async function getManifest(options: Parameters<typeof getRoutes>[1] = {}) {
 async function getBuildTimeServerManifestAsync(
   options: Parameters<typeof getRoutes>[1] = {}
 ): Promise<ExpoRouterServerManifestV1> {
-  const routeTree = getRoutes(ctx, options);
+  const routeTree = getRoutes(ctx, {
+    ...options,
+    unstable_platformExtensions: Boolean(process.env.EXPO_ROUTER_UNSTABLE_PLATFORM_EXTENSIONS),
+  });
 
   if (!routeTree) {
     throw new Error('No routes found');

@@ -1,7 +1,8 @@
 // This file runs in Node.js environments.
 // no relative imports
-import { getRoutes } from './getRoutes';
+import { getRoutes as old_getRoutes } from './getRoutes';
 import { getServerManifest } from './getServerManifest';
+import { getRoutes as new_getRoutes } from './global-state/getRoutes';
 import { RequireContext } from './types';
 
 export type RouteInfo<TRegex = string> = {
@@ -29,10 +30,17 @@ function createMockContextModule(map: string[] = []) {
 
 export function createRoutesManifest(paths: string[]): ExpoRoutesManifestV1 | null {
   // TODO: Drop this part for Node.js
+  const getRoutes =
+    process.env.EXPO_ROUTER_UNSTABLE_GET_ROUTES ||
+    process.env.EXPO_ROUTER_UNSTABLE_PLATFORM_EXTENSIONS
+      ? new_getRoutes
+      : old_getRoutes;
+
   const routeTree = getRoutes(createMockContextModule(paths), {
     preserveApiRoutes: true,
     ignoreRequireErrors: true,
     ignoreEntryPoints: true,
+    unstable_platformExtensions: Boolean(process.env.EXPO_ROUTER_UNSTABLE_PLATFORM_EXTENSIONS),
   });
 
   if (!routeTree) {

@@ -12,6 +12,11 @@ declare const process: {
 
     /** Maps to the `experiments.baseUrl` property in the project Expo config. This is injected by `babel-preset-expo` and supports automatic cache invalidation. */
     EXPO_BASE_URL?: string;
+
+    /** Enable new unstable getRoutes function */
+    EXPO_ROUTER_UNSTABLE_GET_ROUTES?: string;
+    /** Enable route platform extensions */
+    EXPO_ROUTER_UNSTABLE_PLATFORM_EXTENSIONS?: string;
   };
   [key: string]: any;
 };

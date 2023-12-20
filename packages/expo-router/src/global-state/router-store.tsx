@@ -6,6 +6,7 @@ import {
 import * as SplashScreen from 'expo-splash-screen';
 import { useSyncExternalStore, useMemo, ComponentType, Fragment } from 'react';
 
+import { getRoutes as new_getRoutes } from './getRoutes';
 import { canGoBack, goBack, linkTo, navigate, push, replace, setParams } from './routing';
 import { getSortedRoutes } from './sort-routes';
 import { UrlObject, getRouteInfoFromState } from '../LocationProvider';
@@ -13,7 +14,7 @@ import { RouteNode } from '../Route';
 import { deepEqual, getPathDataFromState } from '../fork/getPathFromState';
 import { ResultState } from '../fork/getStateFromPath';
 import { ExpoLinkingOptions, getLinkingConfig } from '../getLinkingConfig';
-import { getRoutes } from '../getRoutes';
+import { getRoutes as old_getRoutes } from '../getRoutes';
 import { RequireContext } from '../types';
 import { getQualifiedRouteComponent } from '../useScreens';
 
@@ -63,7 +64,16 @@ export class RouterStore {
     this.rootStateSubscribers.clear();
     this.storeSubscribers.clear();
 
-    this.routeNode = getRoutes(context, { ignoreEntryPoints: true });
+    const getRoutes =
+      process.env.EXPO_ROUTER_UNSTABLE_GET_ROUTES ||
+      process.env.EXPO_ROUTER_UNSTABLE_PLATFORM_EXTENSIONS
+        ? new_getRoutes
+        : old_getRoutes;
+
+    this.routeNode = getRoutes(context, {
+      ignoreEntryPoints: true,
+      unstable_platformExtensions: Boolean(process.env.EXPO_ROUTER_UNSTABLE_PLATFORM_EXTENSIONS),
+    });
 
     this.rootComponent = this.routeNode ? getQualifiedRouteComponent(this.routeNode) : Fragment;
 

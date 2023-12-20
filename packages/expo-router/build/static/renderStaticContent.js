@@ -45,13 +45,22 @@ const ExpoRoot_1 = require("../ExpoRoot");
 const getReactNavigationConfig_1 = require("../getReactNavigationConfig");
 const getRoutes_1 = require("../getRoutes");
 const getServerManifest_1 = require("../getServerManifest");
+const getRoutes_2 = require("../global-state/getRoutes");
 const head_1 = require("../head");
 const loadStaticParamsAsync_1 = require("../loadStaticParamsAsync");
 const debug = require('debug')('expo:router:renderStaticContent');
 react_native_web_1.AppRegistry.registerComponent('App', () => ExpoRoot_1.ExpoRoot);
+const getRoutes = process.env.EXPO_ROUTER_UNSTABLE_GET_ROUTES ||
+    process.env.EXPO_ROUTER_UNSTABLE_PLATFORM_EXTENSIONS
+    ? getRoutes_2.getRoutes
+    : getRoutes_1.getRoutes;
 /** Get the linking manifest from a Node.js process. */
 async function getManifest(options = {}) {
-    const routeTree = (0, getRoutes_1.getRoutes)(_ctx_1.ctx, { preserveApiRoutes: true, ...options });
+    const routeTree = getRoutes(_ctx_1.ctx, {
+        preserveApiRoutes: true,
+        ...options,
+        unstable_platformExtensions: Boolean(process.env.EXPO_ROUTER_UNSTABLE_PLATFORM_EXTENSIONS),
+    });
     if (!routeTree) {
         throw new Error('No routes found');
     }
@@ -68,7 +77,10 @@ exports.getManifest = getManifest;
  * This is used for the production manifest where we pre-render certain pages and should no longer treat them as dynamic.
  */
 async function getBuildTimeServerManifestAsync(options = {}) {
-    const routeTree = (0, getRoutes_1.getRoutes)(_ctx_1.ctx, options);
+    const routeTree = getRoutes(_ctx_1.ctx, {
+        ...options,
+        unstable_platformExtensions: Boolean(process.env.EXPO_ROUTER_UNSTABLE_PLATFORM_EXTENSIONS),
+    });
     if (!routeTree) {
         throw new Error('No routes found');
     }

@@ -5,8 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 import '@expo/metro-runtime';
-import { getRoutes } from '../getRoutes';
 import { ExpoRouterServerManifestV1 } from '../getServerManifest';
+import { getRoutes as new_getRoutes } from '../global-state/getRoutes';
+declare const getRoutes: typeof new_getRoutes;
 /** Get the linking manifest from a Node.js process. */
 declare function getManifest(options?: Parameters<typeof getRoutes>[1]): Promise<{
     initialRouteName?: string | undefined;

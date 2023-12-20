@@ -5,6 +5,7 @@ exports.createRoutesManifest = void 0;
 // no relative imports
 const getRoutes_1 = require("./getRoutes");
 const getServerManifest_1 = require("./getServerManifest");
+const getRoutes_2 = require("./global-state/getRoutes");
 function createMockContextModule(map = []) {
     const contextModule = (key) => ({ default() { } });
     Object.defineProperty(contextModule, 'keys', {
@@ -14,10 +15,15 @@ function createMockContextModule(map = []) {
 }
 function createRoutesManifest(paths) {
     // TODO: Drop this part for Node.js
-    const routeTree = (0, getRoutes_1.getRoutes)(createMockContextModule(paths), {
+    const getRoutes = process.env.EXPO_ROUTER_UNSTABLE_GET_ROUTES ||
+        process.env.EXPO_ROUTER_UNSTABLE_PLATFORM_EXTENSIONS
+        ? getRoutes_2.getRoutes
+        : getRoutes_1.getRoutes;
+    const routeTree = getRoutes(createMockContextModule(paths), {
         preserveApiRoutes: true,
         ignoreRequireErrors: true,
         ignoreEntryPoints: true,
+        unstable_platformExtensions: Boolean(process.env.EXPO_ROUTER_UNSTABLE_PLATFORM_EXTENSIONS),
     });
     if (!routeTree) {
         return null;

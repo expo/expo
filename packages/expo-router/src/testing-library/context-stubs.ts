@@ -12,6 +12,8 @@ export type FileStub =
 
 export { requireContext };
 
+const validExtensions = ['.js', '.jsx', '.ts', '.tsx'];
+
 export function inMemoryContext(context: Record<string, FileStub>) {
   return Object.assign(
     function (id: string) {
@@ -25,7 +27,7 @@ export function inMemoryContext(context: Record<string, FileStub>) {
         Object.keys(context).map((key) => {
           const ext = path.extname(key);
           key = key.replace(/^\.\//, '');
-          return ext ? `./${key}` : `./${key}.js`;
+          return validExtensions.includes(ext) ? `./${key}` : `./${key}.js`;
         }),
     }
   );

@@ -63,9 +63,9 @@ describe('platform extensions', () => {
       children: [
         {
           children: [],
-          contextKey: './one.web',
+          contextKey: './one.web.js',
           dynamic: null,
-          entryPoints: ['expo-router/build/views/Navigator.js', './one.web'],
+          entryPoints: ['expo-router/build/views/Navigator.js', './one.web.js'],
           route: 'one',
         },
         {
@@ -106,7 +106,7 @@ describe('platform extensions', () => {
     });
   });
 
-  it.only('supports _layout platform extensions', () => {
+  it('supports _layout platform extensions', () => {
     const context = getMockContext({
       one: () => null,
       _layout: () => null,
@@ -121,14 +121,14 @@ describe('platform extensions', () => {
           children: [],
           contextKey: './one.js',
           dynamic: null,
-          entryPoints: ['_layout.web.js', './one.js'],
+          entryPoints: ['./_layout.web.js', './one.js'],
           route: 'one',
         },
         {
           children: [],
           contextKey: './_sitemap.tsx',
           dynamic: null,
-          entryPoints: ['_layout.web', 'expo-router/build/views/Sitemap.js'],
+          entryPoints: ['./_layout.web.js', 'expo-router/build/views/Sitemap.js'],
           generated: true,
           internal: true,
           route: '_sitemap',
@@ -143,16 +143,15 @@ describe('platform extensions', () => {
               notFound: true,
             },
           ],
-          entryPoints: ['_layout.web', 'expo-router/build/views/Unmatched.js'],
+          entryPoints: ['./_layout.web.js', 'expo-router/build/views/Unmatched.js'],
           generated: true,
           internal: true,
           route: '+not-found',
         },
       ],
-      contextKey: './_layout.web',
+      contextKey: './_layout.web.js',
       dynamic: null,
-      generated: true,
-      route: '',
+      route: '_layout',
     });
   });
 });

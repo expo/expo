@@ -27,12 +27,13 @@ exports.useInitializeExpoRouter = exports.useStoreRouteInfo = exports.useStoreRo
 const native_1 = require("@react-navigation/native");
 const SplashScreen = __importStar(require("expo-splash-screen"));
 const react_1 = require("react");
+const getRoutes_1 = require("./getRoutes");
 const routing_1 = require("./routing");
 const sort_routes_1 = require("./sort-routes");
 const LocationProvider_1 = require("../LocationProvider");
 const getPathFromState_1 = require("../fork/getPathFromState");
 const getLinkingConfig_1 = require("../getLinkingConfig");
-const getRoutes_1 = require("../getRoutes");
+const getRoutes_2 = require("../getRoutes");
 const useScreens_1 = require("../useScreens");
 /**
  * This is the global state for the router. It is used to keep track of the current route, and to provide a way to navigate to other routes.
@@ -70,7 +71,14 @@ class RouterStore {
         this.navigationRefSubscription?.();
         this.rootStateSubscribers.clear();
         this.storeSubscribers.clear();
-        this.routeNode = (0, getRoutes_1.getRoutes)(context, { ignoreEntryPoints: true });
+        const getRoutes = process.env.EXPO_ROUTER_UNSTABLE_GET_ROUTES ||
+            process.env.EXPO_ROUTER_UNSTABLE_PLATFORM_EXTENSIONS
+            ? getRoutes_1.getRoutes
+            : getRoutes_2.getRoutes;
+        this.routeNode = getRoutes(context, {
+            ignoreEntryPoints: true,
+            unstable_platformExtensions: Boolean(process.env.EXPO_ROUTER_UNSTABLE_PLATFORM_EXTENSIONS),
+        });
         this.rootComponent = this.routeNode ? (0, useScreens_1.getQualifiedRouteComponent)(this.routeNode) : react_1.Fragment;
         // Only error in production, in development we will show the onboarding screen
         if (!this.routeNode && process.env.NODE_ENV === 'production') {
