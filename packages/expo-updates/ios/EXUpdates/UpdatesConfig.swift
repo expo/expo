@@ -64,7 +64,6 @@ public final class UpdatesConfig: NSObject {
   public static let EXUpdatesConfigReleaseChannelKey = "EXUpdatesReleaseChannel"
   public static let EXUpdatesConfigLaunchWaitMsKey = "EXUpdatesLaunchWaitMs"
   public static let EXUpdatesConfigCheckOnLaunchKey = "EXUpdatesCheckOnLaunch"
-  public static let EXUpdatesConfigSDKVersionKey = "EXUpdatesSDKVersion"
   public static let EXUpdatesConfigRuntimeVersionKey = "EXUpdatesRuntimeVersion"
   public static let EXUpdatesConfigHasEmbeddedUpdateKey = "EXUpdatesHasEmbeddedUpdate"
   public static let EXUpdatesConfigExpectsSignedManifestKey = "EXUpdatesExpectsSignedManifest"
@@ -93,9 +92,7 @@ public final class UpdatesConfig: NSObject {
   // used only in Expo Go to prevent loading rollbacks and other directives, which don't make much sense in the context of Expo Go
   public let enableExpoUpdatesProtocolV0CompatibilityMode: Bool
 
-  public let sdkVersion: String?
-  public let runtimeVersionRaw: String?
-  public let runtimeVersionRealized: String
+  public let runtimeVersion: String
 
   public let hasEmbeddedUpdate: Bool
 
@@ -108,9 +105,7 @@ public final class UpdatesConfig: NSObject {
     launchWaitMs: Int,
     checkOnLaunch: CheckAutomaticallyConfig,
     codeSigningConfiguration: CodeSigningConfiguration?,
-    sdkVersion: String?,
-    runtimeVersionRaw: String?,
-    runtimeVersionRealized: String,
+    runtimeVersion: String,
     hasEmbeddedUpdate: Bool,
     enableExpoUpdatesProtocolV0CompatibilityMode: Bool
   ) {
@@ -122,9 +117,7 @@ public final class UpdatesConfig: NSObject {
     self.launchWaitMs = launchWaitMs
     self.checkOnLaunch = checkOnLaunch
     self.codeSigningConfiguration = codeSigningConfiguration
-    self.sdkVersion = sdkVersion
-    self.runtimeVersionRaw = runtimeVersionRaw
-    self.runtimeVersionRealized = runtimeVersionRealized
+    self.runtimeVersion = runtimeVersion
     self.hasEmbeddedUpdate = hasEmbeddedUpdate
     self.enableExpoUpdatesProtocolV0CompatibilityMode = enableExpoUpdatesProtocolV0CompatibilityMode
   }
@@ -152,10 +145,8 @@ public final class UpdatesConfig: NSObject {
       return true
     }
 
-    let sdkVersion: String? = dictionary.optionalValue(forKey: EXUpdatesConfigSDKVersionKey)
     let runtimeVersion: String? = dictionary.optionalValue(forKey: EXUpdatesConfigRuntimeVersionKey)
-
-    return (sdkVersion?.isEmpty ?? true) && (runtimeVersion?.isEmpty ?? true)
+    return runtimeVersion?.isEmpty ?? true
   }
 
   public static func getUpdatesConfigurationValidationResult(mergingOtherDictionary: [String: Any]?) -> UpdatesConfigurationValidationResult {
@@ -224,10 +215,7 @@ public final class UpdatesConfig: NSObject {
       }
     } ?? CheckAutomaticallyConfig.Always
 
-    let sdkVersion: String? = config.optionalValue(forKey: EXUpdatesConfigSDKVersionKey)
-    let runtimeVersionRaw: String? = config.optionalValue(forKey: EXUpdatesConfigRuntimeVersionKey)
-
-    guard let runtimeVersionRealized = runtimeVersionRaw ?? sdkVersion else {
+    guard let runtimeVersion: String = config.optionalValue(forKey: EXUpdatesConfigRuntimeVersionKey) else {
       throw UpdatesConfigError.ExpoUpdatesMissingRuntimeVersionError
     }
 
@@ -259,9 +247,7 @@ public final class UpdatesConfig: NSObject {
       launchWaitMs: launchWaitMs,
       checkOnLaunch: checkOnLaunch,
       codeSigningConfiguration: codeSigningConfiguration,
-      sdkVersion: sdkVersion,
-      runtimeVersionRaw: runtimeVersionRaw,
-      runtimeVersionRealized: runtimeVersionRealized,
+      runtimeVersion: runtimeVersion,
       hasEmbeddedUpdate: hasEmbeddedUpdate,
       enableExpoUpdatesProtocolV0CompatibilityMode: enableExpoUpdatesProtocolV0CompatibilityMode
     )
