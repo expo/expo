@@ -63,11 +63,11 @@ describe(`manifest`, () => {
 
   function mockNativeModulesProxy(mockValues: object) {
     jest.doMock('expo-modules-core', () => {
-      const UnimodulesCore = jest.requireActual('expo-modules-core');
+      const ExpoModulesCore = jest.requireActual('expo-modules-core');
       return {
-        ...UnimodulesCore,
+        ...ExpoModulesCore,
         NativeModulesProxy: {
-          ...(UnimodulesCore.NativeModulesProxy ?? {}),
+          ...(ExpoModulesCore.NativeModulesProxy ?? {}),
           ...mockValues,
         },
       };
@@ -76,15 +76,18 @@ describe(`manifest`, () => {
 
   function mockExpoUpdates(mockValues: object) {
     jest.doMock('expo-modules-core', () => {
-      const UnimodulesCore = jest.requireActual('expo-modules-core');
+      const ExpoModulesCore = jest.requireActual('expo-modules-core');
       return {
-        ...UnimodulesCore,
-        NativeModulesProxy: {
-          ...(UnimodulesCore.NativeModulesProxy ?? {}),
-          ExpoUpdates: {
-            ...(UnimodulesCore.NativeModulesProxy?.ExpoUpdates ?? {}),
+        ...ExpoModulesCore,
+        requireOptionalNativeModule(moduleName) {
+          if (moduleName !== 'ExpoUpdates') {
+            return jest.requireActual('expo-modules-core').requireOptionalNativeModule(moduleName);
+          }
+
+          return {
+            ...jest.requireActual('expo-modules-core').requireOptionalNativeModule('ExpoUpdates'),
             ...mockValues,
-          },
+          };
         },
       };
     });

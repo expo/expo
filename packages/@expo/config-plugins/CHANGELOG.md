@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing `slugify` dependency. ([#26019](https://github.com/expo/expo/pull/26019) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 7.8.1 — 2023-12-15

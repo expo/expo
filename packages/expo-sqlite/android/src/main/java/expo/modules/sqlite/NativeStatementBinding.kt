@@ -4,18 +4,23 @@ package expo.modules.sqlite
 
 import com.facebook.jni.HybridData
 import expo.modules.core.interfaces.DoNotStrip
+import java.io.Closeable
 
 internal typealias SQLiteColumnNames = ArrayList<String>
 internal typealias SQLiteColumnValues = ArrayList<Any>
 
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
-internal class NativeStatementBinding {
+internal class NativeStatementBinding : Closeable {
   @DoNotStrip
   private val mHybridData: HybridData
 
   init {
     mHybridData = initHybrid()
+  }
+
+  override fun close() {
+    mHybridData.resetNative()
   }
 
   // region sqlite3 bindings

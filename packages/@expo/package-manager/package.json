@@ -46,15 +46,16 @@
     "js-yaml": "^3.13.1",
     "micromatch": "^4.0.2",
     "npm-package-arg": "^7.0.0",
+    "ora": "^3.4.0",
     "split": "^1.0.1",
     "sudo-prompt": "9.1.1"
   },
   "devDependencies": {
+    "@types/js-yaml": "^3.12.5",
+    "@types/micromatch": "^4.0.2",
     "@types/npm-package-arg": "^6.1.0",
     "@types/rimraf": "^3.0.0",
     "@types/split": "^1.0.0",
-    "@types/js-yaml": "^3.12.5",
-    "@types/micromatch": "^4.0.2",
     "expo-module-scripts": "^3.3.0"
   },
   "publishConfig": {
