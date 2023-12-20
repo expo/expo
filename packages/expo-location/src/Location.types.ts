@@ -458,7 +458,7 @@ export type LocationGeocodedAddress = {
    */
   timezone: string | null;
   /**
-   * TODO: Docs for formattedAddress
+   * Composed string of the address components, for example, "111 8th Avenue, New York, NY".
    */
   formattedAddress: string | null;
 };
