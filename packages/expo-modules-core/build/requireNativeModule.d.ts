@@ -7,12 +7,6 @@ type ExpoObject = {
 };
 declare global {
     var expo: ExpoObject | undefined;
-    /**
-     * @deprecated `global.ExpoModules` is deprecated, use `global.expo.modules` instead.
-     */
-    var ExpoModules: undefined | {
-        [key: string]: any;
-    };
 }
 /**
  * Imports the native module registered with given name. In the first place it tries to load
