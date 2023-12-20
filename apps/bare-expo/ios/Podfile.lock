@@ -2059,7 +2059,7 @@ SPEC CHECKSUMS:
   React-RCTText: 08dd5d7173ed279d3468b333217afb22bb7948c3
   React-RCTVibration: 2f906cd58dfd44ff5e4ca4fc0edd8740dceda6be
   React-rendererdebug: e3db5db14234d9ee46d2e58fff3b8652ee7da6bc
-  React-rncore: 6025dc7b0fe1310826f4ccd459120d5b1a385aeb
+  React-rncore: 2d6fc692c7e8adf1d3b43dd0073d55425ee56ab4
   React-runtimeexecutor: d87e84455640dc5685e87563c2eaef90e5df8752
   React-runtimescheduler: 93a4c84e46a85c3fc9678abd4f6923b785226ea7
   React-utils: debda2c206770ee2785bdebb7f16d8db9f18838a
