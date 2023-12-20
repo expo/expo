@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Add FYI link. ([#26049](https://github.com/expo/expo/pull/26049) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 12.9.0 — 2023-11-14
 
 ### 🛠 Breaking changes
