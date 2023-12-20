@@ -47,7 +47,7 @@ async function action(options: ActionOptions) {
       const installedVersion = await getResolvedVersionAsync(workspace._directory, dependency);
 
       console.warn(
-        `- ${dependency}@${installedVersion} is installed, but workspace is at ${dependency}@${workspaceVersion}`
+        `- ${dependency}@${installedVersion} is installed, but workspace is at ${workspaceVersion}`
       );
     }
   }
