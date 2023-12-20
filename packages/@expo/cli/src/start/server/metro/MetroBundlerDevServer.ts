@@ -491,36 +491,28 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           })
         );
 
-        if (exp.web?.output === 'server') {
-          // NOTE(EvanBacon): We aren't sure what files the API routes are using so we'll just invalidate
-          // aggressively to ensure we always have the latest. The only caching we really get here is for
-          // cases where the user is making subsequent requests to the same API route without changing anything.
-          // This is useful for testing but pretty suboptimal. Luckily our caching is pretty aggressive so it makes
-          // up for a lot of the overhead.
-          observeAnyFileChanges(
-            {
-              metro,
-              server,
-            },
-            () => {
+        observeAnyFileChanges(
+          {
+            metro,
+            server,
+          },
+          (events) => {
+            if (exp.web?.output === 'server') {
+              // NOTE(EvanBacon): We aren't sure what files the API routes are using so we'll just invalidate
+              // aggressively to ensure we always have the latest. The only caching we really get here is for
+              // cases where the user is making subsequent requests to the same API route without changing anything.
+              // This is useful for testing but pretty suboptimal. Luckily our caching is pretty aggressive so it makes
+              // up for a lot of the overhead.
               invalidateApiRouteCache();
-            }
-          );
-        } else {
-          observeAnyFileChanges(
-            {
-              metro,
-              server,
-            },
-            (events) => {
+            } else {
               for (const event of events) {
                 if (isApiRouteConvention(event.filePath)) {
                   warnInvalidWebOutput();
                 }
               }
             }
-          );
-        }
+          }
+        );
       } else {
         // This MUST run last since it's the fallback.
         middleware.use(
