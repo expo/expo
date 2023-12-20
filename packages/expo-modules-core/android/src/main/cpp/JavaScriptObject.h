@@ -19,9 +19,11 @@ namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
 
 namespace expo {
-class JavaScriptValue;
 
 class JavaScriptFunction;
+class JavaScriptValue;
+class JavaScriptWeakObject;
+
 
 /**
  * Represents any JavaScript object. Its purpose is to exposes `jsi::Object` API back to Kotlin.
@@ -90,6 +92,8 @@ private:
   );
 
   jni::local_ref<jni::JArrayClass<jstring>> jniGetPropertyNames();
+
+  jni::local_ref<jni::HybridClass<JavaScriptWeakObject, Destructible>::javaobject> createWeak();
 
   jni::local_ref<jni::HybridClass<JavaScriptFunction, Destructible>::javaobject> jniAsFunction();
 
