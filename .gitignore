@@ -89,7 +89,6 @@ jarjar-rules.txt
 /apps/bare-expo/ios/BareExpo/GoogleService-Info.plist
 /ios/Exponent/Generated/EXKeys.h
 /ios/ExponentIntegrationTests/EXTestEnvironment.plist
-/exponent-view-template/ios/Podfile
 
 # Template projects
 templates/**/android/**/generated/*
