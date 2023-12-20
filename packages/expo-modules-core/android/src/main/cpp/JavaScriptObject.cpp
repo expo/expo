@@ -4,6 +4,7 @@
 #include "JavaScriptValue.h"
 #include "JavaScriptFunction.h"
 #include "JavaScriptRuntime.h"
+#include "JavaScriptWeakObject.h"
 #include "JSITypeConverter.h"
 #include "ObjectDeallocator.h"
 #include "JavaReferencesCache.h"
@@ -15,6 +16,7 @@ void JavaScriptObject::registerNatives() {
                    makeNativeMethod("hasProperty", JavaScriptObject::jniHasProperty),
                    makeNativeMethod("getProperty", JavaScriptObject::jniGetProperty),
                    makeNativeMethod("getPropertyNames", JavaScriptObject::jniGetPropertyNames),
+                   makeNativeMethod("createWeak", JavaScriptObject::createWeak),
                    makeNativeMethod("setBoolProperty", JavaScriptObject::setProperty<bool>),
                    makeNativeMethod("setDoubleProperty", JavaScriptObject::setProperty<double>),
                    makeNativeMethod("setStringProperty",
@@ -109,6 +111,14 @@ jni::local_ref<jni::JArrayClass<jstring>> JavaScriptObject::jniGetPropertyNames(
   return paredResult;
 }
 
+jni::local_ref<jni::HybridClass<JavaScriptWeakObject, Destructible>::javaobject> JavaScriptObject::createWeak() {
+  return JavaScriptWeakObject::newInstance(
+    runtimeHolder.getModuleRegistry(),
+    runtimeHolder,
+    get()
+  );
+}
+
 jni::local_ref<JavaScriptFunction::javaobject> JavaScriptObject::jniAsFunction() {
   auto &jsRuntime = runtimeHolder.getJSRuntime();
   auto jsFuncion = std::make_shared<jsi::Function>(jsObject->asFunction(jsRuntime));
@@ -167,7 +177,7 @@ void JavaScriptObject::defineNativeDeallocator(
     rt,
     jsObject,
     [globalRef = std::move(globalRef)]() mutable {
-      auto args = jni::Environment::current()->NewObjectArray(
+      auto args = jni::Environment::ensureCurrentThreadIsAttached()->NewObjectArray(
         0,
         JavaReferencesCache::instance()->getJClass("java/lang/Object").clazz,
         nullptr
