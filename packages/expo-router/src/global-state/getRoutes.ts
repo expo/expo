@@ -30,20 +30,14 @@ const validPlatforms = new Set(['android', 'ios', 'windows', 'osx', 'native', 'w
 
 /** Given a Metro context module, return an array of nested routes. */
 export function getRoutes(contextModule: RequireContext, options: Options = {}): RouteNode | null {
-  const { directoryTree, hasRoutes, hasLayout } = getDirectoryTree(contextModule, options);
+  const directoryTree = getDirectoryTree(contextModule, options);
 
   // If there are no routes
-  if (!hasLayout && !hasRoutes) {
+  if (!directoryTree) {
     return null;
   }
 
-  // Only include the sitemap if there are routes.
-  if (hasRoutes) {
-    appendSitemapRoute(directoryTree);
-  }
-
-  appendNotFoundRoute(directoryTree);
-  return hoistRoutesToNearestLayout(directoryTree, options);
+  return flattenDirectoryTreeToRoutes(directoryTree, options);
 }
 
 function getDirectoryTree(contextModule: RequireContext, options: Options) {
@@ -68,23 +62,27 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
       continue;
     }
 
+    // A single file may be extrapolated into multiple routes if it contains array syntax
     const leaves: DirectoryNode[] = [];
     for (const key of extrapolateGroups(meta.key)) {
-      let node = directory;
-      const subdirectoryParts = key.replace(meta.filename, '').split('/').filter(Boolean);
+      let directoryNode = directory;
 
+      // Traverse the directory tree to its leaf node, creating any missing directories along the way
+      const subdirectoryParts = key.replace(meta.filename, '').split('/').filter(Boolean);
       for (const part of subdirectoryParts) {
-        let child = node.subdirectories.get(part);
+        let child = directoryNode.subdirectories.get(part);
         if (!child) {
           child = {
             files: new Map(),
             subdirectories: new Map(),
           };
-          node.subdirectories.set(part, child);
+          directoryNode.subdirectories.set(part, child);
         }
-        node = child;
+        directoryNode = child;
       }
-      leaves.push(node);
+
+      // Add the leaf node to the list of leaves
+      leaves.push(directoryNode);
     }
 
     const node: RouteNode = {
@@ -156,6 +154,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
     }
   }
 
+  // If there are no layout files, add the global default
   if (!directory.layout) {
     directory.layout = [
       {
@@ -174,7 +173,19 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
     ];
   }
 
-  return { hasRoutes, hasLayout, directoryTree: directory };
+  // If there are no routes
+  if (!hasLayout && !hasRoutes) {
+    return null;
+  }
+
+  // Only include the sitemap if there are routes.
+  if (hasRoutes) {
+    appendSitemapRoute(directory);
+  }
+
+  appendNotFoundRoute(directory);
+
+  return directory;
 }
 
 function appendSitemapRoute(directory: DirectoryNode) {
@@ -220,44 +231,58 @@ function appendNotFoundRoute(directory: DirectoryNode) {
   ]);
 }
 
-function hoistRoutesToNearestLayout(
+function flattenDirectoryTreeToRoutes(
   directory: DirectoryNode,
   options: Options,
-  parent?: RouteNode,
+  /* The nearest _layout file in the directory tree */
+  nearestLayout?: RouteNode,
+  /* Routes need to contain the entryPoints of their parent layouts */
   entryPoints: string[] = [],
+  /* Route names are relative to their layout */
   pathToRemove = ''
 ) {
+  /**
+   * All routes get "hoisted" to the nearest layout.
+   */
   if (directory.layout) {
     const layout = getMostSpecific(directory.layout);
-    if (parent) {
-      parent.children.push(layout);
+
+    // The first _layout is the root layout. It doesn't have a parent
+    if (nearestLayout) {
+      nearestLayout.children.push(layout);
     }
+    nearestLayout = layout;
 
-    parent = layout;
-    const newRoute = parent.route.replace(pathToRemove, '');
-    pathToRemove = parent.route ? `${parent.route}/` : '';
-    parent.route = newRoute;
+    // `route` is the absolute pathname. We need to make this relative to the parent layout
+    const newRoute = nearestLayout.route.replace(pathToRemove, '');
+    pathToRemove = nearestLayout.route ? `${nearestLayout.route}/` : '';
+    nearestLayout.route = newRoute;
 
-    parent.dynamic = generateDynamic(parent.route);
+    nearestLayout.dynamic = generateDynamic(nearestLayout.route);
 
-    if (parent.entryPoints) {
-      entryPoints = [...entryPoints, ...parent.entryPoints];
+    if (nearestLayout.entryPoints) {
+      // Track this _layout's entryPoints so that child routes can inherit them
+      entryPoints = [...entryPoints, ...nearestLayout.entryPoints];
+
       // Layouts never have entryPoints
-      delete parent.entryPoints;
+      delete nearestLayout.entryPoints;
     }
 
     if (options.unstable_stripLoadRoute) {
-      delete (parent as any).loadRoute;
+      delete (nearestLayout as any).loadRoute;
     }
   }
 
   // This should never occur, but it makes the type system happy
-  if (!parent) return null;
+  if (!nearestLayout) return null;
 
   for (const routes of directory.files.values()) {
     const route = getMostSpecific(routes);
+
+    // `route` is the absolute pathname. We need to make this relative to the parent layout
     const name = route.route.replace(pathToRemove, '');
 
+    // Merge the entryPoints of the parent layout(s) with the child route
     const childEntryPoints = new Set(entryPoints);
     if (route.entryPoints?.[0]) {
       childEntryPoints.add(route.entryPoints[0]);
@@ -278,14 +303,15 @@ function hoistRoutesToNearestLayout(
       delete (child as any).loadRoute;
     }
 
-    parent.children.push(child);
+    nearestLayout.children.push(child);
   }
 
+  // Recursively flatten the subdirectories
   for (const child of directory.subdirectories.values()) {
-    hoistRoutesToNearestLayout(child, options, parent, entryPoints, pathToRemove);
+    flattenDirectoryTreeToRoutes(child, options, nearestLayout, entryPoints, pathToRemove);
   }
 
-  return parent;
+  return nearestLayout;
 }
 
 function getMostSpecific(routes: RouteNode[]) {
