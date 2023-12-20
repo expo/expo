@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Removed deprecated `global.ExpoModules`. ([#26027](https://github.com/expo/expo/pull/26027) by [@tsapeta](https://github.com/tsapeta))
+
 ## 1.11.2 — 2023-12-15
 
 ### 💡 Others

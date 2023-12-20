@@ -33,11 +33,12 @@ class ExpoModulesSpec: ExpoSpec {
 
     describe("host object") {
       it("is defined") {
-        expect(try! runtime.eval("'ExpoModules' in this").asBool()).to(beTrue())
+        expect(try! runtime.eval("'expo' in this").asBool()).to(beTrue())
+        expect(try! runtime.eval("'modules' in expo").asBool()).to(beTrue())
       }
 
       it("has native module defined") {
-        expect(try! runtime.eval("'\(testModuleName)' in ExpoModules").asBool()).to(beTrue())
+        expect(try! runtime.eval("'\(testModuleName)' in expo.modules").asBool()).to(beTrue())
       }
 
       it("can access native module") {
@@ -49,7 +50,7 @@ class ExpoModulesSpec: ExpoSpec {
 
       it("has keys for registered modules") {
         let registeredModuleNames = appContext.moduleRegistry.getModuleNames()
-        let keys = try runtime.eval("Object.keys(ExpoModules)").asArray().compactMap {
+        let keys = try runtime.eval("Object.keys(expo.modules)").asArray().compactMap {
           return try! $0?.asString()
         }
         expect(keys).to(contain(registeredModuleNames))

@@ -15,16 +15,6 @@ type ExpoObject = {
 declare global {
   // eslint-disable-next-line no-var
   var expo: ExpoObject | undefined;
-
-  /**
-   * @deprecated `global.ExpoModules` is deprecated, use `global.expo.modules` instead.
-   */
-  // eslint-disable-next-line no-var
-  var ExpoModules:
-    | undefined
-    | {
-        [key: string]: any;
-      };
 }
 
 /**
@@ -57,12 +47,7 @@ export function requireOptionalNativeModule<ModuleType = any>(
 ): ModuleType | null {
   ensureNativeModulesAreInstalled();
 
-  return (
-    globalThis.expo?.modules?.[moduleName] ??
-    globalThis.ExpoModules?.[moduleName] ??
-    NativeModulesProxy[moduleName] ??
-    null
-  );
+  return globalThis.expo?.modules?.[moduleName] ?? NativeModulesProxy[moduleName] ?? null;
 }
 
 /**
