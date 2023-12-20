@@ -457,6 +457,10 @@ export type LocationGeocodedAddress = {
    * @platform ios
    */
   timezone: string | null;
+  /**
+   * Composed string of the address components, for example, "111 8th Avenue, New York, NY".
+   */
+  formattedAddress: string | null;
 };
 
 // @needsAudit
