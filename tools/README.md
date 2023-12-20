@@ -7,9 +7,8 @@ Expotools is a CLI and library that contains internal Expo tooling. It is used a
   - Assist with the release process
 
 ## Prerequisites
-Run `bundle install` in the root to install all required Ruby gems.
 
-To support versioning react-native for Android, [patchelf](https://github.com/NixOS/patchelf) is required. On macOS, could run `brew install patchelf` to install.
+Run `bundle install` in the root to install all required Ruby gems.
 
 ## Usage
 Run `expotools` or `et` from the Expo repository to run the latest version of expotools. This automatically rebuilds the code according to the latest sources.
