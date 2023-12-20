@@ -14,21 +14,12 @@ void JavaScriptWeakObject::registerNatives() {
 jni::local_ref<JavaScriptObject::javaobject> JavaScriptWeakObject::lock() {
   jsi::Runtime &rt = _runtimeHolder.getJSRuntime();
 
-  std::shared_ptr<jsi::Object> objectPtr;
-  if (_weakObjectType == WeakObjectType::JSIWeakObject) {
-    jsi::Value value =
-        std::static_pointer_cast<jsi::WeakObject>(_weakObject)->lock(rt);
-    if (value.isUndefined()) {
-      return nullptr;
-    }
-    objectPtr = std::make_shared<jsi::Object>(value.asObject(rt));
-  } else if (_weakObjectType == WeakObjectType::WeakRef) {
-    objectPtr =
-        derefWeakRef(rt, std::static_pointer_cast<jsi::Object>(_weakObject));
-  } else {
-    objectPtr = std::static_pointer_cast<jsi::Object>(_weakObject);
+  jsi::Value value = _weakObject->lock(rt);
+  if (value.isUndefined()) {
+    return nullptr;
   }
-
+  std::shared_ptr<jsi::Object> objectPtr =
+      std::make_shared<jsi::Object>(value.asObject(rt));
   if (!objectPtr) {
     return nullptr;
   }
@@ -52,64 +43,7 @@ JavaScriptWeakObject::JavaScriptWeakObject(
     : _runtimeHolder(std::move(runtime)) {
   _runtimeHolder.ensureRuntimeIsValid();
   jsi::Runtime &rt = _runtimeHolder.getJSRuntime();
-
-  try {
-    _weakObject = std::make_shared<jsi::WeakObject>(rt, *jsObject);
-    _weakObjectType = WeakObjectType::JSIWeakObject;
-    return;
-  } catch (const std::logic_error &) {
-    // JSCRuntime will throw std::logic_error from unimplemented jsi::WeakObject
-  }
-
-  // Check whether the runtime supports `WeakRef` objects. If it does not,
-  // we consciously hold a strong reference to the object and cause memory
-  // leaks.
-  if (isWeakRefSupported(rt)) {
-    _weakObject = createWeakRef(rt, jsObject);
-    _weakObjectType = WeakObjectType::WeakRef;
-  } else {
-    _weakObject = jsObject;
-    _weakObjectType = WeakObjectType::NotSupported;
-  }
+  _weakObject = std::make_shared<jsi::WeakObject>(rt, *jsObject);
 }
-
-// #region WeakRef runtime helpers (fallback when jsi::WeakObject is not
-// available).
-
-// static
-bool JavaScriptWeakObject::isWeakRefSupported(jsi::Runtime &runtime) {
-  return runtime.global().hasProperty(runtime, "WeakRef");
-}
-
-// static
-std::shared_ptr<jsi::Object>
-JavaScriptWeakObject::createWeakRef(jsi::Runtime &runtime,
-                                    std::shared_ptr<jsi::Object> object) {
-  jsi::Object weakRef =
-      runtime.global()
-          .getProperty(runtime, "WeakRef")
-          .asObject(runtime)
-          .asFunction(runtime)
-          .callAsConstructor(runtime, jsi::Value(runtime, *object))
-          .asObject(runtime);
-  return std::make_shared<jsi::Object>(std::move(weakRef));
-}
-
-// static
-std::shared_ptr<jsi::Object>
-JavaScriptWeakObject::derefWeakRef(jsi::Runtime &runtime,
-                                   std::shared_ptr<jsi::Object> object) {
-  jsi::Value ref = object->getProperty(runtime, "deref")
-                       .asObject(runtime)
-                       .asFunction(runtime)
-                       .callWithThis(runtime, *object);
-
-  if (ref.isUndefined()) {
-    return nullptr;
-  }
-  return std::make_shared<jsi::Object>(ref.asObject(runtime));
-}
-
-// #endregion
 
 } // namespace expo

@@ -19,7 +19,7 @@ namespace expo {
 class JavaScriptObject;
 
 /**
- * Represents JavaScript WeakRef to an jsi::Object.
+ * Represents to a jsi::WeakObject.
  */
 class JavaScriptWeakObject
     : public jni::HybridClass<JavaScriptWeakObject, Destructible> {
@@ -38,32 +38,15 @@ public:
 
   jni::local_ref<JavaScriptObject::javaobject> lock();
 
-  // #region WeakRef runtime helpers (fallback when jsi::WeakObject is not
-  // available).
-
-  static bool isWeakRefSupported(jsi::Runtime &runtime);
-  static std::shared_ptr<jsi::Object>
-  createWeakRef(jsi::Runtime &runtime, std::shared_ptr<jsi::Object> object);
-  static std::shared_ptr<jsi::Object>
-  derefWeakRef(jsi::Runtime &runtime, std::shared_ptr<jsi::Object> object);
-
-  // #endregion
-
 private:
   JavaScriptWeakObject(WeakRuntimeHolder runtime,
                        std::shared_ptr<jsi::Object> jsObject);
 
 private:
   friend HybridBase;
-  enum class WeakObjectType : uint8_t {
-    NotSupported,
-    WeakRef,
-    JSIWeakObject,
-  };
 
   WeakRuntimeHolder _runtimeHolder;
-  std::shared_ptr<jsi::Pointer> _weakObject;
-  WeakObjectType _weakObjectType;
+  std::shared_ptr<jsi::WeakObject> _weakObject;
 };
 
 } // namespace expo

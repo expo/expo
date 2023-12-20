@@ -4,7 +4,7 @@ import com.facebook.jni.HybridData
 import expo.modules.core.interfaces.DoNotStrip
 
 /**
- * A Kotlin representation of WeakRef to a jsi::WeakObject
+ * A Kotlin representation to a jsi::WeakObject
  * Should be used only on the runtime thread.
  */
 @Suppress("KotlinJniMissingFunction")
