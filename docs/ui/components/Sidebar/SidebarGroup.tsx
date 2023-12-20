@@ -13,6 +13,7 @@ import {
   DataIcon,
   CodeSquare01Icon,
   Phone01Icon,
+  StoplightIcon,
 } from '@expo/styleguide-icons';
 
 import { SidebarNodeProps } from './Sidebar';
@@ -68,6 +69,8 @@ function getIconElement(iconName?: string) {
   switch (iconName) {
     case 'Develop':
       return TerminalBrowserIcon;
+    case 'Review':
+      return StoplightIcon;
     case 'Deploy':
       return Rocket01Icon;
     case 'Development process':
