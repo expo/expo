@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Remove classic updates. ([#26036](https://github.com/expo/expo/pull/26036) by [@wschurman](https://github.com/wschurman))
+- Remove classic updates. ([#26036](https://github.com/expo/expo/pull/26036), [#26048](https://github.com/expo/expo/pull/26048) by [@wschurman](https://github.com/wschurman))
 
 ### 🎉 New features
 
