@@ -313,8 +313,6 @@
   UIView *rootView = [_bridgeDelegate createRootViewWithModuleName:@"main" launchOptions:_launchOptions application:UIApplication.sharedApplication];
   _launcherBridge = _bridgeDelegate.bridge;
 
-  [self _ensureUserInterfaceStyleIsInSyncWithTraitEnv:rootView];
-
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(onAppContentDidAppear)
                                                name:RCTContentDidAppearNotification
