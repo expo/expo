@@ -1,4 +1,109 @@
 ---
-title: Creating DevTools Plugins
-description: Learn how to make your own DevTools plugin to enhance your development experience.
+title: Creating Dev Tools Plugins
+description: Learn how to make your own dev tools plugin to enhance your development experience.
 ---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+> Dev Tools plugins are compatible with SDK 50 and above. The process for creating a plugin is still in beta and may change in the future.
+
+You can make your own dev tools plugin, whether that's for inspecting aspects of a common framework or library, or something specific to your custom code.
+
+A plugin consists of an Expo app for displaying the dev tool's web user interface, an **expo-module.config.json** file to help the Expo CLI detect the plugin, and then calls to `expo/devtools` API to help your app communicate back and forth with the dev tool's web UI. Plugins can be included inside your app's monorepo or distributed as a separate package on NPM.
+
+## Creating a plugin
+
+### Create an Expo app
+
+The web interface for your dev tool will be an Expo app. Create a new blank Expo app:
+
+<Terminal cmd={['$ npx create-expo-app']} />
+
+Then add the packages needed to build the app for web and to use the dev tools API:
+
+<Terminal cmd={['$ npx expo install react-native-web@~0.19.6 react-dom@18.2.0 @expo/webpack-config']} />
+
+### Update package.json
+
+Move any dependencies from `dependencies` to `devDependences` in **package.json**. These dependencies are only needed for building the web version of the dev tools UI, and putting them in `devDependencies` will ensure they are not included in your app.
+
+```diff package.json
+"dependencies": {
+-  "expo": "~50.0.0",
+-  "react": "18.2.0",
+-  "react-dom": "18.2.0",
+-  "react-native": "0.73.0",
+-  "react-native-web": "~0.19.6"
+},
+"devDependencies": {
+  "@babel/core": "^7.20.0",
+  "@expo/webpack-config": "^18.1.2",
++  "expo": "~50.0.0",
++  "react": "18.2.0",
++  "react-dom": "18.2.0",
++  "react-native": "0.73.0",
++  "react-native-web": "~0.19.6"
+},
+```
+
+Add a `homepage` field to define the exported base URL for web in the format of `/_expo/plugins/{pluginName}`. For example:
+
+```diff package.json
+  "name": "expo-plugin-helloworld",
+  "version": "1.0.0",
++  "homepage": "/_expo/plugins/expo-plugin-helloworld",
+```
+
+### Add message sending and receiving code to your plugin web UI
+
+`connectPluginFromDevToolsAsync` initiates a client that can send messages and listen for incoming messages. When sending messages, be sure to identify your plugin by name using the `from` parameter:
+```js
+  import { connectPluginFromDevToolsAsync } from 'expo/devtools';
+
+  const client = await connectPluginFromDevToolsAsync();
+
+  client.sendMessage('ping', { from: 'expo-plugin-helloworld' });
+  client.addMessageListener('pong', (data) => {
+    console.log('receiving pong', data);
+  });
+```
+
+A `useDevToolsPluginClient` hook is also available to provide a client entirely within a React component.
+
+Client apps using your plugin will also be able to communicate using `connectPluginFromDevToolsAsync` or `useDevToolsPluginClient`.
+
+### Build your app for web
+
+It's recommended to create a **package.json** script that builds the web app and moves it to the **dist** folder. This will be served by the Expo CLI when invoking the plugin.
+
+```diff package.json
+"scripts": {
+  "start": "expo start",
+  "android": "expo start --android",
+  "ios": "expo start --ios",
+  "web": "expo start --web",
++  "build": "rm -rf dist web-build && expo export:web && mv web-build dist"
+},
+```
+
+Then run the build script to export the plugin web UI and move it to the proper folder:
+
+<Terminal cmd={['$ npm run build']} />
+
+### Create expo-module.config.json
+
+Create an **expo-module.config.json** file and the required information to it. This helps the Expo CLI detect the plugin and serve the correct files.
+
+```json expo-module.config.json
+{
+  "name": "expo-plugin-helloworld",
+  "platforms": ["devtools"],
+  "devtools": {
+    "webpageRoot": "dist"
+  }
+}
+```
+
+### Publish your plugin
+
+You can add this plugin as a package in your monorepo to use it directly in your app, or publish it to NPM to share with others.
