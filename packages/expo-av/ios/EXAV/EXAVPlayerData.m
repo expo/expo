@@ -406,7 +406,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
 
 - (NSNumber *)_getRoundedMillisFromCMTime:(CMTime)time
 {
-  return CMTIME_IS_INVALID(time) || CMTIME_IS_INDEFINITE(time) ? nil : @((long) (CMTimeGetSeconds(time) * 1000));
+  return CMTIME_IS_INVALID(time) || CMTIME_IS_INDEFINITE(time) ? nil : @((long) round((CMTimeGetSeconds(time) * 1000)));
 }
 
 - (NSNumber *)_getClippedValueForValue:(NSNumber *)value withMin:(NSNumber *)min withMax:(NSNumber *)max
