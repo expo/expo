@@ -1,4 +1,4 @@
-import { ExpoConfig } from '@expo/config-types';
+import { ExpoConfig } from '@expo/config';
 
 /**
  * Get the unstable / experimental properties used within the Metro config.

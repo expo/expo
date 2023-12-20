@@ -1,4 +1,4 @@
-import { ExpoConfig } from '@expo/config-types';
+import { ExpoConfig } from '@expo/config';
 import chalk from 'chalk';
 import qrcode from 'qrcode-terminal';
 import wrapAnsi from 'wrap-ansi';
