@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `NativeStatementBinding` leakage on Android. ([#25996](https://github.com/expo/expo/pull/25996) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 13.1.0 — 2023-12-13

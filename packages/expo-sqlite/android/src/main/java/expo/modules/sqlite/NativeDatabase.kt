@@ -10,4 +10,9 @@ internal class NativeDatabase(val databaseName: String, val openOptions: OpenDat
   override fun equals(other: Any?): Boolean {
     return other is NativeDatabase && this.ref == other.ref
   }
+
+  override fun deallocate() {
+    super.deallocate()
+    this.ref.close()
+  }
 }
