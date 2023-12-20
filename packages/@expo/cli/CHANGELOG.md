@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Import `ExpoConfig` from direct dependency `@expo/config`. ([#25989](https://github.com/expo/expo/pull/25989) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 0.16.4 — 2023-12-19
