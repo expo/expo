@@ -179,6 +179,7 @@ export interface ImageProps extends ViewProps {
      * Determines if an image should automatically begin playing if it is an
      * animated image.
      * @default true
+     * @platform android
      * @platform ios
      */
     autoplay?: boolean;
