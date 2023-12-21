@@ -1934,9 +1934,9 @@ CHECKOUT OPTIONS:
     :git: https://github.com/googlemaps/google-maps-ios-utils.git
 
 SPEC CHECKSUMS:
-  boost: 9ccd0979c880976bc3f4dae93c0c7d6d185c8b2b
+  boost: 26fad476bfa736552bbfa698a06cc530475c1505
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
-  DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
+  DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
   EASClient: b550a8d3d3d9d1211ba71eabf789cb46c7e92b3c
   EXApplication: 7d3063cc3cbd14a0d3c6e1c73854f4a71901ac67
   EXAV: 69adaa7433e7123a7dc9df9841fd80e954916d2d
@@ -2005,7 +2005,7 @@ SPEC CHECKSUMS:
   FirebaseCoreDiagnostics: 99a495094b10a57eeb3ae8efa1665700ad0bdaa6
   FirebaseCoreInternal: bca76517fe1ed381e989f5e7d8abb0da8d85bed3
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 41ce6388c5f672fccb3c8bfdf07807de1e2fcecc
+  glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
   Google-Maps-iOS-Utils: f77eab4c4326d7e6a277f8e23a0232402731913a
   GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2
   GoogleMaps: a146f275ee429d14822178c7a841c03366ec92a1
@@ -2024,7 +2024,7 @@ SPEC CHECKSUMS:
   Nimble: 97d90931cca412a23224ff29e258809f75c258f7
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   Quick: d32871931c05547cb4e0bc9009d66a18b50d8558
-  RCT-Folly: 083a526bd53c2f793ebe3ff554c3b5eb12a93505
+  RCT-Folly: 7169b2b1c44399c76a47b5deaaba715eeeb476c0
   RCTRequired: 6dda55e483f75d2b43781d8ad5bd7df276a50981
   RCTTypeSafety: df0f2632f4e89938b9b9f6152b5e6c66fc6e969e
   ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
@@ -2099,6 +2099,6 @@ SPEC CHECKSUMS:
   Yoga: 2b33a7ac96c58cdaa7b810948fc6a2a76ed2d108
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: d21b959522ea734e5c316c7d6e3f09319baf866b
+PODFILE CHECKSUM: e1f5d44d380f1cc8895bdb92d2eb0c65faea5729
 
 COCOAPODS: 1.14.2
