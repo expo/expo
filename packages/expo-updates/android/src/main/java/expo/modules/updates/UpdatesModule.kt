@@ -72,14 +72,6 @@ class UpdatesModule : Module() {
       } catch (e: Exception) {
         // do nothing; this is expected in a development client
         constants["isEnabled"] = false
-
-        // In a development client, we normally don't have access to the updates configuration, but
-        // we should attempt to see if the runtime/sdk versions are defined in AndroidManifest.xml
-        // and warn the developer if not. This does not take into account any extra configuration
-        // provided at runtime in MainApplication.java, because we don't have access to that in a
-        // debug build.
-        val isMissingRuntimeVersion = UpdatesConfiguration.isMissingRuntimeVersion(context, null)
-        constants["isMissingRuntimeVersion"] = isMissingRuntimeVersion
       }
       constants
     }

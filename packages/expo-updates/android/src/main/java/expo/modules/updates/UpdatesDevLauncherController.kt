@@ -43,7 +43,6 @@ class UpdatesDevLauncherController(
   initialUpdatesConfiguration: UpdatesConfiguration?,
   override val updatesDirectory: File?,
   private val updatesDirectoryException: Exception?,
-  private val isMissingRuntimeVersion: Boolean,
   private val callbacks: UpdatesInterfaceCallbacks
 ) : IUpdatesController, UpdatesInterface {
   override val isEmergencyLaunch = updatesDirectoryException != null
@@ -288,7 +287,6 @@ class UpdatesDevLauncherController(
       checkOnLaunch = updatesConfiguration?.checkOnLaunch ?: UpdatesConfiguration.CheckAutomaticallyConfiguration.ALWAYS,
       requestHeaders = updatesConfiguration?.requestHeaders ?: mapOf(),
       localAssetFiles = localAssetFiles,
-      isMissingRuntimeVersion = isMissingRuntimeVersion,
       shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = true
     )
   }
