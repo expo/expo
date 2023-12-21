@@ -44,7 +44,7 @@ async function action(options: ActionOptions) {
     );
 
     for (const dependency of mismatched) {
-      const workspaceVersion = workspaces[dependency]._package.version;
+      const workspaceVersion = workspaces[dependency]._version;
       const installedVersion = await getResolvedVersionAsync(workspace._directory, dependency);
 
       console.warn(
@@ -63,9 +63,9 @@ async function getWorkspacesAsync() {
   return Object.fromEntries(
     Object.entries(workspaces).map(([_name, workspace]) => {
       const _directory = path.join(root, workspace.location);
-      const _package = require(path.join(_directory, 'package.json'));
+      const _version = require(path.join(_directory, 'package.json')).version;
 
-      return [_name, { _name, _package, _directory, ...workspace }];
+      return [_name, { _name, _version, _directory, ...workspace }];
     })
   );
 }
