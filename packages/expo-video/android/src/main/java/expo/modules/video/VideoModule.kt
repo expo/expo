@@ -8,7 +8,6 @@ import androidx.media3.ui.DefaultTimeBar
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.kotlin.sharedobjects.SharedObjectId
 import kotlinx.coroutines.launch
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
@@ -20,9 +19,7 @@ class VideoModule : Module() {
     Name("ExpoVideo")
 
     View(VideoView::class) {
-      Prop("player") { view: VideoView, playerId: Int ->
-        val player = appContext.sharedObjectRegistry.toNativeObject(SharedObjectId(playerId)) as? VideoPlayer
-          ?: return@Prop
+      Prop("player") { view: VideoView, player: VideoPlayer ->
         view.videoPlayer = player
         player.prepare()
       }

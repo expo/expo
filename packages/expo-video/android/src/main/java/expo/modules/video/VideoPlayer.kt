@@ -13,9 +13,11 @@ import java.io.Closeable
 @UnstableApi
 class VideoPlayer(context: Context, private val mediaItem: MediaItem) : Closeable, SharedObject() {
   val player = ExoPlayer.Builder(context).setLooper(context.mainLooper).build()
+
   // We duplicate some properties of the player, because we don't want to always use the mainQueue to access them.
   var isPlaying = false
   var isLoading = true
+
   // Volume of the player if there was no mute applied.
   var userVolume = 1f
   var requiresLinearPlayback = false

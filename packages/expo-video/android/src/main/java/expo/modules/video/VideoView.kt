@@ -15,7 +15,8 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     addView(
       playerView,
       ViewGroup.LayoutParams(
-        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.MATCH_PARENT
       )
     )
   }

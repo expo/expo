@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Initial release for Android 🎉
+- Initial release for Android 🎉 ([#26033](https://github.com/expo/expo/pull/26033) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
