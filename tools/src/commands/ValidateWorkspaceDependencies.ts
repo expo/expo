@@ -9,10 +9,10 @@ export default (program: Command) => {
     .command('validate-workspace-dependencies')
     .alias('vwd')
     .description('Verifies if all workspace packages are linked from monorepo.')
-    .asyncAction(action);
+    .asyncAction(actionAsync);
 };
 
-async function action() {
+async function actionAsync() {
   const workspaces = await getWorkspacesAsync();
   const workspacesMismatched = Object.values(workspaces).filter(
     (workspace) => workspace.mismatchedWorkspaceDependencies.length
