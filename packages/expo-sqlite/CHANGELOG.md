@@ -12,6 +12,10 @@
 
 ### 💡 Others
 
+## 13.1.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
 ## 13.1.0 — 2023-12-13
 
 ### 🛠 Breaking changes
