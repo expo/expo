@@ -13,6 +13,10 @@
 - [ios] Remove unnecessary delegate from FileDownloader. ([#25783](https://github.com/expo/expo/pull/25783) by [@wschurman](https://github.com/wschurman))
 - Migrate to requireNativeModule/requireOptionalNativeModule. ([#25648](https://github.com/expo/expo/pull/25648) by [@wschurman](https://github.com/wschurman))
 
+## 0.24.5 - 2023-12-21
+
+_This version does not introduce any user-facing changes._
+
 ## 0.24.4 - 2023-12-19
 
 ### 🐛 Bug fixes
