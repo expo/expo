@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 12.9.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
 ## 12.9.0 — 2023-11-14
 
 ### 🛠 Breaking changes

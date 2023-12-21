@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix `<Drawer />` navigator navigation. ([#25985](https://github.com/expo/expo/pull/25985) by [@marklawlor](https://github.com/marklawlor))
-
 ### 💡 Others
+
+## 3.4.1 - 2023-12-19
+
+### 🐛 Bug fixes
+
+- Fix `<Drawer />` navigator navigation. ([#25985](https://github.com/expo/expo/pull/25985) by [@marklawlor](https://github.com/marklawlor))
 
 ## 3.4.0 — 2023-12-15
 
