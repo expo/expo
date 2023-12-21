@@ -12,7 +12,7 @@ export default (program: Command) => {
   program
     .command('validate-workspace-dependencies')
     .alias('vwd')
-    .description('Verifies if all workspaces are linked from monorepo.')
+    .description('Verifies if all workspace packages are linked from monorepo.')
     .asyncAction(action);
 };
 
@@ -23,14 +23,14 @@ async function action(options: ActionOptions) {
   );
 
   if (!workspacesMismatched.length) {
-    console.log(`✅  Verified that all workspace dependencies are symlinked.`);
-    return
+    console.log(`✅  Verified that all workspace packages are symlinked.`);
+    return;
   }
 
   console.warn(
     workspacesMismatched.length === 1
-      ? `⚠️  Found 1 workspace installed from npm instead of this repository.`
-      : `⚠️  Found ${workspacesMismatched.length} workspaces installed from npm instead of this repository.`
+      ? `⚠️  Found 1 workspace package installed from npm instead of this repository.`
+      : `⚠️  Found ${workspacesMismatched.length} workspace packages installed from npm instead of this repository.`
   );
 
   for (const workspace of workspacesMismatched) {
@@ -39,8 +39,8 @@ async function action(options: ActionOptions) {
     console.warn();
     console.warn(
       mismatched.length === 1
-        ? `${workspace._name} has 1 workspace that isn't symlinked:`
-        : `${workspace._name} has ${mismatched.length} workspace that aren't symlinked:`
+        ? `${workspace._name} has 1 workspace package that isn't symlinked:`
+        : `${workspace._name} has ${mismatched.length} workspace packages that aren't symlinked:`
     );
 
     for (const dependency of mismatched) {
@@ -48,7 +48,7 @@ async function action(options: ActionOptions) {
       const installedVersion = await getResolvedVersionAsync(workspace._directory, dependency);
 
       console.warn(
-        `- ${dependency}@${installedVersion} is installed, but workspace is at ${workspaceVersion}`
+        `- ${dependency}@${installedVersion} is installed, but workspace package is at ${workspaceVersion}`
       );
     }
   }
