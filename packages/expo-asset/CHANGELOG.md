@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix relative URLs and support for `unstable_path` in development.
+
 ### 💡 Others
 
 - [expo-updates] Migrate to requireNativeModule/requireOptionalNativeModule. ([#25648](https://github.com/expo/expo/pull/25648) by [@wschurman](https://github.com/wschurman))
