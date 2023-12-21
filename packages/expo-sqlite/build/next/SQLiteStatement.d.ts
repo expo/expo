@@ -1,6 +1,7 @@
 import { NativeDatabase } from './NativeDatabase';
 import { SQLiteBindParams, SQLiteBindValue, NativeStatement, SQLiteVariadicBindParams, type SQLiteRunResult } from './NativeStatement';
 export { SQLiteBindParams, SQLiteBindValue, SQLiteRunResult, SQLiteVariadicBindParams };
+type ValuesOf<T extends object> = T[keyof T][];
 /**
  * A prepared statement returned by [`SQLiteDatabase.prepareAsync()`](#prepareasyncsource) or [`SQLiteDatabase.prepareSync()`](#preparesyncsource) that can be binded with parameters and executed.
  */
@@ -17,6 +18,15 @@ export declare class SQLiteStatement {
      * @hidden
      */
     executeAsync<T>(...params: SQLiteVariadicBindParams): Promise<SQLiteExecuteAsyncResult<T>>;
+    /**
+     * Similar to [`executeAsync()`](#executeasyncparams) but returns the raw value array result instead of the row objects.
+     * @hidden Advanced use only.
+     */
+    executeForRawResultAsync<T extends object>(params: SQLiteBindParams): Promise<SQLiteExecuteAsyncResult<ValuesOf<T>>>;
+    /**
+     * @hidden
+     */
+    executeForRawResultAsync<T extends object>(...params: SQLiteVariadicBindParams): Promise<SQLiteExecuteAsyncResult<ValuesOf<T>>>;
     /**
      * Get the column names of the prepared statement.
      */
@@ -38,6 +48,15 @@ export declare class SQLiteStatement {
      * @hidden
      */
     executeSync<T>(...params: SQLiteVariadicBindParams): SQLiteExecuteSyncResult<T>;
+    /**
+     * Similar to [`executeSync()`](#executesyncparams) but returns the raw value array result instead of the row objects.
+     * @hidden Advanced use only.
+     */
+    executeForRawResultSync<T extends object>(params: SQLiteBindParams): SQLiteExecuteSyncResult<ValuesOf<T>>;
+    /**
+     * @hidden
+     */
+    executeForRawResultSync<T extends object>(...params: SQLiteVariadicBindParams): SQLiteExecuteSyncResult<ValuesOf<T>>;
     /**
      * Get the column names of the prepared statement.
      */
