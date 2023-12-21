@@ -92,6 +92,39 @@ describe(SQLiteStatement, () => {
     await statement.finalizeAsync();
   });
 
+  it('executeForRawResultAsync + getFirstAsync should return the first raw value array', async () => {
+    const statement = await db.prepareAsync('SELECT * FROM test WHERE intValue = ?');
+    const result = await statement.executeForRawResultAsync<TestEntity>(123);
+    const firstRow = await result.getFirstAsync();
+    expect(firstRow).toEqual([1, 'test1', 123]);
+    await statement.finalizeAsync();
+  });
+
+  it('executeForRawResultAsync + getAllAsync should return all raw value arrays', async () => {
+    const statement = await db.prepareAsync('SELECT * FROM test WHERE intValue > ?');
+    const result = await statement.executeForRawResultAsync<TestEntity>([200]);
+    const allRows = await result.getAllAsync();
+    expect(allRows.length).toBe(2);
+    expect(allRows[0][2]).toBe(456);
+    expect(allRows[1][2]).toBe(789);
+    await statement.finalizeAsync();
+  });
+
+  it('executeForRawResultAsync should return async iterable for raw value arrays', async () => {
+    const statement = await db.prepareAsync(
+      'SELECT * FROM test WHERE intValue > $intValue ORDER BY intValue DESC'
+    );
+    const result = await statement.executeForRawResultAsync<TestEntity>({ $intValue: 200 });
+    const intValues: number[] = [];
+    for await (const row of result) {
+      intValues.push(row[2] as number);
+    }
+    expect(intValues.length).toBe(2);
+    expect(intValues[0]).toBe(789);
+    expect(intValues[1]).toBe(456);
+    await statement.finalizeAsync();
+  });
+
   it('getColumnNamesAsync should return column names', async () => {
     const statement = await db.prepareAsync('SELECT * FROM test');
     const columnNames = await statement.getColumnNamesAsync();
