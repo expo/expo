@@ -8,8 +8,9 @@ const config_plugins_1 = require("expo/config-plugins");
 const path_1 = __importDefault(require("path"));
 const utils_1 = require("./utils");
 const withFontsIos = (config, fonts) => {
-    config = addFontsToTarget(config, fonts);
-    config = addFontsToPlist(config, fonts);
+    const fontPaths = fonts.map((font) => (typeof font === 'string' ? font : font.path));
+    config = addFontsToTarget(config, fontPaths);
+    config = addFontsToPlist(config, fontPaths);
     return config;
 };
 exports.withFontsIos = withFontsIos;

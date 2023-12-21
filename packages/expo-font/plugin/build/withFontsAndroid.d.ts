@@ -1,2 +1,3 @@
 import { type ConfigPlugin } from 'expo/config-plugins';
-export declare const withFontsAndroid: ConfigPlugin<string[]>;
+import type { Font } from './withFonts';
+export declare const withFontsAndroid: ConfigPlugin<Font[]>;
