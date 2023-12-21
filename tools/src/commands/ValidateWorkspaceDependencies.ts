@@ -23,7 +23,8 @@ async function action(options: ActionOptions) {
   );
 
   if (!workspacesMismatched.length) {
-    return console.log(`✅  Verified that all workspace dependencies are symlinked.`);
+    console.log(`✅  Verified that all workspace dependencies are symlinked.`);
+    return
   }
 
   console.warn(
