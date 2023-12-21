@@ -4,10 +4,6 @@ import path from 'path';
 import { getExpoRepositoryRootDir } from '../Directories';
 import { getInfoAsync } from '../Workspace';
 
-type ActionOptions = {
-  workspace?: string;
-};
-
 export default (program: Command) => {
   program
     .command('validate-workspace-dependencies')
@@ -16,7 +12,7 @@ export default (program: Command) => {
     .asyncAction(action);
 };
 
-async function action(options: ActionOptions) {
+async function action() {
   const workspaces = await getWorkspacesAsync();
   const workspacesMismatched = Object.values(workspaces).filter(
     (workspace) => workspace.mismatchedWorkspaceDependencies.length
