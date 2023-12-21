@@ -10,6 +10,19 @@ import expo.modules.kotlin.views.ExpoView
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class VideoView(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
   val playerView = PlayerView(context.applicationContext)
+  var videoPlayer: VideoPlayer? = null
+    set(videoPlayer) {
+      playerView.player = videoPlayer?.player
+      field = videoPlayer
+    }
+
+  private val mLayoutRunnable = Runnable {
+    measure(
+      MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+      MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY)
+    )
+    layout(left, top, right, bottom)
+  }
 
   init {
     addView(
@@ -21,9 +34,12 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     )
   }
 
-  var videoPlayer: VideoPlayer? = null
-    set(videoPlayer) {
-      playerView.player = videoPlayer?.player
-      field = videoPlayer
-    }
+  override fun requestLayout() {
+    super.requestLayout()
+
+    // Code borrowed from:
+    // https://github.com/facebook/react-native/blob/d19afc73f5048f81656d0b4424232ce6d69a6368/ReactAndroid/src/main/java/com/facebook/react/views/toolbar/ReactToolbar.java#L166
+    // This fixes some layout issues with the exoplayer which caused the resizeMode to not work properly
+    post(mLayoutRunnable)
+  }
 }

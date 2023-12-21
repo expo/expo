@@ -28,6 +28,10 @@ class VideoModule : Module() {
         view.playerView.useController = useNativeControls
       }
 
+      Prop("contentFit") {view: VideoView, contentFit: ContentFit ->
+        view.playerView.resizeMode = contentFit.toResizeMode()
+      }
+
       Prop("requiresLinearPlayback") { view: VideoView, requiresLinearPlayback: Boolean? ->
         val linearPlayback = requiresLinearPlayback ?: false
         view.playerView.setShowFastForwardButton(!linearPlayback)
