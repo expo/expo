@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix relative URLs and support for `unstable_path` in development.
+- Fix relative URLs and support for `unstable_path` in development. ([#26084](https://github.com/expo/expo/pull/26084) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
