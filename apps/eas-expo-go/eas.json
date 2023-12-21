@@ -46,7 +46,7 @@
         "withoutCredentials": true
       },
       "ios": {
-        "scheme": "Expo Go \\(versioned\\)",
+        "scheme": "Expo Go",
         "simulator": true,
         "buildConfiguration": "Release"
       }
@@ -67,7 +67,7 @@
         "withoutCredentials": true
       },
       "ios": {
-        "scheme": "Expo Go \\(unversioned\\)",
+        "scheme": "Expo Go",
         "simulator": true,
         "buildConfiguration": "Release"
       }

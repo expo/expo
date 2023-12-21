@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1230"
-   version = "1.3">
+   LastUpgradeVersion = "1510"
+   version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES">
@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "F14217D8262CB68600BB97E6"
+               BlueprintIdentifier = "78CEE2BF1ACD07D70095B124"
                BuildableName = "Expo Go.app"
-               BlueprintName = "Expo Go (versioned)"
+               BlueprintName = "Expo Go"
                ReferencedContainer = "container:Exponent.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -26,9 +26,8 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES">
-      <Testables>
-      </Testables>
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      shouldAutocreateTestPlan = "YES">
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -44,9 +43,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F14217D8262CB68600BB97E6"
+            BlueprintIdentifier = "78CEE2BF1ACD07D70095B124"
             BuildableName = "Expo Go.app"
-            BlueprintName = "Expo Go (versioned)"
+            BlueprintName = "Expo Go"
             ReferencedContainer = "container:Exponent.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -61,9 +60,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F14217D8262CB68600BB97E6"
+            BlueprintIdentifier = "78CEE2BF1ACD07D70095B124"
             BuildableName = "Expo Go.app"
-            BlueprintName = "Expo Go (versioned)"
+            BlueprintName = "Expo Go"
             ReferencedContainer = "container:Exponent.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

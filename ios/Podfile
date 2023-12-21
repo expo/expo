@@ -11,7 +11,7 @@ inhibit_all_warnings!
 # Disable expo-updates auto create manifest in podspec script_phase
 $expo_updates_create_manifest = false
 
-abstract_target 'Expo Go' do
+target 'Expo Go' do
   pod 'CocoaLumberjack', '~> 3.5.3'
   pod 'GoogleMaps', '~> 7.3.0'
   pod 'Google-Maps-iOS-Utils', :git => 'https://github.com/googlemaps/google-maps-ios-utils.git'
@@ -49,7 +49,7 @@ abstract_target 'Expo Go' do
   # Install vendored pods.
   use_pods! 'vendored/unversioned/**/*.podspec.json'
 
-  # Unversioned React Native
+  # React Native
   use_react_native!(
     :path => '../react-native-lab/react-native/packages/react-native',
     :hermes_enabled => true,
@@ -68,10 +68,6 @@ abstract_target 'Expo Go' do
 
     installer.target_installation_results.pod_target_installation_results
       .each do |pod_name, target_installation_result|
-
-      # Run postinstalls actions for versioned dependencies.
-      # These actions are specified in `versioned-react-native/ABI*/postinstalls.rb` files.
-      run_versioned_postinstalls!(pod_name, target_installation_result)
 
       # Needed for Reanimated to compile
       if pod_name == 'React-hermes' || pod_name == 'hermes-engine'
@@ -132,17 +128,6 @@ abstract_target 'Expo Go' do
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION=0'
       end
     end
-  end
-
-  # Target for development, contains only unversioned code
-  target 'Expo Go (unversioned)' do
-  end
-
-  # Release target additionally includes versioned SDKs
-  target 'Expo Go (versioned)' do
-    # Evaluate all files matching `versioned-react-native/ABI*/dependencies.rb` glob pattern
-    # and install ReactABIXX_0_0 pods with all versioned unimodules.
-    use_versioned_abis!
   end
 
   # Test targets
