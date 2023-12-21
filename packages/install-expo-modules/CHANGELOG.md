@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Avoid installing dependencies when running `npx install-expo-modules`. ([#26075](https://github.com/expo/expo/pull/26075) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 0.8.0 — 2023-12-14
