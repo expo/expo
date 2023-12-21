@@ -28,7 +28,7 @@ class VideoModule : Module() {
         view.playerView.useController = useNativeControls
       }
 
-      Prop("contentFit") {view: VideoView, contentFit: ContentFit ->
+      Prop("contentFit") { view: VideoView, contentFit: ContentFit ->
         view.playerView.resizeMode = contentFit.toResizeMode()
       }
 
