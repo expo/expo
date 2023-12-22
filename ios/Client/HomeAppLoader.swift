@@ -45,13 +45,7 @@ final class HomeAppLoader: AppLoader {
 
     database.databaseQueue.async {
       let update: Update
-      if let manifest = self.manifestAndAssetRequestHeaders.manifest as? LegacyManifest {
-        update = LegacyUpdate.update(
-          withLegacyManifest: manifest,
-          config: self.config,
-          database: self.database
-        )
-      } else if let manifest = self.manifestAndAssetRequestHeaders.manifest as? NewManifest {
+      if let manifest = self.manifestAndAssetRequestHeaders.manifest as? NewManifest {
         update = NewUpdate.update(
           withNewManifest: manifest,
           extensions: ["assetRequestHeaders": self.manifestAndAssetRequestHeaders.assetRequestHeaders],
