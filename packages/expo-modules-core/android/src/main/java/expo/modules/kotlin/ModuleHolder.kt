@@ -14,6 +14,7 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.tracing.trace
 import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
+import kotlin.reflect.KClassifier
 
 class ModuleHolder<T : Module>(val module: T) {
   val definition = module.definition()
@@ -50,12 +51,18 @@ class ModuleHolder<T : Module>(val module: T) {
             val clazzModuleObject = JavaScriptModuleObject(jniDeallocator, clazz.name)
               .initUsingObjectDefinition(module.appContext, clazz.objectDefinition)
             appContext.jniDeallocator.addReference(clazzModuleObject)
-
             val constructor = clazz.constructor
+
+            var ownerClass : Class<*>? = null
+            if(constructor.ownerType !== null) {
+              ownerClass = (constructor.ownerType!!.classifier as KClass<*>).java;
+            }
+
             registerClass(
               clazz.name,
               clazzModuleObject,
               constructor.takesOwner,
+              ownerClass,
               constructor.argsCount,
               constructor.getCppRequiredTypes().toTypedArray(),
               constructor.getJNIFunctionBody(clazz.name, appContext)

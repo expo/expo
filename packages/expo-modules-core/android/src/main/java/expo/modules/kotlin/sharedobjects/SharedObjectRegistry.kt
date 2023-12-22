@@ -5,6 +5,7 @@ import expo.modules.kotlin.jni.JavaScriptObject
 
 @JvmInline
 value class SharedObjectId(val value: Int) {
+
   fun toNativeObject(appContext: AppContext): SharedObject? {
     return appContext.sharedObjectRegistry.toNativeObject(this)
   }

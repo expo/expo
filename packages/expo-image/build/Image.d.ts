@@ -65,7 +65,7 @@ export declare class Image extends React.PureComponent<ImageProps> {
      * an object that references the native image instance.
      * @platform ios
      */
-    static loadAsync(source: ImageSource): Promise<ImageRef>;
+    static load(source: ImageSource): Promise<ImageRef>;
     render(): JSX.Element;
 }
 //# sourceMappingURL=Image.d.ts.map

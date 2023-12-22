@@ -84,8 +84,8 @@ export class Image extends React.PureComponent {
      * an object that references the native image instance.
      * @platform ios
      */
-    static loadAsync(source) {
-        return ExpoImageModule.loadAsync(source);
+    static load(source) {
+        return ExpoImageModule.load(source);
     }
     render() {
         const { style, source, placeholder, contentFit, contentPosition, transition, fadeDuration, resizeMode: resizeModeProp, defaultSource, loadingIndicatorSource, ...restProps } = this.props;

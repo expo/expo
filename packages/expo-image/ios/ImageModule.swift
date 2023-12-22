@@ -157,7 +157,7 @@ public final class ImageModule: Module {
       }
     }
 
-    AsyncFunction("loadAsync") { (source: ImageSource) -> Image? in
+    AsyncFunction("load") { (source: ImageSource) -> Image? in
       if let image = await ImageLoadTask(source).load() {
         return Image(image)
       }

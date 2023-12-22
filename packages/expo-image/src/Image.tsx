@@ -100,8 +100,8 @@ export class Image extends React.PureComponent<ImageProps> {
    * an object that references the native image instance.
    * @platform ios
    */
-  static loadAsync(source: ImageSource): Promise<ImageRef> {
-    return ExpoImageModule.loadAsync(source);
+  static load(source: ImageSource): Promise<ImageRef> {
+    return ExpoImageModule.load(source);
   }
 
   render() {

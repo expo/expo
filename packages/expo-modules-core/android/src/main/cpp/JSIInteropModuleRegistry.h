@@ -111,6 +111,10 @@ public:
   jni::global_ref<JNIDeallocator::javaobject> jniDeallocator;
 
   bool wasDeallocated = false;
+
+  void registerClass(jni::local_ref<jclass> native,jni::local_ref<JavaScriptObject::javaobject> jsClass);
+  jni::local_ref<JavaScriptObject::javaobject> getJavascriptClass(jni::local_ref<jclass> native);
+
 private:
   friend HybridBase;
   jni::global_ref<JSIInteropModuleRegistry::javaobject> javaPart_;

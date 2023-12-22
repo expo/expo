@@ -17,7 +17,7 @@ const ANIMATED_IMAGE_SOURCE = {
 export async function test(t, { setPortalChild, cleanupPortal }) {
   t.describe('Image', () => {
     t.it('loads the image', async () => {
-      const image = await Image.loadAsync(REMOTE_SOURCE);
+      const image = await Image.load(REMOTE_SOURCE);
 
       t.expect(image).toBeDefined();
       t.expect(image instanceof Image.Image).toBe(true);

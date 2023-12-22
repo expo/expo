@@ -7,6 +7,7 @@ import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.objects.ObjectDefinitionData
 import expo.modules.kotlin.tracing.trace
+import kotlin.reflect.KType
 
 /**
  * A class to communicate with CPP part of the [expo.modules.kotlin.modules.Module] class.
@@ -82,7 +83,7 @@ class JavaScriptModuleObject(
     setter: JNIFunctionBody?
   )
 
-  external fun registerClass(name: String, classModule: JavaScriptModuleObject, takesOwner: Boolean, args: Int, desiredTypes: Array<ExpectedType>, body: JNIFunctionBody)
+  external fun registerClass(name: String, classModule: JavaScriptModuleObject, takesOwner: Boolean, ownerClass: Class<*>?, args: Int, desiredTypes: Array<ExpectedType>, body: JNIFunctionBody)
 
   external fun registerViewPrototype(viewPrototype: JavaScriptModuleObject)
 
