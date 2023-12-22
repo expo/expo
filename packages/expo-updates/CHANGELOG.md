@@ -6,6 +6,12 @@
 
 ### 🎉 New features
 
+- Added `AppController.overrideConfiguration()` to override the `UpdatesConfig` on iOS. ([#26093](https://github.com/expo/expo/pull/26093) by [@kudo](https://github.com/kudo))
+
+### 🛠 Breaking changes
+
+- Deprecated `UpdatesController.initialize(Context, Map)` and replaced with `UpdatesController.overrideConfiguration()` method to prevent ANR when overriding the `UpdatesConfiguration` on Android. [#26093](https://github.com/expo/expo/pull/26093) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 - Fix development status for modern updates. ([#26042](https://github.com/expo/expo/pull/26042) by [@wschurman](https://github.com/wschurman))
