@@ -15,7 +15,7 @@ class UpdateSpec : ExpoSpec {
     let database = UpdatesDatabase()
     
     describe("instantiation") {
-      it("works for legacy manifest") {
+      it("throws for legacy manifest") {
         let legacyManifest = [
           "sdkVersion": "39.0.0",
           "releaseId": "0eef8214-4833-4089-9dff-b4138a14f196",
@@ -30,13 +30,13 @@ class UpdateSpec : ExpoSpec {
           manifestSignature: nil
         )
         
-        expect(try! Update.update(
+        expect { try Update.update(
           withManifest: legacyManifest,
           responseHeaderData: responseHeaderData,
           extensions: [:],
           config: config,
           database: database
-        )).notTo(beNil())
+        ) }.to(throwError())
       }
       
       it("works for new manifest") {
