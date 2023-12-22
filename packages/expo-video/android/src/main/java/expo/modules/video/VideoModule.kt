@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 class VideoModule : Module() {
   private val activity: Activity
     get() = appContext.activityProvider?.currentActivity ?: throw Exceptions.MissingActivity()
+
   override fun definition() = ModuleDefinition {
     Name("ExpoVideo")
 
@@ -42,7 +43,11 @@ class VideoModule : Module() {
         // TODO: Make the requiresLinearPlayback hide only the scrubber instead of the whole progress bar. Maybe use custom layout for the player as the scrubber is not available?
         val progressBar = view.playerView.findViewById<View>(androidx.media3.ui.R.id.exo_progress)
         if (progressBar is DefaultTimeBar) {
-          progressBar.visibility = if (linearPlayback) View.GONE else View.VISIBLE
+          progressBar.visibility = if (linearPlayback) {
+            View.GONE
+          } else {
+            View.VISIBLE
+          }
         }
         view.videoPlayer?.requiresLinearPlayback = linearPlayback
       }
@@ -54,26 +59,30 @@ class VideoModule : Module() {
         VideoPlayer(activity.applicationContext, mediaItem)
       }
 
-      Property("isPlaying") { ref: VideoPlayer ->
-        ref.isPlaying
-      }
+      Property("isPlaying")
+        .get { ref: VideoPlayer ->
+          ref.isPlaying
+        }
 
-      Property("isLoading") { ref: VideoPlayer ->
-        ref.isLoading
-      }
+      Property("isLoading")
+        .get { ref: VideoPlayer ->
+          ref.isLoading
+        }
 
-      Property("isMuted") { ref: VideoPlayer ->
-        ref.isMuted
-      }
+      Property("isMuted")
+        .get { ref: VideoPlayer ->
+          ref.isMuted
+        }
         .set { ref: VideoPlayer, isMuted: Boolean ->
           appContext.mainQueue.launch {
             ref.isMuted = isMuted
           }
         }
 
-      Property("volume") { ref: VideoPlayer ->
-        ref.volume
-      }
+      Property("volume")
+        .get { ref: VideoPlayer ->
+          ref.volume
+        }
         .set { ref: VideoPlayer, volume: Float ->
           appContext.mainQueue.launch {
             ref.userVolume = volume

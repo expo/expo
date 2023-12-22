@@ -7,11 +7,10 @@ import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import expo.modules.kotlin.sharedobjects.SharedObject
-import java.io.Closeable
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
 @UnstableApi
-class VideoPlayer(context: Context, private val mediaItem: MediaItem) : Closeable, SharedObject() {
+class VideoPlayer(context: Context, private val mediaItem: MediaItem) : AutoCloseable, SharedObject() {
   val player = ExoPlayer.Builder(context).setLooper(context.mainLooper).build()
 
   // We duplicate some properties of the player, because we don't want to always use the mainQueue to access them.
