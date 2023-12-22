@@ -2,20 +2,13 @@ import {
   addImports,
   appendContentsInsideDeclarationBlock,
 } from '@expo/config-plugins/build/android/codeMod';
-import {
-  ConfigPlugin,
-  withDangerousMod,
-  withMainActivity,
-  withMainApplication,
-  XML,
-} from 'expo/config-plugins';
+import { ExpoConfig } from '@expo/config-types';
+import { ConfigPlugin, withDangerousMod, withMainApplication, XML } from 'expo/config-plugins';
 import fs from 'fs/promises';
 import path from 'path';
 
-import { resolveFontPaths } from './utils';
-import { ExpoConfig } from '@expo/config-types';
+import { resolveFontPaths, groupBy, toAndroidResourceString } from './utils';
 import type { Font, FontObject } from './withFonts';
-import { groupBy, toAndroidResourceString } from './utils';
 
 export const withFontsAndroid: ConfigPlugin<Font[]> = (config, fonts) => {
   config = addFontsInDir(config, fonts);
