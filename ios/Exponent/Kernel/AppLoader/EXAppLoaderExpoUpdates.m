@@ -487,22 +487,6 @@ NS_ASSUME_NONNULL_BEGIN
   @try {
     NSMutableDictionary *mutableManifest = [manifest.rawManifestJSON mutableCopy];
 
-    // If legacy manifest is not yet verified, served by a third party, not standalone, and not an anonymous experience
-    // then scope it locally by using the manifest URL as a scopeKey (id) and consider it verified.
-    if (!mutableManifest[@"isVerified"] &&
-        ![EXKernelLinkingManager isExpoHostedUrl:_httpManifestUrl] &&
-        ![EXAppLoaderExpoUpdates _isAnonymousExperience:manifest] &&
-        [manifest isKindOfClass:[EXManifestsLegacyManifest class]]) {
-      // the manifest id in a legacy manifest determines the namespace/experience id an app is sandboxed with
-      // if manifest is hosted by third parties, we sandbox it with the hostname to avoid clobbering exp.host namespaces
-      // for https urls, sandboxed id is of form quinlanj.github.io/myProj-myApp
-      // for http urls, sandboxed id is of form UNVERIFIED-quinlanj.github.io/myProj-myApp
-      NSString *securityPrefix = [_httpManifestUrl.scheme isEqualToString:@"https"] ? @"" : @"UNVERIFIED-";
-      NSString *slugSuffix = manifest.slug ? [@"-" stringByAppendingString:manifest.slug]: @"";
-      mutableManifest[@"id"] = [NSString stringWithFormat:@"%@%@%@%@", securityPrefix, _httpManifestUrl.host, _httpManifestUrl.path ?: @"", slugSuffix];
-      mutableManifest[@"isVerified"] = @(YES);
-    }
-
     // set verified to false by default
     if (!mutableManifest[@"isVerified"]) {
       mutableManifest[@"isVerified"] = @(NO);
