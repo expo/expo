@@ -104,8 +104,7 @@ class UpdatesDatabaseSpec : ExpoSpec {
         let responseHeaderData1 = ResponseHeaderData(
           protocolVersionRaw: nil,
           serverDefinedHeadersRaw: nil,
-          manifestFiltersRaw: "branch-name=\"rollout-1\",test=\"value\"",
-          manifestSignature: nil
+          manifestFiltersRaw: "branch-name=\"rollout-1\",test=\"value\""
         )
         
         db.databaseQueue.sync {
@@ -115,8 +114,7 @@ class UpdatesDatabaseSpec : ExpoSpec {
         let responseHeaderData2 = ResponseHeaderData(
           protocolVersionRaw: nil,
           serverDefinedHeadersRaw: nil,
-          manifestFiltersRaw: "branch-name=\"rollout-2\"",
-          manifestSignature: nil
+          manifestFiltersRaw: "branch-name=\"rollout-2\""
         )
         
         db.databaseQueue.sync {
@@ -134,8 +132,7 @@ class UpdatesDatabaseSpec : ExpoSpec {
         let responseHeaderData1 = ResponseHeaderData(
           protocolVersionRaw: nil,
           serverDefinedHeadersRaw: nil,
-          manifestFiltersRaw: "branch-name=\"rollout-1\"",
-          manifestSignature: nil
+          manifestFiltersRaw: "branch-name=\"rollout-1\""
         )
         
         db.databaseQueue.sync {
@@ -145,8 +142,7 @@ class UpdatesDatabaseSpec : ExpoSpec {
         let responseHeaderData2 = ResponseHeaderData(
           protocolVersionRaw: nil,
           serverDefinedHeadersRaw: nil,
-          manifestFiltersRaw: "",
-          manifestSignature: nil
+          manifestFiltersRaw: ""
         )
         
         db.databaseQueue.sync {
@@ -164,8 +160,7 @@ class UpdatesDatabaseSpec : ExpoSpec {
         let responseHeaderData1 = ResponseHeaderData(
           protocolVersionRaw: nil,
           serverDefinedHeadersRaw: nil,
-          manifestFiltersRaw: "branch-name=\"rollout-1\"",
-          manifestSignature: nil
+          manifestFiltersRaw: "branch-name=\"rollout-1\""
         )
         
         db.databaseQueue.sync {
@@ -175,8 +170,7 @@ class UpdatesDatabaseSpec : ExpoSpec {
         let responseHeaderData2 = ResponseHeaderData(
           protocolVersionRaw: nil,
           serverDefinedHeadersRaw: nil,
-          manifestFiltersRaw: nil,
-          manifestSignature: nil
+          manifestFiltersRaw: nil
         )
         
         db.databaseQueue.sync {
