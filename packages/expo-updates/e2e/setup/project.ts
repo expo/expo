@@ -327,6 +327,7 @@ async function preparePackageJson(
       ...expoResolutions,
       ...packageJson.resolutions,
       typescript: '5.2.2',
+      '@isaacs/cliui': 'npm:cliui@8.0.1', // Fix string-width ESM error
     },
   };
 
