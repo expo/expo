@@ -48,28 +48,6 @@
   return self;
 }
 
-+ (NSString *)versionedString:(NSString *)string withPrefix:(NSString *)symbolPrefix
-{
-  if (!string || !symbolPrefix) {
-    return nil;
-  }
-  return [NSString stringWithFormat:@"%@%@", symbolPrefix, string];
-}
-
-- (NSString *)symbolPrefixForSdkVersion:(NSString *)version isKernel:(BOOL)isKernel
-{
-#ifdef INCLUDES_VERSIONED_CODE
-  // Projects that use the latest SDK version use unversioned code
-  if (isKernel || [version isEqualToString:_temporarySdkVersion]) {
-    return @"";
-  }
-  if (version && version.length && ![version isEqualToString:@"UNVERSIONED"]) {
-    return [[@"ABI" stringByAppendingString:version] stringByReplacingOccurrencesOfString:@"." withString:@"_"];
-  }
-#endif
-  return @"";
-}
-
 - (NSString *)availableSdkVersionForManifest:(EXManifestsManifest * _Nullable)manifest
 {
   return [self _versionForManifest:manifest];
@@ -131,12 +109,9 @@
   _versions = mutableVersions;
 }
 
-- (BOOL)supportsVersion:(NSString *)sdkVersion {
-#ifdef INCLUDES_VERSIONED_CODE
+- (BOOL)supportsVersion:(NSString *)sdkVersion
+{
   return [_versions[@"sdkVersions"] containsObject:(NSString *) sdkVersion];
-#else
-  return YES;
-#endif
 }
 
 @end
