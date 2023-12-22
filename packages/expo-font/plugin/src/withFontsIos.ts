@@ -8,9 +8,9 @@ import {
   withXcodeProject,
 } from 'expo/config-plugins';
 import path from 'path';
-import type { Font } from './withFonts';
 
 import { resolveFontPaths } from './utils';
+import type { Font } from './withFonts';
 
 export const withFontsIos: ConfigPlugin<Font[]> = (config, fonts) => {
   const fontPaths = fonts.map((font) => (typeof font === 'string' ? font : font.path));
