@@ -26,8 +26,7 @@ class UpdateSpec : ExpoSpec {
         let responseHeaderData = ResponseHeaderData(
           protocolVersionRaw: nil,
           serverDefinedHeadersRaw: nil,
-          manifestFiltersRaw: nil,
-          manifestSignature: nil
+          manifestFiltersRaw: nil
         )
         
         expect { try Update.update(
@@ -53,8 +52,7 @@ class UpdateSpec : ExpoSpec {
         let responseHeaderData = ResponseHeaderData(
           protocolVersionRaw: "0",
           serverDefinedHeadersRaw: nil,
-          manifestFiltersRaw: nil,
-          manifestSignature: nil
+          manifestFiltersRaw: nil
         )
         
         expect(try! Update.update(
@@ -80,8 +78,7 @@ class UpdateSpec : ExpoSpec {
         let responseHeaderData = ResponseHeaderData(
           protocolVersionRaw: "2",
           serverDefinedHeadersRaw: nil,
-          manifestFiltersRaw: nil,
-          manifestSignature: nil
+          manifestFiltersRaw: nil
         )
         
         expect(try Update.update(
