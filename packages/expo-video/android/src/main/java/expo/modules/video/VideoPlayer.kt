@@ -1,11 +1,13 @@
 package expo.modules.video
 
 import android.content.Context
+import android.view.SurfaceView
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
 import expo.modules.kotlin.sharedobjects.SharedObject
 import java.io.Closeable
 
@@ -61,6 +63,12 @@ class VideoPlayer(context: Context, private val mediaItem: MediaItem) : Closeabl
 
   override fun close() {
     player.removeListener(playerListener)
+  }
+
+  fun changePlayerView(playerView: PlayerView) {
+    player.clearVideoSurface()
+    player.setVideoSurfaceView(playerView.videoSurfaceView as SurfaceView?)
+    playerView.player = player
   }
 
   fun prepare() {

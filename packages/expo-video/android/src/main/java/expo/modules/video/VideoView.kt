@@ -1,14 +1,17 @@
 package expo.modules.video
 
 import android.content.Context
+import android.content.Intent
 import android.view.ViewGroup
 import androidx.media3.ui.PlayerView
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ExpoView
+import java.util.UUID
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class VideoView(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
+  val id: String = UUID.randomUUID().toString()
   val playerView = PlayerView(context.applicationContext)
   var videoPlayer: VideoPlayer? = null
     set(videoPlayer) {
@@ -25,6 +28,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   }
 
   init {
+    VideoViewManager.addVideoView(this)
     addView(
       playerView,
       ViewGroup.LayoutParams(
@@ -32,6 +36,17 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
         ViewGroup.LayoutParams.MATCH_PARENT
       )
     )
+  }
+
+  fun enterFullscreen() {
+    val intent = Intent(context, FullscreenActivity::class.java)
+    intent.putExtra(VideoViewManager.INTENT_PLAYER_KEY, id)
+
+    appContext.activityProvider?.currentActivity?.startActivity(intent)
+  }
+
+  fun exitFullscreen() {
+    videoPlayer?.changePlayerView(playerView)
   }
 
   override fun requestLayout() {

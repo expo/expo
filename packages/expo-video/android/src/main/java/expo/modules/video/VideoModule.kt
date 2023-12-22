@@ -31,6 +31,9 @@ class VideoModule : Module() {
       Prop("contentFit") { view: VideoView, contentFit: ContentFit ->
         view.playerView.resizeMode = contentFit.toResizeMode()
       }
+      AsyncFunction("enterFullscreen") { view: VideoView ->
+        view.enterFullscreen()
+      }
 
       Prop("requiresLinearPlayback") { view: VideoView, requiresLinearPlayback: Boolean? ->
         val linearPlayback = requiresLinearPlayback ?: false
