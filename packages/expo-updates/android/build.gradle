@@ -87,6 +87,10 @@ if (!safeExtGet("expoProvidesDefaultConfig", false)) {
 }
 
 android {
+  buildFeatures {
+    buildConfig true
+  }
+
   // Remove this if and it's contents, when support for SDK49 is dropped
   if (!safeExtGet("expoProvidesDefaultConfig", false)) {
     compileSdkVersion safeExtGet("compileSdkVersion", 34)
@@ -139,6 +143,11 @@ android {
   }
   testOptions {
     unitTests.includeAndroidResources = true
+
+    packagingOptions {
+      pickFirst "**/libfbjni.so"
+      pickFirst "**/libc++_shared.so"
+    }
   }
   sourceSets {
     main.assets.srcDirs += files("$projectDir/src/main/certificates".toString())

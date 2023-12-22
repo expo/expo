@@ -6,7 +6,6 @@ import androidx.test.platform.app.InstrumentationRegistry
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.codesigning.*
 import expo.modules.updates.manifest.UpdateManifest
-import expo.modules.updates.codesigning.CertificateFixtures
 import expo.modules.updates.codesigning.TestCertificateType
 import expo.modules.updates.codesigning.getTestCertificate
 import io.mockk.every
@@ -27,11 +26,11 @@ class FileDownloaderManifestParsingTest {
     val contentType = "application/json"
     val response = mockk<Response>().apply {
       every { header("content-type") } returns contentType
-      every { headers } returns mapOf("content-type" to contentType).toHeaders()
+      every { headers } returns mapOf("content-type" to contentType, "expo-protocol-version" to "0").toHeaders()
       every { code } returns 200
       every { body } returns ResponseBody.create(
         "application/json; charset=utf-8".toMediaTypeOrNull(),
-        CertificateFixtures.testClassicManifestBody
+        CertificateFixtures.testNewManifestBody
       )
     }
 
@@ -81,7 +80,7 @@ class FileDownloaderManifestParsingTest {
       )
       .addPart(
         mapOf("Content-Disposition" to "form-data; name=\"manifest\"; filename=\"hello2\"").toHeaders(),
-        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), CertificateFixtures.testClassicManifestBody)
+        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), CertificateFixtures.testNewManifestBody)
       )
       .addPart(
         mapOf("Content-Disposition" to "form-data; name=\"extensions\"; filename=\"hello3\"").toHeaders(),
@@ -97,7 +96,7 @@ class FileDownloaderManifestParsingTest {
 
     val response = mockk<Response>().apply {
       every { header("content-type") } returns contentType
-      every { headers } returns mapOf("content-type" to contentType).toHeaders()
+      every { headers } returns mapOf("content-type" to contentType, "expo-protocol-version" to "0").toHeaders()
       every { code } returns 200
       every { body } returns ResponseBody.create(MultipartBody.MIXED, contentBuffer.readByteArray())
     }

@@ -2,10 +2,7 @@
 package host.exp.exponent
 
 import android.content.Context
-import android.net.Uri
 import android.util.Log
-import expo.modules.jsonutils.getNullable
-import expo.modules.manifests.core.LegacyManifest
 import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
@@ -298,26 +295,6 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
 
   @Throws(JSONException::class)
   private fun processManifestJson(manifestJson: JSONObject): JSONObject {
-    val parsedManifestUrl = Uri.parse(manifestUrl)
-
-    // If legacy manifest is not yet verified, served by a third party, and not an anonymous experience
-    // then scope it locally by using the manifest URL as a scopeKey (id) and consider it verified.
-    if (!manifestJson.optBoolean(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, false) &&
-      isThirdPartyHosted(parsedManifestUrl) &&
-      !exponentManifest.isAnonymousExperience(Manifest.fromManifestJson(manifestJson)) &&
-      Manifest.fromManifestJson(manifestJson) is LegacyManifest
-    ) {
-      // for https urls, sandboxed id is of form quinlanj.github.io/myProj-myApp
-      // for http urls, sandboxed id is of form UNVERIFIED-quinlanj.github.io/myProj-myApp
-      val protocol = parsedManifestUrl.scheme
-      val securityPrefix = if (protocol == "https" || protocol == "exps") "" else "UNVERIFIED-"
-      val path = if (parsedManifestUrl.path != null) parsedManifestUrl.path else ""
-      val slug = manifestJson.getNullable<String>(ExponentManifest.MANIFEST_SLUG) ?: ""
-      val sandboxedId = securityPrefix + parsedManifestUrl.host + path + "-" + slug
-      manifestJson.put(ExponentManifest.MANIFEST_ID_KEY, sandboxedId)
-      manifestJson.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true)
-    }
-
     // if the manifest is scoped to a random anonymous scope key, automatically verify it
     if (exponentManifest.isAnonymousExperience(Manifest.fromManifestJson(manifestJson))) {
       manifestJson.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true)
@@ -329,16 +306,6 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     }
 
     return manifestJson
-  }
-
-  private fun isThirdPartyHosted(uri: Uri): Boolean {
-    val host = uri.host
-    return !(
-      host == "exp.host" || host == "expo.io" || host == "exp.direct" || host == "expo.test" ||
-        host!!.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(
-          ".expo.test"
-        )
-      )
   }
 
   private fun setShouldShowAppLoaderStatus(manifest: Manifest) {

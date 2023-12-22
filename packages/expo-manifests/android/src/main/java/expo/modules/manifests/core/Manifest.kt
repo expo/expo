@@ -244,8 +244,10 @@ abstract class Manifest(protected val json: JSONObject) {
   companion object {
     @JvmStatic fun fromManifestJson(manifestJson: JSONObject): Manifest {
       return when {
+        // TODO(wschurman): remove error in a few major releases after SDK 51 when it's unlikely classic updates
+        // may erroneously be served
         manifestJson.has("releaseId") -> {
-          LegacyManifest(manifestJson)
+          throw Exception("Legacy manifests are no longer supported")
         }
         manifestJson.has("metadata") -> {
           NewManifest(manifestJson)
