@@ -12,9 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) id versionManager;
 @property (nonatomic, assign) BOOL hasBridgeEverLoaded; // has the bridge ever succeeded at loading?
 
-@property (nonatomic, strong) NSString *versionSymbolPrefix;
-@property (nonatomic, strong, nullable) NSString *validatedVersion;
-
 @property (nonatomic, strong) EXReactAppExceptionHandler *exceptionHandler;
 
 - (NSDictionary *)launchOptionsForBridge;

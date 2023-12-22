@@ -27,9 +27,9 @@
 #endif
 
 #import <React/RCTBridge.h>
-#import <React/RCTCxxBridgeDelegate.h>
-#import <React/JSCExecutorFactory.h>
 #import <React/RCTRootView.h>
+
+#import "Expo_Go-Swift.h"
 
 @implementation RCTSource (EXReactAppManager)
 
@@ -48,24 +48,12 @@
 
 @end
 
-@interface EXReactAppManager () <RCTBridgeDelegate, RCTCxxBridgeDelegate>
+@interface EXReactAppManager ()
 
 @property (nonatomic, strong) UIView * __nullable reactRootView;
 @property (nonatomic, copy) RCTSourceLoadBlock loadCallback;
 @property (nonatomic, strong) NSDictionary *initialProps;
 @property (nonatomic, strong) NSTimer *viewTestTimer;
-
-@end
-
-@protocol EXVersionManagerProtocol
-
-+ (instancetype)alloc;
-
-- (instancetype)initWithParams:(nonnull NSDictionary *)params
-                      manifest:(nonnull EXManifestsManifest *)manifest
-                  fatalHandler:(void (^)(NSError *))fatalHandler
-                   logFunction:(RCTLogFunction)logFunction
-                  logThreshold:(NSInteger)threshold;
 
 @end
 
@@ -114,7 +102,6 @@
   NSAssert((_delegate != nil), @"Cannot init react app without EXReactAppManagerDelegate");
 
   [self _invalidateAndClearDelegate:NO];
-  [self computeVersionSymbolPrefix];
 
   // Assert early so we can catch the error before instantiating the bridge, otherwise we would be passing a
   // nullish scope key to the scoped modules.
@@ -123,26 +110,21 @@
   // because Expo.plist is not available in the Expo Go app.
   NSAssert(_appRecord.scopeKey, @"Experience scope key should be nonnull when getting initial properties for root view. This can occur when the manifest JSON, loaded from the server, is missing keys.");
 
-
   if ([self isReadyToLoad]) {
-    Class<EXVersionManagerProtocol> versionManagerClass = [self versionedClassFromString:@"EXVersionManager"];
-    Class bridgeClass = [self versionedClassFromString:@"RCTBridge"];
-    Class rootViewClass = [self versionedClassFromString:@"RCTRootView"];
+    _versionManager = [[EXVersionManager alloc] initWithParams:[self extraParams]
+                                                      manifest:_appRecord.appLoader.manifest
+                                                  fatalHandler:handleFatalReactError
+                                                   logFunction:[self logFunction]
+                                                  logThreshold:[self logLevel]];
 
-    _versionManager = [[versionManagerClass alloc] initWithParams:[self extraParams]
-                                                         manifest:_appRecord.appLoader.manifest
-                                                     fatalHandler:handleFatalReactError
-                                                      logFunction:[self logFunction]
-                                                     logThreshold:[self logLevel]];
-
-    _reactBridge = [[bridgeClass alloc] initWithDelegate:self launchOptions:[self launchOptionsForBridge]];
+    _reactBridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:[self launchOptionsForBridge]];
 
     if (!_isHeadless) {
       // We don't want to run the whole JS app if app launches in the background,
       // so we're omitting creation of RCTRootView that triggers runApplication and sets up React view hierarchy.
-      _reactRootView = [[rootViewClass alloc] initWithBridge:_reactBridge
-                                                  moduleName:[self applicationKeyForRootView]
-                                           initialProperties:[self initialPropertiesForRootView]];
+      _reactRootView = [[RCTRootView alloc] initWithBridge:_reactBridge
+                                                moduleName:[self applicationKeyForRootView]
+                                         initialProperties:[self initialPropertiesForRootView]];
     }
 
     [self setupWebSocketControls];
@@ -160,7 +142,7 @@
   NSMutableDictionary *params = [NSMutableDictionary dictionaryWithDictionary:@{
     @"manifest": _appRecord.appLoader.manifest.rawManifestJSON,
     @"constants": @{
-        @"linkingUri": RCTNullIfNil([EXKernelLinkingManager linkingUriForExperienceUri:_appRecord.appLoader.manifestUrl useLegacy:[self _compareVersionTo:27] == NSOrderedAscending]),
+        @"linkingUri": RCTNullIfNil([EXKernelLinkingManager linkingUriForExperienceUri:_appRecord.appLoader.manifestUrl useLegacy:NO]),
         @"experienceUrl": RCTNullIfNil(_appRecord.appLoader.manifestUrl? _appRecord.appLoader.manifestUrl.absoluteString: nil),
         @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
         @"manifest": _appRecord.appLoader.manifest.rawManifestJSON,
@@ -220,30 +202,6 @@
     }
   }
   _isBridgeRunning = NO;
-  [self _invalidateVersionState];
-}
-
-- (void)computeVersionSymbolPrefix
-{
-  // TODO: ben: kernel checks detached versions here
-  _validatedVersion = [[EXVersions sharedInstance] availableSdkVersionForManifest:_appRecord.appLoader.manifest];
-  _versionSymbolPrefix = [[EXVersions sharedInstance] symbolPrefixForSdkVersion:self.validatedVersion isKernel:NO];
-}
-
-- (void)_invalidateVersionState
-{
-  _versionSymbolPrefix = @"";
-  _validatedVersion = nil;
-}
-
-- (Class)versionedClassFromString: (NSString *)classString
-{
-  return NSClassFromString([self versionedString:classString]);
-}
-
-- (NSString *)versionedString: (NSString *)string
-{
-  return [EXVersions versionedString:string withPrefix:_versionSymbolPrefix];
 }
 
 - (BOOL)isReadyToLoad
@@ -328,7 +286,7 @@
   }
 
   // react won't post this for us
-  [[NSNotificationCenter defaultCenter] postNotificationName:[self versionedString:RCTJavaScriptDidFailToLoadNotification] object:error];
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidFailToLoadNotification object:error];
 
   if (_loadCallback) {
     _loadCallback(error, nil);
@@ -344,33 +302,33 @@
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleJavaScriptStartLoadingEvent:)
-                                               name:[self versionedString:RCTJavaScriptWillStartLoadingNotification]
+                                               name:RCTJavaScriptWillStartLoadingNotification
                                              object:bridge];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleJavaScriptLoadEvent:)
-                                               name:[self versionedString:RCTJavaScriptDidLoadNotification]
+                                               name:RCTJavaScriptDidLoadNotification
                                              object:bridge];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleJavaScriptLoadEvent:)
-                                               name:[self versionedString:RCTJavaScriptDidFailToLoadNotification]
+                                               name:RCTJavaScriptDidFailToLoadNotification
                                              object:bridge];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleReactContentEvent:)
-                                               name:[self versionedString:RCTContentDidAppearNotification]
-                                             object:nil];
+                                               name:RCTContentDidAppearNotification
+                                             object:bridge];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleBridgeEvent:)
-                                               name:[self versionedString:RCTBridgeWillReloadNotification]
+                                               name:RCTBridgeWillReloadNotification
                                              object:bridge];
 }
 
 - (void)_stopObservingBridgeNotifications
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:[self versionedString:RCTJavaScriptWillStartLoadingNotification] object:_reactBridge];
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:[self versionedString:RCTJavaScriptDidLoadNotification] object:_reactBridge];
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:[self versionedString:RCTJavaScriptDidFailToLoadNotification] object:_reactBridge];
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:[self versionedString:RCTContentDidAppearNotification] object:_reactBridge];
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:[self versionedString:RCTBridgeWillReloadNotification] object:_reactBridge];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTJavaScriptWillStartLoadingNotification object:_reactBridge];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTJavaScriptDidLoadNotification object:_reactBridge];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTJavaScriptDidFailToLoadNotification object:_reactBridge];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTContentDidAppearNotification object:_reactBridge];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTBridgeWillReloadNotification object:_reactBridge];
 }
 
 - (void)_handleJavaScriptStartLoadingEvent:(NSNotification *)notification
@@ -386,7 +344,7 @@
 
 - (void)_handleJavaScriptLoadEvent:(NSNotification *)notification
 {
-  if ([notification.name isEqualToString:[self versionedString:RCTJavaScriptDidLoadNotification]]) {
+  if ([notification.name isEqualToString:RCTJavaScriptDidLoadNotification]) {
     _isBridgeRunning = YES;
     _hasBridgeEverLoaded = YES;
     [_versionManager bridgeFinishedLoading:_reactBridge];
@@ -395,7 +353,7 @@
     if (_appRecord.viewController) {
       [_appRecord.viewController hideLoadingProgressWindow];
     }
-  } else if ([notification.name isEqualToString:[self versionedString:RCTJavaScriptDidFailToLoadNotification]]) {
+  } else if ([notification.name isEqualToString:RCTJavaScriptDidFailToLoadNotification]) {
     NSError *error = (notification.userInfo) ? notification.userInfo[@"error"] : nil;
     if (_appRecord.scopeKey) {
       [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:error forScopeKey:_appRecord.scopeKey];
@@ -413,7 +371,7 @@
 
 - (void)_handleReactContentEvent:(NSNotification *)notification
 {
-  if ([notification.name isEqualToString:[self versionedString:RCTContentDidAppearNotification]]
+  if ([notification.name isEqualToString:RCTContentDidAppearNotification]
       && notification.object == self.reactRootView) {
     EX_WEAKIFY(self);
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -426,7 +384,7 @@
 
 - (void)_handleBridgeEvent:(NSNotification *)notification
 {
-  if ([notification.name isEqualToString:[self versionedString:RCTBridgeWillReloadNotification]]) {
+  if ([notification.name isEqualToString:RCTBridgeWillReloadNotification]) {
     EX_WEAKIFY(self);
     dispatch_async(dispatch_get_main_queue(), ^{
       EX_ENSURE_STRONGIFY(self);
@@ -597,20 +555,6 @@
 }
 
 #pragma mark - RN configuration
-
-- (NSComparisonResult)_compareVersionTo:(NSUInteger)version
-{
-  // Unversioned projects are always considered to be on the latest version
-  if (!_validatedVersion || _validatedVersion.length == 0 || [_validatedVersion isEqualToString:@"UNVERSIONED"]) {
-    return NSOrderedDescending;
-  }
-
-  NSUInteger projectVersionNumber = _validatedVersion.integerValue;
-  if (projectVersionNumber == version) {
-    return NSOrderedSame;
-  }
-  return (projectVersionNumber < version) ? NSOrderedAscending : NSOrderedDescending;
-}
 
 - (NSDictionary *)launchOptionsForBridge
 {

@@ -28,6 +28,8 @@
 
 #import <React/RCTAppearance.h>
 
+#import <RNScreens/RNSScreenWindowTraits.h>
+
 #import "Expo_Go-Swift.h"
 
 @import EXManifests;
@@ -569,12 +571,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)shouldUseRNScreenOrientation
 {
-  Class screenWindowTraitsClass = [self->_appRecord.appManager versionedClassFromString:@"RNSScreenWindowTraits"];
-  if ([screenWindowTraitsClass respondsToSelector:@selector(shouldAskScreensForScreenOrientationInViewController:)]) {
-    id<EXKernelRNSScreenWindowTraits> screenWindowTraits = (id<EXKernelRNSScreenWindowTraits>)screenWindowTraitsClass;
-    return [screenWindowTraits shouldAskScreensForScreenOrientationInViewController:self];
-  }
-  return NO;
+  return [RNSScreenWindowTraits shouldAskScreensForScreenOrientationInViewController:self];
 }
 
 - (UIInterfaceOrientationMask)orientationMaskFromManifestOrDefault

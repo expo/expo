@@ -110,12 +110,6 @@ NSString * const kEXHomeLaunchUrlDefaultsKey = @"EXKernelLaunchUrlDefaultsKey";
   return modules;
 }
 
-- (void)computeVersionSymbolPrefix
-{
-  self.validatedVersion = nil;
-  self.versionSymbolPrefix = [[EXVersions sharedInstance] symbolPrefixForSdkVersion:self.validatedVersion isKernel:YES];
-}
-
 - (RCTLogFunction)logFunction
 {
   return EXGetKernelRCTLogFunction();

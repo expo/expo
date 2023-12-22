@@ -1,7 +1,13 @@
 
 #import <UIKit/UIKit.h>
+#import <React/RCTBridgeDelegate.h>
+
 #import "EXAppFetcher.h"
 #import "EXKernelAppRecord.h"
+
+#ifdef __cplusplus
+#import <React/RCTCxxBridgeDelegate.h>
+#endif // __cplusplus
 
 typedef enum EXReactAppManagerStatus {
   kEXReactAppManagerStatusNew,
@@ -22,7 +28,7 @@ typedef enum EXReactAppManagerStatus {
 
 @end
 
-@interface EXReactAppManager : NSObject <EXAppFetcherDataSource>
+@interface EXReactAppManager : NSObject <RCTBridgeDelegate, EXAppFetcherDataSource>
 
 - (instancetype)initWithAppRecord:(EXKernelAppRecord *)record initialProps:(NSDictionary *)initialProps;
 - (void)rebuildBridge;
@@ -31,8 +37,6 @@ typedef enum EXReactAppManagerStatus {
 // these are piped in from the view controller when the app manager is waiting for a bundle.
 - (void)appLoaderFinished;
 - (void)appLoaderFailedWithError:(NSError *)error;
-
-- (Class)versionedClassFromString:(NSString *)classString;
 
 @property (nonatomic, assign) BOOL isHeadless;
 @property (nonatomic, readonly) BOOL isBridgeRunning;
@@ -70,3 +74,8 @@ typedef enum EXReactAppManagerStatus {
 - (void)selectDevMenuItemWithKey:(NSString *)key;
 
 @end
+
+#ifdef __cplusplus
+@interface EXReactAppManager (RCTCxxBridgeDelegate) <RCTCxxBridgeDelegate>
+@end
+#endif // __cplusplus
