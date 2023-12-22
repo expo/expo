@@ -580,7 +580,7 @@ class UpdatesController private constructor(
     private const val UPDATES_STATE_CHANGE_EVENT_NAME = "Expo.nativeUpdatesStateChangeEvent"
 
     private var singletonInstance: UpdatesController? = null
-    private var _overrideConfiguration: UpdatesConfiguration? = null
+    private var overrideConfiguration: UpdatesConfiguration? = null
 
     @JvmStatic val instance: UpdatesController
       get() {
@@ -589,7 +589,7 @@ class UpdatesController private constructor(
 
     @JvmStatic fun initializeWithoutStarting(context: Context) {
       if (singletonInstance == null) {
-        val updatesConfiguration = _overrideConfiguration ?: UpdatesConfiguration(context, null)
+        val updatesConfiguration = overrideConfiguration ?: UpdatesConfiguration(context, null)
         singletonInstance = UpdatesController(context, updatesConfiguration)
       }
     }
@@ -614,7 +614,7 @@ class UpdatesController private constructor(
      */
     @JvmStatic fun initialize(context: Context, configuration: Map<String, Any>) {
       if (singletonInstance == null) {
-        val updatesConfiguration = _overrideConfiguration ?: UpdatesConfiguration(context, configuration)
+        val updatesConfiguration = overrideConfiguration ?: UpdatesConfiguration(context, configuration)
         singletonInstance = UpdatesController(context, updatesConfiguration)
         singletonInstance!!.start(context)
       }
@@ -625,13 +625,10 @@ class UpdatesController private constructor(
      */
     @JvmStatic
     fun overrideConfiguration(context: Context, configuration: Map<String, Any>) {
-      if (Looper.myLooper() != Looper.getMainLooper()) {
-        throw AssertionError("overrideConfiguration() should be called from main thread")
-      }
       if (singletonInstance != null) {
         throw AssertionError("The method should be called before UpdatesController.initialize()")
       }
-      _overrideConfiguration = UpdatesConfiguration(context, configuration)
+      overrideConfiguration = UpdatesConfiguration(context, configuration)
     }
   }
 
