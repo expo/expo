@@ -33,7 +33,7 @@ To test the new EAS update manifest format, set `EXUpdatesUsesLegacyManifest` an
 
 ### Additional Headers
 
-If you want any additional headers to be sent in manifest requests, you can add these to a map under the key `EXUpdatesRequestHeaders` on iOS, or `requestHeaders` on Android (currently, this can't be configured in AndroidManifest.xml and you need to use the `UpdatesController.initialize(Context context, Map<String, Object> configuration)` method in MainApplication.java).
+If you want any additional headers to be sent in manifest requests, you can add these to a map under the key `EXUpdatesRequestHeaders` on iOS, or `requestHeaders` on Android (currently, this can't be configured in AndroidManifest.xml and you need to use the `UpdatesController.overrideConfiguration(Context context, Map<String, Object> configuration)` method in MainApplication.java).
 
 ## Making a Build
 
