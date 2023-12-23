@@ -10,6 +10,28 @@ describe('getFilename', () => {
     const url = 'https://example.com';
     expect(AssetUris.getFilename(url)).toBe('');
   });
+  it(`returns path with relative URL`, () => {
+    const url = '/assets/foobar.png?platform=web';
+    expect(AssetUris.getFilename(url)).toBe('foobar.png');
+  });
+  it(`returns path with Metro dev server URL`, () => {
+    const url =
+      '/assets/?unstable_path=.%2Fsrc%2Fassets%2Fimages%2FPILLAR.png&platform=web&hash=d00faeafda55dca55498cd494a65a83b';
+    expect(AssetUris.getFilename(url)).toBe('PILLAR.png');
+  });
+  it(`does not support Metro dev server URL extraction in production`, () => {
+    const originalDev = __DEV__;
+    try {
+      // @ts-expect-error
+      __DEV__ = false;
+      const url =
+        '/assets?unstable_path=.%2Fsrc%2Fassets%2Fimages%2FPILLAR.png&platform=web&hash=d00faeafda55dca55498cd494a65a83b';
+      expect(AssetUris.getFilename(url)).toBe('assets');
+    } finally {
+      // @ts-expect-error
+      __DEV__ = originalDev;
+    }
+  });
 });
 
 describe('getExtension', () => {
