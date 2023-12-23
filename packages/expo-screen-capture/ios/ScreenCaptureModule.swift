@@ -16,7 +16,6 @@ public final class ScreenCaptureModule: Module {
       let boundLength = max(UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height)
       _blockView.frame = CGRect(x: 0, y: 0, width: boundLength, height: boundLength)
       _blockView.backgroundColor = UIColor.black
-
     }
 
     OnStartObserving {
