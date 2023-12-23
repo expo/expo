@@ -13,7 +13,7 @@ export default (program: Command) => {
 };
 
 async function actionAsync() {
-  const workspaces = await getWorkspacesAsync();
+  const workspacePackages = await getWorkspacePackagesAsync();
   const workspacesMismatched = Object.values(workspaces).filter(
     (workspace) => workspace.mismatchedWorkspaceDependencies.length
   );
