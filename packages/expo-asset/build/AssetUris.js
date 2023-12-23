@@ -1,5 +1,18 @@
 export function getFilename(url) {
-    const { pathname } = new URL(url);
+    const { pathname, searchParams } = new URL(url, 'https://e');
+    // When attached to a dev server, we use `unstable_path` to represent the file path. This ensures
+    // the file name is not canonicalized by the browser.
+    // NOTE(EvanBacon): This is technically not tied to `__DEV__` as it's possible to use this while bundling in production
+    // mode.
+    if (__DEV__) {
+        if (searchParams.has('unstable_path')) {
+            const encodedFilePath = decodeURIComponent(searchParams.get('unstable_path'));
+            return getBasename(encodedFilePath);
+        }
+    }
+    return getBasename(pathname);
+}
+function getBasename(pathname) {
     return pathname.substring(pathname.lastIndexOf('/') + 1);
 }
 export function getFileExtension(url) {
