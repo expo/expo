@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Adjust proguard rules to prevent issues with types implementing `Enumerable`.
+
 ### 💡 Others
 
 - Removed deprecated `global.ExpoModules`. ([#26027](https://github.com/expo/expo/pull/26027) by [@tsapeta](https://github.com/tsapeta))
