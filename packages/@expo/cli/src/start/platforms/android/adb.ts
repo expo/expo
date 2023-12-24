@@ -73,7 +73,7 @@ export async function isPackageInstalledAsync(
   androidPackage: string
 ): Promise<boolean> {
   const packages = await getServer().runAsync(
-    adbArgs(device.pid, 'shell', 'pm', 'list', 'packages', androidPackage)
+    adbArgs(device.pid, 'shell', 'pm', 'list', 'packages', "--user 0",  androidPackage)
   );
 
   const lines = packages.split(/\r?\n/);
