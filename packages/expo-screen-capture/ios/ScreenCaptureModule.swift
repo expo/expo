@@ -4,8 +4,8 @@ let onScreenshotEventName = "onScreenshot"
 
 public final class ScreenCaptureModule: Module {
   private var isBeingObserved = false
-  private var _isListening = false
-  private var _blockView = UIView()
+  private var isListening = false
+  private var blockView = UIView()
 
   public func definition() -> ModuleDefinition {
     Name("ExpoScreenCapture")
@@ -38,8 +38,8 @@ public final class ScreenCaptureModule: Module {
     }
   }
 
-private func setIsBeing(observed: Bool) {
-    self.isBeingObserved = isBeingObserved
+  private func setIsBeing(observed: Bool) {
+    self.isBeingObserved = observed
     let shouldListen = self.isBeingObserved
 
     if shouldListen && !isListening {
