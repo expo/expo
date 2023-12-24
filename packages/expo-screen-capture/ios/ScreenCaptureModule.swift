@@ -45,10 +45,10 @@ public final class ScreenCaptureModule: Module {
     if shouldListen && !isListening {
       // swiftlint:disable:next line_length
       NotificationCenter.default.addObserver(self, selector: #selector(self.listenForScreenCapture), name: UIApplication.userDidTakeScreenshotNotification, object: nil)
-     isListening = true
+      isListening = true
     } else if !shouldListen && isListening {
       NotificationCenter.default.removeObserver(self, name: UIApplication.userDidTakeScreenshotNotification, object: nil)
-     isListening = false
+      isListening = false
     }
   }
 
