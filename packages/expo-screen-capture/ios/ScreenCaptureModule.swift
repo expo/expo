@@ -3,7 +3,7 @@ import ExpoModulesCore
 let onScreenshotEventName = "onScreenshot"
 
 public final class ScreenCaptureModule: Module {
-  private var _isBeingObserved = false
+  private var isBeingObserved = false
   private var _isListening = false
   private var _blockView = UIView()
 
@@ -14,16 +14,16 @@ public final class ScreenCaptureModule: Module {
 
     OnCreate {
       let boundLength = max(UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height)
-      _blockView.frame = CGRect(x: 0, y: 0, width: boundLength, height: boundLength)
-      _blockView.backgroundColor = UIColor.black
+      blockView.frame = CGRect(x: 0, y: 0, width: boundLength, height: boundLength)
+      blockView.backgroundColor = .black
     }
 
     OnStartObserving {
-      self.setIsBeingObserved(isBeingObserved: true)
+      self.setIsBeing(observed: true)
     }
 
     OnStopObserving {
-      self.setIsBeingObserved(isBeingObserved: false)
+      self.setIsBeing(observed: false)
     }
 
     AsyncFunction("preventScreenCapture") {
@@ -38,17 +38,17 @@ public final class ScreenCaptureModule: Module {
     }
   }
 
-  func setIsBeingObserved(isBeingObserved: Bool) {
-    _isBeingObserved = isBeingObserved
-    let shouldListen = _isBeingObserved
+private func setIsBeing(observed: Bool) {
+    self.isBeingObserved = isBeingObserved
+    let shouldListen = self.isBeingObserved
 
-    if shouldListen && !_isListening {
+    if shouldListen && !isListening {
       // swiftlint:disable:next line_length
       NotificationCenter.default.addObserver(self, selector: #selector(self.listenForScreenCapture), name: UIApplication.userDidTakeScreenshotNotification, object: nil)
-      _isListening = true
-    } else if !shouldListen && _isListening {
+     isListening = true
+    } else if !shouldListen && isListening {
       NotificationCenter.default.removeObserver(self, name: UIApplication.userDidTakeScreenshotNotification, object: nil)
-      _isListening = false
+     isListening = false
     }
   }
 
@@ -57,9 +57,9 @@ public final class ScreenCaptureModule: Module {
     let isCaptured = UIScreen.main.isCaptured
 
     if isCaptured {
-      UIApplication.shared.keyWindow?.subviews.first?.addSubview(_blockView)
+      UIApplication.shared.keyWindow?.subviews.first?.addSubview(blockView)
     } else {
-      _blockView.removeFromSuperview()
+      blockView.removeFromSuperview()
     }
   }
 
