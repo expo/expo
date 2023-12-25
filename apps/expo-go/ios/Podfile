@@ -28,6 +28,9 @@ target 'Expo Go' do
 
   # Expo modules
   use_expo_modules!({
+    searchPaths: [
+      '../../../packages'
+    ],
     exclude: [
       'expo-module-template',
       'expo-module-template-local',
