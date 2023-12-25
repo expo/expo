@@ -4,7 +4,7 @@ import path from 'path';
 import plist from 'plist';
 import semver from 'semver';
 
-import { EXPO_DIR, ANDROID_DIR, PACKAGES_DIR } from './Constants';
+import { EXPO_DIR, ANDROID_DIR, PACKAGES_DIR, IOS_DIR } from './Constants';
 
 export type Platform = 'ios' | 'android';
 
@@ -20,7 +20,7 @@ export async function sdkVersionAsync(): Promise<string> {
 }
 
 export async function iosAppVersionAsync(): Promise<string> {
-  const infoPlistPath = path.join(EXPO_DIR, 'ios', 'Exponent', 'Supporting', 'Info.plist');
+  const infoPlistPath = path.join(IOS_DIR, 'Exponent', 'Supporting', 'Info.plist');
   const infoPlist = plist.parse(fs.readFileSync(infoPlistPath, 'utf8'));
   const bundleVersion = infoPlist.CFBundleShortVersionString;
 
@@ -52,11 +52,8 @@ export async function getHomeSDKVersionAsync(): Promise<string> {
 }
 
 export async function getSDKVersionsAsync(platform: Platform): Promise<string[]> {
-  const sdkVersionsPath = path.join(
-    EXPO_DIR,
-    platform === 'ios' ? 'ios/Exponent/Supporting' : 'android',
-    'sdkVersions.json'
-  );
+  const appDir = platform === 'ios' ? path.join(IOS_DIR, 'Exponent', 'Supporting') : ANDROID_DIR;
+  const sdkVersionsPath = path.join(appDir, 'sdkVersions.json');
 
   if (!(await fs.pathExists(sdkVersionsPath))) {
     throw new Error(`File at path "${sdkVersionsPath}" not found.`);
