@@ -1,0 +1,5 @@
+# iOS
+/ios/Pods
+/ios/build
+/ios/.xcode.env.local
+/ios/versioned-react-native/*/ReactNative/sdks/hermes-engine/destroot
