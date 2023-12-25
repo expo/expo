@@ -134,6 +134,8 @@ PODS:
     - ExpoModulesCore
   - ExpoRandom (13.6.0):
     - ExpoModulesCore
+  - ExpoScreenCapture (5.8.0):
+    - ExpoModulesCore
   - ExpoScreenOrientation (6.4.0):
     - ExpoModulesCore
     - glog
@@ -163,8 +165,6 @@ PODS:
   - ExpoVideoThumbnails (7.9.0):
     - ExpoModulesCore
   - ExpoWebBrowser (12.8.0):
-    - ExpoModulesCore
-  - EXScreenCapture (5.8.0):
     - ExpoModulesCore
   - EXSplashScreen (0.26.0):
     - ExpoModulesCore
@@ -1534,6 +1534,7 @@ DEPENDENCIES:
   - ExpoNetwork (from `../packages/expo-network/ios`)
   - ExpoPrint (from `../packages/expo-print/ios`)
   - ExpoRandom (from `../packages/expo-random/ios`)
+  - ExpoScreenCapture (from `../packages/expo-screen-capture/ios`)
   - ExpoScreenOrientation (from `../packages/expo-screen-orientation/ios`)
   - ExpoSecureStore (from `../packages/expo-secure-store/ios`)
   - ExpoSensors (from `../packages/expo-sensors/ios`)
@@ -1547,7 +1548,6 @@ DEPENDENCIES:
   - ExpoVideo (from `../packages/expo-video/ios`)
   - ExpoVideoThumbnails (from `../packages/expo-video-thumbnails/ios`)
   - ExpoWebBrowser (from `../packages/expo-web-browser/ios`)
-  - EXScreenCapture (from `../packages/expo-screen-capture/ios`)
   - EXSplashScreen (from `../packages/expo-splash-screen/ios`)
   - EXStructuredHeaders (from `../packages/expo-structured-headers/ios`)
   - EXStructuredHeaders/Tests (from `../packages/expo-structured-headers/ios`)
@@ -1758,6 +1758,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-print/ios"
   ExpoRandom:
     :path: "../packages/expo-random/ios"
+  ExpoScreenCapture:
+    :path: "../packages/expo-screen-capture/ios"
   ExpoScreenOrientation:
     :path: "../packages/expo-screen-orientation/ios"
   ExpoSecureStore:
@@ -1784,8 +1786,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-video-thumbnails/ios"
   ExpoWebBrowser:
     :path: "../packages/expo-web-browser/ios"
-  EXScreenCapture:
-    :path: "../packages/expo-screen-capture/ios"
   EXSplashScreen:
     :path: "../packages/expo-splash-screen/ios"
   EXStructuredHeaders:
@@ -1980,6 +1980,7 @@ SPEC CHECKSUMS:
   ExpoNetwork: 97d7774ab8f62e35f08db77fbef0388d5e1f2c76
   ExpoPrint: e7ecdd682436eb5a74b744c4ce36dc490df851b7
   ExpoRandom: f0cd58e154e463d913462f3b445870b12d1c2f12
+  ExpoScreenCapture: c3c120b095594bf7ae003251c1b89260566587f6
   ExpoScreenOrientation: b536311828c68fbe8ce5d5c46dadf14933a37812
   ExpoSecureStore: 684e61c2fb2d5e61fee11b3bbd2c67610cd808b8
   ExpoSensors: 773adb32167d5d3c28280697ceee342b88f606ab
@@ -1993,7 +1994,6 @@ SPEC CHECKSUMS:
   ExpoVideo: 5c7f090a003df15ab6a0e73184995cc22529b4dd
   ExpoVideoThumbnails: 9b6c0dada0b3240dd3527e0dc688711e17842c88
   ExpoWebBrowser: 2b660d423b818c4c45b6b3d22a3c0652153fb176
-  EXScreenCapture: d23d01882ce614ba2a341f9fe4bf4a9559830d92
   EXSplashScreen: d6d7ea9582e4ed7655cf893b32dca13ef0712279
   EXStructuredHeaders: 3b8ec10c65a4607dc976b6cdfa5136d2ea2ece19
   EXTaskManager: 81b2dfaaba6d9f9a4bc3e3e2a786a98004eb9e98
