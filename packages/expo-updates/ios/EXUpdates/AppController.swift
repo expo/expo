@@ -199,12 +199,12 @@ public class AppController: NSObject {
     }()
     // swiftlint:enable closure_body_length
 
-    if config != nil {
+    if let config = config {
       let updatesDatabase = UpdatesDatabase()
       do {
         let directory = try initializeUpdatesDirectory()
         try initializeUpdatesDatabase(updatesDatabase: updatesDatabase, inUpdatesDirectory: directory)
-        _sharedInstance = EnabledAppController(config: config!, database: updatesDatabase, updatesDirectory: directory)
+        _sharedInstance = EnabledAppController(config: config, database: updatesDatabase, updatesDirectory: directory)
       } catch {
         logger.error(
           message: "The expo-updates system is disabled due to an error during initialization: \(error.localizedDescription)",
