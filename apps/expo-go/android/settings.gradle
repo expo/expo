@@ -12,28 +12,28 @@ include ':app'
 apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle")
 apply from: new File(rootDir, "versioning_linking.gradle")
 
-includeBuild('../react-native-lab/react-native/packages/react-native-gradle-plugin/')
+includeBuild('../../../react-native-lab/react-native/packages/react-native-gradle-plugin/')
 
 include ':expoview'
 include ':tools'
 include ':packages:react-native:ReactAndroid'
-project(':packages:react-native:ReactAndroid').projectDir = new File(rootDir, '../react-native-lab/react-native/packages/react-native/ReactAndroid')
+project(':packages:react-native:ReactAndroid').projectDir = new File(rootDir, '../../../react-native-lab/react-native/packages/react-native/ReactAndroid')
 dependencyResolutionManagement {
   versionCatalogs {
     defaultLibrariesExtensionName = "expoLibs"
     libs {
-      from(files("../react-native-lab/react-native/packages/react-native/gradle/libs.versions.toml"))
+      from(files("../../../react-native-lab/react-native/packages/react-native/gradle/libs.versions.toml"))
     }
   }
 }
 include ':packages:react-native:ReactAndroid:hermes-engine'
-project(':packages:react-native:ReactAndroid:hermes-engine').projectDir = new File(rootDir, '../react-native-lab/react-native/packages/react-native/ReactAndroid/hermes-engine')
+project(':packages:react-native:ReactAndroid:hermes-engine').projectDir = new File(rootDir, '../../../react-native-lab/react-native/packages/react-native/ReactAndroid/hermes-engine')
 include ':expo-modules-test-core'
-project(':expo-modules-test-core').projectDir = new File(rootDir, '../packages/expo-modules-test-core/android')
+project(':expo-modules-test-core').projectDir = new File(rootDir, '../../../packages/expo-modules-test-core/android')
 
 // Include Expo modules that are not unimodules
 include(":expo-random")
-project(":expo-random").projectDir = new File("../packages/expo-random/android")
+project(":expo-random").projectDir = new File("../../../packages/expo-random/android")
 
 [
     // ADD_NEW_SUPPORTED_ABIS_HERE
@@ -43,6 +43,9 @@ project(":expo-random").projectDir = new File("../packages/expo-random/android")
 })
 
 useExpoModules([
+    searchPaths: [
+        '../../../packages'
+    ],
     exclude : [
         'expo-module-template',
         'expo-module-template-local',

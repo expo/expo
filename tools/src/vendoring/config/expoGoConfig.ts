@@ -177,7 +177,7 @@ const config: VendoringTargetConfig = {
               // react-native root dir is in react-native-lab/react-native
               paths: 'build.gradle',
               find: /\b(def reactNativeRootDir)\s*=.+$/gm,
-              replaceWith: `$1 = Paths.get(projectDir.getPath(), '../../../../../react-native-lab/react-native/packages/react-native').toFile()`,
+              replaceWith: `$1 = Paths.get(projectDir.getPath(), '../../../../../../../react-native-lab/react-native/packages/react-native').toFile()`,
             },
             {
               // no-op for extracting tasks

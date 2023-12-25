@@ -73,7 +73,7 @@ def codegenViewLibraryName = "RNCViewPager"
 def codegenViewModuleName = {
   // Autolink for Fabric uses codegenConfig.name in package.json since react-native@0.70
   // Use codegenViewLibraryName for compatibility with react-native@0.68/0.69
-  def libraryManifestJson = new JsonSlurper().parseText(file("$rootProject.projectDir/../node_modules/react-native-pager-view/package.json").text)
+  def libraryManifestJson = new JsonSlurper().parseText(file("$rootProject.projectDir/../../../node_modules/react-native-pager-view/package.json").text)
   registrationCompat ? codegenViewLibraryName : libraryManifestJson.codegenConfig.name
 }()
 

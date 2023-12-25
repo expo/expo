@@ -38,12 +38,12 @@ def resolveReactNativeDirectory() {
 
     // monorepo workaround
     // react-native can be hoisted or in project's own node_modules
-    def reactNativeFromProjectNodeModules = file("${rootProject.projectDir}/../node_modules/react-native")
+    def reactNativeFromProjectNodeModules = file("${rootProject.projectDir}/../../../node_modules/react-native")
     if (reactNativeFromProjectNodeModules.exists()) {
         return reactNativeFromProjectNodeModules
     }
 
-    def reactNativeFromNodeModulesWithReanimated = file("${projectDir}/../../react-native")
+    def reactNativeFromNodeModulesWithReanimated = file("${projectDir}/../../../../react-native")
     if (reactNativeFromNodeModulesWithReanimated.exists()) {
         return reactNativeFromNodeModulesWithReanimated
     }
