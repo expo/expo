@@ -6,7 +6,7 @@ ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )"/../../.. && pwd )"
 export PATH="$ROOT_DIR/bin:$PATH"
 
 maybe_prebuild_hermes() {
-  ANDROID_DIR="$ROOT_DIR/android"
+  ANDROID_DIR="$ROOT_DIR/apps/expo-go/android"
   CURRENT_VERSION=$(test -f $ANDROID_DIR/prebuiltHermes/.hermesversion && cat $ANDROID_DIR/prebuiltHermes/.hermesversion) || true
   TARGET_VERSION=$(test -f $ROOT_DIR/react-native-lab/react-native/packages/react-native/sdks/.hermesversion && cat $ROOT_DIR/react-native-lab/react-native/packages/react-native/sdks/.hermesversion) || true
   if [[ $CURRENT_VERSION != $TARGET_VERSION ]]; then
