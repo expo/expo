@@ -13,7 +13,7 @@ if [[ -f "$PODS_ROOT/../.xcode.env.local" ]]; then
   source "$PODS_ROOT/../.xcode.env.local"
 fi
 
-export PATH="${SRCROOT}/../bin:$PATH"
+export PATH="${SRCROOT}/../../../bin:$PATH"
 
 if [ "${APP_OWNER}" == "Expo" ]; then
   et ios-generate-dynamic-macros --configuration ${CONFIGURATION}
