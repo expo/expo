@@ -56,7 +56,7 @@ static def findNodeModules(baseDir) {
   throw new GradleException("React-Native-Skia: Failed to find node_modules/ path!")
 }
 
-def nodeModules = Paths.get(projectDir.getPath(), '../../../../../..', 'react-native-lab/react-native/packages').toString()
+def nodeModules = Paths.get(projectDir.getPath(), '../../../../../../../..', 'react-native-lab/react-native/packages').toString()
 logger.warn("react-native-skia: node_modules/ found at: ${nodeModules}")
 
 def sourceBuild = false

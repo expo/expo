@@ -167,7 +167,7 @@ class DownloadVersionedAarsPlugin implements Plugin<Project> {
   @Override
   void apply(org.gradle.api.Project target) {
     target.exec {
-      workingDir '../../bin'
+      workingDir '../../../../bin'
 
       if (Os.isFamily(Os.FAMILY_WINDOWS)) {
         commandLine 'cmd.exe', '/c', 'expotools android-download-versioned-aars'
@@ -186,7 +186,7 @@ class GenerateDynamicMacrosPlugin implements Plugin<Project> {
         it.toLowerCase().contains("release")
       } ? "release" : "debug"
 
-      workingDir '../../bin'
+      workingDir '../../../../bin'
 
       if (Os.isFamily(Os.FAMILY_WINDOWS)) {
         commandLine 'cmd.exe', '/c', "expotools android-generate-dynamic-macros --configuration ${configuration}"
