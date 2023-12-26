@@ -1,11 +1,9 @@
 import { Command } from '@expo/commander';
 import path from 'path';
 
+import { EXPO_DIR, IOS_DIR } from '../Constants';
 import { generateDynamicMacrosAsync } from '../dynamic-macros/generateDynamicMacros';
-import { Directories } from '../expotools';
 
-const EXPO_DIR = Directories.getExpoRepositoryRootDir();
-const IOS_DIR = Directories.getIosDir();
 const SUPPORTING_DIR = path.join(IOS_DIR, 'Exponent', 'Supporting');
 const TEMPLATE_FILES_DIR = path.join(EXPO_DIR, 'template-files');
 
