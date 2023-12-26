@@ -8,18 +8,17 @@ import semver from 'semver';
  * @param projectRoot target project root folder
  * @param pkg package name
  */
-function installPackageNonInteractiveAsync(projectRoot: string, pkg: string) {
-  const manager = PackageManager.createForProject(projectRoot);
+async function installPackageNonInteractiveAsync(projectRoot: string, pkg: string) {
+  const manager = PackageManager.createForProject(projectRoot, { silent: false });
 
-  switch (manager.name) {
-    case 'yarn':
+  if (manager.name === 'yarn') {
+    const version = await manager.versionAsync();
+    if (semver.major(version) === 1) {
       return manager.addAsync([pkg, '--non-interactive']);
-
-    case 'bun':
-    case 'npm':
-    case 'pnpm':
-      return manager.addAsync([pkg]);
+    }
   }
+
+  return manager.addAsync([pkg]);
 }
 
 /**
