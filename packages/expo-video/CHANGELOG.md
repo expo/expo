@@ -6,7 +6,7 @@
 
 ### 🎉 New features
  
-- [web] Add volume
+- [web] Add volume ([#26137](https://github.com/expo/expo/pull/26137) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
