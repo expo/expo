@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Update import for type generation.
+
 ### 💡 Others
 
 ## 0.16.5 - 2023-12-21
