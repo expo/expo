@@ -67,7 +67,7 @@ export abstract class BasePackageManager implements PackageManager {
     return cwd;
   }
 
-  runAsync(command: string[], options?: SpawnOptions) {
+  runAsync(command: string[], options: SpawnOptions = {}) {
     this.log?.(`> ${this.name} ${command.join(' ')}`);
     return spawnAsync(this.bin, command, { ...this.options, ...options });
   }

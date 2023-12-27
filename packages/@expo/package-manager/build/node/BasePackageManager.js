@@ -36,7 +36,7 @@ class BasePackageManager {
         (0, assert_1.default)(cwd, `cwd is required for ${className}${methodName}`);
         return cwd;
     }
-    runAsync(command, options) {
+    runAsync(command, options = {}) {
         this.log?.(`> ${this.name} ${command.join(' ')}`);
         return (0, spawn_async_1.default)(this.bin, command, { ...this.options, ...options });
     }
