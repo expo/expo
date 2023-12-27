@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Added support for macOS platform. ([#26186](https://github.com/expo/expo/pull/26186) by [@tsapeta](https://github.com/tsapeta))
+- Add `Date` type converter.
 
 ### 🐛 Bug fixes
 
