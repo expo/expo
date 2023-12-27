@@ -1,5 +1,5 @@
-const { createMetroConfiguration } = require('expo-yarn-workspaces');
-const baseConfig = createMetroConfiguration(__dirname);
+const { getDefaultConfig } = require('expo/metro-config');
+const baseConfig = getDefaultConfig(__dirname);
 const path = require('path');
 
 const root = path.join(__dirname, '../..');
@@ -11,6 +11,7 @@ baseConfig.watchFolders = [
   ),
 ];
 
+/** @type {import('expo/metro-config').MetroConfig} */
 module.exports = {
   ...baseConfig,
 
@@ -48,14 +49,31 @@ module.exports = {
 
   resolver: {
     ...baseConfig.resolver,
-    assetExts: [...baseConfig.resolver.assetExts, 'kml'],
+    assetExts: [
+      ...baseConfig.resolver.assetExts,
+      'db', // Copied from expo-yarn-workspaces
+      'kml',
+    ],
     blockList: [
-      ...baseConfig.resolver.blockList,
+      // Copied from expo-yarn-workspaces
+      /\/__tests__\//,
+      /\/android\/React(Android|Common)\//,
+      /\/versioned-react-native\//,
 
       // Exclude react-native-lab from haste map.
       // Because react-native versions may be different between node_modules/react-native and react-native-lab,
       // we should use the one from node_modules for bare-expo.
       /\breact-native-lab\b/,
     ],
+  },
+  transformer: {
+    ...baseConfig.transformer,
+    // Copied from expo-yarn-workspaces
+    // Ignore file-relative Babel configurations and apply only the project's
+    // NOTE: The Metro transformer still searches for and uses .babelrc and .babelrc.js files:
+    // https://github.com/facebook/react-native/blob/753bb2094d95c8eb2152d2a2c1f0b67bbeec36de/packages/react-native-babel-transformer/src/index.js#L81
+    // This is in contrast with Babel, which reads only babel.config.json before evaluating its
+    // "babelrc" option: https://babeljs.io/docs/options#configfile
+    enableBabelRCLookup: false,
   },
 };
