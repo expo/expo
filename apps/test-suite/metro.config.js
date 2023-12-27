@@ -3,7 +3,7 @@
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
 
-const root = path.join(__dirname, '../..');
+const monorepoRoot = path.join(__dirname, '../..');
 const config = getDefaultConfig(__dirname);
 
 config.resolver.assetExts.push(
@@ -25,7 +25,7 @@ config.resolver.blockList = [
 // To test test-suite from Expo Go, the react-native js source is from our fork.
 config.serializer.getPolyfills = () => {
   const reactNativeRoot = path.join(
-    root,
+    monorepoRoot,
     'react-native-lab',
     'react-native',
     'packages',
@@ -33,29 +33,6 @@ config.serializer.getPolyfills = () => {
   );
 
   return require(path.join(reactNativeRoot, 'rn-get-polyfills'))();
-};
-
-// NOTE(brentvatne): This can be removed when
-// https://github.com/facebook/metro/issues/290 is fixed.
-config.server.enhanceMiddleware = (middleware) => {
-  return (req, res, next) => {
-    // When an asset is imported outside the project root, it has wrong path on Android
-    // This happens for the back button in stack, so we fix the path to correct one
-    const assets = '/node_modules/@react-navigation/stack/src/views/assets';
-
-    if (req.url.startsWith(assets)) {
-      req.url = req.url.replace(assets, `/assets/../..${assets}`);
-    }
-
-    // Same as above when testing anything required via Asset.downloadAsync() in test-suite
-    const testSuiteAssets = '/test-suite/assets/';
-
-    if (req.url.startsWith(testSuiteAssets)) {
-      req.url = req.url.replace(testSuiteAssets, '/assets/../test-suite/assets/');
-    }
-
-    return middleware(req, res, next);
-  };
 };
 
 module.exports = config;
