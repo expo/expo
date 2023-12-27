@@ -69,12 +69,12 @@ allprojects {
     }
     maven {
       // Local Maven repo containing AARs with JSC built for Android
-      url "$rootDir/../node_modules/jsc-android/dist"
+      url "$rootDir/../../../node_modules/jsc-android/dist"
     }
     maven {
       // Local expo-camera Maven repo containing our slightly modified
       // Google's cameraview from expo/cameraview.
-      url "$rootDir/../packages/expo-camera/android/maven"
+      url "$rootDir/../../../packages/expo-camera/android/maven"
     }
     flatDir {
       dirs 'libs'
