@@ -2,6 +2,7 @@ package expo.modules.video
 
 import android.content.Context
 import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
@@ -34,6 +35,13 @@ class VideoPlayer(context: Context, private val mediaItem: MediaItem) : AutoClos
       volume = if (isMuted) 0f else userVolume
     }
 
+  var playbackParameters: PlaybackParameters = PlaybackParameters.DEFAULT
+    set(value) {
+      if (player.playbackParameters == value) return
+      player.playbackParameters = value
+      field = value
+    }
+
   lateinit var timeline: Timeline
 
   val playerListener = object : Player.Listener {
@@ -51,6 +59,11 @@ class VideoPlayer(context: Context, private val mediaItem: MediaItem) : AutoClos
 
     override fun onVolumeChanged(volume: Float) {
       this@VideoPlayer.volume = volume
+    }
+
+    override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
+      this@VideoPlayer.playbackParameters = playbackParameters
+      super.onPlaybackParametersChanged(playbackParameters)
     }
   }
 

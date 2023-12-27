@@ -9,6 +9,7 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
@@ -40,7 +41,8 @@ class VideoModule : Module() {
         view.playerView.setShowPreviousButton(!linearPlayback)
         view.playerView.setShowNextButton(!linearPlayback)
 
-        // TODO: Make the requiresLinearPlayback hide only the scrubber instead of the whole progress bar. Maybe use custom layout for the player as the scrubber is not available?
+        // TODO: Make the requiresLinearPlayback hide only the scrubber instead of the whole progress bar.
+        //  Maybe use custom layout for the player as the scrubber is not available?
         val progressBar = view.playerView.findViewById<View>(androidx.media3.ui.R.id.exo_progress)
         if (progressBar is DefaultTimeBar) {
           progressBar.visibility = if (linearPlayback) {
@@ -90,15 +92,23 @@ class VideoModule : Module() {
           }
         }
 
-      AsyncFunction("getPlaybackSpeed") { ref: VideoPlayer ->
-        appContext.mainQueue.launch {
-          ref.player.playbackParameters.speed
+      Property("currentTime")
+        .get { ref: VideoPlayer ->
+          // TODO: we shouldn't block the thread, but there are no events for the player position change,
+          //  so we can't update the currentTime in a non-blocking way like the other properties.
+          //  Until we think of something better we can temporarily do it this way
+          runBlocking(appContext.mainQueue.coroutineContext) {
+            ref.player.currentPosition
+          }
         }
+
+      Function("getPlaybackSpeed") { ref: VideoPlayer ->
+        ref.playbackParameters.speed
       }
 
       Function("setPlaybackSpeed") { ref: VideoPlayer, speed: Float ->
-        appContext.mainQueue.launch {
-          ref.player.playbackParameters = PlaybackParameters(speed)
+        appContext.mainQueue.launch{
+          ref.playbackParameters = PlaybackParameters(speed)
         }
       }
 
@@ -118,12 +128,6 @@ class VideoModule : Module() {
         appContext.mainQueue.launch {
           val mediaItem = MediaItem.fromUri(source)
           ref.player.setMediaItem(mediaItem)
-        }
-      }
-
-      AsyncFunction("getCurrentTime") { ref: VideoPlayer ->
-        appContext.mainQueue.launch {
-          ref.player.currentPosition
         }
       }
 
