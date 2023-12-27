@@ -12,6 +12,12 @@ export declare class VideoPlayer {
      */
     isMuted: boolean;
     /**
+     * Float value between 0 and 1 representing the current volume. This value will be ignored if the player is muted.
+     *
+     * @platform web
+     */
+    volume: number;
+    /**
      * Resumes the player.
      */
     play(): void;

@@ -5,6 +5,8 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
+ 
+- [web] Add volume
 
 ### 🐛 Bug fixes
 

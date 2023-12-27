@@ -9,6 +9,7 @@ class VideoPlayerWeb {
     isPlaying = false;
     _isMuted = false;
     timestamp = 0;
+    _volume = 1;
     set isMuted(value) {
         this.mountedVideos.forEach((video) => {
             video.muted = value;
@@ -17,6 +18,15 @@ class VideoPlayerWeb {
     }
     get isMuted() {
         return this._isMuted;
+    }
+    set volume(value) {
+        this.mountedVideos.forEach((video) => {
+            video.volume = value;
+        });
+        this._volume = value;
+    }
+    get volume() {
+        return this._volume;
     }
     play() {
         this.mountedVideos.forEach((video) => {
