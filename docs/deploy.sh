@@ -157,7 +157,6 @@ redirects[introduction/expo]=core-concepts
 redirects[introduction/faq]=faq
 redirects[workflow/expo-go]=get-started/expo-go
 redirects[errors-and-warnings]=debugging/errors-and-warnings
-redirects[develop/unit-testing]=develop/unit-testing
 redirects[guides/splash-screens]=develop/user-interface/splash-screen
 redirects[guides/app-icons]=develop/user-interface/app-icons
 redirects[guides/color-schemes]=develop/user-interface/color-themes
