@@ -14,7 +14,7 @@ export default (program: Command) => {
 
 async function actionAsync() {
   const workspacePackages = await getWorkspacePackagesAsync();
-  const workspacesMismatched = Object.values(workspaces).filter(
+  const workspacesMismatched = Object.values(workspacePackages).filter(
     (workspace) => workspace.mismatchedWorkspaceDependencies.length
   );
 
@@ -40,7 +40,7 @@ async function actionAsync() {
     );
 
     for (const dependency of mismatched) {
-      const workspaceVersion = workspaces[dependency]._version;
+      const workspaceVersion = workspacePackages[dependency]._version;
       const installedVersion = await getResolvedVersionAsync(workspace._directory, dependency);
 
       console.warn(
@@ -52,7 +52,7 @@ async function actionAsync() {
   process.exit(1);
 }
 
-async function getWorkspacesAsync() {
+async function getWorkspacePackagesAsync() {
   const root = getExpoRepositoryRootDir();
   const workspaces = await getInfoAsync();
 
