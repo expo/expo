@@ -24,7 +24,7 @@
       "ios": {
         "cache": {
           "key": "sdk50-0.73.1",
-          "customPaths": ["../../ios/Pods"]
+          "customPaths": ["../expo-go/ios/Pods"]
         },
         "image": "macos-ventura-13.6-xcode-15.0",
         "cocoapods": "1.14.2",

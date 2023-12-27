@@ -1,5 +1,5 @@
 require_relative './podfile_helpers.rb'
-require_relative '../react-native-lab/react-native/packages/react-native/scripts/react_native_pods'
+require_relative '../../../react-native-lab/react-native/packages/react-native/scripts/react_native_pods'
 require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
 
 install! 'cocoapods',
@@ -28,6 +28,9 @@ target 'Expo Go' do
 
   # Expo modules
   use_expo_modules!({
+    searchPaths: [
+      '../../../packages'
+    ],
     exclude: [
       'expo-module-template',
       'expo-module-template-local',
@@ -51,12 +54,12 @@ target 'Expo Go' do
 
   # React Native
   use_react_native!(
-    :path => '../react-native-lab/react-native/packages/react-native',
+    :path => '../../../react-native-lab/react-native/packages/react-native',
     :hermes_enabled => true,
     :fabric_enabled => false,
   )
   setup_jsc!(
-    :react_native_path => '../react-native-lab/react-native/packages/react-native',
+    :react_native_path => '../../../react-native-lab/react-native/packages/react-native',
     :fabric_enabled => false,
   )
 
@@ -81,7 +84,7 @@ target 'Expo Go' do
 
       # Set `REACT_NATIVE_PATH` to react-native submodule
       target_installation_result.native_target.build_configurations.each do |config|
-        config.build_settings["REACT_NATIVE_PATH"] = File.join("${PODS_ROOT}", "..", '../react-native-lab/react-native/packages/react-native')
+        config.build_settings["REACT_NATIVE_PATH"] = File.join("${PODS_ROOT}", "..", '../../../react-native-lab/react-native/packages/react-native')
       end
 
       # This is necessary for Xcode 14 that by default signs resource bundles when building for the device.
@@ -141,6 +144,6 @@ target 'Expo Go' do
     # this test target should inherit all properties from parents.
     inherit! :complete
 
-    pod 'ExpoModulesTestCore', :path => "../packages/expo-modules-test-core/ios"
+    pod 'ExpoModulesTestCore', :path => "../../../packages/expo-modules-test-core/ios"
   end
 end

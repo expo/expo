@@ -1,0 +1,11 @@
+# iOS
+/ios/Pods
+/ios/build
+/ios/.xcode.env.local
+/ios/versioned-react-native/*/ReactNative/sdks/hermes-engine/destroot
+/ios/Exponent/Supporting/EXBuildConstants.plist.bak
+/ios/Exponent/Supporting/EXBuildConstants.plist.json
+/ios/Exponent/Supporting/EXBuildConstants.plist
+/ios/Exponent/Supporting/GoogleService-Info.plist
+/ios/Exponent/Supporting/Info.plist.bak
+/ios/Exponent/Supporting/Info.plist.json
