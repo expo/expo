@@ -107,7 +107,7 @@ class VideoModule : Module() {
       }
 
       Function("setPlaybackSpeed") { ref: VideoPlayer, speed: Float ->
-        appContext.mainQueue.launch{
+        appContext.mainQueue.launch {
           ref.playbackParameters = PlaybackParameters(speed)
         }
       }
