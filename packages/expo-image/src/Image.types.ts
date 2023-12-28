@@ -5,7 +5,7 @@ import ExpoImage from './ExpoImage';
 export type ImageSource = {
   /**
    * A string representing the resource identifier for the image,
-   * which could be an http address, a local file path, or the name of a static image resource.
+   * which could be an HTTPS address, a local file path, or the name of a static image resource.
    */
   uri?: string;
   /**
@@ -15,26 +15,32 @@ export type ImageSource = {
   headers?: Record<string, string>;
   /**
    * Can be specified if known at build time, in which case the value
-   * will be used to set the default `<Image/>` component dimension
+   * will be used to set the default `<Image/>` component dimension.
    */
   width?: number;
   /**
    * Can be specified if known at build time, in which case the value
-   * will be used to set the default `<Image/>` component dimension
+   * will be used to set the default `<Image/>` component dimension.
    */
   height?: number;
 
   /**
-   * The blurhash string to use to generate the image. You can read more about the blurhash
-   * on [`woltapp/blurhash`](https://github.com/woltapp/blurhash) repo. Ignored when `uri` is provided.
+   * A string used to generate the image [`placeholder`](#placeholder). For example,
+   * `placeholder={blurhash}`.  If `uri` is provided as the value of the `source` prop,
+   * this is ignored since the `source` can only have `blurhash` or `uri`.
+   *
    * When using the blurhash, you should also provide `width` and `height` (higher values reduce performance),
    * otherwise their default value is `16`.
+   * For more information, see [`woltapp/blurhash`](https://github.com/woltapp/blurhash) repository.
    */
   blurhash?: string;
 
   /**
-   * The thumbhash string to use to generate the image placeholder. You can read more about thumbhash
-   * on the [`thumbhash website`](https://evanw.github.io/thumbhash/). Ignored when `uri` is provided.
+   * A string used to generate the image [`placeholder`](#placeholder). For example,
+   * `placeholder={thumbhash}`.  If `uri` is provided as the value of the `source` prop,
+   * this is ignored since the `source` can only have `thumbhash` or `uri`.
+   *
+   * For more information, see [`thumbhash website`](https://evanw.github.io/thumbhash/).
    */
   thumbhash?: string;
 
