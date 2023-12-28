@@ -9,11 +9,10 @@ object VideoViewManager {
   }
 
   fun getVideoView(id: String): VideoView {
-    // TODO: throw an exception here
-    return players[id] ?: throw Exception("VideoView with id $id not found")
+    return players[id] ?: throw VideoViewNotFoundException(id)
   }
 
-  fun removePlayer(id: String) {
+  fun removeVideoView(id: String) {
     players.remove(id)
   }
 }

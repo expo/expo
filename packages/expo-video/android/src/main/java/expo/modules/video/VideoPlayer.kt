@@ -23,6 +23,7 @@ class VideoPlayer(context: Context, private val mediaItem: MediaItem) : Closeabl
   // Volume of the player if there was no mute applied.
   var userVolume = 1f
   var requiresLinearPlayback = false
+  lateinit var timeline: Timeline
 
   var volume = 1f
     set(volume) {
@@ -37,9 +38,7 @@ class VideoPlayer(context: Context, private val mediaItem: MediaItem) : Closeabl
       volume = if (isMuted) 0f else userVolume
     }
 
-  lateinit var timeline: Timeline
-
-  val playerListener = object : Player.Listener {
+  private val playerListener = object : Player.Listener {
     override fun onIsPlayingChanged(isPlaying: Boolean) {
       this@VideoPlayer.isPlaying = isPlaying
     }

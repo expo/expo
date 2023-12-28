@@ -18,16 +18,12 @@ class FullscreenActivity : Activity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.fullscreen_activity)
-    mContentView = findViewById(R.id.enclosing_layout) ?: run {
-      // TODO: throw an exception here
-      return
-    }
+    mContentView = findViewById(R.id.enclosing_layout)
 
     playerView = findViewById(R.id.player_view)
-    videoViewId = intent.getStringExtra(VideoViewManager.INTENT_PLAYER_KEY) ?: run {
-      // TODO: throw an exception here
-      return
-    }
+    videoViewId = intent.getStringExtra(VideoViewManager.INTENT_PLAYER_KEY)
+      ?: throw FullScreenVideoViewNotFoundException()
+
     videoView = VideoViewManager.getVideoView(videoViewId)
     videoView.videoPlayer?.changePlayerView(playerView)
   }
