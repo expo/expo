@@ -34,6 +34,10 @@ class VideoModule : Module() {
         view.enterFullscreen()
       }
 
+      Prop("allowsFullscreen") { view: VideoView, allowsFullscreen: Boolean? ->
+        view.allowsFullscreen = allowsFullscreen ?: true
+      }
+
       Prop("requiresLinearPlayback") { view: VideoView, requiresLinearPlayback: Boolean? ->
         val linearPlayback = requiresLinearPlayback ?: false
         view.playerView.applyRequiresLinearPlayback(linearPlayback)

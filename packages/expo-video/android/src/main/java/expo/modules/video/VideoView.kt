@@ -20,6 +20,19 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
       field = videoPlayer
     }
 
+  var allowsFullscreen: Boolean = true
+    set(value) {
+      if (value) {
+        playerView.setFullscreenButtonClickListener { enterFullscreen() }
+      } else {
+        playerView.setFullscreenButtonClickListener(null)
+        // Setting listener to null should hide the button, but judging by ExoPlayer source code
+        // there is a bug and the button isn't hidden. We need to do it manually.
+        playerView.setFullscreenButtonVisibility(false)
+      }
+      field = value
+    }
+
   private val mLayoutRunnable = Runnable {
     measure(
       MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),

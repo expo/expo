@@ -24,3 +24,9 @@ internal fun PlayerView.setTimeBarInteractive(interactive: Boolean) {
     timeBar?.isEnabled = true
   }
 }
+
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
+internal fun PlayerView.setFullscreenButtonVisibility(visible: Boolean) {
+  val fullscreenButton = findViewById<android.widget.ImageButton>(androidx.media3.ui.R.id.exo_fullscreen)
+  fullscreenButton?.visibility = if (visible) android.view.View.VISIBLE else android.view.View.GONE
+}
