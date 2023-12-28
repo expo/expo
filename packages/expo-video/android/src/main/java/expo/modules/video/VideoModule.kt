@@ -7,12 +7,14 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class VideoModule : Module() {
   private val activity: Activity
     get() = appContext.activityProvider?.currentActivity ?: throw Exceptions.MissingActivity()
+
   override fun definition() = ModuleDefinition {
     Name("ExpoVideo")
 
@@ -55,26 +57,30 @@ class VideoModule : Module() {
         VideoPlayer(activity.applicationContext, mediaItem)
       }
 
-      Property("isPlaying") { ref: VideoPlayer ->
-        ref.isPlaying
-      }
+      Property("isPlaying")
+        .get { ref: VideoPlayer ->
+          ref.isPlaying
+        }
 
-      Property("isLoading") { ref: VideoPlayer ->
-        ref.isLoading
-      }
+      Property("isLoading")
+        .get { ref: VideoPlayer ->
+          ref.isLoading
+        }
 
-      Property("isMuted") { ref: VideoPlayer ->
-        ref.isMuted
-      }
+      Property("isMuted")
+        .get { ref: VideoPlayer ->
+          ref.isMuted
+        }
         .set { ref: VideoPlayer, isMuted: Boolean ->
           appContext.mainQueue.launch {
             ref.isMuted = isMuted
           }
         }
 
-      Property("volume") { ref: VideoPlayer ->
-        ref.volume
-      }
+      Property("volume")
+        .get { ref: VideoPlayer ->
+          ref.volume
+        }
         .set { ref: VideoPlayer, volume: Float ->
           appContext.mainQueue.launch {
             ref.userVolume = volume
@@ -82,15 +88,23 @@ class VideoModule : Module() {
           }
         }
 
-      AsyncFunction("getPlaybackSpeed") { ref: VideoPlayer ->
-        appContext.mainQueue.launch {
-          ref.player.playbackParameters.speed
+      Property("currentTime")
+        .get { ref: VideoPlayer ->
+          // TODO: we shouldn't block the thread, but there are no events for the player position change,
+          //  so we can't update the currentTime in a non-blocking way like the other properties.
+          //  Until we think of something better we can temporarily do it this way
+          runBlocking(appContext.mainQueue.coroutineContext) {
+            ref.player.currentPosition
+          }
         }
+
+      Function("getPlaybackSpeed") { ref: VideoPlayer ->
+        ref.playbackParameters.speed
       }
 
       Function("setPlaybackSpeed") { ref: VideoPlayer, speed: Float ->
         appContext.mainQueue.launch {
-          ref.player.playbackParameters = PlaybackParameters(speed)
+          ref.playbackParameters = PlaybackParameters(speed)
         }
       }
 
@@ -110,12 +124,6 @@ class VideoModule : Module() {
         appContext.mainQueue.launch {
           val mediaItem = MediaItem.fromUri(source)
           ref.player.setMediaItem(mediaItem)
-        }
-      }
-
-      AsyncFunction("getCurrentTime") { ref: VideoPlayer ->
-        appContext.mainQueue.launch {
-          ref.player.currentPosition
         }
       }
 
