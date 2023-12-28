@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Update import for type generation. ([#26145](https://github.com/expo/expo/pull/26145) by [@EvanBacon](https://github.com/EvanBacon))
+- Add missing `router.navigate` type generation. ([#26151](https://github.com/expo/expo/pull/26151) by [@alexandernanberg](https://github.com/alexandernanberg))
 
 ### 💡 Others
 
