@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { ViewProps } from 'react-native';
-import { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet, DRMConfig } from './AV';
-import { VideoFullscreenUpdateEvent, VideoReadyForDisplayEvent, } from './Video.types';
+import { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV';
+import { VideoFullscreenUpdateEvent, VideoReadyForDisplayEvent } from './Video.types';
 type ExponentVideoProps = {
     source: AVPlaybackNativeSource | null;
-    drm: DRMConfig | null;
     resizeMode?: object;
     status?: AVPlaybackStatusToSet;
     useNativeControls?: boolean;
