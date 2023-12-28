@@ -14,8 +14,11 @@ object CameraViewHelper {
   // Utilities
   @JvmStatic
   fun getCorrectCameraRotation(rotation: Int, facing: CameraType) =
-    if (facing == CameraType.FRONT) (rotation - 90 + 360) % 360
-    else (-rotation + 90 + 360) % 360
+    if (facing == CameraType.FRONT) {
+      (rotation - 90 + 360) % 360
+    } else {
+      (-rotation + 90 + 360) % 360
+    }
 
   fun generateSimulatorPhoto(width: Int, height: Int): ByteArray {
     val fakePhotoBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)

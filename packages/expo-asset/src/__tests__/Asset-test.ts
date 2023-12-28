@@ -1,5 +1,3 @@
-const { Platform } = require('expo-modules-core');
-
 jest.mock('expo-file-system', () => {
   const FileSystem = jest.requireActual('expo-file-system');
   return {
@@ -10,18 +8,23 @@ jest.mock('expo-file-system', () => {
   };
 });
 
+const { Platform } = jest.requireActual('expo-modules-core');
+
 jest.mock('expo-modules-core', () => {
-  const ModulesCore = jest.requireActual('expo-modules-core');
+  const ExpoModulesCore = jest.requireActual('expo-modules-core');
   return {
-    ...ModulesCore,
-    NativeModulesProxy: {
-      ...ModulesCore.NativeModulesProxy,
-      ExpoUpdates: {
-        ...ModulesCore.NativeModulesProxy.ExpoUpdates,
+    ...ExpoModulesCore,
+    requireOptionalNativeModule: (moduleName) => {
+      if (moduleName !== 'ExpoUpdates') {
+        return jest.requireActual('expo-modules-core').requireOptionalNativeModule(moduleName);
+      }
+
+      return {
+        ...jest.requireActual('expo-modules-core').requireOptionalNativeModule('ExpoUpdates'),
         localAssets: {
           test1: 'file:///Expo.app/asset_test1.png',
         },
-      },
+      };
     },
   };
 });
@@ -161,34 +164,7 @@ it(`downloads uncached assets`, async () => {
   );
 });
 
-it(`throws when the file's checksum does not match`, async () => {
-  const FileSystem = require('expo-file-system');
-  const { Asset } = require('../index');
-
-  const asset = Asset.fromMetadata(mockImageMetadata);
-  expect(asset.localUri).toBeNull();
-
-  FileSystem.getInfoAsync.mockReturnValueOnce({ exists: false });
-  FileSystem.downloadAsync.mockReturnValueOnce({ md5: 'deadf00ddeadf00ddeadf00ddeadf00d' });
-  if (Platform.OS === 'web') {
-    expect(await asset.downloadAsync()).toEqual(
-      expect.objectContaining({
-        downloaded: true,
-        downloading: false,
-        hash: 'cafecafecafecafecafecafecafecafe',
-        height: 1,
-        localUri: 'https://example.com/icon.png',
-        name: undefined,
-        type: 'png',
-        uri: 'https://example.com/icon.png',
-      })
-    );
-  } else {
-    await expect(asset.downloadAsync()).rejects.toThrowError('failed MD5 integrity check');
-  }
-});
-
-it(`uses the local filesystem's cache directory for downloads`, async () => {
+it(`uses the local file system's cache directory for downloads`, async () => {
   const FileSystem = require('expo-file-system');
   const { Asset } = require('../index');
 

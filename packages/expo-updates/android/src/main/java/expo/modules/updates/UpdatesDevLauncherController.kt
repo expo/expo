@@ -23,6 +23,7 @@ import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClie
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import expo.modules.updates.statemachine.UpdatesStateContext
+import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
 import expo.modules.updatesinterface.UpdatesInterface
 import org.json.JSONObject
 import java.io.File
@@ -42,7 +43,8 @@ class UpdatesDevLauncherController(
   initialUpdatesConfiguration: UpdatesConfiguration?,
   override val updatesDirectory: File?,
   private val updatesDirectoryException: Exception?,
-  private val isMissingRuntimeVersion: Boolean
+  private val isMissingRuntimeVersion: Boolean,
+  private val callbacks: UpdatesInterfaceCallbacks
 ) : IUpdatesController, UpdatesInterface {
   override val isEmergencyLaunch = updatesDirectoryException != null
 
@@ -224,7 +226,8 @@ class UpdatesDevLauncherController(
       selectionPolicy
     )
     launcher.launch(
-      databaseHolder.database, context,
+      databaseHolder.database,
+      context,
       object : Launcher.LauncherCallback {
         override fun onFailure(e: Exception) {
           databaseHolder.releaseDatabase()
@@ -287,13 +290,15 @@ class UpdatesDevLauncherController(
       requestHeaders = updatesConfiguration?.requestHeaders ?: mapOf(),
       localAssetFiles = localAssetFiles,
       isMissingRuntimeVersion = isMissingRuntimeVersion,
+      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = true
     )
   }
 
   override fun relaunchReactApplicationForModule(
     callback: IUpdatesController.ModuleCallback<Unit>
   ) {
-    callback.onFailure(NotAvailableInDevClientException("Cannot reload update in a development client. A non-development build should be used to test this functionality."))
+    callbacks.onRequestRelaunch()
+    callback.onSuccess(Unit)
   }
 
   override fun getNativeStateMachineContext(callback: IUpdatesController.ModuleCallback<UpdatesStateContext>) {

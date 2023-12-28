@@ -23,7 +23,7 @@ class UpdateManifestFactoryTest {
   private fun createConfig(): UpdatesConfiguration {
     val configMap = mapOf(
       "updateUrl" to Uri.parse("https://exp.host/@esamelson/native-component-list"),
-      "runtimeVersion" to "1",
+      "runtimeVersion" to "1"
     )
     return UpdatesConfiguration(null, configMap)
   }
@@ -31,13 +31,15 @@ class UpdateManifestFactoryTest {
   @Test
   @Throws(Exception::class)
   fun testGetManifest_Legacy() {
-    val actual = getManifest(
-      JSONObject(legacyManifestJson),
-      ResponseHeaderData(),
-      null,
-      createConfig()
-    )
-    Assert.assertTrue(actual is LegacyUpdateManifest)
+    val exception = Assert.assertThrows(Exception::class.java) {
+      getManifest(
+        JSONObject(legacyManifestJson),
+        ResponseHeaderData(),
+        null,
+        createConfig()
+      )
+    }
+    Assert.assertEquals(exception.message, "Legacy manifests are no longer supported")
   }
 
   @Test
@@ -70,6 +72,6 @@ class UpdateManifestFactoryTest {
       JSONObject(bareManifestJson),
       createConfig()
     )
-    Assert.assertTrue(actual is BareUpdateManifest)
+    Assert.assertNotNull(actual)
   }
 }

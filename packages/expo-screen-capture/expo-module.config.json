@@ -3,5 +3,8 @@
   "platforms": ["ios", "android", "web"],
   "android": {
     "modules": ["expo.modules.screencapture.ScreenCaptureModule"]
+  },
+  "ios": {
+    "modules": ["ScreenCaptureModule"]
   }
 }

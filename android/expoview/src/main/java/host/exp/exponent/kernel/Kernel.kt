@@ -154,7 +154,9 @@ class Kernel : KernelInterface() {
         )
       ) {
         uri.toString()
-      } else null
+      } else {
+        null
+      }
     }
 
   // Don't call this until a loading screen is up, since it has to do some work on the main thread.
@@ -245,13 +247,15 @@ class Kernel : KernelInterface() {
             )
             .addPackage(
               ExpoTurboPackage.kernelExpoTurboPackage(
-                exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest, initialURL
+                exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest,
+                initialURL
               )
             )
             .setInitialLifecycleState(LifecycleState.RESUMED)
           if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE && exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.isDevelopmentMode()) {
             Exponent.enableDeveloperSupport(
-              kernelDebuggerHost, kernelMainModuleName,
+              kernelDebuggerHost,
+              kernelMainModuleName,
               RNObject.wrap(builder)
             )
           }
@@ -361,10 +365,14 @@ class Kernel : KernelInterface() {
       val deviceName = AndroidInfoHelpers.getFriendlyDeviceName()
 
       val jsEngineFromManifest = manifest.jsEngine
-      return if (jsEngineFromManifest == "hermes") HermesExecutorFactory() else JSCExecutorFactory(
-        appName,
-        deviceName
-      )
+      return if (jsEngineFromManifest == "hermes") {
+        HermesExecutorFactory()
+      } else {
+        JSCExecutorFactory(
+          appName,
+          deviceName
+        )
+      }
     }
 
   fun hasOptionsForManifestUrl(manifestUrl: String?): Boolean {
@@ -639,10 +647,10 @@ class Kernel : KernelInterface() {
         try {
           val baseIntent = task.taskInfo.baseIntent
           if (baseIntent.hasExtra(KernelConstants.MANIFEST_URL_KEY) && (
-            baseIntent.getStringExtra(
+              baseIntent.getStringExtra(
                 KernelConstants.MANIFEST_URL_KEY
               ) == manifestUrl
-            )
+              )
           ) {
             return@run task
           }
@@ -728,7 +736,8 @@ class Kernel : KernelInterface() {
       putString("manifestString", manifest.toString())
     }
     queueEvent(
-      "ExponentKernel.addHistoryItem", params,
+      "ExponentKernel.addHistoryItem",
+      params,
       object : KernelEventCallback {
         override fun onEventSuccess(result: ReadableMap) {
           EXL.d(TAG, "Successfully called ExponentKernel.addHistoryItem in kernel JS.")
@@ -785,7 +794,7 @@ class Kernel : KernelInterface() {
   private fun sendManifestToExperienceActivity(
     manifestUrl: String,
     manifest: Manifest,
-    bundleUrl: String,
+    bundleUrl: String
   ) {
     AsyncCondition.wait(
       KernelConstants.OPEN_EXPERIENCE_ACTIVITY_KEY,
@@ -1022,10 +1031,10 @@ class Kernel : KernelInterface() {
     }
 
     /*
-   *
-   * Error handling
-   *
-   */
+     *
+     * Error handling
+     *
+     */
     // Called using reflection from ReactAndroid.
     @DoNotStrip
     fun handleReactNativeError(
@@ -1064,7 +1073,7 @@ class Kernel : KernelInterface() {
       detailsUnversioned: Any?,
       exceptionId: Int?,
       isFatal: Boolean,
-      errorHeader: String? = null,
+      errorHeader: String? = null
     ) {
       val stackList = ArrayList<Bundle>()
       if (detailsUnversioned != null) {
@@ -1104,8 +1113,11 @@ class Kernel : KernelInterface() {
       val stack = stackList.toTypedArray()
       BaseExperienceActivity.addError(
         ExponentError(
-          errorMessage, errorHeader, stack,
-          getExceptionId(exceptionId), isFatal
+          errorMessage,
+          errorHeader,
+          stack,
+          getExceptionId(exceptionId),
+          isFatal
         )
       )
     }
@@ -1113,7 +1125,9 @@ class Kernel : KernelInterface() {
     private fun getExceptionId(originalId: Int?): Int {
       return if (originalId == null || originalId == -1) {
         (-(Math.random() * Int.MAX_VALUE)).toInt()
-      } else originalId
+      } else {
+        originalId
+      }
     }
   }
 

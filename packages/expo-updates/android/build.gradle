@@ -4,7 +4,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '0.24.2'
+version = '0.24.3'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 if (expoModulesCorePlugin.exists()) {
@@ -87,6 +87,10 @@ if (!safeExtGet("expoProvidesDefaultConfig", false)) {
 }
 
 android {
+  buildFeatures {
+    buildConfig true
+  }
+
   // Remove this if and it's contents, when support for SDK49 is dropped
   if (!safeExtGet("expoProvidesDefaultConfig", false)) {
     compileSdkVersion safeExtGet("compileSdkVersion", 34)
@@ -122,7 +126,7 @@ android {
   namespace "expo.modules.updates"
   defaultConfig {
     versionCode 31
-    versionName '0.24.2'
+    versionName '0.24.3'
     consumerProguardFiles("proguard-rules.pro")
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -139,6 +143,11 @@ android {
   }
   testOptions {
     unitTests.includeAndroidResources = true
+
+    packagingOptions {
+      pickFirst "**/libfbjni.so"
+      pickFirst "**/libc++_shared.so"
+    }
   }
   sourceSets {
     main.assets.srcDirs += files("$projectDir/src/main/certificates".toString())

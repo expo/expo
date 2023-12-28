@@ -2,6 +2,7 @@
 
 // swiftlint:disable line_length
 // swiftlint:disable force_unwrapping
+// swiftlint:disable identifier_name
 
 import Foundation
 import ExpoModulesCore
@@ -25,7 +26,20 @@ public struct UpdatesModuleConstants {
    */
   let assetFilesMap: [String: Any]?
 
+  /**
+   Whether there is no runtime version (or sdkVersion) provided in configuration. If it is missing,
+   updates will be disabled and a warning will be logged.
+   */
   let isMissingRuntimeVersion: Bool
+
+  /**
+   Whether the JS API methods should allow calling the native module methods and thus the methods
+   on the controller in development. For non-expo development we want to throw
+   at the JS layer since there isn't a controller set up. But for development within Expo Go
+   or a Dev Client, which have their own controller/JS API implementations, we want the JS API
+   calls to go through.
+   */
+  let shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: Bool
 }
 
 public enum CheckForUpdateResult {
@@ -145,7 +159,6 @@ public class AppController: NSObject {
 
     let logger = UpdatesLogger()
 
-    // swiftlint:disable:next identifier_name
     let updatesConfigurationValidationResult = UpdatesConfig.getUpdatesConfigurationValidationResult(mergingOtherDictionary: configuration)
     if updatesConfigurationValidationResult == UpdatesConfigurationValidationResult.Valid {
       var config: UpdatesConfig?
@@ -256,5 +269,6 @@ public class AppController: NSObject {
   }
 }
 
+// swiftlint:enable identifier_name
 // swiftlint:enable force_unwrapping
 // swiftlint:enable line_length

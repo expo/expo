@@ -73,19 +73,27 @@ class VideoThumbnailsModule : Module() {
     fun execute(): Bitmap? {
       val retriever = MediaMetadataRetriever()
 
-      if (URLUtil.isFileUrl(sourceFilename)) {
-        retriever.setDataSource(Uri.decode(sourceFilename).replace("file://", ""))
-      } else if (URLUtil.isContentUrl(sourceFilename)) {
-        val fileUri = Uri.parse(sourceFilename)
-        val fileDescriptor = context.contentResolver.openFileDescriptor(fileUri, "r")!!.fileDescriptor
-        FileInputStream(fileDescriptor).use { inputStream ->
-          retriever.setDataSource(inputStream.fd)
+      try {
+        if (URLUtil.isFileUrl(sourceFilename)) {
+          retriever.setDataSource(Uri.decode(sourceFilename).replace("file://", ""))
+        } else if (URLUtil.isContentUrl(sourceFilename)) {
+          val fileUri = Uri.parse(sourceFilename)
+          context.contentResolver.openFileDescriptor(fileUri, "r")?.use { parcelFileDescriptor ->
+            FileInputStream(parcelFileDescriptor.fileDescriptor).use { inputStream ->
+              retriever.setDataSource(inputStream.fd)
+            }
+          }
+        } else {
+          retriever.setDataSource(sourceFilename, videoOptions.headers)
         }
-      } else {
-        retriever.setDataSource(sourceFilename, videoOptions.headers)
-      }
 
-      return retriever.getFrameAtTime(videoOptions.time.toLong() * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+        return retriever.getFrameAtTime(
+          videoOptions.time.toLong() * 1000,
+          MediaMetadataRetriever.OPTION_CLOSEST_SYNC
+        )
+      } finally {
+        retriever.release()
+      }
     }
   }
 

@@ -10,6 +10,31 @@
 
 ### 💡 Others
 
+## 0.16.5 - 2023-12-21
+
+### 🐛 Bug fixes
+
+- Import `ExpoConfig` from direct dependency `@expo/config`. ([#25989](https://github.com/expo/expo/pull/25989) by [@byCedric](https://github.com/byCedric))
+
+## 0.16.4 - 2023-12-19
+
+### 🎉 New features
+
+- Update `run:ios` build warning formatting for SDK 50. ([#25978](https://github.com/expo/expo/pull/25978) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+- Add missing `@expo/image-utils` dependency. ([#25990](https://github.com/expo/expo/pull/25990) by [@byCedric](https://github.com/byCedric))
+- Add missing `find-yarn-workspace-root` dependency. ([#25991](https://github.com/expo/expo/pull/25991) by [@byCedric](https://github.com/byCedric))
+- Add missing `lodash.debounce` dependency. ([#25990](https://github.com/expo/expo/pull/25990) by [@byCedric](https://github.com/byCedric))
+- Add missing `@react-native/dev-middleware` dependency. ([#26000](https://github.com/expo/expo/pull/26000) by [@byCedric](https://github.com/byCedric))
+
+## 0.16.3 — 2023-12-15
+
+### 🐛 Bug fixes
+
+- Invalidate API Route cache whenever any file in the repo changes. ([#25936](https://github.com/expo/expo/pull/25936) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.16.2 — 2023-12-14
 
 _This version does not introduce any user-facing changes._

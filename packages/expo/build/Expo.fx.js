@@ -2,7 +2,7 @@
 import './winter';
 import 'expo-asset';
 import * as Font from 'expo-font';
-import { NativeModulesProxy, Platform } from 'expo-modules-core';
+import { requireOptionalNativeModule, Platform } from 'expo-modules-core';
 import { StyleSheet } from 'react-native';
 import { isRunningInExpoGo } from './environment/ExpoGo';
 import { createErrorHandler } from './errors/ExpoErrorManager';
@@ -11,7 +11,7 @@ if (StyleSheet.setStyleAttributePreprocessor) {
     StyleSheet.setStyleAttributePreprocessor('fontFamily', Font.processFontFamily);
 }
 // Asserts if bare workflow isn't setup correctly.
-if (NativeModulesProxy.ExpoUpdates?.isMissingRuntimeVersion) {
+if (requireOptionalNativeModule('ExpoUpdates')?.isMissingRuntimeVersion) {
     const message = 'expo-updates is installed but there is no runtime or SDK version configured. ' +
         "You'll need to configure one of these two properties in " +
         Platform.select({ ios: 'Expo.plist', android: 'AndroidManifest.xml' }) +

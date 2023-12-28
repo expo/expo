@@ -31,7 +31,9 @@ class LoaderSelectionPolicyFilterAware : LoaderSelectionPolicy {
     // we should load the new update no matter the commitTime
     return if (!SelectionPolicies.matchesFilters(launchedUpdate, filters)) {
       true
-    } else newUpdate.commitTime.after(launchedUpdate.commitTime)
+    } else {
+      newUpdate.commitTime.after(launchedUpdate.commitTime)
+    }
   }
 
   override fun shouldLoadRollBackToEmbeddedDirective(
@@ -54,6 +56,8 @@ class LoaderSelectionPolicyFilterAware : LoaderSelectionPolicy {
     // we should roll back to the embedded update no matter the commitTime
     return if (!SelectionPolicies.matchesFilters(launchedUpdate, filters)) {
       true
-    } else directive.commitTime.after(launchedUpdate.commitTime)
+    } else {
+      directive.commitTime.after(launchedUpdate.commitTime)
+    }
   }
 }

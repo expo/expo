@@ -6,7 +6,6 @@ import androidx.test.platform.app.InstrumentationRegistry
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.codesigning.*
 import expo.modules.updates.manifest.UpdateManifest
-import expo.modules.updates.codesigning.CertificateFixtures
 import expo.modules.updates.codesigning.TestCertificateType
 import expo.modules.updates.codesigning.getTestCertificate
 import io.mockk.every
@@ -27,18 +26,18 @@ class FileDownloaderManifestParsingTest {
     val contentType = "application/json"
     val response = mockk<Response>().apply {
       every { header("content-type") } returns contentType
-      every { headers } returns mapOf("content-type" to contentType).toHeaders()
+      every { headers } returns mapOf("content-type" to contentType, "expo-protocol-version" to "0").toHeaders()
       every { code } returns 200
       every { body } returns ResponseBody.create(
         "application/json; charset=utf-8".toMediaTypeOrNull(),
-        CertificateFixtures.testClassicManifestBody
+        CertificateFixtures.testNewManifestBody
       )
     }
 
     val configuration = UpdatesConfiguration(
       null,
       mapOf(
-        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test"),
+        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test")
       )
     )
 
@@ -46,7 +45,8 @@ class FileDownloaderManifestParsingTest {
     var resultUpdateManifest: UpdateManifest? = null
 
     FileDownloader(context).parseRemoteUpdateResponse(
-      response, configuration,
+      response,
+      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = true
@@ -80,7 +80,7 @@ class FileDownloaderManifestParsingTest {
       )
       .addPart(
         mapOf("Content-Disposition" to "form-data; name=\"manifest\"; filename=\"hello2\"").toHeaders(),
-        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), CertificateFixtures.testClassicManifestBody)
+        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), CertificateFixtures.testNewManifestBody)
       )
       .addPart(
         mapOf("Content-Disposition" to "form-data; name=\"extensions\"; filename=\"hello3\"").toHeaders(),
@@ -96,7 +96,7 @@ class FileDownloaderManifestParsingTest {
 
     val response = mockk<Response>().apply {
       every { header("content-type") } returns contentType
-      every { headers } returns mapOf("content-type" to contentType).toHeaders()
+      every { headers } returns mapOf("content-type" to contentType, "expo-protocol-version" to "0").toHeaders()
       every { code } returns 200
       every { body } returns ResponseBody.create(MultipartBody.MIXED, contentBuffer.readByteArray())
     }
@@ -104,7 +104,7 @@ class FileDownloaderManifestParsingTest {
     val configuration = UpdatesConfiguration(
       null,
       mapOf(
-        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test"),
+        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test")
       )
     )
 
@@ -112,7 +112,8 @@ class FileDownloaderManifestParsingTest {
     var resultUpdateResponse: UpdateResponse? = null
 
     FileDownloader(context).parseRemoteUpdateResponse(
-      response, configuration,
+      response,
+      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = true
@@ -162,7 +163,7 @@ class FileDownloaderManifestParsingTest {
     val configuration = UpdatesConfiguration(
       null,
       mapOf(
-        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test"),
+        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test")
       )
     )
 
@@ -170,7 +171,8 @@ class FileDownloaderManifestParsingTest {
     var resultUpdateResponse: UpdateResponse? = null
 
     FileDownloader(context).parseRemoteUpdateResponse(
-      response, configuration,
+      response,
+      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = true
@@ -220,7 +222,7 @@ class FileDownloaderManifestParsingTest {
       null,
       mapOf(
         UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test"),
-        UpdatesConfiguration.UPDATES_CONFIGURATION_ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE to true,
+        UpdatesConfiguration.UPDATES_CONFIGURATION_ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE to true
       )
     )
 
@@ -228,7 +230,8 @@ class FileDownloaderManifestParsingTest {
     var resultUpdateManifest: UpdateManifest? = null
 
     FileDownloader(context).parseRemoteUpdateResponse(
-      response, configuration,
+      response,
+      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = e
@@ -270,7 +273,7 @@ class FileDownloaderManifestParsingTest {
     val configuration = UpdatesConfiguration(
       null,
       mapOf(
-        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test"),
+        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test")
       )
     )
 
@@ -278,7 +281,8 @@ class FileDownloaderManifestParsingTest {
     var resultUpdateResponse: UpdateResponse? = null
 
     FileDownloader(context).parseRemoteUpdateResponse(
-      response, configuration,
+      response,
+      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = true
@@ -313,7 +317,7 @@ class FileDownloaderManifestParsingTest {
     val configuration = UpdatesConfiguration(
       null,
       mapOf(
-        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test"),
+        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test")
       )
     )
 
@@ -321,7 +325,8 @@ class FileDownloaderManifestParsingTest {
     var resultUpdateResponse: UpdateResponse? = null
 
     FileDownloader(context).parseRemoteUpdateResponse(
-      response, configuration,
+      response,
+      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = true
@@ -352,7 +357,7 @@ class FileDownloaderManifestParsingTest {
     val configuration = UpdatesConfiguration(
       null,
       mapOf(
-        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test"),
+        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test")
       )
     )
 
@@ -360,7 +365,8 @@ class FileDownloaderManifestParsingTest {
     var resultUpdateResponse: UpdateResponse? = null
 
     FileDownloader(context).parseRemoteUpdateResponse(
-      response, configuration,
+      response,
+      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = true
@@ -391,7 +397,7 @@ class FileDownloaderManifestParsingTest {
     val configuration = UpdatesConfiguration(
       null,
       mapOf(
-        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test"),
+        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test")
       )
     )
 
@@ -399,7 +405,8 @@ class FileDownloaderManifestParsingTest {
     var resultUpdateResponse: UpdateResponse? = null
 
     FileDownloader(context).parseRemoteUpdateResponse(
-      response, configuration,
+      response,
+      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = true
@@ -431,7 +438,7 @@ class FileDownloaderManifestParsingTest {
     val configuration = UpdatesConfiguration(
       null,
       mapOf(
-        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test"),
+        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test")
       )
     )
 
@@ -439,7 +446,8 @@ class FileDownloaderManifestParsingTest {
     var resultUpdateManifest: UpdateManifest? = null
 
     FileDownloader(context).parseRemoteUpdateResponse(
-      response, configuration,
+      response,
+      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = e
@@ -482,7 +490,7 @@ class FileDownloaderManifestParsingTest {
       mapOf(
         UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test"),
         UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE to testCertificate,
-        UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_METADATA to mapOf<String, String>(),
+        UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_METADATA to mapOf<String, String>()
       )
     )
 
@@ -490,7 +498,8 @@ class FileDownloaderManifestParsingTest {
     var resultUpdateManifest: UpdateManifest? = null
 
     FileDownloader(context).parseRemoteUpdateResponse(
-      response, configuration,
+      response,
+      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = true
@@ -516,7 +525,7 @@ class FileDownloaderManifestParsingTest {
     val headersMap = mapOf(
       "expo-protocol-version" to "0",
       "expo-sfv-version" to "0",
-      "content-type" to contentType,
+      "content-type" to contentType
     )
 
     val extensions = "{}"
@@ -567,7 +576,7 @@ class FileDownloaderManifestParsingTest {
       mapOf(
         UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test"),
         UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE to testCertificate,
-        UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_METADATA to mapOf<String, String>(),
+        UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_METADATA to mapOf<String, String>()
       )
     )
 
@@ -575,7 +584,8 @@ class FileDownloaderManifestParsingTest {
     var resultUpdateResponse: UpdateResponse? = null
 
     FileDownloader(context).parseRemoteUpdateResponse(
-      response, configuration,
+      response,
+      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = true
@@ -602,7 +612,7 @@ class FileDownloaderManifestParsingTest {
     val headersMap = mapOf(
       "expo-protocol-version" to "0",
       "expo-sfv-version" to "0",
-      "content-type" to contentType,
+      "content-type" to contentType
     )
 
     val context = InstrumentationRegistry.getInstrumentation().targetContext
@@ -622,7 +632,7 @@ class FileDownloaderManifestParsingTest {
       mapOf(
         UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test"),
         UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE to testCertificate,
-        UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_METADATA to mapOf<String, String>(),
+        UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_METADATA to mapOf<String, String>()
       )
     )
 
@@ -630,7 +640,8 @@ class FileDownloaderManifestParsingTest {
     var resultUpdateManifest: UpdateManifest? = null
 
     FileDownloader(context).parseRemoteUpdateResponse(
-      response, configuration,
+      response,
+      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = e
@@ -655,7 +666,7 @@ class FileDownloaderManifestParsingTest {
     val headersMap = mapOf(
       "expo-protocol-version" to "0",
       "expo-sfv-version" to "0",
-      "content-type" to contentType,
+      "content-type" to contentType
     )
 
     val extensions = "{}"
@@ -716,7 +727,7 @@ class FileDownloaderManifestParsingTest {
         UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_METADATA to mapOf(
           CODE_SIGNING_METADATA_KEY_ID_KEY to "ca-root"
         ),
-        UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN to true,
+        UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN to true
       )
     )
 
@@ -724,7 +735,8 @@ class FileDownloaderManifestParsingTest {
     var resultUpdateResponse: UpdateResponse? = null
 
     FileDownloader(context).parseRemoteUpdateResponse(
-      response, configuration,
+      response,
+      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = true
@@ -753,7 +765,7 @@ class FileDownloaderManifestParsingTest {
     val headersMap = mapOf(
       "expo-protocol-version" to "0",
       "expo-sfv-version" to "0",
-      "content-type" to contentType,
+      "content-type" to contentType
     )
 
     val extensions = "{}"
@@ -805,7 +817,7 @@ class FileDownloaderManifestParsingTest {
         UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_METADATA to mapOf(
           CODE_SIGNING_METADATA_KEY_ID_KEY to "ca-root"
         ),
-        UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN to true,
+        UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN to true
       )
     )
 
@@ -813,7 +825,8 @@ class FileDownloaderManifestParsingTest {
     var resultUpdateManifest: UpdateManifest? = null
 
     FileDownloader(context).parseRemoteUpdateResponse(
-      response, configuration,
+      response,
+      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = e
@@ -838,7 +851,7 @@ class FileDownloaderManifestParsingTest {
     val headersMap = mapOf(
       "expo-protocol-version" to "0",
       "expo-sfv-version" to "0",
-      "content-type" to contentType,
+      "content-type" to contentType
     )
 
     val directive = CertificateFixtures.testDirectiveNoUpdateAvailableIncorrectProjectId
@@ -886,7 +899,7 @@ class FileDownloaderManifestParsingTest {
         UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_METADATA to mapOf(
           CODE_SIGNING_METADATA_KEY_ID_KEY to "ca-root"
         ),
-        UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN to true,
+        UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN to true
       )
     )
 
@@ -894,7 +907,8 @@ class FileDownloaderManifestParsingTest {
     var resultUpdateResponse: UpdateResponse? = null
 
     FileDownloader(context).parseRemoteUpdateResponse(
-      response, configuration,
+      response,
+      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = e
@@ -936,7 +950,7 @@ class FileDownloaderManifestParsingTest {
         UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test"),
         UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE to getTestCertificate(TestCertificateType.VALID),
         UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_METADATA to mapOf<String, String>(),
-        UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS to true,
+        UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS to true
       )
     )
 
@@ -944,7 +958,8 @@ class FileDownloaderManifestParsingTest {
     var resultUpdateManifest: UpdateManifest? = null
 
     FileDownloader(context).parseRemoteUpdateResponse(
-      response, configuration,
+      response,
+      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = true

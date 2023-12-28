@@ -53,7 +53,7 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
     return mapOf(
       "installationID" to installationIDHelper.getOrCreateInstallationID(reactApplicationContext),
       "isDevice" to !isRunningOnEmulator,
-      "updatesConfig" to getUpdatesConfig(),
+      "updatesConfig" to getUpdatesConfig()
     )
   }
 
@@ -87,7 +87,7 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
   private fun sanitizeUrlString(url: String): Uri {
     var sanitizedUrl = url.trim()
     // If the url does contain a scheme use "http://"
-    if(!sanitizedUrl.contains("://")) {
+    if (!sanitizedUrl.contains("://")) {
       sanitizedUrl = "http://" + sanitizedUrl
     }
 

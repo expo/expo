@@ -17,8 +17,12 @@ import java.nio.ByteBuffer
 
 @OptIn(ExperimentalGetImage::class)
 class BarcodeAnalyzer(private val lensFacing: CameraType, formats: List<BarcodeType>, val onComplete: (BarCodeScannerResult) -> Unit) : ImageAnalysis.Analyzer {
-  private val barcodeFormats = if (formats.isEmpty()) 0 else formats.map { it.mapToBarcode() }.reduce { acc, it ->
-    acc or it
+  private val barcodeFormats = if (formats.isEmpty()) {
+    0
+  } else {
+    formats.map { it.mapToBarcode() }.reduce { acc, it ->
+      acc or it
+    }
   }
   private var barcodeScannerOptions =
     BarcodeScannerOptions.Builder()

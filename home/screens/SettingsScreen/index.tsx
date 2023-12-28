@@ -9,8 +9,7 @@ import { DeleteAccountSection } from './DeleteAccountSection';
 import { DevMenuGestureSection } from './DevMenuGestureSection';
 import { ThemeSection } from './ThemeSection';
 import { TrackingSection } from './TrackingSection';
-
-import { useHome_CurrentUserActorQuery } from '@/graphql/types';
+import { useHome_CurrentUserActorQuery } from '../../graphql/types';
 
 export function SettingsScreen() {
   const { data } = useHome_CurrentUserActorQuery();

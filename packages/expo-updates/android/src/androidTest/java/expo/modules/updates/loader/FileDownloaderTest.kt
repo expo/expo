@@ -33,23 +33,10 @@ class FileDownloaderTest {
   }
 
   @Test
-  fun testCacheControl_LegacyManifest() {
-    val configMap = mapOf<String, Any>(
-      "updateUrl" to Uri.parse("https://exp.host/@test/test"),
-      "runtimeVersion" to "1.0",
-      "usesLegacyManifest" to true
-    )
-    val config = UpdatesConfiguration(null, configMap)
-    val actual = FileDownloader.createRequestForRemoteUpdate(config, null, context)
-    Assert.assertNull(actual.header("Cache-Control"))
-  }
-
-  @Test
-  fun testCacheControl_NewManifest() {
+  fun testCacheControl() {
     val configMap = mapOf<String, Any>(
       "updateUrl" to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
-      "runtimeVersion" to "1.0",
-      "usesLegacyManifest" to false
+      "runtimeVersion" to "1.0"
     )
     val config = UpdatesConfiguration(null, configMap)
     val actual = FileDownloader.createRequestForRemoteUpdate(config, null, context)
@@ -61,7 +48,7 @@ class FileDownloaderTest {
   fun testExtraHeaders_ObjectTypes() {
     val configMap = mapOf<String, Any>(
       "updateUrl" to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
-      "runtimeVersion" to "1.0",
+      "runtimeVersion" to "1.0"
 
     )
     val config = UpdatesConfiguration(null, configMap)
@@ -131,7 +118,7 @@ class FileDownloaderTest {
   fun testAssetExtraHeaders_ObjectTypes() {
     val configMap = mapOf<String, Any>(
       "updateUrl" to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
-      "runtimeVersion" to "1.0",
+      "runtimeVersion" to "1.0"
     )
 
     val config = UpdatesConfiguration(null, configMap)
@@ -195,7 +182,7 @@ class FileDownloaderTest {
   fun test_downloadAsset_mismatchedAssetHash() {
     val configMap = mapOf<String, Any>(
       UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
-      UpdatesConfiguration.UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY to "1.0",
+      UpdatesConfiguration.UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY to "1.0"
     )
 
     val config = UpdatesConfiguration(null, configMap)
@@ -206,7 +193,7 @@ class FileDownloaderTest {
       expectedHash = "badhash"
     }
 
-    val client = mockk<OkHttpClient>() {
+    val client = mockk<OkHttpClient> {
       every { newCall(any()) } returns mockk {
         every { enqueue(any()) } answers {
           firstArg<Callback>().onResponse(
@@ -224,7 +211,10 @@ class FileDownloaderTest {
     var didSucceed = false
 
     FileDownloader(context, client).downloadAsset(
-      assetEntity, File(context.cacheDir, "test"), config, context,
+      assetEntity,
+      File(context.cacheDir, "test"),
+      config,
+      context,
       object : FileDownloader.AssetDownloadCallback {
         override fun onFailure(e: Exception, assetEntity: AssetEntity) {
           error = e
@@ -244,7 +234,7 @@ class FileDownloaderTest {
   fun test_downloadAsset_nullExpectedAssetHash() {
     val configMap = mapOf<String, Any>(
       UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
-      UpdatesConfiguration.UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY to "1.0",
+      UpdatesConfiguration.UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY to "1.0"
     )
 
     val config = UpdatesConfiguration(null, configMap)
@@ -254,7 +244,7 @@ class FileDownloaderTest {
       extraRequestHeaders = JSONObject().apply { put("expo-platform", "ios") }
     }
 
-    val client = mockk<OkHttpClient>() {
+    val client = mockk<OkHttpClient> {
       every { newCall(any()) } returns mockk {
         every { enqueue(any()) } answers {
           firstArg<Callback>().onResponse(
@@ -272,7 +262,10 @@ class FileDownloaderTest {
     var didSucceed = false
 
     FileDownloader(context, client).downloadAsset(
-      assetEntity, File(context.cacheDir, "test"), config, context,
+      assetEntity,
+      File(context.cacheDir, "test"),
+      config,
+      context,
       object : FileDownloader.AssetDownloadCallback {
         override fun onFailure(e: Exception, assetEntity: AssetEntity) {
           error = e

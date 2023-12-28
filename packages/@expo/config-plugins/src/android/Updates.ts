@@ -75,6 +75,14 @@ export async function applyRuntimeVersionFromConfigAsync(
   stringsJSON: ResourceXML
 ): Promise<ResourceXML> {
   const projectRoot = config.modRequest.projectRoot;
+  return await applyRuntimeVersionFromConfigForProjectRootAsync(projectRoot, config, stringsJSON);
+}
+
+export async function applyRuntimeVersionFromConfigForProjectRootAsync(
+  projectRoot: string,
+  config: ExpoConfigUpdates,
+  stringsJSON: ResourceXML
+): Promise<ResourceXML> {
   const runtimeVersion = await getRuntimeVersionNullableAsync(projectRoot, config, 'android');
   if (runtimeVersion) {
     return setStringItem(

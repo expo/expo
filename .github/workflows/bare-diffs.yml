@@ -7,10 +7,12 @@ on:
     paths:
       - 'templates/expo-template-bare-minimum/**'
       - '.github/workflows/bare-diffs.yml'
+      - 'docs/public/static/diffs/template-bare-minimum/**'
   pull_request:
     paths:
       - 'templates/expo-template-bare-minimum/**'
       - '.github/workflows/bare-diffs.yml'
+      - 'docs/public/static/diffs/template-bare-minimum/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}

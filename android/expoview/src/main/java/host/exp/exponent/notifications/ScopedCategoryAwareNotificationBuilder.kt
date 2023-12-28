@@ -19,7 +19,8 @@ class ScopedCategoryAwareNotificationBuilder(
     val content = notificationContent
     val scopedCategoryIdentifier: String = if (requester is ScopedNotificationRequest) {
       ScopedNotificationsIdUtils.getScopedCategoryIdRaw(
-        requester.experienceScopeKeyString!!, content.categoryId
+        requester.experienceScopeKeyString!!,
+        content.categoryId
       )
     } else {
       content.categoryId
