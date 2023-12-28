@@ -8,10 +8,12 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReactContext
 import expo.modules.devlauncher.DevLauncherController
 import expo.modules.manifests.core.Manifest
+import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
 import expo.modules.updatesinterface.UpdatesInterface
 import kotlinx.coroutines.CoroutineScope
 
-interface DevLauncherControllerInterface {
+interface DevLauncherControllerInterface :
+  UpdatesInterfaceCallbacks {
   suspend fun loadApp(url: Uri, mainActivity: ReactActivity? = null)
   suspend fun loadApp(url: Uri, projectUrl: Uri?, mainActivity: ReactActivity? = null)
   fun onAppLoaded(context: ReactContext)

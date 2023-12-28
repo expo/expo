@@ -85,7 +85,7 @@ index 0e77904834..0000000000
 -    ],
 -)
 diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
-index f0293fe400..52d31e3c5e 100644
+index f0293fe400..a265c80fa9 100644
 --- a/templates/expo-template-bare-minimum/android/app/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/app/build.gradle
 @@ -1,235 +1,97 @@
@@ -300,7 +300,7 @@ index f0293fe400..52d31e3c5e 100644
          versionCode 1
          versionName "1.0"
 -        buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
--
+ 
 -        if (isNewArchitectureEnabled()) {
 -            // We configure the NDK build only if you decide to opt-in for the New Architecture.
 -            externalNativeBuild {
@@ -318,7 +318,7 @@ index f0293fe400..52d31e3c5e 100644
 -                    // Make sure this target name is the same you specify inside the
 -                    // src/main/jni/Android.mk file for the `LOCAL_MODULE` variable.
 -                    targets "helloworld_appmodules"
- 
+-
 -                    // Fix for windows limit on number of character in file paths and in command lines
 -                    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
 -                        arguments "NDK_APP_SHORT_COMMANDS=true"
@@ -412,7 +412,7 @@ index f0293fe400..52d31e3c5e 100644
  }
  
  // Apply static values from `gradle.properties` to the `android.packagingOptions`
-@@ -289,10 +137,8 @@ android {
+@@ -289,88 +137,35 @@ android {
  }
  
  dependencies {
@@ -425,30 +425,29 @@ index f0293fe400..52d31e3c5e 100644
  
      def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
      def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
-@@ -301,76 +147,32 @@ dependencies {
- 
-     // If your app supports Android versions before Ice Cream Sandwich (API level 14)
-     if (isGifEnabled || isWebpEnabled) {
+     def isWebpAnimatedEnabled = (findProperty('expo.webp.animated') ?: "") == "true";
+-    def frescoVersion = rootProject.ext.frescoVersion
+-
+-    // If your app supports Android versions before Ice Cream Sandwich (API level 14)
+-    if (isGifEnabled || isWebpEnabled) {
 -        implementation "com.facebook.fresco:fresco:${frescoVersion}"
 -        implementation "com.facebook.fresco:imagepipeline-okhttp3:${frescoVersion}"
-+        implementation("com.facebook.fresco:fresco:${frescoVersion}")
-+        implementation("com.facebook.fresco:imagepipeline-okhttp3:${frescoVersion}")
-     }
+-    }
  
      if (isGifEnabled) {
          // For animated gif support
 -        implementation "com.facebook.fresco:animated-gif:${frescoVersion}"
-+        implementation("com.facebook.fresco:animated-gif:${frescoVersion}")
++        implementation("com.facebook.fresco:animated-gif:${reactAndroidLibs.versions.fresco.get()}")
      }
  
      if (isWebpEnabled) {
          // For webp support
 -        implementation "com.facebook.fresco:webpsupport:${frescoVersion}"
-+        implementation("com.facebook.fresco:webpsupport:${frescoVersion}")
++        implementation("com.facebook.fresco:webpsupport:${reactAndroidLibs.versions.fresco.get()}")
          if (isWebpAnimatedEnabled) {
              // Animated webp support
 -            implementation "com.facebook.fresco:animated-webp:${frescoVersion}"
-+            implementation("com.facebook.fresco:animated-webp:${frescoVersion}")
++            implementation("com.facebook.fresco:animated-webp:${reactAndroidLibs.versions.fresco.get()}")
          }
      }
  
@@ -1535,10 +1534,10 @@ index f35d996202..73b37e4d99 100644
            The item below with state_pressed="false" and state_focused="false" causes a NullPointerException.
            NullPointerException:tempt to invoke virtual method 'android.graphics.drawable.Drawable android.graphics.drawable.Drawable$ConstantState.newDrawable(android.content.res.Resources)'
 diff --git a/templates/expo-template-bare-minimum/android/build.gradle b/templates/expo-template-bare-minimum/android/build.gradle
-index f259b31a11..9da06cc296 100644
+index f259b31a11..02a88dad0a 100644
 --- a/templates/expo-template-bare-minimum/android/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/build.gradle
-@@ -1,72 +1,41 @@
+@@ -1,72 +1,40 @@
 -import org.apache.tools.ant.taskdefs.condition.Os
 -
  // Top-level build file where you can add configuration options common to all sub-projects/modules.
@@ -1553,10 +1552,10 @@ index f259b31a11..9da06cc296 100644
 -        if (findProperty('android.kotlinVersion')) {
 -            kotlinVersion = findProperty('android.kotlinVersion')
 -        }
+-        frescoVersion = findProperty('expo.frescoVersion') ?: '2.5.0'
 +        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '34')
 +        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
 +        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.8.10'
-         frescoVersion = findProperty('expo.frescoVersion') ?: '2.5.0'
  
 -        if (System.properties['os.arch'] == 'aarch64') {
 -            // For M1 Users we need to use the NDK 24 which added support for aarch64
@@ -1835,10 +1834,20 @@ index ac1b06f938..53a6b238d4 100644
  :mainEnd
  if "%OS%"=="Windows_NT" endlocal
 diff --git a/templates/expo-template-bare-minimum/android/settings.gradle b/templates/expo-template-bare-minimum/android/settings.gradle
-index b3332319f9..17ab7a41d7 100644
+index b3332319f9..0fcba3d9bb 100644
 --- a/templates/expo-template-bare-minimum/android/settings.gradle
 +++ b/templates/expo-template-bare-minimum/android/settings.gradle
-@@ -3,15 +3,8 @@ rootProject.name = 'HelloWorld'
+@@ -1,17 +1,18 @@
+ rootProject.name = 'HelloWorld'
+ 
++dependencyResolutionManagement {
++  versionCatalogs {
++    reactAndroidLibs {
++      from(files(new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), "../gradle/libs.versions.toml")))
++    }
++  }
++}
++
  apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle");
  useExpoModules()
  
@@ -2214,7 +2223,7 @@ index a6e13e11ab..37d415b57d 100644
  #else
    return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
  #endif
-@@ -124,43 +59,4 @@ - (void)application:(UIApplication *)application didReceiveRemoteNotification:(N
+@@ -124,43 +59,4 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
    return [super application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
  }
  
@@ -2471,7 +2480,7 @@ index 9430b0f9b6..07c9fce65d 100644
 +
 +module.exports = config;
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index d5ca09a584..b0d7128143 100644
+index d5ca09a584..df471f5854 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -2479,7 +2488,7 @@ index d5ca09a584..b0d7128143 100644
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "46.0.37",
-+  "version": "50.0.11",
++  "version": "50.0.21",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -2494,10 +2503,10 @@ index d5ca09a584..b0d7128143 100644
 -    "react-dom": "18.0.0",
 -    "react-native": "0.69.9",
 -    "react-native-web": "~0.18.7"
-+    "expo": "~50.0.0-beta.0",
-+    "expo-status-bar": "~1.11.0",
++    "expo": "~50.0.0-preview.7",
++    "expo-status-bar": "~1.11.1",
 +    "react": "18.2.0",
-+    "react-native": "0.73.0"
++    "react-native": "0.73.1"
    },
    "devDependencies": {
 -    "@babel/core": "^7.12.9"

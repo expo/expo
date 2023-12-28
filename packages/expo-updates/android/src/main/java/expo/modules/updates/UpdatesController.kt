@@ -4,6 +4,9 @@ import android.content.Context
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactNativeHost
 import expo.modules.updates.loader.LoaderTask
+import expo.modules.updates.logging.UpdatesErrorCode
+import expo.modules.updates.logging.UpdatesLogger
+import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
 
 /**
  * Main entry point to expo-updates. Singleton that keeps track of updates state, holds references
@@ -20,6 +23,7 @@ import expo.modules.updates.loader.LoaderTask
 class UpdatesController {
   companion object {
     private var singletonInstance: IUpdatesController? = null
+
     @JvmStatic val instance: IUpdatesController
       get() {
         return checkNotNull(singletonInstance) { "UpdatesController.instance was called before the module was initialized" }
@@ -35,16 +39,40 @@ class UpdatesController {
           null
         }
 
-        singletonInstance = if (UpdatesConfiguration.canCreateValidConfiguration(context, configuration) && updatesDirectory != null) {
+        val updatesConfigurationValidationResult = UpdatesConfiguration.getUpdatesConfigurationValidationResult(context, configuration)
+        singletonInstance = if (updatesConfigurationValidationResult == UpdatesConfigurationValidationResult.VALID && updatesDirectory != null) {
           val updatesConfiguration = UpdatesConfiguration(context, null)
           EnabledUpdatesController(context, updatesConfiguration, updatesDirectory)
         } else {
+          val logger = UpdatesLogger(context)
+          when (updatesConfigurationValidationResult) {
+            UpdatesConfigurationValidationResult.VALID -> {
+              // this means there was a storage error
+              logger.error(
+                "The expo-updates system is disabled due to a storage access error: ${updatesDirectoryException?.message ?: "Unknown Error"}",
+                UpdatesErrorCode.InitializationError
+              )
+            }
+            UpdatesConfigurationValidationResult.INVALID_NOT_ENABLED -> logger.warn(
+              "The expo-updates system is explicitly disabled. To enable it, set the enabled setting to true.",
+              UpdatesErrorCode.InitializationError
+            )
+            UpdatesConfigurationValidationResult.INVALID_MISSING_URL -> logger.warn(
+              "The expo-updates system is disabled due to an invalid configuration. Ensure a valid URL is supplied.",
+              UpdatesErrorCode.InitializationError
+            )
+            UpdatesConfigurationValidationResult.INVALID_MISSING_RUNTIME_VERSION -> logger.warn(
+              "The expo-updates system is disabled due to an invalid configuration. Ensure a runtime version is supplied.",
+              UpdatesErrorCode.InitializationError
+            )
+          }
+
           DisabledUpdatesController(context, updatesDirectoryException, UpdatesConfiguration.isMissingRuntimeVersion(context, configuration))
         }
       }
     }
 
-    @JvmStatic fun initializeAsDevLauncherWithoutStarting(context: Context): UpdatesDevLauncherController {
+    @JvmStatic fun initializeAsDevLauncherWithoutStarting(context: Context, callbacks: UpdatesInterfaceCallbacks): UpdatesDevLauncherController {
       check(singletonInstance == null) { "UpdatesController must not be initialized prior to calling initializeAsDevLauncherWithoutStarting" }
 
       var updatesDirectoryException: Exception? = null
@@ -55,7 +83,7 @@ class UpdatesController {
         null
       }
 
-      val initialUpdatesConfiguration = if (UpdatesConfiguration.canCreateValidConfiguration(context, null)) {
+      val initialUpdatesConfiguration = if (UpdatesConfiguration.getUpdatesConfigurationValidationResult(context, null) == UpdatesConfigurationValidationResult.VALID) {
         UpdatesConfiguration(context, null)
       } else {
         null
@@ -65,7 +93,8 @@ class UpdatesController {
         initialUpdatesConfiguration,
         updatesDirectory,
         updatesDirectoryException,
-        UpdatesConfiguration.isMissingRuntimeVersion(context, null)
+        UpdatesConfiguration.isMissingRuntimeVersion(context, null),
+        callbacks
       )
       singletonInstance = instance
       return instance

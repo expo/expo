@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "50.0.0-preview.0",
+  "version": "50.0.0-preview.4",
   "description": "The Expo SDK",
   "main": "build/Expo.js",
   "module": "build/Expo.js",
@@ -60,18 +60,18 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.20.0",
-    "@expo/cli": "0.16.0",
-    "@expo/config": "8.5.0",
-    "@expo/config-plugins": "7.8.0",
-    "@expo/metro-config": "0.16.0",
+    "@expo/cli": "0.16.3",
+    "@expo/config": "8.5.1",
+    "@expo/config-plugins": "7.8.1",
+    "@expo/metro-config": "0.17.0",
     "@expo/vector-icons": "^13.0.0",
     "babel-preset-expo": "~10.0.0",
-    "expo-asset": "~9.0.0",
-    "expo-file-system": "~16.0.0",
+    "expo-asset": "~9.0.1",
+    "expo-file-system": "~16.0.1",
     "expo-font": "~11.10.0",
     "expo-keep-awake": "~12.8.0",
     "expo-modules-autolinking": "1.9.0",
-    "expo-modules-core": "1.11.0",
+    "expo-modules-core": "1.11.2",
     "fbemitter": "^3.0.0",
     "whatwg-url-without-unicode": "8.0.0-3"
   },
@@ -81,6 +81,6 @@
     "expo-module-scripts": "^3.4.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "0.73.0"
+    "react-native": "0.73.1"
   }
 }

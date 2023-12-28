@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.database.ContentObserver
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -35,7 +36,7 @@ class ScreenshotEventEmitter(val context: Context, moduleRegistry: ModuleRegistr
       override fun onChange(selfChange: Boolean, uri: Uri?) {
         super.onChange(selfChange, uri)
         if (isListening) {
-          if (!hasReadExternalStoragePermission(context)) {
+          if (!hasPermissions(context)) {
             Log.e("expo-screen-capture", "Could not listen for screenshots, do not have READ_EXTERNAL_STORAGE permission.")
             return
           }
@@ -62,7 +63,12 @@ class ScreenshotEventEmitter(val context: Context, moduleRegistry: ModuleRegistr
     // Do nothing
   }
 
-  private fun hasReadExternalStoragePermission(context: Context): Boolean {
+  private fun hasPermissions(context: Context): Boolean {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+      return ContextCompat.checkSelfPermission(context, permission.DETECT_SCREEN_CAPTURE) == PackageManager.PERMISSION_GRANTED
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      return ContextCompat.checkSelfPermission(context, permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED
+    }
     return ContextCompat.checkSelfPermission(context, permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
   }
 
@@ -86,7 +92,8 @@ class ScreenshotEventEmitter(val context: Context, moduleRegistry: ModuleRegistr
   }
 
   private fun isPathOfNewScreenshot(path: String): Boolean {
-    if (!path.lowercase().contains("screenshot")) {
+    // Ignore paths that are not screenshots and pending screenshots
+    if (!path.lowercase().contains("screenshot") || path.lowercase().contains(".pending")) {
       return false
     }
     // Cannot check that the onChange event is for an insert operation until API level 30

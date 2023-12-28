@@ -65,11 +65,6 @@ export async function bundleApiRoute(
   return route;
 }
 
-export async function rebundleApiRoute(
-  projectRoot: string,
-  filepath: string,
-  options: ApiRouteOptions
-) {
-  pendingRouteOperations.delete(filepath);
-  return bundleApiRoute(projectRoot, filepath, options);
+export async function invalidateApiRouteCache() {
+  pendingRouteOperations.clear();
 }

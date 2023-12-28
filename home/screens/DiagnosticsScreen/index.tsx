@@ -13,11 +13,10 @@ import { DiagnosticButton } from './DiagnosticsButton';
 import GeofencingScreen from './GeofencingDiagnosticsScreen';
 import LocationDiagnosticsScreen from './LocationDiagnosticsScreen';
 import ScrollView from '../../components/NavigationScrollView';
+import { ColorTheme } from '../../constants/Colors';
 import { DiagnosticsStackRoutes } from '../../navigation/Navigation.types';
+import defaultNavigationOptions from '../../navigation/defaultNavigationOptions';
 import Environment from '../../utils/Environment';
-
-import { ColorTheme } from '@/constants/Colors';
-import defaultNavigationOptions from '@/navigation/defaultNavigationOptions';
 
 function useThemeName() {
   const theme = useTheme();

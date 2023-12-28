@@ -1,6 +1,6 @@
 {
   "name": "@expo/config-plugins",
-  "version": "7.8.0",
+  "version": "7.8.1",
   "description": "A library for Expo config plugins",
   "main": "build/index.js",
   "scripts": {
@@ -47,6 +47,7 @@
     "resolve-from": "^5.0.0",
     "semver": "^7.5.3",
     "slash": "^3.0.0",
+    "slugify": "^1.6.6",
     "xcode": "^3.0.1",
     "xml2js": "0.6.0"
   },

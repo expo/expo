@@ -13,6 +13,7 @@ data class ExperienceKey(
 
   companion object {
     @Throws(JSONException::class)
-    @JvmStatic fun fromManifest(manifest: Manifest) = ExperienceKey(manifest.getScopeKey())
+    @JvmStatic
+    fun fromManifest(manifest: Manifest) = ExperienceKey(manifest.getScopeKey())
   }
 }

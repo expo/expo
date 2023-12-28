@@ -84,7 +84,6 @@ class ClipboardModuleTest {
 
   @Test
   fun `setStringAsync should support HTML`() = withClipboardMock {
-
     module.setStringAsync(
       "<p>hello</p>",
       SetStringOptions().apply {

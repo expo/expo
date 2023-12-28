@@ -66,7 +66,7 @@ android {
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
     versionCode 221
-    versionName '2.30.2'
+    versionName '2.30.5'
     // END VERSIONS
 
     multiDexEnabled true
@@ -314,11 +314,6 @@ dependencies {
   // END_SDK_UNVERSIONED
 
   // ADD_NEW_SDKS_HERE
-
-
-  // BEGIN_SDK_49
-  versionedImplementation(project(':expoview-abi49_0_0'))
-  // END_SDK_49
 }
 
 // This has to be down here for some reason

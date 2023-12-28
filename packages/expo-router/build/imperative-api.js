@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.router = void 0;
 const router_store_1 = require("./global-state/router-store");
 exports.router = {
+    navigate: (href) => router_store_1.store.navigate(href),
     push: (href) => router_store_1.store.push(href),
     replace: (href) => router_store_1.store.replace(href),
     back: () => router_store_1.store.goBack(),

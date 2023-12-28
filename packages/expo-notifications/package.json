@@ -1,6 +1,6 @@
 {
   "name": "expo-notifications",
-  "version": "0.27.0",
+  "version": "0.27.1",
   "description": "Notifications module",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -44,12 +44,10 @@
     "badgin": "^1.1.5",
     "expo-application": "~5.8.0",
     "expo-constants": "~15.4.0",
-    "fs-extra": "^9.1.0",
-    "uuid": "^3.4.0"
+    "fs-extra": "^9.1.0"
   },
   "devDependencies": {
     "@types/node-fetch": "^2.5.7",
-    "@types/uuid": "^3.4.7",
     "expo-module-scripts": "^3.0.0",
     "memfs": "^3.2.0",
     "node-fetch": "^2.6.7"

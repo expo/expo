@@ -68,6 +68,15 @@ public final class NewUpdate: Update {
       processedAssets.append(asset)
     }
 
+    var isDevelopmentMode: Bool = false
+    var status: UpdateStatus
+    if manifest.isDevelopmentMode() {
+      isDevelopmentMode = true
+      status = UpdateStatus.StatusDevelopment
+    } else {
+      status = UpdateStatus.StatusPending
+    }
+
     return Update(
       manifest: manifest,
       config: config,
@@ -77,8 +86,8 @@ public final class NewUpdate: Update {
       commitTime: RCTConvert.nsDate(commitTime),
       runtimeVersion: runtimeVersion,
       keep: true,
-      status: UpdateStatus.StatusPending,
-      isDevelopmentMode: false,
+      status: status,
+      isDevelopmentMode: isDevelopmentMode,
       assetsFromManifest: processedAssets
     )
   }

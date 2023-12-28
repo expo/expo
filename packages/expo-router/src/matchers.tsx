@@ -10,6 +10,11 @@ export function matchDeepDynamicRouteName(name: string): string | undefined {
   return name.match(/^\[\.\.\.([^/]+?)\]$/)?.[1];
 }
 
+/** Test `/` -> `page` */
+export function testNotFound(name: string): boolean {
+  return /\+not-found$/.test(name);
+}
+
 /** Match `(page)` -> `page` */
 export function matchGroupName(name: string): string | undefined {
   return name.match(/^(?:[^\\(\\)])*?\(([^\\/]+)\).*?$/)?.[1];

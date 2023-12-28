@@ -156,6 +156,7 @@ const general = [
         makePage('workflow/common-development-errors.mdx'),
         makePage('workflow/android-studio-emulator.mdx'),
         makePage('workflow/ios-simulator.mdx'),
+        makePage('guides/new-architecture.mdx'),
       ],
       { expanded: false }
     ),
@@ -234,6 +235,7 @@ const general = [
     makePage('build/updates.mdx'),
     makePage('build/building-on-ci.mdx'),
     makePage('build/building-from-github.mdx'),
+    makePage('build/orbit.mdx'),
     makeGroup(
       'App Signing',
       [

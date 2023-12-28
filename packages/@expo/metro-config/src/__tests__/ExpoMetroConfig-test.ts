@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 
-import { getDefaultConfig, loadAsync } from '../ExpoMetroConfig';
+import { getDefaultConfig } from '../ExpoMetroConfig';
 
 const projectRoot = '/';
 const consoleError = console.error;
@@ -52,34 +52,5 @@ describe(getDefaultConfig, () => {
     expect(getDefaultConfig(projectRoot).resolver?.sourceExts).toEqual(
       expect.not.arrayContaining(['expo.js'])
     );
-  });
-});
-
-describe(loadAsync, () => {
-  beforeEach(() => {
-    mockProject();
-  });
-  afterEach(() => {
-    vol.reset();
-  });
-  it('adds runtime options to the default configuration', async () => {
-    const options = {
-      maxWorkers: 10,
-      resetCache: true,
-      reporter: { update() {} },
-      sourceExts: ['yml', 'toml', 'json'],
-      assetExts: ['json'],
-    };
-    const config = await loadAsync(projectRoot, options);
-
-    expect(config).toMatchObject({
-      maxWorkers: options.maxWorkers,
-      resetCache: options.resetCache,
-      reporter: options.reporter,
-      resolver: {
-        sourceExts: options.sourceExts,
-        assetExts: options.assetExts,
-      },
-    });
   });
 });

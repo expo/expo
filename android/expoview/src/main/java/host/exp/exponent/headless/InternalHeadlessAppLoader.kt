@@ -235,7 +235,7 @@ class InternalHeadlessAppLoader(private val context: Context) :
       expoPackages = extraExpoPackages,
       exponentPackageDelegate = delegate.exponentPackageDelegate,
       manifest = manifest!!,
-      singletonModules = ExponentPackage.getOrCreateSingletonModules(context, manifest, extraExpoPackages),
+      singletonModules = ExponentPackage.getOrCreateSingletonModules(context, manifest, extraExpoPackages)
     )
 
     val versionedUtils = RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion!!)
@@ -288,11 +288,11 @@ class InternalHeadlessAppLoader(private val context: Context) :
       val uri = Uri.parse(manifestUrl)
       val host = uri.host
       return if (host != null && (
-        host == "exp.host" || host == "expo.io" || host == "exp.direct" || host == "expo.test" ||
-          host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(
-            ".expo.test"
+          host == "exp.host" || host == "expo.io" || host == "exp.direct" || host == "expo.test" ||
+            host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(
+              ".expo.test"
+            )
           )
-        )
       ) {
         val pathSegments = uri.pathSegments
         val builder = uri.buildUpon()

@@ -164,6 +164,6 @@ class ExponentSharedPreferences constructor(val context: Context) {
     SHOULD_NOT_USE_KERNEL_CACHE("should_not_use_kernel_cache"),
     KERNEL_REVISION_ID("kernel_revision_id"),
     EXPO_AUTH_SESSION("expo_auth_session"),
-    OKHTTP_CACHE_VERSION_KEY("okhttp_cache_version"),
+    OKHTTP_CACHE_VERSION_KEY("okhttp_cache_version")
   }
 }

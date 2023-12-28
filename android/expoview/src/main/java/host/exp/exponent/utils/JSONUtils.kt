@@ -9,7 +9,8 @@ import java.util.HashMap
 
 object JSONUtils {
   @Throws(JSONException::class)
-  @JvmStatic fun getJSONString(item: Any): String {
+  @JvmStatic
+  fun getJSONString(item: Any): String {
     if (item is HashMap<*, *>) {
       return getJSONFromHashMap(item).toString()
     } else if (item is ArrayList<*>) {
