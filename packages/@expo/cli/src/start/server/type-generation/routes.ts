@@ -478,9 +478,11 @@ declare module "expo-router" {
    * Expo Router Exports *
    ***********************/
 
-  export type Router = Omit<OriginalRouter, 'push' | 'replace' | 'setParams'> & {
-    /** Navigate to the provided href. */
+  export type Router = Omit<OriginalRouter, 'push' | 'navigate' | 'replace' | 'setParams'> & {
+    /** Navigate to the provided href using a push operation if possible. */
     push: <T>(href: Href<T>) => void;
+    /** Navigate to the provided href. */
+    navigate: <T>(href: Href<T>) => void;
     /** Navigate to route without appending to the history. */
     replace: <T>(href: Href<T>) => void;
     /** Update the current route query params. */
