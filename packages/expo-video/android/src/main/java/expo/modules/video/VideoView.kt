@@ -3,6 +3,7 @@ package expo.modules.video
 import android.content.Context
 import android.content.Intent
 import android.view.ViewGroup
+import android.widget.ImageButton
 import androidx.media3.ui.PlayerView
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ExpoView
@@ -29,6 +30,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
 
   init {
     VideoViewManager.addVideoView(this)
+    playerView.setFullscreenButtonClickListener { enterFullscreen() }
     addView(
       playerView,
       ViewGroup.LayoutParams(
@@ -46,6 +48,9 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   }
 
   fun exitFullscreen() {
+    // Fullscreen uses a different PlayerView instance, because of that we need to manually update the non-fullscreen player icon after exiting
+    val fullScreenButton: ImageButton = playerView.findViewById(androidx.media3.ui.R.id.exo_fullscreen)
+    fullScreenButton.setImageResource(androidx.media3.ui.R.drawable.exo_icon_fullscreen_enter)
     videoPlayer?.changePlayerView(playerView)
   }
 

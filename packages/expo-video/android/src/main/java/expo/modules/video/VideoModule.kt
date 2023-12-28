@@ -1,10 +1,8 @@
 package expo.modules.video
 
 import android.app.Activity
-import android.view.View
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackParameters
-import androidx.media3.ui.DefaultTimeBar
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -37,16 +35,7 @@ class VideoModule : Module() {
 
       Prop("requiresLinearPlayback") { view: VideoView, requiresLinearPlayback: Boolean? ->
         val linearPlayback = requiresLinearPlayback ?: false
-        view.playerView.setShowFastForwardButton(!linearPlayback)
-        view.playerView.setShowRewindButton(!linearPlayback)
-        view.playerView.setShowPreviousButton(!linearPlayback)
-        view.playerView.setShowNextButton(!linearPlayback)
-
-        // TODO: Make the requiresLinearPlayback hide only the scrubber instead of the whole progress bar. Maybe use custom layout for the player as the scrubber is not available?
-        val progressBar = view.playerView.findViewById<View>(androidx.media3.ui.R.id.exo_progress)
-        if (progressBar is DefaultTimeBar) {
-          progressBar.visibility = if (linearPlayback) View.GONE else View.VISIBLE
-        }
+        view.playerView.applyRequiresLinearPlayback(linearPlayback)
         view.videoPlayer?.requiresLinearPlayback = linearPlayback
       }
     }

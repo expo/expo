@@ -5,12 +5,15 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowInsetsController
+import android.widget.ImageButton
 import androidx.media3.ui.PlayerView
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class FullscreenActivity : Activity() {
   private lateinit var mContentView: View
   private lateinit var videoViewId: String
+  private lateinit var playerView: PlayerView
+  private lateinit var videoView: VideoView
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -20,25 +23,32 @@ class FullscreenActivity : Activity() {
       return
     }
 
-    val playerView = findViewById<PlayerView>(R.id.player_view)
-
+    playerView = findViewById(R.id.player_view)
     videoViewId = intent.getStringExtra(VideoViewManager.INTENT_PLAYER_KEY) ?: run {
       // TODO: throw an exception here
       return
     }
-    val videoPlayer = VideoViewManager.getVideoView(videoViewId)?.videoPlayer
-    videoPlayer?.changePlayerView(playerView)
+    videoView = VideoViewManager.getVideoView(videoViewId)
+    videoView.videoPlayer?.changePlayerView(playerView)
   }
 
   override fun onPostCreate(savedInstanceState: Bundle?) {
     super.onPostCreate(savedInstanceState)
-
     hideStatusBar()
+    setupFullscreenButton()
+    playerView.applyRequiresLinearPlayback(videoView.videoPlayer?.requiresLinearPlayback ?: false)
   }
 
   override fun finish() {
     super.finish()
-    VideoViewManager.getVideoView(videoViewId)?.exitFullscreen()
+    VideoViewManager.getVideoView(videoViewId).exitFullscreen()
+  }
+
+  private fun setupFullscreenButton() {
+    playerView.setFullscreenButtonClickListener { finish() }
+
+    val fullScreenButton: ImageButton = playerView.findViewById(androidx.media3.ui.R.id.exo_fullscreen)
+    fullScreenButton.setImageResource(androidx.media3.ui.R.drawable.exo_icon_fullscreen_exit)
   }
 
   private fun hideStatusBar() {
