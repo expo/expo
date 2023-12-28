@@ -1,6 +1,6 @@
 package expo.modules.video
 
-import android.view.View
+import android.graphics.Color
 import androidx.media3.ui.DefaultTimeBar
 import androidx.media3.ui.PlayerView
 
@@ -10,10 +10,17 @@ internal fun PlayerView.applyRequiresLinearPlayback(requireLinearPlayback: Boole
   setShowRewindButton(!requireLinearPlayback)
   setShowPreviousButton(!requireLinearPlayback)
   setShowNextButton(!requireLinearPlayback)
+  setTimeBarInteractive(requireLinearPlayback)
+}
 
-  // TODO: Make the requiresLinearPlayback hide only the scrubber instead of the whole progress bar. Maybe use custom layout for the player as the scrubber is not available?
-  val progressBar = findViewById<View>(androidx.media3.ui.R.id.exo_progress)
-  if (progressBar is DefaultTimeBar) {
-    progressBar.visibility = if (requireLinearPlayback) View.GONE else View.VISIBLE
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
+internal fun PlayerView.setTimeBarInteractive(interactive: Boolean) {
+  val timeBar = findViewById<DefaultTimeBar>(androidx.media3.ui.R.id.exo_progress)
+  if (interactive) {
+    timeBar?.setScrubberColor(Color.TRANSPARENT)
+    timeBar?.isEnabled = false
+  } else {
+    timeBar?.setScrubberColor(Color.WHITE)
+    timeBar?.isEnabled = true
   }
 }

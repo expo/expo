@@ -13,7 +13,7 @@ import java.util.UUID
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class VideoView(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
   val id: String = UUID.randomUUID().toString()
-  val playerView = PlayerView(context.applicationContext)
+  val playerView: PlayerView = PlayerView(context.applicationContext)
   var videoPlayer: VideoPlayer? = null
     set(videoPlayer) {
       playerView.player = videoPlayer?.player
@@ -61,5 +61,12 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     // https://github.com/facebook/react-native/blob/d19afc73f5048f81656d0b4424232ce6d69a6368/ReactAndroid/src/main/java/com/facebook/react/views/toolbar/ReactToolbar.java#L166
     // This fixes some layout issues with the exoplayer which caused the resizeMode to not work properly
     post(mLayoutRunnable)
+  }
+
+  override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+    super.onLayout(changed, l, t, r, b)
+    // On every re-layout ExoPlayer resets the timeBar to be enabled.
+    // We need to disable it to keep scrubbing impossible.
+    playerView.setTimeBarInteractive(videoPlayer?.requiresLinearPlayback ?: true)
   }
 }
