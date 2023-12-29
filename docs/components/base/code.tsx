@@ -6,8 +6,6 @@ import { Language, Prism } from 'prism-react-renderer';
 import * as React from 'react';
 import tippy, { roundArrow } from 'tippy.js';
 
-import { installLanguages } from './languages';
-
 import { useCodeBlockSettingsContext } from '~/providers/CodeBlockSettingsProvider';
 import { Snippet } from '~/ui/components/Snippet/Snippet';
 import { SnippetContent } from '~/ui/components/Snippet/SnippetContent';
@@ -34,7 +32,6 @@ function initPrism() {
 }
 
 initPrism();
-installLanguages(Prism);
 
 const attributes = {
   'data-text': true,
@@ -62,7 +59,7 @@ function replaceXmlCommentsWithAnnotations(value: string) {
       /<span class="token (comment|plain-text)">&lt;!-- @info (.*?)--><\/span>\s*/g,
       (match, type, content) => {
         return content
-          ? `<span class="code-annotation with-tooltip" data-tippy-content="${this.escapeHtml(
+          ? `<span class="code-annotation with-tooltip" data-tippy-content="${escapeHtml(
               content
             )}">`
           : '<span class="code-annotation">';
@@ -71,7 +68,7 @@ function replaceXmlCommentsWithAnnotations(value: string) {
     .replace(
       /<span class="token (comment|plain-text)">&lt;!-- @hide (.*?)--><\/span>\s*/g,
       (match, type, content) => {
-        return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${this.escapeHtml(
+        return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${escapeHtml(
           content
         )}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
       }
@@ -85,7 +82,7 @@ function replaceHashCommentsWithAnnotations(value: string) {
       /<span class="token (comment|plain-text)"># @info (.*?)#<\/span>\s*/g,
       (match, type, content) => {
         return content
-          ? `<span class="code-annotation with-tooltip" data-tippy-content="${this.escapeHtml(
+          ? `<span class="code-annotation with-tooltip" data-tippy-content="${escapeHtml(
               content
             )}">`
           : '<span class="code-annotation">';
@@ -94,7 +91,7 @@ function replaceHashCommentsWithAnnotations(value: string) {
     .replace(
       /<span class="token (comment|plain-text)"># @hide (.*?)#<\/span>\s*/g,
       (match, type, content) => {
-        return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${this.escapeHtml(
+        return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${escapeHtml(
           content
         )}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
       }
@@ -108,7 +105,7 @@ function replaceSlashCommentsWithAnnotations(value: string) {
       /<span class="token (comment|plain-text)">([\n\r\s]*)\/\* @info (.*?)\*\/[\n\r\s]*<\/span>\s*/g,
       (match, type, beforeWhitespace, content) => {
         return content
-          ? `${beforeWhitespace}<span class="code-annotation with-tooltip" data-tippy-content="${this.escapeHtml(
+          ? `${beforeWhitespace}<span class="code-annotation with-tooltip" data-tippy-content="${escapeHtml(
               content
             )}">`
           : `${beforeWhitespace}<span class="code-annotation">`;
@@ -117,7 +114,7 @@ function replaceSlashCommentsWithAnnotations(value: string) {
     .replace(
       /<span class="token (comment|plain-text)">([\n\r\s]*)\/\* @hide (.*?)\*\/([\n\r\s]*)<\/span>\s*/g,
       (match, type, beforeWhitespace, content, afterWhitespace) => {
-        return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${beforeWhitespace}${this.escapeHtml(
+        return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${beforeWhitespace}${escapeHtml(
           content
         )}${afterWhitespace}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
       }
@@ -178,20 +175,20 @@ export function Code({ className, children }: React.PropsWithChildren<Props>) {
       lang = remapLanguages[lang];
     }
 
-      const grammar = Prism.languages[lang as keyof typeof Prism.languages];
-      if (!grammar) {
-        throw new Error(`docs currently do not support language: ${lang}`);
-      }
-
-      html = Prism.highlight(html, grammar, lang as Language);
-      if (['properties', 'ruby', 'bash', 'yaml'].includes(lang)) {
-        html = this.replaceHashCommentsWithAnnotations(html);
-      } else if (['xml', 'html'].includes(lang)) {
-        html = this.replaceXmlCommentsWithAnnotations(html);
-      } else {
-        html = this.replaceSlashCommentsWithAnnotations(html);
-      }
+    const grammar = Prism.languages[lang as keyof typeof Prism.languages];
+    if (!grammar) {
+      throw new Error(`docs currently do not support language: ${lang}`);
     }
+
+    html = Prism.highlight(html, grammar, lang as Language);
+    if (['properties', 'ruby', 'bash', 'yaml'].includes(lang)) {
+      html = replaceHashCommentsWithAnnotations(html);
+    } else if (['xml', 'html'].includes(lang)) {
+      html = replaceXmlCommentsWithAnnotations(html);
+    } else {
+      html = replaceSlashCommentsWithAnnotations(html);
+    }
+  }
 
   return value?.title ? (
     <Snippet>
