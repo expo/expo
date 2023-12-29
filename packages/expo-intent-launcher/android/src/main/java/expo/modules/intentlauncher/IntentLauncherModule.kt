@@ -55,7 +55,12 @@ class IntentLauncherModule : Module() {
         }
       }
 
-      params.extra?.let { intent.putExtras(it.toBundle()) }
+      params.extra?.let {
+        val valuesList = it.mapValues { (_, value) ->
+            if (value is Double) value.toInt() else value
+        }
+        intent.putExtras(valuesList.toBundle())
+      }
       params.flags?.let { intent.addFlags(it) }
       params.category?.let { intent.addCategory(it) }
 
