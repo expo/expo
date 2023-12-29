@@ -33,7 +33,7 @@ open class ConstantsService(private val context: Context) : InternalModule, Cons
   enum class ExecutionEnvironment(val string: String) {
     BARE("bare"),
     STANDALONE("standalone"),
-    STORE_CLIENT("storeClient");
+    STORE_CLIENT("storeClient")
   }
 
   override fun getExportedInterfaces(): List<Class<*>> = listOf(ConstantsInterface::class.java)
@@ -98,7 +98,7 @@ open class ConstantsService(private val context: Context) : InternalModule, Cons
     get() {
       try {
         context.assets.open(CONFIG_FILE_NAME).use {
-          stream ->
+            stream ->
           return IOUtils.toString(stream, StandardCharsets.UTF_8)
         }
       } catch (e: FileNotFoundException) {
@@ -121,7 +121,10 @@ open class ConstantsService(private val context: Context) : InternalModule, Cons
       get() = EmulatorUtilities.isRunningOnEmulator()
 
     private fun getLongVersionCode(info: PackageInfo) =
-      if (Build.VERSION.SDK_INT >= 28) info.longVersionCode
-      else info.versionCode.toLong()
+      if (Build.VERSION.SDK_INT >= 28) {
+        info.longVersionCode
+      } else {
+        info.versionCode.toLong()
+      }
   }
 }

@@ -314,11 +314,6 @@ dependencies {
   // END_SDK_UNVERSIONED
 
   // ADD_NEW_SDKS_HERE
-
-
-  // BEGIN_SDK_49
-  versionedImplementation(project(':expoview-abi49_0_0'))
-  // END_SDK_49
 }
 
 // This has to be down here for some reason

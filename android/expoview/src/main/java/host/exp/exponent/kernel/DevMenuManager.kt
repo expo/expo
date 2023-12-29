@@ -139,7 +139,8 @@ class DevMenuManager {
    */
   fun requestToClose(activity: ExperienceActivity) {
     ExponentKernelModule.queueEvent(
-      "ExponentKernel.requestToCloseDevMenu", Arguments.createMap(),
+      "ExponentKernel.requestToCloseDevMenu",
+      Arguments.createMap(),
       object : ExponentKernelModuleProvider.KernelEventCallback {
         override fun onEventSuccess(result: ReadableMap) {
           hideInActivity(activity)

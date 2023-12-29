@@ -10,15 +10,23 @@
 
 ### 💡 Others
 
+## 3.4.1 - 2023-12-19
+
+### 🐛 Bug fixes
+
+- Fix `<Drawer />` navigator navigation. ([#25985](https://github.com/expo/expo/pull/25985) by [@marklawlor](https://github.com/marklawlor))
+
 ## 3.4.0 — 2023-12-15
 
 ### 🎉 New features
 
 - Add `router.pushOrPop` and `navigate` to `pushOrPop` ([#24600](https://github.com/expo/expo/pull/24600) by [@marklawlor](https://github.com/marklawlor))
+- Add `toHavePathnameWithParams` matcher to `expo-router/testing-library`. ([#25955](https://github.com/expo/expo/pull/25955) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 
 - Allow pushing to the same route multiple times. ([#24600](https://github.com/expo/expo/pull/24600) by [@marklawlor](https://github.com/marklawlor))
+- Remove `not-found` URL parameter on web `not-found` pages. ([#25955](https://github.com/expo/expo/pull/25955) by [@marklawlor](https://github.com/marklawlor))
 
 ## 3.3.1 — 2023-12-12
 

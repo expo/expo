@@ -81,7 +81,8 @@ class ScopedPermissionsRequester(private val experienceKey: ExperienceKey) {
       for (i in grantResults.indices) {
         if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
           expoKernelServiceRegistry.permissionsKernelService.grantScopedPermissions(
-            permissions[i], experienceKey
+            permissions[i],
+            experienceKey
           )
         }
         permissionsResult[permissions[i]] = grantResults[i]

@@ -10,7 +10,6 @@ excluded:
   - apps
   - bin
   - docs
-  - exponent-view-template
   - fastlane
   - guides
   - home

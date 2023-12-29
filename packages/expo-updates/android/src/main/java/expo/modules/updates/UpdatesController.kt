@@ -6,6 +6,7 @@ import com.facebook.react.ReactNativeHost
 import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
+import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
 
 /**
  * Main entry point to expo-updates. Singleton that keeps track of updates state, holds references
@@ -22,6 +23,7 @@ import expo.modules.updates.logging.UpdatesLogger
 class UpdatesController {
   companion object {
     private var singletonInstance: IUpdatesController? = null
+
     @JvmStatic val instance: IUpdatesController
       get() {
         return checkNotNull(singletonInstance) { "UpdatesController.instance was called before the module was initialized" }
@@ -70,7 +72,7 @@ class UpdatesController {
       }
     }
 
-    @JvmStatic fun initializeAsDevLauncherWithoutStarting(context: Context): UpdatesDevLauncherController {
+    @JvmStatic fun initializeAsDevLauncherWithoutStarting(context: Context, callbacks: UpdatesInterfaceCallbacks): UpdatesDevLauncherController {
       check(singletonInstance == null) { "UpdatesController must not be initialized prior to calling initializeAsDevLauncherWithoutStarting" }
 
       var updatesDirectoryException: Exception? = null
@@ -91,7 +93,8 @@ class UpdatesController {
         initialUpdatesConfiguration,
         updatesDirectory,
         updatesDirectoryException,
-        UpdatesConfiguration.isMissingRuntimeVersion(context, null)
+        UpdatesConfiguration.isMissingRuntimeVersion(context, null),
+        callbacks
       )
       singletonInstance = instance
       return instance

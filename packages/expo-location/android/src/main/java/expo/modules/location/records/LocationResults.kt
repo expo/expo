@@ -46,7 +46,7 @@ internal class LocationProviderStatus(
   @Field var gpsAvailable: Boolean? = false,
   @Field var networkAvailable: Boolean? = null,
   @Field var locationServicesEnabled: Boolean = false,
-  @Field var passiveAvailable: Boolean? = null,
+  @Field var passiveAvailable: Boolean? = null
 ) : Record, Serializable
 
 internal class Heading(
@@ -112,7 +112,7 @@ internal class LocationObjectCoords(
   @Field var accuracy: Double? = null,
   @Field var altitudeAccuracy: Double? = null,
   @Field var heading: Double? = null,
-  @Field var speed: Double? = null,
+  @Field var speed: Double? = null
 ) : Record, Serializable {
   constructor(location: Location) : this(
     latitude = location.latitude,
@@ -152,7 +152,7 @@ internal class GeocodeResponse(
   @Field var latitude: Double,
   @Field var longitude: Double,
   @Field var accuracy: Float? = null,
-  @Field var altitude: Double? = null,
+  @Field var altitude: Double? = null
 ) : Record, Serializable {
   companion object {
     fun from(location: Location): GeocodeResponse? {

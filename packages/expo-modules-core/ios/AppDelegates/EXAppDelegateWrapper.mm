@@ -65,10 +65,14 @@
   enableFabric = self.fabricEnabled;
 #endif
 
-  return [self.reactDelegate createRootViewWithBridge:bridge
-                                         moduleName:moduleName
-                                    initialProperties:initProps
-                                        fabricEnabled:enableFabric];
+  UIView *rootView = [self.reactDelegate createRootViewWithBridge:bridge
+                                                       moduleName:moduleName
+                                                initialProperties:initProps
+                                                    fabricEnabled:enableFabric];
+#if !TARGET_OS_TV
+  rootView.backgroundColor = UIColor.systemBackgroundColor;
+#endif
+  return rootView;
 }
 
 - (UIViewController *)createRootViewController

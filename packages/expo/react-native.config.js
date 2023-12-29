@@ -18,10 +18,7 @@ function isExpoModulesInstalledIos(projectRoot) {
     // Assumes true for managed apps
     return true;
   }
-  return isMatchedInFile(
-    podfilePath,
-    /^\s*require File.join\(File\.dirname\(`node --print "require\.resolve\('expo\/package\.json'\)"`\), "scripts\/autolinking"\)\s*$/m
-  );
+  return isMatchedInFile(podfilePath, /use_expo_modules!/);
 }
 
 /**
@@ -33,10 +30,7 @@ function isExpoModulesInstalledAndroid(projectRoot) {
     // Assumes true for managed apps
     return true;
   }
-  return isMatchedInFile(
-    gradlePath,
-    /^\s*apply from: (new File|file)\(\["node", "--print", "require\.resolve\('expo\/package.json'\)"\]\.execute\(null, rootDir\)\.text\.trim\(\), "\.\.\/scripts\/autolinking\.gradle"\);?\s*$/m
-  );
+  return isMatchedInFile(gradlePath, /useExpoModules/);
 }
 
 module.exports = {

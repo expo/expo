@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "postinstall": "expo-yarn-workspaces postinstall",
     "start": "expo start --dev-client",
     "android": "expo run:android",
     "ios": "expo run:ios",
@@ -21,18 +20,10 @@
     "native-component-list": "*",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "0.73.0"
+    "react-native": "0.73.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"
-  },
-  "expo-yarn-workspaces": {
-    "symlinks": [
-      "expo-constants",
-      "expo-camera",
-      "expo-updates",
-      "react-native-reanimated"
-    ]
   },
   "expo": {
     "autolinking": {

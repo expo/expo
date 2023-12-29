@@ -1,4 +1,4 @@
-import { CodedError, NativeModulesProxy } from 'expo-modules-core';
+import { CodedError, requireOptionalNativeModule } from 'expo-modules-core';
 import { Platform, NativeModules } from 'react-native';
 import { AppOwnership, ExecutionEnvironment, UserInterfaceIdiom, } from './Constants.types';
 import ExponentConstants from './ExponentConstants';
@@ -6,15 +6,16 @@ export { AppOwnership, ExecutionEnvironment, UserInterfaceIdiom, };
 if (!ExponentConstants) {
     console.warn("No native ExponentConstants module found, are you sure the expo-constants's module is linked properly?");
 }
+const ExpoUpdates = requireOptionalNativeModule('ExpoUpdates');
 let rawUpdatesManifest = null;
 // If expo-updates defines a non-empty manifest, prefer that one
-if (NativeModulesProxy.ExpoUpdates) {
+if (ExpoUpdates) {
     let updatesManifest;
-    if (NativeModulesProxy.ExpoUpdates.manifest) {
-        updatesManifest = NativeModulesProxy.ExpoUpdates.manifest;
+    if (ExpoUpdates.manifest) {
+        updatesManifest = ExpoUpdates.manifest;
     }
-    else if (NativeModulesProxy.ExpoUpdates.manifestString) {
-        updatesManifest = JSON.parse(NativeModulesProxy.ExpoUpdates.manifestString);
+    else if (ExpoUpdates.manifestString) {
+        updatesManifest = JSON.parse(ExpoUpdates.manifestString);
     }
     if (updatesManifest && Object.keys(updatesManifest).length > 0) {
         rawUpdatesManifest = updatesManifest;
@@ -116,7 +117,7 @@ Object.defineProperties(constants, {
             }
             // if running an embedded update, maybeManifest is a BareManifest which doesn't have
             // the expo config. Instead, the embedded expo-constants app.config should be used.
-            if (NativeModulesProxy.ExpoUpdates && NativeModulesProxy.ExpoUpdates.isEmbeddedLaunch) {
+            if (ExpoUpdates && ExpoUpdates.isEmbeddedLaunch) {
                 return rawAppConfig;
             }
             if (isManifest(maybeManifest)) {

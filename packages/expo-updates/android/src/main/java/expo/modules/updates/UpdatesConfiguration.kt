@@ -40,7 +40,7 @@ data class UpdatesConfiguration(
   val codeSigningMetadata: Map<String, String>?,
   val codeSigningIncludeManifestResponseCertificateChain: Boolean,
   private val codeSigningAllowUnsignedManifests: Boolean,
-  val enableExpoUpdatesProtocolV0CompatibilityMode: Boolean, // used only in Expo Go to prevent loading rollbacks and other directives, which don't make much sense in the context of Expo Go
+  val enableExpoUpdatesProtocolV0CompatibilityMode: Boolean // used only in Expo Go to prevent loading rollbacks and other directives, which don't make much sense in the context of Expo Go
 ) {
   enum class CheckAutomaticallyConfiguration {
     NEVER {
@@ -55,6 +55,7 @@ data class UpdatesConfiguration(
     ALWAYS {
       override fun toJSString() = "ALWAYS"
     };
+
     open fun toJSString(): String {
       throw InvalidArgumentException("Unsupported CheckAutomaticallyConfiguration value")
     }
@@ -64,7 +65,7 @@ data class UpdatesConfiguration(
     expectsSignedManifest = overrideMap?.readValueCheckingType(UPDATES_CONFIGURATION_EXPECTS_EXPO_SIGNED_MANIFEST) ?: false,
     scopeKey = maybeGetDefaultScopeKey(
       overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_SCOPE_KEY_KEY) ?: context?.getMetadataValue("expo.modules.updates.EXPO_SCOPE_KEY"),
-      updateUrl = getUpdatesUrl(context, overrideMap)!!,
+      updateUrl = getUpdatesUrl(context, overrideMap)!!
     ),
     updateUrl = getUpdatesUrl(context, overrideMap)!!,
     sdkVersion = getSDKVersion(context, overrideMap),
@@ -102,7 +103,7 @@ data class UpdatesConfiguration(
     codeSigningAllowUnsignedManifests = overrideMap?.readValueCheckingType<Boolean>(
       UPDATES_CONFIGURATION_CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS
     ) ?: context?.getMetadataValue("expo.modules.updates.CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS") ?: false,
-    enableExpoUpdatesProtocolV0CompatibilityMode = overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE) ?: context?.getMetadataValue("expo.modules.updates.ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE") ?: false,
+    enableExpoUpdatesProtocolV0CompatibilityMode = overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE) ?: context?.getMetadataValue("expo.modules.updates.ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE") ?: false
   )
 
   val codeSigningConfiguration: CodeSigningConfiguration? by lazy {

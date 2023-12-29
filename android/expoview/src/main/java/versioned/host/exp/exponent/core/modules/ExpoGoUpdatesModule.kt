@@ -43,6 +43,7 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
         constants["checkAutomatically"] = configuration.checkOnLaunch.toJSString()
         constants["channel"] = configuration.requestHeaders["expo-channel-name"] ?: ""
         constants["nativeDebug"] = false
+        constants["shouldDeferToNativeForAPIMethodAvailabilityInDevelopment"] = true
 
         val launchedUpdate = appLoaderLocal.launcher.launchedUpdate
         if (launchedUpdate != null) {

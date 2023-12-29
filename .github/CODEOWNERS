@@ -93,7 +93,6 @@
 /packages/expo-video-thumbnails                 @tsapeta
 /packages/expo-video                            @tsapeta @aleqsio
 /packages/expo-web-browser                      @tsapeta
-/packages/expo-yarn-workspaces                  @ide
 /packages/expo                                  @ide @tsapeta @brentvatne
 /packages/jest-expo-enzyme                      @ide @EvanBacon
 /packages/jest-expo-puppeteer                   @ide @EvanBacon

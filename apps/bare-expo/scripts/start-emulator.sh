@@ -52,5 +52,5 @@ if [ "${CURRENT_ENV}" = "test" ]; then
 else
     echo " ☛  Running the Android project..."
     # Build and run the Android project using `react-native run-android`
-    node "node_modules/react-native/cli.js" run-android --no-packager --port ${port}
+    yarn react-native run-android --no-packager --port ${port}
 fi

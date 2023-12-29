@@ -222,7 +222,7 @@ export class Asset {
                     this.name = AssetUris.getFilename(this.uri);
                 }
             }
-            this.localUri = await downloadAsync(this.uri, this.hash, this.type, this.name);
+            this.localUri = await downloadAsync(this.uri, this.hash, this.type);
             this.downloaded = true;
             this._downloadCallbacks.forEach(({ resolve }) => resolve());
         }

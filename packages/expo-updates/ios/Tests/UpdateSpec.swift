@@ -15,7 +15,7 @@ class UpdateSpec : ExpoSpec {
     let database = UpdatesDatabase()
     
     describe("instantiation") {
-      it("works for legacy manifest") {
+      it("throws for legacy manifest") {
         let legacyManifest = [
           "sdkVersion": "39.0.0",
           "releaseId": "0eef8214-4833-4089-9dff-b4138a14f196",
@@ -26,17 +26,16 @@ class UpdateSpec : ExpoSpec {
         let responseHeaderData = ResponseHeaderData(
           protocolVersionRaw: nil,
           serverDefinedHeadersRaw: nil,
-          manifestFiltersRaw: nil,
-          manifestSignature: nil
+          manifestFiltersRaw: nil
         )
         
-        expect(try! Update.update(
+        expect { try Update.update(
           withManifest: legacyManifest,
           responseHeaderData: responseHeaderData,
           extensions: [:],
           config: config,
           database: database
-        )).notTo(beNil())
+        ) }.to(throwError())
       }
       
       it("works for new manifest") {
@@ -53,8 +52,7 @@ class UpdateSpec : ExpoSpec {
         let responseHeaderData = ResponseHeaderData(
           protocolVersionRaw: "0",
           serverDefinedHeadersRaw: nil,
-          manifestFiltersRaw: nil,
-          manifestSignature: nil
+          manifestFiltersRaw: nil
         )
         
         expect(try! Update.update(
@@ -80,8 +78,7 @@ class UpdateSpec : ExpoSpec {
         let responseHeaderData = ResponseHeaderData(
           protocolVersionRaw: "2",
           serverDefinedHeadersRaw: nil,
-          manifestFiltersRaw: nil,
-          manifestSignature: nil
+          manifestFiltersRaw: nil
         )
         
         expect(try Update.update(

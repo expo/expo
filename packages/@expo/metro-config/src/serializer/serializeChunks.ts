@@ -17,7 +17,6 @@ import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString'
 import bundleToString from 'metro/src/lib/bundleToString';
 import { ConfigT, SerializerConfigT } from 'metro-config';
 import path from 'path';
-import pathToRegExp from 'path-to-regexp';
 
 import { stringToUUID } from './debugId';
 import { buildHermesBundleAsync } from './exportHermes';
@@ -31,6 +30,7 @@ import {
 } from './fork/baseJSBundle';
 import { getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
+import { SerializerConfigOptions } from './withExpoSerializers';
 import getMetroAssets from '../transform-worker/getAssets';
 
 type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
@@ -45,7 +45,19 @@ type ChunkSettings = {
 export type SerializeChunkOptions = {
   includeSourceMaps: boolean;
   includeBytecode: boolean;
-};
+} & SerializerConfigOptions;
+
+// Convert file paths to regex matchers.
+function pathToRegex(path: string) {
+  // Escape regex special characters, except for '*'
+  let regexSafePath = path.replace(/[-[\]{}()+?.,\\^$|#\s]/g, '\\$&');
+
+  // Replace '*' with '.*' to act as a wildcard in regex
+  regexSafePath = regexSafePath.replace(/\*/g, '.*');
+
+  // Create a RegExp object with the modified string
+  return new RegExp('^' + regexSafePath + '$');
+}
 
 export async function graphToSerialAssetsAsync(
   config: MetroConfig,
@@ -64,7 +76,7 @@ export async function graphToSerialAssetsAsync(
 
   [
     {
-      test: pathToRegExp(entryFile),
+      test: pathToRegex(entryFile),
     },
   ].map((chunkSettings) => gatherChunks(chunks, chunkSettings, preModules, graph, options, false));
 
@@ -121,6 +133,18 @@ export async function graphToSerialAssetsAsync(
       // );
       // entryChunk.requiredChunks.add(commonChunk);
       // chunks.add(commonChunk);
+    }
+
+    // TODO: Optimize this pass more.
+    // Remove all dependencies from async chunks that are already in the common chunk.
+    for (const chunk of [...chunks.values()]) {
+      if (chunk !== entryChunk) {
+        for (const dep of chunk.deps) {
+          if (entryChunk.deps.has(dep)) {
+            chunk.deps.delete(dep);
+          }
+        }
+      }
     }
   }
 
@@ -337,12 +361,22 @@ export class Chunk {
     {
       includeSourceMaps,
       includeBytecode,
-    }: { includeSourceMaps?: boolean; includeBytecode?: boolean }
+      unstable_beforeAssetSerializationPlugins,
+    }: SerializeChunkOptions
   ): Promise<SerialAsset[]> {
     // Create hash without wrapping to prevent it changing when the wrapping changes.
     const outputFile = this.getFilenameForConfig(serializerConfig);
     // We already use a stable hash for the output filename, so we'll reuse that for the debugId.
     const debugId = stringToUUID(path.basename(outputFile, path.extname(outputFile)));
+
+    let premodules = [...this.preModules];
+    if (unstable_beforeAssetSerializationPlugins) {
+      for (const plugin of unstable_beforeAssetSerializationPlugins) {
+        premodules = plugin({ graph: this.graph, premodules, debugId });
+      }
+      this.preModules = new Set(premodules);
+    }
+
     const jsCode = this.serializeToCode(serializerConfig, { chunks, debugId });
 
     const relativeEntry = path.relative(this.options.projectRoot, this.name);
@@ -537,7 +571,7 @@ function gatherChunks(
       ) {
         gatherChunks(
           chunks,
-          { test: pathToRegExp(dependency.absolutePath) },
+          { test: pathToRegex(dependency.absolutePath) },
           [],
           graph,
           options,
@@ -566,7 +600,7 @@ function gatherChunks(
 async function serializeChunksAsync(
   chunks: Set<Chunk>,
   serializerConfig: Partial<SerializerConfigT>,
-  { includeSourceMaps, includeBytecode }: SerializeChunkOptions
+  options: SerializeChunkOptions
 ) {
   const jsAssets: SerialAsset[] = [];
 
@@ -574,10 +608,7 @@ async function serializeChunksAsync(
   await Promise.all(
     chunksArray.map(async (chunk) => {
       jsAssets.push(
-        ...(await chunk.serializeToAssetsAsync(serializerConfig, chunksArray, {
-          includeSourceMaps,
-          includeBytecode,
-        }))
+        ...(await chunk.serializeToAssetsAsync(serializerConfig, chunksArray, options))
       );
     })
   );

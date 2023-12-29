@@ -23,8 +23,8 @@
       },
       "ios": {
         "cache": {
-          "key": "sdk50-0.73.0",
-          "customPaths": ["../../ios/Pods"]
+          "key": "sdk50-0.73.1",
+          "customPaths": ["../expo-go/ios/Pods"]
         },
         "image": "macos-ventura-13.6-xcode-15.0",
         "cocoapods": "1.14.2",
@@ -46,7 +46,7 @@
         "withoutCredentials": true
       },
       "ios": {
-        "scheme": "Expo Go \\(versioned\\)",
+        "scheme": "Expo Go",
         "simulator": true,
         "buildConfiguration": "Release"
       }
@@ -67,7 +67,7 @@
         "withoutCredentials": true
       },
       "ios": {
-        "scheme": "Expo Go \\(unversioned\\)",
+        "scheme": "Expo Go",
         "simulator": true,
         "buildConfiguration": "Release"
       }

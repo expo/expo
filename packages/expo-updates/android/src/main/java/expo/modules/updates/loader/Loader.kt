@@ -97,7 +97,9 @@ abstract class Loader protected constructor(
     this.callback = callback
 
     loadRemoteUpdate(
-      context, database, configuration,
+      context,
+      database,
+      configuration,
       object : RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           finishWithError(message, e)
@@ -215,7 +217,9 @@ abstract class Loader protected constructor(
   }
 
   private enum class AssetLoadResult {
-    FINISHED, ALREADY_EXISTS, ERRORED
+    FINISHED,
+    ALREADY_EXISTS,
+    ERRORED
   }
 
   private fun downloadAllAssets(assetList: List<AssetEntity>) {
@@ -234,9 +238,9 @@ abstract class Loader protected constructor(
       // if we already have a local copy of this asset, don't try to download it again!
       if (assetEntity.relativePath != null && loaderFiles.fileExists(
           File(
-              updatesDirectory,
-              assetEntity.relativePath
-            )
+            updatesDirectory,
+            assetEntity.relativePath
+          )
         )
       ) {
         handleAssetDownloadCompleted(assetEntity, AssetLoadResult.ALREADY_EXISTS)
@@ -244,12 +248,19 @@ abstract class Loader protected constructor(
       }
 
       loadAsset(
-        context, assetEntity, updatesDirectory, configuration,
+        context,
+        assetEntity,
+        updatesDirectory,
+        configuration,
         object : AssetDownloadCallback {
           override fun onFailure(e: Exception, assetEntity: AssetEntity) {
-            val identifier = if (assetEntity.hash != null) "hash " + UpdatesUtils.bytesToHex(
-              assetEntity.hash!!
-            ) else "key " + assetEntity.key
+            val identifier = if (assetEntity.hash != null) {
+              "hash " + UpdatesUtils.bytesToHex(
+                assetEntity.hash!!
+              )
+            } else {
+              "key " + assetEntity.key
+            }
             Log.e(TAG, "Failed to download asset with $identifier", e)
             handleAssetDownloadCompleted(assetEntity, AssetLoadResult.ERRORED)
           }

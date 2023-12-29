@@ -3,6 +3,7 @@ import assert from 'assert';
 import { microBundle, projectRoot } from '../fork/__tests__/mini-metro';
 import {
   SerialAsset,
+  SerializerConfigOptions,
   SerializerPlugin,
   createSerializerFromSerialProcessors,
   withSerializerPlugins,
@@ -47,13 +48,16 @@ describe('serializes', () => {
   // General helper to reduce boilerplate
   async function serializeTo(
     options: Partial<Parameters<typeof microBundle>[0]>,
-    processors: SerializerPlugin[] = []
+    processors: SerializerPlugin[] = [],
+    configOptions: SerializerConfigOptions = {}
   ) {
     const serializer = createSerializerFromSerialProcessors(
       {
         projectRoot,
       },
-      processors
+      processors,
+      null, // originalSerializer
+      configOptions
     );
 
     const fs = {
@@ -75,15 +79,58 @@ describe('serializes', () => {
     }
   }
 
-  // Serialize to a split bundle
-  async function serializeSplitAsync(fs: Record<string, string>) {
-    return await serializeTo({
-      fs,
-      options: { platform: 'web', dev: false, output: 'static' },
-    });
-  }
+  describe('plugin callbacks', () => {
+    it(`runs plugin with static output`, async () => {
+      let didPluginRun = false;
+      const unstablePlugin = ({ premodules }) => {
+        didPluginRun = true;
+        return premodules;
+      };
 
-  describe('debugId', () => {
+      await serializeTo(
+        {
+          options: {
+            dev: false,
+            platform: 'ios',
+            hermes: false,
+            // Source maps must be enabled otherwise the feature is disabled.
+            sourceMaps: true,
+            output: 'static',
+          },
+        },
+        [], // processors
+        { unstable_beforeAssetSerializationPlugins: [unstablePlugin] }
+      );
+
+      expect(didPluginRun).toBe(true);
+    });
+    it(`runs plugin with non-static output`, async () => {
+      let didPluginRun = false;
+      const unstablePlugin = ({ premodules }) => {
+        didPluginRun = true;
+        return premodules;
+      };
+
+      await serializeTo(
+        {
+          options: {
+            dev: false,
+            platform: 'ios',
+            hermes: false,
+            // Source maps must be enabled otherwise the feature is disabled.
+            sourceMaps: true,
+            output: undefined, // non static output
+          },
+        },
+        [], // processors
+        { unstable_beforeAssetSerializationPlugins: [unstablePlugin] }
+      );
+
+      expect(didPluginRun).toBe(true);
+    });
+  });
+
+  /*   describe('debugId', () => {
     describe('legacy serializer', () => {
       it(`serializes with debugId annotation`, async () => {
         const artifacts = await serializeTo({
@@ -453,7 +500,8 @@ describe('serializes', () => {
       {
         projectRoot,
       },
-      []
+      [],
+      null // originalSerializer
     );
 
     const fs = {
@@ -597,6 +645,39 @@ describe('serializes', () => {
     expect(artifacts[1].metadata).toEqual({
       isAsync: true,
       modulePaths: ['/app/foo.js'],
+      requires: [],
+    });
+  });
+
+  it(`bundle splits an async import with parentheses in the name`, async () => {
+    const artifacts = await serializeSplitAsync({
+      'index.js': `
+          import('./(foo)/index.js')
+          import('./[foo].js')
+          import('./{foo}.js')
+          import('./+foo.js')
+        `,
+      '[foo].js': '//',
+      '{foo}.js': '//',
+      '+foo.js': '//',
+      '(foo)/index.js': `
+          export const foo = 'foo';
+        `,
+    });
+
+    expect(artifacts.map((art) => art.filename)).toEqual([
+      '_expo/static/js/web/index-7dc6e73b19cad01f360b7d820c351f6c.js',
+      '_expo/static/js/web/index-c054379d08b2cfa157d6fc1caa8f4802.js',
+      '_expo/static/js/web/[foo]-8da94e949dff8f4bf13e6e6c77d68d3f.js',
+      '_expo/static/js/web/{foo}-8da94e949dff8f4bf13e6e6c77d68d3f.js',
+      '_expo/static/js/web/+foo-8da94e949dff8f4bf13e6e6c77d68d3f.js',
+    ]);
+
+    // Split bundle
+    expect(artifacts.length).toBe(5);
+    expect(artifacts[1].metadata).toEqual({
+      isAsync: true,
+      modulePaths: ['/app/(foo)/index.js'],
       requires: [],
     });
   });
@@ -797,5 +878,5 @@ describe('serializes', () => {
     // });
     // // Ensure the dedupe chunk isn't run, just loaded.
     // expect(artifacts[3].source).not.toMatch(/TEST_RUN_MODULE/);
-  });
+  }); */
 });

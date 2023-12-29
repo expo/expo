@@ -1,3 +1,5 @@
+@file:Suppress("UnusedImport") // this needs to stay for versioning to work
+
 package expo.modules.updates
 
 import android.content.Context
@@ -17,11 +19,6 @@ import expo.modules.updates.statemachine.UpdatesStateContext
 import java.util.Date
 
 // these unused imports must stay because of versioning
-/* ktlint-disable no-unused-imports */
-import expo.modules.updates.IUpdatesController
-import expo.modules.updates.UpdatesConfiguration
-import expo.modules.updates.UpdatesController
-/* ktlint-enable no-unused-imports */
 
 /**
  * Exported module which provides to the JS runtime information about the currently running update
@@ -56,7 +53,7 @@ class UpdatesModule : Module() {
         constants["runtimeVersion"] = constantsForModule.runtimeVersion ?: ""
         constants["checkAutomatically"] = constantsForModule.checkOnLaunch.toJSString()
         constants["channel"] = constantsForModule.requestHeaders["expo-channel-name"] ?: ""
-        constants["nativeDebug"] = BuildConfig.EX_UPDATES_NATIVE_DEBUG
+        constants["shouldDeferToNativeForAPIMethodAvailabilityInDevelopment"] = constantsForModule.shouldDeferToNativeForAPIMethodAvailabilityInDevelopment || BuildConfig.EX_UPDATES_NATIVE_DEBUG
 
         if (launchedUpdate != null) {
           constants["updateId"] = launchedUpdate.id.toString()
@@ -222,7 +219,8 @@ class UpdatesModule : Module() {
     AsyncFunction("setExtraParamAsync") { key: String, value: String?, promise: Promise ->
       logger.debug("Called setExtraParamAsync with key = $key, value = $value")
       UpdatesController.instance.setExtraParam(
-        key, value,
+        key,
+        value,
         object : IUpdatesController.ModuleCallback<Unit> {
           override fun onSuccess(result: Unit) {
             promise.resolve(null)

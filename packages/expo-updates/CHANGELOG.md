@@ -8,7 +8,23 @@
 
 ### 🐛 Bug fixes
 
+- Fix development status for modern updates. ([#26042](https://github.com/expo/expo/pull/26042) by [@wschurman](https://github.com/wschurman))
+
 ### 💡 Others
+
+- [ios] Remove unnecessary delegate from FileDownloader. ([#25783](https://github.com/expo/expo/pull/25783) by [@wschurman](https://github.com/wschurman))
+- Migrate to requireNativeModule/requireOptionalNativeModule. ([#25648](https://github.com/expo/expo/pull/25648) by [@wschurman](https://github.com/wschurman))
+- Remove classic updates. ([#26036](https://github.com/expo/expo/pull/26036), [#26037](https://github.com/expo/expo/pull/26037), [#26048](https://github.com/expo/expo/pull/26048), [#26059](https://github.com/expo/expo/pull/26059) by [@wschurman](https://github.com/wschurman))
+
+## 0.24.5 - 2023-12-21
+
+_This version does not introduce any user-facing changes._
+
+## 0.24.4 - 2023-12-19
+
+### 🐛 Bug fixes
+
+- Add relaunch to disabled and dev client controllers. ([#25973](https://github.com/expo/expo/pull/25973) by [@wschurman](https://github.com/wschurman))
 
 ## 0.24.3 — 2023-12-15
 

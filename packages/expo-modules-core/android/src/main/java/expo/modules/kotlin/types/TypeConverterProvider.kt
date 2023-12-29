@@ -185,19 +185,24 @@ object TypeConverterProviderImpl : TypeConverterProvider {
 
   private fun createCachedConverters(isOptional: Boolean): Map<KClass<*>, TypeConverter<*>> {
     val intTypeConverter = createTrivialTypeConverter(
-      isOptional, ExpectedType(CppType.INT)
+      isOptional,
+      ExpectedType(CppType.INT)
     ) { it.asDouble().toInt() }
     val longTypeConverter = createTrivialTypeConverter(
-      isOptional, ExpectedType(CppType.LONG)
+      isOptional,
+      ExpectedType(CppType.LONG)
     ) { it.asDouble().toLong() }
     val doubleTypeConverter = createTrivialTypeConverter(
-      isOptional, ExpectedType(CppType.DOUBLE)
+      isOptional,
+      ExpectedType(CppType.DOUBLE)
     ) { it.asDouble() }
     val floatTypeConverter = createTrivialTypeConverter(
-      isOptional, ExpectedType(CppType.FLOAT)
+      isOptional,
+      ExpectedType(CppType.FLOAT)
     ) { it.asDouble().toFloat() }
     val boolTypeConverter = createTrivialTypeConverter(
-      isOptional, ExpectedType(CppType.BOOLEAN)
+      isOptional,
+      ExpectedType(CppType.BOOLEAN)
     ) { it.asBoolean() }
 
     val converters = mapOf(
@@ -291,13 +296,13 @@ object TypeConverterProviderImpl : TypeConverterProvider {
 
       Unit::class to UnitTypeConverter(isOptional),
 
-      ReadableArguments::class to ReadableArgumentsTypeConverter(isOptional),
+      ReadableArguments::class to ReadableArgumentsTypeConverter(isOptional)
     )
 
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
       return converters + mapOf(
         Path::class to PathTypeConverter(isOptional),
-        Color::class to ColorTypeConverter(isOptional),
+        Color::class to ColorTypeConverter(isOptional)
       )
     }
 
