@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unpublished
+added DRM support for Android and iOS 
 
 ### 🛠 Breaking changes
 
