@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Update import for type generation. ([#26145](https://github.com/expo/expo/pull/26145) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.16.5 — 2023-12-21
