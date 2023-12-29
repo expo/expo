@@ -1,12 +1,13 @@
 import { MetroJsonModule } from '@/components/data';
 
-import { useFilteredModules } from '@/components/deps-context';
+import { useFilteredModules, useGraph } from '@/components/deps-context';
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useDynamicHeight } from '@/components/useDynamicHeight';
 import * as echarts from 'echarts';
 import ReactECharts from 'echarts-for-react';
 import { formatSize } from '@/components/table';
+import { useRouter } from 'expo-router';
 
 // Given a list of modules with filepaths `{ absolutePath: string }[]`, create a recursive tree structure of modules `{ absolutePath: string, groups: T[] }[]`
 function createModuleTree(paths: MetroJsonModule[]): {
@@ -41,7 +42,7 @@ function createModuleTree(paths: MetroJsonModule[]): {
 
       if (isLast) {
         next.path = pathObj.absolutePath;
-        next.moduleHref = pathObj.absolutePath;
+        next.moduleHref = pathObj.id;
         next.value = pathObj.size;
       } else {
         next.value += pathObj.size;
@@ -95,6 +96,9 @@ function createModuleTree(paths: MetroJsonModule[]): {
 
 export default function Treemap() {
   const modules = useFilteredModules();
+  const router = useRouter();
+  const graph = useGraph();
+
   // const data = [
   //   {
   //     value: 10,
@@ -241,6 +245,27 @@ export default function Treemap() {
     ];
   }
 
+  // const sunburstOption = {
+  //   series: [
+  //     {
+  //       type: 'sunburst',
+  //       id: 'echarts-package-size',
+  //       radius: ['20%', '90%'],
+  //       // animationDurationUpdate: 1000,
+  //       // nodeClick: undefined,
+  //       data: data,
+  //       universalTransition: true,
+  //       itemStyle: {
+  //         borderWidth: 1,
+  //         borderColor: 'rgba(255,255,255,.5)',
+  //       },
+  //       label: {
+  //         // show: false,
+  //       },
+  //     },
+  //   ],
+  // };
+
   return (
     <div className="flex-1" ref={container}>
       <ReactECharts
@@ -251,11 +276,26 @@ export default function Treemap() {
           height: containerHeight.height,
         }}
         theme="dark"
+        onEvents={{
+          click(params) {
+            console.log('click', params);
+            const isModified =
+              params.event.event.altKey || params.event.event.ctrlKey || params.event.event.metaKey;
+            if (params?.data?.moduleHref && isModified) {
+              router.push({
+                pathname: '/module/[id]',
+                params: { id: params.data.moduleHref },
+              });
+            }
+          },
+        }}
         option={{
           title: {
-            // text: 'Size Tree',
-            // left: 'center',
+            text: 'Bundle Size',
+            subtext: graph.transformOptions.platform,
+            left: 'leafDepth',
           },
+
           backgroundColor: 'transparent',
 
           tooltip: {
@@ -279,10 +319,34 @@ export default function Treemap() {
 
           series: [
             {
+              roam: 'move',
               name: 'Size Tree',
               type: 'treemap',
+              colorMappingBy: 'value',
+              breadcrumb: {
+                show: true,
+                height: 30,
+                left: 'center',
+                top: 'bottom',
+                emptyItemWidth: 25,
+                // emphasis: {
+                //   color: '#313340',
+                //   textStyle: {
+                //     color: '#63709E',
+                //   },
+                // },
+                itemStyle: {
+                  color: '#21222B',
+
+                  borderColor: 'transparent',
+                  shadowColor: 'transparent',
+                  textStyle: {
+                    color: '#63709E',
+                  },
+                },
+              },
               // zoomToNodeRatio: 1000,
-              leafDepth: 3,
+              // leafDepth: 3,
               // visibleMin: 300,
 
               label: {
@@ -308,14 +372,26 @@ export default function Treemap() {
               levels: new Array(maxDepth).fill({}).map((_, index) => {
                 return {
                   itemStyle: {
-                    borderColorSaturation: 0.1,
-                    borderColor: '#000',
+                    // borderColorSaturation: 0.1,
+                    borderColor: saturate('#353745', index / maxDepth),
                     borderWidth: 1,
                     gapWidth: 0,
                     color: '#030816',
                     // color: ['#942e38', '#aaa', '#269f3c'],
                     // colorMappingBy: 'value',
                   },
+
+                  upperLabel: {
+                    show: true,
+                    position: 'insideTop',
+                    distance: 10,
+                    fontSize: 16,
+                    emphasis: {
+                      position: 'insideTop',
+                      distance: 10,
+                    },
+                  },
+
                   // label: {
                   //   show: index === maxDepth - 1,
                   //   formatter: '{b}',
@@ -327,12 +403,35 @@ export default function Treemap() {
                 };
               }),
 
-              itemStyle: {
-                borderColorSaturation: 0.1,
-                borderColor: '#000',
-                borderWidth: 1,
-                gapWidth: 0,
-              },
+              // itemStyle: {
+              //   borderColorSaturation: 0.3,
+              //   // borderColorSaturation: 0.3,
+              //   borderColor: '#000',
+              //   borderWidth: 1,
+              //   gapWidth: 0,
+              // },
+              colorSaturation: [0.2, 0.7],
+              // levels: [
+              //   {},
+              //   {
+              //     colorSaturation: [0.3, 0.6],
+              //     itemStyle: {
+              //       borderColorSaturation: 0.3,
+              //       borderColor: '#000',
+              //       borderWidth: 1,
+              //       gapWidth: 0,
+              //     },
+              //   },
+              //   {
+              //     colorSaturation: [0.3, 0.6],
+              //     itemStyle: {
+              //       borderColorSaturation: 0.3,
+              //       borderColor: '#000',
+              //       borderWidth: 1,
+              //       gapWidth: 0,
+              //     },
+              //   },
+              // ],
               // levels: getLevelOption(),
               data,
             },
@@ -341,6 +440,12 @@ export default function Treemap() {
       />
     </div>
   );
+}
+
+import { modifyHSL, modifyAlpha } from 'zrender/src/tool/color';
+
+function saturate(color: string, amount: number) {
+  return modifyHSL(color, null, null, amount);
 }
 
 type EChartTreeMapDataItem = {
