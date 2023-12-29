@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+- On Android, intent number extras are converted to `double`. However, it must be `int`.
 
 ### 💡 Others
 
