@@ -21,6 +21,7 @@
     ]
   },
   "resolutions": {
+    "tslib": "2.6.0",
     "react-native": "0.73.1",
     "react-refresh": "^0.14.0",
     "@react-navigation/native": "^6.1.6",

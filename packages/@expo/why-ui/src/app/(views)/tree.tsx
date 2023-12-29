@@ -442,10 +442,11 @@ export default function Treemap() {
   );
 }
 
-import { modifyHSL, modifyAlpha } from 'zrender/src/tool/color';
+// import { modifyHSL, modifyAlpha } from 'zrender/src/tool/color';
 
 function saturate(color: string, amount: number) {
-  return modifyHSL(color, null, null, amount);
+  return color;
+  // return modifyHSL(color, null, null, amount);
 }
 
 type EChartTreeMapDataItem = {

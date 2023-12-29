@@ -38,7 +38,7 @@
     "apexcharts": "^3.45.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
-    "echarts": "^4",
+    "echarts": "^5.2.1",
     "echarts-for-react": "^3.0.2",
     "lucide-react": "^0.292.0",
     "react-apexcharts": "^1.4.1",
