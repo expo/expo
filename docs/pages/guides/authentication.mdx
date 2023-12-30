@@ -40,6 +40,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
   />
   <GridItem title="Cognito" protocol={['OAuth 2', 'OpenID']} image={ASSETS.cognito} />
   <GridItem title="Coinbase" protocol={['OAuth 2']} image={ASSETS.coinbase} />
+  <GridItem title="Descope" protocol={['OAuth 2', 'OpenID']} image={ASSETS.descope} />
   <GridItem title="Dropbox" protocol={['OAuth 2']} image={ASSETS.dropbox} />
   <GridItem
     title="Facebook"
@@ -769,6 +770,130 @@ function useMounted() {
 </Tabs>
 </Box>
 {/* End Coinbase */}
+
+<Box
+  name="Descope"
+  createUrl="https://www.descope.com/sign-up"
+  image={ASSETS.descope}
+>
+
+| Website                      | Provider | PKCE      | Auto Discovery |
+| ---------------------------- | -------- | --------- | -------------- |
+| [Get Your Config][c-descope] | OpenID   | Supported | Available      |
+
+[c-descope]: https://docs.descope.com/
+
+- Leverages the Hosted Descope Flow app [Auth-Hosting App](https://github.com/descope/auth-hosting).
+- Requests code after successfully authenticating, followed by exchanging code for the auth tokens (PKCE).
+
+<Tabs tabs={["Auth Code"]}>
+
+<Tab>
+
+{/* prettier-ignore */}
+```tsx
+import * as React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import * as AuthSession from 'expo-auth-session';
+import { Button, View } from 'react-native';
+
+WebBrowser.maybeCompleteAuthSession();
+
+const descopeProjectId = '<Descope Project ID>'; // Replace this with your Descope Project ID
+const descopeUrl = `https://api.descope.com/${descopeProjectId}`;
+const redirectUri = AuthSession.makeRedirectUri();
+
+export default function App() {
+  const [authTokens, setAuthTokens] = React.useState(null);
+  const discovery = AuthSession.useAutoDiscovery(descopeUrl);
+
+  const [request, response, promptAsync] = AuthSession.useAuthRequest(
+    {
+      clientId: descopeProjectId,
+      responseType: AuthSession.ResponseType.Code,
+      redirectUri,
+      usePKCE: true,
+      scopes: ['openid', 'profile', 'email'],
+    },
+    discovery
+  );
+
+  React.useEffect(() => {
+    if (response) {
+      if (response.error) {
+        console.error(
+          'Authentication error',
+          response.params.error_description || 'something went wrong'
+        );
+        return;
+      }
+      if (response.type === 'success') {
+        /* @info Exchange the code for an access token in a server. */
+        const exchangeFn = async (exchangeTokenReq) => {
+        /* @end */
+          try {
+            const exchangeTokenResponse = await AuthSession.exchangeCodeAsync(
+              exchangeTokenReq,
+              discovery
+            );
+            setAuthTokens(exchangeTokenResponse);
+          } catch (error) {
+            console.error(error);
+          }
+        };
+
+        exchangeFn({
+          clientId: descopeProjectId,
+          code: response.params.code,
+          redirectUri,
+          extraParams: {
+            code_verifier: request.codeVerifier,
+          },
+        });
+      }
+    }
+  }, [discovery, request, response]);
+
+  const logout = async () => {
+    const revokeResponse = await AuthSession.revokeAsync(
+      {
+        clientId: descopeProjectId,
+        token: authTokens.refreshToken,
+      },
+      discovery
+    );
+    if (revokeResponse) {
+      setAuthTokens(null);
+    }
+  };
+
+  return (
+    <View>
+      {authTokens ? (
+        <Button title="Logout" onPress={logout} />
+      ) : (
+        <Button
+          /* @info Disable the button until the request is loaded asynchronously. */
+          disabled={!request}
+          /* @end */
+          title="Login"
+          /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+          onPress={promptAsync}
+          /* @end */
+        />
+      )}
+    </View>
+  );
+}
+```
+
+</Tab>
+
+</Tabs>
+
+</Box>
+
+{/* End Descope */}
 
 <Box
   name="Dropbox"
