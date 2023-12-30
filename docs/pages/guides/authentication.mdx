@@ -792,15 +792,14 @@ function useMounted() {
 
 {/* prettier-ignore */}
 ```tsx
-import * as React from "react";
-import * as WebBrowser from "expo-web-browser";
-import * as AuthSession from "expo-auth-session";
-import { Button, Alert, Text, View } from "react-native";
+import * as React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import * as AuthSession from 'expo-auth-session';
+import { Button, View } from 'react-native';
 
 WebBrowser.maybeCompleteAuthSession();
 
-// Replace this with your Descope Project ID
-const descopeProjectId = "<Descope Project ID>";
+const descopeProjectId = '<Descope Project ID>'; // Replace this with your Descope Project ID
 const descopeUrl = `https://api.descope.com/${descopeProjectId}`;
 const redirectUri = AuthSession.makeRedirectUri();
 
@@ -814,34 +813,35 @@ export default function App() {
       responseType: AuthSession.ResponseType.Code,
       redirectUri,
       usePKCE: true,
-      scopes: ["openid", "profile", "email"],
+      scopes: ['openid', 'profile', 'email'],
     },
     discovery
   );
 
   React.useEffect(() => {
-    /* @info Exchange the code for an access token in a server. */
-    const exchangeFn = async (exchangeTokenReq) => {
-    /* @end */
-      try {
-        const exchangeTokenResponse = await AuthSession.exchangeCodeAsync(
-          exchangeTokenReq,
-          discovery
-        );
-        setAuthTokens(exchangeTokenResponse);
-      } catch (error) {
-        console.error(error);
-      }
-    };
     if (response) {
       if (response.error) {
-        Alert.alert(
-          "Authentication error",
-          response.params.error_description || "something went wrong"
+        console.error(
+          'Authentication error',
+          response.params.error_description || 'something went wrong'
         );
         return;
       }
-      if (response.type === "success") {
+      if (response.type === 'success') {
+        /* @info Exchange the code for an access token in a server. */
+        const exchangeFn = async (exchangeTokenReq) => {
+        /* @end */
+          try {
+            const exchangeTokenResponse = await AuthSession.exchangeCodeAsync(
+              exchangeTokenReq,
+              discovery
+            );
+            setAuthTokens(exchangeTokenResponse);
+          } catch (error) {
+            console.error(error);
+          }
+        };
+
         exchangeFn({
           clientId: descopeProjectId,
           code: response.params.code,
@@ -866,18 +866,11 @@ export default function App() {
       setAuthTokens(null);
     }
   };
-  console.log("authTokens: " + JSON.stringify(authTokens));
+
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 20,
-      }}
-    >
+    <View>
       {authTokens ? (
-        <Button title="Logout" onPress={() => logout()} />
+        <Button title="Logout" onPress={logout} />
       ) : (
         <Button
           /* @info Disable the button until the request is loaded asynchronously. */
@@ -885,7 +878,7 @@ export default function App() {
           /* @end */
           title="Login"
           /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-          onPress={() => promptAsync()}
+          onPress={promptAsync}
           /* @end */
         />
       )}
