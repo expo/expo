@@ -7134,14 +7134,19 @@ This uses both
           >
             =
           </span>
-           BarCodeScanner
+           
+          <span
+            class="token maybe-class-name"
+          >
+            BarCodeScanner
+          </span>
           <span
             class="token punctuation"
           >
             .
           </span>
           <span
-            class="token function"
+            class="token method function property-access"
           >
             usePermissions
           </span>
