@@ -86,19 +86,14 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
         >
           await
         </span>
-         
-        <span
-          class="token maybe-class-name"
-        >
-          Application
-        </span>
+         Application
         <span
           class="token punctuation"
         >
           .
         </span>
         <span
-          class="token method function property-access"
+          class="token function"
         >
           getInstallReferrerAsync
         </span>
