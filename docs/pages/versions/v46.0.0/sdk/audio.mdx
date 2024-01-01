@@ -94,11 +94,14 @@ import { Audio } from 'expo-av';
 
 export default function App() {
   const [recording, setRecording] = useState();
+  const [permissionResponse, requestPermission] = Audio.usePermissions();
 
   async function startRecording() {
     try {
-      console.log('Requesting permissions..');
-      /* @info */ await Audio.requestPermissionsAsync();
+      /* @info */ if (permissionResponse.status !== 'granted') {
+        console.log('Requesting permission..');
+        await requestPermission();
+      }
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
         playsInSilentModeIOS: true,
