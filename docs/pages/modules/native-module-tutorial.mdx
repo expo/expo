@@ -64,7 +64,7 @@ class ExpoSettingsModule : Module() {
 }
 ```
 
-```typescript src/index.ts
+```ts src/index.ts
 import ExpoSettingsModule from './ExpoSettingsModule';
 
 export function getTheme(): string {
@@ -72,7 +72,7 @@ export function getTheme(): string {
 }
 ```
 
-```typescript example/App.tsx
+```tsx example/App.tsx
 import * as Settings from 'expo-settings';
 import { Text, View } from 'react-native';
 
@@ -176,7 +176,7 @@ class ExpoSettingsModule : Module() {
 
 Now we can call our native modules from TypeScript.
 
-```typescript src/index.ts
+```ts src/index.ts
 import ExpoSettingsModule from './ExpoSettingsModule';
 
 export function getTheme(): string {
@@ -192,7 +192,7 @@ export function setTheme(theme: string): void {
 
 We can now use the `Settings` API in our example app.
 
-```typescript example/App.tsx
+```tsx example/App.tsx
 import * as Settings from 'expo-settings';
 import { Button, Text, View } from 'react-native';
 
@@ -281,7 +281,7 @@ class ExpoSettingsModule : Module() {
 
 ### TypeScript module
 
-```typescript src/index.ts
+```ts src/index.ts
 import { EventEmitter, Subscription } from 'expo-modules-core';
 import ExpoSettingsModule from './ExpoSettingsModule';
 
@@ -306,7 +306,7 @@ export function setTheme(theme: string): void {
 
 ### Example app
 
-```typescript example/App.tsx
+```tsx example/App.tsx
 import * as Settings from 'expo-settings';
 import * as React from 'react';
 import { Button, Text, View } from 'react-native';
@@ -414,7 +414,7 @@ enum class Theme(val value: String) : Enumerable {
 
 ### TypeScript module
 
-```typescript src/index.ts
+```ts src/index.ts
 import { EventEmitter, Subscription } from 'expo-modules-core';
 
 import ExpoSettingsModule from './ExpoSettingsModule';

@@ -28,7 +28,7 @@ In this page, we reference operations on `playbackObject`s. Here is an example o
 
 ### Example: `Audio.Sound`
 
-```javascript
+```js
 await Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
 
 const playbackObject = new Audio.Sound();
@@ -44,7 +44,7 @@ See the [audio documentation](audio.mdx) for further information on `Audio.Sound
 
 ### Example: `Video`
 
-```javascript
+```js
 ...
 _handleVideoRef = component => {
   const playbackObject = component;
@@ -70,7 +70,7 @@ See the [video documentation](video.mdx) for further information.
 
 ### Example: `setOnPlaybackStatusUpdate()`
 
-```javascript
+```js
 _onPlaybackStatusUpdate = playbackStatus => {
   if (!playbackStatus.isLoaded) {
     // Update your UI for the unloaded state
@@ -106,7 +106,7 @@ playbackObject.setOnPlaybackStatusUpdate(this._onPlaybackStatusUpdate);
 
 ### Example: Loop media exactly 20 times
 
-```javascript
+```js
 const N = 20;
 ...
 

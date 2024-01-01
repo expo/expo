@@ -167,7 +167,7 @@ Setting `checkOnLaunch` to `NEVER` will prevent `expo-updates` from automaticall
 
 You can then use the [`expo-updates`](../versions/latest/sdk/updates.mdx) module included with this library to download new updates and, if appropriate, notify the user and reload the experience.
 
-```javascript
+```js
 try {
   const update = await Updates.checkForUpdateAsync();
   if (update.isAvailable) {

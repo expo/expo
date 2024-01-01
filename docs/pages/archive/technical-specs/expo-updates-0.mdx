@@ -102,7 +102,7 @@ expo-signature: *
 
 The body of the response MUST be a manifest, which is defined as JSON conforming to both the following `Manifest` definition expressed in [TypeScript](https://www.typescriptlang.org/) and the detailed descriptions for each field:
 
-```typescript
+```ts
 type Manifest = {
   id: string;
   createdAt: string;
@@ -176,7 +176,7 @@ Each part is defined as follows:
 
 Defined as JSON conforming to both the following `ManifestExtensions` definition expressed in [TypeScript](https://www.typescriptlang.org/) and the detailed descriptions for each field:
 
-```typescript
+```ts
 type ManifestExtensions = {
   assetRequestHeaders: ExpoAssetHeaderDictionary;
   ...

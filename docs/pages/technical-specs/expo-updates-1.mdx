@@ -140,7 +140,7 @@ Each part is defined as follows:
 
 Defined as JSON conforming to both the following `Manifest` definition expressed in [TypeScript](https://www.typescriptlang.org/) and the detailed descriptions for each field:
 
-```typescript
+```ts
 type Manifest = {
   id: string;
   createdAt: string;
@@ -187,7 +187,7 @@ type Asset = {
 
 Defined as JSON conforming to both the following `Extensions` definition expressed in [TypeScript](https://www.typescriptlang.org/) and the detailed descriptions for each field:
 
-```typescript
+```ts
 type Extensions = {
   assetRequestHeaders: ExpoAssetHeaderDictionary;
   ...
@@ -206,7 +206,7 @@ type ExpoAssetHeaderDictionary = {
 
 Defined as JSON conforming to both the following `Directive` definition expressed in [TypeScript](https://www.typescriptlang.org/) and the detailed descriptions for each field:
 
-```typescript
+```ts
 type Directive = {
   type: string;
   parameters?: { [key: string]: any };

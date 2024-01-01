@@ -126,7 +126,7 @@ const withMyApiKey = config => {
 };
 ```
 
-Additionally, you can use `mods`, which are async functions that modify files in native projects such as source code or configuration (plist, xml) files. The `mods` object is different from the rest of the app config because it doesn't get serialized after the initial reading. This means you can use it to perform actions *during* code generation.
+Additionally, you can use `mods`, which are async functions that modify files in native projects such as source code or configuration (plist, xml) files. The `mods` object is different from the rest of the app config because it doesn't get serialized after the initial reading. This means you can use it to perform actions _during_ code generation.
 
 However, there are a few considerations that we should follow when writing config plugins:
 
@@ -153,7 +153,7 @@ Let's start by creating our plugin with this minimal boilerplate. This will crea
 
 2. Create a **plugin/src/index.ts** file for our plugin:
 
-   ```typescript plugin/src/index.ts
+   ```ts plugin/src/index.ts
    import { ConfigPlugin } from 'expo/config-plugins';
 
    const withMyApiKey: ConfigPlugin = config => {
@@ -189,7 +189,7 @@ To inject our custom API keys into **AndroidManifest.xml** and **Info.plist** we
 
 As the name suggests, `withInfoPlist` allows us to read and modify **Info.plist** values. Using the `modResults` property, we can add custom values as demonstrated in the code snippet below:
 
-```typescript
+```ts
 const withMyApiKey: ConfigPlugin<{ apiKey: string }> = (config, { apiKey }) => {
   config = withInfoPlist(config, config => {
     config.modResults['MY_CUSTOM_API_KEY'] = apiKey;
@@ -202,7 +202,7 @@ const withMyApiKey: ConfigPlugin<{ apiKey: string }> = (config, { apiKey }) => {
 
 Similarly, we can use `withAndroidManifest` to modify the **AndroidManifest.xml** file. In this case, we will utilize `AndroidConfig` helpers to add a meta data item to the main application:
 
-```typescript
+```ts
 const withMyApiKey: ConfigPlugin<{ apiKey: string }> = (config, { apiKey }) => {
   config = withAndroidManifest(config, config => {
     const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
@@ -221,7 +221,7 @@ const withMyApiKey: ConfigPlugin<{ apiKey: string }> = (config, { apiKey }) => {
 
 We can create our custom plugin by merging everything into a single function:
 
-```typescript plugin/src/index.ts
+```ts plugin/src/index.ts
 import {
   withInfoPlist,
   withAndroidManifest,

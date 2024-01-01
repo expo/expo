@@ -44,7 +44,7 @@ Learn how to configure the native projects in the [installation instructions in 
 
 #### Downloading files
 
-```javascript
+```js
 const callback = downloadProgress => {
   const progress = downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
   this.setState({
@@ -111,7 +111,7 @@ files={{
     'GifManagement.ts': 'filesystem/gifManagement.ts'
   }}>
 
-```typescript
+```js
 import * as FileSystem from 'expo-file-system';
 
 const gifDir = FileSystem.cacheDirectory + 'giphy/';
@@ -384,7 +384,7 @@ Download the contents at a remote URI to a file in the app's file system. The di
 
 #### Example
 
-```javascript
+```js
 FileSystem.downloadAsync(
   'http://techslides.com/demos/sample-videos/small.mp4',
   FileSystem.documentDirectory + 'small.mp4'
@@ -431,7 +431,7 @@ Upload the contents of the file pointed by `fileUri` to the remote url.
 
 **client**
 
-```javascript
+```js
 import * as FileSystem from 'expo-file-system';
 
 try {
@@ -584,7 +584,7 @@ Take a `file://` URI and convert it into content URI (`content://`) so that it c
 
 #### Example
 
-```javascript
+```js
 FileSystem.getContentUriAsync(uri).then(cUri => {
   console.log(cUri);
   IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
@@ -608,7 +608,7 @@ Gets the available internal disk storage size, in bytes. This returns the free s
 
 #### Example
 
-```javascript
+```js
 FileSystem.getFreeDiskStorageAsync().then(freeDiskStorage => {
   // Android: 17179869184
   // iOS: 17179869184
@@ -625,7 +625,7 @@ Gets total internal disk storage size, in bytes. This is the total capacity of t
 
 #### Example
 
-```javascript
+```js
 FileSystem.getTotalDiskCapacityAsync().then(totalDiskCapacity => {
   // Android: 17179869184
   // iOS: 17179869184
