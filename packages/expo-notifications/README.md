@@ -517,7 +517,7 @@ A single and required argument is a subscription returned by `addPushTokenListen
 
 ## Listening to notification events
 
-Notification events include incoming notifications, interactions your users perform with notifications (this can be tapping on a notification, or interacting with it via [notification categories](#managing-notification-categories-interactive-notifications)), and rare occasions when your notifications may be dropped.
+Notification events include incoming notifications, interactions your users perform with notifications (this can be tapping on a notification, or interacting with it via [notification categories](#manage-notification-categories-interactive-notifications)), and rare occasions when your notifications may be dropped.
 
 A few different listeners are exposed, so we've provided a chart below which will hopefully help you understand when you can expect each one to be triggered:
 
