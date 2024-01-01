@@ -24,3 +24,14 @@ import * as SystemUI from 'expo-system-ui';
 ```
 
 <APISection packageName="expo-system-ui" apiName="SystemUI" />
+
+## Usage in Expo Router
+
+When using Expo Router, you can place this logic in the default export of `app/_layout.tsx` file and have it dynamically change based on the system color scheme.
+
+```typescript
+export default () => {
+  const colorScheme = useColorScheme();
+  SystemUI.setBackgroundColorAsync(colorScheme === "dark" ? "#101010" : "#e0e0e0");
+  ...
+```
