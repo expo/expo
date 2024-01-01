@@ -22,7 +22,7 @@ Development mode also performs validations while your app is running to give you
 
 ### View the developer menu
 
-The menu gives access to a host of features that make development and debugging much easier. For more information on to open it on Android and iOS, see [Developer menu](/debugging/tools/#developer-menu).
+The menu gives access to a host of features that make development and debugging much easier. For more information on how to open it on Android and iOS, see [Developer menu](/debugging/tools/#developer-menu).
 
 ## Production mode
 
@@ -35,6 +35,6 @@ The easiest way to simulate how your project will run on end users' devices is w
 
 <Terminal cmd={['$ npx expo start --no-dev --minify']} />
 
-Besides running in production mode (which tells the Metro bundler to set the `__DEV__` environment variable to `false`, among a few other things), the `--minify` flag will minify your app. This flag will also eliminate unnecessary data such as comments, formatting, and unused code.
+It runs the JavaScript of your app in production mode (which tells the Metro bundler to set the `__DEV__` environment variable to `false`, among a few other things). The `--minify` flag minifies your app. This flag also eliminates unnecessary data such as comments, formatting, and unused code. If you are getting an error or crash in your standalone app, running your project with this command can save you a lot of time in finding the root cause.
 
-If you're getting an error or crash in your standalone app, running your project with this command can save you a lot of time in finding the root cause.
+To completely compile your app for production see [Compiling Android](/more/expo-cli/#compiling-android) and [Compiling iOS](/more/expo-cli/#compiling-ios).
