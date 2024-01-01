@@ -4,7 +4,6 @@
 #import <ExpoModulesCore/EXReactDelegateWrapper+Private.h>
 #import <ExpoModulesCore/Swift.h>
 
-
 @interface EXAppDelegateWrapper()
 
 @property (nonatomic, strong) EXReactDelegateWrapper *reactDelegate;
@@ -44,12 +43,32 @@
 
 #if __has_include(<React-RCTAppDelegate/RCTAppDelegate.h>) || __has_include(<React_RCTAppDelegate/RCTAppDelegate.h>)
 
+- (UIView *)findRootView:(UIApplication *)application
+{
+#if TARGET_OS_IOS || TARGET_OS_TV
+  UIWindow *mainWindow = application.delegate.window;
+  if (mainWindow == nil) {
+    return nil;
+  }
+  UIViewController *rootViewController = mainWindow.rootViewController;
+  if (rootViewController == nil) {
+    return nil;
+  }
+  UIView *rootView = rootViewController.view;
+  return rootView;
+#elif TARGET_OS_OSX
+  return [[[[NSApplication sharedApplication] keyWindow] contentViewController] view];
+#endif
+}
+
+#if !TARGET_OS_OSX
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   [super application:application didFinishLaunchingWithOptions:launchOptions];
   [_expoAppDelegate application:application didFinishLaunchingWithOptions:launchOptions];
   return YES;
 }
+#endif // !TARGET_OS_OSX
 
 - (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
 {
@@ -69,7 +88,7 @@
                                                        moduleName:moduleName
                                                 initialProperties:initProps
                                                     fabricEnabled:enableFabric];
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV && !TARGET_OS_OSX
   rootView.backgroundColor = UIColor.systemBackgroundColor;
 #endif
   return rootView;

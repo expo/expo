@@ -39,6 +39,7 @@ EX_REGISTER_MODULE();
 
 - (UIViewController *)currentViewController
 {
+#if TARGET_OS_IOS || TARGET_OS_TV
   id<EXUtilService> utilService = [_moduleRegistry getSingletonModuleForName:@"Util"];
 
   if (utilService != nil) {
@@ -47,12 +48,15 @@ EX_REGISTER_MODULE();
 
   UIViewController *controller = [[[UIApplication sharedApplication] keyWindow] rootViewController];
   UIViewController *presentedController = controller.presentedViewController;
-  
+
   while (presentedController && ![presentedController isBeingDismissed]) {
     controller = presentedController;
     presentedController = controller.presentedViewController;
   }
   return controller;
+#elif TARGET_OS_OSX
+  return [[[NSApplication sharedApplication] keyWindow] contentViewController];
+#endif
 }
 
 + (void)performSynchronouslyOnMainThread:(void (^)(void))block
@@ -102,7 +106,11 @@ EX_REGISTER_MODULE();
   static CGFloat scale;
   
   [self unsafeExecuteOnMainQueueOnceSync:&onceToken block:^{
-      scale = [UIScreen mainScreen].scale;
+#if TARGET_OS_IOS || TARGET_OS_TV
+    scale = [UIScreen mainScreen].scale;
+#elif TARGET_OS_OSX
+    scale = [NSScreen mainScreen].backingScaleFactor;
+#endif
   }];
   
   return scale;
