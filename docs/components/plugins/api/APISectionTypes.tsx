@@ -194,16 +194,16 @@ const renderType = ({
     ['array', 'reference'].includes(type.type)
   ) {
     return (
-      <div key={`record-definition-${name}`} css={STYLES_APIBOX}>
+      <div key={`record-definition-${name}`} css={STYLES_APIBOX} className="[&>*:last-child]:!mb-0">
         <APISectionDeprecationNote comment={comment} />
         <APISectionPlatformTags comment={comment} prefix="Only for:" />
         <H3Code tags={getTagNamesList(comment)}>
           <MONOSPACE weight="medium">{name}</MONOSPACE>
         </H3Code>
-        <div css={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-          <BOLD>Type: </BOLD>
+        <P className="mb-3">
+          <BOLD theme="secondary">Type: </BOLD>
           <APIDataType typeDefinition={type} />
-        </div>
+        </P>
         <CommentTextBlock comment={comment} includePlatforms={false} />
       </div>
     );
@@ -217,7 +217,7 @@ const renderType = ({
         </H3Code>
         <CommentTextBlock comment={comment} includePlatforms={false} />
         <P>
-          <BOLD>Type: </BOLD>
+          <BOLD theme="secondary">Type: </BOLD>
           <CODE>{type.name}</CODE>
         </P>
       </div>
@@ -234,14 +234,14 @@ const renderType = ({
         </H3Code>
         <CommentTextBlock comment={comment} includePlatforms={false} />
         <P>
-          <BOLD>Generic: </BOLD>
+          <BOLD theme="secondary">Generic: </BOLD>
           <CODE>
             {type.checkType.name}
             {typeParameter && <> extends {resolveTypeName(typeParameter[0].type)}</>}
           </CODE>
         </P>
         <P>
-          <BOLD>Type: </BOLD>
+          <BOLD theme="secondary">Type: </BOLD>
           <CODE>
             {type.checkType.name}
             {typeParameter && <> extends {type.extendsType && resolveTypeName(type.extendsType)}</>}
