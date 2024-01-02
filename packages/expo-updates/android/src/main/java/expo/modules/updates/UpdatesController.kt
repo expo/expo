@@ -580,6 +580,8 @@ class UpdatesController private constructor(
     private const val UPDATES_STATE_CHANGE_EVENT_NAME = "Expo.nativeUpdatesStateChangeEvent"
 
     private var singletonInstance: UpdatesController? = null
+    private var overrideConfiguration: UpdatesConfiguration? = null
+
     @JvmStatic val instance: UpdatesController
       get() {
         return checkNotNull(singletonInstance) { "UpdatesController.instance was called before the module was initialized" }
@@ -587,7 +589,7 @@ class UpdatesController private constructor(
 
     @JvmStatic fun initializeWithoutStarting(context: Context) {
       if (singletonInstance == null) {
-        val updatesConfiguration = UpdatesConfiguration(context, null)
+        val updatesConfiguration = overrideConfiguration ?: UpdatesConfiguration(context, null)
         singletonInstance = UpdatesController(context, updatesConfiguration)
       }
     }
@@ -612,10 +614,21 @@ class UpdatesController private constructor(
      */
     @JvmStatic fun initialize(context: Context, configuration: Map<String, Any>) {
       if (singletonInstance == null) {
-        val updatesConfiguration = UpdatesConfiguration(context, configuration)
+        val updatesConfiguration = overrideConfiguration ?: UpdatesConfiguration(context, configuration)
         singletonInstance = UpdatesController(context, updatesConfiguration)
         singletonInstance!!.start(context)
       }
+    }
+
+    /**
+     * Overrides the [UpdatesConfiguration] that will be used inside [UpdatesController]
+     */
+    @JvmStatic
+    fun overrideConfiguration(context: Context, configuration: Map<String, Any>) {
+      if (singletonInstance != null) {
+        throw AssertionError("The method should be called before UpdatesController.initialize()")
+      }
+      overrideConfiguration = UpdatesConfiguration(context, configuration)
     }
   }
 
