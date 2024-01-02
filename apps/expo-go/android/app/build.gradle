@@ -34,9 +34,9 @@ react {
   def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
 
   entryFile = file(["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute"].execute(null, rootDir).text.trim())
-  reactNativeDir = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
-  hermesCommand = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/sdks/hermesc/%OS-BIN%/hermesc"
-  codegenDir = new File("../../../../react-native-lab/react-native/packages/react-native-codegen")
+  reactNativeDir = new File(projectRoot, "../../react-native-lab/react-native/packages/react-native")
+  hermesCommand = new File(projectRoot, "../../react-native-lab/react-native/packages/react-native").getAbsolutePath() + "/sdks/hermesc/%OS-BIN%/hermesc"
+  codegenDir = new File(projectRoot, "../../react-native-lab/react-native/packages/react-native-codegen")
 
   cliFile = new File(["node", "--print", "require.resolve('@expo/cli')"].execute(null, rootDir).text.trim())
   bundleCommand = "export:embed"
