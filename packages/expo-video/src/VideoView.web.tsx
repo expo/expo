@@ -32,6 +32,9 @@ class VideoPlayerWeb implements VideoPlayer {
   }
 
   get volume(): number {
+    this.mountedVideos.forEach((video) => {
+      this._volume = video.volume;
+    });
     return this._volume;
   }
 

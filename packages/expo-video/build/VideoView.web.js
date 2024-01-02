@@ -26,6 +26,9 @@ class VideoPlayerWeb {
         this._volume = value;
     }
     get volume() {
+        this.mountedVideos.forEach((video) => {
+            this._volume = video.volume;
+        });
         return this._volume;
     }
     play() {
