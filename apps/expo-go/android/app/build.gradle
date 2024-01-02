@@ -35,7 +35,7 @@ react {
 
   entryFile = file(["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute"].execute(null, rootDir).text.trim())
   reactNativeDir = new File(projectRoot, "../../react-native-lab/react-native/packages/react-native")
-  hermesCommand = new File(projectRoot, "../../react-native-lab/react-native/packages/react-native").getAbsolutePath() + "/sdks/hermesc/%OS-BIN%/hermesc"
+  hermesCommand = new File(projectRoot, "../../react-native-lab/react-native/packages/react-native").getAbsolutePath() + "/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
   codegenDir = new File(projectRoot, "../../react-native-lab/react-native/packages/react-native-codegen")
 
   cliFile = new File(["node", "--print", "require.resolve('@expo/cli')"].execute(null, rootDir).text.trim())
