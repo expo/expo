@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Introduced the `UpdatesController.overrideConfiguration()` method to prevent ANR when overriding the `UpdatesConfiguration` on Android. ([#26078](https://github.com/expo/expo/pull/26078) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 0.18.19 — 2024-01-02
+
+### 🐛 Bug fixes
+
+- Introduced the `UpdatesController.overrideConfiguration()` method to prevent ANR when overriding the `UpdatesConfiguration` on Android. ([#26078](https://github.com/expo/expo/pull/26078) by [@kudo](https://github.com/kudo))
 
 ## 0.18.18 — 2023-12-15
 
