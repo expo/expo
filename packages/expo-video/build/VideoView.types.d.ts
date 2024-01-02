@@ -13,7 +13,7 @@ export declare class VideoPlayer {
     isMuted: boolean;
     /**
      * Float value between 0 and 1 representing the current volume.
-     * > When the player is muted using the `isMuted` property this property will still return the last volume value.
+     * > When the player is muted using the `isMuted` property this property will return the last volume value.
      * > Setting this property when the player is muted will only have an effect after the player is unmuted.
      *
      * @platform android, web
