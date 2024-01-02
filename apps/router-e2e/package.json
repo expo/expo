@@ -13,7 +13,6 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.16",
-    "expo-yarn-workspaces": "^2.0.0",
     "morgan": "^1.10.0",
     "postcss": "^8.4.31",
     "tailwindcss": "^3.3.5",

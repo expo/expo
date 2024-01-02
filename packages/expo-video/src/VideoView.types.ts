@@ -17,7 +17,7 @@ export declare class VideoPlayer {
   /**
    * Float value between 0 and 1 representing the current volume. This value will be ignored if the player is muted.
    *
-   * @platform web
+   * @platform android, web
    */
   volume: number;
 
@@ -64,7 +64,6 @@ export interface VideoViewProps extends ViewProps {
 
   /**
    * Determines whether native controls should be displayed or not.
-   * @platform ios, web
    */
   nativeControls: boolean | undefined;
 
