@@ -5,7 +5,6 @@ import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatf
 import {
   CommentTextBlock,
   getTagNamesList,
-  STYLE_APIBOX_NO_SPACING,
   STYLES_APIBOX,
   H3Code,
 } from '~/components/plugins/api/APISectionUtils';
@@ -20,7 +19,7 @@ const renderConstant = (
   { name, comment, type }: ConstantDefinitionData,
   apiName?: string
 ): JSX.Element => (
-  <div key={`constant-definition-${name}`} css={STYLES_APIBOX}>
+  <div key={`constant-definition-${name}`} css={STYLES_APIBOX} className="[&>*:last-child]:!mb-0">
     <APISectionDeprecationNote comment={comment} />
     <APISectionPlatformTags comment={comment} prefix="Only for:" />
     <H3Code tags={getTagNamesList(comment)}>
@@ -35,9 +34,7 @@ const renderConstant = (
       </P>
     )}
     {comment && (
-      <div css={STYLE_APIBOX_NO_SPACING}>
-        <CommentTextBlock comment={comment} includePlatforms={false} beforeContent={<br />} />
-      </div>
+      <CommentTextBlock comment={comment} includePlatforms={false} beforeContent={<br />} />
     )}
   </div>
 );

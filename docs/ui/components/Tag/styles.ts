@@ -8,7 +8,6 @@ export const tagStyle = css({
   color: theme.text.default,
   fontSize: '90%',
   padding: `${spacing[1]}px ${spacing[2]}px`,
-  marginBottom: spacing[3],
   marginRight: spacing[2],
   borderRadius: borderRadius.sm,
   border: `1px solid ${theme.border.default}`,
@@ -17,7 +16,6 @@ export const tagStyle = css({
 
   'table &': {
     marginTop: 0,
-    marginBottom: spacing[2],
     padding: `${spacing[0.5]}px ${spacing[1.5]}px`,
   },
 
@@ -33,6 +31,7 @@ export const tagStyle = css({
 export const labelStyle = css({
   lineHeight: `${spacing[4]}px`,
   fontWeight: 'normal',
+  fontSize: 'inherit !important',
 });
 
 export const tagToCStyle = css({

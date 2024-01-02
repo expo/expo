@@ -43,7 +43,7 @@ const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Elemen
         <APISectionDeprecationNote comment={enumValue.comment} />
         <APISectionPlatformTags comment={enumValue.comment} prefix="Only for:" />
         <H4 className="!mt-0">
-          <CODE>{enumValue.name}</CODE>
+          <MONOSPACE className="!text-inherit">{enumValue.name}</MONOSPACE>
         </H4>
         <CODE theme="secondary" className="mb-4">
           {`${name}.${enumValue.name} ＝ ${renderEnumValue(enumValue.type.value)}`}
