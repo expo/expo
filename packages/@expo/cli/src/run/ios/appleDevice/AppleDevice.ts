@@ -224,8 +224,25 @@ async function launchAppWithUsbmux(
   throw new CommandError('Unable to launch app, number of tries exceeded');
 }
 
-async function launchAppWithDeviceCtl(deviceId: string, bundleId: string) {
-  await xcrunAsync(['devicectl', 'device', 'process', 'launch', '--device', deviceId, bundleId]);
+/** @internal Exposed for testing */
+export async function launchAppWithDeviceCtl(deviceId: string, bundleId: string) {
+  try {
+    await xcrunAsync(['devicectl', 'device', 'process', 'launch', '--device', deviceId, bundleId]);
+  } catch (error: any) {
+    if ('stderr' in error) {
+      const errorCodes = getDeviceCtlErrorCodes(error.stderr);
+      if (errorCodes.includes('Locked')) {
+        throw new CommandError('APPLE_DEVICE_LOCKED', 'Device is locked, unlock and try again.');
+      }
+    }
+
+    throw new CommandError(`There was an error launching app: ${error}`);
+  }
+}
+
+/** Find all error codes from the output log */
+function getDeviceCtlErrorCodes(log: string): string[] {
+  return [...log.matchAll(/BSErrorCodeDescription\s+=\s+(.*)$/gim)].map(([_line, code]) => code);
 }
 
 /**
