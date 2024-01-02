@@ -343,6 +343,23 @@ const row = await db.getFirstAsync<{ data: Uint8Array }>('SELECT * FROM blobs');
 expect(row.data).toEqual(blob);
 ```
 
+## Third-party libraries integrations
+
+The `expo-sqlite` library is designed to be a solid SQLite foundation. It enables broader integrations with third-party libraries for more advanced features. Here are some of the libraries that you can use with `expo-sqlite`.
+
+### Drizzle ORM
+
+[Drizzle ORM](https://orm.drizzle.team/) is a TypeScript ORM for SQL databases designed with maximum type safety in mind. It comes with a [drizzle-kit](https://github.com/drizzle-team/drizzle-kit-mirror) CLI companion for automatic SQL migrations generation. Drizzle ORM is meant to be a library, not a framework. It stays as an opt-in solution all the time at any levels.
+The ORM's main philosophy is "If you know SQL, you know Drizzle ORM". We follow the SQL-like syntax whenever possible, are strongly typed ground up, and fail at compile time, not in runtime.
+
+Check out the [Drizzle ORM documentation](https://orm.drizzle.team/) and the [`expo-sqlite` integration guide](https://orm.drizzle.team/docs/get-started-sqlite#expo-sqlite) for more details.
+
+### Knex.js
+
+[Knex.js](https://knexjs.org/) is a SQL query builder that is flexible, portable, and fun to use!
+
+Check out the [`expo-sqlite` integration guide](https://github.com/expo/knex-expo-sqlite-dialect) for more details.
+
 ## API
 
 ### Cheatsheet for the common API
