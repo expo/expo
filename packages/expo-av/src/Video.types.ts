@@ -103,10 +103,9 @@ export type VideoProps = {
    * Note that this can also be set on the `ref` via `loadAsync()`. See the [AV documentation](./av) for further information.
    *
    * @see
-   * - The [Android developer documentation](https://developer.android.com/guide/topics/media/media-formats#video-formats)
-   * lists of the video formats supported on Android.
-   * - The [iOS developer documentation](https://developer.apple.com/documentation/coremedia/1564239-video_codec_constants)
-   * lists of the video formats supported on iOS.
+   * The [Android developer documentation](https://developer.android.com/guide/topics/media/platform/supported-formats#video-formats)
+   * and the [iOS developer documentation](https://developer.apple.com/documentation/coremedia/1564239-video_codec_constants)
+   * lists of the video formats supported on Android and iOS.
    */
   source?: AVPlaybackSource;
   /**
