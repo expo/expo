@@ -5,7 +5,9 @@ description: Learn how to use EAS Build locally on your machine or a custom infr
 
 import { Terminal } from '~/ui/components/Snippet';
 
-You can run the same build process that we run on the EAS Build servers directly on your machine with the `--local` flag.
+Local builds are a way to create builds using [EAS Build](/build/introduction) locally, on your machine. When using local builds you can run the same build process that we run on the EAS Build servers directly on your machine with the `--local` flag which is a useful way to debug build failures happening on your EAS cloud builds.
+
+> **Note:** For making builds using the Expo framework locally use [`npx expo run:android` or `npx expo run:ios` commands](/more/expo-cli/#compiling) instead. The `eas build --local` command is a way to make builds using [EAS cloud services](/build/introduction) locally.
 
 <Terminal
   cmd={['eas build --platform android --local', '# or', 'eas build --platform ios --local']}
@@ -22,10 +24,10 @@ You need to be authenticated with Expo:
 
 ## Use cases for local builds
 
+- [Debugging](#using-local-builds-for-debugging) build failures on EAS servers.
 - Company policies that restrict the use of third-party CI/CD services. With local builds, the entire process runs on your infrastructure and the only communication with EAS servers is:
   - to make sure project `@account/slug` exists
   - if you are using managed credentials to download them
-- [Debugging](#using-local-builds-for-debugging) build failures on EAS servers.
 
 ## Use local builds for debugging
 
@@ -34,6 +36,8 @@ If you encounter build failures on EAS servers and you're unable to determine th
 - `EAS_LOCAL_BUILD_SKIP_CLEANUP=1` - Set this to disable cleaning up the working directory after the build process is finished.
 - `EAS_LOCAL_BUILD_WORKINGDIR` - Specify the working directory for the build process, by default it's somewhere (it's platform dependent) in **/tmp** directory.
 - `EAS_LOCAL_BUILD_ARTIFACTS_DIR` - The directory where artifacts are copied after a successful build. By default these files are copied to the current directory, which may be undesirable if you are running many consecutive builds.
+
+If you use `EAS_LOCAL_BUILD_SKIP_CLEANUP` and `EAS_LOCAL_BUILD_WORKINGDIR` for iOS builds you should be able to inspect the contents of the `logs` subdirectory of the working directory to take a look at your Xcode logs.
 
 ## Limitations
 
