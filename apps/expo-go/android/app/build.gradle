@@ -166,6 +166,9 @@ android {
     // AGP will give priority of libc++_shared coming from App modules.
     pickFirst "**/libc++_shared.so"
 
+    // This pickFirst is dedicated for React Native and its dependencies, such as `libfb.so`, `libfabricjni.so`, `libglog.so`.
+    // It is a bit risky as we can't be sure which library gets loaded eventually.
+    // TODO: Figure out how we can avoid it (probably RN gradle plugin loads RN dependencies twice)
     pickFirst "lib/**/lib*.so"
   }
 }
