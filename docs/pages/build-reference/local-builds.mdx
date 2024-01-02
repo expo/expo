@@ -5,9 +5,9 @@ description: Learn how to use EAS Build locally on your machine or a custom infr
 
 import { Terminal } from '~/ui/components/Snippet';
 
-Local builds are a way to create builds using [EAS Build](/build/introduction) locally, on your machine. When using local builds you can run the same build process that we run on the EAS Build servers directly on your machine with the `--local` flag which is a useful way to debug build failures happening on your EAS cloud builds.
+You can run the same build process that we run on the EAS Build servers directly on your machine with the `--local` flag which is a useful way to debug build failures happening on your EAS cloud builds.
 
-> **Note:** For making builds using the Expo framework locally use [`npx expo run:android` or `npx expo run:ios` commands](/more/expo-cli/#compiling) instead. The `eas build --local` command is a way to make builds using [EAS cloud services](/build/introduction) locally.
+> **Note:** For making builds using the Expo framework locally use `npx expo run:android` or `npx expo run:ios` [commands](/more/expo-cli/#compiling) instead. The `eas build --local` command is a way to make builds using [EAS cloud services](/build/introduction) locally.
 
 <Terminal
   cmd={['eas build --platform android --local', '# or', 'eas build --platform ios --local']}
