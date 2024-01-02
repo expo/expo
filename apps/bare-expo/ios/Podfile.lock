@@ -16,8 +16,6 @@ PODS:
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
-  - EXCalendar (12.2.0):
-    - ExpoModulesCore
   - EXConstants (15.4.1):
     - ExpoModulesCore
   - EXContacts (12.8.1):
@@ -153,6 +151,8 @@ PODS:
   - ExpoBlur (12.9.0):
     - ExpoModulesCore
   - ExpoBrightness (11.8.0):
+    - ExpoModulesCore
+  - ExpoCalendar (12.2.0):
     - ExpoModulesCore
   - ExpoCamera (14.0.0):
     - ExpoModulesCore
@@ -1962,6 +1962,7 @@ SPEC CHECKSUMS:
   ExpoBattery: c75a7c094d64d89d96d3e3f419627b152da94f29
   ExpoBlur: 6c4602d729a492663b0916e5862b334a23157f0a
   ExpoBrightness: 6d160de5877289d11674aea61aacdb37422774cf
+  ExpoCalendar: a2da7fc1bdb0d20caf25891f7de6f709038bb8c1
   ExpoCamera: a3f3681963815533c24f698a22c239e68724fb99
   ExpoCellular: 463763547a7489d8fc68d3cc539b666f308a0fe9
   ExpoClipboard: ecbf3edb5dcb460fdefca945923c38f8ad6c7859
