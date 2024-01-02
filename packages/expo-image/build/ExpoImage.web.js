@@ -51,17 +51,23 @@ function onErrorAdapter(onError) {
         });
     };
 }
-// Used for some transitions to mimic native animations
-const setCssVariables = (element, size) => {
+// Used for flip transitions to mimic native animations
+function setCssVariablesForFlipTransitions(element, size) {
     element?.style.setProperty('--expo-image-width', `${size.width}px`);
     element?.style.setProperty('--expo-image-height', `${size.height}px`);
-};
+}
+function isFlipTransition(transition) {
+    return (transition?.effect === 'flip-from-bottom' ||
+        transition?.effect === 'flip-from-top' ||
+        transition?.effect === 'flip-from-left' ||
+        transition?.effect === 'flip-from-right');
+}
 export default function ExpoImage({ source, placeholder, contentFit, contentPosition, placeholderContentFit, cachePolicy, onLoad, transition, onError, responsivePolicy, onLoadEnd, priority, blurRadius, recyclingKey, style, ...props }) {
     const imagePlaceholderContentFit = placeholderContentFit || 'scale-down';
     const imageHashStyle = {
         objectFit: placeholderContentFit || contentFit,
     };
-    const { containerRef, source: selectedSource } = useSourceSelection(source, responsivePolicy, setCssVariables);
+    const { containerRef, source: selectedSource } = useSourceSelection(source, responsivePolicy, isFlipTransition(transition) ? setCssVariablesForFlipTransitions : null);
     const initialNodeAnimationKey = (recyclingKey ? `${recyclingKey}-${placeholder?.[0]?.uri}` : placeholder?.[0]?.uri) ?? '';
     const initialNode = placeholder?.[0]?.uri
         ? [
