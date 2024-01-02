@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix the module requiring the `expo-task-manager` module for methods that don't use it.
+- [Android] Fix the module requiring the `expo-task-manager` module for methods that don't use it. ([#26200](https://github.com/expo/expo/pull/26200) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 
