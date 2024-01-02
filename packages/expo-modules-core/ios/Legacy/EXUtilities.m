@@ -55,6 +55,7 @@ EX_REGISTER_MODULE();
   }
   return controller;
 #elif TARGET_OS_OSX
+  // Even though the function's return type is `UIViewController`, react-native-macos will alias `NSViewController` to `UIViewController`. 
   return [[[NSApplication sharedApplication] keyWindow] contentViewController];
 #endif
 }
