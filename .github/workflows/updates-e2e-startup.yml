@@ -96,6 +96,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_api }}
+          MATRIX_CONTEXT: ${{ toJson(matrix) }}
         with:
           channel: '#expo-sdk'
           status: ${{ job.status }}
