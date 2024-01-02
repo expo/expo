@@ -48,7 +48,7 @@ func calendarSupportedAvailabilities(fromMask types: EKCalendarEventAvailability
 func serialize(ekSource: EKSource) -> [String: Any?] {
   return [
     "id": ekSource.sourceIdentifier,
-    "type": source(type: ekSource.sourceType),
+    "type": sourceToString(type: ekSource.sourceType),
     "name": ekSource.title
   ]
 }
@@ -66,7 +66,7 @@ func serializeCalendar(calendar: EKCalendar) -> [String: Any?] {
     "source": serialize(ekSource: calendar.source),
     "entityType": entity(type: calendar.allowedEntityTypes),
     "color": calendar.cgColor != nil ? EXUtilities.hexString(with: calendar.cgColor) : nil,
-    "type": calendarType(type: calendar.type),
+    "type": calendarTypeToString(type: calendar.type),
     "allowsModifications": calendar.allowsContentModifications,
     "allowedAvailabilities": calendarSupportedAvailabilities(fromMask: calendar.supportedEventAvailabilities)
   ]
@@ -96,8 +96,8 @@ func serializeCalendar(event: EKEvent) -> [String: Any?] {
 
   serializedCalendarEvent["isDetached"] = event.isDetached
   serializedCalendarEvent["allDay"] = event.isAllDay
-  serializedCalendarEvent["availability"] = eventAvailability(event.availability)
-  serializedCalendarEvent["status"] = eventStatus(event.status)
+  serializedCalendarEvent["availability"] = eventAvailabilityToString(event.availability)
+  serializedCalendarEvent["status"] = eventStatusToString(event.status)
   if let organizer = event.organizer {
     serializedCalendarEvent["organizer"] = serialize(attendee: organizer)
   }
@@ -133,7 +133,7 @@ func serializeCalendar(item: EKCalendarItem, with formatter: DateFormatter) -> [
   }
 
   if let rule = item.recurrenceRules?.first {
-    let frequencyType = recurrence(frequency: rule.frequency)
+    let frequencyType = recurrenceToString(frequency: rule.frequency)
     var recurrenceRule: [String: Any?] = ["frequency": frequencyType]
 
     recurrenceRule["interval"] = rule.interval
@@ -219,9 +219,9 @@ func serialize(attendee: EKParticipant) -> [String: Any?] {
     serializedAttendee["name"] = name
   }
 
-  serializedAttendee["role"] = participant(role: attendee.participantRole)
-  serializedAttendee["status"] = participant(status: attendee.participantStatus)
-  serializedAttendee["type"] = participant(type: attendee.participantType)
+  serializedAttendee["role"] = participantToString(role: attendee.participantRole)
+  serializedAttendee["status"] = participantStatusToString(status: attendee.participantStatus)
+  serializedAttendee["type"] = participantTypeToString(type: attendee.participantType)
   serializedAttendee["url"] = attendee.url.absoluteString.removingPercentEncoding
 
   return serializedAttendee

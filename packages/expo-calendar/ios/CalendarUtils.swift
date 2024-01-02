@@ -66,7 +66,7 @@ func createRecurrenceRule(rule: RecurrenceRule) -> EKRecurrenceRule? {
   }
 
   return EKRecurrenceRule(
-    recurrenceWith: recurrenceFrequency(name: rule.frequency),
+    recurrenceWith: recurrenceFrequencyToString(name: rule.frequency),
     interval: recurrenceInterval,
     daysOfTheWeek: daysOfTheWeek,
     daysOfTheMonth: daysOfTheMonth,

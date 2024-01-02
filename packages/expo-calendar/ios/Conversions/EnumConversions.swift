@@ -1,7 +1,7 @@
 import ExpoModulesCore
 import EventKit
 
-func eventAvailability(_ availability: EKEventAvailability) -> String {
+func eventAvailabilityToString(_ availability: EKEventAvailability) -> String {
   switch availability {
   case .notSupported:
     return "notSupported"
@@ -16,7 +16,7 @@ func eventAvailability(_ availability: EKEventAvailability) -> String {
   }
 }
 
-func eventStatus(_ status: EKEventStatus) -> String {
+func eventStatusToString(_ status: EKEventStatus) -> String {
   switch status {
   case .none:
     return "none"
@@ -29,7 +29,7 @@ func eventStatus(_ status: EKEventStatus) -> String {
   }
 }
 
-func source(type: EKSourceType) -> String {
+func sourceToString(type: EKSourceType) -> String {
   switch type {
   case .local:
     return "local"
@@ -46,7 +46,7 @@ func source(type: EKSourceType) -> String {
   }
 }
 
-func participant(role: EKParticipantRole) -> String {
+func participantToString(role: EKParticipantRole) -> String {
   switch role {
   case .unknown:
     return "unknown"
@@ -61,7 +61,7 @@ func participant(role: EKParticipantRole) -> String {
   }
 }
 
-func recurrenceFrequency(name: String) -> EKRecurrenceFrequency {
+func recurrenceFrequencyToString(name: String) -> EKRecurrenceFrequency {
   switch name {
   case "weekly":
     return .weekly
@@ -74,7 +74,7 @@ func recurrenceFrequency(name: String) -> EKRecurrenceFrequency {
   }
 }
 
-func participant(type: EKParticipantType) -> String {
+func participantTypeToString(type: EKParticipantType) -> String {
   switch type {
   case .unknown:
     return "unknown"
@@ -89,7 +89,7 @@ func participant(type: EKParticipantType) -> String {
   }
 }
 
-func participant(status: EKParticipantStatus) -> String {
+func participantStatusToString(status: EKParticipantStatus) -> String {
   switch status {
   case .unknown:
     return "unknown"
@@ -110,7 +110,7 @@ func participant(status: EKParticipantStatus) -> String {
   }
 }
 
-func recurrence(frequency: EKRecurrenceFrequency) -> String {
+func recurrenceToString(frequency: EKRecurrenceFrequency) -> String {
   switch frequency {
   case .daily:
     return "daily"
@@ -123,7 +123,7 @@ func recurrence(frequency: EKRecurrenceFrequency) -> String {
   }
 }
 
-func calendarType(type: EKCalendarType) -> String {
+func calendarTypeToString(type: EKCalendarType) -> String {
   switch type {
   case .local:
     return "local"
