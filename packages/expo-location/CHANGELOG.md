@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix the module requiring the `expo-task-manager` module for methods that don't use it.
+
 ### 💡 Others
 
 ## 16.5.1 - 2023-12-19
