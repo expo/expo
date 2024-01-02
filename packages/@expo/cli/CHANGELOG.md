@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `npx expo uneject` command to convert bare projects as CNG projects and generate **cng-patches**. ([#26199](https://github.com/expo/expo/pull/26199) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 - Update import for type generation. ([#26145](https://github.com/expo/expo/pull/26145) by [@EvanBacon](https://github.com/EvanBacon))
