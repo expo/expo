@@ -43,24 +43,6 @@
 
 #if __has_include(<React-RCTAppDelegate/RCTAppDelegate.h>) || __has_include(<React_RCTAppDelegate/RCTAppDelegate.h>)
 
-- (UIView *)findRootView:(UIApplication *)application
-{
-#if TARGET_OS_IOS || TARGET_OS_TV
-  UIWindow *mainWindow = application.delegate.window;
-  if (mainWindow == nil) {
-    return nil;
-  }
-  UIViewController *rootViewController = mainWindow.rootViewController;
-  if (rootViewController == nil) {
-    return nil;
-  }
-  UIView *rootView = rootViewController.view;
-  return rootView;
-#elif TARGET_OS_OSX
-  return [[[[NSApplication sharedApplication] keyWindow] contentViewController] view];
-#endif
-}
-
 #if !TARGET_OS_OSX
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
