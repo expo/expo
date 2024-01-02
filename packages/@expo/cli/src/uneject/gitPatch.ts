@@ -17,6 +17,7 @@ export async function addAllToGitIndexAsync(repoRoot: string) {
 export async function commitAsync(repoRoot: string, message: string) {
   await runGitAsync(['commit', '-m', message, '--author', 'expo-uneject <noreply@expo.dev>'], {
     cwd: repoRoot,
+    stdio: 'inherit',
   });
 }
 
