@@ -15,6 +15,7 @@ var _exportNames = {
   withRunOnce: true,
   createRunOncePlugin: true,
   withDangerousMod: true,
+  createPatchPlugin: true,
   withMod: true,
   withBaseMod: true,
   withAppDelegate: true,
@@ -52,6 +53,12 @@ Object.defineProperty(exports, "compileModsAsync", {
   enumerable: true,
   get: function () {
     return _modCompiler().compileModsAsync;
+  }
+});
+Object.defineProperty(exports, "createPatchPlugin", {
+  enumerable: true,
+  get: function () {
+    return _withPatchPlugin().createPatchPlugin;
   }
 });
 Object.defineProperty(exports, "createRunOncePlugin", {
@@ -338,6 +345,13 @@ function _withRunOnce() {
 function _withDangerousMod() {
   const data = require("./plugins/withDangerousMod");
   _withDangerousMod = function () {
+    return data;
+  };
+  return data;
+}
+function _withPatchPlugin() {
+  const data = require("./plugins/withPatchPlugin");
+  _withPatchPlugin = function () {
     return data;
   };
   return data;

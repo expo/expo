@@ -62,6 +62,15 @@ const defaultProviders = {
     },
     async write() {},
   }),
+  patch: provider<unknown>({
+    getFilePath() {
+      return '';
+    },
+    async read() {
+      return {};
+    },
+    async write() {},
+  }),
   // Append a rule to supply AppDelegate data to mods on `mods.ios.appDelegate`
   appDelegate: provider<Paths.AppDelegateProjectFile>({
     getFilePath({ modRequest: { projectRoot } }) {

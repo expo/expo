@@ -149,6 +149,18 @@ const defaultProviders = {
     },
     async write() {}
   }),
+  patch: (0, _createBaseMod().provider)({
+    getFilePath() {
+      return '';
+    },
+    async read() {
+      return {
+        filePath: '',
+        modResults: {}
+      };
+    },
+    async write() {}
+  }),
   // Append a rule to supply gradle.properties data to mods on `mods.android.gradleProperties`
   manifest: (0, _createBaseMod().provider)({
     isIntrospective: true,

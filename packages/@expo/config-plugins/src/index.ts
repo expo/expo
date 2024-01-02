@@ -28,6 +28,7 @@ export { withPlugins } from './plugins/withPlugins';
 export { withRunOnce, createRunOncePlugin } from './plugins/withRunOnce';
 
 export { withDangerousMod } from './plugins/withDangerousMod';
+export { createPatchPlugin } from './plugins/withPatchPlugin';
 export { withMod, withBaseMod } from './plugins/withMod';
 
 export {

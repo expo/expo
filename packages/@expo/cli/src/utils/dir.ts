@@ -32,4 +32,6 @@ export const copySync = fs.copySync;
 
 export const copyAsync = fs.copy;
 
+export const moveAsync = fs.move;
+
 export const removeAsync = fs.remove;

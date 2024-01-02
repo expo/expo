@@ -79,7 +79,7 @@ export async function updateFromTemplateAsync(
  *
  * @return `true` if any project files were created.
  */
-async function cloneTemplateAndCopyToProjectAsync({
+export async function cloneTemplateAndCopyToProjectAsync({
   projectRoot,
   templateDirectory,
   template,

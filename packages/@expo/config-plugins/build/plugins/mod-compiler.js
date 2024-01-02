@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.compileModsAsync = compileModsAsync;
 exports.evalModsAsync = evalModsAsync;
+exports.sortMods = sortMods;
 exports.withDefaultBaseMods = withDefaultBaseMods;
 exports.withIntrospectionBaseMods = withIntrospectionBaseMods;
 function _debug() {
@@ -123,18 +124,18 @@ async function compileModsAsync(config, props) {
   }
   return await evalModsAsync(config, props);
 }
-function sortMods(commands, order) {
-  const allKeys = commands.map(([key]) => key);
-  const completeOrder = [...new Set([...order, ...allKeys])];
-  const sorted = [];
-  while (completeOrder.length) {
-    const group = completeOrder.shift();
-    const commandSet = commands.find(([key]) => key === group);
-    if (commandSet) {
-      sorted.push(commandSet);
-    }
-  }
-  return sorted;
+function sortMods(commands, precedences) {
+  const seen = new Set();
+  const dedupedCommands = commands.filter(([key]) => {
+    const duplicate = seen.has(key);
+    seen.add(key);
+    return !duplicate;
+  });
+  return dedupedCommands.sort(([keyA], [keyB]) => {
+    const precedenceA = precedences[keyA] || 0;
+    const precedenceB = precedences[keyB] || 0;
+    return precedenceB - precedenceA;
+  });
 }
 function getRawClone({
   mods,
@@ -144,12 +145,15 @@ function getRawClone({
   // the mods.
   return Object.freeze(JSON.parse(JSON.stringify(config)));
 }
-const orders = {
-  ios: [
-  // dangerous runs first
-  'dangerous',
-  // run the XcodeProject mod second because many plugins attempt to read from it.
-  'xcodeproj']
+const precedences = {
+  ios: {
+    // dangerous runs first
+    dangerous: 2,
+    // run the XcodeProject mod second because many plugins attempt to read from it.
+    xcodeproj: 1,
+    // patch at the last
+    patch: -1
+  }
 };
 /**
  * A generic plugin compiler.
@@ -172,9 +176,13 @@ async function evalModsAsync(config, {
     }
     let entries = Object.entries(platform);
     if (entries.length) {
-      var _orders$platformName;
-      // Move dangerous item to the first position if it exists, this ensures that all dangerous code runs first.
-      entries = sortMods(entries, (_orders$platformName = orders[platformName]) !== null && _orders$platformName !== void 0 ? _orders$platformName : ['dangerous']);
+      var _precedences$platform;
+      // Move dangerous item to the first position and patch item to the last position if it exists.
+      // This ensures that all dangerous code runs first and patch applies last.
+      entries = sortMods(entries, (_precedences$platform = precedences[platformName]) !== null && _precedences$platform !== void 0 ? _precedences$platform : {
+        dangerous: 1,
+        patch: -1
+      });
       debug(`run in order: ${entries.map(([name]) => name).join(', ')}`);
       const platformProjectRoot = _path().default.join(projectRoot, platformName);
       const projectName = platformName === 'ios' ? (0, _Xcodeproj().getHackyProjectName)(projectRoot, config) : undefined;

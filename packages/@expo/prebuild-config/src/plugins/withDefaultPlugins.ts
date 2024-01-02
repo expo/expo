@@ -7,6 +7,7 @@ import {
   IOSConfig,
   StaticPlugin,
   withPlugins,
+  createPatchPlugin,
   withStaticPlugin,
 } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
@@ -62,6 +63,7 @@ export const withIosExpoPlugins: ConfigPlugin<{
     IOSConfig.Locales.withLocales,
     // Dangerous
     withIosIcons,
+    createPatchPlugin('ios'),
   ]);
 };
 
@@ -113,6 +115,7 @@ export const withAndroidExpoPlugins: ConfigPlugin<{
     AndroidConfig.PrimaryColor.withPrimaryColor,
 
     withAndroidIcons,
+    createPatchPlugin('android'),
     // If we renamed the package, we should also move it around and rename it in source files
     // Added last to ensure this plugin runs first. Out of tree solutions will mistakenly resolve the package incorrectly otherwise.
     AndroidConfig.Package.withPackageRefactor,

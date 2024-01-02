@@ -23,6 +23,7 @@ const commands: { [command: string]: () => Promise<Command> } = {
   'run:android': () => import('../src/run/android/index.js').then((i) => i.expoRunAndroid),
   start: () => import('../src/start/index.js').then((i) => i.expoStart),
   prebuild: () => import('../src/prebuild/index.js').then((i) => i.expoPrebuild),
+  uneject: () => import('../src/uneject/index.js').then((i) => i.expoUneject),
   config: () => import('../src/config/index.js').then((i) => i.expoConfig),
   export: () => import('../src/export/index.js').then((i) => i.expoExport),
   'export:web': () => import('../src/export/web/index.js').then((i) => i.expoExportWeb),
@@ -91,6 +92,7 @@ if (!isSubcommand && args['--help']) {
     // workaround until we can use `expo export` for all production bundling.
     // https://github.com/expo/expo/pull/21396/files#r1121025873
     'export:embed': exportEmbed_unused,
+    uneject: uneject_unused, // Experimental command and hide from help
     // Other ignored commands, these are intentially not listed in the `--help` output
     run: _run,
     // All other commands
