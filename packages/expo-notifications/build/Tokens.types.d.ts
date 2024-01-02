@@ -7,12 +7,13 @@ export interface WebDevicePushToken {
     type: 'web';
     data: {
         endpoint: string;
-        keys: {
-            p256dh: string;
-            auth: string;
-        };
+        keys: WebDevicePushTokenKeys;
     };
 }
+export type WebDevicePushTokenKeys = {
+    p256dh: string;
+    auth: string;
+};
 type ExplicitlySupportedDevicePushToken = NativeDevicePushToken | WebDevicePushToken;
 type ImplicitlySupportedDevicePushToken = {
     /**
