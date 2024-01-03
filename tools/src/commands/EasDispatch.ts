@@ -9,8 +9,8 @@ import inquirer from 'inquirer';
 import fetch from 'node-fetch';
 import os from 'os';
 import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
 import semver from 'semver';
+import { v4 as uuidv4 } from 'uuid';
 
 import { EXPO_DIR } from '../Constants';
 import Git from '../Git';
