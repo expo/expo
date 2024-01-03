@@ -51,7 +51,7 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
     self.updatesDirectoryInternal = updatesDirectory
     self.updatesDirectory = updatesDirectory
     self.selectionPolicy = SelectionPolicyFactory.filterAwarePolicy(
-      withRuntimeVersion: self.config.runtimeVersionRealized
+      withRuntimeVersion: self.config.runtimeVersion
     )
     self.logger.info(message: "AppController sharedInstance created")
 
@@ -247,7 +247,7 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
       isEnabled: true,
       releaseChannel: self.config.releaseChannel,
       isUsingEmbeddedAssets: startupProcedure.isUsingEmbeddedAssets(),
-      runtimeVersion: self.config.runtimeVersionRaw ?? "",
+      runtimeVersion: self.config.runtimeVersion,
       checkOnLaunch: self.config.checkOnLaunch,
       requestHeaders: self.config.requestHeaders,
       assetFilesMap: startupProcedure.assetFilesMap(),

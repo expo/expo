@@ -30,6 +30,9 @@ describe('iOS Updates config', () => {
       '/app',
       {
         sdkVersion: '37.0.0',
+        runtimeVersion: {
+          policy: 'sdkVersion',
+        },
         slug: 'my-app',
         owner: 'owner',
         updates: {
@@ -55,7 +58,7 @@ describe('iOS Updates config', () => {
       EXUpdatesEnabled: false,
       EXUpdatesCheckOnLaunch: 'ERROR_RECOVERY_ONLY',
       EXUpdatesLaunchWaitMs: 2000,
-      EXUpdatesSDKVersion: '37.0.0',
+      EXUpdatesRuntimeVersion: 'exposdk:37.0.0',
       EXUpdatesCodeSigningCertificate: fsReal.readFileSync(
         sampleCodeSigningCertificatePath,
         'utf-8'

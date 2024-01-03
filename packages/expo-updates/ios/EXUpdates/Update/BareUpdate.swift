@@ -53,7 +53,7 @@ public final class BareUpdate: Update {
       updateId: uuid,
       scopeKey: config.scopeKey,
       commitTime: Date(timeIntervalSince1970: Double(commitTime) / 1000),
-      runtimeVersion: config.runtimeVersionRealized,
+      runtimeVersion: config.runtimeVersion,
       keep: true,
       status: UpdateStatus.StatusEmbedded,
       isDevelopmentMode: false,

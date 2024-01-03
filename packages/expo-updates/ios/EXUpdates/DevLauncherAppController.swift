@@ -77,7 +77,7 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
     self.isMissingRuntimeVersion = isMissingRuntimeVersion
 
     self.defaultSelectionPolicy = SelectionPolicyFactory.filterAwarePolicy(
-      withRuntimeVersion: initialUpdatesConfiguration.let { it in it.runtimeVersionRealized } ?? "1"
+      withRuntimeVersion: initialUpdatesConfiguration.let { it in it.runtimeVersion } ?? "1"
     )
 
     super.init()
@@ -314,7 +314,7 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
       isEnabled: true,
       releaseChannel: self.config?.releaseChannel ?? "default",
       isUsingEmbeddedAssets: isUsingEmbeddedAssets(),
-      runtimeVersion: self.config?.runtimeVersionRaw ?? "1",
+      runtimeVersion: self.config?.runtimeVersion ?? "1",
       checkOnLaunch: self.config?.checkOnLaunch ?? CheckAutomaticallyConfig.Always,
       requestHeaders: self.config?.requestHeaders ?? [:],
       assetFilesMap: assetFilesMap(),

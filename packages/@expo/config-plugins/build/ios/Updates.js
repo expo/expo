@@ -53,7 +53,6 @@ exports.Config = Config;
   Config["CHECK_ON_LAUNCH"] = "EXUpdatesCheckOnLaunch";
   Config["LAUNCH_WAIT_MS"] = "EXUpdatesLaunchWaitMs";
   Config["RUNTIME_VERSION"] = "EXUpdatesRuntimeVersion";
-  Config["SDK_VERSION"] = "EXUpdatesSDKVersion";
   Config["UPDATE_URL"] = "EXUpdatesURL";
   Config["RELEASE_CHANNEL"] = "EXUpdatesReleaseChannel";
   Config["UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY"] = "EXUpdatesRequestHeaders";
@@ -110,19 +109,11 @@ async function setVersionsConfigAsync(projectRoot, config, expoPlist) {
   if (!runtimeVersion && expoPlist[Config.RUNTIME_VERSION]) {
     throw new Error('A runtime version is set in your Expo.plist, but is missing from your app.json/app.config.js. Please either set runtimeVersion in your app.json/app.config.js or remove EXUpdatesRuntimeVersion from your Expo.plist.');
   }
-  const sdkVersion = (0, _Updates().getSDKVersion)(config);
   if (runtimeVersion) {
-    delete newExpoPlist[Config.SDK_VERSION];
+    delete newExpoPlist['EXUpdatesSDKVersion'];
     newExpoPlist[Config.RUNTIME_VERSION] = runtimeVersion;
-  } else if (sdkVersion) {
-    /**
-     * runtime version maybe null in projects using classic updates. In that
-     * case we use SDK version
-     */
-    delete newExpoPlist[Config.RUNTIME_VERSION];
-    newExpoPlist[Config.SDK_VERSION] = sdkVersion;
   } else {
-    delete newExpoPlist[Config.SDK_VERSION];
+    delete newExpoPlist['EXUpdatesSDKVersion'];
     delete newExpoPlist[Config.RUNTIME_VERSION];
   }
   return newExpoPlist;
@@ -162,7 +153,7 @@ function isShellScriptBuildPhaseConfigured(projectRoot, project) {
   return bundleReactNative.shellScript.includes(buildPhaseShellScriptPath);
 }
 function isPlistConfigurationSet(expoPlist) {
-  return Boolean(expoPlist.EXUpdatesURL && (expoPlist.EXUpdatesSDKVersion || expoPlist.EXUpdatesRuntimeVersion));
+  return Boolean(expoPlist.EXUpdatesURL && expoPlist.EXUpdatesRuntimeVersion);
 }
 async function isPlistConfigurationSyncedAsync(projectRoot, config, expoPlist) {
   return (0, _Updates().getUpdateUrl)(config) === expoPlist.EXUpdatesURL && (0, _Updates().getUpdatesEnabled)(config) === expoPlist.EXUpdatesEnabled && (0, _Updates().getUpdatesTimeout)(config) === expoPlist.EXUpdatesLaunchWaitMs && (0, _Updates().getUpdatesCheckOnLaunch)(config) === expoPlist.EXUpdatesCheckOnLaunch && (0, _Updates().getUpdatesCodeSigningCertificate)(projectRoot, config) === expoPlist.EXUpdatesCodeSigningCertificate && (0, _Updates().getUpdatesCodeSigningMetadata)(config) === expoPlist.EXUpdatesCodeSigningMetadata && (await isPlistVersionConfigurationSyncedAsync(projectRoot, config, expoPlist));
@@ -170,13 +161,10 @@ async function isPlistConfigurationSyncedAsync(projectRoot, config, expoPlist) {
 async function isPlistVersionConfigurationSyncedAsync(projectRoot, config, expoPlist) {
   var _expoPlist$EXUpdatesR, _expoPlist$EXUpdatesS;
   const expectedRuntimeVersion = await (0, _Updates().getRuntimeVersionNullableAsync)(projectRoot, config, 'ios');
-  const expectedSdkVersion = (0, _Updates().getSDKVersion)(config);
   const currentRuntimeVersion = (_expoPlist$EXUpdatesR = expoPlist.EXUpdatesRuntimeVersion) !== null && _expoPlist$EXUpdatesR !== void 0 ? _expoPlist$EXUpdatesR : null;
   const currentSdkVersion = (_expoPlist$EXUpdatesS = expoPlist.EXUpdatesSDKVersion) !== null && _expoPlist$EXUpdatesS !== void 0 ? _expoPlist$EXUpdatesS : null;
   if (expectedRuntimeVersion !== null) {
     return currentRuntimeVersion === expectedRuntimeVersion && currentSdkVersion === null;
-  } else if (expectedSdkVersion !== null) {
-    return currentSdkVersion === expectedSdkVersion && currentRuntimeVersion === null;
   } else {
     return true;
   }

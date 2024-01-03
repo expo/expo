@@ -214,7 +214,7 @@ NS_ASSUME_NONNULL_BEGIN
   NSDictionary *updatesConfig = @{
     EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: @"https://expo.dev", // unused
     EXUpdatesConfig.EXUpdatesConfigHasEmbeddedUpdateKey: @NO,
-    EXUpdatesConfig.EXUpdatesConfigSDKVersionKey: [self _sdkVersions],
+    EXUpdatesConfig.EXUpdatesConfigRuntimeVersionKey: [self _runtimeVersion],
     EXUpdatesConfig.EXUpdatesConfigScopeKeyKey: self.manifestAndAssetRequestHeaders.manifest.scopeKey,
     EXUpdatesConfig.EXUpdatesConfigExpectsSignedManifestKey: @YES,
     EXUpdatesConfig.EXUpdatesConfigRequestHeadersKey: [self _requestHeaders]
@@ -332,6 +332,16 @@ NS_ASSUME_NONNULL_BEGIN
 #if TARGET_IPHONE_SIMULATOR
   return @"EXPO_SIMULATOR";
 #endif
+}
+
+- (NSString *)_runtimeVersion
+{
+  NSArray *versionsAvailable = [EXVersions sharedInstance].versions[@"sdkVersions"];
+  if (versionsAvailable) {
+    return [NSString stringWithFormat:@"exposdk:%@", versionsAvailable.firstObject];
+  } else {
+    return @"1"; // runtime version shouldn't be used for home loader, but is still required
+  }
 }
 
 - (NSString *)_sdkVersions

@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Remove classic updates. ([#26036](https://github.com/expo/expo/pull/26036) by [@wschurman](https://github.com/wschurman))
+- Remove classic updates SDK version. ([#26061](https://github.com/expo/expo/pull/26061) by [@wschurman](https://github.com/wschurman))
 
 ## 3.6.1 - 2023-12-19
 

@@ -29,7 +29,6 @@ data class UpdatesConfiguration(
   val expectsSignedManifest: Boolean,
   val scopeKey: String,
   val updateUrl: Uri,
-  val sdkVersion: String?,
   val runtimeVersionRaw: String?,
   val releaseChannel: String,
   val launchWaitMs: Int,
@@ -68,7 +67,6 @@ data class UpdatesConfiguration(
       updateUrl = getUpdatesUrl(context, overrideMap)!!
     ),
     updateUrl = getUpdatesUrl(context, overrideMap)!!,
-    sdkVersion = getSDKVersion(context, overrideMap),
     runtimeVersionRaw = getRuntimeVersion(context, overrideMap),
     releaseChannel = overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_RELEASE_CHANNEL_KEY) ?: context?.getMetadataValue("expo.modules.updates.EXPO_RELEASE_CHANNEL") ?: UPDATES_CONFIGURATION_RELEASE_CHANNEL_DEFAULT_VALUE,
     launchWaitMs = overrideMap?.readValueCheckingType<Int>(UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY) ?: context?.getMetadataValue("expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS") ?: UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_DEFAULT_VALUE,
@@ -115,10 +113,8 @@ data class UpdatesConfiguration(
   fun getRuntimeVersion(): String {
     return if (!runtimeVersionRaw.isNullOrEmpty()) {
       runtimeVersionRaw
-    } else if (!sdkVersion.isNullOrEmpty()) {
-      sdkVersion
     } else {
-      throw Exception("No runtime version or SDK version provided in configuration")
+      throw Exception("No runtime version provided in configuration")
     }
   }
 
@@ -130,7 +126,6 @@ data class UpdatesConfiguration(
     const val UPDATES_CONFIGURATION_UPDATE_URL_KEY = "updateUrl"
     const val UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY = "requestHeaders"
     const val UPDATES_CONFIGURATION_RELEASE_CHANNEL_KEY = "releaseChannel"
-    const val UPDATES_CONFIGURATION_SDK_VERSION_KEY = "sdkVersion"
     const val UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY = "runtimeVersion"
     const val UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY = "checkOnLaunch"
     const val UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY = "launchWaitMs"
@@ -156,18 +151,12 @@ data class UpdatesConfiguration(
       return overrideMap?.readValueCheckingType(UPDATES_CONFIGURATION_ENABLED_KEY) ?: context?.getMetadataValue("expo.modules.updates.ENABLED") ?: true
     }
 
-    private fun getSDKVersion(context: Context?, overrideMap: Map<String, Any>?): String? {
-      return overrideMap?.readValueCheckingType(UPDATES_CONFIGURATION_SDK_VERSION_KEY) ?: context?.getMetadataValue("expo.modules.updates.EXPO_SDK_VERSION")
-    }
-
     private fun getRuntimeVersion(context: Context?, overrideMap: Map<String, Any>?): String? {
       return overrideMap?.readValueCheckingType(UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY) ?: context?.getMetadataValue<Any>("expo.modules.updates.EXPO_RUNTIME_VERSION")?.toString()?.replaceFirst("^string:".toRegex(), "")
     }
 
     fun isMissingRuntimeVersion(context: Context?, overrideMap: Map<String, Any>?): Boolean {
-      val sdkVersion = getSDKVersion(context, overrideMap)
-      val runtimeVersion = getRuntimeVersion(context, overrideMap)
-      return sdkVersion.isNullOrEmpty() && runtimeVersion.isNullOrEmpty()
+      return getRuntimeVersion(context, overrideMap).isNullOrEmpty()
     }
 
     fun getUpdatesConfigurationValidationResult(context: Context?, overrideMap: Map<String, Any>?): UpdatesConfigurationValidationResult {
