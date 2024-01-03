@@ -11,12 +11,15 @@ export interface WebDevicePushToken {
   type: 'web';
   data: {
     endpoint: string;
-    keys: {
-      p256dh: string;
-      auth: string;
-    };
+    keys: WebDevicePushTokenKeys;
   };
 }
+
+// @docsMissing
+export type WebDevicePushTokenKeys = {
+  p256dh: string;
+  auth: string;
+};
 
 // @docsMissing
 type ExplicitlySupportedDevicePushToken = NativeDevicePushToken | WebDevicePushToken;
@@ -63,6 +66,7 @@ export interface ExpoPushToken {
   data: string;
 }
 
+// @needsAudit
 export interface ExpoPushTokenOptions {
   /**
    * Endpoint URL override.
@@ -76,7 +80,7 @@ export interface ExpoPushTokenOptions {
    * Request body override.
    */
   type?: string;
-  // @missingDocs
+  // @docsMissing
   deviceId?: string;
   /**
    * Makes sense only on iOS, where there are two push notification services: "sandbox" and "production".
