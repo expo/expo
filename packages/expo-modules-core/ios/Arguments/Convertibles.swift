@@ -1,6 +1,5 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-import UIKit
 import CoreGraphics
 
 // Here we extend some common iOS types to implement `Convertible` protocol and

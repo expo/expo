@@ -2,7 +2,6 @@
 
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
-#import <UIKit/UIKit.h>
 
 @protocol EXFaceDetectorManagerInterface
 #if !TARGET_OS_TV
