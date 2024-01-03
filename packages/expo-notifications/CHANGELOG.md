@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `expo-notifications` requiring the `expo-task-manager` module to start.
+
 ### 💡 Others
 
 ## 0.27.2 - 2023-12-19
