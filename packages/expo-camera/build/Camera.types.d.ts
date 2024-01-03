@@ -147,7 +147,7 @@ export type CameraCapturedPicture = {
 };
 export type CameraPictureOptions = {
     /**
-     * Specify the quality of compression, from 0 to 1. 0 means compress for small size, 1 means compress for maximum quality.
+     * Specify the compression quality from `0` to `1`. `0` means compress for small size, and `1` means compress for maximum quality.
      */
     quality?: number;
     /**
@@ -163,9 +163,7 @@ export type CameraPictureOptions = {
      * @platform android
      * @platform ios
      */
-    additionalExif?: {
-        [name: string]: any;
-    };
+    additionalExif?: Record<string, any>;
     /**
      * A callback invoked when picture is saved. If set, the promise of this method will resolve immediately with no data after picture is captured.
      * The data that it should contain will be passed to this callback. If displaying or processing a captured photo right after taking it
