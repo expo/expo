@@ -21,7 +21,7 @@ export const Terminal = ({ cmd, cmdCopy, hideOverflow, title = 'Terminal' }: Ter
     <SnippetHeader alwaysDark title={title} Icon={TerminalSquareIcon}>
       {renderCopyButton({ cmd, cmdCopy })}
     </SnippetHeader>
-    <SnippetContent alwaysDark hideOverflow={hideOverflow} className="grid grid-cols-auto-min-1">
+    <SnippetContent alwaysDark hideOverflow={hideOverflow} className="flex flex-col">
       {cmd.map(cmdMapper)}
     </SnippetContent>
   </Snippet>
