@@ -19,7 +19,7 @@ Feel free to add other options here!
 Configuration for iOS should be done in Expo.plist. On Android, most options can be configured in AndroidManifest.xml.
 
 - Make sure that the URL (`EXUpdatesURL`, `expo.modules.updates.EXPO_UPDATE_URL`) is properly set.
-- Make sure that one of either the SDK version (`EXUpdatesSDKVersion`, `expo.modules.updates.EXPO_SDK_VERSION`) or runtime version (`EXUpdatesRuntimeVersion`, `expo.modules.updates.EXPO_RUNTIME_VERSION`) is also properly set.
+- Make sure that the runtime version (`EXUpdatesRuntimeVersion`, `expo.modules.updates.EXPO_RUNTIME_VERSION`) is properly set.
 
 ### Ignore Embedded Update
 

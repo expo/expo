@@ -675,11 +675,8 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
         .header("EAS-Client-ID", EASClientID(context).uuid.toString())
         .apply {
           val runtimeVersion = configuration.runtimeVersionRaw
-          val sdkVersion = configuration.sdkVersion
           if (!runtimeVersion.isNullOrEmpty()) {
             header("Expo-Runtime-Version", runtimeVersion)
-          } else if (!sdkVersion.isNullOrEmpty()) {
-            header("Expo-SDK-Version", sdkVersion)
           }
         }
         .header("Expo-Release-Channel", configuration.releaseChannel)

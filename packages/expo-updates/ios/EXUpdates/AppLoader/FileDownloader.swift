@@ -304,12 +304,7 @@ public final class FileDownloader {
     request.setValue("true", forHTTPHeaderField: "Expo-JSON-Error")
     request.setValue(config.expectsSignedManifest ? "true" : "false", forHTTPHeaderField: "Expo-Accept-Signature")
     request.setValue(config.releaseChannel, forHTTPHeaderField: "Expo-Release-Channel")
-
-    if let runtimeVersion = config.runtimeVersionRaw {
-      request.setValue(runtimeVersion, forHTTPHeaderField: "Expo-Runtime-Version")
-    } else {
-      request.setValue(config.sdkVersion, forHTTPHeaderField: "Expo-SDK-Version")
-    }
+    request.setValue(config.runtimeVersion, forHTTPHeaderField: "Expo-Runtime-Version")
 
     if let previousFatalError = ErrorRecovery.consumeErrorLog() {
       // some servers can have max length restrictions for headers,
@@ -738,36 +733,6 @@ public final class FileDownloader {
       database: database,
       successBlock: successBlock,
       errorBlock: errorBlock
-    )
-  }
-
-  private func extractUpdateResponseDictionary(parsedJson: Any) throws -> [String: Any] {
-    if let parsedJson = parsedJson as? [String: Any] {
-      return parsedJson
-    }
-
-    if let parsedJson = parsedJson as? [Any] {
-      // TODO: either add support for runtimeVersion or deprecate multi-manifests
-      for providedManifest in parsedJson {
-        if let providedManifest = providedManifest as? [String: Any],
-          let sdkVersion: String = providedManifest.optionalValue(forKey: "sdkVersion"),
-          let supportedSdkVersions = config.sdkVersion?.components(separatedBy: ","),
-          supportedSdkVersions.contains(sdkVersion) {
-          return providedManifest
-        }
-      }
-    }
-
-    throw NSError(
-      domain: ErrorDomain,
-      code: FileDownloaderErrorCode.NoCompatibleUpdateError.rawValue,
-      userInfo: [
-        NSLocalizedDescriptionKey: String(
-          format: "No compatible update found at %@. Only %@ are supported.",
-          config.updateUrl.absoluteString,
-          config.sdkVersion ?? "(missing sdkVersion field)"
-        )
-      ]
     )
   }
 

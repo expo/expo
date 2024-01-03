@@ -9,7 +9,6 @@ import {
   ExpoConfigUpdates,
   getExpoUpdatesPackageVersion,
   getRuntimeVersionNullableAsync,
-  getSDKVersion,
   getUpdatesCheckOnLaunch,
   getUpdatesCodeSigningCertificate,
   getUpdatesCodeSigningMetadata,
@@ -26,7 +25,6 @@ export enum Config {
   CHECK_ON_LAUNCH = 'EXUpdatesCheckOnLaunch',
   LAUNCH_WAIT_MS = 'EXUpdatesLaunchWaitMs',
   RUNTIME_VERSION = 'EXUpdatesRuntimeVersion',
-  SDK_VERSION = 'EXUpdatesSDKVersion',
   UPDATE_URL = 'EXUpdatesURL',
   RELEASE_CHANNEL = 'EXUpdatesReleaseChannel',
   UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY = 'EXUpdatesRequestHeaders',
@@ -108,19 +106,12 @@ export async function setVersionsConfigAsync(
       'A runtime version is set in your Expo.plist, but is missing from your app.json/app.config.js. Please either set runtimeVersion in your app.json/app.config.js or remove EXUpdatesRuntimeVersion from your Expo.plist.'
     );
   }
-  const sdkVersion = getSDKVersion(config);
+
   if (runtimeVersion) {
-    delete newExpoPlist[Config.SDK_VERSION];
+    delete newExpoPlist['EXUpdatesSDKVersion'];
     newExpoPlist[Config.RUNTIME_VERSION] = runtimeVersion;
-  } else if (sdkVersion) {
-    /**
-     * runtime version maybe null in projects using classic updates. In that
-     * case we use SDK version
-     */
-    delete newExpoPlist[Config.RUNTIME_VERSION];
-    newExpoPlist[Config.SDK_VERSION] = sdkVersion;
   } else {
-    delete newExpoPlist[Config.SDK_VERSION];
+    delete newExpoPlist['EXUpdatesSDKVersion'];
     delete newExpoPlist[Config.RUNTIME_VERSION];
   }
 
@@ -197,9 +188,7 @@ export function isShellScriptBuildPhaseConfigured(
 }
 
 export function isPlistConfigurationSet(expoPlist: ExpoPlist): boolean {
-  return Boolean(
-    expoPlist.EXUpdatesURL && (expoPlist.EXUpdatesSDKVersion || expoPlist.EXUpdatesRuntimeVersion)
-  );
+  return Boolean(expoPlist.EXUpdatesURL && expoPlist.EXUpdatesRuntimeVersion);
 }
 
 export async function isPlistConfigurationSyncedAsync(
@@ -225,15 +214,12 @@ export async function isPlistVersionConfigurationSyncedAsync(
   expoPlist: ExpoPlist
 ): Promise<boolean> {
   const expectedRuntimeVersion = await getRuntimeVersionNullableAsync(projectRoot, config, 'ios');
-  const expectedSdkVersion = getSDKVersion(config);
 
   const currentRuntimeVersion = expoPlist.EXUpdatesRuntimeVersion ?? null;
   const currentSdkVersion = expoPlist.EXUpdatesSDKVersion ?? null;
 
   if (expectedRuntimeVersion !== null) {
     return currentRuntimeVersion === expectedRuntimeVersion && currentSdkVersion === null;
-  } else if (expectedSdkVersion !== null) {
-    return currentSdkVersion === expectedSdkVersion && currentRuntimeVersion === null;
   } else {
     return true;
   }

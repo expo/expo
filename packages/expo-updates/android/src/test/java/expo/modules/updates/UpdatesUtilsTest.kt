@@ -44,7 +44,6 @@ class UpdatesUtilsTest : TestCase() {
       expectsSignedManifest = true,
       scopeKey = "wat",
       updateUrl = mockk(),
-      sdkVersion = "38.0.0",
       runtimeVersionRaw = "1.0",
       releaseChannel = "default",
       launchWaitMs = 0,
@@ -58,13 +57,13 @@ class UpdatesUtilsTest : TestCase() {
       enableExpoUpdatesProtocolV0CompatibilityMode = true
     )
 
-    val sdkOnlyConfig = baseConfig.copy(runtimeVersionRaw = null)
-    Assert.assertEquals("38.0.0", sdkOnlyConfig.getRuntimeVersion())
-
-    val runtimeOnlyConfig = baseConfig.copy(sdkVersion = null)
+    val runtimeOnlyConfig = baseConfig.copy()
     Assert.assertEquals("1.0", runtimeOnlyConfig.getRuntimeVersion())
 
-    // should prefer runtimeVersion over sdkVersion if both are specified
-    Assert.assertEquals("1.0", baseConfig.getRuntimeVersion())
+    val noRuntimeConfig = baseConfig.copy(runtimeVersionRaw = null)
+    val exception = Assert.assertThrows(Exception::class.java) {
+      noRuntimeConfig.getRuntimeVersion()
+    }
+    Assert.assertEquals(exception.message, "No runtime version provided in configuration")
   }
 }

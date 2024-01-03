@@ -19,7 +19,6 @@ import {
   ExpoConfigUpdates,
   getExpoUpdatesPackageVersion,
   getRuntimeVersionNullableAsync,
-  getSDKVersion,
   getUpdatesCheckOnLaunch,
   getUpdatesCodeSigningCertificate,
   getUpdatesCodeSigningMetadataStringified,
@@ -35,7 +34,6 @@ export enum Config {
   ENABLED = 'expo.modules.updates.ENABLED',
   CHECK_ON_LAUNCH = 'expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH',
   LAUNCH_WAIT_MS = 'expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS',
-  SDK_VERSION = 'expo.modules.updates.EXPO_SDK_VERSION',
   RUNTIME_VERSION = 'expo.modules.updates.EXPO_RUNTIME_VERSION',
   UPDATE_URL = 'expo.modules.updates.EXPO_UPDATE_URL',
   RELEASE_CHANNEL = 'expo.modules.updates.EXPO_RELEASE_CHANNEL',
@@ -176,24 +174,16 @@ export async function setVersionsConfigAsync(
       'A runtime version is set in your AndroidManifest.xml, but is missing from your app.json/app.config.js. Please either set runtimeVersion in your app.json/app.config.js or remove expo.modules.updates.EXPO_RUNTIME_VERSION from your AndroidManifest.xml.'
     );
   }
-  const sdkVersion = getSDKVersion(config);
   if (runtimeVersion) {
-    removeMetaDataItemFromMainApplication(mainApplication, Config.SDK_VERSION);
+    removeMetaDataItemFromMainApplication(mainApplication, 'expo.modules.updates.EXPO_SDK_VERSION');
     addMetaDataItemToMainApplication(
       mainApplication,
       Config.RUNTIME_VERSION,
       '@string/expo_runtime_version'
     );
-  } else if (sdkVersion) {
-    /**
-     * runtime version maybe null in projects using classic updates. In that
-     * case we use SDK version
-     */
-    removeMetaDataItemFromMainApplication(mainApplication, Config.RUNTIME_VERSION);
-    addMetaDataItemToMainApplication(mainApplication, Config.SDK_VERSION, sdkVersion);
   } else {
     removeMetaDataItemFromMainApplication(mainApplication, Config.RUNTIME_VERSION);
-    removeMetaDataItemFromMainApplication(mainApplication, Config.SDK_VERSION);
+    removeMetaDataItemFromMainApplication(mainApplication, 'expo.modules.updates.EXPO_SDK_VERSION');
   }
 
   return androidManifest;
@@ -257,9 +247,8 @@ export function isBuildGradleConfigured(projectRoot: string, buildGradleContents
 export function isMainApplicationMetaDataSet(androidManifest: AndroidManifest): boolean {
   const updateUrl = getMainApplicationMetaDataValue(androidManifest, Config.UPDATE_URL);
   const runtimeVersion = getMainApplicationMetaDataValue(androidManifest, Config.RUNTIME_VERSION);
-  const sdkVersion = getMainApplicationMetaDataValue(androidManifest, Config.SDK_VERSION);
 
-  return Boolean(updateUrl && (sdkVersion || runtimeVersion));
+  return Boolean(updateUrl && runtimeVersion);
 }
 
 export async function isMainApplicationMetaDataSyncedAsync(
@@ -293,18 +282,18 @@ export async function areVersionsSyncedAsync(
     config,
     'android'
   );
-  const expectedSdkVersion = getSDKVersion(config);
 
   const currentRuntimeVersion = getMainApplicationMetaDataValue(
     androidManifest,
     Config.RUNTIME_VERSION
   );
-  const currentSdkVersion = getMainApplicationMetaDataValue(androidManifest, Config.SDK_VERSION);
+  const currentSdkVersion = getMainApplicationMetaDataValue(
+    androidManifest,
+    'expo.modules.updates.EXPO_SDK_VERSION'
+  );
 
   if (expectedRuntimeVersion !== null) {
     return currentRuntimeVersion === expectedRuntimeVersion && currentSdkVersion === null;
-  } else if (expectedSdkVersion !== null) {
-    return currentSdkVersion === expectedSdkVersion && currentRuntimeVersion === null;
   } else {
     return true;
   }

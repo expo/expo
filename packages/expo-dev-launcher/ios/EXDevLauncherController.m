@@ -673,7 +673,6 @@
 
   NSString *appIcon = [self getAppIcon];
   NSString *runtimeVersion = [self getUpdatesConfigForKey:@"EXUpdatesRuntimeVersion"];
-  NSString *sdkVersion = [self getUpdatesConfigForKey:@"EXUpdatesSDKVersion"];
   NSString *appVersion = [self getFormattedAppVersion];
   NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleDisplayName"] ?: [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleExecutable"];
 
@@ -681,7 +680,6 @@
   [buildInfo setObject:appIcon forKey:@"appIcon"];
   [buildInfo setObject:appVersion forKey:@"appVersion"];
   [buildInfo setObject:runtimeVersion forKey:@"runtimeVersion"];
-  [buildInfo setObject:sdkVersion forKey:@"sdkVersion"];
 
   return buildInfo;
 }
@@ -753,7 +751,6 @@
   NSMutableDictionary *updatesConfig = [NSMutableDictionary new];
 
   NSString *runtimeVersion = [self getUpdatesConfigForKey:@"EXUpdatesRuntimeVersion"];
-  NSString *sdkVersion = [self getUpdatesConfigForKey:@"EXUpdatesSDKVersion"];
 
   // url structure for EASUpdates: `http://u.expo.dev/{appId}`
   // this url field is added to app.json.updates when running `eas update:configure`
@@ -769,8 +766,6 @@
   BOOL usesEASUpdates = isModernManifestProtocol && expoUpdatesInstalled && hasAppId;
 
   [updatesConfig setObject:runtimeVersion forKey:@"runtimeVersion"];
-  [updatesConfig setObject:sdkVersion forKey:@"sdkVersion"];
-
 
   if (usesEASUpdates) {
     [updatesConfig setObject:appId forKey:@"appId"];

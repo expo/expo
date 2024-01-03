@@ -43,7 +43,7 @@ export type ExpoPlist = {
   EXUpdatesReleaseChannel?: string;
   EXUpdatesRuntimeVersion?: string;
   EXUpdatesRequestHeaders?: Record<string, string>;
-  EXUpdatesSDKVersion?: string;
+  EXUpdatesSDKVersion?: string; // removed, but kept in types so that it can be mutated (deleted) from existing plists
   EXUpdatesURL?: string;
   EXUpdatesCodeSigningCertificate?: string;
   EXUpdatesCodeSigningMetadata?: Record<string, string>;
