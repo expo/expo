@@ -12,8 +12,9 @@ import ExpoUpdates from './ExpoUpdates';
 export const isEnabled = !!ExpoUpdates.isEnabled;
 /**
  * The UUID that uniquely identifies the currently running update. The
- * UUID is represented in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) and
- * will always use lowercase letters. This value is `null` when running in a local development environment or any other environment where `expo-updates` is disabled.
+ * UUID is represented in its canonical string form and will always use lowercase letters.
+ * This value is `null` when running in a local development environment or any other environment where `expo-updates` is disabled.
+ * @example xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
  */
 export const updateId = ExpoUpdates.updateId && typeof ExpoUpdates.updateId === 'string'
     ? ExpoUpdates.updateId.toLowerCase()
