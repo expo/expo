@@ -73,12 +73,6 @@ interface IUpdatesController {
     val localAssetFiles: Map<AssetEntity, String>?,
 
     /**
-     * Whether there is no runtime version (or sdkVersion) provided in configuration. If it is missing,
-     * updates will be disabled and a warning will be logged.
-     */
-    val isMissingRuntimeVersion: Boolean,
-
-    /**
      * Whether the JS API methods should allow calling the native module methods and thus the methods
      * on the controller in development. For non-expo development we want to throw
      * at the JS layer since there isn't a controller set up. But for development within Expo Go

@@ -134,7 +134,7 @@ public final class UpdatesConfig: NSObject {
     return dictionary
   }
 
-  public static func isMissingRuntimeVersion(mergingOtherDictionary: [String: Any]?) -> Bool {
+  private static func isMissingRuntimeVersion(mergingOtherDictionary: [String: Any]?) -> Bool {
     guard let dictionary = try? configDictionaryWithExpoPlist(mergingOtherDictionary: mergingOtherDictionary) else {
       return true
     }

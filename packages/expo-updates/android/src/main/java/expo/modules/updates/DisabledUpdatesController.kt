@@ -31,8 +31,7 @@ import java.lang.ref.WeakReference
  */
 class DisabledUpdatesController(
   private val context: Context,
-  private val fatalException: Exception?,
-  private val isMissingRuntimeVersion: Boolean
+  private val fatalException: Exception?
 ) : IUpdatesController, UpdatesStateChangeEventSender {
   private val reactNativeHost: WeakReference<ReactNativeHost>? = if (context is ReactApplication) {
     WeakReference(context.reactNativeHost)
@@ -94,7 +93,6 @@ class DisabledUpdatesController(
       checkOnLaunch = UpdatesConfiguration.CheckAutomaticallyConfiguration.NEVER,
       requestHeaders = mapOf(),
       localAssetFiles = launcher?.localAssetFiles,
-      isMissingRuntimeVersion = isMissingRuntimeVersion,
       shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = false
     )
   }

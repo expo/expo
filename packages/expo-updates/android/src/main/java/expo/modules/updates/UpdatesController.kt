@@ -67,7 +67,7 @@ class UpdatesController {
             )
           }
 
-          DisabledUpdatesController(context, updatesDirectoryException, UpdatesConfiguration.isMissingRuntimeVersion(context, configuration))
+          DisabledUpdatesController(context, updatesDirectoryException)
         }
       }
     }
@@ -93,7 +93,6 @@ class UpdatesController {
         initialUpdatesConfiguration,
         updatesDirectory,
         updatesDirectoryException,
-        UpdatesConfiguration.isMissingRuntimeVersion(context, null),
         callbacks
       )
       singletonInstance = instance

@@ -195,7 +195,6 @@ class EnabledUpdatesController(
       checkOnLaunch = updatesConfiguration.checkOnLaunch,
       requestHeaders = updatesConfiguration.requestHeaders,
       localAssetFiles = localAssetFiles,
-      isMissingRuntimeVersion = false,
       shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = false
     )
   }

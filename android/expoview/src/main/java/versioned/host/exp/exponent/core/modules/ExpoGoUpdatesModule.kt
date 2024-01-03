@@ -35,7 +35,6 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
 
         constants["isEmergencyLaunch"] = appLoaderLocal.isEmergencyLaunch
         constants["isEmbeddedLaunch"] = false
-        constants["isMissingRuntimeVersion"] = false
         constants["isEnabled"] = true
         constants["isUsingEmbeddedAssets"] = false
         constants["runtimeVersion"] = configuration.runtimeVersionRaw ?: ""
