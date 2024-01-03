@@ -190,7 +190,6 @@ class EnabledUpdatesController(
       embeddedUpdate = EmbeddedManifest.get(context, updatesConfiguration)?.updateEntity,
       isEmergencyLaunch = isEmergencyLaunch,
       isEnabled = true,
-      releaseChannel = updatesConfiguration.releaseChannel,
       isUsingEmbeddedAssets = isUsingEmbeddedAssets,
       runtimeVersion = updatesConfiguration.runtimeVersionRaw,
       checkOnLaunch = updatesConfiguration.checkOnLaunch,

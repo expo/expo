@@ -37,7 +37,6 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
         constants["isEmbeddedLaunch"] = false
         constants["isMissingRuntimeVersion"] = false
         constants["isEnabled"] = true
-        constants["releaseChannel"] = configuration.releaseChannel
         constants["isUsingEmbeddedAssets"] = false
         constants["runtimeVersion"] = configuration.runtimeVersionRaw ?: ""
         constants["checkAutomatically"] = configuration.checkOnLaunch.toJSString()

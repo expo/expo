@@ -11,7 +11,6 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.WritableMap
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.toCodedException
-import expo.modules.updates.UpdatesConfiguration.Companion.UPDATES_CONFIGURATION_RELEASE_CHANNEL_DEFAULT_VALUE
 import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.launcher.NoDatabaseLauncher
 import expo.modules.updates.logging.UpdatesLogger
@@ -90,7 +89,6 @@ class DisabledUpdatesController(
       embeddedUpdate = null,
       isEmergencyLaunch = isEmergencyLaunch,
       isEnabled = false,
-      releaseChannel = UPDATES_CONFIGURATION_RELEASE_CHANNEL_DEFAULT_VALUE,
       isUsingEmbeddedAssets = launcher?.isUsingEmbeddedAssets ?: false,
       runtimeVersion = null,
       checkOnLaunch = UpdatesConfiguration.CheckAutomaticallyConfiguration.NEVER,

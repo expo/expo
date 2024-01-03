@@ -59,7 +59,6 @@ interface IUpdatesController {
     val embeddedUpdate: UpdateEntity?,
     val isEmergencyLaunch: Boolean,
     val isEnabled: Boolean,
-    val releaseChannel: String,
     val isUsingEmbeddedAssets: Boolean,
     val runtimeVersion: String?,
     val checkOnLaunch: UpdatesConfiguration.CheckAutomaticallyConfiguration,

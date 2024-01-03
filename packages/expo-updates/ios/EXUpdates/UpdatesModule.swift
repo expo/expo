@@ -20,7 +20,6 @@ public final class UpdatesModule: Module {
     Constants {
       let constantsForModule = AppController.sharedInstance.getConstantsForModule()
 
-      let releaseChannel = constantsForModule.releaseChannel
       let channel = constantsForModule.requestHeaders["expo-channel-name"] ?? ""
       let runtimeVersion = constantsForModule.runtimeVersion ?? ""
       let checkAutomatically = constantsForModule.checkOnLaunch.asString
@@ -32,7 +31,6 @@ public final class UpdatesModule: Module {
           "isEnabled": false,
           "isEmbeddedLaunch": false,
           "isMissingRuntimeVersion": isMissingRuntimeVersion,
-          "releaseChannel": releaseChannel,
           "runtimeVersion": runtimeVersion,
           "checkAutomatically": checkAutomatically,
           "channel": channel,
@@ -54,7 +52,6 @@ public final class UpdatesModule: Module {
         "localAssets": constantsForModule.assetFilesMap,
         "isEmergencyLaunch": constantsForModule.isEmergencyLaunch,
         "isMissingRuntimeVersion": isMissingRuntimeVersion,
-        "releaseChannel": releaseChannel,
         "runtimeVersion": runtimeVersion,
         "checkAutomatically": checkAutomatically,
         "channel": channel,

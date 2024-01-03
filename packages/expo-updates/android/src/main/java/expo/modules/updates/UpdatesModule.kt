@@ -48,7 +48,6 @@ class UpdatesModule : Module() {
         constants["isEmergencyLaunch"] = constantsForModule.isEmergencyLaunch
         constants["isEmbeddedLaunch"] = isEmbeddedLaunch
         constants["isEnabled"] = constantsForModule.isEnabled
-        constants["releaseChannel"] = constantsForModule.releaseChannel
         constants["isUsingEmbeddedAssets"] = constantsForModule.isUsingEmbeddedAssets
         constants["runtimeVersion"] = constantsForModule.runtimeVersion ?: ""
         constants["checkAutomatically"] = constantsForModule.checkOnLaunch.toJSString()

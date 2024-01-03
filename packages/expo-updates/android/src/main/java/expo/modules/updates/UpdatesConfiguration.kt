@@ -30,7 +30,6 @@ data class UpdatesConfiguration(
   val scopeKey: String,
   val updateUrl: Uri,
   val runtimeVersionRaw: String?,
-  val releaseChannel: String,
   val launchWaitMs: Int,
   val checkOnLaunch: CheckAutomaticallyConfiguration,
   val hasEmbeddedUpdate: Boolean, // used only for expo-updates development
@@ -68,7 +67,6 @@ data class UpdatesConfiguration(
     ),
     updateUrl = getUpdatesUrl(context, overrideMap)!!,
     runtimeVersionRaw = getRuntimeVersion(context, overrideMap),
-    releaseChannel = overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_RELEASE_CHANNEL_KEY) ?: context?.getMetadataValue("expo.modules.updates.EXPO_RELEASE_CHANNEL") ?: UPDATES_CONFIGURATION_RELEASE_CHANNEL_DEFAULT_VALUE,
     launchWaitMs = overrideMap?.readValueCheckingType<Int>(UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY) ?: context?.getMetadataValue("expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS") ?: UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_DEFAULT_VALUE,
     checkOnLaunch = overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY)?.let {
       try {
@@ -125,7 +123,6 @@ data class UpdatesConfiguration(
     const val UPDATES_CONFIGURATION_SCOPE_KEY_KEY = "scopeKey"
     const val UPDATES_CONFIGURATION_UPDATE_URL_KEY = "updateUrl"
     const val UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY = "requestHeaders"
-    const val UPDATES_CONFIGURATION_RELEASE_CHANNEL_KEY = "releaseChannel"
     const val UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY = "runtimeVersion"
     const val UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY = "checkOnLaunch"
     const val UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY = "launchWaitMs"
@@ -138,7 +135,6 @@ data class UpdatesConfiguration(
     const val UPDATES_CONFIGURATION_CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN = "codeSigningIncludeManifestResponseCertificateChain"
     const val UPDATES_CONFIGURATION_CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS = "codeSigningAllowUnsignedManifests"
 
-    const val UPDATES_CONFIGURATION_RELEASE_CHANNEL_DEFAULT_VALUE = "default"
     private const val UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_DEFAULT_VALUE = 0
 
     private fun getUpdatesUrl(context: Context?, overrideMap: Map<String, Any>?): Uri? {

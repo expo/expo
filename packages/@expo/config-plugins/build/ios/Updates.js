@@ -54,7 +54,6 @@ exports.Config = Config;
   Config["LAUNCH_WAIT_MS"] = "EXUpdatesLaunchWaitMs";
   Config["RUNTIME_VERSION"] = "EXUpdatesRuntimeVersion";
   Config["UPDATE_URL"] = "EXUpdatesURL";
-  Config["RELEASE_CHANNEL"] = "EXUpdatesReleaseChannel";
   Config["UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY"] = "EXUpdatesRequestHeaders";
   Config["CODE_SIGNING_CERTIFICATE"] = "EXUpdatesCodeSigningCertificate";
   Config["CODE_SIGNING_METADATA"] = "EXUpdatesCodeSigningMetadata";

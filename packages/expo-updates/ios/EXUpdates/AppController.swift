@@ -12,7 +12,6 @@ public struct UpdatesModuleConstants {
   let embeddedUpdate: Update?
   let isEmergencyLaunch: Bool
   let isEnabled: Bool
-  let releaseChannel: String
   let isUsingEmbeddedAssets: Bool
   let runtimeVersion: String?
   let checkOnLaunch: CheckAutomaticallyConfig

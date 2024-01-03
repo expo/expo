@@ -81,7 +81,6 @@ class UpdatesConfigurationInstrumentationTest {
 
     val config = UpdatesConfiguration(context, null)
     Assert.assertEquals(false, config.expectsSignedManifest)
-    Assert.assertEquals("default", config.releaseChannel)
     Assert.assertEquals(0, config.launchWaitMs)
     Assert.assertEquals(UpdatesConfiguration.CheckAutomaticallyConfiguration.ALWAYS, config.checkOnLaunch)
     Assert.assertEquals(true, config.hasEmbeddedUpdate)
@@ -127,7 +126,6 @@ class UpdatesConfigurationInstrumentationTest {
             putString("expo.modules.updates.EXPO_SCOPE_KEY", "invalid")
             putString("expo.modules.updates.EXPO_UPDATE_URL", "http://invalid.com")
             putString("expo.modules.updates.EXPO_RUNTIME_VERSION", "invalid")
-            putString("expo.modules.updates.EXPO_RELEASE_CHANNEL", "invalid")
             putInt("expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS", 9000)
             putString("expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH", "ALWAYS")
             putBoolean("expo.modules.updates.HAS_EMBEDDED_UPDATE", true)
@@ -146,7 +144,6 @@ class UpdatesConfigurationInstrumentationTest {
         UpdatesConfiguration.UPDATES_CONFIGURATION_SCOPE_KEY_KEY to "override",
         UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("http://override.com"),
         UpdatesConfiguration.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY to mapOf("test" to "override"),
-        UpdatesConfiguration.UPDATES_CONFIGURATION_RELEASE_CHANNEL_KEY to "override",
         UpdatesConfiguration.UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY to "override",
         UpdatesConfiguration.UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY to "NEVER",
         UpdatesConfiguration.UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY to 1000,
@@ -161,7 +158,6 @@ class UpdatesConfigurationInstrumentationTest {
     Assert.assertEquals("override", config.scopeKey)
     Assert.assertEquals(Uri.parse("http://override.com"), config.updateUrl)
     Assert.assertEquals("override", config.runtimeVersionRaw)
-    Assert.assertEquals("override", config.releaseChannel)
     Assert.assertEquals(1000, config.launchWaitMs)
     Assert.assertEquals(UpdatesConfiguration.CheckAutomaticallyConfiguration.NEVER, config.checkOnLaunch)
     Assert.assertEquals(false, config.hasEmbeddedUpdate)

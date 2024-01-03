@@ -8,7 +8,6 @@ export declare enum Config {
     LAUNCH_WAIT_MS = "EXUpdatesLaunchWaitMs",
     RUNTIME_VERSION = "EXUpdatesRuntimeVersion",
     UPDATE_URL = "EXUpdatesURL",
-    RELEASE_CHANNEL = "EXUpdatesReleaseChannel",
     UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY = "EXUpdatesRequestHeaders",
     CODE_SIGNING_CERTIFICATE = "EXUpdatesCodeSigningCertificate",
     CODE_SIGNING_METADATA = "EXUpdatesCodeSigningMetadata"

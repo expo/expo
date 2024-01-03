@@ -245,7 +245,6 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
       embeddedUpdate: getEmbeddedUpdate(),
       isEmergencyLaunch: startupProcedure.isEmergencyLaunch,
       isEnabled: true,
-      releaseChannel: self.config.releaseChannel,
       isUsingEmbeddedAssets: startupProcedure.isUsingEmbeddedAssets(),
       runtimeVersion: self.config.runtimeVersion,
       checkOnLaunch: self.config.checkOnLaunch,

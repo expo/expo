@@ -312,7 +312,6 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
       embeddedUpdate: embeddedUpdate,
       isEmergencyLaunch: isEmergencyLaunch,
       isEnabled: true,
-      releaseChannel: self.config?.releaseChannel ?? "default",
       isUsingEmbeddedAssets: isUsingEmbeddedAssets(),
       runtimeVersion: self.config?.runtimeVersion ?? "1",
       checkOnLaunch: self.config?.checkOnLaunch ?? CheckAutomaticallyConfig.Always,

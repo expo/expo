@@ -283,7 +283,6 @@ class UpdatesDevLauncherController(
       embeddedUpdate = updatesConfiguration?.let { EmbeddedManifest.get(context, it) }?.updateEntity,
       isEmergencyLaunch = isEmergencyLaunch,
       isEnabled = true,
-      releaseChannel = updatesConfiguration?.releaseChannel ?: "default",
       isUsingEmbeddedAssets = isUsingEmbeddedAssets,
       runtimeVersion = updatesConfiguration?.runtimeVersionRaw ?: "1",
       checkOnLaunch = updatesConfiguration?.checkOnLaunch ?: UpdatesConfiguration.CheckAutomaticallyConfiguration.ALWAYS,
