@@ -1,4 +1,5 @@
 import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
+import { type ShareOptions } from 'react-native';
 export type CalendarFormatType = CalendarFormats | `${CalendarFormats}`;
 export type ContainerType = ContainerTypes | `${ContainerTypes}`;
 export type ContactType = ContactTypes | `${ContactTypes}`;
@@ -206,7 +207,7 @@ export type UrlAddress = {
  */
 export type Image = {
     /**
-     * A **local image URI**.
+     * A local image URI.
      * > **Note**: If you have a remote URI, download it first using  [`FileSystem.downloadAsync`](/versions/latest/sdk/filesystem/#filesystemdownloadasyncuri-fileuri-options).
      */
     uri?: string;
@@ -368,7 +369,7 @@ export type ContactResponse = {
      */
     hasNextPage: boolean;
     /**
-     * This will be `true if there are previous contacts that weren't retrieved due to `pageOffset` limit.
+     * This will be `true` if there are previous contacts that weren't retrieved due to `pageOffset` limit.
      */
     hasPreviousPage: boolean;
 };
@@ -527,7 +528,7 @@ export { PermissionStatus, PermissionResponse };
  * @returns A promise that fulfills with a `boolean`, indicating whether the Contacts API is available on the current device. It always resolves to `false` on web.
  */
 export declare function isAvailableAsync(): Promise<boolean>;
-export declare function shareContactAsync(contactId: string, message: string, shareOptions?: object): Promise<any>;
+export declare function shareContactAsync(contactId: string, message: string, shareOptions?: ShareOptions): Promise<any>;
 /**
  * Return a list of contacts that fit a given criteria. You can get all of the contacts by passing no criteria.
  * @param contactQuery Object used to query contacts.
@@ -644,7 +645,7 @@ export declare function presentFormAsync(contactId?: string | null, contact?: Co
  */
 export declare function addExistingGroupToContainerAsync(groupId: string, containerId: string): Promise<any>;
 /**
- * Create a group with a name, and add it to a container. If the container is undefined, the default container will be targeted.
+ * Create a group with a name, and add it to a container. If the container is `undefined`, the default container will be targeted.
  * @param name Name of the new group.
  * @param containerId The container you to add membership to.
  * @return A promise that fulfills with ID of the new group.

@@ -177,6 +177,7 @@ const hardcodedTypeLinks: Record<string, string> = {
   Promise:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
   ReactNode: 'https://reactnative.dev/docs/react-node',
+  ShareOptions: 'https://reactnative.dev/docs/share#share',
   SyntheticEvent: 'https://react.dev/reference/react-dom/components/common#react-event-object',
   View: 'https://reactnative.dev/docs/view',
   ViewProps: 'https://reactnative.dev/docs/view#props',

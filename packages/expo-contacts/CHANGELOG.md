@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Reuse React Native `ShareOptions` type for `shareContactAsync` parameter typing. ([#26208](https://github.com/expo/expo/pull/26208) by [@Simek](https://github.com/Simek))
+
 ## 12.8.2 - 2023-12-19
 
 _This version does not introduce any user-facing changes._
