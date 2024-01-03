@@ -16,11 +16,6 @@ export declare const isEnabled: boolean;
  */
 export declare const updateId: string | null;
 /**
- * The name of the release channel currently configured in this standalone or bare app when using
- * classic updates. When using Expo Updates, the value of this field is always `"default"`.
- */
-export declare const releaseChannel: string;
-/**
  * The channel name of the current build, if configured for use with EAS Update. `null` otherwise.
  *
  * Expo Go and development builds are not set to a specific channel and can run any updates compatible with their native runtime. Therefore, this value will always be `null` when running an update on Expo Go or a development build.

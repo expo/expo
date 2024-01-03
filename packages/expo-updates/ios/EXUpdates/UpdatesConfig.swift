@@ -61,7 +61,6 @@ public final class UpdatesConfig: NSObject {
   public static let EXUpdatesConfigScopeKeyKey = "EXUpdatesScopeKey"
   public static let EXUpdatesConfigUpdateUrlKey = "EXUpdatesURL"
   public static let EXUpdatesConfigRequestHeadersKey = "EXUpdatesRequestHeaders"
-  public static let EXUpdatesConfigReleaseChannelKey = "EXUpdatesReleaseChannel"
   public static let EXUpdatesConfigLaunchWaitMsKey = "EXUpdatesLaunchWaitMs"
   public static let EXUpdatesConfigCheckOnLaunchKey = "EXUpdatesCheckOnLaunch"
   public static let EXUpdatesConfigRuntimeVersionKey = "EXUpdatesRuntimeVersion"
@@ -78,13 +77,10 @@ public final class UpdatesConfig: NSObject {
   public static let EXUpdatesConfigCheckOnLaunchValueErrorRecoveryOnly = "ERROR_RECOVERY_ONLY"
   public static let EXUpdatesConfigCheckOnLaunchValueNever = "NEVER"
 
-  public static let ReleaseChannelDefaultValue = "default"
-
   public let expectsSignedManifest: Bool
   public let scopeKey: String
   public let updateUrl: URL
   public let requestHeaders: [String: String]
-  public let releaseChannel: String
   public let launchWaitMs: Int
   public let checkOnLaunch: CheckAutomaticallyConfig
   public let codeSigningConfiguration: CodeSigningConfiguration?
@@ -101,7 +97,6 @@ public final class UpdatesConfig: NSObject {
     scopeKey: String,
     updateUrl: URL,
     requestHeaders: [String: String],
-    releaseChannel: String,
     launchWaitMs: Int,
     checkOnLaunch: CheckAutomaticallyConfig,
     codeSigningConfiguration: CodeSigningConfiguration?,
@@ -113,7 +108,6 @@ public final class UpdatesConfig: NSObject {
     self.scopeKey = scopeKey
     self.updateUrl = updateUrl
     self.requestHeaders = requestHeaders
-    self.releaseChannel = releaseChannel
     self.launchWaitMs = launchWaitMs
     self.checkOnLaunch = checkOnLaunch
     self.codeSigningConfiguration = codeSigningConfiguration
@@ -185,7 +179,6 @@ public final class UpdatesConfig: NSObject {
     let scopeKey = config.optionalValue(forKey: EXUpdatesConfigScopeKeyKey) ?? UpdatesConfig.normalizedURLOrigin(url: updateUrl)
 
     let requestHeaders: [String: String] = config.optionalValue(forKey: EXUpdatesConfigRequestHeadersKey) ?? [:]
-    let releaseChannel = config.optionalValue(forKey: EXUpdatesConfigReleaseChannelKey) ?? ReleaseChannelDefaultValue
     let launchWaitMs = config.optionalValue(forKey: EXUpdatesConfigLaunchWaitMsKey).let { (it: Any) in
       // The only way I can figure out how to detect numbers is to do a is NSNumber (is any Numeric didn't work).
       // This might be able to change when we switch out the plist decoder above
@@ -243,7 +236,6 @@ public final class UpdatesConfig: NSObject {
       scopeKey: scopeKey,
       updateUrl: updateUrl,
       requestHeaders: requestHeaders,
-      releaseChannel: releaseChannel,
       launchWaitMs: launchWaitMs,
       checkOnLaunch: checkOnLaunch,
       codeSigningConfiguration: codeSigningConfiguration,
