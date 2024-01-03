@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added support for macOS platform.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
