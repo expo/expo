@@ -21,14 +21,12 @@ public class DisabledAppController: InternalAppControllerInterface {
   internal private(set) var isEmergencyLaunch: Bool = false
   private let initializationError: Error?
   private var launcher: AppLauncher?
-  private let isMissingRuntimeVersion: Bool
 
   public let updatesDirectory: URL? = nil // internal for E2E test
 
-  required init(error: Error?, isMissingRuntimeVersion: Bool) {
+  required init(error: Error?) {
     self.initializationError = error
     self.isEmergencyLaunch = error != nil
-    self.isMissingRuntimeVersion = isMissingRuntimeVersion
   }
 
   public func start() {
@@ -72,7 +70,6 @@ public class DisabledAppController: InternalAppControllerInterface {
       checkOnLaunch: CheckAutomaticallyConfig.Never,
       requestHeaders: [:],
       assetFilesMap: launcher?.assetFilesMap,
-      isMissingRuntimeVersion: self.isMissingRuntimeVersion,
       shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: false
     )
   }

@@ -151,10 +151,6 @@ data class UpdatesConfiguration(
       return overrideMap?.readValueCheckingType(UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY) ?: context?.getMetadataValue<Any>("expo.modules.updates.EXPO_RUNTIME_VERSION")?.toString()?.replaceFirst("^string:".toRegex(), "")
     }
 
-    fun isMissingRuntimeVersion(context: Context?, overrideMap: Map<String, Any>?): Boolean {
-      return getRuntimeVersion(context, overrideMap).isNullOrEmpty()
-    }
-
     fun getUpdatesConfigurationValidationResult(context: Context?, overrideMap: Map<String, Any>?): UpdatesConfigurationValidationResult {
       val isEnabledConfigSetting = getIsEnabled(context, overrideMap)
       if (!isEnabledConfigSetting) {
@@ -162,7 +158,7 @@ data class UpdatesConfiguration(
       }
       getUpdatesUrl(context, overrideMap) ?: return UpdatesConfigurationValidationResult.INVALID_MISSING_URL
 
-      if (isMissingRuntimeVersion(context, overrideMap)) {
+      if (getRuntimeVersion(context, overrideMap).isNullOrEmpty()) {
         return UpdatesConfigurationValidationResult.INVALID_MISSING_RUNTIME_VERSION
       }
 
