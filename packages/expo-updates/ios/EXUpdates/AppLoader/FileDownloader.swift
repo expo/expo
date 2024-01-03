@@ -303,7 +303,6 @@ public final class FileDownloader {
     request.setValue(EASClientID.uuid().uuidString, forHTTPHeaderField: "EAS-Client-ID")
     request.setValue("true", forHTTPHeaderField: "Expo-JSON-Error")
     request.setValue(config.expectsSignedManifest ? "true" : "false", forHTTPHeaderField: "Expo-Accept-Signature")
-    request.setValue(config.releaseChannel, forHTTPHeaderField: "Expo-Release-Channel")
     request.setValue(config.runtimeVersion, forHTTPHeaderField: "Expo-Runtime-Version")
 
     if let previousFatalError = ErrorRecovery.consumeErrorLog() {

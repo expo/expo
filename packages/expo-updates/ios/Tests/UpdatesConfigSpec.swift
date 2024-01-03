@@ -22,7 +22,6 @@ class UpdatesConfigSpec : ExpoSpec {
         expect(config.scopeKey) == "blah"
         expect(config.updateUrl.absoluteString) == "http://example.com"
         expect(config.requestHeaders) == ["Hello": "World"]
-        expect(config.releaseChannel) == "test"
         expect(config.launchWaitMs) == 2
         expect(config.checkOnLaunch) == .ErrorRecoveryOnly
         expect(config.codeSigningConfiguration).toNot(beNil())
@@ -56,7 +55,6 @@ class UpdatesConfigSpec : ExpoSpec {
         expect(config.scopeKey) == "overridden"
         expect(config.updateUrl.absoluteString) == "http://google.com"
         expect(config.requestHeaders) == ["Foo": "Bar"]
-        expect(config.releaseChannel) == "test"
         expect(config.launchWaitMs) == 2
         expect(config.checkOnLaunch) == .ErrorRecoveryOnly
         expect(config.codeSigningConfiguration).toNot(beNil())
