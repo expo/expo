@@ -19,8 +19,6 @@ PODS:
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
-  - EXCalendar (12.2.0):
-    - ExpoModulesCore
   - EXConstants (15.4.1):
     - ExpoModulesCore
   - EXContacts (12.8.1):
@@ -57,6 +55,8 @@ PODS:
   - ExpoBlur (12.9.0):
     - ExpoModulesCore
   - ExpoBrightness (11.8.0):
+    - ExpoModulesCore
+  - ExpoCalendar (12.2.0):
     - ExpoModulesCore
   - ExpoCamera (14.0.0):
     - ExpoModulesCore
@@ -1496,7 +1496,6 @@ DEPENDENCIES:
   - EXApplication (from `../../../packages/expo-application/ios`)
   - EXAV (from `../../../packages/expo-av/ios`)
   - EXBarCodeScanner (from `../../../packages/expo-barcode-scanner/ios`)
-  - EXCalendar (from `../../../packages/expo-calendar/ios`)
   - EXConstants (from `../../../packages/expo-constants/ios`)
   - EXContacts (from `../../../packages/expo-contacts/ios`)
   - EXFont (from `../../../packages/expo-font/ios`)
@@ -1514,6 +1513,7 @@ DEPENDENCIES:
   - ExpoBattery (from `../../../packages/expo-battery/ios`)
   - ExpoBlur (from `../../../packages/expo-blur/ios`)
   - ExpoBrightness (from `../../../packages/expo-brightness/ios`)
+  - ExpoCalendar (from `../../../packages/expo-calendar/ios`)
   - ExpoCamera (from `../../../packages/expo-camera/ios`)
   - ExpoCellular (from `../../../packages/expo-cellular/ios`)
   - ExpoClipboard (from `../../../packages/expo-clipboard/ios`)
@@ -1686,8 +1686,6 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-av/ios"
   EXBarCodeScanner:
     :path: "../../../packages/expo-barcode-scanner/ios"
-  EXCalendar:
-    :path: "../../../packages/expo-calendar/ios"
   EXConstants:
     :path: "../../../packages/expo-constants/ios"
   EXContacts:
@@ -1718,6 +1716,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-blur/ios"
   ExpoBrightness:
     :path: "../../../packages/expo-brightness/ios"
+  ExpoCalendar:
+    :path: "../../../packages/expo-calendar/ios"
   ExpoCamera:
     :path: "../../../packages/expo-camera/ios"
   ExpoCellular:
@@ -1963,6 +1963,7 @@ SPEC CHECKSUMS:
   ExpoBattery: c75a7c094d64d89d96d3e3f419627b152da94f29
   ExpoBlur: 6c4602d729a492663b0916e5862b334a23157f0a
   ExpoBrightness: 6d160de5877289d11674aea61aacdb37422774cf
+  ExpoCalendar: a2da7fc1bdb0d20caf25891f7de6f709038bb8c1
   ExpoCamera: a3f3681963815533c24f698a22c239e68724fb99
   ExpoCellular: 463763547a7489d8fc68d3cc539b666f308a0fe9
   ExpoClipboard: ecbf3edb5dcb460fdefca945923c38f8ad6c7859
