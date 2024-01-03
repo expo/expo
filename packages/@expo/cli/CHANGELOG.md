@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Remove classic updates SDK version. ([#26061](https://github.com/expo/expo/pull/26061) by [@wschurman](https://github.com/wschurman))
+
 ## 0.16.5 - 2023-12-21
 
 ### 🐛 Bug fixes

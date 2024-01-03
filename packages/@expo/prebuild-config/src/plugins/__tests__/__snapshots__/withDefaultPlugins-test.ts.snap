@@ -498,6 +498,7 @@ exports[`built-in plugins compiles mods 1`] = `
     "web",
   ],
   "primaryColor": "#fff000",
+  "runtimeVersion": "1.0",
   "scheme": "my-app-redirect",
   "slug": "mycoolapp",
   "splash": {
@@ -911,6 +912,12 @@ exports[`built-in plugins introspects mods 1`] = `
                 "meta-data": [
                   {
                     "$": {
+                      "android:name": "expo.modules.updates.EXPO_RUNTIME_VERSION",
+                      "android:value": "@string/expo_runtime_version",
+                    },
+                  },
+                  {
+                    "$": {
                       "android:name": "expo.modules.updates.ENABLED",
                       "android:value": "true",
                     },
@@ -1076,6 +1083,12 @@ exports[`built-in plugins introspects mods 1`] = `
                 },
                 "_": "true",
               },
+              {
+                "$": {
+                  "name": "expo_runtime_version",
+                },
+                "_": "1.0",
+              },
             ],
           },
         },
@@ -1204,6 +1217,7 @@ exports[`built-in plugins introspects mods 1`] = `
           "EXUpdatesCheckOnLaunch": "NEVER",
           "EXUpdatesEnabled": true,
           "EXUpdatesLaunchWaitMs": 650,
+          "EXUpdatesRuntimeVersion": "1.0",
         },
         "infoPlist": {
           "CADisableMinimumFrameDurationOnPhone": true,
@@ -1756,6 +1770,7 @@ exports[`built-in plugins introspects mods 1`] = `
     "web",
   ],
   "primaryColor": "#fff000",
+  "runtimeVersion": "1.0",
   "scheme": "my-app-redirect",
   "slug": "mycoolapp",
   "splash": {
@@ -1960,6 +1975,12 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                 "meta-data": [
                   {
                     "$": {
+                      "android:name": "expo.modules.updates.EXPO_RUNTIME_VERSION",
+                      "android:value": "@string/expo_runtime_version",
+                    },
+                  },
+                  {
+                    "$": {
                       "android:name": "expo.modules.updates.ENABLED",
                       "android:value": "true",
                     },
@@ -2120,6 +2141,12 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                 },
                 "_": "true",
               },
+              {
+                "$": {
+                  "name": "expo_runtime_version",
+                },
+                "_": "1.0",
+              },
             ],
           },
         },
@@ -2204,6 +2231,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
           "EXUpdatesCheckOnLaunch": "NEVER",
           "EXUpdatesEnabled": true,
           "EXUpdatesLaunchWaitMs": 650,
+          "EXUpdatesRuntimeVersion": "1.0",
         },
         "infoPlist": {
           "CADisableMinimumFrameDurationOnPhone": true,
@@ -2717,6 +2745,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
     "web",
   ],
   "primaryColor": "#fff000",
+  "runtimeVersion": "1.0",
   "scheme": "my-app-redirect",
   "slug": "mycoolapp",
   "splash": {

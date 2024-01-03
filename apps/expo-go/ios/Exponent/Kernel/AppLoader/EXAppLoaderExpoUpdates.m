@@ -341,7 +341,6 @@ NS_ASSUME_NONNULL_BEGIN
 
   NSMutableDictionary *updatesConfig = [[NSMutableDictionary alloc] initWithDictionary:@{
     EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: httpManifestUrl.absoluteString,
-    EXUpdatesConfig.EXUpdatesConfigSDKVersionKey: [self _sdkVersions],
     EXUpdatesConfig.EXUpdatesConfigScopeKeyKey: httpManifestUrl.absoluteString,
     EXUpdatesConfig.EXUpdatesConfigReleaseChannelKey: releaseChannel,
     EXUpdatesConfig.EXUpdatesConfigHasEmbeddedUpdateKey: @NO,

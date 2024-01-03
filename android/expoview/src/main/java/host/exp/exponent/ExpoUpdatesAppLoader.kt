@@ -121,7 +121,6 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     val configMap = mutableMapOf<String, Any>()
     configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY] = httpManifestUrl
     configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_SCOPE_KEY_KEY] = httpManifestUrl.toString()
-    configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_SDK_VERSION_KEY] = Constants.SDK_VERSIONS
     configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY] = false
     configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_ENABLED_KEY] = true
     if (useCacheOnly) {
