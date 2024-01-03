@@ -10,6 +10,7 @@ import fetch from 'node-fetch';
 import os from 'os';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
+import semver from 'semver';
 
 import { EXPO_DIR } from '../Constants';
 import Git from '../Git';
@@ -181,12 +182,20 @@ async function iosBuildAndSubmitAsync() {
         stdio: isDebug ? 'inherit' : 'pipe',
       }
     );
+    const { stdout: opensslVersionCommandOutput } = await spawnAsync('openssl', ['--version'], {
+      stdio: isDebug ? 'inherit' : 'pipe',
+    });
+    const opensslVersionRegex = /OpenSSL\s(\d+\.\d+\.\d+)/;
+    const matches = opensslVersionCommandOutput.match(opensslVersionRegex);
+    assert(matches, 'Could not parse openssl version');
+    const opensslVersion = matches[1];
+    const isOpensslVersionAbove1 = semver.satisfies(opensslVersion, '>1');
     await spawnAsync(
       'openssl',
       [
         'pkcs12',
         '-export',
-        '-legacy',
+        ...(isOpensslVersionAbove1 ? ['-legacy'] : []),
         '-out',
         p12KeystorePath,
         '-inkey',
