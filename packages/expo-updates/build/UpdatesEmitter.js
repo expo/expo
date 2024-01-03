@@ -38,10 +38,10 @@ function _emitNativeStateChangeEvent(params) {
     _emitter.emit('Expo.updatesStateChangeEvent', newParams);
 }
 /**
- * @deprecated Adds a callback to be invoked when updates-related events occur (such as upon the initial app
+ * Adds a callback to be invoked when updates-related events occur (such as upon the initial app
  * load) due to auto-update settings chosen at build-time. See also the
- * [`useUpdateEvents`](#useupdateeventslistener) React hook.
- * This API is deprecated and will be removed in a future release corresponding with SDK 51.
+ * [`useUpdateEvents()`](#useupdateeventslistener) React hook.
+ * @deprecated This API is deprecated and will be removed in a future release corresponding with SDK 51.
  * Use [`useUpdates()`](#useupdates) instead.
  *
  * @param listener A function that will be invoked with an [`UpdateEvent`](#updateevent) instance

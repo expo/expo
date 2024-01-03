@@ -11,8 +11,9 @@ import { LocalAssets, Manifest, UpdateCheckResult, UpdateFetchResult, UpdatesChe
 export declare const isEnabled: boolean;
 /**
  * The UUID that uniquely identifies the currently running update. The
- * UUID is represented in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) and
- * will always use lowercase letters. This value is `null` when running in a local development environment or any other environment where `expo-updates` is disabled.
+ * UUID is represented in its canonical string form and will always use lowercase letters.
+ * This value is `null` when running in a local development environment or any other environment where `expo-updates` is disabled.
+ * @example xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
  */
 export declare const updateId: string | null;
 /**
@@ -115,9 +116,7 @@ export declare function checkForUpdateAsync(): Promise<UpdateCheckResult>;
  *
  * This method cannot be used in Expo Go or development mode. It also rejects when expo-updates is not enabled.
  */
-export declare function getExtraParamsAsync(): Promise<{
-    [key: string]: string;
-}>;
+export declare function getExtraParamsAsync(): Promise<Record<string, string>>;
 /**
  * Sets an extra param if value is non-null, otherwise unsets the param.
  * Extra params are sent as an [Expo Structured Field Value Dictionary](https://docs.expo.dev/technical-specs/expo-sfv-0/)

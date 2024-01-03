@@ -7,9 +7,9 @@ import type { Manifest } from './Updates.types';
 export type CurrentlyRunningInfo = {
   /**
    * The UUID that uniquely identifies the currently running update if `expo-updates` is enabled. The
-   * UUID is represented in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) and
-   * will always use lowercase letters. In development mode, or any other environment in which
-   * `expo-updates` is disabled, this value is undefined.
+   * UUID is represented in its canonical string form and will always use lowercase letters.
+   * In development mode, or any other environment in which `expo-updates` is disabled, this value is undefined.
+   * @example xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
    */
   updateId?: string;
   /**
@@ -58,7 +58,7 @@ export type CurrentlyRunningInfo = {
  * The different possible types of updates.
  * Currently, the only supported type is `UpdateInfoType.NEW`, indicating a new update that can be downloaded and launched
  * on the device.
- * In future, other types of updates may be added to this list.
+ * In the future, other types of updates may be added to this list.
  */
 export enum UpdateInfoType {
   /**
@@ -82,8 +82,8 @@ type UpdateInfoNew = {
   /**
    * For updates of type `UpdateInfoType.NEW`, this is
    * a string that uniquely identifies the update. For the manifests used in the current Expo Updates protocol (including
-   * EAS Update), this represents the update's UUID in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`)
-   * and will always use lowercase letters.
+   * EAS Update), this represents the update's UUID in its canonical string form and will always use lowercase letters.
+   * @example xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
    */
   updateId: string;
   /**
@@ -131,7 +131,7 @@ export type UpdateInfo = UpdateInfoNew | UpdateInfoRollback;
  */
 export type UseUpdatesReturnType = {
   /**
-   * Information on the currently running app
+   * Information on the currently running app.
    */
   currentlyRunning: CurrentlyRunningInfo;
   /**
