@@ -1,5 +1,3 @@
-import UIKit
-
 /**
  The definition of the view manager. It's part of the module definition to scope only view-related definitions.
  */

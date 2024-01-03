@@ -1,14 +1,21 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-import UIKit
-
 /**
  Base class for app delegate subscribers. Ensures the class
  inherits from `UIResponder` and has `required init()` initializer.
  */
 @objc(EXBaseAppDelegateSubscriber)
 open class BaseExpoAppDelegateSubscriber: UIResponder {
-  public override required init() {}
+  public override required init() {
+    super.init()
+  }
+
+  #if os(macOS)
+  @available(*, unavailable)
+  public required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+  #endif // os(macOS)
 }
 
 /**

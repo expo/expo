@@ -78,7 +78,8 @@ if (var == nil) { return; }
 // Converts nil -> [NSNull null]
 #define EXNullIfNil(value) (value ?: [NSNull null])
 
-#import <UIKit/UIKit.h>
+#import <ExpoModulesCore/Platform.h>
+
 #import <Foundation/Foundation.h>
 
 typedef struct EXMethodInfo {
@@ -103,6 +104,11 @@ EX_EXTERN void EXLogWarn(NSString *format, ...);
 EX_EXTERN void EXLogError(NSString *format, ...);
 EX_EXTERN void EXFatal(NSError *);
 EX_EXTERN NSError * EXErrorWithMessage(NSString *);
+
+#if TARGET_OS_OSX
+EX_EXTERN NSApplication *EXSharedApplication(void);
+#else
 EX_EXTERN UIApplication *EXSharedApplication(void);
+#endif
 
 EX_EXTERN_C_END

@@ -1,5 +1,3 @@
-import UIKit
-
 /**
  Type-erased protocol for view props classes.
  */

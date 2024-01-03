@@ -1,8 +1,8 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
 
+#import <ExpoModulesCore/Platform.h>
 #import <ExpoModulesCore/EXInternalModule.h>
 #import <ExpoModulesCore/EXUtilitiesInterface.h>
 #import <ExpoModulesCore/EXModuleRegistryConsumer.h>

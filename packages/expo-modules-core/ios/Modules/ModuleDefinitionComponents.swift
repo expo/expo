@@ -1,5 +1,3 @@
-import UIKit
-
 // MARK: - Module name
 
 /**
