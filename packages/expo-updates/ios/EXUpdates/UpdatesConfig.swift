@@ -65,7 +65,6 @@ public final class UpdatesConfig: NSObject {
   public static let EXUpdatesConfigCheckOnLaunchKey = "EXUpdatesCheckOnLaunch"
   public static let EXUpdatesConfigRuntimeVersionKey = "EXUpdatesRuntimeVersion"
   public static let EXUpdatesConfigHasEmbeddedUpdateKey = "EXUpdatesHasEmbeddedUpdate"
-  public static let EXUpdatesConfigExpectsSignedManifestKey = "EXUpdatesExpectsSignedManifest"
   public static let EXUpdatesConfigCodeSigningCertificateKey = "EXUpdatesCodeSigningCertificate"
   public static let EXUpdatesConfigCodeSigningMetadataKey = "EXUpdatesCodeSigningMetadata"
   public static let EXUpdatesConfigCodeSigningIncludeManifestResponseCertificateChainKey = "EXUpdatesCodeSigningIncludeManifestResponseCertificateChain"
@@ -77,7 +76,6 @@ public final class UpdatesConfig: NSObject {
   public static let EXUpdatesConfigCheckOnLaunchValueErrorRecoveryOnly = "ERROR_RECOVERY_ONLY"
   public static let EXUpdatesConfigCheckOnLaunchValueNever = "NEVER"
 
-  public let expectsSignedManifest: Bool
   public let scopeKey: String
   public let updateUrl: URL
   public let requestHeaders: [String: String]
@@ -93,7 +91,6 @@ public final class UpdatesConfig: NSObject {
   public let hasEmbeddedUpdate: Bool
 
   internal required init(
-    expectsSignedManifest: Bool,
     scopeKey: String,
     updateUrl: URL,
     requestHeaders: [String: String],
@@ -104,7 +101,6 @@ public final class UpdatesConfig: NSObject {
     hasEmbeddedUpdate: Bool,
     enableExpoUpdatesProtocolV0CompatibilityMode: Bool
   ) {
-    self.expectsSignedManifest = expectsSignedManifest
     self.scopeKey = scopeKey
     self.updateUrl = updateUrl
     self.requestHeaders = requestHeaders
@@ -172,7 +168,6 @@ public final class UpdatesConfig: NSObject {
   }
 
   public static func config(fromDictionary config: [String: Any]) throws -> UpdatesConfig {
-    let expectsSignedManifest = config.optionalValue(forKey: EXUpdatesConfigExpectsSignedManifestKey) ?? false
     guard let updateUrl = URL(string: config.requiredValue(forKey: EXUpdatesConfigUpdateUrlKey)) else {
       throw UpdatesConfigError.ExpoUpdatesConfigMissingURLError
     }
@@ -232,7 +227,6 @@ public final class UpdatesConfig: NSObject {
     let enableExpoUpdatesProtocolV0CompatibilityMode = config.optionalValue(forKey: EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityModeKey) ?? false
 
     return UpdatesConfig(
-      expectsSignedManifest: expectsSignedManifest,
       scopeKey: scopeKey,
       updateUrl: updateUrl,
       requestHeaders: requestHeaders,

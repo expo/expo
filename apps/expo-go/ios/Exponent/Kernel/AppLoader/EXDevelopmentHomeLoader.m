@@ -216,7 +216,6 @@ NS_ASSUME_NONNULL_BEGIN
     EXUpdatesConfig.EXUpdatesConfigHasEmbeddedUpdateKey: @NO,
     EXUpdatesConfig.EXUpdatesConfigRuntimeVersionKey: [self _runtimeVersion],
     EXUpdatesConfig.EXUpdatesConfigScopeKeyKey: self.manifestAndAssetRequestHeaders.manifest.scopeKey,
-    EXUpdatesConfig.EXUpdatesConfigExpectsSignedManifestKey: @YES,
     EXUpdatesConfig.EXUpdatesConfigRequestHeadersKey: [self _requestHeaders]
   };
 

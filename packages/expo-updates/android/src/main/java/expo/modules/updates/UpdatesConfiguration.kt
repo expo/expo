@@ -26,7 +26,6 @@ enum class UpdatesConfigurationValidationResult {
  * class may be created over the lifetime of the app, but only one should be active at a time.
  */
 data class UpdatesConfiguration(
-  val expectsSignedManifest: Boolean,
   val scopeKey: String,
   val updateUrl: Uri,
   val runtimeVersionRaw: String?,
@@ -60,7 +59,6 @@ data class UpdatesConfiguration(
   }
 
   constructor(context: Context?, overrideMap: Map<String, Any>?) : this(
-    expectsSignedManifest = overrideMap?.readValueCheckingType(UPDATES_CONFIGURATION_EXPECTS_EXPO_SIGNED_MANIFEST) ?: false,
     scopeKey = maybeGetDefaultScopeKey(
       overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_SCOPE_KEY_KEY) ?: context?.getMetadataValue("expo.modules.updates.EXPO_SCOPE_KEY"),
       updateUrl = getUpdatesUrl(context, overrideMap)!!
@@ -127,7 +125,6 @@ data class UpdatesConfiguration(
     const val UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY = "checkOnLaunch"
     const val UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY = "launchWaitMs"
     const val UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY = "hasEmbeddedUpdate"
-    const val UPDATES_CONFIGURATION_EXPECTS_EXPO_SIGNED_MANIFEST = "expectsSignedManifest"
     const val UPDATES_CONFIGURATION_ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE = "enableExpoUpdatesProtocolCompatibilityMode"
 
     const val UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE = "codeSigningCertificate"
