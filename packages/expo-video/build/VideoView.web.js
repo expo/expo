@@ -31,7 +31,6 @@ class VideoPlayerWeb {
     set volume(value) {
         this._mountedVideos.forEach((video) => {
             video.volume = value;
-            console.log('Setting to: ', value, 'current: ', video.volume);
         });
         this._volume = value;
     }
@@ -43,6 +42,7 @@ class VideoPlayerWeb {
     }
     mountVideoView(video) {
         this._mountedVideos.add(video);
+        this._synchronizeWithFirstVideo(video);
         this._addListeners(video);
     }
     unmountVideoView(video) {
@@ -92,6 +92,15 @@ class VideoPlayerWeb {
         });
         this.isPlaying = true;
     }
+    _synchronizeWithFirstVideo(video) {
+        const firstVideo = [...this._mountedVideos][0];
+        if (!firstVideo)
+            return;
+        video.currentTime = firstVideo.currentTime;
+        video.volume = firstVideo.volume;
+        video.muted = firstVideo.muted;
+        video.playbackRate = firstVideo.playbackRate;
+    }
     _addListeners(video) {
         video.onloadedmetadata = () => {
             const source = audioContext.createMediaElementSource(video);
@@ -104,6 +113,45 @@ class VideoPlayerWeb {
                 source.connect(zeroGainNode);
             }
             source.connect(zeroGainNode);
+        };
+        video.onplay = () => {
+            this.isPlaying = true;
+            this._mountedVideos.forEach((mountedVideo) => {
+                mountedVideo.play();
+            });
+        };
+        video.onpause = () => {
+            this.isPlaying = false;
+            this._mountedVideos.forEach((mountedVideo) => {
+                mountedVideo.pause();
+            });
+        };
+        video.onvolumechange = () => {
+            this.volume = video.volume;
+            this.isMuted = video.muted;
+        };
+        video.onseeking = () => {
+            this.timestamp = video.currentTime;
+            this._mountedVideos.forEach((mountedVideo) => {
+                if (mountedVideo === video || mountedVideo.currentTime === video.currentTime)
+                    return;
+                mountedVideo.currentTime = video.currentTime;
+            });
+        };
+        video.onseeked = () => {
+            this.timestamp = video.currentTime;
+            this._mountedVideos.forEach((mountedVideo) => {
+                if (mountedVideo === video || mountedVideo.currentTime === video.currentTime)
+                    return;
+                mountedVideo.currentTime = video.currentTime;
+            });
+        };
+        video.onratechange = () => {
+            this._mountedVideos.forEach((mountedVideo) => {
+                if (mountedVideo === video || mountedVideo.playbackRate === video.playbackRate)
+                    return;
+                mountedVideo.playbackRate = video.playbackRate;
+            });
         };
     }
 }

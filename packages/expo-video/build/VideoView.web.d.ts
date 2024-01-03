@@ -20,6 +20,7 @@ declare class VideoPlayerWeb implements VideoPlayer {
     replace(source: string): void;
     seekBy(seconds: number): void;
     replay(): void;
+    _synchronizeWithFirstVideo(video: HTMLVideoElement): void;
     _addListeners(video: HTMLVideoElement): void;
 }
 export declare function useVideoPlayer(source?: string | null): VideoPlayer;
