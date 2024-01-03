@@ -7,7 +7,7 @@ import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.db.enums.UpdateStatus
 import expo.modules.updates.loader.EmbeddedLoader
-import expo.modules.manifests.core.BareManifest
+import expo.modules.manifests.core.EmbeddedManifest
 import org.json.JSONArray
 import org.json.JSONException
 import java.util.*
@@ -18,16 +18,16 @@ import java.util.*
  * embedded by react-native in the application package. They contain the minimum amount of
  * information needed to reliably identify the update and insert it into [UpdatesDatabase].
  */
-class BareUpdateManifest private constructor(
-  override val manifest: BareManifest,
+class EmbeddedUpdate private constructor(
+  override val manifest: EmbeddedManifest,
   private val mId: UUID,
   private val mScopeKey: String,
   private val mCommitTime: Date,
   private val mRuntimeVersion: String,
   private val mAssets: JSONArray?
-) : UpdateManifest {
+) : Update {
   override val updateEntity: UpdateEntity by lazy {
-    UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey, this@BareUpdateManifest.manifest.getRawJson()).apply {
+    UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey, this@EmbeddedUpdate.manifest.getRawJson()).apply {
       status = UpdateStatus.EMBEDDED
     }
   }
@@ -76,13 +76,13 @@ class BareUpdateManifest private constructor(
   override val isDevelopmentMode: Boolean = false
 
   companion object {
-    private val TAG = BareUpdateManifest::class.java.simpleName
+    private val TAG = EmbeddedUpdate::class.java.simpleName
 
     @Throws(JSONException::class)
-    fun fromBareManifest(
-      manifest: BareManifest,
+    fun fromEmbeddedManifest(
+      manifest: EmbeddedManifest,
       configuration: UpdatesConfiguration
-    ): BareUpdateManifest {
+    ): EmbeddedUpdate {
       val id = UUID.fromString(manifest.getID())
       val commitTime = Date(manifest.getCommitTimeLong())
       val runtimeVersion = configuration.getRuntimeVersion()
@@ -90,7 +90,7 @@ class BareUpdateManifest private constructor(
       if (runtimeVersion.contains(",")) {
         throw AssertionError("Should not be initializing a BareManifest in an environment with multiple runtime versions.")
       }
-      return BareUpdateManifest(
+      return EmbeddedUpdate(
         manifest,
         id,
         configuration.scopeKey,

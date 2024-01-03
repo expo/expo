@@ -594,7 +594,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
           }
 
           if (signatureValidationResult.validationResult != ValidationResult.SKIPPED) {
-            val manifestForProjectInformation = ManifestFactory.getManifest(
+            val manifestForProjectInformation = UpdateFactory.getUpdate(
               preManifest,
               responseHeaderData,
               extensions,
@@ -618,13 +618,13 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
         return
       }
 
-      val updateManifest = ManifestFactory.getManifest(preManifest, responseHeaderData, extensions, configuration)
-      if (!SelectionPolicies.matchesFilters(updateManifest.updateEntity!!, responseHeaderData.manifestFilters)) {
+      val update = UpdateFactory.getUpdate(preManifest, responseHeaderData, extensions, configuration)
+      if (!SelectionPolicies.matchesFilters(update.updateEntity!!, responseHeaderData.manifestFilters)) {
         val message =
           "Downloaded manifest is invalid; provides filters that do not match its content"
         callback.onFailure(message, Exception(message))
       } else {
-        callback.onSuccess(UpdateResponsePart.ManifestUpdateResponsePart(updateManifest))
+        callback.onSuccess(UpdateResponsePart.ManifestUpdateResponsePart(update))
       }
     }
 

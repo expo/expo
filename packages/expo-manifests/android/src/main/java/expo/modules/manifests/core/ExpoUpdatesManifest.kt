@@ -8,7 +8,7 @@ import org.json.JSONObject
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-class NewManifest(json: JSONObject) : Manifest(json) {
+class ExpoUpdatesManifest(json: JSONObject) : Manifest(json) {
   /**
    * An ID representing this manifest, not the ID for the experience.
    */

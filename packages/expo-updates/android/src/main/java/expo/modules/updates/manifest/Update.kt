@@ -8,7 +8,7 @@ import expo.modules.manifests.core.Manifest
  * Represents the manifest object for an update. Distinct from [UpdateEntity] which represents a
  * (theoretical or actual) row in the SQLite `updates` table.
  */
-interface UpdateManifest {
+interface Update {
   val updateEntity: UpdateEntity?
   val assetEntityList: List<AssetEntity>
   val manifest: Manifest
