@@ -186,7 +186,7 @@ export interface YearlyNotificationTrigger {
  */
 export interface FirebaseRemoteMessage {
   collapseKey: string | null;
-  data: { [key: string]: string };
+  data: Record<string, string>;
   from: string | null;
   messageId: string | null;
   messageType: string | null;
@@ -370,6 +370,7 @@ export type NotificationContent = {
    * Data associated with the notification, not displayed
    */
   data: Record<string, any>;
+  // @docsMissing
   sound: 'default' | 'defaultCritical' | 'custom' | null;
 } & (NotificationContentIos | NotificationContentAndroid);
 
