@@ -1,6 +1,6 @@
-import { NewManifest, BareManifest } from 'expo-manifests';
+import { ExpoUpdatesManifest, EmbeddedManifest } from 'expo-manifests';
 
-export type Manifest = NewManifest | BareManifest;
+export type Manifest = ExpoUpdatesManifest | EmbeddedManifest;
 
 /**
  * The types of update-related events, used with `addListener()` and `useUpdateEvents()`.

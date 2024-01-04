@@ -1,5 +1,5 @@
-import { NewManifest, BareManifest } from 'expo-manifests';
-export type Manifest = NewManifest | BareManifest;
+import { ExpoUpdatesManifest, EmbeddedManifest } from 'expo-manifests';
+export type Manifest = ExpoUpdatesManifest | EmbeddedManifest;
 /**
  * The types of update-related events, used with `addListener()` and `useUpdateEvents()`.
  * @deprecated These APIs are deprecated and will be removed in a future release corresponding with SDK 51.

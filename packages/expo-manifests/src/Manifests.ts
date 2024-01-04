@@ -58,9 +58,9 @@ export type ExpoGoPackagerOpts = {
 };
 
 /**
- * A modern manifest.
+ * A expo-updates manifest.
  */
-export type NewManifest = {
+export type ExpoUpdatesManifest = {
   id: string;
   createdAt: string;
   runtimeVersion: string;
@@ -71,12 +71,24 @@ export type NewManifest = {
 };
 
 /**
- * An embedded bare manifest.
+ * @deprecated renamed to ExpoUpdatesManifest, will be removed in a few versions
+ * @see ExpoUpdatesManifest
+ */
+export type NewManifest = ExpoUpdatesManifest;
+
+/**
+ * An embedded manifest.
  *
  * Generated during build in createManifest.js build step script.
  */
-export type BareManifest = {
+export type EmbeddedManifest = {
   id: string;
   commitTime: number;
   assets: any[]; // intentionally underspecified for now since there are no uses in JS
 };
+
+/**
+ * @deprecated renamed to EmbeddedManifest, will be removed in a few versions
+ * @see EmbeddedManifest
+ */
+export type BareManifest = EmbeddedManifest;
