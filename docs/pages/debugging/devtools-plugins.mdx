@@ -182,9 +182,7 @@ import { useTinyBaseDevTools } from '@dev-plugins/tinybase';
 const store = createStore().setValue('counter', 0);
 
 export default function App() {
-  if (__DEV__) {
-    useTinyBaseDevTools(store);
-  }
+  useTinyBaseDevTools(store);
 
   return (
     <Provider store={store}>
