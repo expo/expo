@@ -278,8 +278,8 @@ export type CameraProps = ViewProps & {
    */
   facing?: CameraType;
   /**
-   * Camera flash mode. Use one of `FlashMode`. When `on`, the flash on your device will
-   * turn on when taking a picture, when `off`, it won't. Setting to `auto` will fire flash if required.
+   * Camera flash mode. Use one of `FlashMode` values. When `on`, the flash on your device will
+   * turn on when taking a picture. When `off`, it won't. Setting it to `auto` will fire flash if required.
    * @default 'off'
    */
   flash?: FlashMode;
