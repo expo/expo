@@ -235,8 +235,7 @@ dependencies {
 
   implementation("androidx.tracing:tracing-ktx:1.2.0")
 
-  //noinspection GradleDynamicVersion
-  implementation 'com.facebook.react:react-native:+'
+  implementation 'com.facebook.react:react-android'
 
   compileOnly 'com.facebook.fbjni:fbjni:0.5.1'
 

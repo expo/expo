@@ -113,8 +113,7 @@ dependencies {
   api 'io.mockk:mockk:1.13.5'
   api "org.robolectric:robolectric:4.10"
 
-  //noinspection GradleDynamicVersion
-  implementation 'com.facebook.react:react-native:+'
+  implementation 'com.facebook.react:react-android'
 
   implementation "org.jetbrains.kotlin:kotlin-reflect:${getKotlinVersion()}"
 }
