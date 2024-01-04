@@ -21,8 +21,8 @@ enum StartMode {
   try {
     const startMode = getStartMode();
 
-    TARGET_DEVICE = await setTargetDevice();
-    TARGET_DEVICE_IOS_VERSION = await setTargetIOSVersion();
+    TARGET_DEVICE = await queryFirstDeviceAsync();
+    TARGET_DEVICE_IOS_VERSION = await queryIosSdkVersionAsync();
 
     const projectRoot = path.resolve(__dirname, '..');
     const deviceId = await queryDeviceIdAsync(TARGET_DEVICE);
@@ -215,7 +215,7 @@ async function ensureDirAsync(dirPath: string) {
   }
 }
 
-async function setTargetDevice() {
+async function queryFirstDeviceAsync() {
   const { stdout } = await spawnAsync('xcodebuild', [
     '-workspace',
     './ios/BareExpo.xcworkspace',
@@ -230,7 +230,7 @@ async function setTargetDevice() {
   return deviceName || TARGET_DEVICE;
 }
 
-async function setTargetIOSVersion() {
+async function queryIosSdkVersionAsync() {
   const { stdout } = await spawnAsync('xcodebuild', ['-showsdks']);
   const versionString = stdout.split('\n').filter((line) => line.includes('iphoneos'))[0];
 
