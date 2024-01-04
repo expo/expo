@@ -21,10 +21,8 @@ enum StartMode {
   try {
     const startMode = getStartMode();
 
-    if (startMode === StartMode.BUILD) {
-      TARGET_DEVICE = 'iPhone 15';
-      TARGET_DEVICE_IOS_VERSION = 17;
-    }
+    TARGET_DEVICE = await setTargetDevice();
+    TARGET_DEVICE_IOS_VERSION = await setTargetIOSVersion();
 
     const projectRoot = path.resolve(__dirname, '..');
     const deviceId = await queryDeviceIdAsync(TARGET_DEVICE);
@@ -215,4 +213,27 @@ async function ensureDirAsync(dirPath: string) {
       throw e;
     }
   }
+}
+
+async function setTargetDevice() {
+  const { stdout } = await spawnAsync('xcodebuild', [
+    '-workspace',
+    './ios/BareExpo.xcworkspace',
+    '-scheme',
+    'BareExpo',
+    '-showdestinations',
+  ]);
+
+  const firstDevice = stdout.split('\n').filter((line) => line.includes('name:iPhone'))[0];
+  const deviceName = firstDevice.replace(/^.*name:(iPhone[^}]*) .*$/, '$1');
+
+  return deviceName || TARGET_DEVICE;
+}
+
+async function setTargetIOSVersion() {
+  const { stdout } = await spawnAsync('xcodebuild', ['-showsdks']);
+  const versionString = stdout.split('\n').filter((line) => line.includes('iphoneos'))[0];
+
+  const majorVersion = versionString.match(/iOS (\d+)/)[1];
+  return Number(majorVersion) || TARGET_DEVICE_IOS_VERSION;
 }
