@@ -89,7 +89,8 @@ android {
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     // Deprecated. Used by net.openid:appauth
     manifestPlaceholders = [
-        'appAuthRedirectScheme': 'host.exp.exponent'
+        'appAuthRedirectScheme': 'host.exp.exponent',
+        'appLabel': '@string/versioned_app_name'
     ]
   }
   dexOptions {
@@ -130,10 +131,6 @@ android {
         unstrippedNativeLibsDir file("${buildDir}/intermediates/merged_native_libs/release/out/lib")
       }
     }
-  }
-
-  defaultConfig {
-    manifestPlaceholders = [appLabel:"@string/versioned_app_name"]
   }
 
   lintOptions {
