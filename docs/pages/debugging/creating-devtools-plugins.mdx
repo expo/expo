@@ -30,7 +30,7 @@ Then, add the packages required to build the app for the web and to use the dev 
 
 ### Update package.json
 
-Move any dependencies from `dependencies` to `devDependences` in **package.json**. These dependencies are only needed for building the web version of the dev tools UI, and putting them in `devDependencies` will ensure they are not included in your app.
+Move any dependencies from `dependencies` to `devDependences` in **package.json**. These dependencies are needed for building the web version of the dev tools UI, and are part of your app's development. Having them in `devDependencies` ensures they are not included in your app.
 
 ```diff package.json
 "dependencies": {
