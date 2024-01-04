@@ -11,7 +11,7 @@
       "android": {
         "image": "ubuntu-22.04-jdk-17-ndk-r21e",
         "cache": {
-          "customPaths": ["../../android/prebuiltHermes"]
+          "customPaths": ["../expo-go/android/prebuiltHermes"]
         },
         "resourceClass": "large",
         "env": {
