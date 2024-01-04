@@ -23,16 +23,16 @@ import java.util.*
  */
 class ExpoUpdatesUpdate private constructor(
   override val manifest: ExpoUpdatesManifest,
-  private val mId: UUID,
-  private val mScopeKey: String,
-  private val mCommitTime: Date,
-  private val mRuntimeVersion: String,
-  private val mLaunchAsset: JSONObject,
-  private val mAssets: JSONArray?,
-  private val mExtensions: JSONObject?
+  private val id: UUID,
+  private val scopeKey: String,
+  private val commitTime: Date,
+  private val runtimeVersion: String,
+  private val launchAsset: JSONObject,
+  private val assets: JSONArray?,
+  private val extensions: JSONObject?
 ) : Update {
   override val updateEntity: UpdateEntity by lazy {
-    UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey, this@ExpoUpdatesUpdate.manifest.getRawJson()).apply {
+    UpdateEntity(id, commitTime, runtimeVersion, scopeKey, this@ExpoUpdatesUpdate.manifest.getRawJson()).apply {
       if (isDevelopmentMode) {
         status = UpdateStatus.DEVELOPMENT
       }
@@ -40,7 +40,7 @@ class ExpoUpdatesUpdate private constructor(
   }
 
   private val assetHeaders: Map<String, JSONObject> by lazy {
-    val assetRequestHeadersJSON = (mExtensions ?: JSONObject()).getNullable<JSONObject>("assetRequestHeaders")
+    val assetRequestHeadersJSON = (extensions ?: JSONObject()).getNullable<JSONObject>("assetRequestHeaders")
     assetRequestHeadersJSON?.let { it.keys().asSequence().associateWith { key -> it.require(key) } } ?: mapOf()
   }
 
@@ -49,24 +49,24 @@ class ExpoUpdatesUpdate private constructor(
     try {
       assetList.add(
         AssetEntity(
-          mLaunchAsset.getString("key"),
+          launchAsset.getString("key"),
           // the fileExtension is not necessary for the launch asset and EAS servers will not include it.
-          mLaunchAsset.getNullable("fileExtension")
+          launchAsset.getNullable("fileExtension")
         ).apply {
-          url = Uri.parse(mLaunchAsset.getString("url"))
-          extraRequestHeaders = assetHeaders[mLaunchAsset.getString("key")]
+          url = Uri.parse(launchAsset.getString("url"))
+          extraRequestHeaders = assetHeaders[launchAsset.getString("key")]
           isLaunchAsset = true
           embeddedAssetFilename = EmbeddedLoader.BUNDLE_FILENAME
-          expectedHash = mLaunchAsset.getNullable("hash")
+          expectedHash = launchAsset.getNullable("hash")
         }
       )
     } catch (e: JSONException) {
       Log.e(TAG, "Could not read launch asset from manifest", e)
     }
-    if (mAssets != null && mAssets.length() > 0) {
-      for (i in 0 until mAssets.length()) {
+    if (assets != null && assets.length() > 0) {
+      for (i in 0 until assets.length()) {
         try {
-          val assetObject = mAssets.getJSONObject(i)
+          val assetObject = assets.getJSONObject(i)
           assetList.add(
             AssetEntity(
               assetObject.getString("key"),
@@ -98,27 +98,20 @@ class ExpoUpdatesUpdate private constructor(
       manifest: ExpoUpdatesManifest,
       extensions: JSONObject?,
       configuration: UpdatesConfiguration
-    ): ExpoUpdatesUpdate {
-      val id = UUID.fromString(manifest.getID())
-      val runtimeVersion = manifest.getRuntimeVersion()
-      val launchAsset = manifest.getLaunchAsset()
-      val assets = manifest.getAssets()
-      val commitTime: Date = try {
+    ): ExpoUpdatesUpdate = ExpoUpdatesUpdate(
+      manifest,
+      id = UUID.fromString(manifest.getID()),
+      configuration.scopeKey,
+      commitTime = try {
         UpdatesUtils.parseDateString(manifest.getCreatedAt())
       } catch (e: ParseException) {
         Log.e(TAG, "Could not parse manifest createdAt string; falling back to current time", e)
         Date()
-      }
-      return ExpoUpdatesUpdate(
-        manifest,
-        id,
-        configuration.scopeKey,
-        commitTime,
-        runtimeVersion,
-        launchAsset,
-        assets,
-        extensions
-      )
-    }
+      },
+      runtimeVersion = manifest.getRuntimeVersion(),
+      launchAsset = manifest.getLaunchAsset(),
+      assets = manifest.getAssets(),
+      extensions
+    )
   }
 }

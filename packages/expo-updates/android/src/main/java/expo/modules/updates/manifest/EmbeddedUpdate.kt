@@ -20,14 +20,14 @@ import java.util.*
  */
 class EmbeddedUpdate private constructor(
   override val manifest: EmbeddedManifest,
-  private val mId: UUID,
-  private val mScopeKey: String,
-  private val mCommitTime: Date,
-  private val mRuntimeVersion: String,
-  private val mAssets: JSONArray?
+  private val id: UUID,
+  private val scopeKey: String,
+  private val commitTime: Date,
+  private val runtimeVersion: String,
+  private val assets: JSONArray?
 ) : Update {
   override val updateEntity: UpdateEntity by lazy {
-    UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey, this@EmbeddedUpdate.manifest.getRawJson()).apply {
+    UpdateEntity(id, commitTime, runtimeVersion, scopeKey, this@EmbeddedUpdate.manifest.getRawJson()).apply {
       status = UpdateStatus.EMBEDDED
     }
   }
@@ -35,16 +35,16 @@ class EmbeddedUpdate private constructor(
   override val assetEntityList: List<AssetEntity> by lazy {
     val assetList = mutableListOf<AssetEntity>()
 
-    val bundleKey = "bundle-$mId"
+    val bundleKey = "bundle-$id"
     val bundleAssetEntity = AssetEntity(bundleKey, "js").apply {
       isLaunchAsset = true
       embeddedAssetFilename = EmbeddedLoader.BARE_BUNDLE_FILENAME
     }
     assetList.add(bundleAssetEntity)
-    if (mAssets != null && mAssets.length() > 0) {
-      for (i in 0 until mAssets.length()) {
+    if (assets != null && assets.length() > 0) {
+      for (i in 0 until assets.length()) {
         try {
-          val assetObject = mAssets.getJSONObject(i)
+          val assetObject = assets.getJSONObject(i)
           val type = assetObject.getString("type")
           val assetEntity = AssetEntity(
             assetObject.getString("packagerHash"),
@@ -82,22 +82,13 @@ class EmbeddedUpdate private constructor(
     fun fromEmbeddedManifest(
       manifest: EmbeddedManifest,
       configuration: UpdatesConfiguration
-    ): EmbeddedUpdate {
-      val id = UUID.fromString(manifest.getID())
-      val commitTime = Date(manifest.getCommitTimeLong())
-      val runtimeVersion = configuration.getRuntimeVersion()
-      val assets = manifest.getAssets()
-      if (runtimeVersion.contains(",")) {
-        throw AssertionError("Should not be initializing a BareManifest in an environment with multiple runtime versions.")
-      }
-      return EmbeddedUpdate(
-        manifest,
-        id,
-        configuration.scopeKey,
-        commitTime,
-        runtimeVersion,
-        assets
-      )
-    }
+    ): EmbeddedUpdate = EmbeddedUpdate(
+      manifest,
+      id = UUID.fromString(manifest.getID()),
+      configuration.scopeKey,
+      commitTime = Date(manifest.getCommitTimeLong()),
+      runtimeVersion = configuration.getRuntimeVersion(),
+      assets = manifest.getAssets()
+    )
   }
 }
