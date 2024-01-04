@@ -7,7 +7,7 @@ import expo.modules.kotlin.exception.CodedException
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.loader.LoaderTask
-import expo.modules.updates.manifest.UpdateManifest
+import expo.modules.updates.manifest.Update
 import expo.modules.updates.statemachine.UpdatesStateContext
 import java.io.File
 import java.util.Date
@@ -96,7 +96,7 @@ interface IUpdatesController {
     }
 
     class NoUpdateAvailable(val reason: LoaderTask.RemoteCheckResultNotAvailableReason) : CheckForUpdateResult(Status.NO_UPDATE_AVAILABLE)
-    class UpdateAvailable(val updateManifest: UpdateManifest) : CheckForUpdateResult(Status.UPDATE_AVAILABLE)
+    class UpdateAvailable(val update: Update) : CheckForUpdateResult(Status.UPDATE_AVAILABLE)
     class RollBackToEmbedded(val commitTime: Date) : CheckForUpdateResult(Status.ROLL_BACK_TO_EMBEDDED)
     class ErrorResult(val error: Exception, val message: String) : CheckForUpdateResult(Status.ERROR)
   }

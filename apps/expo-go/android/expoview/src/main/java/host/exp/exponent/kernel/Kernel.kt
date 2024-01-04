@@ -32,7 +32,7 @@ import expo.modules.jsonutils.require
 import expo.modules.notifications.service.NotificationsService.Companion.getNotificationResponseFromOpenIntent
 import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
 import expo.modules.manifests.core.Manifest
-import expo.modules.manifests.core.NewManifest
+import expo.modules.manifests.core.ExpoUpdatesManifest
 import host.exp.exponent.*
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderCallback
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderStatus
@@ -304,7 +304,7 @@ class Kernel : KernelInterface() {
       return try {
         val manifestAndAssetRequestHeaders = exponentManifest.getKernelManifestAndAssetRequestHeaders()
         val manifest = manifestAndAssetRequestHeaders.manifest
-        if (manifest is NewManifest) {
+        if (manifest is ExpoUpdatesManifest) {
           val bundleKey = manifest.getLaunchAsset().getString("key")
           val map: Map<String, JSONObject> = manifestAndAssetRequestHeaders.assetRequestHeaders.let { it.keys().asSequence().associateWith { key -> it.require(key) } } ?: mapOf()
           map[bundleKey] ?: JSONObject()

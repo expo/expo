@@ -237,10 +237,10 @@ abstract class Manifest(protected val json: JSONObject) {
           throw Exception("Legacy manifests are no longer supported")
         }
         manifestJson.has("metadata") -> {
-          NewManifest(manifestJson)
+          ExpoUpdatesManifest(manifestJson)
         }
         else -> {
-          BareManifest(manifestJson)
+          EmbeddedManifest(manifestJson)
         }
       }
     }
