@@ -9,7 +9,6 @@ import android.net.Uri
 import android.os.AsyncTask
 import android.text.TextUtils
 import android.util.LruCache
-import expo.modules.manifests.core.InternalJSONMutator
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.generated.ExponentBuildConstants
@@ -271,32 +270,6 @@ class ExponentManifest @Inject constructor(
     private const val EXPONENT_SERVER_HEADER = "Exponent-Server"
 
     private var hasShownKernelManifestLog = false
-
-    @Throws(JSONException::class)
-    fun normalizeManifestInPlace(manifest: Manifest, manifestUrl: String) {
-      manifest.mutateInternalJSONInPlace(object : InternalJSONMutator {
-        override fun updateJSON(json: JSONObject) {
-          if (!json.has(MANIFEST_ID_KEY)) {
-            json.put(MANIFEST_ID_KEY, manifestUrl)
-          }
-          if (!json.has(MANIFEST_NAME_KEY)) {
-            json.put(MANIFEST_NAME_KEY, "My New Experience")
-          }
-          if (!json.has(MANIFEST_PRIMARY_COLOR_KEY)) {
-            json.put(MANIFEST_PRIMARY_COLOR_KEY, "#023C69")
-          }
-          if (!json.has(MANIFEST_ICON_URL_KEY)) {
-            json.put(
-              MANIFEST_ICON_URL_KEY,
-              "https://d3lwq5rlu14cro.cloudfront.net/ExponentEmptyManifest_192.png"
-            )
-          }
-          if (!json.has(MANIFEST_ORIENTATION_KEY)) {
-            json.put(MANIFEST_ORIENTATION_KEY, "default")
-          }
-        }
-      })
-    }
   }
 
   init {

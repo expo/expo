@@ -727,7 +727,6 @@ class Kernel : KernelInterface() {
     val bundleUrl = toHttp(manifest.getBundleURL())
     val task = getExperienceActivityTask(manifestUrl)
     task.bundleUrl = bundleUrl
-    ExponentManifest.normalizeManifestInPlace(manifest, manifestUrl)
     if (existingTask == null) {
       sendManifestToExperienceActivity(manifestUrl, manifest, bundleUrl)
     }
