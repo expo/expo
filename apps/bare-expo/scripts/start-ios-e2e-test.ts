@@ -1,6 +1,7 @@
 #!/usr/bin/env yarn --silent ts-node --transpile-only
 
 import * as XcodeBuild from '@expo/cli/build/src/run/ios/XcodeBuild';
+import { AppleDeviceManager } from '@expo/cli/build/src/start/platforms/ios/AppleDeviceManager';
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs/promises';
 import path from 'path';
@@ -216,24 +217,23 @@ async function ensureDirAsync(dirPath: string) {
 }
 
 async function queryFirstDeviceAsync() {
-  const { stdout } = await spawnAsync('xcodebuild', [
-    '-workspace',
-    './ios/BareExpo.xcworkspace',
-    '-scheme',
-    'BareExpo',
-    '-showdestinations',
-  ]);
+  const { device } = await AppleDeviceManager.resolveAsync({
+    device: {
+      osType: 'iOS',
+    },
+    shouldPrompt: false,
+  });
 
-  const firstDevice = stdout.split('\n').filter((line) => line.includes('name:iPhone'))[0];
-  const deviceName = firstDevice.replace(/^.*name:(iPhone[^}]*) .*$/, '$1');
-
-  return deviceName || TARGET_DEVICE;
+  return device.name || TARGET_DEVICE;
 }
 
 async function queryIosSdkVersionAsync() {
-  const { stdout } = await spawnAsync('xcodebuild', ['-showsdks']);
-  const versionString = stdout.split('\n').filter((line) => line.includes('iphoneos'))[0];
+  const { device } = await AppleDeviceManager.resolveAsync({
+    device: {
+      osType: 'iOS',
+    },
+    shouldPrompt: false,
+  });
 
-  const majorVersion = versionString.match(/iOS (\d+)/)[1];
-  return Number(majorVersion) || TARGET_DEVICE_IOS_VERSION;
+  return Number(device.osVersion) || TARGET_DEVICE_IOS_VERSION;
 }
