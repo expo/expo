@@ -69,16 +69,14 @@ Pass the navigation root to the plugin in your app's entry point when running in
   import { useReactNavigationDevTools } from '@dev-plugins/react-navigation';
 
   export default Layout() {
-    if (__DEV__) {
-      const navigationRef = useRef(null);
-      const rootNavigation = useRootNavigation();
+    const navigationRef = useRef(null);
+    const rootNavigation = useRootNavigation();
 
-      useReactNavigationDevTools(navigationRef);
+    useReactNavigationDevTools(navigationRef);
 
-      useEffect(() => {
-        navigationRef.current = rootNavigation;
-      }, [navigationRef.current]);
-    }
+    useEffect(() => {
+      navigationRef.current = rootNavigation;
+    }, [navigationRef.current]);
 
     return <Slot />;
   }
