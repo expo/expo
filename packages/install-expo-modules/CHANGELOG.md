@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Avoid installing dependencies when running `npx install-expo-modules`. ([#26075](https://github.com/expo/expo/pull/26075) by [@byCedric](https://github.com/byCedric))
+- Fixed the unknown syntax error when running on a Yarn v3 project. ([#26123](https://github.com/expo/expo/pull/26123) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
