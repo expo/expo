@@ -7,9 +7,9 @@ import Foundation
 public class ManifestFactory: NSObject {
   public static func manifest(forManifestJSON: [String: Any]) -> Manifest {
     if forManifestJSON["metadata"] != nil {
-      return NewManifest(rawManifestJSON: forManifestJSON)
+      return ExpoUpdatesManifest(rawManifestJSON: forManifestJSON)
     }
 
-    return BareManifest(rawManifestJSON: forManifestJSON)
+    return EmbeddedManifest(rawManifestJSON: forManifestJSON)
   }
 }

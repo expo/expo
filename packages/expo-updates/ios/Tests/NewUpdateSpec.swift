@@ -16,7 +16,7 @@ class NewUpdateSpec : ExpoSpec {
 
     describe("instantiation") {
       it("all fields") {
-        let manifest = NewManifest(
+        let manifest = ExpoUpdatesManifest(
           rawManifestJSON: [
             "runtimeVersion": "1",
             "id": "0eef8214-4833-4089-9dff-b4138a14f196",
@@ -28,8 +28,8 @@ class NewUpdateSpec : ExpoSpec {
           ]
         )
 
-        expect(NewUpdate.update(
-          withNewManifest: manifest,
+        expect(ExpoUpdatesUpdate.update(
+          withExpoUpdatesManifest: manifest,
           extensions: [:],
           config: config,
           database: database
@@ -37,7 +37,7 @@ class NewUpdateSpec : ExpoSpec {
       }
 
       it("no runtime version") {
-        let manifest = NewManifest(
+        let manifest = ExpoUpdatesManifest(
           rawManifestJSON: [
             "id": "0eef8214-4833-4089-9dff-b4138a14f196",
             "createdAt": "2020-11-11T00:17:54.797Z",
@@ -48,8 +48,8 @@ class NewUpdateSpec : ExpoSpec {
           ]
         )
 
-        expect(NewUpdate.update(
-          withNewManifest: manifest,
+        expect(ExpoUpdatesUpdate.update(
+          withExpoUpdatesManifest: manifest,
           extensions: [:],
           config: config,
           database: database
@@ -57,7 +57,7 @@ class NewUpdateSpec : ExpoSpec {
       }
 
       it("no id") {
-        let manifest = NewManifest(
+        let manifest = ExpoUpdatesManifest(
           rawManifestJSON: [
             "runtimeVersion": "1",
             "createdAt": "2020-11-11T00:17:54.797Z",
@@ -68,8 +68,8 @@ class NewUpdateSpec : ExpoSpec {
           ]
         )
 
-        expect(NewUpdate.update(
-          withNewManifest: manifest,
+        expect(ExpoUpdatesUpdate.update(
+          withExpoUpdatesManifest: manifest,
           extensions: [:],
           config: config,
           database: database
@@ -77,7 +77,7 @@ class NewUpdateSpec : ExpoSpec {
       }
 
       it("no created at") {
-        let manifest = NewManifest(
+        let manifest = ExpoUpdatesManifest(
           rawManifestJSON: [
             "runtimeVersion": "1",
             "id": "0eef8214-4833-4089-9dff-b4138a14f196",
@@ -88,8 +88,8 @@ class NewUpdateSpec : ExpoSpec {
           ]
         )
 
-        expect(NewUpdate.update(
-          withNewManifest: manifest,
+        expect(ExpoUpdatesUpdate.update(
+          withExpoUpdatesManifest: manifest,
           extensions: [:],
           config: config,
           database: database
@@ -97,7 +97,7 @@ class NewUpdateSpec : ExpoSpec {
       }
 
       it("no launch asset") {
-        let manifest = NewManifest(
+        let manifest = ExpoUpdatesManifest(
           rawManifestJSON: [
             "runtimeVersion": "1",
             "id": "0eef8214-4833-4089-9dff-b4138a14f196",
@@ -105,8 +105,8 @@ class NewUpdateSpec : ExpoSpec {
           ]
         )
 
-        expect(NewUpdate.update(
-          withNewManifest: manifest,
+        expect(ExpoUpdatesUpdate.update(
+          withExpoUpdatesManifest: manifest,
           extensions: [:],
           config: config,
           database: database

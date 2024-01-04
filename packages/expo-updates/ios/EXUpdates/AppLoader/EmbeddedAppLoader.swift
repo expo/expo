@@ -29,8 +29,8 @@ public final class EmbeddedAppLoader: AppLoader {
 
   private static let ErrorDomain = "EXUpdatesEmbeddedAppLoader"
 
-  private static var embeddedManifestInternal: BareUpdate?
-  public static func embeddedManifest(withConfig config: UpdatesConfig, database: UpdatesDatabase?) -> BareUpdate? {
+  private static var embeddedManifestInternal: EmbeddedUpdate?
+  public static func embeddedManifest(withConfig config: UpdatesConfig, database: UpdatesDatabase?) -> EmbeddedUpdate? {
     guard config.hasEmbeddedUpdate else {
       return nil
     }
@@ -95,7 +95,7 @@ public final class EmbeddedAppLoader: AppLoader {
     var mutableManifest = manifestDictionary
     // automatically verify embedded manifest since it was already codesigned
     mutableManifest["isVerified"] = true
-    embeddedManifestInternal = Update.update(withEmbeddedManifest: mutableManifest, config: config, database: database)
+    embeddedManifestInternal = Update.update(withRawEmbeddedManifest: mutableManifest, config: config, database: database)
     return embeddedManifestInternal
   }
 

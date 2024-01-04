@@ -2,9 +2,9 @@
 
 import Foundation
 
-@objc(EXManifestsBareManifest)
+@objc(EXManifestsEmbeddedManifest)
 @objcMembers
-public class BareManifest: Manifest {
+public class EmbeddedManifest: Manifest {
   public func rawId() -> String {
     return rawManifestJSON().requiredValue(forKey: "id")
   }

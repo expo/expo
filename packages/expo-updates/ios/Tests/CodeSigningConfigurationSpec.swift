@@ -96,8 +96,8 @@ class CodeSigningConfigurationSpec : ExpoSpec {
           allowUnsignedManifests: false
         )
         let signatureValidationResult = try configuration.validateSignature(
-          signature: CertificateFixtures.testNewManifestBodySignature,
-          signedData: CertificateFixtures.testNewManifestBody.data(using: .utf8)!,
+          signature: CertificateFixtures.testExpoUpdatesManifestBodySignature,
+          signedData: CertificateFixtures.testExpoUpdatesManifestBody.data(using: .utf8)!,
           manifestResponseCertificateChain: nil
         )
         expect(signatureValidationResult.validationResult) == ValidationResult.valid
@@ -114,7 +114,7 @@ class CodeSigningConfigurationSpec : ExpoSpec {
         )
         let signatureValidationResult = try configuration.validateSignature(
           signature: "sig=\"aGVsbG8=\"",
-          signedData: CertificateFixtures.testNewManifestBody.data(using: .utf8)!,
+          signedData: CertificateFixtures.testExpoUpdatesManifestBody.data(using: .utf8)!,
           manifestResponseCertificateChain: nil
         )
         expect(signatureValidationResult.validationResult) == ValidationResult.invalid
@@ -132,7 +132,7 @@ class CodeSigningConfigurationSpec : ExpoSpec {
         expect {
           try configuration.validateSignature(
             signature: "sig=\"aGVsbG8=\", keyid=\"other\"",
-            signedData: CertificateFixtures.testNewManifestBody.data(using: .utf8)!,
+            signedData: CertificateFixtures.testExpoUpdatesManifestBody.data(using: .utf8)!,
             manifestResponseCertificateChain: nil
           )
         }.to(throwError(CodeSigningError.KeyIdMismatchError))
@@ -149,8 +149,8 @@ class CodeSigningConfigurationSpec : ExpoSpec {
           allowUnsignedManifests: false
         )
         let signatureValidationResult = try configuration.validateSignature(
-          signature: CertificateFixtures.testNewManifestBodySignature,
-          signedData: CertificateFixtures.testNewManifestBody.data(using: .utf8)!,
+          signature: CertificateFixtures.testExpoUpdatesManifestBodySignature,
+          signedData: CertificateFixtures.testExpoUpdatesManifestBody.data(using: .utf8)!,
           manifestResponseCertificateChain: leafCert + intermediateCert
         )
         expect(signatureValidationResult.validationResult) == ValidationResult.valid
@@ -168,8 +168,8 @@ class CodeSigningConfigurationSpec : ExpoSpec {
           allowUnsignedManifests: false
         )
         let signatureValidationResult = try configuration.validateSignature(
-          signature: CertificateFixtures.testNewManifestBodyValidChainLeafSignature,
-          signedData: CertificateFixtures.testNewManifestBody.data(using: .utf8)!,
+          signature: CertificateFixtures.testExpoUpdatesManifestBodyValidChainLeafSignature,
+          signedData: CertificateFixtures.testExpoUpdatesManifestBody.data(using: .utf8)!,
           manifestResponseCertificateChain: leafCert + intermediateCert
         )
         expect(signatureValidationResult.validationResult) == ValidationResult.valid
@@ -189,7 +189,7 @@ class CodeSigningConfigurationSpec : ExpoSpec {
         )
         let signatureValidationResult = try configuration.validateSignature(
           signature: nil,
-          signedData: CertificateFixtures.testNewManifestBody.data(using: .utf8)!,
+          signedData: CertificateFixtures.testExpoUpdatesManifestBody.data(using: .utf8)!,
           manifestResponseCertificateChain: nil
         )
         expect(signatureValidationResult.validationResult) == ValidationResult.skipped
@@ -206,7 +206,7 @@ class CodeSigningConfigurationSpec : ExpoSpec {
         )
         let signatureValidationResult = try configuration.validateSignature(
           signature: "sig=\"aGVsbG8=\"",
-          signedData: CertificateFixtures.testNewManifestBody.data(using: .utf8)!,
+          signedData: CertificateFixtures.testExpoUpdatesManifestBody.data(using: .utf8)!,
           manifestResponseCertificateChain: nil
         )
         expect(signatureValidationResult.validationResult) == ValidationResult.invalid
