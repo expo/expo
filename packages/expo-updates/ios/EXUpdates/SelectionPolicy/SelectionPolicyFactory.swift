@@ -16,12 +16,4 @@ public final class SelectionPolicyFactory: NSObject {
       reaperSelectionPolicy: ReaperSelectionPolicyFilterAware()
     )
   }
-
-  public static func filterAwarePolicy(withRuntimeVersions runtimeVersions: [String]) -> SelectionPolicy {
-    return SelectionPolicy.init(
-      launcherSelectionPolicy: LauncherSelectionPolicyFilterAware.init(runtimeVersions: runtimeVersions),
-      loaderSelectionPolicy: LoaderSelectionPolicyFilterAware(),
-      reaperSelectionPolicy: ReaperSelectionPolicyFilterAware()
-    )
-  }
 }
