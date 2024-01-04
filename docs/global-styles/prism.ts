@@ -49,12 +49,12 @@ export const globalPrism = css`
   .token.prolog,
   .token.doctype,
   .token.cdata {
-    color: ${theme.palette.gray10}
+    color: ${theme.palette.gray10};
   }
 
   .token.operator,
   .token.punctuation {
-    color: ${theme.palette.gray9}
+    color: ${theme.palette.gray9};
   }
 
   .token.attr-name,
@@ -63,7 +63,7 @@ export const globalPrism = css`
   .token.constant,
   .token.symbol,
   .token.deleted {
-    color: ${theme.palette.red11}
+    color: ${theme.palette.red11};
   }
 
   .token.selector,
@@ -71,41 +71,41 @@ export const globalPrism = css`
   .token.builtin,
   .token.script,
   .token.inserted {
-    color: ${theme.palette.green10}
+    color: ${theme.palette.green10};
   }
 
   .token.entity,
   .token.variable {
-    color: ${theme.palette.green11}
+    color: ${theme.palette.green11};
   }
 
   .token.keyword {
-    color: ${theme.palette.pink10}
+    color: ${theme.palette.pink10};
   }
 
   .token.property,
   .token.atrule,
   .token.attr-value,
   .token.function {
-    color: ${theme.palette.purple11}
+    color: ${theme.palette.purple11};
   }
 
   .token.class-name,
   .token.regex,
   .token.important,
   .token.tag {
-    color: ${theme.palette.orange11}
+    color: ${theme.palette.orange11};
   }
 
   .token.number,
   .token.string {
-    color: ${theme.palette.yellow11}
+    color: ${theme.palette.yellow11};
   }
 
   .token.url,
   .token.literal-property,
   .token.property-access {
-    color: ${theme.palette.blue11}
+    color: ${theme.palette.blue11};
   }
 
   .token.important {
@@ -138,7 +138,7 @@ export const globalPrism = css`
   .token.tab:not(:empty):before,
   .token.cr:before,
   .token.lf:before {
-    color: ${theme.palette.gray9}
+    color: ${theme.palette.gray9};
   }
 
   pre[class*='language-'].line-numbers {
