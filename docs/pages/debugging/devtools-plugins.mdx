@@ -35,7 +35,7 @@ client.addMessageListener('pong', (data) => {
 });
 ```
 
-### Compatibility with Expo Go and Development Builds
+### Compatibility with Expo Go and Development builds
 
 Dev tools plugins themselves should only include JavaScript code, meaning they are generally compatible with both Expo Go and [Development Builds](development-builds/introduction/), and it should not require creating a new development build in order to add a dev tools plugin. If the underlying module that the plugin is inspecting is from a package that includes native code that is not already part of Expo Go, then you would need to create a new development build with that package included in order to use both the component and the plugin.
 
