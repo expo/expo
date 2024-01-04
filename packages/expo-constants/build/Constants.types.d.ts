@@ -1,5 +1,5 @@
 import { ExpoConfig } from '@expo/config-types';
-import type { EASConfig as ManifestsEASConfig, ExpoGoConfig as ManifestsExpoGoConfig, NewManifest, BareManifest, ManifestAsset as ManifestAssetForReExport, ManifestExtra as ManifestExtraForReExport, ClientScopingConfig as ClientScopingConfigForReExport, ExpoGoPackagerOpts as ExpoGoPackagerOptsForReExport } from 'expo-manifests';
+import type { EASConfig as ManifestsEASConfig, ExpoGoConfig as ManifestsExpoGoConfig, ExpoUpdatesManifest, EmbeddedManifest, ManifestAsset as ManifestAssetForReExport, ManifestExtra as ManifestExtraForReExport, ClientScopingConfig as ClientScopingConfigForReExport, ExpoGoPackagerOpts as ExpoGoPackagerOptsForReExport } from 'expo-manifests';
 export declare enum AppOwnership {
     /**
      * It is a [standalone app](/classic/building-standalone-apps#building-standalone-apps).
@@ -75,7 +75,7 @@ export interface WebManifest {
     [key: string]: any;
 }
 export type ManifestAsset = ManifestAssetForReExport;
-export type Manifest = NewManifest;
+export type Manifest = ExpoUpdatesManifest;
 export type ManifestExtra = ManifestExtraForReExport;
 export type EASConfig = ManifestsEASConfig;
 export type ClientScopingConfig = ClientScopingConfigForReExport;
@@ -153,18 +153,16 @@ export interface NativeConstants {
      */
     nativeBuildVersion: string | null;
     /**
-     * Classic manifest for Expo apps using classic updates and the updates embedded in builds.
-     * Returns `null` in bare workflow and when `manifest2` is non-null.
+     * Manifest embedded in the build. Returns `null` when `manifest2` is non-null.
      * @deprecated Use `Constants.expoConfig` instead, which behaves more consistently across EAS Build
      * and EAS Update.
      */
-    manifest: BareManifest | null;
+    manifest: EmbeddedManifest | null;
     /**
      * Manifest for Expo apps using modern Expo Updates from a remote source, such as apps that
-     * use EAS Update. Returns `null` in bare workflow and when `manifest` is non-null.
-     * `Constants.expoConfig` should be used for accessing the Expo config object.
+     * use EAS Update. `Constants.expoConfig` should be used for accessing the Expo config object.
      */
-    manifest2: NewManifest | null;
+    manifest2: ExpoUpdatesManifest | null;
     /**
      * The standard Expo config object defined in `app.json` and `app.config.js` files. For both
      * classic and modern manifests, whether they are embedded or remote.
@@ -219,7 +217,7 @@ export interface Constants extends NativeConstants {
      * In certain cases accessing manifest via this property
      * suppresses important warning about missing manifest.
      */
-    __unsafeNoWarnManifest?: BareManifest;
+    __unsafeNoWarnManifest?: EmbeddedManifest;
     /**
      * @hidden
      * @warning do not use this property. Use `manifest2` by default.
@@ -227,6 +225,6 @@ export interface Constants extends NativeConstants {
      * In certain cases accessing manifest via this property
      * suppresses important warning about missing manifest.
      */
-    __unsafeNoWarnManifest2?: NewManifest;
+    __unsafeNoWarnManifest2?: ExpoUpdatesManifest;
 }
 //# sourceMappingURL=Constants.types.d.ts.map
