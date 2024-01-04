@@ -7,7 +7,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 > **warning** Dev Tools plugins are compatible with SDK 50 and above. The process for creating a plugin is still in beta and may change in the future.
 
-You can make your own dev tools plugin, whether that's for inspecting aspects of a common framework or library, or something specific to your custom code.
+You create a dev tools plugin, whether that's for inspecting aspects of a common framework or library or something specific to your custom code.
 
 A plugin consists of an Expo app for displaying the dev tool's web user interface, an **expo-module.config.json** file to help the Expo CLI detect the plugin, and then calls to `expo/devtools` API to help your app communicate back and forth with the dev tool's web UI. Plugins can be included inside your app's monorepo or distributed as a separate package on NPM.
 
