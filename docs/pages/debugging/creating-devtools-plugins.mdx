@@ -61,7 +61,8 @@ Add a `homepage` field to define the exported base URL for web in the format of 
 
 ### Add message sending and receiving code to the plugin's web UI
 
-`connectPluginFromDevToolsAsync` initiates a client that can send messages and listen for incoming messages. When sending messages, be sure to identify your plugin by name using the `from` parameter:
+`connectPluginFromDevToolsAsync` initiates a client that can send messages and listen for incoming messages. When sending messages, make sure to identify the plugin by name using the `from` parameter:
+
 ```js
   import { connectPluginFromDevToolsAsync } from 'expo/devtools';
 
