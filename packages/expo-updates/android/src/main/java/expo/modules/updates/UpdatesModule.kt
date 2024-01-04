@@ -37,27 +37,25 @@ class UpdatesModule : Module() {
 
     Constants {
       UpdatesLogger(context).info("UpdatesModule: getConstants called", UpdatesErrorCode.None)
-
-      val constants = mutableMapOf<String, Any>()
-      try {
+      mutableMapOf<String, Any>().apply {
         val constantsForModule = UpdatesController.instance.getConstantsForModule()
         val launchedUpdate = constantsForModule.launchedUpdate
         val embeddedUpdate = constantsForModule.embeddedUpdate
         val isEmbeddedLaunch = launchedUpdate?.id?.equals(embeddedUpdate?.id) ?: false
 
-        constants["isEmergencyLaunch"] = constantsForModule.isEmergencyLaunch
-        constants["isEmbeddedLaunch"] = isEmbeddedLaunch
-        constants["isEnabled"] = constantsForModule.isEnabled
-        constants["isUsingEmbeddedAssets"] = constantsForModule.isUsingEmbeddedAssets
-        constants["runtimeVersion"] = constantsForModule.runtimeVersion ?: ""
-        constants["checkAutomatically"] = constantsForModule.checkOnLaunch.toJSString()
-        constants["channel"] = constantsForModule.requestHeaders["expo-channel-name"] ?: ""
-        constants["shouldDeferToNativeForAPIMethodAvailabilityInDevelopment"] = constantsForModule.shouldDeferToNativeForAPIMethodAvailabilityInDevelopment || BuildConfig.EX_UPDATES_NATIVE_DEBUG
+        this["isEmergencyLaunch"] = constantsForModule.isEmergencyLaunch
+        this["isEmbeddedLaunch"] = isEmbeddedLaunch
+        this["isEnabled"] = constantsForModule.isEnabled
+        this["isUsingEmbeddedAssets"] = constantsForModule.isUsingEmbeddedAssets
+        this["runtimeVersion"] = constantsForModule.runtimeVersion ?: ""
+        this["checkAutomatically"] = constantsForModule.checkOnLaunch.toJSString()
+        this["channel"] = constantsForModule.requestHeaders["expo-channel-name"] ?: ""
+        this["shouldDeferToNativeForAPIMethodAvailabilityInDevelopment"] = constantsForModule.shouldDeferToNativeForAPIMethodAvailabilityInDevelopment || BuildConfig.EX_UPDATES_NATIVE_DEBUG
 
         if (launchedUpdate != null) {
-          constants["updateId"] = launchedUpdate.id.toString()
-          constants["commitTime"] = launchedUpdate.commitTime.time
-          constants["manifestString"] = launchedUpdate.manifest.toString()
+          this["updateId"] = launchedUpdate.id.toString()
+          this["commitTime"] = launchedUpdate.commitTime.time
+          this["manifestString"] = launchedUpdate.manifest.toString()
         }
         val localAssetFiles = constantsForModule.localAssetFiles
         if (localAssetFiles != null) {
@@ -67,13 +65,9 @@ class UpdatesModule : Module() {
               localAssets[asset.key!!] = localAssetFiles[asset]!!
             }
           }
-          constants["localAssets"] = localAssets
+          this["localAssets"] = localAssets
         }
-      } catch (e: Exception) {
-        // do nothing; this is expected in a development client
-        constants["isEnabled"] = false
       }
-      constants
     }
 
     AsyncFunction("reload") { promise: Promise ->
