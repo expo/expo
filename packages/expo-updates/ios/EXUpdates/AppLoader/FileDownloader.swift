@@ -302,7 +302,6 @@ public final class FileDownloader {
     request.setValue("BARE", forHTTPHeaderField: "Expo-Updates-Environment")
     request.setValue(EASClientID.uuid().uuidString, forHTTPHeaderField: "EAS-Client-ID")
     request.setValue("true", forHTTPHeaderField: "Expo-JSON-Error")
-    request.setValue(config.expectsSignedManifest ? "true" : "false", forHTTPHeaderField: "Expo-Accept-Signature")
     request.setValue(config.runtimeVersion, forHTTPHeaderField: "Expo-Runtime-Version")
 
     if let previousFatalError = ErrorRecovery.consumeErrorLog() {
@@ -746,10 +745,12 @@ public final class FileDownloader {
   ) {
     var mutableManifest = manifest
 
-    // There are a few cases in Expo Go where we still want to use the unsigned manifest anyway, so don't mark it as unverified.
-    if config.expectsSignedManifest {
-      mutableManifest["isVerified"] = false
-    }
+    // Set the isVerified field in the manifest itself so that it is stored in the database.
+    // Note that this is not considered for code signature verification.
+    // currently this is only used by Expo Go, but moving it out of the library would require
+    // also storing the signature so database-loaded-update validity could be derived at load
+    // time.
+    mutableManifest["isVerified"] = false
 
     // check code signing if code signing is configured
     // 1. verify the code signing signature (throw if invalid)

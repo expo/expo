@@ -569,9 +569,12 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
       logger: UpdatesLogger,
       callback: ParseManifestCallback
     ) {
-      if (configuration.expectsSignedManifest) {
-        preManifest.put("isVerified", false)
-      }
+      // Set the isVerified field in the manifest itself so that it is stored in the database.
+      // Note that this is not considered for code signature verification.
+      // currently this is only used by Expo Go, but moving it out of the library would require
+      // also storing the signature so database-loaded-update validity could be derived at load
+      // time.
+      preManifest.put("isVerified", false)
 
       // check code signing if code signing is configured
       // 1. verify the code signing signature (throw if invalid)
@@ -671,7 +674,6 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
         .header("Expo-API-Version", "1")
         .header("Expo-Updates-Environment", "BARE")
         .header("Expo-JSON-Error", "true")
-        .header("Expo-Accept-Signature", configuration.expectsSignedManifest.toString())
         .header("EAS-Client-ID", EASClientID(context).uuid.toString())
         .apply {
           val runtimeVersion = configuration.runtimeVersionRaw

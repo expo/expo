@@ -342,7 +342,6 @@ NS_ASSUME_NONNULL_BEGIN
     EXUpdatesConfig.EXUpdatesConfigEnabledKey: @YES,
     EXUpdatesConfig.EXUpdatesConfigLaunchWaitMsKey: launchWaitMs,
     EXUpdatesConfig.EXUpdatesConfigCheckOnLaunchKey: shouldCheckOnLaunch ? EXUpdatesConfig.EXUpdatesConfigCheckOnLaunchValueAlways : EXUpdatesConfig.EXUpdatesConfigCheckOnLaunchValueNever,
-    EXUpdatesConfig.EXUpdatesConfigExpectsSignedManifestKey: @YES,
     EXUpdatesConfig.EXUpdatesConfigRequestHeadersKey: [self _requestHeaders]
   }];
 

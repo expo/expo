@@ -80,7 +80,6 @@ class UpdatesConfigurationInstrumentationTest {
     }
 
     val config = UpdatesConfiguration(context, null)
-    Assert.assertEquals(false, config.expectsSignedManifest)
     Assert.assertEquals(0, config.launchWaitMs)
     Assert.assertEquals(UpdatesConfiguration.CheckAutomaticallyConfiguration.ALWAYS, config.checkOnLaunch)
     Assert.assertEquals(true, config.hasEmbeddedUpdate)
@@ -148,13 +147,11 @@ class UpdatesConfigurationInstrumentationTest {
         UpdatesConfiguration.UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY to "NEVER",
         UpdatesConfiguration.UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY to 1000,
         UpdatesConfiguration.UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY to false,
-        UpdatesConfiguration.UPDATES_CONFIGURATION_EXPECTS_EXPO_SIGNED_MANIFEST to false,
         UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE to "override",
         UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_METADATA to mapOf("test" to "override")
       )
     )
 
-    Assert.assertEquals(false, config.expectsSignedManifest)
     Assert.assertEquals("override", config.scopeKey)
     Assert.assertEquals(Uri.parse("http://override.com"), config.updateUrl)
     Assert.assertEquals("override", config.runtimeVersionRaw)
