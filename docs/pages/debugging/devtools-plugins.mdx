@@ -123,9 +123,7 @@ const client = new ApolloClient({
 });
 
 export default function App() {
-  if (__DEV__) {
-    useApolloClientDevTools(client);
-  }
+  useApolloClientDevTools(client);
 
   return (
     <ApolloProvider>
