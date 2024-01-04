@@ -15,7 +15,8 @@ type DynamicRouteTemplate = `/colors/[color]` | `/animals/[...animal]` | `/mix/[
 
 type RelativePathString = `./${string}` | `../${string}` | '..';
 type AbsoluteRoute = DynamicRouteTemplate | StaticRoutes;
-type ExternalPathString = `http${string}`;
+type ExternalPathString = `${string}:${string}`;
+
 type ExpoRouterRoutes = DynamicRouteTemplate | StaticRoutes | RelativePathString;
 export type AllRoutes = ExpoRouterRoutes | ExternalPathString;
 

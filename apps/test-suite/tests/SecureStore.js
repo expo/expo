@@ -1,7 +1,6 @@
 'use strict';
 
 import * as SecureStore from 'expo-secure-store';
-import { Platform } from 'react-native';
 
 export const name = 'SecureStore';
 
@@ -96,22 +95,10 @@ export function test(t) {
         const result = await SecureStore.setItemAsync(key, value, optionsServiceA);
         t.expect(result).toBe(undefined);
       });
-      if (Platform.OS === 'ios') {
-        t.it('Fetch value with keychainServiceB, expect null', async () => {
-          const result = await SecureStore.getItemAsync(key, optionsServiceB);
-          t.expect(result).toBe(null);
-        });
-      } else if (Platform.OS === 'android') {
-        t.it('Fetch value with keychainServiceB, expect decoding error', async () => {
-          try {
-            const result = await SecureStore.getItemAsync(key, optionsServiceB);
-            t.fail(result);
-          } catch (e) {
-            t.expect(e).toBeTruthy();
-            t.expect(e.message).toMatch(`Could not encrypt/decrypt the value for SecureStore`);
-          }
-        });
-      }
+      t.it('Fetch value with keychainServiceB, expect null', async () => {
+        const result = await SecureStore.getItemAsync(key, optionsServiceB);
+        t.expect(result).toBe(null);
+      });
     });
     t.describe('store long value, fetch long value -> Success:', () => {
       t.it('Set long value', async () => {

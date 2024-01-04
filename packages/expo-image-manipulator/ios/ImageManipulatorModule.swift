@@ -13,27 +13,28 @@ public class ImageManipulatorModule: Module {
     Name("ExpoImageManipulator")
 
     AsyncFunction("manipulateAsync", manipulateImage)
-      .runOnQueue(.main)
   }
 
   internal func manipulateImage(url: URL, actions: [ManipulateAction], options: ManipulateOptions, promise: Promise) {
     loadImage(atUrl: url) { result in
       switch result {
       case .failure(let error):
-        return promise.reject(error)
+        promise.reject(error)
       case .success(let image):
-        do {
-          let newImage = try manipulate(image: image, actions: actions)
-          let saveResult = try self.saveImage(newImage, options: options)
+        DispatchQueue.main.async {
+          do {
+            let newImage = try manipulate(image: image, actions: actions)
+            let saveResult = try self.saveImage(newImage, options: options)
 
-          promise.resolve([
-            "uri": saveResult.url.absoluteString,
-            "width": newImage.cgImage?.width ?? 0,
-            "height": newImage.cgImage?.height ?? 0,
-            "base64": options.base64 ? saveResult.data.base64EncodedString() : nil
-          ])
-        } catch {
-          promise.reject(error)
+            promise.resolve([
+              "uri": saveResult.url.absoluteString,
+              "width": newImage.cgImage?.width ?? 0,
+              "height": newImage.cgImage?.height ?? 0,
+              "base64": options.base64 ? saveResult.data.base64EncodedString() : nil
+            ])
+          } catch {
+            promise.reject(error)
+          }
         }
       }
     }

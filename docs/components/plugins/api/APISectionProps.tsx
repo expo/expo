@@ -46,7 +46,7 @@ const extractDefaultPropValue = (
 ): string | undefined => {
   const annotationDefault = getTagData('default', comment);
   if (annotationDefault) {
-    return getCommentContent(annotationDefault.content, true);
+    return getCommentContent(annotationDefault.content);
   }
   return defaultProps?.type?.declaration?.children?.filter(
     (defaultProp: PropData) => defaultProp.name === name
@@ -101,7 +101,7 @@ const renderProps = (
     .filter((dec, i, arr) => arr.findIndex(t => t?.name === dec?.name) === i);
 
   return (
-    <div key={`props-definition-${def.name}`}>
+    <div key={`props-definition-${def.name}`} className="[&>*:last-child]:!mb-0">
       {propsDeclarations?.map(prop =>
         prop
           ? renderProp(prop, extractDefaultPropValue(prop, defaultValues), { exposeInSidebar })
@@ -123,7 +123,10 @@ export const renderProp = (
   const extractedComment = getCommentOrSignatureComment(comment, extractedSignatures);
 
   return (
-    <div key={`prop-entry-${name}`} css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
+    <div
+      key={`prop-entry-${name}`}
+      css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}
+      className="!pb-4 [&>*:last-child]:!mb-0">
       <APISectionDeprecationNote comment={extractedComment} />
       <APISectionPlatformTags comment={comment} prefix="Only for:" />
       <HeaderComponent tags={getTagNamesList(comment)}>
@@ -143,7 +146,7 @@ export const renderProp = (
         ) : null}
       </P>
       <CommentTextBlock comment={extractedComment} includePlatforms={false} />
-      {!extractedComment && <br />}
+      {/*{!extractedComment && <br />}*/}
     </div>
   );
 };

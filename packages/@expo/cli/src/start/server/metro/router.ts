@@ -44,11 +44,7 @@ export function getRouterDirectoryModuleIdWithManifest(
   projectRoot: string,
   exp: ExpoConfig
 ): string {
-  return exp.extra?.router?.unstable_src ?? getRouterDirectory(projectRoot);
-}
-
-export function getRouterDirectoryWithManifest(projectRoot: string, exp: ExpoConfig): string {
-  return path.join(projectRoot, getRouterDirectoryModuleIdWithManifest(projectRoot, exp));
+  return exp.extra?.router?.root ?? getRouterDirectory(projectRoot);
 }
 
 const logSrcDir = memoize(() =>
@@ -64,10 +60,6 @@ export function getRouterDirectory(projectRoot: string): string {
 
   debug('Using app as the root directory for Expo Router.');
   return 'app';
-}
-
-export function isApiRouteConvention(name: string): boolean {
-  return /\+api\.[tj]sx?$/.test(name);
 }
 
 export function getApiRoutesForDirectory(cwd: string) {

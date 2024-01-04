@@ -139,7 +139,8 @@ function fromImport({ ErrorBoundary, ...component }: LoadedRoute) {
       return { default: EmptyRoute };
     }
   }
-  return { default: component.default || EmptyRoute };
+
+  return { default: component.default };
 }
 
 function fromLoadedRoute(res: LoadedRoute) {
@@ -160,38 +161,27 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     return qualifiedStore.get(value)!;
   }
 
-  let getLoadable: (props: any, ref: any) => JSX.Element;
+  let ScreenComponent: React.ForwardRefExoticComponent<React.RefAttributes<unknown>>;
 
   // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
   if (EXPO_ROUTER_IMPORT_MODE === 'lazy') {
-    const AsyncComponent = React.lazy(async () => {
+    ScreenComponent = React.lazy(async () => {
       const res = value.loadRoute();
       return fromLoadedRoute(res) as Promise<{
         default: React.ComponentType<any>;
       }>;
     });
-    getLoadable = (props: any, ref: any) => (
-      <React.Suspense fallback={<SuspenseFallback route={value} />}>
-        <AsyncComponent
-          {...{
-            ...props,
-            ref,
-            // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
-            // the intention is to make it possible to deduce shared routes.
-            segment: value.route,
-          }}
-        />
-      </React.Suspense>
-    );
   } else {
     const res = value.loadRoute();
-    const Component = fromImport(res).default;
-    const SyncComponent = React.forwardRef((props, ref) => {
+    const Component = fromImport(res).default as React.ComponentType<any>;
+    ScreenComponent = React.forwardRef((props, ref) => {
       return <Component {...props} ref={ref} />;
     });
+  }
 
-    getLoadable = (props: any, ref: any) => (
-      <SyncComponent
+  const getLoadable = (props: any, ref: any) => (
+    <React.Suspense fallback={<SuspenseFallback route={value} />}>
+      <ScreenComponent
         {...{
           ...props,
           ref,
@@ -200,8 +190,8 @@ export function getQualifiedRouteComponent(value: RouteNode) {
           segment: value.route,
         }}
       />
-    );
-  }
+    </React.Suspense>
+  );
 
   const QualifiedRoute = React.forwardRef(
     (

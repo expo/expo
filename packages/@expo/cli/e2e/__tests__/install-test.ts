@@ -113,7 +113,7 @@ it(
   'runs `npx expo install --check` fails',
   async () => {
     const projectRoot = await setupTestProjectAsync('install-check-fail', 'with-blank');
-    await installAsync(projectRoot, ['add', 'expo-sms@1.0.0', 'expo-auth-session@1.0.0']);
+    await installAsync(projectRoot, ['expo-sms@1.0.0', 'expo-auth-session@1.0.0']);
 
     let pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
     // Added expected package
@@ -147,7 +147,7 @@ it(
   'runs `npx expo install --fix` fails',
   async () => {
     const projectRoot = await setupTestProjectAsync('install-fix-fail', 'with-blank');
-    await installAsync(projectRoot, ['add', 'expo-sms@1.0.0', 'expo-auth-session@1.0.0']);
+    await installAsync(projectRoot, ['expo-sms@1.0.0', 'expo-auth-session@1.0.0']);
 
     await execa('node', [bin, 'install', '--fix', 'expo-sms'], { cwd: projectRoot });
 
@@ -174,6 +174,32 @@ it(
     // Didn't fix expo-auth-session since we didn't pass it in
     pkgDependencies = pkg.dependencies as Record<string, string>;
     expect(pkgDependencies['expo-auth-session']).toBe('~5.0.2');
+  },
+  // Could take 45s depending on how fast npm installs
+  60 * 1000
+);
+
+it(
+  'runs `npx expo install expo@<version> --fix`',
+  async () => {
+    const projectRoot = await setupTestProjectAsync('install-expo-canary-fix', 'with-blank');
+    const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
+
+    // Add a package that requires "fixing" when using canary
+    await execa('node', [bin, 'install', 'expo-dev-client'], { cwd: projectRoot });
+
+    // Ensure `expo-dev-client` is installed
+    expect(pkg.read().dependencies).toMatchObject({
+      'expo-dev-client': expect.any(String),
+    });
+
+    // Add `expo@canary` to the project, and `--fix` project dependencies
+    await execa('node', [bin, 'install', 'expo@canary', '--fix'], { cwd: projectRoot });
+
+    // Ensure `expo-dev-client` is using canary version
+    expect(pkg.read().dependencies).toMatchObject({
+      'expo-dev-client': expect.stringContaining('canary'),
+    });
   },
   // Could take 45s depending on how fast npm installs
   60 * 1000

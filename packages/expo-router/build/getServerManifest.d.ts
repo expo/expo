@@ -8,6 +8,18 @@
  * Based on https://github.com/vercel/next.js/blob/1df2686bc9964f1a86c444701fa5cbf178669833/packages/next/src/shared/lib/router/utils/route-regex.ts
  */
 import type { RouteNode } from './Route';
+export type ExpoRouterServerManifestV1Route<TRegex = string> = {
+    file: string;
+    page: string;
+    routeKeys: Record<string, string>;
+    namedRegex: TRegex;
+    generated?: boolean;
+};
+export type ExpoRouterServerManifestV1<TRegex = string> = {
+    apiRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
+    htmlRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
+    notFoundRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
+};
 export interface Group {
     pos: number;
     repeat: boolean;
@@ -19,41 +31,6 @@ export interface RouteRegex {
     };
     re: RegExp;
 }
-export declare function getServerManifest(route: RouteNode): {
-    apiRoutes: {
-        generated: boolean | undefined;
-        file: string;
-        page: string;
-        namedRegex: string;
-        routeKeys: {
-            [named: string]: string;
-        };
-    }[];
-    htmlRoutes: {
-        generated: boolean | undefined;
-        file: string;
-        page: string;
-        namedRegex: string;
-        routeKeys: {
-            [named: string]: string;
-        };
-    }[];
-    notFoundRoutes: {
-        generated: boolean | undefined;
-        file: string;
-        page: string;
-        namedRegex: string;
-        routeKeys: {
-            [named: string]: string;
-        };
-    }[];
-};
-export declare function getNamedRouteRegex(normalizedRoute: string, page: string): {
-    file: string;
-    page: string;
-    namedRegex: string;
-    routeKeys: {
-        [named: string]: string;
-    };
-};
+export declare function getServerManifest(route: RouteNode): ExpoRouterServerManifestV1;
+export declare function getNamedRouteRegex(normalizedRoute: string, page: string): ExpoRouterServerManifestV1Route;
 //# sourceMappingURL=getServerManifest.d.ts.map

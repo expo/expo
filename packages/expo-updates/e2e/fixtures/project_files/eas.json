@@ -16,7 +16,7 @@
         "buildConfiguration": "Debug"
       }
     },
-    "updates_testing": {
+    "updates_testing_debug": {
       "extends": "base",
       "env": {
         "EX_UPDATES_NATIVE_DEBUG": "1",
@@ -33,6 +33,30 @@
         "resourceClass": "m-medium",
         "image": "macos-ventura-13.3-xcode-14.3",
         "buildConfiguration": "Debug",
+        "cache": {
+          "cacheDefaultPaths": false
+        }
+      },
+      "distribution": "internal",
+      "buildArtifactPaths": ["logs/*.log"]
+    },
+    "updates_testing_release": {
+      "extends": "base",
+      "env": {
+        "EX_UPDATES_NATIVE_DEBUG": "1",
+        "NO_FLIPPER": "1"
+      },
+      "android": {
+        "image": "ubuntu-22.04-jdk-17-ndk-r21e",
+        "gradleCommand": ":app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release",
+        "withoutCredentials": true,
+        "resourceClass": "large"
+      },
+      "ios": {
+        "simulator": true,
+        "resourceClass": "m-medium",
+        "image": "macos-ventura-13.3-xcode-14.3",
+        "buildConfiguration": "Release",
         "cache": {
           "cacheDefaultPaths": false
         }

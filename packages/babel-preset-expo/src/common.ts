@@ -1,3 +1,5 @@
+import path from 'path';
+
 export function hasModule(name: string): boolean {
   try {
     return !!require.resolve(name);
@@ -76,6 +78,16 @@ export function getIsServer(caller: any) {
   return caller?.isServer ?? false;
 }
 
+export function getExpoRouterAbsoluteAppRoot(caller: any): string {
+  const rootModuleId = caller?.routerRoot ?? './app';
+  if (path.isAbsolute(rootModuleId)) {
+    return rootModuleId;
+  }
+  const projectRoot = getPossibleProjectRoot(caller) || '/';
+
+  return path.join(projectRoot, rootModuleId);
+}
+
 export function getInlineEnvVarsEnabled(caller: any): boolean {
   const isWebpack = getBundler(caller) === 'webpack';
   const isDev = getIsDev(caller);
@@ -85,4 +97,17 @@ export function getInlineEnvVarsEnabled(caller: any): boolean {
   // Development env vars are added in the serializer to avoid caching issues in development.
   // Servers have env vars left as-is to read from the environment.
   return !isNodeModule && !isWebpack && !isDev && !isServer && !preserveEnvVars;
+}
+
+export function getAsyncRoutes(caller: any): boolean {
+  const isServer = getIsServer(caller);
+  if (isServer) {
+    return false;
+  }
+  const isProd = getIsProd(caller);
+  const platform = getPlatform(caller);
+  if (platform !== 'web' && isProd) {
+    return false;
+  }
+  return caller?.asyncRoutes ?? false;
 }

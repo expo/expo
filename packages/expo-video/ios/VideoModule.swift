@@ -7,6 +7,11 @@ public final class VideoModule: Module {
     Name("ExpoVideo")
 
     View(VideoView.self) {
+      Events(
+        "onPictureInPictureStart",
+        "onPictureInPictureStop"
+      )
+
       Prop("player") { (view, player: VideoPlayer?) in
         view.player = player?.pointer
       }
@@ -42,12 +47,28 @@ public final class VideoModule: Module {
         view.playerViewController.requiresLinearPlayback = requiresLinearPlayback ?? false
       }
 
+      Prop("allowsPictureInPicture") { (view, allowsPictureInPicture: Bool?) in
+        view.allowPictureInPicture = allowsPictureInPicture ?? false
+      }
+
+      Prop("startsPictureInPictureAutomatically") { (view, startsPictureInPictureAutomatically: Bool?) in
+        view.startPictureInPictureAutomatically = startsPictureInPictureAutomatically ?? false
+      }
+
       AsyncFunction("enterFullscreen") { view in
         view.enterFullscreen()
       }
 
       AsyncFunction("exitFullscreen") { view in
         view.exitFullscreen()
+      }
+
+      AsyncFunction("startPictureInPicture") { view in
+        try view.startPictureInPicture()
+      }
+
+      AsyncFunction("stopPictureInPicture") { view in
+        view.stopPictureInPicture()
       }
     }
 

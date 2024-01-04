@@ -1,13 +1,15 @@
 import { Inter_900Black } from '@expo-google-fonts/inter';
 import Constants from 'expo-constants';
-import { NativeModulesProxy } from 'expo-modules-core';
+import { requireNativeModule } from 'expo-modules-core';
 import { StatusBar } from 'expo-status-bar';
 import * as Updates from 'expo-updates';
 import { UpdatesLogEntry } from 'expo-updates';
 import React from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-require('./test.png');
+const ExpoUpdatesE2ETest = requireNativeModule('ExpoUpdatesE2ETest');
+
+require('./includedAssets/test.png');
 // eslint-disable-next-line no-unused-expressions
 Inter_900Black;
 
@@ -41,6 +43,8 @@ export default function App() {
   const [extraParamsString, setExtraParamsString] = React.useState('');
   const [nativeStateContextString, setNativeStateContextString] = React.useState('{}');
   const [isRollback, setIsRollback] = React.useState(false);
+  const [isReloading, setIsReloading] = React.useState(false);
+  const [startTime, setStartTime] = React.useState<number | null>(null);
   const [didCheckAndDownloadHappenInParallel, setDidCheckAndDownloadHappenInParallel] =
     React.useState(false);
 
@@ -54,6 +58,10 @@ export default function App() {
     isChecking,
     isDownloading,
   } = Updates.useUpdates();
+
+  React.useEffect(() => {
+    setStartTime(Date.now());
+  }, []);
 
   Updates.useUpdateEvents((event) => {
     setLastUpdateEventType(event.type);
@@ -101,13 +109,13 @@ export default function App() {
   });
 
   const handleReadAssetFiles = runBlockAsync(async () => {
-    const numFiles = await NativeModulesProxy.ExpoUpdatesE2ETest.readInternalAssetsFolderAsync();
+    const numFiles = await ExpoUpdatesE2ETest.readInternalAssetsFolderAsync();
     setNumAssetFiles(numFiles);
   });
 
   const handleClearAssetFiles = runBlockAsync(async () => {
-    await NativeModulesProxy.ExpoUpdatesE2ETest.clearInternalAssetsFolderAsync();
-    const numFiles = await NativeModulesProxy.ExpoUpdatesE2ETest.readInternalAssetsFolderAsync();
+    await ExpoUpdatesE2ETest.clearInternalAssetsFolderAsync();
+    const numFiles = await ExpoUpdatesE2ETest.readInternalAssetsFolderAsync();
     setNumAssetFiles(numFiles);
   });
 
@@ -119,6 +127,19 @@ export default function App() {
   const handleClearLogEntries = runBlockAsync(async () => {
     await Updates.clearLogEntriesAsync();
   });
+
+  const handleReload = async () => {
+    setIsReloading(true);
+    // this is done after a timeout so that the button press finishes for detox
+    setTimeout(async () => {
+      try {
+        await Updates.reloadAsync();
+        setIsReloading(false);
+      } catch (e) {
+        console.warn(e);
+      }
+    }, 2000);
+  };
 
   const handleCheckForUpdate = runBlockAsync(async () => {
     await Updates.checkForUpdateAsync();
@@ -167,6 +188,8 @@ export default function App() {
       <TestValue testID="isEmbeddedLaunch" value={`${currentlyRunning.isEmbeddedLaunch}`} />
       <TestValue testID="availableUpdateID" value={`${availableUpdate?.updateId}`} />
       <TestValue testID="extraParamsString" value={`${extraParamsString}`} />
+      <TestValue testID="isReloading" value={`${isReloading}`} />
+      <TestValue testID="startTime" value={`${startTime}`} />
 
       <TestValue testID="state.isUpdateAvailable" value={`${isUpdateAvailable}`} />
       <TestValue testID="state.isUpdatePending" value={`${isUpdatePending}`} />
@@ -230,6 +253,7 @@ export default function App() {
             testID="triggerParallelFetchAndDownload"
             onPress={handleCheckAndDownloadAtSameTime}
           />
+          <TestButton testID="reload" onPress={handleReload} />
         </View>
       </View>
 

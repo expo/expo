@@ -9,7 +9,6 @@ buildscript {
         if (findProperty('android.kotlinVersion')) {
             kotlinVersion = findProperty('android.kotlinVersion')
         }
-        frescoVersion = findProperty('expo.frescoVersion') ?: '2.5.0'
         // for expo-dev-client
         expoUpdatesVersion = null
 
@@ -26,6 +25,8 @@ buildscript {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
     }
 }
+
+apply plugin: "com.facebook.react.rootproject"
 
 allprojects {
     repositories {

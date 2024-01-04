@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '0.25.0'
+version = '0.26.0'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 if (expoModulesCorePlugin.exists()) {
@@ -94,7 +94,7 @@ android {
   namespace "expo.modules.splashscreen"
   defaultConfig {
     versionCode 17
-    versionName '0.25.0'
+    versionName '0.26.0'
   }
 }
 
@@ -105,8 +105,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   }
 
-  //noinspection GradleDynamicVersion
-  implementation 'com.facebook.react:react-native:+'
+  implementation 'com.facebook.react:react-android'
   implementation 'androidx.appcompat:appcompat:1.2.0'
   implementation "org.jetbrains.kotlin:kotlin-reflect:${getKotlinVersion()}"
 }

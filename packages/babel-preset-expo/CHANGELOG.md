@@ -4,10 +4,29 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 10.0.1 - 2023-12-19
+
+### 💡 Others
+
+- Change `@babel/plugin-proposal-object-rest-spread` to `@babel/plugin-transform-object-rest-spread`. ([#26035](https://github.com/expo/expo/pull/26035) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 10.0.0 — 2023-12-12
+
+### 🛠 Breaking changes
+
 - Move `babel-plugin-module-resolver` alias for `react-native-vector-icons` to `@expo/vector-icons` to individual implementations in Metro (via `@expo/cli`) and `jest-expo`. ([#25512](https://github.com/expo/expo/pull/25512) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
+- Support caller option `supportsStaticESM` to disable cjs transforms. ([#25833](https://github.com/expo/expo/pull/25833) by [@EvanBacon](https://github.com/EvanBacon))
+- Inject async routes using caller. ([#25627](https://github.com/expo/expo/pull/25627) by [@EvanBacon](https://github.com/EvanBacon))
+- Use babel caller to determine the `expo-router` root directory. ([#25658](https://github.com/expo/expo/pull/25658) by [@EvanBacon](https://github.com/EvanBacon))
 - Moved `react-refresh` babel plugin from Metro/Webpack to `babel-preset-expo`. ([#25461](https://github.com/expo/expo/pull/25461) by [@EvanBacon](https://github.com/EvanBacon))
 - Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
@@ -18,6 +37,7 @@
 ### 💡 Others
 
 - Replace `@expo/babel-preset-cli` with `expo-module-scripts`. ([#25425](https://github.com/expo/expo/pull/25425) by [@byCedric](https://github.com/byCedric))
+- Update reanimated test snapshots. ([#25644](https://github.com/expo/expo/pull/25644) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 9.9.0 — 2023-11-14
 

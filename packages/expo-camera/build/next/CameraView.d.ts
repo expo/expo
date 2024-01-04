@@ -54,6 +54,10 @@ export default class CameraView extends React.Component<CameraProps> {
      * Presents a modal view controller that uses the `DataScannerViewController` available on iOS 16+.
      */
     static launchModernScanner(options?: ModernScanningOptions): Promise<void>;
+    /**
+     * Dimiss `DataScannerViewController`
+     */
+    static dismissScanner(): Promise<void>;
     static onModernBarcodeScanned(listener: (event: ModernBarcodeScanningResult) => void): Subscription;
     /**
      * Starts recording a video that will be saved to cache directory. Videos are rotated to match device's orientation.

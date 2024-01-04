@@ -1,4 +1,3 @@
-import { asMock } from '../../../../__tests__/asMock';
 import { CommandError } from '../../../../utils/errors';
 import { getAttachedDevicesAsync } from '../adb';
 import { listAvdsAsync } from '../emulator';
@@ -12,8 +11,8 @@ jest.mock('../emulator', () => ({
 }));
 
 it(`asserts no devices are available`, async () => {
-  asMock(getAttachedDevicesAsync).mockResolvedValueOnce([]);
-  asMock(listAvdsAsync).mockResolvedValueOnce([]);
+  jest.mocked(getAttachedDevicesAsync).mockResolvedValueOnce([]);
+  jest.mocked(listAvdsAsync).mockResolvedValueOnce([]);
   await expect(getDevicesAsync()).rejects.toThrowError(CommandError);
   expect(getAttachedDevicesAsync).toBeCalled();
   expect(listAvdsAsync).toBeCalled();

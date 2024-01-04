@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 14.0.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.0 — 2023-12-12
+
+### 🎉 New features
+
+- Methods `stopRecording`, `pausePreview` and `resumePreview` have been updated to return promises. ([#25737](https://github.com/expo/expo/pull/25737) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
 - [iOS] Replace legacy `FileSystem` interfaces usage with core `FileSystemUtilities`. ([#25495](https://github.com/expo/expo/pull/25495) by [@alanhughes](https://github.com/alanjhughes))
 
 ## 13.9.0 — 2023-11-14

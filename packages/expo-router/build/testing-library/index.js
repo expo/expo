@@ -26,6 +26,7 @@ const react_1 = __importDefault(require("react"));
 const context_stubs_1 = require("./context-stubs");
 const mocks_1 = require("./mocks");
 const ExpoRoot_1 = require("../ExpoRoot");
+const getPathFromState_1 = __importDefault(require("../fork/getPathFromState"));
 const getLinkingConfig_1 = require("../getLinkingConfig");
 const router_store_1 = require("../global-state/router-store");
 // re-export everything
@@ -39,9 +40,7 @@ function renderRouter(context = './app', { initialUrl = '/', ...options } = {}) 
     // Reset the initial URL
     (0, mocks_1.setInitialUrl)(initialUrl);
     // Force the render to be synchronous
-    process.env.EXPO_ROUTER_IMPORT_MODE_WEB = 'sync';
-    process.env.EXPO_ROUTER_IMPORT_MODE_IOS = 'sync';
-    process.env.EXPO_ROUTER_IMPORT_MODE_ANDROID = 'sync';
+    process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
     if (typeof context === 'string') {
         ctx = (0, context_stubs_1.requireContext)(path_1.default.resolve(process.cwd(), context));
     }
@@ -71,6 +70,9 @@ function renderRouter(context = './app', { initialUrl = '/', ...options } = {}) 
         },
         getSearchParams() {
             return router_store_1.store.routeInfoSnapshot().params;
+        },
+        getPathnameWithParams() {
+            return (0, getPathFromState_1.default)(router_store_1.store.rootState, router_store_1.store.linking.config);
         },
     });
 }

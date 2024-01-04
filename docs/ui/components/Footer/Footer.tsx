@@ -2,17 +2,15 @@ import { LinkBase, mergeClasses } from '@expo/styleguide';
 import { ArrowLeftIcon, ArrowRightIcon } from '@expo/styleguide-icons';
 import { useRouter } from 'next/compat/router';
 
-import { ForumsLink, EditPageLink, IssuesLink } from './Links';
+import { ForumsLink, EditPageLink, IssuesLink, ShareFeedbackLink } from './Links';
+import { NewsletterSignUp } from './NewsletterSignUp';
+import { PageVote } from './PageVote';
 
 import { NavigationRouteWithSection } from '~/types/common';
-import { NewsletterSignUp } from '~/ui/components/Footer/NewsletterSignUp';
-import { PageVote } from '~/ui/components/Footer/PageVote';
 import { P, FOOTNOTE, UL } from '~/ui/components/Text';
 
-const NEWSLETTER_DISABLED = true as const;
-
 type Props = {
-  title: string;
+  title?: string;
   sourceCodeUrl?: string;
   packageName?: string;
   previousPage?: NavigationRouteWithSection;
@@ -25,7 +23,12 @@ export const Footer = ({ title, sourceCodeUrl, packageName, previousPage, nextPa
   const isExpoPackage = packageName && packageName.startsWith('expo-');
 
   return (
-    <footer className="flex flex-col border-t border-default mt-10 pt-8 gap-8">
+    <footer
+      className={mergeClasses(
+        'flex flex-col gap-8',
+        title && 'pt-10 mt-10 border-t border-default',
+        !title && 'pt-2'
+      )}>
       {title && (previousPage || nextPage) && (
         <div
           className={mergeClasses(
@@ -72,16 +75,29 @@ export const Footer = ({ title, sourceCodeUrl, packageName, previousPage, nextPa
           )}
         </div>
       )}
-      <div className="flex flex-row max-md-gutters:flex-col">
-        <UL className="flex-1 !mt-0 !ml-0 mb-5 !list-none">
-          <ForumsLink isAPIPage={isAPIPage} title={title} />
-          {isAPIPage && (
-            <IssuesLink title={title} repositoryUrl={isExpoPackage ? undefined : sourceCodeUrl} />
-          )}
-          {router?.pathname && <EditPageLink pathname={router.pathname} />}
-        </UL>
-        <PageVote />
-        {!NEWSLETTER_DISABLED && <NewsletterSignUp />}
+      <div
+        className={mergeClasses(
+          'flex flex-row gap-4',
+          title ? 'justify-between' : 'justify-center',
+          'max-md-gutters:flex-col'
+        )}>
+        {title && (
+          <div>
+            <PageVote />
+            <UL className="flex-1 !mt-0 !ml-0 !list-none">
+              <ShareFeedbackLink pathname={router?.pathname} />
+              <ForumsLink isAPIPage={isAPIPage} title={title} />
+              {isAPIPage && (
+                <IssuesLink
+                  title={title}
+                  repositoryUrl={isExpoPackage ? undefined : sourceCodeUrl}
+                />
+              )}
+              {router?.pathname && <EditPageLink pathname={router.pathname} />}
+            </UL>
+          </div>
+        )}
+        <NewsletterSignUp />
       </div>
     </footer>
   );

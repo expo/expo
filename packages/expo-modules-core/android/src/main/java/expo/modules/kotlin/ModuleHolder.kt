@@ -15,7 +15,7 @@ import expo.modules.kotlin.tracing.trace
 import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
 
-class ModuleHolder(val module: Module) {
+class ModuleHolder<T : Module>(val module: T) {
   val definition = module.definition()
 
   val name get() = definition.name

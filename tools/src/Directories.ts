@@ -23,11 +23,11 @@ export function getPackagesDir(): string {
 }
 
 export function getIosDir(): string {
-  return path.join(getExpoRepositoryRootDir(), 'ios');
+  return path.join(getAppsDir(), 'expo-go', 'ios');
 }
 
 export function getAndroidDir(): string {
-  return path.join(getExpoRepositoryRootDir(), 'android');
+  return path.join(getAppsDir(), 'expo-go', 'android');
 }
 
 export function getTemplatesDir(): string {

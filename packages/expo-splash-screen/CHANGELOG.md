@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+- Replace deprecated `com.facebook.react:react-native:+` Android dependency with `com.facebook.react:react-android`. ([#26237](https://github.com/expo/expo/pull/26237) by [@kudo](https://github.com/kudo))
+
+## 0.26.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 0.26.0 — 2023-12-12
+
+### 💡 Others
+
+- Removed 'The current activity is no longer available' warning on Android. ([#25608](https://github.com/expo/expo/pull/25608) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 0.25.0 — 2023-11-14
 
 ### 🛠 Breaking changes

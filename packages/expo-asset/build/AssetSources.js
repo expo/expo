@@ -1,5 +1,5 @@
 import { Platform } from 'expo-modules-core';
-import { PixelRatio } from 'react-native';
+import { PixelRatio, NativeModules } from 'react-native';
 import AssetSourceResolver from './AssetSourceResolver';
 import { getManifest, getManifest2, manifestBaseUrl } from './PlatformUtils';
 // Fast lookup check if asset map has any overrides in the manifest.
@@ -20,9 +20,9 @@ export function selectAssetSource(meta) {
     // explicitly provided URIs
     const scale = AssetSourceResolver.pickScale(meta.scales, PixelRatio.get());
     const index = meta.scales.findIndex((s) => s === scale);
-    const hash = meta.fileHashes ? meta.fileHashes[index] || meta.fileHashes[0] : meta.hash;
+    const hash = meta.fileHashes ? meta.fileHashes[index] ?? meta.fileHashes[0] : meta.hash;
     // Allow asset processors to directly provide the URL to load
-    const uri = meta.fileUris ? meta.fileUris[index] || meta.fileUris[0] : meta.uri;
+    const uri = meta.fileUris ? meta.fileUris[index] ?? meta.fileUris[0] : meta.uri;
     if (uri) {
         return { uri: resolveUri(uri), hash };
     }
@@ -62,11 +62,15 @@ export function selectAssetSource(meta) {
             hash,
         };
     }
-    // Production CDN URIs are based on each asset file hash
-    return {
-        uri: `https://classic-assets.eascdn.net/~assets/${encodeURIComponent(hash)}`,
-        hash,
-    };
+    // Temporary fallback for loading assets in Expo Go home
+    if (NativeModules.ExponentKernel) {
+        return { uri: `https://classic-assets.eascdn.net/~assets/${encodeURIComponent(hash)}`, hash };
+    }
+    // In correctly configured apps, we arrive here if the asset is locally available on disk due to
+    // being managed by expo-updates, and `getLocalAssetUri(hash)` must return a local URI for this
+    // hash. Since the asset is local, we don't have a remote URL and specify an invalid URL (an empty
+    // string) as a placeholder.
+    return { uri: '', hash };
 }
 /**
  * Resolves the given URI to an absolute URI. If the given URI is already an absolute URI, it is

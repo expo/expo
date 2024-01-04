@@ -93,31 +93,27 @@ export default function App() {
 
 [React Native Directory](https://reactnative.directory) is a searchable database of libraries built specifically for React Native. If the library that you are looking for is not provided by React Native or the Expo SDK then this is the best place to look first when trying to find a library for your app.
 
-After React Native Directory, the [npm registry](https://www.npmjs.com/) is the next best place. The npm registry is the definitive source for JavaScript libraries, but the libraries that it lists may not all be compatible with React Native. React Native is one of many JavaScript programming environments, including Node.js, web browsers, Electron, and more, and npm includes libraries that work for all of these environments. Other libraries may be compatible with React Native, but not compatible with the [Expo Go][expo-go] app. How do you figure this out?
+After the React Native Directory, the [npm registry](https://www.npmjs.com/) is the next best place. The npm registry is the definitive source for JavaScript libraries, but the libraries that it lists may not all be compatible with React Native. React Native is one of many JavaScript programming environments, including Node.js, web browsers, Electron, and more, and npm includes libraries that work for all of these environments. Any library that is compatible with React Native is compatible with the Expo project when you create a [development build](/workflow/overview/#development-builds). However, it may not be compatible with the [Expo Go][expo-go] app.
 
 ### Determining third-party library compatibility
 
-**Check React Native Directory**: find the library on the website (if it's there) and verify that it has a "✔️ Expo Go" tag. You can also enable the [filter by Expo Go](https://reactnative.directory/?expo=true).
+Use Expo [development builds](/workflow/overview/#development-builds) for building production-quality apps. It includes all of the native code that your project needs to run. This is a great way to test your app before you publish it to the App Store or Google Play. You can also include libraries that require native projects (**android** and **ios** directories) configuration.
 
-**Not listed on the directory?** find the project on GitHub, an easy way to do this is with `npx npm-home --github <package-name>`. For example, to open the GitHub page for `react-native-localize` you would run:
+The Expo Go app is an optional stepping stone towards development builds. You can use it to quickly test your app while you are developing it, but it does not include all of the native code required to support every library. You can check **React Native Directory** to find a library compatible with Expo Go by visiting the website and verifying that it has a "✔️ Expo Go" tag. You can also enable the [filter by Expo Go](https://reactnative.directory/?expo=true).
+
+
+To determine if a new dependency changes native project directories, you can check the following:
+
+- Does the library includes **android** or **ios** directories?
+- Does the library's README mention linking?
+- Does the library requires you to change **android/app/src/main/AndroidManifest.xml** or **ios/Podfile** or **ios/Info.plist** to change the project configuration?
+- Does the library have a [config plugin](/config-plugins/introduction/)?
+
+**If you answered yes to any of these questions,** then you should [create a development build](/develop/development-builds/introduction/) to use the library in your project.
+
+**Not listed on the directory?** You can find the project on GitHub. A simple way to do this is with `npx npm-home --github <package-name>`. For example, to open the GitHub page for `react-native-localize`, run:
 
 <Terminal cmd={['$ npx npm-home --github react-native-localize']} />
-
-Now check the following:
-
-- Does it include an `ios` and/or `android/` directory?
-- Does the README mention linking?
-- Is it built specifically for Node.js, the web, electron, or another platform?
-
-If you answered yes to any of these questions and the library is not part of the Expo SDK, this library may not be supported in [Expo Go][expo-go]. You can go ahead and try it in a new project to be sure. Run `npx create-expo-app` and add the library to the new project and try to use it. This is a great way to experiment with a library before including it in your project in all circumstances.
-
-Many React Native libraries are not compatible with [Expo Go][expo-go]. For these libraries, you can create a [development build](/develop/development-builds/introduction/):
-
-<BoxLink
-  title="Adding custom native code"
-  description="Learn how to create a development build."
-  href="/workflow/customizing"
-/>
 
 > If you want some help determining library compatibility, [create an issue on the React Native Directory repository](https://github.com/react-native-community/directory/issues/new/choose) and let us know. This will not just help you, it will also help other developers have an easy answer in the future!
 
@@ -144,9 +140,9 @@ If your project does not support [Expo Prebuild](/workflow/prebuild) then you wo
 If the module is not supported in [Expo Go][expo-go], you can create a [development build](/develop/development-builds/introduction/):
 
 <BoxLink
-  title="Adding custom native code"
-  description="Learn how to create a development build."
-  href="/workflow/customizing"
+  title="Add custom native code"
+  description="Learn how to add custom native code to your Expo project."
+  href="/workflow/customizing/"
 />
 
 [expo-cli]: /more/expo-cli/

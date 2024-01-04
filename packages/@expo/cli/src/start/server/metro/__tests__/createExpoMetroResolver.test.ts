@@ -25,7 +25,9 @@ const createContext = ({
   const sourceExts = getBareExtensions([], sourceExtsConfig);
 
   return {
-    resolveAsset: jest.fn(() => ['asset-path']),
+    resolveAsset: jest.fn((dirPath, basename, extension) => [
+      path.join(dirPath, basename + extension),
+    ]),
     customResolverOptions: Object.create({
       environment: isServer ? 'node' : 'client',
     }),
@@ -67,15 +69,17 @@ function resolveToEmpty(
     from = 'index.js',
     nodeModulesPaths,
     packageExports,
+    preserveSymlinks,
   }: {
     platform: string;
     isServer?: boolean;
     from?: string;
     nodeModulesPaths?: string[];
     packageExports?: boolean;
+    preserveSymlinks?: boolean;
   }
 ) {
-  const resolver = createFastResolver({ preserveSymlinks: false, blockList: [] });
+  const resolver = createFastResolver({ preserveSymlinks: !!preserveSymlinks, blockList: [] });
   const context = createContext({
     platform,
     isServer,
@@ -95,15 +99,18 @@ function resolveTo(
     from = 'index.js',
     nodeModulesPaths,
     packageExports,
+    preserveSymlinks,
   }: {
     platform: string;
     isServer?: boolean;
     from?: string;
     nodeModulesPaths?: string[];
     packageExports?: boolean;
-  }
+    preserveSymlinks?: boolean;
+  },
+  type: 'sourceFile' | 'assetFiles' = 'sourceFile'
 ) {
-  const resolver = createFastResolver({ preserveSymlinks: false, blockList: [] });
+  const resolver = createFastResolver({ preserveSymlinks: !!preserveSymlinks, blockList: [] });
   const context = createContext({
     platform,
     isServer,
@@ -113,8 +120,12 @@ function resolveTo(
   });
   const res = resolver(context, moduleId, platform);
 
-  expect(res.type).toBe('sourceFile');
-  return res.type === 'sourceFile' ? res.filePath : null;
+  expect(res.type).toBe(type);
+  return res.type === 'sourceFile'
+    ? res.filePath
+    : res.type === 'assetFiles'
+    ? res.filePaths[0]
+    : null;
 }
 
 describe(createFastResolver, () => {
@@ -183,6 +194,71 @@ describe(createFastResolver, () => {
       ).toMatch(
         /node_modules\/react-native\/node_modules\/promise\/setimmediate\/es6-extensions.js$/
       );
+    });
+
+    describe('resolves assets near self', () => {
+      const initialPath = resolveTo('expo-router/build/views/Sitemap.js', {
+        platform,
+        packageExports: true,
+        preserveSymlinks: true,
+      })!;
+
+      it('exports and symlinks', () => {
+        expect(
+          resolveTo(
+            'expo-router/assets/file.png',
+            {
+              platform,
+              from: initialPath,
+              packageExports: true,
+              preserveSymlinks: true,
+            },
+            'assetFiles'
+          )
+        ).toMatch(/packages\/expo-router\/assets\/file.png$/);
+      });
+      it('exports without symlinks', () => {
+        expect(
+          resolveTo(
+            'expo-router/assets/file.png',
+            {
+              platform,
+              from: initialPath,
+              packageExports: true,
+              preserveSymlinks: false,
+            },
+            'assetFiles'
+          )
+        ).toMatch(/node_modules\/expo-router\/assets\/file.png$/);
+      });
+      it('no exports and symlinks enabled', () => {
+        expect(
+          resolveTo(
+            'expo-router/assets/file.png',
+            {
+              platform,
+              from: initialPath,
+              packageExports: false,
+              preserveSymlinks: true,
+            },
+            'assetFiles'
+          )
+        ).toMatch(/packages\/expo-router\/assets\/file.png$/);
+      });
+      it('no exports or symlinks enabled', () => {
+        expect(
+          resolveTo(
+            'expo-router/assets/file.png',
+            {
+              platform,
+              from: initialPath,
+              packageExports: false,
+              preserveSymlinks: false,
+            },
+            'assetFiles'
+          )
+        ).toMatch(/node_modules\/expo-router\/assets\/file.png$/);
+      });
     });
 
     it('asserts not found module', () => {
@@ -321,7 +397,7 @@ describe(createFastResolver, () => {
       });
       const results = resolver(context, './assets/icons/icon.png', platform);
       expect(results).toEqual({
-        filePaths: ['asset-path'],
+        filePaths: [expect.stringMatching(/\/native-component-list\/assets\/icons\/icon.png/)],
         type: 'assetFiles',
       });
       expect(context.resolveAsset).toBeCalledWith(

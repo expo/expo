@@ -3,17 +3,12 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.Chunk = void 0;
+exports.getSortedModules = getSortedModules;
 exports.graphToSerialAssetsAsync = graphToSerialAssetsAsync;
 function _assert() {
   const data = _interopRequireDefault(require("assert"));
   _assert = function () {
-    return data;
-  };
-  return data;
-}
-function _getAssets() {
-  const data = _interopRequireDefault(require("metro/src/DeltaBundler/Serializers/getAssets"));
-  _getAssets = function () {
     return data;
   };
   return data;
@@ -39,9 +34,9 @@ function _path() {
   };
   return data;
 }
-function _pathToRegexp() {
-  const data = _interopRequireDefault(require("path-to-regexp"));
-  _pathToRegexp = function () {
+function _debugId() {
+  const data = require("./debugId");
+  _debugId = function () {
     return data;
   };
   return data;
@@ -74,6 +69,13 @@ function _getCssDeps() {
   };
   return data;
 }
+function _getAssets() {
+  const data = _interopRequireDefault(require("../transform-worker/getAssets"));
+  _getAssets = function () {
+    return data;
+  };
+  return data;
+}
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 /**
  * Copyright © 2023 650 Industries.
@@ -82,8 +84,19 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * LICENSE file in the root directory of this source tree.
  */
 
+// Convert file paths to regex matchers.
+function pathToRegex(path) {
+  // Escape regex special characters, except for '*'
+  let regexSafePath = path.replace(/[-[\]{}()+?.,\\^$|#\s]/g, '\\$&');
+
+  // Replace '*' with '.*' to act as a wildcard in regex
+  regexSafePath = regexSafePath.replace(/\*/g, '.*');
+
+  // Create a RegExp object with the modified string
+  return new RegExp('^' + regexSafePath + '$');
+}
 async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props) {
-  var _config$serializer, _config$transformer$a, _config$transformer, _getPlatformOption, _config$transformer$p, _config$transformer2;
+  var _config$serializer, _baseUrl$replace, _config$transformer$a, _config$transformer, _getPlatformOption;
   const [entryFile, preModules, graph, options] = props;
   const cssDeps = (0, _getCssDeps().getCssSerialAssets)(graph.dependencies, {
     projectRoot: options.projectRoot,
@@ -93,7 +106,7 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
   // Create chunks for splitting.
   const chunks = new Set();
   [{
-    test: (0, _pathToRegexp().default)(entryFile)
+    test: pathToRegex(entryFile)
   }].map(chunkSettings => gatherChunks(chunks, chunkSettings, preModules, graph, options, false));
 
   // Get the common modules and extract them into a separate chunk.
@@ -125,15 +138,46 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
       }
     }
 
-    // Add common chunk if one exists.
+    // If common dependencies were found, extract them to the entry chunk.
+    // TODO: Extract the metro-runtime to a common chunk apart from the entry chunk then load the common dependencies before the entry chunk.
     if (commonDependencies.length) {
-      const commonDependenciesUnique = [...new Set(commonDependencies)];
-      const commonChunk = new Chunk(chunkIdForModules(commonDependenciesUnique), commonDependenciesUnique, graph, options, false, true);
-      entryChunk.requiredChunks.add(commonChunk);
-      chunks.add(commonChunk);
+      for (const dep of commonDependencies) {
+        entryChunk.deps.add(dep);
+      }
+      // const commonDependenciesUnique = [...new Set(commonDependencies)];
+      // const commonChunk = new Chunk(
+      //   chunkIdForModules(commonDependenciesUnique),
+      //   commonDependenciesUnique,
+      //   graph,
+      //   options,
+      //   false,
+      //   true
+      // );
+      // entryChunk.requiredChunks.add(commonChunk);
+      // chunks.add(commonChunk);
+    }
+
+    // TODO: Optimize this pass more.
+    // Remove all dependencies from async chunks that are already in the common chunk.
+    for (const chunk of [...chunks.values()]) {
+      if (chunk !== entryChunk) {
+        for (const dep of chunk.deps) {
+          if (entryChunk.deps.has(dep)) {
+            chunk.deps.delete(dep);
+          }
+        }
+      }
     }
   }
   const jsAssets = await serializeChunksAsync(chunks, (_config$serializer = config.serializer) !== null && _config$serializer !== void 0 ? _config$serializer : {}, serializeChunkOptions);
+
+  // TODO: Can this be anything besides true?
+  const isExporting = true;
+  const baseUrl = (0, _baseJSBundle().getBaseUrlOption)(graph, {
+    serializerOptions: serializeChunkOptions
+  });
+  const assetPublicUrl = ((_baseUrl$replace = baseUrl.replace(/\/+$/, '')) !== null && _baseUrl$replace !== void 0 ? _baseUrl$replace : '') + '/assets';
+  const publicPath = isExporting ? graph.transformOptions.platform === 'web' ? `/assets?export_path=${assetPublicUrl}` : assetPublicUrl : '/assets/?unstable_path=.';
 
   // TODO: Convert to serial assets
   // TODO: Disable this call dynamically in development since assets are fetched differently.
@@ -143,7 +187,7 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
     platform: (_getPlatformOption = (0, _baseJSBundle().getPlatformOption)(graph, options)) !== null && _getPlatformOption !== void 0 ? _getPlatformOption : 'web',
     projectRoot: options.projectRoot,
     // this._getServerRootDir(),
-    publicPath: (_config$transformer$p = (_config$transformer2 = config.transformer) === null || _config$transformer2 === void 0 ? void 0 : _config$transformer2.publicPath) !== null && _config$transformer$p !== void 0 ? _config$transformer$p : '/'
+    publicPath
   });
   return {
     artifacts: [...jsAssets, ...cssDeps],
@@ -177,20 +221,29 @@ class Chunk {
       serverRoot: this.options.serverRoot
     });
   }
-  getFilenameForConfig(serializerConfig) {
-    return this.getFilename(this.options.dev ? '' : this.serializeToCodeWithTemplates(serializerConfig, {
+  getStableChunkSource(serializerConfig) {
+    return this.options.dev ? '' : this.serializeToCodeWithTemplates(serializerConfig, {
       // Disable source maps when creating a sha to reduce the number of possible changes that could
       // influence the cache hit.
       serializerOptions: {
         includeSourceMaps: false
       },
-      sourceMapUrl: undefined
-    }));
+      sourceMapUrl: undefined,
+      debugId: undefined
+    });
+  }
+  getFilenameForConfig(serializerConfig) {
+    return this.getFilename(this.getStableChunkSource(serializerConfig));
   }
   serializeToCodeWithTemplates(serializerConfig, options = {}) {
     var _serializerConfig$get, _serializerConfig$get2;
     const entryFile = this.name;
-    const jsSplitBundle = (0, _baseJSBundle().baseJSBundleWithDependencies)(entryFile, [...this.preModules.values()], [...this.deps], {
+
+    // TODO: Disable all debugId steps when a dev server is enabled. This is an export-only feature.
+
+    const preModules = [...this.preModules.values()];
+    const dependencies = [...this.deps];
+    const jsSplitBundle = (0, _baseJSBundle().baseJSBundleWithDependencies)(entryFile, preModules, dependencies, {
       ...this.options,
       runBeforeMainModule: (_serializerConfig$get = serializerConfig === null || serializerConfig === void 0 ? void 0 : (_serializerConfig$get2 = serializerConfig.getModulesRunBeforeMainModule) === null || _serializerConfig$get2 === void 0 ? void 0 : _serializerConfig$get2.call(serializerConfig, _path().default.relative(this.options.projectRoot, entryFile))) !== null && _serializerConfig$get !== void 0 ? _serializerConfig$get : [],
       runModule: !this.isVendor && !this.isAsync,
@@ -261,34 +314,70 @@ class Chunk {
       return null;
     }
   }
-  serializeToCode(serializerConfig, chunks) {
+  serializeToCode(serializerConfig, {
+    debugId,
+    chunks
+  }) {
     var _this$getAdjustedSour;
     return this.serializeToCodeWithTemplates(serializerConfig, {
       skipWrapping: false,
       sourceMapUrl: (_this$getAdjustedSour = this.getAdjustedSourceMapUrl(serializerConfig)) !== null && _this$getAdjustedSour !== void 0 ? _this$getAdjustedSour : undefined,
-      computedAsyncModulePaths: this.getComputedPathsForAsyncDependencies(serializerConfig, chunks)
+      computedAsyncModulePaths: this.getComputedPathsForAsyncDependencies(serializerConfig, chunks),
+      debugId
     });
   }
   async serializeToAssetsAsync(serializerConfig, chunks, {
     includeSourceMaps,
-    includeBytecode
+    includeBytecode,
+    unstable_beforeAssetSerializationPlugins
   }) {
-    const jsCode = this.serializeToCode(serializerConfig, chunks);
-    const relativeEntry = _path().default.relative(this.options.projectRoot, this.name);
-    const outputFile = this.getFilenameForConfig(
     // Create hash without wrapping to prevent it changing when the wrapping changes.
-    serializerConfig);
+    const outputFile = this.getFilenameForConfig(serializerConfig);
+    // We already use a stable hash for the output filename, so we'll reuse that for the debugId.
+    const debugId = (0, _debugId().stringToUUID)(_path().default.basename(outputFile, _path().default.extname(outputFile)));
+    let premodules = [...this.preModules];
+    if (unstable_beforeAssetSerializationPlugins) {
+      for (const plugin of unstable_beforeAssetSerializationPlugins) {
+        premodules = plugin({
+          graph: this.graph,
+          premodules,
+          debugId
+        });
+      }
+      this.preModules = new Set(premodules);
+    }
+    const jsCode = this.serializeToCode(serializerConfig, {
+      chunks,
+      debugId
+    });
+    const relativeEntry = _path().default.relative(this.options.projectRoot, this.name);
     const jsAsset = {
       filename: outputFile,
       originFilename: relativeEntry,
       type: 'js',
       metadata: {
         isAsync: this.isAsync,
-        requires: [...this.requiredChunks.values()].map(chunk => chunk.getFilenameForConfig(serializerConfig))
+        requires: [...this.requiredChunks.values()].map(chunk => chunk.getFilenameForConfig(serializerConfig)),
+        // Provide a list of module paths that can be used for matching chunks to routes.
+        // TODO: Move HTML serializing closer to this code so we can reduce passing this much data around.
+        modulePaths: [...this.deps].map(module => module.path)
       },
       source: jsCode
     };
     const assets = [jsAsset];
+    const mutateSourceMapWithDebugId = sourceMap => {
+      // TODO: Upstream this so we don't have to parse the source map back and forth.
+      if (!debugId) {
+        return sourceMap;
+      }
+      // NOTE: debugId isn't required for inline source maps because the source map is included in the same file, therefore
+      // we don't need to disambiguate between multiple source maps.
+      const sourceMapObject = JSON.parse(sourceMap);
+      sourceMapObject.debugId = debugId;
+      // NOTE: Sentry does this, but bun does not.
+      // sourceMapObject.debug_id = debugId;
+      return JSON.stringify(sourceMapObject);
+    };
     if (
     // Only include the source map if the `options.sourceMapUrl` option is provided and we are exporting a static build.
     includeSourceMaps && !this.options.inlineSourceMap && this.options.sourceMapUrl) {
@@ -307,10 +396,12 @@ class Chunk {
         }
         return module;
       });
-      const sourceMap = (0, _sourceMapString().default)(modules, {
+
+      // TODO: We may not need to mutate the original source map with a `debugId` when hermes is enabled since we'll have different source maps.
+      const sourceMap = mutateSourceMapWithDebugId((0, _sourceMapString().default)(modules, {
         excludeSource: false,
         ...this.options
-      });
+      }));
       assets.push({
         filename: this.options.dev ? jsAsset.filename + '.map' : outputFile + '.map',
         originFilename: jsAsset.originFilename,
@@ -336,7 +427,6 @@ class Chunk {
         // TODO: Maybe allow prod + no minify.
         minify: true //!this.options.dev,
       });
-
       if (hermesBundleOutput.hbc) {
         // TODO: Unclear if we should add multiple assets, link the assets, or mutate the first asset.
         // jsAsset.metadata.hbc = hermesBundleOutput.hbc;
@@ -345,7 +435,7 @@ class Chunk {
         jsAsset.filename = jsAsset.filename.replace(/\.js$/, '.hbc');
       }
       if (assets[1] && hermesBundleOutput.sourcemap) {
-        assets[1].source = hermesBundleOutput.sourcemap;
+        assets[1].source = mutateSourceMapWithDebugId(hermesBundleOutput.sourcemap);
         assets[1].filename = assets[1].filename.replace(/\.js\.map$/, '.hbc.map');
       }
     }
@@ -362,6 +452,7 @@ class Chunk {
     return !this.options.dev && this.supportsBytecode() && ((_this$graph$transform = this.graph.transformOptions.customTransformOptions) === null || _this$graph$transform === void 0 ? void 0 : _this$graph$transform.engine) === 'hermes';
   }
 }
+exports.Chunk = Chunk;
 function getEntryModulesForChunkSettings(graph, settings) {
   return [...graph.dependencies.entries()].filter(([path]) => settings.test.test(path)).map(([, module]) => module);
 }
@@ -396,7 +487,7 @@ function gatherChunks(chunks, settings, preModules, graph, options, isAsync = fa
       // Support disabling multiple chunks.
       splitChunks) {
         gatherChunks(chunks, {
-          test: (0, _pathToRegexp().default)(dependency.absolutePath)
+          test: pathToRegex(dependency.absolutePath)
         }, [], graph, options, true);
       } else {
         const module = graph.dependencies.get(dependency.absolutePath);
@@ -415,17 +506,11 @@ function gatherChunks(chunks, settings, preModules, graph, options, isAsync = fa
   }
   return chunks;
 }
-async function serializeChunksAsync(chunks, serializerConfig, {
-  includeSourceMaps,
-  includeBytecode
-}) {
+async function serializeChunksAsync(chunks, serializerConfig, options) {
   const jsAssets = [];
   const chunksArray = [...chunks.values()];
   await Promise.all(chunksArray.map(async chunk => {
-    jsAssets.push(...(await chunk.serializeToAssetsAsync(serializerConfig, chunksArray, {
-      includeSourceMaps,
-      includeBytecode
-    })));
+    jsAssets.push(...(await chunk.serializeToAssetsAsync(serializerConfig, chunksArray, options)));
   }));
   return jsAssets;
 }

@@ -1,11 +1,11 @@
-import { OpenOptions } from './NativeDatabase';
+import { SQLiteOpenOptions } from './NativeDatabase';
 
 export default {
   get name(): string {
     return 'ExpoSQLiteNext';
   },
 
-  NativeDatabase(dbName: string, options?: OpenOptions): void {
+  NativeDatabase(databaseName: string, options?: SQLiteOpenOptions): void {
     throw new Error('Unimplemented');
   },
 
@@ -13,11 +13,11 @@ export default {
     throw new Error('Unimplemented');
   },
 
-  async deleteDatabaseAsync(dbName: string): Promise<void> {
+  async deleteDatabaseAsync(databaseName: string): Promise<void> {
     throw new Error('Unimplemented');
   },
 
-  deleteDatabaseSync(dbName: string): void {
+  deleteDatabaseSync(databaseName: string): void {
     throw new Error('Unimplemented');
   },
 

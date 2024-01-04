@@ -4,6 +4,53 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- Fix development status for modern updates. ([#26042](https://github.com/expo/expo/pull/26042) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- [ios] Remove unnecessary delegate from FileDownloader. ([#25783](https://github.com/expo/expo/pull/25783) by [@wschurman](https://github.com/wschurman))
+- Migrate to requireNativeModule/requireOptionalNativeModule. ([#25648](https://github.com/expo/expo/pull/25648) by [@wschurman](https://github.com/wschurman))
+- Remove classic updates. ([#26036](https://github.com/expo/expo/pull/26036), [#26037](https://github.com/expo/expo/pull/26037), [#26048](https://github.com/expo/expo/pull/26048), [#26059](https://github.com/expo/expo/pull/26059), [#26061](https://github.com/expo/expo/pull/26061), [#26065](https://github.com/expo/expo/pull/26065), [#26080](https://github.com/expo/expo/pull/26080) by [@wschurman](https://github.com/wschurman))
+- Replace deprecated `com.facebook.react:react-native:+` Android dependency with `com.facebook.react:react-android`. ([#26237](https://github.com/expo/expo/pull/26237) by [@kudo](https://github.com/kudo))
+
+## 0.24.5 - 2023-12-21
+
+_This version does not introduce any user-facing changes._
+
+## 0.24.4 - 2023-12-19
+
+### 🐛 Bug fixes
+
+- Add relaunch to disabled and dev client controllers. ([#25973](https://github.com/expo/expo/pull/25973) by [@wschurman](https://github.com/wschurman))
+
+## 0.24.3 — 2023-12-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.18.18 — 2023-12-15
+
+### 🐛 Bug fixes
+
+- [Android] overwrite duplicates when copying assets. ([#25898](https://github.com/expo/expo/pull/25898) by [@douglowder](https://github.com/douglowder))
+
+## 0.24.2 — 2023-12-13
+
+### 🐛 Bug fixes
+
+- [Android] overwrite duplicates when copying assets. ([#25898](https://github.com/expo/expo/pull/25898) by [@douglowder](https://github.com/douglowder))
+
+## 0.24.1 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
+## 0.24.0 — 2023-12-12
+
+### 🛠 Breaking changes
+
 - Add state machine procedure serial runner. ([#25386](https://github.com/expo/expo/pull/25386), [#25431](https://github.com/expo/expo/pull/25431) by [@wschurman](https://github.com/wschurman))
 
 ### 🎉 New features
@@ -13,6 +60,9 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix interaction between reload JS API and ErrorRecovery. ([#25651](https://github.com/expo/expo/pull/25651) by [@wschurman](https://github.com/wschurman))
+- [Android] Fix wait notify bug in launch asset when enabled. ([#25676](https://github.com/expo/expo/pull/25676) by [@wschurman](https://github.com/wschurman))
+
 ### 💡 Others
 
 - Update E2E tests to use local copies of `@expo/metro-config`, `@expo/env`, `@expo/config`. ([#25430](https://github.com/expo/expo/pull/25430) by [@EvanBacon](https://github.com/EvanBacon))
@@ -20,6 +70,8 @@
 - Modify E2E manual test for asset exclusion. ([#25406](https://github.com/expo/expo/pull/25406) by [@douglowder](https://github.com/douglowder))
 - Move tvOS compile test out of updates E2E test matrix. ([#25438](https://github.com/expo/expo/pull/25438) by [@douglowder](https://github.com/douglowder))
 - Assert valid state transitions in debug. ([#25474](https://github.com/expo/expo/pull/25474) by [@wschurman](https://github.com/wschurman))
+- Improve JS API error messages and documentation for Expo Go and Dev Client. ([#25751](https://github.com/expo/expo/pull/25751) by [@wschurman](https://github.com/wschurman))
+- Warn when expo-updates starts in disabled mode. ([#25793](https://github.com/expo/expo/pull/25793) by [@wschurman](https://github.com/wschurman))
 
 ## 0.23.0 — 2023-11-14
 

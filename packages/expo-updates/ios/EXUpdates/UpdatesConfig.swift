@@ -32,6 +32,14 @@ public enum UpdatesConfigError: Int, Error {
   case ExpoUpdatesMissingRuntimeVersionError
 }
 
+public enum UpdatesConfigurationValidationResult {
+  case Valid
+  case InvalidNotEnabled
+  case InvalidPlistError
+  case InvalidMissingURL
+  case InvalidMissingRuntimeVersion
+}
+
 /**
  * Holds global, immutable configuration values for updates, as well as doing some rudimentary
  * validation.
@@ -53,10 +61,8 @@ public final class UpdatesConfig: NSObject {
   public static let EXUpdatesConfigScopeKeyKey = "EXUpdatesScopeKey"
   public static let EXUpdatesConfigUpdateUrlKey = "EXUpdatesURL"
   public static let EXUpdatesConfigRequestHeadersKey = "EXUpdatesRequestHeaders"
-  public static let EXUpdatesConfigReleaseChannelKey = "EXUpdatesReleaseChannel"
   public static let EXUpdatesConfigLaunchWaitMsKey = "EXUpdatesLaunchWaitMs"
   public static let EXUpdatesConfigCheckOnLaunchKey = "EXUpdatesCheckOnLaunch"
-  public static let EXUpdatesConfigSDKVersionKey = "EXUpdatesSDKVersion"
   public static let EXUpdatesConfigRuntimeVersionKey = "EXUpdatesRuntimeVersion"
   public static let EXUpdatesConfigHasEmbeddedUpdateKey = "EXUpdatesHasEmbeddedUpdate"
   public static let EXUpdatesConfigExpectsSignedManifestKey = "EXUpdatesExpectsSignedManifest"
@@ -71,13 +77,10 @@ public final class UpdatesConfig: NSObject {
   public static let EXUpdatesConfigCheckOnLaunchValueErrorRecoveryOnly = "ERROR_RECOVERY_ONLY"
   public static let EXUpdatesConfigCheckOnLaunchValueNever = "NEVER"
 
-  public static let ReleaseChannelDefaultValue = "default"
-
   public let expectsSignedManifest: Bool
   public let scopeKey: String
   public let updateUrl: URL
   public let requestHeaders: [String: String]
-  public let releaseChannel: String
   public let launchWaitMs: Int
   public let checkOnLaunch: CheckAutomaticallyConfig
   public let codeSigningConfiguration: CodeSigningConfiguration?
@@ -85,9 +88,7 @@ public final class UpdatesConfig: NSObject {
   // used only in Expo Go to prevent loading rollbacks and other directives, which don't make much sense in the context of Expo Go
   public let enableExpoUpdatesProtocolV0CompatibilityMode: Bool
 
-  public let sdkVersion: String?
-  public let runtimeVersionRaw: String?
-  public let runtimeVersionRealized: String
+  public let runtimeVersion: String
 
   public let hasEmbeddedUpdate: Bool
 
@@ -96,13 +97,10 @@ public final class UpdatesConfig: NSObject {
     scopeKey: String,
     updateUrl: URL,
     requestHeaders: [String: String],
-    releaseChannel: String,
     launchWaitMs: Int,
     checkOnLaunch: CheckAutomaticallyConfig,
     codeSigningConfiguration: CodeSigningConfiguration?,
-    sdkVersion: String?,
-    runtimeVersionRaw: String?,
-    runtimeVersionRealized: String,
+    runtimeVersion: String,
     hasEmbeddedUpdate: Bool,
     enableExpoUpdatesProtocolV0CompatibilityMode: Bool
   ) {
@@ -110,13 +108,10 @@ public final class UpdatesConfig: NSObject {
     self.scopeKey = scopeKey
     self.updateUrl = updateUrl
     self.requestHeaders = requestHeaders
-    self.releaseChannel = releaseChannel
     self.launchWaitMs = launchWaitMs
     self.checkOnLaunch = checkOnLaunch
     self.codeSigningConfiguration = codeSigningConfiguration
-    self.sdkVersion = sdkVersion
-    self.runtimeVersionRaw = runtimeVersionRaw
-    self.runtimeVersionRealized = runtimeVersionRealized
+    self.runtimeVersion = runtimeVersion
     self.hasEmbeddedUpdate = hasEmbeddedUpdate
     self.enableExpoUpdatesProtocolV0CompatibilityMode = enableExpoUpdatesProtocolV0CompatibilityMode
   }
@@ -139,38 +134,36 @@ public final class UpdatesConfig: NSObject {
     return dictionary
   }
 
-  public static func isMissingRuntimeVersion(mergingOtherDictionary: [String: Any]?) -> Bool {
+  private static func isMissingRuntimeVersion(mergingOtherDictionary: [String: Any]?) -> Bool {
     guard let dictionary = try? configDictionaryWithExpoPlist(mergingOtherDictionary: mergingOtherDictionary) else {
       return true
     }
 
-    let sdkVersion: String? = dictionary.optionalValue(forKey: EXUpdatesConfigSDKVersionKey)
     let runtimeVersion: String? = dictionary.optionalValue(forKey: EXUpdatesConfigRuntimeVersionKey)
-
-    return (sdkVersion?.isEmpty ?? true) && (runtimeVersion?.isEmpty ?? true)
+    return runtimeVersion?.isEmpty ?? true
   }
 
-  public static func canCreateValidConfiguration(mergingOtherDictionary: [String: Any]?) -> Bool {
+  public static func getUpdatesConfigurationValidationResult(mergingOtherDictionary: [String: Any]?) -> UpdatesConfigurationValidationResult {
     guard let dictionary = try? configDictionaryWithExpoPlist(mergingOtherDictionary: mergingOtherDictionary) else {
-      return false
+      return UpdatesConfigurationValidationResult.InvalidPlistError
     }
 
     guard dictionary.optionalValue(forKey: EXUpdatesConfigEnabledKey) ?? true else {
-      return false
+      return UpdatesConfigurationValidationResult.InvalidNotEnabled
     }
 
     let updateUrl: URL? = dictionary.optionalValue(forKey: EXUpdatesConfigUpdateUrlKey).let { it in
       URL(string: it)
     }
     guard updateUrl != nil else {
-      return false
+      return UpdatesConfigurationValidationResult.InvalidMissingURL
     }
 
     if isMissingRuntimeVersion(mergingOtherDictionary: mergingOtherDictionary) {
-      return false
+      return UpdatesConfigurationValidationResult.InvalidMissingRuntimeVersion
     }
 
-    return true
+    return UpdatesConfigurationValidationResult.Valid
   }
 
   public static func configWithExpoPlist(mergingOtherDictionary: [String: Any]?) throws -> UpdatesConfig {
@@ -186,7 +179,6 @@ public final class UpdatesConfig: NSObject {
     let scopeKey = config.optionalValue(forKey: EXUpdatesConfigScopeKeyKey) ?? UpdatesConfig.normalizedURLOrigin(url: updateUrl)
 
     let requestHeaders: [String: String] = config.optionalValue(forKey: EXUpdatesConfigRequestHeadersKey) ?? [:]
-    let releaseChannel = config.optionalValue(forKey: EXUpdatesConfigReleaseChannelKey) ?? ReleaseChannelDefaultValue
     let launchWaitMs = config.optionalValue(forKey: EXUpdatesConfigLaunchWaitMsKey).let { (it: Any) in
       // The only way I can figure out how to detect numbers is to do a is NSNumber (is any Numeric didn't work).
       // This might be able to change when we switch out the plist decoder above
@@ -216,10 +208,7 @@ public final class UpdatesConfig: NSObject {
       }
     } ?? CheckAutomaticallyConfig.Always
 
-    let sdkVersion: String? = config.optionalValue(forKey: EXUpdatesConfigSDKVersionKey)
-    let runtimeVersionRaw: String? = config.optionalValue(forKey: EXUpdatesConfigRuntimeVersionKey)
-
-    guard let runtimeVersionRealized = runtimeVersionRaw ?? sdkVersion else {
+    guard let runtimeVersion: String = config.optionalValue(forKey: EXUpdatesConfigRuntimeVersionKey) else {
       throw UpdatesConfigError.ExpoUpdatesMissingRuntimeVersionError
     }
 
@@ -247,13 +236,10 @@ public final class UpdatesConfig: NSObject {
       scopeKey: scopeKey,
       updateUrl: updateUrl,
       requestHeaders: requestHeaders,
-      releaseChannel: releaseChannel,
       launchWaitMs: launchWaitMs,
       checkOnLaunch: checkOnLaunch,
       codeSigningConfiguration: codeSigningConfiguration,
-      sdkVersion: sdkVersion,
-      runtimeVersionRaw: runtimeVersionRaw,
-      runtimeVersionRealized: runtimeVersionRealized,
+      runtimeVersion: runtimeVersion,
       hasEmbeddedUpdate: hasEmbeddedUpdate,
       enableExpoUpdatesProtocolV0CompatibilityMode: enableExpoUpdatesProtocolV0CompatibilityMode
     )

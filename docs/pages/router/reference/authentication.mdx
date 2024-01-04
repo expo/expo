@@ -46,7 +46,17 @@ This provider uses a mock implementation. You can replace it with your own [auth
 import React from 'react';
 import { useStorageState } from './useStorageState';
 
-const AuthContext = React.createContext<{ signIn: () => void; signOut: () => void; session?: string | null, isLoading: boolean } | null>(null);
+const AuthContext = React.createContext<{ 
+  signIn: () => void; 
+  signOut: () => void;
+  session?: string | null;
+  isLoading: boolean;
+}>({
+  signIn: () => null,
+  signOut: () => null,
+  session: null,
+  isLoading: false,
+});
 
 // This hook can be used to access the user info.
 export function useSession() {
@@ -145,9 +155,8 @@ export function useStorageState(key: string): UseStateHook<string> {
   // Set
   const setValue = React.useCallback(
     (value: string | null) => {
-      setStorageItemAsync(key, value).then(() => {
-        setState(value);
-      });
+      setState(value);
+      setStorageItemAsync(key, value);
     },
     [key]
   );
@@ -182,7 +191,7 @@ export default function Root() {
 
 <Step label="3">
 
-Create a nested [Layout route](/routing/layouts) that checks whether users are authenticated before rendering the child route components. This layout route redirects users to the sign-in screen if they are not authenticated.
+Create a nested [layout route](/router/layouts) that checks whether users are authenticated before rendering the child route components. This layout route redirects users to the sign-in screen if they are not authenticated.
 
 ```jsx app/(app)/_layout.js
 import { Redirect, Stack } from 'expo-router';
@@ -304,8 +313,8 @@ export const unstable_settings = {
 export default function AppLayout() {
   return (
     <Stack>
-      <Stack name="(root)" />
-      <Stack
+      <Stack.Screen name="(root)" />
+      <Stack.Screen
         name="sign-in"
         options={{
           presentation: 'modal',

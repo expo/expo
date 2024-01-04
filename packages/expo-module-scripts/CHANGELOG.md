@@ -6,11 +6,16 @@
 
 ### 🎉 New features
 
-- Add Node-specific Babel and Jest configurations. ([#25458](https://github.com/expo/expo/pull/25458) by [@byCedric](https://github.com/byCedric))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 3.4.0 — 2023-12-12
+
+### 🎉 New features
+
+- Add Node-specific Babel and Jest configurations. ([#25458](https://github.com/expo/expo/pull/25458) by [@byCedric](https://github.com/byCedric))
+- Add Node override in ESLint config for root configuraiton files. ([#25767](https://github.com/expo/expo/pull/25767) by [@byCedric](https://github.com/byCedric))
 
 ## 3.3.0 — 2023-11-14
 

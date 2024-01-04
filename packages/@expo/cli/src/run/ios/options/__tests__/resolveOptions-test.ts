@@ -4,9 +4,6 @@ import rnFixture from '../../../../prebuild/__tests__/fixtures/react-native-proj
 import { isSimulatorDevice } from '../resolveDevice';
 import { resolveOptionsAsync } from '../resolveOptions';
 
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
 jest.mock('../../../../utils/port');
 
 jest.mock('../resolveDevice', () => ({
@@ -39,7 +36,7 @@ describe(resolveOptionsAsync, () => {
   it(`resolves complex options`, async () => {
     vol.fromJSON(rnFixture, '/');
 
-    asMock(isSimulatorDevice).mockImplementationOnce(() => false);
+    jest.mocked(isSimulatorDevice).mockImplementationOnce(() => false);
 
     expect(
       await resolveOptionsAsync('/', {

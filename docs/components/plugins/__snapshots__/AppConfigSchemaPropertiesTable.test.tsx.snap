@@ -3,7 +3,7 @@
 exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
 <div>
   <div
-    class="css-c2t1qw-AppConfigProperty"
+    class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
   >
     <p
       class="  css-1kfqm4n-TextComponent"
@@ -21,7 +21,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-6n7j50"
         >
           <code
-            class="css-2z1nlz-PropertyName"
+            class="css-10gpz29-PropertyName"
             data-text="true"
           >
             name
@@ -63,7 +63,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     >
       Type: 
       <code
-        class="css-iwb7ur-TextComponent"
+        class="css-ite7ne-TextComponent"
         data-text="true"
       >
         string
@@ -143,7 +143,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </a>
       </summary>
       <div
-        class="css-16wdqb0"
+        class="last:[&>*]:!mb-1 css-qbaxbl"
       >
         <p
           class="mb-4 css-1kfqm4n-TextComponent"
@@ -156,7 +156,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     <div />
   </div>
   <div
-    class="css-c2t1qw-AppConfigProperty"
+    class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
   >
     <p
       class="  css-1kfqm4n-TextComponent"
@@ -174,7 +174,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-6n7j50"
         >
           <code
-            class="css-2z1nlz-PropertyName"
+            class="css-10gpz29-PropertyName"
             data-text="true"
           >
             androidNavigationBar
@@ -216,7 +216,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     >
       Type: 
       <code
-        class="css-iwb7ur-TextComponent"
+        class="css-ite7ne-TextComponent"
         data-text="true"
       >
         object
@@ -296,7 +296,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </a>
       </summary>
       <div
-        class="css-16wdqb0"
+        class="last:[&>*]:!mb-1 css-qbaxbl"
       >
         <p
           class="mb-4 css-1kfqm4n-TextComponent"
@@ -374,7 +374,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </a>
       </summary>
       <div
-        class="css-16wdqb0"
+        class="last:[&>*]:!mb-1 css-qbaxbl"
       >
         <p
           class="mb-4 css-1kfqm4n-TextComponent"
@@ -386,7 +386,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </details>
     <div>
       <div
-        class="css-c2t1qw-AppConfigProperty"
+        class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
       >
         <p
           class="  css-1kfqm4n-TextComponent"
@@ -404,7 +404,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-6n7j50"
             >
               <code
-                class="css-2z1nlz-PropertyName"
+                class="css-10gpz29-PropertyName"
                 data-text="true"
               >
                 visible
@@ -446,7 +446,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           Type: 
           <code
-            class="css-iwb7ur-TextComponent"
+            class="css-ite7ne-TextComponent"
             data-text="true"
           >
             enum
@@ -535,7 +535,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </a>
           </summary>
           <div
-            class="css-16wdqb0"
+            class="last:[&>*]:!mb-1 css-qbaxbl"
           >
             <p
               class="mb-4 css-1kfqm4n-TextComponent"
@@ -547,7 +547,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </details>
         <div>
           <div
-            class="css-c2t1qw-AppConfigProperty"
+            class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
           >
             <p
               class="  css-1kfqm4n-TextComponent"
@@ -565,7 +565,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="css-6n7j50"
                 >
                   <code
-                    class="css-2z1nlz-PropertyName"
+                    class="css-10gpz29-PropertyName"
                     data-text="true"
                   >
                     always
@@ -607,7 +607,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             >
               Type: 
               <code
-                class="css-iwb7ur-TextComponent"
+                class="css-ite7ne-TextComponent"
                 data-text="true"
               >
                 boolean
@@ -633,7 +633,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </div>
       <div
-        class="css-c2t1qw-AppConfigProperty"
+        class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
       >
         <p
           class="  css-1kfqm4n-TextComponent"
@@ -651,7 +651,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-6n7j50"
             >
               <code
-                class="css-2z1nlz-PropertyName"
+                class="css-10gpz29-PropertyName"
                 data-text="true"
               >
                 backgroundColor
@@ -693,7 +693,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           Type: 
           <code
-            class="css-iwb7ur-TextComponent"
+            class="css-ite7ne-TextComponent"
             data-text="true"
           >
             string
@@ -722,7 +722,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           6 character long hex color string, eg: 
           <code
-            class="css-1a6y07t-TextComponent"
+            class="css-qyuze8-TextComponent"
             data-text="true"
           >
             '#000000'
@@ -733,7 +733,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </div>
   </div>
   <div
-    class="css-c2t1qw-AppConfigProperty"
+    class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
   >
     <p
       class="  css-1kfqm4n-TextComponent"
@@ -751,7 +751,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-6n7j50"
         >
           <code
-            class="css-2z1nlz-PropertyName"
+            class="css-10gpz29-PropertyName"
             data-text="true"
           >
             intentFilters
@@ -793,7 +793,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     >
       Type: 
       <code
-        class="css-iwb7ur-TextComponent"
+        class="css-ite7ne-TextComponent"
         data-text="true"
       >
         array
@@ -873,7 +873,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </a>
       </summary>
       <div
-        class="css-16wdqb0"
+        class="last:[&>*]:!mb-1 css-qbaxbl"
       >
         <p
           class="mb-4 css-1kfqm4n-TextComponent"
@@ -927,7 +927,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </blockquote>
     <div>
       <div
-        class="css-c2t1qw-AppConfigProperty"
+        class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
       >
         <p
           class="  css-1kfqm4n-TextComponent"
@@ -945,7 +945,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-6n7j50"
             >
               <code
-                class="css-2z1nlz-PropertyName"
+                class="css-10gpz29-PropertyName"
                 data-text="true"
               >
                 autoVerify
@@ -987,7 +987,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           Type: 
           <code
-            class="css-iwb7ur-TextComponent"
+            class="css-ite7ne-TextComponent"
             data-text="true"
           >
             boolean
@@ -1011,7 +1011,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <div />
       </div>
       <div
-        class="css-c2t1qw-AppConfigProperty"
+        class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
       >
         <p
           class="  css-1kfqm4n-TextComponent"
@@ -1029,7 +1029,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-6n7j50"
             >
               <code
-                class="css-2z1nlz-PropertyName"
+                class="css-10gpz29-PropertyName"
                 data-text="true"
               >
                 data
@@ -1071,7 +1071,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           Type: 
           <code
-            class="css-iwb7ur-TextComponent"
+            class="css-ite7ne-TextComponent"
             data-text="true"
           >
             array || object
@@ -1088,7 +1088,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </p>
         <div>
           <div
-            class="css-c2t1qw-AppConfigProperty"
+            class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
           >
             <p
               class="  css-1kfqm4n-TextComponent"
@@ -1106,7 +1106,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="css-6n7j50"
                 >
                   <code
-                    class="css-2z1nlz-PropertyName"
+                    class="css-10gpz29-PropertyName"
                     data-text="true"
                   >
                     host
@@ -1148,7 +1148,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             >
               Type: 
               <code
-                class="css-iwb7ur-TextComponent"
+                class="css-ite7ne-TextComponent"
                 data-text="true"
               >
                 string

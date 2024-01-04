@@ -1,4 +1,3 @@
-import { asMock } from '../../../../__tests__/asMock';
 import { getVersionsAsync } from '../../../../api/getVersions';
 import { Log } from '../../../../log';
 import { getVersionedNativeModulesAsync } from '../bundledNativeModules';
@@ -8,6 +7,7 @@ import {
   getRemoteVersionsForSdkAsync,
   getVersionedPackagesAsync,
 } from '../getVersionedPackages';
+import { hasExpoCanaryAsync } from '../resolvePackages';
 
 jest.mock('../../../../log');
 
@@ -19,10 +19,14 @@ jest.mock('../bundledNativeModules', () => ({
   getVersionedNativeModulesAsync: jest.fn(),
 }));
 
+jest.mock('../resolvePackages', () => ({
+  hasExpoCanaryAsync: jest.fn().mockResolvedValue(false),
+}));
+
 describe(getCombinedKnownVersionsAsync, () => {
   it(`should prioritize remote versions over bundled versions`, async () => {
     // Remote versions
-    asMock(getVersionsAsync).mockResolvedValueOnce({
+    jest.mocked(getVersionsAsync).mockResolvedValueOnce({
       sdkVersions: {
         '1.0.0': {
           relatedPackages: {
@@ -34,7 +38,7 @@ describe(getCombinedKnownVersionsAsync, () => {
     } as any);
 
     // Bundled versions
-    asMock(getVersionedNativeModulesAsync).mockResolvedValueOnce({
+    jest.mocked(getVersionedNativeModulesAsync).mockResolvedValueOnce({
       shared: 'bundled',
       'local-only': 'xxx',
     });
@@ -45,12 +49,31 @@ describe(getCombinedKnownVersionsAsync, () => {
       'remote-only': 'xxx',
     });
   });
+
+  it(`skips remote versions for canary releases`, async () => {
+    jest.mocked(hasExpoCanaryAsync).mockResolvedValueOnce(true);
+    jest.mocked(getVersionedNativeModulesAsync).mockResolvedValue({
+      shared: 'bundled',
+    });
+
+    // Should not call the API
+    expect(getVersionsAsync).not.toBeCalled();
+    // Should only return the bundled modules value
+    expect(
+      await getCombinedKnownVersionsAsync({
+        projectRoot: '/',
+        sdkVersion: '1.0.0',
+      })
+    ).toEqual({
+      shared: 'bundled',
+    });
+  });
 });
 
 describe(getVersionedPackagesAsync, () => {
   it('should return an SDK compatible version of a package if one is available', async () => {
-    asMock(getVersionedNativeModulesAsync).mockResolvedValueOnce({});
-    asMock(getVersionsAsync).mockResolvedValueOnce({
+    jest.mocked(getVersionedNativeModulesAsync).mockResolvedValueOnce({});
+    jest.mocked(getVersionsAsync).mockResolvedValueOnce({
       sdkVersions: {
         '1.0.0': {
           relatedPackages: {
@@ -73,8 +96,8 @@ describe(getVersionedPackagesAsync, () => {
   });
 
   it('should ignore SDK compatible version if package@version is passed in', async () => {
-    asMock(getVersionedNativeModulesAsync).mockResolvedValueOnce({});
-    asMock(getVersionsAsync).mockResolvedValueOnce({
+    jest.mocked(getVersionedNativeModulesAsync).mockResolvedValueOnce({});
+    jest.mocked(getVersionsAsync).mockResolvedValueOnce({
       sdkVersions: {
         '1.0.0': {
           relatedPackages: {
@@ -97,8 +120,8 @@ describe(getVersionedPackagesAsync, () => {
   });
 
   it('should return an SDK compatible version of react if one is available', async () => {
-    asMock(getVersionedNativeModulesAsync).mockResolvedValueOnce({});
-    asMock(getVersionsAsync).mockResolvedValueOnce({
+    jest.mocked(getVersionedNativeModulesAsync).mockResolvedValueOnce({});
+    jest.mocked(getVersionsAsync).mockResolvedValueOnce({
       sdkVersions: {
         '1.0.0': {
           relatedPackages: {
@@ -121,8 +144,8 @@ describe(getVersionedPackagesAsync, () => {
   });
 
   it('should return the SDK incompatible version of react when react@version is passed in', async () => {
-    asMock(getVersionedNativeModulesAsync).mockResolvedValueOnce({});
-    asMock(getVersionsAsync).mockResolvedValueOnce({
+    jest.mocked(getVersionedNativeModulesAsync).mockResolvedValueOnce({});
+    jest.mocked(getVersionsAsync).mockResolvedValueOnce({
       sdkVersions: {
         '1.0.0': {
           relatedPackages: {
@@ -145,8 +168,8 @@ describe(getVersionedPackagesAsync, () => {
   });
 
   it('should ignore SDK compatible version if package@version is passed in', async () => {
-    asMock(getVersionedNativeModulesAsync).mockResolvedValueOnce({});
-    asMock(getVersionsAsync).mockResolvedValueOnce({
+    jest.mocked(getVersionedNativeModulesAsync).mockResolvedValueOnce({});
+    jest.mocked(getVersionsAsync).mockResolvedValueOnce({
       sdkVersions: {
         '1.0.0': {
           relatedPackages: {
@@ -169,8 +192,8 @@ describe(getVersionedPackagesAsync, () => {
   });
 
   it('should return versioned packages', async () => {
-    asMock(getVersionedNativeModulesAsync).mockResolvedValueOnce({});
-    asMock(getVersionsAsync).mockResolvedValueOnce({
+    jest.mocked(getVersionedNativeModulesAsync).mockResolvedValueOnce({});
+    jest.mocked(getVersionsAsync).mockResolvedValueOnce({
       sdkVersions: {
         '1.0.0': {
           relatedPackages: {
@@ -212,8 +235,8 @@ describe(getVersionedPackagesAsync, () => {
   });
 
   it('should not specify versions for excluded packages', async () => {
-    asMock(getVersionedNativeModulesAsync).mockResolvedValueOnce({});
-    asMock(getVersionsAsync).mockResolvedValueOnce({
+    jest.mocked(getVersionedNativeModulesAsync).mockResolvedValueOnce({});
+    jest.mocked(getVersionsAsync).mockResolvedValueOnce({
       sdkVersions: {
         '1.0.0': {
           relatedPackages: {
@@ -254,8 +277,8 @@ describe(getVersionedPackagesAsync, () => {
   });
 
   it('should not list packages in expo.install.exclude that do not have a bundledNativeVersion', async () => {
-    asMock(getVersionedNativeModulesAsync).mockResolvedValueOnce({});
-    asMock(getVersionsAsync).mockResolvedValueOnce({
+    jest.mocked(getVersionedNativeModulesAsync).mockResolvedValueOnce({});
+    jest.mocked(getVersionsAsync).mockResolvedValueOnce({
       sdkVersions: {
         '1.0.0': {
           relatedPackages: {
@@ -335,7 +358,7 @@ describe(getRemoteVersionsForSdkAsync, () => {
     expect(getVersionsAsync).not.toBeCalled();
   });
   it('returns an empty object when the SDK version is not supported', async () => {
-    asMock(getVersionsAsync).mockResolvedValueOnce({ sdkVersions: {} } as any);
+    jest.mocked(getVersionsAsync).mockResolvedValueOnce({ sdkVersions: {} } as any);
 
     expect(await getRemoteVersionsForSdkAsync({ sdkVersion: '1.0.0', skipCache: true })).toEqual(
       {}
@@ -343,7 +366,7 @@ describe(getRemoteVersionsForSdkAsync, () => {
   });
 
   it('returns versions for SDK with Facebook overrides', async () => {
-    asMock(getVersionsAsync).mockResolvedValueOnce({
+    jest.mocked(getVersionsAsync).mockResolvedValueOnce({
       sdkVersions: {
         '1.0.0': {
           relatedPackages: {

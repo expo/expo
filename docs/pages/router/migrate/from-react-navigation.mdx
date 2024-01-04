@@ -84,7 +84,7 @@ export default function App() {
 
 Create an **app** directory at the root of your repo, or in a root **src** directory.
 
-Layout the structure of your app by creating files according to the [creating pages guide](/routing/create-pages/). Best practice dictates that you use kebab-case and lowercase letters for filenames.
+Layout the structure of your app by creating files according to the [creating pages guide](/router/create-pages/). Kebab-case and lowercase letters are considered best practice for route filenames.
 
 Replace navigators with directories, for example:
 
@@ -334,11 +334,11 @@ Use the [`usePathname()`](/router/reference/hooks/#usepathname), [`useSegments()
 In React Navigation, [`onReady`](https://reactnavigation.org/docs/navigation-container/#onready) is most often used to determine when the splash screen should hide or when to track screens using analytics. Expo Router has special handling for both of these use cases. Assume the navigation is always ready for navigation events in the Expo Router.
 
 - See the [Screen Tracking guide](/router/reference/screen-tracking/) for info on migrating analytics from React Navigation.
-- See the [Splash Screen feature](/routing/appearance/#splash-screen) for info on handling the splash screen.
+- See the [Splash Screen feature](/router/appearance/#splash-screen) for info on handling the splash screen.
 
 #### `onUnhandledAction`
 
-Actions are always handled in Expo Router. Use [dynamic routes](/routing/create-pages/#dynamic-routes) and [404 screens](/routing/error-handling/#unmatched-routes) in favor of [`onUnhandledAction`](https://reactnavigation.org/docs/navigation-container/#onunhandledaction).
+Actions are always handled in Expo Router. Use [dynamic routes](/router/create-pages/#dynamic-routes) and [404 screens](/router/error-handling/#unmatched-routes) in favor of [`onUnhandledAction`](https://reactnavigation.org/docs/navigation-container/#onunhandledaction).
 
 #### `linking`
 
@@ -346,7 +346,7 @@ The [`linking`](https://reactnavigation.org/docs/navigation-container/#linking) 
 
 #### `fallback`
 
-The [`fallback`](https://reactnavigation.org/docs/navigation-container/#fallback) prop is automatically handled by Expo Router. Learn more in the [Splash Screen](/routing/appearance/#splash-screen) guide.
+The [`fallback`](https://reactnavigation.org/docs/navigation-container/#fallback) prop is automatically handled by Expo Router. Learn more in the [Splash Screen](/router/appearance/#splash-screen) guide.
 
 #### `theme`
 

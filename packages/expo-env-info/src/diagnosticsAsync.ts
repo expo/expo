@@ -16,6 +16,7 @@ function getEnvironmentInfoAsync(): Promise<string> {
       SDKs: ['iOS SDK', 'Android SDK'],
       npmPackages: [
         'expo',
+        'expo-router',
         'react',
         'react-dom',
         'react-native',

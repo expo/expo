@@ -41,7 +41,7 @@ export function isLoaded(fontFamily) {
     if (Platform.OS === 'web') {
         return fontFamily in loaded || !!ExpoFontLoader.isLoaded(fontFamily);
     }
-    return fontFamily in loaded;
+    return fontFamily in loaded || ExpoFontLoader.customNativeFonts?.includes(fontFamily);
 }
 // @needsAudit
 /**

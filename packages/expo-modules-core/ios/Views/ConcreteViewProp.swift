@@ -1,7 +1,5 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
-import UIKit
-
 /**
  Specialized class for the view prop. Specifies the prop name and its setter.
  */

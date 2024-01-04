@@ -15,6 +15,8 @@ import {
   shouldEnableAsyncImports,
   createBundleUrlPath,
   getBaseUrlFromExpoConfig,
+  getAsyncRoutesFromExpoConfig,
+  createBundleUrlPathFromExpoConfig,
 } from './metroOptions';
 import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
 import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
@@ -26,6 +28,7 @@ import { CommandError } from '../../../utils/errors';
 import { stripExtension } from '../../../utils/url';
 import * as ProjectDevices from '../../project/devices';
 import { UrlCreator } from '../UrlCreator';
+import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
 import { getPlatformBundlers } from '../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
 
@@ -165,6 +168,12 @@ export abstract class ManifestMiddleware<
       hostname,
       engine: isHermesEnabled ? 'hermes' : undefined,
       baseUrl: getBaseUrlFromExpoConfig(projectConfig.exp),
+      asyncRoutes: getAsyncRoutesFromExpoConfig(
+        projectConfig.exp,
+        this.options.mode ?? 'development',
+        platform
+      ),
+      routerRoot: getRouterDirectoryModuleIdWithManifest(this.projectRoot, projectConfig.exp),
     });
 
     // Resolve all assets and set them on the manifest as URLs
@@ -218,13 +227,17 @@ export abstract class ManifestMiddleware<
     engine,
     baseUrl,
     isExporting,
+    asyncRoutes,
+    routerRoot,
   }: {
     platform: string;
     hostname?: string | null;
     mainModuleName: string;
     engine?: 'hermes';
     baseUrl?: string;
+    asyncRoutes: boolean;
     isExporting?: boolean;
+    routerRoot: string;
   }): string {
     const path = createBundleUrlPath({
       mode: this.options.mode ?? 'development',
@@ -235,6 +248,8 @@ export abstract class ManifestMiddleware<
       engine,
       baseUrl,
       isExporting: !!isExporting,
+      asyncRoutes,
+      routerRoot,
     });
 
     return (
@@ -310,7 +325,7 @@ export abstract class ManifestMiddleware<
       platform,
     });
 
-    return createBundleUrlPath({
+    return createBundleUrlPathFromExpoConfig(this.projectRoot, this.initialProjectConfig.exp, {
       platform,
       mainModuleName,
       minify: this.options.minify,
@@ -318,7 +333,6 @@ export abstract class ManifestMiddleware<
       mode: this.options.mode ?? 'development',
       // Hermes doesn't support more modern JS features than most, if not all, modern browser.
       engine: 'hermes',
-      baseUrl: getBaseUrlFromExpoConfig(this.initialProjectConfig.exp),
       isExporting: false,
     });
   }

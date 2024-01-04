@@ -4,7 +4,7 @@ import { URL } from 'url';
 
 import { METRO_INSPECTOR_RESPONSE_FIXTURE } from './fixtures/metroInspectorResponse';
 import * as JsInspector from '../JsInspector';
-import createJsInspectorMiddleware from '../createJsInspectorMiddleware';
+import { createJsInspectorMiddleware } from '../createJsInspectorMiddleware';
 
 jest.mock('../JsInspector');
 

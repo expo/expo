@@ -8,7 +8,7 @@ description: Learn about the current build server infrastructure when using EAS.
 import { Collapsible } from '~/ui/components/Collapsible';
 import { HardwareList, BuildResourceList } from '~/ui/components/utils/infrastructure';
 
-> This document was last updated on **November 8, 2023**.
+> This document was last updated on **December 15, 2023**.
 
 ## Builder IP addresses
 
@@ -69,11 +69,12 @@ Android builders run on virtual machines in an isolated environment. Every build
 - Docker image: `ubuntu:jammy-20220531`
 - NDK 21.4.7075529
 - Node.js 18.18.0
-- Bun 1.0.2
-- Yarn 1.22.17
+- Bun 1.0.14
+- Yarn 1.22.19
 - pnpm 8.9.2
-- npm 8.19.2
+- npm 9.8.1
 - Java 17
+- node-gyp 10.0.1
 
 </Collapsible>
 
@@ -83,12 +84,13 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 - Docker image: `ubuntu:jammy-20220531`
 - NDK 21.4.7075529
-- Node.js 16.18.1
-- Bun 1.0.2
-- Yarn 1.22.17
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
 - pnpm 8.7.5
-- npm 8.19.2
+- npm 9.8.1
 - Java 11
+- node-gyp 10.0.1
 
 </Collapsible>
 
@@ -98,12 +100,13 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 - Docker image: `ubuntu:jammy-20220531`
 - NDK 21.4.7075529
-- Node.js 16.18.1
-- Bun 1.0.2
-- Yarn 1.22.17
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
 - pnpm 7.0.0
-- npm 8.19.2
+- npm 9.8.1
 - Java 8
+- node-gyp 10.0.1
 
 </Collapsible>
 
@@ -113,12 +116,13 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 - Docker image: `ubuntu:focal-20210921`
 - NDK 21.4.7075529
-- Node.js 16.18.1
-- Bun 1.0.2
-- Yarn 1.22.17
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
 - pnpm 7.0.0
-- npm 8.19.2
+- npm 9.8.1
 - Java 11
+- node-gyp 10.0.1
 
 </Collapsible>
 
@@ -128,42 +132,45 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 - Docker image: `ubuntu:focal-20210921`
 - NDK 21.4.7075529
-- Node.js 16.18.1
-- Bun 1.0.2
-- Yarn 1.22.17
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
 - pnpm 7.0.0
-- npm 8.19.2
+- npm 9.8.1
 - Java 8
+- node-gyp 10.0.1
 
 </Collapsible>
 
-#### `ubuntu-18.04-jdk-11-ndk-r19c`
+#### `ubuntu-20.04-jdk-11-ndk-r19c`
 
 <Collapsible summary="Details">
 
-- Docker image: `ubuntu:bionic-20210930`
+- Docker image: `ubuntu:focal-20210921`
 - NDK 19.2.5345600
-- Node.js 16.18.1
-- Bun 1.0.2
-- Yarn 1.22.17
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
 - pnpm 7.0.0
-- npm 8.19.2
+- npm 9.8.1
 - Java 11
+- node-gyp 10.0.1
 
 </Collapsible>
 
-#### `ubuntu-18.04-jdk-8-ndk-r19c`
+#### `ubuntu-20.04-jdk-8-ndk-r19c`
 
 <Collapsible summary="Details">
 
-- Docker image: `ubuntu:bionic-20210930`
+- Docker image: `ubuntu:focal-20210921`
 - NDK 19.2.5345600
-- Node.js 16.18.1
-- Bun 1.0.2
-- Yarn 1.22.17
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
 - pnpm 7.0.0
-- npm 8.19.2
+- npm 9.8.1
 - Java 8
+- node-gyp 10.0.1
 
 </Collapsible>
 
@@ -199,20 +206,39 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
 
 ### iOS server images
 
-#### `macos-ventura-13.6-xcode-15.0` (`latest`)
+#### `macos-ventura-13.6-xcode-15.1` (`latest`)
+
+<Collapsible summary="Details">
+
+- macOS Ventura 13.6
+- Xcode 15.1 (15C65)
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
+- pnpm 8.12.1
+- npm 9.8.1
+- fastlane 2.217.0
+- CocoaPods 1.14.3
+- Ruby 2.7
+- node-gyp 10.0.1
+
+</Collapsible>
+
+#### `macos-ventura-13.6-xcode-15.0`
 
 <Collapsible summary="Details">
 
 - macOS Ventura 13.6
 - Xcode 15.0 (15A240d)
 - Node.js 18.18.0
-- Bun 1.0.2
-- Yarn 1.22.17
+- Bun 1.0.14
+- Yarn 1.22.19
 - pnpm 8.7.6
-- npm 8.1.2
+- npm 9.8.1
 - fastlane 2.216.0
 - CocoaPods 1.13.0
 - Ruby 2.7
+- node-gyp 10.0.1
 
 </Collapsible>
 
@@ -222,14 +248,15 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
 
 - macOS Ventura 13.4
 - Xcode 14.3.1 (14E300c)
-- Node.js 16.18.1
-- Bun 1.0.2
-- Yarn 1.22.17
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
 - pnpm 8.6.5
-- npm 8.1.2
+- npm 9.8.1
 - fastlane 2.213.0
 - CocoaPods 1.12.1
 - Ruby 2.7
+- node-gyp 10.0.1
 
 </Collapsible>
 
@@ -239,14 +266,15 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
 
 - macOS Ventura 13.3
 - Xcode 14.3 (14E222b)
-- Node.js 16.18.1
-- Bun 1.0.2
-- Yarn 1.22.17
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
 - pnpm 8.2.0
-- npm 8.1.2
+- npm 9.8.1
 - fastlane 2.212.2
 - CocoaPods 1.12.0
 - Ruby 2.7
+- node-gyp 10.0.1
 
 </Collapsible>
 
@@ -256,14 +284,15 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
 
 - macOS Monterey 12.6
 - Xcode 14.2 (14C18)
-- Node.js 16.18.1
-- Bun 1.0.2
-- Yarn 1.22.17
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
 - pnpm 7.27.0
-- npm 8.19.2
+- npm 9.8.1
 - fastlane 2.211.0
 - CocoaPods 1.11.3
 - Ruby 2.7
+- node-gyp 10.0.1
 
 </Collapsible>
 
@@ -273,14 +302,15 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
 
 - macOS Monterey 12.6
 - Xcode 14.1 (14B47b)
-- Node.js 16.18.1
-- Bun 1.0.2
-- Yarn 1.22.17
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
 - pnpm 7.15.0
-- npm 8.19.2
+- npm 9.8.1
 - fastlane 2.210.1
 - CocoaPods 1.11.3
 - Ruby 2.7
+- node-gyp 10.0.1
 
 </Collapsible>
 
@@ -290,14 +320,15 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
 
 - macOS Monterey 12.6
 - Xcode 14.0 (14A309)
-- Node.js 16.18.1
-- Bun 1.0.2
-- Yarn 1.22.17
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
 - pnpm 7.11.0
-- npm 8.19.2
+- npm 9.8.1
 - fastlane 2.210.0
 - CocoaPods 1.11.3
 - Ruby 2.7
+- node-gyp 10.0.1
 
 </Collapsible>
 
@@ -307,14 +338,15 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
 
 - macOS Monterey 12.4
 - Xcode 13.4 (13F17a)
-- Node.js 16.18.1
-- Bun 1.0.2
-- Yarn 1.22.17
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
 - pnpm 7.0.0
-- npm 8.19.2
+- npm 9.8.1
 - fastlane 2.205.2
 - CocoaPods 1.11.3
 - Ruby 2.7
+- node-gyp 10.0.1
 
 </Collapsible>
 
@@ -324,14 +356,15 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
 
 - macOS Monterey 12.3.1
 - Xcode 13.3.1 (13E500a)
-- Node.js 16.18.1
-- Bun 1.0.2
-- Yarn 1.22.17
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
 - pnpm 7.0.0
-- npm 8.19.2
+- npm 9.8.1
 - fastlane 2.205.2
 - CocoaPods 1.11.3
 - Ruby 2.7
+- node-gyp 10.0.1
 
 </Collapsible>
 
@@ -341,13 +374,14 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
 
 - macOS Monterey 12.1
 - Xcode 13.2.1 (13C100)
-- Node.js 16.18.1
-- Bun 1.0.2
-- Yarn 1.22.17
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
 - pnpm 7.0.0
-- npm 8.19.2
+- npm 9.8.1
 - fastlane 2.201.0
 - CocoaPods 1.11.2
 - Ruby 2.7
+- node-gyp 10.0.1
 
 </Collapsible>

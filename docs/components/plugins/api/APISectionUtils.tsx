@@ -108,14 +108,12 @@ export const mdComponentsNoValidation: MDComponents = {
 };
 
 const nonLinkableTypes = [
-  'AsyncIterableIterator',
   'ColorValue',
   'Component',
   'ComponentClass',
   'PureComponent',
   'E',
   'EventSubscription',
-  'IterableIterator',
   'Listener',
   'NativeSyntheticEvent',
   'ParsedQs',
@@ -154,6 +152,8 @@ const replaceableTypes: Partial<Record<string, string>> = {
 };
 
 const hardcodedTypeLinks: Record<string, string> = {
+  AsyncIterableIterator:
+    'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator',
   AVPlaybackSource: '/versions/latest/sdk/av/#avplaybacksource',
   AVPlaybackStatus: '/versions/latest/sdk/av/#avplaybackstatus',
   AVPlaybackStatusToSet: '/versions/latest/sdk/av/#avplaybackstatustoset',
@@ -166,6 +166,8 @@ const hardcodedTypeLinks: Record<string, string> = {
     'https://github.com/expo/expo/blob/main/packages/%40expo/config-types/src/ExpoConfig.ts',
   File: 'https://developer.mozilla.org/en-US/docs/Web/API/File',
   FileList: 'https://developer.mozilla.org/en-US/docs/Web/API/FileList',
+  IterableIterator:
+    'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator',
   Manifest: '/versions/latest/sdk/constants/#manifest',
   MediaTrackSettings: 'https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings',
   MessageEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent',
@@ -175,6 +177,7 @@ const hardcodedTypeLinks: Record<string, string> = {
   Promise:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
   ReactNode: 'https://reactnative.dev/docs/react-node',
+  ShareOptions: 'https://reactnative.dev/docs/share#share',
   SyntheticEvent: 'https://react.dev/reference/react-dom/components/common#react-event-object',
   View: 'https://reactnative.dev/docs/view',
   ViewProps: 'https://reactnative.dev/docs/view#props',
@@ -432,15 +435,21 @@ function createInheritPermalink(baseNestingLevel: number) {
 export const BoxSectionHeader = ({
   text,
   exposeInSidebar,
+  className,
   baseNestingLevel = DEFAULT_BASE_NESTING_LEVEL,
 }: {
   text: string;
   exposeInSidebar?: boolean;
+  className?: string;
   baseNestingLevel?: number;
 }) => {
   const TextWrapper = exposeInSidebar ? createInheritPermalink(baseNestingLevel) : Fragment;
   return (
-    <CALLOUT theme="secondary" weight="medium" css={STYLES_NESTED_SECTION_HEADER}>
+    <CALLOUT
+      theme="secondary"
+      weight="medium"
+      css={STYLES_NESTED_SECTION_HEADER}
+      className={className}>
       <TextWrapper>{text}</TextWrapper>
     </CALLOUT>
   );
@@ -459,7 +468,8 @@ export const listParams = (parameters: MethodParamData[]) =>
 export const renderDefaultValue = (defaultValue?: string) =>
   defaultValue && defaultValue !== '...' ? (
     <div css={defaultValueContainerStyle}>
-      <DEMI>Default:</DEMI> <CODE>{defaultValue}</CODE>
+      <DEMI className="!text-inherit">Default:</DEMI>{' '}
+      <CODE className="!text-inherit">{defaultValue}</CODE>
     </div>
   ) : undefined;
 
@@ -574,16 +584,11 @@ const getParamTags = (shortText?: string) => {
   return Array.from(shortText.matchAll(PARAM_TAGS_REGEX), match => match[0]);
 };
 
-export const getCommentContent = (content: CommentContentData[], ignoreCodeBlock = false) => {
-  const commentText = content
+export const getCommentContent = (content: CommentContentData[]) => {
+  return content
     .map(entry => entry.text)
     .join('')
     .trim();
-
-  if (ignoreCodeBlock) {
-    return commentText.replace(/```.+\n/, '').replace(/\n```/, '');
-  }
-  return commentText;
 };
 
 export const CommentTextBlock = ({
@@ -597,7 +602,7 @@ export const CommentTextBlock = ({
   const content = comment && comment.summary ? getCommentContent(comment.summary) : undefined;
 
   if (emptyCommentFallback && (!comment || !content || !content.length)) {
-    return <>{emptyCommentFallback}</>;
+    return <span className="text-tertiary">{emptyCommentFallback}</span>;
   }
 
   const paramTags = content ? getParamTags(content) : undefined;
@@ -728,12 +733,10 @@ export const STYLES_APIBOX_WRAPPER = css({
   },
 });
 
-export const STYLE_APIBOX_NO_SPACING = css({ marginBottom: -spacing[5] });
-
 export const STYLES_NESTED_SECTION_HEADER = css({
   display: 'flex',
-  borderTop: `1px solid ${theme.border.default}`,
-  borderBottom: `1px solid ${theme.border.default}`,
+  borderTop: `1px solid ${theme.border.secondary}`,
+  borderBottom: `1px solid ${theme.border.secondary}`,
   margin: `${spacing[4]}px -${spacing[5]}px ${spacing[4]}px`,
   padding: `${spacing[2.5]}px ${spacing[5]}px`,
   backgroundColor: theme.background.subtle,

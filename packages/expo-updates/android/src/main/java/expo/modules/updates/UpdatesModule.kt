@@ -1,3 +1,5 @@
+@file:Suppress("UnusedImport") // this needs to stay for versioning to work
+
 package expo.modules.updates
 
 import android.content.Context
@@ -17,9 +19,6 @@ import expo.modules.updates.statemachine.UpdatesStateContext
 import java.util.Date
 
 // these unused imports must stay because of versioning
-/* ktlint-disable no-unused-imports */
-
-/* ktlint-enable no-unused-imports */
 
 /**
  * Exported module which provides to the JS runtime information about the currently running update
@@ -49,12 +48,11 @@ class UpdatesModule : Module() {
         constants["isEmergencyLaunch"] = constantsForModule.isEmergencyLaunch
         constants["isEmbeddedLaunch"] = isEmbeddedLaunch
         constants["isEnabled"] = constantsForModule.isEnabled
-        constants["releaseChannel"] = constantsForModule.releaseChannel
         constants["isUsingEmbeddedAssets"] = constantsForModule.isUsingEmbeddedAssets
         constants["runtimeVersion"] = constantsForModule.runtimeVersion ?: ""
         constants["checkAutomatically"] = constantsForModule.checkOnLaunch.toJSString()
         constants["channel"] = constantsForModule.requestHeaders["expo-channel-name"] ?: ""
-        constants["nativeDebug"] = BuildConfig.EX_UPDATES_NATIVE_DEBUG
+        constants["shouldDeferToNativeForAPIMethodAvailabilityInDevelopment"] = constantsForModule.shouldDeferToNativeForAPIMethodAvailabilityInDevelopment || BuildConfig.EX_UPDATES_NATIVE_DEBUG
 
         if (launchedUpdate != null) {
           constants["updateId"] = launchedUpdate.id.toString()
@@ -74,14 +72,6 @@ class UpdatesModule : Module() {
       } catch (e: Exception) {
         // do nothing; this is expected in a development client
         constants["isEnabled"] = false
-
-        // In a development client, we normally don't have access to the updates configuration, but
-        // we should attempt to see if the runtime/sdk versions are defined in AndroidManifest.xml
-        // and warn the developer if not. This does not take into account any extra configuration
-        // provided at runtime in MainApplication.java, because we don't have access to that in a
-        // debug build.
-        val isMissingRuntimeVersion = UpdatesConfiguration.isMissingRuntimeVersion(context, null)
-        constants["isMissingRuntimeVersion"] = isMissingRuntimeVersion
       }
       constants
     }
@@ -220,7 +210,8 @@ class UpdatesModule : Module() {
     AsyncFunction("setExtraParamAsync") { key: String, value: String?, promise: Promise ->
       logger.debug("Called setExtraParamAsync with key = $key, value = $value")
       UpdatesController.instance.setExtraParam(
-        key, value,
+        key,
+        value,
         object : IUpdatesController.ModuleCallback<Unit> {
           override fun onSuccess(result: Unit) {
             promise.resolve(null)

@@ -1,7 +1,6 @@
 import { getConfig } from '@expo/config';
 import { vol } from 'memfs';
 
-import { asMock } from '../../../../__tests__/asMock';
 import * as Log from '../../../../log';
 import * as ProjectDevices from '../../../project/devices';
 import { getPlatformBundlers } from '../../platformBundlers';
@@ -64,7 +63,7 @@ describe('checkBrowserRequestAsync', () => {
     jest.fn(({ scheme, hostname }) => `${scheme}://${hostname ?? 'localhost'}:8080`);
 
   it('handles browser requests when the web bundler is "metro" and no platform is specified', async () => {
-    asMock(getPlatformBundlers).mockReturnValueOnce({
+    jest.mocked(getPlatformBundlers).mockReturnValueOnce({
       web: 'metro',
       ios: 'metro',
       android: 'metro',
@@ -93,7 +92,7 @@ describe('checkBrowserRequestAsync', () => {
         // NOTE(EvanBacon): Browsers won't pass the `expo-platform` header so we need to
         // provide the `platform=web` query parameter in order for the multi-platform dev server
         // to return the correct bundle.
-        '/index.bundle?platform=web&dev=true&hot=false&transform.engine=hermes',
+        '/index.bundle?platform=web&dev=true&hot=false&transform.engine=hermes&transform.routerRoot=app',
       ],
     });
     expect(res.setHeader).toBeCalledWith('Content-Type', 'text/html');
@@ -101,7 +100,7 @@ describe('checkBrowserRequestAsync', () => {
   });
 
   it('skips handling browser requests when the web bundler is "webpack"', async () => {
-    asMock(getPlatformBundlers).mockReturnValueOnce({
+    jest.mocked(getPlatformBundlers).mockReturnValueOnce({
       web: 'webpack',
       ios: 'metro',
       android: 'metro',
@@ -202,7 +201,7 @@ describe('_resolveProjectSettingsAsync', () => {
       mode: 'development',
     });
 
-    asMock(getConfig).mockClear();
+    jest.mocked(getConfig).mockClear();
 
     middleware._getBundleUrl = jest.fn(() => 'http://fake.mock/index.bundle');
 
@@ -233,7 +232,7 @@ describe('_resolveProjectSettingsAsync', () => {
       mode: 'production',
     });
 
-    asMock(getConfig).mockClear();
+    jest.mocked(getConfig).mockClear();
 
     middleware._getBundleUrl = jest.fn(() => 'http://fake.mock/index.bundle');
 

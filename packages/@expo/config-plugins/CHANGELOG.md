@@ -6,6 +6,29 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Remove classic updates SDK version and release channel. ([#26061](https://github.com/expo/expo/pull/26061), [#26065](https://github.com/expo/expo/pull/26065) by [@wschurman](https://github.com/wschurman))
+
+## 7.8.2 - 2023-12-19
+
+### 🐛 Bug fixes
+
+- Add missing `slugify` dependency. ([#26019](https://github.com/expo/expo/pull/26019) by [@byCedric](https://github.com/byCedric))
+
+## 7.8.1 — 2023-12-15
+
+### 🐛 Bug fixes
+
+- Fixed bug on mergeContents when tags have the same prefix. ([#25972](https://github.com/expo/expo/pull/25972) by [@alfonsocj](https://github.com/alfonsocj))
+- Separate out runtime version setting method for eas-cli. ([#25874](https://github.com/expo/expo/pull/25874) by [@wschurman](https://github.com/wschurman))
+
+## 7.8.0 — 2023-12-12
+
+### 🎉 New features
+
 - Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes

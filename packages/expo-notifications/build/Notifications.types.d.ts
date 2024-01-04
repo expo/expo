@@ -168,9 +168,7 @@ export interface YearlyNotificationTrigger {
  */
 export interface FirebaseRemoteMessage {
     collapseKey: string | null;
-    data: {
-        [key: string]: string;
-    };
+    data: Record<string, string>;
     from: string | null;
     messageId: string | null;
     messageType: string | null;

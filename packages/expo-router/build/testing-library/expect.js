@@ -9,6 +9,9 @@ expect.extend({
     toHavePathname(screen, expected) {
         return matchers_1.default.toEqual(screen.getPathname(), expected);
     },
+    toHavePathnameWithParams(screen, expected) {
+        return matchers_1.default.toEqual(screen.getPathnameWithParams(), expected);
+    },
     toHaveSegments(screen, expected) {
         return matchers_1.default.toEqual(screen.getSegments(), expected);
     },

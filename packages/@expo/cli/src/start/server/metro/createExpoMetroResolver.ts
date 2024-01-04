@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import fs from 'fs';
 import { Resolution, ResolutionContext } from 'metro-resolver';
 import path from 'path';
 
@@ -14,6 +15,22 @@ import { formatFileCandidates } from './formatFileCandidates';
 class FailedToResolvePathError extends Error {}
 
 class ShimModuleError extends Error {}
+
+const realpathFS =
+  process.platform !== 'win32' && fs.realpathSync && typeof fs.realpathSync.native === 'function'
+    ? fs.realpathSync.native
+    : fs.realpathSync;
+
+function realpathSync(x: string) {
+  try {
+    return realpathFS(x);
+  } catch (realpathErr: any) {
+    if (realpathErr.code !== 'ENOENT') {
+      throw realpathErr;
+    }
+  }
+  return x;
+}
 
 export function createFastResolver({
   preserveSymlinks,
@@ -107,11 +124,17 @@ export function createFastResolver({
         blockList,
         enablePackageExports: context.unstable_enablePackageExports,
         basedir: path.dirname(context.originModulePath),
-        paths: context.nodeModulesPaths as string[],
+        paths: context.nodeModulesPaths.length ? (context.nodeModulesPaths as string[]) : undefined,
         extensions,
         conditions,
-        // @ts-ignore
-        realpathSync: context.unstable_getRealPath,
+        realpathSync(file: string): string {
+          // @ts-expect-error: Missing on type.
+          const metroRealPath = context.unstable_getRealPath?.(file);
+          if (metroRealPath == null && preserveSymlinks) {
+            return realpathSync(file);
+          }
+          return metroRealPath ?? file;
+        },
         packageFilter(pkg) {
           // set the pkg.main to the first available field in context.mainFields
           for (const field of context.mainFields) {
@@ -182,7 +205,6 @@ export function createFastResolver({
           };
         }
 
-        // TODO: Add improved error handling.
         throw new FailedToResolvePathError(
           'The module could not be resolved because no file or module matched the pattern:\n' +
             `  ${formatFileCandidates(
@@ -192,7 +214,7 @@ export function createFastResolver({
                 candidateExts: extensions,
               },
               true
-            )}\n\n`
+            )}\n\nFrom:\n  ${context.originModulePath}\n`
         );
       }
       throw error;

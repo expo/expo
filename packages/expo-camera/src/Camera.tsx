@@ -298,34 +298,34 @@ export default class Camera extends React.Component<CameraProps> {
   /**
    * Stops recording if any is in progress.
    */
-  stopRecording() {
+  async stopRecording(): Promise<void> {
     if (!CameraManager.stopRecording) {
       throw new UnavailabilityError('Camera', 'stopRecording');
     }
 
-    CameraManager.stopRecording(this._cameraHandle);
+    return await CameraManager.stopRecording(this._cameraHandle);
   }
 
   /**
    * Pauses the camera preview. It is not recommended to use `takePictureAsync` when preview is paused.
    */
-  pausePreview() {
+  async pausePreview(): Promise<void> {
     if (!CameraManager.pausePreview) {
       throw new UnavailabilityError('Camera', 'pausePreview');
     }
 
-    CameraManager.pausePreview(this._cameraHandle);
+    return await CameraManager.pausePreview(this._cameraHandle);
   }
 
   /**
    * Resumes the camera preview.
    */
-  resumePreview() {
+  async resumePreview(): Promise<void> {
     if (!CameraManager.resumePreview) {
       throw new UnavailabilityError('Camera', 'resumePreview');
     }
 
-    CameraManager.resumePreview(this._cameraHandle);
+    return await CameraManager.resumePreview(this._cameraHandle);
   }
 
   _onCameraReady = () => {

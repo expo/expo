@@ -21,10 +21,16 @@ public class VideoThumbnailsModule: Module {
     let generator = AVAssetImageGenerator.init(asset: asset)
 
     generator.appliesPreferredTrackTransform = true
-    generator.requestedTimeToleranceBefore = CMTime.zero
     generator.requestedTimeToleranceAfter = CMTime.zero
 
     let time = CMTimeMake(value: options.time, timescale: 1000)
+
+    // `requestedTimeToleranceBefore` can only be set if `time` is less
+    // than the video duration, otherwise it will fail to generate an image.
+    if time < asset.duration {
+      generator.requestedTimeToleranceBefore = .zero
+    }
+
     let imgRef = try generator.copyCGImage(at: time, actualTime: nil)
     let thumbnail = UIImage.init(cgImage: imgRef)
     let savedImageUrl = try saveImage(image: thumbnail, quality: options.quality)

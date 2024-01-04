@@ -8,7 +8,7 @@ typealias ResultReceiverBody = (resultCode: Int, resultData: Bundle?) -> Unit
 
 internal fun createDefaultResultReceiver(
   handler: Handler?,
-  body: ResultReceiverBody,
+  body: ResultReceiverBody
 ): ResultReceiver {
   return object : ResultReceiver(handler) {
     override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {

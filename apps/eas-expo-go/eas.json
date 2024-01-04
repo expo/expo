@@ -7,12 +7,11 @@
   },
   "build": {
     "base": {
-      "node": "18.18.0",
       "credentialsSource": "local",
       "android": {
         "image": "ubuntu-22.04-jdk-17-ndk-r21e",
         "cache": {
-          "customPaths": ["../../android/prebuiltHermes"]
+          "customPaths": ["../expo-go/android/prebuiltHermes"]
         },
         "resourceClass": "large",
         "env": {
@@ -24,10 +23,12 @@
       },
       "ios": {
         "cache": {
-          "key": "sdk50-0.73.0-rc.5",
-          "customPaths": ["../../ios/Pods"]
+          "key": "sdk50-0.73.1",
+          "customPaths": ["../expo-go/ios/Pods"]
         },
-        "resourceClass": "m-medium",
+        "image": "macos-ventura-13.6-xcode-15.0",
+        "cocoapods": "1.14.2",
+        "resourceClass": "medium",
         "env": {
           "EAS_BUILD_PLATFORM": "ios",
           "EXPO_ROOT_DIR": "/Users/expo/workingdir/build",
@@ -45,7 +46,7 @@
         "withoutCredentials": true
       },
       "ios": {
-        "scheme": "Expo Go \\(versioned\\)",
+        "scheme": "Expo Go",
         "simulator": true,
         "buildConfiguration": "Release"
       }
@@ -66,7 +67,7 @@
         "withoutCredentials": true
       },
       "ios": {
-        "scheme": "Expo Go \\(unversioned\\)",
+        "scheme": "Expo Go",
         "simulator": true,
         "buildConfiguration": "Release"
       }
@@ -86,7 +87,7 @@
       },
       "ios": {
         "autoIncrement": "buildNumber",
-        "resourceClass": "m-large",
+        "resourceClass": "large",
         "cache": {
           "disabled": true
         },
@@ -107,7 +108,7 @@
         "gradleCommand": ":app:assembleVersionedRelease"
       },
       "ios": {
-        "resourceClass": "m-large",
+        "resourceClass": "large",
         "autoIncrement": "buildNumber",
         "cache": {
           "disabled": true

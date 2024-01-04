@@ -28,7 +28,7 @@ export const createPermalinkedComponent = (
   }
 ) => {
   const { baseNestingLevel, sidebarType = HeadingType.Text } = options || {};
-  return ({ children, level, id, ...props }: PermalinkedComponentProps) => {
+  return ({ children, level, id, className, ...props }: PermalinkedComponentProps) => {
     const cleanChildren = React.Children.map(children, child => {
       if (React.isValidElement(child) && child?.props?.href) {
         isDev &&
@@ -123,7 +123,6 @@ const linkStyled = css({
 const codeStyle = css({
   borderColor: theme.border.secondary,
   borderRadius: borderRadius.sm,
-  verticalAlign: 'initial',
   wordBreak: 'unset',
 });
 
@@ -142,7 +141,7 @@ export const kbdStyle = css({
 });
 
 const { h1, h2, h3, h4, h5 } = typography.headers.default;
-const codeInHeaderStyle = { '& code': { fontSize: '95%' } };
+const codeInHeaderStyle = { '& code': { fontSize: '90%' } };
 
 const h1Style = {
   ...h1,

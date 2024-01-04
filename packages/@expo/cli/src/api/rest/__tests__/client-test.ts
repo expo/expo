@@ -3,7 +3,6 @@ import nock from 'nock';
 import { FetchError } from 'node-fetch';
 import { URLSearchParams } from 'url';
 
-import { asMock } from '../../../__tests__/asMock';
 import { getExpoApiBaseUrl } from '../../endpoint';
 import UserSettings from '../../user/UserSettings';
 import { ApiV2Error, fetchAsync } from '../client';
@@ -113,7 +112,7 @@ it('makes a request using an absolute URL', async () => {
 });
 
 it('makes an authenticated request with access token', async () => {
-  asMock(UserSettings.getAccessToken).mockClear().mockReturnValue('my-access-token');
+  jest.mocked(UserSettings.getAccessToken).mockClear().mockReturnValue('my-access-token');
 
   nock(getExpoApiBaseUrl())
     .matchHeader('authorization', (val) => val.length === 1 && val[0] === 'Bearer my-access-token')
@@ -126,13 +125,13 @@ it('makes an authenticated request with access token', async () => {
 });
 
 it('makes an authenticated request with session secret', async () => {
-  asMock(UserSettings.getSession).mockClear().mockReturnValue({
+  jest.mocked(UserSettings.getSession).mockClear().mockReturnValue({
     sessionSecret: 'my-secret-token',
     userId: '',
     username: '',
     currentConnection: 'Username-Password-Authentication',
   });
-  asMock(UserSettings.getAccessToken).mockReturnValue(null);
+  jest.mocked(UserSettings.getAccessToken).mockReturnValue(null);
 
   nock(getExpoApiBaseUrl())
     .matchHeader('expo-session', (val) => val.length === 1 && val[0] === 'my-secret-token')
@@ -145,8 +144,8 @@ it('makes an authenticated request with session secret', async () => {
 });
 
 it('only uses access token when both authentication methods are available', async () => {
-  asMock(UserSettings.getAccessToken).mockClear().mockReturnValue('my-access-token');
-  asMock(UserSettings.getSession).mockClear().mockReturnValue({
+  jest.mocked(UserSettings.getAccessToken).mockClear().mockReturnValue('my-access-token');
+  jest.mocked(UserSettings.getSession).mockClear().mockReturnValue({
     sessionSecret: 'my-secret-token',
     userId: '',
     username: '',

@@ -10,7 +10,6 @@ excluded:
   - apps
   - bin
   - docs
-  - exponent-view-template
   - fastlane
   - guides
   - home
@@ -53,7 +52,6 @@ opt_in_rules:
   - identical_operands
   - implicitly_unwrapped_optional
   - indentation_width
-  - legacy_objc_type
   - literal_expression_end_indentation
   - local_doc_comment
   - lower_acl_than_parent
@@ -126,8 +124,8 @@ control_statement: warning
 
 # Limits the complexity of function bodies.
 cyclomatic_complexity:
-  warning: 12
-  error: 20
+  warning: 20
+  error: 28
   ignores_case_statements: true
 
 # Directly return the expression instead of assigning it to a variable first.
@@ -182,8 +180,8 @@ force_unwrapping: error
 
 # Functions bodies should not span too many lines.
 function_body_length:
-  warning: 250
-  error: 300
+  warning: 300
+  error: 350
 
 # Comparing two identical operands is likely a mistake.
 identical_operands: error

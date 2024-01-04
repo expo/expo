@@ -8,10 +8,23 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 16.0.2 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.1 — 2023-12-13
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.0 — 2023-12-12
+
+### 🐛 Bug fixes
+
 - On `Android`, handle using files from `SAF` correctly. ([#25389](https://github.com/expo/expo/pull/25389) by [@alanjhughes](https://github.com/alanjhughes))
 - Removed legacy `bundledAssets` constant that was used only in standalone apps. ([#25484](https://github.com/expo/expo/pull/25484) by [@tsapeta](https://github.com/tsapeta))
-
-### 💡 Others
+- [iOS] Added missing check for directory permissions in `deleteAsync` method. ([#25704](https://github.com/expo/expo/pull/25704) by [@tsapeta](https://github.com/tsapeta))
 
 ## 15.4.5 — 2023-11-20
 

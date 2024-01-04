@@ -5,9 +5,7 @@ import {
   StackNavigationProp,
   StackScreenProps,
 } from '@react-navigation/stack';
-import { ColorTheme } from 'constants/Colors';
 import { Spacer } from 'expo-dev-client-components';
-import defaultNavigationOptions from 'navigation/defaultNavigationOptions';
 import * as React from 'react';
 
 import AudioDiagnosticsScreen from './AudioDiagnosticsScreen';
@@ -15,7 +13,9 @@ import { DiagnosticButton } from './DiagnosticsButton';
 import GeofencingScreen from './GeofencingDiagnosticsScreen';
 import LocationDiagnosticsScreen from './LocationDiagnosticsScreen';
 import ScrollView from '../../components/NavigationScrollView';
+import { ColorTheme } from '../../constants/Colors';
 import { DiagnosticsStackRoutes } from '../../navigation/Navigation.types';
+import defaultNavigationOptions from '../../navigation/defaultNavigationOptions';
 import Environment from '../../utils/Environment';
 
 function useThemeName() {

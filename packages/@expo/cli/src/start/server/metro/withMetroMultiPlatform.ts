@@ -22,7 +22,6 @@ import {
   setupShimFiles,
 } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
-import { getAppRouterRelativeEntryPath } from './router';
 import {
   withMetroErrorReportingResolver,
   withMetroMutatedResolverContext,
@@ -123,7 +122,7 @@ export function withExtendedResolver(
   const defaultResolver = metroResolver.resolve;
   const resolver = isFastResolverEnabled
     ? createFastResolver({
-        preserveSymlinks: config.resolver?.unstable_enableSymlinks ?? false,
+        preserveSymlinks: config.resolver?.unstable_enableSymlinks ?? true,
         blockList: Array.isArray(config.resolver?.blockList)
           ? config.resolver?.blockList
           : [config.resolver?.blockList],
@@ -429,7 +428,6 @@ export async function withMetroMultiPlatformAsync(
     platformBundlers,
     isTsconfigPathsEnabled,
     webOutput,
-    routerDirectory,
     isFastResolverEnabled,
     isExporting,
   }: {
@@ -437,7 +435,6 @@ export async function withMetroMultiPlatformAsync(
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
     webOutput?: 'single' | 'static' | 'server';
-    routerDirectory: string;
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
   }
@@ -446,8 +443,6 @@ export async function withMetroMultiPlatformAsync(
     // @ts-expect-error: read-only types
     config.projectRoot = projectRoot;
   }
-  // Auto pick app entry for router.
-  process.env.EXPO_ROUTER_APP_ROOT = getAppRouterRelativeEntryPath(projectRoot, routerDirectory);
 
   // Required for @expo/metro-runtime to format paths in the web LogBox.
   process.env.EXPO_PUBLIC_PROJECT_ROOT = process.env.EXPO_PUBLIC_PROJECT_ROOT ?? projectRoot;
@@ -467,12 +462,10 @@ export async function withMetroMultiPlatformAsync(
     config.watchFolders.push(path.join(require.resolve('metro-runtime/package.json'), '../..'));
   }
 
-  // Ensure the cache is invalidated if these values change.
-  // @ts-expect-error
-  config.transformer._expoRouterRootDirectory = process.env.EXPO_ROUTER_APP_ROOT;
   // @ts-expect-error
   config.transformer._expoRouterWebRendering = webOutput;
-  // TODO: import mode
+  // @ts-expect-error: Invalidate the cache when the location of expo-router changes on-disk.
+  config.transformer._expoRouterPath = resolveFrom.silent(projectRoot, 'expo-router');
 
   if (platformBundlers.web === 'metro') {
     await new WebSupportProjectPrerequisite(projectRoot).assertAsync();

@@ -6,11 +6,23 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 3.1.0 — 2023-12-12
+
+### 🎉 New features
+
 - Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
+- Use `build` directory for native usage. ([#25655](https://github.com/expo/expo/pull/25655) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
+
+- Skip showing "Downloading..." overlay on web. ([#25832](https://github.com/expo/expo/pull/25832) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.0.4 — 2023-11-14
 

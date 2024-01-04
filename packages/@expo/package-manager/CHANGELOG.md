@@ -8,6 +8,18 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `PackageManager.versionAsync()` and `PackageManager.getConfigAsync()` returns empty string when silent mode is off. ([#26123](https://github.com/expo/expo/pull/26123) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+## 1.4.1 - 2023-12-19
+
+### 🐛 Bug fixes
+
+- Add missing `ora` dependency. ([#26023](https://github.com/expo/expo/pull/26023) by [@byCedric](https://github.com/byCedric))
+
+## 1.4.0 — 2023-12-12
+
 ### 💡 Others
 
 - Replace `@expo/babel-preset-cli` with `expo-module-scripts`. ([#25422](https://github.com/expo/expo/pull/25422) by [@byCedric](https://github.com/byCedric))

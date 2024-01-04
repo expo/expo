@@ -81,7 +81,7 @@ function fromImport({ ErrorBoundary, ...component }) {
             return { default: EmptyRoute_1.EmptyRoute };
         }
     }
-    return { default: component.default || EmptyRoute_1.EmptyRoute };
+    return { default: component.default };
 }
 function fromLoadedRoute(res) {
     if (!(res instanceof Promise)) {
@@ -97,37 +97,30 @@ function getQualifiedRouteComponent(value) {
     if (qualifiedStore.has(value)) {
         return qualifiedStore.get(value);
     }
-    let getLoadable;
+    let ScreenComponent;
     // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
     if (import_mode_1.default === 'lazy') {
-        const AsyncComponent = react_1.default.lazy(async () => {
+        ScreenComponent = react_1.default.lazy(async () => {
             const res = value.loadRoute();
             return fromLoadedRoute(res);
         });
-        getLoadable = (props, ref) => (<react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
-        <AsyncComponent {...{
-            ...props,
-            ref,
-            // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
-            // the intention is to make it possible to deduce shared routes.
-            segment: value.route,
-        }}/>
-      </react_1.default.Suspense>);
     }
     else {
         const res = value.loadRoute();
         const Component = fromImport(res).default;
-        const SyncComponent = react_1.default.forwardRef((props, ref) => {
+        ScreenComponent = react_1.default.forwardRef((props, ref) => {
             return <Component {...props} ref={ref}/>;
         });
-        getLoadable = (props, ref) => (<SyncComponent {...{
-            ...props,
-            ref,
-            // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
-            // the intention is to make it possible to deduce shared routes.
-            segment: value.route,
-        }}/>);
     }
+    const getLoadable = (props, ref) => (<react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
+      <ScreenComponent {...{
+        ...props,
+        ref,
+        // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
+        // the intention is to make it possible to deduce shared routes.
+        segment: value.route,
+    }}/>
+    </react_1.default.Suspense>);
     const QualifiedRoute = react_1.default.forwardRef(({ 
     // Remove these React Navigation props to
     // enforce usage of expo-router hooks (where the query params are correct).
