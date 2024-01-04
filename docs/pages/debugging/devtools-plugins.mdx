@@ -12,7 +12,9 @@ Dev tools plugins are available in your local development environment to help yo
 
 ## Add a dev tools plugin to a project
 
-Dev tools plugins are installed as packages in your project. A plugin will typically have a small amount of connecting code that you add to your app in order to enable two-way communication between your app and the plugin. This code will generally be invoked in your app's root component, especially if the plugin is inspecting a module that is available for the entire time your app is running. It is recommended that you wrap this code in a conditional that only runs in development mode, so that it is not included in production builds of your app:
+To add a dev tool plugin to your app, install it as a package and add a small snippet to connect the code to your app. This code is invoked from the app's root component to establish a two-way communication between your app and the plugin. Then, the plugin can inspect the available module for the entire time your app runs in development mode.
+
+It is recommended that you wrap this code in a conditional that only runs in development mode so that it is not included in the production build of your app:
 
 ```jsx
 if (__DEV__) {
