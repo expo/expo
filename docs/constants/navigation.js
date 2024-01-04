@@ -100,7 +100,7 @@ const home = [
         makePage('debugging/runtime-issues.mdx'),
         makePage('debugging/tools.mdx'),
         makePage('debugging/devtools-plugins.mdx'),
-        makePage('debugging/creating-devtools-plugins.mdx'),
+        makePage('debugging/create-devtools-plugins.mdx'),
       ],
       { expanded: false }
     ),
