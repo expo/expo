@@ -62,7 +62,7 @@ jobs:
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 🚨 Run Spotless lint check
-        working-directory: android
+        working-directory: apps/expo-go/android
         run: ./gradlew spotlessCheck || { echo '::error Spotless lint failed. Run `./gradlew spotlessApply` to automatically fix formatting.' && exit 1; }
       - name: 🎸 Run native Android unit tests
         timeout-minutes: 30
