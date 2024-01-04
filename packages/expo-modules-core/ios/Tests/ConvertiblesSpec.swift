@@ -381,5 +381,21 @@ class ConvertiblesSpec: ExpoSpec {
         })
       }
     }
+    
+    describe("Date") {
+      it("converts from `ISO 8601` String to Date") {
+        let date = try Date.convert(from: "2023-12-27T10:58:20.654Z", appContext: appContext)
+        let components = Calendar.current.dateComponents([.day, .month], from: date)
+        expect(components.month) == 12
+        expect(components.day) == 27
+      }
+      
+      it("converts from `Date.now()` to Date") {
+        let date = try Date.convert(from: 1703718341639, appContext: appContext)
+        let components = Calendar.current.dateComponents([.day, .month], from: date)
+        expect(components.month) == 12
+        expect(components.day) == 27
+      }
+    }
   }
 }

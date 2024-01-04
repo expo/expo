@@ -41,6 +41,7 @@ import java.io.File
 import java.net.URI
 import java.net.URL
 import java.nio.file.Path
+import java.time.LocalDate
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
@@ -302,7 +303,8 @@ object TypeConverterProviderImpl : TypeConverterProvider {
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
       return converters + mapOf(
         Path::class to PathTypeConverter(isOptional),
-        Color::class to ColorTypeConverter(isOptional)
+        Color::class to ColorTypeConverter(isOptional),
+        LocalDate::class to DateTypeConverter(isOptional)
       )
     }
 

@@ -95,3 +95,21 @@ extension CGRect: Convertible {
     throw Conversions.ConvertingException<CGRect>(value)
   }
 }
+
+extension Date: Convertible {
+  public static func convert(from value: Any?, appContext: AppContext) throws -> Date {
+    if let value = value as? String {
+      let formatter = ISO8601DateFormatter()
+      formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+      guard let date = formatter.date(from: value) else {
+        throw Conversions.ConvertingException<Date>(value)
+      }
+      return date
+    }
+    // For converting the value from `Date.now()`
+    if let value = value as? Int {
+      return Date(timeIntervalSince1970: Double(value) / 1000.0)
+    }
+    throw Conversions.ConvertingException<Date>(value)
+  }
+}
