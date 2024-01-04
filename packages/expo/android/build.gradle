@@ -152,8 +152,7 @@ android {
 }
 
 dependencies { dependencyHandler ->
-  //noinspection GradleDynamicVersion
-  implementation 'com.facebook.react:react-native:+'
+  implementation 'com.facebook.react:react-android'
 
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'androidx.test:core:1.5.0'
