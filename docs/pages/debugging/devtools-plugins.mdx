@@ -152,9 +152,7 @@ import { useReactQueryDevTools } from '@dev-plugins/react-query';
 const queryClient = new QueryClient({});
 
 export default function App() {
-  if (__DEV__) {
-    useReactQueryDevTools(queryClient);
-  }
+  useReactQueryDevTools(queryClient);
 
   return (
     <QueryClientProvider>
