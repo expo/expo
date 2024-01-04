@@ -41,7 +41,6 @@ class UpdatesUtilsTest : TestCase() {
   @Test
   fun testGetRuntimeVersion() {
     val baseConfig = UpdatesConfiguration(
-      expectsSignedManifest = true,
       scopeKey = "wat",
       updateUrl = mockk(),
       runtimeVersionRaw = "1.0",

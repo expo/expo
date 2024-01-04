@@ -18,7 +18,6 @@ class UpdatesConfigSpec : ExpoSpec {
           throw UpdatesConfigError.ExpoUpdatesConfigPlistError
         }
         let config = try! UpdatesConfig.config(fromDictionary: configNSDictionary)
-        expect(config.expectsSignedManifest) == true
         expect(config.scopeKey) == "blah"
         expect(config.updateUrl.absoluteString) == "http://example.com"
         expect(config.requestHeaders) == ["Hello": "World"]
@@ -39,7 +38,6 @@ class UpdatesConfigSpec : ExpoSpec {
           UpdatesConfig.EXUpdatesConfigEnabledKey: false,
           UpdatesConfig.EXUpdatesConfigScopeKeyKey: "overridden",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "overridden",
-          UpdatesConfig.EXUpdatesConfigExpectsSignedManifestKey: false,
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "http://google.com",
           UpdatesConfig.EXUpdatesConfigRequestHeadersKey: ["Foo": "Bar"],
         ]
@@ -51,7 +49,6 @@ class UpdatesConfigSpec : ExpoSpec {
         var dictionary: [String: Any] = configNSDictionary.merging(otherDictionary, uniquingKeysWith: { _, new in new })
 
         let config = try! UpdatesConfig.config(fromDictionary: dictionary)
-        expect(config.expectsSignedManifest) == false
         expect(config.scopeKey) == "overridden"
         expect(config.updateUrl.absoluteString) == "http://google.com"
         expect(config.requestHeaders) == ["Foo": "Bar"]
