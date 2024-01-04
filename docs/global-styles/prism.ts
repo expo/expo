@@ -14,7 +14,6 @@ export const globalPrism = css`
     position: relative;
     padding: 0.2em;
     border-radius: 0.3em;
-    color: ${theme.palette.red11};
     border: 1px solid ${theme.border.default};
     display: inline;
     white-space: normal;
