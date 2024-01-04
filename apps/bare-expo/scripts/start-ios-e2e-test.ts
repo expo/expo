@@ -22,8 +22,7 @@ enum StartMode {
   try {
     const startMode = getStartMode();
 
-    TARGET_DEVICE = await queryFirstDeviceAsync();
-    TARGET_DEVICE_IOS_VERSION = await queryIosSdkVersionAsync();
+    await queryTargetDetailsAsync();
 
     const projectRoot = path.resolve(__dirname, '..');
     const deviceId = await queryDeviceIdAsync(TARGET_DEVICE);
@@ -216,7 +215,7 @@ async function ensureDirAsync(dirPath: string) {
   }
 }
 
-async function queryFirstDeviceAsync() {
+async function queryTargetDetailsAsync() {
   const { device } = await AppleDeviceManager.resolveAsync({
     device: {
       osType: 'iOS',
@@ -224,16 +223,6 @@ async function queryFirstDeviceAsync() {
     shouldPrompt: false,
   });
 
-  return device.name || TARGET_DEVICE;
-}
-
-async function queryIosSdkVersionAsync() {
-  const { device } = await AppleDeviceManager.resolveAsync({
-    device: {
-      osType: 'iOS',
-    },
-    shouldPrompt: false,
-  });
-
-  return Number(device.osVersion) || TARGET_DEVICE_IOS_VERSION;
+  TARGET_DEVICE = device.name || TARGET_DEVICE;
+  TARGET_DEVICE_IOS_VERSION = Number(device.osVersion) || TARGET_DEVICE_IOS_VERSION;
 }
