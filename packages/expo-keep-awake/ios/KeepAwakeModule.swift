@@ -25,9 +25,13 @@ public final class KeepAwakeModule: Module {
     }
 
     AsyncFunction("isActivated") { () -> Bool in
+      #if os(iOS) || os(tvOS)
       return DispatchQueue.main.sync {
         return UIApplication.shared.isIdleTimerDisabled
       }
+      #elseif os(macOS)
+      return false
+      #endif
     }
 
     OnAppEntersForeground {
@@ -45,7 +49,9 @@ public final class KeepAwakeModule: Module {
 }
 
 private func setActivated(_ activated: Bool) {
+  #if os(iOS) || os(tvOS)
   DispatchQueue.main.async {
     UIApplication.shared.isIdleTimerDisabled = activated
   }
+  #endif
 }
