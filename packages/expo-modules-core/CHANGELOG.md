@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Adjust proguard rules to prevent issues with types implementing `Enumerable`. ([#26108](https://github.com/expo/expo/pull/26108) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 1.11.4 — 2023-12-21
