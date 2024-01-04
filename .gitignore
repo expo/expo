@@ -57,28 +57,15 @@ xcuserdata
 # Android
 *.apk
 *.hprof
-/android/**/build
-/android/**/.cxx
-/android/**/local.properties
-/android/captures
-/android/expoview/libs/ReactAndroid-temp
-/android/versioned-react-native/packages
-/android/versioned-react-native/ReactAndroid
 ReactAndroid-temp.aar
-/android/prebuiltHermes
-/android/versioned-abis/**/*.aar
 
 # Tools
 jarjar-rules.txt
 
 # Dynamic Macros
-/android/expoview/src/main/java/host/exp/exponent/generated/ExponentBuildConstants.java
-/android/app/src/androidTest/java/host/exp/exponent/generated/TestBuildConstants.java
 .kernel-ngrok-url
 
 # Template files
-/android/app/src/main/AndroidManifest.xml
-/android/app/google-services.json
 /apps/bare-expo/android/app/google-services.json
 /apps/bare-expo/ios/BareExpo/GoogleService-Info.plist
 
