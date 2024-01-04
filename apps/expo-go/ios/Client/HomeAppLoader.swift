@@ -45,17 +45,17 @@ final class HomeAppLoader: AppLoader {
 
     database.databaseQueue.async {
       let update: Update
-      if let manifest = self.manifestAndAssetRequestHeaders.manifest as? NewManifest {
-        update = NewUpdate.update(
-          withNewManifest: manifest,
+      if let manifest = self.manifestAndAssetRequestHeaders.manifest as? ExpoUpdatesManifest {
+        update = ExpoUpdatesUpdate.update(
+          withExpoUpdatesManifest: manifest,
           extensions: ["assetRequestHeaders": self.manifestAndAssetRequestHeaders.assetRequestHeaders],
           config: self.config,
           database: self.database
         )
       } else {
         // swiftlint:disable force_cast
-        update = BareUpdate.update(
-          withBareManifest: self.manifestAndAssetRequestHeaders.manifest as! BareManifest,
+        update = EmbeddedUpdate.update(
+          withEmbeddedManifest: self.manifestAndAssetRequestHeaders.manifest as! EmbeddedManifest,
           config: self.config,
           database: self.database
         )
