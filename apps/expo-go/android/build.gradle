@@ -87,20 +87,6 @@ allprojects {
   }
 
   configurations.all {
-    // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
-    resolutionStrategy.dependencySubstitution {
-      substitute(module("com.facebook.react:react-native"))
-        .using(project(":packages:react-native:ReactAndroid"))
-        .because("Building React Native from source")
-      substitute(module("com.facebook.react:react-native:+"))
-        .using(project(":packages:react-native:ReactAndroid"))
-        .because("Building React Native from source")
-      substitute(module("com.facebook.react:react-android"))
-        .using(project(":packages:react-native:ReactAndroid"))
-        .because("Building React Native from source")
-    }
-    // WHEN_DISTRIBUTING_REMOVE_TO_HERE
-
     resolutionStrategy.force(
       libs.fresco,
       libs.fresco.imagepipeline.okhttp3,

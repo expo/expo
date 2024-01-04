@@ -35,8 +35,10 @@ react {
 
   entryFile = file(["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute"].execute(null, rootDir).text.trim())
   reactNativeDir = new File(projectRoot, "../../react-native-lab/react-native/packages/react-native")
-  hermesCommand = new File(projectRoot, "../../react-native-lab/react-native/packages/react-native").getAbsolutePath() + "/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
   codegenDir = new File(projectRoot, "../../react-native-lab/react-native/packages/react-native-codegen")
+
+  // Expo Go does not require JS bundling from build, we set all variants as debuggableVariants
+  debuggableVariants = ["versionedDebug", "versionedRelease", "unversionedDebug", "unversionedRelease"]
 
   cliFile = new File(["node", "--print", "require.resolve('@expo/cli')"].execute(null, rootDir).text.trim())
   bundleCommand = "export:embed"
@@ -165,11 +167,6 @@ android {
     pickFirst "lib/**/libfbjni.so"
     // AGP will give priority of libc++_shared coming from App modules.
     pickFirst "**/libc++_shared.so"
-
-    // This pickFirst is dedicated for React Native and its dependencies, such as `libfb.so`, `libfabricjni.so`, `libglog.so`.
-    // It is a bit risky as we can't be sure which library gets loaded eventually.
-    // TODO: Figure out how we can avoid it (probably RN gradle plugin loads RN dependencies twice)
-    pickFirst "lib/**/lib*.so"
   }
 }
 
@@ -345,3 +342,25 @@ def ensureCrashlyticsDir = tasks.register('ensureCrashlyticsDir') {
   }
 }
 preBuild.dependsOn(ensureCrashlyticsDir)
+
+afterEvaluate {
+  // Overrides the react-native enforcing from RNGP
+  rootProject.allprojects { eachProject ->
+    eachProject.configurations.all { configuration ->
+      configuration.resolutionStrategy.dependencySubstitution {
+        substitute(module("com.facebook.react:react-native"))
+          .using(project(":packages:react-native:ReactAndroid"))
+          .because("Building React Native from source")
+        substitute(module("com.facebook.react:react-native:+"))
+          .using(project(":packages:react-native:ReactAndroid"))
+          .because("Building React Native from source")
+        substitute(module("com.facebook.react:react-android"))
+          .using(project(":packages:react-native:ReactAndroid"))
+          .because("Building React Native from source")
+        substitute(module("com.facebook.react:hermes-android"))
+          .using(project(":packages:react-native:ReactAndroid:hermes-engine"))
+          .because("Building React Native from source")
+      }
+    }
+  }
+}
