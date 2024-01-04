@@ -4,7 +4,7 @@ import android.net.Uri
 import androidx.room.Room
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
-import expo.modules.manifests.core.NewManifest
+import expo.modules.manifests.core.ExpoUpdatesManifest
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.UpdatesDatabase
 import org.json.JSONException
@@ -19,17 +19,17 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 
 @RunWith(AndroidJUnit4ClassRunner::class)
-class UpdateManifestMetadataTest {
+class UpdateMetadataTest {
   private lateinit var db: UpdatesDatabase
   private lateinit var config: UpdatesConfiguration
-  private lateinit var manifest: NewManifest
+  private lateinit var manifest: ExpoUpdatesManifest
 
   @Before
   @Throws(JSONException::class)
   fun setupManifest() {
     val manifestString =
       "{\"runtimeVersion\":\"1\",\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",\"launchAsset\":{\"url\":\"https://url.to/bundle.js\",\"contentType\":\"application/javascript\"}}"
-    manifest = NewManifest(JSONObject(manifestString))
+    manifest = ExpoUpdatesManifest(JSONObject(manifestString))
     config = createConfig()
   }
 

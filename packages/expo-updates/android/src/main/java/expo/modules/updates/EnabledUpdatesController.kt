@@ -20,7 +20,7 @@ import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
-import expo.modules.updates.manifest.EmbeddedManifest
+import expo.modules.updates.manifest.EmbeddedManifestUtils
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.procedures.CheckForUpdateProcedure
 import expo.modules.updates.procedures.FetchUpdateProcedure
@@ -187,7 +187,7 @@ class EnabledUpdatesController(
   override fun getConstantsForModule(): IUpdatesController.UpdatesModuleConstants {
     return IUpdatesController.UpdatesModuleConstants(
       launchedUpdate = launchedUpdate,
-      embeddedUpdate = EmbeddedManifest.get(context, updatesConfiguration)?.updateEntity,
+      embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, updatesConfiguration)?.updateEntity,
       isEmergencyLaunch = isEmergencyLaunch,
       isEnabled = true,
       isUsingEmbeddedAssets = isUsingEmbeddedAssets,

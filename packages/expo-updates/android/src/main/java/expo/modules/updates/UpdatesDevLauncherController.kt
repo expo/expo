@@ -17,7 +17,7 @@ import expo.modules.updates.loader.Loader
 import expo.modules.updates.loader.RemoteLoader
 import expo.modules.updates.loader.UpdateDirective
 import expo.modules.updates.loader.UpdateResponse
-import expo.modules.updates.manifest.EmbeddedManifest
+import expo.modules.updates.manifest.EmbeddedManifestUtils
 import expo.modules.updates.selectionpolicy.LauncherSelectionPolicySingleUpdate
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient
 import expo.modules.updates.selectionpolicy.SelectionPolicy
@@ -179,8 +179,8 @@ class UpdatesDevLauncherController(
           )
         }
 
-        val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
-        return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = callback.onManifestLoaded(updateManifest.manifest.getRawJson()))
+        val update = updateResponse.manifestUpdateResponsePart?.update ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
+        return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = callback.onManifestLoaded(update.manifest.getRawJson()))
       }
     })
   }
@@ -279,7 +279,7 @@ class UpdatesDevLauncherController(
   override fun getConstantsForModule(): IUpdatesController.UpdatesModuleConstants {
     return IUpdatesController.UpdatesModuleConstants(
       launchedUpdate = launchedUpdate,
-      embeddedUpdate = updatesConfiguration?.let { EmbeddedManifest.get(context, it) }?.updateEntity,
+      embeddedUpdate = updatesConfiguration?.let { EmbeddedManifestUtils.getEmbeddedUpdate(context, it) }?.updateEntity,
       isEmergencyLaunch = isEmergencyLaunch,
       isEnabled = true,
       isUsingEmbeddedAssets = isUsingEmbeddedAssets,

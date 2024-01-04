@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - [Android] Remove unsafe internal mutation capability. ([#26229](https://github.com/expo/expo/pull/26229) by [@wschurman](https://github.com/wschurman))
+- Rename native classes. ([#26234](https://github.com/expo/expo/pull/26234) by [@wschurman](https://github.com/wschurman))
 
 ## 0.13.0 — 2023-12-12
 

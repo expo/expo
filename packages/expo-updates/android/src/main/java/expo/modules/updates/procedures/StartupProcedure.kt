@@ -20,7 +20,7 @@ import expo.modules.updates.loader.UpdateDirective
 import expo.modules.updates.loader.UpdateResponse
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
-import expo.modules.updates.manifest.UpdateManifest
+import expo.modules.updates.manifest.Update
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
 import expo.modules.updates.statemachine.UpdatesStateValue
@@ -133,7 +133,7 @@ class StartupProcedure(
         procedureContext.processStateEvent(event)
       }
 
-      override fun onRemoteUpdateManifestResponseManifestLoaded(updateManifest: UpdateManifest) {
+      override fun onRemoteUpdateManifestResponseUpdateLoaded(update: Update) {
         remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADING
       }
 
@@ -287,8 +287,8 @@ class StartupProcedure(
               )
             }
 
-            val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
-            return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = selectionPolicy.shouldLoadNewUpdate(updateManifest.updateEntity, launchedUpdate, updateResponse.responseHeaderData?.manifestFilters))
+            val update = updateResponse.manifestUpdateResponsePart?.update ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
+            return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = selectionPolicy.shouldLoadNewUpdate(update.updateEntity, launchedUpdate, updateResponse.responseHeaderData?.manifestFilters))
           }
         })
       }

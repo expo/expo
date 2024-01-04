@@ -130,7 +130,7 @@ class UpdatesModule : Module() {
                     putBoolean("isAvailable", true)
                     putString(
                       "manifestString",
-                      result.updateManifest.manifest.toString()
+                      result.update.manifest.toString()
                     )
                   }
                 )

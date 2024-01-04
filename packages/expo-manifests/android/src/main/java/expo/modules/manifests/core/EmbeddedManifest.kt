@@ -6,7 +6,7 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
-class BareManifest(json: JSONObject) : Manifest(json) {
+class EmbeddedManifest(json: JSONObject) : Manifest(json) {
   /**
    * A UUID for this manifest.
    */

@@ -9,7 +9,7 @@ import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.loader.EmbeddedLoader
-import expo.modules.manifests.core.NewManifest
+import expo.modules.manifests.core.ExpoUpdatesManifest
 import expo.modules.updates.db.enums.UpdateStatus
 import org.json.JSONArray
 import org.json.JSONException
@@ -21,8 +21,8 @@ import java.util.*
  * Class for manifests using the modern format defined in the Expo Updates specification
  * (https://docs.expo.dev/technical-specs/expo-updates-1/). This is used by EAS Update.
  */
-class NewUpdateManifest private constructor(
-  override val manifest: NewManifest,
+class ExpoUpdatesUpdate private constructor(
+  override val manifest: ExpoUpdatesManifest,
   private val mId: UUID,
   private val mScopeKey: String,
   private val mCommitTime: Date,
@@ -30,9 +30,9 @@ class NewUpdateManifest private constructor(
   private val mLaunchAsset: JSONObject,
   private val mAssets: JSONArray?,
   private val mExtensions: JSONObject?
-) : UpdateManifest {
+) : Update {
   override val updateEntity: UpdateEntity by lazy {
-    UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey, this@NewUpdateManifest.manifest.getRawJson()).apply {
+    UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey, this@ExpoUpdatesUpdate.manifest.getRawJson()).apply {
       if (isDevelopmentMode) {
         status = UpdateStatus.DEVELOPMENT
       }
@@ -91,14 +91,14 @@ class NewUpdateManifest private constructor(
   }
 
   companion object {
-    private val TAG = UpdateManifest::class.java.simpleName
+    private val TAG = Update::class.java.simpleName
 
     @Throws(JSONException::class)
-    fun fromNewManifest(
-      manifest: NewManifest,
+    fun fromExpoUpdatesManifest(
+      manifest: ExpoUpdatesManifest,
       extensions: JSONObject?,
       configuration: UpdatesConfiguration
-    ): NewUpdateManifest {
+    ): ExpoUpdatesUpdate {
       val id = UUID.fromString(manifest.getID())
       val runtimeVersion = manifest.getRuntimeVersion()
       val launchAsset = manifest.getLaunchAsset()
@@ -109,7 +109,7 @@ class NewUpdateManifest private constructor(
         Log.e(TAG, "Could not parse manifest createdAt string; falling back to current time", e)
         Date()
       }
-      return NewUpdateManifest(
+      return ExpoUpdatesUpdate(
         manifest,
         id,
         configuration.scopeKey,

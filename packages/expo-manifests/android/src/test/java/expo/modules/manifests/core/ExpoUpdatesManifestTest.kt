@@ -4,14 +4,14 @@ import org.json.JSONObject
 import org.junit.Assert
 import org.junit.Test
 
-class NewManifestTest {
+class ExpoUpdatesManifestTest {
   @Test
   @Throws(Exception::class)
   fun testGetSDKVersionNullable_ValidCases() {
     val runtimeVersion = "exposdk:39.0.0"
     val manifestJson =
       "{\"runtimeVersion\":\"$runtimeVersion\"}"
-    val manifest = NewManifest(JSONObject(manifestJson))
+    val manifest = ExpoUpdatesManifest(JSONObject(manifestJson))
     Assert.assertEquals(manifest.getExpoGoSDKVersion(), "39.0.0")
   }
 
@@ -21,7 +21,7 @@ class NewManifestTest {
     val runtimeVersion = "exposdk:UNVERSIONED"
     val manifestJson =
       "{\"runtimeVersion\":\"$runtimeVersion\"}"
-    val manifest = NewManifest(JSONObject(manifestJson))
+    val manifest = ExpoUpdatesManifest(JSONObject(manifestJson))
     Assert.assertEquals(manifest.getExpoGoSDKVersion(), "UNVERSIONED")
   }
 
@@ -39,7 +39,7 @@ class NewManifestTest {
     runtimeVersions.forEach { runtimeVersion ->
       val manifestJson =
         "{\"runtimeVersion\":\"$runtimeVersion\"}"
-      val manifest = NewManifest(JSONObject(manifestJson))
+      val manifest = ExpoUpdatesManifest(JSONObject(manifestJson))
       Assert.assertNull(manifest.getExpoGoSDKVersion())
     }
   }

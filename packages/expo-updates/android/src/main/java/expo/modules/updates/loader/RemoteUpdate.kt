@@ -4,7 +4,7 @@ import expo.modules.jsonutils.getNullable
 import expo.modules.jsonutils.require
 import expo.modules.updates.UpdatesUtils.parseDateString
 import expo.modules.updates.manifest.ResponseHeaderData
-import expo.modules.updates.manifest.UpdateManifest
+import expo.modules.updates.manifest.Update
 import org.json.JSONObject
 import java.util.*
 
@@ -39,6 +39,6 @@ data class UpdateResponse(
 )
 
 sealed class UpdateResponsePart {
-  data class ManifestUpdateResponsePart(val updateManifest: UpdateManifest) : UpdateResponsePart()
+  data class ManifestUpdateResponsePart(val update: Update) : UpdateResponsePart()
   data class DirectiveUpdateResponsePart(val updateDirective: UpdateDirective) : UpdateResponsePart()
 }

@@ -15,9 +15,9 @@ import expo.modules.updates.launcher.DatabaseLauncher
 import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.loader.Loader.LoaderCallback
-import expo.modules.updates.manifest.EmbeddedManifest
+import expo.modules.updates.manifest.EmbeddedManifestUtils
 import expo.modules.updates.manifest.ManifestMetadata
-import expo.modules.updates.manifest.UpdateManifest
+import expo.modules.updates.manifest.Update
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import org.json.JSONObject
 import java.io.File
@@ -127,7 +127,7 @@ class LoaderTask(
      */
     fun onCachedUpdateLoaded(update: UpdateEntity): Boolean
 
-    fun onRemoteUpdateManifestResponseManifestLoaded(updateManifest: UpdateManifest)
+    fun onRemoteUpdateManifestResponseUpdateLoaded(update: Update)
     fun onRemoteCheckForUpdateStarted() {}
     fun onRemoteCheckForUpdateFinished(result: RemoteCheckResult) {}
     fun onRemoteUpdateLoadStarted() {}
@@ -311,7 +311,7 @@ class LoaderTask(
       // if the embedded update should be launched (e.g. if it's newer than any other update we have
       // in the database, which can happen if the app binary is updated), load it into the database
       // so we can launch it
-      val embeddedUpdate = EmbeddedManifest.get(context, configuration)!!.updateEntity
+      val embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, configuration)!!.updateEntity
       val launchableUpdate = launcher.getLaunchableUpdate(database, context)
       val manifestFilters = ManifestMetadata.getManifestFilters(database, configuration)
       if (selectionPolicy.shouldLoadNewUpdate(embeddedUpdate, launchableUpdate, manifestFilters)) {
@@ -385,22 +385,22 @@ class LoaderTask(
               }
             }
 
-            val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
-            if (updateManifest == null) {
+            val update = updateResponse.manifestUpdateResponsePart?.update
+            if (update == null) {
               isUpToDate = true
               callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.NoUpdateAvailable(RemoteCheckResultNotAvailableReason.NO_UPDATE_AVAILABLE_ON_SERVER))
               return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
             }
 
             return if (selectionPolicy.shouldLoadNewUpdate(
-                updateManifest.updateEntity,
+                update.updateEntity,
                 candidateLauncher?.launchedUpdate,
                 updateResponse.responseHeaderData?.manifestFilters
               )
             ) {
               isUpToDate = false
-              callback.onRemoteUpdateManifestResponseManifestLoaded(updateManifest)
-              callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.UpdateAvailable(updateManifest.manifest.getRawJson()))
+              callback.onRemoteUpdateManifestResponseUpdateLoaded(update)
+              callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.UpdateAvailable(update.manifest.getRawJson()))
               callback.onRemoteUpdateLoadStarted()
               Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
             } else {
