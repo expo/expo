@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added support for macOS platform.
+- Added support for macOS platform. ([#26221](https://github.com/expo/expo/pull/26221) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
