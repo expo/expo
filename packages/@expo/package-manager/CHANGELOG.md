@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `PackageManager.versionAsync()` and `PackageManager.getConfigAsync()` returns empty string when silent mode is off. ([#26123](https://github.com/expo/expo/pull/26123) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 1.4.1 — 2023-12-19
