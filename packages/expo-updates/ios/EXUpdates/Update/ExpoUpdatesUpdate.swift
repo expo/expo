@@ -3,19 +3,19 @@
 import Foundation
 import EXManifests
 
-public final class NewUpdate: Update {
+public final class ExpoUpdatesUpdate: Update {
   /**
    * Method for initializing updates with modern format manifests that conform to the Expo Updates
    * specification (https://docs.expo.dev/technical-specs/expo-updates-1/). This is used by EAS
    * Update.
    */
   public static func update(
-    withNewManifest: NewManifest,
+    withExpoUpdatesManifest: ExpoUpdatesManifest,
     extensions: [String: Any],
     config: UpdatesConfig,
     database: UpdatesDatabase
   ) -> Update {
-    let manifest = withNewManifest
+    let manifest = withExpoUpdatesManifest
     let assetHeaders: [String: Any] = extensions.optionalValue(forKey: "assetRequestHeaders") ?? [:]
 
     let updateId = manifest.rawId()

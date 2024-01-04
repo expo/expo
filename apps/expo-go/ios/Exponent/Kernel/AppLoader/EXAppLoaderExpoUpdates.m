@@ -496,7 +496,7 @@ NS_ASSUME_NONNULL_BEGIN
       NSString *currentScopeKeyAndSaltToHash = [NSString stringWithFormat:@"unverified-%@", manifest.scopeKey];
       NSString *currentScopeKeyHash = [currentScopeKeyAndSaltToHash hexEncodedSHA256];
       NSString *newScopeKey = [NSString stringWithFormat:@"%@-%@", currentScopeKeyAndSaltToHash, currentScopeKeyHash];
-      if ([manifest isKindOfClass:EXManifestsNewManifest.class]) {
+      if ([manifest isKindOfClass:EXManifestsExpoUpdatesManifest.class]) {
         NSDictionary *extra = mutableManifest[@"extra"] ?: @{};
         NSMutableDictionary *mutableExtra = [extra mutableCopy];
         mutableExtra[@"scopeKey"] = newScopeKey;
