@@ -31,6 +31,7 @@ import expo.modules.updates.statemachine.UpdatesStateChangeEventSender
 import expo.modules.updates.statemachine.UpdatesStateContext
 import expo.modules.updates.statemachine.UpdatesStateEventType
 import expo.modules.updates.statemachine.UpdatesStateMachine
+import expo.modules.updates.statemachine.UpdatesStateValue
 import java.io.File
 import java.lang.ref.WeakReference
 
@@ -54,7 +55,7 @@ class EnabledUpdatesController(
   private val selectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(
     updatesConfiguration.getRuntimeVersion()
   )
-  private val stateMachine = UpdatesStateMachine(context, this)
+  private val stateMachine = UpdatesStateMachine(context, this, UpdatesStateValue.values().toSet())
   private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context))
 
   private fun purgeUpdatesLogsOlderThanOneDay() {

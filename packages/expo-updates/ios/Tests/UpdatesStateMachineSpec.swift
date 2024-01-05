@@ -22,14 +22,14 @@ class UpdatesStateMachineSpec: ExpoSpec {
     describe("default state") {
       it("instantiates") {
         let testStateChangeDelegate = TestStateChangeDelegate()
-        let machine = UpdatesStateMachine()
+        let machine = UpdatesStateMachine(validUpdatesStateValues: Set(UpdatesStateValue.allCases))
         machine.changeEventDelegate = testStateChangeDelegate
         expect(machine.getStateForTesting()) == .idle
       }
 
       it("should handle check and checkCompleteAvailable") {
         let testStateChangeDelegate = TestStateChangeDelegate()
-        let machine = UpdatesStateMachine()
+        let machine = UpdatesStateMachine(validUpdatesStateValues: Set(UpdatesStateValue.allCases))
         machine.changeEventDelegate = testStateChangeDelegate
 
         machine.processEventForTesting(UpdatesStateEventCheck())
@@ -52,7 +52,7 @@ class UpdatesStateMachineSpec: ExpoSpec {
 
       it("should handle check and checkCompleteUnavailable") {
         let testStateChangeDelegate = TestStateChangeDelegate()
-        let machine = UpdatesStateMachine()
+        let machine = UpdatesStateMachine(validUpdatesStateValues: Set(UpdatesStateValue.allCases))
         machine.changeEventDelegate = testStateChangeDelegate
 
         machine.processEventForTesting(UpdatesStateEventCheck())
@@ -69,7 +69,7 @@ class UpdatesStateMachineSpec: ExpoSpec {
 
       it("should handle download and downloadComplete") {
         let testStateChangeDelegate = TestStateChangeDelegate()
-        let machine = UpdatesStateMachine()
+        let machine = UpdatesStateMachine(validUpdatesStateValues: Set(UpdatesStateValue.allCases))
         machine.changeEventDelegate = testStateChangeDelegate
 
         machine.processEventForTesting(UpdatesStateEventDownload())
@@ -90,7 +90,7 @@ class UpdatesStateMachineSpec: ExpoSpec {
 
       it("should handle rollback") {
         let testStateChangeDelegate = TestStateChangeDelegate()
-        let machine = UpdatesStateMachine()
+        let machine = UpdatesStateMachine(validUpdatesStateValues: Set(UpdatesStateValue.allCases))
         machine.changeEventDelegate = testStateChangeDelegate
         let commitTime = Date()
         machine.processEventForTesting(UpdatesStateEventCheck())
@@ -108,7 +108,7 @@ class UpdatesStateMachineSpec: ExpoSpec {
 
       it("invalid transitions are handled as expected") {
         let testStateChangeDelegate = TestStateChangeDelegate()
-        let machine = UpdatesStateMachine()
+        let machine = UpdatesStateMachine(validUpdatesStateValues: Set(UpdatesStateValue.allCases))
         machine.changeEventDelegate = testStateChangeDelegate
 
         machine.processEventForTesting(UpdatesStateEventCheck())
@@ -149,6 +149,17 @@ class UpdatesStateMachineSpec: ExpoSpec {
 
         expect(machine.processEventForTesting(UpdatesStateEventDownloadComplete())).to(throwAssertion())
         expect(machine.getStateForTesting()) == .restarting
+      }
+
+      it("invalid state values are handled as expected") {
+        let testStateChangeDelegate = TestStateChangeDelegate()
+        let machine = UpdatesStateMachine(validUpdatesStateValues: [UpdatesStateValue.idle])
+        machine.changeEventDelegate = testStateChangeDelegate
+
+        expect(machine.processEventForTesting(UpdatesStateEventDownload())).to(throwAssertion())
+        expect(machine.getStateForTesting()) == .idle
+        expect(testStateChangeDelegate.lastEventType).to(beNil())
+        expect(testStateChangeDelegate.lastEventBody).to(beNil())
       }
     }
   }
