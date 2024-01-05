@@ -12,7 +12,6 @@ excluded:
   - docs
   - fastlane
   - guides
-  - home
   - ios/Pods
   - ios/vendored
   - ios/versioned
