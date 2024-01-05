@@ -141,7 +141,8 @@ public final class FileDownloader: NSObject, URLSessionDataDelegate {
       if let expectedBase64URLEncodedSHA256Hash = expectedBase64URLEncodedSHA256Hash,
         expectedBase64URLEncodedSHA256Hash != hashBase64String {
         let errorMessage = String(
-          format: "File download was successful but base64url-encoded SHA-256 did not match expected; expected: %@; actual: %@",
+          format: "Asset download was successful but base64url-encoded SHA-256 did not match expected; URL: %@; expected hash: %@; actual hash: %@",
+          url.absoluteString,
           expectedBase64URLEncodedSHA256Hash,
           hashBase64String
         )
@@ -160,7 +161,7 @@ public final class FileDownloader: NSObject, URLSessionDataDelegate {
         return
       } catch {
         let errorMessage = String(
-          format: "Could not write to path %@: %@",
+          format: "Could not write downloaded asset file to path %@: %@",
           destinationPath,
           error.localizedDescription
         )
@@ -176,6 +177,7 @@ public final class FileDownloader: NSObject, URLSessionDataDelegate {
         return
       }
     } errorBlock: { error in
+      self.logger.error(message: error.localizedDescription, code: UpdatesErrorCode.assetsFailedToLoad)
       errorBlock(error)
     }
   }

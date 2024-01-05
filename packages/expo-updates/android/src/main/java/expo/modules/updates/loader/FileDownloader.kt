@@ -71,18 +71,16 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
       request,
       object : Callback {
         override fun onFailure(call: Call, e: IOException) {
+          logger.error("Failed to download asset from ${request.url}", UpdatesErrorCode.AssetsFailedToLoad, e)
           callback.onFailure(e)
         }
 
         @Throws(IOException::class)
         override fun onResponse(call: Call, response: Response) {
           if (!response.isSuccessful) {
-            callback.onFailure(
-              Exception(
-                "Network request failed: " + response.body!!
-                  .string()
-              )
-            )
+            val error = Exception("Network request failed: " + response.body!!.string())
+            logger.error("Failed to download file from ${request.url}", UpdatesErrorCode.AssetsFailedToLoad, error)
+            callback.onFailure(error)
             return
           }
           try {
@@ -91,7 +89,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
               callback.onSuccess(destination, hash)
             }
           } catch (e: Exception) {
-            logger.error("Failed to download file to destination $destination: ${e.localizedMessage}", UpdatesErrorCode.AssetsFailedToLoad, e)
+            logger.error("Failed to write file from ${request.url} to destination $destination", UpdatesErrorCode.AssetsFailedToLoad, e)
             callback.onFailure(e)
           }
         }
