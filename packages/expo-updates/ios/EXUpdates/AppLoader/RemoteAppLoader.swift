@@ -108,7 +108,7 @@ public final class RemoteAppLoader: AppLoader {
           return
         }
 
-        self.downloader.downloadFile(
+        self.downloader.downloadAsset(
           fromURL: assetUrl,
           verifyingHash: asset.expectedHash,
           toPath: urlOnDisk.path,
