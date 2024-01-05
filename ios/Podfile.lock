@@ -2245,7 +2245,7 @@ PODS:
   - RNScreens (3.27.0):
     - React-Core
     - React-RCTImage
-  - RNSVG (14.0.0):
+  - RNSVG (14.1.0):
     - React-Core
   - SDWebImage (5.17.0):
     - SDWebImage/Core (= 5.17.0)
@@ -3401,7 +3401,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: 4279931048471f17faf46d912b2e96e10f1da99b
   RNReanimated: c7706129cc5d41b737193456f549dca3a9b0a0ca
   RNScreens: 2b19e2471db8a581c83f381f4ea5d43071c9a3bf
-  RNSVG: 255767813dac22db1ec2062c8b7e7b856d4e5ae6
+  RNSVG: ba3e7232f45e34b7b47e74472386cf4e1a676d0a
   SDWebImage: 750adf017a315a280c60fde706ab1e552a3ae4e9
   SDWebImageAVIFCoder: 8348fef6d0ec69e129c66c9fe4d74fbfbf366112
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
