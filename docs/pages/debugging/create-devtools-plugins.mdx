@@ -61,14 +61,14 @@ Add a `homepage` field to define the exported base URL for web in the format of 
 
 ### Add message sending and receiving code to the plugin's web UI
 
-`connectPluginFromDevToolsAsync` initiates a client that can send messages and listen for incoming messages. When sending messages, make sure to identify the plugin by name using the `from` parameter:
+`getDevToolsPluginClientAsync` initiates a client that can send messages and listen for incoming messages:
 
 ```js
-  import { connectPluginFromDevToolsAsync } from 'expo/devtools';
+  import { getDevToolsPluginClientAsync } from 'expo/devtools';
 
-  const client = await connectPluginFromDevToolsAsync();
+  const client = await getDevToolsPluginClientAsync('REPLACE-FOR-YOUR-PLUGIN-NAME');
 
-  client.sendMessage('ping', { from: 'expo-plugin-helloworld' });
+  client.sendMessage('ping');
   client.addMessageListener('pong', (data) => {
     console.log('receiving pong', data);
   });
@@ -76,7 +76,7 @@ Add a `homepage` field to define the exported base URL for web in the format of 
 
 A `useDevToolsPluginClient` hook is also available to provide a client entirely within a React component.
 
-Client apps using your plugin will also be able to communicate using `connectPluginFromDevToolsAsync` or `useDevToolsPluginClient`.
+Client apps using your plugin will also be able to communicate using `getDevToolsPluginClientAsync` or `useDevToolsPluginClient`. The identifier passed to `getDevToolsPluginClientAsync` must match in both the plugin and the client app.
 
 ### Build the app for web
 
