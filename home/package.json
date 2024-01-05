@@ -19,7 +19,7 @@
   "dependencies": {
     "@apollo/client": "^3.4.10",
     "@expo/styleguide-native": "^1.0.1",
-    "@expo/vector-icons": "^13.0.0",
+    "@expo/vector-icons": "^14.0.0",
     "@gorhom/bottom-sheet": "4.4.6",
     "@graphql-codegen/introspection": "^2.1.1",
     "@react-native-async-storage/async-storage": "1.18.2",
