@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed white splash screen flickering in dark mode. ([#25933](https://github.com/expo/expo/pull/25933) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 6.7.3 — 2024-01-05
+
+### 🐛 Bug fixes
+
+- Fixed white splash screen flickering in dark mode. ([#25933](https://github.com/expo/expo/pull/25933) by [@kudo](https://github.com/kudo))
 
 ## 6.7.2 — 2023-12-19
 

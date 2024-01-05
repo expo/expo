@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix relative URLs and support for `unstable_path` in development. ([#26084](https://github.com/expo/expo/pull/26084) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 💡 Others
+
+## 9.0.2 — 2024-01-05
+
+### 🐛 Bug fixes
+
+- Fix relative URLs and support for `unstable_path` in development. ([#26084](https://github.com/expo/expo/pull/26084) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 9.0.1 — 2023-12-13
 

@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add more failure logs in asset download. ([#26277](https://github.com/expo/expo/pull/26277) by [@wschurman](https://github.com/wschurman))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.24.6 — 2024-01-05
+
+### 🎉 New features
+
+- Add more failure logs in asset download. ([#26277](https://github.com/expo/expo/pull/26277) by [@wschurman](https://github.com/wschurman))
 
 ## 0.24.5 — 2023-12-21
 
