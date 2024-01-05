@@ -1,0 +1,11 @@
+--- a/node_modules/react-native-screens/ios/RNSScreenStackHeaderConfig.mm
++++ b/node_modules/react-native-screens/ios/RNSScreenStackHeaderConfig.mm
+@@ -744,7 +744,7 @@
+  */
+ + (RCTImageSource *)imageSourceFromImageView:(RCTImageComponentView *)view
+ {
+-  auto const imageProps = *std::static_pointer_cast<const react::ImageProps>(view.props);
++  auto const &imageProps = *std::static_pointer_cast<const react::ImageProps>(view.props);
+   react::ImageSource cppImageSource = imageProps.sources.at(0);
+   auto imageSize = CGSize{cppImageSource.size.width, cppImageSource.size.height};
+   NSURLRequest *request =

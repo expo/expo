@@ -72,7 +72,9 @@
                                                                contextContainer:_contextContainer];
   self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
 
-  [self unstable_registerLegacyComponents];
+  if ([self respondsToSelector:@selector(unstable_registerLegacyComponents)]) {
+    [self unstable_registerLegacyComponents];
+  }
   [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
 #endif
 

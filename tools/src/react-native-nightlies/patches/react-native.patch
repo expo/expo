@@ -1,0 +1,21 @@
+--- a/node_modules/react-native/Libraries/AppDelegate/RCTAppSetupUtils.h
++++ b/node_modules/react-native/Libraries/AppDelegate/RCTAppSetupUtils.h
+@@ -54,14 +54,14 @@
+     BOOL turboModuleEnabled,
+     const facebook::react::ReactNativeConfig &reactNativeConfig);
+ 
+-#endif // __cplusplus
+-
+-RCT_EXTERN_C_BEGIN
+-
+ [[deprecated("Use the 3-argument overload of RCTAppSetupPrepareApp instead")]] void RCTAppSetupPrepareApp(
+     UIApplication *application,
+     BOOL turboModuleEnabled);
+ 
++#endif // __cplusplus
++
++RCT_EXTERN_C_BEGIN
++
+ UIView *RCTAppSetupDefaultRootView(
+     RCTBridge *bridge,
+     NSString *moduleName,

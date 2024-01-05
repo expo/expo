@@ -22,10 +22,7 @@ export default (program: Command) => {
 };
 
 async function main() {
-  const nightlyVersion = (await getPackageViewAsync('react-native'))?.['dist-tags'].nightly;
-  if (!nightlyVersion) {
-    throw new Error('Unable to get react-native nightly version.');
-  }
+  const nightlyVersion = await queryNpmDistTagVersionAsync('react-native', 'nightly');
 
   logger.info('Adding bare-expo optional packages:');
   await addBareExpoOptionalPackagesAsync();
@@ -33,15 +30,40 @@ async function main() {
   logger.info('Adding pinned packages:');
   const pinnedPackages = {
     'react-native': nightlyVersion,
+
+    // These 3rd party libraries are broken from react-native nightlies, trying to update them to the latest version.
+    ...(await queryLatest3rdPartyLibrariesAsync({
+      '@react-native-community/slider': 'latest',
+      'lottie-react-native': 'latest',
+      'react-native-pager-view': 'latest',
+      'react-native-safe-area-context': 'latest',
+      'react-native-screens': 'latest',
+      'react-native-svg': 'latest',
+      'react-native-webview': 'latest',
+    })),
   };
   await addPinnedPackagesAsync(pinnedPackages);
 
   logger.info('Yarning...');
   await workspaceInstallAsync();
 
-  await patchAndroidTurboModuleAsync();
-  // await patchAndroidBuildConfigAsync();
-  // await patchSafeAreaContextAsync();
+  await patchAndroidCallInvokerHolderAsync();
+
+  const patches = [
+    'datetimepicker.patch',
+    'react-native.patch',
+    'react-native-gesture-handler.patch',
+    'react-native-reanimated.patch',
+    'react-native-safe-area-context.patch',
+    'react-native-screens.patch',
+  ];
+  await Promise.all(
+    patches.map(async (patch) => {
+      const patchFile = path.join(PATCHES_ROOT, patch);
+      const patchContent = await fs.readFile(patchFile, 'utf8');
+      await applyPatchAsync({ patchContent, cwd: EXPO_DIR, stripPrefixNum: 1 });
+    })
+  );
 
   logger.info('Setting up Expo modules files');
   await updateExpoModulesAsync();
@@ -89,9 +111,39 @@ async function addPinnedPackagesAsync(packages: Record<string, string>) {
   await JsonFile.writeAsync(workspacePackageJsonPath, json);
 }
 
-async function patchAndroidTurboModuleAsync() {
+async function patchAndroidCallInvokerHolderAsync() {
   const nodeModulesDir = path.join(EXPO_DIR, 'node_modules');
   const targetFiles = [
+    path.join(
+      EXPO_DIR,
+      'packages',
+      'expo-modules-core',
+      'android/src/main/java/expo/modules/adapters/react/services/UIManagerModuleWrapper.java'
+    ),
+    path.join(
+      EXPO_DIR,
+      'packages',
+      'expo-modules-core',
+      'android/src/main/java/expo/modules/core/interfaces/JavaScriptContextProvider.java'
+    ),
+    path.join(
+      EXPO_DIR,
+      'packages',
+      'expo-modules-core',
+      'android/src/main/java/expo/modules/core/interfaces/JavaScriptContextProvider.java'
+    ),
+    path.join(
+      EXPO_DIR,
+      'packages',
+      'expo-modules-core',
+      'android/src/main/java/expo/modules/kotlin/jni/JSIInteropModuleRegistry.kt'
+    ),
+    path.join(
+      EXPO_DIR,
+      'packages',
+      'expo-av',
+      'android/src/main/java/expo/modules/av/AVManager.java'
+    ),
     path.join(
       nodeModulesDir,
       'react-native-reanimated',
@@ -112,17 +164,11 @@ async function patchAndroidTurboModuleAsync() {
   for (const file of targetFiles) {
     await transformFileAsync(file, [
       {
-        find: `import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;`,
-        replaceWith: 'import com.facebook.react.internal.turbomodule.core.CallInvokerHolderImpl;',
+        find: /^(import )(com\.facebook\.react\.turbomodule\.core\.CallInvokerHolderImpl)(;?)$/gm,
+        replaceWith: '$1com.facebook.react.internal.turbomodule.core.CallInvokerHolderImpl$3',
       },
     ]);
   }
-}
-
-async function patchSafeAreaContextAsync() {
-  const patchFile = path.join(PATCHES_ROOT, 'react-native-safe-area-context.patch');
-  const patchContent = await fs.readFile(patchFile, 'utf8');
-  await applyPatchAsync({ patchContent, cwd: EXPO_DIR, stripPrefixNum: 1 });
 }
 
 async function updateExpoModulesAsync() {
@@ -151,34 +197,20 @@ async function updateBareExpoAsync(nightlyVersion: string) {
   ]);
 }
 
-async function patchAndroidBuildConfigAsync() {
-  const missingBuildConfigModules = [
-    '@react-native-async-storage/async-storage',
-    '@react-native-community/datetimepicker',
-    '@react-native-community/netinfo',
-    '@react-native-community/slider',
-    'lottie-react-native',
-    'react-native-gesture-handler',
-    'react-native-maps',
-    'react-native-pager-view',
-    'react-native-reanimated',
-    'react-native-safe-area-context',
-    'react-native-screens',
-    'react-native-svg',
-    'react-native-webview',
-  ];
-  const searchPattern = /^(android \{[\s\S]*?)(\n})/gm;
-  const replacement = `$1
-    buildFeatures {
-        buildConfig true
-    }$2`;
-  for (const module of missingBuildConfigModules) {
-    const gradleFile = path.join(EXPO_DIR, 'node_modules', module, 'android', 'build.gradle');
-    await transformFileAsync(gradleFile, [
-      {
-        find: searchPattern,
-        replaceWith: replacement,
-      },
-    ]);
+async function queryNpmDistTagVersionAsync(pkg: string, distTag: string) {
+  const view = await getPackageViewAsync(pkg);
+  const version = view?.['dist-tags'][distTag];
+  if (!version) {
+    throw new Error(`Unable to get ${pkg} version for dist-tag: ${distTag}.`);
   }
+  return version;
+}
+
+async function queryLatest3rdPartyLibrariesAsync(pkgAndTag: Record<string, string>) {
+  const pkgAndVersion: Record<string, string> = {};
+  for (const [pkg, tag] of Object.entries(pkgAndTag)) {
+    const version = await queryNpmDistTagVersionAsync(pkg, tag);
+    pkgAndVersion[pkg] = version;
+  }
+  return pkgAndVersion;
 }

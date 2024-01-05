@@ -27,7 +27,11 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
     enableTM = YES;
 #endif
 
+#if REACT_NATIVE_MINOR_VERSION >= 74
+    RCTAppSetupPrepareApp(application, enableTM, facebook::react::EmptyReactNativeConfig());
+#else
     RCTAppSetupPrepareApp(application, enableTM);
+#endif
 
     self.bridge = [super createBridgeAndSetAdapterWithLaunchOptions:launchOptions];
 
