@@ -1,17 +1,8 @@
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
 
+const monorepoRoot = path.join(__dirname, '../..');
 const baseConfig = getDefaultConfig(__dirname);
-
-// To test home from Expo Go, the react-native js source is from our fork.
-const reactNativeRoot = path.join(
-  __dirname,
-  '..',
-  'react-native-lab',
-  'react-native',
-  'packages',
-  'react-native'
-);
 
 /** @type {import('expo/metro-config').MetroConfig} */
 module.exports = {
@@ -59,7 +50,18 @@ module.exports = {
   },
   serializer: {
     ...baseConfig.serializer,
-    getPolyfills: () => require(path.join(reactNativeRoot, 'rn-get-polyfills'))(),
+    // To test NCL from Expo Go, the react-native js source is from our fork.
+    getPolyfills: () => {
+      const reactNativeRoot = path.join(
+        monorepoRoot,
+        'react-native-lab',
+        'react-native',
+        'packages',
+        'react-native'
+      );
+
+      return require(path.join(reactNativeRoot, 'rn-get-polyfills'))();
+    },
   },
   transformer: {
     ...baseConfig.transformer,
