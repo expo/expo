@@ -2,11 +2,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as StoreReview from 'expo-store-review';
-import { CommonAppDataFragment, CommonSnackDataFragment } from 'graphql/types';
 import { useEffect, useState } from 'react';
 import { Platform, AppState, NativeEventSubscription } from 'react-native';
 
 import addListenerWithNativeCallback from './addListenerWithNativeCallback';
+import { CommonAppDataFragment, CommonSnackDataFragment } from '../graphql/types';
 import * as Kernel from '../kernel/Kernel';
 import { HomeStackRoutes } from '../navigation/Navigation.types';
 

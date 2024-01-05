@@ -1,10 +1,10 @@
 import { iconSize, XIcon, spacing, typography } from '@expo/styleguide-native';
 import { Row, Text, useExpoTheme, View, Button } from 'expo-dev-client-components';
 import { isDevice } from 'expo-device';
-import { CommonAppDataFragment, CommonSnackDataFragment } from 'graphql/types';
 import React from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 
+import { CommonAppDataFragment, CommonSnackDataFragment } from '../graphql/types';
 import { useUserReviewCheck } from '../utils/useUserReviewCheck';
 
 type Props = {
