@@ -101,8 +101,8 @@ export default function BarCodeScreen(props: StackScreenProps<ModalStackRoutes, 
       <QRIndicator />
 
       <View style={[styles.footer, { bottom: 30 + bottom }]}>
-        <QRFooterButton onPress={onFlashToggle} isActive={isLit} iconName="ios-flashlight" />
-        <QRFooterButton onPress={onCancel} iconName="ios-close" iconSize={48} />
+        <QRFooterButton onPress={onFlashToggle} isActive={isLit} iconName="flashlight" />
+        <QRFooterButton onPress={onCancel} iconName="close" iconSize={48} />
       </View>
 
       <StatusBar barStyle="light-content" backgroundColor="#000" />
