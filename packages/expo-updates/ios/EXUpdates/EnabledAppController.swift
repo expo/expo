@@ -31,7 +31,7 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
 
   private var eventsToSendToJS: [[String: Any?]] = []
 
-  private let stateMachine = UpdatesStateMachine()
+  private let stateMachine = UpdatesStateMachine(validUpdatesStateValues: Set(UpdatesStateValue.allCases))
 
   private let selectionPolicy: SelectionPolicy
 
