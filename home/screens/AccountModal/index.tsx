@@ -42,7 +42,7 @@ export function AccountModal() {
             style={{ borderWidth: 1, borderColor: theme.border.warning }}>
             <Row align="center">
               <Ionicons
-                name={Platform.select({ ios: 'ios-warning', default: 'md-warning' })}
+                name="warning"
                 size={18}
                 lightColor={theme.text.warning}
                 darkColor={theme.text.warning}
