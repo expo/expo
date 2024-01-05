@@ -198,7 +198,7 @@ export default {
       return '';
     }
 
-    const pathToHome = 'home';
+    const pathToHome = 'apps/expo-go';
     const url = await UrlUtils.constructManifestUrlAsync(path.join(EXPO_DIR, pathToHome));
 
     try {

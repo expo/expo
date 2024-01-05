@@ -3,12 +3,12 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import format from 'date-fns/format';
 import { Row, Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
-import { HomeStackRoutes } from 'navigation/Navigation.types';
 import React from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { DateFormats } from '../constants/DateFormats';
 import { WebContainerProjectPage_Query } from '../graphql/types';
+import { HomeStackRoutes } from '../navigation/Navigation.types';
 
 type Update =
   WebContainerProjectPage_Query['app']['byId']['updateBranches'][number]['updates'][number];

@@ -42,7 +42,7 @@ export async function androidAppVersionAsync(): Promise<string> {
 }
 
 export async function getHomeSDKVersionAsync(): Promise<string> {
-  const homeAppJsonPath = path.join(EXPO_DIR, 'home', 'app.json');
+  const homeAppJsonPath = path.join(EXPO_DIR, 'apps', 'expo-go', 'app.json');
   const appJson = (await JsonFile.readAsync(homeAppJsonPath, { json5: true })) as any;
 
   if (appJson?.expo?.sdkVersion) {

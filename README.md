@@ -81,14 +81,12 @@ Read the [Expo Community Guidelines](https://expo.dev/guidelines) before interac
 
 - [`packages`](/packages) All the source code for Expo modules, if you want to edit a library or just see how it works this is where you'll find it.
 - [`apps`](/apps) This is where you can find Expo projects which are linked to the development modules. You'll do most of your testing in here.
+- [`apps/expo-go`](/apps/expo-go) This is where you can find the source code for Expo Go.
+- [`apps/expo-go/ios/Exponent.xcworkspace`](/ios) is the Xcode workspace. When developing iOS, always open this instead of `Exponent.xcodeproj` because the workspace also loads the CocoaPods dependencies.
 - [`docs`](/docs) The source code for **https://docs.expo.dev**
 - [`templates`](/templates) The template projects you get when you run `npx create-expo-app`
 - [`react-native-lab`](/react-native-lab) This is our fork of `react-native` used to build Expo Go.
 - [`guides`](/guides) In-depth tutorials for advanced topics like contributing to the client.
-- [`android`](/android) contains the Android project.
-- [`home`](/home) contains the JavaScript source code of the app.
-- [`ios`](/ios) contains the iOS project.
-- [`ios/Exponent.xcworkspace`](/ios) is the Xcode workspace. Always open this instead of `Exponent.xcodeproj` because the workspace also loads the CocoaPods dependencies.
 - [`tools`](/tools) contains build and configuration tools.
 - [`template-files`](/template-files) contains templates for files that require private keys. They are populated using the keys in `template-files/keys.json`.
 - [`template-files/ios/dependencies.json`](/template-files/ios/dependencies.json) specifies the CocoaPods dependencies of the app.

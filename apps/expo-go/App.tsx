@@ -6,12 +6,12 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { enableScreens } from 'react-native-screens';
 import { Provider as ReduxProvider } from 'react-redux';
 
-import HomeApp from './HomeApp';
-import ApolloClient from './api/ApolloClient';
-import Store from './redux/Store';
-import './menu/DevMenuApp';
-import { AccountNameProvider } from './utils/AccountNameContext';
-import { InitialDataProvider } from './utils/InitialDataContext';
+import HomeApp from './src/HomeApp';
+import ApolloClient from './src/api/ApolloClient';
+import Store from './src/redux/Store';
+import './src/menu/DevMenuApp';
+import { AccountNameProvider } from './src/utils/AccountNameContext';
+import { InitialDataProvider } from './src/utils/InitialDataContext';
 
 if (Platform.OS === 'android') {
   enableScreens(false);

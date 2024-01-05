@@ -6,8 +6,8 @@ This directory contains the apps we use for testing Expo. **Do not add new apps 
   A project that uses the bare workflow and can load the Test Suite and Native Component List's JS.
 - #### [jest-expo Mock Generator](https://github.com/expo/expo/tree/main/apps/jest-expo-mock-generator)
   An app that uses reflection to generate Jest mocks for native modules. Eventually we can remove the need for this once we have a JSON schema for each module definition (Turbomodules) and generate the Jest mock from the JSON schema.
-- #### [Home](https://github.com/expo/expo/tree/main/home) (not in this directory)
-  The UI for the development client.
+- #### [Expo Go](https://github.com/expo/expo/tree/main/apps/expo-go)
+  The UI for the Expo Go client.
 - #### [Native Component List](https://github.com/expo/expo/tree/main/apps/native-component-list)
   A showcase of the components and APIs in the default Expo preset.
 - #### [Sandbox](https://github.com/expo/expo/tree/main/apps/sandbox)

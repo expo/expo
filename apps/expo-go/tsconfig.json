@@ -9,5 +9,6 @@
     "noUnusedParameters": true,
     "noImplicitAny": true
   },
+  "include": ["App.tsx", "src/**/*"],
   "exclude": ["**/__mocks__/*"]
 }

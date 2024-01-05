@@ -201,7 +201,7 @@ async function action(options: ActionOptions): Promise<void> {
   console.log(
     chalk.yellow(
       `Finished publishing. Remember to commit changes of ${chalk.magenta(
-        'home/app.json'
+        'apps/expo-go/app.json'
       )} and ${chalk.magenta('dev-home-config.json')}.`
     )
   );

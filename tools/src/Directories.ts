@@ -7,7 +7,7 @@ export function getExpoRepositoryRootDir(): string {
 }
 
 export function getExpoHomeJSDir(): string {
-  return path.join(getExpoRepositoryRootDir(), 'home');
+  return path.join(getExpoRepositoryRootDir(), 'apps/expo-go');
 }
 
 export function getExpotoolsDir(): string {
