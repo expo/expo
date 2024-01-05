@@ -106,7 +106,7 @@ export default class Recorder extends React.Component<
             { backgroundColor: 'gray' },
             this.state.canRecord && { backgroundColor: 'red' },
           ]}>
-          <Ionicons name="ios-mic" style={[styles.bigIcon, { color: 'white' }]} />
+          <Ionicons name="mic" style={[styles.bigIcon, { color: 'white' }]} />
         </TouchableOpacity>
       );
     }
@@ -117,7 +117,7 @@ export default class Recorder extends React.Component<
           onPress={this._togglePause}
           style={[styles.bigRoundButton, { borderColor: 'red', borderWidth: 5 }]}>
           <Ionicons
-            name={`ios-${this.state.isRecording ? 'pause' : 'mic'}` as any}
+            name={`${this.state.isRecording ? 'pause' : 'mic'}` as any}
             style={[styles.bigIcon, { color: 'red' }]}
           />
         </TouchableOpacity>
@@ -134,7 +134,7 @@ export default class Recorder extends React.Component<
               borderWidth: 4,
             },
           ]}>
-          <Ionicons name="ios-square" style={[styles.smallIcon, { color: 'white' }]} />
+          <Ionicons name="square" style={[styles.smallIcon, { color: 'white' }]} />
         </TouchableOpacity>
       </View>
     );

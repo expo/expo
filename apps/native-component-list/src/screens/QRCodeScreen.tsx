@@ -197,7 +197,7 @@ function QRCodeView() {
             disabled={type !== CameraType.back}
             onPress={onFlashToggle}
             isActive={isLit}
-            iconName="ios-flashlight"
+            iconName="flashlight"
           />
         </View>
       )}

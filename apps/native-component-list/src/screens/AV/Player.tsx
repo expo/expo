@@ -93,19 +93,16 @@ export default function Player(props: Props) {
 
   const _renderPlayPauseButton = () => {
     let onPress = _pause;
-    let iconName = 'ios-pause';
+    let iconName = 'pause';
 
     if (!props.isPlaying) {
       onPress = _play;
-      iconName = 'ios-play';
+      iconName = 'play';
     }
 
     return (
       <TouchableOpacity onPress={onPress} disabled={!props.isLoaded}>
-        <Ionicons
-          name={iconName as 'ios-pause' | 'ios-play'}
-          style={[styles.icon, styles.playPauseIcon]}
-        />
+        <Ionicons name={iconName as 'pause' | 'play'} style={[styles.icon, styles.playPauseIcon]} />
       </TouchableOpacity>
     );
   };
@@ -144,7 +141,7 @@ export default function Player(props: Props) {
         disabled={!props.isLoaded}
         onPress={onPress}>
         <Ionicons
-          name={`ios-${iconName}` as any}
+          name={`${iconName}` as any}
           size={iconName === 'refresh' ? 20 : 24}
           style={[styles.icon, styles.buttonIcon, active && styles.activeButtonText]}
         />
@@ -285,7 +282,7 @@ function PitchControl({
       onPress={() => {
         onPress(!value);
       }}>
-      <Ionicons name="ios-stats-chart" size={24} color={color} style={{}} />
+      <Ionicons name="stats-chart" size={24} color={color} style={{}} />
       <Text
         style={{
           textDecorationLine: disabled ? 'line-through' : 'none',
@@ -307,7 +304,7 @@ function SpeedSegmentedControl({ onValueChange }: { onValueChange: (value: numbe
 
   const renderIcon = (name: string) => (
     <Ionicons
-      name={`ios-${name}` as 'ios-hourglass' | 'ios-speedometer'}
+      name={`${name}` as 'hourglass' | 'speedometer'}
       size={24}
       style={{ color: Colors.tintColor, paddingHorizontal: 8 }}
     />
@@ -439,7 +436,7 @@ function VolumeSlider({
           onValueChanged({ isMuted: !isMuted, volume });
         }}>
         <Ionicons
-          name={`ios-${iconName}` as 'ios-volume-high' | 'ios-volume-low' | 'ios-volume-off'}
+          name={`${iconName}` as 'volume-high' | 'volume-low' | 'volume-off'}
           size={24}
           color={color}
           style={{}}

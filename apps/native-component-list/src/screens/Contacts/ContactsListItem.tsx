@@ -24,7 +24,7 @@ export default function ContactsListItem(props: {
           {subtitle && <Text style={styles.link}>{subtitle}</Text>}
         </View>
         {isMe && <Text style={styles.subtitle}>me</Text>}
-        <Ionicons size={24} color={Colors.tabIconDefault} name="ios-arrow-forward" />
+        <Ionicons size={24} color={Colors.tabIconDefault} name="arrow-forward" />
       </View>
     </TouchableHighlight>
   );
