@@ -24,7 +24,7 @@ type ExpoCliStateObject = {
   };
 };
 
-const EXPO_HOME_PATH = Directories.getExpoHomeJSDir();
+const EXPO_HOME_PATH = Directories.getExpoGoDir();
 const { EXPO_HOME_DEV_ACCOUNT_USERNAME, EXPO_HOME_DEV_ACCOUNT_PASSWORD } = process.env;
 
 /**
