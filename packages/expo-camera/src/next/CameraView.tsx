@@ -9,8 +9,8 @@ import {
   CameraProps,
   CameraRecordingOptions,
   CameraViewRef,
-  ModernScanningOptions,
-  ModernBarcodeScanningResult,
+  ScanningOptions,
+  ScanningResult,
   VideoCodec,
 } from './Camera.types';
 import ExpoCamera from './ExpoCamera';
@@ -142,7 +142,7 @@ export default class CameraView extends React.Component<CameraProps> {
    * Presents a modal view controller that uses the [`DataScannerViewController`](https://developer.apple.com/documentation/visionkit/scanning_data_with_the_camera) available on iOS 16+.
    * @platform ios
    */
-  static async launchScanner(options?: ModernScanningOptions): Promise<void> {
+  static async launchScanner(options?: ScanningOptions): Promise<void> {
     if (!options) {
       options = { barCodeTypes: [] };
     }
@@ -162,19 +162,15 @@ export default class CameraView extends React.Component<CameraProps> {
   }
 
   /**
-   *
-   * Callback that is invoked when a bar code has been successfully scanned. The callback is provided with
-   * an object of the `ModernBarcodeScanningResult` shape, where the `type`
-   * refers to the bar code type that was scanned and the `data` is the information encoded in the bar code
+   * Invokes the `listener` function when a bar code has been successfully scanned. The callback is provided with
+   * an object of the `ScanningResult` shape, where the `type` refers to the bar code type that was scanned and the `data` is the information encoded in the bar code
    * (in this case of QR codes, this is often a URL). See [`BarCodeType`](#barcodetype) for supported values.
-   * @param listener
+   * @param listener Invoked with the [ScanningResult](#scanningresult) when a bar code has been successfully scanned.
    *
    * @platform ios
    */
-  static onModernBarcodeScanned(
-    listener: (event: ModernBarcodeScanningResult) => void
-  ): Subscription {
-    return emitter.addListener<ModernBarcodeScanningResult>('onModernBarcodeScanned', listener);
+  static onModernBarcodeScanned(listener: (event: ScanningResult) => void): Subscription {
+    return emitter.addListener<ScanningResult>('onModernBarcodeScanned', listener);
   }
 
   /**

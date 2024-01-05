@@ -232,7 +232,7 @@ export type BarcodeScanningResult = {
      */
     bounds: BarcodeBounds;
 };
-export type ModernBarcodeScanningResult = Omit<BarcodeScanningResult, 'bounds'>;
+export type ScanningResult = Omit<BarcodeScanningResult, 'bounds'>;
 export type CameraProps = ViewProps & {
     /**
      * Camera facing. Use one of `CameraType`. When `front`, use the front-facing camera.
@@ -366,7 +366,7 @@ export type BarcodeSettings = {
 /**
  * @platform ios
  */
-export type ModernScanningOptions = {
+export type ScanningOptions = {
     /**
      * The type of codes to scan for.
      */

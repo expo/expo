@@ -267,7 +267,7 @@ export type BarcodeScanningResult = {
   bounds: BarcodeBounds;
 };
 
-export type ModernBarcodeScanningResult = Omit<BarcodeScanningResult, 'bounds'>;
+export type ScanningResult = Omit<BarcodeScanningResult, 'bounds'>;
 
 // @needsAudit
 export type CameraProps = ViewProps & {
@@ -404,7 +404,7 @@ export type BarcodeSettings = {
 /**
  * @platform ios
  */
-export type ModernScanningOptions = {
+export type ScanningOptions = {
   /**
    * The type of codes to scan for.
    */
