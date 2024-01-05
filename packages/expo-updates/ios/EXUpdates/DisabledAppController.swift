@@ -16,7 +16,8 @@ public class DisabledAppController: InternalAppControllerInterface {
 
   public weak var delegate: AppControllerDelegate?
 
-  private let stateMachine = UpdatesStateMachine()
+  // disabled controller state machine can only be idle or restarting
+  private let stateMachine = UpdatesStateMachine(validUpdatesStateValues: [UpdatesStateValue.idle, UpdatesStateValue.restarting])
 
   internal private(set) var isEmergencyLaunch: Bool = false
   private let initializationError: Error?
