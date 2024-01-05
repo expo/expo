@@ -42,7 +42,7 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
     View(CameraViewNext.self) {
       Events(cameraNextEvents)
 
-      Prop("type") { (view, type: CameraTypeNext) in
+      Prop("facing") { (view, type: CameraTypeNext) in
         if view.presetCamera != type.toPosition() {
           view.presetCamera = type.toPosition()
         }
