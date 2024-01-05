@@ -9,8 +9,8 @@ import {
   CameraProps,
   CameraRecordingOptions,
   CameraViewRef,
-  ModernScanningOptions,
-  ModernBarcodeScanningResult,
+  ScanningOptions,
+  ScanningResult,
   VideoCodec,
 } from './Camera.types';
 import ExpoCamera from './ExpoCamera';
@@ -102,10 +102,10 @@ export default class CameraView extends React.Component<CameraProps> {
 
   static defaultProps: CameraProps = {
     zoom: 0,
-    type: 'back',
+    facing: 'back',
     enableTorch: false,
     mode: 'picture',
-    flashMode: 'off',
+    flash: 'off',
   };
 
   _cameraHandle?: number | null;
@@ -139,9 +139,10 @@ export default class CameraView extends React.Component<CameraProps> {
   }
 
   /**
-   * Presents a modal view controller that uses the `DataScannerViewController` available on iOS 16+.
+   * Presents a modal view controller that uses the [`DataScannerViewController`](https://developer.apple.com/documentation/visionkit/scanning_data_with_the_camera) available on iOS 16+.
+   * @platform ios
    */
-  static async launchModernScanner(options?: ModernScanningOptions): Promise<void> {
+  static async launchScanner(options?: ScanningOptions): Promise<void> {
     if (!options) {
       options = { barCodeTypes: [] };
     }
@@ -151,7 +152,8 @@ export default class CameraView extends React.Component<CameraProps> {
   }
 
   /**
-   * Dimiss `DataScannerViewController`
+   * Dimiss the scanner presented by `launchScanner`.
+   * @platform ios
    */
   static async dismissScanner(): Promise<void> {
     if (Platform.OS === 'ios' && CameraView.isModernBarcodeScannerAvailable) {
@@ -159,10 +161,16 @@ export default class CameraView extends React.Component<CameraProps> {
     }
   }
 
-  static onModernBarcodeScanned(
-    listener: (event: ModernBarcodeScanningResult) => void
-  ): Subscription {
-    return emitter.addListener<ModernBarcodeScanningResult>('onModernBarcodeScanned', listener);
+  /**
+   * Invokes the `listener` function when a bar code has been successfully scanned. The callback is provided with
+   * an object of the `ScanningResult` shape, where the `type` refers to the bar code type that was scanned and the `data` is the information encoded in the bar code
+   * (in this case of QR codes, this is often a URL). See [`BarCodeType`](#barcodetype) for supported values.
+   * @param listener Invoked with the [ScanningResult](#scanningresult) when a bar code has been successfully scanned.
+   *
+   * @platform ios
+   */
+  static onModernBarcodeScanned(listener: (event: ScanningResult) => void): Subscription {
+    return emitter.addListener<ScanningResult>('onModernBarcodeScanned', listener);
   }
 
   /**

@@ -43,6 +43,9 @@ declare function requestMicrophonePermissionsAsync(): Promise<PermissionResponse
  */
 export declare const useMicrophonePermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 export * from './Camera.types';
+/**
+ * @hidden
+ */
 export declare const Camera: {
     getCameraPermissionsAsync: typeof getCameraPermissionsAsync;
     requestCameraPermissionsAsync: typeof requestCameraPermissionsAsync;

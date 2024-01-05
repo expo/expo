@@ -636,7 +636,6 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
   public override func removeFromSuperview() {
     lifecycleManager?.unregisterAppLifecycleListener(self)
-    self.stopSession()
     super.removeFromSuperview()
     NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
   }

@@ -3,7 +3,7 @@ import CameraManager from '../ExpoCameraManager';
 // Values under keys from this object will be transformed to native options
 export const ConversionTables = {
     type: CameraManager.Type,
-    flashMode: CameraManager.FlashMode,
+    flash: CameraManager.FlashMode,
 };
 export function convertNativeProps(props) {
     if (!props || typeof props !== 'object') {

@@ -68,10 +68,10 @@ export default class CameraView extends React.Component {
     static ConversionTables = ConversionTables;
     static defaultProps = {
         zoom: 0,
-        type: 'back',
+        facing: 'back',
         enableTorch: false,
         mode: 'picture',
-        flashMode: 'off',
+        flash: 'off',
     };
     _cameraHandle;
     _cameraRef = React.createRef();
@@ -99,9 +99,10 @@ export default class CameraView extends React.Component {
         return await this._cameraRef.current?.takePicture(pictureOptions);
     }
     /**
-     * Presents a modal view controller that uses the `DataScannerViewController` available on iOS 16+.
+     * Presents a modal view controller that uses the [`DataScannerViewController`](https://developer.apple.com/documentation/visionkit/scanning_data_with_the_camera) available on iOS 16+.
+     * @platform ios
      */
-    static async launchModernScanner(options) {
+    static async launchScanner(options) {
         if (!options) {
             options = { barCodeTypes: [] };
         }
@@ -110,13 +111,22 @@ export default class CameraView extends React.Component {
         }
     }
     /**
-     * Dimiss `DataScannerViewController`
+     * Dimiss the scanner presented by `launchScanner`.
+     * @platform ios
      */
     static async dismissScanner() {
         if (Platform.OS === 'ios' && CameraView.isModernBarcodeScannerAvailable) {
             await CameraManager.dismissScanner();
         }
     }
+    /**
+     * Invokes the `listener` function when a bar code has been successfully scanned. The callback is provided with
+     * an object of the `ScanningResult` shape, where the `type` refers to the bar code type that was scanned and the `data` is the information encoded in the bar code
+     * (in this case of QR codes, this is often a URL). See [`BarCodeType`](#barcodetype) for supported values.
+     * @param listener Invoked with the [ScanningResult](#scanningresult) when a bar code has been successfully scanned.
+     *
+     * @platform ios
+     */
     static onModernBarcodeScanned(listener) {
         return emitter.addListener('onModernBarcodeScanned', listener);
     }

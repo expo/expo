@@ -64,6 +64,9 @@ export const useMicrophonePermissions = createPermissionHook({
     requestMethod: requestMicrophonePermissionsAsync,
 });
 export * from './Camera.types';
+/**
+ * @hidden
+ */
 export const Camera = {
     getCameraPermissionsAsync,
     requestCameraPermissionsAsync,

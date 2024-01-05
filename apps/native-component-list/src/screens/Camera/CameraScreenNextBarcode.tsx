@@ -1,11 +1,11 @@
-import { CameraView, ModernBarcodeScanningResult, ModernScanningOptions } from 'expo-camera/next';
+import { CameraView, ScanningResult, ScanningOptions } from 'expo-camera/next';
 import Checkbox from 'expo-checkbox';
 import { useEffect, useState } from 'react';
 import { View, Button, Platform, Text, StyleSheet } from 'react-native';
 
 export default function CameraScreenNextBarcode() {
-  const [result, setResult] = useState<ModernBarcodeScanningResult | null>(null);
-  const [options, setOptions] = useState<ModernScanningOptions>({
+  const [result, setResult] = useState<ScanningResult | null>(null);
+  const [options, setOptions] = useState<ScanningOptions>({
     isGuidanceEnabled: false,
     barCodeTypes: ['qr'],
     isHighlightingEnabled: false,
@@ -25,7 +25,7 @@ export default function CameraScreenNextBarcode() {
 
   async function launchScanner() {
     if (CameraView.isModernBarcodeScannerAvailable) {
-      await CameraView.launchModernScanner(options);
+      await CameraView.launchScanner(options);
     }
   }
 

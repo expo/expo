@@ -38,6 +38,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-build-properties': [['withBuildProperties.ts', 'pluginConfig.ts']],
   'expo-calendar': ['Calendar.ts'],
   'expo-camera': ['index.ts'],
+  'expo-camera-next': ['next/index.ts', 'expo-camera'],
   'expo-cellular': ['Cellular.ts'],
   'expo-checkbox': ['Checkbox.ts'],
   'expo-clipboard': [['Clipboard.ts', 'Clipboard.types.ts']],

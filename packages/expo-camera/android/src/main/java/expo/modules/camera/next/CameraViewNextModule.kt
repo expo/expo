@@ -81,8 +81,8 @@ class CameraViewNextModule : Module() {
     View(ExpoCameraView::class) {
       Events(cameraEvents)
 
-      Prop("type") { view, type: CameraType ->
-        view.lenFacing = type
+      Prop("facing") { view, facing: CameraType ->
+        view.lenFacing = facing
       }
 
       Prop("flashMode") { view, flashMode: FlashMode ->
