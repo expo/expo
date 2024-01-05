@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add more failure logs in asset download. ([#26277](https://github.com/expo/expo/pull/26277) by [@wschurman](https://github.com/wschurman))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
