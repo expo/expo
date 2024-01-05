@@ -356,7 +356,7 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
     }
 
     FileDownloader.assetFilesQueue.async {
-      self.downloader.downloadFile(
+      self.downloader.downloadAsset(
         fromURL: assetUrl,
         verifyingHash: asset.expectedHash,
         toPath: assetLocalUrl.path,

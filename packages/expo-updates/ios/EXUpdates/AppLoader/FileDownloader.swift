@@ -110,7 +110,7 @@ public final class FileDownloader {
 
   public static let assetFilesQueue: DispatchQueue = DispatchQueue(label: "expo.controller.AssetFilesQueue")
 
-  public func downloadFile(
+  public func downloadAsset(
     fromURL url: URL,
     verifyingHash expectedBase64URLEncodedSHA256Hash: String?,
     toPath destinationPath: String,
@@ -124,7 +124,7 @@ public final class FileDownloader {
     ) { data, response in
       guard let data = data else {
         let errorMessage = String(
-          format: "File download response was empty for URL: %@",
+          format: "Asset download response was empty for URL: %@",
           url.absoluteString
         )
         self.logger.error(message: errorMessage, code: UpdatesErrorCode.assetsFailedToLoad)
@@ -140,7 +140,8 @@ public final class FileDownloader {
       if let expectedBase64URLEncodedSHA256Hash = expectedBase64URLEncodedSHA256Hash,
         expectedBase64URLEncodedSHA256Hash != hashBase64String {
         let errorMessage = String(
-          format: "File download was successful but base64url-encoded SHA-256 did not match expected; expected: %@; actual: %@",
+          format: "Asset download was successful but base64url-encoded SHA-256 did not match expected; URL: %@; expected hash: %@; actual hash: %@",
+          url.absoluteString,
           expectedBase64URLEncodedSHA256Hash,
           hashBase64String
         )
@@ -159,11 +160,11 @@ public final class FileDownloader {
         return
       } catch {
         let errorMessage = String(
-          format: "Could not write to path %@: %@",
+          format: "Could not write downloaded asset file to path %@: %@",
           destinationPath,
           error.localizedDescription
         )
-        self.logger.error(message: errorMessage, code: UpdatesErrorCode.unknown)
+        self.logger.error(message: errorMessage, code: UpdatesErrorCode.assetsFailedToLoad)
         errorBlock(NSError(
           domain: ErrorDomain,
           code: FileDownloaderErrorCode.FileWriteError.rawValue,
@@ -175,6 +176,7 @@ public final class FileDownloader {
         return
       }
     } errorBlock: { error in
+      self.logger.error(message: error.localizedDescription, code: UpdatesErrorCode.assetsFailedToLoad)
       errorBlock(error)
     }
   }
