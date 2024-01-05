@@ -1,5 +1,5 @@
 ---
-title: Create dev tools plugin
+title: Create a dev tools plugin
 description: Learn how to create a dev tools plugin to enhance your development experience.
 ---
 
@@ -11,7 +11,7 @@ You create a dev tools plugin, whether that's for inspecting aspects of a common
 
 A plugin consists of three key elements:
 - an Expo app to display the dev tools web user interface
-- an **expo-module.config.json** for Expo CLI recognition 
+- an **expo-module.config.json** for Expo CLI recognition
 - calls to `expo/devtools` API for the app to communicate back and forth with the dev tool's web interface
 
 Plugins can be included inside your app's monorepo or distributed separately on npm.
@@ -92,7 +92,7 @@ Create a **package.json** script that builds the web app and moves it to the **d
 },
 ```
 
-Then run the build script to export the plugin web UI and move it to the proper folder:
+Then run the build script to export the plugin web UI and move it to the **dist** folder:
 
 <Terminal cmd={['$ npm run build']} />
 
