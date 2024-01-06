@@ -32,8 +32,6 @@
 #import <React/RCTImageResponseObserverProxy.h>
 #import <React/RCTImageSource.h>
 #import <react/renderer/components/rnsvg/ComponentDescriptors.h>
-#import <react/renderer/components/view/conversions.h>
-#import <react/renderer/imagemanager/RCTImagePrimitivesConversions.h>
 #import <rnsvg/RNSVGImageComponentDescriptor.h>
 #import "RNSVGFabricConversions.h"
 
