@@ -37,7 +37,7 @@ Pod::Spec.new do |s|
     ]
   }
 
-  new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+  new_arch_enabled = ENV['USE_NEW_ARCH'] != nil ? ENV['USE_NEW_ARCH'] == '1' : ENV['RCT_NEW_ARCH_ENABLED'] == '1'
 
   other_c_flags = "$(inherited) -DREACT_NATIVE_TARGET_VERSION=#{reactNativeTargetVersion}"
   dev_launcher_url = ENV['EX_DEV_LAUNCHER_URL'] || ""
@@ -54,7 +54,7 @@ Pod::Spec.new do |s|
   end
 
   if new_arch_enabled
-    other_c_flags += ' -DRN_FABRIC_ENABLED -DRCT_NEW_ARCH_ENABLED'
+    other_c_flags += ' -DRN_FABRIC_ENABLED -DUSE_NEW_ARCH'
   end
 
   s.xcconfig = {
