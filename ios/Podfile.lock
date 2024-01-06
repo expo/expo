@@ -2244,7 +2244,7 @@ PODS:
     - React-RCTText
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (3.27.0):
+  - RNScreens (3.29.0):
     - React-Core
     - React-RCTImage
   - RNSVG (14.1.0):

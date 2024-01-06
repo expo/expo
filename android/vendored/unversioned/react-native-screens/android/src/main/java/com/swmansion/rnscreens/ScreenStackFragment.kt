@@ -77,6 +77,7 @@ class ScreenStackFragment : ScreenFragment, ScreenStackFragmentWrapper {
     }
 
     override fun onContainerUpdate() {
+        super.onContainerUpdate()
         screen.headerConfig?.onUpdate()
     }
 

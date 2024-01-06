@@ -1423,6 +1423,15 @@ Class<RCTComponentViewProtocol> RNSScreenCls(void)
     // we don't want to send `scrollViewDidEndDecelerating` event to JS before the JS thread is ready
     return;
   }
+
+  if ([NSStringFromClass([view class]) isEqualToString:@"AVPlayerView"]) {
+    // Traversing through AVPlayerView is an uncommon edge case that causes the disappearing screen
+    // to an excessive traversal through all video player elements
+    // (e.g., for react-native-video, this includes all controls and additional video views).
+    // Thus, we want to avoid unnecessary traversals through these views.
+    return;
+  }
+
   if ([view isKindOfClass:[UIScrollView class]] &&
       ([[(UIScrollView *)view delegate] respondsToSelector:@selector(scrollViewDidEndDecelerating:)])) {
     [[(UIScrollView *)view delegate] scrollViewDidEndDecelerating:(id)view];
@@ -1543,6 +1552,7 @@ RCT_ENUM_CONVERTER(
       @"slide_from_bottom" : @(RNSScreenStackAnimationSlideFromBottom),
       @"slide_from_right" : @(RNSScreenStackAnimationDefault),
       @"slide_from_left" : @(RNSScreenStackAnimationDefault),
+      @"ios" : @(RNSScreenStackAnimationDefault),
     }),
     RNSScreenStackAnimationDefault,
     integerValue)

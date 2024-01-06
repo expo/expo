@@ -86,8 +86,16 @@
     "react-native-pager-view": "6.2.3",
     "react-native-reanimated": "~3.6.0",
     "react-native-safe-area-context": "4.8.2",
+<<<<<<< HEAD
     "react-native-screens": "~3.27.0",
     "react-native-svg": "14.1.0",
+||||||| parent of a94c170b85 ([ios][android] Update react-native-screens to 3.29.0)
+    "react-native-screens": "~3.27.0",
+    "react-native-svg": "14.0.0",
+=======
+    "react-native-screens": "~3.29.0",
+    "react-native-svg": "14.0.0",
+>>>>>>> a94c170b85 ([ios][android] Update react-native-screens to 3.29.0)
     "react-native-view-shot": "3.8.0",
     "react-native-webview": "13.6.4",
     "test-suite": "*"
