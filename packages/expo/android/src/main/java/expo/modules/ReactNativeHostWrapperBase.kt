@@ -5,12 +5,7 @@ import androidx.collection.ArrayMap
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
-import com.facebook.react.bridge.JSIModule
-import com.facebook.react.bridge.JSIModulePackage
-import com.facebook.react.bridge.JSIModuleSpec
-import com.facebook.react.bridge.JavaScriptContextHolder
 import com.facebook.react.bridge.JavaScriptExecutorFactory
-import com.facebook.react.bridge.ReactApplicationContext
 import java.lang.reflect.Method
 
 open class ReactNativeHostWrapperBase(
