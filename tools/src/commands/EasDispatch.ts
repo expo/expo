@@ -11,7 +11,7 @@ import os from 'os';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
-import { EXPO_DIR, IOS_DIR } from '../Constants';
+import { EXPO_DIR, EXPO_GO_IOS_DIR } from '../Constants';
 import Git from '../Git';
 import logger from '../Logger';
 import { androidAppVersionAsync, iosAppVersionAsync } from '../ProjectVersions';
@@ -362,7 +362,7 @@ async function androidAPKBuildAndPublishAsync() {
 }
 
 async function internalRemoveBackgroundPermissionsFromInfoPlistAsync(): Promise<void> {
-  const INFO_PLIST_PATH = path.join(IOS_DIR, 'Exponent/Supporting/Info.plist');
+  const INFO_PLIST_PATH = path.join(EXPO_GO_IOS_DIR, 'Exponent/Supporting/Info.plist');
   const rawPlist = await fs.readFile(INFO_PLIST_PATH, 'utf-8');
   const parsedPlist = plist.parse(rawPlist);
 
