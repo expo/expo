@@ -16759,10 +16759,10 @@ react-native-reanimated@~3.6.0:
     convert-source-map "^2.0.0"
     invariant "^2.2.4"
 
-react-native-safe-area-context@4.7.4:
-  version "4.7.4"
-  resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-4.7.4.tgz#3dd8438971e70043d76f2428ede75b8a9639265e"
-  integrity sha512-3LR3DCq9pdzlbq6vsHGWBFehXAKDh2Ljug6jWhLWs1QFuJHM6AS2+mH2JfKlB2LqiSFZOBcZfHQFz0sGaA3uqg==
+react-native-safe-area-context@4.8.2:
+  version "4.8.2"
+  resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-4.8.2.tgz#e6b3d8acf3c6afcb4b5db03a97f9c37df7668f65"
+  integrity sha512-ffUOv8BJQ6RqO3nLml5gxJ6ab3EestPiyWekxdzO/1MQ7NF8fW1Mzh1C5QE9yq573Xefnc7FuzGXjtesZGv7cQ==
 
 react-native-screens@~3.27.0:
   version "3.27.0"
@@ -16777,10 +16777,10 @@ react-native-scrollable-mixin@^1.0.0:
   resolved "https://registry.yarnpkg.com/react-native-scrollable-mixin/-/react-native-scrollable-mixin-1.0.1.tgz#34a32167b64248594154fd0d6a8b03f22740548e"
   integrity sha512-haw7VtcK0Vg1p7CTE8vzhltICPhfuzLUNR1m9Rh55VYEGkD3o765Y5YTu88iA32uV/hMhJUopP5Tex/SvNidoA==
 
-react-native-svg@14.0.0:
-  version "14.0.0"
-  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-14.0.0.tgz#ea1974dec9a91a09c6a38b7bf58d85e857c291f5"
-  integrity sha512-17W/gWXRUMS7p7PSHu/WyGkZUc1NzRTGxxXc0VqBLjzKSchyb0EmgsiWf9aKmfC6gmY0wcsmKZcGV41bCcNfBA==
+react-native-svg@14.1.0:
+  version "14.1.0"
+  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-14.1.0.tgz#7903bddd3c71bf3a8a503918253c839e6edaa724"
+  integrity sha512-HeseElmEk+AXGwFZl3h56s0LtYD9HyGdrpg8yd9QM26X+d7kjETrRQ9vCjtxuT5dCZEIQ5uggU1dQhzasnsCWA==
   dependencies:
     css-select "^5.1.0"
     css-tree "^1.1.3"
