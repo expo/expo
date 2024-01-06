@@ -3,7 +3,9 @@ import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
 import fs from 'fs-extra';
+import glob from 'glob-promise';
 import path from 'path';
+import semver from 'semver';
 
 import { EXPO_DIR, EXPOTOOLS_DIR } from '../Constants';
 import logger from '../Logger';
@@ -31,13 +33,13 @@ async function main() {
   const pinnedPackages = {
     'react-native': nightlyVersion,
 
-    // These 3rd party libraries are broken from react-native nightlies, trying to update them to the latest version.
+    // These 3rd party libraries are broken from react-native nightlies, trying to update them to newer versions.
     ...(await queryLatest3rdPartyLibrariesAsync({
       '@react-native-community/slider': 'latest',
       'lottie-react-native': 'latest',
       'react-native-pager-view': 'latest',
       'react-native-safe-area-context': 'latest',
-      'react-native-screens': 'latest',
+      'react-native-screens': '3.29.0',
       'react-native-svg': 'latest',
       'react-native-webview': 'latest',
     })),
@@ -48,6 +50,7 @@ async function main() {
   await workspaceInstallAsync();
 
   await patchAndroidCallInvokerHolderAsync();
+  await patchIosNewArchFlagsAsync(path.join(EXPO_DIR, 'node_modules', 'react-native-reanimated'));
 
   const patches = [
     'datetimepicker.patch',
@@ -171,6 +174,30 @@ async function patchAndroidCallInvokerHolderAsync() {
   }
 }
 
+async function patchIosNewArchFlagsAsync(packageRoot: string) {
+  const podspecPath = await glob('*.podspec', { cwd: packageRoot, absolute: true });
+  await transformFileAsync(podspecPath[0], [
+    {
+      find: "new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'",
+      replaceWith:
+        "new_arch_enabled = ENV['USE_NEW_ARCH'] != nil ? ENV['USE_NEW_ARCH'] == '1' : ENV['RCT_NEW_ARCH_ENABLED'] == '1'",
+    },
+  ]);
+
+  const files = await glob('**/*.{h,cpp,m,mm}', { cwd: packageRoot, absolute: true });
+  const regexp = /RCT_NEW_ARCH_ENABLED/g;
+  await Promise.all(
+    files.map((file) =>
+      transformFileAsync(file, [
+        {
+          find: regexp,
+          replaceWith: 'USE_NEW_ARCH',
+        },
+      ])
+    )
+  );
+}
+
 async function updateExpoModulesAsync() {
   // no-op currently
 }
@@ -206,10 +233,15 @@ async function queryNpmDistTagVersionAsync(pkg: string, distTag: string) {
   return version;
 }
 
-async function queryLatest3rdPartyLibrariesAsync(pkgAndTag: Record<string, string>) {
+async function queryLatest3rdPartyLibrariesAsync(pkgTuple: Record<string, string>) {
   const pkgAndVersion: Record<string, string> = {};
-  for (const [pkg, tag] of Object.entries(pkgAndTag)) {
-    const version = await queryNpmDistTagVersionAsync(pkg, tag);
+  for (const [pkg, tagOrVersion] of Object.entries(pkgTuple)) {
+    let version;
+    if (semver.valid(tagOrVersion)) {
+      version = tagOrVersion;
+    } else {
+      version = await queryNpmDistTagVersionAsync(pkg, tagOrVersion);
+    }
     pkgAndVersion[pkg] = version;
   }
   return pkgAndVersion;
