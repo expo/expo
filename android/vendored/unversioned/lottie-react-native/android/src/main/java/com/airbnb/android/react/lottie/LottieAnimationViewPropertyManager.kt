@@ -3,7 +3,6 @@ package com.airbnb.android.react.lottie
 import android.graphics.ColorFilter
 import android.graphics.Typeface
 import android.net.Uri
-import android.util.Log
 import android.widget.ImageView
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieDrawable
@@ -14,7 +13,6 @@ import com.airbnb.lottie.TextDelegate
 import com.airbnb.lottie.FontAssetDelegate
 import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.value.LottieValueCallback
-import com.facebook.react.BuildConfig
 import com.facebook.react.bridge.ColorPropConverter
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
@@ -24,6 +22,9 @@ import com.facebook.react.views.text.TextAttributeProps.UNSET
 import com.facebook.react.util.RNLog
 import java.lang.ref.WeakReference
 import java.util.regex.Pattern
+import java.util.zip.ZipInputStream
+import java.io.File
+import java.io.FileInputStream
 
 /**
  * Class responsible for applying the properties to the LottieView. The way react-native works makes
@@ -67,9 +68,8 @@ class LottieAnimationViewPropertyManager(view: LottieAnimationView) {
 
         view.setFontAssetDelegate(object : FontAssetDelegate() {
             override fun fetchFont(fontFamily: String): Typeface {
-                val typeface = ReactFontManager.getInstance()
+                return ReactFontManager.getInstance()
                     .getTypeface(fontFamily, UNSET, UNSET, view.context.assets)
-                return typeface?: Typeface.defaultFromStyle(400)
             }
         
             override fun fetchFont(fontFamily: String, fontStyle: String, fontName: String): Typeface {
@@ -82,9 +82,8 @@ class LottieAnimationViewPropertyManager(view: LottieAnimationView) {
                     "Black" -> 900
                     else -> UNSET
                 }
-                val typeface = ReactFontManager.getInstance()
+                return ReactFontManager.getInstance()
                     .getTypeface(fontName, UNSET, weight, view.context.assets)
-                return typeface?: Typeface.defaultFromStyle(400)
             }
         })
     }
@@ -119,13 +118,27 @@ class LottieAnimationViewPropertyManager(view: LottieAnimationView) {
         }
 
         animationURL?.let {
-            view.setAnimationFromUrl(it, it.hashCode().toString())
+            var file = File(it)
+            if (file.exists()) {
+                view.setAnimation(FileInputStream(file), it.hashCode().toString())
+            } else {
+                view.setAnimationFromUrl(it, it.hashCode().toString())
+            }
             animationURL = null
         }
 
         sourceDotLottie?.let { assetName ->
-            val scheme = runCatching { Uri.parse(assetName).scheme }.getOrNull()
+            var file = File(assetName)
+            if (file.exists()) {
+                view.setAnimation(
+                    ZipInputStream(FileInputStream(file)),
+                    assetName.hashCode().toString()
+                )
+                sourceDotLottie = null
+                return
+            }
 
+            val scheme = runCatching { Uri.parse(assetName).scheme }.getOrNull()
             if (scheme != null) {
                 view.setAnimationFromUrl(assetName)
                 sourceDotLottie = null
