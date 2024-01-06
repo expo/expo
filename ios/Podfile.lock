@@ -837,7 +837,7 @@ PODS:
     - React-Core
   - EXNotifications (0.27.2):
     - ExpoModulesCore
-  - Expo (50.0.0-preview.8):
+  - Expo (50.0.0-preview.7):
     - ExpoModulesCore
   - ExpoAppleAuthentication (6.3.0):
     - ExpoModulesCore
@@ -963,7 +963,7 @@ PODS:
   - EXTaskManager (11.7.0):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (0.24.6):
+  - EXUpdates (0.24.5):
     - EASClient
     - EXManifests
     - ExpoModulesCore
@@ -973,7 +973,7 @@ PODS:
     - ReachabilitySwift
     - React-Core
     - sqlite3 (~> 3.42.0)
-  - EXUpdates/Tests (0.24.6):
+  - EXUpdates/Tests (0.24.5):
     - EASClient
     - EXManifests
     - ExpoModulesCore
@@ -3264,7 +3264,7 @@ SPEC CHECKSUMS:
   EXManifests: 2355abd4aeacfb75eec5b43393c0aef9c2789fcf
   EXMediaLibrary: 179f3ffc668ca2eb7b14e8ed7b404321624f9093
   EXNotifications: 3ee880b7474efd940c4aa7502c8a6f1f51e3dafa
-  Expo: 87664535771d38d078a93d5db36a3f82f06eb7f9
+  Expo: cd2dc043dd1cc3d9e8e4e035fb9a41b421e8f13f
   ExpoAppleAuthentication: 4fc9972356977f009911f2f3a5f56319c2a5b11b
   ExpoBackgroundFetch: 094377b73648adb55032a440f50cad1a5d3c3a89
   ExpoBattery: 60bf880aea8f769fe39f709a920442542c1bfd62
@@ -3310,7 +3310,7 @@ SPEC CHECKSUMS:
   EXSplashScreen: 30e18a1afc6c8afbc5d7fe612232e1ffd119035c
   EXStructuredHeaders: 3b8ec10c65a4607dc976b6cdfa5136d2ea2ece19
   EXTaskManager: 81b2dfaaba6d9f9a4bc3e3e2a786a98004eb9e98
-  EXUpdates: 1f3f34454d39132504a194ca1ed8809e8f957309
+  EXUpdates: 87277948b77dabde81251fbd07c831418dd10993
   EXUpdatesInterface: 95d6bc086d7e043c1f33e30762ebc16a5cf4b153
   FBAEMKit: 4763aa27b8f69eb9d2c274189e91388de1dbd88a
   FBAudienceNetwork: 03e273f66b70756be7d060927111af97b7641b06
