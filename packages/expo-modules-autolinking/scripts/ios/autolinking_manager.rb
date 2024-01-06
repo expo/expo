@@ -245,9 +245,11 @@ module Expo
     end
 
     # Checks whether the podspec declares support for the given platform.
+    # It compares not only the platform name, but also the deployment target.
     private def podspec_supports_platform?(podspec, platform)
-      # TODO: check if it works when the deployment targets are different
-      return platform && podspec.available_platforms().include?(platform)
+      return platform && podspec.available_platforms().any? do |available_platform|
+        next platform.supports?(available_platform)
+      end
     end
 
   end # class AutolinkingManager
