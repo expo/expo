@@ -16806,10 +16806,10 @@ react-native-web@~0.19.6:
     postcss-value-parser "^4.2.0"
     styleq "^0.1.3"
 
-react-native-webview@13.6.3:
-  version "13.6.3"
-  resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-13.6.3.tgz#f3d26e942ef5cc5a07547f2e47903aa81a68e25e"
-  integrity sha512-IApO0JSj0uAWsBGKWagyfgDYoX29piiMYLmkHtRjKeL1rIVjLoR/bMe7KJ/0X47y86b//a6u3cYQtphyay+F2A==
+react-native-webview@13.6.4:
+  version "13.6.4"
+  resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-13.6.4.tgz#6ef66db9dd78b2a2ae1b4fe79e1e3597aa29186e"
+  integrity sha512-AdgmaMBHPcyERTvng9eSGgHX6AleyUlSusWAxngSOSdiYGgHW81T6C5A8j/ImJAF9oZg0bQDxp43Hu56tzENZQ==
   dependencies:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"
