@@ -5,26 +5,28 @@ import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
 import com.facebook.react.bridge.Arguments
-import com.facebook.react.uimanager.FabricViewStateManager
-import com.facebook.react.uimanager.FabricViewStateManager.HasFabricViewStateManager
+import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.views.view.ReactViewGroup
-import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
 private const val MAX_WAIT_TIME_NANO = 500000000L // 500ms
 
 class SafeAreaView(context: Context?) :
-    ReactViewGroup(context), ViewTreeObserver.OnPreDrawListener, HasFabricViewStateManager {
+    ReactViewGroup(context), ViewTreeObserver.OnPreDrawListener {
   private var mMode = SafeAreaViewMode.PADDING
   private var mInsets: EdgeInsets? = null
   private var mEdges: SafeAreaViewEdges? = null
   private var mProviderView: View? = null
-  private val mFabricViewStateManager = FabricViewStateManager()
+  private var mStateWrapper: StateWrapper? = null
 
-  override fun getFabricViewStateManager(): FabricViewStateManager {
-    return mFabricViewStateManager
+  fun getStateWrapper(): StateWrapper? {
+    return mStateWrapper
+  }
+
+  fun setStateWrapper(stateWrapper: StateWrapper?) {
+    mStateWrapper = stateWrapper
   }
 
   private fun updateInsets() {
@@ -37,12 +39,11 @@ class SafeAreaView(context: Context?) :
                   SafeAreaViewEdgeModes.ADDITIVE,
                   SafeAreaViewEdgeModes.ADDITIVE,
                   SafeAreaViewEdgeModes.ADDITIVE)
-      if (mFabricViewStateManager.hasStateWrapper()) {
-        mFabricViewStateManager.setState {
-          val map = Arguments.createMap()
-          map.putMap("insets", edgeInsetsToJsMap(insets))
-          map
-        }
+      val stateWrapper = getStateWrapper()
+      if (stateWrapper != null) {
+        val map = Arguments.createMap()
+        map.putMap("insets", edgeInsetsToJsMap(insets))
+        stateWrapper.updateState(map)
       } else {
         val localData = SafeAreaViewLocalData(insets = insets, mode = mMode, edges = edges)
         val reactContext = getReactContext(this)
