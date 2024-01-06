@@ -76,6 +76,9 @@ Pod::Spec.new do |s|
   }
 
   compiler_flags = folly_compiler_flags + ' ' + "-DREACT_NATIVE_MINOR_VERSION=#{reactNativeMinorVersion}"
+  if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
+    compiler_flags += ' -DUSE_HERMES'
+  end
 
   s.dependency 'React-Core'
   s.dependency 'ReactCommon/turbomodule/core'
