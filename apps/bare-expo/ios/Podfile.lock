@@ -1953,7 +1953,7 @@ SPEC CHECKSUMS:
   EXManifests: 2355abd4aeacfb75eec5b43393c0aef9c2789fcf
   EXMediaLibrary: 5a74f7d9cce776ca07cb3090b948cedd7d4841a1
   EXNotifications: 3ee880b7474efd940c4aa7502c8a6f1f51e3dafa
-  Expo: 87664535771d38d078a93d5db36a3f82f06eb7f9
+  Expo: 38112cabf7758f70ea13178b7db869cb8658b904
   expo-dev-client: 21a0596a8b6e51425b0f0006ec942b61a633e643
   expo-dev-launcher: 90c05b0da0a9e1e27063510f019c4f8e0ef5b76d
   expo-dev-menu: 48359556db01e574b4f966ca39fe24c1efdee4c3
