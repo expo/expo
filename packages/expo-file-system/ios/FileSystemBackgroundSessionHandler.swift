@@ -19,7 +19,9 @@ public final class FileSystemBackgroundSessionHandler: ExpoAppDelegateSubscriber
 
   // MARK: - ExpoAppDelegateSubscriber
 
+  #if os(iOS) || os(tvOS)
   public func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
     completionHandlers[identifier] = completionHandler
   }
+  #endif
 }
