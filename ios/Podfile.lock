@@ -1135,8 +1135,10 @@ PODS:
   - libwebp/webp (1.3.2):
     - libwebp/sharpyuv
   - lottie-ios (4.3.3)
-  - lottie-react-native (6.4.1):
+  - lottie-react-native (6.5.1):
+    - glog
     - lottie-ios (~> 4.3.3)
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core
   - MBProgressHUD (1.2.0)
   - nanopb (2.30909.0):
@@ -3340,7 +3342,7 @@ SPEC CHECKSUMS:
   libvmaf: 27f523f1e63c694d14d534cd0fddd2fab0ae8711
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
   lottie-ios: 25e7b2675dad5c3ddad369ac9baab03560c5bfdd
-  lottie-react-native: a2ae9c27c273b060b2affff2957bc0ff7fdca353
+  lottie-react-native: c1c6a1fd86e1942d69c2bc2e14212be72b55f3be
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
   Nimble: 97d90931cca412a23224ff29e258809f75c258f7
