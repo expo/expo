@@ -1,7 +1,5 @@
 package versioned.host.exp.exponent.modules.api.safeareacontext
 
-import java.util.*
-
 enum class SafeAreaViewEdgeModes {
   OFF,
   ADDITIVE,
