@@ -51,7 +51,23 @@ const config: VendoringTargetConfig = {
     'lottie-react-native': {
       source: 'lottie-react-native',
       sourceType: 'npm',
-      ios: {},
+      ios: {
+        async preReadPodspecHookAsync(podspecPath: string): Promise<string> {
+          let content = await fs.readFile(podspecPath, 'utf-8');
+          // load `install_modules_dependencies()` from react-native_pods.rb
+          content = content.replace(
+            /^(\s*install_modules_dependencies\(.*$)/gm,
+            `\
+    unless defined?(install_modules_dependencies)
+      require File.join('${REACT_NATIVE_SUBMODULE_DIR}', 'scripts/react_native_pods')
+    end\n$1`
+          );
+          // comment out `Pod::UI.puts` calls that will break JSON parsing
+          content = content.replace(/Pod::UI.puts\(.+\)/gm, '');
+          await fs.writeFile(podspecPath, content);
+          return podspecPath;
+        },
+      },
       android: {
         includeFiles: ['android/**'],
         excludeFiles: ['src/android/gradle.properties', 'src/android/gradle-maven-push.gradle'],
