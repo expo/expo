@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added support for macOS and tvOS targets. ([#26287](https://github.com/expo/expo/pull/26287) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
