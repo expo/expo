@@ -6,8 +6,8 @@ import { Podspec, readPodspecAsync } from './CocoaPods';
 import * as Directories from './Directories';
 import * as Npm from './Npm';
 
-const ANDROID_DIR = Directories.getAndroidDir();
-const IOS_DIR = Directories.getIosDir();
+const ANDROID_DIR = Directories.getExpoGoAndroidDir();
+const IOS_DIR = Directories.getExpoGoIosDir();
 const PACKAGES_DIR = Directories.getPackagesDir();
 
 /**

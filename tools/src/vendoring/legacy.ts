@@ -51,8 +51,8 @@ interface VendoredModuleConfig {
   warnings?: string[];
 }
 
-const IOS_DIR = Directories.getIosDir();
-const ANDROID_DIR = Directories.getAndroidDir();
+const IOS_DIR = Directories.getExpoGoIosDir();
+const ANDROID_DIR = Directories.getExpoGoAndroidDir();
 
 const SvgModifier: ModuleModifier = async function (
   moduleConfig: VendoredModuleConfig,

@@ -4,7 +4,7 @@ import glob from 'glob-promise';
 import path from 'path';
 
 import { Podspec } from '../CocoaPods';
-import { IOS_DIR } from '../Constants';
+import { EXPO_GO_IOS_DIR } from '../Constants';
 import logger from '../Logger';
 import { Package } from '../Packages';
 import {
@@ -15,7 +15,7 @@ import {
 import XcodeProject from './XcodeProject';
 import { Flavor, Framework, XcodebuildSettings } from './XcodeProject.types';
 
-const PODS_DIR = path.join(IOS_DIR, 'Pods');
+const PODS_DIR = path.join(EXPO_GO_IOS_DIR, 'Pods');
 
 // We will be increasing this list slowly. Once all are enabled,
 // find a better way to ignore some packages that shouldn't be prebuilt (like interfaces).

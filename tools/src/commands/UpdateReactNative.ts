@@ -2,7 +2,7 @@ import { Command } from '@expo/commander';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 
-import { ANDROID_DIR } from '../Constants';
+import { EXPO_GO_ANDROID_DIR } from '../Constants';
 import { getNextSDKVersionAsync } from '../ProjectVersions';
 
 type ActionOptions = {
@@ -17,7 +17,7 @@ async function updateReactAndroidAsync(sdkVersion: string): Promise<void> {
     )} command...`
   );
   await spawnAsync('./gradlew', [':tools:execute', '--args', sdkVersion], {
-    cwd: ANDROID_DIR,
+    cwd: EXPO_GO_ANDROID_DIR,
     stdio: 'inherit',
   });
 }
