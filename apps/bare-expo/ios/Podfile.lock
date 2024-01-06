@@ -1969,7 +1969,7 @@ SPEC CHECKSUMS:
   ExpoCrypto: e2ca148f5c93a0514959df86b34256bb3c50d358
   ExpoDevice: 33221bfe3d2551cf0321371d0ee978de4e488956
   ExpoDocumentPicker: 70254802886e29a45d4ad25486e64b6fc9c8f0cc
-  ExpoFileSystem: fb4c94cc5ec5c50cb2663d2f6d503a1960b95a1d
+  ExpoFileSystem: b3fdba47e6b8bf6504a0a297c192370e9a61c29d
   ExpoGL: 085542f97b13f2428ac2edb077c9a90f4566944d
   ExpoHaptics: 28a771b630353cd6e8dcf1b1e3e693e38ad7c3c3
   ExpoImage: 1cdaa65a6a70bb01067e21ad1347ff2d973885f5
