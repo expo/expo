@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `getAppleInfoPlist` on Apple platforms to get the contents of the `Info.plist` file.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

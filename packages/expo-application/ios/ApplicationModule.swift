@@ -15,6 +15,10 @@ public class ApplicationModule: Module {
       ]
     }
 
+    Function("getAppleInfoPlist") { () -> [String: Any]? in
+        return Bundle.main.infoDictionary
+    }
+
     AsyncFunction("getIosIdForVendorAsync") { () -> String? in
       return UIDevice.current.identifierForVendor?.uuidString
     }
