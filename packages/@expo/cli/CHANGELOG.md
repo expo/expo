@@ -9,8 +9,11 @@
 ### 🐛 Bug fixes
 
 - Update import for type generation. ([#26145](https://github.com/expo/expo/pull/26145) by [@EvanBacon](https://github.com/EvanBacon))
+- Handle locked iOS devices when launching app through devicectl. ([#26203](https://github.com/expo/expo/pull/26203) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
+
+- Remove classic updates SDK version. ([#26061](https://github.com/expo/expo/pull/26061) by [@wschurman](https://github.com/wschurman))
 
 ## 0.16.5 - 2023-12-21
 

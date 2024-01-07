@@ -15,7 +15,6 @@
     "packages": [
       "apps/*",
       "apps/test-suite/puppeteer-test",
-      "home",
       "packages/*",
       "packages/@expo/*"
     ]

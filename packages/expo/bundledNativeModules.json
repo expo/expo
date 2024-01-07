@@ -1,5 +1,5 @@
 {
-  "@expo/vector-icons": "^13.0.0",
+  "@expo/vector-icons": "^14.0.0",
   "@react-native-async-storage/async-storage": "1.21.0",
   "@react-native-community/datetimepicker": "7.6.1",
   "@react-native-masked-view/masked-view": "0.3.0",

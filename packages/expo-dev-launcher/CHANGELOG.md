@@ -10,7 +10,9 @@
 
 ### 💡 Others
 
-- Remove classic updates. ([#26036](https://github.com/expo/expo/pull/26036) by [@wschurman](https://github.com/wschurman))
+- Remove classic updates. ([#26036](https://github.com/expo/expo/pull/26036), [#26230](https://github.com/expo/expo/pull/26230) by [@wschurman](https://github.com/wschurman))
+- Remove classic updates SDK version. ([#26061](https://github.com/expo/expo/pull/26061) by [@wschurman](https://github.com/wschurman))
+- Replace deprecated `com.facebook.react:react-native:+` Android dependency with `com.facebook.react:react-android`. ([#26237](https://github.com/expo/expo/pull/26237) by [@kudo](https://github.com/kudo))
 
 ## 3.6.1 - 2023-12-19
 

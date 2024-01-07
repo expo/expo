@@ -1942,16 +1942,16 @@ SPEC CHECKSUMS:
   EXAV: 69adaa7433e7123a7dc9df9841fd80e954916d2d
   EXBarCodeScanner: 2c2fee40a33902612792b2f0de4e9da40f080613
   EXCalendar: 3c6e6c545f617c89835a10fe251093cf36914b31
-  EXConstants: 86bbc9fedbb67770c0c6bb37f22f81970ef45dc8
+  EXConstants: cefee7155f9ed25c610d0b6cf96972f485e4cbae
   EXContacts: 2ef734aa7b13c8e5ff20fb77d04f1cb172b61456
-  EXFont: 9ae7e8e2e4825cef04a45dca74512a3f711e2fe9
+  EXFont: b4a7dd9f19df9c55e9b9a1849e801d6726e7a8a3
   EXImageLoader: 55080616b2fe9da19ef8c7f706afd9814e279b6b
   EXJSONUtils: d138005ee11b84fc4e3bf7119a160034db5d5e20
   EXLocation: 4cdbc108ff5bd944d981b7d0c0cf98630104a84a
   EXManifests: 2355abd4aeacfb75eec5b43393c0aef9c2789fcf
   EXMediaLibrary: 9ca30a11319813904316ac3910bc4beef6af5b8a
   EXNotifications: 6e3b49fa7f916bc2783d37fbd5599509b160776c
-  Expo: 00eaae3d5de1f2e9af393abf1b2c9efb57b3b599
+  Expo: 5096704437d0388c1ae6c622c8fd6d1b61889a53
   ExpoAppleAuthentication: 4fc9972356977f009911f2f3a5f56319c2a5b11b
   ExpoBackgroundFetch: 094377b73648adb55032a440f50cad1a5d3c3a89
   ExpoBattery: c75a7c094d64d89d96d3e3f419627b152da94f29
@@ -1963,19 +1963,19 @@ SPEC CHECKSUMS:
   ExpoCrypto: e2ca148f5c93a0514959df86b34256bb3c50d358
   ExpoDevice: 30d5e44aff42048ab016fa0c37a51fdb6b1f8608
   ExpoDocumentPicker: 015978166ecdb556dbeff1db7413a051f8c03bc7
-  ExpoFileSystem: ebbbe77366bff2e66876e3b3bf09e61d3bb72c70
+  ExpoFileSystem: d36501dcf237026e7ddb26324abcbfe44461aecc
   ExpoGL: 085542f97b13f2428ac2edb077c9a90f4566944d
   ExpoHaptics: 76961bc7692870eb8ddac0527260a7ecaf28300d
   ExpoHead: 573e78cb221b5461376d0cc88ee0611337c3c3cb
   ExpoImage: 5ba424cbd89ba94103f21817cc310c26a009d967
   ExpoImageManipulator: c1d7cb865eacd620a35659f3da34c70531f10b59
   ExpoImagePicker: 247fc7d2c13426a835525b67d5fb221864b79612
-  ExpoKeepAwake: ed71bfe0e6ecd38e337586ba6e1ba27a56eb373b
+  ExpoKeepAwake: fe7be5056ccf39dd1e05afcdb32a5569973f3685
   ExpoLinearGradient: 6ff7b35f824f18f77d9c3ad3ee09fe0b4229e669
   ExpoLocalAuthentication: c55ffb179683efed04cb144fc80ccf26891f0cb4
   ExpoLocalization: b3b77d35b8c7653700ae3045bf6d8175ab91d042
   ExpoMailComposer: 1f980bbdd0647500178625f453e509cef1282d43
-  ExpoModulesCore: 94238d9653114ff9786634541688e1fdb7ed95e3
+  ExpoModulesCore: 67e0691f804f3fdb7b2827b1cc3d9ac1385fd3e2
   ExpoModulesTestCore: 0fe626daae71122fbc305d7fbb87b1afd283e4c5
   ExpoNetwork: 97d7774ab8f62e35f08db77fbef0388d5e1f2c76
   ExpoPrint: e7ecdd682436eb5a74b744c4ce36dc490df851b7
