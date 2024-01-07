@@ -4,7 +4,13 @@ import minimatch from 'minimatch';
 import path from 'path';
 
 import { Podspec } from '../../CocoaPods';
-import { EXPO_DIR, EXPOTOOLS_DIR, REACT_NATIVE_SUBMODULE_DIR } from '../../Constants';
+import {
+  EXPO_DIR,
+  EXPO_GO_ANDROID_DIR,
+  EXPO_GO_IOS_DIR,
+  EXPOTOOLS_DIR,
+  REACT_NATIVE_SUBMODULE_DIR,
+} from '../../Constants';
 import logger from '../../Logger';
 import { transformFileAsync } from '../../Transforms';
 import { applyPatchAsync } from '../../Utils';
@@ -14,10 +20,10 @@ const config: VendoringTargetConfig = {
   name: 'Expo Go',
   platforms: {
     ios: {
-      targetDirectory: 'ios/vendored/unversioned',
+      targetDirectory: `${EXPO_GO_IOS_DIR}/vendored/unversioned`,
     },
     android: {
-      targetDirectory: 'android/vendored/unversioned',
+      targetDirectory: `${EXPO_GO_ANDROID_DIR}/vendored/unversioned`,
     },
   },
   modules: {
