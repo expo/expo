@@ -94,69 +94,141 @@ function createModuleTree(paths: MetroJsonModule[]): {
   return { data: root.children, maxDepth };
 }
 
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
+import { Checkbox } from '@/components/ui/checkbox';
+
+function padSpaces(str: string, length: number) {
+  return '0'.repeat(length - str.length) + str;
+}
+
 export default function Treemap() {
   const modules = useFilteredModules();
-  const router = useRouter();
-  const graph = useGraph();
+  const [isNodeModulesVisible, setIsNodeModulesVisible] = useState(true);
+  const [regexString, setRegExp] = useState<string>('');
+  const [excludeString, setExcludeRegExp] = useState<string>('');
 
-  // const data = [
-  //   {
-  //     value: 10,
-  //     name: 'WidgetResources',
-  //     path: 'WidgetResources',
-  //     children: [
-  //       {
-  //         value: 16,
-  //         name: '.parsers',
-  //         path: 'WidgetResources/.parsers',
-  //       },
-  //       {
-  //         value: 172,
-  //         name: 'AppleClasses',
-  //         path: 'WidgetResources/AppleClasses',
-  //         children: [
-  //           {
-  //             value: 1,
-  //             name: 'Images',
-  //             path: 'WidgetResources/AppleClasses/Images',
-  //           },
-  //           {
-  //             value: 20,
-  //             name: 'Images',
-  //             path: 'WidgetResources/AppleClasses/Images',
-  //             children: [
-  //               {
-  //                 value: 10,
-  //                 name: 'Images3',
-  //                 path: 'WidgetResources/AppleClasses/Images2',
-  //               },
-  //               {
-  //                 value: 3,
-  //                 name: 'Images2',
-  //                 path: 'WidgetResources/AppleClasses/Images3',
-  //               },
-  //             ],
-  //           },
-  //         ],
-  //       },
-  //       {
-  //         value: 0,
-  //         name: 'AppleParser',
-  //         path: 'WidgetResources/AppleParser',
-  //       },
-  //       {
-  //         value: 48,
-  //         name: 'button',
-  //         path: 'WidgetResources/button',
-  //       },
-  //       {
-  //         value: 32,
-  //         name: 'ibutton',
-  //         path: 'WidgetResources/ibutton',
-  //       },
-  //     ],
-  //   },
-  // ];
+  const filteredForNodeModules = useMemo(() => {
+    if (!isNodeModulesVisible) {
+      return modules.filter((v) => !v.isNodeModule);
+    }
+    return modules;
+  }, [modules, isNodeModulesVisible]);
+
+  const filteredModules = useMemo(() => {
+    let filtered = filteredForNodeModules;
+
+    if (regexString) {
+      const regex = new RegExp(regexString, 'i');
+      filtered = filtered.filter((v) => regex.test(v.path));
+    }
+
+    if (excludeString) {
+      const regex = new RegExp(excludeString, 'i');
+      filtered = filtered.filter((v) => !regex.test(v.path));
+    }
+
+    return filtered;
+  }, [filteredForNodeModules, regexString, excludeString]);
+
+  return (
+    <Sheet modal={false}>
+      <div className="flex flex-1 flex-col">
+        <div className="p-2 justify-end flex">
+          <SheetTrigger asChild>
+            <Button variant="outline">Filters</Button>
+          </SheetTrigger>
+        </div>
+
+        <TreemapGraph modules={filteredModules} />
+      </div>
+
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle>Tree Controls</SheetTitle>
+          <SheetDescription>
+            Filter the tree to show only the modules you want to see.
+          </SheetDescription>
+          <SheetDescription>
+            Total modules:{' '}
+            <span className="font-mono">
+              {padSpaces(filteredModules.length + '', (modules.length + '').length)}/
+              {modules.length}
+            </span>
+          </SheetDescription>
+        </SheetHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="include" className="text-right">
+              Files to Include
+            </Label>
+            <Input
+              id="include"
+              value={regexString}
+              onChange={(e) => {
+                setRegExp(e.target.value);
+              }}
+              placeholder=".*"
+              className="col-span-3"
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="exclude" className="text-right">
+              Files to Exclude
+            </Label>
+            <Input
+              id="exclude"
+              value={excludeString}
+              onChange={(e) => {
+                setExcludeRegExp(e.target.value);
+              }}
+              placeholder=".*"
+              className="col-span-3"
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label
+              htmlFor="node_modules"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              Node Modules
+            </Label>
+            <Checkbox
+              id="node_modules"
+              checked={isNodeModulesVisible}
+              onCheckedChange={() => setIsNodeModulesVisible((visible) => !visible)}
+            />
+          </div>
+        </div>
+        <SheetFooter>
+          <Button
+            onClick={() => {
+              setRegExp('');
+              setExcludeRegExp('');
+              setIsNodeModulesVisible(true);
+            }}
+            type="reset">
+            Reset Filters
+          </Button>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
+  const router = useRouter();
+
   const { data, maxDepth } = useMemo(
     () =>
       createModuleTree(
@@ -275,6 +347,7 @@ export default function Treemap() {
           // width: containerHeight.width,
           height: containerHeight.height,
         }}
+        key={'1'}
         theme="dark"
         onEvents={{
           click(params) {
@@ -290,11 +363,10 @@ export default function Treemap() {
           },
         }}
         option={{
-          title: {
-            text: 'Bundle Size',
-            subtext: graph.transformOptions.platform,
-            left: 'leafDepth',
-          },
+          // title: {
+          //   text: 'Bundle Size',
+          //   left: 'leafDepth',
+          // },
 
           backgroundColor: 'transparent',
 
