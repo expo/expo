@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add `getAppleInfoPlist` on Apple platforms to get the contents of the `Info.plist` file.
+- Add `getAppleInfoPlist` on Apple platforms to get the contents of the `Info.plist` file. ([#26293](https://github.com/expo/expo/pull/26293) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
