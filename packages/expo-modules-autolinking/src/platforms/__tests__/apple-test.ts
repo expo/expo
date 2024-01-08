@@ -3,7 +3,11 @@ import path from 'path';
 
 import { ExpoModuleConfig } from '../../ExpoModuleConfig';
 import { registerGlobMock } from '../../__tests__/mockHelpers';
-import { formatArrayOfReactDelegateHandler, getSwiftModuleNames, resolveModuleAsync } from '../ios';
+import {
+  formatArrayOfReactDelegateHandler,
+  getSwiftModuleNames,
+  resolveModuleAsync,
+} from '../apple';
 
 jest.mock('fast-glob');
 
