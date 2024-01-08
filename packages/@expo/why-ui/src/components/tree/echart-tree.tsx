@@ -9,7 +9,7 @@ import React, { useMemo } from 'react';
 export type EChartTreeMapDataItem = {
   name: string;
   path: string;
-  value: number;
+  value: [number, number];
   moduleHref?: string;
   tip: string;
   ratio: number;
@@ -21,18 +21,25 @@ export type EChartTreeMapDataItem = {
 function createModuleTree(paths: MetroJsonModule[]): {
   data: EChartTreeMapDataItem[];
   maxDepth: number;
+  maxNodeModules: number;
 } {
+  let nodeModuleIndex: { [key: string]: number } = {};
+  let lastIndex = 1;
+  function indexForNodeModule(moduleName: string) {
+    if (nodeModuleIndex[moduleName] == null) {
+      nodeModuleIndex[moduleName] = lastIndex++;
+    }
+    return nodeModuleIndex[moduleName];
+  }
+
   const root: EChartTreeMapDataItem = {
     path: '/',
     children: [],
     name: '/',
-    value: 0,
+    value: [0, 0],
     ratio: 0,
     tip: '',
     nodeModuleName: '',
-    itemStyle: {
-      color: '#fff',
-    },
   };
 
   let maxDepth = 0;
@@ -52,7 +59,7 @@ function createModuleTree(paths: MetroJsonModule[]): {
           path: part,
           name: part,
           children: [],
-          value: 0,
+          value: [0, 0],
           ratio: 0,
           tip: '',
           nodeModuleName: '',
@@ -63,10 +70,10 @@ function createModuleTree(paths: MetroJsonModule[]): {
       if (isLast) {
         next.path = pathObj.absolutePath;
         next.moduleHref = pathObj.id;
-        next.value = pathObj.size;
+        next.value = [pathObj.size, indexForNodeModule(pathObj.nodeModuleName)];
         next.nodeModuleName = pathObj.nodeModuleName;
       } else {
-        next.value += pathObj.size;
+        next.value[0] += pathObj.size;
       }
 
       current = next;
@@ -81,6 +88,7 @@ function createModuleTree(paths: MetroJsonModule[]): {
       group.path = child.path;
       group.children = child.children;
       group.moduleHref = child.moduleHref;
+      group.nodeModuleName = child.nodeModuleName;
 
       foldSingleChildGroups(group); // recursively fold single child children
     } else {
@@ -89,11 +97,72 @@ function createModuleTree(paths: MetroJsonModule[]): {
   };
   foldSingleChildGroups(root);
 
-  root.value = root.children.reduce((acc, g) => acc + g.value, 0);
+  const foldNodeModuleValue = (group: EChartTreeMapDataItem) => {
+    // const nodeModuleName = group.children
+    if (group.nodeModuleName) {
+      return group.nodeModuleName;
+    }
+
+    const childNames = group.children.map((nm) => {
+      // if (nm.path)
+      return foldNodeModuleValue(nm);
+    });
+
+    const hasTopLevelChild = group.children.some((v) => !v.children.length);
+
+    const hasAmbiguousName = !childNames.every((v) => v === childNames[0]);
+
+    if (hasAmbiguousName && (group.name.startsWith('@') || group.name === 'node_modules')) {
+      group.nodeModuleName = '';
+      group.value[1] = 0; //indexForNodeModule(group.name);
+    } else {
+      if (hasTopLevelChild || !hasAmbiguousName) {
+        group.nodeModuleName = childNames[0];
+      } else {
+        group.nodeModuleName = '';
+      }
+      group.value[1] = indexForNodeModule(group.nodeModuleName);
+    }
+
+    // if (childNames.every((v) => v === childNames[0])) {
+    //   group.nodeModuleName = childNames[0];
+    //   group.value[1] = indexForNodeModule(group.nodeModuleName);
+    // } else {
+    //   group.nodeModuleName = '';
+    // }
+
+    return group.nodeModuleName;
+  };
+  foldNodeModuleValue(root);
+
+  // Recalculate the node modules value (#2) relative to the size of the node module overall.
+  // First we need to calculate the total size of each node module
+  const nodeModuleSizes: { [key: string]: number } = {};
+
+  const getNodeModuleSizesMap = (group: EChartTreeMapDataItem) => {
+    if (group.nodeModuleName && !nodeModuleSizes[group.nodeModuleName]) {
+      nodeModuleSizes[group.nodeModuleName] = group.value[0];
+    }
+
+    group.children.forEach(getNodeModuleSizesMap);
+  };
+  getNodeModuleSizesMap(root);
+
+  const sizes = Object.entries(nodeModuleSizes).sort((a, b) => b[1] - a[1]);
+
+  const recalculateNodeModuleSizesValue = (group: EChartTreeMapDataItem) => {
+    const size = sizes.findIndex(([name]) => name === group.nodeModuleName);
+    group.value[1] = size + 1;
+
+    group.children.forEach(recalculateNodeModuleSizesValue);
+  };
+  recalculateNodeModuleSizesValue(root);
+
+  root.value[0] = root.children.reduce((acc, g) => acc + g.value[0], 0);
 
   // Calculate the ratio of each group
   const calculateRatio = (group: EChartTreeMapDataItem) => {
-    group.ratio = group.value / root.value;
+    group.ratio = group.value[0] / root.value[0];
     group.children.forEach(calculateRatio);
   };
   calculateRatio(root);
@@ -106,19 +175,19 @@ function createModuleTree(paths: MetroJsonModule[]): {
       percetageString = '< 0.01%';
     }
 
-    const size = formatSize(group.value);
+    const size = formatSize(group.value[0]);
     group.tip = percetageString + ' (' + size + ')';
     group.children.forEach(calculateTooltip);
   };
   calculateTooltip(root);
 
-  return { data: root.children, maxDepth };
+  return { data: root.children, maxDepth, maxNodeModules: lastIndex };
 }
 
 export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
   const router = useRouter();
 
-  const { data, maxDepth } = useMemo(
+  const { data, maxDepth, maxNodeModules } = useMemo(
     () =>
       createModuleTree(
         modules.filter((v) =>
@@ -136,75 +205,6 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
   const containerHeight = useDynamicHeight(container, 300);
 
   const formatUtil = echarts.format;
-
-  function getLevelOption() {
-    // return [
-    //   {
-    //     itemStyle: {
-    //       borderWidth: 0,
-    //       gapWidth: 5,
-    //     },
-    //   },
-    // ];
-    return [
-      // {
-      //   itemStyle: {
-      //     borderWidth: 3,
-      //     borderColor: '#333',
-      //     gapWidth: 3,
-      //   },
-      // },
-      // {},
-      // // {
-      // //   color: ['#942e38', '#aaa', '#269f3c'],
-      // //   colorMappingBy: 'value',
-      // //   itemStyle: {
-      // //     gapWidth: 1,
-      // //   },
-      // // },
-      // // {
-      // //   itemStyle: {
-      // //     borderColor: '#777',
-      // //     borderWidth: 0,
-      // //     gapWidth: 1,
-      // //   },
-      // //   upperLabel: {
-      // //     show: false,
-      // //   },
-      // // },
-      // {
-      //   upperLabel: {
-      //     show: false,
-      //   },
-      //   itemStyle: {
-      //     borderColor: '#555',
-      //     borderWidth: 5,
-      //     gapWidth: 1,
-      //   },
-      //   emphasis: {
-      //     itemStyle: {
-      //       borderColor: '#ddd',
-      //     },
-      //   },
-      // },
-      // {
-      //   label: {
-      //     show: true,
-      //     formatter: '{b}',
-      //   },
-      //   upperLabel: {
-      //     show: true,
-      //     height: 30,
-      //   },
-      //   // colorSaturation: [0.35, 0.5],
-      //   itemStyle: {
-      //     borderWidth: 5,
-      //     gapWidth: 1,
-      //     borderColorSaturation: 0.6,
-      //   },
-      // },
-    ];
-  }
 
   // const sunburstOption = {
   //   series: [
@@ -227,12 +227,12 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
   //   ],
   // };
 
-  const labelObj = {
+  const getLabelObj = ({ multiLevel }) => ({
     show: true,
-    position: 'insideTopLeft',
+
     formatter(params) {
       //   console.log('p', params);
-      return `{name|${params.name}}\n{tip|${params.data?.tip}}`;
+      return [`{name|${params.name}}`, `{tip|${params.data?.tip}}`].join(multiLevel ? '\n' : ' ');
     },
     rich: {
       name: {
@@ -241,9 +241,18 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
       },
       tip: {
         fontSize: 10,
-        color: '#63709E',
+        // color: '#63709E',
       },
     },
+  });
+
+  const labelObj = {
+    ...getLabelObj({ multiLevel: true }),
+    position: 'insideTopLeft',
+  };
+  const upperLabelObj = {
+    ...getLabelObj({ multiLevel: false }),
+    position: 'insideBottomLeft',
   };
 
   return (
@@ -280,7 +289,7 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
 
           tooltip: {
             formatter(info) {
-              const value = formatSize(info.value);
+              const value = formatSize(info.value[0]);
               const treePathInfo = info.treePathInfo;
               const treePath = [];
 
@@ -293,6 +302,7 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
                   formatUtil.encodeHTML(treePath.join('/')) +
                   '</div>',
                 'Size: ' + value,
+                'NM: ' + info.value[1] + ' ' + info.data?.nodeModuleName,
               ].join('');
             },
           },
@@ -303,7 +313,23 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
               name: 'Size Tree',
               type: 'treemap',
               // colorMappingBy: 'value',
-              // colorMappingBy: 'index',
+              //   colorMappingBy: 'value',
+              visualDimension: 1,
+
+              //   color: ['#F7DF1C', '#0085FF', '#FFB200', '#FF0000', '#00CACA', '#FF00FF', '#00FF00'],
+              color: new Array(maxNodeModules).fill(null).map((_, index) => {
+                // Limit hue to 120-300
+                const range = 300 - 120;
+                const hue = (index / maxNodeModules) * 360;
+                // const range = 300 - 120;
+                // const hue = (index / maxNodeModules) * range + 120;
+
+                return saturate(`hsl(${hue}, 50%, 50%)`, 0.5);
+              }),
+              colorMappingBy: 'value',
+
+              visualMin: 0,
+              visualMax: maxNodeModules,
               breadcrumb: {
                 show: true,
                 height: 30,
@@ -335,16 +361,24 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
               // leafDepth: 3,
               // visibleMin: 300,
 
-              visibleMin: 300,
+              //   visibleMin: 300,
 
               upperLabel: {
                 show: true,
                 height: 30,
                 formatter: '{b}',
+                ...upperLabelObj,
+                emphasis: {
+                  ...upperLabelObj,
+                },
               },
 
               itemStyle: {
                 borderColor: '#fff',
+                shadowColor: 'rgba(0,0,0,0.5)',
+                shadowBlur: 0,
+                shadowOffsetX: -0.5,
+                shadowOffsetY: -0.5,
               },
 
               label: labelObj,
@@ -361,7 +395,6 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
                   },
                 },
                 {
-                  //   upperLabel: labelObj,
                   itemStyle: {
                     borderColor: '#555',
                     borderWidth: 5,
@@ -373,21 +406,13 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
                     },
                   },
                 },
-                {
-                  //   upperLabel: labelObj,
-                  colorSaturation: [0.35, 0.5],
-                  itemStyle: {
-                    borderWidth: 5,
-                    gapWidth: 1,
-                    borderColorSaturation: 0.6,
-                  },
-                },
                 ...new Array(maxDepth).fill(null).map((_, index) => ({
                   //   upperLabel: labelObj,
                   colorSaturation: [0.35, 0.5],
                   itemStyle: {
-                    borderWidth: 0,
-                    gapWidth: 1,
+                    borderWidth: 2,
+
+                    // gapWidth: 1,
                     borderColorSaturation: 0.6,
                   },
                 })),

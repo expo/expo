@@ -37,13 +37,21 @@ export default function Treemap() {
     let filtered = filteredForNodeModules;
 
     if (regexString) {
-      const regex = new RegExp(regexString, 'i');
-      filtered = filtered.filter((v) => regex.test(v.path));
+      try {
+        const regex = new RegExp(regexString, 'i');
+        filtered = filtered.filter((v) => regex.test(v.path));
+      } catch (error) {
+        console.error(error);
+      }
     }
 
     if (excludeString) {
-      const regex = new RegExp(excludeString, 'i');
-      filtered = filtered.filter((v) => !regex.test(v.path));
+      try {
+        const regex = new RegExp(excludeString, 'i');
+        filtered = filtered.filter((v) => !regex.test(v.path));
+      } catch (error) {
+        console.error(error);
+      }
     }
 
     return filtered;
