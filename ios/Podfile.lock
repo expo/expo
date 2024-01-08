@@ -837,7 +837,7 @@ PODS:
     - React-Core
   - EXNotifications (0.27.2):
     - ExpoModulesCore
-  - Expo (50.0.0-preview.7):
+  - Expo (50.0.0-preview.8):
     - ExpoModulesCore
   - ExpoAppleAuthentication (6.3.0):
     - ExpoModulesCore
@@ -963,7 +963,7 @@ PODS:
   - EXTaskManager (11.7.0):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (0.24.5):
+  - EXUpdates (0.24.6):
     - EASClient
     - EXManifests
     - ExpoModulesCore
@@ -973,7 +973,7 @@ PODS:
     - ReachabilitySwift
     - React-Core
     - sqlite3 (~> 3.42.0)
-  - EXUpdates/Tests (0.24.5):
+  - EXUpdates/Tests (0.24.6):
     - EASClient
     - EXManifests
     - ExpoModulesCore
@@ -2026,7 +2026,7 @@ PODS:
     - React-debug
   - react-native-netinfo (11.1.0):
     - React-Core
-  - react-native-pager-view (6.2.2):
+  - react-native-pager-view (6.2.3):
     - React-Core
   - react-native-safe-area-context (4.8.2):
     - React-Core
@@ -3244,7 +3244,7 @@ SPEC CHECKSUMS:
   Analytics: 9655e0e1c71ea98107cfcb2b14891168acc6c6c9
   AppAuth: 3bb1d1cd9340bd09f5ed189fb00b1cc28e1e8570
   ASN1Decoder: 4f4bbcaf1d1b8be56daa3280e82863a607f5bda9
-  boost: 9ccd0979c880976bc3f4dae93c0c7d6d185c8b2b
+  boost: 42fe04d4353fbd09a3e183ae133230469d587424
   Branch: 23b6b9351d5574377e7a764841cfb13a70c2799b
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
@@ -3262,7 +3262,7 @@ SPEC CHECKSUMS:
   EXManifests: 2355abd4aeacfb75eec5b43393c0aef9c2789fcf
   EXMediaLibrary: 179f3ffc668ca2eb7b14e8ed7b404321624f9093
   EXNotifications: 3ee880b7474efd940c4aa7502c8a6f1f51e3dafa
-  Expo: cd2dc043dd1cc3d9e8e4e035fb9a41b421e8f13f
+  Expo: 87664535771d38d078a93d5db36a3f82f06eb7f9
   ExpoAppleAuthentication: 4fc9972356977f009911f2f3a5f56319c2a5b11b
   ExpoBackgroundFetch: 094377b73648adb55032a440f50cad1a5d3c3a89
   ExpoBattery: 60bf880aea8f769fe39f709a920442542c1bfd62
@@ -3308,7 +3308,7 @@ SPEC CHECKSUMS:
   EXSplashScreen: 30e18a1afc6c8afbc5d7fe612232e1ffd119035c
   EXStructuredHeaders: 3b8ec10c65a4607dc976b6cdfa5136d2ea2ece19
   EXTaskManager: 81b2dfaaba6d9f9a4bc3e3e2a786a98004eb9e98
-  EXUpdates: 87277948b77dabde81251fbd07c831418dd10993
+  EXUpdates: 1f3f34454d39132504a194ca1ed8809e8f957309
   EXUpdatesInterface: 95d6bc086d7e043c1f33e30762ebc16a5cf4b153
   FBAEMKit: 4763aa27b8f69eb9d2c274189e91388de1dbd88a
   FBAudienceNetwork: 03e273f66b70756be7d060927111af97b7641b06
@@ -3370,7 +3370,7 @@ SPEC CHECKSUMS:
   React-logger: 9012a5b9c7f366d1aa4d9ca87ac35105b7819653
   React-Mapbuffer: d2dc1c7d55d5a1283913120e1b647d007aa6817b
   react-native-netinfo: 3aa5637c18834966e0c932de8ae1ae56fea20a97
-  react-native-pager-view: 02a5c4962530f7efc10dd51ee9cdabeff5e6c631
+  react-native-pager-view: c29d484f19c49ff19525a94105e4ab2c4d4ae273
   react-native-safe-area-context: 0ee144a6170530ccc37a0fd9388e28d06f516a89
   react-native-segmented-control: 0e4b5d93911e2234f110057df2b41738b326ab3e
   react-native-skia: 1a2fbce7fc198eb229b13f15bce48a06b5c92d69
