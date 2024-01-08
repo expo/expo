@@ -80,39 +80,28 @@ function createModuleTree(paths: MetroJsonModule[]): {
     });
   });
 
-  const foldSingleChildGroups = (group: EChartTreeMapDataItem) => {
-    if (group.children.length === 1) {
-      const child = group.children[0];
-      group.value = child.value;
-      group.name = group.name + '/' + child.name;
-      group.path = child.path;
-      group.children = child.children;
-      group.moduleHref = child.moduleHref;
-      group.nodeModuleName = child.nodeModuleName;
-
-      foldSingleChildGroups(group); // recursively fold single child children
-    } else {
-      group.children.forEach(foldSingleChildGroups);
-    }
-  };
-  foldSingleChildGroups(root);
-
   const foldNodeModuleValue = (group: EChartTreeMapDataItem) => {
     // const nodeModuleName = group.children
     if (group.nodeModuleName) {
       return group.nodeModuleName;
     }
 
-    const childNames = group.children.map((nm) => {
-      // if (nm.path)
-      return foldNodeModuleValue(nm);
-    });
+    const childNames = group.children
+      .map((nm) => {
+        // if (nm.path)
+        const name = foldNodeModuleValue(nm);
+        return nm.name.startsWith('node_modules') ? null : name;
+      })
+      .filter((name) => name != null);
 
     const hasTopLevelChild = group.children.some((v) => !v.children.length);
 
     const hasAmbiguousName = !childNames.every((v) => v === childNames[0]);
 
-    if (hasAmbiguousName && (group.name.startsWith('@') || group.name === 'node_modules')) {
+    if (
+      hasAmbiguousName
+      // && (group.name.startsWith('@') || group.name === 'node_modules')
+    ) {
       group.nodeModuleName = '';
       group.value[1] = 0; //indexForNodeModule(group.name);
     } else {
@@ -134,6 +123,59 @@ function createModuleTree(paths: MetroJsonModule[]): {
     return group.nodeModuleName;
   };
   foldNodeModuleValue(root);
+
+  const foldSingleChildGroups = (group: EChartTreeMapDataItem) => {
+    if (group.children.length === 1 && group.name !== group.nodeModuleName) {
+      const child = group.children[0];
+      group.value = child.value;
+      group.name = group.name + '/' + child.name;
+      group.path = child.path;
+      group.children = child.children;
+      group.moduleHref = child.moduleHref;
+      group.nodeModuleName = child.nodeModuleName;
+
+      foldSingleChildGroups(group); // recursively fold single child children
+    } else {
+      group.children.forEach(foldSingleChildGroups);
+    }
+  };
+  foldSingleChildGroups(root);
+
+  const unfoldNodeModuleNames = (group: EChartTreeMapDataItem) => {
+    for (const child of group.children) {
+      // Has children and no nodeModuleName
+      if (child.children.length && !child.nodeModuleName && child.name.startsWith('@')) {
+        // Split this child into multiple sub children
+        for (const subChild of child.children) {
+          group.children.push({
+            ...subChild,
+            name: child.name + '/' + subChild.name,
+            path: child.path + '/' + subChild.path,
+          });
+        }
+        // Remove the original child
+        group.children.splice(group.children.indexOf(child), 1);
+      }
+    }
+
+    group.children.forEach(unfoldNodeModuleNames);
+  };
+  unfoldNodeModuleNames(root);
+
+  // Extrapolate the node module groups so a single group represents the node module name, e.g. { name: `@react-native`, children: [...] } -> [{name: '@react-native/lists'}, {name: '@react-native/scrollview'}]
+  //   const extrapolateNodeModules = (group: EChartTreeMapDataItem) => {
+  //     if (group.nodeModuleName) {
+  //       const nodeModuleGroup = group.children.find((v) => v.name === group.nodeModuleName);
+  //       if (nodeModuleGroup) {
+  //         group.children = nodeModuleGroup.children;
+  //       } else {
+  //         group.children = [];
+  //       }
+  //     }
+
+  //     group.children.forEach(extrapolateNodeModules);
+  //   };
+  //   extrapolateNodeModules(root);
 
   // Recalculate the node modules value (#2) relative to the size of the node module overall.
   // First we need to calculate the total size of each node module
@@ -358,7 +400,7 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
               },
 
               // zoomToNodeRatio: 1000,
-              // leafDepth: 3,
+              leafDepth: 2,
               // visibleMin: 300,
 
               //   visibleMin: 300,
