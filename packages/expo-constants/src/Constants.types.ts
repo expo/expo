@@ -154,34 +154,11 @@ export interface NativeConstants {
   expoVersion: string | null;
   isDetached?: boolean;
   intentUri?: string;
-  /**
-   * An identifier that is unique to this particular device and whose lifetime is at least as long
-   * as the installation of the app.
-   * @deprecated `Constants.installationId` is deprecated in favor of generating your own ID and
-   * storing it.
-   */
-  installationId: string;
-  /**
-   * `true` if the app is running on a device, `false` if running in a simulator or emulator.
-   * @deprecated Use `expo-device`'s [`Device.isDevice`](./device/#deviceisdevice).
-   */
-  isDevice: boolean;
   isHeadless: boolean;
   linkingUri: string;
+
   /**
-   * The **Info.plist** value for `CFBundleShortVersionString` on iOS and the version name set
-   * by `version` in app.json on Android at the time the native app was built.
-   * @deprecated Use `expo-application`'s [`Application.nativeApplicationVersion`](./application/#applicationnativeapplicationversion).
-   */
-  nativeAppVersion: string | null;
-  /**
-   * The **Info.plist** value for `CFBundleVersion` on iOS (set with `ios.buildNumber` value in
-   * **app.json** in a standalone app) and the version code set by `android.versionCode` in
-   * **app.json** on Android at the time the native app was built.
-   * @deprecated Use `expo-application`'s [`Application.nativeBuildVersion`](./application/#applicationnativebuildversion).
-   */
-  nativeBuildVersion: string | null;
-  /**
+   * @hidden
    * Manifest embedded in the build. Returns `null` when `manifest2` is non-null.
    * @deprecated Use `Constants.expoConfig` instead, which behaves more consistently across EAS Build
    * and EAS Update.

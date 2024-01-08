@@ -45,35 +45,15 @@ export default {
   get executionEnvironment() {
     return ExecutionEnvironment.Bare;
   },
-  get installationId(): string {
-    let installationId;
-    try {
-      installationId = localStorage.getItem(ID_KEY);
-      if (installationId == null || typeof installationId !== 'string') {
-        installationId = (Date.now() + '-' + Math.floor(Math.random() * 1000000000)).toString();
-        localStorage.setItem(ID_KEY, installationId as string);
-      }
-    } catch {
-      installationId = _sessionId;
-    } finally {
-      return installationId;
-    }
-  },
   get sessionId(): string {
     return _sessionId;
-  },
-  get platform(): PlatformManifest {
-    return { web: typeof navigator !== 'undefined' ? { ua: navigator.userAgent } : undefined };
   },
   get isHeadless(): boolean {
     if (typeof navigator === 'undefined') return true;
 
     return /\bHeadlessChrome\//.test(navigator.userAgent);
   },
-  get isDevice(): true {
-    // TODO: Bacon: Possibly want to add information regarding simulators
-    return true;
-  },
+
   get expoVersion(): string | null {
     return (this.manifest as any)!.sdkVersion || null;
   },
@@ -92,12 +72,6 @@ export default {
   get deviceName(): string | undefined {
     return getBrowserName();
   },
-  get nativeAppVersion(): null {
-    return null;
-  },
-  get nativeBuildVersion(): null {
-    return null;
-  },
   get systemFonts(): string[] {
     // TODO: Bacon: Maybe possible.
     return [];
@@ -109,11 +83,11 @@ export default {
     // TODO: Bacon: The android version isn't very accurate either, maybe we could try and guess this value.
     return null;
   },
-  get manifest(): WebManifest {
-    // This is defined by @expo/webpack-config or babel-preset-expo.
-    // If your site is bundled with a different config then you may not have access to the app.json automatically.
-    return process.env.APP_MANIFEST || {};
-  },
+  // get manifest(): WebManifest {
+  //   // This is defined by @expo/webpack-config or babel-preset-expo.
+  //   // If your site is bundled with a different config then you may not have access to the app.json automatically.
+  //   return process.env.APP_MANIFEST || {};
+  // },
   get manifest2(): null {
     return null;
   },

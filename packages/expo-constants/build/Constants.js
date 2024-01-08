@@ -46,19 +46,12 @@ if (ExponentConstants && ExponentConstants.manifest) {
 }
 let rawManifest = rawUpdatesManifest ?? rawDevLauncherManifest ?? rawAppConfig;
 const { name, appOwnership, ...nativeConstants } = (ExponentConstants || {});
-let warnedAboutManifestField = false;
 const constants = {
     ...nativeConstants,
     // Ensure this is null in bare workflow
     appOwnership: appOwnership ?? null,
 };
 Object.defineProperties(constants, {
-    installationId: {
-        get() {
-            return nativeConstants.installationId;
-        },
-        enumerable: false,
-    },
     /**
      * Use `manifest` property by default.
      * This property is only used for internal purposes.
@@ -84,20 +77,6 @@ Object.defineProperties(constants, {
             return maybeManifest;
         },
         enumerable: false,
-    },
-    manifest: {
-        get() {
-            if (__DEV__ && !warnedAboutManifestField) {
-                console.warn(`Constants.manifest has been deprecated in favor of Constants.expoConfig.`);
-                warnedAboutManifestField = true;
-            }
-            const maybeManifest = getManifest();
-            if (!maybeManifest || !isEmbeddedManifest(maybeManifest)) {
-                return null;
-            }
-            return maybeManifest;
-        },
-        enumerable: true,
     },
     manifest2: {
         get() {
