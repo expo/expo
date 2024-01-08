@@ -26,7 +26,7 @@ export async function prebuildPatchAsync(
   options: {
     /** List of platforms to prebuild. */
     platforms: ModPlatform[];
-    /** Should delete the native folders after attempting to prebuild. */
+    /** Should delete the native folders after attempting to prebuild. @default false */
     clean?: boolean;
     /** URL or file path to the prebuild template. */
     template?: string;

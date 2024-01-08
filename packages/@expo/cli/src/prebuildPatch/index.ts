@@ -9,7 +9,7 @@ export const expoPrebuildPatch: Command = async (argv) => {
     {
       // Types
       '--help': Boolean,
-      '--no-clean': Boolean,
+      '--clean': Boolean,
       '--template': String,
       '--platform': String,
       // Aliases
@@ -25,7 +25,7 @@ export const expoPrebuildPatch: Command = async (argv) => {
       chalk`npx expo prebuild:patch {dim <dir>}`,
       [
         chalk`<dir>                                    Directory of the Expo project. {dim Default: Current working directory}`,
-        `--no-clean                               Skip cleaning native platform directories`,
+        `--clean                                  Delete the native folders after the conversion`,
         `--template <template>                    Project template to clone from. File path pointing to a local tar file or a github repo`,
         chalk`-p, --platform <all|android|ios>         Platforms to sync: ios, android, all. {dim Default: all}`,
         `-h, --help                               Usage info`,
@@ -50,7 +50,7 @@ export const expoPrebuildPatch: Command = async (argv) => {
   return (() => {
     return prebuildPatchAsync(getProjectRoot(args), {
       // Parsed options
-      clean: !args['--no-clean'],
+      clean: !!args['--clean'],
       platforms: resolvePlatformOption(args['--platform']),
       template: args['--template'],
     });
