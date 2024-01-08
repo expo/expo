@@ -6,7 +6,7 @@ public typealias FunctionCallResult = Result<Any, Exception>
 /**
  A protocol for any type-erased function.
  */
-internal protocol AnyFunction: AnyDefinition, JavaScriptObjectBuilder {
+internal protocol AnyFunctionDefinition: AnyDefinition, JavaScriptObjectBuilder {
   /**
    Name of the function. JavaScript refers to the function by this name.
    */
@@ -47,7 +47,7 @@ internal protocol AnyFunction: AnyDefinition, JavaScriptObjectBuilder {
   func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> ())
 }
 
-extension AnyFunction {
+extension AnyFunctionDefinition {
   var requiredArgumentsCount: Int {
     var trailingOptionalArgumentsCount: Int = 0
 

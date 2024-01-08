@@ -1,7 +1,7 @@
 /**
  Type-erased protocol for view props classes.
  */
-public protocol AnyViewProp: ViewManagerDefinitionComponent {
+public protocol AnyViewProp: AnyViewDefinitionElement {
   /**
    Name of the view prop that JavaScript refers to.
    */

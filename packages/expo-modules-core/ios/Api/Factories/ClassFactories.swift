@@ -5,7 +5,7 @@
  */
 public func Constructor<R>(
   @_implicitSelfCapture _ body: @escaping () throws -> R
-) -> SyncFunctionComponent<(), Void, R> {
+) -> SyncFunctionDefinition<(), Void, R> {
   return Function("constructor", body)
 }
 
@@ -14,7 +14,7 @@ public func Constructor<R>(
  */
 public func Constructor<R, A0: AnyArgument>(
   @_implicitSelfCapture _ body: @escaping (A0) throws -> R
-) -> SyncFunctionComponent<(A0), A0, R> {
+) -> SyncFunctionDefinition<(A0), A0, R> {
   return Function("constructor", body)
 }
 
@@ -23,7 +23,7 @@ public func Constructor<R, A0: AnyArgument>(
  */
 public func Constructor<R, A0: AnyArgument, A1: AnyArgument>(
   @_implicitSelfCapture _ body: @escaping (A0, A1) throws -> R
-) -> SyncFunctionComponent<(A0, A1), A0, R> {
+) -> SyncFunctionDefinition<(A0, A1), A0, R> {
   return Function("constructor", body)
 }
 
@@ -32,7 +32,7 @@ public func Constructor<R, A0: AnyArgument, A1: AnyArgument>(
  */
 public func Constructor<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument>(
   @_implicitSelfCapture _ body: @escaping (A0, A1, A2) throws -> R
-) -> SyncFunctionComponent<(A0, A1, A2), A0, R> {
+) -> SyncFunctionDefinition<(A0, A1, A2), A0, R> {
   return Function("constructor", body)
 }
 
@@ -41,7 +41,7 @@ public func Constructor<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument>(
  */
 public func Constructor<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument>(
   @_implicitSelfCapture _ body: @escaping (A0, A1, A2, A3) throws -> R
-) -> SyncFunctionComponent<(A0, A1, A2, A3), A0, R> {
+) -> SyncFunctionDefinition<(A0, A1, A2, A3), A0, R> {
   return Function("constructor", body)
 }
 
@@ -50,7 +50,7 @@ public func Constructor<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3
  */
 public func Constructor<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument>(
   @_implicitSelfCapture _ body: @escaping (A0, A1, A2, A3, A4) throws -> R
-) -> SyncFunctionComponent<(A0, A1, A2, A3, A4), A0, R> {
+) -> SyncFunctionDefinition<(A0, A1, A2, A3, A4), A0, R> {
   return Function("constructor", body)
 }
 
@@ -59,38 +59,38 @@ public func Constructor<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3
  */
 public func Constructor<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument, A5: AnyArgument>(
   @_implicitSelfCapture _ body: @escaping (A0, A1, A2, A3, A4, A5) throws -> R
-) -> SyncFunctionComponent<(A0, A1, A2, A3, A4, A5), A0, R> {
+) -> SyncFunctionDefinition<(A0, A1, A2, A3, A4, A5), A0, R> {
   return Function("constructor", body)
 }
 
 /**
- Creates the component describing a JavaScript class.
+ Creates the definition describing a JavaScript class.
  */
 public func Class(
   _ name: String,
-  @ClassComponentElementsBuilder<JavaScriptObject> @_implicitSelfCapture _ elements: () -> [AnyClassComponentElement]
-) -> ClassComponent {
-  return ClassComponent(name: name, associatedType: JavaScriptObject.self, elements: elements())
+  @ClassDefinitionBuilder<JavaScriptObject> @_implicitSelfCapture _ elements: () -> [AnyClassDefinitionElement]
+) -> ClassDefinition {
+  return ClassDefinition(name: name, associatedType: JavaScriptObject.self, elements: elements())
 }
 
 /**
- Creates the component describing a JavaScript class with an associated native shared object class.
+ Creates the definition describing a JavaScript class with an associated native shared object class.
  */
 public func Class<SharedObjectType: SharedObject>(
   _ name: String = String(describing: SharedObjectType.self),
   _ sharedObjectType: SharedObjectType.Type,
-  @ClassComponentElementsBuilder<SharedObjectType> @_implicitSelfCapture _ elements: () -> [AnyClassComponentElement]
-) -> ClassComponent {
-  return ClassComponent(name: name, associatedType: SharedObjectType.self, elements: elements())
+  @ClassDefinitionBuilder<SharedObjectType> @_implicitSelfCapture _ elements: () -> [AnyClassDefinitionElement]
+) -> ClassDefinition {
+  return ClassDefinition(name: name, associatedType: SharedObjectType.self, elements: elements())
 }
 
 /**
- Creates the component describing a JavaScript class with an associated native shared object class
+ Creates the definition describing a JavaScript class with an associated native shared object class
  and with the name that is inferred from the shared object type.
  */
 public func Class<SharedObjectType: SharedObject>(
   _ sharedObjectType: SharedObjectType.Type,
-  @ClassComponentElementsBuilder<SharedObjectType> @_implicitSelfCapture _ elements: () -> [AnyClassComponentElement]
-) -> ClassComponent {
-  return ClassComponent(name: String(describing: SharedObjectType.self), associatedType: SharedObjectType.self, elements: elements())
+  @ClassDefinitionBuilder<SharedObjectType> @_implicitSelfCapture _ elements: () -> [AnyClassDefinitionElement]
+) -> ClassDefinition {
+  return ClassDefinition(name: String(describing: SharedObjectType.self), associatedType: SharedObjectType.self, elements: elements())
 }

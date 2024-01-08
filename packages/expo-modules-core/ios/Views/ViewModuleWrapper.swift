@@ -86,7 +86,7 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
     guard let appContext = wrappedModuleHolder.appContext else {
       fatalError(Exceptions.AppContextLost().reason)
     }
-    guard let view = wrappedModuleHolder.definition.viewManager?.createView(appContext: appContext) else {
+    guard let view = wrappedModuleHolder.definition.view?.createView(appContext: appContext) else {
       fatalError("Cannot create a view from module '\(self.name)'")
     }
     return view

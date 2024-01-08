@@ -3,7 +3,7 @@
 /**
  Represents a JavaScript class.
  */
-public final class ClassComponent: ObjectDefinition {
+public final class ClassDefinition: ObjectDefinition {
   /**
    Name of the class.
    */
@@ -12,7 +12,7 @@ public final class ClassComponent: ObjectDefinition {
   /**
    A synchronous function that gets called when the object of this class is initializing.
    */
-  let constructor: AnySyncFunctionComponent?
+  let constructor: AnySyncFunctionDefinition?
 
   /**
    A dynamic type for the associated object class.
@@ -22,13 +22,13 @@ public final class ClassComponent: ObjectDefinition {
   init<AssociatedObject: ClassAssociatedObject>(
     name: String,
     associatedType: AssociatedObject.Type,
-    elements: [AnyClassComponentElement] = []
+    elements: [AnyClassDefinitionElement] = []
   ) {
     self.name = name
-    self.constructor = elements.first(where: isConstructor) as? AnySyncFunctionComponent
+    self.constructor = elements.first(where: isConstructor) as? AnySyncFunctionDefinition
     self.associatedType = ~AssociatedObject.self
 
-    // Constructors can't be passed down to the object component
+    // Constructors can't be passed down to the object definition
     // as we shouldn't override the default `<Class>.prototype.constructor`.
     let elementsWithoutConstructors = elements.filter({ !isConstructor($0) })
 
@@ -78,7 +78,7 @@ public final class ClassComponent: ObjectDefinition {
 // MARK: - ClassAssociatedObject
 
 /**
- A protocol for types that can be used an associated type of the `ClassComponent`.
+ A protocol for types that can be used an associated type of the ``ClassDefinition``.
  */
 internal protocol ClassAssociatedObject {}
 
@@ -99,10 +99,10 @@ extension SharedObject: ClassAssociatedObject {}
  Checks whether the definition item is a constructor — a synchronous function whose name is "constructor".
 
  We do it that way for the following two reasons:
- - It's easier to reuse existing `SyncFunctionComponent`.
+ - It's easier to reuse existing `SyncFunctionDefinition`.
  - Redefining prototype's `constructor` is a bad idea so a function with this name
    needs to be filtered out when decorating the prototype.
  */
 fileprivate func isConstructor(_ item: AnyDefinition) -> Bool {
-  return (item as? AnySyncFunctionComponent)?.name == "constructor"
+  return (item as? AnySyncFunctionDefinition)?.name == "constructor"
 }

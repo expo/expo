@@ -3,7 +3,7 @@
 /**
  An enum that identifies lifecycle method types.
  */
-internal enum ViewLifecycleMethodType {
+public enum ViewLifecycleMethodType {
   case didUpdateProps
 }
 

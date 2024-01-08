@@ -264,7 +264,7 @@ public final class AppContext: NSObject {
   @objc
   public func getViewManagers() -> [ViewModuleWrapper] {
     return moduleRegistry.compactMap { holder in
-      if holder.definition.viewManager != nil {
+      if holder.definition.view != nil {
         return ViewModuleWrapper(holder)
       } else {
         return nil
@@ -372,9 +372,9 @@ public final class AppContext: NSObject {
 
   private func viewManagersMetadata() -> [String: Any] {
     return moduleRegistry.reduce(into: [String: Any]()) { acc, holder in
-      if let viewManager = holder.definition.viewManager {
+      if let viewDefinition = holder.definition.view {
         acc[holder.name] = [
-          "propsNames": viewManager.props.map { $0.name }
+          "propsNames": viewDefinition.props.map { $0.name }
         ]
       }
     }

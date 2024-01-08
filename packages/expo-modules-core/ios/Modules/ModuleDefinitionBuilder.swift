@@ -1,7 +1,6 @@
-#if swift(>=5.4)
 /**
  A function builder that provides DSL-like syntax. Thanks to this, the function doesn't need to explicitly return an array,
- but can just return multiple components one after another. This works similarly to SwiftUI's `body` block.
+ but can just return multiple definitions one after another. This works similarly to SwiftUI's `body` block.
  */
 @resultBuilder
 public struct ModuleDefinitionBuilder {
@@ -9,4 +8,3 @@ public struct ModuleDefinitionBuilder {
     return ModuleDefinition(definitions: definitions)
   }
 }
-#endif

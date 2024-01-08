@@ -1,9 +1,4 @@
 /**
- A protocol that must be implemented to be a part of module's definition and the module definition itself.
- */
-public protocol AnyDefinition {}
-
-/**
  The definition of the module. It is used to define some parameters
  of the module and what it exports to the JavaScript world.
  See `ModuleDefinitionBuilder` for more details on how to create it.
@@ -20,7 +15,8 @@ public final class ModuleDefinition: ObjectDefinition {
   var name: String
 
   let eventListeners: [EventListener]
-  let viewManager: ViewManagerDefinition?
+
+  let view: AnyViewDefinition?
 
   /**
    Names of the events that the module can send to JavaScript.
@@ -38,8 +34,8 @@ public final class ModuleDefinition: ObjectDefinition {
 
     self.eventListeners = definitions.compactMap { $0 as? EventListener }
 
-    self.viewManager = definitions
-      .compactMap { $0 as? ViewManagerDefinition }
+    self.view = definitions
+      .compactMap { $0 as? AnyViewDefinition }
       .last
 
     self.eventNames = Array(
@@ -68,9 +64,8 @@ public final class ModuleDefinition: ObjectDefinition {
   public override func build(appContext: AppContext) throws -> JavaScriptObject {
     let object = try super.build(appContext: appContext)
 
-    if let viewManager {
-      let reactComponentPrototype = try appContext.runtime.createObject()
-      try viewManager.decorateWithFunctions(object: reactComponentPrototype, appContext: appContext)
+    if let viewDefinition = view {
+      let reactComponentPrototype = try viewDefinition.createReactComponentPrototype(appContext: appContext)
       object.setProperty("ViewPrototype", value: reactComponentPrototype)
     }
 

@@ -16,10 +16,10 @@ public struct ObjectDefinitionBuilder {
   }
 }
 
-extension SyncFunctionComponent: AnyObjectDefinitionElement {}
+extension SyncFunctionDefinition: AnyObjectDefinitionElement {}
 
-extension AsyncFunctionComponent: AnyObjectDefinitionElement {}
+extension AsyncFunctionDefinition: AnyObjectDefinitionElement {}
 
-extension PropertyComponent: AnyObjectDefinitionElement {}
+extension PropertyDefinition: AnyObjectDefinitionElement {}
 
 extension ConstantsDefinition: AnyObjectDefinitionElement {}

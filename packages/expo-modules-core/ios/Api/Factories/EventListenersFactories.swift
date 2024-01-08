@@ -1,14 +1,3 @@
-// MARK: - Module name
-
-/**
- Sets the name of the module that is exported to the JavaScript world.
- */
-public func Name(_ name: String) -> AnyDefinition {
-  return ModuleNameDefinition(name: name)
-}
-
-// MARK: - Module's lifecycle
-
 /**
  Creates module's lifecycle listener that is called right after module initialization.
  */
@@ -49,13 +38,4 @@ public func OnAppBecomesActive(@_implicitSelfCapture _ closure: @escaping () -> 
  */
 public func OnAppEntersBackground(@_implicitSelfCapture _ closure: @escaping () -> Void) -> AnyDefinition {
   return EventListener(.appEntersBackground, closure)
-}
-
-// MARK: - View Manager
-
-/**
- Creates the view manager definition that scopes other view-related definitions.
- */
-public func ViewManager(@ViewManagerDefinitionBuilder _ closure: @escaping () -> ViewManagerDefinition) -> AnyDefinition {
-  return closure()
 }

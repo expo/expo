@@ -7,7 +7,7 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
   /**
    A dictionary of functions defined by the object.
    */
-  let functions: [String: AnyFunction]
+  let functions: [String: AnyFunctionDefinition]
 
   /**
    An array of constants definitions.
@@ -17,20 +17,20 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
   /**
    A map of dynamic properties defined by the object.
    */
-  let properties: [String: AnyPropertyComponent]
+  let properties: [String: AnyPropertyDefinition]
 
   /**
    A map of classes defined within the object.
    */
-  let classes: [String: ClassComponent]
+  let classes: [String: ClassDefinition]
 
   /**
    Default initializer receiving children definitions from the result builder.
    */
   init(definitions: [AnyDefinition]) {
     self.functions = definitions
-      .compactMap { $0 as? AnyFunction }
-      .reduce(into: [String: AnyFunction]()) { dict, function in
+      .compactMap { $0 as? AnyFunctionDefinition }
+      .reduce(into: [String: AnyFunctionDefinition]()) { dict, function in
         dict[function.name] = function
       }
 
@@ -38,14 +38,14 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
       .compactMap { $0 as? ConstantsDefinition }
 
     self.properties = definitions
-      .compactMap { $0 as? AnyPropertyComponent }
-      .reduce(into: [String: AnyPropertyComponent]()) { dict, property in
+      .compactMap { $0 as? AnyPropertyDefinition }
+      .reduce(into: [String: AnyPropertyDefinition]()) { dict, property in
         dict[property.name] = property
       }
 
     self.classes = definitions
-      .compactMap { $0 as? ClassComponent }
-      .reduce(into: [String: ClassComponent]()) { dict, klass in
+      .compactMap { $0 as? ClassDefinition }
+      .reduce(into: [String: ClassDefinition]()) { dict, klass in
         dict[klass.name] = klass
       }
   }

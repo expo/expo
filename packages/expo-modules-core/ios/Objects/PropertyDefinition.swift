@@ -1,6 +1,6 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-protocol AnyPropertyComponent {
+protocol AnyPropertyDefinition {
   /**
    Name of the property.
    */
@@ -12,7 +12,7 @@ protocol AnyPropertyComponent {
   func buildDescriptor(appContext: AppContext) throws -> JavaScriptObject
 }
 
-public final class PropertyComponent<OwnerType>: AnyDefinition, AnyPropertyComponent {
+public final class PropertyDefinition<OwnerType>: AnyDefinition, AnyPropertyDefinition {
   /**
    Name of the property.
    */
@@ -21,22 +21,22 @@ public final class PropertyComponent<OwnerType>: AnyDefinition, AnyPropertyCompo
   /**
    Synchronous function that is called when the property is being accessed.
    */
-  var getter: AnySyncFunctionComponent?
+  var getter: AnySyncFunctionDefinition?
 
   /**
    Synchronous function that is called when the property is being set.
    */
-  var setter: AnySyncFunctionComponent?
+  var setter: AnySyncFunctionDefinition?
 
   /**
-   Initializes an unowned PropertyComponent without getter and setter functions.
+   Initializes an unowned PropertyDefinition without getter and setter functions.
    */
   init(name: String) {
     self.name = name
   }
 
   /**
-   Initializes an unowned PropertyComponent with a getter without arguments.
+   Initializes an unowned PropertyDefinition with a getter without arguments.
    */
   init<ReturnType>(name: String, getter: @escaping () -> ReturnType) {
     self.name = name
@@ -46,7 +46,7 @@ public final class PropertyComponent<OwnerType>: AnyDefinition, AnyPropertyCompo
   }
 
   /**
-   Initializes an owned PropertyComponent with a getter that takes the owner as its first argument.
+   Initializes an owned PropertyDefinition with a getter that takes the owner as its first argument.
    */
   init<ReturnType>(name: String, getter: @escaping (_ this: OwnerType) -> ReturnType) {
     self.name = name
@@ -62,7 +62,7 @@ public final class PropertyComponent<OwnerType>: AnyDefinition, AnyPropertyCompo
    */
   @discardableResult
   public func get<ReturnType>(_ getter: @escaping () -> ReturnType) -> Self {
-    self.getter = SyncFunctionComponent(
+    self.getter = SyncFunctionDefinition(
       "get",
       firstArgType: Void.self,
       dynamicArgumentTypes: [],
@@ -77,7 +77,7 @@ public final class PropertyComponent<OwnerType>: AnyDefinition, AnyPropertyCompo
    */
   @discardableResult
   public func get<ReturnType>(_ getter: @escaping (_ this: OwnerType) -> ReturnType) -> Self {
-    self.getter = SyncFunctionComponent(
+    self.getter = SyncFunctionDefinition(
       "get",
       firstArgType: OwnerType.self,
       dynamicArgumentTypes: [~OwnerType.self],
@@ -92,7 +92,7 @@ public final class PropertyComponent<OwnerType>: AnyDefinition, AnyPropertyCompo
    */
   @discardableResult
   public func set<ValueType>(_ setter: @escaping (_ newValue: ValueType) -> Void) -> Self {
-    self.setter = SyncFunctionComponent(
+    self.setter = SyncFunctionDefinition(
       "set",
       firstArgType: ValueType.self,
       dynamicArgumentTypes: [~ValueType.self],
@@ -107,7 +107,7 @@ public final class PropertyComponent<OwnerType>: AnyDefinition, AnyPropertyCompo
    */
   @discardableResult
   public func set<ValueType>(_ setter: @escaping (_ this: OwnerType, _ newValue: ValueType) -> Void) -> Self {
-    self.setter = SyncFunctionComponent(
+    self.setter = SyncFunctionDefinition(
       "set",
       firstArgType: OwnerType.self,
       dynamicArgumentTypes: [~OwnerType.self, ~ValueType.self],
@@ -189,58 +189,5 @@ public final class PropertyComponent<OwnerType>: AnyDefinition, AnyPropertyCompo
 internal final class NativePropertyUnavailableException: GenericException<String> {
   override var reason: String {
     return "Native property '\(param)' is no longer available in memory"
-  }
-}
-
-// MARK: - Factory functions
-
-/**
- Creates the property with given name. The component is basically no-op if you don't call `.get(_:)` or `.set(_:)` on it.
- */
-public func Property(_ name: String) -> PropertyComponent<Void> {
-  return PropertyComponent(name: name)
-}
-
-/**
- Creates the read-only property whose getter doesn't take the owner as an argument.
- */
-public func Property<Value: AnyArgument>(_ name: String, @_implicitSelfCapture get: @escaping () -> Value) -> PropertyComponent<Void> {
-  return PropertyComponent(name: name, getter: get)
-}
-
-/**
- Creates the read-only property whose getter takes the owner as an argument.
- */
-public func Property<Value: AnyArgument, OwnerType>(
-  _ name: String,
-  @_implicitSelfCapture get: @escaping (_ this: OwnerType) -> Value
-) -> PropertyComponent<OwnerType> {
-  return PropertyComponent<OwnerType>(name: name, getter: get)
-}
-
-/**
- Creates the property that references to an immutable property of the owner object using the key path.
- */
-public func Property<Value: AnyArgument, OwnerType>(
-  _ name: String,
-  _ keyPath: KeyPath<OwnerType, Value>
-) -> PropertyComponent<OwnerType> {
-  return PropertyComponent<OwnerType>(name: name) { owner in
-    return owner[keyPath: keyPath]
-  }
-}
-
-/**
- Creates the property that references to a mutable property of the owner object using the key path.
- */
-public func Property<Value: AnyArgument, OwnerType>(
-  _ name: String,
-  _ keyPath: ReferenceWritableKeyPath<OwnerType, Value>
-) -> PropertyComponent<OwnerType> {
-  return PropertyComponent<OwnerType>(name: name) { owner in
-    return owner[keyPath: keyPath]
-  }
-  .set { owner, newValue in
-    owner[keyPath: keyPath] = newValue
   }
 }

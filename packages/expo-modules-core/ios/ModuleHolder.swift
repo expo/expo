@@ -32,13 +32,6 @@ public final class ModuleHolder {
   }
 
   /**
-   Shortcut to get the underlying view manager definition.
-   */
-  var viewManager: ViewManagerDefinition? {
-    return definition.viewManager
-  }
-
-  /**
    Number of JavaScript listeners attached to the module.
    */
   var listenersCount: Int = 0
@@ -75,7 +68,7 @@ public final class ModuleHolder {
 
   @discardableResult
   func callSync(function functionName: String, args: [Any]) -> Any? {
-    guard let appContext, let function = definition.functions[functionName] as? AnySyncFunctionComponent else {
+    guard let appContext, let function = definition.functions[functionName] as? AnySyncFunctionDefinition else {
       return nil
     }
     do {

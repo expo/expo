@@ -1,12 +1,13 @@
-/// Here we implement the components exclusive for view managers.
-
-// MARK: View factory
+/// Here we implement factories for the definitions exclusive for native views.
 
 /**
- Defines the factory creating a native view when the module is used as a view.
+ Creates a view definition describing the native view exported to React.
  */
-public func View<ViewType: UIView>(_ closure: @escaping () -> ViewType) -> ViewManagerDefinitionComponent {
-  return ViewFactory(closure)
+public func View<ViewType: UIView>(
+  _ viewType: ViewType.Type,
+  @ViewDefinitionBuilder<ViewType> _ elements: @escaping () -> [AnyViewDefinitionElement]
+) -> ViewDefinition<ViewType> {
+  return ViewDefinition(viewType, elements: elements())
 }
 
 // MARK: Props

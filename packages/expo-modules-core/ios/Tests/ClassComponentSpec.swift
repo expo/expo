@@ -2,12 +2,12 @@ import ExpoModulesTestCore
 
 @testable import ExpoModulesCore
 
-class ClassComponentSpec: ExpoSpec {
+class ClassDefinitionSpec: ExpoSpec {
   override class func spec() {
     describe("basic") {
-      it("factory returns a component") {
+      it("factory returns a definition") {
         let klass = Class("") {}
-        expect(klass).to(beAnInstanceOf(ClassComponent.self))
+        expect(klass).to(beAnInstanceOf(ClassDefinition.self))
       }
 
       it("has a name") {

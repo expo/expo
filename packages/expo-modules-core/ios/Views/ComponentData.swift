@@ -35,7 +35,7 @@ public final class ComponentData: RCTComponentDataSwiftAdapter {
     }
 
     // If the prop is defined as an event, create our own event setter.
-    if moduleHolder?.viewManager?.eventNames.contains(propName) == true {
+    if moduleHolder?.definition.view?.eventNames.contains(propName) == true {
       return createEventSetter(eventName: propName, bridge: self.manager?.bridge)
     }
 
@@ -48,7 +48,7 @@ public final class ComponentData: RCTComponentDataSwiftAdapter {
       log.warn("Given view is not an UIView")
       return
     }
-    guard let viewManager = moduleHolder?.viewManager else {
+    guard let viewDefinition = moduleHolder?.definition.view else {
       log.warn("View manager '\(self.name)' not found")
       return
     }
@@ -56,7 +56,7 @@ public final class ComponentData: RCTComponentDataSwiftAdapter {
       log.warn("App context has been lost")
       return
     }
-    let propsDict = viewManager.propsDict()
+    let propsDict = viewDefinition.propsDict()
     var remainingProps = props
 
     for (key, prop) in propsDict {
@@ -75,7 +75,7 @@ public final class ComponentData: RCTComponentDataSwiftAdapter {
     // Let the base class `RCTComponentData` handle all remaining props.
     super.setProps(remainingProps, forView: view)
 
-    viewManager.callLifecycleMethods(withType: .didUpdateProps, forView: view)
+    viewDefinition.callLifecycleMethods(withType: .didUpdateProps, forView: view)
   }
 
   /**
@@ -87,12 +87,12 @@ public final class ComponentData: RCTComponentDataSwiftAdapter {
     var directEvents: [String] = []
     let superClass: AnyClass? = managerClass.superclass()
 
-    if let viewManager = moduleHolder?.viewManager {
-      for prop in viewManager.props {
+    if let viewDefinition = moduleHolder?.definition.view {
+      for prop in viewDefinition.props {
         // `id` allows every type to be passed in
         propTypes[prop.name] = "id"
       }
-      for eventName in viewManager.eventNames {
+      for eventName in viewDefinition.eventNames {
         directEvents.append(RCTNormalizeInputEventName(eventName))
         propTypes[eventName] = "BOOL"
       }

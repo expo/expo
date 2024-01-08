@@ -30,7 +30,7 @@ internal func cast(_ value: Any, toType type: AnyDynamicType, appContext: AppCon
  - Throws: `InvalidArgsNumberException` when the number of arguments is not equal to the actual number
  of function's arguments (without an owner and promise). Rethrows exceptions thrown by `cast(_:toType:)`.
  */
-internal func cast(arguments: [Any], forFunction function: AnyFunction, appContext: AppContext) throws -> [Any] {
+internal func cast(arguments: [Any], forFunction function: AnyFunctionDefinition, appContext: AppContext) throws -> [Any] {
   return try arguments.enumerated().map { index, argument in
     let argumentType = function.dynamicArgumentTypes[index]
 
@@ -45,7 +45,7 @@ internal func cast(arguments: [Any], forFunction function: AnyFunction, appConte
 /**
  Casts an array of JavaScript values to non-JavaScript types.
  */
-internal func cast(jsValues: [Any], forFunction function: AnyFunction, appContext: AppContext) throws -> [Any] {
+internal func cast(jsValues: [Any], forFunction function: AnyFunctionDefinition, appContext: AppContext) throws -> [Any] {
   // TODO: Replace `[Any]` with `[JavaScriptValue]` once we make sure only JS values are passed here
   return try jsValues.enumerated().map { index, jsValue in
     let type = function.dynamicArgumentTypes[index]
@@ -67,7 +67,7 @@ internal func cast(jsValues: [Any], forFunction function: AnyFunction, appContex
  Validates whether the number of received arguments is enough to call the given function.
  Throws `InvalidArgsNumberException` otherwise.
  */
-internal func validateArgumentsNumber(function: AnyFunction, received: Int) throws {
+internal func validateArgumentsNumber(function: AnyFunctionDefinition, received: Int) throws {
   let argumentsCount = function.argumentsCount
   let requiredArgumentsCount = function.requiredArgumentsCount
 
@@ -89,7 +89,7 @@ internal func concat(
   arguments: [Any],
   withOwner owner: AnyObject?,
   withPromise promise: Promise?,
-  forFunction function: AnyFunction,
+  forFunction function: AnyFunctionDefinition,
   appContext: AppContext
 ) -> [Any] {
   var result = arguments

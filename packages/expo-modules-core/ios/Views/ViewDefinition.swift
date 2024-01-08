@@ -1,19 +1,46 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 /**
- A component representing the native view to export to React.
-
- Temporarily it extends the old `ViewManagerDefinition`, but the plan is to replace it entirely.
- The difference is that the old one allows the user to initialize the view (and pass some custom arguments).
- To integrate well with Fabric and its recycling mechanism, we have to disallow that and so call the view initializer internally.
- As a consequence, the user should just provide the type of the view.
+ A definition representing the native view to export to React.
  */
-public final class ViewDefinition<ViewType: UIView>: ViewManagerDefinition {
-  init(_ viewType: ViewType.Type, elements: [AnyDefinition]) {
+public final class ViewDefinition<ViewType: UIView>: ObjectDefinition, AnyViewDefinition {
+  /**
+   An array of view props definitions.
+   */
+  public let props: [AnyViewProp]
+
+  /**
+   Names of the events that the view can send to JavaScript.
+   */
+  public let eventNames: [String]
+
+  /**
+   An array of the view lifecycle methods.
+   */
+  let lifecycleMethods: [AnyViewLifecycleMethod]
+
+  /**
+   Default initializer receiving children definitions from the result builder.
+   */
+  init(_ viewType: ViewType.Type, elements: [AnyViewDefinitionElement]) {
+    self.props = elements
+      .compactMap { $0 as? AnyViewProp }
+
+    self.eventNames = Array(
+      elements
+        .compactMap { ($0 as? EventsDefinition)?.names }
+        .joined()
+    )
+
+    self.lifecycleMethods = elements
+      .compactMap { $0 as? AnyViewLifecycleMethod }
+
     super.init(definitions: elements)
   }
 
-  override func createView(appContext: AppContext) -> UIView? {
+  // MARK: - AnyViewDefinition
+
+  public func createView(appContext: AppContext) -> UIView? {
     if let expoViewType = ViewType.self as? ExpoView.Type {
       return expoViewType.init(appContext: appContext)
     }
@@ -23,58 +50,24 @@ public final class ViewDefinition<ViewType: UIView>: ViewManagerDefinition {
     return ViewType(frame: .zero)
   }
 
-  /**
-   A result builder for the view elements such as prop setters or view events.
-   */
-  @resultBuilder
-  public struct ElementsBuilder {
-    public static func buildBlock(_ elements: AnyViewDefinitionElement...) -> [AnyDefinition] {
-      return elements
+  public func propsDict() -> [String: AnyViewProp] {
+    return props.reduce(into: [String: AnyViewProp]()) { acc, prop in
+      acc[prop.name] = prop
     }
+  }
 
-    /**
-     Accepts `Events` component as a definition element of `View`.
-     */
-    public static func buildExpression(_ element: EventsDefinition) -> AnyViewDefinitionElement {
-      return element
+  public func callLifecycleMethods(withType type: ViewLifecycleMethodType, forView view: UIView) {
+    for method in lifecycleMethods where method.type == type {
+      method(view)
     }
+  }
 
-    /**
-     Accepts `Prop` component as a definition element and lets to skip defining the view type — it's inferred from the `View` component.
-     */
-    public static func buildExpression<PropType: AnyArgument>(_ element: ConcreteViewProp<ViewType, PropType>) -> AnyViewDefinitionElement {
-      return element
-    }
+  public func createReactComponentPrototype(appContext: AppContext) throws -> JavaScriptObject {
+    let prototype = try appContext.runtime.createObject()
 
-    /**
-     Accepts lifecycle methods (such as `OnViewDidUpdateProps`) as a definition element.
-     */
-    public static func buildExpression(_ element: ViewLifecycleMethod<ViewType>) -> AnyViewDefinitionElement {
-      return element
-    }
+    try decorateWithFunctions(object: prototype, appContext: appContext)
 
-    /**
-     Accepts functions as a view definition elements.
-     */
-    public static func buildExpression<ElementType: ViewDefinitionFunctionElement>(
-      _ element: ElementType
-    ) -> AnyViewDefinitionElement {
-      return element
-    }
-
-    /**
-     Accepts functions that take the owner as a view definition elements.
-     */
-    public static func buildExpression<ElementType: ViewDefinitionFunctionElement>(
-      _ element: ElementType
-    ) -> AnyViewDefinitionElement where ElementType.ViewType == ViewType {
-      // Enforce async functions to run on the main queue
-      if var function = element as? AnyAsyncFunctionComponent {
-        function.runOnQueue(.main)
-        function.takesOwner = true
-      }
-      return element
-    }
+    return prototype
   }
 }
 
@@ -90,7 +83,7 @@ extension ViewLifecycleMethod: AnyViewDefinitionElement {}
 public protocol ViewDefinitionFunctionElement: AnyViewDefinitionElement {
   associatedtype ViewType
 }
-extension AsyncFunctionComponent: ViewDefinitionFunctionElement {
+extension AsyncFunctionDefinition: ViewDefinitionFunctionElement {
   public typealias ViewType = FirstArgType
 }
 extension ConcurrentFunctionDefinition: ViewDefinitionFunctionElement {
@@ -101,14 +94,4 @@ extension UIView: AnyArgument {
   public static func getDynamicType() -> AnyDynamicType {
     return DynamicViewType(innerType: Self.self)
   }
-}
-
-/**
- Creates a view definition describing the native view exported to React.
- */
-public func View<ViewType: UIView>(
-  _ viewType: ViewType.Type,
-  @ViewDefinition<ViewType>.ElementsBuilder _ elements: @escaping () -> [AnyDefinition]
-) -> ViewDefinition<ViewType> {
-  return ViewDefinition(viewType, elements: elements())
 }

@@ -1,4 +1,4 @@
-/// This file implements definition components that are allowed in any object-based definition — `ObjectDefinition`.
+/// This file implements factories for definitions that are allowed in any object-based definition — `ObjectDefinition`.
 /// So far only constants and functions belong to plain object.
 
 // MARK: - Object
@@ -42,13 +42,13 @@ public func Events(_ names: [String]) -> EventsDefinition {
 /**
  Function that is invoked when the first event listener is added.
  */
-public func OnStartObserving(@_implicitSelfCapture _ body: @escaping () -> Void) -> AsyncFunctionComponent<(), Void, Void> {
-  return AsyncFunctionComponent("startObserving", firstArgType: Void.self, dynamicArgumentTypes: [], body)
+public func OnStartObserving(@_implicitSelfCapture _ body: @escaping () -> Void) -> AsyncFunctionDefinition<(), Void, Void> {
+  return AsyncFunctionDefinition("startObserving", firstArgType: Void.self, dynamicArgumentTypes: [], body)
 }
 
 /**
  Function that is invoked when all event listeners are removed.
  */
-public func OnStopObserving(@_implicitSelfCapture _ body: @escaping () -> Void) -> AsyncFunctionComponent<(), Void, Void> {
-  return AsyncFunctionComponent("stopObserving", firstArgType: Void.self, dynamicArgumentTypes: [], body)
+public func OnStopObserving(@_implicitSelfCapture _ body: @escaping () -> Void) -> AsyncFunctionDefinition<(), Void, Void> {
+  return AsyncFunctionDefinition("stopObserving", firstArgType: Void.self, dynamicArgumentTypes: [], body)
 }
