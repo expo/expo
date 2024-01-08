@@ -1,4 +1,9 @@
+const { isEnableHermesManaged } = require('@expo/cli/build/src/export/exportHermes');
 const { loadMetroConfigAsync } = require('@expo/cli/build/src/start/server/metro/instantiateMetro');
+const {
+  getMetroDirectBundleOptionsForExpoConfig,
+} = require('@expo/cli/build/src/start/server/middleware/metroOptions');
+const { getConfig } = require('@expo/config');
 const { resolveEntryPoint } = require('@expo/config/paths');
 const crypto = require('crypto');
 const fs = require('fs');
@@ -50,8 +55,11 @@ function getRelativeEntryPoint(projectRoot, platform) {
 
   process.chdir(projectRoot);
 
+  let exp;
   let metroConfig;
   try {
+    exp = getConfig(projectRoot, { skipSDKVersionRequirement: true }).exp;
+
     // Load the metro config the same way it would be loaded in Expo CLI.
     // This ensures dynamic features like tsconfig paths can be used.
     metroConfig = (
@@ -61,6 +69,7 @@ function getRelativeEntryPoint(projectRoot, platform) {
           // No config options can be passed to this point.
         },
         {
+          exp,
           isExporting: true,
         }
       )
@@ -76,7 +85,7 @@ function getRelativeEntryPoint(projectRoot, platform) {
 
   let assets;
   try {
-    assets = await fetchAssetManifestAsync(platform, projectRoot, entryFile, metroConfig);
+    assets = await fetchAssetManifestAsync(platform, projectRoot, entryFile, metroConfig, exp);
   } catch (e) {
     throw new Error(
       "Error loading assets JSON from Metro. Ensure you've followed all expo-updates installation steps correctly. " +
@@ -157,26 +166,28 @@ function getBasePath(asset) {
 }
 
 // Spawn a Metro server to get the asset manifest
-async function fetchAssetManifestAsync(platform, projectRoot, entryFile, metroConfig) {
+async function fetchAssetManifestAsync(platform, projectRoot, entryFile, metroConfig, exp) {
   // Project-level babel config does not load unless we change to the
   // projectRoot before instantiating the server
   process.chdir(projectRoot);
 
   const server = new Server(metroConfig);
 
-  const requestOpts = {
-    entryFile,
-    dev: false,
-    minify: false,
-    platform,
-  };
+  const isHermes = isEnableHermesManaged(exp, platform);
 
   let assetManifest;
   let error;
   try {
     assetManifest = await server.getAssets({
       ...Server.DEFAULT_BUNDLE_OPTIONS,
-      ...requestOpts,
+      ...getMetroDirectBundleOptionsForExpoConfig(projectRoot, exp, {
+        mainModuleName: entryFile,
+        platform,
+        minify: false,
+        mode: 'production',
+        engine: isHermes ? 'hermes' : undefined,
+        isExporting: true,
+      }),
     });
   } catch (e) {
     error = e;
