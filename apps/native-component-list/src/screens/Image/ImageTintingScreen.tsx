@@ -28,6 +28,7 @@ const IMAGES: ImageSource[] = [
   require('../../../assets/images/expo.svg'),
   'https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg',
   'https://img.icons8.com/?size=512&id=121173&format=png',
+  require('../../../assets/images/pin.svg'),
 ];
 
 export default function ImageTintingScreen() {
@@ -74,8 +75,8 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   image: {
-    width: 100,
-    height: 100,
+    width: 80,
+    height: 80,
     borderWidth: 1,
     borderColor: Colors.border,
     marginVertical: 10,
