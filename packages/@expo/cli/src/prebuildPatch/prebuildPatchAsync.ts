@@ -16,12 +16,12 @@ import { ensureValidPlatforms } from '../prebuild/resolveOptions';
 import { moveAsync } from '../utils/dir';
 import { setNodeEnv } from '../utils/nodeEnv';
 
-const debug = require('debug')('expo:uneject') as typeof console.log;
+const debug = require('debug')('expo:prebuild:patch') as typeof console.log;
 
 /**
- * Entry point into the uneject process.
+ * Entry point into the prebuild:patch process.
  */
-export async function unejectAsync(
+export async function prebuildPatchAsync(
   projectRoot: string,
   options: {
     /** List of platforms to prebuild. */
@@ -54,7 +54,7 @@ export async function unejectAsync(
       await fs.rm(patchFilePath, { force: true });
       await fs.mkdir(path.join(projectRoot, patchRoot), { recursive: true });
 
-      await unejectForPlatformAsync({
+      await prebuildPatchForPlatformAsync({
         projectRoot,
         platform,
         workingDirectories,
@@ -68,7 +68,7 @@ export async function unejectAsync(
   }
 }
 
-async function unejectForPlatformAsync({
+async function prebuildPatchForPlatformAsync({
   projectRoot,
   platform,
   workingDirectories,
@@ -81,7 +81,7 @@ async function unejectForPlatformAsync({
   workingDirectories: WorkingDirectories;
   patchFilePath: string;
   exp: ExpoConfig;
-  options: Omit<Parameters<typeof unejectAsync>[1], 'platforms'>;
+  options: Omit<Parameters<typeof prebuildPatchAsync>[1], 'platforms'>;
 }): Promise<void> {
   const { diffDir, originDir } = workingDirectories;
 

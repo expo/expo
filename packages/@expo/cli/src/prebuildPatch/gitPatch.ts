@@ -19,8 +19,8 @@ export async function commitAsync(repoRoot: string, message: string) {
     cwd: repoRoot,
     env: {
       ...process.env,
-      GIT_AUTHOR_NAME: 'expo-uneject',
-      GIT_COMMITTER_NAME: 'expo-uneject',
+      GIT_AUTHOR_NAME: 'expo-cng',
+      GIT_COMMITTER_NAME: 'expo-cng',
       GIT_AUTHOR_EMAIL: 'noreply@expo.dev',
       GIT_COMMITTER_EMAIL: 'noreply@expo.dev',
     },

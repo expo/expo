@@ -50,7 +50,9 @@ afterAll(() => {
 });
 
 it('loads expected modules by default', async () => {
-  const modules = await getLoadedModulesAsync(`require('../../build/src/uneject').expoUneject`);
+  const modules = await getLoadedModulesAsync(
+    `require('../../build/src/prebuildPatch').expoPrebuildPatch`
+  );
   expect(modules).toStrictEqual([
     '../node_modules/ansi-styles/index.js',
     '../node_modules/arg/index.js',
@@ -59,20 +61,20 @@ it('loads expected modules by default', async () => {
     '../node_modules/has-flag/index.js',
     '../node_modules/supports-color/index.js',
     '@expo/cli/build/src/log.js',
-    '@expo/cli/build/src/uneject/index.js',
+    '@expo/cli/build/src/prebuildPatch/index.js',
     '@expo/cli/build/src/utils/args.js',
   ]);
 });
 
-it('runs `npx expo uneject --help`', async () => {
-  const results = await execute('uneject', '--help');
+it('runs `npx expo prebuild:patch --help`', async () => {
+  const results = await execute('prebuild:patch', '--help');
   expect(results.stdout).toMatchInlineSnapshot(`
     "
       Info
         Convert native iOS and Android project files into CNG patch files
 
       Usage
-        $ npx expo uneject <dir>
+        $ npx expo prebuild:patch <dir>
 
       Options
         <dir>                                    Directory of the Expo project. Default: Current working directory
@@ -84,8 +86,8 @@ it('runs `npx expo uneject --help`', async () => {
   `);
 });
 
-it('runs `npx expo uneject` asserts when expo is not installed', async () => {
-  const projectName = 'basic-uneject-assert-no-expo';
+it('runs `npx expo prebuild:patch` asserts when expo is not installed', async () => {
+  const projectName = 'basic-prebuild-assert-no-expo';
   const projectRoot = getRoot(projectName);
   // Create the project root aot
   await fs.mkdir(projectRoot, { recursive: true });
@@ -93,13 +95,13 @@ it('runs `npx expo uneject` asserts when expo is not installed', async () => {
   await fs.writeFile(path.join(projectRoot, 'package.json'), '{ "version": "1.0.0" }');
   await fs.writeFile(path.join(projectRoot, 'app.json'), '{ "expo": { "name": "foobar" } }');
 
-  await expect(execute('uneject', projectName)).rejects.toThrowError(
+  await expect(execute('prebuild:patch', projectName)).rejects.toThrowError(
     /Cannot determine which native SDK version your project uses because the module `expo` is not installed\. Please install it with `yarn add expo` and try again./
   );
 });
 
 it(
-  'runs `npx expo uneject` should convert a project to CNG patches`',
+  'runs `npx expo prebuild:patch` should convert a project to CNG patches`',
   async () => {
     const projectRoot = await setupTestProjectAsync('basic-prebuild', 'with-blank');
     await fs.rm(path.join(projectRoot, 'cng-patches'), { recursive: true, force: true });
@@ -121,9 +123,13 @@ it(
     contents = contents.replace('org.webkit:android-jsc:+', 'org.webkit:android-jsc-intl:+');
     await fs.writeFile(appGradlePath, contents, 'utf8');
 
-    await execa('node', [bin, 'uneject', '--platform', 'android', '--template', templateFolder], {
-      cwd: projectRoot,
-    });
+    await execa(
+      'node',
+      [bin, 'prebuild:patch', '--platform', 'android', '--template', templateFolder],
+      {
+        cwd: projectRoot,
+      }
+    );
 
     let androidDirExists;
     try {
@@ -148,7 +154,7 @@ it(
 );
 
 it(
-  'runs `npx expo uneject` should convert a project to CNG patches` and `npx expo prebuild` should apply the patches',
+  'runs `npx expo prebuild:patch` should convert a project to CNG patches` and `npx expo prebuild` should apply the patches',
   async () => {
     const projectRoot = await setupTestProjectAsync('basic-prebuild', 'with-blank');
     await fs.rm(path.join(projectRoot, 'cng-patches'), { recursive: true, force: true });
@@ -173,9 +179,13 @@ it(
     );
     await fs.writeFile(appGradlePath, patchedContents, 'utf8');
 
-    await execa('node', [bin, 'uneject', '--platform', 'android', '--template', templateFolder], {
-      cwd: projectRoot,
-    });
+    await execa(
+      'node',
+      [bin, 'prebuild:patch', '--platform', 'android', '--template', templateFolder],
+      {
+        cwd: projectRoot,
+      }
+    );
 
     await execa(
       'node',

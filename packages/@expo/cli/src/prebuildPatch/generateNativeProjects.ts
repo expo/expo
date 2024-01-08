@@ -49,7 +49,7 @@ export async function generateNativeProjectsAsync(
 }
 
 /**
- * Sanity check for the native project before attempting to run uneject.
+ * Sanity check for the native project before attempting to run prebuild:patch.
  */
 export async function platformSanityCheckAsync({
   exp,

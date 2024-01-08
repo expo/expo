@@ -5,7 +5,7 @@ import path from 'path';
 
 import { ensureDirectoryAsync } from '../utils/dir';
 
-const WORKING_DIR_ROOT = '.uneject-tmp';
+const WORKING_DIR_ROOT = '.prebuildPatch-tmp';
 
 export interface WorkingDirectories {
   /** Root directory for all the working directories */
@@ -21,7 +21,7 @@ export interface WorkingDirectories {
 }
 
 /**
- * Create working directories for the uneject process.
+ * Create working directories for the prebuild:patch process.
  */
 export async function createWorkingDirectoriesAsync(
   projectRoot: string,
