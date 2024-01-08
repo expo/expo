@@ -28,6 +28,7 @@ export type MetroJsonModule = {
   absolutePath: string;
   isEntry: boolean;
   isNodeModule: boolean;
+  nodeModuleName: string;
 };
 
 export type JsonGraph = [

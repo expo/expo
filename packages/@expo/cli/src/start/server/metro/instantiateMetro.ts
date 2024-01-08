@@ -2,6 +2,7 @@ import { ExpoConfig, getConfig } from '@expo/config';
 import { getDefaultConfig, LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import { Server as ConnectServer } from 'connect';
+import fs from 'fs';
 import http from 'http';
 import type Metro from 'metro';
 import { loadConfig, resolveConfig, ConfigT } from 'metro-config';
@@ -393,6 +394,7 @@ type MetroJsonDependencyStats = {
   }[];
   absolutePath: string;
   isNodeModule: boolean;
+  nodeModuleName: string;
   isEntry: boolean;
 };
 
@@ -412,6 +414,42 @@ type MetroRequestStats = [
   },
 ];
 
+const cache = new Map<string, string>();
+function getNodeModuleNameForPath(path: string) {
+  if (cache.has(path)) {
+    return cache.get(path);
+  }
+
+  // pop up to the parent directory to match the node module
+  const parts = path.split('/');
+
+  for (let i = parts.length - 1; i >= 0; i--) {
+    if (parts[i] === 'node_modules') {
+      // If the next part is a scoped module, we need to include it in the name
+      let name = parts[i + 1];
+
+      if (name.startsWith('@') && i + 2 < parts.length) {
+        name += '/' + parts[i + 2];
+      }
+
+      cache.set(path, name);
+      return name;
+    }
+  }
+}
+
+function findUpPackageJsonDir(dir: string): string | null {
+  const packageJson = path.join(dir, 'package.json');
+  if (fs.existsSync(packageJson)) {
+    return packageJson;
+  }
+  const parent = path.dirname(dir);
+  if (parent === dir) {
+    return null;
+  }
+  return findUpPackageJsonDir(parent);
+}
+
 function toJson(
   projectRoot: string,
   entryFile: string,
@@ -425,6 +463,24 @@ function toJson(
     // if (!mod.path.match(/src\/app\/_layout/)) {
     //   return null;
     // }
+
+    // TODO: Cache this operation.
+    let nodeModuleName = getNodeModuleNameForPath(mod.path);
+    let isNodeModule = !!nodeModuleName;
+    if (!nodeModuleName) {
+      const pkgDir = findUpPackageJsonDir(mod.path);
+      if (pkgDir) {
+        const pkg = JSON.parse(fs.readFileSync(pkgDir, 'utf8'));
+        nodeModuleName = pkg.name;
+        const isRootApp = pkgDir === path.join(projectRoot, 'package.json');
+        isNodeModule = !isRootApp;
+      } else {
+        // Not sure when this would happen, maybe virtual modules.
+      }
+    }
+
+    nodeModuleName ??= '[unknown]';
+
     return {
       dependencies: [...mod.dependencies.entries()].map(([key, value]) => {
         return path.relative(projectRoot, value.absolutePath);
@@ -458,8 +514,9 @@ function toJson(
         },
       })),
 
+      nodeModuleName,
       absolutePath: mod.path,
-      isNodeModule: mod.path.match(/node_modules/) != null,
+      isNodeModule,
       isEntry: entryFile === mod.path || options.runBeforeMainModule.includes(mod.path) || false,
     };
   }
@@ -478,7 +535,7 @@ function toJson(
 
   return [
     entryFile,
-    preModules.map((mod) => modifyDep(mod, options)),
+    preModules.map((mod) => modifyDep(mod)),
     simplifyGraph(graph),
     {
       ...options,

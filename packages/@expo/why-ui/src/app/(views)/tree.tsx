@@ -9,6 +9,30 @@ import ReactECharts from 'echarts-for-react';
 import { formatSize } from '@/components/table';
 import { useRouter } from 'expo-router';
 
+const cache = new Map<string, string>();
+function getNodeModuleNameForPath(path: string) {
+  if (cache.has(path)) {
+    return cache.get(path);
+  }
+
+  // pop up to the parent directory to match the node module
+  const parts = path.split('/');
+
+  for (let i = parts.length - 1; i >= 0; i--) {
+    if (parts[i] === 'node_modules') {
+      // If the next part is a scoped module, we need to include it in the name
+      let name = parts[i + 1];
+
+      if (name.startsWith('@') && i + 2 < parts.length) {
+        name += '/' + parts[i + 2];
+      }
+
+      cache.set(path, name);
+      return name;
+    }
+  }
+}
+
 // Given a list of modules with filepaths `{ absolutePath: string }[]`, create a recursive tree structure of modules `{ absolutePath: string, groups: T[] }[]`
 function createModuleTree(paths: MetroJsonModule[]): {
   data: EChartTreeMapDataItem[];
@@ -21,6 +45,10 @@ function createModuleTree(paths: MetroJsonModule[]): {
     value: 0,
     ratio: 0,
     tip: '',
+    nodeModuleName: '',
+    itemStyle: {
+      color: '#fff',
+    },
   };
 
   let maxDepth = 0;
@@ -36,7 +64,15 @@ function createModuleTree(paths: MetroJsonModule[]): {
       let next = current.children.find((g) => g.path === part);
 
       if (!next) {
-        next = { path: part, name: part, children: [], value: 0, ratio: 0, tip: '' };
+        next = {
+          path: part,
+          name: part,
+          children: [],
+          value: 0,
+          ratio: 0,
+          tip: '',
+          nodeModuleName: '',
+        };
         current.children.push(next);
       }
 
@@ -44,6 +80,7 @@ function createModuleTree(paths: MetroJsonModule[]): {
         next.path = pathObj.absolutePath;
         next.moduleHref = pathObj.id;
         next.value = pathObj.size;
+        next.nodeModuleName = pathObj.nodeModuleName;
       } else {
         next.value += pathObj.size;
       }
@@ -391,10 +428,11 @@ function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
 
           series: [
             {
-              roam: 'move',
+              // roam: 'move',
               name: 'Size Tree',
               type: 'treemap',
-              colorMappingBy: 'value',
+              // colorMappingBy: 'value',
+              // colorMappingBy: 'index',
               breadcrumb: {
                 show: true,
                 height: 30,
@@ -410,19 +448,53 @@ function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
                 itemStyle: {
                   color: '#21222B',
 
-                  borderColor: 'transparent',
+                  borderColor: '#353745',
+                  borderWidth: 1,
+                  gapWidth: 0,
+
+                  // borderColor: 'transparent',
                   shadowColor: 'transparent',
                   textStyle: {
                     color: '#63709E',
                   },
                 },
               },
+              visibleMin: 2,
               // zoomToNodeRatio: 1000,
               // leafDepth: 3,
               // visibleMin: 300,
 
               label: {
                 show: true,
+                position: 'insideTopLeft',
+                formatter(params) {
+                  console.log('p', params);
+                  return `{name|${params.name}}\n{tip|${params.data?.tip}}`;
+                  // let arr = [
+                  //   '{name|' + params.name + '}',
+                  //   '{hr|}',
+                  //   '{budget|$ ' +
+                  //     echarts.format.addCommas(params.value[0]) +
+                  //     '} {label|budget}'
+                  // ];
+                  // // mode !== 1 &&
+                  // //   arr.push(
+                  // //     '{household|$ ' +
+                  // //       echarts.format.addCommas(+params.value[3].toFixed(4) * 1000) +
+                  // //       '} {label|per household}'
+                  // //   );
+                  // return arr.join('\n');
+                },
+                rich: {
+                  name: {
+                    formatSize: 12,
+                    color: '#fff',
+                  },
+                  tip: {
+                    fontSize: 10,
+                    color: '#63709E',
+                  },
+                },
                 // formatter: '{b}',
 
                 // normal: {
@@ -431,49 +503,65 @@ function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
                 //   },
                 // },
               },
-              upperLabel: {
-                show: true,
-                position: 'insideTop',
-                distance: 10,
-                emphasis: {
-                  position: 'insideTop',
-                  distance: 10,
-                },
-              },
+              // upperLabel: {
+              //   show: true,
+              //   position: 'insideTopLeft',
+              //   distance: 10,
+              //   emphasis: {
+              //     position: 'insideTopLeft',
+              //     distance: 10,
+              //   },
+              // },
+              // levels: [
+              //   {},
+              //   {},
+              //   {
+              //     upperLabel: {
+              //       show: true,
+              //       position: 'insideTop',
+              //       formatter: '{b}',
+              //       distance: 10,
+              //       fontSize: 12,
+              //       emphasis: {
+              //         position: 'insideTop',
+              //         distance: 10,
+              //       },
+              //     },
+              //   },
+              // ],
 
-              levels: new Array(maxDepth).fill({}).map((_, index) => {
-                return {
+              levels: [
+                {
+                  colorSaturation: [0.35, 0.5],
                   itemStyle: {
-                    // borderColorSaturation: 0.1,
-                    borderColor: saturate('#353745', index / maxDepth),
-                    borderWidth: 1,
-                    gapWidth: 0,
-                    color: '#030816',
-                    // color: ['#942e38', '#aaa', '#269f3c'],
-                    // colorMappingBy: 'value',
+                    borderWidth: 5,
+                    gapWidth: 1,
+                    borderColorSaturation: 0.6,
                   },
+                },
+              ],
+              // levels: new Array(maxDepth).fill({}).map((_, index) => {
+              //   return {
+              //     itemStyle: {
+              //       // borderColorSaturation: 0.1,
+              //       borderColor: saturate('#353745', index / maxDepth),
+              //       borderWidth: 1,
+              //       gapWidth: 0,
+              //     },
 
-                  upperLabel: {
-                    show: true,
-                    position: 'insideTop',
-                    distance: 10,
-                    fontSize: 16,
-                    emphasis: {
-                      position: 'insideTop',
-                      distance: 10,
-                    },
-                  },
-
-                  // label: {
-                  //   show: index === maxDepth - 1,
-                  //   formatter: '{b}',
-                  // },
-                  // upperLabel: {
-                  //   show: index === maxDepth - 1,
-                  //   height: 30,
-                  // },
-                };
-              }),
+              //     upperLabel: {
+              //       show: true,
+              //       position: 'insideTop',
+              //       formatter: '{b}',
+              //       distance: 10,
+              //       fontSize: 12,
+              //       emphasis: {
+              //         position: 'insideTop',
+              //         distance: 10,
+              //       },
+              //     },
+              //   };
+              // }),
 
               // itemStyle: {
               //   borderColorSaturation: 0.3,
@@ -482,7 +570,7 @@ function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
               //   borderWidth: 1,
               //   gapWidth: 0,
               // },
-              colorSaturation: [0.2, 0.7],
+              colorSaturation: [0.7, 0.2],
               // levels: [
               //   {},
               //   {
@@ -529,6 +617,7 @@ type EChartTreeMapDataItem = {
   tip: string;
   ratio: number;
   children?: EChartTreeMapDataItem[];
+  nodeModuleName: string;
 };
 
 const preventDefault = (event: any) => {
