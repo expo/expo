@@ -12,6 +12,7 @@ import { directoryExistsAsync } from '../utils/dir';
 /**
  * Generates native projects for the given platforms.
  * This step is similar to the `expo prebuild` command but removes some validation.
+ * @return The checksum of the template used to generate the native projects.
  */
 export async function generateNativeProjectsAsync(
   projectRoot: string,
@@ -24,9 +25,9 @@ export async function generateNativeProjectsAsync(
     /** Directory to write the template to before copying into the project. */
     templateDirectory: string;
   }
-) {
+): Promise<string> {
   // Create native projects from template.
-  await cloneTemplateAndCopyToProjectAsync({
+  const { templateChecksum } = await cloneTemplateAndCopyToProjectAsync({
     exp,
     projectRoot,
     template: options.template != null ? resolveTemplateOption(options.template) : undefined,
@@ -46,6 +47,8 @@ export async function generateNativeProjectsAsync(
     const { installCocoaPodsAsync } = await import('../utils/cocoapods.js');
     await installCocoaPodsAsync(projectRoot);
   }
+
+  return templateChecksum;
 }
 
 /**

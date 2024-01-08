@@ -1,11 +1,12 @@
 import spawnAsync from '@expo/spawn-async';
 import { boolish } from 'getenv';
+import { glob } from 'glob';
 import path from 'path';
 
 import { withMod } from './withMod';
 import { withRunOnce } from './withRunOnce';
 import type { ConfigPlugin, ModPlatform } from '../Plugin.types';
-import { fileExistsAsync } from '../utils/modules';
+import { addWarningForPlatform } from '../utils/warnings';
 
 const DEFAULT_PATCH_ROOT = 'cng-patches';
 const EXPO_DEBUG = boolish('EXPO_DEBUG', false);
@@ -20,7 +21,8 @@ const withPatchMod: ConfigPlugin<[ModPlatform, PatchPluginProps]> = (config, [pl
     platform,
     mod: 'patch',
     action: async (config) => {
-      await applyPatchAsync(config.modRequest.projectRoot, platform, props);
+      const templateChecksum = config._internal?.templateChecksum ?? '';
+      await applyPatchAsync(config.modRequest.projectRoot, platform, templateChecksum, props);
       return config;
     },
   });
@@ -47,14 +49,31 @@ export function createPatchPlugin(
 async function applyPatchAsync(
   projectRoot: string,
   platform: ModPlatform,
+  templateChecksum: string,
   props: PatchPluginProps
 ) {
-  const patchFilePath = path.join(
-    projectRoot,
-    props.patchRoot ?? DEFAULT_PATCH_ROOT,
-    `${platform}.patch`
-  );
-  const patchExists = await fileExistsAsync(patchFilePath);
+  const patchRoot = path.join(projectRoot, props.patchRoot ?? DEFAULT_PATCH_ROOT);
+  let patchFilePath = path.join(patchRoot, `${platform}+${templateChecksum}.patch`);
+
+  const patchFiles = await getPatchFilesAsync(patchRoot, platform, props);
+  let patchExists = patchFiles.includes(path.basename(patchFilePath));
+  if (patchFiles.length > 0 && !patchExists) {
+    const firstPatchFilePath = path.join(patchRoot, patchFiles[0]);
+    addWarningForPlatform(
+      platform,
+      'withPatchPlugin',
+      `Having patch files in ${patchRoot} but none matching "${patchFilePath}", using "${firstPatchFilePath}" instead.`
+    );
+    patchFilePath = firstPatchFilePath;
+    patchExists = true;
+  } else if (patchFiles.length > 1) {
+    addWarningForPlatform(
+      platform,
+      'withPatchPlugin',
+      `Having multiple patch files in ${patchRoot} is not supported. Only matched patch file "${patchFilePath}" will be applied.`
+    );
+  }
+
   if (EXPO_DEBUG) {
     console.log(
       patchExists
@@ -80,4 +99,20 @@ async function applyPatchAsync(
     }
     throw e;
   }
+}
+
+async function getPatchFilesAsync(
+  patchRoot: string,
+  platform: ModPlatform,
+  props: PatchPluginProps
+): Promise<string[]> {
+  return await new Promise<string[]>((resolve, reject) => {
+    glob(`${platform}*.patch`, { cwd: patchRoot }, (error, matches) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(matches);
+      }
+    });
+  });
 }

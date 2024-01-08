@@ -14,6 +14,7 @@ import { createWorkingDirectoriesAsync, type WorkingDirectories } from './workin
 import { Log } from '../log';
 import { ensureValidPlatforms } from '../prebuild/resolveOptions';
 import { moveAsync } from '../utils/dir';
+import { anyMatchAsync } from '../utils/glob';
 import { setNodeEnv } from '../utils/nodeEnv';
 
 const debug = require('debug')('expo:prebuild:patch') as typeof console.log;
@@ -50,15 +51,14 @@ export async function prebuildPatchAsync(
 
     const workingDirectories = await createWorkingDirectoriesAsync(projectRoot, platform);
     try {
-      const patchFilePath = path.join(projectRoot, patchRoot, `${platform}.patch`);
-      await fs.rm(patchFilePath, { force: true });
+      await removePatchFilesAsync(patchRoot, platform);
       await fs.mkdir(path.join(projectRoot, patchRoot), { recursive: true });
 
       await prebuildPatchForPlatformAsync({
         projectRoot,
         platform,
         workingDirectories,
-        patchFilePath,
+        patchRoot,
         exp,
         options,
       });
@@ -72,14 +72,14 @@ async function prebuildPatchForPlatformAsync({
   projectRoot,
   platform,
   workingDirectories,
-  patchFilePath,
+  patchRoot,
   exp,
   options,
 }: {
   projectRoot: string;
   platform: ModPlatform;
   workingDirectories: WorkingDirectories;
-  patchFilePath: string;
+  patchRoot: string;
   exp: ExpoConfig;
   options: Omit<Parameters<typeof prebuildPatchAsync>[1], 'platforms'>;
 }): Promise<void> {
@@ -98,7 +98,7 @@ async function prebuildPatchForPlatformAsync({
 
   debug(`Generating native projects from prebuild template - projectRoot[${projectRoot}]`);
   Log.log(chalk.bold(`Generating native projects from prebuild template - platform[${platform}]`));
-  await generateNativeProjectsAsync(projectRoot, exp, {
+  const templateChecksum = await generateNativeProjectsAsync(projectRoot, exp, {
     platforms: [platform],
     template: options.template,
     templateDirectory: workingDirectories.templateDir,
@@ -124,11 +124,12 @@ async function prebuildPatchForPlatformAsync({
   await moveAsync(originDir, platformDiffDir);
 
   debug(`Generating patch file`);
+  const patchFilePath = path.join(projectRoot, patchRoot, `${platform}+${templateChecksum}.patch`);
   Log.log(chalk.bold(`Saving patch file to ${patchFilePath}`));
   await diffAsync(diffDir, patchFilePath, options.diffOptions ?? []);
   const stat = await fs.stat(patchFilePath);
   if (stat.size === 0) {
-    Log.log('No changes detected, removing the patch file');
+    Log.log(`No changes detected, removing the patch file: ${patchFilePath}`);
     await fs.rm(patchFilePath);
   }
 
@@ -137,4 +138,14 @@ async function prebuildPatchForPlatformAsync({
     await moveAsync(platformDiffDir, path.join(projectRoot, platform));
     await revertNormalizeNativeProjectsAsync(backupFileMappings);
   }
+}
+
+async function removePatchFilesAsync(patchRoot: string, platform: ModPlatform): Promise<void> {
+  const patchFiles = await anyMatchAsync(`${platform}*.patch`, { cwd: patchRoot, absolute: true });
+  await Promise.all(
+    patchFiles.map((file) => {
+      Log.log(`Removing patch file: ${file}`);
+      return fs.rm(file, { force: true });
+    })
+  );
 }
