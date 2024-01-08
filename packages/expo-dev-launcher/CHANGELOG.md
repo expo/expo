@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+### 📚 3rd party library updates
+
+- Update react-native to 0.73.2. ([#26308](https://github.com/expo/expo/pull/26308) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 3.6.1 — 2023-12-19
 
 ### 🎉 New features
