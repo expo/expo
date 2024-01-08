@@ -2,7 +2,7 @@ import ExpoModulesTestCore
 
 @testable import ExpoModulesCore
 
-class PropertyComponentSpec: ExpoSpec {
+class PropertyDefinitionSpec: ExpoSpec {
   override class func spec() {
     describe("property") {
       let appContext = AppContext.create()
