@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 6.8.2 — 2023-12-15
+
+_This version does not introduce any user-facing changes._
+
 ## 6.8.1 — 2023-12-13
 
 ### 🎉 New features

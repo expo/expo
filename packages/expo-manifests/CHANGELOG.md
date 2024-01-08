@@ -4,11 +4,16 @@
 
 ### 🛠 Breaking changes
 
+- Remove classic updates. ([#26036](https://github.com/expo/expo/pull/26036), [#26048](https://github.com/expo/expo/pull/26048) by [@wschurman](https://github.com/wschurman))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- [Android] Remove unsafe internal mutation capability. ([#26229](https://github.com/expo/expo/pull/26229) by [@wschurman](https://github.com/wschurman))
+- Rename manifest classes. ([#26234](https://github.com/expo/expo/pull/26234), [#26235](https://github.com/expo/expo/pull/26235), [#26257](https://github.com/expo/expo/pull/26257) by [@wschurman](https://github.com/wschurman))
 
 ## 0.13.0 — 2023-12-12
 

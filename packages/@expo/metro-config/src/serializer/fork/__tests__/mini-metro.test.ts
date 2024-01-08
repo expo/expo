@@ -108,6 +108,7 @@ it(`can create a micro Metro graph fixture`, () => {
         "dev": true,
         "getRunModuleStatement": [Function],
         "includeAsyncPaths": true,
+        "inlineSourceMap": undefined,
         "modulesOnly": false,
         "processModuleFilter": [Function],
         "projectRoot": "/app/",

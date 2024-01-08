@@ -62,7 +62,7 @@ class ViewDefinitionBuilder<T : View>(
       callbacksDefinition = callbacksDefinition,
       viewGroupDefinition = viewGroupDefinition,
       onViewDidUpdateProps = onViewDidUpdateProps,
-      asyncFunctions = asyncFunctions.values.toList(),
+      asyncFunctions = asyncFunctions.values.toList()
     )
   }
 

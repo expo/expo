@@ -45,7 +45,7 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
             )
         }
       ),
-      DevMenuPackage(),
+      DevMenuPackage()
     )
 
     try {

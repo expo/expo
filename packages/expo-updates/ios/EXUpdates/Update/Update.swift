@@ -75,6 +75,7 @@ public enum UpdateStatus: Int {
 @objc(EXUpdatesUpdateError)
 public enum UpdateError: Int, Error {
   case invalidExpoProtocolVersion
+  case legacyManifestInstantiationInvalid
 }
 
 @objc(EXUpdatesUpdate)
@@ -138,14 +139,10 @@ public class Update: NSObject {
     let protocolVersion = responseHeaderData.protocolVersion
     switch protocolVersion {
     case nil:
-      return LegacyUpdate.update(
-        withLegacyManifest: LegacyManifest(rawManifestJSON: withManifest),
-        config: config,
-        database: database
-      )
+      throw UpdateError.legacyManifestInstantiationInvalid
     case 0, 1:
-      return NewUpdate.update(
-        withNewManifest: NewManifest(rawManifestJSON: withManifest),
+      return ExpoUpdatesUpdate.update(
+        withExpoUpdatesManifest: ExpoUpdatesManifest(rawManifestJSON: withManifest),
         extensions: extensions,
         config: config,
         database: database
@@ -156,12 +153,12 @@ public class Update: NSObject {
   }
 
   public static func update(
-    withEmbeddedManifest: [String: Any],
+    withRawEmbeddedManifest: [String: Any],
     config: UpdatesConfig,
     database: UpdatesDatabase?
-  ) -> BareUpdate {
-    return BareUpdate.update(
-      withBareManifest: BareManifest(rawManifestJSON: withEmbeddedManifest),
+  ) -> EmbeddedUpdate {
+    return EmbeddedUpdate.update(
+      withEmbeddedManifest: EmbeddedManifest(rawManifestJSON: withRawEmbeddedManifest),
       config: config,
       database: database
     )

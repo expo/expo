@@ -62,6 +62,10 @@ module.exports = defaultConfig;
 Use the following function (or similar) to open your database:
 
 ```ts
+import * as FileSystem from 'expo-file-system';
+import * as SQLite from 'expo-sqlite';
+import { Asset } from 'expo-asset';
+
 async function openDatabase(pathToDatabaseFile: string): Promise<SQLite.WebSQLDatabase> {
   if (!(await FileSystem.getInfoAsync(FileSystem.documentDirectory + 'SQLite')).exists) {
     await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'SQLite');
@@ -79,6 +83,8 @@ async function openDatabase(pathToDatabaseFile: string): Promise<SQLite.WebSQLDa
 ### Executing statements with an async transaction
 
 ```js
+import * as SQLite from 'expo-sqlite';
+
 const db = SQLite.openDatabase('dbName', version);
 
 const readOnly = true;
@@ -93,6 +99,8 @@ await db.transactionAsync(async tx => {
 > You should use this kind of execution only when it is necessary. For instance, when code is a no-op within transactions. Example: `PRAGMA foreign_keys = ON;`.
 
 ```js
+import * as SQLite from 'expo-sqlite';
+
 const db = SQLite.openDatabase('dbName', version);
 
 await db.execAsync([{ sql: 'PRAGMA foreign_keys = ON;', args: [] }], false);

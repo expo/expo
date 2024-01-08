@@ -1,6 +1,5 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-import UIKit
 import CoreGraphics
 
 // Here we extend some common iOS types to implement `Convertible` protocol and
@@ -94,5 +93,23 @@ extension CGRect: Convertible {
       return CGRect(x: args[0], y: args[1], width: args[2], height: args[3])
     }
     throw Conversions.ConvertingException<CGRect>(value)
+  }
+}
+
+extension Date: Convertible {
+  public static func convert(from value: Any?, appContext: AppContext) throws -> Date {
+    if let value = value as? String {
+      let formatter = ISO8601DateFormatter()
+      formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+      guard let date = formatter.date(from: value) else {
+        throw Conversions.ConvertingException<Date>(value)
+      }
+      return date
+    }
+    // For converting the value from `Date.now()`
+    if let value = value as? Int {
+      return Date(timeIntervalSince1970: Double(value) / 1000.0)
+    }
+    throw Conversions.ConvertingException<Date>(value)
   }
 }

@@ -40,7 +40,7 @@ object DevLauncherPackageDelegate {
       DevLauncherModule(reactContext),
       DevLauncherInternalModule(reactContext),
       DevLauncherDevMenuExtension(reactContext),
-      DevLauncherAuth(reactContext),
+      DevLauncherAuth(reactContext)
     )
 
   fun createApplicationLifecycleListeners(context: Context?): List<ApplicationLifecycleListener> =

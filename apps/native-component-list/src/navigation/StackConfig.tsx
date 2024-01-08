@@ -42,11 +42,7 @@ export default function getStackConfig({
         <TouchableOpacity
           onPress={() => navigation.navigate('searchNavigator')}
           style={{ marginRight: 16 }}>
-          <Ionicons
-            name="md-search"
-            size={Platform.OS === 'ios' ? 22 : 25}
-            color={Colors.tintColor}
-          />
+          <Ionicons name="search" size={Platform.OS === 'ios' ? 22 : 25} color={Colors.tintColor} />
         </TouchableOpacity>
       ),
     }),

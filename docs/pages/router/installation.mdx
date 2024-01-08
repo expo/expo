@@ -85,7 +85,7 @@ You'll need to install the following dependencies:
 
 <Tab label="SDK 49 and above">
 
-    Use the `expo-router/entry` file in the **package.json**. The initial client file is [**app/_layout.js**](/router/advanced/root-layout).
+    For the property `main`, use the `expo-router/entry` as its value in the **package.json**. The initial client file is [**app/_layout.js**](/router/advanced/root-layout).
 
     ```json package.json
     {
@@ -151,34 +151,41 @@ Then, enable [Metro web](/guides/customizing-metro/#adding-web-support-to-metro)
 
 <Tabs>
 
-  <Tab label="SDK 50 and above">
+<Tab label="SDK 50 and above">
 
-    Ensure you use `babel-preset-expo` as the `preset`, in the **babel.config.js** file or delete the file:
+Ensure you use `babel-preset-expo` as the `preset`, in the **babel.config.js** file or delete the file:
 
-    ```js babel.config.js
-    module.exports = function (api) {
-      api.cache(true);
-      return {
-        presets: ['babel-preset-expo'],
-      };
-    };
-    ```
+```js babel.config.js
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: ['babel-preset-expo'],
+  };
+};
+```
 
-    If you're upgrading from a version of Expo Router that is older than v3, remove the `plugins: ['expo-router/babel']`. `expo-router/babel` was merged in `babel-preset-expo` in SDK 50 (Expo Router v3).
+If you're upgrading from a version of Expo Router that is older than v3, remove the `plugins: ['expo-router/babel']`. `expo-router/babel` was merged in `babel-preset-expo` in SDK 50 (Expo Router v3).
 
-  </Tab>
+</Tab>
 
-  <Tab label="SDK 49 and below">
+<Tab label="SDK 49 and below">
 
-   Add `expo-router/babel` plugin as the last item in the `plugins` array to your project's **babel.config.js**:
+Add `expo-router/babel` plugin as the last item in the `plugins` array to your project's **babel.config.js**:
 
-  {/* prettier-ignore */}
-  ```js babel.config.js
-  plugins: ['expo-router/babel']
-  ```
+{/* prettier-ignore */}
+```js babel.config.js
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: ['babel-preset-expo'],
+    /* @info Add the following line. */
+    plugins: ['expo-router/babel'],
+    /* @end */
+  };
+};
+```
 
-
-  </Tab>
+</Tab>
 
 </Tabs>
 
@@ -201,7 +208,9 @@ After updating the Babel config file, run the following command to clear the bun
 <Tabs>
 
   <Tab label="SDK 50 and above">
-    If you're upgrading from an older version of Expo Router, ensure you remove all outdated Yarn resolutions or npm overrides in your **package.json**. Specifically remove `metro`, `metro-resolver`, `react-refresh` resolutions from your **package.json**.
+    If you're upgrading from an older version of Expo Router, ensure you remove all outdated Yarn
+    resolutions or npm overrides in your **package.json**. Specifically remove `metro`,
+    `metro-resolver`, `react-refresh` resolutions from your **package.json**.
   </Tab>
 
   <Tab label="SDK 49">
@@ -231,6 +240,7 @@ After updating the Babel config file, run the following command to clear the bun
           ```
       </Tab>
     </Tabs>
+
   </Tab>
 
   <Tab label="SDK 48 and below">
@@ -259,6 +269,7 @@ After updating the Babel config file, run the following command to clear the bun
           ```
       </Tab>
     </Tabs>
+
   </Tab>
 </Tabs>
 </Step>

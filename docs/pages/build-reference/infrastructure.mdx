@@ -8,7 +8,7 @@ description: Learn about the current build server infrastructure when using EAS.
 import { Collapsible } from '~/ui/components/Collapsible';
 import { BuildResourceList } from '~/ui/components/utils/infrastructure';
 
-> This document was last updated on **November 28, 2023**.
+> This document was last updated on **December 15, 2023**.
 
 ## Builder IP addresses
 
@@ -74,7 +74,6 @@ Android builders run on virtual machines in an isolated environment. Every build
 - pnpm 8.9.2
 - npm 9.8.1
 - Java 17
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
@@ -91,7 +90,6 @@ Android builders run on virtual machines in an isolated environment. Every build
 - pnpm 8.7.5
 - npm 9.8.1
 - Java 11
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
@@ -108,7 +106,6 @@ Android builders run on virtual machines in an isolated environment. Every build
 - pnpm 7.0.0
 - npm 9.8.1
 - Java 8
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
@@ -125,7 +122,6 @@ Android builders run on virtual machines in an isolated environment. Every build
 - pnpm 7.0.0
 - npm 9.8.1
 - Java 11
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
@@ -142,7 +138,6 @@ Android builders run on virtual machines in an isolated environment. Every build
 - pnpm 7.0.0
 - npm 9.8.1
 - Java 8
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
@@ -159,7 +154,6 @@ Android builders run on virtual machines in an isolated environment. Every build
 - pnpm 7.0.0
 - npm 9.8.1
 - Java 11
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
@@ -176,7 +170,6 @@ Android builders run on virtual machines in an isolated environment. Every build
 - pnpm 7.0.0
 - npm 9.8.1
 - Java 8
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
@@ -215,7 +208,25 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 
 ### iOS server images
 
-#### `macos-ventura-13.6-xcode-15.0` (`latest`)
+#### `macos-ventura-13.6-xcode-15.1` (`latest`)
+
+<Collapsible summary="Details">
+
+- macOS Ventura 13.6
+- Xcode 15.1 (15C65)
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
+- pnpm 8.12.1
+- npm 9.8.1
+- fastlane 2.217.0
+- CocoaPods 1.14.3
+- Ruby 2.7
+- node-gyp 10.0.1
+
+</Collapsible>
+
+#### `macos-ventura-13.6-xcode-15.0`
 
 <Collapsible summary="Details">
 
@@ -229,7 +240,6 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - fastlane 2.216.0
 - CocoaPods 1.13.0
 - Ruby 2.7
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
@@ -248,7 +258,6 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - fastlane 2.213.0
 - CocoaPods 1.12.1
 - Ruby 2.7
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
@@ -267,7 +276,6 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - fastlane 2.212.2
 - CocoaPods 1.12.0
 - Ruby 2.7
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
@@ -286,7 +294,6 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - fastlane 2.211.0
 - CocoaPods 1.11.3
 - Ruby 2.7
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
@@ -305,7 +312,6 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - fastlane 2.210.1
 - CocoaPods 1.11.3
 - Ruby 2.7
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
@@ -324,7 +330,6 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - fastlane 2.210.0
 - CocoaPods 1.11.3
 - Ruby 2.7
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
@@ -343,7 +348,6 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - fastlane 2.205.2
 - CocoaPods 1.11.3
 - Ruby 2.7
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
@@ -362,7 +366,6 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - fastlane 2.205.2
 - CocoaPods 1.11.3
 - Ruby 2.7
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
@@ -381,7 +384,6 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - fastlane 2.201.0
 - CocoaPods 1.11.2
 - Ruby 2.7
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>

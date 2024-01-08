@@ -28,11 +28,11 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           url: URL(string: "https://exp.host/@test/test")!,
           statusCode: 200,
           httpVersion: "HTTP/1.1",
-          headerFields: ["content-type": contentType]
+          headerFields: ["content-type": contentType, "expo-protocol-version": "0"]
         )!
         
-        let bodyData = CertificateFixtures.testClassicManifestBody.data(using: .utf8)!
-        
+        let bodyData = CertificateFixtures.testExpoUpdatesManifestBody.data(using: .utf8)!
+
         var resultUpdateResponse: UpdateResponse? = nil
         var errorOccurred: (any Error)? = nil
         downloader.parseManifestResponse(response, withData: bodyData, database: database) { updateResponse in
@@ -59,12 +59,12 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           url: URL(string: "https://exp.host/@test/test")!,
           statusCode: 200,
           httpVersion: "HTTP/1.1",
-          headerFields: ["content-type": contentType]
+          headerFields: ["content-type": contentType, "expo-protocol-version": "0"]
         )!
         
         let bodyData = FileDownloaderManifestParsingSpec.mutlipartData(
           boundary: boundary,
-          manifest: CertificateFixtures.testClassicManifestBody,
+          manifest: CertificateFixtures.testExpoUpdatesManifestBody,
           manifestSignature: nil,
           certificateChain: nil,
           directive: CertificateFixtures.testDirectiveNoUpdateAvailable,
@@ -351,11 +351,11 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
             "expo-protocol-version": "0",
             "expo-sfv-version": "0",
             "content-type": contentType,
-            "expo-signature": CertificateFixtures.testNewManifestBodySignature,
+            "expo-signature": CertificateFixtures.testExpoUpdatesManifestBodySignature,
           ]
         )!
         
-        let bodyData = CertificateFixtures.testNewManifestBody.data(using: .utf8)!
+        let bodyData = CertificateFixtures.testExpoUpdatesManifestBody.data(using: .utf8)!
         
         var resultUpdateResponse: UpdateResponse? = nil
         var errorOccurred: (any Error)? = nil
@@ -394,8 +394,8 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
         
         let bodyData = FileDownloaderManifestParsingSpec.mutlipartData(
           boundary: boundary,
-          manifest: CertificateFixtures.testNewManifestBody,
-          manifestSignature: CertificateFixtures.testNewManifestBodySignature,
+          manifest: CertificateFixtures.testExpoUpdatesManifestBody,
+          manifestSignature: CertificateFixtures.testExpoUpdatesManifestBodySignature,
           certificateChain: nil,
           directive: CertificateFixtures.testDirectiveNoUpdateAvailable,
           directiveSignature: CertificateFixtures.testDirectiveNoUpdateAvailableSignature
@@ -439,7 +439,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           ]
         )!
         
-        let bodyData = CertificateFixtures.testNewManifestBody.data(using: .utf8)!
+        let bodyData = CertificateFixtures.testExpoUpdatesManifestBody.data(using: .utf8)!
         
         var resultUpdateResponse: UpdateResponse? = nil
         var errorOccurred: (any Error)? = nil
@@ -480,8 +480,8 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
         
         let bodyData = FileDownloaderManifestParsingSpec.mutlipartData(
           boundary: boundary,
-          manifest: CertificateFixtures.testNewManifestBody,
-          manifestSignature: CertificateFixtures.testNewManifestBodyValidChainLeafSignature,
+          manifest: CertificateFixtures.testExpoUpdatesManifestBody,
+          manifestSignature: CertificateFixtures.testExpoUpdatesManifestBodyValidChainLeafSignature,
           certificateChain: "\(getTestCertificate(.chainLeaf))\(getTestCertificate(.chainIntermediate))",
           directive: CertificateFixtures.testDirectiveNoUpdateAvailable,
           directiveSignature: CertificateFixtures.testDirectiveNoUpdateAvailableValidChainLeafSignature
@@ -530,8 +530,8 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
         
         let bodyData = FileDownloaderManifestParsingSpec.mutlipartData(
           boundary: boundary,
-          manifest: CertificateFixtures.testNewManifestBodyIncorrectProjectId,
-          manifestSignature: CertificateFixtures.testNewManifestBodyValidChainLeafSignatureIncorrectProjectId,
+          manifest: CertificateFixtures.testExpoUpdatesManifestBodyIncorrectProjectId,
+          manifestSignature: CertificateFixtures.testExpoUpdatesManifestBodyValidChainLeafSignatureIncorrectProjectId,
           certificateChain: "\(getTestCertificate(.chainLeaf))\(getTestCertificate(.chainIntermediate))",
           directive: nil,
           directiveSignature: nil
@@ -616,7 +616,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           ]
         )!
         
-        let bodyData = CertificateFixtures.testNewManifestBody.data(using: .utf8)!
+        let bodyData = CertificateFixtures.testExpoUpdatesManifestBody.data(using: .utf8)!
         
         var resultUpdateResponse: UpdateResponse? = nil
         var errorOccurred: (any Error)? = nil

@@ -104,7 +104,7 @@ class DevLauncherDevSupportManagerSwapper : DevLauncherKoinComponent {
       val shakeDetector: ShakeDetector =
         DevSupportManagerBase::class.java.getProtectedFieldValue(
           currentDevSupportManager,
-          "mShakeDetector",
+          "mShakeDetector"
         )
       shakeDetector.stop()
     } catch (e: Exception) {

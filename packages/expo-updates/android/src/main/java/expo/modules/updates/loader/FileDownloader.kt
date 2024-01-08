@@ -10,8 +10,6 @@ import expo.modules.updates.launcher.NoDatabaseLauncher
 import expo.modules.updates.selectionpolicy.SelectionPolicies
 import okhttp3.*
 import okhttp3.brotli.BrotliInterceptor
-import org.json.JSONArray
-import org.json.JSONException
 import org.json.JSONObject
 import java.io.File
 import java.io.IOException
@@ -22,7 +20,6 @@ import org.apache.commons.fileupload.ParameterParser
 import java.io.ByteArrayOutputStream
 import expo.modules.easclient.EASClientID
 import okhttp3.Headers.Companion.toHeaders
-import expo.modules.jsonutils.getNullable
 import expo.modules.structuredheaders.StringItem
 import expo.modules.updates.codesigning.ValidationResult
 import expo.modules.updates.db.UpdatesDatabase
@@ -61,7 +58,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
     fun onSuccess(assetEntity: AssetEntity, isNew: Boolean)
   }
 
-  private fun downloadFileAndVerifyHashAndWriteToPath(
+  private fun downloadAssetAndVerifyHashAndWriteToPath(
     request: Request,
     expectedBase64URLEncodedSHA256Hash: String?,
     destination: File,
@@ -71,18 +68,16 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
       request,
       object : Callback {
         override fun onFailure(call: Call, e: IOException) {
+          logger.error("Failed to download asset from ${request.url}", UpdatesErrorCode.AssetsFailedToLoad, e)
           callback.onFailure(e)
         }
 
         @Throws(IOException::class)
         override fun onResponse(call: Call, response: Response) {
           if (!response.isSuccessful) {
-            callback.onFailure(
-              Exception(
-                "Network request failed: " + response.body!!
-                  .string()
-              )
-            )
+            val error = Exception("Network request failed: " + response.body!!.string())
+            logger.error("Failed to download file from ${request.url}", UpdatesErrorCode.AssetsFailedToLoad, error)
+            callback.onFailure(error)
             return
           }
           try {
@@ -91,7 +86,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
               callback.onSuccess(destination, hash)
             }
           } catch (e: Exception) {
-            logger.error("Failed to download file to destination $destination: ${e.localizedMessage}", UpdatesErrorCode.AssetsFailedToLoad, e)
+            logger.error("Failed to write file from ${request.url} to destination $destination", UpdatesErrorCode.AssetsFailedToLoad, e)
             callback.onFailure(e)
           }
         }
@@ -104,8 +99,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
     val responseHeaderData = ResponseHeaderData(
       protocolVersionRaw = responseHeaders["expo-protocol-version"],
       manifestFiltersRaw = responseHeaders["expo-manifest-filters"],
-      serverDefinedHeadersRaw = responseHeaders["expo-server-defined-headers"],
-      manifestSignature = responseHeaders["expo-manifest-signature"],
+      serverDefinedHeadersRaw = responseHeaders["expo-server-defined-headers"]
     )
     val responseBody = response.body
 
@@ -378,7 +372,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
           val signatureValidationResult = codeSigningConfiguration.validateSignature(
             directiveResponsePartInfo.responsePartHeaderData.signature,
             body.toByteArray(),
-            certificateChainFromManifestResponse,
+            certificateChainFromManifestResponse
           )
           if (signatureValidationResult.validationResult == ValidationResult.INVALID) {
             throw IOException("Directive download was successful, but signature was incorrect")
@@ -424,86 +418,17 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
     callback: ParseManifestCallback
   ) {
     try {
-      val updateResponseJson = extractUpdateResponseJson(manifestResponseInfo.body, configuration)
-      val isSignatureInBody =
-        updateResponseJson.has("manifestString") && updateResponseJson.has("signature")
-      val signature = if (isSignatureInBody) {
-        updateResponseJson.getNullable("signature")
-      } else {
-        manifestResponseInfo.responseHeaderData.manifestSignature
-      }
-
-      /**
-       * The updateResponseJson is just the manifest when it is unsigned, or the signature is sent as a header.
-       * If the signature is in the body, the updateResponseJson looks like:
-       * {
-       *   manifestString: string;
-       *   signature: string;
-       * }
-       */
-      val manifestString = if (isSignatureInBody) {
-        updateResponseJson.getString("manifestString")
-      } else {
-        manifestResponseInfo.body
-      }
-      val preManifest = JSONObject(manifestString)
-
-      // XDL serves unsigned manifests with the `signature` key set to "UNSIGNED".
-      // We should treat these manifests as unsigned rather than signed with an invalid signature.
-      val isUnsignedFromXDL = "UNSIGNED" == signature
-      if (signature != null && !isUnsignedFromXDL) {
-        verifyExpoPublicRSASignature(
-          this@FileDownloader,
-          manifestString,
-          signature,
-          object : RSASignatureListener {
-            override fun onError(exception: Exception, isNetworkError: Boolean) {
-              callback.onFailure("Could not validate signed manifest", exception)
-            }
-
-            override fun onCompleted(isValid: Boolean) {
-              if (isValid) {
-                try {
-                  checkCodeSigningAndCreateManifest(
-                    bodyString = manifestResponseInfo.body,
-                    preManifest = preManifest,
-                    responseHeaderData = manifestResponseInfo.responseHeaderData,
-                    responsePartHeaderData = manifestResponseInfo.responsePartHeaderData,
-                    extensions = extensions,
-                    certificateChainFromManifestResponse = certificateChainFromManifestResponse,
-                    isVerified = true,
-                    configuration = configuration,
-                    logger = logger,
-                    callback = callback
-                  )
-                } catch (e: Exception) {
-                  callback.onFailure("Failed to parse manifest data", e)
-                }
-              } else {
-                val message = "Manifest signature is invalid; aborting"
-                logger.error(message, UpdatesErrorCode.UpdateHasInvalidSignature)
-                callback.onFailure(
-                  message,
-                  Exception("Manifest signature is invalid")
-                )
-              }
-            }
-          }
-        )
-      } else {
-        checkCodeSigningAndCreateManifest(
-          bodyString = manifestResponseInfo.body,
-          preManifest = preManifest,
-          responseHeaderData = manifestResponseInfo.responseHeaderData,
-          responsePartHeaderData = manifestResponseInfo.responsePartHeaderData,
-          extensions = extensions,
-          certificateChainFromManifestResponse = certificateChainFromManifestResponse,
-          isVerified = false,
-          configuration = configuration,
-          logger = logger,
-          callback = callback
-        )
-      }
+      checkCodeSigningAndCreateManifest(
+        bodyString = manifestResponseInfo.body,
+        preManifest = JSONObject(manifestResponseInfo.body),
+        responseHeaderData = manifestResponseInfo.responseHeaderData,
+        responsePartHeaderData = manifestResponseInfo.responsePartHeaderData,
+        extensions = extensions,
+        certificateChainFromManifestResponse = certificateChainFromManifestResponse,
+        configuration = configuration,
+        logger = logger,
+        callback = callback
+      )
     } catch (e: Exception) {
       val message = "Failed to parse manifest data: ${e.localizedMessage}"
       logger.error(message, UpdatesErrorCode.UpdateFailedToLoad, e)
@@ -579,7 +504,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
       callback.onSuccess(asset, false)
     } else {
       try {
-        downloadFileAndVerifyHashAndWriteToPath(
+        downloadAssetAndVerifyHashAndWriteToPath(
           createRequestForAsset(asset, configuration, context),
           asset.expectedHash,
           path,
@@ -603,7 +528,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
     }
   }
 
-  fun downloadData(request: Request, callback: Callback) {
+  private fun downloadData(request: Request, callback: Callback) {
     downloadData(request, callback, false)
   }
 
@@ -638,14 +563,16 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
       responsePartHeaderData: ResponsePartHeaderData,
       extensions: JSONObject?,
       certificateChainFromManifestResponse: String?,
-      isVerified: Boolean,
       configuration: UpdatesConfiguration,
       logger: UpdatesLogger,
       callback: ParseManifestCallback
     ) {
-      if (configuration.expectsSignedManifest) {
-        preManifest.put("isVerified", isVerified)
-      }
+      // Set the isVerified field in the manifest itself so that it is stored in the database.
+      // Note that this is not considered for code signature verification.
+      // currently this is only used by Expo Go, but moving it out of the library would require
+      // also storing the signature so database-loaded-update validity could be derived at load
+      // time.
+      preManifest.put("isVerified", false)
 
       // check code signing if code signing is configured
       // 1. verify the code signing signature (throw if invalid)
@@ -658,14 +585,14 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
           val signatureValidationResult = codeSigningConfiguration.validateSignature(
             responsePartHeaderData.signature,
             bodyString.toByteArray(),
-            certificateChainFromManifestResponse,
+            certificateChainFromManifestResponse
           )
           if (signatureValidationResult.validationResult == ValidationResult.INVALID) {
             throw IOException("Manifest download was successful, but signature was incorrect")
           }
 
           if (signatureValidationResult.validationResult != ValidationResult.SKIPPED) {
-            val manifestForProjectInformation = ManifestFactory.getManifest(
+            val manifestForProjectInformation = UpdateFactory.getUpdate(
               preManifest,
               responseHeaderData,
               extensions,
@@ -689,47 +616,14 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
         return
       }
 
-      val updateManifest = ManifestFactory.getManifest(preManifest, responseHeaderData, extensions, configuration)
-      if (!SelectionPolicies.matchesFilters(updateManifest.updateEntity!!, responseHeaderData.manifestFilters)) {
+      val update = UpdateFactory.getUpdate(preManifest, responseHeaderData, extensions, configuration)
+      if (!SelectionPolicies.matchesFilters(update.updateEntity!!, responseHeaderData.manifestFilters)) {
         val message =
           "Downloaded manifest is invalid; provides filters that do not match its content"
         callback.onFailure(message, Exception(message))
       } else {
-        callback.onSuccess(UpdateResponsePart.ManifestUpdateResponsePart(updateManifest))
+        callback.onSuccess(UpdateResponsePart.ManifestUpdateResponsePart(update))
       }
-    }
-
-    @Throws(IOException::class)
-    private fun extractUpdateResponseJson(
-      manifestString: String,
-      configuration: UpdatesConfiguration
-    ): JSONObject {
-      try {
-        return JSONObject(manifestString)
-      } catch (e: JSONException) {
-        // Ignore this error, try to parse manifest as array
-      }
-
-      // TODO: either add support for runtimeVersion or deprecate multi-manifests
-      try {
-        // the manifestString could be an array of manifest objects
-        // in this case, we choose the first compatible manifest in the array
-        val manifestArray = JSONArray(manifestString)
-        for (i in 0 until manifestArray.length()) {
-          val manifestCandidate = manifestArray.getJSONObject(i)
-          val sdkVersion = manifestCandidate.getString("sdkVersion")
-          if (configuration.sdkVersion != null && configuration.sdkVersion.split(",").contains(sdkVersion)
-          ) {
-            return manifestCandidate
-          }
-        }
-      } catch (e: JSONException) {
-        throw IOException(
-          "Manifest string is not a valid JSONObject or JSONArray: $manifestString",
-          e
-        )
-      }
-      throw IOException("No compatible manifest found. SDK Versions supported: " + configuration.sdkVersion + " Provided manifestString: " + manifestString)
     }
 
     private fun Request.Builder.addHeadersFromJSONObject(headers: JSONObject?): Request.Builder {
@@ -746,7 +640,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
     internal fun createRequestForAsset(
       assetEntity: AssetEntity,
       configuration: UpdatesConfiguration,
-      context: Context,
+      context: Context
     ): Request {
       return Request.Builder()
         .url(assetEntity.url!!.toString())
@@ -778,18 +672,13 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
         .header("Expo-API-Version", "1")
         .header("Expo-Updates-Environment", "BARE")
         .header("Expo-JSON-Error", "true")
-        .header("Expo-Accept-Signature", configuration.expectsSignedManifest.toString())
         .header("EAS-Client-ID", EASClientID(context).uuid.toString())
         .apply {
           val runtimeVersion = configuration.runtimeVersionRaw
-          val sdkVersion = configuration.sdkVersion
           if (!runtimeVersion.isNullOrEmpty()) {
             header("Expo-Runtime-Version", runtimeVersion)
-          } else if (!sdkVersion.isNullOrEmpty()) {
-            header("Expo-SDK-Version", sdkVersion)
           }
         }
-        .header("Expo-Release-Channel", configuration.releaseChannel)
         .apply {
           val previousFatalError = NoDatabaseLauncher.consumeErrorLog(context)
           if (previousFatalError != null) {
