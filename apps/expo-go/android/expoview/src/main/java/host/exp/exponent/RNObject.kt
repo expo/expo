@@ -36,7 +36,7 @@ class RNObject {
   // required for "unversioned" flavor check
   fun loadVersion(version: String): RNObject {
     try {
-      clazz = if (version == UNVERSIONED || BuildConfig.FLAVOR == "unversioned") {
+      clazz = if (version == UNVERSIONED) {
         if (className.startsWith("host.exp.exponent")) {
           Class.forName("versioned.$className")
         } else {
