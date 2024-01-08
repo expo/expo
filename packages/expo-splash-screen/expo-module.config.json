@@ -1,6 +1,6 @@
 {
   "name": "expo-splash-screen",
-  "platforms": ["ios", "android"],
+  "platforms": ["ios", "android", "tvos"],
   "android": {
     "modules": ["expo.modules.splashscreen.SplashScreenModule"]
   }

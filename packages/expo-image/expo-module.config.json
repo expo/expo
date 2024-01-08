@@ -1,5 +1,5 @@
 {
-  "platforms": ["ios", "android"],
+  "platforms": ["ios", "android", "tvos"],
   "ios": {
     "modules": ["ImageModule"]
   },
