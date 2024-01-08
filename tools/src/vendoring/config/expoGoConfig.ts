@@ -20,10 +20,10 @@ const config: VendoringTargetConfig = {
   name: 'Expo Go',
   platforms: {
     ios: {
-      targetDirectory: `${EXPO_GO_IOS_DIR}/vendored/unversioned`,
+      targetDirectory: path.join(EXPO_GO_IOS_DIR, 'vendored/unversioned'),
     },
     android: {
-      targetDirectory: `${EXPO_GO_ANDROID_DIR}/vendored/unversioned`,
+      targetDirectory: path.join(EXPO_GO_ANDROID_DIR, 'vendored/unversioned'),
     },
   },
   modules: {
