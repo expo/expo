@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
 import type { LinkProps as OriginalLinkProps } from 'expo-router/build/link/Link';
-import type { Router as OriginalRouter } from 'expo-router/src/types';
+import type { Router as OriginalRouter } from 'expo-router/build/types';
 export * from 'expo-router/build';
 
 // prettier-ignore
