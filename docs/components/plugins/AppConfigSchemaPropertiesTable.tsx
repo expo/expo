@@ -4,9 +4,9 @@ import { borderRadius, breakpoints, spacing } from '@expo/styleguide-base';
 import ReactMarkdown from 'react-markdown';
 
 import { HeadingType } from '~/common/headingManager';
+import { CodeBlock } from '~/components/base/code';
 import { APIBox } from '~/components/plugins/APIBox';
 import { mdComponents } from '~/components/plugins/api/APISectionUtils';
-import { Callout } from '~/ui/components/Callout';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { P, CALLOUT, CODE, createPermalinkedComponent, BOLD } from '~/ui/components/Text';
 
@@ -30,17 +30,17 @@ export type Property = {
   properties?: Record<string, Property>;
   items?: {
     properties?: Record<string, Property>;
-    [key: string]: any;
-  };
+  } & Record<string, any>;
   uniqueItems?: boolean;
   additionalProperties?: boolean;
+  oneOf?: Record<string, Property>[];
 };
 
 type FormattedProperty = {
   name: string;
   description: string;
-  type?: string;
-  example?: string;
+  type?: string | string[];
+  example?: any;
   expoKit?: string;
   bareWorkflow?: string;
   subproperties: FormattedProperty[];
@@ -109,7 +109,7 @@ function formatProperty(property: [string, Property], parent?: string): Formatte
     name: propertyKey,
     description: createDescription(property),
     type: _getType(propertyValue),
-    example: propertyValue.exampleString?.replaceAll('\n', ''),
+    example: propertyValue.example,
     expoKit: propertyValue?.meta?.expoKit,
     bareWorkflow: propertyValue?.meta?.bareWorkflow,
     subproperties,
@@ -117,8 +117,16 @@ function formatProperty(property: [string, Property], parent?: string): Formatte
   };
 }
 
-export function _getType({ enum: enm, type }: Partial<Property>) {
-  return enm ? 'enum' : type?.toString().replace(',', ' || ');
+export function _getType(property: Partial<Property>) {
+  if (property.enum) {
+    return 'enum';
+  }
+  if (property.oneOf) {
+    return property.oneOf.map(prop =>
+      JSON.stringify({ ...prop, meta: undefined, additionalProperties: undefined }, null, 2)
+    );
+  }
+  return property.type?.toString().replace(',', ' || ');
 }
 
 export function createDescription(propertyEntry: [string, Property]) {
@@ -166,7 +174,20 @@ const AppConfigProperty = ({
   <APIBox css={boxStyle}>
     <PropertyName name={name} nestingLevel={nestingLevel} />
     <CALLOUT theme="secondary" data-text="true" css={typeRow}>
-      Type: <CODE>{type || 'undefined'}</CODE>
+      {Array.isArray(type) ? (
+        <span className="grid grid-cols-1 gap-2 mb-2">
+          One of types:{' '}
+          {type.map((oneOfType, index) => (
+            <CodeBlock inline theme="secondary" key={`${name}-${index}`}>
+              {oneOfType}
+            </CodeBlock>
+          ))}
+        </span>
+      ) : (
+        <>
+          Type: <CODE>{type ?? 'undefined'}</CODE>
+        </>
+      )}
       {nestingLevel > 0 && (
         <>
           &emsp;&bull;&emsp;Path:{' '}
@@ -188,21 +209,19 @@ const AppConfigProperty = ({
       </Collapsible>
     )}
     {example && (
-      <Callout>
+      <span className="grid grid-cols-1 gap-2 mb-6">
         <BOLD>Example</BOLD>
-        <ReactMarkdown components={mdComponents}>{example}</ReactMarkdown>
-      </Callout>
+        <CodeBlock inline>{JSON.stringify(example, null, 2)}</CodeBlock>
+      </span>
     )}
-    <div>
-      {subproperties.length > 0 &&
-        subproperties.map((formattedProperty, index) => (
-          <AppConfigProperty
-            {...formattedProperty}
-            key={`${name}-${index}`}
-            nestingLevel={nestingLevel + 1}
-          />
-        ))}
-    </div>
+    {subproperties.length > 0 &&
+      subproperties.map((formattedProperty, index) => (
+        <AppConfigProperty
+          {...formattedProperty}
+          key={`${name}-${index}`}
+          nestingLevel={nestingLevel + 1}
+        />
+      ))}
   </APIBox>
 );
 
