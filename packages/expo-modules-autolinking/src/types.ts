@@ -1,6 +1,6 @@
 import { ExpoModuleConfig } from './ExpoModuleConfig';
 
-export type SupportedPlatform = 'ios' | 'android' | 'web' | 'devtools';
+export type SupportedPlatform = 'ios' | 'android' | 'web' | 'macos' | 'tvos' | 'devtools';
 
 export interface SearchOptions {
   // Available in the CLI

@@ -15,7 +15,7 @@ function registerSearchCommand(commandName, fn) {
         .command(`${commandName} [paths...]`)
         .option('-i, --ignore-paths <ignorePaths...>', 'Paths to ignore when looking up for modules.', (value, previous) => (previous ?? []).concat(value))
         .option('-e, --exclude <exclude...>', 'Package names to exclude when looking up for modules.', (value, previous) => (previous ?? []).concat(value))
-        .option('-p, --platform [platform]', 'The platform that the resulting modules must support. Available options: "ios", "android"', 'ios')
+        .option('-p, --platform [platform]', 'The platform that the resulting modules must support. Available options: "ios", "android", "macos", "tvos"', 'ios')
         .option('--silent', 'Silence resolution warnings')
         .addOption(new commander_1.default.Option('--project-root <projectRoot>', 'The path to the root of the project').default(process.cwd(), 'process.cwd()'))
         .option('--only-project-deps', 'For a monorepo, include only modules that are the project dependencies.', true)

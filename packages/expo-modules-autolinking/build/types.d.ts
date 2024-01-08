@@ -1,5 +1,5 @@
 import { ExpoModuleConfig } from './ExpoModuleConfig';
-export type SupportedPlatform = 'ios' | 'android' | 'web' | 'devtools';
+export type SupportedPlatform = 'ios' | 'android' | 'web' | 'macos' | 'tvos' | 'devtools';
 export interface SearchOptions {
     searchPaths: string[];
     ignorePaths?: string[] | null;

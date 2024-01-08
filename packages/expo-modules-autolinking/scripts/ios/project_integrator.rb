@@ -213,6 +213,7 @@ module Expo
     # Generates the support script that is executed by the build script phase.
     def self.generate_support_script(autolinking_manager, modules_provider_path)
       args = autolinking_manager.base_command_args.map { |arg| "\"#{arg}\"" }.join(' ')
+      platform = autolinking_manager.platform_name.downcase
 
       <<~SUPPORT_SCRIPT
       #!/usr/bin/env bash
@@ -258,7 +259,7 @@ module Expo
         fi
       }
 
-      with_node --no-warnings --eval "require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))" generate-package-list #{args} --target "#{modules_provider_path}"
+      with_node --no-warnings --eval "require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))" generate-package-list #{args} --target "#{modules_provider_path}" --platform "#{platform}"
       SUPPORT_SCRIPT
     end
 
