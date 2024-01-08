@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Fix development status for modern updates. ([#26042](https://github.com/expo/expo/pull/26042) by [@wschurman](https://github.com/wschurman))
+- Fix metro asset call in embedded manifest creation step. ([#26307](https://github.com/expo/expo/pull/26307) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 
