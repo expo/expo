@@ -1,3 +1,4 @@
+import { getLinkingImplementationForPlatform } from './utils';
 import { ModuleDescriptor, ResolveOptions, SearchResults } from '../types';
 
 /**
@@ -7,7 +8,7 @@ export async function resolveModulesAsync(
   searchResults: SearchResults,
   options: ResolveOptions
 ): Promise<ModuleDescriptor[]> {
-  const platformLinking = require(`../platforms/${options.platform}`);
+  const platformLinking = getLinkingImplementationForPlatform(options.platform);
 
   return (
     await Promise.all(
