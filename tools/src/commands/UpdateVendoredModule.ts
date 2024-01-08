@@ -110,16 +110,14 @@ async function action(options: ActionOptions) {
         continue;
       }
 
-      const relativeTargetDirectory = path.join(
+      const targetDirectory = path.join(
         targetConfig.platforms[platform].targetDirectory,
         moduleName
       );
-      const targetDirectory = path.join(EXPO_DIR, relativeTargetDirectory);
-
       logger.log(
         '🎯 Vendoring for %s to %s',
         chalk.yellow(platform),
-        chalk.magenta(relativeTargetDirectory)
+        chalk.magenta(targetDirectory)
       );
 
       // Clean up previous version
