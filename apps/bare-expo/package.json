@@ -74,7 +74,7 @@
     "react-dom": "18.2.0",
     "react-native": "0.73.2",
     "react-native-gesture-handler": "~2.14.0",
-    "react-native-pager-view": "6.2.2",
+    "react-native-pager-view": "6.2.3",
     "react-native-reanimated": "~3.6.0",
     "react-native-safe-area-context": "4.7.4",
     "react-native-screens": "~3.27.0",
