@@ -1,5 +1,5 @@
 import Constants from 'expo-constants';
-export declare const IS_MANAGED_ENV: boolean;
+export declare const IS_EXPO_GO: boolean;
 export declare const IS_BARE_ENV_WITH_UPDATES: boolean;
 export declare const IS_ENV_WITH_UPDATES_ENABLED: boolean;
 export declare const IS_BARE_ENV_WITHOUT_UPDATES: boolean;
