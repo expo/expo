@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed the issue with the application of tint color when an element does not have a style assigned to it.
+
 ### 💡 Others
 
 ## 1.10.1 — 2023-12-19
