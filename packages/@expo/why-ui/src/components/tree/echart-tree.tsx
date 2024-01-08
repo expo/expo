@@ -227,6 +227,25 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
   //   ],
   // };
 
+  const labelObj = {
+    show: true,
+    position: 'insideTopLeft',
+    formatter(params) {
+      //   console.log('p', params);
+      return `{name|${params.name}}\n{tip|${params.data?.tip}}`;
+    },
+    rich: {
+      name: {
+        formatSize: 12,
+        color: '#fff',
+      },
+      tip: {
+        fontSize: 10,
+        color: '#63709E',
+      },
+    },
+  };
+
   return (
     <div className="flex-1" ref={container}>
       <ReactECharts
@@ -311,79 +330,51 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
                   },
                 },
               },
-              visibleMin: 2,
+
               // zoomToNodeRatio: 1000,
               // leafDepth: 3,
               // visibleMin: 300,
 
-              label: {
-                show: true,
-                position: 'insideTopLeft',
-                formatter(params) {
-                  console.log('p', params);
-                  return `{name|${params.name}}\n{tip|${params.data?.tip}}`;
-                  // let arr = [
-                  //   '{name|' + params.name + '}',
-                  //   '{hr|}',
-                  //   '{budget|$ ' +
-                  //     echarts.format.addCommas(params.value[0]) +
-                  //     '} {label|budget}'
-                  // ];
-                  // // mode !== 1 &&
-                  // //   arr.push(
-                  // //     '{household|$ ' +
-                  // //       echarts.format.addCommas(+params.value[3].toFixed(4) * 1000) +
-                  // //       '} {label|per household}'
-                  // //   );
-                  // return arr.join('\n');
-                },
-                rich: {
-                  name: {
-                    formatSize: 12,
-                    color: '#fff',
-                  },
-                  tip: {
-                    fontSize: 10,
-                    color: '#63709E',
-                  },
-                },
-                // formatter: '{b}',
+              visibleMin: 300,
 
-                // normal: {
-                //   textStyle: {
-                //     ellipsis: true,
-                //   },
-                // },
+              upperLabel: {
+                show: true,
+                height: 30,
+                formatter: '{b}',
               },
-              // upperLabel: {
-              //   show: true,
-              //   position: 'insideTopLeft',
-              //   distance: 10,
-              //   emphasis: {
-              //     position: 'insideTopLeft',
-              //     distance: 10,
-              //   },
-              // },
-              // levels: [
-              //   {},
-              //   {},
-              //   {
-              //     upperLabel: {
-              //       show: true,
-              //       position: 'insideTop',
-              //       formatter: '{b}',
-              //       distance: 10,
-              //       fontSize: 12,
-              //       emphasis: {
-              //         position: 'insideTop',
-              //         distance: 10,
-              //       },
-              //     },
-              //   },
-              // ],
+
+              itemStyle: {
+                borderColor: '#fff',
+              },
+
+              label: labelObj,
 
               levels: [
                 {
+                  itemStyle: {
+                    borderColor: '#777',
+                    borderWidth: 0,
+                    gapWidth: 1,
+                  },
+                  upperLabel: {
+                    show: false,
+                  },
+                },
+                {
+                  //   upperLabel: labelObj,
+                  itemStyle: {
+                    borderColor: '#555',
+                    borderWidth: 5,
+                    gapWidth: 1,
+                  },
+                  emphasis: {
+                    itemStyle: {
+                      borderColor: '#ddd',
+                    },
+                  },
+                },
+                {
+                  //   upperLabel: labelObj,
                   colorSaturation: [0.35, 0.5],
                   itemStyle: {
                     borderWidth: 5,
@@ -391,60 +382,18 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
                     borderColorSaturation: 0.6,
                   },
                 },
+                ...new Array(maxDepth).fill(null).map((_, index) => ({
+                  //   upperLabel: labelObj,
+                  colorSaturation: [0.35, 0.5],
+                  itemStyle: {
+                    borderWidth: 0,
+                    gapWidth: 1,
+                    borderColorSaturation: 0.6,
+                  },
+                })),
               ],
-              // levels: new Array(maxDepth).fill({}).map((_, index) => {
-              //   return {
-              //     itemStyle: {
-              //       // borderColorSaturation: 0.1,
-              //       borderColor: saturate('#353745', index / maxDepth),
-              //       borderWidth: 1,
-              //       gapWidth: 0,
-              //     },
 
-              //     upperLabel: {
-              //       show: true,
-              //       position: 'insideTop',
-              //       formatter: '{b}',
-              //       distance: 10,
-              //       fontSize: 12,
-              //       emphasis: {
-              //         position: 'insideTop',
-              //         distance: 10,
-              //       },
-              //     },
-              //   };
-              // }),
-
-              // itemStyle: {
-              //   borderColorSaturation: 0.3,
-              //   // borderColorSaturation: 0.3,
-              //   borderColor: '#000',
-              //   borderWidth: 1,
-              //   gapWidth: 0,
-              // },
-              colorSaturation: [0.7, 0.2],
-              // levels: [
-              //   {},
-              //   {
-              //     colorSaturation: [0.3, 0.6],
-              //     itemStyle: {
-              //       borderColorSaturation: 0.3,
-              //       borderColor: '#000',
-              //       borderWidth: 1,
-              //       gapWidth: 0,
-              //     },
-              //   },
-              //   {
-              //     colorSaturation: [0.3, 0.6],
-              //     itemStyle: {
-              //       borderColorSaturation: 0.3,
-              //       borderColor: '#000',
-              //       borderWidth: 1,
-              //       gapWidth: 0,
-              //     },
-              //   },
-              // ],
-              // levels: getLevelOption(),
+              //   colorSaturation: [0.7, 0.2],
               data,
             },
           ],
