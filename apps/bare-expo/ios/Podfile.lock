@@ -43,7 +43,7 @@ PODS:
     - React-Core
   - EXNotifications (0.27.2):
     - ExpoModulesCore
-  - Expo (50.0.0-preview.7):
+  - Expo (50.0.0-preview.8):
     - ExpoModulesCore
   - expo-dev-client (3.3.4):
     - EXManifests
@@ -1207,9 +1207,11 @@ PODS:
     - React-debug
   - react-native-netinfo (11.1.0):
     - React-Core
-  - react-native-pager-view (6.2.2):
+  - react-native-pager-view (6.2.3):
+    - glog
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core
-  - react-native-safe-area-context (4.7.4):
+  - react-native-safe-area-context (4.8.2):
     - React-Core
   - react-native-segmented-control (2.4.1):
     - React-Core
@@ -1409,7 +1411,7 @@ PODS:
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
-  - RNSVG (14.0.0):
+  - RNSVG (14.1.0):
     - React-Core
   - SDWebImage (5.17.0):
     - SDWebImage/Core (= 5.17.0)
@@ -1949,7 +1951,7 @@ SPEC CHECKSUMS:
   EXManifests: 2355abd4aeacfb75eec5b43393c0aef9c2789fcf
   EXMediaLibrary: 5a74f7d9cce776ca07cb3090b948cedd7d4841a1
   EXNotifications: 3ee880b7474efd940c4aa7502c8a6f1f51e3dafa
-  Expo: cd2dc043dd1cc3d9e8e4e035fb9a41b421e8f13f
+  Expo: 87664535771d38d078a93d5db36a3f82f06eb7f9
   expo-dev-client: 21a0596a8b6e51425b0f0006ec942b61a633e643
   expo-dev-launcher: 90c05b0da0a9e1e27063510f019c4f8e0ef5b76d
   expo-dev-menu: 48359556db01e574b4f966ca39fe24c1efdee4c3
@@ -2038,8 +2040,8 @@ SPEC CHECKSUMS:
   React-logger: e0c1e918d9588a9f39c9bc62d9d6bfe9ca238d9d
   React-Mapbuffer: 9731a0a63ebaf8976014623c4d637744d7353a7c
   react-native-netinfo: 3aa5637c18834966e0c932de8ae1ae56fea20a97
-  react-native-pager-view: 02a5c4962530f7efc10dd51ee9cdabeff5e6c631
-  react-native-safe-area-context: 2cd91d532de12acdb0a9cbc8d43ac72a8e4c897c
+  react-native-pager-view: d81ab2060b9caf57ca8c3a0d57467ff407cdb825
+  react-native-safe-area-context: 0ee144a6170530ccc37a0fd9388e28d06f516a89
   react-native-segmented-control: 0e4b5d93911e2234f110057df2b41738b326ab3e
   react-native-slider: 33b8d190b59d4f67a541061bb91775d53d617d9d
   react-native-view-shot: 6b7ed61d77d88580fed10954d45fad0eb2d47688
@@ -2072,7 +2074,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: 61bfdfc05db9b79dd61f894dcd29d3dcc6db3c02
   RNReanimated: 92958cd13e63c2c34c71bc50ee2c8d5561bc4e3f
   RNScreens: 5f4df9babb21d30723580377b5f52d9f9baf0005
-  RNSVG: 255767813dac22db1ec2062c8b7e7b856d4e5ae6
+  RNSVG: ba3e7232f45e34b7b47e74472386cf4e1a676d0a
   SDWebImage: 750adf017a315a280c60fde706ab1e552a3ae4e9
   SDWebImageAVIFCoder: 8348fef6d0ec69e129c66c9fe4d74fbfbf366112
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
