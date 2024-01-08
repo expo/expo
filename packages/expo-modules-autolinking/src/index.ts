@@ -32,7 +32,7 @@ function registerSearchCommand<OptionsType extends SearchOptions>(
     )
     .option(
       '-p, --platform [platform]',
-      'The platform that the resulting modules must support. Available options: "ios", "android"',
+      'The platform that the resulting modules must support. Available options: "ios", "android", "macos", "tvos"',
       'ios'
     )
     .option('--silent', 'Silence resolution warnings')
