@@ -343,8 +343,8 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
                 '<div class="tooltip-title">' +
                   formatUtil.encodeHTML(treePath.join('/')) +
                   '</div>',
-                'Size: ' + value,
-                'NM: ' + info.value[1] + ' ' + info.data?.nodeModuleName,
+                info.data.tip,
+                // 'NM: ' + info.value[1] + ' ' + info.data?.nodeModuleName,
               ].join('');
             },
           },
@@ -358,14 +358,37 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
               //   colorMappingBy: 'value',
               visualDimension: 1,
 
+              //   zoomToNodeRatio: 0.5,
               //   color: ['#F7DF1C', '#0085FF', '#FFB200', '#FF0000', '#00CACA', '#FF00FF', '#00FF00'],
               color: new Array(maxNodeModules).fill(null).map((_, index) => {
+                // Four colors that are easy to distinguish
+                const colors = [
+                  '#5D4627',
+                  '#474036',
+                  '#5F562B',
+                  '#355431',
+                  '#3C5056',
+                  '#263C5F',
+                  '#313158',
+                  '#4A325C',
+                  '#5B2B32',
+                ];
+                return colors[index % colors.length];
                 // Limit hue to 120-300
                 const range = 300 - 120;
-                const hue = (index / maxNodeModules) * 360;
+                const next = index % 2 ? -1 : 1;
+                const isEven = index % 2 === 0;
+                if (isEven) {
+                  return '#ff0';
+                } else {
+                  return '#00ff00';
+                }
+                const adjusted = index * next;
+                // const hue = (adjusted / maxNodeModules) * 360;
                 // const range = 300 - 120;
-                // const hue = (index / maxNodeModules) * range + 120;
+                const hue = (index / maxNodeModules) * range + 120;
 
+                // return '#282A35';
                 return saturate(`hsl(${hue}, 50%, 50%)`, 0.5);
               }),
               colorMappingBy: 'value',
@@ -375,8 +398,8 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
               breadcrumb: {
                 show: true,
                 height: 30,
-                left: 'center',
-                top: 'bottom',
+                left: 'left',
+                top: 'top',
                 emptyItemWidth: 25,
                 // emphasis: {
                 //   color: '#313340',
@@ -387,7 +410,7 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
                 itemStyle: {
                   color: '#21222B',
 
-                  borderColor: '#353745',
+                  borderColor: '#191A20',
                   borderWidth: 1,
                   gapWidth: 0,
 
@@ -400,7 +423,7 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
               },
 
               // zoomToNodeRatio: 1000,
-              leafDepth: 2,
+              // leafDepth: 2,
               // visibleMin: 300,
 
               //   visibleMin: 300,
@@ -428,9 +451,9 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
               levels: [
                 {
                   itemStyle: {
-                    borderColor: '#777',
+                    borderColor: 'transparent',
                     borderWidth: 0,
-                    gapWidth: 1,
+                    gapWidth: 4,
                   },
                   upperLabel: {
                     show: false,
@@ -438,13 +461,13 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
                 },
                 {
                   itemStyle: {
-                    borderColor: '#555',
+                    borderColor: '#191A20',
                     borderWidth: 5,
-                    gapWidth: 1,
+                    gapWidth: 2,
                   },
                   emphasis: {
                     itemStyle: {
-                      borderColor: '#ddd',
+                      borderColor: '#25262B',
                     },
                   },
                 },

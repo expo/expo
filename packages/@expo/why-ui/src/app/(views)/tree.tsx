@@ -20,6 +20,10 @@ function padSpaces(str: string, length: number) {
   return '0'.repeat(length - str.length) + str;
 }
 
+function uniq<T>(arr: T[]) {
+  return Array.from(new Set(arr));
+}
+
 export default function Treemap() {
   const modules = useFilteredModules();
   const [isNodeModulesVisible, setIsNodeModulesVisible] = useState(true);
@@ -32,6 +36,10 @@ export default function Treemap() {
     }
     return modules;
   }, [modules, isNodeModulesVisible]);
+
+  // const nodeModuleToggleNames = useMemo(() => {
+  //   return uniq(modules.map((v) => v.nodeModuleName)).sort();
+  // }, [modules]);
 
   const filteredModules = useMemo(() => {
     let filtered = filteredForNodeModules;
@@ -59,8 +67,8 @@ export default function Treemap() {
 
   return (
     <Sheet modal={false}>
-      <div className="flex flex-1 flex-col">
-        <div className="p-2 justify-end flex">
+      <div className="flex flex-1 flex-col p-1 relative">
+        <div className="p-2 justify-end flex absolute top-0 right-0 z-10">
           <SheetTrigger asChild>
             <Button variant="outline">Filters</Button>
           </SheetTrigger>
@@ -124,6 +132,22 @@ export default function Treemap() {
               onCheckedChange={() => setIsNodeModulesVisible((visible) => !visible)}
             />
           </div>
+          {/* {nodeModuleToggleNames.map((name) => (
+            <div key={name} className="grid grid-cols-2 items-center gap-4">
+              <Label
+                htmlFor={name}
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                {name}
+              </Label>
+              <Checkbox
+                id={name}
+                checked={true}
+                onCheckedChange={() => {
+                  // TODO
+                }}
+              />
+            </div>
+          ))} */}
         </div>
         <SheetFooter>
           <Button
