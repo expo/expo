@@ -2,7 +2,6 @@
 package host.exp.exponent
 
 import host.exp.exponent.analytics.EXL
-import host.exp.expoview.BuildConfig
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.InvocationTargetException
