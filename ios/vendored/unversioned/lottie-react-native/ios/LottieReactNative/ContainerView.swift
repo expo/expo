@@ -242,15 +242,8 @@ class ContainerView: RCTView {
     }
 
     @objc func setResizeMode(_ resizeMode: String) {
-        switch resizeMode {
-        case "cover":
-            animationView?.contentMode = .scaleAspectFill
-        case "contain":
-            animationView?.contentMode = .scaleAspectFit
-        case "center":
-            animationView?.contentMode = .center
-        default: break
-        }
+        self.resizeMode = resizeMode
+        applyContentMode()
     }
 
     @objc func setColorFilters(_ newColorFilters: [NSDictionary]) {
@@ -287,21 +280,17 @@ class ContainerView: RCTView {
     }
 
     // The animation view is a child of the RCTView, so if the bounds ever change, add those changes to the animation view as well
-    override var bounds: CGRect {
-        didSet {
-            animationView?.frame = self.bounds
-        }
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        animationView?.frame = self.bounds
     }
 
     // MARK: Private
     func replaceAnimationView(next: LottieAnimationView) {
         super.removeReactSubview(animationView)
 
-        let contentMode = animationView?.contentMode ?? .scaleAspectFit
-
         animationView = next
 
-        animationView?.contentMode = contentMode
         animationView?.backgroundBehavior = .pauseAndRestore
         animationView?.animationSpeed = speed
         animationView?.loopMode = loop
@@ -309,12 +298,27 @@ class ContainerView: RCTView {
 
         addSubview(next)
 
+        applyContentMode()
         applyColorProperties()
         playIfNeeded()
 
-        animationView?.animationLoaded = { [weak self] animationView, animation in
+        animationView?.animationLoaded = { [weak self] _, _ in
             guard let self = self else { return }
             self.loadedCallback()
+        }
+    }
+
+    func applyContentMode() {
+        guard let animationView = animationView else { return }
+
+        switch resizeMode {
+        case "cover":
+            animationView.contentMode = .scaleAspectFill
+        case "contain":
+            animationView.contentMode = .scaleAspectFit
+        case "center":
+            animationView.contentMode = .center
+        default: break
         }
     }
 
