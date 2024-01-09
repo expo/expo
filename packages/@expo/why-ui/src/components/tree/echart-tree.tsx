@@ -12,9 +12,18 @@ export type EChartTreeMapDataItem = {
   value: [number, number];
   moduleHref?: string;
   tip: string;
+  sizeString: string;
   ratio: number;
+  ratioString: string;
   children?: EChartTreeMapDataItem[];
   nodeModuleName: string;
+  isNodeModuleRoot?: boolean;
+};
+
+const ICON_STRINGS = {
+  file: `<svg fill="white" xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 -960 960 960" width="24"><path d="M320-240h320v-80H320v80Zm0-160h320v-80H320v80ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z"/></svg>`,
+  dir: `<svg fill="white" xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 -960 960 960" width="24"><path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h240l80 80h320q33 0 56.5 23.5T880-640v400q0 33-23.5 56.5T800-160H160Zm0-80h640v-400H447l-80-80H160v480Zm0 0v-480 480Z"/></svg>`,
+  pkg: `<svg fill="white" xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 -960 960 960" width="24"><path d="M440-183v-274L200-596v274l240 139Zm80 0 240-139v-274L520-457v274Zm-40-343 237-137-237-137-237 137 237 137ZM160-252q-19-11-29.5-29T120-321v-318q0-22 10.5-40t29.5-29l280-161q19-11 40-11t40 11l280 161q19 11 29.5 29t10.5 40v318q0 22-10.5 40T800-252L520-91q-19 11-40 11t-40-11L160-252Zm320-228Z"/></svg>`,
 };
 
 // Given a list of modules with filepaths `{ absolutePath: string }[]`, create a recursive tree structure of modules `{ absolutePath: string, groups: T[] }[]`
@@ -39,6 +48,8 @@ function createModuleTree(paths: MetroJsonModule[]): {
     value: [0, 0],
     ratio: 0,
     tip: '',
+    sizeString: '',
+    ratioString: '',
     nodeModuleName: '',
   };
 
@@ -62,6 +73,8 @@ function createModuleTree(paths: MetroJsonModule[]): {
           value: [0, 0],
           ratio: 0,
           tip: '',
+          sizeString: '',
+          ratioString: '',
           nodeModuleName: '',
         };
         current.children.push(next);
@@ -98,27 +111,18 @@ function createModuleTree(paths: MetroJsonModule[]): {
 
     const hasAmbiguousName = !childNames.every((v) => v === childNames[0]);
 
-    if (
-      hasAmbiguousName
-      // && (group.name.startsWith('@') || group.name === 'node_modules')
-    ) {
+    if (hasAmbiguousName) {
       group.nodeModuleName = '';
       group.value[1] = 0; //indexForNodeModule(group.name);
     } else {
       if (hasTopLevelChild || !hasAmbiguousName) {
         group.nodeModuleName = childNames[0];
+        group.isNodeModuleRoot = group.nodeModuleName === group.name;
       } else {
         group.nodeModuleName = '';
       }
       group.value[1] = indexForNodeModule(group.nodeModuleName);
     }
-
-    // if (childNames.every((v) => v === childNames[0])) {
-    //   group.nodeModuleName = childNames[0];
-    //   group.value[1] = indexForNodeModule(group.nodeModuleName);
-    // } else {
-    //   group.nodeModuleName = '';
-    // }
 
     return group.nodeModuleName;
   };
@@ -147,9 +151,11 @@ function createModuleTree(paths: MetroJsonModule[]): {
       if (child.children.length && !child.nodeModuleName && child.name.startsWith('@')) {
         // Split this child into multiple sub children
         for (const subChild of child.children) {
+          const name = child.name + '/' + subChild.name;
           group.children.push({
             ...subChild,
-            name: child.name + '/' + subChild.name,
+            isNodeModuleRoot: name === subChild.nodeModuleName,
+            name: name,
             path: child.path + '/' + subChild.path,
           });
         }
@@ -218,7 +224,9 @@ function createModuleTree(paths: MetroJsonModule[]): {
     }
 
     const size = formatSize(group.value[0]);
+    group.ratioString = percetageString;
     group.tip = percetageString + ' (' + size + ')';
+    group.sizeString = size;
     group.children.forEach(calculateTooltip);
   };
   calculateTooltip(root);
@@ -274,11 +282,19 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
 
     formatter(params) {
       //   console.log('p', params);
-      return [`{name|${params.name}}`, `{tip|${params.data?.tip}}`].join(multiLevel ? '\n' : ' ');
+      return [
+        `{${params.data.isNodeModuleRoot ? 'nameBold' : 'name'}|${params.name}}`,
+        `{tip|${params.data?.tip}}`,
+      ].join(multiLevel ? '\n' : ' ');
     },
     rich: {
       name: {
         formatSize: 12,
+        color: '#fff',
+      },
+      nameBold: {
+        formatSize: 12,
+        fontWeight: 'bold',
         color: '#fff',
       },
       tip: {
@@ -330,18 +346,71 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
           backgroundColor: 'transparent',
 
           tooltip: {
+            backgroundColor: '#000',
+            // backgroundColor: '#282A35',
+            borderWidth: 1,
+            borderColor: '#20293A',
+            padding: 0,
+            textStyle: {
+              color: 'white',
+            },
             formatter(info) {
-              const value = formatSize(info.value[0]);
               const treePathInfo = info.treePathInfo;
+              console.log('treePathInfo', info);
               const treePath = [];
 
               for (let i = 1; i < treePathInfo.length; i++) {
                 treePath.push(treePathInfo[i].name);
               }
 
+              const relativePath = formatUtil.encodeHTML(treePath.join('/'));
+
+              const padding = 8;
+              if ('data' in info && info.data?.tip) {
+                const { data } = info;
+                const components: string[] = [];
+                const sideIcon = data.isNodeModuleRoot
+                  ? ICON_STRINGS['pkg']
+                  : data.moduleHref
+                  ? ICON_STRINGS['file']
+                  : ICON_STRINGS['dir'];
+                // if (info.data?.isNodeModuleRoot) {
+                components.push(
+                  `<div style="padding:0 ${padding}px;display:flex;flex-direction:row;justify-content:space-between;">
+                        <div style="display:flex;align-items:center">${sideIcon}
+                        <span style="font-weight:${
+                          data.isNodeModuleRoot ? 'bold' : 'normal'
+                        };padding-right:8px;">${
+                          data.isNodeModuleRoot ? info.data.nodeModuleName : info.data.name
+                        }</span></div>
+                        <span>${info.data.ratioString}</span>
+                    </div>`
+                );
+                const divider = `<span style="width:100%;background-color:#20293A;height:1px"></span>`;
+                components.push(divider);
+                // }
+                components.push(
+                  `<span style="padding:0 ${padding}px;"><b>Size:</b> ${info.data.sizeString}</span>`
+                );
+                components.push(
+                  `<span style="padding:0 ${padding}px;"><b>Path:</b> ${relativePath}</span>`
+                );
+                if (info.data.moduleHref) {
+                  components.push(divider);
+                  components.push(
+                    `<span style="padding:0 ${padding}px;color:#4B86E3"><b>Open File:</b> <kbd>⌘ + Click</kbd></span>`
+                  );
+                }
+                return `<div style="display:flex;flex-direction:column;gap:${padding}px;padding:${padding}px 0;">${components.join(
+                  ''
+                )}</div>`;
+              }
+
+              const value = formatSize(info.value[0]);
+
               return [
-                '<div class="tooltip-title">' +
-                  formatUtil.encodeHTML(treePath.join('/')) +
+                '<div class="tooltip-title" style="background-color:#282A35;">' +
+                  relativePath +
                   '</div>',
                 info.data.tip,
                 // 'NM: ' + info.value[1] + ' ' + info.data?.nodeModuleName,
@@ -364,6 +433,7 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
                 // Four colors that are easy to distinguish
                 const colors = [
                   '#5D4627',
+                  '#282A35',
                   '#474036',
                   '#5F562B',
                   '#355431',
@@ -397,27 +467,29 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
               visualMax: maxNodeModules,
               breadcrumb: {
                 show: true,
-                height: 30,
-                left: 'left',
-                top: 'top',
+                height: 36,
+                // position: [10, 10],
+                left: 8,
+                top: 8,
                 emptyItemWidth: 25,
-                // emphasis: {
-                //   color: '#313340',
-                //   textStyle: {
-                //     color: '#63709E',
-                //   },
-                // },
                 itemStyle: {
-                  color: '#21222B',
-
-                  borderColor: '#191A20',
+                  color: '#000',
+                  borderColor: '#20293A',
                   borderWidth: 1,
                   gapWidth: 0,
-
-                  // borderColor: 'transparent',
                   shadowColor: 'transparent',
                   textStyle: {
-                    color: '#63709E',
+                    color: '#96A2B5',
+                    fontWeight: 'bold',
+                  },
+                },
+                emphasis: {
+                  itemStyle: {
+                    borderWidth: 2,
+                    textStyle: {
+                      color: '#fff',
+                      fontWeight: 'bold',
+                    },
                   },
                 },
               },
@@ -478,7 +550,7 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
                     borderWidth: 2,
 
                     // gapWidth: 1,
-                    borderColorSaturation: 0.6,
+                    borderColorSaturation: 0.4,
                   },
                 })),
               ],

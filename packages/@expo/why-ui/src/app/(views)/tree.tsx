@@ -67,7 +67,7 @@ export default function Treemap() {
 
   return (
     <Sheet modal={false}>
-      <div className="flex flex-1 flex-col p-1 relative">
+      <div className="flex flex-1 flex-col relative">
         <div className="p-2 justify-end flex absolute top-0 right-0 z-10">
           <SheetTrigger asChild>
             <Button variant="outline">Filters</Button>
