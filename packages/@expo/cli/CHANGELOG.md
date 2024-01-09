@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Fix metro asset call in expo-updates embedded manifest creation step. ([#26307](https://github.com/expo/expo/pull/26307) by [@wschurman](https://github.com/wschurman))
+
 ## 0.16.6 — 2024-01-05
 
 ### 🐛 Bug fixes
