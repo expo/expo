@@ -85,6 +85,11 @@ internal fun defineStyles(element: SvgElementBase, newColor: Int, hasStyle: Bool
 }
 
 internal fun applyTintColor(element: SVG.SvgObject, newColor: Int, parentDefinesStyle: Boolean) {
+  // We want to keep the colors in the mask as they control the visibility of the element to which the mask is applied.
+  if (element is SVG.Mask) {
+    return
+  }
+
   val definesStyle = if (element is SvgElementBase) {
     val hasStyle = parentDefinesStyle || hasStyle(element)
 
@@ -107,6 +112,9 @@ internal fun applyTintColor(element: SVG.SvgObject, newColor: Int, parentDefines
 fun applyTintColor(svg: SVG, newColor: Int) {
   val root = svg.rootElement
 
+  svg.cssRules?.forEach { rule ->
+    replaceStyles(rule.style, newColor)
+  }
   replaceStyles(root.style, newColor)
   val hasStyle = hasStyle(root)
 
