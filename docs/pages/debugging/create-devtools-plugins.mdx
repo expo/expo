@@ -10,9 +10,9 @@ import { Terminal } from '~/ui/components/Snippet';
 You can create a dev tools plugin, whether that's for inspecting aspects of a common framework or library or something specific to your custom code. This guide will walk you through creating a dev tools plugin.
 
 A plugin consists of three key elements:
-- an Expo app to display the dev tools web user interface,
-- an **expo-module.config.json** for Expo CLI recognition,
-- calls to `expo/devtools` API for the app to communicate back and forth with the dev tool's web interface.
+- An Expo app to display the dev tools web user interface.
+- An **expo-module.config.json** for Expo CLI recognition.
+- Calls to `expo/devtools` API for the app to communicate back and forth with the dev tool's web interface.
 
 Plugins can be included inside your app's monorepo or distributed separately on npm.
 
