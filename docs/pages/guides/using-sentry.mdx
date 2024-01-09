@@ -381,7 +381,7 @@ Once you have each of these: organization slug, project name, DSN, and auth toke
 
 ### Installation
 
-In your project directory, run:
+Run the following command in your project directory to install `@sentry/react-native`:
 
 <Terminal cmd={['$ npx expo install @sentry/react-native']} />
 
@@ -414,7 +414,7 @@ If you are using EAS Build, you can set the `SENTRY_AUTH_TOKEN` environment vari
 
 <ConfigReactNative>
 
-If you do not use [Continuous Native Generation (CNG)](https://docs.expo.dev/workflow/continuous-native-generation/), then you should use the [@sentry/wizard](https://docs.sentry.io/platforms/react-native/#install).
+If you do not use [Continuous Native Generation (CNG)](https://docs.expo.dev/workflow/continuous-native-generation/), then you should use the [`@sentry/wizard`](https://docs.sentry.io/platforms/react-native/#install).
 
 </ConfigReactNative>
 
@@ -440,7 +440,7 @@ Now wrap the root component of your app with Sentry. This may be **App.js** or *
 ```js
 import * as Sentry from "@sentry/react-native";
 
-// your App component here
+// Your App component here
 
 export default Sentry.wrap(App);
 ```
@@ -453,10 +453,10 @@ export default Sentry.wrap(App);
 
 Create a new release build of your app and verify that it uploads source maps correctly. You may want to add a button in your app to test that it is working and sourcemaps are wired up as expected, for example:
 
-```js
+```jsx
 import { Button } from 'react-native';
 
-// inside some component
+// Inside some component
 <Button title='Press me' onPress={() => throw new Error('Hello, Sentry!')} />
 ```
 
@@ -468,7 +468,7 @@ Using the above instructions, no additional work is needed to integrate Sentry i
 
 ## Usage with EAS Update
 
-In the current state of SDK 50 beta, EAS Update is not yet supported. We're working on making it easier than ever to integrate updates with Sentry, and we plan to release along with SDK 50 proper.
+In the current state of SDK 50 beta, EAS Update is not yet supported. We're working on making it easier than ever to integrate updates with Sentry, and we plan to release it along with SDK 50.
 
 </Tab>
 
