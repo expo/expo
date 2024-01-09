@@ -22,9 +22,9 @@ export type EChartTreeMapDataItem = {
 };
 
 const ICON_STRINGS = {
-  file: `<svg fill="white" xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 -960 960 960" width="24"><path d="M320-240h320v-80H320v80Zm0-160h320v-80H320v80ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z"/></svg>`,
-  dir: `<svg fill="white" xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 -960 960 960" width="24"><path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h240l80 80h320q33 0 56.5 23.5T880-640v400q0 33-23.5 56.5T800-160H160Zm0-80h640v-400H447l-80-80H160v480Zm0 0v-480 480Z"/></svg>`,
-  pkg: `<svg fill="white" xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 -960 960 960" width="24"><path d="M440-183v-274L200-596v274l240 139Zm80 0 240-139v-274L520-457v274Zm-40-343 237-137-237-137-237 137 237 137ZM160-252q-19-11-29.5-29T120-321v-318q0-22 10.5-40t29.5-29l280-161q19-11 40-11t40 11l280 161q19 11 29.5 29t10.5 40v318q0 22-10.5 40T800-252L520-91q-19 11-40 11t-40-11L160-252Zm320-228Z"/></svg>`,
+  file: `<svg fill="white" xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 -960 960 960" width="16"><path d="M320-240h320v-80H320v80Zm0-160h320v-80H320v80ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z"/></svg>`,
+  dir: `<svg fill="white" xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 -960 960 960" width="16"><path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h240l80 80h320q33 0 56.5 23.5T880-640v400q0 33-23.5 56.5T800-160H160Zm0-80h640v-400H447l-80-80H160v480Zm0 0v-480 480Z"/></svg>`,
+  pkg: `<svg fill="white" xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 -960 960 960" width="16"><path d="M440-183v-274L200-596v274l240 139Zm80 0 240-139v-274L520-457v274Zm-40-343 237-137-237-137-237 137 237 137ZM160-252q-19-11-29.5-29T120-321v-318q0-22 10.5-40t29.5-29l280-161q19-11 40-11t40 11l280 161q19 11 29.5 29t10.5 40v318q0 22-10.5 40T800-252L520-91q-19 11-40 11t-40-11L160-252Zm320-228Z"/></svg>`,
 };
 
 // Given a list of modules with filepaths `{ absolutePath: string }[]`, create a recursive tree structure of modules `{ absolutePath: string, groups: T[] }[]`
@@ -232,7 +232,11 @@ function createModuleTree(paths: MetroJsonModule[]): {
     group.sizeString = size;
     group.children.forEach(calculateTooltip);
   };
+
   calculateTooltip(root);
+
+  //   const size = formatSize(root.value[0]);
+  //   root.sizeString = size;
 
   const calculateChildCount = (group: EChartTreeMapDataItem): number => {
     group.childCount = group.children.reduce((acc, v) => acc + calculateChildCount(v), 0);
@@ -288,38 +292,50 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
 
   const getLabelObj = ({ multiLevel }) => ({
     show: true,
-
+    overflow: 'truncate',
     formatter(params) {
-      //   console.log('p', params);
-      return [
-        `{${params.data.isNodeModuleRoot ? 'nameBold' : 'name'}|${params.name}}`,
-        `{tip|${params.data?.tip}}`,
-      ].join(multiLevel ? '\n' : ' ');
+      let ratioString = params.data.ratioString;
+      if (!ratioString) {
+        console.log('p', params);
+        ratioString = formatSize(params.data.value);
+      }
+
+      //   return [
+      //     `{${params.data.isNodeModuleRoot ? 'nameBold' : 'name'}|${params.name}}`,
+      //     `{tip|${ratioString}}`,
+      //   ].join(multiLevel ? '\n' : ' ');
+      return [params.name, `${ratioString}`].join(multiLevel ? '\n' : ' ');
     },
-    rich: {
-      name: {
-        formatSize: 12,
-        color: '#fff',
-      },
-      nameBold: {
-        formatSize: 12,
-        fontWeight: 'bold',
-        color: '#fff',
-      },
-      tip: {
-        fontSize: 10,
-        // color: '#63709E',
-      },
-    },
+    // rich: {
+    //   name: {
+    //     formatSize: 12,
+    //     color: '#fff',
+    //   },
+    //   nameBold: {
+    //     formatSize: 12,
+    //     fontWeight: 'bold',
+    //     color: '#fff',
+    //   },
+    //   tip: {
+    //     fontSize: 10,
+    //     opacity: 0.6,
+    //     // color: '#63709E',
+    //   },
+    // },
   });
 
   const labelObj = {
     ...getLabelObj({ multiLevel: true }),
-    position: 'insideTopLeft',
+    position: 'left',
+    // position: 'insideTopLeft',
+    // position: 'inside',
+    align: 'left',
+    verticalAlign: 'middle',
   };
   const upperLabelObj = {
     ...getLabelObj({ multiLevel: false }),
-    position: 'insideBottomLeft',
+    // position: 'insideTopLeft',
+    // position: 'insideBottomLeft',
   };
 
   return (
@@ -330,8 +346,9 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
           // renderer: 'svg',
           // width: containerHeight.width,
           height: containerHeight.height,
+          //   width: 'auto',
         }}
-        key={'1'}
+        key="1"
         theme="dark"
         onEvents={{
           click(params) {
@@ -347,16 +364,9 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
           },
         }}
         option={{
-          // title: {
-          //   text: 'Bundle Size',
-          //   left: 'leafDepth',
-          // },
-
           backgroundColor: 'transparent',
-
           tooltip: {
             backgroundColor: '#000',
-            // backgroundColor: '#282A35',
             borderWidth: 1,
             borderColor: '#20293A',
             padding: 0,
@@ -365,19 +375,19 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
             },
             formatter(info) {
               const treePathInfo = info.treePathInfo;
-              console.log('treePathInfo', info);
+
               const treePath = [];
 
               for (let i = 1; i < treePathInfo.length; i++) {
                 treePath.push(treePathInfo[i].name);
               }
 
+              const components: string[] = [];
               const relativePath = formatUtil.encodeHTML(treePath.join('/'));
 
-              const padding = 8;
+              const padding = 6;
               if ('data' in info && info.data?.tip) {
                 const { data } = info;
-                const components: string[] = [];
                 const sideIcon = data.isNodeModuleRoot
                   ? ICON_STRINGS['pkg']
                   : data.moduleHref
@@ -386,13 +396,13 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
 
                 components.push(
                   `<div style="padding:0 ${padding}px;display:flex;flex-direction:row;justify-content:space-between;">
-                        <div style="display:flex;align-items:center">${sideIcon}
+                        <div style="display:flex;align-items:center;gap:6px">${sideIcon}
                         <span style="font-weight:${
                           data.isNodeModuleRoot ? 'bold' : 'normal'
                         };padding-right:8px;">${
-                          data.isNodeModuleRoot ? info.data.nodeModuleName : info.data.name
+                          data.isNodeModuleRoot ? data.nodeModuleName : data.name
                         }</span></div>
-                        <span>${info.data.ratioString}</span>
+                        <span>${data.ratioString}</span>
                     </div>`
                 );
                 const divider = `<span style="width:100%;background-color:#20293A;height:1px"></span>`;
@@ -404,77 +414,56 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
                   );
                 }
                 components.push(
-                  `<span style="padding:0 ${padding}px;"><b>Size:</b> ${info.data.sizeString}</span>`
+                  `<span style="padding:0 ${padding}px;"><b>Size:</b> ${data.sizeString}</span>`
                 );
                 components.push(
                   `<span style="padding:0 ${padding}px;opacity: 0.5;"><b>Path:</b> ${relativePath}</span>`
                 );
-                if (info.data.moduleHref) {
+                if (data.moduleHref) {
                   components.push(divider);
                   components.push(
                     `<span style="padding:0 ${padding}px;color:#4B86E3"><b>Open File:</b> <kbd>⌘ + Click</kbd></span>`
                   );
                 }
-                return `<div style="display:flex;flex-direction:column;gap:${padding}px;padding:${padding}px 0;">${components.join(
-                  ''
-                )}</div>`;
+              } else {
+                // Full bundle
+                components.push(
+                  `<div style="padding:0 ${padding}px;display:flex;flex-direction:row;justify-content:space-between;">
+                          <div style="display:flex;align-items:center;gap:6px">${ICON_STRINGS.pkg}
+                          <span style="padding-right:8px;">Bundle</span></div>
+                          <span>100%</span>
+                      </div>`
+                );
               }
-
-              return '...';
+              return `<div style="display:flex;flex-direction:column;gap:${2}px;padding:${padding}px 0;">${components.join(
+                ''
+              )}</div>`;
             },
           },
 
           series: [
             {
               // roam: 'move',
-              name: 'Size Tree',
+              name: 'Bundle',
               type: 'treemap',
-              // colorMappingBy: 'value',
-              //   colorMappingBy: 'value',
-              visualDimension: 1,
-
+              height: '85%',
+              width: '95%',
               //   zoomToNodeRatio: 0.5,
-              //   color: ['#F7DF1C', '#0085FF', '#FFB200', '#FF0000', '#00CACA', '#FF00FF', '#00FF00'],
-              color: new Array(maxNodeModules).fill(null).map((_, index) => {
-                // Four colors that are easy to distinguish
-                const colors = [
-                  '#5D4627',
-                  '#282A35',
-                  '#474036',
-                  '#5F562B',
-                  '#355431',
-                  '#3C5056',
-                  '#263C5F',
-                  '#313158',
-                  '#4A325C',
-                  '#5B2B32',
-                ];
-                return colors[index % colors.length];
-                // Limit hue to 120-300
-                const range = 300 - 120;
-                const next = index % 2 ? -1 : 1;
-                const isEven = index % 2 === 0;
-                if (isEven) {
-                  return '#ff0';
-                } else {
-                  return '#00ff00';
-                }
-                const adjusted = index * next;
-                // const hue = (adjusted / maxNodeModules) * 360;
-                // const range = 300 - 120;
-                const hue = (index / maxNodeModules) * range + 120;
 
-                // return '#282A35';
-                return saturate(`hsl(${hue}, 50%, 50%)`, 0.5);
-              }),
+              //# Colors
               colorMappingBy: 'value',
-
+              visualDimension: 1,
+              color: new Array(maxNodeModules).fill(null).map((_, index) => {
+                const colors = ['#37434A', '#282A35', '#3C5056', '#263C5F', '#313158', '#4A325C'];
+                return colors[index % colors.length];
+              }),
               visualMin: 0,
               visualMax: maxNodeModules,
+
+              //# Breadcrumbs
               breadcrumb: {
                 show: true,
                 height: 36,
-                // position: [10, 10],
                 left: 8,
                 top: 8,
                 emptyItemWidth: 25,
@@ -529,12 +518,12 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
               levels: [
                 {
                   itemStyle: {
-                    borderColor: 'transparent',
-                    borderWidth: 0,
+                    borderColor: '#353745',
+                    borderWidth: 6,
                     gapWidth: 4,
                   },
                   upperLabel: {
-                    show: false,
+                    // show: false,
                   },
                 },
                 {
@@ -550,18 +539,12 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
                   },
                 },
                 ...new Array(maxDepth).fill(null).map((_, index) => ({
-                  //   upperLabel: labelObj,
-                  colorSaturation: [0.35, 0.5],
                   itemStyle: {
                     borderWidth: 2,
-
-                    // gapWidth: 1,
                     borderColorSaturation: 0.4,
                   },
                 })),
               ],
-
-              //   colorSaturation: [0.7, 0.2],
               data,
             },
           ],
@@ -570,15 +553,3 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
     </div>
   );
 }
-
-// import { modifyHSL, modifyAlpha } from 'zrender/src/tool/color';
-
-function saturate(color: string, amount: number) {
-  return color;
-  // return modifyHSL(color, null, null, amount);
-}
-
-const preventDefault = (event: any) => {
-  // Replace 'any' with a more specific event type
-  event.preventDefault();
-};
