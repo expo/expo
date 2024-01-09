@@ -166,7 +166,46 @@ Using the above instructions, no additional work is needed to integrate Sentry i
 
 ## Usage with EAS Update
 
-After you publish an update with `eas update`, run `npx sentry-expo-upload-sourcemaps dist` (where `dist` is the directory containing your bundles and source maps) to create a new release on Sentry and upload the source maps.
+### Tag configuration
+
+Configuring Sentry to tag your scope with information about your update allows to see errors happening on certain updates in Sentry dashboard.
+
+Add the following snippet in the global scope as early as possible in your application's lifecycle.
+
+```js
+import * as Updates from 'expo-updates';
+
+const { metadata, extra } = Updates.manifest;
+
+Sentry.init({
+  // dsn, release, dist, etc...
+});
+
+Sentry.configureScope(scope => {
+  scope.setTag('expo-update-group-id', metadata?.updateGroup);
+  scope.setTag('expo-update-id', Updates.updateId);
+  // This will be `true` if the update is the one embedded in the build, and not one downloaded from the updates server.
+  scope.setTag('expo-is-embedded-update', Updates.isEmbeddedLaunch);
+  scope.setTag(
+    'expo-update-debug-url',
+    Updates.isEmbeddedLaunch
+      ? 'not applicable for embedded updates'
+      : `https://expo.dev/accounts/${extra?.expoClient?.owner}/projects/${extra?.expoClient?.slug}/updates/${metadata?.updateGroup}`
+  );
+});
+```
+
+Once configured, information about the associated update will show up in an error's tag section:
+
+<ImageSpotlight alt="Sentry update tags" src="/static/images/guides/sentry-tags.png" />
+
+### Upload source maps
+
+After running `eas update`, upload the source maps to Sentry:
+
+```sh
+SENTRY_AUTH_TOKEN=[super-secret-token] node node_modules/@sentry/react-native/scripts/expo-upload-sourcemaps.js dist
+```
 
 </Tab>
 
