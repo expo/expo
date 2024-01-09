@@ -14,6 +14,7 @@ export type EChartTreeMapDataItem = {
   tip: string;
   sizeString: string;
   ratio: number;
+  childCount: number;
   ratioString: string;
   children?: EChartTreeMapDataItem[];
   nodeModuleName: string;
@@ -47,6 +48,7 @@ function createModuleTree(paths: MetroJsonModule[]): {
     name: '/',
     value: [0, 0],
     ratio: 0,
+    childCount: 0,
     tip: '',
     sizeString: '',
     ratioString: '',
@@ -72,6 +74,7 @@ function createModuleTree(paths: MetroJsonModule[]): {
           children: [],
           value: [0, 0],
           ratio: 0,
+          childCount: 0,
           tip: '',
           sizeString: '',
           ratioString: '',
@@ -231,6 +234,12 @@ function createModuleTree(paths: MetroJsonModule[]): {
   };
   calculateTooltip(root);
 
+  const calculateChildCount = (group: EChartTreeMapDataItem): number => {
+    group.childCount = group.children.reduce((acc, v) => acc + calculateChildCount(v), 0);
+    return group.childCount + (group.children.length ? 0 : 1);
+  };
+  calculateChildCount(root);
+
   return { data: root.children, maxDepth, maxNodeModules: lastIndex };
 }
 
@@ -374,7 +383,7 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
                   : data.moduleHref
                   ? ICON_STRINGS['file']
                   : ICON_STRINGS['dir'];
-                // if (info.data?.isNodeModuleRoot) {
+
                 components.push(
                   `<div style="padding:0 ${padding}px;display:flex;flex-direction:row;justify-content:space-between;">
                         <div style="display:flex;align-items:center">${sideIcon}
@@ -388,12 +397,17 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
                 );
                 const divider = `<span style="width:100%;background-color:#20293A;height:1px"></span>`;
                 components.push(divider);
-                // }
+
+                if (data.childCount) {
+                  components.push(
+                    `<span style="padding:0 ${padding}px;"><b>Files:</b> ${data.childCount}</span>`
+                  );
+                }
                 components.push(
                   `<span style="padding:0 ${padding}px;"><b>Size:</b> ${info.data.sizeString}</span>`
                 );
                 components.push(
-                  `<span style="padding:0 ${padding}px;"><b>Path:</b> ${relativePath}</span>`
+                  `<span style="padding:0 ${padding}px;opacity: 0.5;"><b>Path:</b> ${relativePath}</span>`
                 );
                 if (info.data.moduleHref) {
                   components.push(divider);
@@ -406,15 +420,7 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
                 )}</div>`;
               }
 
-              const value = formatSize(info.value[0]);
-
-              return [
-                '<div class="tooltip-title" style="background-color:#282A35;">' +
-                  relativePath +
-                  '</div>',
-                info.data.tip,
-                // 'NM: ' + info.value[1] + ' ' + info.data?.nodeModuleName,
-              ].join('');
+              return '...';
             },
           },
 
