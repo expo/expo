@@ -28,9 +28,12 @@ async function applyPatchAsync(projectRoot, patchFilePath) {
 }
 async function getPatchChangedLinesAsync(patchFilePath) {
   const stdout = await runGitAsync(['apply', '--numstat', patchFilePath]);
-  const lines = stdout.split('\n');
+  const lines = stdout.split(/\r?\n/);
   let changedLines = 0;
   for (const line of lines) {
+    if (line === '') {
+      continue;
+    }
     const [added, deleted] = line.split('\t', 2);
     changedLines += Number(added) + Number(deleted);
   }
