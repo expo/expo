@@ -343,20 +343,20 @@ const row = await db.getFirstAsync<{ data: Uint8Array }>('SELECT * FROM blobs');
 expect(row.data).toEqual(blob);
 ```
 
-## Third-party libraries integrations
+## Third-party library integrations
 
-The `expo-sqlite` library is designed to be a solid SQLite foundation. It enables broader integrations with third-party libraries for more advanced features. Here are some of the libraries that you can use with `expo-sqlite`.
+The `expo-sqlite` library is designed to be a solid SQLite foundation. It enables broader integrations with third-party libraries for more advanced higher-level features. Here are some of the libraries that you can use with `expo-sqlite`.
 
 ### Drizzle ORM
 
-[Drizzle](https://orm.drizzle.team/) is a headless TypeScript ORM with a head. Runs on Node, Bun and Deno. Lives on the Edge and yes, it's a JavaScript ORM too! It comes with a [drizzle-kit](https://orm.drizzle.team/kit-docs/overview) CLI companion for automatic SQL migrations generation and it is Expo ready.
+[Drizzle](https://orm.drizzle.team/) is a ["headless TypeScript ORM with a head"](https://orm.drizzle.team/docs/overview). It runs on Node, Bun, Deno, and React Native. It also comes with a [CLI compansion called drizzle-kit](https://orm.drizzle.team/kit-docs/overview) for generating SQL migrations.
 
 Check out the [Drizzle ORM documentation](https://orm.drizzle.team/) and the [`expo-sqlite` integration guide](https://orm.drizzle.team/docs/get-started-sqlite#expo-sqlite) for more details.
 
 
 ### Knex.js
 
-[Knex.js](https://knexjs.org/) is a SQL query builder that is flexible, portable, and fun to use!
+[Knex.js](https://knexjs.org/) is a SQL query builder that is ["flexible, portable, and fun to use!"](https://github.com/knex/knex)
 
 Check out the [`expo-sqlite` integration guide](https://github.com/expo/knex-expo-sqlite-dialect) for more details.
 
