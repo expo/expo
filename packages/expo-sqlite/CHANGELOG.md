@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed building error on Windows. ([#26296](https://github.com/expo/expo/pull/26296) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 13.1.2 - 2023-12-21
