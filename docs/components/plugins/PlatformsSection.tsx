@@ -1,4 +1,5 @@
 import { StatusWaitingIcon } from '@expo/styleguide-icons';
+import { useState, useEffect } from 'react';
 
 import { ElementType } from '~/types/common';
 import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
@@ -50,29 +51,50 @@ type Props = {
 
 type PlatformProps = Omit<Props, 'title'>;
 
-const PlatformsSection = (props: Props) => (
-  <>
-    <H4 className="mb-1">{props.title || 'Platform Compatibility'}</H4>
-    <Table layout={TableLayout.Fixed}>
-      <TableHead>
-        <Row>
-          {platforms.map(({ title }) => (
-            <HeaderCell key={title}>{title}</HeaderCell>
-          ))}
-        </Row>
-      </TableHead>
-      <tbody>
-        <Row>
-          {platforms.map(platform => (
-            <Cell
-              key={platform.title}
-              {...getInfo(props[platform.propName as keyof PlatformProps], platform)}
-            />
-          ))}
-        </Row>
-      </tbody>
-    </Table>
-  </>
-);
+const PlatformsSection = (props: Props) => {
+  const [tableLayout, setTableLayout] = useState(TableLayout.Fixed);
+
+  useEffect(() => {
+    function handleResize() {
+      if (window.innerWidth <= 480) {
+        setTableLayout(TableLayout.Auto);
+      } else {
+        setTableLayout(TableLayout.Fixed);
+      }
+    }
+
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+
+    handleResize();
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return (
+    <>
+      <H4 className="mb-1">{props.title || 'Platform Compatibility'}</H4>
+      <Table layout={tableLayout}>
+        <TableHead>
+          <Row>
+            {platforms.map(({ title }) => (
+              <HeaderCell key={title}>{title}</HeaderCell>
+            ))}
+          </Row>
+        </TableHead>
+        <tbody>
+          <Row>
+            {platforms.map(platform => (
+              <Cell
+                key={platform.title}
+                {...getInfo(props[platform.propName as keyof PlatformProps], platform)}
+              />
+            ))}
+          </Row>
+        </tbody>
+      </Table>
+    </>
+  );
+};
 
 export default PlatformsSection;
