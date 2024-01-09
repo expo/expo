@@ -8,7 +8,6 @@ public interface ConstantsInterface {
   String getAppScopeKey();
   String getAppOwnership();
   String getDeviceName();
-  boolean getIsDevice();
   int getStatusBarHeight();
   String getSystemVersion();
   List<String> getSystemFonts();
