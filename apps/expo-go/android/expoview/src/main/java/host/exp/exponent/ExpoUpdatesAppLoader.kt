@@ -144,7 +144,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
 
     val configuration = UpdatesConfiguration(null, configMap)
     val sdkVersionsList = mutableListOf<String>().apply {
-      (Constants.SDK_VERSIONS_LIST + listOf(RNObject.UNVERSIONED)).forEach {
+      listOf(Constants.SDK_VERSION, RNObject.UNVERSIONED).forEach {
         add(it)
         add("exposdk:$it")
       }
@@ -336,7 +336,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       if (KernelConfig.FORCE_UNVERSIONED_PUBLISHED_EXPERIENCES) {
         headers["Exponent-SDK-Version"] = "UNVERSIONED"
       } else {
-        headers["Exponent-SDK-Version"] = Constants.SDK_VERSIONS
+        headers["Exponent-SDK-Version"] = Constants.SDK_VERSION
       }
       return headers
     }
@@ -358,12 +358,8 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     if (RNObject.UNVERSIONED == sdkVersion) {
       return true
     }
-    for (version in Constants.SDK_VERSIONS_LIST) {
-      if (version == sdkVersion) {
-        return true
-      }
-    }
-    return false
+
+    return sdkVersion == Constants.SDK_VERSION
   }
 
   private fun formatExceptionForIncompatibleSdk(sdkVersion: String?): ManifestException {
@@ -372,7 +368,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       errorJson.put("message", "Invalid SDK version")
       if (sdkVersion == null) {
         errorJson.put("errorCode", "NO_SDK_VERSION_SPECIFIED")
-      } else if (ABIVersion.toNumber(sdkVersion) > ABIVersion.toNumber(Constants.SDK_VERSIONS_LIST[0])) {
+      } else if (ABIVersion.toNumber(sdkVersion) > ABIVersion.toNumber(Constants.SDK_VERSION)) {
         errorJson.put("errorCode", "EXPERIENCE_SDK_VERSION_TOO_NEW")
       } else {
         errorJson.put("errorCode", "EXPERIENCE_SDK_VERSION_OUTDATED")

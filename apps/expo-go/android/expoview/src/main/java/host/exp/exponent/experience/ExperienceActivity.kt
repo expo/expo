@@ -449,21 +449,11 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     // In detach/shell, we always use UNVERSIONED as the ABI.
     detachSdkVersion = sdkVersion
 
-    if (RNObject.UNVERSIONED != sdkVersion) {
-      var isValidVersion = false
-      for (version in Constants.SDK_VERSIONS_LIST) {
-        if (version == sdkVersion) {
-          isValidVersion = true
-          break
-        }
-      }
-      if (!isValidVersion) {
-        KernelProvider.instance.handleError(
-          sdkVersion + " is not a valid SDK version. Options are " +
-            TextUtils.join(", ", Constants.SDK_VERSIONS_LIST) + ", " + RNObject.UNVERSIONED + "."
-        )
-        return
-      }
+    if (RNObject.UNVERSIONED != sdkVersion && sdkVersion != Constants.SDK_VERSION) {
+      KernelProvider.instance.handleError(
+        "$sdkVersion is not a supported SDK version. Options are ${Constants.SDK_VERSION} and ${RNObject.UNVERSIONED}."
+      )
+      return
     }
 
     soLoaderInit()

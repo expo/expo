@@ -116,18 +116,9 @@ class InternalHeadlessAppLoader(private val context: Context) :
 
     detachSdkVersion = sdkVersion
 
-    if (RNObject.UNVERSIONED != sdkVersion) {
-      var isValidVersion = false
-      for (version in Constants.SDK_VERSIONS_LIST) {
-        if (version == sdkVersion) {
-          isValidVersion = true
-          break
-        }
-      }
-      if (!isValidVersion) {
-        callback!!.onComplete(false, Exception("$sdkVersion is not a valid SDK version."))
-        return
-      }
+    if (RNObject.UNVERSIONED != sdkVersion && sdkVersion != Constants.SDK_VERSION) {
+      callback!!.onComplete(false, Exception("$sdkVersion is not a valid SDK version."))
+      return
     }
 
     soLoaderInit()
