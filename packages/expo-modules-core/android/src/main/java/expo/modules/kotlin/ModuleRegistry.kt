@@ -46,7 +46,7 @@ class ModuleRegistry(
 
   fun register(provider: ModulesProvider) = apply {
     provider.getModulesList().forEach { type ->
-      val module = type.newInstance()
+      val module = type.getDeclaredConstructor().newInstance()
       register(module)
     }
   }
