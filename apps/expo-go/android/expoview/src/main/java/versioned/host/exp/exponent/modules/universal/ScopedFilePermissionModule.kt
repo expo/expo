@@ -2,7 +2,6 @@ package versioned.host.exp.exponent.modules.universal
 
 import expo.modules.core.ModuleRegistry
 import expo.modules.filesystem.FilePermissionModule
-import expo.modules.interfaces.constants.ConstantsInterface
 import expo.modules.interfaces.filesystem.Permission
 import host.exp.exponent.utils.ScopedContext
 import java.io.File
@@ -17,11 +16,12 @@ class ScopedFilePermissionModule(private val scopedContext: ScopedContext) : Fil
     try {
       // In scoped context we do not allow access to Expo Go's directory,
       // however accessing other directories is ok as far as we're concerned.
+      // Scoped context is only an Expo Go concept, so we should forbid access to data directory.
       val context = scopedContext.context
       val dataDirCanonicalPath = File(context.applicationInfo.dataDir).canonicalPath
       val canonicalPath = File(path).canonicalPath
       val isInDataDir = canonicalPath.startsWith("$dataDirCanonicalPath/") || (canonicalPath == dataDirCanonicalPath)
-      if (shouldForbidAccessToDataDirectory() && isInDataDir) {
+      if (isInDataDir) {
         return EnumSet.noneOf(Permission::class.java)
       }
     } catch (e: IOException) {
@@ -29,12 +29,6 @@ class ScopedFilePermissionModule(private val scopedContext: ScopedContext) : Fil
       return EnumSet.noneOf(Permission::class.java)
     }
     return super.getExternalPathPermissions(path)
-  }
-
-  private fun shouldForbidAccessToDataDirectory(): Boolean {
-    val constantsModule = moduleRegistry.getModule(ConstantsInterface::class.java)
-    // If there's no constants module, or app ownership isn't "expo", we're not in Expo Go.
-    return constantsModule != null && "expo" == constantsModule.appOwnership
   }
 
   override fun onCreate(moduleRegistry: ModuleRegistry) {
