@@ -397,7 +397,7 @@ Configuring `@sentry/react-native` can be done through the config plugin in your
 ```json app.json
 {
   "expo": {
-    "plugins": ["sentry-expo", {
+    "plugins": ["@sentry/react-native/expo", {
       "organization": "sentry org slug, or use the `SENTRY_ORG` environment variable",
       "project": "sentry project name, or use the `SENTRY_PROJECT` environment variable"
     }]
