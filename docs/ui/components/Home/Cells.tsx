@@ -1,10 +1,11 @@
 import { css } from '@emotion/react';
 import { shadows, theme, typography } from '@expo/styleguide';
 import { borderRadius, breakpoints, palette, spacing } from '@expo/styleguide-base';
-import { ArrowRightIcon, ArrowUpRightIcon } from '@expo/styleguide-icons';
+import { ArrowRightIcon, ArrowUpRightIcon, AtSignIcon, Users02Icon } from '@expo/styleguide-icons';
 import { PropsWithChildren } from 'react';
 import { Container, Col, ColProps } from 'react-grid-system';
 
+import { Talk } from '~/public/static/talks';
 import { A, CALLOUT, LABEL, P } from '~/ui/components/Text';
 
 export const CellContainer = ({ children }: PropsWithChildren<object>) => (
@@ -66,18 +67,15 @@ export const APIGridCell = ({
   </CustomCol>
 );
 
-type TalkGridCellProps = ColProps & {
-  title?: string;
-  event?: string;
-  description?: string;
-  videoId?: string;
-};
+type TalkGridCellProps = ColProps & Talk;
 
 export const TalkGridCell = ({
   title,
   event,
   description,
   videoId,
+  thumbnail,
+  link,
   className,
   sm = 6,
   md = 6,
@@ -87,22 +85,33 @@ export const TalkGridCell = ({
   <CustomCol css={cellWrapperStyle} md={md} sm={sm} lg={lg} xl={xl}>
     <A
       openInNewTab
-      href={`https://www.youtube.com/watch?v=${videoId}`}
+      href={link ?? `https://www.youtube.com/watch?v=${videoId}`}
       css={[cellStyle, cellAPIStyle, cellHoverStyle]}
       className={className}
       isStyled>
-      <img
-        src={`https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`}
-        alt="Thumbnail"
-        className="border-b border-b-default"
+      <div
+        style={{
+          backgroundImage: `url(${
+            thumbnail
+              ? `/static/thumbnails/${thumbnail}`
+              : `https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`
+          })`,
+        }}
+        className="border-b border-b-default bg-cover bg-center h-[138px]"
       />
-      <div css={cellTitleWrapperStyle} className="gap-1">
-        <div>
-          <LABEL className="block !leading-normal !mb-1">{title}</LABEL>
-          <CALLOUT theme="secondary">{description}</CALLOUT>
-          <CALLOUT theme="secondary">{event}</CALLOUT>
-        </div>
-        <ArrowUpRightIcon className="text-icon-secondary shrink-0" />
+      <div css={cellTitleWrapperStyle} className="px-4 py-3 gap-1">
+        <LABEL className="block leading-normal">{title}</LABEL>
+        <ArrowUpRightIcon className="text-icon-secondary shrink-0 icon-sm" />
+      </div>
+      <div className="px-4 pb-2 bg-default flex flex-col gap-0.5">
+        <CALLOUT theme="secondary" className="flex gap-2 items-center">
+          <Users02Icon className="icon-xs text-icon-tertiary shrink-0" />
+          {description}
+        </CALLOUT>
+        <CALLOUT theme="secondary" className="flex gap-2 items-center">
+          <AtSignIcon className="icon-xs text-icon-tertiary shrink-0" />
+          {event}
+        </CALLOUT>
       </div>
     </A>
   </CustomCol>
@@ -222,7 +231,6 @@ const cellTitleWrapperStyle = css({
   display: 'flex',
   justifyContent: 'space-between',
   backgroundColor: theme.background.default,
-  padding: spacing[4],
   textDecoration: 'none',
   minHeight: 30,
   color: theme.text.default,
