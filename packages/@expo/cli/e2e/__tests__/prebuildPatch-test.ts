@@ -78,7 +78,7 @@ it('runs `npx expo prebuild:patch --help`', async () => {
 
       Options
         <dir>                                    Directory of the Expo project. Default: Current working directory
-        --no-clean                               Skip cleaning native platform directories
+        --clean                                  Delete the native folders after the conversion
         --template <template>                    Project template to clone from. File path pointing to a local tar file or a github repo
         -p, --platform <all|android|ios>         Platforms to sync: ios, android, all. Default: all
         -h, --help                               Usage info
@@ -125,7 +125,7 @@ it(
 
     await execa(
       'node',
-      [bin, 'prebuild:patch', '--platform', 'android', '--template', templateFolder],
+      [bin, 'prebuild:patch', '--clean', '--platform', 'android', '--template', templateFolder],
       {
         cwd: projectRoot,
       }
@@ -140,8 +140,10 @@ it(
     }
     expect(androidDirExists).toBe(false);
 
+    // Assume the first patch is the android patch
+    const patchFiles = await fs.readdir(path.join(projectRoot, 'cng-patches'));
     const patchContents = await fs.readFile(
-      path.join(projectRoot, 'cng-patches', 'android.patch'),
+      path.join(projectRoot, 'cng-patches', patchFiles[0]),
       'utf8'
     );
     expect(patchContents).toMatch(`\
@@ -181,7 +183,7 @@ it(
 
     await execa(
       'node',
-      [bin, 'prebuild:patch', '--platform', 'android', '--template', templateFolder],
+      [bin, 'prebuild:patch', '--clean', '--platform', 'android', '--template', templateFolder],
       {
         cwd: projectRoot,
       }
