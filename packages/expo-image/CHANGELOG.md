@@ -10,7 +10,7 @@
 
 - Fixed ResizeObserver attaching on every image transition. ([#25819](https://github.com/expo/expo/pull/25819) by [@aleqsio](https://github.com/aleqsio))
 - [Android] Fixed the issue with the application of tint color when an element does not have a style assigned to it. ([#26251](https://github.com/expo/expo/pull/26251) by [@lukmccall](https://github.com/lukmccall))
-- [Android] Fixed the tine color was applied to the mask element.
+- [Android] Fixed the tine color was applied to the mask element. ([#26323](https://github.com/expo/expo/pull/26323) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
