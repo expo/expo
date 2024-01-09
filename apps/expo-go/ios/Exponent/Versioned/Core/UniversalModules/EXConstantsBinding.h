@@ -10,8 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXConstantsBinding : EXConstantsService <EXInternalModule, EXConstantsInterface>
 
-@property (nonatomic, readonly) NSString *appOwnership;
-
 - (instancetype)initWithParams:(NSDictionary *)params;
 
 @end

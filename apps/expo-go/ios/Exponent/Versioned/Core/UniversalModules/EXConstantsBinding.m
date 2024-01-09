@@ -5,7 +5,6 @@
 
 @interface EXConstantsBinding ()
 
-@property (nonatomic, strong) NSString *appOwnership;
 @property (nonatomic, strong) NSDictionary *unversionedConstants;
 
 @end
@@ -16,9 +15,6 @@
 {
   if (self = [super init]) {
     _unversionedConstants = params[@"constants"];
-    if (_unversionedConstants && _unversionedConstants[@"appOwnership"]) {
-      _appOwnership = _unversionedConstants[@"appOwnership"];
-    }
   }
   return self;
 }
@@ -37,13 +33,11 @@
     [constants addEntriesFromDictionary:_unversionedConstants];
   }
 
-  if ([constants[@"appOwnership"] isEqualToString:@"expo"]) {
-    NSMutableDictionary *platform = [constants[@"platform"] mutableCopy];
-    NSMutableDictionary *ios = [platform[@"ios"] mutableCopy];
-    [ios setValue:[NSNull null] forKey:@"buildNumber"];
-    [platform setValue:ios forKey:@"ios"];
-    [constants setValue:platform forKey:@"platform"];
-  }
+  NSMutableDictionary *platform = [constants[@"platform"] mutableCopy];
+  NSMutableDictionary *ios = [platform[@"ios"] mutableCopy];
+  [ios setValue:[NSNull null] forKey:@"buildNumber"];
+  [platform setValue:ios forKey:@"ios"];
+  [constants setValue:platform forKey:@"platform"];
 
   return constants;
 }

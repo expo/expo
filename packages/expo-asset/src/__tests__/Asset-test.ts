@@ -65,6 +65,14 @@ afterEach(() => {
 
 if (Platform.OS !== 'web') {
   describe(`source resolution with React Native`, () => {
+    jest.doMock('expo-constants', () => {
+      const Constants = jest.requireActual('expo-constants');
+      return {
+        ...Constants,
+        appOwnership: Constants.AppOwnership.Expo,
+      };
+    });
+
     it(`automatically registers a source resolver`, () => {
       require('../index');
       const {

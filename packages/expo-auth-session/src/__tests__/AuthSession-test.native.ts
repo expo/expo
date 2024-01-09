@@ -39,7 +39,7 @@ describe('Managed', () => {
         mockConstants(
           {
             linkingUri: 'exp://exp.host/@test/test',
-            appOwnership: AppOwnership.Standalone,
+            appOwnership: null,
             executionEnvironment: ExecutionEnvironment.Standalone,
           },
           manifestObj
@@ -62,7 +62,7 @@ describe('Managed', () => {
         mockConstants(
           {
             linkingUri: 'exp://exp.host/@test/test',
-            appOwnership: AppOwnership.Standalone,
+            appOwnership: null,
             executionEnvironment: ExecutionEnvironment.Standalone,
           },
           manifestObj
@@ -85,7 +85,7 @@ describe('Managed', () => {
         mockConstants(
           {
             linkingUri: 'exp://exp.host/@test/test',
-            appOwnership: AppOwnership.Standalone,
+            appOwnership: null,
             executionEnvironment: ExecutionEnvironment.Standalone,
           },
           manifestObj

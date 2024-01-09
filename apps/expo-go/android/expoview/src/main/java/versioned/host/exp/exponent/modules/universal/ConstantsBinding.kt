@@ -27,14 +27,14 @@ class ConstantsBinding(
       this["nativeAppVersion"] = ExpoViewKernel.instance.versionName
       this["nativeBuildVersion"] = Constants.ANDROID_VERSION_CODE
       this["supportedExpoSdks"] = Constants.SDK_VERSIONS_LIST
-      this["appOwnership"] = appOwnership
+      this["appOwnership"] = "expo"
       this["executionEnvironment"] = executionEnvironment.string
 
       this.putAll(experienceProperties)
 
       this["platform"] = mapOf(
         "android" to mapOf(
-          "versionCode" to if (appOwnership == "expo") null else Constants.ANDROID_VERSION_CODE
+          "versionCode" to null
         )
       )
       this["isDetached"] = false
@@ -47,10 +47,6 @@ class ConstantsBinding(
     } catch (e: JSONException) {
       null
     }
-  }
-
-  override fun getAppOwnership(): String {
-    return "expo"
   }
 
   private val executionEnvironment: ExecutionEnvironment

@@ -12,18 +12,13 @@
 
 @interface EXScopedFilePermissionModule ()
 
-@property (nonatomic, assign) BOOL isDetached;
-
 @end
 
 @implementation EXScopedFilePermissionModule
 
 - (instancetype)initWithConstantsBinding:(EXConstantsBinding *)constantsBinding
 {
-  if (self = [super init]) {
-    _isDetached = ![constantsBinding.appOwnership isEqualToString:@"expo"];
-  }
-  return self;
+  return [super init];
 }
 
 - (EXFileSystemPermissionFlags)getExternalPathPermissions:(NSString *)path
@@ -36,7 +31,7 @@
 }
 
 - (BOOL)shouldForbidAccessToExternalDirectories {
-  return !_isDetached;
+  return true;
 }
 
 @end

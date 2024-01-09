@@ -12,8 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithScopeKey:(NSString *)scopeKey;
 
 + (void)maybeMigrateLegacyCategoryIdentifiersForProjectWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
-                                                                 scopeKey:(NSString *)scopeKey
-                                                                         isInExpoGo:(BOOL)isInExpoGo;
+                                                                           scopeKey:(NSString *)scopeKey;
 
 @end
 

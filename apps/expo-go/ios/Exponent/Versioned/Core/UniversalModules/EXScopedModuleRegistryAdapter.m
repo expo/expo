@@ -49,11 +49,8 @@
 #endif
 
 #if __has_include(<EXFacebook/EXFacebook.h>)
-  // only override in Expo Go
-  if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
-    EXScopedFacebook *scopedFacebook = [[EXScopedFacebook alloc] initWithScopeKey:scopeKey manifest:manifest];
-    [moduleRegistry registerExportedModule:scopedFacebook];
-  }
+  EXScopedFacebook *scopedFacebook = [[EXScopedFacebook alloc] initWithScopeKey:scopeKey manifest:manifest];
+  [moduleRegistry registerExportedModule:scopedFacebook];
 #endif
 
 #if __has_include(<ExpoFileSystem/EXFileSystem.h>)
@@ -129,19 +126,13 @@
 #endif
 
 #if __has_include(<EXNotifications/EXNotificationsEmitter.h>)
-  // only override in Expo Go
-  if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
-    EXScopedNotificationsEmitter *notificationsEmmitter = [[EXScopedNotificationsEmitter alloc] initWithScopeKey:scopeKey];
-    [moduleRegistry registerExportedModule:notificationsEmmitter];
-  }
+  EXScopedNotificationsEmitter *notificationsEmmitter = [[EXScopedNotificationsEmitter alloc] initWithScopeKey:scopeKey];
+  [moduleRegistry registerExportedModule:notificationsEmmitter];
 #endif
 
 #if __has_include(<EXNotifications/EXNotificationsHandlerModule.h>)
-  // only override in Expo Go
-  if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
-    EXScopedNotificationsHandlerModule *notificationsHandler = [[EXScopedNotificationsHandlerModule alloc] initWithScopeKey:scopeKey];
-    [moduleRegistry registerExportedModule:notificationsHandler];
-  }
+  EXScopedNotificationsHandlerModule *notificationsHandler = [[EXScopedNotificationsHandlerModule alloc] initWithScopeKey:scopeKey];
+  [moduleRegistry registerExportedModule:notificationsHandler];
 #endif
 
 #if __has_include(<EXNotifications/EXNotificationsHandlerModule.h>)
@@ -151,30 +142,20 @@
 #endif
 
 #if __has_include(<EXNotifications/EXNotificationSchedulerModule.h>)
-  // only override in Expo Go
-  if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
-    EXScopedNotificationSchedulerModule *schedulerModule = [[EXScopedNotificationSchedulerModule alloc] initWithScopeKey:scopeKey];
-    [moduleRegistry registerExportedModule:schedulerModule];
-  }
+  EXScopedNotificationSchedulerModule *schedulerModule = [[EXScopedNotificationSchedulerModule alloc] initWithScopeKey:scopeKey];
+  [moduleRegistry registerExportedModule:schedulerModule];
 #endif
 
 #if __has_include(<EXNotifications/EXNotificationPresentationModule.h>)
-  // only override in Expo Go
-  if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
-    EXScopedNotificationPresentationModule *notificationPresentationModule = [[EXScopedNotificationPresentationModule alloc] initWithScopeKey:scopeKey];
-    [moduleRegistry registerExportedModule:notificationPresentationModule];
-  }
+  EXScopedNotificationPresentationModule *notificationPresentationModule = [[EXScopedNotificationPresentationModule alloc] initWithScopeKey:scopeKey];
+  [moduleRegistry registerExportedModule:notificationPresentationModule];
 #endif
 
 #if __has_include(<EXNotifications/EXNotificationCategoriesModule.h>)
-  // only override in Expo Go
-  if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
-    EXScopedNotificationCategoriesModule *scopedCategoriesModule = [[EXScopedNotificationCategoriesModule alloc] initWithScopeKey:scopeKey];
-    [moduleRegistry registerExportedModule:scopedCategoriesModule];
-  }
+  EXScopedNotificationCategoriesModule *scopedCategoriesModule = [[EXScopedNotificationCategoriesModule alloc] initWithScopeKey:scopeKey];
+  [moduleRegistry registerExportedModule:scopedCategoriesModule];
   [EXScopedNotificationCategoriesModule maybeMigrateLegacyCategoryIdentifiersForProjectWithExperienceStableLegacyId:experienceStableLegacyId
-                                                                                                 scopeKey:scopeKey
-                                                                                                         isInExpoGo:[params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]];
+                                                                                                           scopeKey:scopeKey];
 #endif
 
 #if __has_include(<EXNotifications/EXServerRegistrationModule.h>)

@@ -15,10 +15,6 @@
 
 - (instancetype)initWithScopeKey:(NSString *)scopeKey manifest:(EXManifestsManifest *)manifest constantsBinding:(EXConstantsBinding *)constantsBinding
 {
-  if (![@"expo" isEqualToString:constantsBinding.appOwnership]) {
-    return [super init];
-  }
-
   // Setup the protected app names
   NSMutableDictionary* protectedAppNames = [NSMutableDictionary dictionaryWithDictionary:@{
     @"__FIRAPP_DEFAULT": @YES,

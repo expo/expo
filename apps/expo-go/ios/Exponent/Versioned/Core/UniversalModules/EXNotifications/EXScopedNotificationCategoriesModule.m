@@ -71,15 +71,9 @@
 
 + (void)maybeMigrateLegacyCategoryIdentifiersForProjectWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
                                                                  scopeKey:(NSString *)scopeKey
-                                                                         isInExpoGo:(BOOL)isInExpoGo __deprecated_msg("To be removed once SDK 43 is phased out")
 {
-  if (isInExpoGo) {
-    // Changed scoping prefix in SDK 41 FROM "experienceId-" to ESCAPED "experienceId/"
-    [EXScopedNotificationCategoryMigrator migrateLegacyScopedCategoryIdentifiersForProjectWithScopeKey:scopeKey];
-  } else {
-    // Used to prefix with "experienceId-" even in standalone apps in SDKs <= 40, so we need to unscope those
-    [EXScopedNotificationCategoryMigrator unscopeLegacyCategoryIdentifiersForProjectWithScopeKey:scopeKey];
-  }
+  // Changed scoping prefix in SDK 41 FROM "experienceId-" to ESCAPED "experienceId/"
+  [EXScopedNotificationCategoryMigrator migrateLegacyScopedCategoryIdentifiersForProjectWithScopeKey:scopeKey];
 }
 
 @end

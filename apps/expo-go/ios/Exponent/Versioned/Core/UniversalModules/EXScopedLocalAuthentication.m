@@ -10,15 +10,12 @@
 
 @interface EXScopedLocalAuthentication ()
 
-@property (nonatomic, assign) BOOL isInExpoClient;
-
 @end
 
 @implementation EXScopedLocalAuthentication
 
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  _isInExpoClient = [((EXConstantsBinding *)[moduleRegistry getModuleImplementingProtocol:@protocol(EXConstantsInterface)]).appOwnership isEqualToString:@"expo"];
 }
 
 EX_EXPORT_METHOD_AS(authenticateAsync,
@@ -26,9 +23,8 @@ EX_EXPORT_METHOD_AS(authenticateAsync,
                     resolve:(EXPromiseResolveBlock)resolve
                     reject:(EXPromiseRejectBlock)reject)
 {
-  BOOL isInExpoClient = _isInExpoClient;
   [super authenticateWithOptions:options resolve:^(NSDictionary *result) {
-    if (isInExpoClient && [[self class] isFaceIdDevice]) {
+    if ([[self class] isFaceIdDevice]) {
       NSString *usageDescription = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"NSFaceIDUsageDescription"];
 
       if (!usageDescription) {
