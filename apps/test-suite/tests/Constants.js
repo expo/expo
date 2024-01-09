@@ -10,7 +10,7 @@ export function test(t) {
       t.it(`can only use ${v} in the managed workflow`, () => {
         if (
           Constants.appOwnership === 'expo' ||
-          Constants.appOwnership === 'standalone' ||
+          Constants.appOwnership === null ||
           Platform.OS === 'web'
         ) {
           t.expect(Constants[v]).toBeDefined();

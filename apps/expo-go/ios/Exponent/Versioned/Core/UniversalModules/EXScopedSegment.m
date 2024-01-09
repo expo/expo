@@ -7,15 +7,12 @@
 
 @interface EXScopedSegment ()
 
-@property (nonatomic, assign) BOOL isInExpoClient;
-
 @end
 
 @implementation EXScopedSegment
 
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  _isInExpoClient = [((EXConstantsBinding *)[moduleRegistry getModuleImplementingProtocol:@protocol(EXConstantsInterface)]).appOwnership isEqualToString:@"expo"];
 }
 
 EX_EXPORT_METHOD_AS(setEnabledAsync,
@@ -23,12 +20,8 @@ EX_EXPORT_METHOD_AS(setEnabledAsync,
                     withResolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  if (_isInExpoClient) {
-    reject(@"E_UNSUPPORTED", @"Setting Segment's `enabled` is not supported in Expo Go.", nil);
-    return;
-  }
-
-  [super setEnabled:enabled withResolver:resolve rejecter:reject];
+  reject(@"E_UNSUPPORTED", @"Setting Segment's `enabled` is not supported in Expo Go.", nil);
+  return;
 }
 
 @end
