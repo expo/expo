@@ -71,7 +71,7 @@ it('runs `npx expo prebuild:patch --help`', async () => {
   expect(results.stdout).toMatchInlineSnapshot(`
     "
       Info
-        Convert native iOS and Android project files into CNG patch files
+        (Experimental) Generate patch files for iOS and Android native projects to persist changes made manually after prebuild
 
       Usage
         $ npx expo prebuild:patch <dir>

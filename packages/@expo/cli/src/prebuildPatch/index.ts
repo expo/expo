@@ -21,7 +21,7 @@ export const expoPrebuildPatch: Command = async (argv) => {
 
   if (args['--help']) {
     printHelp(
-      `Convert native iOS and Android project files into CNG patch files`,
+      `(Experimental) Generate patch files for iOS and Android native projects to persist changes made manually after prebuild`,
       chalk`npx expo prebuild:patch {dim <dir>}`,
       [
         chalk`<dir>                                    Directory of the Expo project. {dim Default: Current working directory}`,
