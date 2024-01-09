@@ -54,8 +54,6 @@ function _warnings() {
   return data;
 }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-const DEFAULT_PATCH_ROOT = 'cng-patches';
-const DEFAULT_CHANGED_LINES_LIMIT = 300;
 const EXPO_DEBUG = (0, _getenv().boolish)('EXPO_DEBUG', false);
 const withPatchMod = (config, platform) => {
   return (0, _withMod().withMod)(config, {
@@ -68,11 +66,9 @@ const withPatchMod = (config, platform) => {
       const templateChecksum = (_config$_internal$tem = (_config$_internal = config._internal) === null || _config$_internal === void 0 ? void 0 : _config$_internal.templateChecksum) !== null && _config$_internal$tem !== void 0 ? _config$_internal$tem : '';
       const patchFilePath = await determinePatchFilePathAsync(projectRoot, platform, templateChecksum, props);
       if (patchFilePath != null) {
-        var _props$changedLinesLi;
         const changedLines = await (0, _gitPatch().getPatchChangedLinesAsync)(patchFilePath);
-        const changedLinesLimit = (_props$changedLinesLi = props.changedLinesLimit) !== null && _props$changedLinesLi !== void 0 ? _props$changedLinesLi : DEFAULT_CHANGED_LINES_LIMIT;
-        if (changedLines > changedLinesLimit) {
-          (0, _warnings().addWarningForPlatform)(platform, 'withPatchPlugin', `The patch file "${patchFilePath}" has ${changedLines} changed lines, which exceeds the limit of ${changedLinesLimit}.`);
+        if (changedLines > props.changedLinesLimit) {
+          (0, _warnings().addWarningForPlatform)(platform, 'withPatchPlugin', `The patch file "${patchFilePath}" has ${changedLines} changed lines, which exceeds the limit of ${props.changedLinesLimit}.`);
         }
         await (0, _gitPatch().applyPatchAsync)(projectRoot, patchFilePath);
       }
@@ -95,8 +91,7 @@ function createPatchPlugin(platform) {
   return withUnknown;
 }
 async function determinePatchFilePathAsync(projectRoot, platform, templateChecksum, props) {
-  var _props$patchRoot;
-  const patchRoot = _path().default.join(projectRoot, (_props$patchRoot = props.patchRoot) !== null && _props$patchRoot !== void 0 ? _props$patchRoot : DEFAULT_PATCH_ROOT);
+  const patchRoot = _path().default.join(projectRoot, props.patchRoot);
   let patchFilePath = _path().default.join(patchRoot, `${platform}+${templateChecksum}.patch`);
   const patchFiles = await getPatchFilesAsync(patchRoot, platform, props);
   let patchExists = patchFiles.includes(_path().default.basename(patchFilePath));

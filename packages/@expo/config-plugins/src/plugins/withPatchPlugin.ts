@@ -9,8 +9,6 @@ import type { ConfigPlugin, ModPlatform } from '../Plugin.types';
 import { applyPatchAsync, getPatchChangedLinesAsync } from '../utils/gitPatch';
 import { addWarningForPlatform } from '../utils/warnings';
 
-const DEFAULT_PATCH_ROOT = 'cng-patches';
-const DEFAULT_CHANGED_LINES_LIMIT = 300;
 const EXPO_DEBUG = boolish('EXPO_DEBUG', false);
 
 interface PatchPluginProps {
@@ -36,12 +34,11 @@ const withPatchMod: ConfigPlugin<ModPlatform> = (config, platform) => {
       );
       if (patchFilePath != null) {
         const changedLines = await getPatchChangedLinesAsync(patchFilePath);
-        const changedLinesLimit = props.changedLinesLimit ?? DEFAULT_CHANGED_LINES_LIMIT;
-        if (changedLines > changedLinesLimit) {
+        if (changedLines > props.changedLinesLimit) {
           addWarningForPlatform(
             platform,
             'withPatchPlugin',
-            `The patch file "${patchFilePath}" has ${changedLines} changed lines, which exceeds the limit of ${changedLinesLimit}.`
+            `The patch file "${patchFilePath}" has ${changedLines} changed lines, which exceeds the limit of ${props.changedLinesLimit}.`
           );
         }
 
@@ -73,7 +70,7 @@ async function determinePatchFilePathAsync(
   templateChecksum: string,
   props: PatchPluginProps
 ): Promise<string | null> {
-  const patchRoot = path.join(projectRoot, props.patchRoot ?? DEFAULT_PATCH_ROOT);
+  const patchRoot = path.join(projectRoot, props.patchRoot);
   let patchFilePath = path.join(patchRoot, `${platform}+${templateChecksum}.patch`);
 
   const patchFiles = await getPatchFilesAsync(patchRoot, platform, props);
