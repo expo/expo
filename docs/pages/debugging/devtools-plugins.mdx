@@ -12,27 +12,40 @@ Dev tools plugins are available in your local development environment to help yo
 
 ## Add a dev tools plugin to a project
 
-To add a dev tool plugin to your app, install it as a package and add a small snippet to connect the code to your app. This code is invoked from the app's root component to establish a two-way communication between your app and the plugin. Then, the plugin can inspect the available module for the entire time your app runs in development mode.
+To add a dev tool plugin to your app, install it as a package and add a small snippet to connect the code to your app. This code is invoked from the app's root component to establish a two-way communication between your app and the plugin. Then, the plugin can inspect aspects of your app for the entire time your app runs in development mode.
 
-It is recommended that you wrap this code in a conditional that only runs in development mode so that it is not included in the production build of your app:
+All [Expo dev tools plugins](#expo-dev-tools-plugins) and plugins created with [our creation tool](/create-devtools-plugins) export a hook that you can use to connect the plugin to your app. The hook and any functions returned from it will no-op when the app is not running in development mode.
 
-```jsx
-if (__DEV__) {
-  // initialize your DevTools plugin here
+Some plugin hooks require parameters that relate to how the plugin inspects your app. For instance, a plugin for inspecting React Navigation state might require a reference to the navigation root.
+
+To start using the plugin, use the hook in your app's root component:
+
+```jsx App.js
+import { useMyDevToolsPlugin } from 'my-devtools-plugin';
+
+export default App() {
+  useMyDevToolsPlugin();
+  return (/* rest of your app */)
 }
 ```
 
-In some cases, you may need to interact with a plugin directly. All plugins communicate through exports from `expo/devtools`, and you can send and listen to messages through `connectPluginFromDevToolsAsync`:
+In some cases, you may need to interact with a plugin directly. All plugins communicate through exports from `expo/devtools`, and you can send and listen to messages through `useDevToolsPluginClient`. Be sure to pass the same plugin name to `useDevToolsPluginClient` as is used by the plugin's web user interface:
 
-```jsx
-import { connectPluginFromDevToolsAsync } from 'expo/devtools';
+```jsx App.js
+import { useDevToolsPluginClient } from "expo/devtools";
 
-const client = await connectPluginFromDevToolsAsync();
-
-client.sendMessage('ping', { from: 'app' });
-client.addMessageListener('pong', (data) => {
-  console.log('receiving pong', data);
-});
+export default App() {
+  const client = useDevToolsPluginClient('my-devtools-plugin');
+   useEffect(() => {
+    // receive messages
+    client?.addMessageListener("ping", (data) => {
+      alert(`Received ping from ${data.from}`);
+    });
+    // send messages
+    client?.sendMessage("ping", { from: "app" });
+   }, []);
+  return (/* rest of your app */)
+}
 ```
 
 ### Compatibility with Expo Go and Development builds

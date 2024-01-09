@@ -4,6 +4,7 @@ description: Learn how to create a dev tools plugin to enhance your development 
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
+import { APIBox } from '~/components/plugins/APIBox';
 
 > **warning** Dev Tools plugins are compatible with SDK 50 and above.
 
@@ -36,6 +37,31 @@ The plugin project will contain the following folders:
 ### Customize your plugin's functionality
 
 The template includes a simple example of sending and receiving messages between the plugin and the app. `useDevToolsPluginClient`, imported from `expo/devtools`, provides functionality for sending and receiving messages between the plugin and the app.
+
+The client object returned by `useDevToolsPluginClient` includes:
+<APIBox header="addMessageListener">
+
+Listens for a message matching the type string and invokes the callback with the message data.
+
+```jsx
+const client = useDevToolsPluginClient('my-devtools-plugin');
+client.addMessageListener('ping', (data) => {
+  alert(`Received ping from ${data.from}`);
+});
+```
+
+</APIBox>
+
+<APIBox header="sendMessage">
+
+Listens for a message matching the type string and invokes the callback with the message data.
+
+```jsx
+const client = useDevToolsPluginClient('my-devtools-plugin');
+client?.sendMessage("ping", { from: "web" });
+```
+
+</APIBox>
 
 Edit the Expo app inside the **webui** folder to customize the user interface that displays diagnostic information from your app or triggers test scenarios:
 ```tsx webui/App.tsx
