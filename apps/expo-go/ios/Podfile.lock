@@ -1201,7 +1201,7 @@ PODS:
     - React-debug
   - react-native-netinfo (11.1.0):
     - React-Core
-  - react-native-pager-view (6.2.2):
+  - react-native-pager-view (6.2.3):
     - React-Core
   - react-native-safe-area-context (4.7.4):
     - React-Core
@@ -2048,7 +2048,7 @@ SPEC CHECKSUMS:
   React-logger: 66b168e2b2bee57bd8ce9e69f739d805732a5570
   React-Mapbuffer: 9ee041e1d7be96da6d76a251f92e72b711c651d6
   react-native-netinfo: 3aa5637c18834966e0c932de8ae1ae56fea20a97
-  react-native-pager-view: 02a5c4962530f7efc10dd51ee9cdabeff5e6c631
+  react-native-pager-view: c29d484f19c49ff19525a94105e4ab2c4d4ae273
   react-native-safe-area-context: 2cd91d532de12acdb0a9cbc8d43ac72a8e4c897c
   react-native-segmented-control: 0e4b5d93911e2234f110057df2b41738b326ab3e
   react-native-skia: 1a2fbce7fc198eb229b13f15bce48a06b5c92d69

@@ -42,7 +42,7 @@ if(shouldUseNameSpace){
       manifestContent = manifestContent.replaceAll(
         PACKAGE_PROP,
         ''
-    )  
+    )
 } else {
     if(!manifestContent.contains("$PACKAGE_PROP")){
         manifestContent = manifestContent.replace(
@@ -61,7 +61,6 @@ def registrationCompat = {
   def reactAndroidProject = rootProject.allprojects.find { it.name == 'ReactAndroid' }
   if (reactAndroidProject == null) return false
 
-  println(reactAndroidProject.projectDir)
   def reactNativeManifest = file("${reactAndroidProject.projectDir}/../package.json")
   def reactNativeVersion = new JsonSlurper().parseText(reactNativeManifest.text).version as String
   // Fabric was introduced at react-native@0.68, full CMake support were introduced at react-native@0.71
@@ -83,6 +82,9 @@ android {
   compileSdkVersion getExtOrIntegerDefault('compileSdkVersion')
   if (shouldUseNameSpace){
     namespace = "com.reactnativepagerview"
+    buildFeatures {
+      buildConfig true
+    }
   }
   defaultConfig {
     minSdkVersion getExtOrIntegerDefault('minSdkVersion')
