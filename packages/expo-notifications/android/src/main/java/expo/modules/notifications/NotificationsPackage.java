@@ -6,11 +6,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import expo.modules.core.BasePackage;
-import expo.modules.core.ExportedModule;
 import expo.modules.core.interfaces.InternalModule;
 import expo.modules.core.interfaces.SingletonModule;
 import expo.modules.notifications.notifications.NotificationManager;
-import expo.modules.notifications.notifications.categories.ExpoNotificationCategoriesModule;
 import expo.modules.notifications.notifications.categories.serializers.ExpoNotificationsCategoriesSerializer;
 import expo.modules.notifications.notifications.channels.AndroidXNotificationsChannelsProvider;
 import expo.modules.notifications.tokens.PushTokenManager;

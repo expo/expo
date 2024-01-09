@@ -7,7 +7,6 @@ import java.util.List;
 
 import expo.modules.av.player.datasource.SharedCookiesDataSourceFactoryProvider;
 import expo.modules.core.BasePackage;
-import expo.modules.core.ExportedModule;
 import expo.modules.core.interfaces.InternalModule;
 
 public class AVPackage extends BasePackage {
