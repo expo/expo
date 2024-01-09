@@ -1,4 +1,3 @@
-import spawnAsync from '@expo/spawn-async';
 import { boolish } from 'getenv';
 import { glob } from 'glob';
 import path from 'path';
@@ -6,14 +5,18 @@ import path from 'path';
 import { withMod } from './withMod';
 import { withRunOnce } from './withRunOnce';
 import type { ConfigPlugin, ModPlatform } from '../Plugin.types';
+import { applyPatchAsync, getPatchChangedLinesAsync } from '../utils/gitPatch';
 import { addWarningForPlatform } from '../utils/warnings';
 
 const DEFAULT_PATCH_ROOT = 'cng-patches';
+const DEFAULT_CHANGED_LINES_LIMIT = 300;
 const EXPO_DEBUG = boolish('EXPO_DEBUG', false);
 
 export interface PatchPluginProps {
   /** The directory to search for patch files in. */
   patchRoot?: string;
+  /** The maximum changed lines allowed in the patch file, if exceeded the patch will show a warning. */
+  changedLinesLimit?: number;
 }
 
 const withPatchMod: ConfigPlugin<[ModPlatform, PatchPluginProps]> = (config, [platform, props]) => {
@@ -21,8 +24,27 @@ const withPatchMod: ConfigPlugin<[ModPlatform, PatchPluginProps]> = (config, [pl
     platform,
     mod: 'patch',
     action: async (config) => {
+      const projectRoot = config.modRequest.projectRoot;
       const templateChecksum = config._internal?.templateChecksum ?? '';
-      await applyPatchAsync(config.modRequest.projectRoot, platform, templateChecksum, props);
+      const patchFilePath = await determinePatchFilePathAsync(
+        projectRoot,
+        platform,
+        templateChecksum,
+        props
+      );
+      if (patchFilePath != null) {
+        const changedLines = await getPatchChangedLinesAsync(patchFilePath);
+        const changedLinesLimit = props.changedLinesLimit ?? DEFAULT_CHANGED_LINES_LIMIT;
+        if (changedLines > changedLinesLimit) {
+          addWarningForPlatform(
+            platform,
+            'withPatchPlugin',
+            `The patch file "${patchFilePath}" has ${changedLines} changed lines, which exceeds the limit of ${changedLinesLimit}.`
+          );
+        }
+
+        await applyPatchAsync(projectRoot, patchFilePath);
+      }
       return config;
     },
   });
@@ -46,12 +68,12 @@ export function createPatchPlugin(
   return withUnknown;
 }
 
-async function applyPatchAsync(
+async function determinePatchFilePathAsync(
   projectRoot: string,
   platform: ModPlatform,
   templateChecksum: string,
   props: PatchPluginProps
-) {
+): Promise<string | null> {
   const patchRoot = path.join(projectRoot, props.patchRoot ?? DEFAULT_PATCH_ROOT);
   let patchFilePath = path.join(patchRoot, `${platform}+${templateChecksum}.patch`);
 
@@ -82,23 +104,9 @@ async function applyPatchAsync(
     );
   }
   if (!patchExists) {
-    return;
+    return null;
   }
-  try {
-    const { stdout, stderr } = await spawnAsync('git', ['apply', patchFilePath], {
-      cwd: projectRoot,
-    });
-    if (EXPO_DEBUG) {
-      console.log(`[withPatchPlugin] outputs\nstdout:\n${stdout}\nstderr:\n${stderr}`);
-    }
-  } catch (e: any) {
-    if (e.code === 'ENOENT') {
-      e.message += `\nGit is required to apply patches. Install Git and try again.`;
-    } else if (e.stderr) {
-      e.message += `\nstderr:\n${e.stderr}`;
-    }
-    throw e;
-  }
+  return patchFilePath;
 }
 
 async function getPatchFilesAsync(

@@ -1,15 +1,18 @@
 import type { ExpoConfig } from '@expo/config';
-import spawnAsync from '@expo/spawn-async';
 import { vol } from 'memfs';
 
 import { compileModsAsync } from '../../plugins/mod-compiler';
+import { applyPatchAsync, getPatchChangedLinesAsync } from '../../utils/gitPatch';
 import { withInfoPlist } from '../ios-plugins';
 import { withDangerousMod } from '../withDangerousMod';
 import { createPatchPlugin } from '../withPatchPlugin';
 
-jest.mock('@expo/spawn-async');
 jest.mock('fs');
-const mockedSpawnAsync = spawnAsync as jest.MockedFunction<typeof spawnAsync>;
+jest.mock('../../utils/gitPatch');
+const mockedApplyPatchAsync = applyPatchAsync as jest.MockedFunction<typeof applyPatchAsync>;
+const mockedGetPatchChangedLinesAsync = getPatchChangedLinesAsync as jest.MockedFunction<
+  typeof getPatchChangedLinesAsync
+>;
 console.warn = jest.fn();
 
 describe(createPatchPlugin, () => {
@@ -20,10 +23,6 @@ describe(createPatchPlugin, () => {
     vol.reset();
     vol.mkdirpSync('/app/cng-patches');
     vol.writeFileSync(`/app/cng-patches/ios+${templateChecksum}.patch`, '');
-
-    mockedSpawnAsync.mockClear();
-    // @ts-expect-error
-    mockedSpawnAsync.mockResolvedValue({ stdout: '', stderr: '' });
   });
 
   it('should do nothing when no patch files', async () => {
@@ -33,7 +32,7 @@ describe(createPatchPlugin, () => {
     });
     vol.reset();
     await compileModsAsync(config, { projectRoot, platforms: ['ios'] });
-    expect(mockedSpawnAsync).not.toHaveBeenCalled();
+    expect(mockedApplyPatchAsync).not.toHaveBeenCalled();
   });
 
   it('should call git apply with existing patch file', async () => {
@@ -43,12 +42,11 @@ describe(createPatchPlugin, () => {
       _internal: { templateChecksum },
     });
     await compileModsAsync(config, { projectRoot, platforms: ['ios'] });
-    expect(mockedSpawnAsync).toHaveBeenCalled();
-    expect(mockedSpawnAsync.mock.calls[0][0]).toEqual('git');
-    expect(mockedSpawnAsync.mock.calls[0][1]).toEqual([
-      'apply',
-      `/app/cng-patches/ios+${templateChecksum}.patch`,
-    ]);
+    expect(mockedApplyPatchAsync).toHaveBeenCalled();
+    expect(mockedApplyPatchAsync.mock.calls[0][0]).toEqual(projectRoot);
+    expect(mockedApplyPatchAsync.mock.calls[0][1]).toEqual(
+      `/app/cng-patches/ios+${templateChecksum}.patch`
+    );
   });
 
   it('should call git apply with existing patch file when no templateChecksum', async () => {
@@ -60,9 +58,9 @@ describe(createPatchPlugin, () => {
     vol.mkdirpSync('/app/cng-patches');
     vol.writeFileSync('/app/cng-patches/ios+.patch', '');
     await compileModsAsync(config, { projectRoot, platforms: ['ios'] });
-    expect(mockedSpawnAsync).toHaveBeenCalled();
-    expect(mockedSpawnAsync.mock.calls[0][0]).toEqual('git');
-    expect(mockedSpawnAsync.mock.calls[0][1]).toEqual(['apply', '/app/cng-patches/ios+.patch']);
+    expect(mockedApplyPatchAsync).toHaveBeenCalled();
+    expect(mockedApplyPatchAsync.mock.calls[0][0]).toEqual(projectRoot);
+    expect(mockedApplyPatchAsync.mock.calls[0][1]).toEqual('/app/cng-patches/ios+.patch');
   });
 
   it('should show warning for multiple patch files', async () => {
@@ -75,10 +73,9 @@ describe(createPatchPlugin, () => {
     const spyWarning = jest.spyOn(console, 'warn');
     vol.writeFileSync(`/app/cng-patches/ios+anotherchecksum.patch`, '');
     await compileModsAsync(config, { projectRoot, platforms: ['ios'] });
-    expect(mockedSpawnAsync.mock.calls[0][1]).toEqual([
-      'apply',
-      `/app/cng-patches/ios+${templateChecksum}.patch`,
-    ]);
+    expect(mockedApplyPatchAsync.mock.calls[0][1]).toEqual(
+      `/app/cng-patches/ios+${templateChecksum}.patch`
+    );
     expect(spyWarning).toHaveBeenCalledWith(
       expect.stringMatching(
         /withPatchPlugin: Having multiple patch files in .+? is not supported. Only matched patch file ".+?" will be applied./
@@ -103,12 +100,28 @@ describe(createPatchPlugin, () => {
         /withPatchPlugin: Having patch files in .+? but none matching ".+?", using ".+?" instead./
       )
     );
-    expect(mockedSpawnAsync).toHaveBeenCalled();
-    expect(mockedSpawnAsync.mock.calls[0][0]).toEqual('git');
-    expect(mockedSpawnAsync.mock.calls[0][1]).toEqual([
-      'apply',
-      '/app/cng-patches/ios+anotherchecksum.patch',
-    ]);
+    expect(mockedApplyPatchAsync.mock.calls[0][1]).toEqual(
+      '/app/cng-patches/ios+anotherchecksum.patch'
+    );
+  });
+
+  it('should show warning for a large patch file', async () => {
+    const config = createPatchPlugin('ios')({
+      name: 'testproject',
+      slug: 'testproject',
+      _internal: { templateChecksum },
+    });
+    mockedGetPatchChangedLinesAsync.mockResolvedValueOnce(500);
+    const spyWarning = jest.spyOn(console, 'warn');
+    await compileModsAsync(config, { projectRoot, platforms: ['ios'] });
+    expect(mockedApplyPatchAsync.mock.calls[0][1]).toEqual(
+      `/app/cng-patches/ios+${templateChecksum}.patch`
+    );
+    expect(spyWarning).toHaveBeenCalledWith(
+      expect.stringMatching(
+        /withPatchPlugin: The patch file ".+?" has 500 changed lines, which exceeds the limit of 300/
+      )
+    );
   });
 
   it('should support custom patchRoot', async () => {
@@ -121,39 +134,9 @@ describe(createPatchPlugin, () => {
     vol.mkdirpSync(`/app/${patchRoot}`);
     vol.writeFileSync(`/app/${patchRoot}/ios+${templateChecksum}.patch`, '');
     await compileModsAsync(config, { projectRoot, platforms: ['ios'] });
-    expect(mockedSpawnAsync).toHaveBeenCalled();
-    expect(mockedSpawnAsync.mock.calls[0][0]).toEqual('git');
-    expect(mockedSpawnAsync.mock.calls[0][1]).toEqual([
-      'apply',
-      `/app/${patchRoot}/ios+${templateChecksum}.patch`,
-    ]);
-  });
-
-  it('should throw if git is not installed', async () => {
-    const config = createPatchPlugin('ios')({
-      name: 'testproject',
-      slug: 'testproject',
-      _internal: { templateChecksum },
-    });
-    const error = new Error('spawn git ENOENT');
-    // @ts-expect-error: Simulate spawn error
-    error.code = 'ENOENT';
-    mockedSpawnAsync.mockRejectedValue(error);
-    await expect(() =>
-      compileModsAsync(config, { projectRoot, platforms: ['ios'] })
-    ).rejects.toThrowError(/Git is required to apply patches/);
-  });
-
-  it('should throw from git apply errors', async () => {
-    const config = createPatchPlugin('ios')({
-      name: 'testproject',
-      slug: 'testproject',
-      _internal: { templateChecksum },
-    });
-    mockedSpawnAsync.mockRejectedValue(new Error('git apply failed'));
-    await expect(() =>
-      compileModsAsync(config, { projectRoot, platforms: ['ios'] })
-    ).rejects.toThrow();
+    expect(mockedApplyPatchAsync.mock.calls[0][1]).toEqual(
+      `/app/${patchRoot}/ios+${templateChecksum}.patch`
+    );
   });
 
   it('should run patch plugin only once', async () => {
@@ -166,7 +149,7 @@ describe(createPatchPlugin, () => {
     config = createPatchPlugin('ios')(config);
 
     await compileModsAsync(config, { projectRoot, platforms: ['ios'] });
-    expect(mockedSpawnAsync).toHaveBeenCalledTimes(1);
+    expect(mockedApplyPatchAsync).toHaveBeenCalledTimes(1);
   });
 
   it('should run patch plugin at the end', async () => {
@@ -223,7 +206,7 @@ describe(createPatchPlugin, () => {
     );
     expect(mockFn2.mock.invocationCallOrder[0]).toBeLessThan(mockFn1.mock.invocationCallOrder[0]);
     expect(mockFn1.mock.invocationCallOrder[0]).toBeLessThan(
-      mockedSpawnAsync.mock.invocationCallOrder[0]
+      mockedApplyPatchAsync.mock.invocationCallOrder[0]
     );
   });
 });
