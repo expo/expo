@@ -1,3 +1,4 @@
+import type { ExpoConfig } from '@expo/config-types';
 import { boolish } from 'getenv';
 import { glob } from 'glob';
 import path from 'path';
@@ -12,18 +13,19 @@ const DEFAULT_PATCH_ROOT = 'cng-patches';
 const DEFAULT_CHANGED_LINES_LIMIT = 300;
 const EXPO_DEBUG = boolish('EXPO_DEBUG', false);
 
-export interface PatchPluginProps {
+interface PatchPluginProps {
   /** The directory to search for patch files in. */
-  patchRoot?: string;
+  patchRoot: string;
   /** The maximum changed lines allowed in the patch file, if exceeded the patch will show a warning. */
-  changedLinesLimit?: number;
+  changedLinesLimit: number;
 }
 
-const withPatchMod: ConfigPlugin<[ModPlatform, PatchPluginProps]> = (config, [platform, props]) => {
+const withPatchMod: ConfigPlugin<ModPlatform> = (config, platform) => {
   return withMod(config, {
     platform,
     mod: 'patch',
     action: async (config) => {
+      const props = createPropsFromConfig(config);
       const projectRoot = config.modRequest.projectRoot;
       const templateChecksum = config._internal?.templateChecksum ?? '';
       const patchFilePath = await determinePatchFilePathAsync(
@@ -50,15 +52,12 @@ const withPatchMod: ConfigPlugin<[ModPlatform, PatchPluginProps]> = (config, [pl
   });
 };
 
-export function createPatchPlugin(
-  platform: ModPlatform,
-  props: PatchPluginProps = {}
-): ConfigPlugin {
+export function createPatchPlugin(platform: ModPlatform): ConfigPlugin {
   const platformName = platform.charAt(0).toUpperCase() + platform.slice(1);
   const pluginName = `with${platformName}PatchPlugin`;
   const withUnknown: ConfigPlugin = (config) => {
     return withRunOnce(config, {
-      plugin: (config) => withPatchMod(config, [platform, props]),
+      plugin: (config) => withPatchMod(config, platform),
       name: pluginName,
     });
   };
@@ -123,4 +122,15 @@ async function getPatchFilesAsync(
       }
     });
   });
+}
+
+function createPropsFromConfig(config: ExpoConfig): PatchPluginProps {
+  const patchPluginConfig =
+    config.plugins?.find(
+      (plugin) => Array.isArray(plugin) && plugin[0] === 'withPatchPlugin'
+    )?.[1] ?? {};
+  return {
+    patchRoot: patchPluginConfig.patchRoot ?? 'cng-patches',
+    changedLinesLimit: patchPluginConfig.changedLinesLimit ?? 300,
+  };
 }

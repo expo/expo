@@ -124,12 +124,13 @@ describe(createPatchPlugin, () => {
     );
   });
 
-  it('should support custom patchRoot', async () => {
+  it('should support custom patchRoot in app config', async () => {
     const patchRoot = 'customPatchRoot';
-    const config = createPatchPlugin('ios', { patchRoot })({
+    const config = createPatchPlugin('ios')({
       name: 'testproject',
       slug: 'testproject',
       _internal: { templateChecksum },
+      plugins: [['withPatchPlugin', { patchRoot }]],
     });
     vol.mkdirpSync(`/app/${patchRoot}`);
     vol.writeFileSync(`/app/${patchRoot}/ios+${templateChecksum}.patch`, '');
