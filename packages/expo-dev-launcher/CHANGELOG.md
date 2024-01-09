@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix launcher bridge not filtering native modules. ([#26332](https://github.com/expo/expo/pull/26332) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ### 📚 3rd party library updates
