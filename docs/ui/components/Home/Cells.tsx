@@ -99,7 +99,7 @@ export const TalkGridCell = ({
         }}
         className="border-b border-b-default bg-cover bg-center h-[138px]"
       />
-      <div css={cellTitleWrapperStyle} className="px-4 py-3 gap-1">
+      <div css={cellTitleWrapperStyle} className="!py-3 gap-1">
         <LABEL className="block leading-normal">{title}</LABEL>
         <ArrowUpRightIcon className="text-icon-secondary shrink-0 icon-sm" />
       </div>
@@ -233,6 +233,7 @@ const cellTitleWrapperStyle = css({
   backgroundColor: theme.background.default,
   textDecoration: 'none',
   minHeight: 30,
+  padding: spacing[4],
   color: theme.text.default,
   alignItems: 'center',
 });
