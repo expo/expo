@@ -5,111 +5,120 @@ description: Learn how to create a dev tools plugin to enhance your development 
 
 import { Terminal } from '~/ui/components/Snippet';
 
-> **warning** Dev Tools plugins are compatible with SDK 50 and above. The process for creating a plugin is still in beta and may change in the future.
+> **warning** Dev Tools plugins are compatible with SDK 50 and above.
 
 You can create a dev tools plugin, whether that's for inspecting aspects of a common framework or library or something specific to your custom code. This guide will walk you through creating a dev tools plugin.
+
+## What is a dev tools plugin?
+A dev tools plugin runs in your web browser in your local development environment and connects to your Expo app.
 
 A plugin consists of three key elements:
 - An Expo app to display the dev tools web user interface.
 - An **expo-module.config.json** for Expo CLI recognition.
 - Calls to `expo/devtools` API for the app to communicate back and forth with the dev tool's web interface.
 
-Plugins can be included inside your app's monorepo or distributed separately on npm.
+Plugins can be distributed on npm or included inside your app's monorepo. They typically export a single hook that can be used in your app's root component to initiate two-way communication with the web interface when your app is running in debug mode.
 
 ## Create a plugin
 
-### Create an Expo app
+### Create a new plugin project
 
-The web interface of your dev tool will be an Expo app. Create a new blank Expo app:
+`create-dev-plugin` will setup a new plugin project for you. Run the following command to create a new plugin project:
 
-<Terminal cmd={['$ npx create-expo-app']} />
+<Terminal cmd={['$ npx create-dev-plugin']} />
 
-Then, add the packages required to build the app for the web and to use the dev tools API:
+`create-dev-plugin` will prompt you for a name of your plugin, a description, and the name of the hook that will be used by consumers of your plugin.
 
-<Terminal cmd={['$ npx expo install react-native-web react-dom']} />
+The plugin project will contain the following folders:
+- **src** - this exports the hook that will be used inside the consuming app to connect it to the plugin.
+- **webui** - this contains the web user interface for the plugin.
 
-### Update package.json
+### Customize your plugin's functionality
 
-Move any dependencies from `dependencies` to `devDependences` in **package.json**. These dependencies are needed for building the web version of the dev tools UI, and are part of your app's development. Having them in `devDependencies` ensures they are not included in your app.
+The template includes a simple example of sending and receiving messages between the plugin and the app. `useDevToolsPluginClient`, imported from `expo/devtools`, provides functionality for sending and receiving messages between the plugin and the app.
 
-```diff package.json
-"dependencies": {
--  "expo": "~50.0.0",
--  "react": "18.2.0",
--  "react-dom": "18.2.0",
--  "react-native": "0.73.0",
--  "react-native-web": "~0.19.6"
-},
-"devDependencies": {
-  "@babel/core": "^7.20.0",
-  "@expo/webpack-config": "^18.1.2",
-+  "expo": "~50.0.0",
-+  "react": "18.2.0",
-+  "react-dom": "18.2.0",
-+  "react-native": "0.73.0",
-+  "react-native-web": "~0.19.6"
-},
+Edit the Expo app inside the **webui** folder to customize the user interface that displays diagnostic information from your app or triggers test scenarios:
+```tsx webui/App.tsx
+import { useDevToolsPluginClient, type EventSubscription } from 'expo/devtools';
+import { useEffect } from 'react';
+
+export default function App() {
+  const client = useDevToolsPluginClient('my-devtools-plugin');
+
+  useEffect(() => {
+    const subscriptions: EventSubscription[] = [];
+
+    subscriptions.push(
+      client?.addMessageListener('ping', (data) => {
+        alert(`Received ping from ${data.from}`);
+      })
+    );
+
+    return () => {
+      for (const subscription of subscriptions) {
+        subscription?.remove();
+      }
+    };
+  }, [client]);
+}
+
 ```
 
-Add a `homepage` field to define the exported base URL for web in the format of `/_expo/plugins/{pluginName}`. For example:
+Edit the hook in the **src** folder to customize what diagnostic information is sent to the plugin or how the app should respond to any messages from the web user interface:
+```tsx src/useMyDevToolsPlugin.ts
+import { useDevToolsPluginClient } from 'expo/devtools';
 
-```diff package.json
-  "name": "expo-plugin-helloworld",
-  "version": "1.0.0",
-+  "homepage": "/_expo/plugins/expo-plugin-helloworld",
-```
+export function useMyDevToolsPlugin() {
+  const client = useDevToolsPluginClient('my-devtools-plugin');
 
-### Add message sending and receiving code to the plugin's web UI
+  const sendPing = () => {
+    client?.sendMessage('ping', { from: 'app' });
+  }
 
-`getDevToolsPluginClientAsync` initiates a client that can send messages and listen for incoming messages:
-
-```js
-  import { getDevToolsPluginClientAsync } from 'expo/devtools';
-
-  const client = await getDevToolsPluginClientAsync('REPLACE-FOR-YOUR-PLUGIN-NAME');
-
-  client.sendMessage('ping');
-  client.addMessageListener('pong', (data) => {
-    console.log('receiving pong', data);
-  });
-```
-
-A `useDevToolsPluginClient` hook is also available to provide a client entirely within a React component.
-
-Client apps using your plugin will also be able to communicate using `getDevToolsPluginClientAsync` or `useDevToolsPluginClient`. The identifier passed to `getDevToolsPluginClientAsync` must match in both the plugin and the client app.
-
-### Build the app for web
-
-Create a **package.json** script to build the web app and move it to the **dist** directory. This will be served by the Expo CLI when invoking the plugin.
-
-```diff package.json
-"scripts": {
-  "start": "expo start",
-  "android": "expo start --android",
-  "ios": "expo start --ios",
-  "web": "expo start --web",
-+  "build": "rm -rf dist web-build && expo export:web && mv web-build dist"
-},
-```
-
-Run the build script to export the plugin web UI and move it to the **dist** folder:
-
-<Terminal cmd={['$ npm run build']} />
-
-### Create expo-module.config.json
-
-Create an **expo-module.config.json** file and add the required information as shown below in the code snippet. This helps the Expo CLI detect the plugin and serve the correct files.
-
-```json expo-module.config.json
-{
-  "name": "expo-plugin-helloworld",
-  "platforms": ["devtools"],
-  "devtools": {
-    "webpageRoot": "dist"
+  return {
+    sendPing,
   }
 }
 ```
 
-### Publish your plugin
+If you update the hook to return functions that will be called by the app, you will also need to update **src/index.ts** so it exports no-op functions when the app is not running in debug mode:
+```diff src/index.ts
+if (process.env.NODE_ENV !== 'production') {
+  useTestPlugin = require('./useTestPlugin').useTestPlugin;
+} else {
+  useTestPlugin = () => ({
++    sendPing: () => {},
+  });
+}
+```
 
-You can add this plugin as a package in your monorepo to use it directly in your app or publish it to npm to share with others.
+### Test your plugin
+Since the plugin web UI is an Expo app, you can test it just like you would any other Expo app, with `npx expo start`, except that you will run it in the browser only. The template includes a convenience command to run the plugin in local development mode:
+
+<Terminal cmd={['$ npm run web:dev']} />
+
+### Build your plugin
+
+To prepare your plugin for distribution or for use within your monorepo, you will need to build the plugin with the following command:
+
+<Terminal cmd={['$ npm run prepublishOnly']} />
+
+This command will build the hook code into the **build** folder, and the web user interface into the **dist** folder.
+
+### Use your plugin
+Import the plugin's hook into your app's root component and call it to connect your app to the plugin:
+
+```tsx App.js
+import { useMyDevToolsPlugin } from 'my-devtools-plugin';
+import { Button } from 'react-native';
+
+export default function App() {
+  const { sendPing } = useTestPlugin();
+
+  return (
+    <View style={styles.container}>
+      <Button title="Ping" onPress={() => { sendPing(); }}>
+    </View>
+  );
+}
+```
