@@ -298,10 +298,10 @@ index 0000000000..c4467326aa
 +}
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.java b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.java
 deleted file mode 100644
-index 8502c4402d..0000000000
+index e7f376902d..0000000000
 --- a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.java
 +++ /dev/null
-@@ -1,80 +0,0 @@
+@@ -1,82 +0,0 @@
 -package com.helloworld;
 -
 -import android.app.Application;
@@ -372,7 +372,9 @@ index 8502c4402d..0000000000
 -      // If you opted-in for the New Architecture, we load the native entry point for this app.
 -      DefaultNewArchitectureEntryPoint.load();
 -    }
--    ReactNativeFlipper.initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+-    if (BuildConfig.DEBUG) {
+-      ReactNativeFlipper.initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+-    }
 -    ApplicationLifecycleDispatcher.onApplicationCreate(this);
 -  }
 -
@@ -384,10 +386,10 @@ index 8502c4402d..0000000000
 -}
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
 new file mode 100644
-index 0000000000..dd90f54e04
+index 0000000000..8258c40ed4
 --- /dev/null
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
-@@ -0,0 +1,63 @@
+@@ -0,0 +1,65 @@
 +package com.helloworld
 +
 +import android.app.Application
@@ -442,7 +444,9 @@ index 0000000000..dd90f54e04
 +      // If you opted-in for the New Architecture, we load the native entry point for this app.
 +      load()
 +    }
-+    ReactNativeFlipper.initializeFlipper(this, reactNativeHost.reactInstanceManager)
++    if (BuildConfig.DEBUG) {
++      ReactNativeFlipper.initializeFlipper(this, reactNativeHost.reactInstanceManager)
++    }
 +    ApplicationLifecycleDispatcher.onApplicationCreate(this)
 +  }
 +
@@ -907,15 +911,15 @@ index 2402cc34b2..b3978b9515 100644
      # This is necessary for Xcode 14, because it signs resource bundles by default
      # when building for devices.
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index f100f535f5..df471f5854 100644
+index 50e94a0837..fd1cd53388 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
  {
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
--  "version": "49.0.23",
-+  "version": "50.0.21",
+-  "version": "49.0.24",
++  "version": "50.0.22",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -926,11 +930,11 @@ index f100f535f5..df471f5854 100644
 -    "expo": "~49.0.18",
 -    "expo-splash-screen": "~0.20.5",
 -    "expo-status-bar": "~1.6.0",
-+    "expo": "~50.0.0-preview.7",
++    "expo": "~50.0.0-preview.8",
 +    "expo-status-bar": "~1.11.1",
      "react": "18.2.0",
 -    "react-native": "0.72.6"
-+    "react-native": "0.73.1"
++    "react-native": "0.73.2"
    },
    "devDependencies": {
      "@babel/core": "^7.20.0"
