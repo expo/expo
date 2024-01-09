@@ -30,11 +30,7 @@ export function getLocalAssets() {
   return ExpoUpdates?.localAssets ?? {};
 }
 
-export function getManifest(): { [key: string]: any } {
-  return Constants.__unsafeNoWarnManifest ?? {};
-}
-
-export function getManifest2(): typeof Constants.__unsafeNoWarnManifest2 | undefined {
+export function getManifest2(): typeof Constants.__unsafeNoWarnManifest2 {
   return Constants.__unsafeNoWarnManifest2;
 }
 
