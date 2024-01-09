@@ -21,11 +21,11 @@ import { withXCParseXcodeProjectBaseMod } from './plugins/ios/withXCParseXcodePr
 import { getDefaultSdkVersion, getVersionInfo, VersionInfo } from './utils/expoVersionMappings';
 import { learnMore } from './utils/link';
 import { installExpoPackageAsync, installPodsAsync } from './utils/packageInstaller';
-import { normalizeProjectRoot } from './utils/projectRoot';
+import { normalizeProjectRootAsync } from './utils/projectRoot';
 
 const packageJSON = require('../package.json');
 
-let projectRoot: string = '';
+let inputProjectRoot: string = '';
 
 const program = new Command(packageJSON.name)
   .version(packageJSON.version)
@@ -34,10 +34,10 @@ const program = new Command(packageJSON.name)
   .description('Install expo-modules into your project')
   .option('-s, --sdk-version <version>', 'Install specified expo-modules sdk version')
   .option('--non-interactive', 'Disable interactive prompts')
-  .action((inputProjectRoot: string) => (projectRoot = inputProjectRoot))
+  .action((_inputProjectRoot: string) => (inputProjectRoot = _inputProjectRoot))
   .parse(process.argv);
 
-function getSdkVersionInfo(): VersionInfo {
+function getSdkVersionInfo(projectRoot: string): VersionInfo {
   const { sdkVersion } = program;
   if (sdkVersion) {
     const versionInfo = getVersionInfo(sdkVersion);
@@ -125,24 +125,36 @@ Do you want to install the Expo CLI integration?`;
 }
 
 async function runAsync(programName: string) {
-  projectRoot = normalizeProjectRoot(projectRoot);
+  const { projectRoot, platformAndroid, platformIos } =
+    await normalizeProjectRootAsync(inputProjectRoot);
 
   const {
     expoSdkVersion: sdkVersion,
     iosDeploymentTarget,
     androidAgpVersion,
     supportCliIntegration,
-  } = getSdkVersionInfo();
-  if (androidAgpVersion && !(await promptUpgradeAgpVersionAsync(projectRoot, androidAgpVersion))) {
+  } = getSdkVersionInfo(projectRoot);
+  if (
+    platformAndroid &&
+    androidAgpVersion &&
+    !(await promptUpgradeAgpVersionAsync(projectRoot, androidAgpVersion))
+  ) {
     return;
   }
-  if (!(await promptUpgradeIosDeployTargetAsync(projectRoot, iosDeploymentTarget))) {
+  if (platformIos && !(await promptUpgradeIosDeployTargetAsync(projectRoot, iosDeploymentTarget))) {
     return;
   }
 
   const cliIntegration = supportCliIntegration && (await promptCliIntegrationAsync());
 
-  const platforms: ModPlatform[] = ['android', 'ios'];
+  const platforms: ModPlatform[] = [];
+  if (platformAndroid) {
+    platforms.push('android');
+  }
+  if (platformIos) {
+    platforms.push('ios');
+  }
+
   let { exp: config } = getConfig(projectRoot, {
     skipSDKVersionRequirement: true,
     isModdedConfig: true,

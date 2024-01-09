@@ -76,26 +76,18 @@ export const Footer = ({ title, sourceCodeUrl, packageName, previousPage, nextPa
         </div>
       )}
       <div
-        className={mergeClasses(
-          'flex flex-row max-md-gutters:flex-col max-md-gutters:gap-4',
-          title ? 'justify-between' : 'justify-center'
-        )}>
-        {title && (
-          <div>
-            <PageVote />
-            <UL className="flex-1 !mt-0 !ml-0 !list-none">
-              <ShareFeedbackLink pathname={router?.pathname} />
-              <ForumsLink isAPIPage={isAPIPage} title={title} />
-              {isAPIPage && (
-                <IssuesLink
-                  title={title}
-                  repositoryUrl={isExpoPackage ? undefined : sourceCodeUrl}
-                />
-              )}
-              {router?.pathname && <EditPageLink pathname={router.pathname} />}
-            </UL>
-          </div>
-        )}
+        className={mergeClasses('flex flex-row gap-4 justify-between', 'max-md-gutters:flex-col')}>
+        <div>
+          <PageVote />
+          <UL className="flex-1 !mt-0 !ml-0 !list-none">
+            <ShareFeedbackLink pathname={router?.pathname} />
+            {title && <ForumsLink isAPIPage={isAPIPage} title={title} />}
+            {title && isAPIPage && (
+              <IssuesLink title={title} repositoryUrl={isExpoPackage ? undefined : sourceCodeUrl} />
+            )}
+            {title && router?.pathname && <EditPageLink pathname={router.pathname} />}
+          </UL>
+        </div>
         <NewsletterSignUp />
       </div>
     </footer>

@@ -25,7 +25,8 @@ const sortByValue = (a: EnumValueData, b: EnumValueData) => {
   return 0;
 };
 
-const renderEnumValue = (value: any) => (typeof value === 'string' ? `"${value}"` : value);
+const renderEnumValue = (value: any, fallback?: string) =>
+  typeof value === 'string' ? `"${value}"` : value ?? fallback;
 
 const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Element => (
   <div key={`enum-definition-${name}`} css={STYLES_APIBOX} className="!p-0">
@@ -43,10 +44,13 @@ const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Elemen
         <APISectionDeprecationNote comment={enumValue.comment} />
         <APISectionPlatformTags comment={enumValue.comment} prefix="Only for:" />
         <H4 className="!mt-0">
-          <CODE>{enumValue.name}</CODE>
+          <MONOSPACE className="!text-inherit">{enumValue.name}</MONOSPACE>
         </H4>
         <CODE theme="secondary" className="mb-4">
-          {`${name}.${enumValue.name} ＝ ${renderEnumValue(enumValue.type.value)}`}
+          {`${name}.${enumValue.name} ＝ ${renderEnumValue(
+            enumValue.type.value,
+            enumValue.type.name
+          )}`}
         </CODE>
         <CommentTextBlock comment={enumValue.comment} includePlatforms={false} />
       </div>

@@ -1,3 +1,5 @@
+@file:Suppress("UnusedImport") // this needs to stay for versioning to work
+
 package expo.modules.updates
 
 import android.content.Context
@@ -18,7 +20,7 @@ import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
-import expo.modules.updates.manifest.EmbeddedManifest
+import expo.modules.updates.manifest.EmbeddedManifestUtils
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.procedures.CheckForUpdateProcedure
 import expo.modules.updates.procedures.FetchUpdateProcedure
@@ -29,13 +31,11 @@ import expo.modules.updates.statemachine.UpdatesStateChangeEventSender
 import expo.modules.updates.statemachine.UpdatesStateContext
 import expo.modules.updates.statemachine.UpdatesStateEventType
 import expo.modules.updates.statemachine.UpdatesStateMachine
+import expo.modules.updates.statemachine.UpdatesStateValue
 import java.io.File
 import java.lang.ref.WeakReference
 
 // this needs to stay for versioning to work
-/* ktlint-disable no-unused-imports */
-import expo.modules.updates.UpdatesConfiguration
-/* ktlint-enable no-unused-imports */
 
 /**
  * Updates controller for applications that have updates enabled and properly-configured.
@@ -45,7 +45,7 @@ class EnabledUpdatesController(
   private val updatesConfiguration: UpdatesConfiguration,
   override val updatesDirectory: File
 ) : IUpdatesController, UpdatesStateChangeEventSender {
-  private var reactNativeHost: WeakReference<ReactNativeHost>? = if (context is ReactApplication) {
+  private val reactNativeHost: WeakReference<ReactNativeHost>? = if (context is ReactApplication) {
     WeakReference(context.reactNativeHost)
   } else {
     null
@@ -55,7 +55,7 @@ class EnabledUpdatesController(
   private val selectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(
     updatesConfiguration.getRuntimeVersion()
   )
-  private val stateMachine = UpdatesStateMachine(context, this)
+  private val stateMachine = UpdatesStateMachine(context, this, UpdatesStateValue.values().toSet())
   private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context))
 
   private fun purgeUpdatesLogsOlderThanOneDay() {
@@ -188,16 +188,15 @@ class EnabledUpdatesController(
   override fun getConstantsForModule(): IUpdatesController.UpdatesModuleConstants {
     return IUpdatesController.UpdatesModuleConstants(
       launchedUpdate = launchedUpdate,
-      embeddedUpdate = EmbeddedManifest.get(context, updatesConfiguration)?.updateEntity,
+      embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, updatesConfiguration)?.updateEntity,
       isEmergencyLaunch = isEmergencyLaunch,
       isEnabled = true,
-      releaseChannel = updatesConfiguration.releaseChannel,
       isUsingEmbeddedAssets = isUsingEmbeddedAssets,
       runtimeVersion = updatesConfiguration.runtimeVersionRaw,
       checkOnLaunch = updatesConfiguration.checkOnLaunch,
       requestHeaders = updatesConfiguration.requestHeaders,
       localAssetFiles = localAssetFiles,
-      isMissingRuntimeVersion = false,
+      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = false
     )
   }
 
@@ -244,7 +243,7 @@ class EnabledUpdatesController(
       try {
         val result = ManifestMetadata.getExtraParams(
           databaseHolder.database,
-          updatesConfiguration,
+          updatesConfiguration
         )
         databaseHolder.releaseDatabase()
         val resultMap = when (result) {
@@ -290,7 +289,7 @@ class EnabledUpdatesController(
     private const val UPDATE_NO_UPDATE_AVAILABLE_EVENT = "noUpdateAvailable"
     private const val UPDATE_ERROR_EVENT = "error"
 
-    private const val UPDATES_EVENT_NAME = "Expo.nativeUpdatesEvent"
-    private const val UPDATES_STATE_CHANGE_EVENT_NAME = "Expo.nativeUpdatesStateChangeEvent"
+    const val UPDATES_EVENT_NAME = "Expo.nativeUpdatesEvent"
+    const val UPDATES_STATE_CHANGE_EVENT_NAME = "Expo.nativeUpdatesStateChangeEvent"
   }
 }

@@ -179,7 +179,7 @@ describe('server', () => {
       expect(manifest.extra.expoClient.hostUri).toBe('127.0.0.1:8081');
 
       // Manifest
-      expect(manifest.runtimeVersion).toBe('exposdk:49.0.0');
+      expect(manifest.runtimeVersion).toBe('1.0');
       expect(manifest.extra.expoClient.sdkVersion).toBe('49.0.0');
       expect(manifest.extra.expoClient.slug).toBe('basic-start');
       expect(manifest.extra.expoClient.name).toBe('basic-start');

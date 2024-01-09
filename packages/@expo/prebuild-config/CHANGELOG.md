@@ -8,7 +8,21 @@
 
 ### 🐛 Bug fixes
 
+- Fixed white splash screen flickering in dark mode. ([#25933](https://github.com/expo/expo/pull/25933) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+- Remove classic updates SDK version. ([#26061](https://github.com/expo/expo/pull/26061) by [@wschurman](https://github.com/wschurman))
+
+## 6.7.2 - 2023-12-19
+
+### 🐛 Bug fixes
+
+- Move `expo-module-scripts` to `devDependencies` instead of `peerDependencies`. ([#25994](https://github.com/expo/expo/pull/25994) by [@byCedric](https://github.com/byCedric))
+
+## 6.7.1 — 2023-12-15
+
+_This version does not introduce any user-facing changes._
 
 ## 6.7.0 — 2023-12-12
 

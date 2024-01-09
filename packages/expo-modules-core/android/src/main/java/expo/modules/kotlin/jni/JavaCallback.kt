@@ -12,7 +12,6 @@ import expo.modules.kotlin.logger
 class JavaCallback @DoNotStrip internal constructor(@DoNotStrip private val mHybridData: HybridData) : Destructible {
   operator fun invoke(result: Any?) {
     try {
-
       if (result == null) {
         invoke()
         return

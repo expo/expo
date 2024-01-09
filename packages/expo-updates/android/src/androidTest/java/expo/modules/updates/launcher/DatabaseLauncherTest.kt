@@ -59,7 +59,7 @@ class DatabaseLauncherTest {
         null,
         mapOf(
           "updateUrl" to Uri.parse("https://example.com"),
-          "hasEmbeddedUpdate" to false,
+          "hasEmbeddedUpdate" to false
         )
       ),
       File("test"),

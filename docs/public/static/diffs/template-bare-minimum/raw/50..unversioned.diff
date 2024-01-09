@@ -1,22 +1,55 @@
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
+index 34a7ca8314..04b326127b 100644
+--- a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
++++ b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
+@@ -20,7 +20,7 @@
+ 
+   <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme">
+     <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="YOUR-APP-URL-HERE"/>
+-    <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="YOUR-APP-SDK-VERSION-HERE"/>
++    <meta-data android:name="expo.modules.updates.EXPO_RUNTIME_VERSION" android:value="YOUR-APP-RUNTIME-VERSION-HERE"/>
+     <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
+       <intent-filter>
+         <action android:name="android.intent.action.MAIN"/>
+diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Supporting/Expo.plist b/templates/expo-template-bare-minimum/ios/HelloWorld/Supporting/Expo.plist
+index 03410dc8b3..f4f9f60993 100644
+--- a/templates/expo-template-bare-minimum/ios/HelloWorld/Supporting/Expo.plist
++++ b/templates/expo-template-bare-minimum/ios/HelloWorld/Supporting/Expo.plist
+@@ -2,8 +2,8 @@
+ <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+ <plist version="1.0">
+ <dict>
+-        <key>EXUpdatesSDKVersion</key>
+-        <string>YOUR-APP-SDK-VERSION-HERE</string>
++        <key>EXUpdatesRuntimeVersion</key>
++        <string>YOUR-APP-RUNTIME-VERSION-HERE</string>
+         <key>EXUpdatesURL</key>
+         <string>YOUR-APP-URL-HERE</string>
+ </dict>
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index b0d7128143..4b96471aba 100644
+index fd1cd53388..a0b1b85c0a 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
  {
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
--  "version": "50.0.11",
-+  "version": "50.0.13",
+-  "version": "50.0.22",
++  "version": "50.0.17",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
-@@ -10,7 +10,7 @@
+@@ -10,10 +10,10 @@
      "web": "expo start --web"
    },
    "dependencies": {
--    "expo": "~50.0.0-beta.0",
-+    "expo": "~50.0.0-preview.0",
-     "expo-status-bar": "~1.11.0",
+-    "expo": "~50.0.0-preview.8",
+-    "expo-status-bar": "~1.11.1",
++    "expo": "~50.0.0-preview.4",
++    "expo-status-bar": "~1.11.0",
      "react": "18.2.0",
-     "react-native": "0.73.0"
+-    "react-native": "0.73.2"
++    "react-native": "0.73.1"
+   },
+   "devDependencies": {
+     "@babel/core": "^7.20.0"

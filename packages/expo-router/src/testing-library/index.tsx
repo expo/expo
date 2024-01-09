@@ -13,6 +13,7 @@ import {
 } from './context-stubs';
 import { setInitialUrl } from './mocks';
 import { ExpoRoot } from '../ExpoRoot';
+import getPathFromState from '../fork/getPathFromState';
 import { stateCache } from '../getLinkingConfig';
 import { store } from '../global-state/router-store';
 import { RequireContext } from '../types';
@@ -26,6 +27,7 @@ type RenderRouterOptions = Parameters<typeof render>[1] & {
 
 type Result = ReturnType<typeof render> & {
   getPathname(): string;
+  getPathnameWithParams(): string;
   getSegments(): string[];
   getSearchParams(): Record<string, string | string[]>;
 };
@@ -94,6 +96,9 @@ export function renderRouter(
     },
     getSearchParams(this: RenderResult): Record<string, string | string[]> {
       return store.routeInfoSnapshot().params;
+    },
+    getPathnameWithParams(this: RenderResult): string {
+      return getPathFromState(store.rootState!, store.linking!.config);
     },
   });
 }

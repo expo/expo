@@ -23,14 +23,15 @@ class KotlinExpoModulesCorePlugin implements Plugin<Project> {
           "1.6.21": "1.6.21-1.0.6",
           "1.7.22": "1.7.22-1.0.8",
           "1.8.0": "1.8.0-1.0.9",
-          "1.8.10": "1.8.10-1.0.9"
+          "1.8.10": "1.8.10-1.0.9",
+          "1.8.22": "1.8.22-1.0.11"
         ]
 
         project.rootProject.ext.has("kspVersion")
           ? project.rootProject.ext.get("kspVersion")
           : kspVersionsMap.containsKey(project.ext.kotlinVersion())
           ? kspVersionsMap.get(project.ext.kotlinVersion())
-          : "1.8.10-1.0.9"
+          : "1.8.22-1.0.11"
       }
     }
 

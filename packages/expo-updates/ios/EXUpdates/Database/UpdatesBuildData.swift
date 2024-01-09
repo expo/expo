@@ -18,7 +18,6 @@ import Foundation
  * the updates cache rarely) and likely to
  * cause bugs when they do. The tracked fields are:
  *
- *   EXUpdatesReleaseChannel
  *   EXUpdatesURL
  *
  * and all of the values in json
@@ -59,7 +58,6 @@ internal final class UpdatesBuildData {
   static func getBuildDataFromConfig(_ config: UpdatesConfig) -> [String: Any] {
     return [
       "EXUpdatesURL": config.updateUrl.absoluteString,
-      "EXUpdatesReleaseChannel": config.releaseChannel,
       "EXUpdatesRequestHeaders": config.requestHeaders
     ]
   }

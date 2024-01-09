@@ -56,6 +56,7 @@ exports.Redirect = Redirect;
  *
  * @param props.href Absolute path to route (e.g. `/feeds/hot`).
  * @param props.replace Should replace the current route without adding to the history.
+ * @param props.push Should push the current route, always adding to the history.
  * @param props.asChild Forward props to child component. Useful for custom buttons.
  * @param props.children Child elements to render the content.
  * @param props.className On web, this sets the HTML `class` directly. On native, this can be used with CSS interop tools like Nativewind.
@@ -102,7 +103,7 @@ const useHrefAttrs = react_native_1.Platform.select({
         return {};
     },
 });
-function ExpoRouterLink({ href, replace, 
+function ExpoRouterLink({ href, replace, push, 
 // TODO: This does not prevent default on the anchor tag.
 asChild, rel, target, download, ...rest }, ref) {
     // Mutate the style prop to add the className on web.
@@ -115,7 +116,12 @@ asChild, rel, target, download, ...rest }, ref) {
         }
         return (0, href_1.resolveHref)(href);
     }, [href]);
-    const props = (0, useLinkToPathProps_1.default)({ href: resolvedHref, replace });
+    let event;
+    if (push)
+        event = 'PUSH';
+    if (replace)
+        event = 'REPLACE';
+    const props = (0, useLinkToPathProps_1.default)({ href: resolvedHref, event });
     const onPress = (e) => {
         if ('onPress' in rest) {
             rest.onPress?.(e);

@@ -90,6 +90,10 @@ export type BarCodeScannerProps = ViewProps & {
      */
     onBarCodeScanned?: BarCodeScannedCallback;
 };
+/**
+ * @deprecated
+ * BarCodeScanner has been deprecated and will be removed in a future SDK version. Plesae use `expo-camera` instead. see [barcode-scanner-to-expo-camera](https://expo.fyi/barcode-scanner-to-expo-camera) for more details on how to migrate.
+ */
 export declare class BarCodeScanner extends React.Component<BarCodeScannerProps> {
     lastEvents: {
         [key: string]: any;
@@ -108,6 +112,7 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
         type: any;
         barCodeTypes: unknown[];
     };
+    componentDidMount(): void;
     /**
      * Checks user's permissions for accessing the camera.
      * @return Return a promise that fulfills to an object of type [`PermissionResponse`](#permissionresponse).

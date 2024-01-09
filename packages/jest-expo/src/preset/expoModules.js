@@ -718,6 +718,7 @@ module.exports = {
           WhiteBalance: { type: 'object' },
         },
         ExponentConstants: {
+          AppOwnership: { type: 'object' },
           appOwnership: { type: 'string' },
           debugMode: { type: 'boolean', mock: false },
           deviceName: { type: 'string' },

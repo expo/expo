@@ -7,7 +7,6 @@ import Update from './utils/update';
 const projectRoot = process.env.PROJECT_ROOT || process.cwd();
 const platform = device.getPlatform();
 const protocolVersion = 1;
-const TIMEOUT_BIAS = process.env.CI ? 10 : 1;
 
 const testElementValueAsync = async (testID: string) => {
   const attributes: any = await element(by.id(testID)).getAttributes();
@@ -27,7 +26,6 @@ describe('Basic tests', () => {
   });
 
   it('downloads new update before launching', async () => {
-    jest.setTimeout(300000 * TIMEOUT_BIAS);
     const bundleFilename = 'bundle1.js';
     const newNotifyString = 'test-update-1';
     const hash = await Update.copyBundleToStaticFolder(
@@ -59,7 +57,6 @@ describe('Basic tests', () => {
   });
 
   it('does not download new update when it takes longer than timeout', async () => {
-    jest.setTimeout(300000 * TIMEOUT_BIAS);
     const bundleFilename = 'bundle1.js';
     const newNotifyString = 'test-update-1';
     const hash = await Update.copyBundleToStaticFolder(
@@ -77,7 +74,7 @@ describe('Basic tests', () => {
       projectRoot
     );
 
-    Server.start(Update.serverPort, protocolVersion, 5000);
+    Server.start(Update.serverPort, protocolVersion, 7000);
     await Server.serveSignedManifest(manifest, projectRoot);
     await device.installApp();
     await device.launchApp({

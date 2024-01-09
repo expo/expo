@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 1.3.0 — 2023-12-15
+
+### 🎉 New features
+
+- Allow skipping dependency version check. ([#25822](https://github.com/expo/expo/pull/25822) by [@floatplane](https://github.com/floatplane))
+
+## 1.2.0 — 2023-12-12
+
+### 💡 Others
+
 - Report if project has unused static config. ([#25674](https://github.com/expo/expo/pull/25674) by [@keith-kurak](https://github.com/keith-kurak))
 
 ## 1.1.6 — 2023-12-12

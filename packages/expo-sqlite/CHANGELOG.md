@@ -6,9 +6,29 @@
 
 ### 🎉 New features
 
+- Added `SQLiteStatement.executeForRawResultAsync()` in `expo-sqlite/next` API which returns array based raw values than key-value based row value. ([#26073](https://github.com/expo/expo/pull/26073) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
+- Fixed building error on Windows. ([#26296](https://github.com/expo/expo/pull/26296) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+## 13.1.2 - 2023-12-21
+
+### 🐛 Bug fixes
+
+- Fixed `NativeStatementBinding` leakage on Android. ([#25996](https://github.com/expo/expo/pull/25996) by [@kudo](https://github.com/kudo))
+
+## 13.1.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.0 — 2023-12-13
+
+### 🛠 Breaking changes
+
+- Refactor `expo-sqlite/next` API to be more React idiomatic. ([#25657](https://github.com/expo/expo/pull/25657) by [@kudo](https://github.com/kudo))
 
 ## 13.0.0 — 2023-12-12
 
