@@ -21,7 +21,6 @@ public class ExpoFabricView: ExpoFabricViewObjC {
     return appContext?.moduleRegistry.get(moduleHolderForName: moduleName)
   }
 
-
   /**
    A dictionary of prop objects that contain prop setters.
    */
