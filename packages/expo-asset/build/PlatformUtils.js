@@ -21,9 +21,6 @@ export const IS_BARE_ENV_WITHOUT_UPDATES = !IS_EXPO_GO && !IS_BARE_ENV_WITH_UPDA
 export function getLocalAssets() {
     return ExpoUpdates?.localAssets ?? {};
 }
-export function getManifest() {
-    return Constants.__unsafeNoWarnManifest ?? {};
-}
 export function getManifest2() {
     return Constants.__unsafeNoWarnManifest2;
 }
