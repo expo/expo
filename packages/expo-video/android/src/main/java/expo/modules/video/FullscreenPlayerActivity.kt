@@ -1,6 +1,7 @@
 package expo.modules.video
 
 import android.app.Activity
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.WindowInsets
@@ -9,7 +10,7 @@ import android.widget.ImageButton
 import androidx.media3.ui.PlayerView
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
-class FullscreenActivity : Activity() {
+class FullscreenPlayerActivity : Activity() {
   private lateinit var mContentView: View
   private lateinit var videoViewId: String
   private lateinit var playerView: PlayerView
@@ -17,7 +18,7 @@ class FullscreenActivity : Activity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.fullscreen_activity)
+    setContentView(R.layout.fullscreen_player_activity)
     mContentView = findViewById(R.id.enclosing_layout)
 
     playerView = findViewById(R.id.player_view)
@@ -43,6 +44,13 @@ class FullscreenActivity : Activity() {
   override fun finish() {
     super.finish()
     VideoViewManager.getVideoView(videoViewId).exitFullscreen()
+
+    // Disable the exit transition
+    if (Build.VERSION.SDK_INT >= 34) {
+      overrideActivityTransition(OVERRIDE_TRANSITION_CLOSE, 0, 0)
+    } else {
+      overridePendingTransition(0, 0)
+    }
   }
 
   private fun setupFullscreenButton() {
@@ -53,7 +61,7 @@ class FullscreenActivity : Activity() {
   }
 
   private fun hideStatusBar() {
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       val controller = mContentView.windowInsetsController
       controller?.apply {
         systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE

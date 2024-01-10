@@ -5,7 +5,8 @@
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:background="@android:color/black"
-  tools:context=".FullscreenActivity">
+  android:keepScreenOn="true"
+  tools:context=".FullscreenPlayerActivity">
 
   <androidx.media3.ui.PlayerView
     android:id="@+id/player_view"
