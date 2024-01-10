@@ -403,6 +403,10 @@ const config: VendoringTargetConfig = {
     },
     '@react-native-picker/picker': {
       source: 'https://github.com/react-native-picker/picker',
+      ios: {},
+      android: {
+        excludeFiles: ['android/gradle{/**,**}'],
+      },
     },
     '@react-native-community/slider': {
       source: 'https://github.com/callstack/react-native-slider',

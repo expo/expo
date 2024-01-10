@@ -2211,6 +2211,8 @@ PODS:
     - React-perflogger (= 0.73.2)
   - RNCAsyncStorage (1.18.2):
     - React-Core
+  - RNCPicker (2.6.1):
+    - React-Core
   - RNFlashList (1.6.3):
     - React-Core
   - RNGestureHandler (2.14.0):
@@ -2564,6 +2566,7 @@ DEPENDENCIES:
   - React-utils (from `../react-native-lab/react-native/packages/react-native/ReactCommon/react/utils`)
   - ReactCommon/turbomodule/core (from `../react-native-lab/react-native/packages/react-native/ReactCommon`)
   - "RNCAsyncStorage (from `./vendored/unversioned/@react-native-async-storage/async-storage`)"
+  - "RNCPicker (from `./vendored/unversioned/@react-native-picker/picker`)"
   - "RNFlashList (from `./vendored/unversioned/@shopify/flash-list`)"
   - RNGestureHandler (from `./vendored/unversioned/react-native-gesture-handler`)
   - RNReanimated (from `./vendored/unversioned/react-native-reanimated`)
@@ -3104,6 +3107,8 @@ EXTERNAL SOURCES:
     :path: "../react-native-lab/react-native/packages/react-native/ReactCommon"
   RNCAsyncStorage:
     :path: "./vendored/unversioned/@react-native-async-storage/async-storage"
+  RNCPicker:
+    :path: "./vendored/unversioned/@react-native-picker/picker"
   RNFlashList:
     :path: "./vendored/unversioned/@shopify/flash-list"
   RNGestureHandler:
@@ -3399,6 +3404,7 @@ SPEC CHECKSUMS:
   React-utils: fab57d2ea66e0f7eaca844f16032e2c2fa0201d6
   ReactCommon: 64943a65edc9701717e09436c8f1f655ce1f85bf
   RNCAsyncStorage: ddc4ee162bfd41b0d2c68bf2d95acd81dd7f1f93
+  RNCPicker: b18aaf30df596e9b1738e7c1f9ee55402a229dca
   RNFlashList: 4b4b6b093afc0df60ae08f9cbf6ccd4c836c667a
   RNGestureHandler: 4279931048471f17faf46d912b2e96e10f1da99b
   RNReanimated: c7706129cc5d41b737193456f549dca3a9b0a0ca
