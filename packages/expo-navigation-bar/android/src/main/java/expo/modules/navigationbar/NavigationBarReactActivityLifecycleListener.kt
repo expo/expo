@@ -7,7 +7,6 @@ import android.util.Log
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.navigationbar.singletons.NavigationBar
 
-
 class NavigationBarReactActivityLifecycleListener : ReactActivityLifecycleListener {
   override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {
     // Execute static tasks before the JS engine starts.
