@@ -10,16 +10,16 @@ import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDe
 import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import {
   CommentTextBlock,
+  ELEMENT_SPACING,
   getCommentContent,
   getCommentOrSignatureComment,
+  getH3CodeWithBaseNestingLevel,
   getTagData,
   getTagNamesList,
-  getH3CodeWithBaseNestingLevel,
   renderTypeOrSignatureType,
   resolveTypeName,
   STYLES_APIBOX,
   STYLES_APIBOX_NESTED,
-  ELEMENT_SPACING,
   STYLES_NESTED_SECTION_HEADER,
   STYLES_NOT_EXPOSED_HEADER,
   STYLES_SECONDARY,
@@ -80,7 +80,7 @@ const renderInheritedProps = (
 };
 
 const getPropsBaseTypes = (def: PropsDefinitionData) => {
-  if (def.kind === TypeDocKind.TypeAlias) {
+  if (def.kind === TypeDocKind.TypeAlias || def.kind === TypeDocKind.TypeAlias_Legacy) {
     const baseTypes = def?.type?.types
       ? def.type.types?.filter((t: TypeDefinitionData) => t.declaration)
       : [def.type];
