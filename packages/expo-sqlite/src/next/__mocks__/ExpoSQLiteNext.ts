@@ -98,6 +98,8 @@ class NativeStatement {
     assert(this.sqlite3Stmt);
     if (this.iterator == null) {
       this.iterator = this.sqlite3Stmt.iterate();
+      // Since the first row is retrieved by `_run()`, we need to skip the first row here.
+      this.iterator.next();
     }
     const result = this.iterator.next();
     const columnValues =
@@ -137,7 +139,10 @@ class NativeStatement {
     assert(this.sqlite3Stmt);
     if (this.iterator == null) {
       this.iterator = this.sqlite3Stmt.iterate();
+      // Since the first row is retrieved by `_run()`, we need to skip the first row here.
+      this.iterator.next();
     }
+
     const result = this.iterator.next();
     const columnValues =
       result.done === false ? Object.values(result.value as Record<string, any>) : null;
@@ -161,18 +166,30 @@ class NativeStatement {
     assert(this.sqlite3Stmt);
     this.sqlite3Stmt.bind(...params);
     const result = this.sqlite3Stmt.run();
+
+    // better-sqlite3 does not support run() returning the first row, use get() instead.
+    let firstRow;
+    try {
+      firstRow = this.sqlite3Stmt.get();
+    } catch {
+      // better-sqlite3 may throw `TypeError: This statement does not return data. Use run() instead`
+      firstRow = null;
+    }
     return {
       lastInsertRowId: Number(result.lastInsertRowid),
       changes: result.changes,
-      // NOTE: better-sqlite3 will call sqlite3_reset from run() and we have no way to get the first row values.
-      firstRowValues: [],
+      firstRowValues: firstRow ? Object.values(firstRow) : [],
     };
   };
 
   private _allValues = (): SQLiteColumnNames[] => {
     assert(this.sqlite3Stmt);
     const sqlite3Stmt = this.sqlite3Stmt as any;
-    return sqlite3Stmt.all().map((row: any) => Object.values(row));
+    // Since the first row is retrieved by `_run()`, we need to skip the first row here.
+    return sqlite3Stmt
+      .all()
+      .slice(1)
+      .map((row: any) => Object.values(row));
   };
 
   private _reset = () => {

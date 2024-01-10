@@ -98,6 +98,23 @@ CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(6
       expect(result.key).toBe('hello');
       expect(result.value).toBe('哈囉');
     });
+
+    it('using getAllAsync for write operations should only run once', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      await db.execAsync(`
+DROP TABLE IF EXISTS test;
+CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
+`);
+
+      let error = null;
+      try {
+        await db.getAllAsync('INSERT INTO test (id, name) VALUES (?, ?)', 0, 'aaa');
+      } catch (e) {
+        error = e;
+      }
+      // If running twice, the second insertion will fail because of the primary key constraint
+      expect(error).toBeNull();
+    });
   });
 
   describe('File system tests', () => {
