@@ -11,6 +11,7 @@ import expo.modules.test.core.legacy.assertCodedException
 import io.mockk.every
 import io.mockk.slot
 import io.mockk.verify
+import junit.framework.ComparisonFailure
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -18,10 +19,29 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 import org.robolectric.RobolectricTestRunner
-import org.unimodules.test.core.assertListsEqual
 
-import org.unimodules.test.core.assertSetsEqual
-import org.unimodules.test.core.assertStringValueNull
+private fun assertSetsEqual(first: Set<*>, second: Set<*>, message: String = "") {
+  if (!first.all { second.contains(it) }) {
+    throw ComparisonFailure(message, first.toString(), second.toString())
+  }
+}
+
+private fun assertStringValueNull(bundle: Bundle, key: String) {
+  assertTrue(bundle.containsKey(key))
+  assertEquals(null, bundle.getString(key))
+}
+
+private fun assertListsEqual(first: List<*>?, second: List<*>?, message: String = "") {
+  if (first == second) return
+
+  if (first == null || second == null) {
+    throw throw ComparisonFailure(message, first.toString(), second.toString())
+  }
+
+  if (!first.toTypedArray().contentDeepEquals(second.toTypedArray())) {
+    throw ComparisonFailure(message, first.toString(), second.toString())
+  }
+}
 
 private interface WebBrowserModuleTestInterface {
   @Throws(CodedException::class)

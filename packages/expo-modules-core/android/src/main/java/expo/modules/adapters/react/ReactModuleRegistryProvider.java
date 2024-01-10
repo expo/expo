@@ -5,18 +5,16 @@ import android.content.Context;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.ReactApplicationContext;
 
-import expo.modules.core.ExportedModule;
-import expo.modules.core.ModuleRegistry;
-import expo.modules.core.ModuleRegistryProvider;
-import expo.modules.core.ViewManager;
-import expo.modules.core.interfaces.InternalModule;
-import expo.modules.core.interfaces.Package;
-import expo.modules.core.interfaces.SingletonModule;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.ModuleRegistryProvider;
+import expo.modules.core.interfaces.InternalModule;
+import expo.modules.core.interfaces.Package;
+import expo.modules.core.interfaces.SingletonModule;
 
 /**
  * Since React Native v0.55, {@link com.facebook.react.ReactPackage#createViewManagers(ReactApplicationContext)}
@@ -27,7 +25,6 @@ import java.util.List;
  * only once (and managers returned this one time will persist "forever").
  */
 public class ReactModuleRegistryProvider extends ModuleRegistryProvider {
-  private Collection<ViewManager> mViewManagers;
   private Collection<com.facebook.react.uimanager.ViewManager> mReactViewManagers;
   private Collection<SingletonModule> mSingletonModules;
 
@@ -43,13 +40,11 @@ public class ReactModuleRegistryProvider extends ModuleRegistryProvider {
   @Override
   public ModuleRegistry get(Context context) {
     Collection<InternalModule> internalModules = new ArrayList<>();
-    Collection<ExportedModule> exportedModules = new ArrayList<>();
 
     ReactPackagesProvider reactPackagesProvider = new ReactPackagesProvider();
 
     for (Package pkg : getPackages()) {
       internalModules.addAll(pkg.createInternalModules(context));
-      exportedModules.addAll(pkg.createExportedModules(context));
 
       if (pkg instanceof ReactPackage) {
         reactPackagesProvider.addPackage((ReactPackage) pkg);
@@ -57,7 +52,7 @@ public class ReactModuleRegistryProvider extends ModuleRegistryProvider {
     }
     internalModules.add(reactPackagesProvider);
 
-    return new ModuleRegistry(internalModules, exportedModules, getViewManagers(context), getSingletonModules(context));
+    return new ModuleRegistry(internalModules, getSingletonModules(context));
   }
 
   private Collection<SingletonModule> getSingletonModules(Context context) {
@@ -72,17 +67,6 @@ public class ReactModuleRegistryProvider extends ModuleRegistryProvider {
       singletonModules.addAll(pkg.createSingletonModules(context));
     }
     return singletonModules;
-  }
-
-  // TODO: change access to package private when react-native-adapter was removed.
-  public Collection<ViewManager> getViewManagers(Context context) {
-    if (mViewManagers != null) {
-      return mViewManagers;
-    }
-
-    mViewManagers = new HashSet<>();
-    mViewManagers.addAll(createViewManagers(context));
-    return mViewManagers;
   }
 
   // TODO: change access to package private when react-native-adapter was removed.
