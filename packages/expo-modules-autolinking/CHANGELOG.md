@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Added support for macOS and tvOS targets. ([#26287](https://github.com/expo/expo/pull/26287) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 1.10.0 - 2024-01-10
+
+### 🎉 New features
+
+- Added support for macOS and tvOS targets. ([#26287](https://github.com/expo/expo/pull/26287) by [@tsapeta](https://github.com/tsapeta))
 
 ## 1.9.0 — 2023-12-12
 
