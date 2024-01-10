@@ -40,14 +40,15 @@ jni::local_ref<JavaCallback::JavaPart> createJavaCallbackFromJSIFunction(
   auto callbackWrapperOwner =
     std::make_shared<react::RAIICallbackWrapperDestroyer>(weakWrapper);
 
-  std::function<void(folly::dynamic)> fn =
+  std::function<void(CallbackArg *)> fn =
     [
       weakWrapper,
       callbackWrapperOwner = std::move(callbackWrapperOwner),
       wrapperWasCalled = false,
-      isRejectCallback
+      isRejectCallback,
+      moduleRegistry
     ](
-      folly::dynamic responses) mutable {
+      CallbackArg *responses) mutable {
       if (wrapperWasCalled) {
         throw std::runtime_error(
           "callback 2 arg cannot be called more than once");
@@ -62,40 +63,78 @@ jni::local_ref<JavaCallback::JavaPart> createJavaCallbackFromJSIFunction(
         [
           weakWrapper,
           callbackWrapperOwner = std::move(callbackWrapperOwner),
-          responses = std::move(responses),
-          isRejectCallback
-        ]() mutable {
+          responses = responses,
+          isRejectCallback, moduleRegistry]() mutable {
           auto strongWrapper2 = weakWrapper.lock();
           if (!strongWrapper2) {
             return;
           }
+          if (responses->type == CallbackArgType::DYNAMIC) {
+            folly::dynamic follyObject = std::move(*responses->arg.dynamicArg);
+            jsi::Value arg = jsi::valueFromDynamic(strongWrapper2->runtime(), follyObject);
+            if (!isRejectCallback) {
+              strongWrapper2->callback().call(
+                strongWrapper2->runtime(),
+                (const jsi::Value *) &arg,
+                (size_t) 1
+              );
+            } else {
+              auto &rt = strongWrapper2->runtime();
+              auto jsErrorObject = arg.getObject(rt);
+              auto errorCode = jsErrorObject.getProperty(rt, "code").asString(rt);
+              auto message = jsErrorObject.getProperty(rt, "message").asString(rt);
 
-          jsi::Value arg = jsi::valueFromDynamic(strongWrapper2->runtime(), responses);
-          auto enhancedArg = decorateValueForDynamicExtension(strongWrapper2->runtime(), arg);
-          if (enhancedArg) {
-            arg = std::move(*enhancedArg);
-          }
-          if (!isRejectCallback) {
-            strongWrapper2->callback().call(
-              strongWrapper2->runtime(),
-              (const jsi::Value *) &arg,
-              (size_t) 1
-            );
-          } else {
+              jsi::Value arg = jsi::valueFromDynamic(strongWrapper2->runtime(),
+                                                     *responses->arg.dynamicArg);
+              auto enhancedArg = decorateValueForDynamicExtension(strongWrapper2->runtime(), arg);
+              if (enhancedArg) {
+                arg = std::move(*enhancedArg);
+              }
+              if (!isRejectCallback) {
+                strongWrapper2->callback().call(
+                  strongWrapper2->runtime(),
+                  (const jsi::Value *) &arg,
+                  (size_t) 1
+                );
+              } else {
+                auto &rt = strongWrapper2->runtime();
+                auto jsErrorObject = arg.getObject(rt);
+                auto errorCode = jsErrorObject.getProperty(rt, "code").asString(rt);
+                auto message = jsErrorObject.getProperty(rt, "message").asString(rt);
+
+                auto codedError = makeCodedError(
+                  rt,
+                  std::move(errorCode),
+                  std::move(message)
+                );
+
+
+                strongWrapper2->callback().call(
+                  strongWrapper2->runtime(),
+                  (const jsi::Value *) &codedError,
+                  (size_t) 1
+                );
+              }
+            }
+          } else if (responses->type == CallbackArgType::SHARED_REF) {
             auto &rt = strongWrapper2->runtime();
-            auto jsErrorObject = arg.getObject(rt);
-            auto errorCode = jsErrorObject.getProperty(rt, "code").asString(rt);
-            auto message = jsErrorObject.getProperty(rt, "message").asString(rt);
+            auto native = jni::make_local(responses->arg.sharedRefArg);
 
-            auto codedError = makeCodedError(
-              rt,
-              std::move(errorCode),
-              std::move(message)
-            );
+            auto jsClass = moduleRegistry->getJavascriptClass(native->getClass());
+            auto jsObject = jsClass->cthis()->get()->asFunction(rt).callAsConstructor(rt).asObject(
+              rt);
 
+            auto objSharedPtr = std::make_shared<jsi::Object>(std::move(jsObject));
+            auto jsObjectInstance = JavaScriptObject::newInstance(moduleRegistry,
+                                                           moduleRegistry->runtimeHolder,
+                                                           objSharedPtr);
+            jni::local_ref<JavaScriptObject::javaobject> jsRef = jni::make_local(jsObjectInstance);
+            moduleRegistry->registerSharedObject(native, jsRef);
+
+            auto ret = jsi::Value(rt, *objSharedPtr);
             strongWrapper2->callback().call(
               strongWrapper2->runtime(),
-              (const jsi::Value *) &codedError,
+              (const jsi::Value *) &ret,
               (size_t) 1
             );
           }

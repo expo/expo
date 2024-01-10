@@ -9,12 +9,58 @@
 
 #include <react/jni/WritableNativeArray.h>
 #include <react/jni/WritableNativeMap.h>
+#include <fbjni/detail/CoreClasses.h>
 
 namespace jni = facebook::jni;
 namespace react = facebook::react;
 
 namespace expo {
+
+struct SharedObjectId : public jni::HybridClass<SharedObjectId> {
+  static constexpr const char *kJavaDescriptor = "Lexpo/modules/kotlin/sharedobjects/SharedObjectId;";
+
+  SharedObjectId();
+
+  RN_EXPORT int value{};
+
+  static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject> jThis);
+
+  private:
+    friend HybridBase;
+};
+
+struct SharedRef : public jni::HybridClass<SharedRef, SharedObjectId> {
+  static constexpr const char *kJavaDescriptor = "Lexpo/modules/kotlin/sharedobjects/SharedRef;";
+
+  SharedRef();
+
+  SharedObjectId sharedObjectId;
+
+  static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject> jThis);
+  static void registerNatives();
+
+  private:
+    friend HybridBase;
+
+};
+
 class JSIInteropModuleRegistry;
+
+struct CallbackArgUnion {
+  folly::dynamic* dynamicArg;
+  jni::global_ref<SharedRef::javaobject> sharedRefArg;
+};
+
+enum CallbackArgType {
+  DYNAMIC,
+  SHARED_REF,
+};
+
+struct CallbackArg
+{
+  CallbackArgType type;
+  CallbackArgUnion arg;
+};
 
 class JavaCallback : public jni::HybridClass<JavaCallback, Destructible> {
 public:
@@ -22,7 +68,7 @@ public:
     kJavaDescriptor = "Lexpo/modules/kotlin/jni/JavaCallback;";
   static auto constexpr TAG = "JavaCallback";
 
-  using Callback = std::function<void(folly::dynamic)>;
+  using Callback = std::function<void(CallbackArg*)>;
 
   static void registerNatives();
 
@@ -30,6 +76,8 @@ public:
     JSIInteropModuleRegistry *jsiInteropModuleRegistry,
     Callback callback
   );
+
+  static JSIInteropModuleRegistry *jsiRegistry_;
 
 private:
   friend HybridBase;
@@ -52,6 +100,8 @@ private:
   void invokeArray(jni::alias_ref<react::WritableNativeArray::javaobject> result);
 
   void invokeMap(jni::alias_ref<react::WritableNativeMap::javaobject> result);
+
+  void invokeSharedRef(jni::alias_ref<SharedRef::javaobject> result);
 
   Callback callback;
 };
