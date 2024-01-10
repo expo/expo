@@ -300,16 +300,9 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
   }
 
   public func getConstantsForModule() -> UpdatesModuleConstants {
-    let embeddedUpdate: Update?
-    if isStarted {
-      embeddedUpdate = self.config.let { it in EmbeddedAppLoader.embeddedManifest(withConfig: it, database: self.database) }
-    } else {
-      embeddedUpdate = nil
-    }
-
     return UpdatesModuleConstants(
       launchedUpdate: launcher?.launchedUpdate,
-      embeddedUpdate: embeddedUpdate,
+      embeddedUpdate: nil, // no embedded update in debug builds
       isEmergencyLaunch: isEmergencyLaunch,
       isEnabled: true,
       releaseChannel: self.config?.releaseChannel ?? "default",
