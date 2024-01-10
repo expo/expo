@@ -73,7 +73,7 @@ class UpdatesController {
               UpdatesErrorCode.InitializationError
             )
           }
-          DisabledUpdatesController(context, updatesDirectoryException, UpdatesConfiguration.isMissingRuntimeVersion(context, configuration))
+          DisabledUpdatesController(context, updatesDirectoryException, UpdatesConfiguration.isMissingRuntimeVersion(context, null))
         }
       }
     }
