@@ -17,6 +17,7 @@
 
 - Fix development status for modern updates. ([#26042](https://github.com/expo/expo/pull/26042) by [@wschurman](https://github.com/wschurman))
 - Fix metro asset call in embedded manifest creation step. ([#26307](https://github.com/expo/expo/pull/26307) by [@wschurman](https://github.com/wschurman))
+- [expo-updates] dev launcher updates controller should not read embedded manifest. ([#26336](https://github.com/expo/expo/pull/26336) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
 

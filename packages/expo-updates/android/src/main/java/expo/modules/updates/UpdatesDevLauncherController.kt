@@ -17,7 +17,6 @@ import expo.modules.updates.loader.Loader
 import expo.modules.updates.loader.RemoteLoader
 import expo.modules.updates.loader.UpdateDirective
 import expo.modules.updates.loader.UpdateResponse
-import expo.modules.updates.manifest.EmbeddedManifestUtils
 import expo.modules.updates.selectionpolicy.LauncherSelectionPolicySingleUpdate
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient
 import expo.modules.updates.selectionpolicy.SelectionPolicy
@@ -279,7 +278,7 @@ class UpdatesDevLauncherController(
   override fun getConstantsForModule(): IUpdatesController.UpdatesModuleConstants {
     return IUpdatesController.UpdatesModuleConstants(
       launchedUpdate = launchedUpdate,
-      embeddedUpdate = updatesConfiguration?.let { EmbeddedManifestUtils.getEmbeddedUpdate(context, it) }?.updateEntity,
+      embeddedUpdate = null, // no embedded update in debug builds
       isEmergencyLaunch = isEmergencyLaunch,
       isEnabled = true,
       isUsingEmbeddedAssets = isUsingEmbeddedAssets,
