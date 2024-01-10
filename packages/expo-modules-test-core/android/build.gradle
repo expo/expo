@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'org.unimodules'
-version = '0.17.1'
+version = '0.17.2'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 if (expoModulesCorePlugin.exists()) {
@@ -94,7 +94,7 @@ android {
   namespace "org.unimodules.test.core"
   defaultConfig {
     versionCode 3
-    versionName '0.17.1'
+    versionName '0.17.2'
   }
 }
 
