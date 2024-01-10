@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- Added support for macOS platform. ([#26283](https://github.com/expo/expo/pull/26283) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 50.0.0-preview.9 — 2024-01-10
+
+### 🎉 New features
+
+- Added support for macOS platform. ([#26283](https://github.com/expo/expo/pull/26283) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 

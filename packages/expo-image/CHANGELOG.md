@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 1.10.2 — 2024-01-10
+
+### 🐛 Bug fixes
+
 - [Android] Fixed the issue with the application of tint color when an element does not have a style assigned to it. ([#26251](https://github.com/expo/expo/pull/26251) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Fixed the tint color was applied to the mask element. ([#26323](https://github.com/expo/expo/pull/26323) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Fixed the tint color wasn't applied to the root element. ([#26339](https://github.com/expo/expo/pull/26339) by [@lukmccall](https://github.com/lukmccall))

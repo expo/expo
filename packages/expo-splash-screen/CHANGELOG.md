@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.26.2 — 2024-01-10
+
+### 🐛 Bug fixes
+
 - Fixed return value of the `preventAutoHideAsync` function. ([#26348](https://github.com/expo/expo/pull/26348) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others

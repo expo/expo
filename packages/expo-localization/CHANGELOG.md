@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 14.8.2 — 2024-01-10
+
+_This version does not introduce any user-facing changes._
+
 ## 14.8.1 — 2023-12-19
 
 _This version does not introduce any user-facing changes._

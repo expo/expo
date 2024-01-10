@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.24.7 — 2024-01-10
+
+### 🎉 New features
+
 - Added `AppController.overrideConfiguration()` to override the `UpdatesConfig` on iOS. ([#26093](https://github.com/expo/expo/pull/26093) by [@kudo](https://github.com/kudo))
 
 ### 🛠 Breaking changes

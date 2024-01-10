@@ -1,6 +1,6 @@
 {
   "name": "expo-system-ui",
-  "version": "2.9.2",
+  "version": "2.9.3",
   "description": "Interact with system UI elements",
   "main": "build/SystemUI.js",
   "types": "build/SystemUI.d.ts",
