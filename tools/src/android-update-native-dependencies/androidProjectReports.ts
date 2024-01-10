@@ -191,7 +191,7 @@ async function readAndConvertReports(): Promise<AndroidProjectReport[]> {
     await Promise.all(
       [
         Directories.getPackagesDir(),
-        Directories.getAndroidDir(),
+        Directories.getExpoGoAndroidDir(),
         path.join(Directories.getAppsDir(), 'bare-expo/android'),
       ].map(findGradleReportsFiles)
     )
@@ -231,7 +231,7 @@ export async function getAndroidProjectReports(
   }
 
   for (const androidProjectPath of [
-    Directories.getAndroidDir(),
+    Directories.getExpoGoAndroidDir(),
     path.join(Directories.getAppsDir(), 'bare-expo/android'),
   ]) {
     await executeGradleTask(androidProjectPath, options);

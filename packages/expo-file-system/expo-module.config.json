@@ -1,6 +1,6 @@
 {
   "name": "expo-file-system",
-  "platforms": ["ios", "android"],
+  "platforms": ["ios", "android", "macos", "tvos"],
   "ios": {
     "modules": ["FileSystemModule"],
     "appDelegateSubscribers": ["FileSystemBackgroundSessionHandler"]

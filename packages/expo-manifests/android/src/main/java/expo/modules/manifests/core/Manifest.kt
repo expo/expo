@@ -6,20 +6,7 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
-interface InternalJSONMutator {
-  @Throws(JSONException::class)
-  fun updateJSON(json: JSONObject)
-}
-
 abstract class Manifest(protected val json: JSONObject) {
-  @Deprecated(message = "Strive for manifests to be immutable")
-  @Throws(JSONException::class)
-  fun mutateInternalJSONInPlace(internalJSONMutator: InternalJSONMutator) {
-    json.apply {
-      internalJSONMutator.updateJSON(this)
-    }
-  }
-
   @Deprecated(message = "Prefer to use specific field getters")
   fun getRawJson(): JSONObject = json
 
@@ -250,10 +237,10 @@ abstract class Manifest(protected val json: JSONObject) {
           throw Exception("Legacy manifests are no longer supported")
         }
         manifestJson.has("metadata") -> {
-          NewManifest(manifestJson)
+          ExpoUpdatesManifest(manifestJson)
         }
         else -> {
-          BareManifest(manifestJson)
+          EmbeddedManifest(manifestJson)
         }
       }
     }

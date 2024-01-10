@@ -11,7 +11,6 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.WritableMap
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.toCodedException
-import expo.modules.updates.UpdatesConfiguration.Companion.UPDATES_CONFIGURATION_RELEASE_CHANNEL_DEFAULT_VALUE
 import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.launcher.NoDatabaseLauncher
 import expo.modules.updates.logging.UpdatesLogger
@@ -20,6 +19,7 @@ import expo.modules.updates.statemachine.UpdatesStateChangeEventSender
 import expo.modules.updates.statemachine.UpdatesStateContext
 import expo.modules.updates.statemachine.UpdatesStateEventType
 import expo.modules.updates.statemachine.UpdatesStateMachine
+import expo.modules.updates.statemachine.UpdatesStateValue
 import java.io.File
 import java.lang.ref.WeakReference
 
@@ -32,8 +32,7 @@ import java.lang.ref.WeakReference
  */
 class DisabledUpdatesController(
   private val context: Context,
-  private val fatalException: Exception?,
-  private val isMissingRuntimeVersion: Boolean
+  private val fatalException: Exception?
 ) : IUpdatesController, UpdatesStateChangeEventSender {
   private val reactNativeHost: WeakReference<ReactNativeHost>? = if (context is ReactApplication) {
     WeakReference(context.reactNativeHost)
@@ -41,7 +40,9 @@ class DisabledUpdatesController(
     null
   }
   private val logger = UpdatesLogger(context)
-  private val stateMachine = UpdatesStateMachine(context, this)
+
+  // disabled controller state machine can only be idle or restarting
+  private val stateMachine = UpdatesStateMachine(context, this, setOf(UpdatesStateValue.Idle, UpdatesStateValue.Restarting))
 
   private var isStarted = false
   private var launcher: Launcher? = null
@@ -90,13 +91,11 @@ class DisabledUpdatesController(
       embeddedUpdate = null,
       isEmergencyLaunch = isEmergencyLaunch,
       isEnabled = false,
-      releaseChannel = UPDATES_CONFIGURATION_RELEASE_CHANNEL_DEFAULT_VALUE,
       isUsingEmbeddedAssets = launcher?.isUsingEmbeddedAssets ?: false,
       runtimeVersion = null,
       checkOnLaunch = UpdatesConfiguration.CheckAutomaticallyConfiguration.NEVER,
       requestHeaders = mapOf(),
       localAssetFiles = launcher?.localAssetFiles,
-      isMissingRuntimeVersion = isMissingRuntimeVersion,
       shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = false
     )
   }

@@ -6,7 +6,6 @@
 @interface EXScopedNotificationBuilder ()
 
 @property (nonatomic, strong) NSString *scopeKey;
-@property (nonatomic, assign) BOOL isInExpoGo;
 
 @end
 
@@ -17,7 +16,6 @@
 {
   if (self = [super init]) {
     _scopeKey = scopeKey;
-    _isInExpoGo = [@"expo" isEqualToString:constantsBinding.appOwnership];
   }
   
   return self;
@@ -34,7 +32,7 @@
   userInfo[@"scopeKey"] = _scopeKey;
   [content setUserInfo:userInfo];
   
-  if (content.categoryIdentifier && _isInExpoGo) {
+  if (content.categoryIdentifier) {
     NSString *scopedCategoryIdentifier = [EXScopedNotificationsUtils scopedIdentifierFromId:content.categoryIdentifier
                                                                               forExperience:_scopeKey];
     [content setCategoryIdentifier:scopedCategoryIdentifier];
