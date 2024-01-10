@@ -76,7 +76,7 @@ export default function App() {
   // ...
   return (
     <View style={styles.container}>
-      /* ...rest of the code remains same */
+      {/* ...rest of the code remains same */}
       /* @info Based on the value of showAppOptions, the buttons will be displayed. Also, move the existing buttons in the conditional operator block. */
       {showAppOptions ? (
         <View />
@@ -219,7 +219,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      /* ...rest of the code remains same */
+      {/* ...rest of the code remains same */}
       {showAppOptions ? (
         /* @info Replace empty View component with this snippet to display App option buttons. */
         <View style={styles.optionsContainer}>
@@ -231,7 +231,7 @@ export default function App() {
         </View>
         /* @end */
       ) : (
-        /* ...rest of the code remains same */
+        // ...rest of the code remains same
       )}
       <StatusBar style="auto" />
     </View>
@@ -413,7 +413,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      /* ...rest of the code remains same */
+      {/* ...rest of the code remains same */}
       /* @info Render the EmojiPicker component at the bottom of the App component, just before the StatusBar. */
       <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
         {/* A list of emoji component will go here */}
@@ -467,17 +467,15 @@ export default function EmojiList({ onSelect, onCloseModal }) {
       showsHorizontalScrollIndicator={Platform.OS === 'web'}
       data={emoji}
       contentContainerStyle={styles.listContainer}
-      renderItem={({ item, index }) => {
-        return (
-          <Pressable
-            onPress={() => {
-              onSelect(item);
-              onCloseModal();
-            }}>
-            <Image source={item} key={index} style={styles.image} />
-          </Pressable>
-        );
-      }}
+      renderItem={({ item, index }) => (
+        <Pressable
+          onPress={() => {
+            onSelect(item);
+            onCloseModal();
+          }}>
+          <Image source={item} key={index} style={styles.image} />
+        </Pressable>
+      )}
     />
   );
 }
@@ -522,7 +520,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      /* rest of the code remains unchanged */
+      {/* rest of the code remains unchanged */}
       <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
         /* @info Render the EmojiList component inside the EmojiPicker component. */
         <EmojiList onSelect={setPickedEmoji} onCloseModal={onModalClose} />
@@ -531,7 +529,6 @@ export default function App() {
       <StatusBar style="auto" />
     </View>
   );
-  )
 }
 ```
 
@@ -607,9 +604,9 @@ export default function App() {
     <View>
       <View style={styles.imageContainer}>
         <ImageViewer placeholderImageSource={PlaceholderImage} selectedImage={selectedImage} />
-        /* @info */{pickedEmoji !== null ? <EmojiSticker imageSize={40} stickerSource={pickedEmoji} /> : null} /* @end */
+        /* @info */{pickedEmoji && <EmojiSticker imageSize={40} stickerSource={pickedEmoji} />}/* @end */
       </View>
-      /* ...rest of the code remains same*/
+      {/* ...rest of the code remains same */}
     </View>
   );
 }
