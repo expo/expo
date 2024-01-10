@@ -46,8 +46,8 @@ This provider uses a mock implementation. You can replace it with your own [auth
 import React from 'react';
 import { useStorageState } from './useStorageState';
 
-const AuthContext = React.createContext<{ 
-  signIn: () => void; 
+const AuthContext = React.createContext<{
+  signIn: () => void;
   signOut: () => void;
   session?: string | null;
   isLoading: boolean;
@@ -339,7 +339,7 @@ To fix this, add a group and move conditional logic down a level.
 
 <FileTree files={['app/_layout.js', 'app/about.js']} />
 
-```js app/_layout.js
+```jsx app/_layout.js
 export default function RootLayout() {
   React.useEffect(() => {
     // This navigation event will trigger the error above.
@@ -366,13 +366,13 @@ export default function RootLayout() {
   ]}
 />
 
-```js app/_layout.js
+```jsx app/_layout.js
 export default function RootLayout() {
   return <Slot />;
 }
 ```
 
-```js app/(app)/_layout.js
+```jsx app/(app)/_layout.js
 export default function RootLayout() {
   React.useEffect(() => {
     router.push('/about');
