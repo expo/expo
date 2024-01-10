@@ -105,9 +105,16 @@ Every custom updates server must implement the [Expo Updates protocol](/technica
 
 There are build-time configuration options that control the behavior of `expo-updates`.
 
-On Android, these options are set as `meta-data` tags adjacent to the tags added during installation in the **AndroidManifest.xml** file. You can also define these options at runtime by passing a `Map` as the second parameter of `UpdatesController.initialize()`, and the provided values will override any value specified in **AndroidManifest.xml**.
+On Android, these options are set as `meta-data` tags adjacent to the tags added during installation in the **AndroidManifest.xml** file. You can also define these options at runtime by passing a `Map` as the second parameter of `UpdatesController.overrideConfiguration()`, and the provided values will override any value specified in **AndroidManifest.xml**.
 
-On iOS, these properties are set as keys in **Expo.plist** file. You can also set them at runtime by calling `[EXUpdatesAppController.sharedInstance setConfiguration:]` at any point before calling `start` or `startAndShowLaunchScreen`, and the values in this dictionary will override any values specified in **Expo.plist**.
+On iOS, these properties are set as keys in the **Expo.plist** file. You can also set them at runtime by calling `[EXUpdatesAppController overrideConfigurationWithConfiguration:]` at any point before `expo-updates` is initialized, and the values in this dictionary will override any values specified in **Expo.plist**. If you tried to use the `EXUpdatesAppController` from the **AppDelegate.mm**, you will need to add the following imports:
+
+```objc From Objective-C to import Swift headers for expo-updates
+#import "ExpoModulesCore-Swift.h"
+#import "EXUpdatesInterface-Swift.h"
+#import "EXUpdates-Swift.h"
+```
+
 
 | iOS plist/dictionary key                                      | Android Map key                                      | Android meta-data name                                                          | Default                                                          | Required?                                                                                                |
 | ------------------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
