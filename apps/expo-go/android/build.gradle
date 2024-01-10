@@ -26,9 +26,7 @@ buildscript {
     classpath "de.undercouch:gradle-download-task:$gradleDownloadTaskVersion"
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
 
-    // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
     classpath "com.facebook.react:react-native-gradle-plugin"
-    // WHEN_DISTRIBUTING_REMOVE_TO_HERE
   }
 }
 
@@ -39,12 +37,10 @@ plugins {
    alias libs.plugins.download apply false
 }
 
-// WHEN_DISTRIBUTING_REMOVE_FROM_HERE
 // We don't need linter on turtle.
 plugins {
   id "com.diffplug.spotless" version "6.23.3"
 }
-// WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
 def reactProperties = new Properties()
 file("${project(':packages:react-native:ReactAndroid').projectDir}/gradle.properties").withInputStream { reactProperties.load(it) }
@@ -99,8 +95,6 @@ allprojects {
 // because the "*/" in there could affect the resulted code by closing the comment to early.
 def ktlintTarget = '**/*.kt'
 
-// WHEN_DISTRIBUTING_REMOVE_FROM_HERE
-// We don't need linter on turtle.
 subprojects { project ->
   if (project.name == "ReactAndroid") { return; }
   if (project.name.startsWith("vendored_")) { return; }
@@ -147,4 +141,3 @@ subprojects { project ->
     }
   }
 }
-// WHEN_DISTRIBUTING_REMOVE_TO_HERE

@@ -5,9 +5,6 @@ package expo.modules.splashscreen
 import android.content.Context
 import androidx.core.content.ContextCompat
 
-// this needs to stay for versioning to work
-// EXPO_VERSIONING_NEEDS_PACKAGE_R
-
 /**
  * Default implementation that uses native resources.
  */

@@ -50,12 +50,6 @@ public class Constants {
 
   static {
     List<String> abiVersions = new ArrayList<>();
-    // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
-    // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
-    // ADD ABI VERSIONS HERE DO NOT MODIFY
-    // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
-    // WHEN_DISTRIBUTING_REMOVE_TO_HERE
-
     if (TEMPORARY_SDK_VERSION != null) {
       abiVersions.add(TEMPORARY_SDK_VERSION);
     }

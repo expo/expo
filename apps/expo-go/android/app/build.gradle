@@ -79,11 +79,8 @@ android {
 
   defaultConfig {
     applicationId 'host.exp.exponent'
-    // ADD VERSIONS HERE
-    // BEGIN VERSIONS
     versionCode 221
     versionName '2.30.5'
-    // END VERSIONS
 
     multiDexEnabled true
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -295,15 +292,9 @@ dependencies {
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'org.mockito:mockito-core:1.10.19'
 
-  // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
-
-  // BEGIN_SDK_UNVERSIONED
   implementation(project(':expoview'))
 
   implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
-  // END_SDK_UNVERSIONED
-
-  // ADD_NEW_SDKS_HERE
 }
 
 // This has to be down here for some reason
