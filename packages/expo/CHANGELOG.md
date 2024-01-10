@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 49.0.22 — 2024-01-10
+
+_This version does not introduce any user-facing changes._
+
 ## 49.0.21 — 2023-11-24
 
 _This version does not introduce any user-facing changes._
