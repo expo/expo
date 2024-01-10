@@ -397,6 +397,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🐛 Bug fixes
 
+- **`expo-sensors`**
+  - On `iOS`, fixed a rounding error of the barometric pressure in expo go ([#26345](https://github.com/expo/expo/pull/26345) by [@TwoTenPvP](https://github.com/TwoTenPvP))
 - **`expo-asset`**
   - URL encode asset paths defined as query parameter. ([#24562](https://github.com/expo/expo/pull/24562) by [@byCedric](https://github.com/byCedric))
   - fix URLs in development. ([#25202](https://github.com/expo/expo/pull/25202) by [@EvanBacon](https://github.com/EvanBacon))
