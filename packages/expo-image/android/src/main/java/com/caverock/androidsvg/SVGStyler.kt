@@ -115,6 +115,7 @@ fun applyTintColor(svg: SVG, newColor: Int) {
   svg.cssRules?.forEach { rule ->
     replaceStyles(rule.style, newColor)
   }
+  replaceStyles(root.baseStyle, newColor)
   replaceStyles(root.style, newColor)
   val hasStyle = hasStyle(root)
 
