@@ -43,6 +43,7 @@ class UpdatesModule : Module() {
         val embeddedUpdate = constantsForModule.embeddedUpdate
         val isEmbeddedLaunch = launchedUpdate?.id?.equals(embeddedUpdate?.id) ?: false
 
+        // keep these keys in sync with ExpoGoUpdatesModule
         this["isEmergencyLaunch"] = constantsForModule.isEmergencyLaunch
         this["isEmbeddedLaunch"] = isEmbeddedLaunch
         this["isEnabled"] = constantsForModule.isEnabled

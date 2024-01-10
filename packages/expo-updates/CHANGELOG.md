@@ -24,6 +24,7 @@
 - [Android] Remove try/catch in expo-updates module constants block. ([#26228](https://github.com/expo/expo/pull/26228) by [@wschurman](https://github.com/wschurman))
 - Rename native classes. ([#26234](https://github.com/expo/expo/pull/26234), [#26235](https://github.com/expo/expo/pull/26235) by [@wschurman](https://github.com/wschurman))
 - Remove support for multiple runtime versions. ([#26258](https://github.com/expo/expo/pull/26258) by [@wschurman](https://github.com/wschurman))
+- Improve updates types and clarity in expo-asset. ([#26337](https://github.com/expo/expo/pull/26337) by [@wschurman](https://github.com/wschurman))
 
 ## 0.24.7 - 2024-01-10
 
