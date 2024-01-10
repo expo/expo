@@ -16,10 +16,10 @@ let _preventAutoHideAsyncInvoked = false;
  *
  * @private
  */
-export const _internal_preventAutoHideAsync = () => {
+export async function _internal_preventAutoHideAsync(): Promise<boolean> {
   // Memoize, this should only be called once.
   if (_preventAutoHideAsyncInvoked) {
-    return;
+    return false;
   }
   _preventAutoHideAsyncInvoked = true;
 
@@ -33,8 +33,8 @@ export const _internal_preventAutoHideAsync = () => {
     });
   }
 
-  SplashModule.preventAutoHideAsync();
-};
+  return SplashModule.preventAutoHideAsync();
+}
 
 /**
  * Used for Expo libraries to attempt hiding the splash screen after they've completed their work.
@@ -70,5 +70,5 @@ export const preventAutoHideAsync = () => {
   // Indicate that the user is controlling the auto hide behavior.
   _userControlledAutoHideEnabled = true;
   // Prevent as usual...
-  _internal_preventAutoHideAsync();
+  return _internal_preventAutoHideAsync();
 };

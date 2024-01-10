@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed return value of the `preventAutoHideAsync` function. ([#26348](https://github.com/expo/expo/pull/26348) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 - Replace deprecated `com.facebook.react:react-native:+` Android dependency with `com.facebook.react:react-android`. ([#26237](https://github.com/expo/expo/pull/26237) by [@kudo](https://github.com/kudo))
