@@ -62,7 +62,7 @@ EX_REGISTER_MODULE();
            @"isHeadless": @(NO),
            @"nativeAppVersion": [self appVersion],
            @"nativeBuildVersion": EXNullIfNil([self buildVersion]),
-           @"installationId": [_installationIdProvider getOrCreateInstallationId],
+           @"installationId": EXNullIfNil([_installationIdProvider getOrCreateInstallationId]),
            @"manifest": EXNullIfNil([[self class] appConfig]),
            @"platform": @{
                @"ios": @{
