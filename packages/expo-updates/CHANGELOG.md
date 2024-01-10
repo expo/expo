@@ -7,6 +7,11 @@
 ### 🎉 New features
 
 - Add more failure logs in asset download. ([#26268](https://github.com/expo/expo/pull/26268) by [@wschurman](https://github.com/wschurman))
+- Added `AppController.overrideConfiguration()` to override the `UpdatesConfig` on iOS. ([#26093](https://github.com/expo/expo/pull/26093) by [@kudo](https://github.com/kudo))
+
+### 🛠 Breaking changes
+
+- Deprecated `UpdatesController.initialize(Context, Map)` and replaced with `UpdatesController.overrideConfiguration()` method to prevent ANR when overriding the `UpdatesConfiguration` on Android. [#26093](https://github.com/expo/expo/pull/26093) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 

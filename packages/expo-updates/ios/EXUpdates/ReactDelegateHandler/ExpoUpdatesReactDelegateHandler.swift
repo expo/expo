@@ -49,7 +49,7 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     }
 
     self.reactDelegate = reactDelegate
-    AppController.initializeWithoutStarting(configuration: nil)
+    AppController.initializeWithoutStarting()
     let controller = AppController.sharedInstance
     controller.delegate = self
 
