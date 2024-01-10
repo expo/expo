@@ -49,7 +49,6 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
 
   private var previousUpdatesConfiguration: UpdatesConfig?
   private var config: UpdatesConfig?
-  private let isMissingRuntimeVersion: Bool
 
   private var directoryDatabaseException: Error?
   public let updatesDirectory: URL? // internal for E2E test
@@ -66,18 +65,16 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
     initialUpdatesConfiguration: UpdatesConfig?,
     updatesDirectory: URL?,
     updatesDatabase: UpdatesDatabase,
-    directoryDatabaseException: Error?,
-    isMissingRuntimeVersion: Bool
+    directoryDatabaseException: Error?
   ) {
     self.config = initialUpdatesConfiguration
     self.updatesDirectory = updatesDirectory
     self.database = updatesDatabase
     self.directoryDatabaseException = directoryDatabaseException
     self.isEmergencyLaunch = directoryDatabaseException != nil
-    self.isMissingRuntimeVersion = isMissingRuntimeVersion
 
     self.defaultSelectionPolicy = SelectionPolicyFactory.filterAwarePolicy(
-      withRuntimeVersion: initialUpdatesConfiguration.let { it in it.runtimeVersionRealized } ?? "1"
+      withRuntimeVersion: initialUpdatesConfiguration.let { it in it.runtimeVersion } ?? "1"
     )
 
     super.init()
@@ -312,13 +309,11 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
       embeddedUpdate: embeddedUpdate,
       isEmergencyLaunch: isEmergencyLaunch,
       isEnabled: true,
-      releaseChannel: self.config?.releaseChannel ?? "default",
       isUsingEmbeddedAssets: isUsingEmbeddedAssets(),
-      runtimeVersion: self.config?.runtimeVersionRaw ?? "1",
+      runtimeVersion: self.config?.runtimeVersion ?? "1",
       checkOnLaunch: self.config?.checkOnLaunch ?? CheckAutomaticallyConfig.Always,
       requestHeaders: self.config?.requestHeaders ?? [:],
       assetFilesMap: assetFilesMap(),
-      isMissingRuntimeVersion: self.isMissingRuntimeVersion,
       shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: true
     )
   }

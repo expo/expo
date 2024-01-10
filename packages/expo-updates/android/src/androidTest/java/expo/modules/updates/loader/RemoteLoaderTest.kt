@@ -4,7 +4,7 @@ import android.net.Uri
 import androidx.room.Room
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
-import expo.modules.manifests.core.NewManifest
+import expo.modules.manifests.core.ExpoUpdatesManifest
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
@@ -13,8 +13,8 @@ import expo.modules.updates.codesigning.*
 import expo.modules.updates.db.enums.UpdateStatus
 import expo.modules.updates.loader.FileDownloader.AssetDownloadCallback
 import expo.modules.updates.loader.Loader.LoaderCallback
-import expo.modules.updates.manifest.NewUpdateManifest
-import expo.modules.updates.manifest.UpdateManifest
+import expo.modules.updates.manifest.ExpoUpdatesUpdate
+import expo.modules.updates.manifest.Update
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -32,7 +32,7 @@ import java.util.*
 class RemoteLoaderTest {
   private lateinit var db: UpdatesDatabase
   private lateinit var configuration: UpdatesConfiguration
-  private lateinit var manifest: UpdateManifest
+  private lateinit var manifest: Update
   private lateinit var loader: RemoteLoader
   private lateinit var mockLoaderFiles: LoaderFiles
   private lateinit var mockFileDownloader: FileDownloader
@@ -60,8 +60,8 @@ class RemoteLoaderTest {
       mockLoaderFiles
     )
 
-    val manifestString = CertificateFixtures.testNewManifestBody
-    manifest = NewUpdateManifest.fromNewManifest(NewManifest(JSONObject(manifestString)), null, configuration)
+    val manifestString = CertificateFixtures.testExpoUpdatesManifestBody
+    manifest = ExpoUpdatesUpdate.fromExpoUpdatesManifest(ExpoUpdatesManifest(JSONObject(manifestString)), null, configuration)
 
     every { mockFileDownloader.downloadRemoteUpdate(any(), any(), any(), any()) } answers {
       val callback = arg<FileDownloader.RemoteUpdateDownloadCallback>(3)
@@ -254,7 +254,7 @@ class RemoteLoaderTest {
   fun testRemoteLoader_DevelopmentModeManifest() {
     val manifestString =
       "{\"metadata\":{},\"runtimeVersion\":\"1\",\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",\"launchAsset\":{\"url\":\"https://url.to/bundle.js\",\"contentType\":\"application/javascript\"},\"extra\":{\"expoGo\":{\"developer\":{\"tool\":\"expo-cli\",\"projectRoot\":\"/Users/eric/expo/updates-unit-test-template\"},\"packagerOpts\":{\"scheme\":null,\"hostType\":\"lan\",\"lanType\":\"ip\",\"dev\":true,\"minify\":false,\"urlRandomness\":null,\"https\":false}}}}"
-    manifest = NewUpdateManifest.fromNewManifest(NewManifest(JSONObject(manifestString)), null, configuration)
+    manifest = ExpoUpdatesUpdate.fromExpoUpdatesManifest(ExpoUpdatesManifest(JSONObject(manifestString)), null, configuration)
 
     every { mockFileDownloader.downloadRemoteUpdate(any(), any(), any(), any()) } answers {
       val callback = arg<FileDownloader.RemoteUpdateDownloadCallback>(3)

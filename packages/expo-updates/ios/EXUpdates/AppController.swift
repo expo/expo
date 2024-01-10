@@ -12,7 +12,6 @@ public struct UpdatesModuleConstants {
   let embeddedUpdate: Update?
   let isEmergencyLaunch: Bool
   let isEnabled: Bool
-  let releaseChannel: String
   let isUsingEmbeddedAssets: Bool
   let runtimeVersion: String?
   let checkOnLaunch: CheckAutomaticallyConfig
@@ -25,12 +24,6 @@ public struct UpdatesModuleConstants {
    use the locally downloaded assets.
    */
   let assetFilesMap: [String: Any]?
-
-  /**
-   Whether there is no runtime version (or sdkVersion) provided in configuration. If it is missing,
-   updates will be disabled and a warning will be logged.
-   */
-  let isMissingRuntimeVersion: Bool
 
   /**
    Whether the JS API methods should allow calling the native module methods and thus the methods
@@ -210,11 +203,11 @@ public class AppController: NSObject {
           message: "The expo-updates system is disabled due to an error during initialization: \(error.localizedDescription)",
           code: .initializationError
         )
-        _sharedInstance = DisabledAppController(error: error, isMissingRuntimeVersion: UpdatesConfig.isMissingRuntimeVersion(mergingOtherDictionary: nil))
+        _sharedInstance = DisabledAppController(error: error)
         return
       }
     } else {
-      _sharedInstance = DisabledAppController(error: nil, isMissingRuntimeVersion: UpdatesConfig.isMissingRuntimeVersion(mergingOtherDictionary: nil))
+      _sharedInstance = DisabledAppController(error: nil)
     }
   }
 
@@ -256,8 +249,7 @@ public class AppController: NSObject {
       initialUpdatesConfiguration: config,
       updatesDirectory: updatesDirectory,
       updatesDatabase: updatesDatabase,
-      directoryDatabaseException: directoryDatabaseException,
-      isMissingRuntimeVersion: UpdatesConfig.isMissingRuntimeVersion(mergingOtherDictionary: nil)
+      directoryDatabaseException: directoryDatabaseException
     )
     _sharedInstance = appController
     return appController

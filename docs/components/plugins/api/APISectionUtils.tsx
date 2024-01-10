@@ -177,6 +177,7 @@ const hardcodedTypeLinks: Record<string, string> = {
   Promise:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
   ReactNode: 'https://reactnative.dev/docs/react-node',
+  ShareOptions: 'https://reactnative.dev/docs/share#share',
   SyntheticEvent: 'https://react.dev/reference/react-dom/components/common#react-event-object',
   View: 'https://reactnative.dev/docs/view',
   ViewProps: 'https://reactnative.dev/docs/view#props',
@@ -467,7 +468,8 @@ export const listParams = (parameters: MethodParamData[]) =>
 export const renderDefaultValue = (defaultValue?: string) =>
   defaultValue && defaultValue !== '...' ? (
     <div css={defaultValueContainerStyle}>
-      <DEMI>Default:</DEMI> <CODE>{defaultValue}</CODE>
+      <DEMI className="!text-inherit">Default:</DEMI>{' '}
+      <CODE className="!text-inherit">{defaultValue}</CODE>
     </div>
   ) : undefined;
 
@@ -600,7 +602,7 @@ export const CommentTextBlock = ({
   const content = comment && comment.summary ? getCommentContent(comment.summary) : undefined;
 
   if (emptyCommentFallback && (!comment || !content || !content.length)) {
-    return <>{emptyCommentFallback}</>;
+    return <span className="text-tertiary">{emptyCommentFallback}</span>;
   }
 
   const paramTags = content ? getParamTags(content) : undefined;
@@ -731,12 +733,10 @@ export const STYLES_APIBOX_WRAPPER = css({
   },
 });
 
-export const STYLE_APIBOX_NO_SPACING = css({ marginBottom: -spacing[5] });
-
 export const STYLES_NESTED_SECTION_HEADER = css({
   display: 'flex',
-  borderTop: `1px solid ${theme.border.default}`,
-  borderBottom: `1px solid ${theme.border.default}`,
+  borderTop: `1px solid ${theme.border.secondary}`,
+  borderBottom: `1px solid ${theme.border.secondary}`,
   margin: `${spacing[4]}px -${spacing[5]}px ${spacing[4]}px`,
   padding: `${spacing[2.5]}px ${spacing[5]}px`,
   backgroundColor: theme.background.subtle,

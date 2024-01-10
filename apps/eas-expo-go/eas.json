@@ -11,7 +11,7 @@
       "android": {
         "image": "ubuntu-22.04-jdk-17-ndk-r21e",
         "cache": {
-          "customPaths": ["../../android/prebuiltHermes"]
+          "customPaths": ["../expo-go/android/prebuiltHermes"]
         },
         "resourceClass": "large",
         "env": {
@@ -23,8 +23,8 @@
       },
       "ios": {
         "cache": {
-          "key": "sdk50-0.73.1",
-          "customPaths": ["../../ios/Pods"]
+          "key": "sdk50-0.73.2",
+          "customPaths": ["../expo-go/ios/Pods"]
         },
         "image": "macos-ventura-13.6-xcode-15.0",
         "cocoapods": "1.14.2",
@@ -42,7 +42,7 @@
         "EAS_BUILD_PROFILE": "versioned-client"
       },
       "android": {
-        "gradleCommand": ":app:assembleVersionedDebug",
+        "gradleCommand": ":app:assembleDebug",
         "withoutCredentials": true
       },
       "ios": {
@@ -63,7 +63,7 @@
         "EAS_BUILD_PROFILE": "unversioned-client"
       },
       "android": {
-        "gradleCommand": ":app:assembleUnversionedDebug",
+        "gradleCommand": ":app:assembleDebug",
         "withoutCredentials": true
       },
       "ios": {
@@ -105,7 +105,7 @@
           "disabled": true
         },
         "withoutCredentials": false,
-        "gradleCommand": ":app:assembleVersionedRelease"
+        "gradleCommand": ":app:assembleRelease"
       },
       "ios": {
         "resourceClass": "large",

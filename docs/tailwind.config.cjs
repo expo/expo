@@ -25,6 +25,16 @@ module.exports = {
       )}, transparent)`,
       appjs: "url('/static/images/appjs.svg'), linear-gradient(#0033cc, #0033cc)",
     }),
+    fontSize: {
+      inherit: [
+        'inherit',
+        {
+          lineHeight: 'inherit',
+          letterSpacing: 'inherit',
+          fontWeight: 'inherit',
+        },
+      ],
+    },
     keyframes: {
       fadeIn: {
         '0%': {

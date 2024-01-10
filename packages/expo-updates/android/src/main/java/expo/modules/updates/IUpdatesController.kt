@@ -7,7 +7,7 @@ import expo.modules.kotlin.exception.CodedException
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.loader.LoaderTask
-import expo.modules.updates.manifest.UpdateManifest
+import expo.modules.updates.manifest.Update
 import expo.modules.updates.statemachine.UpdatesStateContext
 import java.io.File
 import java.util.Date
@@ -59,7 +59,6 @@ interface IUpdatesController {
     val embeddedUpdate: UpdateEntity?,
     val isEmergencyLaunch: Boolean,
     val isEnabled: Boolean,
-    val releaseChannel: String,
     val isUsingEmbeddedAssets: Boolean,
     val runtimeVersion: String?,
     val checkOnLaunch: UpdatesConfiguration.CheckAutomaticallyConfiguration,
@@ -72,12 +71,6 @@ interface IUpdatesController {
      * use the locally downloaded assets.
      */
     val localAssetFiles: Map<AssetEntity, String>?,
-
-    /**
-     * Whether there is no runtime version (or sdkVersion) provided in configuration. If it is missing,
-     * updates will be disabled and a warning will be logged.
-     */
-    val isMissingRuntimeVersion: Boolean,
 
     /**
      * Whether the JS API methods should allow calling the native module methods and thus the methods
@@ -103,7 +96,7 @@ interface IUpdatesController {
     }
 
     class NoUpdateAvailable(val reason: LoaderTask.RemoteCheckResultNotAvailableReason) : CheckForUpdateResult(Status.NO_UPDATE_AVAILABLE)
-    class UpdateAvailable(val updateManifest: UpdateManifest) : CheckForUpdateResult(Status.UPDATE_AVAILABLE)
+    class UpdateAvailable(val update: Update) : CheckForUpdateResult(Status.UPDATE_AVAILABLE)
     class RollBackToEmbedded(val commitTime: Date) : CheckForUpdateResult(Status.ROLL_BACK_TO_EMBEDDED)
     class ErrorResult(val error: Exception, val message: String) : CheckForUpdateResult(Status.ERROR)
   }
