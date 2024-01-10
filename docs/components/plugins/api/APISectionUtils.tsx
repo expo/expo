@@ -56,7 +56,7 @@ export enum TypeDocKind {
   Method = 2048,
   Parameter = 32768,
   Accessor = 262144,
-  TypeAlias = 4194304,
+  TypeAlias = 2097152,
 }
 
 export const DEFAULT_BASE_NESTING_LEVEL = 2;
