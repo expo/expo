@@ -4,8 +4,8 @@ import { StyleSheet } from 'react-native';
 import { VideoPlayer, VideoViewProps } from './VideoView.types';
 
 /**
- * This audio context is used to mute all but one video when there is multiple video views playing from one player simultaneously.
- * Using audio context nodes allows us to mute the videos without showing the mute icon in the video player.
+ * This audio context is used to mute all but one video when multiple video views are playing from one player simultaneously.
+ * Using audio context nodes allows muting videos without displaying the mute icon in the video player.
  */
 const audioContext = new window.AudioContext();
 const zeroGainNode = audioContext.createGain();
