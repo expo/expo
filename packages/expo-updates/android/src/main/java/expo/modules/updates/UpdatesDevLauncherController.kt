@@ -279,7 +279,7 @@ class UpdatesDevLauncherController(
   override fun getConstantsForModule(): IUpdatesController.UpdatesModuleConstants {
     return IUpdatesController.UpdatesModuleConstants(
       launchedUpdate = launchedUpdate,
-      embeddedUpdate = updatesConfiguration?.let { EmbeddedManifestUtils.getEmbeddedUpdate(context, it) }?.updateEntity,
+      embeddedUpdate = null, // no embedded update in debug builds
       isEmergencyLaunch = isEmergencyLaunch,
       isEnabled = true,
       isUsingEmbeddedAssets = isUsingEmbeddedAssets,
