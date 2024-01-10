@@ -1,13 +1,18 @@
 import React, { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { StyleSheet } from 'react-native';
 /**
- * This audio context is used to mute all but one video when there is multiple video views playing from one player simultaneously.
- * Using audio context nodes allows us to mute the videos without showing the mute icon in the video player.
+ * This audio context is used to mute all but one video when multiple video views are playing from one player simultaneously.
+ * Using audio context nodes allows muting videos without displaying the mute icon in the video player.
  */
-const audioContext = new window.AudioContext();
-const zeroGainNode = audioContext.createGain();
-zeroGainNode.gain.value = 0;
-zeroGainNode.connect(audioContext.destination);
+const audioContext = window && new window.AudioContext();
+const zeroGainNode = audioContext && audioContext.createGain();
+if (audioContext && zeroGainNode) {
+    zeroGainNode.gain.value = 0;
+    zeroGainNode.connect(audioContext.destination);
+}
+else {
+    console.warn("Couldn't create AudioContext, this might affect the audio playback when using multiple video views with the same player.");
+}
 class VideoPlayerWeb {
     constructor(source = null) {
         this.src = source;
@@ -53,7 +58,7 @@ class VideoPlayerWeb {
         this._mountedVideos.delete(video);
         this._audioNodes.delete(mediaElementSources[videoIndex]);
         // If video playing audio has been removed, select a new video to be the audio player by disconnecting it from the mute node.
-        if (videoPlayingAudio === video && this._audioNodes.size > 0) {
+        if (videoPlayingAudio === video && this._audioNodes.size > 0 && audioContext) {
             const newMainAudioSource = [...this._audioNodes][0];
             newMainAudioSource.disconnect();
             newMainAudioSource.connect(audioContext.destination);
@@ -103,6 +108,8 @@ class VideoPlayerWeb {
     }
     _addListeners(video) {
         video.onloadedmetadata = () => {
+            if (!audioContext || !zeroGainNode)
+                return;
             const source = audioContext.createMediaElementSource(video);
             this._audioNodes.add(source);
             // First mounted video should be connected to the audio context. All other videos have to be muted.
@@ -112,7 +119,6 @@ class VideoPlayerWeb {
             else {
                 source.connect(zeroGainNode);
             }
-            source.connect(zeroGainNode);
         };
         video.onplay = () => {
             this.isPlaying = true;
@@ -197,7 +203,7 @@ export const VideoView = forwardRef((props, ref) => {
             }
         };
     }, [props.player]);
-    return (<video controls={props.nativeControls} controlsList={props.allowsFullscreen ? undefined : 'nofullscreen'} style={{
+    return (<video controls={props.nativeControls} controlsList={props.allowsFullscreen ? undefined : 'nofullscreen'} crossOrigin="anonymous" style={{
             ...mapStyles(props.style),
             objectFit: props.contentFit,
         }} ref={(newRef) => {

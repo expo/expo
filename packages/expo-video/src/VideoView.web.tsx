@@ -7,10 +7,16 @@ import { VideoPlayer, VideoViewProps } from './VideoView.types';
  * This audio context is used to mute all but one video when multiple video views are playing from one player simultaneously.
  * Using audio context nodes allows muting videos without displaying the mute icon in the video player.
  */
-const audioContext = new window.AudioContext();
-const zeroGainNode = audioContext.createGain();
-zeroGainNode.gain.value = 0;
-zeroGainNode.connect(audioContext.destination);
+const audioContext = window && new window.AudioContext();
+const zeroGainNode = audioContext && audioContext.createGain();
+if (audioContext && zeroGainNode) {
+  zeroGainNode.gain.value = 0;
+  zeroGainNode.connect(audioContext.destination);
+} else {
+  console.warn(
+    "Couldn't create AudioContext, this might affect the audio playback when using multiple video views with the same player."
+  );
+}
 
 class VideoPlayerWeb implements VideoPlayer {
   constructor(source: string | null = null) {
@@ -64,7 +70,7 @@ class VideoPlayerWeb implements VideoPlayer {
     this._audioNodes.delete(mediaElementSources[videoIndex]);
 
     // If video playing audio has been removed, select a new video to be the audio player by disconnecting it from the mute node.
-    if (videoPlayingAudio === video && this._audioNodes.size > 0) {
+    if (videoPlayingAudio === video && this._audioNodes.size > 0 && audioContext) {
       const newMainAudioSource = [...this._audioNodes][0];
       newMainAudioSource.disconnect();
       newMainAudioSource.connect(audioContext.destination);
@@ -116,6 +122,7 @@ class VideoPlayerWeb implements VideoPlayer {
 
   _addListeners(video: HTMLVideoElement): void {
     video.onloadedmetadata = () => {
+      if (!audioContext || !zeroGainNode) return;
       const source = audioContext.createMediaElementSource(video);
       this._audioNodes.add(source);
 
@@ -125,7 +132,6 @@ class VideoPlayerWeb implements VideoPlayer {
       } else {
         source.connect(zeroGainNode);
       }
-      source.connect(zeroGainNode);
     };
 
     video.onplay = () => {
@@ -223,6 +229,7 @@ export const VideoView = forwardRef((props: { player?: VideoPlayerWeb } & VideoV
     <video
       controls={props.nativeControls}
       controlsList={props.allowsFullscreen ? undefined : 'nofullscreen'}
+      crossOrigin="anonymous"
       style={{
         ...mapStyles(props.style),
         objectFit: props.contentFit,
