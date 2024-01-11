@@ -1,12 +1,23 @@
 package expo.modules.video
 
+import android.R
+import android.app.PictureInPictureParams
 import android.content.Context
 import android.content.Intent
+import android.graphics.Rect
+import android.os.Build
+import android.util.Rational
+import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageButton
+import androidx.fragment.app.FragmentActivity
 import androidx.media3.ui.PlayerView
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
+import java.util.ArrayList
 import java.util.UUID
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
@@ -14,10 +25,44 @@ import java.util.UUID
 class VideoView(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
   val id: String = UUID.randomUUID().toString()
   val playerView: PlayerView = PlayerView(context.applicationContext)
+  val onPictureInPictureStart by EventDispatcher<Unit>()
+  val onPictureInPictureStop by EventDispatcher<Unit>()
+
+
+  private val currentActivity = appContext.currentActivity
+    ?: throw Exceptions.MissingActivity()
+  private val decorView = currentActivity.window.decorView
+  private val rootView = decorView.findViewById(R.id.content) as ViewGroup
+
+  private val rectHint: Rect = Rect()
+  private val rootViewChildrenOriginalVisibility: ArrayList<Int> = arrayListOf()
+
+  private var pictureInPictureHelperTag: String? = null
+
+  var autoEnterPiP: Boolean = false
+    set(value) {
+      field = value
+      if (Build.VERSION.SDK_INT >= 31) {
+        currentActivity.setPictureInPictureParams(PictureInPictureParams.Builder().setAutoEnterEnabled(value).build())
+      }
+    }
+
+  var contentFit: ContentFit = ContentFit.CONTAIN
+    set(value) {
+      playerView.resizeMode = value.toResizeMode()
+      field = value
+    }
+
   var videoPlayer: VideoPlayer? = null
     set(videoPlayer) {
       playerView.player = videoPlayer?.player
       field = videoPlayer
+    }
+
+  var useNativeControls: Boolean = true
+    set(value) {
+      playerView.useController = value
+      field = value
     }
 
   var allowsFullscreen: Boolean = true
@@ -57,7 +102,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     val intent = Intent(context, FullscreenActivity::class.java)
     intent.putExtra(VideoViewManager.INTENT_PLAYER_KEY, id)
 
-    appContext.activityProvider?.currentActivity?.startActivity(intent)
+    currentActivity.startActivity(intent)
   }
 
   fun exitFullscreen() {
@@ -65,6 +110,104 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     val fullScreenButton: ImageButton = playerView.findViewById(androidx.media3.ui.R.id.exo_fullscreen)
     fullScreenButton.setImageResource(androidx.media3.ui.R.drawable.exo_icon_fullscreen_enter)
     videoPlayer?.changePlayerView(playerView)
+  }
+
+  fun enterPictureInPicture() {
+    if (!isPictureInPictureSupported()) {
+      throw PictureInPictureUnsupportedException()
+    }
+
+    val player = playerView.player
+      ?: throw PictureInPictureEnterException("No player attached to the VideoView")
+    playerView.useController = false
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      var aspectRatio = if (contentFit == ContentFit.CONTAIN) {
+        Rational(player.videoSize.width, player.videoSize.height)
+      } else {
+        Rational(width, height)
+      }
+      // Android PiP doesn't support aspect ratios lower than 0.4184 or higher than 2.39
+      if (aspectRatio.toFloat() > 2.39) {
+        aspectRatio = Rational(239, 100)
+      } else if (aspectRatio.toFloat() < 0.4184) {
+        aspectRatio = Rational(10000, 4184)
+      }
+
+      currentActivity.setPictureInPictureParams(
+        PictureInPictureParams
+          .Builder()
+          .setSourceRectHint(rectHint)
+          .setAspectRatio(aspectRatio)
+          .build()
+      )
+    }
+
+    calculateRectHint()
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      currentActivity.enterPictureInPictureMode(PictureInPictureParams.Builder().build())
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+      @Suppress("DEPRECATION")
+      currentActivity.enterPictureInPictureMode()
+    }
+  }
+
+  /**
+   * For optimal picture in picture experience it's best to only have one view. This method
+   * hides all children of the root view and makes the player the only visible child of the rootView.
+   * */
+  fun layoutForPiPEnter() {
+    playerView.useController = false
+    (playerView.parent as? ViewGroup)?.removeView(playerView)
+    for (i in 0 until rootView.childCount) {
+      if (rootView.getChildAt(i) == playerView) continue
+      rootViewChildrenOriginalVisibility.add(rootView.getChildAt(i).visibility)
+      rootView.getChildAt(i).visibility = View.GONE
+    }
+    rootView.addView(playerView, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+  }
+
+  fun layoutForPiPExit() {
+    playerView.useController = useNativeControls
+    rootView.removeView(playerView)
+    for (i in 0 until rootView.childCount) {
+      rootView.getChildAt(i).visibility = rootViewChildrenOriginalVisibility[i]
+    }
+    rootViewChildrenOriginalVisibility.clear()
+    this.addView(playerView)
+  }
+
+  private fun calculateRectHint() {
+    getGlobalVisibleRect(rectHint)
+
+    // For `contain` contentFit we need to calculate where the video content is in the view and set the rectHint to that area
+    if (contentFit == ContentFit.CONTAIN) {
+      val player = playerView.player ?: return
+      val videoWidth = player.videoSize.width
+      val videoHeight = player.videoSize.height
+      val videoRatio = videoWidth.toFloat() / videoHeight.toFloat()
+      val viewRatio = width.toFloat() / height.toFloat()
+
+      if (videoRatio > viewRatio) {
+        val newHeight = (width.toFloat() / videoRatio).toInt()
+        rectHint.set(rectHint.left, rectHint.top + (height - newHeight) / 2, rectHint.right, rectHint.bottom - (height - newHeight) / 2)
+      } else {
+        val newWidth = (height.toFloat() * videoRatio).toInt()
+        rectHint.set(rectHint.left + (width - newWidth) / 2, rectHint.top, rectHint.right - (width - newWidth) / 2, rectHint.bottom)
+      }
+    }
+  }
+
+  private fun applyRectHint() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      currentActivity.setPictureInPictureParams(PictureInPictureParams.Builder().setSourceRectHint(rectHint).build())
+    }
+  }
+
+  fun isPictureInPictureSupported(): Boolean {
+    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && currentActivity.packageManager.hasSystemFeature(
+      android.content.pm.PackageManager.FEATURE_PICTURE_IN_PICTURE
+    )
   }
 
   override fun requestLayout() {
@@ -81,5 +224,31 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     // On every re-layout ExoPlayer resets the timeBar to be enabled.
     // We need to disable it to keep scrubbing impossible.
     playerView.setTimeBarInteractive(videoPlayer?.requiresLinearPlayback ?: true)
+
+    calculateRectHint()
+    applyRectHint()
+  }
+
+  override fun onAttachedToWindow() {
+    super.onAttachedToWindow()
+    (currentActivity as? FragmentActivity)?.let {
+      val fragment = PictureInPictureHelperFragment(this)
+      pictureInPictureHelperTag = fragment.id
+      it.supportFragmentManager.beginTransaction()
+        .add(fragment, fragment.id)
+        .commitAllowingStateLoss()
+    }
+  }
+
+  override fun onDetachedFromWindow() {
+    super.onDetachedFromWindow()
+    (currentActivity as? FragmentActivity)?.let {
+      val fragment = it.supportFragmentManager.findFragmentByTag(pictureInPictureHelperTag ?: "")
+      if (fragment != null) {
+        it.supportFragmentManager.beginTransaction()
+          .remove(fragment)
+          .commitAllowingStateLoss()
+      }
+    }
   }
 }

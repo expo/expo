@@ -55,6 +55,11 @@ public final class VideoModule: Module {
         view.startPictureInPictureAutomatically = startsPictureInPictureAutomatically ?? false
       }
 
+      // TODO: Change this to a synchronous function once support for synchronous functions for views is added
+      AsyncFunction("isPictureInPictureSupportedAsync") { view in
+        return AVPictureInPictureController.isPictureInPictureSupported()
+      }
+
       AsyncFunction("enterFullscreen") { view in
         view.enterFullscreen()
       }
