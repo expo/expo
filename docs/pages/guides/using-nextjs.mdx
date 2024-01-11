@@ -128,7 +128,7 @@ module.exports = nextConfig;
 
 The package `react-native-web` builds on the assumption of reset CSS styles. Here's how you reset styles in Next.js using the **pages** directory.
 
-```js pages/_document.js
+```jsx pages/_document.js
 import { Children } from 'react';
 import Document, { Html, Head, Main, NextScript } from 'next/document';
 import { AppRegistry } from 'react-native';
@@ -188,7 +188,7 @@ export default class MyDocument extends Document {
 }
 ```
 
-```js pages/_app.js
+```jsx pages/_app.js
 import Head from 'next/head';
 
 export default function App({ Component, pageProps }) {

@@ -91,7 +91,7 @@ Here, we'll define a global style for the class name `.container`:
 
 We can then use the class name in our component by importing the stylesheet and using `.container`:
 
-```js App.js
+```jsx App.js
 import './styles.css';
 import { View } from 'react-native';
 
@@ -144,7 +144,7 @@ Flipping the extension, for example, `App.ios.module.css` will not work and resu
 
 > You cannot pass styles to the `className` prop of a React Native or React Native for web component. Instead, you must use the `style` prop.
 
-```js App.js
+```jsx App.js
 import styles, { unstable_styles } from './App.module.css';
 
 export default function Page() {
