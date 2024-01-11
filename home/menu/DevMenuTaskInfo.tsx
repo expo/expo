@@ -35,13 +35,15 @@ function getInfoFromManifest(
       isVerified: (manifest as any).isVerified,
     };
   } else {
-    // no properties for bare manifests
+    // classic manifests no longer have types, but we still want to show info for
+    // them
+    const maybeClassicManifest = manifest as any;
     return {
-      iconUrl: undefined,
-      taskName: undefined,
-      sdkVersion: undefined,
-      runtimeVersion: undefined,
-      isVerified: undefined,
+      iconUrl: maybeClassicManifest.iconUrl,
+      taskName: maybeClassicManifest.name,
+      sdkVersion: maybeClassicManifest.sdkVersion,
+      runtimeVersion: stringOrUndefined(maybeClassicManifest.runtimeVersion),
+      isVerified: maybeClassicManifest.isVerified,
     };
   }
 }
