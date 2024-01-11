@@ -2,10 +2,15 @@ GEM
   remote: https://rubygems.org/
   specs:
     CFPropertyList (3.0.3)
-    activesupport (7.0.6)
+    activesupport (7.1.2)
+      base64
+      bigdecimal
       concurrent-ruby (~> 1.0, >= 1.0.2)
+      connection_pool (>= 2.2.5)
+      drb
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
+      mutex_m
       tzinfo (~> 2.0)
     addressable (2.8.0)
       public_suffix (>= 2.0.2, < 5.0)
@@ -31,6 +36,8 @@ GEM
     aws-sigv4 (1.5.0)
       aws-eventstream (~> 1, >= 1.0.2)
     babosa (1.0.4)
+    base64 (0.2.0)
+    bigdecimal (3.1.5)
     claide (1.0.3)
     cocoapods (1.14.2)
       addressable (~> 2.8)
@@ -74,12 +81,15 @@ GEM
     commander (4.6.0)
       highline (~> 2.0.0)
     concurrent-ruby (1.2.2)
+    connection_pool (2.4.1)
     declarative (0.0.20)
     digest-crc (0.6.4)
       rake (>= 12.0.0, < 14.0.0)
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
     dotenv (2.7.6)
+    drb (2.2.0)
+      ruby2_keywords
     emoji_regex (3.2.3)
     escape (0.0.4)
     ethon (0.16.0)
@@ -207,10 +217,11 @@ GEM
     memoist (0.16.2)
     mini_magick (4.11.0)
     mini_mime (1.1.2)
-    minitest (5.19.0)
+    minitest (5.20.0)
     molinillo (0.8.0)
     multi_json (1.15.0)
     multipart-post (2.0.0)
+    mutex_m (0.2.0)
     nanaimo (0.3.0)
     nap (1.1.0)
     naturally (2.2.1)
