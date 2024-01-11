@@ -32,6 +32,10 @@ async function main() {
   logger.info('Adding pinned packages:');
   const pinnedPackages = {
     'react-native': nightlyVersion,
+    '@react-native/assets-registry': await queryNpmDistTagVersionAsync(
+      '@react-native/assets-registry',
+      'nightly'
+    ),
 
     // These 3rd party libraries are broken from react-native nightlies, trying to update them to newer versions.
     ...(await queryLatest3rdPartyLibrariesAsync({
