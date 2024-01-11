@@ -22,9 +22,18 @@ export class VideoView extends PureComponent<VideoViewProps> {
   }
 
   /**
+   * Returns whether the current device supports Picture in Picture (PiP) mode.
+   * @returns A Promise that fulfills to `true` if the device supports PiP mode, and `false` otherwise.
+   * @platform android, ios
+   */
+  async isPictureInPictureSupportedAsync(): Promise<boolean> {
+    return this.nativeRef.current?.isPictureInPictureSupportedAsync();
+  }
+
+  /**
    * Enters Picture in Picture (PiP) mode. Throws an exception if the device does not support PiP.
    * > **Note:** Only one player can be in Picture in Picture (PiP) mode at a time.
-   * @platform ios 14+
+   * @platform android, ios 14+
    */
   startPictureInPicture() {
     return this.nativeRef.current?.startPictureInPicture();
@@ -32,7 +41,7 @@ export class VideoView extends PureComponent<VideoViewProps> {
 
   /**
    * Exits Picture in Picture (PiP) mode.
-   * @platform ios 14+
+   * @platform android, ios 14+
    */
   stopPictureInPicture() {
     return this.nativeRef.current?.stopPictureInPicture();
