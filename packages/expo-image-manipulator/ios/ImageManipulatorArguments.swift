@@ -81,6 +81,7 @@ internal enum ImageFormat: String, EnumArgument {
   case jpeg
   case jpg
   case png
+  case webp
 
   var fileExtension: String {
     switch self {
@@ -88,6 +89,8 @@ internal enum ImageFormat: String, EnumArgument {
       return ".jpg"
     case .png:
       return ".png"
+    case .webp:
+      return ".webp"  
     }
   }
 }

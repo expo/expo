@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 11.9.0 — 2023-01-11
+
+### 🎉 New features
+
+- Added support for converting to WEBP on Android and iOS.
+
 ## 11.8.0 — 2023-12-12
 
 ### 🐛 Bug fixes

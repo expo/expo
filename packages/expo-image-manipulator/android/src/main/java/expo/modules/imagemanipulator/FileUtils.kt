@@ -26,6 +26,7 @@ internal object FileUtils {
     return when (compressFormat) {
       CompressFormat.JPEG -> ".jpg"
       CompressFormat.PNG -> ".png"
+      CompressFormat.WEBP_LOSSY -> ".webp"
       else -> ".jpg"
     }
   }

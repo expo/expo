@@ -19,13 +19,15 @@ data class SaveOptions(
     get() = when (format) {
       ImageFormat.JPEG, ImageFormat.JPG -> Bitmap.CompressFormat.JPEG
       ImageFormat.PNG -> Bitmap.CompressFormat.PNG
+      ImageFormat.WEBP -> Bitmap.CompressFormat.WEBP_LOSSY
     }
 }
 
 enum class ImageFormat(val value: String) : Enumerable {
   JPEG("jpeg"),
   JPG("jpg"),
-  PNG("png")
+  PNG("png"),
+  WEBP("webp")
 }
 
 data class ManipulateAction(
