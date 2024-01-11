@@ -13,7 +13,7 @@ The `Stack` Layout in Expo Router wraps the [Native Stack Navigator](https://rea
 
 To create a `Stack` layout with two screens as shown in the file structure above:
 
-```js app/_layout.js
+```jsx app/_layout.js
 import { Stack } from 'expo-router/stack';
 
 export default function Layout() {
@@ -220,9 +220,7 @@ export default function Layout() {
     <Stack>
       <Stack.Screen
         name="[user]"
-        /* @info Returning a new ID everytime will cause every page to push. */
-        getId={({ params }) => String(Date.now())}
-        /* @end */
+        getId={/* @info Returning a new ID everytime will cause every page to push. */({ params }) => String(Date.now())/* @end */}
       />
     </Stack>
   );

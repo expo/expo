@@ -141,16 +141,12 @@ import Head from 'expo-router/head';
 
 export default function App() {
   return (
-    <>
-      <Head>
-        <meta
-          property="og:url"
-          /* @info */
-          content={Platform.select({ web: 'https://expo.dev', default: null })}
-          /* @end */
-        />
-      </Head>
-    </>
+    <Head>
+      <meta
+        property="og:url"
+        content={/* @info */Platform.select({ web: 'https://expo.dev', default: null })/* @end */}
+      />
+    </Head>
   );
 }
 ```

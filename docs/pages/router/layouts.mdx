@@ -13,7 +13,7 @@ By default, routes fill the entire screen. Moving between them is a full-page tr
 
 To create a layout route for a directory, create a file named **\_layout.js** in the directory, and export a React component as `default`.
 
-```js app/home/_layout.js
+```jsx app/home/_layout.js
 import { Slot } from 'expo-router';
 
 export default function HomeLayout() {
@@ -23,7 +23,7 @@ export default function HomeLayout() {
 
 From the above example, **Slot** will render the current child route, think of this like the `children` prop in React. This component can be wrapped with other components to create a layout.
 
-```js app/home/_layout.js
+```jsx app/home/_layout.js
 import { Slot } from 'expo-router';
 
 export default function HomeLayout() {
@@ -41,7 +41,7 @@ Expo Router supports adding a single layout route for a given directory. If you 
 
 <FileTree files={['app/_layout.js', 'app/home/_layout.js', 'app/home/index.js']} />
 
-```js app/_layout.js
+```jsx app/_layout.js
 import { Tabs } from 'expo-router';
 
 export default function Layout() {
@@ -49,7 +49,7 @@ export default function Layout() {
 }
 ```
 
-```js app/home/_layout.js
+```jsx app/home/_layout.js
 import { Stack } from 'expo-router';
 
 export default function Layout() {
@@ -83,13 +83,13 @@ Groups are also good for organizing sections of the app. In the following exampl
 
 One of the best advantages to React Native is being able to use native UI components. Expo Router provides a few drop-in native layouts that you can use to easily achieve familiar native behavior. To change between truly-native layouts on certain platforms and custom layouts on others, see [Platform-specific modules](/router/advanced/platform-specific-modules).
 
-```js app/home/_layout.js
+```jsx app/home/_layout.js
 import { Stack } from 'expo-router';
 
 export default function HomeLayout() {
-    return (
-        <Stack screenOptions={{ ... }} />
-    )
+  return (
+    <Stack screenOptions={{ ... }} />
+  );
 }
 ```
 
