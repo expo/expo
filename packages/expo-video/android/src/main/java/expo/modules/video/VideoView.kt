@@ -7,7 +7,6 @@ import android.os.Build
 import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
-import android.os.Build
 import android.util.Rational
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +17,6 @@ import androidx.media3.ui.PlayerView
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.viewevent.EventDispatcher
-import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.views.ExpoView
 import java.util.ArrayList
 import java.util.UUID
@@ -104,10 +102,11 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   fun enterFullscreen() {
     val intent = Intent(context, FullscreenPlayerActivity::class.java)
     intent.putExtra(VideoViewManager.INTENT_PLAYER_KEY, id)
+    currentActivity.startActivity(intent)
 
     // Disable the enter transition
     if (Build.VERSION.SDK_INT >= 34) {
-      currentActivity.overrideActivityTransition(Activity.OVERRIDE_TRANSITION_ENTER, 0, 0)
+      currentActivity.overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, 0, 0)
     } else {
       currentActivity.overridePendingTransition(0, 0)
     }
