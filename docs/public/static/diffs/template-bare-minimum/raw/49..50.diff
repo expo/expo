@@ -911,7 +911,7 @@ index 2402cc34b2..b3978b9515 100644
      # This is necessary for Xcode 14, because it signs resource bundles by default
      # when building for devices.
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 50e94a0837..fd1cd53388 100644
+index 50e94a0837..4e3a5f9e5e 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -919,7 +919,7 @@ index 50e94a0837..fd1cd53388 100644
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "49.0.24",
-+  "version": "50.0.22",
++  "version": "50.0.23",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -930,7 +930,7 @@ index 50e94a0837..fd1cd53388 100644
 -    "expo": "~49.0.18",
 -    "expo-splash-screen": "~0.20.5",
 -    "expo-status-bar": "~1.6.0",
-+    "expo": "~50.0.0-preview.8",
++    "expo": "~50.0.0-preview.9",
 +    "expo-status-bar": "~1.11.1",
      "react": "18.2.0",
 -    "react-native": "0.72.6"
