@@ -19,21 +19,26 @@ class VideoModule : Module() {
     Name("ExpoVideo")
 
     View(VideoView::class) {
+      Events(
+        "onPictureInPictureStart",
+        "onPictureInPictureStop"
+      )
+
       Prop("player") { view: VideoView, player: VideoPlayer ->
         view.videoPlayer = player
         player.prepare()
       }
 
       Prop("nativeControls") { view: VideoView, useNativeControls: Boolean ->
-        view.playerView.useController = useNativeControls
+        view.useNativeControls = useNativeControls
       }
 
       Prop("contentFit") { view: VideoView, contentFit: ContentFit ->
-        view.playerView.resizeMode = contentFit.toResizeMode()
+        view.contentFit = contentFit
       }
 
-      AsyncFunction("enterFullscreen") { view: VideoView ->
-        view.enterFullscreen()
+      Prop("startsPictureInPictureAutomatically") { view: VideoView, autoEnterPiP: Boolean ->
+        view.autoEnterPiP = autoEnterPiP
       }
 
       Prop("allowsFullscreen") { view: VideoView, allowsFullscreen: Boolean? ->
@@ -44,6 +49,27 @@ class VideoModule : Module() {
         val linearPlayback = requiresLinearPlayback ?: false
         view.playerView.applyRequiresLinearPlayback(linearPlayback)
         view.videoPlayer?.requiresLinearPlayback = linearPlayback
+      }
+
+      AsyncFunction("enterFullscreen") { view: VideoView ->
+        view.enterFullscreen()
+      }
+
+      AsyncFunction("exitFullscreen") {
+        throw MethodUnsupportedException("exitFullscreen")
+      }
+
+      // TODO: Change this to a synchronous function once support for synchronous functions for views is added
+      AsyncFunction("isPictureInPictureSupportedAsync") {view: VideoView ->
+        return@AsyncFunction view.isPictureInPictureSupported()
+      }
+
+      AsyncFunction("startPictureInPicture") { view: VideoView ->
+        view.enterPictureInPicture()
+      }
+
+      AsyncFunction("stopPictureInPicture") {
+        throw MethodUnsupportedException("stopPictureInPicture")
       }
 
       OnViewDestroys {
