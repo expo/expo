@@ -31,6 +31,7 @@ import expo.modules.image.records.ImageLoadEvent
 import expo.modules.image.records.ImageProgressEvent
 import expo.modules.image.records.ImageTransition
 import expo.modules.image.records.SourceMap
+import expo.modules.image.svg.SVGPictureDrawable
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.tracing.beginAsyncTraceBlock
 import expo.modules.kotlin.tracing.trace
@@ -127,7 +128,12 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   internal var tintColor: Int? = null
     set(value) {
       field = value
-      activeView.setTintColor(value)
+      // To apply the tint color to the SVG, we need to recreate the drawable.
+      if (activeView.drawable is SVGPictureDrawable) {
+        shouldRerender = true
+      } else {
+        activeView.setTintColor(value)
+      }
     }
 
   internal var isFocusableProp: Boolean = false
