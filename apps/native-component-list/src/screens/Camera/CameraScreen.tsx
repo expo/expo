@@ -328,7 +328,7 @@ export default class CameraScreen extends React.Component<object, State> {
             <MaterialCommunityIcons name="stop-circle" size={64} color="red" />
           ) : (
             <Ionicons
-              name="ios-radio-button-on"
+              name="radio-button-on"
               size={64}
               color={this.state.mode === 'picture' ? 'white' : 'red'}
             />

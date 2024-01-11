@@ -12,6 +12,7 @@ export const ASSETS = {
   cognito: ASSETS_PATH + 'cognito.png',
   coinbase: ASSETS_PATH + 'coinbase.png',
   id4: ASSETS_PATH + 'identity4.png',
+  descope: ASSETS_PATH + 'descope.png',
   dropbox: ASSETS_PATH + 'dropbox.png',
   facebook: ASSETS_PATH + 'facebook.png',
   fitbit: ASSETS_PATH + 'fitbit.png',

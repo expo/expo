@@ -195,7 +195,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
         self.currentPosition = self.player.currentTime;
 
         self.player.currentItem.audioTimePitchAlgorithm = self.pitchCorrectionQuality;
-        self.player.volume = self.volume.floatValue;
+        self.player.volume = self.volume.doubleValue;
         self.player.muted = self.isMuted;
         [self _updateLooping:self.isLooping];
 
@@ -221,13 +221,34 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
   return _shouldPlay && ![_rate isEqualToNumber:@(0)];
 }
 
+- (BOOL)_hasZeroTolerance:(NSDictionary *)parameters
+{
+  if ([parameters objectForKey:EXAVPlayerDataStatusSeekMillisToleranceBeforeKeyPath] == nil) {
+    return NO;
+  }
+    
+  NSNumber *seekMillisToleranceBefore = parameters[EXAVPlayerDataStatusSeekMillisToleranceBeforeKeyPath];
+    
+  if (CMTimeCompare(CMTimeMakeWithSeconds(seekMillisToleranceBefore.doubleValue / 1000, NSEC_PER_SEC), kCMTimeZero) != 0) {
+    return NO;
+  }
+    
+  if ([parameters objectForKey:EXAVPlayerDataStatusSeekMillisToleranceAfterKeyPath] == nil) {
+    return NO;
+  }
+
+  NSNumber *seekMillisToleranceAfter = parameters[EXAVPlayerDataStatusSeekMillisToleranceAfterKeyPath];
+    
+  return CMTimeCompare(CMTimeMakeWithSeconds(seekMillisToleranceAfter.doubleValue / 1000, NSEC_PER_SEC), kCMTimeZero) == 0;
+}
+
 - (NSError *)_tryPlayPlayerWithRateAndMuteIfNecessary
 {
   if (_player && [self _shouldPlayerPlay]) {
     NSError *error = [_exAV promoteAudioSessionIfNecessary];
     if (!error) {
       _player.muted = _isMuted;
-      _player.rate = [_rate floatValue];
+      _player.rate = [_rate doubleValue];
     }
     return error;
   }
@@ -264,9 +285,9 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
     NSNumber *currentPositionMillis = parameters[EXAVPlayerDataStatusPositionMillisKeyPath];
     
     // We only seek if the new position is different from _currentPosition by a whole number of milliseconds.
-    mustSeek = currentPositionMillis.longValue != [self _getRoundedMillisFromCMTime:_currentPosition].longValue;
+    mustSeek = [self _hasZeroTolerance:parameters] || currentPositionMillis.longValue != [self _getRoundedMillisFromCMTime:_currentPosition].longValue;
     if (mustSeek) {
-      newPosition = CMTimeMakeWithSeconds(currentPositionMillis.floatValue / 1000, NSEC_PER_SEC);
+      newPosition = CMTimeMakeWithSeconds(currentPositionMillis.doubleValue / 1000, NSEC_PER_SEC);
     }
   }
   
@@ -277,13 +298,13 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
   // We need to set toleranceBefore only if we will seek
   if (mustSeek && [parameters objectForKey:EXAVPlayerDataStatusSeekMillisToleranceBeforeKeyPath] != nil) {
     NSNumber *seekMillisToleranceBefore = parameters[EXAVPlayerDataStatusSeekMillisToleranceBeforeKeyPath];
-    toleranceBefore = CMTimeMakeWithSeconds(seekMillisToleranceBefore.floatValue / 1000, NSEC_PER_SEC);
+    toleranceBefore = CMTimeMakeWithSeconds(seekMillisToleranceBefore.doubleValue / 1000, NSEC_PER_SEC);
   }
   
   // We need to set toleranceAfter only if we will seek
   if (mustSeek && [parameters objectForKey:EXAVPlayerDataStatusSeekMillisToleranceAfterKeyPath] != nil) {
     NSNumber *seekMillisToleranceAfter = parameters[EXAVPlayerDataStatusSeekMillisToleranceAfterKeyPath];
-    toleranceAfter = CMTimeMakeWithSeconds(seekMillisToleranceAfter.floatValue / 1000, NSEC_PER_SEC);
+    toleranceAfter = CMTimeMakeWithSeconds(seekMillisToleranceAfter.doubleValue / 1000, NSEC_PER_SEC);
   }
   
   if ([parameters objectForKey:EXAVPlayerDataStatusShouldPlayKeyPath] != nil) {
@@ -334,7 +355,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
       _player.currentItem.audioTimePitchAlgorithm = AVAudioTimePitchAlgorithmVarispeed;
     }
 
-    _player.volume = _volume.floatValue;
+    _player.volume = _volume.doubleValue;
     
     // Apply parameters necessary after seek.
     EX_WEAKIFY(self);
@@ -401,7 +422,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
 
 - (NSNumber *)_getRoundedMillisFromCMTime:(CMTime)time
 {
-  return CMTIME_IS_INVALID(time) || CMTIME_IS_INDEFINITE(time) ? nil : @((long) (CMTimeGetSeconds(time) * 1000));
+  return CMTIME_IS_INVALID(time) || CMTIME_IS_INDEFINITE(time) ? nil : @((long) round((CMTimeGetSeconds(time) * 1000)));
 }
 
 - (NSNumber *)_getClippedValueForValue:(NSNumber *)value withMin:(NSNumber *)min withMax:(NSNumber *)max
@@ -680,7 +701,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
   
   EX_WEAKIFY(self);
   
-  CMTime interval = CMTimeMakeWithSeconds(_progressUpdateIntervalMillis.floatValue / 1000.0, NSEC_PER_SEC);
+  CMTime interval = CMTimeMakeWithSeconds(_progressUpdateIntervalMillis.doubleValue / 1000.0, NSEC_PER_SEC);
   
   void (^timeObserverBlock)(CMTime time) = ^(CMTime time) {
     EX_ENSURE_STRONGIFY(self);
@@ -784,7 +805,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
             strongSelf.replayResolve = nil;
           }
 
-          int observedRate = strongSelf.observedRate.floatValue * 1000;
+          int observedRate = strongSelf.observedRate.doubleValue * 1000;
           int currentRate = strongSelf.player.rate * 1000;
 
           if (abs(observedRate - currentRate) > 1) {

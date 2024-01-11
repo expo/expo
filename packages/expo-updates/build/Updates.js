@@ -12,17 +12,13 @@ import ExpoUpdates from './ExpoUpdates';
 export const isEnabled = !!ExpoUpdates.isEnabled;
 /**
  * The UUID that uniquely identifies the currently running update. The
- * UUID is represented in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) and
- * will always use lowercase letters. This value is `null` when running in a local development environment or any other environment where `expo-updates` is disabled.
+ * UUID is represented in its canonical string form and will always use lowercase letters.
+ * This value is `null` when running in a local development environment or any other environment where `expo-updates` is disabled.
+ * @example xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
  */
 export const updateId = ExpoUpdates.updateId && typeof ExpoUpdates.updateId === 'string'
     ? ExpoUpdates.updateId.toLowerCase()
     : null;
-/**
- * The name of the release channel currently configured in this standalone or bare app when using
- * classic updates. When using Expo Updates, the value of this field is always `"default"`.
- */
-export const releaseChannel = ExpoUpdates.releaseChannel ?? 'default';
 /**
  * The channel name of the current build, if configured for use with EAS Update. `null` otherwise.
  *

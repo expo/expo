@@ -24,19 +24,14 @@ export const isEnabled: boolean = !!ExpoUpdates.isEnabled;
 
 /**
  * The UUID that uniquely identifies the currently running update. The
- * UUID is represented in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) and
- * will always use lowercase letters. This value is `null` when running in a local development environment or any other environment where `expo-updates` is disabled.
+ * UUID is represented in its canonical string form and will always use lowercase letters.
+ * This value is `null` when running in a local development environment or any other environment where `expo-updates` is disabled.
+ * @example xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
  */
 export const updateId: string | null =
   ExpoUpdates.updateId && typeof ExpoUpdates.updateId === 'string'
     ? ExpoUpdates.updateId.toLowerCase()
     : null;
-
-/**
- * The name of the release channel currently configured in this standalone or bare app when using
- * classic updates. When using Expo Updates, the value of this field is always `"default"`.
- */
-export const releaseChannel: string = ExpoUpdates.releaseChannel ?? 'default';
 
 /**
  * The channel name of the current build, if configured for use with EAS Update. `null` otherwise.
@@ -216,7 +211,7 @@ export async function checkForUpdateAsync(): Promise<UpdateCheckResult> {
  *
  * This method cannot be used in Expo Go or development mode. It also rejects when expo-updates is not enabled.
  */
-export async function getExtraParamsAsync(): Promise<{ [key: string]: string }> {
+export async function getExtraParamsAsync(): Promise<Record<string, string>> {
   if (!ExpoUpdates.getExtraParamsAsync) {
     throw new UnavailabilityError('Updates', 'getExtraParamsAsync');
   }
