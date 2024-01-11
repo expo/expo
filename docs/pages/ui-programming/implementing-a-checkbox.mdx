@@ -220,10 +220,8 @@ export default function App() {
         <MyCheckbox
           checked={checked}
           onChange={setChecked}
-          /* @info Pass in base and active styles for the checkbox */
-          buttonStyle={styles.checkboxBase}
-          activeButtonStyle={styles.checkboxChecked}
-          /* @end */
+          buttonStyle={/* @info Pass in base styles for the checkbox */styles.checkboxBase/* @end */}
+          activeButtonStyle={/* @info Pass in active styles for the checkbox */styles.checkboxChecked/* @end */}
         />
         <Text style={styles.checkboxLabel}>{`⬅️ Click!`}</Text>
       </View>
