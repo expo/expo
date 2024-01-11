@@ -46,7 +46,8 @@ class DevMenuAppInstance: DevMenuRCTAppDelegate {
         forBundleRoot: "index",
         packagerHost: packagerHost,
         enableDev: true,
-        enableMinification: false)
+        enableMinification: false,
+        inlineSourceMap: false)
     }
     #endif
     return jsSourceUrl()
