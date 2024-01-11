@@ -53,6 +53,7 @@ export default function Route() {
   /* @info <b>user=baconbrix</b> & <b>extra=info</b> */
   const { user, extra } = useGlobalSearchParams();
   /* @end */
+
   return <Text>User: {user}</Text>;
 }
 ```
@@ -79,6 +80,7 @@ export default function Route() {
   /* @info */
   const { user, extra } = useLocalSearchParams();
   /* @end */
+
   return <Text>User: {user}</Text>;
 }
 ```
@@ -98,6 +100,7 @@ export default function Route() {
   /* @info Access the current navigation object for the current route */
   const navigation = useNavigation();
   /* @end */
+
   return (
     <View>
       <Text
@@ -180,6 +183,7 @@ export default function Route() {
   /* @info <b>segments = ["profile", "[user]"]</b> */
   const segments = useSegments();
   /* @end */
+
   return <Text>Hello</Text>;
 }
 ```

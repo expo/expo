@@ -311,9 +311,7 @@ export default function App() {
   return (
     <SafeAreaView>
       <Button
-        /* @info Disable the button until the request is loaded asynchronously. */
-        disabled={!request}
-        /* @end */
+        disabled={/* @info Disable the button until the request is loaded asynchronously*/!request/* @end */}
         title="Login"
         onPress={() => {
           /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
@@ -2009,7 +2007,6 @@ function App() {
 Because there was no secure way to do this to store client secrets in your app bundle, historically, many providers have offered an "Implicit flow" which enables you to request an access token without the client secret. **This is no longer recommended** due to inherent security risks, including the risk of access token injection. Instead, most providers now support the authorization code with PKCE (Proof Key for Code Exchange) extension to securely exchange an authorization code for an access token within your client app code. Learn more about [transitioning from Implicit flow to authorization code with PKCE](https://oauth.net/2/grant-types/implicit/).
 
 `expo-auth-session` still supports Implicit flow for legacy code purposes. Below is an example implementation of the Implicit flow.
-
 
 {/* prettier-ignore */}
 ```tsx
