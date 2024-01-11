@@ -205,7 +205,7 @@ Once configured, information about the associated update will show up in an erro
 After running `eas update`, upload the source maps to Sentry:
 
 ```sh
-SENTRY_AUTH_TOKEN=[super-secret-token] node node_modules/@sentry/react-native/scripts/expo-upload-sourcemaps.js dist
+SENTRY_AUTH_TOKEN=[super-secret-token] npx sentry-expo-upload-sourcemaps dist
 ```
 
 </Tab>
