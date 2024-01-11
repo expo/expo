@@ -27,6 +27,8 @@ export const packPackageToTarball = new Task<TaskArgs>(
 
             state.packageTarballFilename = packResult.filename;
           }
+          // eslint-disable-next-line no-useless-return
+          return;
         } catch (error) {
           step.fail();
           logger.error(error.stderr);
