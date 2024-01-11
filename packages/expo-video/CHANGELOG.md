@@ -6,8 +6,8 @@
 
 ### 🎉 New features
  
+- [Android] Add fullscreen support. ([#26159](https://github.com/expo/expo/pull/26159) by [@behenate](https://github.com/behenate))
 - [web] Add volume ([#26137](https://github.com/expo/expo/pull/26137) by [@behenate](https://github.com/behenate))
-
 - Initial release for Android 🎉 ([#26033](https://github.com/expo/expo/pull/26033) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
