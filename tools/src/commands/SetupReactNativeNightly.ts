@@ -3,7 +3,9 @@ import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
 import fs from 'fs-extra';
+import glob from 'glob-promise';
 import path from 'path';
+import semver from 'semver';
 
 import { EXPO_DIR, EXPOTOOLS_DIR } from '../Constants';
 import logger from '../Logger';
@@ -22,10 +24,7 @@ export default (program: Command) => {
 };
 
 async function main() {
-  const nightlyVersion = (await getPackageViewAsync('react-native'))?.['dist-tags'].nightly;
-  if (!nightlyVersion) {
-    throw new Error('Unable to get react-native nightly version.');
-  }
+  const nightlyVersion = await queryNpmDistTagVersionAsync('react-native', 'nightly');
 
   logger.info('Adding bare-expo optional packages:');
   await addBareExpoOptionalPackagesAsync();
@@ -33,22 +32,40 @@ async function main() {
   logger.info('Adding pinned packages:');
   const pinnedPackages = {
     'react-native': nightlyVersion,
-    '@react-native-async-storage/async-storage': '~1.19.1', // fix AGP 8 build error
+
+    // These 3rd party libraries are broken from react-native nightlies, trying to update them to newer versions.
+    ...(await queryLatest3rdPartyLibrariesAsync({
+      '@react-native-community/slider': 'latest',
+      'lottie-react-native': 'latest',
+      'react-native-pager-view': 'latest',
+      'react-native-safe-area-context': 'latest',
+      'react-native-screens': '3.29.0',
+      'react-native-svg': 'latest',
+      'react-native-webview': 'latest',
+    })),
   };
   await addPinnedPackagesAsync(pinnedPackages);
 
   logger.info('Yarning...');
   await workspaceInstallAsync();
 
-  await updateReactNativePackageAsync();
+  await patchAndroidCallInvokerHolderAsync();
+  await patchIosNewArchFlagsAsync(path.join(EXPO_DIR, 'node_modules', 'react-native-reanimated'));
 
-  await patchAndroidBuildConfigAsync();
-  await patchReactNavigationAsync();
-  await patchDetoxAsync();
-  await patchReanimatedAsync();
-  await patchScreensAsync();
-  await patchGestureHandlerAsync();
-  await patchSafeAreaContextAsync();
+  const patches = [
+    'datetimepicker.patch',
+    'react-native-gesture-handler.patch',
+    'react-native-reanimated.patch',
+    'react-native-safe-area-context.patch',
+    'react-native-screens.patch',
+  ];
+  await Promise.all(
+    patches.map(async (patch) => {
+      const patchFile = path.join(PATCHES_ROOT, patch);
+      const patchContent = await fs.readFile(patchFile, 'utf8');
+      await applyPatchAsync({ patchContent, cwd: EXPO_DIR, stripPrefixNum: 1 });
+    })
+  );
 
   logger.info('Setting up Expo modules files');
   await updateExpoModulesAsync();
@@ -96,102 +113,88 @@ async function addPinnedPackagesAsync(packages: Record<string, string>) {
   await JsonFile.writeAsync(workspacePackageJsonPath, json);
 }
 
-async function updateReactNativePackageAsync() {
-  const reactNativeRoot = path.join(EXPO_DIR, 'node_modules', 'react-native');
+async function patchAndroidCallInvokerHolderAsync() {
+  const nodeModulesDir = path.join(EXPO_DIR, 'node_modules');
+  const targetFiles = [
+    path.join(
+      EXPO_DIR,
+      'packages',
+      'expo-modules-core',
+      'android/src/main/java/expo/modules/adapters/react/services/UIManagerModuleWrapper.java'
+    ),
+    path.join(
+      EXPO_DIR,
+      'packages',
+      'expo-modules-core',
+      'android/src/main/java/expo/modules/core/interfaces/JavaScriptContextProvider.java'
+    ),
+    path.join(
+      EXPO_DIR,
+      'packages',
+      'expo-modules-core',
+      'android/src/main/java/expo/modules/core/interfaces/JavaScriptContextProvider.java'
+    ),
+    path.join(
+      EXPO_DIR,
+      'packages',
+      'expo-modules-core',
+      'android/src/main/java/expo/modules/kotlin/jni/JSIInteropModuleRegistry.kt'
+    ),
+    path.join(
+      EXPO_DIR,
+      'packages',
+      'expo-av',
+      'android/src/main/java/expo/modules/av/AVManager.java'
+    ),
+    path.join(
+      nodeModulesDir,
+      'react-native-reanimated',
+      'android/src/paper/java/com/swmansion/reanimated/NativeProxy.java'
+    ),
+    path.join(
+      nodeModulesDir,
+      'react-native-reanimated',
+      'android/src/fabric/java/com/swmansion/reanimated/NativeProxy.java'
+    ),
+    path.join(
+      nodeModulesDir,
+      '@shopify/react-native-skia',
+      'android/src/main/java/com/shopify/reactnative/skia/SkiaManager.java'
+    ),
+  ];
 
-  // https://github.com/facebook/react-native/pull/38993
-  await transformFileAsync(path.join(reactNativeRoot, 'React-Core.podspec'), [
+  for (const file of targetFiles) {
+    await transformFileAsync(file, [
+      {
+        find: /^(import )(com\.facebook\.react\.turbomodule\.core\.CallInvokerHolderImpl)(;?)$/gm,
+        replaceWith: '$1com.facebook.react.internal.turbomodule.core.CallInvokerHolderImpl$3',
+      },
+    ]);
+  }
+}
+
+async function patchIosNewArchFlagsAsync(packageRoot: string) {
+  const podspecPath = await glob('*.podspec', { cwd: packageRoot, absolute: true });
+  await transformFileAsync(podspecPath[0], [
     {
-      find: '"React/CxxLogUtils/*.h"',
-      replaceWith: '"React/Cxx*/*.h"',
+      find: "new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'",
+      replaceWith:
+        "new_arch_enabled = ENV['USE_NEW_ARCH'] != nil ? ENV['USE_NEW_ARCH'] == '1' : ENV['RCT_NEW_ARCH_ENABLED'] == '1'",
     },
   ]);
-}
 
-async function patchReactNavigationAsync() {
-  await transformFileAsync(
-    path.join(EXPO_DIR, 'node_modules', '@react-navigation/elements', 'src/Header/Header.tsx'),
-    [
-      {
-        // Weird that the nightlies will break if pass `undefined` to the `transform` prop
-        find: 'style={[{ height, minHeight, maxHeight, opacity, transform }]}',
-        replaceWith:
-          'style={[{ height, minHeight, maxHeight, opacity, transform: transform ?? [] }]}',
-      },
-    ]
+  const files = await glob('**/*.{h,cpp,m,mm}', { cwd: packageRoot, absolute: true });
+  const regexp = /RCT_NEW_ARCH_ENABLED/g;
+  await Promise.all(
+    files.map((file) =>
+      transformFileAsync(file, [
+        {
+          find: regexp,
+          replaceWith: 'USE_NEW_ARCH',
+        },
+      ])
+    )
   );
-}
-
-async function patchDetoxAsync() {
-  await transformFileAsync(
-    path.join(EXPO_DIR, 'node_modules', 'detox', 'android/detox/build.gradle'),
-    [
-      {
-        // namespace
-        find: /^(android \{[\s\S]*?)(\n})/gm,
-        replaceWith: '$1\n  namespace "com.wix.detox"\n$2',
-      },
-    ]
-  );
-}
-
-async function patchReanimatedAsync() {
-  await transformFileAsync(
-    path.join(
-      EXPO_DIR,
-      'node_modules',
-      'react-native-reanimated',
-      'android/src/main/java/com/swmansion/reanimated/keyboardObserver/ReanimatedKeyboardEventListener.java'
-    ),
-    [
-      {
-        // AGP 8 `nonTransitiveRClass`
-        find: /\bcom\.swmansion\.reanimated\.(R\.id\.action_bar_root)/g,
-        replaceWith: 'androidx.appcompat.$1',
-      },
-    ]
-  );
-}
-
-async function patchScreensAsync() {
-  await transformFileAsync(
-    path.join(
-      EXPO_DIR,
-      'node_modules',
-      'react-native-screens',
-      'android/src/main/java/com/swmansion/rnscreens/ScreenStackHeaderConfig.kt'
-    ),
-    [
-      {
-        // AGP 8 `nonTransitiveRClass`
-        find: /\b(R\.attr\.colorPrimary)/g,
-        replaceWith: 'android.$1',
-      },
-    ]
-  );
-}
-
-async function patchGestureHandlerAsync() {
-  await transformFileAsync(
-    path.join(
-      EXPO_DIR,
-      'node_modules',
-      'react-native-gesture-handler',
-      'android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerModule.kt'
-    ),
-    [
-      {
-        find: 'decorateRuntime(jsContext.get())',
-        replaceWith: 'decorateRuntime(jsContext!!.get())',
-      },
-    ]
-  );
-}
-
-async function patchSafeAreaContextAsync() {
-  const patchFile = path.join(PATCHES_ROOT, 'react-native-safe-area-context.patch');
-  const patchContent = await fs.readFile(patchFile, 'utf8');
-  await applyPatchAsync({ patchContent, cwd: EXPO_DIR, stripPrefixNum: 1 });
 }
 
 async function updateExpoModulesAsync() {
@@ -200,18 +203,10 @@ async function updateExpoModulesAsync() {
 
 async function updateBareExpoAsync(nightlyVersion: string) {
   const root = path.join(EXPO_DIR, 'apps', 'bare-expo');
+
+  // Flipper was removed in 0.74
   await transformFileAsync(path.join(root, 'ios', 'Podfile'), [
     {
-      find: /(platform :ios, )['"]13\.0['"]/g,
-      replaceWith: "$1'13.4'",
-    },
-    {
-      // __apply_Xcode_12_5_M1_post_install_workaround was removed in 0.73
-      find: '__apply_Xcode_12_5_M1_post_install_workaround(installer)',
-      replaceWith: '',
-    },
-    {
-      // Flipper was removed in 0.74
       find: `flipper_config = ENV['NO_FLIPPER'] == "1" || ENV['CI'] ? FlipperConfiguration.disabled : FlipperConfiguration.enabled`,
       replaceWith: '',
     },
@@ -220,71 +215,33 @@ async function updateBareExpoAsync(nightlyVersion: string) {
       replaceWith: '',
     },
   ]);
-
-  // flipper-integration
   await transformFileAsync(path.join(root, 'android', 'app', 'build.gradle'), [
     {
-      find: 'debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}")',
-      replaceWith: 'debugImplementation("com.facebook.fresco:flipper-fresco-plugin:3.0.0")',
-    },
-  ]);
-  await transformFileAsync(path.join(root, 'android', 'gradle.properties'), [
-    {
-      find: /FLIPPER_VERSION=0\.182\.0/,
-      replaceWith: 'FLIPPER_VERSION=0.201.0',
+      find: `implementation("com.facebook.react:flipper-integration")`,
+      replaceWith: '',
     },
   ]);
 }
 
-async function patchAndroidBuildConfigAsync() {
-  const missingBuildConfigModules = [
-    '@react-native-async-storage/async-storage',
-    '@react-native-community/datetimepicker',
-    '@react-native-community/netinfo',
-    '@react-native-community/slider',
-    'lottie-react-native',
-    'react-native-gesture-handler',
-    'react-native-maps',
-    'react-native-pager-view',
-    'react-native-reanimated',
-    'react-native-safe-area-context',
-    'react-native-screens',
-    'react-native-svg',
-    'react-native-webview',
-  ];
-  const searchPattern = /^(android \{[\s\S]*?)(\n})/gm;
-  const replacement = `$1
-    buildFeatures {
-        buildConfig true
-    }$2`;
-  for (const module of missingBuildConfigModules) {
-    const gradleFile = path.join(EXPO_DIR, 'node_modules', module, 'android', 'build.gradle');
-    await transformFileAsync(gradleFile, [
-      {
-        find: searchPattern,
-        replaceWith: replacement,
-      },
-    ]);
+async function queryNpmDistTagVersionAsync(pkg: string, distTag: string) {
+  const view = await getPackageViewAsync(pkg);
+  const version = view?.['dist-tags'][distTag];
+  if (!version) {
+    throw new Error(`Unable to get ${pkg} version for dist-tag: ${distTag}.`);
   }
+  return version;
+}
 
-  const missingNamespaceModules = {
-    '@shopify/flash-list': 'com.shopify.reactnative.flash_list',
-    '@shopify/react-native-skia': 'com.shopify.reactnative.skia',
-    '@react-native-community/slider': 'com.reactnativecommunity.slider',
-    '@react-native-masked-view/masked-view': 'org.reactnative.maskedview',
-    '@react-native-picker/picker': 'com.reactnativecommunity.picker',
-    'react-native-maps': 'com.rnmaps.maps',
-    'react-native-pager-view': 'com.reactnativepagerview',
-    'react-native-view-shot': 'fr.greweb.reactnativeviewshot',
-    'react-native-webview': 'com.reactnativecommunity.webview',
-  };
-  for (const [module, namespace] of Object.entries(missingNamespaceModules)) {
-    const gradleFile = path.join(EXPO_DIR, 'node_modules', module, 'android', 'build.gradle');
-    await transformFileAsync(gradleFile, [
-      {
-        find: searchPattern,
-        replaceWith: `$1\n  namespace "${namespace}"\n$2`,
-      },
-    ]);
+async function queryLatest3rdPartyLibrariesAsync(pkgTuple: Record<string, string>) {
+  const pkgAndVersion: Record<string, string> = {};
+  for (const [pkg, tagOrVersion] of Object.entries(pkgTuple)) {
+    let version;
+    if (semver.valid(tagOrVersion)) {
+      version = tagOrVersion;
+    } else {
+      version = await queryNpmDistTagVersionAsync(pkg, tagOrVersion);
+    }
+    pkgAndVersion[pkg] = version;
   }
+  return pkgAndVersion;
 }

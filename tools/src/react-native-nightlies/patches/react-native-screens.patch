@@ -1,0 +1,1384 @@
+diff --git a/node_modules/react-native-screens/RNScreens.podspec b/node_modules/react-native-screens/RNScreens.podspec
+index 45193f7..baceb27 100644
+--- a/node_modules/react-native-screens/RNScreens.podspec
++++ b/node_modules/react-native-screens/RNScreens.podspec
+@@ -2,7 +2,7 @@ require "json"
+ 
+ package = JSON.parse(File.read(File.join(__dir__, "package.json")))
+ 
+-new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
++new_arch_enabled = ENV['USE_NEW_ARCH'] != nil ? ENV['USE_NEW_ARCH'] == '1' : ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+ platform = new_arch_enabled ? "11.0" : "9.0"
+ source_files = new_arch_enabled ? 'ios/**/*.{h,m,mm,cpp}' : "ios/**/*.{h,m,mm}"
+ 
+@@ -12,10 +12,6 @@ folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1
+ class RNScreensDependencyHelper
+   # Helper class to add the Common subspec
+   def self.add_common_subspec(s, new_arch_enabled)
+-    unless new_arch_enabled
+-      return
+-    end
+-
+     s.subspec "common" do |ss|
+       ss.source_files         = "common/cpp/**/*.{cpp,h}"
+       ss.header_dir           = "rnscreens"
+diff --git a/node_modules/react-native-screens/ios/RCTImageComponentView+RNSScreenStackHeaderConfig.h b/node_modules/react-native-screens/ios/RCTImageComponentView+RNSScreenStackHeaderConfig.h
+index ca75f92..efa0817 100644
+--- a/node_modules/react-native-screens/ios/RCTImageComponentView+RNSScreenStackHeaderConfig.h
++++ b/node_modules/react-native-screens/ios/RCTImageComponentView+RNSScreenStackHeaderConfig.h
+@@ -1,4 +1,4 @@
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ 
+ #include <React/RCTImageComponentView.h>
+ 
+@@ -8,4 +8,4 @@
+ 
+ @end
+ 
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+diff --git a/node_modules/react-native-screens/ios/RCTImageComponentView+RNSScreenStackHeaderConfig.mm b/node_modules/react-native-screens/ios/RCTImageComponentView+RNSScreenStackHeaderConfig.mm
+index 601095f..d094d1e 100644
+--- a/node_modules/react-native-screens/ios/RCTImageComponentView+RNSScreenStackHeaderConfig.mm
++++ b/node_modules/react-native-screens/ios/RCTImageComponentView+RNSScreenStackHeaderConfig.mm
+@@ -1,4 +1,4 @@
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ 
+ #include "RCTImageComponentView+RNSScreenStackHeaderConfig.h"
+ 
+@@ -11,4 +11,4 @@
+ 
+ @end
+ 
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+diff --git a/node_modules/react-native-screens/ios/RNSConvert.h b/node_modules/react-native-screens/ios/RNSConvert.h
+index 17b0485..072c708 100644
+--- a/node_modules/react-native-screens/ios/RNSConvert.h
++++ b/node_modules/react-native-screens/ios/RNSConvert.h
+@@ -1,4 +1,4 @@
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ #import <react/renderer/components/rnscreens/Props.h>
+ #import "RNSEnums.h"
+ 
+@@ -33,4 +33,4 @@ namespace react = facebook::react;
+ 
+ @end
+ 
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+diff --git a/node_modules/react-native-screens/ios/RNSConvert.mm b/node_modules/react-native-screens/ios/RNSConvert.mm
+index 70a1f39..886e6b4 100644
+--- a/node_modules/react-native-screens/ios/RNSConvert.mm
++++ b/node_modules/react-native-screens/ios/RNSConvert.mm
+@@ -1,6 +1,6 @@
+ #import "RNSConvert.h"
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ @implementation RNSConvert
+ 
+ + (RNSScreenStackPresentation)RNSScreenStackPresentationFromCppEquivalent:
+@@ -152,4 +152,4 @@
+ 
+ @end
+ 
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+diff --git a/node_modules/react-native-screens/ios/RNSFullWindowOverlay.h b/node_modules/react-native-screens/ios/RNSFullWindowOverlay.h
+index 65d6100..ee4ec65 100644
+--- a/node_modules/react-native-screens/ios/RNSFullWindowOverlay.h
++++ b/node_modules/react-native-screens/ios/RNSFullWindowOverlay.h
+@@ -1,15 +1,15 @@
+ #import <React/RCTViewManager.h>
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ #import <React/RCTViewComponentView.h>
+ #else
+ #import <React/RCTInvalidating.h>
+ #import <React/RCTView.h>
+ #endif
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ namespace react = facebook::react;
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+ 
+ @interface RNSFullWindowOverlayManager : RCTViewManager
+ 
+@@ -20,15 +20,15 @@ namespace react = facebook::react;
+ @end
+ 
+ @interface RNSFullWindowOverlay :
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+     RCTViewComponentView
+ #else
+     RCTView <RCTInvalidating>
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ @property (nonatomic) react::LayoutMetrics oldLayoutMetrics;
+ @property (nonatomic) react::LayoutMetrics newLayoutMetrics;
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+ 
+ @end
+diff --git a/node_modules/react-native-screens/ios/RNSFullWindowOverlay.mm b/node_modules/react-native-screens/ios/RNSFullWindowOverlay.mm
+index 74f1804..68121b3 100644
+--- a/node_modules/react-native-screens/ios/RNSFullWindowOverlay.mm
++++ b/node_modules/react-native-screens/ios/RNSFullWindowOverlay.mm
+@@ -2,16 +2,13 @@
+ 
+ #import "RNSFullWindowOverlay.h"
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
+ #import <React/RCTConversions.h>
+ #import <React/RCTFabricComponentsPlugins.h>
+ #import <React/RCTSurfaceTouchHandler.h>
+ #import <react/renderer/components/rnscreens/ComponentDescriptors.h>
+ #import <react/renderer/components/rnscreens/Props.h>
+ #import <react/renderer/components/rnscreens/RCTComponentViewHelpers.h>
+-#else
+ #import <React/RCTTouchHandler.h>
+-#endif // RCT_NEW_ARCH_ENABLED
+ 
+ @implementation RNSFullWindowOverlayContainer
+ 
+@@ -71,14 +68,14 @@
+   __weak RCTBridge *_bridge;
+   RNSFullWindowOverlayContainer *_container;
+   CGRect _reactFrame;
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   RCTSurfaceTouchHandler *_touchHandler;
+ #else
+   RCTTouchHandler *_touchHandler;
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+ }
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ - (instancetype)init
+ {
+   if (self = [super init]) {
+@@ -88,7 +85,7 @@
+   }
+   return self;
+ }
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+ 
+ - (instancetype)initWithBridge:(RCTBridge *)bridge
+ {
+@@ -139,7 +136,7 @@
+       UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, _container);
+     }
+     if (_touchHandler == nil) {
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+       _touchHandler = [RCTSurfaceTouchHandler new];
+ #else
+       _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
+@@ -149,7 +146,7 @@
+   }
+ }
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ #pragma mark - Fabric Specific
+ 
+ // When the component unmounts we remove it from window's children,
+@@ -215,27 +212,25 @@
+   _container = nil;
+ }
+ 
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+ 
+ @end
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
+ Class<RCTComponentViewProtocol> RNSFullWindowOverlayCls(void)
+ {
+   return RNSFullWindowOverlay.class;
+ }
+-#endif // RCT_NEW_ARCH_ENABLED
+ 
+ @implementation RNSFullWindowOverlayManager
+ 
+ RCT_EXPORT_MODULE()
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ #else
+ - (UIView *)view
+ {
+   return [[RNSFullWindowOverlay alloc] initWithBridge:self.bridge];
+ }
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+ 
+ @end
+diff --git a/node_modules/react-native-screens/ios/RNSScreen.h b/node_modules/react-native-screens/ios/RNSScreen.h
+index f1bd9d8..b417729 100644
+--- a/node_modules/react-native-screens/ios/RNSScreen.h
++++ b/node_modules/react-native-screens/ios/RNSScreen.h
+@@ -4,17 +4,17 @@
+ #import "RNSEnums.h"
+ #import "RNSScreenContainer.h"
+ 
+-#if RCT_NEW_ARCH_ENABLED
++#if USE_NEW_ARCH
+ #import <React/RCTViewComponentView.h>
+ #else
+ #import <React/RCTView.h>
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+ 
+ NS_ASSUME_NONNULL_BEGIN
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ namespace react = facebook::react;
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+ 
+ @interface RCTConvert (RNSScreen)
+ 
+@@ -39,7 +39,7 @@ namespace react = facebook::react;
+ - (void)calculateAndNotifyHeaderHeightChangeIsModal:(BOOL)isModal;
+ - (void)notifyFinishTransitioning;
+ - (RNSScreenView *)screenView;
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ - (void)setViewToSnapshot:(UIView *)snapshot;
+ - (void)resetViewToScreen;
+ #endif
+@@ -49,7 +49,7 @@ namespace react = facebook::react;
+ @class RNSScreenStackHeaderConfig;
+ 
+ @interface RNSScreenView :
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+     RCTViewComponentView
+ #else
+     RCTView
+@@ -92,7 +92,7 @@ namespace react = facebook::react;
+ @property (nonatomic) BOOL sheetExpandsWhenScrolledToEdge;
+ #endif // !TARGET_OS_TV
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ // we recreate the behavior of `reactSetFrame` on new architecture
+ @property (nonatomic) react::LayoutMetrics oldLayoutMetrics;
+ @property (nonatomic) react::LayoutMetrics newLayoutMetrics;
+@@ -108,12 +108,12 @@ namespace react = facebook::react;
+ @property (nonatomic, copy) RCTDirectEventBlock onNativeDismissCancelled;
+ @property (nonatomic, copy) RCTDirectEventBlock onTransitionProgress;
+ @property (nonatomic, copy) RCTDirectEventBlock onGestureCancel;
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+ 
+ - (void)notifyFinishTransitioning;
+ - (void)notifyHeaderHeightChange:(double)height;
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ - (void)notifyWillAppear;
+ - (void)notifyWillDisappear;
+ - (void)notifyAppear;
+diff --git a/node_modules/react-native-screens/ios/RNSScreen.mm b/node_modules/react-native-screens/ios/RNSScreen.mm
+index 4b24cff..8c731ed 100644
+--- a/node_modules/react-native-screens/ios/RNSScreen.mm
++++ b/node_modules/react-native-screens/ios/RNSScreen.mm
+@@ -4,7 +4,6 @@
+ #import "RNSScreenContainer.h"
+ #import "RNSScreenWindowTraits.h"
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
+ #import <React/RCTConversions.h>
+ #import <React/RCTFabricComponentsPlugins.h>
+ #import <React/RCTRootComponentView.h>
+@@ -16,21 +15,19 @@
+ #import "RNSConvert.h"
+ #import "RNSHeaderHeightChangeEvent.h"
+ #import "RNSScreenViewEvent.h"
+-#else
+ #import <React/RCTTouchHandler.h>
+-#endif
+ 
+ #import <React/RCTShadowView.h>
+ #import <React/RCTUIManager.h>
+ #import "RNSScreenStack.h"
+ #import "RNSScreenStackHeaderConfig.h"
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ namespace react = facebook::react;
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+ 
+ @interface RNSScreenView ()
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+     <RCTRNSScreenViewProtocol, UIAdaptivePresentationControllerDelegate>
+ #else
+     <UIAdaptivePresentationControllerDelegate, RCTInvalidating>
+@@ -39,7 +36,7 @@ namespace react = facebook::react;
+ 
+ @implementation RNSScreenView {
+   __weak RCTBridge *_bridge;
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   RCTSurfaceTouchHandler *_touchHandler;
+   react::RNSScreenShadowNode::ConcreteState::Shared _state;
+   // on fabric, they are not available by default so we need them exposed here too
+@@ -50,7 +47,7 @@ namespace react = facebook::react;
+ #endif
+ }
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ - (instancetype)initWithFrame:(CGRect)frame
+ {
+   if (self = [super initWithFrame:frame]) {
+@@ -61,7 +58,7 @@ namespace react = facebook::react;
+   }
+   return self;
+ }
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+ 
+ - (instancetype)initWithBridge:(RCTBridge *)bridge
+ {
+@@ -96,7 +93,7 @@ namespace react = facebook::react;
+   return _controller;
+ }
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ - (NSArray<UIView *> *)reactSubviews
+ {
+   return _reactSubviews;
+@@ -105,7 +102,7 @@ namespace react = facebook::react;
+ 
+ - (void)updateBounds
+ {
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   if (_state != nullptr) {
+     auto newState = react::RNSScreenState{RCTSizeFromCGSize(self.bounds.size)};
+     _state->updateState(std::move(newState));
+@@ -165,7 +162,7 @@ namespace react = facebook::react;
+     // https://developer.apple.com/documentation/uikit/uiviewcontroller/1621426-presentationcontroller?language=objc
+     _controller.presentationController.delegate = self;
+   } else if (_stackPresentation != RNSScreenStackPresentationPush) {
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+     // TODO: on Fabric, same controllers can be used as modals and then recycled and used a push which would result in
+     // this error. It would be good to check if it doesn't leak in such case.
+ #else
+@@ -291,7 +288,7 @@ namespace react = facebook::react;
+ 
+ - (void)notifyDismissedWithCount:(int)dismissCount
+ {
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   // If screen is already unmounted then there will be no event emitter
+   // it will be cleaned in prepareForRecycle
+   if (_eventEmitter != nullptr) {
+@@ -313,7 +310,7 @@ namespace react = facebook::react;
+ 
+ - (void)notifyDismissCancelledWithDismissCount:(int)dismissCount
+ {
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   // If screen is already unmounted then there will be no event emitter
+   // it will be cleaned in prepareForRecycle
+   if (_eventEmitter != nullptr) {
+@@ -330,7 +327,7 @@ namespace react = facebook::react;
+ 
+ - (void)notifyWillAppear
+ {
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   // If screen is already unmounted then there will be no event emitter
+   // it will be cleaned in prepareForRecycle
+   if (_eventEmitter != nullptr) {
+@@ -353,7 +350,7 @@ namespace react = facebook::react;
+   if (_hideKeyboardOnSwipe) {
+     [self endEditing:YES];
+   }
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   // If screen is already unmounted then there will be no event emitter
+   // it will be cleaned in prepareForRecycle
+   if (_eventEmitter != nullptr) {
+@@ -369,7 +366,7 @@ namespace react = facebook::react;
+ 
+ - (void)notifyAppear
+ {
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   // If screen is already unmounted then there will be no event emitter
+   // it will be cleaned in prepareForRecycle
+   if (_eventEmitter != nullptr) {
+@@ -389,7 +386,7 @@ namespace react = facebook::react;
+ 
+ - (void)notifyDisappear
+ {
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   // If screen is already unmounted then there will be no event emitter
+   // it will be cleaned in prepareForRecycle
+   if (_eventEmitter != nullptr) {
+@@ -405,7 +402,7 @@ namespace react = facebook::react;
+ 
+ - (void)notifyHeaderHeightChange:(double)headerHeight
+ {
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   if (_eventEmitter != nullptr) {
+     std::dynamic_pointer_cast<const facebook::react::RNSScreenEventEmitter>(_eventEmitter)
+         ->onHeaderHeightChange(
+@@ -428,7 +425,7 @@ namespace react = facebook::react;
+ 
+ - (void)notifyGestureCancel
+ {
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   if (_eventEmitter != nullptr) {
+     std::dynamic_pointer_cast<const react::RNSScreenEventEmitter>(_eventEmitter)
+         ->onGestureCancel(react::RNSScreenEventEmitter::OnGestureCancel{});
+@@ -442,7 +439,7 @@ namespace react = facebook::react;
+ 
+ - (BOOL)isMountedUnderScreenOrReactRoot
+ {
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ #define RNS_EXPECTED_VIEW RCTRootComponentView
+ #else
+ #define RNS_EXPECTED_VIEW RCTRootView
+@@ -463,7 +460,7 @@ namespace react = facebook::react;
+   // root application window.
+   if (self.window != nil && ![self isMountedUnderScreenOrReactRoot]) {
+     if (_touchHandler == nil) {
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+       _touchHandler = [RCTSurfaceTouchHandler new];
+ #else
+       _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
+@@ -475,7 +472,7 @@ namespace react = facebook::react;
+   }
+ }
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ - (RCTSurfaceTouchHandler *)touchHandler
+ #else
+ - (RCTTouchHandler *)touchHandler
+@@ -500,7 +497,7 @@ namespace react = facebook::react;
+ 
+ - (void)notifyTransitionProgress:(double)progress closing:(BOOL)closing goingForward:(BOOL)goingForward
+ {
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   if (_eventEmitter != nullptr) {
+     std::dynamic_pointer_cast<const react::RNSScreenEventEmitter>(_eventEmitter)
+         ->onTransitionProgress(react::RNSScreenEventEmitter::OnTransitionProgress{
+@@ -535,7 +532,7 @@ namespace react = facebook::react;
+   // pulling down starting at some touchable item. Without "reset" the touchable
+   // will never go back from highlighted state even when the modal start sliding
+   // down.
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   [_touchHandler setEnabled:NO];
+   [_touchHandler setEnabled:YES];
+ #else
+@@ -653,7 +650,7 @@ namespace react = facebook::react;
+ #endif // !TARGET_OS_TV
+ 
+ #pragma mark - Fabric specific
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ 
+ - (BOOL)hasHeaderConfig
+ {
+@@ -860,12 +857,10 @@ namespace react = facebook::react;
+ 
+ @end
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
+ Class<RCTComponentViewProtocol> RNSScreenCls(void)
+ {
+   return RNSScreenView.class;
+ }
+-#endif
+ 
+ #pragma mark - RNSScreen
+ 
+@@ -891,7 +886,7 @@ Class<RCTComponentViewProtocol> RNSScreenCls(void)
+     self.view = view;
+     _fakeView = [UIView new];
+     _shouldNotify = YES;
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+     _initialView = (RNSScreenView *)view;
+ #endif
+   }
+@@ -982,7 +977,7 @@ Class<RCTComponentViewProtocol> RNSScreenCls(void)
+ - (void)viewDidDisappear:(BOOL)animated
+ {
+   [super viewDidDisappear:animated];
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   [self resetViewToScreen];
+ #endif
+   if (self.parentViewController == nil && self.presentingViewController == nil) {
+@@ -1004,7 +999,7 @@ Class<RCTComponentViewProtocol> RNSScreenCls(void)
+ 
+   _isSwiping = NO;
+   _shouldNotify = YES;
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ #else
+   [self traverseForScrollView:self.screenView];
+ #endif
+@@ -1027,7 +1022,7 @@ Class<RCTComponentViewProtocol> RNSScreenCls(void)
+   }
+ 
+   if (isDisplayedWithinUINavController || self.screenView.isPresentedAsNativeModal) {
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+     [self.screenView updateBounds];
+ #else
+     if (!CGRectEqualToRect(_lastViewFrame, self.screenView.frame)) {
+@@ -1346,7 +1341,7 @@ Class<RCTComponentViewProtocol> RNSScreenCls(void)
+ // when we want to check props of ScreenView, we need to get them from _initialView
+ - (RNSScreenView *)screenView
+ {
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   return _initialView;
+ #else
+   return (RNSScreenView *)self.view;
+@@ -1371,7 +1366,7 @@ Class<RCTComponentViewProtocol> RNSScreenCls(void)
+           [self.navigationController.viewControllers objectAtIndex:currentIndex - 1].navigationItem;
+       BOOL wasSearchBarActive = prevNavigationItem.searchController.active;
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+       BOOL shouldHideHeader = !config.show;
+ #else
+       BOOL shouldHideHeader = config.hide;
+@@ -1388,7 +1383,7 @@ Class<RCTComponentViewProtocol> RNSScreenCls(void)
+ #endif
+ }
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ #pragma mark - Fabric specific
+ 
+ - (void)setViewToSnapshot:(UIView *)snapshot
+diff --git a/node_modules/react-native-screens/ios/RNSScreenContainer.h b/node_modules/react-native-screens/ios/RNSScreenContainer.h
+index 998aa97..686005d 100644
+--- a/node_modules/react-native-screens/ios/RNSScreenContainer.h
++++ b/node_modules/react-native-screens/ios/RNSScreenContainer.h
+@@ -1,4 +1,4 @@
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ #import <React/RCTViewComponentView.h>
+ #else
+ #endif
+@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
+ @end
+ 
+ @interface RNSScreenContainerView :
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+     RCTViewComponentView <RNSScreenContainerDelegate>
+ #else
+     UIView <RNSScreenContainerDelegate, RCTInvalidating>
+diff --git a/node_modules/react-native-screens/ios/RNSScreenContainer.mm b/node_modules/react-native-screens/ios/RNSScreenContainer.mm
+index 09f5d4d..98d4f38 100644
+--- a/node_modules/react-native-screens/ios/RNSScreenContainer.mm
++++ b/node_modules/react-native-screens/ios/RNSScreenContainer.mm
+@@ -1,15 +1,15 @@
+ #import "RNSScreenContainer.h"
+ #import "RNSScreen.h"
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
+ #import <React/RCTConversions.h>
+ #import <React/RCTFabricComponentsPlugins.h>
+ #import <react/renderer/components/rnscreens/ComponentDescriptors.h>
+ #import <react/renderer/components/rnscreens/Props.h>
+ 
++#ifdef USE_NEW_ARCH
+ namespace react = facebook::react;
+ 
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+ 
+ @implementation RNSViewController
+ 
+@@ -61,7 +61,7 @@ namespace react = facebook::react;
+ - (instancetype)init
+ {
+   if (self = [super init]) {
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+     static const auto defaultProps = std::make_shared<const react::RNSScreenContainerProps>();
+     _props = defaultProps;
+ #endif
+@@ -237,7 +237,7 @@ namespace react = facebook::react;
+   [super layoutSubviews];
+   _controller.view.frame = self.bounds;
+   for (RNSScreenView *subview in _reactSubviews) {
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+     react::LayoutMetrics screenLayoutMetrics = subview.newLayoutMetrics;
+     screenLayoutMetrics.frame = RCTRectFromCGRect(CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height));
+     [subview updateLayoutMetrics:screenLayoutMetrics oldLayoutMetrics:subview.oldLayoutMetrics];
+@@ -249,7 +249,7 @@ namespace react = facebook::react;
+ }
+ 
+ #pragma mark-- Fabric specific
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ 
+ - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+ {
+@@ -324,12 +324,10 @@ namespace react = facebook::react;
+ 
+ @end
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
+ Class<RCTComponentViewProtocol> RNSScreenContainerCls(void)
+ {
+   return RNSScreenContainerView.class;
+ }
+-#endif
+ 
+ @implementation RNSScreenContainerManager
+ 
+diff --git a/node_modules/react-native-screens/ios/RNSScreenNavigationContainer.mm b/node_modules/react-native-screens/ios/RNSScreenNavigationContainer.mm
+index f10671e..fd5c021 100644
+--- a/node_modules/react-native-screens/ios/RNSScreenNavigationContainer.mm
++++ b/node_modules/react-native-screens/ios/RNSScreenNavigationContainer.mm
+@@ -2,13 +2,13 @@
+ #import "RNSScreen.h"
+ #import "RNSScreenContainer.h"
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
+ #import <React/RCTFabricComponentsPlugins.h>
+ #import <react/renderer/components/rnscreens/ComponentDescriptors.h>
+ #import <react/renderer/components/rnscreens/Props.h>
+ 
++#ifdef USE_NEW_ARCH
+ namespace react = facebook::react;
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+ 
+ @implementation RNSContainerNavigationController
+ 
+@@ -38,7 +38,7 @@ namespace react = facebook::react;
+ }
+ 
+ #pragma mark-- Fabric specific
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ + (react::ComponentDescriptorProvider)componentDescriptorProvider
+ {
+   return react::concreteComponentDescriptorProvider<react::RNSScreenNavigationContainerComponentDescriptor>();
+@@ -47,12 +47,10 @@ namespace react = facebook::react;
+ 
+ @end
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
+ Class<RCTComponentViewProtocol> RNSScreenNavigationContainerCls(void)
+ {
+   return RNSScreenNavigationContainerView.class;
+ }
+-#endif
+ 
+ @implementation RNSScreenNavigationContainerManager
+ 
+diff --git a/node_modules/react-native-screens/ios/RNSScreenStack.h b/node_modules/react-native-screens/ios/RNSScreenStack.h
+index 0f5fd1b..e3f7c6e 100644
+--- a/node_modules/react-native-screens/ios/RNSScreenStack.h
++++ b/node_modules/react-native-screens/ios/RNSScreenStack.h
+@@ -1,4 +1,4 @@
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ #import <React/RCTViewComponentView.h>
+ #else
+ #import <React/RCTUIManagerObserverCoordinator.h>
+@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
+ @end
+ 
+ @interface RNSScreenStackView :
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+     RCTViewComponentView <RNSScreenContainerDelegate>
+ #else
+     UIView <RNSScreenContainerDelegate, RCTInvalidating>
+@@ -23,10 +23,10 @@ NS_ASSUME_NONNULL_BEGIN
+ - (void)markChildUpdated;
+ - (void)didUpdateChildren;
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ #else
+ @property (nonatomic, copy) RCTDirectEventBlock onFinishTransitioning;
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+ 
+ @end
+ 
+diff --git a/node_modules/react-native-screens/ios/RNSScreenStack.mm b/node_modules/react-native-screens/ios/RNSScreenStack.mm
+index 6c3afe6..0373cd5 100644
+--- a/node_modules/react-native-screens/ios/RNSScreenStack.mm
++++ b/node_modules/react-native-screens/ios/RNSScreenStack.mm
+@@ -1,4 +1,3 @@
+-#ifdef RCT_NEW_ARCH_ENABLED
+ #import <React/RCTFabricComponentsPlugins.h>
+ #import <React/RCTMountingTransactionObserving.h>
+ #import <React/RCTSurfaceTouchHandler.h>
+@@ -7,14 +6,12 @@
+ #import <react/renderer/components/rnscreens/EventEmitters.h>
+ #import <react/renderer/components/rnscreens/Props.h>
+ #import <react/renderer/components/rnscreens/RCTComponentViewHelpers.h>
+-#else
+ #import <React/RCTBridge.h>
+ #import <React/RCTRootContentView.h>
+ #import <React/RCTShadowView.h>
+ #import <React/RCTTouchHandler.h>
+ #import <React/RCTUIManager.h>
+ #import <React/RCTUIManagerUtils.h>
+-#endif // RCT_NEW_ARCH_ENABLED
+ 
+ #import "RNSScreen.h"
+ #import "RNSScreenStack.h"
+@@ -22,16 +19,16 @@
+ #import "RNSScreenStackHeaderConfig.h"
+ #import "RNSScreenWindowTraits.h"
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ namespace react = facebook::react;
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+ 
+ @interface RNSScreenStackView () <
+     UINavigationControllerDelegate,
+     UIAdaptivePresentationControllerDelegate,
+     UIGestureRecognizerDelegate,
+     UIViewControllerTransitioningDelegate
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+     ,
+     RCTMountingTransactionObserving
+ #endif
+@@ -115,12 +112,12 @@ namespace react = facebook::react;
+   BOOL _hasLayout;
+   __weak RNSScreenStackManager *_manager;
+   BOOL _updateScheduled;
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   UIView *_snapshot;
+ #endif
+ }
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ - (instancetype)initWithFrame:(CGRect)frame
+ {
+   if (self = [super initWithFrame:frame]) {
+@@ -131,7 +128,7 @@ namespace react = facebook::react;
+ 
+   return self;
+ }
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+ 
+ - (instancetype)initWithManager:(RNSScreenStackManager *)manager
+ {
+@@ -179,7 +176,7 @@ namespace react = facebook::react;
+ 
+ - (void)emitOnFinishTransitioningEvent
+ {
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   if (_eventEmitter != nullptr) {
+     std::dynamic_pointer_cast<const react::RNSScreenStackEventEmitter>(_eventEmitter)
+         ->onFinishTransitioning(react::RNSScreenStackEventEmitter::OnFinishTransitioning{});
+@@ -196,7 +193,7 @@ namespace react = facebook::react;
+                     animated:(BOOL)animated
+ {
+   UIView *view = viewController.view;
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   if (![view isKindOfClass:[RNSScreenView class]]) {
+     // if the current view is a snapshot, config was already removed so we don't trigger the method
+     return;
+@@ -223,7 +220,7 @@ namespace react = facebook::react;
+     [_presentedModals removeObject:presentationController.presentedViewController];
+ 
+     _updatingModals = NO;
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+     [self emitOnFinishTransitioningEvent];
+ #else
+     // we double check if there are no new controllers pending to be presented since someone could
+@@ -250,7 +247,7 @@ namespace react = facebook::react;
+ - (void)didMoveToWindow
+ {
+   [super didMoveToWindow];
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   // for handling nested stacks
+   [self maybeAddToParentAndUpdateContainer];
+ #else
+@@ -266,7 +263,7 @@ namespace react = facebook::react;
+ - (void)maybeAddToParentAndUpdateContainer
+ {
+   BOOL wasScreenMounted = _controller.parentViewController != nil;
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   BOOL isScreenReadyForShowing = self.window;
+ #else
+   BOOL isScreenReadyForShowing = self.window && _hasLayout;
+@@ -548,7 +545,7 @@ namespace react = facebook::react;
+   }
+ 
+   UIViewController *top = controllers.lastObject;
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   UIViewController *previousTop = _controller.topViewController;
+ #else
+   UIViewController *previousTop = _controller.viewControllers.lastObject;
+@@ -570,7 +567,7 @@ namespace react = facebook::react;
+       if (![_controller.viewControllers containsObject:top] &&
+           ((RNSScreenView *)top.view).replaceAnimation == RNSScreenReplaceAnimationPush) {
+         // setting new controllers with animation does `push` animation by default
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+         auto screenController = (RNSScreen *)top;
+         [screenController resetViewToScreen];
+ #endif
+@@ -591,7 +588,7 @@ namespace react = facebook::react;
+       NSMutableArray *newControllers = [NSMutableArray arrayWithArray:controllers];
+       [newControllers removeLastObject];
+       [_controller setViewControllers:newControllers animated:NO];
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+       auto screenController = (RNSScreen *)top;
+       [screenController resetViewToScreen];
+ #endif
+@@ -638,7 +635,7 @@ namespace react = facebook::react;
+ 
+ - (void)dismissOnReload
+ {
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   if ([_controller.visibleViewController isKindOfClass:[RNSScreen class]]) {
+     [(RNSScreen *)_controller.visibleViewController resetViewToScreen];
+   }
+@@ -685,7 +682,7 @@ namespace react = facebook::react;
+   while (parent != nil && ![parent respondsToSelector:@selector(touchHandler)])
+     parent = parent.superview;
+   if (parent != nil) {
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+     RCTSurfaceTouchHandler *touchHandler = [parent performSelector:@selector(touchHandler)];
+ #else
+     RCTTouchHandler *touchHandler = [parent performSelector:@selector(touchHandler)];
+@@ -1021,7 +1018,7 @@ namespace react = facebook::react;
+   });
+ }
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ #pragma mark - Fabric specific
+ 
+ - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+@@ -1132,16 +1129,14 @@ namespace react = facebook::react;
+   [_controller removeFromParentViewController];
+ }
+ 
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+ 
+ @end
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
+ Class<RCTComponentViewProtocol> RNSScreenStackCls(void)
+ {
+   return RNSScreenStackView.class;
+ }
+-#endif
+ 
+ @implementation RNSScreenStackManager {
+   NSPointerArray *_stacks;
+@@ -1151,7 +1146,7 @@ RCT_EXPORT_MODULE()
+ 
+ RCT_EXPORT_VIEW_PROPERTY(onFinishTransitioning, RCTDirectEventBlock);
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ #else
+ - (UIView *)view
+ {
+@@ -1162,7 +1157,7 @@ RCT_EXPORT_VIEW_PROPERTY(onFinishTransitioning, RCTDirectEventBlock);
+   [_stacks addPointer:(__bridge void *)view];
+   return view;
+ }
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+ 
+ - (void)invalidate
+ {
+diff --git a/node_modules/react-native-screens/ios/RNSScreenStackHeaderConfig.h b/node_modules/react-native-screens/ios/RNSScreenStackHeaderConfig.h
+index 83d4b61..ef191a9 100644
+--- a/node_modules/react-native-screens/ios/RNSScreenStackHeaderConfig.h
++++ b/node_modules/react-native-screens/ios/RNSScreenStackHeaderConfig.h
+@@ -1,4 +1,4 @@
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ #import <React/RCTViewComponentView.h>
+ #else
+ #import <React/RCTViewManager.h>
+@@ -16,7 +16,7 @@
+ @end
+ 
+ @interface RNSScreenStackHeaderConfig :
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+     RCTViewComponentView
+ #else
+     UIView
+@@ -24,7 +24,7 @@
+ 
+ @property (nonatomic, weak) RNSScreenView *screenView;
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ @property (nonatomic) BOOL show;
+ #else
+ @property (nonatomic) UIBlurEffectStyle blurEffect;
+diff --git a/node_modules/react-native-screens/ios/RNSScreenStackHeaderConfig.mm b/node_modules/react-native-screens/ios/RNSScreenStackHeaderConfig.mm
+index 4fa7506..7cce4ab 100644
+--- a/node_modules/react-native-screens/ios/RNSScreenStackHeaderConfig.mm
++++ b/node_modules/react-native-screens/ios/RNSScreenStackHeaderConfig.mm
+@@ -1,4 +1,3 @@
+-#ifdef RCT_NEW_ARCH_ENABLED
+ #import <React/RCTConversions.h>
+ #import <React/RCTFabricComponentsPlugins.h>
+ #import <React/RCTImageComponentView.h>
+@@ -9,12 +8,10 @@
+ #import <react/renderer/components/rnscreens/Props.h>
+ #import <react/renderer/components/rnscreens/RCTComponentViewHelpers.h>
+ #import "RCTImageComponentView+RNSScreenStackHeaderConfig.h"
+-#else
+ #import <React/RCTImageView.h>
+ #import <React/RCTShadowView.h>
+ #import <React/RCTUIManager.h>
+ #import <React/RCTUIManagerUtils.h>
+-#endif
+ #import <React/RCTBridge.h>
+ #import <React/RCTFont.h>
+ #import <React/RCTImageLoader.h>
+@@ -24,17 +21,17 @@
+ #import "RNSSearchBar.h"
+ #import "RNSUIBarButtonItem.h"
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ namespace react = facebook::react;
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+ 
+-#ifndef RCT_NEW_ARCH_ENABLED
++#ifndef USE_NEW_ARCH
+ // Some RN private method hacking below. Couldn't figure out better way to access image data
+ // of a given RCTImageView. See more comments in the code section processing SubviewTypeBackButton
+ @interface RCTImageView (Private)
+ - (UIImage *)image;
+ @end
+-#endif // !RCT_NEW_ARCH_ENABLED
++#endif // !USE_NEW_ARCH
+ 
+ @interface RCTImageLoader (Private)
+ - (id<RCTImageCache>)imageCache;
+@@ -54,13 +51,13 @@ namespace react = facebook::react;
+ 
+ @implementation RNSScreenStackHeaderConfig {
+   NSMutableArray<RNSScreenStackHeaderSubview *> *_reactSubviews;
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   BOOL _initialPropsSet;
+ #else
+ #endif
+ }
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ - (instancetype)initWithFrame:(CGRect)frame
+ {
+   if (self = [super initWithFrame:frame]) {
+@@ -273,11 +270,11 @@ namespace react = facebook::react;
+   for (RNSScreenStackHeaderSubview *subview in config.reactSubviews) {
+     if (subview.type == RNSScreenStackHeaderSubviewTypeBackButton && subview.subviews.count > 0) {
+       hasBackButtonImage = YES;
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+       RCTImageComponentView *imageView = subview.subviews[0];
+ #else
+       RCTImageView *imageView = subview.subviews[0];
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+       if (imageView.image == nil) {
+         // This is yet another workaround for loading custom back icon. It turns out that under
+         // certain circumstances image attribute can be null despite the app running in production
+@@ -316,12 +313,12 @@ namespace react = facebook::react;
+             imageForUrl:imageSource.request.URL.absoluteString
+                    size:imageSource.size
+                   scale:imageSource.scale
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+              resizeMode:resizeModeFromCppEquiv(
+                             std::static_pointer_cast<const react::ImageProps>(imageView.props)->resizeMode)];
+ #else
+              resizeMode:imageView.resizeMode];
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+       }
+       if (image == nil) {
+         // This will be triggered if the image is not in the cache yet. What we do is we wait until
+@@ -383,7 +380,7 @@ namespace react = facebook::react;
+   }
+ 
+   // TODO: implement blurEffect on Fabric
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ #else
+   if (config.blurEffect) {
+     appearance.backgroundEffect = [UIBlurEffect effectWithStyle:config.blurEffect];
+@@ -466,7 +463,7 @@ namespace react = facebook::react;
+       currentIndex > 0 ? [navctr.viewControllers objectAtIndex:currentIndex - 1].navigationItem : nil;
+ 
+   BOOL wasHidden = navctr.navigationBarHidden;
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   BOOL shouldHide = config == nil || !config.show;
+ #else
+   BOOL shouldHide = config == nil || config.hide;
+@@ -693,7 +690,7 @@ namespace react = facebook::react;
+   [self updateViewControllerIfNeeded];
+ }
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ #pragma mark - Fabric specific
+ 
+ - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+@@ -744,7 +741,7 @@ static RCTResizeMode resizeModeFromCppEquiv(react::ImageResizeMode resizeMode)
+  */
+ + (RCTImageSource *)imageSourceFromImageView:(RCTImageComponentView *)view
+ {
+-  auto const imageProps = *std::static_pointer_cast<const react::ImageProps>(view.props);
++  auto const &imageProps = *std::static_pointer_cast<const react::ImageProps>(view.props);
+   react::ImageSource cppImageSource = imageProps.sources.at(0);
+   auto imageSize = CGSize{cppImageSource.size.width, cppImageSource.size.height};
+   NSURLRequest *request =
+@@ -882,12 +879,10 @@ static RCTResizeMode resizeModeFromCppEquiv(react::ImageResizeMode resizeMode)
+ #endif
+ @end
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
+ Class<RCTComponentViewProtocol> RNSScreenStackHeaderConfigCls(void)
+ {
+   return RNSScreenStackHeaderConfig.class;
+ }
+-#endif
+ 
+ @implementation RNSScreenStackHeaderConfigManager
+ 
+diff --git a/node_modules/react-native-screens/ios/RNSScreenStackHeaderSubview.h b/node_modules/react-native-screens/ios/RNSScreenStackHeaderSubview.h
+index 6930491..361547a 100644
+--- a/node_modules/react-native-screens/ios/RNSScreenStackHeaderSubview.h
++++ b/node_modules/react-native-screens/ios/RNSScreenStackHeaderSubview.h
+@@ -1,5 +1,5 @@
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ #import <React/RCTViewComponentView.h>
+ #endif
+ 
+@@ -10,7 +10,7 @@
+ NS_ASSUME_NONNULL_BEGIN
+ 
+ @interface RNSScreenStackHeaderSubview :
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+     RCTViewComponentView
+ #else
+     UIView
+@@ -22,10 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
+ 
+ @property (nonatomic, weak) RCTBridge *bridge;
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ #else
+ - (instancetype)initWithBridge:(RCTBridge *)bridge;
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+ 
+ @end
+ 
+diff --git a/node_modules/react-native-screens/ios/RNSScreenStackHeaderSubview.mm b/node_modules/react-native-screens/ios/RNSScreenStackHeaderSubview.mm
+index c23c7b3..214b00d 100644
+--- a/node_modules/react-native-screens/ios/RNSScreenStackHeaderSubview.mm
++++ b/node_modules/react-native-screens/ios/RNSScreenStackHeaderSubview.mm
+@@ -1,18 +1,16 @@
+ #import "RNSScreenStackHeaderSubview.h"
+ #import "RNSConvert.h"
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
+ #import <react/renderer/components/rnscreens/ComponentDescriptors.h>
+ #import <react/renderer/components/rnscreens/EventEmitters.h>
+ #import <react/renderer/components/rnscreens/RCTComponentViewHelpers.h>
+ 
+ #import <React/RCTConversions.h>
+ #import <React/RCTFabricComponentsPlugins.h>
+-#endif // RCT_NEW_ARCH_ENABLED
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ namespace react = facebook::react;
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+ 
+ @interface RCTBridge (Private)
+ + (RCTBridge *)currentBridge;
+@@ -22,7 +20,7 @@ namespace react = facebook::react;
+ 
+ #pragma mark - Common
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ 
+ #pragma mark - Fabric specific
+ 
+@@ -93,15 +91,15 @@ namespace react = facebook::react;
+   [super reactSetFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
+ }
+ 
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+ 
+ - (RCTBridge *)bridge
+ {
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   return [RCTBridge currentBridge];
+ #else
+   return _bridge;
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+ }
+ 
+ @end
+@@ -112,7 +110,7 @@ RCT_EXPORT_MODULE()
+ 
+ RCT_EXPORT_VIEW_PROPERTY(type, RNSScreenStackHeaderSubviewType)
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ #else
+ - (UIView *)view
+ {
+@@ -122,12 +120,10 @@ RCT_EXPORT_VIEW_PROPERTY(type, RNSScreenStackHeaderSubviewType)
+ 
+ @end
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
+ Class<RCTComponentViewProtocol> RNSScreenStackHeaderSubviewCls(void)
+ {
+   return RNSScreenStackHeaderSubview.class;
+ }
+-#endif
+ 
+ @implementation RCTConvert (RNSScreenStackHeaderSubview)
+ 
+diff --git a/node_modules/react-native-screens/ios/RNSSearchBar.h b/node_modules/react-native-screens/ios/RNSSearchBar.h
+index 9ac04c0..b476252 100644
+--- a/node_modules/react-native-screens/ios/RNSSearchBar.h
++++ b/node_modules/react-native-screens/ios/RNSSearchBar.h
+@@ -1,6 +1,6 @@
+ #import <UIKit/UIKit.h>
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ #import <React/RCTViewComponentView.h>
+ #import <react/renderer/components/rnscreens/RCTComponentViewHelpers.h>
+ #endif
+@@ -11,7 +11,7 @@
+ #import "RNSEnums.h"
+ 
+ @interface RNSSearchBar :
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+     RCTViewComponentView <UISearchBarDelegate, RCTRNSSearchBarViewProtocol>
+ #else
+     UIView <UISearchBarDelegate>
+@@ -27,7 +27,7 @@
+     API_UNAVAILABLE(tvos, watchos);
+ #endif // Check for iOS >= 16 && !TARGET_OS_TV
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ #else
+ @property (nonatomic, copy) RCTBubblingEventBlock onChangeText;
+ @property (nonatomic, copy) RCTBubblingEventBlock onCancelButtonPress;
+diff --git a/node_modules/react-native-screens/ios/RNSSearchBar.mm b/node_modules/react-native-screens/ios/RNSSearchBar.mm
+index 94475b7..ff4b1f3 100644
+--- a/node_modules/react-native-screens/ios/RNSSearchBar.mm
++++ b/node_modules/react-native-screens/ios/RNSSearchBar.mm
+@@ -6,18 +6,16 @@
+ #import <React/RCTComponent.h>
+ #import <React/RCTUIManager.h>
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
+ #import <React/RCTConversions.h>
+ #import <React/RCTFabricComponentsPlugins.h>
+ #import <react/renderer/components/rnscreens/ComponentDescriptors.h>
+ #import <react/renderer/components/rnscreens/EventEmitters.h>
+ #import <react/renderer/components/rnscreens/Props.h>
+ #import "RNSConvert.h"
+-#endif // RCT_NEW_ARCH_ENABLED
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ namespace react = facebook::react;
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+ 
+ @implementation RNSSearchBar {
+   __weak RCTBridge *_bridge;
+@@ -36,7 +34,7 @@ namespace react = facebook::react;
+   return self;
+ }
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ - (instancetype)init
+ {
+   if (self = [super init]) {
+@@ -58,7 +56,7 @@ namespace react = facebook::react;
+ 
+ - (void)emitOnFocusEvent
+ {
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   if (_eventEmitter != nullptr) {
+     std::dynamic_pointer_cast<const react::RNSSearchBarEventEmitter>(_eventEmitter)
+         ->onFocus(react::RNSSearchBarEventEmitter::OnFocus{});
+@@ -72,7 +70,7 @@ namespace react = facebook::react;
+ 
+ - (void)emitOnBlurEvent
+ {
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   if (_eventEmitter != nullptr) {
+     std::dynamic_pointer_cast<const react::RNSSearchBarEventEmitter>(_eventEmitter)
+         ->onBlur(react::RNSSearchBarEventEmitter::OnBlur{});
+@@ -86,7 +84,7 @@ namespace react = facebook::react;
+ 
+ - (void)emitOnSearchButtonPressEventWithText:(NSString *)text
+ {
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   if (_eventEmitter != nullptr) {
+     std::dynamic_pointer_cast<const react::RNSSearchBarEventEmitter>(_eventEmitter)
+         ->onSearchButtonPress(
+@@ -103,7 +101,7 @@ namespace react = facebook::react;
+ 
+ - (void)emitOnCancelButtonPressEvent
+ {
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   if (_eventEmitter != nullptr) {
+     std::dynamic_pointer_cast<const react::RNSSearchBarEventEmitter>(_eventEmitter)
+         ->onCancelButtonPress(react::RNSSearchBarEventEmitter::OnCancelButtonPress{});
+@@ -117,7 +115,7 @@ namespace react = facebook::react;
+ 
+ - (void)emitOnChangeTextEventWithText:(NSString *)text
+ {
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+   if (_eventEmitter != nullptr) {
+     std::dynamic_pointer_cast<const react::RNSSearchBarEventEmitter>(_eventEmitter)
+         ->onChangeText(react::RNSSearchBarEventEmitter::OnChangeText{.text = RCTStringFromNSString(text)});
+@@ -306,7 +304,7 @@ namespace react = facebook::react;
+ 
+ #pragma mark-- Fabric specific
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ - (void)updateProps:(react::Props::Shared const &)props oldProps:(react::Props::Shared const &)oldProps
+ {
+   const auto &oldScreenProps = *std::static_pointer_cast<const react::RNSSearchBarProps>(_props);
+@@ -364,22 +362,20 @@ namespace react = facebook::react;
+ }
+ 
+ #else
+-#endif // RCT_NEW_ARCH_ENABLED
++#endif // USE_NEW_ARCH
+ 
+ @end
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
+ Class<RCTComponentViewProtocol> RNSSearchBarCls(void)
+ {
+   return RNSSearchBar.class;
+ }
+-#endif
+ 
+ @implementation RNSSearchBarManager
+ 
+ RCT_EXPORT_MODULE()
+ 
+-#ifdef RCT_NEW_ARCH_ENABLED
++#ifdef USE_NEW_ARCH
+ #else
+ - (UIView *)view
+ {
+@@ -404,7 +400,7 @@ RCT_EXPORT_VIEW_PROPERTY(onSearchButtonPress, RCTBubblingEventBlock)
+ RCT_EXPORT_VIEW_PROPERTY(onFocus, RCTBubblingEventBlock)
+ RCT_EXPORT_VIEW_PROPERTY(onBlur, RCTBubblingEventBlock)
+ 
+-#ifndef RCT_NEW_ARCH_ENABLED
++#ifndef USE_NEW_ARCH
+ 
+ RCT_EXPORT_METHOD(focus : (NSNumber *_Nonnull)reactTag)
+ {
+@@ -446,7 +442,7 @@ RCT_EXPORT_METHOD(setText : (NSNumber *_Nonnull)reactTag text : (NSString *)text
+   }];
+ }
+ 
+-#endif /* !RCT_NEW_ARCH_ENABLED */
++#endif /* !USE_NEW_ARCH */
+ 
+ @end
+ 
