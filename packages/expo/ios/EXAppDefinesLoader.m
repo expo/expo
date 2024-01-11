@@ -19,7 +19,7 @@
 #endif
     @"APP_RCT_DEBUG": @(RCT_DEBUG),
     @"APP_RCT_DEV": @(RCT_DEV),
-#if RCT_NEW_ARCH_ENABLED
+#if USE_NEW_ARCH
     @"APP_NEW_ARCH_ENABLED": @(YES),
 #else
     @"APP_NEW_ARCH_ENABLED": @(NO),

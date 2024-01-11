@@ -12,6 +12,9 @@ reactNativeTargetVersion = reactNativeVersion.split('.')[1].to_i
 
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -Wno-comma -Wno-shorten-64-to-32'
 compiler_flags = folly_compiler_flags + ' ' + "-DREACT_NATIVE_TARGET_VERSION=#{reactNativeTargetVersion}"
+if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
+  compiler_flags += ' -DUSE_HERMES'
+end
 
 Pod::Spec.new do |s|
   s.name           = 'expo-dev-menu'
@@ -103,8 +106,10 @@ Pod::Spec.new do |s|
   end
 
   s.subspec 'ReactNativeCompatibles' do |ss|
-    if reactNativeTargetVersion >= 73
+    if reactNativeTargetVersion >= 74
       ss.source_files = 'ios/ReactNativeCompatibles/ReactNative/**/*'
+    elsif reactNativeTargetVersion >= 73
+      ss.source_files = 'ios/ReactNativeCompatibles/ReactNative73/**/*'
     else
       ss.source_files = 'ios/ReactNativeCompatibles/ReactNative72/**/*'
     end

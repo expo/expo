@@ -37,7 +37,7 @@ Pod::Spec.new do |s|
     ]
   }
 
-  new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+  new_arch_enabled = ENV['USE_NEW_ARCH'] != nil ? ENV['USE_NEW_ARCH'] == '1' : ENV['RCT_NEW_ARCH_ENABLED'] == '1'
 
   other_c_flags = "$(inherited) -DREACT_NATIVE_TARGET_VERSION=#{reactNativeTargetVersion}"
   dev_launcher_url = ENV['EX_DEV_LAUNCHER_URL'] || ""
@@ -45,13 +45,16 @@ Pod::Spec.new do |s|
     escaped_dev_launcher_url = Shellwords.escape(dev_launcher_url).gsub('/','\\/')
     other_c_flags += " -DEX_DEV_LAUNCHER_URL=\"\\\"" + escaped_dev_launcher_url + "\\\"\""
   end
+  if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
+    other_c_flags += ' -DUSE_HERMES'
+  end
   other_swift_flags = "$(inherited)"
   unless ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] == 'false'
     other_swift_flags += ' -DEX_DEV_CLIENT_NETWORK_INSPECTOR'
   end
 
   if new_arch_enabled
-    other_c_flags += ' -DRN_FABRIC_ENABLED -DRCT_NEW_ARCH_ENABLED'
+    other_c_flags += ' -DRN_FABRIC_ENABLED -DUSE_NEW_ARCH'
   end
 
   s.xcconfig = {

@@ -1,9 +1,7 @@
 #import <EXDevMenu/DevClientAppDelegate.h>
 
 #import <React/RCTBundleURLProvider.h>
-#import <React/RCTRuntimeExecutorFromBridge.h>
 #import <React/RCTCxxBridgeDelegate.h>
-#import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #if __has_include(<React_RCTAppDelegate/RCTAppSetupUtils.h>)
 // for importing the header from framework, the dash will be transformed to underscore
 #import <React_RCTAppDelegate/RCTAppSetupUtils.h>
@@ -15,16 +13,25 @@
 #import <memory>
 
 #import <React/CoreModulesPlugins.h>
+#import <React/RCTComponentViewFactory.h>
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
+#import <ReactCommon/RCTContextContainerHandling.h>
+#import <ReactCommon/RCTHost.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <react/config/ReactNativeConfig.h>
 
+#import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 
-@interface DevClientAppDelegate () <RCTTurboModuleManagerDelegate> {
+@interface DevClientAppDelegate () <
+    RCTTurboModuleManagerDelegate,
+    RCTCxxBridgeDelegate,
+    RCTComponentViewFactoryComponentProvider,
+    RCTContextContainerHandling> {
   std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
   facebook::react::ContextContainer::Shared _contextContainer;
+  std::shared_ptr<facebook::react::RuntimeScheduler> _runtimeScheduler;
 }
 @end
 
@@ -36,12 +43,11 @@
 
 @end
 
-@interface DevClientAppDelegate () <RCTCxxBridgeDelegate> {
-  std::shared_ptr<facebook::react::RuntimeScheduler> _runtimeScheduler;
+@implementation DevClientAppDelegate {
+#if USE_NEW_ARCH
+  RCTHost *_reactHost;
+#endif // USE_NEW_ARCH
 }
-@end
-
-@implementation DevClientAppDelegate
 
 #if USE_NEW_ARCH
 - (instancetype)init
@@ -59,33 +65,35 @@
   self.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
 
 #ifdef USE_NEW_ARCH
+  // bridgeless mode is not yet supported in expo-dev-client
+  assert(!self.bridgelessEnabled);
+
   self.bridgeAdapter = [[RCTSurfacePresenterBridgeAdapter alloc] initWithBridge:self.bridge
                                                                contextContainer:_contextContainer];
   self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
 
   [self unstable_registerLegacyComponents];
+  [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
 #endif
 
   return self.bridge;
 }
 
 #pragma mark - RCTCxxBridgeDelegate
+
+#if USE_NEW_ARCH
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
 {
-#if USE_NEW_ARCH
   _runtimeScheduler = std::make_shared<facebook::react::RuntimeScheduler>(RCTRuntimeExecutorFromBridge(bridge));
   std::shared_ptr<facebook::react::CallInvoker> callInvoker =
       std::make_shared<facebook::react::RuntimeSchedulerCallInvoker>(_runtimeScheduler);
-  self.turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge delegate:self jsInvoker:callInvoker];
+  RCTTurboModuleManager *turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
+                                                                                   delegate:self
+                                                                                  jsInvoker:callInvoker];
   _contextContainer->erase("RuntimeScheduler");
   _contextContainer->insert("RuntimeScheduler", _runtimeScheduler);
-  return RCTAppSetupDefaultJsExecutorFactory(bridge, self.turboModuleManager, _runtimeScheduler);
-#else
-  if (self.runtimeSchedulerEnabled) {
-    _runtimeScheduler = std::make_shared<facebook::react::RuntimeScheduler>(RCTRuntimeExecutorFromBridge(bridge));
-  }
-  return RCTAppSetupJsExecutorFactoryForOldArch(bridge, _runtimeScheduler);
-#endif
+  return RCTAppSetupDefaultJsExecutorFactory(bridge, turboModuleManager, _runtimeScheduler);
 }
+#endif // USE_NEW_ARCH
 
 @end
