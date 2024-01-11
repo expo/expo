@@ -1,12 +1,14 @@
 package expo.modules.video
 
 import android.content.Context
+import android.view.SurfaceView
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
 import expo.modules.kotlin.sharedobjects.SharedObject
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
@@ -21,6 +23,7 @@ class VideoPlayer(context: Context, private val mediaItem: MediaItem) : AutoClos
   // Volume of the player if there was no mute applied.
   var userVolume = 1f
   var requiresLinearPlayback = false
+  lateinit var timeline: Timeline
 
   var volume = 1f
     set(volume) {
@@ -42,9 +45,7 @@ class VideoPlayer(context: Context, private val mediaItem: MediaItem) : AutoClos
       field = value
     }
 
-  lateinit var timeline: Timeline
-
-  val playerListener = object : Player.Listener {
+  private val playerListener = object : Player.Listener {
     override fun onIsPlayingChanged(isPlaying: Boolean) {
       this@VideoPlayer.isPlaying = isPlaying
     }
@@ -73,6 +74,12 @@ class VideoPlayer(context: Context, private val mediaItem: MediaItem) : AutoClos
 
   override fun close() {
     player.removeListener(playerListener)
+  }
+
+  fun changePlayerView(playerView: PlayerView) {
+    player.clearVideoSurface()
+    player.setVideoSurfaceView(playerView.videoSurfaceView as SurfaceView?)
+    playerView.player = player
   }
 
   fun prepare() {
