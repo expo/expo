@@ -63,20 +63,19 @@ Inside the app config, make changes to use [`runtimeVersion`](/versions/latest/c
       }
       /* @hide ... */ /* @end */
     }
-    /* @hide ... */ /* @end */
-    runtimeVersion: '1.0.0',
+    "runtimeVersion": "1.0.0",
     /* @hide ... */ /* @end */
   }
 ```
 
-> In the [introductory guide](/eas-update/getting-started), the channel name is set by EAS Build and is different for various build profiles. Since this is a local build, it is necessary to set this request header explicitly in the app config.
+> In the [introduction guide](/eas-update/getting-started), the channel name is set by EAS Build and is different for various build profiles. Since this is a local build, it is necessary to set this request header explicitly in the app config.
 
 </Step>
 
 <Step label="4">
 ## Run prebuild
 
-This runs automatically when executing `npx expo run:android` or `npx expo run:ios`. However, we want to call this step out separately in this guide. In SDK 48 and above, this step adds our desired request headers to **AndroidManifest.xml** and **Expo.plist** in the Android and iOS builds.
+Prebuild runs automatically when executing `npx expo run:android` or `npx expo run:ios`. However, we want to call this step out separately in this guide. From SDK 48 and above, this step adds our desired request headers to **AndroidManifest.xml** and **Expo.plist** in the Android and iOS builds.
 
 <Terminal
   cmd={[
@@ -90,20 +89,22 @@ After running the above, inspect **android/app/src/main/AndroidManifest.xml** an
 
 {/* prettier-ignore */}
 ```xml Expo.plist
-<!-- @hide ... your existing configuration --> <!-- @end -->
-    <!-- @info New --> <key>EXUpdatesRequestHeaders</key> <!-- @end -->
-    <!-- @info New --> <dict> <!-- @end -->
-      <!-- @info New --> <key>expo-channel-name</key> <!-- @end -->
-      <!-- @info New --> <string>main</string> <!-- @end -->
-    <!-- @info New --> </dict> <!-- @end -->
-<!-- @hide ... your existing configuration --><!-- @end -->
+<!-- @hide ... Existing configuration --> <!-- @end -->
+  <!-- @info Changes added to Expo.plist on running prebuild command. -->
+  <key>EXUpdatesRequestHeaders</key>
+  <dict>
+    <key>expo-channel-name</key>
+    <string>main</string>
+  </dict>
+  <!-- @end -->
+<!-- @hide ... Existing configuration --><!-- @end -->
 ```
 
 {/* prettier-ignore */}
 ```xml AndroidManifest.xml
-<!-- @hide ... your existing configuration --> <!-- @end -->
-    <!-- @info New --> <meta-data android:name="expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY" android:value="{&quot;expo-channel-name&quot;:&quot;main&quot;}"/> <!-- @end -->
-<!-- @hide ... your existing configuration --><!-- @end -->
+<!-- @hide ... Existing configuration --> <!-- @end -->
+  <!-- @info Changes added to AndroidManifest.xml on run running prebuild command. --> <meta-data android:name="expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY" android:value="{&quot;expo-channel-name&quot;:&quot;main&quot;}"/> <!-- @end -->
+<!-- @hide ... Existing configuration --><!-- @end -->
 ```
 
 > If you do not see the above lines added to these files, it means that you are using SDK 47 or earlier, and you should add these lines manually to **AndroidManifest.xml** and **Expo.plist**. In SDK 48 and later, the [`requestHeaders`](/versions/latest/config/app/#requestheaders) property from the app config is used to automatically add these lines to the native files.
