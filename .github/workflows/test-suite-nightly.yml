@@ -54,9 +54,6 @@ jobs:
       - name: 🥥 Update RCT-Folly and SocketRocket pods in apps/bare-expo/ios
         run: pod update RCT-Folly SocketRocket --no-repo-update
         working-directory: apps/bare-expo/ios
-      - name: 🥥 Install pods in apps/bare-expo/ios
-        run: npx pod-install
-        working-directory: apps/bare-expo/ios
       - name: 🍏 Build iOS Project
         run: ./scripts/start-ios-e2e-test.ts --build
         working-directory: apps/bare-expo
