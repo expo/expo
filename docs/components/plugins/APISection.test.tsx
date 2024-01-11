@@ -100,7 +100,7 @@ describe('APISection', () => {
     );
 
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(3);
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(18);
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(17);
     expect(screen.getAllByRole('table')).toHaveLength(7);
 
     expect(screen.queryByText('Classes'));
