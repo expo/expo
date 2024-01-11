@@ -12,22 +12,22 @@ Expo Router uses "links" to move between pages in the app. This is conceptually 
 In the following example, there are two `<Link />` components which navigate to different routes.
 
 {/* prettier-ignore */}
-```js app/index.js
+```jsx app/index.js
 import { View } from 'react-native';
-/* @info Import the <b>Link</b> React component from <b>expo-router</b> */
+/* @info Import the <strong>Link</strong> React component from <strong>expo-router</strong> */
 import { Link } from 'expo-router';
 /* @end */
 
 export default function Page() {
   return (
     <View>
-      /* @info Tapping this will link to the <b>about</b> page */
+      /* @info Tapping this will link to the <strong>about</strong> page */
       <Link href="/about">About</Link>
-    /* @end */
-
-      /* @info Tapping this will navigate to the dynamic route <b>user/[id]</b> where <b>id=bacon</b> */
+      /* @end */
+      {/* ...other links */}
+      /* @info Tapping this will navigate to the dynamic route <strong>user/[id]</strong> where <strong>id=bacon</strong> */
       <Link href="/user/bacon">View user</Link>
-    /* @end */
+      /* @end */
     </View>
   );
 }
@@ -38,13 +38,13 @@ export default function Page() {
 The Link component wraps the children in a `<Text>` component by default, this is useful for accessibility but not always desired. You can customize the component by passing the `asChild` prop, which will forward all props to the first child of the `Link` component. The child component must support the `onPress` and `onClick` props, `href` and `role` will also be passed down.
 
 {/* prettier-ignore */}
-```js
+```jsx
 import { Pressable, Text } from "react-native";
 import { Link } from "expo-router";
 
 export default function Page() {
   return (
-    /* @info The <b>onPress</b> event that navigates to <b>/other</b> will be passed to <b>Pressable</b> */
+    /* @info The <strong>onPress</strong> event that navigates to <strong>/other</strong> will be passed to <strong>Pressable</strong> */
     <Link href="/other" asChild>
     /* @end */
       <Pressable>
@@ -73,7 +73,7 @@ You may want to navigate from a global store when a user logs in or out. You can
 import { router } from 'expo-router';
 
 export function logout() {
-  /* @info Navigate to <b>/login</b> */
+  /* @info Navigate to <strong>/login</strong> */
   router.replace('/login');
   /* @end */
 }
@@ -93,8 +93,8 @@ The `router` object is immutable and contains the following functions:
 Dynamic routes and query parameters can be provided statically or with the convenience **Href** object.
 
 {/* prettier-ignore */}
-```js app/index.js
-/* @info Import the <b>Link</b> React component from <b>expo-router</b> */
+```jsx app/index.js
+/* @info Import the <strong>Link</strong> React component from <strong>expo-router</strong> */
 import { Link } from 'expo-router';
 /* @end */
 
@@ -103,7 +103,7 @@ export default function Page() {
     <View>
       <Link
         href={{
-          /* @info Navigate to <b>/user/bacon</b> */
+          /* @info Navigate to <strong>/user/bacon</strong> */
           pathname: "/user/[id]",
           params: { id: 'bacon' }
           /* @end */
@@ -126,13 +126,13 @@ import { Link } from 'expo-router';
 export default function Page() {
   return (
     <View>
+      /* @info Navigate to <strong>/feed</strong> and always add it to the stack. */
       <Link
-        /* @info Navigate to <b>/feed</b> and always add it to the stack. */
         push
-      /* @end */
         href="/feed">
         Login
       </Link>
+      /* @end */
     </View>
   );
 }
@@ -143,25 +143,25 @@ export default function Page() {
 By default, links "push" routes onto the navigation stack. It follows the same rules as [`navigation.navigate()`](https://reactnavigation.org/docs/navigating/#navigate-to-a-route-multiple-times). This means that the previous screen will be available when the user navigates back. You can use the `replace` prop to replace the current screen instead of pushing a new one.
 
 {/* prettier-ignore */}
-```js app/index.js
+```jsx app/index.js
 import { Link } from 'expo-router';
 
 export default function Page() {
   return (
     <View>
+      /* @info Navigate to <strong>/feed</strong> without adding it to the stack. */
       <Link
-        /* @info Navigate to <b>/feed</b> without adding it to the stack. */
         replace
-      /* @end */
         href="/feed">
         Login
       </Link>
+      /* @end */
     </View>
   );
 }
 ```
 
-Use **router.replace()** to replace the current screen imperatively.
+Use `router.replace()` to replace the current screen imperatively.
 
 Native navigation does not always support `replace`. For example on Twitter, you wouldn't be able to "replace" directly from a profile to a tweet, this is because the UI requires a back button to return to the feed or other top-level tab screen. In this case, replace would switch to the feed tab, and push the tweet route on top of it, or if you were on a different tweet inside the feed tab, it would replace the current tweet with the new tweet. This exact behavior can be obtained in Expo Router by using [`unstable_settings`](/router/advanced/router-settings).
 
