@@ -4252,11 +4252,12 @@ OAuth 2.0 protocol
             <td
               class="css-18p3734-Cell"
             >
-              <span
-                class="text-tertiary"
+              <p
+                class="mb-4 css-1kfqm4n-TextComponent"
+                data-text="true"
               >
-                -
-              </span>
+                A method to unsubscribe the listener.
+              </p>
             </td>
           </tr>
         </tbody>
@@ -6319,6 +6320,68 @@ exports[`APISection expo-barcode-scanner 1`] = `
   <div
     class="css-1fultt1"
   >
+    <div
+      class="css-1avgxs7-APISectionDeprecationNote"
+    >
+      <blockquote
+        class="css-dmb9uy-Callout"
+        data-testid="callout-container"
+      >
+        <div
+          class="css-7jywx8-Callout"
+        >
+          <svg
+            class="icon-sm text-warning"
+            fill="currentColor"
+            role="img"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g
+              id="alert-triangle"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M12.8126 1.66837C12.2953 1.43834 11.7047 1.43834 11.1874 1.66837C10.7878 1.84602 10.5283 2.15894 10.3477 2.41391C10.1701 2.66461 9.98004 2.99303 9.77096 3.35422L1.50381 17.6339C1.2939 17.9964 1.10315 18.3258 0.973806 18.6054C0.842356 18.8895 0.699752 19.2714 0.745201 19.7074C0.804012 20.2715 1.09955 20.7841 1.55827 21.1176C1.91276 21.3753 2.31476 21.4433 2.62652 21.4719C2.93327 21.5 3.31392 21.5 3.73281 21.5H20.2671C20.686 21.5 21.0667 21.5 21.3734 21.4719C21.6852 21.4433 22.0872 21.3753 22.4417 21.1176C22.9004 20.7841 23.1959 20.2715 23.2547 19.7074C23.3002 19.2714 23.1576 18.8895 23.0261 18.6054C22.8968 18.3258 22.7061 17.9964 22.4962 17.6339L14.229 3.35419C14.0199 2.99301 13.8298 2.66459 13.6522 2.41391C13.4716 2.15894 13.2121 1.84602 12.8126 1.66837ZM13 9C13 8.44772 12.5523 8 12 8C11.4477 8 11 8.44772 11 9V13C11 13.5523 11.4477 14 12 14C12.5523 14 13 13.5523 13 13V9ZM12 16C11.4477 16 11 16.4477 11 17C11 17.5523 11.4477 18 12 18H12.01C12.5623 18 13.01 17.5523 13.01 17C13.01 16.4477 12.5623 16 12.01 16H12Z"
+                fill-rule="evenodd"
+                id="Solid"
+              />
+            </g>
+          </svg>
+        </div>
+        <div
+          class="css-1m74yfi-Callout"
+        >
+          <p
+            class="mb-4 css-1kfqm4n-TextComponent"
+            data-text="true"
+          >
+            <strong
+              class="css-bvflvn-TextComponent"
+            >
+              Deprecated.
+            </strong>
+             BarCodeScanner has been deprecated and will be removed in a future SDK version. Plesae use 
+            <code
+              class="css-qyuze8-TextComponent"
+              data-text="true"
+            >
+              expo-camera
+            </code>
+             instead. see 
+            <a
+              class="css-1na8e0o-A"
+              href="https://expo.fyi/barcode-scanner-to-expo-camera"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              barcode-scanner-to-expo-camera
+            </a>
+             for more details on how to migrate.
+          </p>
+        </div>
+      </blockquote>
+    </div>
     <h3
       class="  css-nikr5x-TextComponent"
       data-heading="true"
@@ -11375,13 +11438,13 @@ in order to enable/disable the permission.
         </span>
       </a>
     </h3>
+    <p
+      class="mb-4 css-1kfqm4n-TextComponent"
+      data-text="true"
+    >
+      Callback function providing event result as an argument.
+    </p>
     <div>
-      <p
-        class="mb-4 css-1kfqm4n-TextComponent"
-        data-text="true"
-      >
-        Callback function providing event result as an argument.
-      </p>
       <div
         class="css-1uyflf8-Table"
       >
@@ -11653,11 +11716,12 @@ in order to enable/disable the permission.
             <td
               class="css-18p3734-Cell"
             >
-              <span
-                class="text-tertiary"
+              <p
+                class="mb-4 css-1kfqm4n-TextComponent"
+                data-text="true"
               >
-                -
-              </span>
+                A method to unsubscribe the listener.
+              </p>
             </td>
           </tr>
         </tbody>
