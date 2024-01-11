@@ -89,7 +89,7 @@ It's possible that the user doesn't have the Lyft app installed, in which case y
 
 On iOS, `Linking.canOpenURL` requires additional configuration to query other apps' linking schemes. You can use the `expo.ios.infoPlist` key in your app config (**app.json**, **app.config.js**) to specify a list of schemes your app needs to query. For example:
 
-```json
+```json app.json
 {
   "expo": {
     "ios": {
@@ -143,7 +143,7 @@ The [`expo-linking`][expo-linking] API enables you to open a URL with the operat
 
 <SnackInline label="WebBrowser vs Linking" dependencies={["expo-web-browser", "expo-linking"]}>
 
-```js
+```jsx
 import React from 'react';
 import { Button, View, StyleSheet } from 'react-native';
 import * as Linking from 'expo-linking';
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
 
 To link to your [development build](/develop/development-builds/introduction/) or standalone app, you need to specify a custom URL scheme for your app. You can register a scheme in your app config (**app.json**, **app.config.js**) by adding a string under the `scheme` key:
 
-```json
+```json app.json
 {
   "expo": {
     "scheme": "myapp"
@@ -260,7 +260,7 @@ For more information, see [`expo-linking`](/versions/latest/sdk/linking) API ref
 
 Parse the **path**, **hostname**, and **query parameters** from a URL with the `Linking.parse()` function. Unlike other URL parsing methods, this function considers nonstandard implementations like [Expo Go linking](#linking-to-expo-go). Example:
 
-```javascript
+```js
 function App() {
   const url = Linking.useURL();
 

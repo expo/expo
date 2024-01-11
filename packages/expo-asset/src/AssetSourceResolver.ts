@@ -23,12 +23,12 @@ function getScaledAssetPath(asset): string {
 }
 
 export default class AssetSourceResolver {
-  serverUrl: string;
+  private readonly serverUrl: string;
   // where the jsbundle is being run from
   // NOTE(EvanBacon): Never defined on web.
-  jsbundleUrl?: string | null;
+  private readonly jsbundleUrl: string | undefined | null;
   // the asset to resolve
-  asset: PackagerAsset;
+  public readonly asset: PackagerAsset;
 
   constructor(
     serverUrl: string | undefined | null,

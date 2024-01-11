@@ -187,9 +187,6 @@
 
 
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>
-    <!-- WHEN_PREPARING_SHELL_REMOVE_FROM_HERE -->
-    <!-- ADD DEV SETTINGS HERE -->
-    <!-- WHEN_PREPARING_SHELL_REMOVE_TO_HERE -->
 
     <activity
         android:name="net.openid.appauth.RedirectUriReceiverActivity"

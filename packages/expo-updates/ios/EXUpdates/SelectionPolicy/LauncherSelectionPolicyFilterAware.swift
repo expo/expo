@@ -11,20 +11,16 @@ import Foundation
 @objc(EXUpdatesLauncherSelectionPolicyFilterAware)
 @objcMembers
 public final class LauncherSelectionPolicyFilterAware: NSObject, LauncherSelectionPolicy {
-  let runtimeVersions: [String]
+  let runtimeVersion: String
 
-  public convenience init(runtimeVersion: String) {
-    self.init(runtimeVersions: [runtimeVersion])
-  }
-
-  public init(runtimeVersions: [String]) {
-    self.runtimeVersions = runtimeVersions
+  public required init(runtimeVersion: String) {
+    self.runtimeVersion = runtimeVersion
   }
 
   public func launchableUpdate(fromUpdates updates: [Update], filters: [String: Any]?) -> Update? {
     var runnableUpdate: Update?
     for update in updates {
-      if !runtimeVersions.contains(update.runtimeVersion) || !SelectionPolicies.doesUpdate(update, matchFilters: filters) {
+      if runtimeVersion != update.runtimeVersion || !SelectionPolicies.doesUpdate(update, matchFilters: filters) {
         continue
       }
 

@@ -16,7 +16,6 @@
 @interface EXScopedSecureStore ()
 
 @property (strong, nonatomic) NSString *scopeKey;
-@property (nonatomic) BOOL isStandaloneApp;
 
 @end
 
@@ -27,7 +26,6 @@
 {
   if (self = [super init]) {
     _scopeKey = scopeKey;
-    _isStandaloneApp = ![@"expo" isEqualToString:constantsBinding.appOwnership];
   }
   return self;
 }
@@ -37,12 +35,9 @@
     return nil;
   }
 
-  return _isStandaloneApp ? key : [NSString stringWithFormat:@"%@-%@", _scopeKey, key];
+  return [NSString stringWithFormat:@"%@-%@", _scopeKey, key];
 }
 
-// We must override this method so that items saved in standalone apps on SDK 40 and below,
-// which were scoped by prefixing the validated key with the scopeKey, can still be
-// found in SDK 41 and up. This override can be removed in SDK 45.
 - (NSString *)_getValueWithKey:(NSString *)key
                    withOptions:(NSDictionary *)options
                          error:(NSError **)error __deprecated_msg("To be removed once SDK 41 is phased out")
@@ -55,19 +50,6 @@
     NSString *value = [[NSString alloc] initWithData:data
                                             encoding:NSUTF8StringEncoding];
     return value;
-  } else if (_isStandaloneApp) {
-    NSString *scopedKey = [NSString stringWithFormat:@"%@-%@", _scopeKey, key];
-    NSString *scopedValue = [self getValueWithScopedKey:scopedKey
-                                             withOptions:options];
-    if (scopedValue) {
-      [self migrateValue:scopedValue
-            fromScopedKey:scopedKey
-                 toNewKey:key
-              withOptions:options];
-      return scopedValue;
-    }
-    // If we don't find anything under the scopedKey, we want to return
-    // the original error from searching for the unscoped key.
   }
 
   *error = searchError;

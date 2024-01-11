@@ -4,7 +4,13 @@ import path from 'path';
 import plist from 'plist';
 import semver from 'semver';
 
-import { EXPO_DIR, ANDROID_DIR, PACKAGES_DIR, IOS_DIR } from './Constants';
+import {
+  EXPO_DIR,
+  EXPO_GO_ANDROID_DIR,
+  PACKAGES_DIR,
+  EXPO_GO_IOS_DIR,
+  EXPO_GO_DIR,
+} from './Constants';
 
 export type Platform = 'ios' | 'android';
 
@@ -20,7 +26,7 @@ export async function sdkVersionAsync(): Promise<string> {
 }
 
 export async function iosAppVersionAsync(): Promise<string> {
-  const infoPlistPath = path.join(IOS_DIR, 'Exponent', 'Supporting', 'Info.plist');
+  const infoPlistPath = path.join(EXPO_GO_IOS_DIR, 'Exponent', 'Supporting', 'Info.plist');
   const infoPlist = plist.parse(fs.readFileSync(infoPlistPath, 'utf8'));
   const bundleVersion = infoPlist.CFBundleShortVersionString;
 
@@ -31,7 +37,7 @@ export async function iosAppVersionAsync(): Promise<string> {
 }
 
 export async function androidAppVersionAsync(): Promise<string> {
-  const buildGradlePath = path.join(ANDROID_DIR, 'app', 'build.gradle');
+  const buildGradlePath = path.join(EXPO_GO_ANDROID_DIR, 'app', 'build.gradle');
   const buildGradleContent = await fs.readFile(buildGradlePath, 'utf8');
   const match = buildGradleContent.match(/versionName ['"]([^'"]+?)['"]/);
 
@@ -41,9 +47,9 @@ export async function androidAppVersionAsync(): Promise<string> {
   return match[1];
 }
 
-export async function getHomeSDKVersionAsync(): Promise<string> {
-  const homeAppJsonPath = path.join(EXPO_DIR, 'home', 'app.json');
-  const appJson = (await JsonFile.readAsync(homeAppJsonPath, { json5: true })) as any;
+export async function getExpoGoSDKVersionAsync(): Promise<string> {
+  const expoGoAppJsonPath = path.join(EXPO_GO_DIR, 'app.json');
+  const appJson = (await JsonFile.readAsync(expoGoAppJsonPath, { json5: true })) as any;
 
   if (appJson?.expo?.sdkVersion) {
     return appJson.expo.sdkVersion as string;
@@ -52,7 +58,8 @@ export async function getHomeSDKVersionAsync(): Promise<string> {
 }
 
 export async function getSDKVersionsAsync(platform: Platform): Promise<string[]> {
-  const appDir = platform === 'ios' ? path.join(IOS_DIR, 'Exponent', 'Supporting') : ANDROID_DIR;
+  const appDir =
+    platform === 'ios' ? path.join(EXPO_GO_IOS_DIR, 'Exponent', 'Supporting') : EXPO_GO_ANDROID_DIR;
   const sdkVersionsPath = path.join(appDir, 'sdkVersions.json');
 
   if (!(await fs.pathExists(sdkVersionsPath))) {

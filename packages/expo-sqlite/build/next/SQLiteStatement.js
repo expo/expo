@@ -178,9 +178,13 @@ class SQLiteExecuteAsyncResultImpl {
             throw new Error('The SQLite cursor has been shifted and is unable to retrieve all rows without being reset. Invoke `resetAsync()` to reset the cursor first if you want to retrieve all rows.');
         }
         this.isStepCalled = true;
+        const firstRowValues = this.popFirstRowValues();
+        if (firstRowValues == null) {
+            // If the first row is empty, this SQL query may be a write operation. We should not call `statement.getAllAsync()` to write again.
+            return [];
+        }
         const columnNames = await this.getColumnNamesAsync();
         const allRows = await this.statement.getAllAsync(this.database);
-        const firstRowValues = this.popFirstRowValues();
         if (firstRowValues != null && firstRowValues.length > 0) {
             return composeRowsIfNeeded(this.options.rawResult, columnNames, [
                 firstRowValues,
@@ -255,9 +259,13 @@ class SQLiteExecuteSyncResultImpl {
         if (this.isStepCalled) {
             throw new Error('The SQLite cursor has been shifted and is unable to retrieve all rows without being reset. Invoke `resetSync()` to reset the cursor first if you want to retrieve all rows.');
         }
+        const firstRowValues = this.popFirstRowValues();
+        if (firstRowValues == null) {
+            // If the first row is empty, this SQL query may be a write operation. We should not call `statement.getAllAsync()` to write again.
+            return [];
+        }
         const columnNames = this.getColumnNamesSync();
         const allRows = this.statement.getAllSync(this.database);
-        const firstRowValues = this.popFirstRowValues();
         if (firstRowValues != null && firstRowValues.length > 0) {
             return composeRowsIfNeeded(this.options.rawResult, columnNames, [
                 firstRowValues,

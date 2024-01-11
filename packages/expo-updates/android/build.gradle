@@ -168,8 +168,7 @@ dependencies {
   implementation project(':expo-manifests')
   implementation project(':expo-json-utils')
   implementation project(':expo-eas-client')
-  //noinspection GradleDynamicVersion
-  implementation "com.facebook.react:react-native:+"
+  implementation "com.facebook.react:react-android"
 
   def room_version = "2.4.2"
 

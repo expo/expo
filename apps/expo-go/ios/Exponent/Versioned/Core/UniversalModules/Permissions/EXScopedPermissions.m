@@ -79,8 +79,7 @@
     };
     
     return [self askForGlobalPermissionUsingRequesterClass:requesterClass withResolver:customOnResults withRejecter:reject];
-  } else if ([_constantsBinding.appOwnership isEqualToString:@"expo"] &&
-             ![self hasGrantedScopedPermission:permissionType]) {
+  } else if (![self hasGrantedScopedPermission:permissionType]) {
     // second group
     // had to reinitilize UIAlertActions between alertShow invocations
     UIAlertAction *allowAction = [UIAlertAction actionWithTitle:@"Allow" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
@@ -117,8 +116,7 @@
   }
   NSMutableDictionary *permission = [NSMutableDictionary dictionaryWithDictionary:globalPermission];
   
-  if ([_constantsBinding.appOwnership isEqualToString:@"expo"]
-      && [self shouldVerifyScopedPermission:permissionType]
+  if ([self shouldVerifyScopedPermission:permissionType]
       && [EXPermissionsService statusForPermission:permission] == EXPermissionStatusGranted) {
     permission[@"status"] = [self getScopedPermissionStatus:permissionType];
     permission[@"granted"] = [permission[@"status"] isEqual:@"granted"] ? @YES : @NO;

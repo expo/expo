@@ -4,7 +4,6 @@
 #import <ExpoModulesCore/EXReactDelegateWrapper+Private.h>
 #import <ExpoModulesCore/Swift.h>
 
-
 @interface EXAppDelegateWrapper()
 
 @property (nonatomic, strong) EXReactDelegateWrapper *reactDelegate;
@@ -44,12 +43,14 @@
 
 #if __has_include(<React-RCTAppDelegate/RCTAppDelegate.h>) || __has_include(<React_RCTAppDelegate/RCTAppDelegate.h>)
 
+#if !TARGET_OS_OSX
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   [super application:application didFinishLaunchingWithOptions:launchOptions];
   [_expoAppDelegate application:application didFinishLaunchingWithOptions:launchOptions];
   return YES;
 }
+#endif // !TARGET_OS_OSX
 
 - (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
 {
@@ -69,8 +70,11 @@
                                                        moduleName:moduleName
                                                 initialProperties:initProps
                                                     fabricEnabled:enableFabric];
-#if !TARGET_OS_TV
+#if TARGET_OS_IOS
   rootView.backgroundColor = UIColor.systemBackgroundColor;
+#elif TARGET_OS_OSX
+  rootView.wantsLayer = YES;
+  rootView.layer.backgroundColor = NSColor.windowBackgroundColor.CGColor;
 #endif
   return rootView;
 }

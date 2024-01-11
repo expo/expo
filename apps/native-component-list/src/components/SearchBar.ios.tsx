@@ -23,7 +23,7 @@ const SearchContainerWidth = Layout.window.width - SearchContainerHorizontalMarg
 
 const SearchIcon = () => (
   <View style={styles.searchIconContainer}>
-    <Ionicons name="ios-search" size={18} color="#ccc" />
+    <Ionicons name="search" size={18} color="#ccc" />
   </View>
 );
 
