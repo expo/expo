@@ -79,7 +79,7 @@ You can then [import the custom config plugin](/config-plugins/plugins-and-mods/
 
 ### Custom URL schemes
 
-If you know the custom scheme for another app you can link to it. Some services provide documentation for deep linking, for example the [Lyft deep linking documentation](https://developer.lyft.com/v1/docs/deeplinking) describes how to link directly to a specific pickup location and destination:
+If you know the custom scheme for another app you can link to it. Some services provide documentation for deep linking, for example, the [Lyft deep linking documentation](https://developer.lyft.com/v1/docs/deeplinking) describes how to link directly to a specific pickup location and destination:
 
 ```
 lyft://ridetype?id=lyft&pickup[latitude]=37.764728&pickup[longitude]=-122.422999&destination[latitude]=37.7763592&destination[longitude]=-122.4242038
@@ -89,7 +89,7 @@ It's possible that the user doesn't have the Lyft app installed, in which case y
 
 On iOS, `Linking.canOpenURL` requires additional configuration to query other apps' linking schemes. You can use the `expo.ios.infoPlist` key in your app config (**app.json**, **app.config.js**) to specify a list of schemes your app needs to query. For example:
 
-```json
+```json app.json
 {
   "expo": {
     "ios": {
@@ -101,22 +101,22 @@ On iOS, `Linking.canOpenURL` requires additional configuration to query other ap
 }
 ```
 
-If you don't specify this list, `Linking.canOpenURL` may return `false` regardless of whether the device has the app installed. Note that this configuration can only be tested in [development builds](/develop/development-builds/introduction/), because it requires native changes that will not be applied when testing in [Expo Go][expo-go].
+If you don't specify this list, `Linking.canOpenURL` may return `false` regardless of whether the device has the app installed. Note that this configuration can only be tested in [development builds](/develop/development-builds/introduction/) because it requires native changes that will not be applied when testing in [Expo Go][expo-go].
 
 ### Creating URLs
 
-To save you the trouble of inserting a bunch of conditionals based on the environment that you're in and hardcoding urls, we provide some helper methods in our extension of the `Linking` module. When you want to provide a service with a url that it needs to redirect back into your app, you can call `Linking.createURL()` and it will resolve to the following:
+To save you the trouble of inserting a bunch of conditionals based on the environment that you're in and hardcoding URLs, we provide some helper methods in our extension of the `Linking` module. When you want to provide a service with a URL that it needs to redirect back into your app, you can call `Linking.createURL()` and it will resolve to the following:
 
 - _Production and development builds_: `myapp://` (see [#linking-to-your-app](#linking-to-your-app))
 - _Development in Expo Go_: `exp://127.0.0.1:8081`. For SDK 48 and lower, the port number is `19000`.
 
-When loading published updates in Expo Go, the URL that is created by `Linking.createURL()` depends on the manner in which the project was launched and shouldn't be relied upon to be consistent or stable. For applications that require a stable URL (authorization provider redirects, for example), you should use a development build with a custom scheme instead (see [#linking-to-your-app](#linking-to-your-app)).
+When loading published updates in Expo Go, the URL that is created by `Linking.createURL()` depends on how the project was launched and shouldn't be relied upon to be consistent or stable. For applications that require a stable URL (authorization provider redirects, for example), you should use a development build with a custom scheme instead (see [#linking-to-your-app](#linking-to-your-app)).
 
 - _Project loaded via QR code or via menus in Expo Go_: `exp://u.expo.dev/[project-id]/group/[update-group-id]` or `exp://u.expo.dev/[project-id]/update/[update-id]`. The project ID is stable but the update group ID and update ID are not.
 
-You can also change the returned url by passing optional parameters into `Linking.createURL()`. These will be used by your app to receive data, which we will talk about in the next section.
+You can also change the returned URL by passing optional parameters into `Linking.createURL()`. These will be used by your app to receive data, which we will talk about in the next section.
 
-To pass some data to an app, you can append it as a path or query string on your url. `Linking.createURL(path, { queryParams })` will construct a working url automatically for you. Example:
+To pass some data to an app, you can append it as a path or query string on your URL. `Linking.createURL(path, { queryParams })` will construct a working URL automatically for you. Example:
 
 ```ts
 const redirectUrl = Linking.createURL('path/into/app', {
@@ -143,7 +143,7 @@ The [`expo-linking`][expo-linking] API enables you to open a URL with the operat
 
 <SnackInline label="WebBrowser vs Linking" dependencies={["expo-web-browser", "expo-linking"]}>
 
-```js
+```jsx
 import React from 'react';
 import { Button, View, StyleSheet } from 'react-native';
 import * as Linking from 'expo-linking';
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
 
 To link to your [development build](/develop/development-builds/introduction/) or standalone app, you need to specify a custom URL scheme for your app. You can register a scheme in your app config (**app.json**, **app.config.js**) by adding a string under the `scheme` key:
 
-```json
+```json app.json
 {
   "expo": {
     "scheme": "myapp"
@@ -232,7 +232,7 @@ In development, your app will live at a url like `exp://127.0.0.1:8081` (for SDK
 
 You can test this mechanism in your mobile browser by searching `exp://u.expo.dev/F767ADF57-B487-4D8F-9522-85549C39F43F?channel-name=main&runtime-version=exposdk:45.0.0`, this will redirect to your experience in the Expo Go app.
 
-By default `exp://` is replaced with `http://` when opening a URL in Expo Go. Similarly you can use `exps://` to open `https://` URLs. `exps://` does not currently support loading sites with insecure TLS certificates.
+By default `exp://` is replaced with `http://` when opening a URL in Expo Go. Similarly, you can use `exps://` to open `https://` URLs. `exps://` does not currently support loading sites with insecure TLS certificates.
 
 ### Handling links
 
@@ -249,18 +249,18 @@ export default function App() {
 }
 ```
 
-Behind the scenes this hook uses the following imperative API methods:
+Behind the scenes, this hook uses the following imperative API methods:
 
 1. The link that started the app is initially returned with: [`Linking.getInitialURL`](/versions/latest/sdk/linking/#linkinggetinitialurl)
 2. Any new links that were triggered while the app was already open are observed with: [`Linking.addEventListener('url', callback)`](/versions/latest/sdk/linking/#linkingaddeventlistenertype-handler)
 
-Learn more in the [API documentation](/versions/latest/sdk/linking).
+For more information, see [`expo-linking`](/versions/latest/sdk/linking) API reference.
 
 ### Parsing URLs
 
 Parse the **path**, **hostname**, and **query parameters** from a URL with the `Linking.parse()` function. Unlike other URL parsing methods, this function considers nonstandard implementations like [Expo Go linking](#linking-to-expo-go). Example:
 
-```javascript
+```js
 function App() {
   const url = Linking.useURL();
 
@@ -280,7 +280,7 @@ function App() {
 
 ## Testing URLs
 
-> Adding schemes will require a rebuilding your custom app.
+> Adding schemes will require rebuilding your custom app.
 
 You can open a URL like:
 

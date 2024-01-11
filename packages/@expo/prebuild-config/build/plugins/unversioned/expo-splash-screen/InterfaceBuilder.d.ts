@@ -64,6 +64,7 @@ export type IBImageView = IBItem<{
     translatesAutoresizingMaskIntoConstraints?: IBBoolean;
 }, {
     rect: IBRect[];
+    color: IBColor[];
 }>;
 export type IBLabel = IBItem<{
     id: string;

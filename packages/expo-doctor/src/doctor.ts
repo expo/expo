@@ -1,4 +1,4 @@
-import { getConfig } from '@expo/config';
+import { ExpoConfig, getConfig } from '@expo/config';
 import chalk from 'chalk';
 import semver from 'semver';
 
@@ -115,6 +115,34 @@ export async function runChecksAsync(
   );
 }
 
+export function getChecksInScopeForProject(exp: ExpoConfig) {
+  // add additional checks here
+  const checks = [
+    new GlobalPrereqsVersionCheck(),
+    new IllegalPackageCheck(),
+    new GlobalPackageInstalledCheck(),
+    new SupportPackageVersionCheck(),
+    new ExpoConfigSchemaCheck(),
+    new ExpoConfigCommonIssueCheck(),
+    new DirectPackageInstallCheck(),
+    new PackageJsonCheck(),
+    new ProjectSetupCheck(),
+  ];
+  if (env.EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK) {
+    Log.log(
+      chalk.yellow(
+        'Checking dependencies for compatibility with the installed Expo SDK version is disabled. Unset the EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK environment variable to re-enable this check.'
+      )
+    );
+  } else {
+    checks.push(new InstalledDependencyVersionCheck());
+  }
+  return checks.filter(
+    (check) =>
+      exp.sdkVersion === 'UNVERSIONED' || semver.satisfies(exp.sdkVersion!, check.sdkVersionRange)
+  );
+}
+
 export async function actionAsync(projectRoot: string) {
   await warnUponCmdExe();
 
@@ -133,25 +161,7 @@ export async function actionAsync(projectRoot: string) {
     return;
   }
 
-  // add additional checks here
-  const checks = [
-    new GlobalPrereqsVersionCheck(),
-    new IllegalPackageCheck(),
-    new GlobalPackageInstalledCheck(),
-    new SupportPackageVersionCheck(),
-    new InstalledDependencyVersionCheck(),
-    new ExpoConfigSchemaCheck(),
-    new ExpoConfigCommonIssueCheck(),
-    new DirectPackageInstallCheck(),
-    new PackageJsonCheck(),
-    new ProjectSetupCheck(),
-  ];
-
-  const filteredChecks = checks.filter(
-    (check) =>
-      projectConfig.exp.sdkVersion === 'UNVERSIONED' ||
-      semver.satisfies(projectConfig.exp.sdkVersion!, check.sdkVersionRange)
-  );
+  const filteredChecks = getChecksInScopeForProject(projectConfig.exp);
 
   const spinner = startSpinner(`Running ${filteredChecks.length} checks on your project...`);
 

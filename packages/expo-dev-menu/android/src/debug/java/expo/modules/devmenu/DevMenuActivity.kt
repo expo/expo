@@ -115,7 +115,8 @@ class DevMenuActivity : ReactActivity() {
     if (supportsDevelopment) {
       val devSupportManager: DevSupportManager =
         ReactInstanceManager::class.java.getPrivateDeclaredFieldValue(
-          "mDevSupportManager", instanceManager
+          "mDevSupportManager",
+          instanceManager
         )
 
       devSupportManager.devSupportEnabled = true

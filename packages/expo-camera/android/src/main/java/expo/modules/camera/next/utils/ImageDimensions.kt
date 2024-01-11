@@ -8,9 +8,13 @@ data class ImageDimensions @JvmOverloads constructor(private val mWidth: Int, pr
   val width: Int
     get() = if (isLandscape) {
       mHeight
-    } else mWidth
+    } else {
+      mWidth
+    }
   val height: Int
     get() = if (isLandscape) {
       mWidth
-    } else mHeight
+    } else {
+      mHeight
+    }
 }

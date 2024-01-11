@@ -25,7 +25,7 @@ interface KeyBasedEncryptor<E : KeyStore.Entry> {
     keyStoreEntry: E,
     requireAuthentication: Boolean,
     authenticationPrompt: String,
-    authenticationHelper: AuthenticationHelper,
+    authenticationHelper: AuthenticationHelper
   ): JSONObject
 
   @Throws(GeneralSecurityException::class, JSONException::class)

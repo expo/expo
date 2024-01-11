@@ -67,15 +67,6 @@ void JSIInteropModuleRegistry::installJSI(
       "modules",
       expoModulesObject
     );
-
-  // Also define `global.ExpoModules` for backwards compatibility (used before SDK47, can be removed in SDK48).
-  runtime
-    ->global()
-    .setProperty(
-      *runtime,
-      "ExpoModules",
-      expoModulesObject
-    );
 }
 
 void JSIInteropModuleRegistry::installJSIForTests(

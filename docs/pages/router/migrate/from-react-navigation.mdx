@@ -101,17 +101,15 @@ function HomeTabs() {
 
 function App() {
   return (
-    /* @info NavigationContainer is managed by Expo Router. */
+    // NavigationContainer is managed by Expo Router.
     <NavigationContainer
-      /* @end */
-
-      /* @info Delete the linking configuration, this is managed by Expo Router. */
       linking={
+        /* @info Delete the linking configuration, this is managed by Expo Router. */
         {
-          // ...
+          // ...linking configuration
         }
+        /* @end */
       }
-      /* @end */
     >
       <Stack.Navigator>
         /* @info Standard screens can be moved to files. */
@@ -120,13 +118,13 @@ function App() {
         <Stack.Screen name="Profile" component={Profile} />
         /* @info A screen that exports a navigator should be converted to a directory with a layout route. */
         <Stack.Screen
-          /* @end */
           name="Home"
           component={HomeTabs}
           options={{
             title: 'Home Screen',
           }}
         />
+          /* @end */
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -158,11 +156,9 @@ export default function RootLayout() {
     <Stack>
       <Stack.Screen
         name="(home)"
-        /* @info Options can be expressed using the Screen component on a navigator. This has the same types as React Navigation. */
-        options={{
+        options={/* @info Options can be expressed using the Screen component on a navigator. This has the same types as React Navigation. */{
           title: 'Home Screen',
-        }}
-        /* @end */
+        }/* @end */}
       />
     </Stack>
   );
@@ -421,17 +417,14 @@ import { Navigator, usePathname, Slot, Link } from 'expo-router';
 
 export default function App() {
   return (
-    /* @info */
-    <Navigator router={TabRouter}>
-      /* @end */
+    /* @info */<Navigator router={TabRouter}>/* @end */
       <Header />
       <Slot />
     </Navigator>
   );
 }
 
-function Header() {
-  const { navigation, state, descriptors, router } = Navigator.useContext();
+function Header() {;
   const pathname = usePathname();
 
   return (
@@ -439,9 +432,7 @@ function Header() {
       <Link href="/">Home</Link>
       <Link
         href="/profile"
-        /* @info Use <code>pathname</code> to determine if the link is active. */
-        style={[pathname === '/profile' && { color: 'blue' }]}>
-        /* @end */
+        style={/* @info Use <code>pathname</code> to determine if the link is active. */[pathname === '/profile' && { color: 'blue' }]/* @end */}>
         Profile
       </Link>
       <Link href="/settings">Settings</Link>
@@ -499,10 +490,10 @@ export default function Screen() {
 
   return (
     <>
-      /* @hide ... */ /* @end */
-      <Button title='Reset' onPress={handleResetAction}>
+      {/* ...rest of the code */}
+      <Button title='Reset' onPress={handleResetAction} />
     </>
-  )
+  );
 }
 ```
 

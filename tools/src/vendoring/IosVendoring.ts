@@ -5,7 +5,7 @@ import inquirer from 'inquirer';
 import path from 'path';
 
 import { podInstallAsync, Podspec, readPodspecAsync } from '../CocoaPods';
-import { IOS_DIR } from '../Constants';
+import { EXPO_GO_IOS_DIR } from '../Constants';
 import logger from '../Logger';
 import { arrayize, searchFilesAsync } from '../Utils';
 import { copyVendoredFilesAsync } from './common';
@@ -55,8 +55,8 @@ export async function vendorAsync(
   logger.log('📄 Generating %s', chalk.magenta(podspecJsonFile));
 
   if (await promptToReinstallPodsAsync()) {
-    logger.log('♻️  Reinstalling pods at %s', chalk.magenta(IOS_DIR));
-    await podInstallAsync(IOS_DIR, {
+    logger.log('♻️  Reinstalling pods at %s', chalk.magenta(EXPO_GO_IOS_DIR));
+    await podInstallAsync(EXPO_GO_IOS_DIR, {
       noRepoUpdate: true,
     });
   }

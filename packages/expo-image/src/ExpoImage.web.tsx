@@ -63,11 +63,20 @@ function onErrorAdapter(onError?: { (event: { error: string }): void }) {
   };
 }
 
-// Used for some transitions to mimic native animations
-const setCssVariables = (element: HTMLElement, size: DOMRect) => {
+// Used for flip transitions to mimic native animations
+function setCssVariablesForFlipTransitions(element: HTMLElement, size: DOMRect) {
   element?.style.setProperty('--expo-image-width', `${size.width}px`);
   element?.style.setProperty('--expo-image-height', `${size.height}px`);
-};
+}
+
+function isFlipTransition(transition: ImageNativeProps['transition']) {
+  return (
+    transition?.effect === 'flip-from-bottom' ||
+    transition?.effect === 'flip-from-top' ||
+    transition?.effect === 'flip-from-left' ||
+    transition?.effect === 'flip-from-right'
+  );
+}
 
 export default function ExpoImage({
   source,
@@ -94,7 +103,7 @@ export default function ExpoImage({
   const { containerRef, source: selectedSource } = useSourceSelection(
     source,
     responsivePolicy,
-    setCssVariables
+    isFlipTransition(transition) ? setCssVariablesForFlipTransitions : null
   );
 
   const initialNodeAnimationKey =

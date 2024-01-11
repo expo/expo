@@ -17,7 +17,7 @@ export default class ExpoModulesScreen extends React.PureComponent<any, any> {
     return (
       <ScrollView style={styles.scrollView}>
         <HeadingText>Host object is installed</HeadingText>
-        <MonoText>{`'ExpoModules' in global => ${'ExpoModules' in globalThis}`}</MonoText>
+        <MonoText>{`'modules' in globalThis.expo => ${'modules' in globalThis.expo!}`}</MonoText>
 
         <HeadingText>Available Expo modules</HeadingText>
         <MonoText>

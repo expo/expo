@@ -25,7 +25,7 @@ You can read more about notification channels on the [Android developer website]
 
 Creating a channel is easy -- before you create a local notification (or receive a push notification), simply call the following method:
 
-```javascript
+```js
 if (Platform.OS === 'android') {
   Notifications.createChannelAndroidAsync('chat-messages', {
     name: 'Chat messages',
@@ -38,7 +38,7 @@ Creating a channel that already exists is essentially a no-op, so it's safe to c
 
 Then, when you want to send a notification for a chat message, either add the `channelId: 'chat-messages'` field to your [push notification message](../push-notifications/#message-format), or create a local notification like this:
 
-```javascript
+```js
 Notifications.presentLocalNotificationAsync({
   title: 'New Message',
   body: 'Message!!!!',
@@ -66,7 +66,7 @@ Once you have decided on a set of channels, you need to add logic to your app to
 
 For example, if this is your code before:
 
-```javascript
+```js
 _createNotificationAsync = () => {
   Notifications.presentLocalNotificationAsync({
     title: 'Reminder',
@@ -82,7 +82,7 @@ _createNotificationAsync = () => {
 
 You might change it to something like this:
 
-```javascript
+```js
 componentDidMount() {
   // ...
   if (Platform.OS === 'android') {
@@ -112,7 +112,7 @@ This will create a channel called "Reminders" with default settings of `max` pri
 
 ## Send channel notification with Expo API service
 
-```javascript
+```js
 [
   {
     to: 'ExponentPushToken[xxxxxx]',

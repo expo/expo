@@ -180,7 +180,9 @@ class Contact(var contactId: String) {
   fun getFinalDisplayName(): String? {
     return if (displayName == null && firstName != null) {
       if (lastName == null) firstName else String.format("%s %s", firstName, lastName).trim { it <= ' ' }
-    } else displayName
+    } else {
+      displayName
+    }
   }
 
   private fun toByteArray(bitmap: Bitmap): ByteArray {

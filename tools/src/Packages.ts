@@ -5,11 +5,9 @@ import path from 'path';
 import { Podspec, readPodspecAsync } from './CocoaPods';
 import * as Directories from './Directories';
 import * as Npm from './Npm';
-import AndroidUnversionablePackages from './versioning/android/unversionablePackages.json';
-import IosUnversionablePackages from './versioning/ios/unversionablePackages.json';
 
-const ANDROID_DIR = Directories.getAndroidDir();
-const IOS_DIR = Directories.getIosDir();
+const ANDROID_DIR = Directories.getExpoGoAndroidDir();
+const IOS_DIR = Directories.getExpoGoIosDir();
 const PACKAGES_DIR = Directories.getPackagesDir();
 
 /**
@@ -236,15 +234,6 @@ export class Package {
     throw new Error(
       `'isIncludedInExpoClientOnPlatform' is not supported on '${platform}' platform yet.`
     );
-  }
-
-  isVersionableOnPlatform(platform: 'ios' | 'android'): boolean {
-    if (platform === 'ios') {
-      return this.podspecName != null && !IosUnversionablePackages.includes(this.packageName);
-    } else if (platform === 'android') {
-      return !AndroidUnversionablePackages.includes(this.packageName);
-    }
-    throw new Error(`'isVersionableOnPlatform' is not supported on '${platform}' platform yet.`);
   }
 
   async getPackageViewAsync(): Promise<Npm.PackageViewType | null> {
