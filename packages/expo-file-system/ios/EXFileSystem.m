@@ -5,7 +5,12 @@
 #import <ExpoFileSystem/EXFileSystem.h>
 
 #import <CommonCrypto/CommonDigest.h>
+
+#if TARGET_OS_IOS || TARGET_OS_TV
 #import <MobileCoreServices/MobileCoreServices.h>
+#elif TARGET_OS_OSX
+#import <CoreServices/CoreServices.h>
+#endif
 
 #import <ExpoFileSystem/EXFileSystemLocalFileHandler.h>
 #import <ExpoFileSystem/EXFileSystemAssetLibraryHandler.h>

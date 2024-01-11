@@ -11,6 +11,13 @@
 ### 💡 Others
 
 - [expo-updates] Migrate to requireNativeModule/requireOptionalNativeModule. ([#25648](https://github.com/expo/expo/pull/25648) by [@wschurman](https://github.com/wschurman))
+- Remove most of Constants.appOwnership. ([#26313](https://github.com/expo/expo/pull/26313) by [@wschurman](https://github.com/wschurman))
+
+## 15.4.3 - 2024-01-10
+
+### 🎉 New features
+
+- Added support for macOS platform. ([#26233](https://github.com/expo/expo/pull/26233) by [@tsapeta](https://github.com/tsapeta))
 
 ## 15.4.2 - 2023-12-19
 

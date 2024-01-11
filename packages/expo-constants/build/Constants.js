@@ -68,7 +68,7 @@ Object.defineProperties(constants, {
     __unsafeNoWarnManifest: {
         get() {
             const maybeManifest = getManifest(true);
-            if (!maybeManifest || !isBareManifest(maybeManifest)) {
+            if (!maybeManifest || !isEmbeddedManifest(maybeManifest)) {
                 return null;
             }
             return maybeManifest;
@@ -78,7 +78,7 @@ Object.defineProperties(constants, {
     __unsafeNoWarnManifest2: {
         get() {
             const maybeManifest = getManifest(true);
-            if (!maybeManifest || !isManifest(maybeManifest)) {
+            if (!maybeManifest || !isExpoUpdatesManifest(maybeManifest)) {
                 return null;
             }
             return maybeManifest;
@@ -92,7 +92,7 @@ Object.defineProperties(constants, {
                 warnedAboutManifestField = true;
             }
             const maybeManifest = getManifest();
-            if (!maybeManifest || !isBareManifest(maybeManifest)) {
+            if (!maybeManifest || !isEmbeddedManifest(maybeManifest)) {
                 return null;
             }
             return maybeManifest;
@@ -102,7 +102,7 @@ Object.defineProperties(constants, {
     manifest2: {
         get() {
             const maybeManifest = getManifest();
-            if (!maybeManifest || !isManifest(maybeManifest)) {
+            if (!maybeManifest || !isExpoUpdatesManifest(maybeManifest)) {
                 return null;
             }
             return maybeManifest;
@@ -115,15 +115,15 @@ Object.defineProperties(constants, {
             if (!maybeManifest) {
                 return null;
             }
-            // if running an embedded update, maybeManifest is a BareManifest which doesn't have
+            // if running an embedded update, maybeManifest is a EmbeddedManifest which doesn't have
             // the expo config. Instead, the embedded expo-constants app.config should be used.
             if (ExpoUpdates && ExpoUpdates.isEmbeddedLaunch) {
                 return rawAppConfig;
             }
-            if (isManifest(maybeManifest)) {
+            if (isExpoUpdatesManifest(maybeManifest)) {
                 return maybeManifest.extra?.expoClient ?? null;
             }
-            else if (isBareManifest(maybeManifest)) {
+            else if (isEmbeddedManifest(maybeManifest)) {
                 return maybeManifest;
             }
             return null;
@@ -136,10 +136,10 @@ Object.defineProperties(constants, {
             if (!maybeManifest) {
                 return null;
             }
-            if (isManifest(maybeManifest)) {
+            if (isExpoUpdatesManifest(maybeManifest)) {
                 return maybeManifest.extra?.expoGo ?? null;
             }
-            else if (isBareManifest(maybeManifest)) {
+            else if (isEmbeddedManifest(maybeManifest)) {
                 return maybeManifest;
             }
             return null;
@@ -152,10 +152,10 @@ Object.defineProperties(constants, {
             if (!maybeManifest) {
                 return null;
             }
-            if (isManifest(maybeManifest)) {
+            if (isExpoUpdatesManifest(maybeManifest)) {
                 return maybeManifest.extra?.eas ?? null;
             }
-            else if (isBareManifest(maybeManifest)) {
+            else if (isEmbeddedManifest(maybeManifest)) {
                 return maybeManifest;
             }
             return null;
@@ -172,10 +172,10 @@ Object.defineProperties(constants, {
         enumerable: false,
     },
 });
-function isBareManifest(manifest) {
-    return !isManifest(manifest);
+function isEmbeddedManifest(manifest) {
+    return !isExpoUpdatesManifest(manifest);
 }
-function isManifest(manifest) {
+function isExpoUpdatesManifest(manifest) {
     return 'metadata' in manifest;
 }
 function getManifest(suppressWarning = false) {

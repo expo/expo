@@ -105,6 +105,7 @@ EX_EXPORT_METHOD_AS(loadAsync,
  * Queries custom native font names from the Info.plist `UIAppFonts`.
  */
 - (NSArray<NSString *> *)queryCustomNativeFonts {
+  #if TARGET_OS_IOS || TARGET_OS_TV
   // [0] Read from main bundle's Info.plist
   NSArray *fontFilePaths = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIAppFonts"];
   NSMutableSet<NSString *> *fontFamilies = [[NSMutableSet alloc] init];
@@ -138,6 +139,10 @@ EX_EXPORT_METHOD_AS(loadAsync,
 
   // [3] Return as array
   return [fontNames allObjects];
+  #elif TARGET_OS_OSX
+  // TODO: Add support for `ATSApplicationFontsPath` key in Info.plist
+  return @[];
+  #endif
 }
 
 @end

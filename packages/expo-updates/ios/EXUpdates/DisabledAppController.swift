@@ -16,19 +16,18 @@ public class DisabledAppController: InternalAppControllerInterface {
 
   public weak var delegate: AppControllerDelegate?
 
-  private let stateMachine = UpdatesStateMachine()
+  // disabled controller state machine can only be idle or restarting
+  private let stateMachine = UpdatesStateMachine(validUpdatesStateValues: [UpdatesStateValue.idle, UpdatesStateValue.restarting])
 
   internal private(set) var isEmergencyLaunch: Bool = false
   private let initializationError: Error?
   private var launcher: AppLauncher?
-  private let isMissingRuntimeVersion: Bool
 
   public let updatesDirectory: URL? = nil // internal for E2E test
 
-  required init(error: Error?, isMissingRuntimeVersion: Bool) {
+  required init(error: Error?) {
     self.initializationError = error
     self.isEmergencyLaunch = error != nil
-    self.isMissingRuntimeVersion = isMissingRuntimeVersion
   }
 
   public func start() {
@@ -67,13 +66,11 @@ public class DisabledAppController: InternalAppControllerInterface {
       embeddedUpdate: nil,
       isEmergencyLaunch: self.isEmergencyLaunch,
       isEnabled: false,
-      releaseChannel: UpdatesConfig.ReleaseChannelDefaultValue,
       isUsingEmbeddedAssets: launcher?.isUsingEmbeddedAssets() ?? false,
       runtimeVersion: nil,
       checkOnLaunch: CheckAutomaticallyConfig.Never,
       requestHeaders: [:],
       assetFilesMap: launcher?.assetFilesMap,
-      isMissingRuntimeVersion: self.isMissingRuntimeVersion,
       shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: false
     )
   }

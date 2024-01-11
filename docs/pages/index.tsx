@@ -16,7 +16,7 @@ import type { PropsWithChildren } from 'react';
 import { Row, ScreenClassProvider } from 'react-grid-system';
 
 import DocumentationPage from '~/components/DocumentationPage';
-import TALKS from '~/public/static/talks';
+import { TALKS } from '~/public/static/talks';
 import { AppJSBanner } from '~/ui/components/AppJSBanner';
 import {
   CellContainer,

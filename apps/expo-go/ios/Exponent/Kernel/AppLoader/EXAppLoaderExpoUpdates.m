@@ -335,20 +335,13 @@ NS_ASSUME_NONNULL_BEGIN
 
   NSURL *httpManifestUrl = [[self class] _httpUrlFromManifestUrl:_manifestUrl];
 
-  // in Expo Go, the release channel can change at runtime depending on the URL we load
-  NSURLComponents *manifestUrlComponents = [NSURLComponents componentsWithURL:httpManifestUrl resolvingAgainstBaseURL:YES];
-  NSString *releaseChannel = releaseChannel = [EXKernelLinkingManager releaseChannelWithUrlComponents:manifestUrlComponents];
-
   NSMutableDictionary *updatesConfig = [[NSMutableDictionary alloc] initWithDictionary:@{
     EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: httpManifestUrl.absoluteString,
-    EXUpdatesConfig.EXUpdatesConfigSDKVersionKey: [self _sdkVersions],
     EXUpdatesConfig.EXUpdatesConfigScopeKeyKey: httpManifestUrl.absoluteString,
-    EXUpdatesConfig.EXUpdatesConfigReleaseChannelKey: releaseChannel,
     EXUpdatesConfig.EXUpdatesConfigHasEmbeddedUpdateKey: @NO,
     EXUpdatesConfig.EXUpdatesConfigEnabledKey: @YES,
     EXUpdatesConfig.EXUpdatesConfigLaunchWaitMsKey: launchWaitMs,
     EXUpdatesConfig.EXUpdatesConfigCheckOnLaunchKey: shouldCheckOnLaunch ? EXUpdatesConfig.EXUpdatesConfigCheckOnLaunchValueAlways : EXUpdatesConfig.EXUpdatesConfigCheckOnLaunchValueNever,
-    EXUpdatesConfig.EXUpdatesConfigExpectsSignedManifestKey: @YES,
     EXUpdatesConfig.EXUpdatesConfigRequestHeadersKey: [self _requestHeaders]
   }];
 
@@ -503,7 +496,7 @@ NS_ASSUME_NONNULL_BEGIN
       NSString *currentScopeKeyAndSaltToHash = [NSString stringWithFormat:@"unverified-%@", manifest.scopeKey];
       NSString *currentScopeKeyHash = [currentScopeKeyAndSaltToHash hexEncodedSHA256];
       NSString *newScopeKey = [NSString stringWithFormat:@"%@-%@", currentScopeKeyAndSaltToHash, currentScopeKeyHash];
-      if ([manifest isKindOfClass:EXManifestsNewManifest.class]) {
+      if ([manifest isKindOfClass:EXManifestsExpoUpdatesManifest.class]) {
         NSDictionary *extra = mutableManifest[@"extra"] ?: @{};
         NSMutableDictionary *mutableExtra = [extra mutableCopy];
         mutableExtra[@"scopeKey"] = newScopeKey;

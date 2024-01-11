@@ -58,7 +58,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
     fun onSuccess(assetEntity: AssetEntity, isNew: Boolean)
   }
 
-  private fun downloadFileAndVerifyHashAndWriteToPath(
+  private fun downloadAssetAndVerifyHashAndWriteToPath(
     request: Request,
     expectedBase64URLEncodedSHA256Hash: String?,
     destination: File,
@@ -68,18 +68,16 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
       request,
       object : Callback {
         override fun onFailure(call: Call, e: IOException) {
+          logger.error("Failed to download asset from ${request.url}", UpdatesErrorCode.AssetsFailedToLoad, e)
           callback.onFailure(e)
         }
 
         @Throws(IOException::class)
         override fun onResponse(call: Call, response: Response) {
           if (!response.isSuccessful) {
-            callback.onFailure(
-              Exception(
-                "Network request failed: " + response.body!!
-                  .string()
-              )
-            )
+            val error = Exception("Network request failed: " + response.body!!.string())
+            logger.error("Failed to download file from ${request.url}", UpdatesErrorCode.AssetsFailedToLoad, error)
+            callback.onFailure(error)
             return
           }
           try {
@@ -88,7 +86,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
               callback.onSuccess(destination, hash)
             }
           } catch (e: Exception) {
-            logger.error("Failed to download file to destination $destination: ${e.localizedMessage}", UpdatesErrorCode.AssetsFailedToLoad, e)
+            logger.error("Failed to write file from ${request.url} to destination $destination", UpdatesErrorCode.AssetsFailedToLoad, e)
             callback.onFailure(e)
           }
         }
@@ -506,7 +504,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
       callback.onSuccess(asset, false)
     } else {
       try {
-        downloadFileAndVerifyHashAndWriteToPath(
+        downloadAssetAndVerifyHashAndWriteToPath(
           createRequestForAsset(asset, configuration, context),
           asset.expectedHash,
           path,
@@ -569,9 +567,12 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
       logger: UpdatesLogger,
       callback: ParseManifestCallback
     ) {
-      if (configuration.expectsSignedManifest) {
-        preManifest.put("isVerified", false)
-      }
+      // Set the isVerified field in the manifest itself so that it is stored in the database.
+      // Note that this is not considered for code signature verification.
+      // currently this is only used by Expo Go, but moving it out of the library would require
+      // also storing the signature so database-loaded-update validity could be derived at load
+      // time.
+      preManifest.put("isVerified", false)
 
       // check code signing if code signing is configured
       // 1. verify the code signing signature (throw if invalid)
@@ -591,7 +592,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
           }
 
           if (signatureValidationResult.validationResult != ValidationResult.SKIPPED) {
-            val manifestForProjectInformation = ManifestFactory.getManifest(
+            val manifestForProjectInformation = UpdateFactory.getUpdate(
               preManifest,
               responseHeaderData,
               extensions,
@@ -615,13 +616,13 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
         return
       }
 
-      val updateManifest = ManifestFactory.getManifest(preManifest, responseHeaderData, extensions, configuration)
-      if (!SelectionPolicies.matchesFilters(updateManifest.updateEntity!!, responseHeaderData.manifestFilters)) {
+      val update = UpdateFactory.getUpdate(preManifest, responseHeaderData, extensions, configuration)
+      if (!SelectionPolicies.matchesFilters(update.updateEntity!!, responseHeaderData.manifestFilters)) {
         val message =
           "Downloaded manifest is invalid; provides filters that do not match its content"
         callback.onFailure(message, Exception(message))
       } else {
-        callback.onSuccess(UpdateResponsePart.ManifestUpdateResponsePart(updateManifest))
+        callback.onSuccess(UpdateResponsePart.ManifestUpdateResponsePart(update))
       }
     }
 
@@ -671,18 +672,13 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
         .header("Expo-API-Version", "1")
         .header("Expo-Updates-Environment", "BARE")
         .header("Expo-JSON-Error", "true")
-        .header("Expo-Accept-Signature", configuration.expectsSignedManifest.toString())
         .header("EAS-Client-ID", EASClientID(context).uuid.toString())
         .apply {
           val runtimeVersion = configuration.runtimeVersionRaw
-          val sdkVersion = configuration.sdkVersion
           if (!runtimeVersion.isNullOrEmpty()) {
             header("Expo-Runtime-Version", runtimeVersion)
-          } else if (!sdkVersion.isNullOrEmpty()) {
-            header("Expo-SDK-Version", sdkVersion)
           }
         }
-        .header("Expo-Release-Channel", configuration.releaseChannel)
         .apply {
           val previousFatalError = NoDatabaseLauncher.consumeErrorLog(context)
           if (previousFatalError != null) {

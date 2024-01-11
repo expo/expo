@@ -1,6 +1,6 @@
 {
   "name": "expo-updates",
-  "platforms": ["ios", "android"],
+  "platforms": ["ios", "android", "tvos"],
   "ios": {
     "modules": ["UpdatesModule"],
     "appDelegateSubscribers": ["ExpoUpdatesAppDelegateSubscriber"],

@@ -28,7 +28,7 @@ To view a list of available commands in Expo CLI, run the following in your proj
 
 The output should look something like below:
 
-```shell
+```sh
 Usage
   $ npx expo <command>
 
@@ -282,7 +282,7 @@ This will export the website with all resources prefixed with `/my-root`. For ex
 
 Expo Router has built-in support for `baseUrl`. When using the `Link` and `router` APIs, the `baseUrl` will be automatically prepended to the URL.
 
-```js app/blog/index.tsx
+```jsx app/blog/index.tsx
 import { Link } from 'expo-router';
 
 export default function Blog() {
@@ -302,7 +302,7 @@ The `baseUrl` functionality is production-only and must be set before exporting 
 
 Images and other assets will work automatically if you `require` or `import` them. If you directly reference a resource URL then you will need to append the **baseUrl** manually.
 
-```js app/index.tsx
+```jsx app/index.tsx
 import { Image } from 'expo-image';
 
 export default function Blog() {
@@ -318,7 +318,7 @@ This will **export** to the following:
 
 Manually passing a URL will need to be manually prefixed:
 
-```js app/index.tsx
+```jsx app/index.tsx
 export default function Blog() {
   return <img src="/my-root/assets/image.png" />;
 }
