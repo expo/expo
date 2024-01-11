@@ -3,14 +3,14 @@ import chalk from 'chalk';
 import fs from 'fs-extra';
 import path from 'path';
 
+import { checkPackageAccess } from './checkPackageAccess';
+import { selectPackagesToPublish } from './selectPackagesToPublish';
 import Git from '../../Git';
 import logger from '../../Logger';
 import * as Npm from '../../Npm';
 import { Package } from '../../Packages';
 import { Task } from '../../TasksRunner';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-import { checkPackageAccess } from './checkPackageAccess';
-import { selectPackagesToPublish } from './selectPackagesToPublish';
 
 const { green, cyan, yellow } = chalk;
 

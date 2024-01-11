@@ -27,10 +27,10 @@
     "**/util": "~0.12.4"
   },
   "dependencies": {
-    "eslint": "^8.45.0",
+    "eslint": "^8.56.0",
     "jsc-android": "^250231.0.0",
     "node-gyp": "^10.0.1",
-    "prettier": "^3.0.0",
-    "yarn-deduplicate": "^6.0.0"
+    "prettier": "^3.1.1",
+    "yarn-deduplicate": "^6.0.2"
   }
 }
