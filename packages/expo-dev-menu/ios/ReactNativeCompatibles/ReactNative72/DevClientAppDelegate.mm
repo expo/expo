@@ -11,7 +11,7 @@
 #import <React-RCTAppDelegate/RCTAppSetupUtils.h>
 #endif
 
-#ifdef USE_NEW_ARCH
+#ifdef RCT_NEW_ARCH_ENABLED
 #import <memory>
 
 #import <React/CoreModulesPlugins.h>
@@ -43,7 +43,7 @@
 
 @implementation DevClientAppDelegate
 
-#if USE_NEW_ARCH
+#if RCT_NEW_ARCH_ENABLED
 - (instancetype)init
 {
   if (self = [super init]) {
@@ -58,7 +58,7 @@
 - (RCTBridge *)createBridgeAndSetAdapterWithLaunchOptions:(NSDictionary * _Nullable)launchOptions {
   self.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
 
-#ifdef USE_NEW_ARCH
+#ifdef RCT_NEW_ARCH_ENABLED
   self.bridgeAdapter = [[RCTSurfacePresenterBridgeAdapter alloc] initWithBridge:self.bridge
                                                                contextContainer:_contextContainer];
   self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
@@ -72,7 +72,7 @@
 #pragma mark - RCTCxxBridgeDelegate
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
 {
-#if USE_NEW_ARCH
+#if RCT_NEW_ARCH_ENABLED
   _runtimeScheduler = std::make_shared<facebook::react::RuntimeScheduler>(RCTRuntimeExecutorFromBridge(bridge));
   std::shared_ptr<facebook::react::CallInvoker> callInvoker =
       std::make_shared<facebook::react::RuntimeSchedulerCallInvoker>(_runtimeScheduler);

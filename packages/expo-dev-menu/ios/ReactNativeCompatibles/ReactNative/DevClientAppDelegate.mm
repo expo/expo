@@ -9,6 +9,7 @@
 #import <React-RCTAppDelegate/RCTAppSetupUtils.h>
 #endif
 
+#ifdef RCT_NEW_ARCH_ENABLED
 #import <memory>
 
 #import <React/CoreModulesPlugins.h>
@@ -34,6 +35,8 @@
 }
 @end
 
+#endif
+
 @interface RCTAppDelegate (DevClientAppDelegate)
 
 - (void)unstable_registerLegacyComponents;
@@ -41,9 +44,12 @@
 @end
 
 @implementation DevClientAppDelegate {
+#if RCT_NEW_ARCH_ENABLED
   RCTHost *_reactHost;
+#endif // RCT_NEW_ARCH_ENABLED
 }
 
+#if RCT_NEW_ARCH_ENABLED
 - (instancetype)init
 {
   if (self = [super init]) {
@@ -53,10 +59,12 @@
   }
   return self;
 }
+#endif
 
 - (RCTBridge *)createBridgeAndSetAdapterWithLaunchOptions:(NSDictionary * _Nullable)launchOptions {
   self.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
 
+#ifdef RCT_NEW_ARCH_ENABLED
   // bridgeless mode is not yet supported in expo-dev-client
   assert(!self.bridgelessEnabled);
 
@@ -64,13 +72,16 @@
                                                                contextContainer:_contextContainer];
   self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
 
+  [self unstable_registerLegacyComponents];
   [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
+#endif
 
   return self.bridge;
 }
 
 #pragma mark - RCTCxxBridgeDelegate
 
+#if RCT_NEW_ARCH_ENABLED
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
 {
   _runtimeScheduler = std::make_shared<facebook::react::RuntimeScheduler>(RCTRuntimeExecutorFromBridge(bridge));
@@ -83,5 +94,6 @@
   _contextContainer->insert("RuntimeScheduler", _runtimeScheduler);
   return RCTAppSetupDefaultJsExecutorFactory(bridge, turboModuleManager, _runtimeScheduler);
 }
+#endif // RCT_NEW_ARCH_ENABLED
 
 @end

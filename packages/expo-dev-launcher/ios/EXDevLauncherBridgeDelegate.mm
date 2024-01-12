@@ -10,7 +10,7 @@
 #import <React-RCTAppDelegate/RCTAppSetupUtils.h>
 #endif
 
-#ifdef USE_NEW_ARCH
+#ifdef RCT_NEW_ARCH_ENABLED
 
 static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
@@ -28,7 +28,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 - (RCTRootView *)createRootViewWithModuleName:(NSString *)moduleName launchOptions:(NSDictionary * _Nullable)launchOptions application:(UIApplication *)application{
     BOOL enableTM = NO;
-#if USE_NEW_ARCH
+#if RCT_NEW_ARCH_ENABLED
     enableTM = YES;
 #endif
 
@@ -41,7 +41,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
     self.bridge = [super createBridgeAndSetAdapterWithLaunchOptions:launchOptions];
 
     NSMutableDictionary *initProps = [NSMutableDictionary new];
-#ifdef USE_NEW_ARCH
+#ifdef RCT_NEW_ARCH_ENABLED
     initProps[kRNConcurrentRoot] = @YES;
 #endif
 

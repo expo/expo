@@ -25,7 +25,7 @@
 #import <EXDevLauncher-Swift.h>
 #endif
 
-#ifdef USE_NEW_ARCH
+#ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTSurfaceView.h>
 #endif
 
@@ -604,7 +604,7 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTContentDidAppearNotification object:nil];
 
   dispatch_async(dispatch_get_main_queue(), ^{
-    #ifdef USE_NEW_ARCH
+    #ifdef RCT_NEW_ARCH_ENABLED
       #define EXPECTED_ROOT_VIEW RCTSurfaceView
     #else
       #define EXPECTED_ROOT_VIEW RCTRootContentView
