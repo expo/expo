@@ -37,9 +37,15 @@ The changes that come with the New Architecture address the technical debt of th
 
 ## Expo tools and the New Architecture
 
-As of SDK 49, all `expo-*` packages in the [Expo SDK](/versions/latest/) support the New Architecture, with the exception of `expo-updates`. We plan to add support for `expo-updates` in SDK 51.
+As of SDK 49, nearly all `expo-*` packages in the [Expo SDK](/versions/latest/) support the New Architecture.
 
 Additionally, all modules written using the [Expo Modules API](/modules/overview/) support the New Architecture by default! So if you have built your own native modules using this API, no additional work is needed to use them with the New Architecture.
+
+### Known incompatibilities
+
+- `expo-updates` does not yet support the New Architecture. This is expected to be ready for SDK 51.
+- `Font.loadAsync()` from `expo-font` is not yet compatible. This is expected to be ready by SDK 51. [Use the `expo-font` config plugin](/develop/user-interface/fonts/#embed-the-font-in-your-native-project) to statically embed fonts in your app instead.
+- Bridgeless mode is not yet supported. This will be worked on for SDK 51, but may not be ready.
 
 ## Initialize a new project with the New Architecture
 
@@ -48,8 +54,6 @@ The easiest way to get started with the New Architecture is to use the `with-new
 <Terminal cmd={['$ npx create-expo-app@latest -e with-new-arch']} />
 
 ## Enable the New Architecture in an existing project
-
-> Note: `expo-updates` does not yet support the New Architecture. If you use it in your project, you will need to remove it before continuing.
 
 You can enable the New Architecture in your app using the [`expo-build-properties`](/versions/latest/sdk/build-properties/) config plugin:
 
