@@ -75,7 +75,7 @@ describe('resolveAdbPromise', () => {
       };
     })();
     await expect(server.resolveAdbPromise(rejects)).rejects.toThrowError(
-      /^Invalid ADB user number \"FUNKY\" set with environment variable EXPO_ADB_USER. Run \"adb shell pm list users\" to see valid user numbers.$/
+      /^Invalid ADB user number "FUNKY" set with environment variable EXPO_ADB_USER. Run "adb shell pm list users" to see valid user numbers.$/
     );
   });
 });
