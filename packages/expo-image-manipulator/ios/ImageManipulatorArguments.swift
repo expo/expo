@@ -90,7 +90,7 @@ internal enum ImageFormat: String, EnumArgument {
     case .png:
       return ".png"
     case .webp:
-      return ".webp"  
+      return ".webp"
     }
   }
 }
