@@ -3,7 +3,8 @@ import { execFileSync } from 'child_process';
 
 import { assertSdkRoot } from './AndroidSdk';
 import { Log } from '../../../log';
-import { AbortCommandError } from '../../../utils/errors';
+import { env } from '../../../utils/env';
+import { AbortCommandError, CommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
 
 const debug = require('debug')('expo:start:platforms:android:adbServer') as typeof console.log;
@@ -111,11 +112,19 @@ export class ADBServer {
       if (error.signal === 'SIGINT') {
         throw new AbortCommandError();
       }
+      if (error.status === 255 && error.stdout.includes('Bad user number')) {
+        const userNumber = error.stdout.match(/Bad user number: (.+)/)?.[1] ?? env.EXPO_ADB_USER;
+        throw new CommandError(
+          'EXPO_ADB_USER',
+          `Invalid ADB user number "${userNumber}" set with environment variable EXPO_ADB_USER. Run "adb shell pm list users" to see valid user numbers.`
+        );
+      }
       // TODO: Support heap corruption for adb 29 (process exits with code -1073740940) (windows and linux)
       let errorMessage = (error.stderr || error.stdout || error.message).trim();
       if (errorMessage.startsWith(BEGINNING_OF_ADB_ERROR_MESSAGE)) {
         errorMessage = errorMessage.substring(BEGINNING_OF_ADB_ERROR_MESSAGE.length);
       }
+
       error.message = errorMessage;
       throw error;
     }

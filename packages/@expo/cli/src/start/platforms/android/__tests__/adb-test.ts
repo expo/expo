@@ -93,6 +93,8 @@ describe(isPackageInstalledAsync, () => {
       'pm',
       'list',
       'packages',
+      '--user',
+      '0',
       'com.google.android.youtube',
     ]);
   });

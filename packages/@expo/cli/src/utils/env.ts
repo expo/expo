@@ -174,6 +174,11 @@ class Env {
   get EXPO_USE_UNSTABLE_DEBUGGER(): boolean {
     return boolish('EXPO_USE_UNSTABLE_DEBUGGER', false);
   }
+
+  /** Set the default `user` that should be passed to `--user` with ADB commands. Used for installing APKs on Android devices with multiple profiles. Defaults to `0`. */
+  get EXPO_ADB_USER(): string {
+    return string('EXPO_ADB_USER', '0');
+  }
 }
 
 export const env = new Env();
