@@ -148,7 +148,7 @@ internal fun Intent.getAllDataUris(): List<Uri> {
 internal suspend fun copyFile(
   sourceUri: Uri,
   targetFile: File,
-  contentResolver: ContentResolver,
+  contentResolver: ContentResolver
 ) = runInterruptible {
   val targetUri = Uri.fromFile(targetFile)
 
@@ -184,7 +184,7 @@ internal suspend fun copyExifData(
     ExifInterface.TAG_IMAGE_WIDTH,
     ExifInterface.TAG_PIXEL_X_DIMENSION,
     ExifInterface.TAG_PIXEL_Y_DIMENSION,
-    ExifInterface.TAG_ORIENTATION,
+    ExifInterface.TAG_ORIENTATION
   )
 
   try {

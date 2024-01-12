@@ -30,7 +30,11 @@ class EmbeddedLoader internal constructor(
   updatesDirectory: File,
   private val loaderFiles: LoaderFiles
 ) : Loader(
-  context, configuration, database, updatesDirectory, loaderFiles
+  context,
+  configuration,
+  database,
+  updatesDirectory,
+  loaderFiles
 ) {
 
   constructor(
@@ -47,12 +51,12 @@ class EmbeddedLoader internal constructor(
     configuration: UpdatesConfiguration,
     callback: RemoteUpdateDownloadCallback
   ) {
-    val updateManifest = loaderFiles.readEmbeddedManifest(this.context, this.configuration)
-    if (updateManifest != null) {
+    val update = loaderFiles.readEmbeddedUpdate(this.context, this.configuration)
+    if (update != null) {
       callback.onSuccess(
         UpdateResponse(
           responseHeaderData = null,
-          manifestUpdateResponsePart = UpdateResponsePart.ManifestUpdateResponsePart(updateManifest),
+          manifestUpdateResponsePart = UpdateResponsePart.ManifestUpdateResponsePart(update),
           directiveUpdateResponsePart = null
         )
       )

@@ -61,15 +61,15 @@ EX_REGISTER_MODULE();
            @"debugMode": @(isDebugXCodeScheme),
            @"isHeadless": @(NO),
            @"nativeAppVersion": [self appVersion],
-           @"nativeBuildVersion": [self buildVersion],
-           @"installationId": [_installationIdProvider getOrCreateInstallationId],
+           @"nativeBuildVersion": EXNullIfNil([self buildVersion]),
+           @"installationId": EXNullIfNil([_installationIdProvider getOrCreateInstallationId]),
            @"manifest": EXNullIfNil([[self class] appConfig]),
            @"platform": @{
                @"ios": @{
-                   @"buildNumber": [self buildVersion],
+                   @"buildNumber": EXNullIfNil([self buildVersion]),
                    @"platform": [[self class] devicePlatform],
                    @"userInterfaceIdiom": [self userInterfaceIdiom],
-                   @"systemVersion": [self iosVersion],
+                   @"systemVersion": EXNullIfNil([self iosVersion]),
                    },
                },
            };
@@ -87,24 +87,29 @@ EX_REGISTER_MODULE();
 
 - (CGFloat)statusBarHeight
 {
-#if TARGET_OS_TV
-  return 0;
-#else
+#if TARGET_OS_IOS
   __block CGSize statusBarSize;
   [EXUtilities performSynchronouslyOnMainThread:^{
     statusBarSize = [UIApplication sharedApplication].statusBarFrame.size;
   }];
   return MIN(statusBarSize.width, statusBarSize.height);
+#elif TARGET_OS_OSX || TARGET_OS_TV
+  return 0;
 #endif
 }
 
 - (NSString *)iosVersion
 {
+#if TARGET_OS_IOS || TARGET_OS_TV
   return [UIDevice currentDevice].systemVersion;
+#else
+  return nil;
+#endif
 }
 
 - (NSString *)userInterfaceIdiom
 {
+#if TARGET_OS_IOS || TARGET_OS_TV
   UIUserInterfaceIdiom idiom = UI_USER_INTERFACE_IDIOM();
 
   switch (idiom) {
@@ -117,6 +122,9 @@ EX_REGISTER_MODULE();
     default:
       return @"unsupported";
   }
+#elif TARGET_OS_OSX
+  return @"desktop";
+#endif
 }
 
 - (BOOL)isDevice
@@ -129,6 +137,7 @@ EX_REGISTER_MODULE();
 
 - (NSArray<NSString *> *)systemFontNames
 {
+#if TARGET_OS_IOS || TARGET_OS_TV
   NSArray<NSString *> *familyNames = [UIFont familyNames];
   NSMutableArray<NSString *> *fontNames = [NSMutableArray array];
   for (NSString *familyName in familyNames) {
@@ -144,8 +153,11 @@ EX_REGISTER_MODULE();
     }
   }
 
-  // Remove duplciates and sort alphabetically
+  // Remove duplicates and sort alphabetically
   return [[[NSSet setWithArray:fontNames] allObjects] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+#elif TARGET_OS_OSX
+  return [[NSFontManager sharedFontManager] availableFontFamilies];
+#endif
 }
 
 # pragma mark - device info
@@ -165,7 +177,11 @@ EX_REGISTER_MODULE();
 
 + (NSString *)deviceName
 {
+#if TARGET_OS_IOS || TARGET_OS_TV
   return [UIDevice currentDevice].name;
+#elif TARGET_OS_OSX
+  return [NSHost currentHost].localizedName;
+#endif
 }
 
 + (NSDictionary *)appConfig
@@ -188,6 +204,5 @@ EX_REGISTER_MODULE();
   }
   return nil;
 }
-
 
 @end

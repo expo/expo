@@ -2,7 +2,7 @@ import * as React from 'react';
 import { GestureResponderEvent } from 'react-native';
 export default function useLinkToPathProps(props: {
     href: string;
-    replace?: boolean;
+    event?: string;
 }): {
     href: string;
     role: "link";

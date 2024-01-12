@@ -25,7 +25,7 @@ import java.nio.charset.StandardCharsets
 
 class ExpoSymbolProcessor(
   private val codeGenerator: CodeGenerator,
-  private val logger: KSPLogger,
+  private val logger: KSPLogger
 ) : SymbolProcessor {
   override fun process(resolver: Resolver): List<KSAnnotated> {
     val symbols = resolver
@@ -57,7 +57,7 @@ class ExpoSymbolProcessor(
 class ConverterBinderVisitor(
   private val clazz: ClassName?,
   private val codeGenerator: CodeGenerator,
-  private val logger: KSPLogger,
+  private val logger: KSPLogger
 ) : KSVisitorVoid() {
 
   override fun visitFunctionDeclaration(function: KSFunctionDeclaration, data: Unit) {

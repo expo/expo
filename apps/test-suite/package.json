@@ -2,9 +2,8 @@
   "name": "test-suite",
   "version": "1.0.0",
   "description": "Test suite for the Expo SDK",
-  "main": "__generated__/AppEntry.js",
+  "main": "index.js",
   "scripts": {
-    "postinstall": "expo-yarn-workspaces postinstall",
     "lint": "eslint ."
   },
   "author": "",
@@ -51,12 +50,9 @@
     "jasmine-core": "^2.4.1",
     "lodash": "^4.17.19",
     "react": "18.2.0",
-    "react-native": "0.73.0",
+    "react-native": "0.73.2",
     "react-native-gesture-handler": "~2.14.0",
     "sinon": "^7.1.1"
-  },
-  "devDependencies": {
-    "expo-yarn-workspaces": "^2.0.0"
   },
   "browserslist": [
     ">0.2%",

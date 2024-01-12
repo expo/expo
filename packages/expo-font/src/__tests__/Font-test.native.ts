@@ -40,14 +40,18 @@ afterEach(async () => {
   jest.resetModules();
 });
 
-describe('within Expo client', () => {
+describe('within Expo Go', () => {
   beforeAll(() => {
-    jest.doMock('expo-constants', () => ({
-      manifest: {},
-      sessionId: 'testsession',
-      systemFonts: ['Helvetica', 'Helvetica Neue'],
-      appOwnership: 'expo',
-    }));
+    jest.doMock('expo-constants', () => {
+      const Constants = jest.requireActual('expo-constants');
+      return {
+        ...Constants,
+        appOwnership: Constants.AppOwnership.Expo,
+        manifest: {},
+        sessionId: 'testsession',
+        systemFonts: ['Helvetica', 'Helvetica Neue'],
+      };
+    });
   });
 
   afterEach(async () => {
@@ -334,12 +338,16 @@ describe('within Expo client', () => {
 
 describe('in standalone app', () => {
   beforeAll(() => {
-    jest.doMock('expo-constants', () => ({
-      manifest: {},
-      sessionId: 'testsession',
-      systemFonts: ['Helvetica', 'Helvetica Neue'],
-      appOwnership: 'standalone',
-    }));
+    jest.doMock('expo-constants', () => {
+      const Constants = jest.requireActual('expo-constants');
+      return {
+        ...Constants,
+        manifest: {},
+        sessionId: 'testsession',
+        systemFonts: ['Helvetica', 'Helvetica Neue'],
+        appOwnership: null,
+      };
+    });
   });
 
   afterAll(() => {
@@ -364,11 +372,15 @@ describe('in standalone app', () => {
 
 describe('in bare workflow', () => {
   beforeAll(() => {
-    jest.doMock('expo-constants', () => ({
-      manifest: {},
-      sessionId: 'testsession',
-      systemFonts: ['Helvetica', 'Helvetica Neue'],
-    }));
+    jest.doMock('expo-constants', () => {
+      const Constants = jest.requireActual('expo-constants');
+      return {
+        ...Constants,
+        manifest: {},
+        sessionId: 'testsession',
+        systemFonts: ['Helvetica', 'Helvetica Neue'],
+      };
+    });
   });
   afterEach(() => {
     clearMemory();

@@ -1,4 +1,4 @@
-import { CodedError, NativeModulesProxy, UnavailabilityError } from 'expo-modules-core';
+import { CodedError, UnavailabilityError } from 'expo-modules-core';
 import ExpoUpdates from './ExpoUpdates';
 /**
  * Whether expo-updates is enabled. This may be false in a variety of cases including:
@@ -12,17 +12,13 @@ import ExpoUpdates from './ExpoUpdates';
 export const isEnabled = !!ExpoUpdates.isEnabled;
 /**
  * The UUID that uniquely identifies the currently running update. The
- * UUID is represented in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) and
- * will always use lowercase letters. This value is `null` when running in a local development environment or any other environment where `expo-updates` is disabled.
+ * UUID is represented in its canonical string form and will always use lowercase letters.
+ * This value is `null` when running in a local development environment or any other environment where `expo-updates` is disabled.
+ * @example xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
  */
 export const updateId = ExpoUpdates.updateId && typeof ExpoUpdates.updateId === 'string'
     ? ExpoUpdates.updateId.toLowerCase()
     : null;
-/**
- * The name of the release channel currently configured in this standalone or bare app when using
- * classic updates. When using Expo Updates, the value of this field is always `"default"`.
- */
-export const releaseChannel = ExpoUpdates.releaseChannel ?? 'default';
 /**
  * The channel name of the current build, if configured for use with EAS Update. `null` otherwise.
  *
@@ -88,13 +84,18 @@ export const manifest = (ExpoUpdates.manifestString ? JSON.parse(ExpoUpdates.man
 export const createdAt = ExpoUpdates.commitTime
     ? new Date(ExpoUpdates.commitTime)
     : null;
-const isUsingDeveloperTool = !!manifest.developer?.tool;
-const isUsingExpoDevelopmentClient = NativeModulesProxy.ExponentConstants?.appOwnership === 'expo';
-const manualUpdatesInstructions = isUsingExpoDevelopmentClient
-    ? 'To test manual updates, publish your project using `expo publish` and open the published ' +
-        'version in this development client.'
-    : 'To test manual updates, make a release build with `npm run ios --configuration Release` or ' +
-        '`npm run android --variant Release`.';
+/**
+ * During non-expo development we block accessing the updates API methods on the JS side, but when developing in
+ * Expo Go or a development client build, the controllers should have control over which API methods should
+ * be allowed.
+ */
+const shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = !!ExpoUpdates.shouldDeferToNativeForAPIMethodAvailabilityInDevelopment;
+/**
+ * Developer tool is set when a project is served by `expo start`.
+ */
+const isUsingDeveloperTool = 'extra' in manifest ? !!manifest.extra?.expoGo?.developer?.tool : false;
+const manualUpdatesInstructions = 'To test usage of the expo-updates JS API in your app, make a release build with `npx expo run:ios --configuration Release` or ' +
+    '`npx expo run:android --variant Release`.';
 /**
  * Instructs the app to reload using the most recently downloaded version. This is useful for
  * triggering a newly downloaded update to launch without the user needing to manually restart the
@@ -123,7 +124,8 @@ export async function reloadAsync() {
     if (!ExpoUpdates.reload) {
         throw new UnavailabilityError('Updates', 'reloadAsync');
     }
-    if (!ExpoUpdates?.nativeDebug && __DEV__ && !isUsingExpoDevelopmentClient) {
+    if ((__DEV__ || isUsingDeveloperTool) &&
+        !shouldDeferToNativeForAPIMethodAvailabilityInDevelopment) {
         throw new CodedError('ERR_UPDATES_DISABLED', `You cannot use the Updates module in development mode in a production app. ${manualUpdatesInstructions}`);
     }
     await ExpoUpdates.reload();
@@ -147,7 +149,8 @@ export async function checkForUpdateAsync() {
     if (!ExpoUpdates.checkForUpdateAsync) {
         throw new UnavailabilityError('Updates', 'checkForUpdateAsync');
     }
-    if (!ExpoUpdates?.nativeDebug && (__DEV__ || isUsingDeveloperTool)) {
+    if ((__DEV__ || isUsingDeveloperTool) &&
+        !shouldDeferToNativeForAPIMethodAvailabilityInDevelopment) {
         throw new CodedError('ERR_UPDATES_DISABLED', `You cannot check for updates in development mode. ${manualUpdatesInstructions}`);
     }
     const result = await ExpoUpdates.checkForUpdateAsync();
@@ -231,7 +234,8 @@ export async function fetchUpdateAsync() {
     if (!ExpoUpdates.fetchUpdateAsync) {
         throw new UnavailabilityError('Updates', 'fetchUpdateAsync');
     }
-    if (!ExpoUpdates?.nativeDebug && (__DEV__ || isUsingDeveloperTool)) {
+    if ((__DEV__ || isUsingDeveloperTool) &&
+        !shouldDeferToNativeForAPIMethodAvailabilityInDevelopment) {
         throw new CodedError('ERR_UPDATES_DISABLED', `You cannot fetch updates in development mode. ${manualUpdatesInstructions}`);
     }
     const result = await ExpoUpdates.fetchUpdateAsync();

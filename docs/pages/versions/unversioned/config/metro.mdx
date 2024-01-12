@@ -104,7 +104,7 @@ Here, we'll define a global style for the class name `.container`:
 
 We can then use the class name in our component by importing the stylesheet and using `.container`:
 
-```js App.js
+```jsx App.js
 import './styles.css';
 import { View } from 'react-native';
 
@@ -157,7 +157,7 @@ Flipping the extension, for example, `App.ios.module.css` will not work and resu
 
 > You cannot pass styles to the `className` prop of a React Native or React Native for web component. Instead, you must use the `style` prop.
 
-```js App.js
+```jsx App.js
 import styles, { unstable_styles } from './App.module.css';
 
 export default function Page() {
@@ -562,6 +562,24 @@ import('./math').then(math => {
 ```
 
 When you run `npx expo export -p web`, the bundles are split into multiple files, and the entry bundle is added to the main HTML file.
+
+## Source map debug ID
+
+> Available from SDK 50 on all platforms.
+
+If a bundle is exported with an external source map, a [**Debug ID**](https://sentry.engineering/blog/the-case-for-debug-ids) annotation will be added to the end of the file, along with a matching `debugId` in the source map for corresponding the files together. If no source maps are exported, or inline source maps are used then this annotation will not be added.
+
+```js
+// <all source code>
+
+//# debugId=<deterministic chunk hash>
+```
+
+The associated `*.js.map` or `*.hbc.map` source map will be a JSON file containing an equivalent `debugId` property. The `debugId` will be injected before hermes bytecode generation to ensure matching in all cases.
+
+The `debugId` is a deterministic hash of the bundle's contents without the external bundle splitting references. This is the same value used to create a chunks filename but formatted as a UUID. For example, `431b98e2-c997-4975-a3d9-2987710abd44`.
+
+`@expo/metro-config` injects `debugId` during `npx expo export` and `npx expo export:embed`. Any additional optimization steps in `npx expo export:embed` like Hermes bytecode generation will need to have the `debugId` injected manually.
 
 ## Bare workflow setup
 

@@ -7,7 +7,7 @@ exports.UnexpectedError = exports.PluginError = void 0;
 class UnexpectedError extends Error {
   name = 'UnexpectedError';
   constructor(message) {
-    super(`${message}\nPlease report this as an issue on https://github.com/expo/expo-cli/issues`);
+    super(`${message}\nPlease report this as an issue on https://github.com/expo/expo/issues`);
   }
 }
 exports.UnexpectedError = UnexpectedError;

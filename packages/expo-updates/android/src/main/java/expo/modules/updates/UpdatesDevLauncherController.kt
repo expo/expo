@@ -17,12 +17,12 @@ import expo.modules.updates.loader.Loader
 import expo.modules.updates.loader.RemoteLoader
 import expo.modules.updates.loader.UpdateDirective
 import expo.modules.updates.loader.UpdateResponse
-import expo.modules.updates.manifest.EmbeddedManifest
 import expo.modules.updates.selectionpolicy.LauncherSelectionPolicySingleUpdate
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import expo.modules.updates.statemachine.UpdatesStateContext
+import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
 import expo.modules.updatesinterface.UpdatesInterface
 import org.json.JSONObject
 import java.io.File
@@ -42,7 +42,7 @@ class UpdatesDevLauncherController(
   initialUpdatesConfiguration: UpdatesConfiguration?,
   override val updatesDirectory: File?,
   private val updatesDirectoryException: Exception?,
-  private val isMissingRuntimeVersion: Boolean
+  private val callbacks: UpdatesInterfaceCallbacks
 ) : IUpdatesController, UpdatesInterface {
   override val isEmergencyLaunch = updatesDirectoryException != null
 
@@ -178,8 +178,8 @@ class UpdatesDevLauncherController(
           )
         }
 
-        val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
-        return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = callback.onManifestLoaded(updateManifest.manifest.getRawJson()))
+        val update = updateResponse.manifestUpdateResponsePart?.update ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
+        return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = callback.onManifestLoaded(update.manifest.getRawJson()))
       }
     })
   }
@@ -224,7 +224,8 @@ class UpdatesDevLauncherController(
       selectionPolicy
     )
     launcher.launch(
-      databaseHolder.database, context,
+      databaseHolder.database,
+      context,
       object : Launcher.LauncherCallback {
         override fun onFailure(e: Exception) {
           databaseHolder.releaseDatabase()
@@ -277,23 +278,23 @@ class UpdatesDevLauncherController(
   override fun getConstantsForModule(): IUpdatesController.UpdatesModuleConstants {
     return IUpdatesController.UpdatesModuleConstants(
       launchedUpdate = launchedUpdate,
-      embeddedUpdate = updatesConfiguration?.let { EmbeddedManifest.get(context, it) }?.updateEntity,
+      embeddedUpdate = null, // no embedded update in debug builds
       isEmergencyLaunch = isEmergencyLaunch,
       isEnabled = true,
-      releaseChannel = updatesConfiguration?.releaseChannel ?: "default",
       isUsingEmbeddedAssets = isUsingEmbeddedAssets,
       runtimeVersion = updatesConfiguration?.runtimeVersionRaw ?: "1",
       checkOnLaunch = updatesConfiguration?.checkOnLaunch ?: UpdatesConfiguration.CheckAutomaticallyConfiguration.ALWAYS,
       requestHeaders = updatesConfiguration?.requestHeaders ?: mapOf(),
       localAssetFiles = localAssetFiles,
-      isMissingRuntimeVersion = isMissingRuntimeVersion,
+      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = true
     )
   }
 
   override fun relaunchReactApplicationForModule(
     callback: IUpdatesController.ModuleCallback<Unit>
   ) {
-    callback.onFailure(NotAvailableInDevClientException("Cannot reload update in a development client. A non-development build should be used to test this functionality."))
+    callbacks.onRequestRelaunch()
+    callback.onSuccess(Unit)
   }
 
   override fun getNativeStateMachineContext(callback: IUpdatesController.ModuleCallback<UpdatesStateContext>) {

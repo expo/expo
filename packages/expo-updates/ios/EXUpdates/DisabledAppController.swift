@@ -10,26 +10,31 @@ import ExpoModulesCore
  * - Configuration errors (missing required configuration)
  */
 public class DisabledAppController: InternalAppControllerInterface {
-  public private(set) var isStarted: Bool = false // this is always false for disabled controllers
+  public private(set) var isStarted: Bool = false
 
   public weak var bridge: AnyObject?
 
   public weak var delegate: AppControllerDelegate?
 
+  // disabled controller state machine can only be idle or restarting
+  private let stateMachine = UpdatesStateMachine(validUpdatesStateValues: [UpdatesStateValue.idle, UpdatesStateValue.restarting])
+
   internal private(set) var isEmergencyLaunch: Bool = false
   private let initializationError: Error?
   private var launcher: AppLauncher?
-  private let isMissingRuntimeVersion: Bool
 
   public let updatesDirectory: URL? = nil // internal for E2E test
 
-  required init(error: Error?, isMissingRuntimeVersion: Bool) {
+  required init(error: Error?) {
     self.initializationError = error
     self.isEmergencyLaunch = error != nil
-    self.isMissingRuntimeVersion = isMissingRuntimeVersion
   }
 
   public func start() {
+    precondition(!isStarted, "AppController:start should only be called once per instance")
+
+    isStarted = true
+
     let launcherNoDatabase = AppLauncherNoDatabase()
     launcher = launcherNoDatabase
     launcherNoDatabase.launchUpdate()
@@ -61,13 +66,12 @@ public class DisabledAppController: InternalAppControllerInterface {
       embeddedUpdate: nil,
       isEmergencyLaunch: self.isEmergencyLaunch,
       isEnabled: false,
-      releaseChannel: UpdatesConfig.ReleaseChannelDefaultValue,
       isUsingEmbeddedAssets: launcher?.isUsingEmbeddedAssets() ?? false,
       runtimeVersion: nil,
       checkOnLaunch: CheckAutomaticallyConfig.Never,
       requestHeaders: [:],
       assetFilesMap: launcher?.assetFilesMap,
-      isMissingRuntimeVersion: self.isMissingRuntimeVersion
+      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: false
     )
   }
 
@@ -75,7 +79,12 @@ public class DisabledAppController: InternalAppControllerInterface {
     success successBlockArg: @escaping () -> Void,
     error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void
   ) {
-    errorBlockArg(UpdatesDisabledException())
+    let procedure = RecreateReactContextProcedure(triggerReloadCommandListenersReason: "Requested by JavaScript - Updates.reloadAsync()") {
+      successBlockArg()
+    } errorBlock: { error in
+      errorBlockArg(error)
+    }
+    stateMachine.queueExecution(stateMachineProcedure: procedure)
   }
 
   public func checkForUpdate(
@@ -112,6 +121,6 @@ public class DisabledAppController: InternalAppControllerInterface {
     success successBlockArg: @escaping (UpdatesStateContext) -> Void,
     error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void
   ) {
-    errorBlockArg(UpdatesDisabledException())
+    successBlockArg(self.stateMachine.context)
   }
 }

@@ -1,5 +1,5 @@
 import fs from 'fs/promises';
-import { debounce } from 'lodash';
+import debounce from 'lodash.debounce';
 import { Server } from 'metro';
 import path from 'path';
 
@@ -305,7 +305,7 @@ const routerDotTSTemplate = unsafeTemplate`/* eslint-disable @typescript-eslint/
 /* eslint-disable @typescript-eslint/ban-types */
 declare module "expo-router" {
   import type { LinkProps as OriginalLinkProps } from 'expo-router/build/link/Link';
-  import type { Router as OriginalRouter } from 'expo-router/src/types';
+  import type { Router as OriginalRouter } from 'expo-router/build/types';
   export * from 'expo-router/build';
 
   // prettier-ignore
@@ -320,7 +320,7 @@ declare module "expo-router" {
   type ExternalPathString = \`\${string}:\${string}\`;
 
   type ExpoRouterRoutes = DynamicRouteTemplate | StaticRoutes | RelativePathString;
-  type AllRoutes = ExpoRouterRoutes | ExternalPathString;
+  export type AllRoutes = ExpoRouterRoutes | ExternalPathString;
 
   /****************
    * Route Utils  *
@@ -514,7 +514,7 @@ declare module "expo-router" {
    * @param props.className On web, this sets the HTML \`class\` directly. On native, this can be used with CSS interop tools like Nativewind.
    */
   export const Link: LinkComponent;
-  
+
   /** Redirects to the href as soon as the component is mounted. */
   export const Redirect: <T>(
     props: React.PropsWithChildren<{ href: Href<T> }>
