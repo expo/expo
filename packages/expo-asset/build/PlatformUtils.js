@@ -1,29 +1,25 @@
 import computeMd5 from 'blueimp-md5';
-import Constants from 'expo-constants';
+import Constants, { AppOwnership } from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
 import { requireOptionalNativeModule } from 'expo-modules-core';
 import { getManifestBaseUrl } from './AssetUris';
 const ExpoUpdates = requireOptionalNativeModule('ExpoUpdates');
-// Constants.appOwnership is only available in managed apps (Expo client and standalone)
-export const IS_MANAGED_ENV = !!Constants.appOwnership;
+export const IS_EXPO_GO = Constants.appOwnership === AppOwnership.Expo;
 // In the future (SDK38+) expo-updates is likely to be used in managed apps, so we decide
 // that you are in a bare app with updates if you're not in a managed app and you have
 // local assets available.
-export const IS_BARE_ENV_WITH_UPDATES = !IS_MANAGED_ENV &&
+export const IS_BARE_ENV_WITH_UPDATES = !IS_EXPO_GO &&
     !!ExpoUpdates?.isEnabled &&
     // if expo-updates is installed but we're running directly from the embedded bundle, we don't want
     // to override the AssetSourceResolver
     !ExpoUpdates?.isUsingEmbeddedAssets;
-export const IS_ENV_WITH_UPDATES_ENABLED = IS_MANAGED_ENV || IS_BARE_ENV_WITH_UPDATES;
+export const IS_ENV_WITH_UPDATES_ENABLED = IS_EXPO_GO || IS_BARE_ENV_WITH_UPDATES;
 // If it's not managed or bare w/ updates, then it must be bare w/o updates!
-export const IS_BARE_ENV_WITHOUT_UPDATES = !IS_MANAGED_ENV && !IS_BARE_ENV_WITH_UPDATES;
+export const IS_BARE_ENV_WITHOUT_UPDATES = !IS_EXPO_GO && !IS_BARE_ENV_WITH_UPDATES;
 // Get the localAssets property from the ExpoUpdates native module so that we do
 // not need to include expo-updates as a dependency of expo-asset
 export function getLocalAssets() {
     return ExpoUpdates?.localAssets ?? {};
-}
-export function getManifest() {
-    return Constants.__unsafeNoWarnManifest ?? {};
 }
 export function getManifest2() {
     return Constants.__unsafeNoWarnManifest2;
@@ -32,51 +28,25 @@ export function getManifest2() {
 export const manifestBaseUrl = Constants.experienceUrl
     ? getManifestBaseUrl(Constants.experienceUrl)
     : null;
-// TODO: how should this behave in bare app with updates? re: hashAssetFiles
-export async function downloadAsync(uri, hash, type, name) {
-    if (IS_MANAGED_ENV) {
-        return _downloadAsyncManagedEnv(uri, hash, type, name);
-    }
-    return _downloadAsyncUnmanagedEnv(uri, hash, type);
-}
 /**
- * Check if the file exists on disk already, perform integrity check if so.
- * Otherwise, download it.
+ * Downloads the asset from the given URL to a local cache and returns the local URL of the cached
+ * file.
+ *
+ * If there is already a locally cached file and its MD5 hash matches the given `md5Hash` parameter,
+ * if present, the remote asset is not downloaded. The `hash` property is included in Metro's asset
+ * metadata objects when this module's `hashAssetFiles` plugin is used, which is the typical way the
+ * `md5Hash` parameter of this function is provided.
  */
-async function _downloadAsyncManagedEnv(uri, hash, type, name) {
-    const cacheFileId = hash || computeMd5(uri);
-    const localUri = `${FileSystem.cacheDirectory}ExponentAsset-${cacheFileId}.${type}`;
-    const fileInfo = await FileSystem.getInfoAsync(localUri, {
-        md5: true,
-    });
-    if (!fileInfo.exists || (hash !== null && fileInfo.md5 !== hash)) {
-        const { md5 } = await FileSystem.downloadAsync(uri, localUri, {
-            md5: true,
-        });
-        if (hash !== null && md5 !== hash) {
-            throw new Error(`Downloaded file for asset '${name}.${type}' ` +
-                `Located at ${uri} ` +
-                `failed MD5 integrity check`);
-        }
+export async function downloadAsync(url, md5Hash, type) {
+    if (url.startsWith('file://')) {
+        return url;
     }
-    return localUri;
-}
-/**
- * Just download the asset, don't perform integrity check because we don't have
- * the hash to compare it with (we don't have hashAssetFiles plugin). Hash is
- * only used for the file name.
- */
-async function _downloadAsyncUnmanagedEnv(uri, hash, type) {
-    // TODO: does this make sense to bail out if it's already at a file URL
-    // because it's already available locally?
-    if (uri.startsWith('file://')) {
-        return uri;
-    }
-    const cacheFileId = hash || computeMd5(uri);
+    const cacheFileId = md5Hash ?? computeMd5(url);
     const localUri = `${FileSystem.cacheDirectory}ExponentAsset-${cacheFileId}.${type}`;
-    // We don't check the FileSystem for an existing version of the asset and we
-    // also don't perform an integrity check!
-    await FileSystem.downloadAsync(uri, localUri);
+    const fileInfo = await FileSystem.getInfoAsync(localUri, { md5: md5Hash !== null });
+    if (!fileInfo.exists || (md5Hash !== null && fileInfo.md5 !== md5Hash)) {
+        await FileSystem.downloadAsync(url, localUri);
+    }
     return localUri;
 }
 //# sourceMappingURL=PlatformUtils.js.map

@@ -65,6 +65,14 @@ afterEach(() => {
 
 if (Platform.OS !== 'web') {
   describe(`source resolution with React Native`, () => {
+    jest.doMock('expo-constants', () => {
+      const Constants = jest.requireActual('expo-constants');
+      return {
+        ...Constants,
+        appOwnership: Constants.AppOwnership.Expo,
+      };
+    });
+
     it(`automatically registers a source resolver`, () => {
       require('../index');
       const {
@@ -164,34 +172,7 @@ it(`downloads uncached assets`, async () => {
   );
 });
 
-it(`throws when the file's checksum does not match`, async () => {
-  const FileSystem = require('expo-file-system');
-  const { Asset } = require('../index');
-
-  const asset = Asset.fromMetadata(mockImageMetadata);
-  expect(asset.localUri).toBeNull();
-
-  FileSystem.getInfoAsync.mockReturnValueOnce({ exists: false });
-  FileSystem.downloadAsync.mockReturnValueOnce({ md5: 'deadf00ddeadf00ddeadf00ddeadf00d' });
-  if (Platform.OS === 'web') {
-    expect(await asset.downloadAsync()).toEqual(
-      expect.objectContaining({
-        downloaded: true,
-        downloading: false,
-        hash: 'cafecafecafecafecafecafecafecafe',
-        height: 1,
-        localUri: 'https://example.com/icon.png',
-        name: undefined,
-        type: 'png',
-        uri: 'https://example.com/icon.png',
-      })
-    );
-  } else {
-    await expect(asset.downloadAsync()).rejects.toThrowError('failed MD5 integrity check');
-  }
-});
-
-it(`uses the local filesystem's cache directory for downloads`, async () => {
+it(`uses the local file system's cache directory for downloads`, async () => {
   const FileSystem = require('expo-file-system');
   const { Asset } = require('../index');
 

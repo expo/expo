@@ -1,75 +1,40 @@
-diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
-index 52d31e3c5e..a265c80fa9 100644
---- a/templates/expo-template-bare-minimum/android/app/build.gradle
-+++ b/templates/expo-template-bare-minimum/android/app/build.gradle
-@@ -143,25 +143,18 @@ dependencies {
-     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
-     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
-     def isWebpAnimatedEnabled = (findProperty('expo.webp.animated') ?: "") == "true";
--    def frescoVersion = rootProject.ext.frescoVersion
--
--    // If your app supports Android versions before Ice Cream Sandwich (API level 14)
--    if (isGifEnabled || isWebpEnabled) {
--        implementation("com.facebook.fresco:fresco:${frescoVersion}")
--        implementation("com.facebook.fresco:imagepipeline-okhttp3:${frescoVersion}")
--    }
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
+index 34a7ca8314..04b326127b 100644
+--- a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
++++ b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
+@@ -20,7 +20,7 @@
  
-     if (isGifEnabled) {
-         // For animated gif support
--        implementation("com.facebook.fresco:animated-gif:${frescoVersion}")
-+        implementation("com.facebook.fresco:animated-gif:${reactAndroidLibs.versions.fresco.get()}")
-     }
- 
-     if (isWebpEnabled) {
-         // For webp support
--        implementation("com.facebook.fresco:webpsupport:${frescoVersion}")
-+        implementation("com.facebook.fresco:webpsupport:${reactAndroidLibs.versions.fresco.get()}")
-         if (isWebpAnimatedEnabled) {
-             // Animated webp support
--            implementation("com.facebook.fresco:animated-webp:${frescoVersion}")
-+            implementation("com.facebook.fresco:animated-webp:${reactAndroidLibs.versions.fresco.get()}")
-         }
-     }
- 
-diff --git a/templates/expo-template-bare-minimum/android/build.gradle b/templates/expo-template-bare-minimum/android/build.gradle
-index 9da06cc296..02a88dad0a 100644
---- a/templates/expo-template-bare-minimum/android/build.gradle
-+++ b/templates/expo-template-bare-minimum/android/build.gradle
-@@ -7,7 +7,6 @@ buildscript {
-         compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '34')
-         targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
-         kotlinVersion = findProperty('android.kotlinVersion') ?: '1.8.10'
--        frescoVersion = findProperty('expo.frescoVersion') ?: '2.5.0'
- 
-         ndkVersion = "25.1.8937393"
-     }
-diff --git a/templates/expo-template-bare-minimum/android/settings.gradle b/templates/expo-template-bare-minimum/android/settings.gradle
-index 17ab7a41d7..0fcba3d9bb 100644
---- a/templates/expo-template-bare-minimum/android/settings.gradle
-+++ b/templates/expo-template-bare-minimum/android/settings.gradle
-@@ -1,5 +1,13 @@
- rootProject.name = 'HelloWorld'
- 
-+dependencyResolutionManagement {
-+  versionCatalogs {
-+    reactAndroidLibs {
-+      from(files(new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), "../gradle/libs.versions.toml")))
-+    }
-+  }
-+}
-+
- apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle");
- useExpoModules()
- 
+   <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme">
+     <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="YOUR-APP-URL-HERE"/>
+-    <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="YOUR-APP-SDK-VERSION-HERE"/>
++    <meta-data android:name="expo.modules.updates.EXPO_RUNTIME_VERSION" android:value="YOUR-APP-RUNTIME-VERSION-HERE"/>
+     <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
+       <intent-filter>
+         <action android:name="android.intent.action.MAIN"/>
+diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Supporting/Expo.plist b/templates/expo-template-bare-minimum/ios/HelloWorld/Supporting/Expo.plist
+index 03410dc8b3..f4f9f60993 100644
+--- a/templates/expo-template-bare-minimum/ios/HelloWorld/Supporting/Expo.plist
++++ b/templates/expo-template-bare-minimum/ios/HelloWorld/Supporting/Expo.plist
+@@ -2,8 +2,8 @@
+ <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+ <plist version="1.0">
+ <dict>
+-        <key>EXUpdatesSDKVersion</key>
+-        <string>YOUR-APP-SDK-VERSION-HERE</string>
++        <key>EXUpdatesRuntimeVersion</key>
++        <string>YOUR-APP-RUNTIME-VERSION-HERE</string>
+         <key>EXUpdatesURL</key>
+         <string>YOUR-APP-URL-HERE</string>
+ </dict>
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 7a9b382c4a..a0b1b85c0a 100644
+index fd1cd53388..a0b1b85c0a 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
  {
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
--  "version": "50.0.16",
+-  "version": "50.0.22",
 +  "version": "50.0.17",
    "main": "index.js",
    "scripts": {
@@ -78,11 +43,12 @@ index 7a9b382c4a..a0b1b85c0a 100644
      "web": "expo start --web"
    },
    "dependencies": {
--    "expo": "~50.0.0-preview.3",
+-    "expo": "~50.0.0-preview.8",
+-    "expo-status-bar": "~1.11.1",
 +    "expo": "~50.0.0-preview.4",
-     "expo-status-bar": "~1.11.0",
++    "expo-status-bar": "~1.11.0",
      "react": "18.2.0",
--    "react-native": "0.73.0"
+-    "react-native": "0.73.2"
 +    "react-native": "0.73.1"
    },
    "devDependencies": {

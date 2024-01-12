@@ -43,6 +43,8 @@ open class JavaScriptObject @DoNotStrip internal constructor(@DoNotStrip private
   }
 
   external fun getPropertyNames(): Array<String>
+  external fun createWeak(): JavaScriptWeakObject
+
   private external fun setBoolProperty(name: String, value: Boolean)
   private external fun setDoubleProperty(name: String, value: Double)
   private external fun setStringProperty(name: String, value: String?)

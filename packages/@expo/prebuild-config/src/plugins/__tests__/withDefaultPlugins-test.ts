@@ -48,7 +48,7 @@ function getLargeConfig(): ExportedConfig {
     // owner?: string;
     // privacy?: 'public' | 'unlisted' | 'hidden';
     // sdkVersion?: string;
-    // runtimeVersion?: string;
+    runtimeVersion: '1.0',
     splash: {
       backgroundColor: '#ff00ff',
     },

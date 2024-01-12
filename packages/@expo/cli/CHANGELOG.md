@@ -6,6 +6,35 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Remove classic updates SDK version. ([#26061](https://github.com/expo/expo/pull/26061) by [@wschurman](https://github.com/wschurman))
+
+## 0.16.7 - 2024-01-10
+
+### 💡 Others
+
+- Fix metro asset call in expo-updates embedded manifest creation step. ([#26307](https://github.com/expo/expo/pull/26307) by [@wschurman](https://github.com/wschurman))
+
+## 0.16.6 - 2024-01-05
+
+### 🐛 Bug fixes
+
+- Update import for type generation. ([#26145](https://github.com/expo/expo/pull/26145) by [@EvanBacon](https://github.com/EvanBacon))
+- Handle locked iOS devices when launching app through devicectl. ([#26203](https://github.com/expo/expo/pull/26203) by [@byCedric](https://github.com/byCedric))
+
+## 0.16.5 - 2023-12-21
+
+### 🐛 Bug fixes
+
+- Import `ExpoConfig` from direct dependency `@expo/config`. ([#25989](https://github.com/expo/expo/pull/25989) by [@byCedric](https://github.com/byCedric))
+
+## 0.16.4 - 2023-12-19
+
+### 🎉 New features
+
 - Update `run:ios` build warning formatting for SDK 50. ([#25978](https://github.com/expo/expo/pull/25978) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
@@ -15,8 +44,6 @@
 - Add missing `lodash.debounce` dependency. ([#25990](https://github.com/expo/expo/pull/25990) by [@byCedric](https://github.com/byCedric))
 - Add missing `@react-native/dev-middleware` dependency. ([#26000](https://github.com/expo/expo/pull/26000) by [@byCedric](https://github.com/byCedric))
 - Warn users if they are using an incorrect `web.output` with API Routes. ([#25931](https://github.com/expo/expo/pull/25931) by [@marklawlor](https://github.com/marklawlor))
-
-### 💡 Others
 
 ## 0.16.3 — 2023-12-15
 
@@ -72,6 +99,7 @@ _This version does not introduce any user-facing changes._
 
 ### 💡 Others
 
+- Export generated expo router type. ([#24999](https://github.com/expo/expo/pull/24999) by [@hichemfantar](https://github.com/hichemfantar))
 - Prevent showing log events for source maps in development. ([#25830](https://github.com/expo/expo/pull/25830) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove unused Metro `extraNodeModules` augmentation for web resolution in favor of standard aliases. ([#25506](https://github.com/expo/expo/pull/25506) by [@EvanBacon](https://github.com/EvanBacon))
 - Consolidate logic for resolving Node.js built-in shims in browser environments. ([#25511](https://github.com/expo/expo/pull/25511) by [@EvanBacon](https://github.com/EvanBacon))

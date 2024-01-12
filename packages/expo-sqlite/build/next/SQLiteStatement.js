@@ -11,7 +11,19 @@ export class SQLiteStatement {
     }
     async executeAsync(...params) {
         const { lastInsertRowId, changes, firstRowValues } = await this.nativeStatement.runAsync(this.nativeDatabase, ...normalizeParams(...params));
-        return createSQLiteExecuteAsyncResult(this.nativeDatabase, this.nativeStatement, lastInsertRowId, changes, firstRowValues);
+        return createSQLiteExecuteAsyncResult(this.nativeDatabase, this.nativeStatement, firstRowValues, {
+            rawResult: false,
+            lastInsertRowId,
+            changes,
+        });
+    }
+    async executeForRawResultAsync(...params) {
+        const { lastInsertRowId, changes, firstRowValues } = await this.nativeStatement.runAsync(this.nativeDatabase, ...normalizeParams(...params));
+        return createSQLiteExecuteAsyncResult(this.nativeDatabase, this.nativeStatement, firstRowValues, {
+            rawResult: true,
+            lastInsertRowId,
+            changes,
+        });
     }
     /**
      * Get the column names of the prepared statement.
@@ -30,7 +42,19 @@ export class SQLiteStatement {
     }
     executeSync(...params) {
         const { lastInsertRowId, changes, firstRowValues } = this.nativeStatement.runSync(this.nativeDatabase, ...normalizeParams(...params));
-        return createSQLiteExecuteSyncResult(this.nativeDatabase, this.nativeStatement, lastInsertRowId, changes, firstRowValues);
+        return createSQLiteExecuteSyncResult(this.nativeDatabase, this.nativeStatement, firstRowValues, {
+            rawResult: false,
+            lastInsertRowId,
+            changes,
+        });
+    }
+    executeForRawResultSync(...params) {
+        const { lastInsertRowId, changes, firstRowValues } = this.nativeStatement.runSync(this.nativeDatabase, ...normalizeParams(...params));
+        return createSQLiteExecuteSyncResult(this.nativeDatabase, this.nativeStatement, firstRowValues, {
+            rawResult: true,
+            lastInsertRowId,
+            changes,
+        });
     }
     /**
      * Get the column names of the prepared statement.
@@ -48,24 +72,23 @@ export class SQLiteStatement {
         this.nativeStatement.finalizeSync(this.nativeDatabase);
     }
 }
-//#region Internals for SQLiteExecuteAsyncResult and SQLiteExecuteSyncResult
 /**
  * Create the `SQLiteExecuteAsyncResult` instance.
  *
  * NOTE: Since Hermes does not support the `Symbol.asyncIterator` feature, we have to use an AsyncGenerator to implement the `AsyncIterableIterator` interface.
  * This is done by `Object.defineProperties` to add the properties to the AsyncGenerator.
  */
-async function createSQLiteExecuteAsyncResult(database, statement, lastInsertRowId, changes, firstRowValues) {
-    const instance = new SQLiteExecuteAsyncResultImpl(database, statement, lastInsertRowId, changes, firstRowValues);
+async function createSQLiteExecuteAsyncResult(database, statement, firstRowValues, options) {
+    const instance = new SQLiteExecuteAsyncResultImpl(database, statement, firstRowValues, options);
     const generator = instance.generatorAsync();
     Object.defineProperties(generator, {
         lastInsertRowId: {
-            value: lastInsertRowId,
+            value: options.lastInsertRowId,
             enumerable: true,
             writable: false,
             configurable: true,
         },
-        changes: { value: changes, enumerable: true, writable: false, configurable: true },
+        changes: { value: options.changes, enumerable: true, writable: false, configurable: true },
         getFirstAsync: {
             value: instance.getFirstAsync.bind(instance),
             enumerable: true,
@@ -90,17 +113,17 @@ async function createSQLiteExecuteAsyncResult(database, statement, lastInsertRow
 /**
  * Create the `SQLiteExecuteSyncResult` instance.
  */
-function createSQLiteExecuteSyncResult(database, statement, lastInsertRowId, changes, firstRowValues) {
-    const instance = new SQLiteExecuteSyncResultImpl(database, statement, lastInsertRowId, changes, firstRowValues);
+function createSQLiteExecuteSyncResult(database, statement, firstRowValues, options) {
+    const instance = new SQLiteExecuteSyncResultImpl(database, statement, firstRowValues, options);
     const generator = instance.generatorSync();
     Object.defineProperties(generator, {
         lastInsertRowId: {
-            value: lastInsertRowId,
+            value: options.lastInsertRowId,
             enumerable: true,
             writable: false,
             configurable: true,
         },
-        changes: { value: changes, enumerable: true, writable: false, configurable: true },
+        changes: { value: options.changes, enumerable: true, writable: false, configurable: true },
         getFirstSync: {
             value: instance.getFirstSync.bind(instance),
             enumerable: true,
@@ -125,17 +148,15 @@ function createSQLiteExecuteSyncResult(database, statement, lastInsertRowId, cha
 class SQLiteExecuteAsyncResultImpl {
     database;
     statement;
-    lastInsertRowId;
-    changes;
     firstRowValues;
+    options;
     columnNames = null;
     isStepCalled = false;
-    constructor(database, statement, lastInsertRowId, changes, firstRowValues) {
+    constructor(database, statement, firstRowValues, options) {
         this.database = database;
         this.statement = statement;
-        this.lastInsertRowId = lastInsertRowId;
-        this.changes = changes;
         this.firstRowValues = firstRowValues;
+        this.options = options;
     }
     async getFirstAsync() {
         if (this.isStepCalled) {
@@ -145,36 +166,45 @@ class SQLiteExecuteAsyncResultImpl {
         const columnNames = await this.getColumnNamesAsync();
         const firstRowValues = this.popFirstRowValues();
         if (firstRowValues != null) {
-            return composeRow(columnNames, firstRowValues);
+            return composeRowIfNeeded(this.options.rawResult, columnNames, firstRowValues);
         }
         const firstRow = await this.statement.stepAsync(this.database);
-        return firstRow != null ? composeRow(columnNames, firstRow) : null;
+        return firstRow != null
+            ? composeRowIfNeeded(this.options.rawResult, columnNames, firstRow)
+            : null;
     }
     async getAllAsync() {
         if (this.isStepCalled) {
             throw new Error('The SQLite cursor has been shifted and is unable to retrieve all rows without being reset. Invoke `resetAsync()` to reset the cursor first if you want to retrieve all rows.');
         }
         this.isStepCalled = true;
+        const firstRowValues = this.popFirstRowValues();
+        if (firstRowValues == null) {
+            // If the first row is empty, this SQL query may be a write operation. We should not call `statement.getAllAsync()` to write again.
+            return [];
+        }
         const columnNames = await this.getColumnNamesAsync();
         const allRows = await this.statement.getAllAsync(this.database);
-        const firstRowValues = this.popFirstRowValues();
         if (firstRowValues != null && firstRowValues.length > 0) {
-            return composeRows(columnNames, [firstRowValues, ...allRows]);
+            return composeRowsIfNeeded(this.options.rawResult, columnNames, [
+                firstRowValues,
+                ...allRows,
+            ]);
         }
-        return composeRows(columnNames, allRows);
+        return composeRowsIfNeeded(this.options.rawResult, columnNames, allRows);
     }
     async *generatorAsync() {
         this.isStepCalled = true;
         const columnNames = await this.getColumnNamesAsync();
         const firstRowValues = this.popFirstRowValues();
         if (firstRowValues != null) {
-            yield composeRow(columnNames, firstRowValues);
+            yield composeRowIfNeeded(this.options.rawResult, columnNames, firstRowValues);
         }
         let result;
         do {
             result = await this.statement.stepAsync(this.database);
             if (result != null) {
-                yield composeRow(columnNames, result);
+                yield composeRowIfNeeded(this.options.rawResult, columnNames, result);
             }
         } while (result != null);
     }
@@ -201,17 +231,15 @@ class SQLiteExecuteAsyncResultImpl {
 class SQLiteExecuteSyncResultImpl {
     database;
     statement;
-    lastInsertRowId;
-    changes;
     firstRowValues;
+    options;
     columnNames = null;
     isStepCalled = false;
-    constructor(database, statement, lastInsertRowId, changes, firstRowValues) {
+    constructor(database, statement, firstRowValues, options) {
         this.database = database;
         this.statement = statement;
-        this.lastInsertRowId = lastInsertRowId;
-        this.changes = changes;
         this.firstRowValues = firstRowValues;
+        this.options = options;
     }
     getFirstSync() {
         if (this.isStepCalled) {
@@ -220,34 +248,43 @@ class SQLiteExecuteSyncResultImpl {
         const columnNames = this.getColumnNamesSync();
         const firstRowValues = this.popFirstRowValues();
         if (firstRowValues != null) {
-            return composeRow(columnNames, firstRowValues);
+            return composeRowIfNeeded(this.options.rawResult, columnNames, firstRowValues);
         }
         const firstRow = this.statement.stepSync(this.database);
-        return firstRow != null ? composeRow(columnNames, firstRow) : null;
+        return firstRow != null
+            ? composeRowIfNeeded(this.options.rawResult, columnNames, firstRow)
+            : null;
     }
     getAllSync() {
         if (this.isStepCalled) {
             throw new Error('The SQLite cursor has been shifted and is unable to retrieve all rows without being reset. Invoke `resetSync()` to reset the cursor first if you want to retrieve all rows.');
         }
+        const firstRowValues = this.popFirstRowValues();
+        if (firstRowValues == null) {
+            // If the first row is empty, this SQL query may be a write operation. We should not call `statement.getAllAsync()` to write again.
+            return [];
+        }
         const columnNames = this.getColumnNamesSync();
         const allRows = this.statement.getAllSync(this.database);
-        const firstRowValues = this.popFirstRowValues();
         if (firstRowValues != null && firstRowValues.length > 0) {
-            return composeRows(columnNames, [firstRowValues, ...allRows]);
+            return composeRowsIfNeeded(this.options.rawResult, columnNames, [
+                firstRowValues,
+                ...allRows,
+            ]);
         }
-        return composeRows(columnNames, allRows);
+        return composeRowsIfNeeded(this.options.rawResult, columnNames, allRows);
     }
     *generatorSync() {
         const columnNames = this.getColumnNamesSync();
         const firstRowValues = this.popFirstRowValues();
         if (firstRowValues != null) {
-            yield composeRow(columnNames, firstRowValues);
+            yield composeRowIfNeeded(this.options.rawResult, columnNames, firstRowValues);
         }
         let result;
         do {
             result = this.statement.stepSync(this.database);
             if (result != null) {
-                yield composeRow(columnNames, result);
+                yield composeRowIfNeeded(this.options.rawResult, columnNames, result);
             }
         } while (result != null);
     }
@@ -270,6 +307,16 @@ class SQLiteExecuteSyncResultImpl {
         }
         return this.columnNames;
     }
+}
+function composeRowIfNeeded(rawResult, columnNames, columnValues) {
+    return rawResult
+        ? columnValues // T would be a ValuesOf<> from caller
+        : composeRow(columnNames, columnValues);
+}
+function composeRowsIfNeeded(rawResult, columnNames, columnValuesList) {
+    return rawResult
+        ? columnValuesList // T[] would be a ValuesOf<>[] from caller
+        : composeRows(columnNames, columnValuesList);
 }
 //#endregion
 //# sourceMappingURL=SQLiteStatement.js.map

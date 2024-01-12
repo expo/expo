@@ -5,8 +5,7 @@ import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.codesigning.*
-import expo.modules.updates.manifest.UpdateManifest
-import expo.modules.updates.codesigning.CertificateFixtures
+import expo.modules.updates.manifest.Update
 import expo.modules.updates.codesigning.TestCertificateType
 import expo.modules.updates.codesigning.getTestCertificate
 import io.mockk.every
@@ -27,11 +26,11 @@ class FileDownloaderManifestParsingTest {
     val contentType = "application/json"
     val response = mockk<Response>().apply {
       every { header("content-type") } returns contentType
-      every { headers } returns mapOf("content-type" to contentType).toHeaders()
+      every { headers } returns mapOf("content-type" to contentType, "expo-protocol-version" to "0").toHeaders()
       every { code } returns 200
       every { body } returns ResponseBody.create(
         "application/json; charset=utf-8".toMediaTypeOrNull(),
-        CertificateFixtures.testClassicManifestBody
+        CertificateFixtures.testExpoUpdatesManifestBody
       )
     }
 
@@ -43,7 +42,7 @@ class FileDownloaderManifestParsingTest {
     )
 
     var errorOccurred = false
-    var resultUpdateManifest: UpdateManifest? = null
+    var resultUpdate: Update? = null
 
     FileDownloader(context).parseRemoteUpdateResponse(
       response,
@@ -54,14 +53,14 @@ class FileDownloaderManifestParsingTest {
         }
 
         override fun onSuccess(updateResponse: UpdateResponse) {
-          resultUpdateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
+          resultUpdate = updateResponse.manifestUpdateResponsePart?.update
         }
       }
     )
 
     Assert.assertFalse(errorOccurred)
-    Assert.assertNotNull(resultUpdateManifest)
-    Assert.assertFalse(resultUpdateManifest!!.manifest.isVerified())
+    Assert.assertNotNull(resultUpdate)
+    Assert.assertFalse(resultUpdate!!.manifest.isVerified())
   }
 
   @Test
@@ -81,7 +80,7 @@ class FileDownloaderManifestParsingTest {
       )
       .addPart(
         mapOf("Content-Disposition" to "form-data; name=\"manifest\"; filename=\"hello2\"").toHeaders(),
-        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), CertificateFixtures.testClassicManifestBody)
+        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), CertificateFixtures.testExpoUpdatesManifestBody)
       )
       .addPart(
         mapOf("Content-Disposition" to "form-data; name=\"extensions\"; filename=\"hello3\"").toHeaders(),
@@ -97,7 +96,7 @@ class FileDownloaderManifestParsingTest {
 
     val response = mockk<Response>().apply {
       every { header("content-type") } returns contentType
-      every { headers } returns mapOf("content-type" to contentType).toHeaders()
+      every { headers } returns mapOf("content-type" to contentType, "expo-protocol-version" to "0").toHeaders()
       every { code } returns 200
       every { body } returns ResponseBody.create(MultipartBody.MIXED, contentBuffer.readByteArray())
     }
@@ -130,7 +129,7 @@ class FileDownloaderManifestParsingTest {
 
     Assert.assertNotNull(resultUpdateResponse)
     Assert.assertNotNull(resultUpdateResponse!!.manifestUpdateResponsePart)
-    Assert.assertFalse(resultUpdateResponse!!.manifestUpdateResponsePart!!.updateManifest.manifest.isVerified())
+    Assert.assertFalse(resultUpdateResponse!!.manifestUpdateResponsePart!!.update.manifest.isVerified())
 
     Assert.assertNotNull(resultUpdateResponse!!.directiveUpdateResponsePart)
     Assert.assertTrue(resultUpdateResponse!!.directiveUpdateResponsePart!!.updateDirective is UpdateDirective.NoUpdateAvailableUpdateDirective)
@@ -228,7 +227,7 @@ class FileDownloaderManifestParsingTest {
     )
 
     var errorOccurred: Exception? = null
-    var resultUpdateManifest: UpdateManifest? = null
+    var resultUpdate: Update? = null
 
     FileDownloader(context).parseRemoteUpdateResponse(
       response,
@@ -239,13 +238,13 @@ class FileDownloaderManifestParsingTest {
         }
 
         override fun onSuccess(updateResponse: UpdateResponse) {
-          resultUpdateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
+          resultUpdate = updateResponse.manifestUpdateResponsePart?.update
         }
       }
     )
 
     Assert.assertEquals("Multipart response missing manifest part. Manifest is required in version 0 of the expo-updates protocol. This may be due to the update being a rollback or other directive.", errorOccurred!!.message)
-    Assert.assertNull(resultUpdateManifest)
+    Assert.assertNull(resultUpdate)
   }
 
   @Test
@@ -444,7 +443,7 @@ class FileDownloaderManifestParsingTest {
     )
 
     var errorOccurred: Exception? = null
-    var resultUpdateManifest: UpdateManifest? = null
+    var resultUpdate: Update? = null
 
     FileDownloader(context).parseRemoteUpdateResponse(
       response,
@@ -455,13 +454,13 @@ class FileDownloaderManifestParsingTest {
         }
 
         override fun onSuccess(updateResponse: UpdateResponse) {
-          resultUpdateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
+          resultUpdate = updateResponse.manifestUpdateResponsePart?.update
         }
       }
     )
 
     Assert.assertEquals("Missing body in remote update", errorOccurred!!.message)
-    Assert.assertNull(resultUpdateManifest)
+    Assert.assertNull(resultUpdate)
   }
 
   @Test
@@ -471,7 +470,7 @@ class FileDownloaderManifestParsingTest {
       "expo-protocol-version" to "0",
       "expo-sfv-version" to "0",
       "content-type" to contentType,
-      "expo-signature" to CertificateFixtures.testNewManifestBodySignature
+      "expo-signature" to CertificateFixtures.testExpoUpdatesManifestBodySignature
     )
 
     val context = InstrumentationRegistry.getInstrumentation().targetContext
@@ -482,7 +481,7 @@ class FileDownloaderManifestParsingTest {
       }
       every { headers } returns headersMap.toHeaders()
       every { code } returns 200
-      every { body } returns ResponseBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), CertificateFixtures.testNewManifestBody)
+      every { body } returns ResponseBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), CertificateFixtures.testExpoUpdatesManifestBody)
     }
 
     val testCertificate = getTestCertificate(TestCertificateType.VALID)
@@ -496,7 +495,7 @@ class FileDownloaderManifestParsingTest {
     )
 
     var errorOccurred = false
-    var resultUpdateManifest: UpdateManifest? = null
+    var resultUpdate: Update? = null
 
     FileDownloader(context).parseRemoteUpdateResponse(
       response,
@@ -507,14 +506,14 @@ class FileDownloaderManifestParsingTest {
         }
 
         override fun onSuccess(updateResponse: UpdateResponse) {
-          resultUpdateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
+          resultUpdate = updateResponse.manifestUpdateResponsePart?.update
         }
       }
     )
 
     Assert.assertFalse(errorOccurred)
-    Assert.assertNotNull(resultUpdateManifest)
-    Assert.assertTrue(resultUpdateManifest!!.manifest.isVerified())
+    Assert.assertNotNull(resultUpdate)
+    Assert.assertTrue(resultUpdate!!.manifest.isVerified())
   }
 
   @Test
@@ -541,10 +540,10 @@ class FileDownloaderManifestParsingTest {
       .addPart(
         mapOf(
           "Content-Disposition" to "form-data; name=\"manifest\"; filename=\"hello2\"",
-          "expo-signature" to CertificateFixtures.testNewManifestBodySignature
+          "expo-signature" to CertificateFixtures.testExpoUpdatesManifestBodySignature
         )
           .toHeaders(),
-        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), CertificateFixtures.testNewManifestBody)
+        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), CertificateFixtures.testExpoUpdatesManifestBody)
       )
       .addPart(
         mapOf("Content-Disposition" to "form-data; name=\"extensions\"; filename=\"hello3\"").toHeaders(),
@@ -601,7 +600,7 @@ class FileDownloaderManifestParsingTest {
     Assert.assertFalse(errorOccurred)
 
     Assert.assertNotNull(resultUpdateResponse)
-    Assert.assertTrue(resultUpdateResponse!!.manifestUpdateResponsePart!!.updateManifest.manifest.isVerified())
+    Assert.assertTrue(resultUpdateResponse!!.manifestUpdateResponsePart!!.update.manifest.isVerified())
 
     Assert.assertNotNull(resultUpdateResponse!!.directiveUpdateResponsePart)
     Assert.assertTrue(resultUpdateResponse!!.directiveUpdateResponsePart!!.updateDirective is UpdateDirective.NoUpdateAvailableUpdateDirective)
@@ -624,7 +623,7 @@ class FileDownloaderManifestParsingTest {
       }
       every { headers } returns headersMap.toHeaders()
       every { code } returns 200
-      every { body } returns ResponseBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), CertificateFixtures.testNewManifestBody)
+      every { body } returns ResponseBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), CertificateFixtures.testExpoUpdatesManifestBody)
     }
 
     val testCertificate = getTestCertificate(TestCertificateType.VALID)
@@ -638,7 +637,7 @@ class FileDownloaderManifestParsingTest {
     )
 
     var errorOccurred: Exception? = null
-    var resultUpdateManifest: UpdateManifest? = null
+    var resultUpdate: Update? = null
 
     FileDownloader(context).parseRemoteUpdateResponse(
       response,
@@ -649,13 +648,13 @@ class FileDownloaderManifestParsingTest {
         }
 
         override fun onSuccess(updateResponse: UpdateResponse) {
-          resultUpdateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
+          resultUpdate = updateResponse.manifestUpdateResponsePart?.update
         }
       }
     )
 
     Assert.assertEquals("No expo-signature header specified", errorOccurred!!.message)
-    Assert.assertNull(resultUpdateManifest)
+    Assert.assertNull(resultUpdate)
   }
 
   @Test
@@ -686,10 +685,10 @@ class FileDownloaderManifestParsingTest {
       .addPart(
         mapOf(
           "Content-Disposition" to "form-data; name=\"manifest\"; filename=\"hello2\"",
-          "expo-signature" to CertificateFixtures.testNewManifestBodyValidChainLeafSignature
+          "expo-signature" to CertificateFixtures.testExpoUpdatesManifestBodyValidChainLeafSignature
         )
           .toHeaders(),
-        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), CertificateFixtures.testNewManifestBody)
+        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), CertificateFixtures.testExpoUpdatesManifestBody)
       )
       .addPart(
         mapOf("Content-Disposition" to "form-data; name=\"extensions\"; filename=\"hello3\"").toHeaders(),
@@ -750,8 +749,8 @@ class FileDownloaderManifestParsingTest {
     )
 
     Assert.assertFalse(errorOccurred)
-    Assert.assertNotNull(resultUpdateResponse!!.manifestUpdateResponsePart?.updateManifest)
-    Assert.assertTrue(resultUpdateResponse!!.manifestUpdateResponsePart?.updateManifest!!.manifest.isVerified())
+    Assert.assertNotNull(resultUpdateResponse!!.manifestUpdateResponsePart?.update)
+    Assert.assertTrue(resultUpdateResponse!!.manifestUpdateResponsePart?.update!!.manifest.isVerified())
 
     Assert.assertNotNull(resultUpdateResponse!!.directiveUpdateResponsePart)
     Assert.assertTrue(resultUpdateResponse!!.directiveUpdateResponsePart!!.updateDirective is UpdateDirective.NoUpdateAvailableUpdateDirective)
@@ -784,10 +783,10 @@ class FileDownloaderManifestParsingTest {
       .addPart(
         mapOf(
           "Content-Disposition" to "form-data; name=\"manifest\"; filename=\"hello2\"",
-          "expo-signature" to CertificateFixtures.testNewManifestBodyValidChainLeafSignatureIncorrectProjectId
+          "expo-signature" to CertificateFixtures.testExpoUpdatesManifestBodyValidChainLeafSignatureIncorrectProjectId
         )
           .toHeaders(),
-        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), CertificateFixtures.testNewManifestBodyIncorrectProjectId)
+        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), CertificateFixtures.testExpoUpdatesManifestBodyIncorrectProjectId)
       )
       .addPart(
         mapOf("Content-Disposition" to "form-data; name=\"extensions\"; filename=\"hello3\"").toHeaders(),
@@ -823,7 +822,7 @@ class FileDownloaderManifestParsingTest {
     )
 
     var errorOccurred: Exception? = null
-    var resultUpdateManifest: UpdateManifest? = null
+    var resultUpdate: Update? = null
 
     FileDownloader(context).parseRemoteUpdateResponse(
       response,
@@ -834,13 +833,13 @@ class FileDownloaderManifestParsingTest {
         }
 
         override fun onSuccess(updateResponse: UpdateResponse) {
-          resultUpdateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
+          resultUpdate = updateResponse.manifestUpdateResponsePart?.update
         }
       }
     )
 
     Assert.assertEquals("Invalid certificate for manifest project ID or scope key", errorOccurred!!.message)
-    Assert.assertNull(resultUpdateManifest)
+    Assert.assertNull(resultUpdate)
   }
 
   @Test
@@ -942,7 +941,7 @@ class FileDownloaderManifestParsingTest {
       }
       every { headers } returns headersMap.toHeaders()
       every { code } returns 200
-      every { body } returns ResponseBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), CertificateFixtures.testNewManifestBody)
+      every { body } returns ResponseBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), CertificateFixtures.testExpoUpdatesManifestBody)
     }
 
     val configuration = UpdatesConfiguration(
@@ -956,7 +955,7 @@ class FileDownloaderManifestParsingTest {
     )
 
     var errorOccurred = false
-    var resultUpdateManifest: UpdateManifest? = null
+    var resultUpdate: Update? = null
 
     FileDownloader(context).parseRemoteUpdateResponse(
       response,
@@ -967,12 +966,12 @@ class FileDownloaderManifestParsingTest {
         }
 
         override fun onSuccess(updateResponse: UpdateResponse) {
-          resultUpdateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
+          resultUpdate = updateResponse.manifestUpdateResponsePart?.update
         }
       }
     )
 
     Assert.assertFalse(errorOccurred)
-    Assert.assertNotNull(resultUpdateManifest)
+    Assert.assertNotNull(resultUpdate)
   }
 }

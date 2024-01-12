@@ -157,7 +157,6 @@ redirects[introduction/expo]=core-concepts
 redirects[introduction/faq]=faq
 redirects[workflow/expo-go]=get-started/expo-go
 redirects[errors-and-warnings]=debugging/errors-and-warnings
-redirects[develop/unit-testing]=develop/unit-testing
 redirects[guides/splash-screens]=develop/user-interface/splash-screen
 redirects[guides/app-icons]=develop/user-interface/app-icons
 redirects[guides/color-schemes]=develop/user-interface/color-themes
@@ -327,6 +326,7 @@ redirects[versions/v50.0.0/sdk/taskmanager]=versions/v50.0.0/sdk/task-manager
 redirects[versions/v49.0.0/sdk/taskmanager]=versions/v49.0.0/sdk/task-manager
 redirects[versions/v48.0.0/sdk/taskmanager]=versions/v48.0.0/sdk/task-manager
 redirects[versions/v47.0.0/sdk/taskmanager]=versions/v47.0.0/sdk/task-manager
+redirects[versions/v46.0.0/sdk/taskmanager]=versions/v46.0.0/sdk/task-manager
 redirects[task-manager]=versions/latest/sdk/task-manager
 redirects[versions/v49.0.0/sdk/filesystem.md]=versions/v49.0.0/sdk/filesystem
 redirects[versions/v48.0.0/sdk/filesystem.md]=versions/v48.0.0/sdk/filesystem
@@ -337,6 +337,13 @@ redirects[versions/v48.0.0/sdk]=versions/latest
 redirects[versions/v48.0.0/sdk/config/app]=versions/v48.0.0/config/app
 redirects[guides/how-expo-works]=faq
 redirects[config/app]=workflow/configuration
+redirects[versions/v50.0.0/sdk]=versions/v50.0.0
+redirects[versions/v49.0.0/sdk]=versions/v49.0.0
+redirects[versions/v47.0.0/sdk]=versions/v47.0.0
+redirects[versions/v46.0.0/sdk]=versions/v46.0.0
+redirects[guides/authentication.md]=guides/authentication
+redirects[versions/latest/workflow/linking/]=guides/linking
+redirects[versions/latest/sdk/overview]=versions/latest
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys

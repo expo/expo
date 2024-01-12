@@ -110,7 +110,7 @@ public final class FileDownloader {
 
   public static let assetFilesQueue: DispatchQueue = DispatchQueue(label: "expo.controller.AssetFilesQueue")
 
-  public func downloadFile(
+  public func downloadAsset(
     fromURL url: URL,
     verifyingHash expectedBase64URLEncodedSHA256Hash: String?,
     toPath destinationPath: String,
@@ -124,7 +124,7 @@ public final class FileDownloader {
     ) { data, response in
       guard let data = data else {
         let errorMessage = String(
-          format: "File download response was empty for URL: %@",
+          format: "Asset download response was empty for URL: %@",
           url.absoluteString
         )
         self.logger.error(message: errorMessage, code: UpdatesErrorCode.assetsFailedToLoad)
@@ -140,7 +140,8 @@ public final class FileDownloader {
       if let expectedBase64URLEncodedSHA256Hash = expectedBase64URLEncodedSHA256Hash,
         expectedBase64URLEncodedSHA256Hash != hashBase64String {
         let errorMessage = String(
-          format: "File download was successful but base64url-encoded SHA-256 did not match expected; expected: %@; actual: %@",
+          format: "Asset download was successful but base64url-encoded SHA-256 did not match expected; URL: %@; expected hash: %@; actual hash: %@",
+          url.absoluteString,
           expectedBase64URLEncodedSHA256Hash,
           hashBase64String
         )
@@ -159,11 +160,11 @@ public final class FileDownloader {
         return
       } catch {
         let errorMessage = String(
-          format: "Could not write to path %@: %@",
+          format: "Could not write downloaded asset file to path %@: %@",
           destinationPath,
           error.localizedDescription
         )
-        self.logger.error(message: errorMessage, code: UpdatesErrorCode.unknown)
+        self.logger.error(message: errorMessage, code: UpdatesErrorCode.assetsFailedToLoad)
         errorBlock(NSError(
           domain: ErrorDomain,
           code: FileDownloaderErrorCode.FileWriteError.rawValue,
@@ -175,6 +176,7 @@ public final class FileDownloader {
         return
       }
     } errorBlock: { error in
+      self.logger.error(message: error.localizedDescription, code: UpdatesErrorCode.assetsFailedToLoad)
       errorBlock(error)
     }
   }
@@ -302,14 +304,7 @@ public final class FileDownloader {
     request.setValue("BARE", forHTTPHeaderField: "Expo-Updates-Environment")
     request.setValue(EASClientID.uuid().uuidString, forHTTPHeaderField: "EAS-Client-ID")
     request.setValue("true", forHTTPHeaderField: "Expo-JSON-Error")
-    request.setValue(config.expectsSignedManifest ? "true" : "false", forHTTPHeaderField: "Expo-Accept-Signature")
-    request.setValue(config.releaseChannel, forHTTPHeaderField: "Expo-Release-Channel")
-
-    if let runtimeVersion = config.runtimeVersionRaw {
-      request.setValue(runtimeVersion, forHTTPHeaderField: "Expo-Runtime-Version")
-    } else {
-      request.setValue(config.sdkVersion, forHTTPHeaderField: "Expo-SDK-Version")
-    }
+    request.setValue(config.runtimeVersion, forHTTPHeaderField: "Expo-Runtime-Version")
 
     if let previousFatalError = ErrorRecovery.consumeErrorLog() {
       // some servers can have max length restrictions for headers,
@@ -359,8 +354,7 @@ public final class FileDownloader {
     let responseHeaderData = ResponseHeaderData(
       protocolVersionRaw: httpResponse.value(forHTTPHeaderField: "expo-protocol-version"),
       serverDefinedHeadersRaw: httpResponse.value(forHTTPHeaderField: "expo-server-defined-headers"),
-      manifestFiltersRaw: httpResponse.value(forHTTPHeaderField: "expo-manifest-filters"),
-      manifestSignature: httpResponse.value(forHTTPHeaderField: "expo-manifest-signature")
+      manifestFiltersRaw: httpResponse.value(forHTTPHeaderField: "expo-manifest-filters")
     )
 
     if httpResponse.statusCode == 204 || data == nil {
@@ -533,8 +527,7 @@ public final class FileDownloader {
     let responseHeaderData = ResponseHeaderData(
       protocolVersionRaw: httpResponse.value(forHTTPHeaderField: "expo-protocol-version"),
       serverDefinedHeadersRaw: httpResponse.value(forHTTPHeaderField: "expo-server-defined-headers"),
-      manifestFiltersRaw: httpResponse.value(forHTTPHeaderField: "expo-manifest-filters"),
-      manifestSignature: httpResponse.value(forHTTPHeaderField: "expo-manifest-signature")
+      manifestFiltersRaw: httpResponse.value(forHTTPHeaderField: "expo-manifest-filters")
     )
 
     let manifestResponseInfo = manifestPartHeadersAndData.let { it in
@@ -713,54 +706,10 @@ public final class FileDownloader {
     successBlock: @escaping ParseManifestSuccessBlock,
     errorBlock: @escaping ParseManifestErrorBlock
   ) {
-    let headerSignature = responsePartInfo.responseHeaderData.manifestSignature
-
-    let updateResponseDictionary: [String: Any]
-    do {
-      let manifestBodyJson = try JSONSerialization.jsonObject(with: responsePartInfo.body)
-      updateResponseDictionary = try extractUpdateResponseDictionary(parsedJson: manifestBodyJson)
-    } catch {
-      errorBlock(error)
-      return
-    }
-
-    let bodyManifestString = updateResponseDictionary["manifestString"]
-    let bodySignature = updateResponseDictionary["signature"]
-    let isSignatureInBody = bodyManifestString != nil && bodySignature != nil
-
-    let signature = isSignatureInBody ? bodySignature : headerSignature
-    let manifestString = isSignatureInBody ? bodyManifestString : String(data: responsePartInfo.body, encoding: .utf8)
-
-    // XDL serves unsigned manifests with the `signature` key set to "UNSIGNED".
-    // We should treat these manifests as unsigned rather than signed with an invalid signature.
-    let isUnsignedFromXDL = signature as? String == "UNSIGNED"
-
-    guard let manifestString = manifestString as? String else {
-      let message = "manifestString should be a string"
-      logger.error(message: message, code: .unknown)
-      errorBlock(NSError(
-        domain: ErrorDomain,
-        code: FileDownloaderErrorCode.ManifestStringError.rawValue,
-        userInfo: [NSLocalizedDescriptionKey: message]
-      ))
-      return
-    }
-
-    guard let manifestStringData = manifestString.data(using: .utf8) else {
-      let message = "manifest should be a valid JSON object"
-      logger.error(message: message, code: .unknown)
-      errorBlock(NSError(
-        domain: ErrorDomain,
-        code: FileDownloaderErrorCode.ManifestJSONError.rawValue,
-        userInfo: [NSLocalizedDescriptionKey: message]
-      ))
-      return
-    }
-
     var manifest: [String: Any]?
     var manifestParseError: (any Error)?
     do {
-      manifest = try JSONSerialization.jsonObject(with: manifestStringData) as? [String: Any]
+      manifest = try JSONSerialization.jsonObject(with: responsePartInfo.body) as? [String: Any]
     } catch {
       manifestParseError = error
     }
@@ -776,88 +725,14 @@ public final class FileDownloader {
       return
     }
 
-    if let signature = signature, !isUnsignedFromXDL {
-      guard let signature = signature as? String else {
-        let message = "signature should be a string"
-        logger.error(message: message, code: .unknown)
-        errorBlock(NSError(
-          domain: ErrorDomain,
-          code: FileDownloaderErrorCode.ManifestSignatureError.rawValue,
-          userInfo: [NSLocalizedDescriptionKey: message]
-        ))
-        return
-      }
-
-      Crypto.verifySignature(
-        withData: manifestString,
-        signature: signature,
-        config: config
-      ) { isValid in
-        guard isValid else {
-          let message = "Manifest verification failed"
-          self.logger.error(message: message, code: .unknown)
-          errorBlock(NSError(
-            domain: ErrorDomain,
-            code: FileDownloaderErrorCode.ManifestVerificationError.rawValue,
-            userInfo: [NSLocalizedDescriptionKey: message]
-          ))
-          return
-        }
-
-        self.createUpdate(
-          manifest: manifest,
-          responsePartInfo: responsePartInfo,
-          extensions: extensions,
-          certificateChainFromManifestResponse: certificateChainFromManifestResponse,
-          database: database,
-          isVerified: true,
-          successBlock: successBlock,
-          errorBlock: errorBlock
-        )
-      } errorBlock: { error in
-        errorBlock(error)
-      }
-    } else {
-      createUpdate(
-        manifest: manifest,
-        responsePartInfo: responsePartInfo,
-        extensions: extensions,
-        certificateChainFromManifestResponse: certificateChainFromManifestResponse,
-        database: database,
-        isVerified: false,
-        successBlock: successBlock,
-        errorBlock: errorBlock
-      )
-    }
-  }
-
-  private func extractUpdateResponseDictionary(parsedJson: Any) throws -> [String: Any] {
-    if let parsedJson = parsedJson as? [String: Any] {
-      return parsedJson
-    }
-
-    if let parsedJson = parsedJson as? [Any] {
-      // TODO: either add support for runtimeVersion or deprecate multi-manifests
-      for providedManifest in parsedJson {
-        if let providedManifest = providedManifest as? [String: Any],
-          let sdkVersion: String = providedManifest.optionalValue(forKey: "sdkVersion"),
-          let supportedSdkVersions = config.sdkVersion?.components(separatedBy: ","),
-          supportedSdkVersions.contains(sdkVersion) {
-          return providedManifest
-        }
-      }
-    }
-
-    throw NSError(
-      domain: ErrorDomain,
-      code: FileDownloaderErrorCode.NoCompatibleUpdateError.rawValue,
-      userInfo: [
-        NSLocalizedDescriptionKey: String(
-          format: "No compatible update found at %@. Only %@ are supported.",
-          config.updateUrl.absoluteString,
-          config.sdkVersion ?? "(missing sdkVersion field)"
-        )
-      ]
+    createUpdate(
+      manifest: manifest,
+      responsePartInfo: responsePartInfo,
+      extensions: extensions,
+      certificateChainFromManifestResponse: certificateChainFromManifestResponse,
+      database: database,
+      successBlock: successBlock,
+      errorBlock: errorBlock
     )
   }
 
@@ -867,15 +742,17 @@ public final class FileDownloader {
     extensions: [String: Any],
     certificateChainFromManifestResponse: String?,
     database: UpdatesDatabase,
-    isVerified: Bool,
     successBlock: ParseManifestSuccessBlock,
     errorBlock: ParseManifestErrorBlock
   ) {
     var mutableManifest = manifest
-    if config.expectsSignedManifest {
-      // There are a few cases in Expo Go where we still want to use the unsigned manifest anyway, so don't mark it as unverified.
-      mutableManifest["isVerified"] = isVerified
-    }
+
+    // Set the isVerified field in the manifest itself so that it is stored in the database.
+    // Note that this is not considered for code signature verification.
+    // currently this is only used by Expo Go, but moving it out of the library would require
+    // also storing the signature so database-loaded-update validity could be derived at load
+    // time.
+    mutableManifest["isVerified"] = false
 
     // check code signing if code signing is configured
     // 1. verify the code signing signature (throw if invalid)

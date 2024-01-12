@@ -49,7 +49,7 @@ export default class ImageManipulatorScreen extends React.Component<{}, State> {
         <View style={{ padding: 10 }}>
           <View style={styles.actionsButtons}>
             <Button style={styles.button} onPress={() => this._rotate(90)}>
-              <Ionicons name="ios-refresh" size={16} color="#ffffff" /> 90
+              <Ionicons name="refresh" size={16} color="#ffffff" /> 90
             </Button>
             <Button style={styles.button} onPress={() => this._rotate(45)}>
               45

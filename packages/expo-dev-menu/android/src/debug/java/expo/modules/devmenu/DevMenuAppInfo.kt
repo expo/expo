@@ -15,7 +15,6 @@ object DevMenuAppInfo {
     val applicationInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
     var appName = packageManager.getApplicationLabel(applicationInfo).toString()
     val runtimeVersion = getMetadataValue(reactContext, "expo.modules.updates.EXPO_RUNTIME_VERSION")
-    val sdkVersion = getMetadataValue(reactContext, "expo.modules.updates.EXPO_SDK_VERSION")
     val appIcon = getApplicationIconUri(reactContext)
     var hostUrl = reactContext.sourceURL
 
@@ -49,7 +48,6 @@ object DevMenuAppInfo {
       putString("appName", appName)
       putString("appIcon", appIcon)
       putString("runtimeVersion", runtimeVersion)
-      putString("sdkVersion", sdkVersion)
       putString("hostUrl", hostUrl)
       putString("engine", engine)
     }

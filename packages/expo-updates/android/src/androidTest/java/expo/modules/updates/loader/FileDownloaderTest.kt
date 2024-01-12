@@ -33,23 +33,10 @@ class FileDownloaderTest {
   }
 
   @Test
-  fun testCacheControl_LegacyManifest() {
-    val configMap = mapOf<String, Any>(
-      "updateUrl" to Uri.parse("https://exp.host/@test/test"),
-      "runtimeVersion" to "1.0",
-      "usesLegacyManifest" to true
-    )
-    val config = UpdatesConfiguration(null, configMap)
-    val actual = FileDownloader.createRequestForRemoteUpdate(config, null, context)
-    Assert.assertNull(actual.header("Cache-Control"))
-  }
-
-  @Test
-  fun testCacheControl_NewManifest() {
+  fun testCacheControl() {
     val configMap = mapOf<String, Any>(
       "updateUrl" to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
-      "runtimeVersion" to "1.0",
-      "usesLegacyManifest" to false
+      "runtimeVersion" to "1.0"
     )
     val config = UpdatesConfiguration(null, configMap)
     val actual = FileDownloader.createRequestForRemoteUpdate(config, null, context)

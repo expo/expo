@@ -6,13 +6,44 @@
 
 ### 🎉 New features
 
-- Added support for React Native 0.73.1. ([#25998](https://github.com/expo/expo/pull/25998) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
 - [expo-updates] Migrate to requireNativeModule/requireOptionalNativeModule. ([#25648](https://github.com/expo/expo/pull/25648) by [@wschurman](https://github.com/wschurman))
+- Remove implicit dependency on expo-updates to do runtime version check at runtime. ([#26080](https://github.com/expo/expo/pull/26080) by [@wschurman](https://github.com/wschurman))
+
+### 📚 3rd party library updates
+
+- Update react-native to 0.73.2. ([#26311](https://github.com/expo/expo/pull/26311) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 50.0.0-preview.9 - 2024-01-10
+
+### 🎉 New features
+
+- Added support for macOS platform. ([#26283](https://github.com/expo/expo/pull/26283) by [@tsapeta](https://github.com/tsapeta))
+
+### 💡 Others
+
+- Replace deprecated `com.facebook.react:react-native:+` Android dependency with `com.facebook.react:react-android`. ([#26237](https://github.com/expo/expo/pull/26237) by [@kudo](https://github.com/kudo))
+
+## 50.0.0-preview.8 - 2024-01-05
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.7 - 2023-12-21
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.6 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.5 - 2023-12-19
+
+### 🎉 New features
+
+- Added support for React Native 0.73.1. ([#25998](https://github.com/expo/expo/pull/25998) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 50.0.0-preview.4 — 2023-12-15
 
