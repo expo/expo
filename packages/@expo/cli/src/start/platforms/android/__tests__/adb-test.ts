@@ -13,6 +13,7 @@ import {
   openAppIdAsync,
   sanitizeAdbDeviceName,
   openUrlAsync,
+  _getServerInstance,
 } from '../adb';
 
 jest.mock('../ADBServer', () => ({
@@ -93,6 +94,8 @@ describe(isPackageInstalledAsync, () => {
       'pm',
       'list',
       'packages',
+      '--user',
+      '0',
       'com.google.android.youtube',
     ]);
   });

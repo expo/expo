@@ -65,6 +65,19 @@ describe('resolveAdbPromise', () => {
     })();
     await expect(server.resolveAdbPromise(rejects)).rejects.toThrowError(/^foobar$/);
   });
+  it(`formats bad user number error`, async () => {
+    const server = new ADBServer();
+    const rejects = (async () => {
+      // eslint-disable-next-line no-throw-literal
+      throw {
+        status: 255,
+        stdout: 'Error: java.lang.IllegalArgumentException: Bad user number: FUNKY\n',
+      };
+    })();
+    await expect(server.resolveAdbPromise(rejects)).rejects.toThrowError(
+      /^Invalid ADB user number \"FUNKY\" set with environment variable EXPO_ADB_USER. Run \"adb shell pm list users\" to see valid user numbers.$/
+    );
+  });
 });
 
 describe('startAsync', () => {
