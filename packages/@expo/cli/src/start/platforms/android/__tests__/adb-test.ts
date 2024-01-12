@@ -13,7 +13,6 @@ import {
   openAppIdAsync,
   sanitizeAdbDeviceName,
   openUrlAsync,
-  _getServerInstance,
 } from '../adb';
 
 jest.mock('../ADBServer', () => ({
