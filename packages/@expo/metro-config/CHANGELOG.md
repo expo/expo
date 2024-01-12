@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Bump `postcss` to 8.4.32.
+- Bump `postcss` to 8.4.32. ([#26385](https://github.com/expo/expo/pull/26385) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.17.1 - 2023-12-19
 
