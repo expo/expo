@@ -1,6 +1,7 @@
 package expo.modules.imagemanipulator
 
-import android.graphics.Bitmap
+import android.graphics.Bitmap.CompressFormat
+import android.os.Build
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
@@ -17,9 +18,13 @@ data class SaveOptions(
 ) : Record {
   val compressFormat
     get() = when (format) {
-      ImageFormat.JPEG, ImageFormat.JPG -> Bitmap.CompressFormat.JPEG
-      ImageFormat.PNG -> Bitmap.CompressFormat.PNG
-      ImageFormat.WEBP -> Bitmap.CompressFormat.WEBP_LOSSY
+      ImageFormat.JPEG, ImageFormat.JPG -> CompressFormat.JPEG
+      ImageFormat.PNG -> CompressFormat.PNG
+      ImageFormat.WEBP -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        CompressFormat.WEBP_LOSSY
+      } else {
+        CompressFormat.WEBP
+      }
     }
 }
 

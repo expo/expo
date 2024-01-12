@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
 
   s.dependency 'ExpoModulesCore'
   s.dependency 'EXImageLoader'
-  s.dependency 'SDWebImageWebPCoder', '~> 0.13.0'
+  s.dependency 'SDWebImageWebPCoder'
 
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
