@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Ensure `router.replace()` falls back correctly on `<Drawer />` navigators.
+
 ### 💡 Others
 
 ## 3.4.2 - 2024-01-10

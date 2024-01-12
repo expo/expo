@@ -154,7 +154,7 @@ function getNavigateAction(state: ResultState, parentState: NavigationState, typ
 
   if (type === 'PUSH' && parentState.type !== 'stack') {
     type = 'NAVIGATE';
-  } else if (type === 'REPLACE' && parentState.type === 'tab') {
+  } else if (type === 'REPLACE' && (parentState.type === 'tab' || parentState.type === 'drawer')) {
     type = 'JUMP_TO';
   }
 
