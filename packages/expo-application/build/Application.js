@@ -45,7 +45,7 @@ export const applicationId = ExpoApplication
     : null;
 // @needsAudit
 /**
- * Returns the compiled Apple `Info.plist` for the application. On Android and web, this function is `undefined`.
+ * Returns the compiled Apple `Info.plist` for the app. This function is `undefined` on Android and web.
  *
  * @example `{"CFBundleDevelopmentRegion": "en", "CFBundleExecutable": "Scribbles", ...}`
  * @platform ios
