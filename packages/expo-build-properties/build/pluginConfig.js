@@ -18,7 +18,7 @@ const EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS = {
         kotlinVersion: '1.6.10',
     },
     ios: {
-        deploymentTarget: '13.0',
+        deploymentTarget: '13.4',
     },
 };
 const schema = {
@@ -53,6 +53,35 @@ const schema = {
                 networkInspector: { type: 'boolean', nullable: true },
                 extraMavenRepos: { type: 'array', items: { type: 'string' }, nullable: true },
                 usesCleartextTraffic: { type: 'boolean', nullable: true },
+                manifestQueries: {
+                    required: ['package'],
+                    type: 'object',
+                    properties: {
+                        package: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: false },
+                        intent: {
+                            type: 'array',
+                            items: {
+                                type: 'object',
+                                properties: {
+                                    action: { type: 'string', nullable: true },
+                                    data: {
+                                        type: 'object',
+                                        properties: {
+                                            scheme: { type: 'string', nullable: true },
+                                            host: { type: 'string', nullable: true },
+                                            mimeType: { type: 'string', nullable: true },
+                                        },
+                                        nullable: true,
+                                    },
+                                    category: { type: 'array', items: { type: 'string' }, nullable: true },
+                                },
+                            },
+                            nullable: true,
+                        },
+                        provider: { type: 'array', items: { type: 'string' }, nullable: true },
+                    },
+                    nullable: true,
+                },
             },
             nullable: true,
         },

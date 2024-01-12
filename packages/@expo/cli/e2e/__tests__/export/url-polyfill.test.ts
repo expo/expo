@@ -23,6 +23,7 @@ describe('exports with url-polyfill', () => {
           EXPO_USE_STATIC: 'static',
           E2E_ROUTER_SRC: 'url-polyfill',
           E2E_ROUTER_ASYNC: 'development',
+          EXPO_USE_FAST_RESOLVER: 'true',
         },
       });
     },
@@ -50,7 +51,7 @@ describe('exports with url-polyfill', () => {
       fileMetadata: {
         ios: {
           assets: expect.anything(),
-          bundle: expect.stringMatching(/bundles\/ios-.*\.js/),
+          bundle: expect.stringMatching(/_expo\/static\/js\/ios\/index-.*\.js/),
         },
       },
       version: 0,
@@ -60,7 +61,7 @@ describe('exports with url-polyfill', () => {
     expect(files).not.toContain('+html.html');
     expect(files).not.toContain('index.html');
 
-    const iosBundle = files.find((v) => v?.startsWith('bundles/ios'));
+    const iosBundle = files.find((v) => v?.startsWith('_expo/static/js/ios/'));
     expect(iosBundle).toBeDefined();
   });
 });

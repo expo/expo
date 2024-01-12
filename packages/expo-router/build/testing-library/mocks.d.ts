@@ -1,5 +1,3 @@
 import '@testing-library/jest-native/extend-expect';
-export declare const initialUrlRef: {
-    value: string | Promise<string>;
-};
+export declare function setInitialUrl(value: string): void;
 //# sourceMappingURL=mocks.d.ts.map

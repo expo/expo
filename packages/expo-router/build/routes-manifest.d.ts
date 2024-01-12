@@ -1,4 +1,5 @@
 export type RouteInfo<TRegex = string> = {
+    file: string;
     page: string;
     namedRegex: TRegex;
     routeKeys: {

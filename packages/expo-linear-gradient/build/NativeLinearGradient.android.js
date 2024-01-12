@@ -18,9 +18,10 @@ export default function NativeLinearGradient({ colors, locations, startPoint, en
         flatStyle.borderBottomLeftRadius ?? borderRadius,
         flatStyle.borderBottomLeftRadius ?? borderRadius,
     ];
-    return (React.createElement(View, { ...props, style: style },
-        React.createElement(BaseNativeLinearGradient, { style: StyleSheet.absoluteFill, colors: colors, startPoint: startPoint, endPoint: endPoint, locations: locations, borderRadii: borderRadiiPerCorner }),
-        children));
+    return (<View {...props} style={style}>
+      <BaseNativeLinearGradient style={StyleSheet.absoluteFill} colors={colors} startPoint={startPoint} endPoint={endPoint} locations={locations} borderRadii={borderRadiiPerCorner}/>
+      {children}
+    </View>);
 }
 const BaseNativeLinearGradient = requireNativeViewManager('ExpoLinearGradient');
 //# sourceMappingURL=NativeLinearGradient.android.js.map

@@ -13,7 +13,7 @@ type InitialRouteConfig = {
 export type ResultState = PartialState<NavigationState> & {
     state?: ResultState;
 };
-export declare function getUrlWithReactNavigationConcessions(path: string, basePath?: string | undefined): {
+export declare function getUrlWithReactNavigationConcessions(path: string, baseUrl?: string | undefined): {
     nonstandardPathname: string;
     inputPathnameWithoutHash: string;
 };
@@ -54,6 +54,6 @@ export declare function getMatchableRouteConfigs<ParamList extends object>(optio
     }[];
     initialRoutes: InitialRouteConfig[];
 };
-export declare function stripBasePath(path: string, basePath?: string | undefined): string;
+export declare function stripBaseUrl(path: string, baseUrl?: string | undefined): string;
 export {};
 //# sourceMappingURL=getStateFromPath.d.ts.map

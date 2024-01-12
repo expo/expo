@@ -58,13 +58,19 @@ async function transformPostCssModule(projectRoot, {
 }) {
   const inputConfig = resolvePostcssConfig(projectRoot);
   if (!inputConfig) {
-    return src;
+    return {
+      src,
+      hasPostcss: false
+    };
   }
-  return await processWithPostcssInputConfigAsync(projectRoot, {
-    inputConfig,
-    src,
-    filename
-  });
+  return {
+    src: await processWithPostcssInputConfigAsync(projectRoot, {
+      inputConfig,
+      src,
+      filename
+    }),
+    hasPostcss: true
+  };
 }
 async function processWithPostcssInputConfigAsync(projectRoot, {
   src,

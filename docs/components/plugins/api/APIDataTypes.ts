@@ -64,6 +64,8 @@ export type TypeDefinitionData = {
     value: string;
   };
   qualifiedName?: string;
+  head?: string;
+  tail?: (TypeDefinitionData | string)[][];
 };
 
 export type MethodParamData = {

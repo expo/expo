@@ -1,5 +1,6 @@
 import { ImageWrapperEvents } from './ImageWrapper.types';
 import { ImageSource } from '../Image.types';
+import { isBlurhashString } from '../utils/resolveSources';
 
 export function getImageWrapperEventHandler(
   events: ImageWrapperEvents | undefined,
@@ -17,6 +18,12 @@ export function getImageWrapperEventHandler(
       }
     },
     onTransitionEnd: () => events?.onTransitionEnd?.forEach((e) => e?.()),
-    onError: () => events?.onError?.forEach((e) => e?.({ source: source || null })),
+    onError: () => {
+      // A temporary workaround for blurhash blobs throwing opaque errors when used in an img tag.
+      if (source?.uri && isBlurhashString(source?.uri)) {
+        return;
+      }
+      events?.onError?.forEach((e) => e?.({ source: source || null }));
+    },
   };
 }

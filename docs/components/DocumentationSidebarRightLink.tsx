@@ -126,7 +126,10 @@ const DocumentationSidebarRightLink = React.forwardRef<HTMLAnchorElement, Sideba
   ({ heading, isActive, shortenCode, onClick }, ref) => {
     const { slug, level, title, type, tags } = heading;
 
+    // preset for monospace, tail ellipsize, and removing extra bits like details of function signatures
     const isCode = type === HeadingType.InlineCode;
+    // preset for monospace, tail ellipsize, don't touch the title otherwise
+    const isCodeOrFilePath = isCode || type === HeadingType.CodeFilePath;
     const paddingLeft = NESTING_OFFSET * (level - BASE_HEADING_LEVEL);
     const displayTitle = shortenCode && isCode ? trimCodedTitle(title) : title;
 
@@ -143,7 +146,7 @@ const DocumentationSidebarRightLink = React.forwardRef<HTMLAnchorElement, Sideba
       setTooltipVisible(false);
     };
 
-    const TitleElement = isCode ? MONOSPACE : CALLOUT;
+    const TitleElement = isCodeOrFilePath ? MONOSPACE : CALLOUT;
 
     return (
       <>
@@ -162,7 +165,7 @@ const DocumentationSidebarRightLink = React.forwardRef<HTMLAnchorElement, Sideba
           <TitleElement
             css={[
               STYLES_LINK_LABEL,
-              isCode && STYLES_LINK_MONOSPACE,
+              isCodeOrFilePath && STYLES_LINK_MONOSPACE,
               isActive && STYLES_LINK_ACTIVE,
             ]}>
             {displayTitle}

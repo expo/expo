@@ -11,11 +11,11 @@ export default function NativeLinearGradient({ colors, locations, startPoint, en
     const linearGradientBackgroundImage = React.useMemo(() => {
         return getLinearGradientBackgroundImage(colors, locations, startPoint, endPoint, width, height);
     }, [colors, locations, startPoint, endPoint, width, height]);
-    return (React.createElement(View, { ...props, style: [
+    return (<View {...props} style={[
             props.style,
             // @ts-ignore: [ts] Property 'backgroundImage' does not exist on type 'ViewStyle'.
             { backgroundImage: linearGradientBackgroundImage },
-        ], onLayout: (event) => {
+        ]} onLayout={(event) => {
             const { width, height } = event.nativeEvent.layout;
             setLayout((oldLayout) => {
                 // don't set new layout state unless the layout has actually changed
@@ -27,7 +27,7 @@ export default function NativeLinearGradient({ colors, locations, startPoint, en
             if (props.onLayout) {
                 props.onLayout(event);
             }
-        } }));
+        }}/>);
 }
 /**
  * Extracted to a separate function in order to be able to test logic independently.

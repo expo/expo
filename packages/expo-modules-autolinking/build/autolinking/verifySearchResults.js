@@ -9,9 +9,8 @@ const path_1 = __importDefault(require("path"));
 /**
  * Verifies the search results by checking whether there are no duplicates.
  */
-function verifySearchResults(searchResults) {
-    const cwd = process.cwd();
-    const relativePath = (pkg) => path_1.default.relative(cwd, pkg.path);
+function verifySearchResults(searchResults, options) {
+    const relativePath = (pkg) => path_1.default.relative(options.projectRoot, pkg.path);
     let counter = 0;
     for (const moduleName in searchResults) {
         const revision = searchResults[moduleName];

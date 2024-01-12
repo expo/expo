@@ -11,8 +11,9 @@ import {
   requireContext,
   requireContextWithOverrides,
 } from './context-stubs';
-import { initialUrlRef } from './mocks';
+import { setInitialUrl } from './mocks';
 import { ExpoRoot } from '../ExpoRoot';
+import getPathFromState from '../fork/getPathFromState';
 import { stateCache } from '../getLinkingConfig';
 import { store } from '../global-state/router-store';
 import { RequireContext } from '../types';
@@ -26,6 +27,7 @@ type RenderRouterOptions = Parameters<typeof render>[1] & {
 
 type Result = ReturnType<typeof render> & {
   getPathname(): string;
+  getPathnameWithParams(): string;
   getSegments(): string[];
   getSearchParams(): Record<string, string | string[]>;
 };
@@ -57,12 +59,11 @@ export function renderRouter(
   let ctx: RequireContext;
 
   // Reset the initial URL
-  initialUrlRef.value = initialUrl as any;
+
+  setInitialUrl(initialUrl);
 
   // Force the render to be synchronous
-  process.env.EXPO_ROUTER_IMPORT_MODE_WEB = 'sync';
-  process.env.EXPO_ROUTER_IMPORT_MODE_IOS = 'sync';
-  process.env.EXPO_ROUTER_IMPORT_MODE_ANDROID = 'sync';
+  process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
 
   if (typeof context === 'string') {
     ctx = requireContext(path.resolve(process.cwd(), context));
@@ -95,6 +96,9 @@ export function renderRouter(
     },
     getSearchParams(this: RenderResult): Record<string, string | string[]> {
       return store.routeInfoSnapshot().params;
+    },
+    getPathnameWithParams(this: RenderResult): string {
+      return getPathFromState(store.rootState!, store.linking!.config);
     },
   });
 }

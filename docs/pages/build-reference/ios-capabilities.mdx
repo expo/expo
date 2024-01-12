@@ -81,6 +81,7 @@ EAS Build will only enable capabilities that it has built-in support for, any un
 | <YesIcon /> | Sign In with Apple                                | `com.apple.developer.applesignin`                                          |
 | <YesIcon /> | SiriKit                                           | `com.apple.developer.siri`                                                 |
 | <YesIcon /> | System Extension                                  | `com.apple.developer.system-extension.install`                             |
+| <YesIcon /> | Tap to Pay on iPhone                              | `com.apple.developer.proximity-reader.payment.acceptance`                  |
 | <YesIcon /> | Tap to Present ID on iPhone (Display Only)        | `com.apple.developer.proximity-reader.identity.display`                    |
 | <YesIcon /> | TV Services                                       | `com.apple.developer.user-management`                                      |
 | <YesIcon /> | Time Sensitive Notifications                      | `com.apple.developer.usernotifications.time-sensitive`                     |
@@ -90,7 +91,7 @@ EAS Build will only enable capabilities that it has built-in support for, any un
 | <YesIcon /> | iCloud                                            | `com.apple.developer.icloud-container-identifiers`                         |
 | <NoIcon />  | HLS Interstitial Previews                         | Unknown                                                                    |
 
-The unsupported capabilities either don't support iOS, or they don't have a corresponding entitlement value. Here are all of the [official Apple capabilities][apple-all-capabilities].
+The unsupported capabilities either don't support iOS, or they don't have a corresponding entitlement value. Here is a list of all of the [official Apple capabilities](https://developer.apple.com/help/account/reference/supported-capabilities-ios).
 
 ## Capability identifiers
 
@@ -133,5 +134,4 @@ If adding capabilities process has not been done correctly then your iOS native 
 ```
 
 [apple-enable-capability]: https://help.apple.com/xcode/mac/current/#/dev88ff319e7
-[apple-all-capabilities]: https://help.apple.com/developer-account/#/dev21218dfd6
 [apple-dev-console]: https://developer.apple.com/account/resources/identifiers/list

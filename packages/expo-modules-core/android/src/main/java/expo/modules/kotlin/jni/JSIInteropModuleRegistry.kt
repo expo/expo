@@ -5,7 +5,6 @@ import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import com.facebook.soloader.SoLoader
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.NativeMethodCallInvokerHolderImplCompatible
 import expo.modules.kotlin.exception.JavaScriptEvaluateException
 import expo.modules.kotlin.sharedobjects.SharedObject
 import java.lang.ref.WeakReference
@@ -33,15 +32,14 @@ class JSIInteropModuleRegistry(appContext: AppContext) : Destructible {
   external fun installJSI(
     jsRuntimePointer: Long,
     jniDeallocator: JNIDeallocator,
-    jsInvokerHolder: CallInvokerHolderImpl,
-    nativeInvokerHolder: NativeMethodCallInvokerHolderImplCompatible
+    jsInvokerHolder: CallInvokerHolderImpl
   )
 
   /**
    * Initializes the test runtime. Shouldn't be used in the production.
    */
   external fun installJSIForTests(
-    jniDeallocator: JNIDeallocator,
+    jniDeallocator: JNIDeallocator
   )
 
   fun installJSIForTests() = installJSIForTests(
@@ -69,6 +67,11 @@ class JSIInteropModuleRegistry(appContext: AppContext) : Destructible {
    * Drains the JavaScript VM internal Microtask (a.k.a. event loop) queue.
    */
   external fun drainJSEventLoop()
+
+  /**
+   * Informs C++ that runtime was deallocated.
+   */
+  external fun wasDeallocated()
 
   /**
    * Returns a `JavaScriptModuleObject` that is a bridge between [expo.modules.kotlin.modules.Module]

@@ -1,7 +1,9 @@
-import { NewManifest, BareManifest } from 'expo-manifests';
-export type Manifest = NewManifest | BareManifest;
+import { ExpoUpdatesManifest, EmbeddedManifest } from 'expo-manifests';
+export type Manifest = ExpoUpdatesManifest | EmbeddedManifest;
 /**
- * The types of update-related events.
+ * The types of update-related events, used with `addListener()` and `useUpdateEvents()`.
+ * @deprecated These APIs are deprecated and will be removed in a future release corresponding with SDK 51.
+ * Use [`useUpdates()`](#useupdates) instead.
  */
 export declare enum UpdateEventType {
     /**
@@ -125,7 +127,7 @@ export type UpdateCheckResultFailure = UpdateCheckResultNotAvailable;
 export type UpdateFetchResultSuccess = {
     /**
      * Whether the fetched update is new (that is, a different version than what's currently running).
-     * False when roll back to embedded is true.
+     * Always `true` when `isRollBackToEmbedded` is `false`.
      */
     isNew: true;
     /**
@@ -143,7 +145,7 @@ export type UpdateFetchResultSuccess = {
 export type UpdateFetchResultFailure = {
     /**
      * Whether the fetched update is new (that is, a different version than what's currently running).
-     * False when roll back to embedded is true.
+     * Always `false` when `isRollBackToEmbedded` is `true`.
      */
     isNew: false;
     /**
@@ -161,7 +163,7 @@ export type UpdateFetchResultFailure = {
 type UpdateFetchResultRollBackToEmbedded = {
     /**
      * Whether the fetched update is new (that is, a different version than what's currently running).
-     * False when roll back to embedded is true.
+     * Always `false` when `isRollBackToEmbedded` is `true`.
      */
     isNew: false;
     /**
@@ -208,7 +210,7 @@ export type UpdatesLogEntry = {
      */
     message: string;
     /**
-     * One of the defined code values for expo-updates log entries.
+     * One of the defined code values for `expo-updates` log entries.
      */
     code: UpdatesLogEntryCode;
     /**
@@ -224,7 +226,7 @@ export type UpdatesLogEntry = {
      */
     assetId?: string;
     /**
-     * If present, an iOS or Android native stack trace associated with this log entry.
+     * If present, an Android or iOS native stack trace associated with this log entry.
      */
     stacktrace?: string[];
 };
@@ -241,6 +243,7 @@ export declare enum UpdatesLogEntryCode {
     UPDATE_FAILED_TO_LOAD = "UpdateFailedToLoad",
     ASSETS_FAILED_TO_LOAD = "AssetsFailedToLoad",
     JS_RUNTIME_ERROR = "JSRuntimeError",
+    INITIALIZATION_ERROR = "InitializationError",
     UNKNOWN = "Unknown"
 }
 /**
@@ -256,7 +259,9 @@ export declare enum UpdatesLogEntryLevel {
 }
 /**
  * The possible settings that determine if expo-updates will check for updates on app startup.
- * By default, Expo will check for updates every time the app is loaded. Set this to `ON_ERROR_RECOVERY` to disable automatic checking unless recovering from an error. Set this to `NEVER` to completely disable automatic checking. Must be one of `ON_LOAD` (default value), `ON_ERROR_RECOVERY`, `WIFI_ONLY`, or `NEVER`
+ * By default, Expo will check for updates every time the app is loaded.
+ * Set this to `ON_ERROR_RECOVERY` to disable automatic checking unless recovering from an error.
+ * Set this to `NEVER` to completely disable automatic checking.
  */
 export declare enum UpdatesCheckAutomaticallyValue {
     /**
@@ -268,7 +273,7 @@ export declare enum UpdatesCheckAutomaticallyValue {
      */
     ON_ERROR_RECOVERY = "ON_ERROR_RECOVERY",
     /**
-     * Only checks for updates when the app starts and has a WiFi connection.
+     * Only checks for updates when the app starts and has a Wi-Fi connection.
      */
     WIFI_ONLY = "WIFI_ONLY",
     /**

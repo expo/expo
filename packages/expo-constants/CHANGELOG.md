@@ -10,6 +10,40 @@
 
 ### 💡 Others
 
+- [expo-updates] Migrate to requireNativeModule/requireOptionalNativeModule. ([#25648](https://github.com/expo/expo/pull/25648) by [@wschurman](https://github.com/wschurman))
+- Remove most of Constants.appOwnership. ([#26313](https://github.com/expo/expo/pull/26313) by [@wschurman](https://github.com/wschurman))
+
+## 15.4.3 - 2024-01-10
+
+### 🎉 New features
+
+- Added support for macOS platform. ([#26233](https://github.com/expo/expo/pull/26233) by [@tsapeta](https://github.com/tsapeta))
+
+## 15.4.2 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 15.4.1 — 2023-12-13
+
+_This version does not introduce any user-facing changes._
+
+## 15.4.0 — 2023-12-12
+
+### 💡 Others
+
+- Drop `crypto` usage on web. ([#25411](https://github.com/expo/expo/pull/25411) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 15.3.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 15.2.0 — 2023-10-17
+
+_This version does not introduce any user-facing changes._
+
 ## 15.1.0 — 2023-09-15
 
 ### 🎉 New features

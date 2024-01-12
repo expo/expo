@@ -1,6 +1,6 @@
 ---
-title: Debugging tools
-description: Learn about different tools available to debug your Expo project.
+title: Debugging and profiling tools
+description: Learn about different tools available to inspect your Expo project at runtime.
 sidebar_title: Tools
 ---
 
@@ -69,6 +69,42 @@ The **Network tab** gives you insights into the network requests made by your ap
 
 > **info** See the [Inspecting network traffic](#inspecting-network-traffic) for alternative ways to inspect network requests.
 
+## Profiling JavaScript performance
+
+> **warning** Profiles are not yet symbolicated with sourcemaps, and [can only be used in debug builds](https://github.com/facebook/hermes/issues/760). These limitations will be addressed in upcoming releases.
+
+You can enable the **JavaScript Profiler tab** within Chrome DevTools to record and analyze the performance of your app JavaScript. The **Performance tab** is not currently supported. To profile the native runtime, use the tools included in Android Studio or Xcode.
+
+### Enable the JavaScript Profiler within Chrome DevTools
+
+- Press <kbd>⌘ cmd</kbd> + <kbd>shift</kbd> + <kbd>p</kbd> (Mac) or <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>p</kbd> (Windows, Linux) to open the command palette.
+- Type **javascript** and select **Show JavaScript Profiler**.
+
+<Collapsible summary="Screenshot of the Chrome DevTools command palette">
+
+<ImageSpotlight
+  alt="Chrome DevTools showing the command paletter."
+  src="/static/images/debugging/profiling-enable.png"
+/>
+
+</Collapsible>
+
+### Record and read profiles from the JavaScript Profiler tab
+
+- Press **Start**.
+- Interact with your app.
+- Press **Stop** to finish recording.
+- Analyze the profile.
+
+<Collapsible summary="Screenshot of the Chrome DevTools with the JavaScript Profiler tab open">
+
+<ImageSpotlight
+  alt="JavaScript Profiler tab opened in the Chrome DevTools."
+  src="/static/images/debugging/profiling-start.png"
+/>
+
+</Collapsible>
+
 ## Debugging with VS Code
 
 > **warning** This feature is only available from Expo SDK 49 and higher.
@@ -116,7 +152,7 @@ This menu gives you access to several functions which are useful for debugging a
 - iOS device (without USB):
   - Shake the device.
   - Touch 3 fingers to the screen.
-- iOS simulator or device (with USB):
+- iOS Simulator or device (with USB):
   - Press <kbd>Ctrl</kbd> + <kbd>Cmd ⌘</kbd> + <kbd>z</kbd> or <kbd>Cmd ⌘</kbd> + <kbd>d</kbd>
 
 </Collapsible>
@@ -214,6 +250,6 @@ There are however [some limitations](https://github.com/jhen0409/react-native-de
 
 ## Debugging production apps with Sentry
 
-In a perfect world, your app would ship without any bugs. However, that's usually not the case. So, it's a good idea to implement a crash and bug reporting system into your app. This way, if any user experiences a fatal JS error (or any event that you've configured to notify Sentry) you can see the details in your Sentry dashboard.
+In a perfect world, your app would ship without any bugs. However, that's usually not the case. So, it's a good idea to implement a crash and bug reporting system into your app. This way, if any user experiences a fatal JS error (or any event that you have configured to notify Sentry) you can see the details in your Sentry dashboard.
 
 Expo provides a wrapper called [`sentry-expo`](/guides/using-sentry) which allows you to get as much information as possible from crashes and other events. Plus, when running in the managed workflow, you can configure sourcemaps so that the stracktraces you see in Sentry will look much more like the code in your editor.

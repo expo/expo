@@ -35,12 +35,12 @@ files={{
   }}>
 
 ```jsx
-import * as React from 'react';
-import { Text, View, StyleSheet, Button } from 'react-native';
+import { useEffect, useState } from 'react';
+import { View, StyleSheet, Button } from 'react-native';
 import { Audio } from 'expo-av';
 
 export default function App() {
-  const [sound, setSound] = React.useState();
+  const [sound, setSound] = useState();
 
   async function playSound() {
     console.log('Loading Sound');
@@ -53,7 +53,7 @@ export default function App() {
     await /* @info */ sound.playAsync(); /* @end */
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     return sound
       ? () => {
           console.log('Unloading Sound');
@@ -88,17 +88,20 @@ const styles = StyleSheet.create({
 <SnackInline label='Recording sounds' dependencies={['expo-av', 'expo-asset']}>
 
 ```jsx
-import * as React from 'react';
-import { Text, View, StyleSheet, Button } from 'react-native';
+import { useState } from 'react';
+import { View, StyleSheet, Button } from 'react-native';
 import { Audio } from 'expo-av';
 
 export default function App() {
-  const [recording, setRecording] = React.useState();
+  const [recording, setRecording] = useState();
+  const [permissionResponse, requestPermission] = Audio.usePermissions();
 
   async function startRecording() {
     try {
-      console.log('Requesting permissions..');
-      /* @info */ await Audio.requestPermissionsAsync();
+      /* @info */ if (permissionResponse.status !== 'granted') {
+        console.log('Requesting permission..');
+        await requestPermission();
+      }
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
         playsInSilentModeIOS: true,
@@ -175,8 +178,7 @@ See an example of **app.json** that enables audio playback in background:
 ### Notes on web usage
 
 - A MediaRecorder issue on Chrome produces WebM files missing the duration metadata. [See the open Chromium issue](https://bugs.chromium.org/p/chromium/issues/detail?id=642012).
-- MediaRecorder encoding options and other configurations are inconsistent across browsers, utilizing a Polyfill such as [kbumsik/opus-media-recorder](https://github.com/kbumsik/opus-media-recorder).
-  or [ai/audio-recorder-polyfill](https://github.com/ai/audio-recorder-polyfill) in your application will improve your experience. Any options passed to `prepareToRecordAsync` will be passed directly to the MediaRecorder API and as such the polyfill.
+- MediaRecorder encoding options and other configurations are inconsistent across browsers, utilizing a Polyfill such as [kbumsik/opus-media-recorder](https://github.com/kbumsik/opus-media-recorder) or [ai/audio-recorder-polyfill](https://github.com/ai/audio-recorder-polyfill) in your application will improve your experience. Any options passed to `prepareToRecordAsync` will be passed directly to the MediaRecorder API and as such the polyfill.
 - Web browsers require sites to be served securely for them to listen to a mic. See [MediaDevices `getUserMedia()` security](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#security) for more details.
 
 ## API
@@ -189,4 +191,4 @@ import { Audio } from 'expo-av';
 
 ## Unified API
 
-The rest of the API on the `Sound.Audio` is the same as the API for `Video` component `ref` - see the [AV documentation](av/#playback) for further information.
+The rest of the API on the `Sound.Audio` is the same as the API for `Video` component `ref`. See the [AV documentation](av/#playback) for more information.

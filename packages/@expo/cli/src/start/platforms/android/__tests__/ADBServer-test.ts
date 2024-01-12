@@ -2,7 +2,6 @@ import spawnAsync from '@expo/spawn-async';
 import { execFileSync } from 'child_process';
 import { vol } from 'memfs';
 
-import { asMock } from '../../../../__tests__/asMock';
 import * as Log from '../../../../log';
 import { AbortCommandError } from '../../../../utils/errors';
 import { installExitHooks } from '../../../../utils/exit';
@@ -70,7 +69,7 @@ describe('resolveAdbPromise', () => {
 
 describe('startAsync', () => {
   it(`starts the ADB server`, async () => {
-    asMock(spawnAsync).mockResolvedValueOnce({
+    jest.mocked(spawnAsync).mockResolvedValueOnce({
       stderr: '* daemon started successfully',
     } as any);
     const server = new ADBServer();
@@ -90,7 +89,7 @@ describe('startAsync', () => {
 });
 describe('runAsync', () => {
   it(`runs an ADB command`, async () => {
-    asMock(spawnAsync).mockResolvedValueOnce({
+    jest.mocked(spawnAsync).mockResolvedValueOnce({
       output: ['did thing'],
       stderr: 'did thing',
     } as any);
@@ -108,7 +107,7 @@ describe('runAsync', () => {
 });
 describe('getFileOutputAsync', () => {
   it(`returns file output from ADB`, async () => {
-    asMock(execFileSync).mockReturnValueOnce('foobar');
+    jest.mocked(execFileSync).mockReturnValueOnce('foobar');
     const server = new ADBServer();
     server.startAsync = jest.fn();
     server.resolveAdbPromise = jest.fn(server.resolveAdbPromise);
@@ -126,7 +125,7 @@ describe('getFileOutputAsync', () => {
 });
 describe('stopAsync', () => {
   it(`stops the ADB server when running`, async () => {
-    asMock(spawnAsync).mockResolvedValueOnce({ output: [''] } as any);
+    jest.mocked(spawnAsync).mockResolvedValueOnce({ output: [''] } as any);
     const server = new ADBServer();
     server.isRunning = true;
     await expect(server.stopAsync()).resolves.toBe(true);
@@ -134,7 +133,7 @@ describe('stopAsync', () => {
     expect(spawnAsync).toBeCalledTimes(1);
   });
   it(`stops the ADB server when not running`, async () => {
-    asMock(spawnAsync).mockResolvedValueOnce({ output: [''] } as any);
+    jest.mocked(spawnAsync).mockResolvedValueOnce({ output: [''] } as any);
     const server = new ADBServer();
     server.isRunning = false;
     await expect(server.stopAsync()).resolves.toBe(false);

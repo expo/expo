@@ -142,7 +142,10 @@ class Env {
     return process.env.HTTP_PROXY || process.env.http_proxy || '';
   }
 
-  /** Use the network inspector by overriding the metro inspector proxy with a custom version */
+  /**
+   * Use the network inspector by overriding the metro inspector proxy with a custom version.
+   * @deprecated This has been replaced by `@react-native/dev-middleware` and is now unused.
+   */
   get EXPO_NO_INSPECTOR_PROXY(): boolean {
     return boolish('EXPO_NO_INSPECTOR_PROXY', false);
   }
@@ -155,6 +158,21 @@ class Env {
   /** Enable the unstable inverse dependency stack trace for Metro bundling errors. */
   get EXPO_METRO_UNSTABLE_ERRORS() {
     return boolish('EXPO_METRO_UNSTABLE_ERRORS', false);
+  }
+
+  /** Enable the unstable fast resolver for Metro. */
+  get EXPO_USE_FAST_RESOLVER() {
+    return boolish('EXPO_USE_FAST_RESOLVER', false);
+  }
+
+  /** Disable Environment Variable injection in client bundles. */
+  get EXPO_NO_CLIENT_ENV_VARS(): boolean {
+    return boolish('EXPO_NO_CLIENT_ENV_VARS', false);
+  }
+
+  /** Enable the React Native JS Inspector, instead of the "classic" Chrome DevTools (SDK <=49) */
+  get EXPO_USE_UNSTABLE_DEBUGGER(): boolean {
+    return boolish('EXPO_USE_UNSTABLE_DEBUGGER', false);
   }
 }
 

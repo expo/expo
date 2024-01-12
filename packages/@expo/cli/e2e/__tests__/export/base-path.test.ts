@@ -5,7 +5,7 @@ import klawSync from 'klaw-sync';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { bin, getPageHtml, getRouterE2ERoot } from '../utils';
+import { bin, ensurePortFreeAsync, getPageHtml, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
@@ -16,16 +16,19 @@ describe('static-rendering with a custom base path', () => {
 
   beforeAll(
     async () => {
-      const basePath = '/one/two';
-      process.env.EXPO_E2E_BASE_PATH = basePath;
+      await ensurePortFreeAsync(8081);
+
+      const baseUrl = '/one/two';
+      process.env.EXPO_E2E_BASE_PATH = baseUrl;
       await execa('node', [bin, 'export', '-p', 'web', '--clear', '--output-dir', outputName], {
         cwd: projectRoot,
         env: {
           NODE_ENV: 'production',
-          EXPO_E2E_BASE_PATH: basePath,
+          EXPO_E2E_BASE_PATH: baseUrl,
           EXPO_USE_STATIC: 'static',
           E2E_ROUTER_SRC: 'static-rendering',
           E2E_ROUTER_ASYNC: 'development',
+          EXPO_USE_FAST_RESOLVER: 'true',
         },
       });
     },
@@ -58,7 +61,7 @@ describe('static-rendering with a custom base path', () => {
 
       // Injected by framework
       expect(files).toContain('_sitemap.html');
-      expect(files).toContain('[...404].html');
+      expect(files).toContain('+not-found.html');
 
       // Normal routes
       expect(files).toContain('about.html');
@@ -152,7 +155,7 @@ describe('static-rendering with a custom base path', () => {
   );
 
   it(
-    'supports basePath in Links',
+    'supports baseUrl in Links',
     async () => {
       expect(
         (await getPageHtml(outputDir, 'links.html')).querySelector(

@@ -11,7 +11,7 @@ export type Options = {
   clear: boolean;
   minify: boolean;
   dumpAssetmap: boolean;
-  dumpSourcemap: boolean;
+  sourceMaps: boolean;
 };
 
 /** Returns an array of platforms based on the input platform identifier and runtime constraints. */
@@ -76,6 +76,6 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
     dev: !!args['--dev'],
     maxWorkers: args['--max-workers'],
     dumpAssetmap: !!args['--dump-assetmap'],
-    dumpSourcemap: !!args['--dump-sourcemap'],
+    sourceMaps: !!args['--source-maps'],
   };
 }

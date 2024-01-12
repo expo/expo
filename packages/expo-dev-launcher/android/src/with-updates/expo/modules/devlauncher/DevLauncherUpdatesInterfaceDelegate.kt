@@ -1,10 +1,10 @@
 package expo.modules.devlauncher
 
 import android.content.Context
-import expo.modules.updates.UpdatesDevLauncherController
+import expo.modules.updates.UpdatesController
 
 object DevLauncherUpdatesInterfaceDelegate {
   fun initializeUpdatesInterface(context: Context) {
-    DevLauncherController.instance.updatesInterface = UpdatesDevLauncherController.initialize(context)
+    DevLauncherController.instance.updatesInterface = UpdatesController.initializeAsDevLauncherWithoutStarting(context, DevLauncherController.instance)
   }
 }

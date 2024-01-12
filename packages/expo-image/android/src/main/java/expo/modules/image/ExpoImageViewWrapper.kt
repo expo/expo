@@ -18,7 +18,6 @@ import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.Target.SIZE_ORIGINAL
 import com.facebook.yoga.YogaConstants
 import expo.modules.image.enums.ContentFit
 import expo.modules.image.enums.Priority
@@ -32,11 +31,13 @@ import expo.modules.image.records.ImageLoadEvent
 import expo.modules.image.records.ImageProgressEvent
 import expo.modules.image.records.ImageTransition
 import expo.modules.image.records.SourceMap
+import expo.modules.image.svg.SVGPictureDrawable
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.tracing.beginAsyncTraceBlock
+import expo.modules.kotlin.tracing.trace
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
 import jp.wasabeef.glide.transformations.BlurTransformation
-import java.lang.Float.max
 import java.lang.ref.WeakReference
 import kotlin.math.abs
 import kotlin.math.min
@@ -127,7 +128,12 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   internal var tintColor: Int? = null
     set(value) {
       field = value
-      activeView.setTintColor(value)
+      // To apply the tint color to the SVG, we need to recreate the drawable.
+      if (activeView.drawable is SVGPictureDrawable) {
+        shouldRerender = true
+      } else {
+        activeView.setTintColor(value)
+      }
     }
 
   internal var isFocusableProp: Boolean = false
@@ -160,6 +166,8 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       shouldRerender = true
     }
 
+  internal var autoplay: Boolean = true
+
   internal var priority: Priority = Priority.NORMAL
   internal var cachePolicy: CachePolicy = CachePolicy.DISK
 
@@ -180,6 +188,18 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   fun setBorderColor(index: Int, rgb: Float, alpha: Float) {
     borderColor[index] = rgb to alpha
     activeView.setBorderColor(index, rgb, alpha)
+  }
+
+  fun setIsAnimating(setAnimating: Boolean) {
+    val resource = activeView.drawable
+
+    if (resource is Animatable) {
+      if (setAnimating) {
+        resource.start()
+      } else {
+        resource.stop()
+      }
+    }
   }
 
   /**
@@ -263,74 +283,83 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     // However, in this case, it is safe to use as long as nothing else is added to the queue.
     // The intention is simply to wait for the Glide code to finish before the content of the underlying views is changed during the same rendering tick.
     mainHandler.postAtFrontOfQueue {
-      val transitionDuration = (transition?.duration ?: 0).toLong()
+      trace(Trace.tag, "onResourceReady") {
+        val transitionDuration = (transition?.duration ?: 0).toLong()
 
-      // If provided resource is a placeholder, but the target doesn't have a source, we treat it as a normal image.
-      if (!isPlaceholder || !target.hasSource) {
-        val (newView, previousView) = if (firstView.drawable == null) {
-          firstView to secondView
+        // If provided resource is a placeholder, but the target doesn't have a source, we treat it as a normal image.
+        if (!isPlaceholder || !target.hasSource) {
+          val (newView, previousView) = if (firstView.drawable == null) {
+            firstView to secondView
+          } else {
+            secondView to firstView
+          }
+
+          val clearPreviousView = {
+            previousView
+              .recycleView()
+              ?.apply {
+                // When the placeholder is loaded, one target is displayed in both views.
+                // So we just have to move the reference to a new view instead of clearing the target.
+                if (this != target) {
+                  clear(requestManager)
+                }
+              }
+          }
+
+          configureView(newView, target, resource, isPlaceholder)
+          if (transitionDuration <= 0) {
+            clearPreviousView()
+            newView.alpha = 1f
+            newView.bringToFront()
+          } else {
+            newView.bringToFront()
+            previousView.alpha = 1f
+            newView.alpha = 0f
+            previousView.animate().apply {
+              duration = transitionDuration
+              alpha(0f)
+              withEndAction {
+                clearPreviousView()
+              }
+            }
+            newView.animate().apply {
+              duration = transitionDuration
+              alpha(1f)
+            }
+          }
         } else {
-          secondView to firstView
-        }
+          // We don't want to show the placeholder if something is currently displayed.
+          // There is one exception - when we're displaying a different placeholder.
+          if ((firstView.drawable != null && !firstView.isPlaceholder) || secondView.drawable != null) {
+            return@trace
+          }
 
-        val clearPreviousView = {
-          previousView
+          firstView
             .recycleView()
             ?.apply {
-              // When the placeholder is loaded, one target is displayed in both views.
-              // So we just have to move the reference to a new view instead of clearing the target.
+              // The current target is already bound to the view. We don't want to cancel it in that case.
               if (this != target) {
                 clear(requestManager)
               }
             }
-        }
 
-        configureView(newView, target, resource, isPlaceholder)
-        if (transitionDuration <= 0) {
-          clearPreviousView()
-          newView.alpha = 1f
-          newView.bringToFront()
-        } else {
-          newView.bringToFront()
-          previousView.alpha = 1f
-          newView.alpha = 0f
-          previousView.animate().apply {
-            duration = transitionDuration
-            alpha(0f)
-            withEndAction {
-              clearPreviousView()
+          configureView(firstView, target, resource, isPlaceholder)
+          if (transitionDuration > 0) {
+            firstView.bringToFront()
+            firstView.alpha = 0f
+            secondView.isVisible = false
+            firstView.animate().apply {
+              duration = transitionDuration
+              alpha(1f)
             }
           }
-          newView.animate().apply {
-            duration = transitionDuration
-            alpha(1f)
-          }
-        }
-      } else {
-        // We don't want to show the placeholder if something is currently displayed.
-        // There is one exception - when we're displaying a different placeholder.
-        if ((firstView.drawable != null && !firstView.isPlaceholder) || secondView.drawable != null) {
-          return@postAtFrontOfQueue
         }
 
-        firstView
-          .recycleView()
-          ?.apply {
-            // The current target is already bound to the view. We don't want to cancel it in that case.
-            if (this != target) {
-              clear(requestManager)
-            }
-          }
-
-        configureView(firstView, target, resource, isPlaceholder)
-        if (transitionDuration > 0) {
-          firstView.bringToFront()
-          firstView.alpha = 0f
-          secondView.isVisible = false
-          firstView.animate().apply {
-            duration = transitionDuration
-            alpha(1f)
-          }
+        // If our image is animated, we want to see if autoplay is disabled. If it is, we should
+        // stop the animation as soon as the resource is ready. Placeholders should not follow this
+        // value since the intention is almost certainly to display the animation (i.e. a spinner)
+        if (resource is Animatable && !isPlaceholder && !autoplay) {
+          resource.stop()
         }
       }
     }
@@ -428,7 +457,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     requestManager.clear(secondTarget)
   }
 
-  internal fun rerenderIfNeeded(shouldRerenderBecauseOfResize: Boolean = false) {
+  internal fun rerenderIfNeeded(shouldRerenderBecauseOfResize: Boolean = false) = trace(Trace.tag, "rerenderIfNeeded(shouldRerenderBecauseOfResize=$shouldRerenderBecauseOfResize)") {
     val bestSource = bestSource
     val bestPlaceholder = bestPlaceholder
 
@@ -446,7 +475,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       loadedSource = null
       transformationMatrixChanged = false
       clearViewBeforeChangingSource = false
-      return
+      return@trace
     }
 
     val shouldRerender = sourceToLoad != loadedSource || shouldRerender || (sourceToLoad == null && placeholder != null)
@@ -484,73 +513,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       newTarget.hasSource = sourceToLoad != null
 
       val downsampleStrategy = if (allowDownscaling) {
-        object : DownsampleStrategy() {
-          var wasTriggered = false
-          override fun getScaleFactor(
-            sourceWidth: Int,
-            sourceHeight: Int,
-            requestedWidth: Int,
-            requestedHeight: Int
-          ): Float {
-            // The method is invoked twice per asset, but we only need to preserve the original dimensions for the first call.
-            // As Glide uses Android downsampling, it can only adjust dimensions by a factor of two,
-            // and hence two distinct scaling factors are computed to achieve greater accuracy.
-            if (!wasTriggered) {
-              newTarget.sourceWidth = sourceWidth
-              newTarget.sourceHeight = sourceHeight
-              wasTriggered = true
-            }
-
-            // The size of the container is unknown, we don't know what to do, so we just run the default scale.
-            if (requestedWidth == SIZE_ORIGINAL || requestedHeight == SIZE_ORIGINAL) {
-              return 1f
-            }
-
-            val aspectRation = calculateScaleFactor(
-              sourceWidth.toFloat(),
-              sourceHeight.toFloat(),
-              requestedWidth.toFloat(),
-              requestedHeight.toFloat()
-            )
-
-            // We don't want to upscale the image
-            return min(1f, aspectRation)
-          }
-
-          private fun calculateScaleFactor(
-            sourceWidth: Float,
-            sourceHeight: Float,
-            requestedWidth: Float,
-            requestedHeight: Float
-          ): Float = when (contentFit) {
-            ContentFit.Contain -> min(
-              requestedWidth / sourceWidth,
-              requestedHeight / sourceHeight
-            )
-            ContentFit.Cover -> max(
-              requestedWidth / sourceWidth,
-              requestedHeight / sourceHeight
-            )
-            ContentFit.Fill, ContentFit.None -> 1f
-            ContentFit.ScaleDown -> if (requestedWidth < sourceWidth || requestedHeight < sourceHeight) {
-              // The container is smaller than the image — scale it down and behave like `contain`
-              min(
-                requestedWidth / sourceWidth,
-                requestedHeight / sourceHeight
-              )
-            } else {
-              // The container is bigger than the image — don't scale it and behave like `none`
-              1f
-            }
-          }
-
-          override fun getSampleSizeRounding(
-            sourceWidth: Int,
-            sourceHeight: Int,
-            requestedWidth: Int,
-            requestedHeight: Int
-          ) = SampleSizeRounding.QUALITY
-        }
+        ContentFitDownsampleStrategy(newTarget, contentFit)
       } else {
         DownsampleStrategy.NONE
       }
@@ -579,6 +542,16 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
         .encodeQuality(100)
         .apply(propOptions)
 
+      tintColor?.let {
+        val tintColorOptions = RequestOptions().apply {
+          set(CustomOptions.tintColor, it)
+        }
+        request.apply(tintColorOptions)
+      }
+
+      val cookie = Trace.getNextCookieValue()
+      beginAsyncTraceBlock(Trace.tag, Trace.loadNewImageBlock, cookie)
+      newTarget.setCookie(cookie)
       request.into(newTarget)
     } else {
       // In the case where the source didn't change, but the transformation matrix has to be

@@ -96,6 +96,12 @@ function applyImageToSplashScreenXML(xml, {
         width,
         height
       }
+    }],
+    color: [{
+      $: {
+        key: 'backgroundColor',
+        systemColor: 'systemBackgroundColor'
+      }
     }]
   };
   const mainView = xml.document.scenes[0].scene[0].objects[0].viewController[0].view[0];

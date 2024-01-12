@@ -110,13 +110,10 @@ export async function installCocoaPodsAsync(projectRoot: string): Promise<boolea
   }
 
   try {
-    await packageManager.installAsync({
-      // @ts-expect-error: multiple versions in the monorepo
-      spinner: step,
-    });
+    await packageManager.installAsync({ spinner: step });
     // Create cached list for later
     await hasPackageJsonDependencyListChangedAsync(projectRoot).catch(() => null);
-    step.succeed('Installed pods and initialized Xcode workspace.');
+    step.succeed('Installed CocoaPods');
     return true;
   } catch (error: any) {
     step.stopAndPersist({

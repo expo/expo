@@ -4,13 +4,49 @@
 
 ### 🛠 Breaking changes
 
-- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 3.3.5 - 2024-01-10
+
+### 💡 Others
+
+- Replace deprecated `com.facebook.react:react-native:+` Android dependency with `com.facebook.react:react-android`. ([#26237](https://github.com/expo/expo/pull/26237) by [@kudo](https://github.com/kudo))
+
+## 3.3.4 - 2023-12-21
+
+_This version does not introduce any user-facing changes._
+
+## 3.3.3 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 3.3.2 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
+## 3.3.1 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
+## 3.3.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 3.2.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+## 2.4.11 — 2023-09-25
+
+_This version does not introduce any user-facing changes._
 
 ## 3.1.1 — 2023-09-18
 

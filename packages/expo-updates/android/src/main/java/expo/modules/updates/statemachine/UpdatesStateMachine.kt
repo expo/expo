@@ -2,6 +2,8 @@ package expo.modules.updates.statemachine
 
 import android.content.Context
 import expo.modules.updates.logging.UpdatesLogger
+import expo.modules.updates.procedures.StateMachineProcedure
+import expo.modules.updates.procedures.StateMachineSerialExecutorQueue
 import java.util.Date
 
 /**
@@ -10,26 +12,47 @@ import java.util.Date
  */
 class UpdatesStateMachine(
   androidContext: Context,
-  private val changeEventSender: UpdatesStateChangeEventSender
+  private val changeEventSender: UpdatesStateChangeEventSender,
+  private val validUpdatesStateValues: Set<UpdatesStateValue>
 ) {
+  private val serialExecutorQueue = StateMachineSerialExecutorQueue(object : StateMachineProcedure.StateMachineProcedureContext {
+    override fun processStateEvent(event: UpdatesStateEvent) {
+      this@UpdatesStateMachine.processEvent(event)
+    }
+
+    override fun getCurrentState(): UpdatesStateValue {
+      return state
+    }
+
+    override fun resetState() {
+      reset()
+    }
+  })
+
+  /**
+   * Queue a StateMachineProcedure procedure for serial execution.
+   */
+  fun queueExecution(stateMachineProcedure: StateMachineProcedure) {
+    serialExecutorQueue.queueExecution(stateMachineProcedure)
+  }
 
   private val logger = UpdatesLogger(androidContext)
 
   /**
    * The current state
    */
-  var state: UpdatesStateValue = UpdatesStateValue.Idle
+  private var state: UpdatesStateValue = UpdatesStateValue.Idle
 
   /**
    * The context
    */
   var context: UpdatesStateContext = UpdatesStateContext()
+    private set
 
   /**
-   Called after the app restarts (reloadAsync()) to reset the machine to its
-   starting state.
+   * Reset the machine to its starting state. Should only be called after the app restarts (reloadAsync()).
    */
-  fun reset() {
+  private fun reset() {
     state = UpdatesStateValue.Idle
     context = UpdatesStateContext()
     logger.info("Updates state change: reset, context = ${context.json}")
@@ -37,10 +60,9 @@ class UpdatesStateMachine(
   }
 
   /**
-   Called by LoaderTask delegate methods in UpdatesController during the initial
-   background check for updates, and called by checkForUpdateAsync(), fetchUpdateAsync(), and reloadAsync().
+   * Transition the state machine forward to a new state.
    */
-  fun processEvent(event: UpdatesStateEvent) {
+  private fun processEvent(event: UpdatesStateEvent) {
     if (transition(event)) {
       context = reduceContext(context, event)
       logger.info("Updates state change: ${event.type}, context = ${context.json}")
@@ -55,10 +77,15 @@ class UpdatesStateMachine(
   private fun transition(event: UpdatesStateEvent): Boolean {
     val allowedEvents: Set<UpdatesStateEventType> = updatesStateAllowedEvents[state] ?: setOf()
     if (!allowedEvents.contains(event.type)) {
-      // Optionally put an assert here when testing to catch bad state transitions in E2E tests
+      assert(false) { "UpdatesState: invalid transition requested: state = $state, event = ${event.type}" }
       return false
     }
-    state = updatesStateTransitions[event.type] ?: UpdatesStateValue.Idle
+    val newStateValue = updatesStateTransitions[event.type] ?: UpdatesStateValue.Idle
+    if (!validUpdatesStateValues.contains(newStateValue)) {
+      assert(false) { "UpdatesState: invalid transition requested: state = $state, event = ${event.type}" }
+      return false
+    }
+    state = newStateValue
     return true
   }
 
@@ -108,7 +135,7 @@ class UpdatesStateMachine(
           latestManifest = null,
           rollback = null,
           isUpdateAvailable = false,
-          lastCheckForUpdateTime = Date(),
+          lastCheckForUpdateTime = Date()
         )
         is UpdatesStateEvent.CheckCompleteWithRollback -> context.copy(
           isChecking = false,
@@ -135,7 +162,7 @@ class UpdatesStateMachine(
         is UpdatesStateEvent.DownloadComplete -> context.copy(
           isDownloading = false,
           downloadError = null,
-          isUpdatePending = true,
+          isUpdatePending = true
         )
         is UpdatesStateEvent.DownloadCompleteWithRollback -> context.copy(
           isDownloading = false,

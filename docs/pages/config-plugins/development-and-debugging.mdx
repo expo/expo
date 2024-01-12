@@ -84,7 +84,7 @@ const { /* @hide ...*//* @end */ } = require('@expo/config-plugins');
 
 ### Tooling
 
-We highly recommend installing the [Expo Tools VS Code plugin][vscode-expo]
+We highly recommend installing the [Expo Tools VS Code extension][vscode-expo]
 as this will perform automatic validation on the plugins and surface error information along with other quality of life improvements for Config Plugin development.
 
 ### Setup up a playground environment
@@ -528,7 +528,6 @@ If the language of the project AppDelegate changes from Objective-C to Swift, th
 Here are some examples of the AppDelegate proxy in action:
 
 - `expo-app-auth` -- [**EXAppAuthAppDelegate.m**](https://github.com/expo/expo/blob/bd7bc03ee10d89487eac25351a455bd9db155b8c/packages/expo-app-auth/ios/EXAppAuth/EXAppAuthAppDelegate.m) (openURL)
-- `expo-branch` -- [**EXBranchManager.m**](https://github.com/expo/expo/blob/636b55ab767f502f29c922a34821434efff04034/packages/expo-branch/ios/EXBranch/EXBranchManager.m) (didFinishLaunchingWithOptions, continueUserActivity, openURL)
 - `expo-notifications` -- [**EXPushTokenManager.m**](https://github.com/expo/expo/blob/bd469e421856f348d539b1b57325890147935dbc/packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenManager.m) (didRegisterForRemoteNotificationsWithDeviceToken, didFailToRegisterForRemoteNotificationsWithError)
 - `expo-facebook` -- [**EXFacebookAppDelegate.m**](https://github.com/expo/expo/blob/e0bb254c889734f2ec6c7b688167f013587ed201/packages/expo-facebook/ios/EXFacebook/EXFacebookAppDelegate.m) (openURL)
 - `expo-file-system` -- [**EXSessionHandler.m**](https://github.com/expo/expo/blob/e0bb254c889734f2ec6c7b688167f013587ed201/packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXSessionHandler.m) (handleEventsForBackgroundURLSession)
@@ -681,13 +680,8 @@ Please add the following to your app config
 [config-docs]: /versions/latest/config/app/
 [prebuild-config]: https://github.com/expo/expo-cli/tree/main/packages/prebuild-config#readme
 [cli-prebuild]: /more/expo-cli//#expo-prebuild
-[configplugin]: https://github.com/expo/expo-cli/blob/3a0ef962a27525a0fe4b7e5567fb7b3fb18ec786/packages/config-plugins/src/Plugin.types.ts#L76
 [source-template]: https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum
-[expo-beta-docs]: https://github.com/expo/expo/tree/main/guides/releasing/Release%20Workflow.mdx#stage-5---beta-release
 [vscode-expo]: https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools
 [ems-plugin]: https://github.com/expo/expo/tree/main/packages/expo-module-scripts#-config-plugin
-[xml2js]: https://www.npmjs.com/package/xml2js
-[expo-plist]: https://www.npmjs.com/package/@expo/plist
 [memfs]: https://www.npmjs.com/package/memfs
-[emc]: https://github.com/expo/expo/tree/main/packages/expo-modules-core
 [autolinking]: /more/glossary-of-terms#autolinking

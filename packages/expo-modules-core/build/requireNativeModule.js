@@ -1,3 +1,4 @@
+import { NativeModules } from 'react-native';
 import NativeModulesProxy from './NativeModulesProxy';
 /**
  * Imports the native module registered with given name. In the first place it tries to load
@@ -23,9 +24,25 @@ export function requireNativeModule(moduleName) {
  * @returns Object representing the native module or `null` when it cannot be found.
  */
 export function requireOptionalNativeModule(moduleName) {
-    return (globalThis.expo?.modules?.[moduleName] ??
-        globalThis.ExpoModules?.[moduleName] ??
-        NativeModulesProxy[moduleName] ??
-        null);
+    ensureNativeModulesAreInstalled();
+    return globalThis.expo?.modules?.[moduleName] ?? NativeModulesProxy[moduleName] ?? null;
+}
+/**
+ * Ensures that the native modules are installed in the current runtime.
+ * Otherwise, it synchronously calls a native function that installs them.
+ */
+function ensureNativeModulesAreInstalled() {
+    if (globalThis.expo) {
+        return;
+    }
+    try {
+        // TODO: ExpoModulesCore shouldn't be optional here,
+        // but to keep backwards compatibility let's just ignore it in SDK 50.
+        // In most cases the modules were already installed from the native side.
+        NativeModules.ExpoModulesCore?.installModules();
+    }
+    catch (error) {
+        console.error(`Unable to install Expo modules: ${error}`);
+    }
 }
 //# sourceMappingURL=requireNativeModule.js.map

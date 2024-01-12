@@ -1,13 +1,13 @@
 ---
 title: Progressive Web Apps
-desscription: Learn how to build a progressive web app with Expo.
+description: Learn how to build a progressive web app with Expo.
 ---
 
 import { CODE } from '~/ui/components/Text';
 
 A progressive web app (or PWA for short) is a website that can be installed on the user's device and used offline. If you build your native app with Expo, then Expo CLI can generate a lot of the PWA automatically based on how the native app works. Ex: icons, splash screens, orientation, and so on. [Add service workers](https://expo.fyi/enabling-web-service-workers) to get a complete PWA.
 
-> This guide is oriented towards apps using webpack. If you use [Metro for web](/guides/customizing-metro/#web-support) (such as with [Expo Router](/routing/introduction)), you can still build a PWA. However, the Expo tooling suggested in this guide is not all intended for it. Use the [`web.output`](/versions/latest/config/app/#output) property with `single` as its default value to generate a SPA. You can then modify your **public/index.html** to add meta tags and PWA assets, and use [`expo-router/head`](/router/reference/static-rendering/#meta-tags) to set meta tags on each route. [Workbox](https://web.dev/learn/pwa/workbox/) is recommended for service workers.
+> This guide is oriented towards apps using Webpack. If you use [Metro for web](/guides/customizing-metro/#web-support) (such as with [Expo Router](/router/introduction)), you can still build a PWA. However, the Expo tooling suggested in this guide is not intended for it. Use the [`web.output`](/versions/latest/config/app/#output) property with `single` as its default value to generate a SPA. You can then modify your **public/index.html** to add meta tags and PWA assets, and use [`expo-router/head`](/router/reference/static-rendering/#meta-tags) to set meta tags on each route. [Workbox](https://web.dev/learn/pwa/workbox/) is recommended for service workers.
 
 ## Usage
 

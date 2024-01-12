@@ -1,34 +1,38 @@
 ---
-title: Use ESLint
-description: How to configure ESLint for formatting Expo apps.
+title: Use ESLint and Prettier
+description: A guide on configuring ESLint and Prettier to format Expo apps.
 ---
 
-import { Collapsible } from '~/ui/components/Collapsible';
-import { Terminal } from '~/ui/components/Snippet';
-import { FileTree } from '~/ui/components/FileTree';
-import { Tabs, Tab, TabsGroup } from '~/ui/components/Tabs';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { CODE } from '~/ui/components/Text';
 import { Step } from '~/ui/components/Step';
+import { Tabs, Tab, TabsGroup } from '~/ui/components/Tabs';
+import { Terminal } from '~/ui/components/Snippet';
 
 <TabsGroup>
 
-[ESLint](https://eslint.org/) is a JavaScript linter that helps you find and fix errors in your code. It's a great tool to help you write better code and catch mistakes before they make it to production.
+[ESLint](https://eslint.org/) is a JavaScript linter that helps you find and fix errors in your code. It's a great tool to help you write better code and catch mistakes before they make it to production. In conjunction, you can use [Prettier](https://prettier.io/docs/en/), a code formatter that ensures all the code files follow a consistent styling.
+
+This guide provides steps to set up and configure ESLint and Prettier.
 
 ## Setup
 
 <Step label="1">
 
-Install ESLint in your project.
+Install ESLint, Prettier, and [`eslint-config-universe`](https://github.com/expo/expo/tree/main/packages/eslint-config-universe#eslint-config-universe) in your project.
 
 <Tabs>
     <Tab label="npm">
-        <Terminal cmd={['$ npm install eslint eslint-config-universe --save-dev']} />
+        <Terminal cmd={['$ npm install eslint prettier eslint-config-universe --save-dev']} />
     </Tab>
 
     <Tab label="yarn">
-        <Terminal cmd={['$ yarn add -D eslint eslint-config-universe']} />
+        <Terminal cmd={['$ yarn add -D eslint prettier eslint-config-universe']} />
     </Tab>
 
 </Tabs>
+
+The `eslint-config-universe` library provides shared ESLint configurations for Node.js, web and universal Expo apps.
 
 </Step>
 
@@ -67,7 +71,7 @@ You can replace the `.` with specific directories or files to lint. For example,
 
 ## Usage
 
-You can lint your code manually from the command-line with the script:
+You can lint your code manually from the command line with the script:
 
 <Tabs>
     <Tab label="npm">
@@ -84,7 +88,7 @@ You can lint your code manually from the command-line with the script:
 
 ## Environment configuration
 
-ESLint is generally configured for a single environment. However, the source code is written in JavaScript in an Expo app runs in multiple different environments. For example, the **app.config.js**, **metro.config.js**, **babel.config.js**, and **app/+html.tsx** files are run in a Node.js environment. It means they have access to the global `__dirname` variable and can use Node.js modules such as `path`. Standard Expo project files like **app/index.js** can be run in Hermes, Node.js, or the web browser.
+ESLint is generally configured for a single environment. However, the source code is written in JavaScript in an Expo app that runs in multiple different environments. For example, the **app.config.js**, **metro.config.js**, **babel.config.js**, and **app/+html.tsx** files are run in a Node.js environment. It means they have access to the global `__dirname` variable and can use Node.js modules such as `path`. Standard Expo project files like **app/index.js** can be run in Hermes, Node.js, or the web browser.
 
 You can add the `eslint-env` comment directive to the top of a file to tell ESLint which environment the file is running in. For example, to tell ESLint that a file is run in Node.js, add the following comment to the top of the file:
 
@@ -99,6 +103,16 @@ const config = getDefaultConfig(
 
 module.exports = config;
 ```
+
+## Prettier
+
+To customize its settings, create a **.prettierrc** file at the root of your project and add the configuration.
+
+<BoxLink
+  title="Custom Prettier configuration"
+  description="Learn more about customizing Prettier configuration."
+  href="https://github.com/expo/expo/tree/main/packages/eslint-config-universe#customizing-prettier"
+/>
 
 ## Troubleshooting
 
@@ -118,3 +132,15 @@ node_modules
 ```
 
 </TabsGroup>
+
+## Next step
+
+<BoxLink
+  title={
+    <>
+      <CODE>eslint-config-universe</CODE>
+    </>
+  }
+  description="Learn more about shared ESLint configurations for Node.js, web and universal Expo apps."
+  href="https://github.com/expo/expo/tree/main/packages/eslint-config-universe"
+/>

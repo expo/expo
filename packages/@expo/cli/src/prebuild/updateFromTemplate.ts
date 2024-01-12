@@ -2,7 +2,7 @@ import { ExpoConfig, PackageJSONConfig } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
 import chalk from 'chalk';
 
-import { copyTemplateFilesAsync, createCopyFilesSuccessMessage } from './copyTemplateFiles';
+import { copyTemplateFiles, createCopyFilesSuccessMessage } from './copyTemplateFiles';
 import { cloneTemplateAsync } from './resolveTemplate';
 import { DependenciesModificationResults, updatePackageJSONAsync } from './updatePackageJson';
 import { validateTemplatePlatforms } from './validateTemplatePlatforms';
@@ -14,7 +14,7 @@ import { profile } from '../utils/profile';
 /**
  * Creates local native files from an input template file path.
  *
- * @return `true` if the project is ejecting, and `false` if it's syncing.
+ * @return `true` if the project is prebuilding, and `false` if it's syncing.
  */
 export async function updateFromTemplateAsync(
   projectRoot: string,
@@ -69,10 +69,7 @@ export async function updateFromTemplateAsync(
   return {
     hasNewProjectFiles: !!copiedPaths.length,
     // If the iOS folder changes or new packages are added, we should rerun pod install.
-    needsPodInstall:
-      copiedPaths.includes('ios') ||
-      depsResults.hasNewDependencies ||
-      depsResults.hasNewDevDependencies,
+    needsPodInstall: copiedPaths.includes('ios') || !!depsResults.changedDependencies.length,
     ...depsResults,
   };
 }
@@ -101,19 +98,17 @@ async function cloneTemplateAndCopyToProjectAsync({
     .join(' and ');
 
   const pluralized = unknownPlatforms.length > 1 ? 'directories' : 'directory';
-  const ora = logNewSection(
-    `Creating native project ${pluralized} (${platformDirectories}) and updating .gitignore`
-  );
+  const ora = logNewSection(`Creating native ${pluralized} (${platformDirectories})`);
 
   try {
     await cloneTemplateAsync({ templateDirectory, template, exp, ora });
 
-    const platforms = await validateTemplatePlatforms({
+    const platforms = validateTemplatePlatforms({
       templateDirectory,
       platforms: unknownPlatforms,
     });
 
-    const results = await copyTemplateFilesAsync(projectRoot, {
+    const results = copyTemplateFiles(projectRoot, {
       templateDirectory,
       platforms,
     });
@@ -125,10 +120,10 @@ async function cloneTemplateAndCopyToProjectAsync({
     if (!(e instanceof AbortCommandError)) {
       Log.error(e.message);
     }
-    ora.fail('Failed to create the native project.');
+    ora.fail(`Failed to create the native ${pluralized}`);
     Log.log(
       chalk.yellow(
-        'You may want to delete the `./ios` and/or `./android` directories before trying again.'
+        chalk`You may want to delete the {bold ./ios} and/or {bold ./android} directories before trying again.`
       )
     );
     throw new SilentError(e);

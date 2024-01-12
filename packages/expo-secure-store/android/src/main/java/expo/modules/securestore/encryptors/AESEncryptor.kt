@@ -5,6 +5,7 @@ import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
 import expo.modules.securestore.AuthenticationHelper
+import expo.modules.securestore.DecryptException
 import expo.modules.securestore.SecureStoreModule
 import expo.modules.securestore.SecureStoreOptions
 import org.json.JSONException
@@ -77,7 +78,7 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
     keyStoreEntry: KeyStore.SecretKeyEntry,
     requireAuthentication: Boolean,
     authenticationPrompt: String,
-    authenticationHelper: AuthenticationHelper,
+    authenticationHelper: AuthenticationHelper
   ): JSONObject {
     val secretKey = keyStoreEntry.secretKey
     val cipher = Cipher.getInstance(AES_CIPHER)
@@ -108,6 +109,7 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
 
   @Throws(GeneralSecurityException::class, JSONException::class)
   override suspend fun decryptItem(
+    key: String,
     encryptedItem: JSONObject,
     keyStoreEntry: KeyStore.SecretKeyEntry,
     options: SecureStoreOptions,
@@ -122,6 +124,9 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
     val cipher = Cipher.getInstance(AES_CIPHER)
     val requiresAuthentication = encryptedItem.optBoolean(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY)
 
+    if (authenticationTagLength < MIN_GCM_AUTHENTICATION_TAG_LENGTH) {
+      throw DecryptException("Authentication tag length must be at least $MIN_GCM_AUTHENTICATION_TAG_LENGTH bits long", key, options.keychainService)
+    }
     cipher.init(Cipher.DECRYPT_MODE, keyStoreEntry.secretKey, gcmSpec)
     val unlockedCipher = authenticationHelper.authenticateCipher(cipher, requiresAuthentication, options.authenticationPrompt)
     return String(unlockedCipher.doFinal(ciphertextBytes), StandardCharsets.UTF_8)
@@ -134,5 +139,6 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
     private const val CIPHERTEXT_PROPERTY = "ct"
     const val IV_PROPERTY = "iv"
     private const val GCM_AUTHENTICATION_TAG_LENGTH_PROPERTY = "tlen"
+    private const val MIN_GCM_AUTHENTICATION_TAG_LENGTH = 96
   }
 }

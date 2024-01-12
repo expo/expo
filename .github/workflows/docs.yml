@@ -30,7 +30,7 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: 18.x
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
@@ -43,17 +43,18 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: 🧪 Run Docs tests
         run: yarn test
-      - name: 🚨 Lint Docs app
+      - name: 🚨 Lint Docs website code
         run: yarn lint --max-warnings 0
+      - name: 💬 Lint Docs website content
+        run: yarn lint-prose
       - run: yarn danger ci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 🏗️ Build Docs website for deploy
         run: yarn export
         timeout-minutes: 20
-      # TODO(cedric): If we have time, we should make sure all links are valid and connected to a proper header
-      # - name: lint links
-      #   run: yarn lint-links --quiet
+      - name: 🔗 Lint pages links
+        run: yarn lint-links --quiet
       - name: ✅ Test links (legacy)
         run: |
           yarn export-server &

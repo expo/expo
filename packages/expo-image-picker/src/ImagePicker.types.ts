@@ -276,6 +276,10 @@ export type ImagePickerAsset = {
    * Length of the video in milliseconds or `null` if the asset is not a video.
    */
   duration?: number | null;
+  /**
+   * The MIME type of the selected asset or `null` if could not be determined.
+   */
+  mimeType?: string;
 };
 
 // @needsAudit

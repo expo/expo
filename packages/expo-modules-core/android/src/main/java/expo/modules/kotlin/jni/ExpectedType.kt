@@ -62,7 +62,8 @@ class ExpectedType(
 
   operator fun plus(other: ExpectedType): ExpectedType {
     return ExpectedType(
-      *this.innerPossibleTypes, *other.innerPossibleTypes
+      *this.innerPossibleTypes,
+      *other.innerPossibleTypes
     )
   }
 
@@ -73,15 +74,6 @@ class ExpectedType(
 
     fun forPrimitiveArray(parameterType: ExpectedType) = ExpectedType(
       SingleType(CppType.PRIMITIVE_ARRAY, arrayOf(parameterType))
-    )
-
-    // We are not using all types here to provide a similar behaviour to the bridge implementation
-    fun forAny() = ExpectedType(
-      CppType.READABLE_MAP,
-      CppType.READABLE_ARRAY,
-      CppType.STRING,
-      CppType.BOOLEAN,
-      CppType.DOUBLE
     )
 
     fun forEnum() = ExpectedType(

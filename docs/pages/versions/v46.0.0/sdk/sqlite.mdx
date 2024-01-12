@@ -3,6 +3,7 @@ title: SQLite
 description: A library that provides access to a database that can be queried through a WebSQL-like API.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-46/packages/expo-sqlite'
 packageName: 'expo-sqlite'
+iconUrl: '/static/images/packages/expo-sqlite.png'
 ---
 
 import APISection from '~/components/plugins/APISection';
@@ -61,6 +62,10 @@ module.exports = defaultConfig;
 Use the following function (or similar) to open your database:
 
 ```ts
+import * as FileSystem from 'expo-file-system';
+import * as SQLite from 'expo-sqlite';
+import { Asset } from 'expo-asset';
+
 async function openDatabase(pathToDatabaseFile: string): Promise<SQLite.WebSQLDatabase> {
   if (!(await FileSystem.getInfoAsync(FileSystem.documentDirectory + 'SQLite')).exists) {
     await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'SQLite');
@@ -80,6 +85,8 @@ async function openDatabase(pathToDatabaseFile: string): Promise<SQLite.WebSQLDa
 > You should use this kind of execution only when it is necessary. For instance, when code is a no-op within transactions. Example: `PRAGMA foreign_keys = ON;`.
 
 ```js
+import * as SQLite from 'expo-sqlite';
+
 const db = SQLite.openDatabase('dbName', version);
 
 db.exec([{ sql: 'PRAGMA foreign_keys = ON;', args: [] }], false, () =>

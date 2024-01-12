@@ -1,6 +1,6 @@
 {
   "name": "expo-secure-store",
-  "version": "12.5.0",
+  "version": "12.8.0",
   "description": "Provides a way to encrypt and securely store key-value pairs locally on the device.",
   "main": "build/SecureStore.js",
   "types": "build/SecureStore.d.ts",

@@ -10,6 +10,17 @@
 
 ### 💡 Others
 
+## 3.3.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🎉 New features
+
+- Added function `getAdvertisingId`. ([#24777](https://github.com/expo/expo/pull/24777) by [@reichhartd](https://github.com/reichhartd))
+
 ## 3.2.0 — 2023-08-02
 
 _This version does not introduce any user-facing changes._

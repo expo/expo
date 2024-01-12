@@ -1,9 +1,11 @@
 import { ImageStyle as RNImageStyle, ViewProps, StyleProp, ViewStyle } from 'react-native';
 
+import ExpoImage from './ExpoImage';
+
 export type ImageSource = {
   /**
    * A string representing the resource identifier for the image,
-   * which could be an http address, a local file path, or the name of a static image resource.
+   * which could be an HTTPS address, a local file path, or the name of a static image resource.
    */
   uri?: string;
   /**
@@ -13,26 +15,32 @@ export type ImageSource = {
   headers?: Record<string, string>;
   /**
    * Can be specified if known at build time, in which case the value
-   * will be used to set the default `<Image/>` component dimension
+   * will be used to set the default `<Image/>` component dimension.
    */
   width?: number;
   /**
    * Can be specified if known at build time, in which case the value
-   * will be used to set the default `<Image/>` component dimension
+   * will be used to set the default `<Image/>` component dimension.
    */
   height?: number;
 
   /**
-   * The blurhash string to use to generate the image. You can read more about the blurhash
-   * on [`woltapp/blurhash`](https://github.com/woltapp/blurhash) repo. Ignored when `uri` is provided.
+   * A string used to generate the image [`placeholder`](#placeholder). For example,
+   * `placeholder={blurhash}`.  If `uri` is provided as the value of the `source` prop,
+   * this is ignored since the `source` can only have `blurhash` or `uri`.
+   *
    * When using the blurhash, you should also provide `width` and `height` (higher values reduce performance),
    * otherwise their default value is `16`.
+   * For more information, see [`woltapp/blurhash`](https://github.com/woltapp/blurhash) repository.
    */
   blurhash?: string;
 
   /**
-   * The thumbhash string to use to generate the image placeholder. You can read more about thumbhash
-   * on the [`thumbhash website`](https://evanw.github.io/thumbhash/). Ignored when `uri` is provided.
+   * A string used to generate the image [`placeholder`](#placeholder). For example,
+   * `placeholder={thumbhash}`.  If `uri` is provided as the value of the `source` prop,
+   * this is ignored since the `source` can only have `thumbhash` or `uri`.
+   *
+   * For more information, see [`thumbhash website`](https://evanw.github.io/thumbhash/).
    */
   thumbhash?: string;
 
@@ -49,6 +57,12 @@ export type ImageSource = {
    * @platform web
    */
   webMaxViewportWidth?: number;
+  /**
+   * Whether the image is animated (an animated GIF or WebP for example).
+   * @platform android
+   * @platform ios
+   */
+  isAnimated?: boolean;
 };
 
 /**
@@ -104,8 +118,7 @@ export interface ImageProps extends ViewProps {
   contentFit?: ImageContentFit;
 
   /**
-   * Determines how the placeholder should be resized to fit its container
-   * @hidden Described in the {@link ImageProps['contentFit']}
+   * Determines how the placeholder should be resized to fit its container. Available resize modes are the same as for the [`contentFit`](#contentfit) prop.
    * @default 'scale-down'
    */
   placeholderContentFit?: ImageContentFit;
@@ -188,6 +201,15 @@ export interface ImageProps extends ViewProps {
    * @platform ios
    */
   recyclingKey?: string | null;
+
+  /**
+   * Determines if an image should automatically begin playing if it is an
+   * animated image.
+   * @default true
+   * @platform android
+   * @platform ios
+   */
+  autoplay?: boolean;
 
   /**
    * Called when the image starts to load.
@@ -289,7 +311,6 @@ export interface ImageProps extends ViewProps {
    *
    * Downscaling is never used when the `contentFit` prop is set to `none` or `fill`.
    * @default true
-   * @platform android
    */
   allowDownscaling?: boolean;
 }
@@ -304,6 +325,8 @@ export interface ImageNativeProps extends ImageProps {
   placeholder?: ImageSource[];
   contentPosition?: ImageContentPositionObject;
   transition?: ImageTransition | null;
+  autoplay?: boolean;
+  nativeViewRef?: React.RefObject<ExpoImage>;
 }
 
 /**
@@ -438,6 +461,7 @@ export type ImageLoadEventData = {
     width: number;
     height: number;
     mediaType: string | null;
+    isAnimated?: boolean;
   };
 };
 

@@ -73,24 +73,9 @@ const home = [
       { expanded: false }
     ),
     makeGroup(
-      'Routing',
-      [
-        makePage('routing/introduction.mdx'),
-        makePage('routing/installation.mdx'),
-        makePage('routing/create-pages.mdx'),
-        makePage('routing/navigating-pages.mdx'),
-        makePage('routing/layouts.mdx'),
-        makePage('routing/appearance.mdx'),
-        makePage('routing/error-handling.mdx'),
-        makePage('routing/next-steps.mdx'),
-      ],
-      { expanded: false }
-    ),
-    makeGroup(
       'Development builds',
       [
         makePage('develop/development-builds/introduction.mdx'),
-        makePage('develop/development-builds/installation.mdx'),
         makePage('develop/development-builds/create-a-build.mdx'),
         makePage('develop/development-builds/use-development-builds.mdx'),
         makePage('develop/development-builds/share-with-your-team.mdx'),
@@ -132,6 +117,7 @@ const home = [
 const general = [
   makeSection('', [makePage('guides/overview.mdx')]),
   makeSection('Development process', [
+    makePage('workflow/overview.mdx'),
     makePage('workflow/configuration.mdx'),
     makePage('guides/local-app-development.mdx'),
     makePage('workflow/using-libraries.mdx'),
@@ -170,11 +156,19 @@ const general = [
         makePage('workflow/common-development-errors.mdx'),
         makePage('workflow/android-studio-emulator.mdx'),
         makePage('workflow/ios-simulator.mdx'),
+        makePage('guides/new-architecture.mdx'),
       ],
       { expanded: false }
     ),
   ]),
   makeSection('Expo Router', [
+    makePage('router/introduction.mdx'),
+    makePage('router/installation.mdx'),
+    makePage('router/create-pages.mdx'),
+    makePage('router/navigating-pages.mdx'),
+    makePage('router/layouts.mdx'),
+    makePage('router/appearance.mdx'),
+    makePage('router/error-handling.mdx'),
     makeGroup('Advanced', [
       makePage('router/advanced/root-layout.mdx'),
       makePage('router/advanced/stack.mdx'),
@@ -193,6 +187,7 @@ const general = [
       makePage('router/reference/redirects.mdx'),
       makePage('router/reference/static-rendering.mdx'),
       makePage('router/reference/async-routes.mdx'),
+      makePage('router/reference/api-routes.mdx'),
       makePage('router/reference/sitemap.mdx'),
       makePage('router/reference/typed-routes.mdx'),
       makePage('router/reference/authentication.mdx'),
@@ -202,7 +197,10 @@ const general = [
       makePage('router/reference/troubleshooting.mdx'),
       makePage('router/reference/faq.mdx'),
     ]),
-    makeGroup('Migration', [makePage('router/migrate/from-react-navigation.mdx')]),
+    makeGroup('Migration', [
+      makePage('router/migrate/from-react-navigation.mdx'),
+      makePage('router/migrate/from-expo-webpack.mdx'),
+    ]),
   ]),
   makeSection(
     'Expo Modules API',
@@ -237,6 +235,7 @@ const general = [
     makePage('build/updates.mdx'),
     makePage('build/building-on-ci.mdx'),
     makePage('build/building-from-github.mdx'),
+    makePage('build/orbit.mdx'),
     makeGroup(
       'App Signing',
       [
@@ -315,6 +314,8 @@ const general = [
       makePage('eas-update/environment-variables.mdx'),
       makePage('eas-update/code-signing.mdx'),
       makePage('eas-update/rollouts.mdx'),
+      makePage('eas-update/rollbacks.mdx'),
+      makePage('eas-update/asset-selection.mdx'),
     ]),
     makeGroup('Reference', [
       makePage('eas-update/migrate-from-classic-updates.mdx'),
@@ -373,10 +374,14 @@ const general = [
         makePage('guides/icons.mdx'),
         makePage('guides/localization.mdx'),
         makePage('guides/configuring-js-engines.mdx'),
+        makePage('guides/using-bun.mdx'),
+        makePage('guides/editing-richtext.mdx'),
+        makePage('guides/store-assets.mdx'),
       ]),
       makeSection('Integrations', [
         makePage('guides/using-analytics.mdx'),
         makePage('guides/facebook-authentication.mdx'),
+        makePage('guides/using-supabase.mdx'),
         makePage('guides/using-firebase.mdx'),
         makePage('guides/using-flipper.mdx'),
         makePage('guides/google-authentication.mdx'),
@@ -400,6 +405,7 @@ const general = [
         makePage('bare/using-expo-client.mdx'),
         makePage('bare/install-dev-builds-in-bare.mdx'),
         makePage('bare/error-recovery.mdx'),
+        makePage('bare/upgrade.mdx'),
       ]),
     ],
     { expanded: true }
@@ -449,8 +455,8 @@ const preview = [
   makeSection('Preview', [
     makePage('preview/introduction.mdx'),
     makePage('preview/support.mdx'),
+    makePage('router/reference/not-found.mdx'),
     { expanded: true },
-    makeSection('Expo Router', [makePage('preview/api-routes.mdx')]),
   ]),
 ];
 

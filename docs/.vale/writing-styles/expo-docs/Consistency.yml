@@ -20,14 +20,12 @@ swap:
   eas metadata: EAS Metadata
   eas submit: EAS Submit
   eas update: EAS Update
-  eslint: ESLint
   expo cli: Expo CLI
   expo go: Expo Go
   expo sdk: Expo SDK
   github: GitHub
   Github: GitHub
   gitlab: GitLab
-  ios: iOS
   ios simulator: iOS Simulator
   icloud: iCloud
   IPhone: iPhone

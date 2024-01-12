@@ -161,6 +161,21 @@ public:
 };
 
 /**
+ * Converter from js Uint8Array to [java.lang.Byte] array.
+ */
+class ByteArrayFrontendConverter : public FrontendConverter {
+public:
+  jobject convert(
+    jsi::Runtime &rt,
+    JNIEnv *env,
+    JSIInteropModuleRegistry *moduleRegistry,
+    const jsi::Value &value
+  ) const override;
+
+  bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
+};
+
+/**
  * Converter from js type array to [expo.modules.kotlin.jni.JavaScriptTypedArray].
  */
 class TypedArrayFrontendConverter : public FrontendConverter {
@@ -369,5 +384,25 @@ private:
    * Converter used to convert values.
    */
   std::shared_ptr<FrontendConverter> valueConverter;
+};
+
+/**
+ * Converter from js object to [kotlin.Any] (Boolean, Double, String, Map<Any>, List<Any>).
+ */
+class AnyFrontendConvert : public FrontendConverter {
+public:
+  jobject convert(
+    jsi::Runtime &rt,
+    JNIEnv *env,
+    JSIInteropModuleRegistry *moduleRegistry,
+    const jsi::Value &value
+  ) const override;
+
+  bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
+
+private:
+  BooleanFrontendConverter booleanConverter;
+  DoubleFrontendConverter doubleConverter;
+  StringFrontendConverter stringConverter;
 };
 } // namespace expo

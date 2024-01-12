@@ -75,12 +75,19 @@ class HybridAESEncryptor(private var mContext: Context, private val mAESEncrypto
     throw EncryptException(
       "HybridAESEncryption should not be used on Android SDK >= 23. This shouldn't happen. " +
         "If you see this message report an issue at https://github.com/expo/expo.",
-      "unknown", "unknown"
+      "unknown",
+      "unknown"
     )
   }
 
   @Throws(GeneralSecurityException::class, JSONException::class)
-  override suspend fun decryptItem(encryptedItem: JSONObject, keyStoreEntry: KeyStore.PrivateKeyEntry, options: SecureStoreOptions, authenticationHelper: AuthenticationHelper): String {
+  override suspend fun decryptItem(
+    key: String,
+    encryptedItem: JSONObject,
+    keyStoreEntry: KeyStore.PrivateKeyEntry,
+    options: SecureStoreOptions,
+    authenticationHelper: AuthenticationHelper
+  ): String {
     // Decrypt the encrypted symmetric key
     val encryptedSecretKeyString = encryptedItem.getString(ENCRYPTED_SECRET_KEY_PROPERTY)
     val encryptedSecretKeyBytes = Base64.decode(encryptedSecretKeyString, Base64.DEFAULT)
@@ -88,11 +95,13 @@ class HybridAESEncryptor(private var mContext: Context, private val mAESEncrypto
     cipher.init(Cipher.DECRYPT_MODE, keyStoreEntry.privateKey)
     val secretKeyBytes = cipher.doFinal(encryptedSecretKeyBytes)
     // constant value will be copied
-    @SuppressLint("InlinedApi") val secretKey: SecretKey = SecretKeySpec(secretKeyBytes, KeyProperties.KEY_ALGORITHM_AES)
+
+    @SuppressLint("InlinedApi")
+    val secretKey: SecretKey = SecretKeySpec(secretKeyBytes, KeyProperties.KEY_ALGORITHM_AES)
 
     // Decrypt the value with the symmetric key
     val secretKeyEntry = KeyStore.SecretKeyEntry(secretKey)
-    return mAESEncryptor.decryptItem(encryptedItem, secretKeyEntry, options, authenticationHelper)
+    return mAESEncryptor.decryptItem(key, encryptedItem, secretKeyEntry, options, authenticationHelper)
   }
 
   @get:Throws(NoSuchAlgorithmException::class, NoSuchProviderException::class, NoSuchPaddingException::class)

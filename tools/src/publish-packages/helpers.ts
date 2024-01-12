@@ -31,7 +31,7 @@ export function pickBackupableOptions(options: CommandOptions): BackupableOption
  * Whether tasks backup can be used to retry previous command invocation.
  */
 export async function shouldUseBackupAsync(options: CommandOptions): Promise<boolean> {
-  if (process.env.CI) {
+  if (process.env.CI || options.canary) {
     return false;
   }
   if (options.retry) {

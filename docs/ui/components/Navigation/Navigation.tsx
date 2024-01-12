@@ -1,7 +1,6 @@
 import { useRouter } from 'next/compat/router';
 import React, { FC, useMemo } from 'react';
 
-import { ApiVersionSelect } from './ApiVersionSelect';
 import { GroupList } from './GroupList';
 import { PageLink } from './PageLink';
 import { SectionList } from './SectionList';
@@ -22,7 +21,6 @@ export function Navigation({ routes }: NavigationProps) {
   return (
     <nav className="w-[280px] h-full bg-subtle dark:bg-default">
       <LayoutScroll {...persistScroll}>
-        <ApiVersionSelect />
         {routes.map(route => navigationRenderer(route, activeRoutes))}
       </LayoutScroll>
     </nav>

@@ -1,48 +1,32 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stripBasePath = exports.getMatchableRouteConfigs = exports.getUrlWithReactNavigationConcessions = void 0;
+exports.stripBaseUrl = exports.getMatchableRouteConfigs = exports.getUrlWithReactNavigationConcessions = void 0;
 const escape_string_regexp_1 = __importDefault(require("escape-string-regexp"));
-const expo_constants_1 = __importDefault(require("expo-constants"));
-const queryString = __importStar(require("query-string"));
-const url_parse_1 = __importDefault(require("url-parse"));
 const findFocusedRoute_1 = require("./findFocusedRoute");
 const validatePathConfig_1 = __importDefault(require("./validatePathConfig"));
 const matchers_1 = require("../matchers");
-function getUrlWithReactNavigationConcessions(path, basePath = expo_constants_1.default.expoConfig?.experiments?.basePath) {
-    const parsed = new url_parse_1.default(path, 'https://acme.com');
+function getUrlWithReactNavigationConcessions(path, baseUrl = process.env.EXPO_BASE_URL) {
+    let parsed;
+    try {
+        parsed = new URL(path, 'https://phony.example');
+    }
+    catch {
+        // Do nothing with invalid URLs.
+        return {
+            nonstandardPathname: '',
+            inputPathnameWithoutHash: '',
+        };
+    }
     const pathname = parsed.pathname;
     // Make sure there is a trailing slash
     return {
         // The slashes are at the end, not the beginning
-        nonstandardPathname: stripBasePath(pathname, basePath).replace(/^\/+/g, '').replace(/\/+$/g, '') + '/',
+        nonstandardPathname: stripBaseUrl(pathname, baseUrl).replace(/^\/+/g, '').replace(/\/+$/g, '') + '/',
         // React Navigation doesn't support hashes, so here
-        inputPathnameWithoutHash: stripBasePath(path, basePath).replace(/#.*$/, ''),
+        inputPathnameWithoutHash: stripBaseUrl(path, baseUrl).replace(/#.*$/, ''),
     };
 }
 exports.getUrlWithReactNavigationConcessions = getUrlWithReactNavigationConcessions;
@@ -124,12 +108,14 @@ function assertConfigDuplicates(configs) {
                 // NOTE(EvanBacon): Adds more context to the error message since we know about the
                 // file-based routing.
                 const last = config.pattern.split('/').pop();
-                const routeType = last?.startsWith(':')
-                    ? 'dynamic route'
-                    : last?.startsWith('*')
-                        ? 'dynamic-rest route'
-                        : 'route';
-                throw new Error(`The ${routeType} pattern '${config.pattern || '/'}' resolves to both '${alpha.userReadableName}' and '${config.userReadableName}'. Patterns must be unique and cannot resolve to more than one route.`);
+                if (!last?.match(/^\*not-found$/)) {
+                    const routeType = last?.startsWith(':')
+                        ? 'dynamic route'
+                        : last?.startsWith('*')
+                            ? 'dynamic-rest route'
+                            : 'route';
+                    throw new Error(`The ${routeType} pattern '${config.pattern || '/'}' resolves to both '${alpha.userReadableName}' and '${config.userReadableName}'. Patterns must be unique and cannot resolve to more than one route.`);
+                }
             }
         }
         return Object.assign(acc, {
@@ -183,6 +169,17 @@ function sortConfigs(a, b) {
         const bWildCard = bParts[i].startsWith('*');
         // if both are wildcard we compare next component
         if (aWildCard && bWildCard) {
+            const aNotFound = aParts[i].match(/^[*]not-found$/);
+            const bNotFound = bParts[i].match(/^[*]not-found$/);
+            if (aNotFound && bNotFound) {
+                continue;
+            }
+            else if (aNotFound) {
+                return 1;
+            }
+            else if (bNotFound) {
+                return -1;
+            }
             continue;
         }
         // if only a is wild card, b get higher priority
@@ -197,6 +194,17 @@ function sortConfigs(a, b) {
         const bSlug = bParts[i].startsWith(':');
         // if both are wildcard we compare next component
         if (aSlug && bSlug) {
+            const aNotFound = aParts[i].match(/^[*]not-found$/);
+            const bNotFound = bParts[i].match(/^[*]not-found$/);
+            if (aNotFound && bNotFound) {
+                continue;
+            }
+            else if (aNotFound) {
+                return 1;
+            }
+            else if (bNotFound) {
+                return -1;
+            }
             continue;
         }
         // if only a is wild card, b get higher priority
@@ -511,11 +519,19 @@ const createNestedStateObject = (path, routes, routeConfigs, initialRoutes) => {
     route.path = (0, matchers_1.stripGroupSegmentsFromPath)(path);
     const params = parseQueryParams(route.path, findParseConfigForRoute(route.name, routeConfigs));
     if (params) {
-        const resolvedParams = { ...route.params, ...params };
-        if (Object.keys(resolvedParams).length > 0) {
-            route.params = resolvedParams;
+        route.params = Object.assign(Object.create(null), route.params);
+        for (const [name, value] of Object.entries(params)) {
+            if (route.params?.[name]) {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.warn(`Route '/${route.name}' with param '${name}' was specified both in the path and as a param, removing from path`);
+                }
+            }
+            if (!route.params?.[name]) {
+                route.params[name] = value;
+                continue;
+            }
         }
-        else {
+        if (Object.keys(route.params).length === 0) {
             delete route.params;
         }
     }
@@ -523,7 +539,10 @@ const createNestedStateObject = (path, routes, routeConfigs, initialRoutes) => {
 };
 const parseQueryParams = (path, parseConfig) => {
     const query = path.split('?')[1];
-    const params = queryString.parse(query);
+    const searchParams = new URLSearchParams(query);
+    const params = Object.fromEntries(
+    // @ts-ignore: [Symbol.iterator] is indeed, available on every platform.
+    searchParams);
     if (parseConfig) {
         Object.keys(params).forEach((name) => {
             if (Object.hasOwnProperty.call(parseConfig, name) && typeof params[name] === 'string') {
@@ -533,23 +552,23 @@ const parseQueryParams = (path, parseConfig) => {
     }
     return Object.keys(params).length ? params : undefined;
 };
-const basePathCache = new Map();
-function getBasePathRegex(basePath) {
-    if (basePathCache.has(basePath)) {
-        return basePathCache.get(basePath);
+const baseUrlCache = new Map();
+function getBaseUrlRegex(baseUrl) {
+    if (baseUrlCache.has(baseUrl)) {
+        return baseUrlCache.get(baseUrl);
     }
-    const regex = new RegExp(`^\\/?${(0, escape_string_regexp_1.default)(basePath)}`, 'g');
-    basePathCache.set(basePath, regex);
+    const regex = new RegExp(`^\\/?${(0, escape_string_regexp_1.default)(baseUrl)}`, 'g');
+    baseUrlCache.set(baseUrl, regex);
     return regex;
 }
-function stripBasePath(path, basePath = expo_constants_1.default.expoConfig?.experiments?.basePath) {
+function stripBaseUrl(path, baseUrl = process.env.EXPO_BASE_URL) {
     if (process.env.NODE_ENV !== 'development') {
-        if (basePath) {
-            const reg = getBasePathRegex(basePath);
+        if (baseUrl) {
+            const reg = getBaseUrlRegex(baseUrl);
             return path.replace(/^\/+/g, '/').replace(reg, '');
         }
     }
     return path;
 }
-exports.stripBasePath = stripBasePath;
+exports.stripBaseUrl = stripBaseUrl;
 //# sourceMappingURL=getStateFromPath.js.map

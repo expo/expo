@@ -4,6 +4,7 @@ import android.util.Log
 import android.view.KeyEvent
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
+import com.facebook.react.devsupport.HMRClient
 import expo.interfaces.devmenu.DevMenuExtensionInterface
 import expo.interfaces.devmenu.DevMenuExtensionSettingsInterface
 import expo.interfaces.devmenu.items.DevMenuDataSourceInterface
@@ -87,7 +88,20 @@ class DevMenuExtension(reactContext: ReactApplicationContext) :
       }
 
       val fastRefreshAction = {
-        devInternalSettings.isHotModuleReplacementEnabled = !devInternalSettings.isHotModuleReplacementEnabled
+        val nextEnabled = !devInternalSettings.isHotModuleReplacementEnabled
+        devInternalSettings.isHotModuleReplacementEnabled = nextEnabled
+
+        if (reactApplicationContext != null) {
+          if (nextEnabled) {
+            reactApplicationContext.getJSModule(HMRClient::class.java).enable()
+          } else {
+            reactApplicationContext.getJSModule(HMRClient::class.java).disable()
+          }
+        }
+        if (nextEnabled && !devInternalSettings.isJSDevModeEnabled) {
+          devInternalSettings.isJSDevModeEnabled = true
+          reactDevManager.handleReloadJS()
+        }
       }
 
       action("fast-refresh", fastRefreshAction) {

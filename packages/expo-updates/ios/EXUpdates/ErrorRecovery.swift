@@ -21,19 +21,18 @@ public enum RemoteLoadStatus: Int {
 }
 // swiftlint:enable identifier_name
 
-@objc(EXUpdatesErrorRecoveryDelegate)
-public protocol ErrorRecoveryDelegate: AnyObject {
-  @objc var config: UpdatesConfig { get }
-  @objc var remoteLoadStatus: RemoteLoadStatus { get }
+internal protocol ErrorRecoveryDelegate: AnyObject {
+  var config: UpdatesConfig { get }
+  var remoteLoadStatus: RemoteLoadStatus { get }
 
-  @objc func launchedUpdate() -> Update?
-  @objc func relaunch(completion: @escaping (_ error: Error?, _ success: Bool) -> Void)
-  @objc func loadRemoteUpdate()
+  func launchedUpdate() -> Update?
+  func relaunch(completion: @escaping (_ error: Error?, _ success: Bool) -> Void)
+  func loadRemoteUpdate()
 
-  @objc func markFailedLaunchForLaunchedUpdate()
-  @objc func markSuccessfulLaunchForLaunchedUpdate()
+  func markFailedLaunchForLaunchedUpdate()
+  func markSuccessfulLaunchForLaunchedUpdate()
 
-  @objc func throwException(_ exception: NSException)
+  func throwException(_ exception: NSException)
 }
 
 /**
@@ -83,7 +82,7 @@ public final class ErrorRecovery: NSObject {
   private static let ErrorLogFile = "expo-error.log"
   private static let RemoteLoadTimeoutMs = 5000
 
-  public weak var delegate: ErrorRecoveryDelegate?
+  internal weak var delegate: (any ErrorRecoveryDelegate)?
 
   private var pipeline: [ErrorRecoveryTask]
   private var isRunning: Bool
@@ -92,7 +91,6 @@ public final class ErrorRecovery: NSObject {
   private let remoteLoadTimeout: Int
 
   private let errorRecoveryQueue: DispatchQueue
-  private let diskWriteQueue: DispatchQueue?
 
   private var encounteredErrors: [Any]
 
@@ -104,14 +102,12 @@ public final class ErrorRecovery: NSObject {
   public convenience override init() {
     self.init(
       errorRecoveryQueue: DispatchQueue(label: "expo.controller.errorRecoveryQueue"),
-      diskWriteQueue: nil,
       remoteLoadTimeout: ErrorRecovery.RemoteLoadTimeoutMs
     )
   }
 
   public required init(
     errorRecoveryQueue: DispatchQueue,
-    diskWriteQueue: DispatchQueue?,
     remoteLoadTimeout: Int
   ) {
     // tasks should never be added to the pipeline after this point, only removed
@@ -125,7 +121,6 @@ public final class ErrorRecovery: NSObject {
     self.isWaitingForRemoteUpdate = false
     self.rctContentHasAppeared = false
     self.errorRecoveryQueue = errorRecoveryQueue
-    self.diskWriteQueue = diskWriteQueue
     self.remoteLoadTimeout = remoteLoadTimeout
     self.encounteredErrors = []
     self.logger = UpdatesLogger()
@@ -137,12 +132,12 @@ public final class ErrorRecovery: NSObject {
 
   public func handle(error: NSError) {
     startPipeline(withEncounteredError: error)
-    writeErrorOrExceptionToLog(error)
+    ErrorRecovery.writeErrorOrExceptionToLog(error)
   }
 
   public func handle(exception: NSException) {
     startPipeline(withEncounteredError: exception)
-    writeErrorOrExceptionToLog(exception)
+    ErrorRecovery.writeErrorOrExceptionToLog(exception)
   }
 
   public func notify(newRemoteLoadStatus newStatus: RemoteLoadStatus) {
@@ -376,9 +371,8 @@ public final class ErrorRecovery: NSObject {
     return String(data: data, encoding: .utf8)
   }
 
-  public func writeErrorOrExceptionToLog(_ errorOrException: Any) {
-    let queue = diskWriteQueue ?? DispatchQueue.global()
-    queue.async {
+  public static func writeErrorOrExceptionToLog(_ errorOrException: Any, dispatchQueue: DispatchQueue = DispatchQueue.global()) {
+    dispatchQueue.async {
       var serializedError: String
       if let errorOrException = errorOrException as? NSError {
         serializedError = "Fatal error: \(ErrorRecovery.serialize(error: errorOrException))"
@@ -388,7 +382,7 @@ public final class ErrorRecovery: NSObject {
         return
       }
 
-      self.logger.error(message: "ErrorRecovery fatal exception: \(serializedError)", code: .jsRuntimeError)
+      UpdatesLogger().error(message: "ErrorRecovery fatal exception: \(serializedError)", code: .jsRuntimeError)
       let data = serializedError.data(using: .utf8)!
       let errorLogFile = ErrorRecovery.errorLogFile()
       if FileManager.default.fileExists(atPath: errorLogFile.path) {

@@ -15,6 +15,7 @@ import { checkPackagesIntegrity } from '../publish-packages/tasks/checkPackagesI
 import { grantTeamAccessToPackages } from '../publish-packages/tasks/grantTeamAccessToPackages';
 import { listUnpublished } from '../publish-packages/tasks/listUnpublished';
 import { getCachedParcel } from '../publish-packages/tasks/loadRequestedParcels';
+import { publishCanaryPipeline } from '../publish-packages/tasks/publishCanary';
 import { publishPackagesPipeline } from '../publish-packages/tasks/publishPackagesPipeline';
 import { CommandOptions, Parcel, TaskArgs, PublishBackupData } from '../publish-packages/types';
 
@@ -64,6 +65,7 @@ export default (program: Command) => {
       'Checks integrity of packages. These checks must pass to clearly identify changes that have been made since previous publish.',
       false
     )
+    .option('-C, --canary', 'Whether to publish all packages as canary versions.', false)
 
     /* debug options */
     .option(
@@ -205,6 +207,9 @@ function tasksForOptions(options: CommandOptions): Task<TaskArgs>[] {
   }
   if (options.checkIntegrity) {
     return [checkPackagesIntegrity];
+  }
+  if (options.canary) {
+    return [publishCanaryPipeline];
   }
   return [publishPackagesPipeline];
 }

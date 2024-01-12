@@ -30,7 +30,7 @@ def getRNVersion() {
       .text
       .trim()
 
-  def version = System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: safeExtGet("reactNativeVersion", nodeModulesVersion)
+  def version = safeExtGet("reactNativeVersion", nodeModulesVersion)
   def coreVersion = version.split("-")[0]
   def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
 
@@ -44,7 +44,7 @@ def getRNVersion() {
 ensureDependeciesWereEvaluated(project)
 
 group = 'host.exp.exponent'
-version = '50.0.0-alpha.5'
+version = '50.0.0-preview.4'
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -91,11 +91,11 @@ if (!safeExtGet("expoProvidesDefaultConfig", false)) {
 android {
   // Remove this if and it's contents, when support for SDK49 is dropped
   if (!safeExtGet("expoProvidesDefaultConfig", false)) {
-    compileSdkVersion safeExtGet("compileSdkVersion", 33)
+    compileSdkVersion safeExtGet("compileSdkVersion", 34)
 
     defaultConfig {
       minSdkVersion safeExtGet("minSdkVersion", 23)
-      targetSdkVersion safeExtGet("targetSdkVersion", 33)
+      targetSdkVersion safeExtGet("targetSdkVersion", 34)
     }
 
     publishing {
@@ -124,7 +124,7 @@ android {
   namespace "expo.core"
   defaultConfig {
     versionCode 1
-    versionName "50.0.0-alpha.5"
+    versionName "50.0.0-preview.4"
     consumerProguardFiles("proguard-rules.pro")
   }
   testOptions {
@@ -152,13 +152,12 @@ android {
 }
 
 dependencies { dependencyHandler ->
-  //noinspection GradleDynamicVersion
-  implementation 'com.facebook.react:react-native:+'
+  implementation 'com.facebook.react:react-android'
 
   testImplementation 'junit:junit:4.13.2'
-  testImplementation 'androidx.test:core:1.4.0'
+  testImplementation 'androidx.test:core:1.5.0'
   testImplementation "com.google.truth:truth:1.1.2"
-  testImplementation 'io.mockk:mockk:1.12.0'
+  testImplementation 'io.mockk:mockk:1.13.5'
 
   // Link expo modules as dependencies of the adapter. It uses `api` configuration so they all will be visible for the app as well.
   // A collection of the dependencies depends on the options passed to `useExpoModules` in your project's `settings.gradle`.

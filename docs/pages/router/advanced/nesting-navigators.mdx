@@ -1,18 +1,17 @@
 ---
 title: Nesting navigators
 description: Learn how to nest navigators in Expo Router.
-hideTOC: true
 ---
 
 import { FileTree } from '~/ui/components/FileTree';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
-
-> This guide is an extension from [React Navigation: Nesting navigators](https://reactnavigation.org/docs/nesting-navigators) to Expo Router.
 
 > **warning** Navigation UI elements (Link, Tabs, Stack) may move out of the Expo Router library in the future.
 
-Consider the following file structure which is used as an example in this guide:
+Nesting navigators allow rendering a navigator inside the screen of another navigator. This guide is an extension of [React Navigation: Nesting navigators](https://reactnavigation.org/docs/nesting-navigators) to Expo Router. It provides an example of how nesting navigators work when using Expo Router.
+
+## Example
+
+Consider the following file structure which is used as an example:
 
 <FileTree
   files={[
@@ -28,18 +27,21 @@ In the above example, **app/home/feed.js** matches `/home/feed`, and **app/home/
 
 ```jsx app/_layout.js
 import { Stack } from 'expo-router';
+
 export default Stack;
 ```
 
-Both **app/home/_layout.js** and **app/index.js** below are nested in the **app/_layout.js** layout so that it will be rendered as a stack.
+Both **app/home/\_layout.js** and **app/index.js** below are nested in the **app/\_layout.js** layout so that it will be rendered as a stack.
 
 ```jsx app/home/_layout.js
 import { Tabs } from 'expo-router';
+
 export default Tabs;
 ```
 
 ```jsx app/index.js
 import { Link } from 'expo-router';
+
 export default function Root() {
   return <Link href="/home/messages">Navigate to nested route</Link>;
 }
@@ -49,6 +51,7 @@ Both **app/home/feed.js** and **app/home/messages.js** below are nested in the *
 
 ```jsx app/home/feed.js
 import { View, Text } from 'react-native';
+
 export default function Feed() {
   return (
     <View>
@@ -60,6 +63,7 @@ export default function Feed() {
 
 ```jsx app/home/messages.js
 import { View, Text } from 'react-native';
+
 export default function Messages() {
   return (
     <View>
@@ -69,11 +73,23 @@ export default function Messages() {
 }
 ```
 
-## Next steps
+## Navigate to a screen in a nested navigator
 
-<BoxLink
-  title="Modals"
-  Icon={BookOpen02Icon}
-  description="Learn how to use modals in Expo Router."
-  href="/router/advanced/modals"
-/>
+In React Navigation, navigating to a specific nested screen can be controlled by passing the screen name in params. This renders the specified nested screen instead of the initial screen for that nested navigator.
+
+For example, from the initial screen inside the `root` navigator, you want to navigate to a screen called `media` inside `settings` (a nested navigator). In React Navigation, this is done as shown in the example below:
+
+```js React Navigation
+navigation.navigate('root', {
+  screen: 'settings',
+  params: {
+    screen: 'media',
+  },
+});
+```
+
+In Expo Router, you can use `router.push()` to achieve the same result. There is no need to pass the screen name in the params explicitly.
+
+```js Expo Router
+router.push('/root/settings/media');
+```

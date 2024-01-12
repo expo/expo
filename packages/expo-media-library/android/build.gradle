@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '15.6.0'
+version = '15.9.0'
 
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -62,11 +62,11 @@ if (!safeExtGet("expoProvidesDefaultConfig", false)) {
 android {
   // Remove this if and it's contents, when support for SDK49 is dropped
   if (!safeExtGet("expoProvidesDefaultConfig", false)) {
-    compileSdkVersion safeExtGet("compileSdkVersion", 33)
+    compileSdkVersion safeExtGet("compileSdkVersion", 34)
 
     defaultConfig {
       minSdkVersion safeExtGet("minSdkVersion", 23)
-      targetSdkVersion safeExtGet("targetSdkVersion", 33)
+      targetSdkVersion safeExtGet("targetSdkVersion", 34)
     }
 
     publishing {
@@ -95,7 +95,7 @@ android {
   namespace "expo.modules.medialibrary"
   defaultConfig {
     versionCode 37
-    versionName "15.6.0"
+    versionName "15.9.0"
   }
 }
 

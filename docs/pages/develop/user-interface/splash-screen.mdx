@@ -7,8 +7,6 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import Video from '~/components/plugins/Video';
 import { Terminal } from '~/ui/components/Snippet';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 A splash screen, also known as a launch screen, is the first screen a user sees when they open your app. It stays visible while the app is loading. You can also control the behavior of when a splash screen disappears by using the native [SplashScreen API](/versions/latest/sdk/splash-screen).
 
@@ -30,7 +28,7 @@ Android screen sizes vary greatly with the massive variety of devices on the mar
 
 ### iOS
 
-The [iOS Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/foundations/layout#specifications) list the device's screen sizes. In the video example, we use `1242` pixels wide (the width of the widest iPhone at the moment of writing) and `2436` pixels tall (the height of the tallest iPhone at the moment of writing). Expo will resize the image for you depending on the size of the device's size, and you can specify the strategy used to resize the image with [`splash.resizeMode`](/versions/latest/config/app/#resizemode).
+Expo will resize the image for your app depending on the size of the device's screen. You can specify the strategy used to resize the image with [`splash.resizeMode`](/versions/latest/config/app/#resizemode). You can see the [Device screens and sizes specifications](https://developer.apple.com/design/human-interface-guidelines/layout#Specifications) from the iOS Human Interface Guidelines for an up-to-date list of screen sizes.
 
 ## Export the splash image as a .png
 
@@ -155,12 +153,3 @@ In custom iOS builds, launch screens can sometimes remain cached between builds,
 <Terminal cmd={['$ npx expo run:ios --no-build-cache']} />
 
 See [Apple's guide on testing launch screens](https://developer.apple.com/documentation/technotes/tn3118-debugging-your-apps-launch-screen) for more information.
-
-## Next step
-
-<BoxLink
-  title="App icons"
-  description="An app's icon is what your app users see on their device's home screen and app stores. Learn about how to customize your app's icon and what are the different requirements for Android and iOS."
-  href="/develop/user-interface/app-icons"
-  Icon={BookOpen02Icon}
-/>

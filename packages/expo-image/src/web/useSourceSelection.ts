@@ -57,6 +57,10 @@ function selectSource(
     return null;
   }
 
+  if (sources.length === 1) {
+    return sources[0];
+  }
+
   if (responsivePolicy !== 'static') {
     return findBestSourceForSize(sources, size);
   }
@@ -97,7 +101,7 @@ type UseSourceSelectionReturn = {
 export default function useSourceSelection(
   sources?: ImageSource[],
   responsivePolicy: ImageProps['responsivePolicy'] = 'static',
-  measurementCallback?: (target: HTMLElement, size: DOMRect) => void
+  measurementCallback: ((target: HTMLElement, size: DOMRect) => void) | null = null
 ): UseSourceSelectionReturn {
   const hasMoreThanOneSource = (sources?.length ?? 0) > 1;
   // null - not calculated yet, DOMRect - size available
@@ -112,7 +116,6 @@ export default function useSourceSelection(
 
   const containerRef = React.useCallback(
     (element: HTMLDivElement) => {
-      // we can't short circuit here since we need to read the size for better animated transitions
       if (!hasMoreThanOneSource && !measurementCallback) {
         return;
       }
@@ -132,7 +135,7 @@ export default function useSourceSelection(
         resizeObserver.current.observe(element);
       }
     },
-    [hasMoreThanOneSource, responsivePolicy]
+    [hasMoreThanOneSource, responsivePolicy, measurementCallback]
   );
 
   const source = selectSource(sources, size, responsivePolicy);

@@ -97,7 +97,11 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
   // Can only change the package.json location if an app.json or app.config.json exists
   const [packageJson, packageJsonPath] = getPackageJsonAndPath(projectRoot);
 
-  function fillAndReturnConfig(config: SplitConfigs, dynamicConfigObjectType: string | null) {
+  function fillAndReturnConfig(
+    config: SplitConfigs,
+    dynamicConfigObjectType: string | null,
+    mayHaveUnusedStaticConfig: boolean = false
+  ) {
     const configWithDefaultValues = {
       ...ensureConfigHasDefaultValues({
         projectRoot,
@@ -112,6 +116,8 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
       rootConfig,
       dynamicConfigPath: paths.dynamicConfigPath,
       staticConfigPath: paths.staticConfigPath,
+      hasUnusedStaticConfig:
+        !!paths.staticConfigPath && !!paths.dynamicConfigPath && mayHaveUnusedStaticConfig,
     };
 
     if (options.isModdedConfig) {
@@ -167,19 +173,20 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
 
   if (paths.dynamicConfigPath) {
     // No app.config.json or app.json but app.config.js
-    const { exportedObjectType, config: rawDynamicConfig } = getDynamicConfig(
-      paths.dynamicConfigPath,
-      {
-        projectRoot,
-        staticConfigPath: paths.staticConfigPath,
-        packageJsonPath,
-        config: getContextConfig(staticConfig),
-      }
-    );
+    const {
+      exportedObjectType,
+      config: rawDynamicConfig,
+      mayHaveUnusedStaticConfig,
+    } = getDynamicConfig(paths.dynamicConfigPath, {
+      projectRoot,
+      staticConfigPath: paths.staticConfigPath,
+      packageJsonPath,
+      config: getContextConfig(staticConfig),
+    });
     // Allow for the app.config.js to `export default null;`
     // Use `dynamicConfigPath` to detect if a dynamic config exists.
     const dynamicConfig = reduceExpoObject(rawDynamicConfig) || {};
-    return fillAndReturnConfig(dynamicConfig, exportedObjectType);
+    return fillAndReturnConfig(dynamicConfig, exportedObjectType, mayHaveUnusedStaticConfig);
   }
 
   // No app.config.js but json or no config

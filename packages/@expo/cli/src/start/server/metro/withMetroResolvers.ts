@@ -6,11 +6,11 @@
  */
 import chalk from 'chalk';
 import { ConfigT as MetroConfig } from 'metro-config';
-import { ResolutionContext } from 'metro-resolver';
+import type { ResolutionContext, CustomResolutionContext } from 'metro-resolver';
+import * as metroResolver from 'metro-resolver';
 import path from 'path';
 
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
-import { importMetroResolverFromProject } from './resolveFromProject';
 import { env } from '../../../utils/env';
 
 const debug = require('debug')('expo:metro:withMetroResolvers') as typeof console.log;
@@ -24,9 +24,8 @@ export type ExpoCustomMetroResolver = (
 
 /** @returns `MetroResolver` utilizing the upstream `resolve` method. */
 export function getDefaultMetroResolver(projectRoot: string): MetroResolver {
-  const { resolve } = importMetroResolverFromProject(projectRoot);
   return (context: ResolutionContext, moduleName: string, platform: string | null) => {
-    return resolve(context, moduleName, platform);
+    return metroResolver.resolve(context, moduleName, platform);
   };
 }
 
@@ -42,13 +41,11 @@ function optionsKeyForContext(context: ResolutionContext) {
  * exit early by returning a `Resolution` or skip to the next resolver by returning `null`.
  *
  * @param config Metro config.
- * @param projectRoot path to the project root used to resolve the default Metro resolver.
  * @param resolvers custom MetroResolver to chain.
  * @returns a new `MetroConfig` with the `resolver.resolveRequest` method chained.
  */
 export function withMetroResolvers(
   config: MetroConfig,
-  projectRoot: string,
   resolvers: ExpoCustomMetroResolver[]
 ): MetroConfig {
   debug(
@@ -56,8 +53,99 @@ export function withMetroResolvers(
       resolvers.length
     } custom resolvers to Metro config. (has custom resolver: ${!!config.resolver?.resolveRequest})`
   );
-  const originalResolveRequest =
-    config.resolver?.resolveRequest || getDefaultMetroResolver(projectRoot);
+  // const hasUserDefinedResolver = !!config.resolver?.resolveRequest;
+  // const defaultResolveRequest = getDefaultMetroResolver(projectRoot);
+  const originalResolveRequest = config.resolver?.resolveRequest;
+
+  return {
+    ...config,
+    resolver: {
+      ...config.resolver,
+      resolveRequest(context, moduleName, platform) {
+        const upstreamResolveRequest = context.resolveRequest;
+
+        const universalContext = {
+          ...context,
+          resolveRequest(
+            ctx: CustomResolutionContext,
+            moduleName: string,
+            platform: string | null
+          ) {
+            for (const resolver of resolvers) {
+              try {
+                const res = resolver(ctx, moduleName, platform);
+                if (res) {
+                  return res;
+                }
+              } catch (error: any) {
+                // If the error is directly related to a resolver not being able to resolve a module, then
+                // we can ignore the error and try the next resolver. Otherwise, we should throw the error.
+                const isResolutionError =
+                  isFailedToResolveNameError(error) || isFailedToResolvePathError(error);
+                if (!isResolutionError) {
+                  throw error;
+                }
+                debug(
+                  `Custom resolver threw: ${error.constructor.name}. (module: ${moduleName}, platform: ${platform})`
+                );
+              }
+            }
+            // If we haven't returned by now, use the original resolver or upstream resolver.
+            return upstreamResolveRequest(ctx, moduleName, platform);
+          },
+        };
+
+        // If the user defined a resolver, run it first and depend on the documented
+        // chaining logic: https://facebook.github.io/metro/docs/resolution/#resolution-algorithm
+        //
+        // config.resolver.resolveRequest = (context, moduleName, platform) => {
+        //
+        //  // Do work...
+        //
+        //  return context.resolveRequest(context, moduleName, platform);
+        // };
+        const firstResolver = originalResolveRequest ?? universalContext.resolveRequest;
+        return firstResolver(universalContext, moduleName, platform);
+      },
+    },
+  };
+}
+
+/**
+ * Hook into the Metro resolver chain and mutate the context so users can resolve against our custom assumptions.
+ * For example, this will set `preferNativePlatform` to false when bundling for web.
+ * */
+export function withMetroMutatedResolverContext(
+  config: MetroConfig,
+  getContext: (
+    ctx: CustomResolutionContext,
+    moduleName: string,
+    platform: string | null
+  ) => CustomResolutionContext
+): MetroConfig {
+  const defaultResolveRequest = getDefaultMetroResolver(config.projectRoot);
+  const originalResolveRequest = config.resolver?.resolveRequest;
+
+  return {
+    ...config,
+    resolver: {
+      ...config.resolver,
+      resolveRequest(context, moduleName, platform) {
+        const universalContext = getContext(context, moduleName, platform);
+        const firstResolver =
+          originalResolveRequest ?? universalContext.resolveRequest ?? defaultResolveRequest;
+        return firstResolver(universalContext, moduleName, platform);
+      },
+    },
+  };
+}
+
+export function withMetroErrorReportingResolver(config: MetroConfig): MetroConfig {
+  if (!env.EXPO_METRO_UNSTABLE_ERRORS) {
+    return config;
+  }
+
+  const originalResolveRequest = config.resolver?.resolveRequest;
 
   function mutateResolutionError(
     error: Error,
@@ -65,7 +153,7 @@ export function withMetroResolvers(
     moduleName: string,
     platform: string | null
   ) {
-    if (!env.EXPO_METRO_UNSTABLE_ERRORS || !platform) {
+    if (!platform) {
       debug('Cannot mutate resolution error');
       return error;
     }
@@ -106,7 +194,7 @@ export function withMetroResolvers(
       return new Array(num).fill(' ').join('');
     };
 
-    const root = config.server?.unstable_serverRoot ?? config.projectRoot ?? projectRoot;
+    const root = config.server?.unstable_serverRoot ?? config.projectRoot;
 
     type InverseDepResult = {
       origin: string;
@@ -228,7 +316,7 @@ export function withMetroResolvers(
       ...config.resolver,
       resolveRequest(context, moduleName, platform) {
         const storeResult = (res: NonNullable<ReturnType<ExpoCustomMetroResolver>>) => {
-          if (!env.EXPO_METRO_UNSTABLE_ERRORS || !platform) return;
+          if (!platform) return;
 
           const key = optionsKeyForContext(context);
           if (!depGraph.has(key)) depGraph.set(key, new Map());
@@ -243,44 +331,22 @@ export function withMetroResolvers(
           setForModule.add({ path: qualifiedModuleName, request: moduleName });
         };
 
-        const universalContext = {
-          ...context,
-          preferNativePlatform: platform !== 'web',
-        };
-
+        // If the user defined a resolver, run it first and depend on the documented
+        // chaining logic: https://facebook.github.io/metro/docs/resolution/#resolution-algorithm
+        //
+        // config.resolver.resolveRequest = (context, moduleName, platform) => {
+        //
+        //  // Do work...
+        //
+        //  return context.resolveRequest(context, moduleName, platform);
+        // };
         try {
-          for (const resolver of resolvers) {
-            try {
-              const resolution = resolver(universalContext, moduleName, platform);
-              if (resolution) {
-                storeResult(resolution);
-                return resolution;
-              }
-            } catch (error: any) {
-              // If no user-defined resolver, use Expo's default behavior.
-              // This prevents extraneous resolution attempts on failure.
-              if (!config.resolver.resolveRequest) {
-                throw error;
-              }
-
-              // If the error is directly related to a resolver not being able to resolve a module, then
-              // we can ignore the error and try the next resolver. Otherwise, we should throw the error.
-              const isResolutionError =
-                isFailedToResolveNameError(error) || isFailedToResolvePathError(error);
-              if (!isResolutionError) {
-                throw error;
-              }
-              debug(
-                `Custom resolver threw: ${error.constructor.name}. (module: ${moduleName}, platform: ${platform})`
-              );
-            }
-          }
-          // If we haven't returned by now, use the original resolver or upstream resolver.
-          const res = originalResolveRequest(universalContext, moduleName, platform);
+          const firstResolver = originalResolveRequest ?? context.resolveRequest;
+          const res = firstResolver(context, moduleName, platform);
           storeResult(res);
           return res;
         } catch (error: any) {
-          throw mutateResolutionError(error, universalContext, moduleName, platform);
+          throw mutateResolutionError(error, context, moduleName, platform);
         }
       },
     },

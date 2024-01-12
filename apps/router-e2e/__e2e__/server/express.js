@@ -7,7 +7,8 @@ const express = require('express');
 const compression = require('compression');
 const morgan = require('morgan');
 
-const BUILD_DIR = path.join(__dirname, '../../dist-server');
+const CLIENT_BUILD_DIR = path.join(__dirname, '../../dist-server/client');
+const SERVER_BUILD_DIR = path.join(__dirname, '../../dist-server/server');
 
 const app = express();
 
@@ -19,10 +20,7 @@ app.disable('x-powered-by');
 process.env.NODE_ENV = 'production';
 
 app.use(
-  // Prevent access to expo functions as these may
-  // contain sensitive information.
-  [/^\/_expo\/functions($|\/)/, '/'],
-  express.static(BUILD_DIR, {
+  express.static(CLIENT_BUILD_DIR, {
     maxAge: '1h',
     extensions: ['html'],
   })
@@ -33,7 +31,7 @@ app.use(morgan('tiny'));
 app.all(
   '*',
   createRequestHandler({
-    build: BUILD_DIR,
+    build: SERVER_BUILD_DIR,
   })
 );
 const port = process.env.PORT || 3000;

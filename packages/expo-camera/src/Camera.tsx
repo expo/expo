@@ -13,7 +13,7 @@ import {
   PermissionResponse,
   VideoCodec,
 } from './Camera.types';
-import ExponentCamera from './ExponentCamera';
+import ExpoCamera from './ExpoCamera';
 import CameraManager from './ExponentCameraManager';
 import { ConversionTables, ensureNativeProps } from './utils/props';
 
@@ -242,7 +242,7 @@ export default class Camera extends React.Component<CameraProps> {
    * for an `Image` element for example. `exif` is included if the `exif` option was truthy, and is an object containing EXIF
    * data for the image--the names of its properties are EXIF tags and their values are the values for those tags.
    *
-   * > On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem.md#filesystemcopyasyncoptions)
+   * > On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem/#filesystemcachedirectory)
    * > to make a permanent copy of the image.
    */
   async takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture> {
@@ -270,7 +270,7 @@ export default class Camera extends React.Component<CameraProps> {
    * @return Returns a Promise that resolves to an array of strings representing picture sizes that can be passed to `pictureSize` prop.
    * The list varies across Android devices but is the same for every iOS.
    */
-  async getAvailablePictureSizesAsync(ratio?: string): Promise<string[]> {
+  async getAvailablePictureSizesAsync(ratio: string): Promise<string[]> {
     if (!CameraManager.getAvailablePictureSizes) {
       throw new UnavailabilityError('Camera', 'getAvailablePictureSizesAsync');
     }
@@ -298,34 +298,34 @@ export default class Camera extends React.Component<CameraProps> {
   /**
    * Stops recording if any is in progress.
    */
-  stopRecording() {
+  async stopRecording(): Promise<void> {
     if (!CameraManager.stopRecording) {
       throw new UnavailabilityError('Camera', 'stopRecording');
     }
 
-    CameraManager.stopRecording(this._cameraHandle);
+    return await CameraManager.stopRecording(this._cameraHandle);
   }
 
   /**
    * Pauses the camera preview. It is not recommended to use `takePictureAsync` when preview is paused.
    */
-  pausePreview() {
+  async pausePreview(): Promise<void> {
     if (!CameraManager.pausePreview) {
       throw new UnavailabilityError('Camera', 'pausePreview');
     }
 
-    CameraManager.pausePreview(this._cameraHandle);
+    return await CameraManager.pausePreview(this._cameraHandle);
   }
 
   /**
    * Resumes the camera preview.
    */
-  resumePreview() {
+  async resumePreview(): Promise<void> {
     if (!CameraManager.resumePreview) {
       throw new UnavailabilityError('Camera', 'resumePreview');
     }
 
-    CameraManager.resumePreview(this._cameraHandle);
+    return await CameraManager.resumePreview(this._cameraHandle);
   }
 
   _onCameraReady = () => {
@@ -395,7 +395,7 @@ export default class Camera extends React.Component<CameraProps> {
     const onFacesDetected = this._onObjectDetected(this.props.onFacesDetected);
 
     return (
-      <ExponentCamera
+      <ExpoCamera
         {...nativeProps}
         ref={this._setReference}
         onCameraReady={this._onCameraReady}

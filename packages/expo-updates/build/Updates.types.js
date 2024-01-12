@@ -1,5 +1,7 @@
 /**
- * The types of update-related events.
+ * The types of update-related events, used with `addListener()` and `useUpdateEvents()`.
+ * @deprecated These APIs are deprecated and will be removed in a future release corresponding with SDK 51.
+ * Use [`useUpdates()`](#useupdates) instead.
  */
 export var UpdateEventType;
 (function (UpdateEventType) {
@@ -58,6 +60,7 @@ export var UpdatesLogEntryCode;
     UpdatesLogEntryCode["UPDATE_FAILED_TO_LOAD"] = "UpdateFailedToLoad";
     UpdatesLogEntryCode["ASSETS_FAILED_TO_LOAD"] = "AssetsFailedToLoad";
     UpdatesLogEntryCode["JS_RUNTIME_ERROR"] = "JSRuntimeError";
+    UpdatesLogEntryCode["INITIALIZATION_ERROR"] = "InitializationError";
     UpdatesLogEntryCode["UNKNOWN"] = "Unknown";
 })(UpdatesLogEntryCode || (UpdatesLogEntryCode = {}));
 /**
@@ -74,7 +77,9 @@ export var UpdatesLogEntryLevel;
 })(UpdatesLogEntryLevel || (UpdatesLogEntryLevel = {}));
 /**
  * The possible settings that determine if expo-updates will check for updates on app startup.
- * By default, Expo will check for updates every time the app is loaded. Set this to `ON_ERROR_RECOVERY` to disable automatic checking unless recovering from an error. Set this to `NEVER` to completely disable automatic checking. Must be one of `ON_LOAD` (default value), `ON_ERROR_RECOVERY`, `WIFI_ONLY`, or `NEVER`
+ * By default, Expo will check for updates every time the app is loaded.
+ * Set this to `ON_ERROR_RECOVERY` to disable automatic checking unless recovering from an error.
+ * Set this to `NEVER` to completely disable automatic checking.
  */
 export var UpdatesCheckAutomaticallyValue;
 (function (UpdatesCheckAutomaticallyValue) {
@@ -87,7 +92,7 @@ export var UpdatesCheckAutomaticallyValue;
      */
     UpdatesCheckAutomaticallyValue["ON_ERROR_RECOVERY"] = "ON_ERROR_RECOVERY";
     /**
-     * Only checks for updates when the app starts and has a WiFi connection.
+     * Only checks for updates when the app starts and has a Wi-Fi connection.
      */
     UpdatesCheckAutomaticallyValue["WIFI_ONLY"] = "WIFI_ONLY";
     /**

@@ -1,9 +1,8 @@
-import { Platform, uuid } from 'expo-modules-core';
 import { ExecutionEnvironment, } from './Constants.types';
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
-const _sessionId = uuid.v4();
+const _sessionId = (Date.now() + '-' + Math.floor(Math.random() * 1000000000)).toString();
 function getBrowserName() {
-    if (Platform.isDOMAvailable) {
+    if (typeof navigator !== 'undefined' && typeof navigator.userAgent === 'string') {
         const agent = navigator.userAgent.toLowerCase();
         if (agent.includes('edge')) {
             return 'Edge';
@@ -30,9 +29,6 @@ function getBrowserName() {
     return undefined;
 }
 export default {
-    get name() {
-        return 'ExponentConstants';
-    },
     get appOwnership() {
         return null;
     },
@@ -44,7 +40,7 @@ export default {
         try {
             installationId = localStorage.getItem(ID_KEY);
             if (installationId == null || typeof installationId !== 'string') {
-                installationId = uuid.v4();
+                installationId = (Date.now() + '-' + Math.floor(Math.random() * 1000000000)).toString();
                 localStorage.setItem(ID_KEY, installationId);
             }
         }
@@ -59,10 +55,10 @@ export default {
         return _sessionId;
     },
     get platform() {
-        return { web: Platform.isDOMAvailable ? { ua: navigator.userAgent } : undefined };
+        return { web: typeof navigator !== 'undefined' ? { ua: navigator.userAgent } : undefined };
     },
     get isHeadless() {
-        if (!Platform.isDOMAvailable)
+        if (typeof navigator === 'undefined')
             return true;
         return /\bHeadlessChrome\//.test(navigator.userAgent);
     },
@@ -74,7 +70,7 @@ export default {
         return this.manifest.sdkVersion || null;
     },
     get linkingUri() {
-        if (Platform.isDOMAvailable) {
+        if (typeof location !== 'undefined') {
             // On native this is `exp://`
             // On web we should use the protocol and hostname (location.origin)
             return location.origin;
@@ -107,7 +103,7 @@ export default {
         return null;
     },
     get manifest() {
-        // This is defined by @expo/webpack-config.
+        // This is defined by @expo/webpack-config or babel-preset-expo.
         // If your site is bundled with a different config then you may not have access to the app.json automatically.
         return process.env.APP_MANIFEST || {};
     },
@@ -115,7 +111,7 @@ export default {
         return null;
     },
     get experienceUrl() {
-        if (Platform.isDOMAvailable) {
+        if (typeof location !== 'undefined') {
             return location.origin;
         }
         else {
@@ -126,7 +122,7 @@ export default {
         return __DEV__;
     },
     async getWebViewUserAgentAsync() {
-        if (Platform.isDOMAvailable) {
+        if (typeof navigator !== 'undefined') {
             return navigator.userAgent;
         }
         else {

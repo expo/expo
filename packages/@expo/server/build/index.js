@@ -51,13 +51,16 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
     }
     return fs_1.default.readFileSync(filePath, 'utf-8');
 }, getApiRoute = async (route) => {
-    const filePath = path_1.default.join(distFolder, '_expo/functions', route.page + '.js');
+    const filePath = path_1.default.join(distFolder, route.file);
     debug(`Handling API route: ${route.page}: ${filePath}`);
     // TODO: What's the standard behavior for malformed projects?
     if (!fs_1.default.existsSync(filePath)) {
         return null;
     }
-    return require(filePath);
+    if (/\.[cj]s$/.test(filePath)) {
+        return require(filePath);
+    }
+    return import(filePath);
 }, logApiRouteExecutionError = (error) => {
     console.error(error);
 }, } = {}) {

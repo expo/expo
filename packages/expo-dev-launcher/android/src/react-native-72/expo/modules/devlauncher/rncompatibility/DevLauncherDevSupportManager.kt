@@ -1,8 +1,8 @@
 package expo.modules.devlauncher.rncompatibility
 
 import android.content.Context
-import android.os.Handler;
-import android.os.Looper;
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import com.facebook.common.logging.FLog
@@ -29,11 +29,11 @@ import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.packagerconnection.RequestHandler
 import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.koin.DevLauncherKoinComponent
+import expo.modules.devlauncher.koin.optInject
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devlauncher.launcher.errors.DevLauncherAppError
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity
 
-import org.koin.core.component.inject
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.ExecutionException
@@ -48,7 +48,7 @@ class DevLauncherDevSupportManager(
   redBoxHandler: RedBoxHandler?,
   devBundleDownloadListener: DevBundleDownloadListener?,
   minNumShakes: Int,
-  customPackagerCommandHandlers: MutableMap<String, RequestHandler>?,
+  customPackagerCommandHandlers: MutableMap<String, RequestHandler>?
 ) : DevSupportManagerBase(
   applicationContext,
   reactInstanceManagerHelper,
@@ -62,7 +62,8 @@ class DevLauncherDevSupportManager(
   null
 ),
   DevLauncherKoinComponent {
-  private val controller: DevLauncherControllerInterface by inject()
+  private val controller: DevLauncherControllerInterface? by optInject()
+
   // copied from https://github.com/facebook/react-native/blob/aa4da248c12e3ba41ecc9f1c547b21c208d9a15f/ReactAndroid/src/main/java/com/facebook/react/devsupport/BridgeDevSupportManager.java#L65
   private var mIsSamplingProfilerEnabled = false
   private val devSettings: DevLauncherInternalSettingsWrapper = DevLauncherInternalSettingsWrapper(getDevSettings())
@@ -84,11 +85,15 @@ class DevLauncherDevSupportManager(
     }
 
     addCustomDevOption(
-      if (mIsSamplingProfilerEnabled) applicationContext!!.getString(
-        R.string.catalyst_sample_profiler_disable
-      ) else applicationContext!!.getString(
-        R.string.catalyst_sample_profiler_enable
-      )
+      if (mIsSamplingProfilerEnabled) {
+        applicationContext!!.getString(
+          R.string.catalyst_sample_profiler_disable
+        )
+      } else {
+        applicationContext!!.getString(
+          R.string.catalyst_sample_profiler_enable
+        )
+      }
     ) { toggleJSSamplingProfiler() }
   }
 
@@ -104,7 +109,7 @@ class DevLauncherDevSupportManager(
       return
     }
 
-    controller.onAppLoadedWithError()
+    controller?.onAppLoadedWithError()
     DevLauncherErrorActivity.showError(activity, DevLauncherAppError(message, e))
   }
 
@@ -121,9 +126,10 @@ class DevLauncherDevSupportManager(
       object : CallbackWithBundleLoader {
         override fun onSuccess(bundleLoader: JSBundleLoader) {
           bundleLoader.loadScript(currentContext!!.catalystInstance)
+          var bundleURL = controller?.manifest?.getBundleURL() ?: devServerHelper.getDevServerSplitBundleURL(bundlePath)
           currentContext!!
             .getJSModule(HMRClient::class.java)
-            .registerBundle(devServerHelper.getDevServerSplitBundleURL(bundlePath))
+            .registerBundle(bundleURL)
           callback.onSuccess()
         }
 
@@ -178,7 +184,8 @@ class DevLauncherDevSupportManager(
       val executor = WebsocketJavaScriptExecutor()
       val future = SimpleSettableFuture<Boolean>()
       executor.connect(
-        devServerHelper.websocketProxyURL, getExecutorConnectCallback(future)
+        devServerHelper.websocketProxyURL,
+        getExecutorConnectCallback(future)
       )
       // TODO(t9349129) Don't use timeout
       try {
@@ -213,7 +220,7 @@ class DevLauncherDevSupportManager(
     } else {
       PrinterHolder.getPrinter()
         .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: load from Server")
-      val bundleURL = devServerHelper
+      val bundleURL = controller?.manifest?.getBundleURL() ?: devServerHelper
         .getDevServerBundleURL(Assertions.assertNotNull(jsAppBundleName))
       reloadJSFromServer(bundleURL)
     }
@@ -246,7 +253,9 @@ class DevLauncherDevSupportManager(
     } else {
       try {
         val outputPath: String = File.createTempFile(
-          "sampling-profiler-trace", ".cpuprofile", applicationContext.cacheDir
+          "sampling-profiler-trace",
+          ".cpuprofile",
+          applicationContext.cacheDir
         ).path
         javaScriptExecutorFactory.stopSamplingProfiler(outputPath)
         handler.post {

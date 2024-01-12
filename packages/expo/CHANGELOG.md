@@ -10,6 +10,136 @@
 
 ### 💡 Others
 
+- [expo-updates] Migrate to requireNativeModule/requireOptionalNativeModule. ([#25648](https://github.com/expo/expo/pull/25648) by [@wschurman](https://github.com/wschurman))
+- Remove implicit dependency on expo-updates to do runtime version check at runtime. ([#26080](https://github.com/expo/expo/pull/26080) by [@wschurman](https://github.com/wschurman))
+
+### 📚 3rd party library updates
+
+- Update react-native to 0.73.2. ([#26311](https://github.com/expo/expo/pull/26311) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 50.0.0-preview.9 - 2024-01-10
+
+### 🎉 New features
+
+- Added support for macOS platform. ([#26283](https://github.com/expo/expo/pull/26283) by [@tsapeta](https://github.com/tsapeta))
+
+### 💡 Others
+
+- Replace deprecated `com.facebook.react:react-native:+` Android dependency with `com.facebook.react:react-android`. ([#26237](https://github.com/expo/expo/pull/26237) by [@kudo](https://github.com/kudo))
+
+## 50.0.0-preview.8 - 2024-01-05
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.7 - 2023-12-21
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.6 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.5 - 2023-12-19
+
+### 🎉 New features
+
+- Added support for React Native 0.73.1. ([#25998](https://github.com/expo/expo/pull/25998) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 50.0.0-preview.4 — 2023-12-15
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.3 — 2023-12-14
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.2 — 2023-12-13
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.1 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.0 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-beta.0 — 2023-12-12
+
+### 🎉 New features
+
+- Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `concurrentRoot` is missing from intialProps when running on New Architecture mode. ([#25415](https://github.com/expo/expo/pull/25415) by [@kudo](https://github.com/kudo))
+- Use explicit `@expo/metro-config` dependendecy to avoid unexpected versions in monorepos. ([#25804](https://github.com/expo/expo/pull/25804) by [@byCedric](https://github.com/byCedric))
+- Fixed `Unable to resolve "fbemitter"` issue when using DevTools Plugins. ([#25856](https://github.com/expo/expo/pull/25856) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Update internal types. ([#25627](https://github.com/expo/expo/pull/25627) by [@EvanBacon](https://github.com/EvanBacon))
+- Removed the dependency on the `expo-application` package. ([#25583](https://github.com/expo/expo/pull/25583) by [@tsapeta](https://github.com/tsapeta))
+
+## 49.0.21 — 2023-11-24
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.20 — 2023-11-20
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-alpha.7 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Remove `expo/scripts/launchPackager.command` script for launching Expo CLI when building iOS apps for development in Xcode. ([#25130](https://github.com/expo/expo/pull/25130) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🎉 New features
+
+- Add support for standard `URL` API. ([#24941](https://github.com/expo/expo/pull/24941) by [@EvanBacon](https://github.com/EvanBacon))
+- Added Expo CLI devtools plugins support. ([#24667](https://github.com/expo/expo/pull/24667) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Migrate to `whatwg-url-without-unicode` to fix `SharedArrayBuffer` issue. ([#25005](https://github.com/expo/expo/pull/25005) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Add types for `process.env.EXPO_BASE_URL`. ([#25305](https://github.com/expo/expo/pull/25305) by [@EvanBacon](https://github.com/EvanBacon))
+- Revert `URL` support. ([#25006](https://github.com/expo/expo/pull/25006) by [@EvanBacon](https://github.com/EvanBacon))
+- Encode Blob components in `URL.createObjectURL`. ([#25004](https://github.com/expo/expo/pull/25004) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove deprecated `REACT_NATIVE_OVERRIDE_VERSION` for React Native nightly testing. ([#25151](https://github.com/expo/expo/pull/25151) by [@kudo](https://github.com/kudo))
+- Improve DevTools Plugins API. ([#25167](https://github.com/expo/expo/pull/25167) by [@kudo](https://github.com/kudo))
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `31`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 49.0.16 — 2023-10-20
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-alpha.6 — 2023-10-17
+
+### 💡 Others
+
+- Export `requireOptionalNativeModule` and `requireNativeModule`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- Ship untranspiled JSX to support custom handling of `jsx` and `createElement`. ([#24889](https://github.com/expo/expo/pull/24889) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 49.0.14 — 2023-10-05
+
+### 💡 Others
+
+- Export `requireNativeModule` by [@alanjhughes](https://github.com/alanjhughes)
+
+## 49.0.13 — 2023-09-27
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.12 — 2023-09-25
+
+_This version does not introduce any user-facing changes._
+
 ## 50.0.0-alpha.5 — 2023-09-18
 
 _This version does not introduce any user-facing changes._

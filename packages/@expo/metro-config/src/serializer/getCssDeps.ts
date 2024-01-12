@@ -34,10 +34,13 @@ export type JSModule = Module<{
       code: string;
       map: unknown;
       lineCount: number;
+      skipCache?: boolean;
     };
   };
   type: 'js/module';
-}>;
+}> & {
+  unstable_transformResultKey?: string;
+};
 
 export function filterJsModules(
   dependencies: ReadOnlyDependencies,
@@ -115,7 +118,7 @@ function getCssMetadata(module: JSModule): MetroModuleCSSMetadata | null {
 export function fileNameFromContents({ filepath, src }: { filepath: string; src: string }): string {
   // Decode if the path is encoded from the Metro dev server, then normalize paths for Windows support.
   const decoded = decodeURIComponent(filepath).replace(/\\/g, '/');
-  return getFileName(decoded) + '-' + hashString(decoded + src);
+  return getFileName(decoded) + '-' + hashString(src);
 }
 
 export function getFileName(module: string) {

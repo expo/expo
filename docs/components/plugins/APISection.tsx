@@ -26,6 +26,12 @@ type Props = {
   strictTypes?: boolean;
   testRequire?: any;
   headersMapping?: Record<string, string>;
+
+  /**
+   * Whether to expose all classes props in the sidebar.
+   * @default true when the api has only one class, false otherwise.
+   */
+  exposeAllClassPropsInSidebar?: boolean;
 };
 
 const filterDataByKind = (
@@ -92,12 +98,15 @@ const groupByHeader = (entries: GeneratedData[]) => {
 };
 
 const renderAPI = (
-  packageName: string,
-  version: string = 'unversioned',
-  apiName?: string,
-  strictTypes: boolean = false,
-  testRequire: any = undefined,
-  headersMapping: Record<string, string> = {}
+  version: string,
+  {
+    packageName,
+    apiName,
+    strictTypes = false,
+    testRequire = undefined,
+    headersMapping = {},
+    ...restProps
+  }: Omit<Props, 'forceVersion'>
 ): JSX.Element => {
   try {
     const { children: data } = testRequire
@@ -128,7 +137,7 @@ const renderAPI = (
 
     const types = filterDataByKind(
       data,
-      TypeDocKind.TypeAlias,
+      TypeDocKind.TypeAlias || TypeDocKind.TypeAlias_Legacy,
       entry =>
         !isProp(entry) &&
         !!(
@@ -142,10 +151,10 @@ const renderAPI = (
 
     const props = filterDataByKind(
       data,
-      [TypeDocKind.TypeAlias, TypeDocKind.Interface],
+      [TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy, TypeDocKind.Interface],
       entry =>
         isProp(entry) &&
-        (entry.kind === TypeDocKind.TypeAlias
+        ([TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy].includes(entry.kind)
           ? !!(entry.type.types || entry.type.declaration?.children)
           : true)
     );
@@ -176,7 +185,7 @@ const renderAPI = (
     );
     const componentsProps = filterDataByKind(
       props,
-      [TypeDocKind.TypeAlias, TypeDocKind.Interface],
+      [TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy, TypeDocKind.Interface],
       entry => componentsPropNames.includes(entry.name)
     );
 
@@ -189,15 +198,16 @@ const renderAPI = (
     );
 
     const componentsChildren = components
-      .map((cls: ClassDefinitionData) =>
-        cls.children?.filter(
-          child =>
-            (child?.kind === TypeDocKind.Method || child?.kind === TypeDocKind.Property) &&
-            !child.inheritedFrom &&
-            child.name !== 'render' &&
-            // note(simek): hide unannotated "private" methods
-            !child.name.startsWith('_')
-        )
+      .map(
+        (cls: ClassDefinitionData) =>
+          cls.children?.filter(
+            child =>
+              (child?.kind === TypeDocKind.Method || child?.kind === TypeDocKind.Property) &&
+              !child.inheritedFrom &&
+              child.name !== 'render' &&
+              // note(simek): hide unannotated "private" methods
+              !child.name.startsWith('_')
+          )
       )
       .flat();
 
@@ -244,7 +254,10 @@ const renderAPI = (
         <APISectionMethods data={componentMethods} header="Component Methods" />
         <APISectionConstants data={constants} apiName={apiName} />
         <APISectionMethods data={hooks} header="Hooks" />
-        <APISectionClasses data={classes} />
+        <APISectionClasses
+          data={classes}
+          exposeAllClassPropsInSidebar={restProps.exposeAllClassPropsInSidebar}
+        />
         {props && !componentsProps.length ? (
           <APISectionProps data={props} defaultProps={defaultProps} />
         ) : null}
@@ -265,19 +278,12 @@ const renderAPI = (
   }
 };
 
-const APISection = ({
-  packageName,
-  apiName,
-  forceVersion,
-  strictTypes = false,
-  testRequire = undefined,
-  headersMapping = {},
-}: Props) => {
+const APISection = ({ forceVersion, ...restProps }: Props) => {
   const { version } = usePageApiVersion();
   const resolvedVersion =
     forceVersion ||
     (version === 'unversioned' ? version : version === 'latest' ? LATEST_VERSION : version);
-  return renderAPI(packageName, resolvedVersion, apiName, strictTypes, testRequire, headersMapping);
+  return renderAPI(resolvedVersion, restProps);
 };
 
 export default APISection;

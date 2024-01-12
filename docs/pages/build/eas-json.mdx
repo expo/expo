@@ -117,7 +117,7 @@ It's common to have development and production builds installed simultaneously o
 
 ## Configuring your build tools
 
-Every build depends either implicitly or explicitly on a specific set of versions of related tools that are needed to carry out the build process. These include but are not limited to: Node.js, npm, yarn, Ruby, Bundler, Cocoapods, Fastlane, Xcode, and Android NDK.
+Every build depends either implicitly or explicitly on a specific set of versions of related tools that are needed to carry out the build process. These include but are not limited to: Node.js, npm, Yarn, Ruby, Bundler, CocoaPods, Fastlane, Xcode, and Android NDK.
 
 ### Selecting build tool versions
 
@@ -158,9 +158,35 @@ It's common to want to share build tool configuration between profiles, and we c
 }
 ```
 
+### Selecting resource class
+
+Resource class is the virtual machine resources configuration (CPU cores, RAM size) EAS Build provides to your jobs. By default, the resource class is set to `medium`, which is usually sufficient for both small and bigger projects. However, if your project requires a more powerful CPU or bigger memory, or if you want your builds to finish faster, you can switch to `large` workers.
+
+For more details on resources provided to each class, see [`android.resourceClass`](/eas/json/#resourceclass-1) and [`ios.resourceClass`](/eas/json/#resourceclass-2) property documentations. To run your build on a worker of a specific resource class, configure this property in your build profile:
+
+{/* prettier-ignore */}
+```json eas.json
+{
+  "build": {
+    "production": {
+      "ios": {
+        "resourceClass": "large"
+      },
+      "android": {
+        "resourceClass": "medium"
+      }
+    }
+    /* @hide ... */ /* @end */
+  }
+  /* @hide ... */ /* @end */
+}
+```
+
+> **Note**: Running jobs on a `large` worker requires a paid EAS plan. [Subscribe here](https://expo.dev/accounts/[account]/settings/billing).
+
 ### Selecting a base image
 
-The base image for the build job controls the default versions for a variety of dependencies, such as Node.js, Yarn, and Cocoapods. You can override them using the specific named fields as described in the previous section. However, the image includes specific versions of tools that can't be explicitly set any other way, such as the operating system version and Xcode version.
+The base image for the build job controls the default versions for a variety of dependencies, such as Node.js, Yarn, and CocoaPods. You can override them using the specific named fields as described in the previous section. However, the image includes specific versions of tools that can't be explicitly set any other way, such as the operating system version and Xcode version.
 
 If you are using the Expo managed workflow, EAS Build will pick the appropriate image to use with a reasonable set of dependencies for the SDK version that you are building for. Otherwise, it is recommended to read about the available images on [Build server infrastructure](/build-reference/infrastructure).
 

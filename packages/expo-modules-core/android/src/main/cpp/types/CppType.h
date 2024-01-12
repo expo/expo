@@ -19,12 +19,14 @@ enum CppType {
   JS_VALUE = 1 << 7,
   READABLE_ARRAY = 1 << 8,
   READABLE_MAP = 1 << 9,
-  TYPED_ARRAY = 1 << 10,
-  PRIMITIVE_ARRAY = 1 << 11,
-  LIST = 1 << 12,
-  MAP = 1 << 13,
-  VIEW_TAG = 1 << 14,
-  SHARED_OBJECT_ID = 1 << 15,
-  JS_FUNCTION = 1 << 16
+  UINT8_TYPED_ARRAY = 1 << 10,
+  TYPED_ARRAY = 1 << 11,
+  PRIMITIVE_ARRAY = 1 << 12,
+  LIST = 1 << 13,
+  MAP = 1 << 14,
+  VIEW_TAG = 1 << 15,
+  SHARED_OBJECT_ID = 1 << 16,
+  JS_FUNCTION = 1 << 17,
+  ANY = 1 << 18
 };
 } // namespace expo

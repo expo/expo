@@ -1,5 +1,6 @@
 ---
 title: Build a screen
+description: In this tutorial, learn how to use React Native components such as Image, Pressable, and Vector icons to build a screen.
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
@@ -112,14 +113,16 @@ export default function App() {
   return (
     <View style={styles.container}>
       /* @info Replace the default value of color property to '#fff'. */
-      <Text style={{ color: '#fff' }}>Open up App.js to start working on your app!</Text>
+      <Text style={{ color: '#fff' }}>
+        Open up App.js to start working on your app!
+      </Text>
       /* @end */
       <StatusBar style="auto" />
     </View>
   );
 }
 
-/* @hide const styles = StyleSheet.create({*/
+/* @hide const styles = StyleSheet.create( */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -151,7 +154,7 @@ We can use React Native's `<Image>` component to display the image in the app. T
 Next, import and use the `<Image>` component from React Native and `background-image.png` in the **App.js**. Let's also add styles to display the image.
 
 <SnackInline label="Display placeholder image" dependencies={['expo-status-bar']} files={{
-    'assets/images/background-image.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/503001f14bb7b8fe48a4e318ad07e910'
+  'assets/images/background-image.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/503001f14bb7b8fe48a4e318ad07e910'
 }}>
 
 {/* prettier-ignore */}
@@ -169,7 +172,8 @@ export default function App() {
       /* @info Wrap the Image component inside a container. Also, add the image component to display the placeholder image. */
       <View style={styles.imageContainer}>
         <Image source={PlaceholderImage} style={styles.image} />
-      </View> /* @end */
+      </View>
+      /* @end */
       <StatusBar style="auto" />
     </View>
   );
@@ -376,7 +380,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-Let's take a look at our app on iOS, Android and the web:
+Let's take a look at our app on Android, iOS and the web:
 
 <ImageSpotlight
   alt="Initial layout."
@@ -411,13 +415,12 @@ To load and display the icon on the button, let's use `FontAwesome` from the lib
 import { StyleSheet, View, Pressable, Text } from 'react-native';
 /* @info Import FontAwesome. */import FontAwesome from "@expo/vector-icons/FontAwesome";/* @end */
 
-export default function Button({ label, /* @info The prop theme to detect the button variant. */ theme/* @end */ }) {
+export default function Button({ label, /* @info The prop theme to detect the button variant. */theme/* @end */ }) {
   /* @info Conditionally render the primary themed button. */
   if (theme === "primary") {
+  /* @end */
     return (
-      <View
-      style={[styles.buttonContainer, { borderWidth: 4, borderColor: "#ffd33d", borderRadius: 18 }]}
-      >
+      <View style={[styles.buttonContainer, { borderWidth: 4, borderColor: "#ffd33d", borderRadius: 18 }]}>
         <Pressable
           style={[styles.button, { backgroundColor: "#fff" }]}
           onPress={() => alert('You pressed a button.')}
@@ -430,10 +433,11 @@ export default function Button({ label, /* @info The prop theme to detect the bu
           />
           <Text style={[styles.buttonLabel, { color: "#25292e" }]}>{label}</Text>
         </Pressable>
-    </View>
+      </View>
     );
+  /* @info */
   }
- /* @end */
+  /* @end */
 
   return (
     <View style={styles.buttonContainer}>
@@ -485,7 +489,7 @@ export default function App() {
 
 </SnackInline>
 
-Let's take a look at our app on iOS, Android and the web:
+Let's take a look at our app on Android, iOS and the web:
 
 <Video file="tutorial/02-complete-layout.mp4" />
 

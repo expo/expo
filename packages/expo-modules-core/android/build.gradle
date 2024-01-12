@@ -3,10 +3,9 @@ import java.nio.file.Paths
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
-apply plugin: "de.undercouch.download"
 
 group = 'host.exp.exponent'
-version = '1.8.0'
+version = '1.11.2'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 if (expoModulesCorePlugin.exists()) {
@@ -40,7 +39,6 @@ buildscript {
 
   dependencies {
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${getKotlinVersion()}")
-    classpath("de.undercouch:gradle-download-task:5.3.0")
   }
 }
 
@@ -54,27 +52,16 @@ def isExpoModulesCoreTests = {
   return false
 }.call()
 
-def customDownloadsDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
-def downloadsDir = customDownloadsDir ? new File(customDownloadsDir) : new File("$buildDir/downloads")
-def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
-
 def REACT_NATIVE_BUILD_FROM_SOURCE = findProject(":packages:react-native:ReactAndroid") != null
 def REACT_NATIVE_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
   ? findProject(":packages:react-native:ReactAndroid").getProjectDir().parent
   : new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).parent
-def REACT_NATIVE_SO_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
-  ? Paths.get(findProject(":packages:react-native:ReactAndroid").getProjectDir().toString(), "build", "intermediates", "library_*", "*", "jni")
-  : "${buildDir}/react/jni"
 
 def reactProperties = new Properties()
 file("$REACT_NATIVE_DIR/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
 
-// TODO: Remove react-native < 0.71 support
-def BOOST_VERSION = reactProperties.getProperty("BOOST_VERSION") ?: "1_76_0"
-def REACT_NATIVE_VERSION = System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: reactProperties.getProperty("VERSION_NAME")
+def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME")
 def REACT_NATIVE_TARGET_VERSION = REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
-
-def reactNativeThirdParty = new File("$REACT_NATIVE_DIR/ReactAndroid/src/main/jni/third-party")
 
 def reactNativeArchitectures() {
   def value = project.getProperties().get("reactNativeArchitectures")
@@ -115,11 +102,11 @@ if (!safeExtGet("expoProvidesDefaultConfig", false)) {
 android {
   // Remove this if and it's contents, when support for SDK49 is dropped
   if (!safeExtGet("expoProvidesDefaultConfig", false)) {
-    compileSdkVersion safeExtGet("compileSdkVersion", 33)
+    compileSdkVersion safeExtGet("compileSdkVersion", 34)
 
     defaultConfig {
       minSdkVersion safeExtGet("minSdkVersion", 23)
-      targetSdkVersion safeExtGet("targetSdkVersion", 33)
+      targetSdkVersion safeExtGet("targetSdkVersion", 34)
     }
 
     publishing {
@@ -156,7 +143,7 @@ android {
   defaultConfig {
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
-    versionName "1.8.0"
+    versionName "1.11.2"
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled.toString()
 
     testInstrumentationRunner "expo.modules.TestRunner"
@@ -166,14 +153,9 @@ android {
         abiFilters (*reactNativeArchitectures())
         arguments "-DANDROID_STL=c++_shared",
           "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
-          "-DREACT_NATIVE_SO_DIR=${REACT_NATIVE_SO_DIR}",
           "-DREACT_NATIVE_TARGET_VERSION=${REACT_NATIVE_TARGET_VERSION}",
-          "-DBOOST_VERSION=${BOOST_VERSION}",
           "-DUSE_HERMES=${USE_HERMES}",
           "-DIS_NEW_ARCHITECTURE_ENABLED=${isNewArchitectureEnabled}",
-          "-DPROJECT_BUILD_DIR=$buildDir",
-          "-DREACT_ANDROID_DIR=${REACT_NATIVE_DIR}/ReactAndroid",
-          "-DREACT_ANDROID_BUILD_DIR=${REACT_NATIVE_DIR}/ReactAndroid/build",
           "-DUNIT_TEST=${isExpoModulesCoreTests}"
       }
     }
@@ -181,23 +163,7 @@ android {
 
   externalNativeBuild {
     cmake {
-      if (REACT_NATIVE_TARGET_VERSION >= 71) {
-        path "CMakeLists.txt"
-      } else {
-        path "legacy/CMakeLists.txt"
-      }
-    }
-  }
-
-  sourceSets {
-    main {
-      java {
-        if (REACT_NATIVE_TARGET_VERSION >= 73) {
-          srcDirs += "src/reactnative"
-        } else {
-          srcDirs += "src/reactnative72"
-        }
-      }
+      path "CMakeLists.txt"
     }
   }
 
@@ -257,46 +223,33 @@ android {
   }
 }
 
-
 dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   implementation "org.jetbrains.kotlin:kotlin-reflect:${getKotlinVersion()}"
-  implementation 'androidx.annotation:annotation:1.3.0'
+  implementation 'androidx.annotation:annotation:1.7.1'
 
   api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
-  api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0"
-  api "androidx.core:core-ktx:1.6.0"
+  api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
+  api "androidx.core:core-ktx:1.12.0"
   api project(':expo-modules-core$android-annotation')
 
-  /**
-   * ReactActivity (the base activity for every React Native application) is subclassing AndroidX classes.
-   * Unfortunately until https://github.com/facebook/react-native/pull/33072 is released React Native uses "androidx.appcompat:appcompat:1.0.2".
-   * Gradle is picking the highest version of the dependency so we enforce higher version here.
-   * see https://docs.gradle.org/current/userguide/dependency_resolution.html#sec:version-conflict
-   * We're enforcing the most up-to-date versions of the dependencies here that are used in subclassing chain for ReactActivity.
-   */
-  implementation "androidx.appcompat:appcompat:1.4.1"
-  implementation "androidx.activity:activity-ktx:1.7.1" // androidx.appcompat:appcompat:1.4.1 depends on version 1.2.3, so we enforce higher one here
-  implementation "androidx.fragment:fragment-ktx:1.5.7" // androidx.appcomapt:appcompat:1.4.1 depends on version 1.3.4, so we enforce higher one here
+  implementation("androidx.tracing:tracing-ktx:1.2.0")
 
-  implementation("androidx.tracing:tracing-ktx:1.1.0")
+  implementation 'com.facebook.react:react-android'
 
-  //noinspection GradleDynamicVersion
-  implementation 'com.facebook.react:react-native:+'
+  compileOnly 'com.facebook.fbjni:fbjni:0.5.1'
 
-  compileOnly 'com.facebook.fbjni:fbjni:0.3.0'
-
-  testImplementation 'androidx.test:core:1.4.0'
+  testImplementation 'androidx.test:core:1.5.0'
   testImplementation 'junit:junit:4.13.2'
-  testImplementation 'io.mockk:mockk:1.12.3'
+  testImplementation 'io.mockk:mockk:1.13.5'
   testImplementation "com.google.truth:truth:1.1.2"
-  testImplementation "org.robolectric:robolectric:4.10"
+  testImplementation "org.robolectric:robolectric:4.11.1"
   testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
   testImplementation "org.json:json:20230227"
 
-  androidTestImplementation 'androidx.test:runner:1.4.0'
-  androidTestImplementation 'androidx.test:core:1.4.0'
-  androidTestImplementation 'androidx.test:rules:1.4.0'
+  androidTestImplementation 'androidx.test:runner:1.5.2'
+  androidTestImplementation 'androidx.test:core:1.5.0'
+  androidTestImplementation 'androidx.test:rules:1.5.0'
   androidTestImplementation "io.mockk:mockk-android:1.12.3"
   androidTestImplementation "com.google.truth:truth:1.1.2"
   androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
@@ -308,61 +261,4 @@ dependencies {
       compileOnly "org.webkit:android-jsc:+"
     }
   }
-}
-
-def createNativeDepsDirectories = project.tasks.findByName('createNativeDepsDirectories') ?: project.tasks.register('createNativeDepsDirectories') {
-  downloadsDir.mkdirs()
-  thirdPartyNdkDir.mkdirs()
-}
-
-def downloadBoost = tasks.create('downloadBoost', Download) {
-  dependsOn(createNativeDepsDirectories)
-  def srcUrl = REACT_NATIVE_TARGET_VERSION >= 69
-    ? "https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION.replace("_", ".")}/source/boost_${BOOST_VERSION}.tar.gz"
-    : "https://github.com/react-native-community/boost-for-react-native/releases/download/v${BOOST_VERSION.replace("_", ".")}-0/boost_${BOOST_VERSION}.tar.gz"
-  src(srcUrl)
-  onlyIfNewer(true)
-  overwrite(false)
-  dest(new File(downloadsDir, "boost_${BOOST_VERSION}.tar.gz"))
-}
-
-def prepareBoost = tasks.register('prepareBoost', Copy) {
-  dependsOn(downloadBoost)
-  from(tarTree(resources.gzip(downloadBoost.dest)))
-  from("$reactNativeThirdParty/boost/Android.mk")
-  include("Android.mk", "boost_${BOOST_VERSION}/boost/**/*.hpp", "boost/boost/**/*.hpp")
-  includeEmptyDirs = false
-  into("$thirdPartyNdkDir/boost")
-  doLast {
-    new File("$thirdPartyNdkDir/boost/boost").renameTo("$thirdPartyNdkDir/boost/boost_${BOOST_VERSION}")
-  }
-}
-
-void nativeBuildDependsOn(project, dependsOnTask, buildTypesIncludes) {
-  def buildTasks = project.tasks.findAll { task ->
-    def taskName = task.name
-    if (taskName.contains("Clean")) { return false }
-    if (taskName.contains("externalNative") || taskName.contains("CMake") || taskName.contains("generateJsonModel")) {
-      if (buildTypesIncludes == null) { return true }
-      for (buildType in buildTypesIncludes) {
-        if (taskName.contains(buildType)) { return true }
-      }
-    }
-    return false
-  }
-  buildTasks.forEach { task -> task.dependsOn(dependsOnTask) }
-}
-
-afterEvaluate {
-  if (REACT_NATIVE_TARGET_VERSION < 71) {
-    nativeBuildDependsOn(project, prepareBoost, null)
-  }
-}
-
-if (REACT_NATIVE_TARGET_VERSION < 71) {
-  project.ext.extraLegacyReactNativeLibs = [
-    'prepareDoubleConversion',
-    'prepareFolly',
-  ]
-  applyLegacyReactNativeLibsExtractionPlugin()
 }

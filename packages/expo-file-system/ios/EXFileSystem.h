@@ -10,9 +10,8 @@
 
 @property (nonatomic, readonly) NSString *documentDirectory;
 @property (nonatomic, readonly) NSString *cachesDirectory;
-@property (nonatomic, readonly) NSString *bundleDirectory;
 
-- (instancetype)initWithDocumentDirectory:(NSString *)documentDirectory cachesDirectory:(NSString *)cachesDirectory bundleDirectory:(NSString *)bundleDirectory;
+- (instancetype)initWithDocumentDirectory:(NSString *)documentDirectory cachesDirectory:(NSString *)cachesDirectory;
 
 - (EXFileSystemPermissionFlags)permissionsForURI:(NSURL *)uri;
 

@@ -17,7 +17,10 @@ module Expo
       @podfile = podfile
       @target_definition = target_definition
       @options = options
+
+      validate_target_definition()
       resolve_result = resolve()
+
       @packages = resolve_result['modules'].map { |json_package| Package.new(json_package) }
       @extraPods = resolve_result['extraDependencies']['iosPods']
     end
@@ -43,16 +46,23 @@ module Expo
               next
             end
 
-            podspec_dir_path = Pathname.new(pod.podspec_dir).relative_path_from(project_directory).to_path
+            podspec = get_podspec_for_pod(pod)
+
+            # Skip if the podspec doesn't include the platform for the current target.
+            unless podspec_supports_platform?(podspec, @target_definition.platform)
+              UI.message '- ' << package.name.green << " doesn't support #{@target_definition.platform.string_name} platform".yellow
+              next
+            end
 
             # Ensure that the dependencies of packages with Swift code use modular headers, otherwise
             # `pod install` may fail if there is no `use_modular_headers!` declaration or
             # `:modular_headers => true` is not used for this particular dependency.
             # The latter require adding transitive dependencies to user's Podfile that we'd rather like to avoid.
             if package.has_swift_modules_to_link?
-              podspec = get_podspec_for_pod(pod)
               use_modular_headers_for_dependencies(podspec.all_dependencies)
             end
+
+            podspec_dir_path = Pathname.new(pod.podspec_dir).relative_path_from(project_directory).to_path
 
             pod_options = {
               :path => podspec_dir_path,
@@ -60,7 +70,6 @@ module Expo
             }.merge(global_flags, package.flags)
 
             if tests_only || include_tests
-              podspec = podspec || get_podspec_for_pod(pod)
               test_specs_names = podspec.test_specs.map { |test_spec|
                 test_spec.name.delete_prefix(podspec.name + "/")
               }
@@ -134,6 +143,12 @@ module Expo
       return !@options.fetch(:testsOnly, false)
     end
 
+    # Returns the platform name of the current target definition.
+    # Note that it is suitable to be presented to the user (i.e. is not lowercased).
+    public def platform_name
+      return @target_definition.platform&.string_name
+    end
+
     # privates
 
     private def resolve
@@ -181,7 +196,7 @@ module Expo
         'require(require.resolve(\'expo-modules-autolinking\', { paths: [\'' +  __dir__ + '\'] }))(process.argv.slice(1))',
         command_name,
         '--platform',
-        'ios'
+        platform_name.downcase
       ]
       return eval_command_args.concat(base_command_args())
     end
@@ -216,6 +231,27 @@ module Expo
           @target_definition.set_use_modular_headers_for_pod(root_spec_name, true)
         end
       }
+    end
+
+    # Validates whether the Expo modules can be autolinked in the given target definition.
+    private def validate_target_definition
+      # The platform must be declared within the current target (e.g. `platform :ios, '13.0'`)
+      if platform_name.nil?
+        raise "Undefined platform for target #{@target_definition.name}, make sure to call `platform` method globally or inside the target"
+      end
+
+      # The declared platform must be iOS, macOS or tvOS, others are not supported.
+      unless ['iOS', 'macOS', 'tvOS'].include?(platform_name)
+        raise "Target #{@target_definition.name} is dedicated to #{platform_name} platform, which is not supported by Expo Modules"
+      end
+    end
+
+    # Checks whether the podspec declares support for the given platform.
+    # It compares not only the platform name, but also the deployment target.
+    private def podspec_supports_platform?(podspec, platform)
+      return platform && podspec.available_platforms().any? do |available_platform|
+        next platform.supports?(available_platform)
+      end
     end
 
   end # class AutolinkingManager

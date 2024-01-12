@@ -1,0 +1,1 @@
+{"version":3,"file":"environment.js","names":["NON_STANDARD_SYMBOL","Symbol","exports"],"sources":["../src/environment.ts"],"sourcesContent":["export const NON_STANDARD_SYMBOL = Symbol('non-standard');\n"],"mappings":";;;;;;AAAO,MAAMA,mBAAmB,GAAGC,MAAM,CAAC,cAAc,CAAC;AAACC,OAAA,CAAAF,mBAAA,GAAAA,mBAAA"}

@@ -227,19 +227,6 @@ module.exports = {
             key: 'getMobileNetworkCodeAsync',
           },
         ],
-        ExpoClipboard: [
-          { name: 'getImageAsync', argumentsCount: 1, key: 'getImageAsync' },
-          { name: 'getStringAsync', argumentsCount: 1, key: 'getStringAsync' },
-          { name: 'getUrlAsync', argumentsCount: 0, key: 'getUrlAsync' },
-          { name: 'hasImageAsync', argumentsCount: 0, key: 'hasImageAsync' },
-          { name: 'hasStringAsync', argumentsCount: 0, key: 'hasStringAsync' },
-          { name: 'hasUrlAsync', argumentsCount: 0, key: 'hasUrlAsync' },
-          { name: 'setImageAsync', argumentsCount: 1, key: 'setImageAsync' },
-          { name: 'setStringAsync', argumentsCount: 2, key: 'setStringAsync' },
-          { name: 'setUrlAsync', argumentsCount: 1, key: 'setUrlAsync' },
-          { name: 'startObserving', argumentsCount: 0, key: 'startObserving' },
-          { name: 'stopObserving', argumentsCount: 0, key: 'stopObserving' },
-        ],
         ExpoContacts: [
           { name: 'getDefaultContainerIdentifierAsync', argumentsCount: 0, key: 0 },
           { name: 'addExistingGroupToContainerAsync', argumentsCount: 2, key: 1 },
@@ -260,19 +247,6 @@ module.exports = {
           { name: 'writeContactToFileAsync', argumentsCount: 1, key: 16 },
           { name: 'dismissFormAsync', argumentsCount: 0, key: 17 },
         ],
-        ExpoCrypto: [
-          { name: 'digest', argumentsCount: 3, key: 'digest' },
-          { name: 'digestString', argumentsCount: 3, key: 'digestString' },
-          { name: 'digestStringAsync', argumentsCount: 3, key: 'digestStringAsync' },
-          { name: 'getRandomBase64String', argumentsCount: 1, key: 'getRandomBase64String' },
-          {
-            name: 'getRandomBase64StringAsync',
-            argumentsCount: 1,
-            key: 'getRandomBase64StringAsync',
-          },
-          { name: 'getRandomValues', argumentsCount: 1, key: 'getRandomValues' },
-          { name: 'randomUUID', argumentsCount: 0, key: 'randomUUID' },
-        ],
         ExpoDevice: [
           { name: 'getDeviceTypeAsync', argumentsCount: 0, key: 'getDeviceTypeAsync' },
           { name: 'getUptimeAsync', argumentsCount: 0, key: 'getUptimeAsync' },
@@ -282,7 +256,6 @@ module.exports = {
             key: 'isRootedExperimentalAsync',
           },
         ],
-        ExpoDevMenu: [],
         ExpoDocumentPicker: [
           { name: 'getDocumentAsync', argumentsCount: 1, key: 'getDocumentAsync' },
         ],
@@ -296,6 +269,9 @@ module.exports = {
           { name: 'clearDiskCache', argumentsCount: 0, key: 'clearDiskCache' },
           { name: 'clearMemoryCache', argumentsCount: 0, key: 'clearMemoryCache' },
           { name: 'prefetch', argumentsCount: 1, key: 'prefetch' },
+          { name: 'getCachePathAsync', argumentsCount: 1, key: 'getCachePathAsync' },
+          { name: 'startAnimating', argumentsCount: 0, key: 'startAnimating' },
+          { name: 'stopAnimating', argumentsCount: 0, key: 'stopAnimating' },
         ],
         ExpoImageManipulator: [
           { name: 'manipulateAsync', argumentsCount: 3, key: 'manipulateAsync' },
@@ -397,7 +373,7 @@ module.exports = {
           { name: 'getCurrentInput', argumentsCount: 0, key: 21 },
           { name: 'startAudioRecording', argumentsCount: 0, key: 22 },
         ],
-        ExponentCamera: [
+        ExpoCamera: [
           { name: 'getAvailablePictureSizes', argumentsCount: 2, key: 'getAvailablePictureSizes' },
           {
             name: 'getAvailableVideoCodecsAsync',
@@ -441,7 +417,7 @@ module.exports = {
         ],
         ExponentFileSystem: [
           { name: 'uploadAsync', argumentsCount: 3, key: 0 },
-          { name: 'readDirectoryAsync', argumentsCount: 2, key: 1 },
+          { name: 'readDirectoryAsync', argumentsCount: 1, key: 1 },
           { name: 'getTotalDiskCapacityAsync', argumentsCount: 0, key: 2 },
           { name: 'getInfoAsync', argumentsCount: 2, key: 3 },
           { name: 'downloadAsync', argumentsCount: 3, key: 4 },
@@ -687,8 +663,6 @@ module.exports = {
           mobileCountryCode: { type: 'object', mock: null },
           mobileNetworkCode: { type: 'object', mock: null },
         },
-        ExpoClipboard: {},
-        ExpoCrypto: {},
         ExpoDevice: {
           brand: { type: 'string' },
           deviceName: { type: 'string' },
@@ -706,6 +680,9 @@ module.exports = {
           totalMemory: { type: 'number', mock: 17179869184 },
         },
         ExpoDocumentPicker: {},
+        ExpoFontLoader: {
+          customNativeFonts: { type: 'array' },
+        },
         ExpoHaptics: {},
         ExpoImage: {},
         ExpoImageManipulator: {},
@@ -731,7 +708,7 @@ module.exports = {
           SortBy: { type: 'object' },
         },
         ExponentAV: { Qualities: { type: 'object' } },
-        ExponentCamera: {
+        ExpoCamera: {
           AutoFocus: { type: 'object' },
           FlashMode: { type: 'object' },
           Type: { type: 'object' },
@@ -741,10 +718,10 @@ module.exports = {
           WhiteBalance: { type: 'object' },
         },
         ExponentConstants: {
+          AppOwnership: { type: 'object' },
           appOwnership: { type: 'string' },
-          debugMode: { type: 'boolean', mock: true },
+          debugMode: { type: 'boolean', mock: false },
           deviceName: { type: 'string' },
-          deviceYearClass: { type: 'number', mock: 2023 },
           executionEnvironment: { type: 'string' },
           experienceUrl: { type: 'string' },
           expoRuntimeVersion: { type: 'string' },
@@ -765,7 +742,6 @@ module.exports = {
         },
         ExponentDeviceMotion: { Gravity: { type: 'number', mock: 9.8100004196167 } },
         ExponentFileSystem: {
-          bundledAssets: { type: 'object', mock: null },
           bundleDirectory: { type: 'object', mock: null },
           cacheDirectory: { type: 'string' },
           documentDirectory: { type: 'string' },
@@ -773,7 +749,7 @@ module.exports = {
         ExponentGLView: {},
         ExponentImagePicker: {},
         ExpoNetwork: {},
-        ExpoPrint: {},
+        ExpoPrint: { Orientation: { type: 'object' } },
         ExpoRandom: {},
         ExpoScreenOrientation: {},
         ExpoSecureStore: {
@@ -818,16 +794,6 @@ module.exports = {
         ExpoAppleAuthentication: { propsNames: ['buttonStyle', 'buttonType', 'cornerRadius'] },
         ExpoBarCodeScanner: { propsNames: ['barCodeTypes', 'type'] },
         ExpoBlurView: { propsNames: ['intensity', 'tint'] },
-        ExpoClipboard: {
-          propsNames: [
-            'acceptedContentTypes',
-            'backgroundColor',
-            'cornerStyle',
-            'displayMode',
-            'foregroundColor',
-            'imageOptions',
-          ],
-        },
         ExpoImage: {
           propsNames: [
             'accessibilityLabel',
@@ -847,7 +813,7 @@ module.exports = {
           ],
         },
         ExpoLinearGradient: { propsNames: ['colors', 'endPoint', 'locations', 'startPoint'] },
-        ExponentCamera: {
+        ExpoCamera: {
           propsNames: [
             'autoFocus',
             'barCodeScannerEnabled',
@@ -946,7 +912,6 @@ module.exports = {
     getCurrentState: { type: 'function', functionType: 'promise' },
     removeListeners: { type: 'function', functionType: 'async' },
   },
-  RNCPickerManager: {},
   RNCSafeAreaContext: {
     getConstants: { type: 'function' },
     initialWindowMetrics: { type: 'object' },
@@ -989,10 +954,6 @@ module.exports = {
     updateGestureHandler: { type: 'function', functionType: 'async' },
   },
   RNSFullWindowOverlayManager: {},
-  RNSharedElementTransition: {
-    configure: { type: 'function', functionType: 'promise' },
-    getConstants: { type: 'function' },
-  },
   RNSkia: {
     getConstants: { type: 'function' },
     install: { type: 'function', functionType: 'sync' },

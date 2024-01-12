@@ -11,6 +11,21 @@ import type { RouteNode } from './Route';
 import { getContextKey } from './matchers';
 import { sortRoutes } from './sortRoutes';
 
+// TODO: Share these types across cli, server, router, etc.
+export type ExpoRouterServerManifestV1Route<TRegex = string> = {
+  file: string;
+  page: string;
+  routeKeys: Record<string, string>;
+  namedRegex: TRegex;
+  generated?: boolean;
+};
+
+export type ExpoRouterServerManifestV1<TRegex = string> = {
+  apiRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
+  htmlRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
+  notFoundRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
+};
+
 export interface Group {
   pos: number;
   repeat: boolean;
@@ -27,14 +42,11 @@ function isApiRoute(route: RouteNode) {
 }
 
 function isNotFoundRoute(route: RouteNode) {
-  if (route.route === '404') {
-    return true;
-  }
-  return route.dynamic?.length && route.dynamic[0].name === '404';
+  return route.dynamic && route.dynamic[route.dynamic.length - 1].notFound;
 }
 
 // Given a nested route tree, return a flattened array of all routes that can be matched.
-export function getServerManifest(route: RouteNode) {
+export function getServerManifest(route: RouteNode): ExpoRouterServerManifestV1 {
   function getFlatNodes(route: RouteNode): [string, RouteNode][] {
     if (route.children.length) {
       return route.children.map((child) => getFlatNodes(child)).flat();
@@ -66,16 +78,22 @@ export function getServerManifest(route: RouteNode) {
   };
 }
 
-function getMatchableManifestForPaths(paths: [string, RouteNode][]) {
+function getMatchableManifestForPaths(
+  paths: [string, RouteNode][]
+): ExpoRouterServerManifestV1Route[] {
   return paths.map((normalizedRoutePath) => ({
     ...getNamedRouteRegex(normalizedRoutePath[0], normalizedRoutePath[1].contextKey),
     generated: normalizedRoutePath[1].generated,
   }));
 }
 
-export function getNamedRouteRegex(normalizedRoute: string, page: string) {
+export function getNamedRouteRegex(
+  normalizedRoute: string,
+  page: string
+): ExpoRouterServerManifestV1Route {
   const result = getNamedParametrizedRoute(normalizedRoute);
   return {
+    file: page,
     page: page.replace(/\.[jt]sx?$/, ''),
     namedRegex: `^${result.namedParameterizedRoute}(?:/)?$`,
     routeKeys: result.routeKeys,
@@ -118,7 +136,7 @@ function buildGetSafeRouteKey() {
   };
 }
 
-function removeTrailingSlash(route: string) {
+function removeTrailingSlash(route: string): string {
   return route.replace(/\/$/, '') || '/';
 }
 
@@ -128,7 +146,10 @@ function getNamedParametrizedRoute(route: string) {
   const routeKeys: { [named: string]: string } = {};
   return {
     namedParameterizedRoute: segments
-      .map((segment) => {
+      .map((segment, index) => {
+        if (segment === '+not-found' && index === segments.length - 1) {
+          segment = '[...not-found]';
+        }
         if (/^\[.*\]$/.test(segment)) {
           const { name, optional, repeat } = parseParameter(segment.slice(1, -1));
           // replace any non-word characters since they can break

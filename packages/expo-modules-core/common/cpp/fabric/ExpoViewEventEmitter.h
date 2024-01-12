@@ -13,7 +13,7 @@ namespace expo {
 
 class ExpoViewEventEmitter : public facebook::react::ViewEventEmitter {
 public:
-  using ViewEventEmitter::ViewEventEmitter;
+  using facebook::react::ViewEventEmitter::ViewEventEmitter;
   using Shared = std::shared_ptr<const ExpoViewEventEmitter>;
 
   /**

@@ -7,13 +7,17 @@ import {
   matchGroupName,
   removeSupportedExtensions,
   stripGroupSegmentsFromPath,
-  stripInvisibleSegmentsFromPath,
 } from './matchers';
 import type { RequireContext } from './types';
 
-export type FileNode = Pick<RouteNode, 'contextKey' | 'loadRoute'> & {
+export type FileNode = Pick<IntermediateRouteNode, 'contextKey' | 'loadRoute' | 'filePath'> & {
   /** Like `(tab)/index` */
   normalizedName: string;
+};
+
+type IntermediateRouteNode = Omit<RouteNode, 'children'> & {
+  filePath: string;
+  children: IntermediateRouteNode[];
 };
 
 type TreeNode = {
@@ -28,6 +32,7 @@ type Options = {
   ignore?: RegExp[];
   preserveApiRoutes?: boolean;
   ignoreRequireErrors?: boolean;
+  ignoreEntryPoints?: boolean;
 };
 
 /** Convert a flat map of file nodes into a nested tree of files. */
@@ -92,21 +97,31 @@ function assertDeprecatedFormat(tree: TreeNode) {
   }
 }
 
-function getTreeNodesAsRouteNodes(nodes: TreeNode[]): RouteNode[] {
+function getTreeNodesAsRouteNodes(nodes: TreeNode[], options: Options): IntermediateRouteNode[] {
   return nodes
-    .map((node) => treeNodeToRouteNode(node))
+    .map((node) => treeNodeToRouteNode(node, options))
     .flat()
-    .filter(Boolean) as RouteNode[];
+    .filter(Boolean) as IntermediateRouteNode[];
 }
 
 export function generateDynamicFromSegment(name: string): DynamicConvention | null {
+  if (name === '+not-found') {
+    return {
+      name: '+not-found',
+      deep: true,
+      notFound: true,
+    };
+  }
+
   const deepDynamicName = matchDeepDynamicRouteName(name);
   const dynamicName = deepDynamicName ?? matchDynamicName(name);
-
-  return dynamicName ? { name: dynamicName, deep: !!deepDynamicName } : null;
+  if (!dynamicName) {
+    return null;
+  }
+  return { name: dynamicName, deep: !!deepDynamicName };
 }
 
-export function generateDynamic(name: string): RouteNode['dynamic'] {
+export function generateDynamic(name: string): IntermediateRouteNode['dynamic'] {
   const description = name
     .split('/')
     .map((segment) => generateDynamicFromSegment(segment))
@@ -126,11 +141,11 @@ function collapseRouteSegments(route: string) {
  * Routes like `explore/(something)/index` will be matched against `explore`.
  *
  */
-function getDefaultInitialRoute(node: RouteNode, name: string) {
+function getDefaultInitialRoute(node: IntermediateRouteNode, name: string) {
   return node.children.find((node) => collapseRouteSegments(node.route) === name);
 }
 
-function applyDefaultInitialRouteName(node: RouteNode): RouteNode {
+function applyDefaultInitialRouteName(node: IntermediateRouteNode): IntermediateRouteNode {
   const groupName = matchGroupName(node.route);
   if (!node.children?.length) {
     return node;
@@ -159,7 +174,10 @@ function applyDefaultInitialRouteName(node: RouteNode): RouteNode {
   };
 }
 
-function folderNodeToRouteNode({ name, children }: TreeNode): RouteNode[] | null {
+function folderNodeToRouteNode(
+  { name, children }: TreeNode,
+  options: Options
+): IntermediateRouteNode[] | null {
   // Empty folder, skip it.
   if (!children.length) {
     return null;
@@ -173,11 +191,12 @@ function folderNodeToRouteNode({ name, children }: TreeNode): RouteNode[] | null
         ...child,
         name: [name, child.name].filter(Boolean).join('/'),
       };
-    })
+    }),
+    options
   );
 }
 
-function fileNodeToRouteNode(tree: TreeNode): RouteNode[] | null {
+function fileNodeToRouteNode(tree: TreeNode, options: Options): IntermediateRouteNode[] | null {
   const { name, node, children } = tree;
 
   if (!node) throw new Error('node must be defined');
@@ -191,8 +210,11 @@ function fileNodeToRouteNode(tree: TreeNode): RouteNode[] | null {
     loadRoute: node.loadRoute,
     route: name,
     contextKey: node.contextKey,
-    children: getTreeNodesAsRouteNodes(children),
+    children: getTreeNodesAsRouteNodes(children, options),
     dynamic,
+    filePath: node.filePath,
+    entryPoints:
+      options.ignoreEntryPoints || isApiRoutePath(node.contextKey) ? undefined : [node.filePath],
   };
 
   if (clones.size) {
@@ -209,8 +231,11 @@ function fileNodeToRouteNode(tree: TreeNode): RouteNode[] | null {
     applyDefaultInitialRouteName({
       loadRoute: node.loadRoute,
       route: name,
+      entryPoints:
+        options.ignoreEntryPoints || isApiRoutePath(node.contextKey) ? undefined : [node.filePath],
+      filePath: node.filePath,
       contextKey: node.contextKey,
-      children: getTreeNodesAsRouteNodes(children),
+      children: getTreeNodesAsRouteNodes(children, options),
       dynamic,
     }),
   ];
@@ -249,12 +274,12 @@ function extrapolateGroupRoutes(
   return routes;
 }
 
-function treeNodeToRouteNode(tree: TreeNode): RouteNode[] | null {
+function treeNodeToRouteNode(tree: TreeNode, options: Options): IntermediateRouteNode[] | null {
   if (tree.node) {
-    return fileNodeToRouteNode(tree);
+    return fileNodeToRouteNode(tree, options);
   }
 
-  return folderNodeToRouteNode(tree);
+  return folderNodeToRouteNode(tree, options);
 }
 
 function contextModuleToFileNodes(
@@ -289,6 +314,7 @@ function contextModuleToFileNodes(
           }
         },
         normalizedName: getNameFromFilePath(key),
+        filePath: key,
         contextKey: key,
       };
 
@@ -303,7 +329,7 @@ function contextModuleToFileNodes(
   return nodes.filter(Boolean) as FileNode[];
 }
 
-function hasCustomRootLayoutNode(routes: RouteNode[]) {
+function hasCustomRootLayoutNode(routes: IntermediateRouteNode[]) {
   if (routes.length !== 1) {
     return false;
   }
@@ -316,8 +342,8 @@ function hasCustomRootLayoutNode(routes: RouteNode[]) {
   return false;
 }
 
-function treeNodesToRootRoute(treeNode: TreeNode): RouteNode | null {
-  const routes = treeNodeToRouteNode(treeNode);
+function treeNodesToRootRoute(treeNode: TreeNode, options: Options): IntermediateRouteNode | null {
+  const routes = treeNodeToRouteNode(treeNode, options);
   return withOptionalRootLayout(routes);
 }
 
@@ -357,7 +383,7 @@ export function assertDuplicateRoutes(filenames: string[]) {
 
 /** Given a Metro context module, return an array of nested routes. */
 export function getRoutes(contextModule: RequireContext, options?: Options): RouteNode | null {
-  const route = getExactRoutes(contextModule, options);
+  const route = getExactRoutesInternal(contextModule, options);
 
   // If there is no route, return an empty route.
   if (!route) {
@@ -369,22 +395,101 @@ export function getRoutes(contextModule: RequireContext, options?: Options): Rou
   // Auto add not found route if it doesn't exist
   appendUnmatchedRoute(route);
 
+  if (options?.ignoreEntryPoints) {
+    return removeFilePath(route);
+  }
+  return removeFilePath(crawlAndAppendEntryFilesForInitialRoutes(crawlAndAppendEntryFiles(route)));
+}
+
+function removeFilePath(route: IntermediateRouteNode | null): RouteNode | null {
+  if (!route) return route;
+  const { filePath, ...rest } = route;
+
+  return {
+    ...rest,
+    children: route.children.map((child) => removeFilePath(child)).filter(Boolean) as RouteNode[],
+  };
+}
+
+function unique<T>(array: T[]): T[] {
+  return [...new Set(array)];
+}
+
+function isLayoutRoute(route: IntermediateRouteNode) {
+  return route.contextKey.match(/\/_layout\.([jt]sx?)$/);
+}
+
+function isViewRoute(route?: IntermediateRouteNode | null): route is IntermediateRouteNode {
+  return !!route && !isApiRoute(route);
+}
+function isApiRoute(route: IntermediateRouteNode) {
+  return isApiRoutePath(route.contextKey);
+}
+function isApiRoutePath(route: string): boolean {
+  return !!route.match(/\+api\.[jt]sx?$/);
+}
+
+function crawlAndAppendEntryFiles(
+  route: IntermediateRouteNode | null,
+  entryPoints: string[] = []
+): IntermediateRouteNode | null {
+  if (!isViewRoute(route)) {
+    return null;
+  }
+  const nextEntryPoints = unique([...entryPoints, ...(route.entryPoints ?? []), route.filePath]);
+
+  route.children.forEach((child) => {
+    crawlAndAppendEntryFiles(child, nextEntryPoints);
+  });
+
+  // Skip adding entry points for layout routes since we only need them
+  // for rendering child nodes.
+  if (isLayoutRoute(route)) {
+    delete route.entryPoints;
+  } else {
+    route.entryPoints = nextEntryPoints;
+  }
+
   return route;
 }
 
-export async function getRoutesAsync(
-  contextModule: RequireContext,
-  options?: Options
-): Promise<RouteNode | null> {
-  const route = await getExactRoutesAsync(contextModule, options);
-  if (!route) {
+function crawlAndAppendEntryFilesForInitialRoutes(
+  route: IntermediateRouteNode | null,
+  initialRoutes: IntermediateRouteNode[] = []
+): IntermediateRouteNode | null {
+  if (!isViewRoute(route)) {
     return null;
   }
 
-  appendSitemapRoute(route);
+  // Skip adding entry points for layout routes since we only need them
+  // for rendering child nodes.
+  if (isLayoutRoute(route)) {
+    if (route.initialRouteName) {
+      const initialRoute = route.children.find((child) => child.route === route.initialRouteName);
+      if (!initialRoute) {
+        throw new Error(
+          `Invalid initialRouteName "${route.initialRouteName}" defined in ${
+            route.filePath
+          }. Options are: ${route.children.map((route) => route.route).join(', ')}`
+        );
+      }
+      // Update all children to include the entry points from the initial route...
 
-  // Auto add not found route if it doesn't exist
-  appendUnmatchedRoute(route);
+      route.children.forEach((child) => {
+        crawlAndAppendEntryFilesForInitialRoutes(child, [...initialRoutes, initialRoute]);
+      });
+    }
+  } else {
+    const isInitial = initialRoutes.some(
+      (initialRoute) => initialRoute.contextKey === route.contextKey
+    );
+    if (!isInitial) {
+      route.entryPoints = unique([
+        ...initialRoutes.map((route) => route.entryPoints ?? []).flat(),
+        ...(route.entryPoints ?? []),
+      ]);
+    }
+  }
 
   return route;
 }
@@ -397,11 +502,24 @@ function getIgnoreList(options?: Options) {
   return ignore;
 }
 
+function getExactRoutesInternal(
+  contextModule: RequireContext,
+  options: Options = {}
+): IntermediateRouteNode | null {
+  const treeNodes = contextModuleToTree(contextModule, options);
+  return treeNodesToRootRoute(treeNodes, options);
+}
+
 /** Get routes without unmatched or sitemap. */
 export function getExactRoutes(contextModule: RequireContext, options?: Options): RouteNode | null {
-  const treeNodes = contextModuleToTree(contextModule, options);
-  const route = treeNodesToRootRoute(treeNodes);
-  return route || null;
+  const route = getExactRoutesInternal(contextModule, options);
+  if (!options?.ignoreEntryPoints) {
+    return removeFilePath(
+      crawlAndAppendEntryFilesForInitialRoutes(crawlAndAppendEntryFiles(route))
+    );
+  }
+
+  return removeFilePath(route);
 }
 
 function contextModuleToTree(contextModule: RequireContext, options?: Options) {
@@ -414,16 +532,7 @@ function contextModuleToTree(contextModule: RequireContext, options?: Options) {
   return getRecursiveTree(files);
 }
 
-export async function getExactRoutesAsync(
-  contextModule: RequireContext,
-  options?: Options
-): Promise<RouteNode | null> {
-  const treeNodes = contextModuleToTree(contextModule, options);
-  const route = treeNodesToRootRoute(treeNodes);
-  return route || null;
-}
-
-function appendSitemapRoute(routes: RouteNode) {
+function appendSitemapRoute(routes: IntermediateRouteNode) {
   if (
     !routes.children.length ||
     // Allow overriding the sitemap route
@@ -436,6 +545,7 @@ function appendSitemapRoute(routes: RouteNode) {
       const { Sitemap, getNavOptions } = require('./views/Sitemap');
       return { default: Sitemap, getNavOptions };
     },
+    filePath: 'expo-router/build/views/Sitemap.js',
     route: '_sitemap',
     contextKey: './_sitemap.tsx',
     generated: true,
@@ -446,17 +556,18 @@ function appendSitemapRoute(routes: RouteNode) {
   return routes;
 }
 
-function appendUnmatchedRoute(routes: RouteNode) {
+function appendUnmatchedRoute(routes: IntermediateRouteNode) {
   // Auto add not found route if it doesn't exist
-  const userDefinedDynamicRoute = getUserDefinedDeepDynamicRoute(routes);
+  const userDefinedDynamicRoute = getUserDefinedTopLevelNotFoundRoute(routes);
   if (!userDefinedDynamicRoute) {
     routes.children.push({
       loadRoute() {
         return { default: require('./views/Unmatched').Unmatched };
       },
-      route: '[...404]',
-      contextKey: './[...404].tsx',
-      dynamic: [{ name: '404', deep: true }],
+      filePath: 'expo-router/build/views/Unmatched.js',
+      route: '+not-found',
+      contextKey: './+not-found.tsx',
+      dynamic: [{ name: '+not-found', deep: true, notFound: true }],
       children: [],
       generated: true,
       internal: true,
@@ -469,18 +580,18 @@ function appendUnmatchedRoute(routes: RouteNode) {
  * Exposed for testing.
  * @returns a top-level deep dynamic route if it exists, otherwise null.
  */
-export function getUserDefinedDeepDynamicRoute(routes: RouteNode): RouteNode | null {
+export function getUserDefinedTopLevelNotFoundRoute(routes: RouteNode | null): RouteNode | null {
   // Auto add not found route if it doesn't exist
-  for (const route of routes.children ?? []) {
+  for (const route of routes?.children ?? []) {
     if (route.generated) continue;
-    const opaqueRoute = stripInvisibleSegmentsFromPath(route.route);
-    const isDeepDynamic = matchDeepDynamicRouteName(opaqueRoute);
+    const isDeepDynamic =
+      stripGroupSegmentsFromPath(route.route) === '+not-found' && route.route.match(/\+not-found$/);
     if (isDeepDynamic) {
       return route;
     }
     // Recurse through group routes
     if (matchGroupName(route.route)) {
-      const child = getUserDefinedDeepDynamicRoute(route);
+      const child = getUserDefinedTopLevelNotFoundRoute(route);
       if (child) {
         return child;
       }
@@ -489,7 +600,9 @@ export function getUserDefinedDeepDynamicRoute(routes: RouteNode): RouteNode | n
   return null;
 }
 
-function withOptionalRootLayout(routes: RouteNode[] | null): RouteNode | null {
+function withOptionalRootLayout(
+  routes: IntermediateRouteNode[] | null
+): IntermediateRouteNode | null {
   if (!routes?.length) {
     return null;
   }
@@ -503,6 +616,7 @@ function withOptionalRootLayout(routes: RouteNode[] | null): RouteNode | null {
       default: (require('./views/Navigator') as typeof import('./views/Navigator'))
         .DefaultNavigator,
     }),
+    filePath: 'expo-router/build/views/Navigator.js',
     // Generate a fake file name for the directory
     contextKey: './_layout.tsx',
     route: '',

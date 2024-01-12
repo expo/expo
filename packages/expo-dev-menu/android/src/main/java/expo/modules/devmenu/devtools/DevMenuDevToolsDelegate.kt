@@ -34,7 +34,7 @@ class DevMenuDevToolsDelegate(
   internal val devInternalSettings: DevMenuInternalSettingsWrapper?
     get() {
       val devSettings = this.devSettings ?: return null
-      return if (devSettings.javaClass.canonicalName == "com.facebook.react.DevInternalSettings") DevMenuInternalSettingsWrapper(devSettings) else null
+      return if (devSettings.javaClass.canonicalName == "com.facebook.react.devsupport.DevLauncherInternalSettings") DevMenuInternalSettingsWrapper(devSettings) else null
     }
 
   val reactContext

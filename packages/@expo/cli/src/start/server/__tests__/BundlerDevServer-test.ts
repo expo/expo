@@ -100,6 +100,10 @@ class MockBundlerDevServer extends BundlerDevServer {
   protected getConfigModuleIds(): string[] {
     return ['./fake.config.js'];
   }
+
+  public startTypeScriptServices(): Promise<void> {
+    throw new Error('Unimplemented');
+  }
 }
 
 class MockMetroBundlerDevServer extends MockBundlerDevServer {
@@ -205,12 +209,9 @@ describe('isRedirectPageEnabled', () => {
   it(`is redirect enabled`, async () => {
     mockDevClientInstalled();
 
-    const server = new MockBundlerDevServer(
-      '/',
-      getPlatformBundlers({}),
-      // is Dev Client
-      false
-    );
+    const server = new MockBundlerDevServer('/', getPlatformBundlers({}), {
+      isDevClient: false,
+    });
     expect(server['isRedirectPageEnabled']()).toBe(true);
   });
 
@@ -219,46 +220,34 @@ describe('isRedirectPageEnabled', () => {
 
     process.env.EXPO_NO_REDIRECT_PAGE = '1';
 
-    const server = new MockBundlerDevServer(
-      '/',
-      getPlatformBundlers({}),
-      // is Dev Client
-      false
-    );
+    const server = new MockBundlerDevServer('/', getPlatformBundlers({}), {
+      isDevClient: false,
+    });
     expect(server['isRedirectPageEnabled']()).toBe(false);
   });
 
   it(`redirect is disabled when running in dev client mode`, async () => {
     mockDevClientInstalled();
 
-    const server = new MockBundlerDevServer(
-      '/',
-      getPlatformBundlers({}),
-      // is Dev Client
-      true
-    );
+    const server = new MockBundlerDevServer('/', getPlatformBundlers({}), {
+      isDevClient: true,
+    });
     expect(server['isRedirectPageEnabled']()).toBe(false);
   });
 
   it(`redirect is disabled when expo-dev-client is not installed in the project`, async () => {
-    const server = new MockBundlerDevServer(
-      '/',
-      getPlatformBundlers({}),
-      // is Dev Client
-      false
-    );
+    const server = new MockBundlerDevServer('/', getPlatformBundlers({}), {
+      isDevClient: false,
+    });
     expect(server['isRedirectPageEnabled']()).toBe(false);
   });
 });
 
 describe('getRedirectUrl', () => {
   it(`returns null when the redirect page functionality is disabled`, async () => {
-    const server = new MockBundlerDevServer(
-      '/',
-      getPlatformBundlers({}),
-      // is Dev Client
-      false
-    );
+    const server = new MockBundlerDevServer('/', getPlatformBundlers({}), {
+      isDevClient: false,
+    });
     server['isRedirectPageEnabled'] = () => false;
     expect(server['getRedirectUrl']()).toBe(null);
   });
@@ -311,7 +300,9 @@ describe('getNativeRuntimeUrl', () => {
     expect(server.getNativeRuntimeUrl({ scheme: 'foobar' })).toBe('exp://100.100.1.100:3000');
   });
   it(`gets the native runtime URL for dev client`, async () => {
-    const server = new MockBundlerDevServer('/', getPlatformBundlers({}), true);
+    const server = new MockBundlerDevServer('/', getPlatformBundlers({}), {
+      isDevClient: true,
+    });
     await server.startAsync({
       location: {
         scheme: 'my-app',

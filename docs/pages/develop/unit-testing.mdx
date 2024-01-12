@@ -78,7 +78,7 @@ To write your first unit test, start by writing a simple test for **App.js**. Cr
 
 The test will expect the state of the `<App />` component to have one child element:
 
-```js App.test.js
+```jsx App.test.js
 import React from 'react';
 import renderer from 'react-test-renderer';
 
@@ -143,7 +143,7 @@ A snapshot test is used to make sure that UI stays consistent, especially when a
 
 To add a snapshot test for `<App />`, add the following code snippet in the `describe()` in **App.test.js**:
 
-```js App.test.js
+```jsx App.test.js
 it('renders correctly', () => {
   const tree = renderer.create(<App />).toJSON();
   expect(tree).toMatchSnapshot();

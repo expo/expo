@@ -13,12 +13,12 @@ Universal links are different from standard deep links as they use regular HTTPS
 
 > Deferred deep links can be implemented with [`react-native-branch`](https://github.com/expo/config-plugins/tree/main/packages/react-native-branch).
 
-Before you can use an app/universal links, you've to setup the two-way association between the website and app for both Android and iOS:
+Before you can use an app/universal links, you have to setup the two-way association between the website and app for both Android and iOS:
 
 1. **Native app verification:** This requires some form of code signing that references the target website domain (URL).
 2. **Website verification:** This requires a file to be hosted on the target website in the **/.well-known** directory.
 
-After the two-way association is setup, you've to setup the runtime routing of the link in your app. This is done in JavaScript and must be configured for every route, then coordinated between web and native. Expo offers a fully automated solution for this called [Expo Router](/routing/introduction/).
+After the two-way association is setup, you have to setup the runtime routing of the link in your app. This is done in JavaScript and must be configured for every route, then coordinated between web and native. Expo offers a fully automated solution for this called [Expo Router](/router/introduction/).
 
 > Universal links cannot be tested in the Expo Go app. You need to create a [development build](/develop/development-builds/introduction).
 
@@ -63,11 +63,11 @@ If you enable through the [Apple Developer Console](/build-reference/ios-capabil
 
 ### AASA configuration
 
-On the web-side, you've to host a config file from **/.well-known/apple-app-site-association** (with no extension). This file JSON specifies your Apple Developer Team ID, Bundler ID, and a list of supported paths to redirect to the native app.
+On the web-side, you have to host a config file from **/.well-known/apple-app-site-association** (with no extension). This file JSON specifies your Apple Developer Team ID, Bundler ID, and a list of supported paths to redirect to the native app.
 
 > You can run the **experimental** CLI command `npx setup-safari` to automatically register a bundle identifier to your Apple account, assign entitlements to the ID, and create an iTunes app entry in the store. The local setup will be printed and you can skip most the following. This is the easiest way to get started with universal links on iOS.
 
-If you're using [Expo Router](/routing/introduction/) to build your website (or another modern React framework like Remix, Next.js, and so on), create the file at **public/.well-known/apple-app-site-association**. Legacy Expo webpack projects can create the file at **web/.well-known/apple-app-site-association**.
+If you're using [Expo Router](/router/introduction/) to build your website (or another modern React framework like Remix, Next.js, and so on), create the file at **public/.well-known/apple-app-site-association**. Legacy Expo webpack projects can create the file at **web/.well-known/apple-app-site-association**.
 
 ```json public/.well-known/apple-app-site-association
 {
@@ -79,7 +79,7 @@ If you're using [Expo Router](/routing/introduction/) to build your website (or 
         // Example: "QQ57RJ5UTD.com.acme.myapp"
         "appID": "{APPLE_TEAM_ID}.{BUNDLE_ID}",
         // All paths that should support redirecting
-        "paths": ["*"]
+        "paths": ["/records/*"]
       }
     ]
   },
@@ -98,7 +98,7 @@ This snippet tells iOS that any links to `https://www.myapp.io/records/*` (with 
 
 > The `activitycontinuation` and `webcredentials` objects are optional, but recommended.
 
-After you've setup the AASA file, deploy your website to a server that supports HTTPS (most modern web hosts).
+After you have setup the AASA file, deploy your website to a server that supports HTTPS (most modern web hosts).
 
 See [Apple's documentation](https://developer.apple.com/library/archive/documentation/General/Conceptual/AppSearch/UniversalLinks.html) for further details on the format of the AASA. Branch provides an [AASA validator](https://branch.io/resources/aasa-validator/) which can help you confirm that your AASA is correctly deployed and has a valid format.
 
@@ -152,7 +152,7 @@ To support all iOS versions, you can provide both the above formats in your `det
 
 Note that iOS will download your AASA when your app is first installed and when updates are installed from the App Store, but it will not refresh any more frequently. If you wish to change the paths in your AASA for a production app, you will need to issue a full update via the App Store so that all of your users' apps re-fetch your AASA and recognize the new paths.
 
-Now, a link to your website on your mobile device should open your app. If it doesn't, re-check the previous steps to ensure that your AASA is valid, the path is specified in the AASA, and you have correctly configured your App ID in the [Apple Developer Console](https://developer.apple.com/account/resources/identifiers/list). Once you've got your app opened, move to the [Handling links into your app](/guides/linking/#handling-links) section for details on how to handle the inbound link and show the user the content they requested.
+Now, a link to your website on your mobile device should open your app. If it doesn't, re-check the previous steps to ensure that your AASA is valid, the path is specified in the AASA, and you have correctly configured your App ID in the [Apple Developer Console](https://developer.apple.com/account/resources/identifiers/list). Once you have got your app opened, move to the [Handling links into your app](/guides/linking/#handling-links) section for details on how to handle the inbound link and show the user the content they requested.
 
 ### Apple Smart Banner
 
@@ -219,16 +219,16 @@ Implementing deep links on Android (without a custom URL scheme) is somewhat sim
 }
 ```
 
-### Android Asset Links
+### Android App Links
 
 It may be desirable for links to your domain to always open your app (without presenting the user a dialog where they can choose the browser or a different handler). You can implement this with Android App Links, which use a similar verification process as Universal Links on iOS.
 
-Create a JSON file for the website verification (a.k.a. [digital asset links](https://developers.google.com/digital-asset-links/v1/getting-started) file) at **public/.well-known/assetlinks.json** (or **web/.well-known/assetlinks.json** for legacy Expo webpack websites), and collect the following information:
+Create a JSON file for the website verification (also known as [digital asset links](https://developers.google.com/digital-asset-links/v1/getting-started) file) at **public/.well-known/assetlinks.json** (or **web/.well-known/assetlinks.json** for legacy Expo webpack websites), and collect the following information:
 
 - `package_name`: The Android [application ID](/versions/latest/config/app/#package) of your app (for example, `com.bacon.app`). This can be found in the **app.json** file under `expo.android.package`.
-- `sha256_cert_fingerprints`: The SHA256 fingerprints of your app’s signing certificate. This can be obtained in one of two ways:
+- `sha256_cert_fingerprints`: The SHA256 fingerprints of your app's signing certificate. This can be obtained in one of two ways:
   1. After building an Android app with EAS Build, run `eas credentials -p android` and select the profile you wish to obtain the fingerprint for. The fingerprint will be listed under `SHA256 Fingerprint`.
-  2. By visiting the [Play Console](https://play.google.com/console/) developer account under **Release > Setup > App Integrity > App Signing**. If you do, then you'll also find the correct Digital Asset Links JSON snippet for your app on the same page. The value will look like `14:6D:E9:83...`
+  2. By visiting the [Play Console](https://play.google.com/console/) developer account under **Release > Setup > App Signing**. If you do, then you'll also find the correct Digital Asset Links JSON snippet for your app on the same page. The value will look like `14:6D:E9:83...`
 
 ```json public/.well-known/assetlinks.json
 [
@@ -246,15 +246,13 @@ Create a JSON file for the website verification (a.k.a. [digital asset links](ht
 ]
 ```
 
-Installing the native app on a device will trigger the [Android app verification](https://developer.android.com/training/app-links/verify-android-applinks#web-assoc) process, which can take up to 20 seconds.
+Installing the native app on a device will trigger the [Android app verification](https://developer.android.com/training/app-links/verify-android-applinks#web-assoc) process, which can take up to 20 seconds. Once you have got your app opened, move to the [Handling links into your app](/guides/linking/#handling-links) section for details on how to handle the inbound link and show the user the content they requested.
 
 <ConfigReactNative title="Manual native configuration">
 
-If you're not using EAS to manage code signing, you can find the **sha256_cert_fingerprints** by building and submitting your app manually, then visiting the [Google Play Console](https://play.google.com/console/) developer account under **Release > Setup > App Integrity > App Signing**; if you do, then you'll also find the correct **Digital Asset Links JSON** snippet for your app on the same page. The value will look like `14:6D:E9:83...`. Copy this value into your `public/.well-known/assetlinks.json` file.
+If you're not using EAS to manage code signing, you can find the **sha256_cert_fingerprints** by building and submitting your app manually, then visiting the [Google Play Console](https://play.google.com/console/) developer account under **Release > Setup > App Signing**; if you do, then you'll also find the correct **Digital Asset Links JSON** snippet for your app on the same page. The value will look like `14:6D:E9:83...`. Copy this value into your `public/.well-known/assetlinks.json` file.
 
 </ConfigReactNative>
-
-It may be desirable for links to your domain to always open your app (without presenting the user a dialog where they can choose the browser or a different handler). You can implement this with Android App Links, which use a similar verification process as Universal Links on iOS.
 
 <Collapsible summary={<>Handle App Links on Android for <CODE>expo-dev-client</CODE> version 1.2.1 and below</>}>
 
@@ -404,6 +402,7 @@ Expo CLI enables you to test your universal links without deploying a website. U
 
 ## Troubleshooting
 
+- Read Apple's [official documentation on debugging universal links](https://developer.apple.com/documentation/technotes/tn3155-debugging-universal-links).
 - Ensure your apple app site association file is valid by using a [validator tool](https://branch.io/resources/aasa-validator/).
 - Ensure your website is served over HTTPS.
 - The uncompressed `apple-app-site-association` file cannot be [larger than 128kb](https://developer.apple.com/library/archive/documentation/General/Conceptual/AppSearch/UniversalLinks.html).
@@ -418,7 +417,7 @@ This is the easiest way to set up deep links in your app because it requires a m
 
 The main problem is that if the user does not have your app installed and follows a link to your app with its custom scheme, their operating system will indicate that the page couldn't be opened but not give much more information. This is not a great experience. There is no way to work around this in the browser.
 
-Additionally, many messaging apps do not autolink URLs with custom schemes -- for example, `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]` might just show up as plain text in your browser rather than as a link ([exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]](#)).
+Additionally, many messaging apps do not autolink URLs with custom schemes. For example, `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]` might just show up as plain text in your browser rather than as a link ([exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]](#)).
 
 An example of this is Gmail which strips the `href` property from the links of most apps, a trick to use is to link to a regular HTTPS URL instead of your app's custom scheme, this will open the user's web browser. Browsers do not usually strip the `href` property so you can host a file online that redirects the user to your app's custom schemes.
 

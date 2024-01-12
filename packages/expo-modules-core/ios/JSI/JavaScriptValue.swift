@@ -18,11 +18,17 @@ public enum JavaScriptValueKind: String {
 /**
  A protocol that JavaScript values, objects and functions can conform to.
  */
-protocol AnyJavaScriptValue {
+protocol AnyJavaScriptValue: AnyArgument {
   /**
    Tries to convert a raw JavaScript value to the conforming type.
    */
   static func convert(from value: JavaScriptValue, appContext: AppContext) throws -> Self
+}
+
+extension AnyJavaScriptValue {
+  public static func getDynamicType() -> AnyDynamicType {
+    return DynamicJavaScriptType(innerType: Self.self)
+  }
 }
 
 extension JavaScriptValue: AnyJavaScriptValue, AnyArgument {

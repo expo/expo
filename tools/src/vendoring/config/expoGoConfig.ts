@@ -4,7 +4,13 @@ import minimatch from 'minimatch';
 import path from 'path';
 
 import { Podspec } from '../../CocoaPods';
-import { EXPO_DIR, EXPOTOOLS_DIR, REACT_NATIVE_SUBMODULE_DIR } from '../../Constants';
+import {
+  EXPO_DIR,
+  EXPO_GO_ANDROID_DIR,
+  EXPO_GO_IOS_DIR,
+  EXPOTOOLS_DIR,
+  REACT_NATIVE_SUBMODULE_DIR,
+} from '../../Constants';
 import logger from '../../Logger';
 import { transformFileAsync } from '../../Transforms';
 import { applyPatchAsync } from '../../Utils';
@@ -14,10 +20,10 @@ const config: VendoringTargetConfig = {
   name: 'Expo Go',
   platforms: {
     ios: {
-      targetDirectory: 'ios/vendored/unversioned',
+      targetDirectory: path.join(EXPO_GO_IOS_DIR, 'vendored/unversioned'),
     },
     android: {
-      targetDirectory: 'android/vendored/unversioned',
+      targetDirectory: path.join(EXPO_GO_ANDROID_DIR, 'vendored/unversioned'),
     },
   },
   modules: {
@@ -101,7 +107,7 @@ const config: VendoringTargetConfig = {
         async mutatePodspec(podspec: Podspec) {
           const reactCommonDir = path.relative(
             EXPO_DIR,
-            path.join(REACT_NATIVE_SUBMODULE_DIR, 'packages', 'react-native', 'ReactCommon')
+            path.join(REACT_NATIVE_SUBMODULE_DIR, 'ReactCommon')
           );
           // `reanimated_utils.rb` generates wrong and confusing paths to ReactCommon headers, so we need to fix them.
           podspec.xcconfig['HEADER_SEARCH_PATHS'] = podspec.xcconfig[
@@ -177,7 +183,7 @@ const config: VendoringTargetConfig = {
               // react-native root dir is in react-native-lab/react-native
               paths: 'build.gradle',
               find: /\b(def reactNativeRootDir)\s*=.+$/gm,
-              replaceWith: `$1 = Paths.get(projectDir.getPath(), '../../../../../react-native-lab/react-native/packages/react-native').toFile()`,
+              replaceWith: `$1 = Paths.get(projectDir.getPath(), '../../../../../../../react-native-lab/react-native/packages/react-native').toFile()`,
             },
             {
               // no-op for extracting tasks
@@ -244,7 +250,9 @@ const config: VendoringTargetConfig = {
     },
     '@react-native-community/netinfo': {
       source: 'https://github.com/react-native-netinfo/react-native-netinfo',
-      ios: {},
+      ios: {
+        excludeFiles: 'example/**/*',
+      },
     },
     'react-native-webview': {
       source: 'https://github.com/react-native-webview/react-native-webview.git',
@@ -412,7 +420,9 @@ const config: VendoringTargetConfig = {
               framework
             );
             const sharedFrameworkPath = path.join(vendoredCommonDir, path.basename(framework));
-            await fs.unlink(sharedFrameworkPath);
+            try {
+              await fs.unlink(sharedFrameworkPath);
+            } catch {}
             await fs.symlink(
               path.relative(path.dirname(sharedFrameworkPath), sourceFrameworkPath),
               sharedFrameworkPath
@@ -439,7 +449,13 @@ const config: VendoringTargetConfig = {
         includeFiles: ['android/**', 'cpp/**'],
         async postCopyFilesHookAsync(sourceDirectory, targetDirectory) {
           // create symlink from node_modules/@shopify/react-native-skia to common lib dir
-          const libs = ['libskia.a', 'libskshaper.a', 'libsvg.a'];
+          const libs = [
+            'libskia.a',
+            'libskparagraph.a',
+            'libskshaper.a',
+            'libsvg.a',
+            'libskunicode.a',
+          ];
           const archs = ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'];
           for (const lib of libs) {
             for (const arch of archs) {
@@ -451,7 +467,9 @@ const config: VendoringTargetConfig = {
               );
               const commonLibPath = path.join(targetDirectory, '../../../common/libs', arch, lib);
               await fs.ensureDir(path.dirname(commonLibPath));
-              await fs.unlink(commonLibPath);
+              try {
+                await fs.unlink(commonLibPath);
+              } catch {}
               await fs.symlink(
                 path.relative(path.dirname(commonLibPath), sourceLibPath),
                 commonLibPath

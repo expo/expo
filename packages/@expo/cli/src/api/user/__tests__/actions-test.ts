@@ -1,4 +1,3 @@
-import { asMock } from '../../../__tests__/asMock';
 import { promptAsync } from '../../../utils/prompts';
 import { ApiV2Error } from '../../rest/client';
 import { showLoginPromptAsync } from '../actions';
@@ -17,24 +16,26 @@ jest.mock('../otp');
 jest.mock('../user');
 
 beforeEach(() => {
-  asMock(promptAsync).mockClear();
-  asMock(promptAsync).mockImplementation(() => {
+  jest.mocked(promptAsync).mockClear();
+  jest.mocked(promptAsync).mockImplementation(() => {
     throw new Error('Should not be called');
   });
 
-  asMock(loginAsync).mockClear();
-  asMock(ssoLoginAsync).mockClear();
+  jest.mocked(loginAsync).mockClear();
+  jest.mocked(ssoLoginAsync).mockClear();
 });
 
 describe(showLoginPromptAsync, () => {
   it('prompts for OTP when 2FA is enabled', async () => {
-    asMock(promptAsync)
+    jest
+      .mocked(promptAsync)
       .mockImplementationOnce(async () => ({ username: 'hello', password: 'world' }))
       .mockImplementationOnce(async () => ({ otp: '123456' }))
       .mockImplementation(() => {
         throw new Error("shouldn't happen");
       });
-    asMock(loginAsync)
+    jest
+      .mocked(loginAsync)
       .mockImplementationOnce(async () => {
         throw new ApiV2Error({
           message: 'An OTP is required',
@@ -70,16 +71,16 @@ describe(showLoginPromptAsync, () => {
   });
 
   it('does not prompt if all required credentials are provided', async () => {
-    asMock(promptAsync).mockImplementation(() => {
+    jest.mocked(promptAsync).mockImplementation(() => {
       throw new Error("shouldn't happen");
     });
-    asMock(loginAsync).mockImplementation(async () => {});
+    jest.mocked(loginAsync).mockImplementation(async () => {});
 
     await showLoginPromptAsync({ username: 'hello', password: 'world' });
   });
 
   it('calls regular login if the sso flag is false', async () => {
-    asMock(promptAsync).mockImplementationOnce(async () => ({
+    jest.mocked(promptAsync).mockImplementationOnce(async () => ({
       username: 'USERNAME',
       password: 'PASSWORD',
     }));
@@ -90,7 +91,8 @@ describe(showLoginPromptAsync, () => {
   });
 
   it('calls regular login if the sso flag is undefined', async () => {
-    asMock(promptAsync)
+    jest
+      .mocked(promptAsync)
       .mockImplementationOnce(async () => ({ username: 'USERNAME', password: 'PASSWORD' }))
       .mockImplementation(() => {
         throw new Error("shouldn't happen");
@@ -102,7 +104,7 @@ describe(showLoginPromptAsync, () => {
   });
 
   it('calls SSO login if the sso flag is true', async () => {
-    asMock(promptAsync);
+    jest.mocked(promptAsync);
     await showLoginPromptAsync({ username: 'hello', password: 'world', sso: true });
 
     expect(ssoLoginAsync).toHaveBeenCalledTimes(1);

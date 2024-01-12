@@ -1,13 +1,15 @@
 import { Inter_900Black } from '@expo-google-fonts/inter';
 import Constants from 'expo-constants';
-import { NativeModulesProxy } from 'expo-modules-core';
+import { requireNativeModule } from 'expo-modules-core';
 import { StatusBar } from 'expo-status-bar';
 import * as Updates from 'expo-updates';
 import { UpdatesLogEntry } from 'expo-updates';
 import React from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-require('./test.png');
+const ExpoUpdatesE2ETest = requireNativeModule('ExpoUpdatesE2ETest');
+
+require('./includedAssets/test.png');
 // eslint-disable-next-line no-unused-expressions
 Inter_900Black;
 
@@ -36,11 +38,15 @@ function TestButton(props: { testID: string; onPress: () => void }) {
 export default function App() {
   const [numAssetFiles, setNumAssetFiles] = React.useState(0);
   const [logs, setLogs] = React.useState<UpdatesLogEntry[]>([]);
-  const [active, setActive] = React.useState(false);
+  const [numActive, setNumActive] = React.useState(0);
   const [lastUpdateEventType, setLastUpdateEventType] = React.useState('');
   const [extraParamsString, setExtraParamsString] = React.useState('');
   const [nativeStateContextString, setNativeStateContextString] = React.useState('{}');
   const [isRollback, setIsRollback] = React.useState(false);
+  const [isReloading, setIsReloading] = React.useState(false);
+  const [startTime, setStartTime] = React.useState<number | null>(null);
+  const [didCheckAndDownloadHappenInParallel, setDidCheckAndDownloadHappenInParallel] =
+    React.useState(false);
 
   const {
     currentlyRunning,
@@ -49,7 +55,13 @@ export default function App() {
     isUpdateAvailable,
     isUpdatePending,
     checkError,
+    isChecking,
+    isDownloading,
   } = Updates.useUpdates();
+
+  React.useEffect(() => {
+    setStartTime(Date.now());
+  }, []);
 
   Updates.useUpdateEvents((event) => {
     setLastUpdateEventType(event.type);
@@ -65,94 +77,89 @@ export default function App() {
     }
   }, [isUpdateAvailable]);
 
-  const handleReadNativeStateContext = () => {
-    const handleAsync = async () => {
-      setActive(true);
-      const state = await Updates.getNativeStateMachineContextAsync();
-      setNativeStateContextString(JSON.stringify(state));
-      await delay(1000);
-      setActive(false);
-    };
-    handleAsync().catch((e) => {
+  // Record if checking an downloading happen in parallel (they shouldn't)
+  React.useEffect(() => {
+    if (isChecking && isDownloading) {
+      setDidCheckAndDownloadHappenInParallel(true);
+    }
+  }, [isChecking, isDownloading]);
+
+  const runBlockAsync = (block: () => Promise<void>) => async () => {
+    setNumActive((n) => n + 1);
+    try {
+      await block();
+    } catch (e) {
       console.warn(e);
-    });
+    } finally {
+      setNumActive((n) => n - 1);
+    }
   };
 
-  const handleSetExtraParams = () => {
-    const handleAsync = async () => {
-      setActive(true);
-      await Updates.setExtraParamAsync('testsetnull', 'testvalue');
-      await Updates.setExtraParamAsync('testsetnull', null);
-      await Updates.setExtraParamAsync('testparam', 'testvalue');
-      const params = await Updates.getExtraParamsAsync();
-      setExtraParamsString(JSON.stringify(params, null, 2));
-      await delay(1000);
-      setActive(false);
-    };
-    handleAsync().catch((e) => {
-      console.warn(e);
-    });
+  const handleReadNativeStateContext = runBlockAsync(async () => {
+    const state = await Updates.getNativeStateMachineContextAsync();
+    setNativeStateContextString(JSON.stringify(state));
+  });
+
+  const handleSetExtraParams = runBlockAsync(async () => {
+    await Updates.setExtraParamAsync('testsetnull', 'testvalue');
+    await Updates.setExtraParamAsync('testsetnull', null);
+    await Updates.setExtraParamAsync('testparam', 'testvalue');
+    const params = await Updates.getExtraParamsAsync();
+    setExtraParamsString(JSON.stringify(params, null, 2));
+  });
+
+  const handleReadAssetFiles = runBlockAsync(async () => {
+    const numFiles = await ExpoUpdatesE2ETest.readInternalAssetsFolderAsync();
+    setNumAssetFiles(numFiles);
+  });
+
+  const handleClearAssetFiles = runBlockAsync(async () => {
+    await ExpoUpdatesE2ETest.clearInternalAssetsFolderAsync();
+    const numFiles = await ExpoUpdatesE2ETest.readInternalAssetsFolderAsync();
+    setNumAssetFiles(numFiles);
+  });
+
+  const handleReadLogEntries = runBlockAsync(async () => {
+    const logEntries = await Updates.readLogEntriesAsync(60000);
+    setLogs(logEntries);
+  });
+
+  const handleClearLogEntries = runBlockAsync(async () => {
+    await Updates.clearLogEntriesAsync();
+  });
+
+  const handleReload = async () => {
+    setIsReloading(true);
+    // this is done after a timeout so that the button press finishes for detox
+    setTimeout(async () => {
+      try {
+        await Updates.reloadAsync();
+        setIsReloading(false);
+      } catch (e) {
+        console.warn(e);
+      }
+    }, 2000);
   };
 
-  const handleReadAssetFiles = () => {
-    const handleAsync = async () => {
-      setActive(true);
-      const numFiles = await NativeModulesProxy.ExpoUpdatesE2ETest.readInternalAssetsFolderAsync();
-      await delay(1000);
-      setNumAssetFiles(numFiles);
-      setActive(false);
-    };
-    handleAsync().catch((e) => {
-      console.warn(e);
-    });
-  };
+  const handleCheckForUpdate = runBlockAsync(async () => {
+    await Updates.checkForUpdateAsync();
+  });
 
-  const handleClearAssetFiles = () => {
-    const handleAsync = async () => {
-      setActive(true);
-      await NativeModulesProxy.ExpoUpdatesE2ETest.clearInternalAssetsFolderAsync();
-      const numFiles = await NativeModulesProxy.ExpoUpdatesE2ETest.readInternalAssetsFolderAsync();
-      await delay(1000);
-      setNumAssetFiles(numFiles);
-      setActive(false);
-    };
-    handleAsync().catch((e) => {
-      console.warn(e);
-    });
-  };
+  const handleDownloadUpdate = runBlockAsync(async () => {
+    await Updates.fetchUpdateAsync();
+  });
 
-  const handleReadLogEntries = () => {
-    const handleAsync = async () => {
-      setActive(true);
-      const logEntries = await Updates.readLogEntriesAsync(60000);
-      await delay(1000);
-      setLogs(logEntries);
-      setActive(false);
-    };
-    handleAsync().catch((e) => {
-      console.warn(e);
-    });
-  };
-
-  const handleClearLogEntries = () => {
-    const handleAsync = async () => {
-      setActive(true);
-      await Updates.clearLogEntriesAsync();
-      await delay(1000);
-      setActive(false);
-    };
-    handleAsync().catch((e) => {
-      console.warn(e);
-    });
-  };
-
-  const handleCheckForUpdate = () => {
-    Updates.checkForUpdateAsync();
-  };
-
-  const handleDownloadUpdate = () => {
-    Updates.fetchUpdateAsync();
-  };
+  const handleCheckAndDownloadAtSameTime = runBlockAsync(async () => {
+    await Promise.all([
+      Updates.checkForUpdateAsync(),
+      Updates.fetchUpdateAsync(),
+      Updates.checkForUpdateAsync(),
+      Updates.fetchUpdateAsync(),
+      Updates.checkForUpdateAsync(),
+      Updates.fetchUpdateAsync(),
+      Updates.checkForUpdateAsync(),
+    ]);
+  });
 
   const logsToString = (logs: UpdatesLogEntry[]) =>
     JSON.stringify(
@@ -167,6 +174,11 @@ export default function App() {
 
   return (
     <View style={styles.container}>
+      <TestValue testID="numActive" value={`${numActive}`} />
+      <TestValue
+        testID="didCheckAndDownloadHappenInParallel"
+        value={`${didCheckAndDownloadHappenInParallel}`}
+      />
       <TestValue testID="lastUpdateEventType" value={`${lastUpdateEventType}`} />
       <TestValue testID="updateString" value="test" />
       <TestValue testID="updateID" value={`${Updates.updateId}`} />
@@ -176,6 +188,8 @@ export default function App() {
       <TestValue testID="isEmbeddedLaunch" value={`${currentlyRunning.isEmbeddedLaunch}`} />
       <TestValue testID="availableUpdateID" value={`${availableUpdate?.updateId}`} />
       <TestValue testID="extraParamsString" value={`${extraParamsString}`} />
+      <TestValue testID="isReloading" value={`${isReloading}`} />
+      <TestValue testID="startTime" value={`${startTime}`} />
 
       <TestValue testID="state.isUpdateAvailable" value={`${isUpdateAvailable}`} />
       <TestValue testID="state.isUpdatePending" value={`${isUpdatePending}`} />
@@ -222,7 +236,7 @@ export default function App() {
         </Text>
       </ScrollView>
 
-      {active ? <ActivityIndicator testID="activity" size="small" color="#0000ff" /> : null}
+      {numActive > 0 ? <ActivityIndicator testID="activity" size="small" color="#0000ff" /> : null}
       <View style={{ flexDirection: 'row' }}>
         <View>
           <TestButton testID="readAssetFiles" onPress={handleReadAssetFiles} />
@@ -235,6 +249,11 @@ export default function App() {
           <TestButton testID="downloadUpdate" onPress={handleDownloadUpdate} />
           <TestButton testID="setExtraParams" onPress={handleSetExtraParams} />
           <TestButton testID="readNativeStateContext" onPress={handleReadNativeStateContext} />
+          <TestButton
+            testID="triggerParallelFetchAndDownload"
+            onPress={handleCheckAndDownloadAtSameTime}
+          />
+          <TestButton testID="reload" onPress={handleReload} />
         </View>
       </View>
 
@@ -242,17 +261,6 @@ export default function App() {
     </View>
   );
 }
-
-/**
- * Promise wrapper for setTimeout()
- * @param {delay} timeout Timeout in ms
- * @returns a Promise that resolves after the timeout has elapsed
- */
-const delay = (timeout: number) => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, timeout);
-  });
-};
 
 const styles = StyleSheet.create({
   container: {

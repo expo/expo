@@ -9,7 +9,7 @@ class DevMenuRCTBridgeTest: QuickSpec {
   @objc(NotAllowModule)
   class NotAllowModule: NSObject {}
 
-  override func spec() {
+  override class func spec() {
     it("should be connected with DevMenuRCTCxxBridge") {
       let bridge = DevMenuRCTBridge(delegate: nil, launchOptions: nil)!
 

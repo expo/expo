@@ -1,4 +1,3 @@
-import { asMock } from '../../../../__tests__/asMock';
 import { CommandError } from '../../../../utils/errors';
 import {
   Device,
@@ -47,9 +46,9 @@ describe(openUrlAsync, () => {
 
 describe(launchActivityAsync, () => {
   it(`asserts that the launch activity does not exist`, async () => {
-    asMock(getServer().runAsync).mockResolvedValueOnce(
-      'Error: Activity class dev.bacon.app/.MainActivity does not exist.'
-    );
+    jest
+      .mocked(getServer().runAsync)
+      .mockResolvedValueOnce('Error: Activity class dev.bacon.app/.MainActivity does not exist.');
     await expect(
       launchActivityAsync(device, {
         launchActivity: 'dev.bacon.app/.MainActivity',
@@ -57,7 +56,7 @@ describe(launchActivityAsync, () => {
     ).rejects.toThrow(CommandError);
   });
   it(`runs`, async () => {
-    asMock(getServer().runAsync).mockResolvedValueOnce('...');
+    jest.mocked(getServer().runAsync).mockResolvedValueOnce('...');
     await launchActivityAsync(device, {
       launchActivity: 'dev.bacon.app/.MainActivity',
     });
@@ -77,13 +76,15 @@ describe(launchActivityAsync, () => {
 
 describe(isPackageInstalledAsync, () => {
   it(`returns true when a package is installed`, async () => {
-    asMock(getServer().runAsync).mockResolvedValueOnce(
-      [
-        'package:com.google.android.networkstack.tethering',
-        'package:com.android.cts.priv.ctsshim',
-        'package:com.google.android.youtube',
-      ].join('\n')
-    );
+    jest
+      .mocked(getServer().runAsync)
+      .mockResolvedValueOnce(
+        [
+          'package:com.google.android.networkstack.tethering',
+          'package:com.android.cts.priv.ctsshim',
+          'package:com.google.android.youtube',
+        ].join('\n')
+      );
     expect(await isPackageInstalledAsync(device, 'com.google.android.youtube')).toBe(true);
     expect(getServer().runAsync).toBeCalledWith([
       '-s',
@@ -96,16 +97,16 @@ describe(isPackageInstalledAsync, () => {
     ]);
   });
   it(`returns false when a package is not isntalled`, async () => {
-    asMock(getServer().runAsync).mockResolvedValueOnce('');
+    jest.mocked(getServer().runAsync).mockResolvedValueOnce('');
     expect(await isPackageInstalledAsync(device, 'com.google.android.youtube')).toBe(false);
   });
 });
 
 describe(openAppIdAsync, () => {
   it(`asserts that the app does not exist`, async () => {
-    asMock(getServer().runAsync).mockResolvedValueOnce(
-      'Error: Activity not started, unable to resolve Intent'
-    );
+    jest
+      .mocked(getServer().runAsync)
+      .mockResolvedValueOnce('Error: Activity not started, unable to resolve Intent');
     await expect(
       openAppIdAsync(device, {
         applicationId: 'dev.bacon.app',
@@ -116,16 +117,16 @@ describe(openAppIdAsync, () => {
 
 describe(getAdbNameForDeviceIdAsync, () => {
   it(`returns a device name`, async () => {
-    asMock(getServer().runAsync).mockResolvedValueOnce(['Pixel_4_XL_API_30', 'OK'].join('\n'));
+    jest.mocked(getServer().runAsync).mockResolvedValueOnce(['Pixel_4_XL_API_30', 'OK'].join('\n'));
 
     expect(await getAdbNameForDeviceIdAsync(asDevice({ pid: 'emulator-5554' }))).toBe(
       'Pixel_4_XL_API_30'
     );
   });
   it(`asserts when a device is not found`, async () => {
-    asMock(getServer().runAsync).mockResolvedValueOnce(
-      'error: could not connect to TCP port 55534: Connection refused'
-    );
+    jest
+      .mocked(getServer().runAsync)
+      .mockResolvedValueOnce('error: could not connect to TCP port 55534: Connection refused');
 
     await expect(
       getAdbNameForDeviceIdAsync(asDevice({ pid: 'emulator-5554' }))
@@ -135,7 +136,8 @@ describe(getAdbNameForDeviceIdAsync, () => {
 
 describe(isDeviceBootedAsync, () => {
   it(`returns a device when booted`, async () => {
-    asMock(getServer().runAsync)
+    jest
+      .mocked(getServer().runAsync)
       .mockResolvedValueOnce(
         [
           'List of devices attached',
@@ -158,14 +160,15 @@ describe(isDeviceBootedAsync, () => {
   });
 
   it(`returns null when the device is not booted`, async () => {
-    asMock(getServer().runAsync).mockResolvedValueOnce('');
+    jest.mocked(getServer().runAsync).mockResolvedValueOnce('');
     expect(await isDeviceBootedAsync(device)).toBe(null);
   });
 });
 
 describe(getAttachedDevicesAsync, () => {
   it(`gets devices`, async () => {
-    asMock(getServer().runAsync)
+    jest
+      .mocked(getServer().runAsync)
       .mockResolvedValueOnce(
         [
           'List of devices attached',
@@ -214,20 +217,20 @@ describe(getAttachedDevicesAsync, () => {
 
 describe(isBootAnimationCompleteAsync, () => {
   it(`returns true if the boot animation is complete for a device`, async () => {
-    asMock(getServer().getFileOutputAsync).mockResolvedValueOnce(
-      ['[init.svc.bootanim]: [stopped]'].join('\n')
-    );
+    jest
+      .mocked(getServer().getFileOutputAsync)
+      .mockResolvedValueOnce(['[init.svc.bootanim]: [stopped]'].join('\n'));
 
     await expect(isBootAnimationCompleteAsync()).resolves.toBe(true);
   });
   it(`returns false if the boot animation is not complete`, async () => {
-    asMock(getServer().getFileOutputAsync).mockResolvedValueOnce(
-      ['[init.svc.bootanim]: [running]'].join('\n')
-    );
+    jest
+      .mocked(getServer().getFileOutputAsync)
+      .mockResolvedValueOnce(['[init.svc.bootanim]: [running]'].join('\n'));
     await expect(isBootAnimationCompleteAsync()).resolves.toBe(false);
   });
   it(`returns false if the properties cannot be read`, async () => {
-    asMock(getServer().getFileOutputAsync).mockImplementationOnce(() => {
+    jest.mocked(getServer().getFileOutputAsync).mockImplementationOnce(() => {
       throw new Error('File not found');
     });
 
@@ -237,7 +240,7 @@ describe(isBootAnimationCompleteAsync, () => {
 
 describe(getPropertyDataForDeviceAsync, () => {
   it(`returns parsed property data`, async () => {
-    asMock(getServer().getFileOutputAsync).mockResolvedValueOnce(
+    jest.mocked(getServer().getFileOutputAsync).mockResolvedValueOnce(
       [
         '[wifi.direct.interface]: [p2p-dev-wlan0]',
         '[init.svc.bootanim]: [stopped]',
@@ -257,9 +260,9 @@ describe(getPropertyDataForDeviceAsync, () => {
 
 describe(getDeviceABIsAsync, () => {
   it(`returns a list of device ABIs`, async () => {
-    asMock(getServer().getFileOutputAsync).mockResolvedValueOnce(
-      ['x86,armeabi-v7a,armeabi', ''].join('\n')
-    );
+    jest
+      .mocked(getServer().getFileOutputAsync)
+      .mockResolvedValueOnce(['x86,armeabi-v7a,armeabi', ''].join('\n'));
     await expect(isBootAnimationCompleteAsync()).resolves.toBe(false);
   });
 });

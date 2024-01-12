@@ -39,9 +39,8 @@ public final class PedometerModule: Module {
       guard let permissionsManager = appContext?.permissions else {
         return
       }
-      EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
-        permissionsManager,
-        withRequester: EXMotionPermissionRequester.self,
+      appContext?.permissions?.getPermissionUsingRequesterClass(
+        EXMotionPermissionRequester.self,
         resolve: promise.resolver,
         reject: promise.legacyRejecter
       )
@@ -51,9 +50,8 @@ public final class PedometerModule: Module {
       guard let permissionsManager = appContext?.permissions else {
         return
       }
-      EXPermissionsMethodsDelegate.askForPermission(
-        withPermissionsManager: permissionsManager,
-        withRequester: EXMotionPermissionRequester.self,
+      appContext?.permissions?.askForPermission(
+        usingRequesterClass: EXMotionPermissionRequester.self,
         resolve: promise.resolver,
         reject: promise.legacyRejecter
       )
@@ -63,7 +61,7 @@ public final class PedometerModule: Module {
       guard let permissionsManager = appContext?.permissions else {
         return
       }
-      EXPermissionsMethodsDelegate.register([EXMotionPermissionRequester()], withPermissionsManager: permissionsManager)
+      appContext?.permissions?.register([EXMotionPermissionRequester()])
     }
 
     OnStartObserving {
@@ -98,15 +96,20 @@ public final class PedometerModule: Module {
     }
 
     OnDestroy {
-      pedometer.stopUpdates()
+      stopUpdates()
     }
   }
 
   private func stopUpdates() {
-    if watchHandler != nil {
-      pedometer.stopUpdates()
-      watchStartDate = nil
-      watchHandler = nil
+    guard let permissions = appContext?.permissions else {
+      return
+    }
+    if permissions.hasGrantedPermission(usingRequesterClass: EXMotionPermissionRequester.self) {
+      if watchHandler != nil {
+        pedometer.stopUpdates()
+        watchStartDate = nil
+        watchHandler = nil
+      }
     }
   }
 }

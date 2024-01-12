@@ -1,40 +1,28 @@
+import { getConfig } from '@expo/config';
 import chalk from 'chalk';
-import fs from 'fs';
 import path from 'path';
 
-import { createBundlesAsync } from './createBundles';
-import { exportAssetsAsync, exportCssAssetsAsync } from './exportAssets';
+import { createMetadataJson } from './createMetadataJson';
+import { exportAssetsAsync } from './exportAssets';
 import { unstable_exportStaticAsync } from './exportStaticAsync';
 import { getVirtualFaviconAssetsAsync } from './favicon';
+import { createBundlesAsync } from './fork-bundleAsync';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
-import { persistMetroAssetsAsync } from './persistMetroAssets';
-import { printBundleSizes } from './printBundleSizes';
+import { copyPublicFolderAsync } from './publicFolder';
 import { Options } from './resolveOptions';
-import {
-  writeAssetMapAsync,
-  writeBundlesAsync,
-  writeDebugHtmlAsync,
-  writeMetadataJsonAsync,
-  writeSourceMapsAsync,
-} from './writeContents';
+import { ExportAssetMap, getFilesFromSerialAssets, persistMetroFilesAsync } from './saveAssets';
+import { createAssetMap, createSourceMapDebugHtml } from './writeContents';
 import * as Log from '../log';
+import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/router';
+import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
+import {
+  getAsyncRoutesFromExpoConfig,
+  getBaseUrlFromExpoConfig,
+} from '../start/server/middleware/metroOptions';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
-import { copyAsync, ensureDirectoryAsync } from '../utils/dir';
 import { env } from '../utils/env';
 import { setNodeEnv } from '../utils/nodeEnv';
 
-/**
- * The structure of the outputDir will be:
- *
- * ```
- * ├── assets
- * │   └── *
- * ├── bundles
- * │   ├── android-01ee6e3ab3e8c16a4d926c91808d5320.js
- * │   └── ios-ee8206cc754d3f7aa9123b7f909d94ea.js
- * └── metadata.json
- * ```
- */
 export async function exportAppAsync(
   projectRoot: string,
   {
@@ -43,30 +31,39 @@ export async function exportAppAsync(
     clear,
     dev,
     dumpAssetmap,
-    dumpSourcemap,
+    sourceMaps,
     minify,
+    maxWorkers,
   }: Pick<
     Options,
-    'dumpAssetmap' | 'dumpSourcemap' | 'dev' | 'clear' | 'outputDir' | 'platforms' | 'minify'
+    | 'dumpAssetmap'
+    | 'sourceMaps'
+    | 'dev'
+    | 'clear'
+    | 'outputDir'
+    | 'platforms'
+    | 'minify'
+    | 'maxWorkers'
   >
 ): Promise<void> {
   setNodeEnv(dev ? 'development' : 'production');
   require('@expo/env').load(projectRoot);
 
+  const projectConfig = getConfig(projectRoot);
   const exp = await getPublicExpoManifestAsync(projectRoot, {
     // Web doesn't require validation.
     skipValidation: platforms.length === 1 && platforms[0] === 'web',
   });
 
   const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
-  const basePath = (exp.experiments?.basePath?.replace(/\/+$/, '') ?? '').trim();
+  const baseUrl = getBaseUrlFromExpoConfig(exp);
 
   // Print out logs
-  if (basePath) {
+  if (baseUrl) {
     Log.log();
-    Log.log(chalk.gray`Using (experimental) base path: ${basePath}`);
+    Log.log(chalk.gray`Using (experimental) base path: ${baseUrl}`);
     // Warn if not using an absolute path.
-    if (!basePath.startsWith('/')) {
+    if (!baseUrl.startsWith('/')) {
       Log.log(
         chalk.yellow`  Base path does not start with a slash. Requests will not be absolute.`
       );
@@ -74,157 +71,133 @@ export async function exportAppAsync(
   }
 
   const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
-
   const outputPath = path.resolve(projectRoot, outputDir);
-  const staticFolder = outputPath;
-  const assetsPath = path.join(staticFolder, 'assets');
-  const bundlesPath = path.join(staticFolder, 'bundles');
 
-  await Promise.all([assetsPath, bundlesPath].map(ensureDirectoryAsync));
-
-  await copyPublicFolderAsync(publicPath, staticFolder);
+  // NOTE(kitten): The public folder is currently always copied, regardless of targetDomain
+  // split. Hence, there's another separate `copyPublicFolderAsync` call below for `web`
+  await copyPublicFolderAsync(publicPath, outputPath);
 
   // Run metro bundler and create the JS bundles/source maps.
-  const bundles = await createBundlesAsync(
-    projectRoot,
-    { resetCache: !!clear },
-    {
-      platforms,
-      minify,
-      // TODO: Breaks asset exports
-      // platforms: useServerRendering
-      //   ? platforms.filter((platform) => platform !== 'web')
-      //   : platforms,
-      dev,
-      // TODO: Disable source map generation if we aren't outputting them.
-    }
-  );
-
-  const bundleEntries = Object.entries(bundles);
-  if (bundleEntries.length) {
-    // Log bundle size info to the user
-    printBundleSizes(
-      Object.fromEntries(
-        bundleEntries.map(([key, value]) => {
-          if (!dumpSourcemap) {
-            return [
-              key,
-              {
-                ...value,
-                // Remove source maps from the bundles if they aren't going to be written.
-                map: undefined,
-              },
-            ];
-          }
-
-          return [key, value];
-        })
-      )
-    );
-  }
-
-  // Write the JS bundles to disk, and get the bundle file names (this could change with async chunk loading support).
-  const { hashes, fileNames } = await writeBundlesAsync({
-    bundles,
-    useServerRendering,
-    outputDir: bundlesPath,
+  const bundles = await createBundlesAsync(projectRoot, projectConfig, {
+    clear: !!clear,
+    minify,
+    sourcemaps: sourceMaps,
+    platforms: useServerRendering ? platforms.filter((platform) => platform !== 'web') : platforms,
+    dev,
+    maxWorkers,
   });
 
-  Log.log('Finished saving JS Bundles');
+  // Write the JS bundles to disk, and get the bundle file names (this could change with async chunk loading support).
+
+  const files: ExportAssetMap = new Map();
+
+  Object.values(bundles).forEach((bundle) => {
+    getFilesFromSerialAssets(bundle.artifacts, {
+      includeSourceMaps: sourceMaps,
+      files,
+    });
+  });
+
+  const bundleEntries = Object.entries(bundles);
+  // Can be empty during web-only SSG.
+  if (bundleEntries.length) {
+    // TODO: Use same asset system across platforms again.
+    const { assets, embeddedHashSet } = await exportAssetsAsync(projectRoot, {
+      files,
+      exp,
+      outputDir: outputPath,
+      bundles,
+      baseUrl,
+    });
+
+    if (dumpAssetmap) {
+      Log.log('Creating asset map');
+      files.set('assetmap.json', { contents: JSON.stringify(createAssetMap({ assets })) });
+    }
+
+    const fileNames = Object.fromEntries(
+      Object.entries(bundles).map(([platform, bundle]) => [
+        platform,
+        bundle.artifacts.filter((asset) => asset.type === 'js').map((asset) => asset.filename),
+      ])
+    );
+
+    // build source maps
+    if (sourceMaps) {
+      Log.log('Preparing additional debugging files');
+      // If we output source maps, then add a debug HTML file which the user can open in
+      // the web browser to inspect the output like web.
+      files.set('debug.html', {
+        contents: createSourceMapDebugHtml({
+          fileNames: Object.values(fileNames).flat(),
+        }),
+      });
+    }
+
+    // Generate a `metadata.json` for EAS Update.
+    const contents = createMetadataJson({
+      bundles,
+      fileNames,
+      embeddedHashSet,
+    });
+    files.set('metadata.json', { contents: JSON.stringify(contents) });
+  }
+
+  // Additional web-only steps...
 
   if (platforms.includes('web')) {
     if (useServerRendering) {
+      const exportServer = exp.web?.output === 'server';
+
+      if (exportServer) {
+        // TODO: Remove when this is abstracted into the files map
+        await copyPublicFolderAsync(publicPath, path.resolve(outputPath, 'client'));
+      }
+
       await unstable_exportStaticAsync(projectRoot, {
+        files,
+        clear: !!clear,
         outputDir: outputPath,
         minify,
-        basePath,
-        includeMaps: dumpSourcemap,
-        // @ts-expect-error: server not on type yet
-        exportServer: exp.web?.output === 'server',
+        baseUrl,
+        includeSourceMaps: sourceMaps,
+        asyncRoutes: getAsyncRoutesFromExpoConfig(exp, dev ? 'development' : 'production', 'web'),
+        routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
+        exportServer,
+        maxWorkers,
       });
-      Log.log('Finished saving static files');
     } else {
-      const cssLinks = await exportCssAssetsAsync({
-        outputDir,
-        bundles,
-        basePath,
+      // TODO: Unify with exportStaticAsync
+      // TODO: Maybe move to the serializer.
+      let html = await serializeHtmlWithAssets({
+        mode: 'production',
+        resources: bundles.web!.artifacts,
+        template: await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
+          scripts: [],
+          cssLinks: [],
+        }),
+        baseUrl,
       });
-      let html = await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
-        scripts: [`${basePath}/bundles/${fileNames.web}`],
-        cssLinks,
-      });
+
       // Add the favicon assets to the HTML.
       const modifyHtml = await getVirtualFaviconAssetsAsync(projectRoot, {
         outputDir,
-        basePath,
+        baseUrl,
+        files,
       });
       if (modifyHtml) {
         html = modifyHtml(html);
       }
+
       // Generate SPA-styled HTML file.
       // If web exists, then write the template HTML file.
-      await fs.promises.writeFile(path.join(staticFolder, 'index.html'), html);
-    }
-
-    // TODO: Use a different mechanism for static web.
-    if (bundles.web) {
-      // Save assets like a typical bundler, preserving the file paths on web.
-      // TODO: Update React Native Web to support loading files from asset hashes.
-      await persistMetroAssetsAsync(bundles.web.assets, {
-        platform: 'web',
-        outputDirectory: staticFolder,
-        basePath,
+      files.set('index.html', {
+        contents: html,
+        targetDomain: 'client',
       });
     }
   }
 
-  // Can be empty during web-only SSG.
-  // TODO: Use same asset system across platforms again.
-  if (Object.keys(fileNames).length) {
-    const { assets } = await exportAssetsAsync(projectRoot, {
-      exp,
-      outputDir: staticFolder,
-      bundles,
-    });
-
-    if (dumpAssetmap) {
-      Log.log('Dumping asset map');
-      await writeAssetMapAsync({ outputDir: staticFolder, assets });
-    }
-    // build source maps
-    if (dumpSourcemap) {
-      Log.log('Dumping source maps');
-      await writeSourceMapsAsync({
-        bundles,
-        hashes,
-        outputDir: bundlesPath,
-        fileNames,
-      });
-
-      Log.log('Preparing additional debugging files');
-      // If we output source maps, then add a debug HTML file which the user can open in
-      // the web browser to inspect the output like web.
-      await writeDebugHtmlAsync({
-        outputDir: staticFolder,
-        fileNames,
-      });
-    }
-
-    // Generate a `metadata.json` and the export is complete.
-    await writeMetadataJsonAsync({ outputDir: staticFolder, bundles, fileNames });
-  }
-}
-
-/**
- * Copy the contents of the public folder into the output folder.
- * This enables users to add static files like `favicon.ico` or `serve.json`.
- *
- * The contents of this folder are completely universal since they refer to
- * static network requests which fall outside the scope of React Native's magic
- * platform resolution patterns.
- */
-async function copyPublicFolderAsync(publicFolder: string, outputFolder: string) {
-  if (fs.existsSync(publicFolder)) {
-    await copyAsync(publicFolder, outputFolder);
-  }
+  // Write all files at the end for unified logging.
+  await persistMetroFilesAsync(files, outputPath);
 }

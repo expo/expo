@@ -126,12 +126,12 @@ open class SecureStoreModule : Module() {
         AESEncryptor.NAME -> {
           val secretKeyEntry = getPreferredKeyEntry(SecretKeyEntry::class.java, mAESEncryptor, options, requireAuthentication, usesKeystoreSuffix)
             ?: throw DecryptException("Could not find a keychain for key $key$legacyReadFailedWarning", key, options.keychainService)
-          return mAESEncryptor.decryptItem(encryptedItem, secretKeyEntry, options, authenticationHelper)
+          return mAESEncryptor.decryptItem(key, encryptedItem, secretKeyEntry, options, authenticationHelper)
         }
         HybridAESEncryptor.NAME -> {
           val privateKeyEntry = getPreferredKeyEntry(PrivateKeyEntry::class.java, hybridAESEncryptor, options, requireAuthentication, usesKeystoreSuffix)
             ?: throw DecryptException("Could not find a keychain for key $key$legacyReadFailedWarning", key, options.keychainService)
-          return hybridAESEncryptor.decryptItem(encryptedItem, privateKeyEntry, options, authenticationHelper)
+          return hybridAESEncryptor.decryptItem(key, encryptedItem, privateKeyEntry, options, authenticationHelper)
         }
         else -> {
           throw DecryptException("The item for key $key in SecureStore has an unknown encoding scheme $scheme)", key, options.keychainService)
@@ -175,7 +175,7 @@ open class SecureStoreModule : Module() {
        versions we store an asymmetric key pair and use hybrid encryption. We store the scheme we
        use in the encrypted JSON item so that we know how to decode and decrypt it when reading
        back a value.
-      */
+       */
       val secretKeyEntry: SecretKeyEntry = getKeyEntry(SecretKeyEntry::class.java, mAESEncryptor, options, options.requireAuthentication)
       val encryptedItem = mAESEncryptor.createEncryptedItem(value, secretKeyEntry, options.requireAuthentication, options.authenticationPrompt, authenticationHelper)
       encryptedItem.put(SCHEME_PROPERTY, AESEncryptor.NAME)

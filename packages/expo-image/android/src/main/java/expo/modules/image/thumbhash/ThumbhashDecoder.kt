@@ -96,10 +96,12 @@ object ThumbhashDecoder {
     hash[2] = (header24 shr 16).toByte()
     hash[3] = header16.toByte()
     hash[4] = (header16 shr 8).toByte()
-    if (hasAlpha) hash[5] = (
-      Math.round(15.0f * a_channel!!.dc)
-        or (Math.round(15.0f * a_channel.scale) shl 4)
-      ).toByte()
+    if (hasAlpha) {
+      hash[5] = (
+        Math.round(15.0f * a_channel!!.dc)
+          or (Math.round(15.0f * a_channel.scale) shl 4)
+        ).toByte()
+    }
 
     // Write the varying factors
     var ac_index = 0

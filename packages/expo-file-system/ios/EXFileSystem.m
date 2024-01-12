@@ -5,7 +5,12 @@
 #import <ExpoFileSystem/EXFileSystem.h>
 
 #import <CommonCrypto/CommonDigest.h>
+
+#if TARGET_OS_IOS || TARGET_OS_TV
 #import <MobileCoreServices/MobileCoreServices.h>
+#elif TARGET_OS_OSX
+#import <CoreServices/CoreServices.h>
+#endif
 
 #import <ExpoFileSystem/EXFileSystemLocalFileHandler.h>
 #import <ExpoFileSystem/EXFileSystemAssetLibraryHandler.h>
@@ -46,7 +51,6 @@ typedef NS_ENUM(NSInteger, EXFileSystemUploadType) {
 @property (nonatomic, weak) id<EXEventEmitterService> eventEmitter;
 @property (nonatomic, strong) NSString *documentDirectory;
 @property (nonatomic, strong) NSString *cachesDirectory;
-@property (nonatomic, strong) NSString *bundleDirectory;
 
 @end
 
@@ -64,12 +68,11 @@ EX_REGISTER_MODULE();
   return @[@protocol(EXFileSystemInterface)];
 }
 
-- (instancetype)initWithDocumentDirectory:(NSString *)documentDirectory cachesDirectory:(NSString *)cachesDirectory bundleDirectory:(NSString *)bundleDirectory
+- (instancetype)initWithDocumentDirectory:(NSString *)documentDirectory cachesDirectory:(NSString *)cachesDirectory
 {
   if (self = [super init]) {
     _documentDirectory = documentDirectory;
     _cachesDirectory = cachesDirectory;
-    _bundleDirectory = bundleDirectory;
 
     _taskHandlersManager = [EXTaskHandlersManager new];
 
@@ -88,8 +91,7 @@ EX_REGISTER_MODULE();
   NSString *cacheDirectory = [cachesPaths objectAtIndex:0];
 
   return [self initWithDocumentDirectory:documentDirectory
-                         cachesDirectory:cacheDirectory
-                         bundleDirectory:[NSBundle mainBundle].bundlePath];
+                         cachesDirectory:cacheDirectory];
 }
 
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
@@ -106,8 +108,7 @@ EX_REGISTER_MODULE();
 {
   return @{
            @"documentDirectory": _documentDirectory ? [NSURL fileURLWithPath:_documentDirectory].absoluteString : [NSNull null],
-           @"cacheDirectory": _cachesDirectory ? [NSURL fileURLWithPath:_cachesDirectory].absoluteString : [NSNull null],
-           @"bundleDirectory": _bundleDirectory ? [NSURL fileURLWithPath:_bundleDirectory].absoluteString : [NSNull null]
+           @"cacheDirectory": _cachesDirectory ? [NSURL fileURLWithPath:_cachesDirectory].absoluteString : [NSNull null]
            };
 }
 

@@ -5,11 +5,9 @@ import path from 'path';
 import { Podspec, readPodspecAsync } from './CocoaPods';
 import * as Directories from './Directories';
 import * as Npm from './Npm';
-import AndroidUnversionablePackages from './versioning/android/unversionablePackages.json';
-import IosUnversionablePackages from './versioning/ios/unversionablePackages.json';
 
-const ANDROID_DIR = Directories.getAndroidDir();
-const IOS_DIR = Directories.getIosDir();
+const ANDROID_DIR = Directories.getExpoGoAndroidDir();
+const IOS_DIR = Directories.getExpoGoIosDir();
 const PACKAGES_DIR = Directories.getPackagesDir();
 
 /**
@@ -238,15 +236,6 @@ export class Package {
     );
   }
 
-  isVersionableOnPlatform(platform: 'ios' | 'android'): boolean {
-    if (platform === 'ios') {
-      return this.podspecName != null && !IosUnversionablePackages.includes(this.packageName);
-    } else if (platform === 'android') {
-      return !AndroidUnversionablePackages.includes(this.packageName);
-    }
-    throw new Error(`'isVersionableOnPlatform' is not supported on '${platform}' platform yet.`);
-  }
-
   async getPackageViewAsync(): Promise<Npm.PackageViewType | null> {
     if (this.packageView !== undefined) {
       return this.packageView;
@@ -379,7 +368,13 @@ export async function getListOfPackagesAsync(): Promise<Package[]> {
   if (!cachedPackages) {
     const paths = await glob('**/package.json', {
       cwd: PACKAGES_DIR,
-      ignore: ['**/example/**', '**/node_modules/**', '**/__tests__/**', '**/__mocks__/**'],
+      ignore: [
+        '**/example/**',
+        '**/node_modules/**',
+        '**/__tests__/**',
+        '**/__mocks__/**',
+        '**/__fixtures__/**',
+      ],
     });
     cachedPackages = paths
       .map((packageJsonPath) => {

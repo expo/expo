@@ -7,7 +7,7 @@ exports.Head = void 0;
 const react_1 = __importDefault(require("react"));
 const react_helmet_async_1 = require("react-helmet-async");
 const Head = ({ children }) => {
-    return react_1.default.createElement(react_helmet_async_1.Helmet, null, children);
+    return <react_helmet_async_1.Helmet>{children}</react_helmet_async_1.Helmet>;
 };
 exports.Head = Head;
 exports.Head.Provider = react_helmet_async_1.HelmetProvider;

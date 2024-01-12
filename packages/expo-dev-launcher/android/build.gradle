@@ -37,11 +37,11 @@ buildscript {
 android {
   // Remove this if and it's contents, when support for SDK49 is dropped
   if (!safeExtGet("expoProvidesDefaultConfig", false)) {
-    compileSdkVersion safeExtGet("compileSdkVersion", 33)
-    
+    compileSdkVersion safeExtGet("compileSdkVersion", 34)
+
     defaultConfig {
       minSdkVersion safeExtGet("minSdkVersion", 23)
-      targetSdkVersion safeExtGet("targetSdkVersion", 33)
+      targetSdkVersion safeExtGet("targetSdkVersion", 34)
     }
 
     lintOptions {
@@ -51,9 +51,9 @@ android {
   namespace "expo.modules.devlauncher"
   defaultConfig {
     minSdkVersion safeExtGet('minSdkVersion', 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 33)
+    targetSdkVersion safeExtGet("targetSdkVersion", 34)
     versionCode 9
-    versionName "3.2.1"
+    versionName "3.6.0"
   }
 
 
@@ -140,8 +140,7 @@ dependencies {
     implementation project(":expo-updates")
   }
 
-  //noinspection GradleDynamicVersion
-  implementation 'com.facebook.react:react-native:+'  // From node_modules
+  implementation 'com.facebook.react:react-android'
 
   implementation 'commons-io:commons-io:2.6'
 
@@ -192,17 +191,6 @@ def getNodeModulesPackageVersion(packageName, overridePropName) {
 }
 
 def getRNVersion() {
-  if (System.getenv("REACT_NATIVE_OVERRIDE_VERSION")) {
-    def version = System.getenv("REACT_NATIVE_OVERRIDE_VERSION")
-    def coreVersion = version.split("-")[0]
-    def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
-    return versionToNumber(
-        major,
-        minor,
-        patch
-    )
-  }
-
   return getNodeModulesPackageVersion("react-native", "reactNativeVersion")
 }
 
@@ -218,30 +206,3 @@ def projectIncludesExpoUpdates() {
     return false
   }
 }
-
-// [BEGIN] Workaround okhttp/okio compatibility issue
-// Remove when we drop support for SDK 44
-def okhttpPinnedArtifacts = []
-configurations.implementation.getDependencies().removeIf { it ->
-  if (it.group == 'com.squareup.okhttp3' && it.name == 'okhttp') {
-    okhttpPinnedArtifacts.add(it)
-    return true
-  }
-  return false
-}
-okhttpPinnedArtifacts.each { artifact ->
-  dependencies.add('compileOnly', artifact)
-  dependencies.add('testImplementation', artifact)
-  configurations.all { conf ->
-    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-      def requested = details.requested
-      // Only to pin old okhttp in compile phase because mockwebserver requires okhttp4
-      if (conf.name.contains('Compile')) {
-        if (requested.group == artifact.group && requested.name == artifact.name) {
-          details.useVersion artifact.version
-        }
-      }
-    }
-  }
-}
-// [END] Workaround okhttp/okio compatibility issue

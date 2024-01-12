@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.linkTo = exports.setParams = exports.canGoBack = exports.goBack = exports.replace = exports.push = void 0;
+exports.linkTo = exports.setParams = exports.canGoBack = exports.goBack = exports.replace = exports.push = exports.navigate = void 0;
 const Linking = __importStar(require("expo-linking"));
 const href_1 = require("../link/href");
 const path_1 = require("../link/path");
@@ -33,8 +33,12 @@ function assertIsReady(store) {
         throw new Error('Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.');
     }
 }
+function navigate(url) {
+    return this.linkTo((0, href_1.resolveHref)(url), 'NAVIGATE');
+}
+exports.navigate = navigate;
 function push(url) {
-    return this.linkTo((0, href_1.resolveHref)(url));
+    return this.linkTo((0, href_1.resolveHref)(url), 'PUSH');
 }
 exports.push = push;
 function replace(url) {
@@ -64,7 +68,7 @@ function setParams(params = {}) {
 }
 exports.setParams = setParams;
 function linkTo(href, event) {
-    if ((0, url_1.hasUrlProtocolPrefix)(href)) {
+    if ((0, url_1.shouldLinkExternally)(href)) {
         Linking.openURL(href);
         return;
     }
@@ -80,12 +84,31 @@ function linkTo(href, event) {
         navigationRef.goBack();
         return;
     }
+    const rootState = navigationRef.getRootState();
     if (href.startsWith('.')) {
-        let base = this.linking.getPathFromState?.(navigationRef.getRootState(), {
-            screens: [],
-            preserveGroups: true,
-        }) ?? '';
-        if (base && !base.endsWith('/')) {
+        // Resolve base path by merging the current segments with the params
+        let base = this.routeInfo?.segments
+            ?.map((segment) => {
+            if (!segment.startsWith('['))
+                return segment;
+            if (segment.startsWith('[...')) {
+                segment = segment.slice(4, -1);
+                const params = this.routeInfo?.params?.[segment];
+                if (Array.isArray(params)) {
+                    return params.join('/');
+                }
+                else {
+                    return params?.split(',')?.join('/') ?? '';
+                }
+            }
+            else {
+                segment = segment.slice(1, -1);
+                return this.routeInfo?.params?.[segment];
+            }
+        })
+            .filter(Boolean)
+            .join('/') ?? '/';
+        if (!this.routeInfo?.isIndex) {
             base += '/..';
         }
         href = (0, path_1.resolve)(base, href);
@@ -95,19 +118,14 @@ function linkTo(href, event) {
         console.error('Could not generate a valid navigation state for the given path: ' + href);
         return;
     }
-    switch (event) {
-        case 'REPLACE':
-            return navigationRef.dispatch(getNavigateReplaceAction(state, navigationRef.getRootState()));
-        default:
-            return navigationRef.dispatch(getNavigatePushAction(state));
-    }
+    return navigationRef.dispatch(getNavigateAction(state, rootState, event));
 }
 exports.linkTo = linkTo;
 function rewriteNavigationStateToParams(state, params = {}) {
     if (!state)
         return params;
     // We Should always have at least one route in the state
-    const lastRoute = state.routes.at(-1);
+    const lastRoute = state.routes[state.routes.length - 1];
     params.screen = lastRoute.name;
     // Weirdly, this always needs to be an object. If it's undefined, it won't work.
     params.params = lastRoute.params ? JSON.parse(JSON.stringify(lastRoute.params)) : {};
@@ -116,38 +134,28 @@ function rewriteNavigationStateToParams(state, params = {}) {
     }
     return JSON.parse(JSON.stringify(params));
 }
-function getNavigatePushAction(state) {
-    const { screen, params } = rewriteNavigationStateToParams(state);
-    return {
-        type: 'NAVIGATE',
-        payload: {
-            name: screen,
-            params,
-        },
-    };
-}
-function getNavigateReplaceAction(previousState, parentState, lastNavigatorSupportingReplace = parentState) {
-    // We should always have at least one route in the state
-    const state = previousState.routes.at(-1);
-    // Only these navigators support replace
-    if (parentState.type === 'stack' || parentState.type === 'tab') {
-        lastNavigatorSupportingReplace = parentState;
-    }
-    const currentRoute = parentState.routes.find((route) => route.name === state.name);
+function getNavigateAction(state, parentState, type = 'NAVIGATE') {
+    const route = state.routes[state.routes.length - 1];
+    const currentRoute = parentState.routes.find((parentRoute) => parentRoute.name === route.name);
     const routesAreEqual = parentState.routes[parentState.index] === currentRoute;
     // If there is nested state and the routes are equal, we should keep going down the tree
-    if (state.state && routesAreEqual && currentRoute.state) {
-        return getNavigateReplaceAction(state.state, currentRoute.state, lastNavigatorSupportingReplace);
+    if (route.state && routesAreEqual && currentRoute.state) {
+        return getNavigateAction(route.state, currentRoute.state, type);
     }
     // Either we reached the bottom of the state or the point where the routes diverged
-    const { screen, params } = rewriteNavigationStateToParams(previousState);
+    const { screen, params } = rewriteNavigationStateToParams(state);
+    if (type === 'PUSH' && parentState.type !== 'stack') {
+        type = 'NAVIGATE';
+    }
+    else if (type === 'REPLACE' && parentState.type === 'tab') {
+        type = 'JUMP_TO';
+    }
     return {
-        type: lastNavigatorSupportingReplace.type === 'stack' ? 'REPLACE' : 'JUMP_TO',
+        type,
+        target: parentState.key,
         payload: {
             name: screen,
             params,
-            // Ensure that the last navigator supporting replace is the one that handles the action
-            source: lastNavigatorSupportingReplace?.key,
         },
     };
 }

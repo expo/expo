@@ -10,7 +10,46 @@
 
 ### 💡 Others
 
+- Remove classic updates SDK version. ([#26061](https://github.com/expo/expo/pull/26061) by [@wschurman](https://github.com/wschurman))
+
+## 6.7.3 - 2024-01-05
+
+### 🐛 Bug fixes
+
+- Fixed white splash screen flickering in dark mode. ([#25933](https://github.com/expo/expo/pull/25933) by [@kudo](https://github.com/kudo))
+
+## 6.7.2 - 2023-12-19
+
+### 🐛 Bug fixes
+
+- Move `expo-module-scripts` to `devDependencies` instead of `peerDependencies`. ([#25994](https://github.com/expo/expo/pull/25994) by [@byCedric](https://github.com/byCedric))
+
+## 6.7.1 — 2023-12-15
+
+_This version does not introduce any user-facing changes._
+
+## 6.7.0 — 2023-12-12
+
+### 🎉 New features
+
+- Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
+- Replace `@expo/babel-preset-cli` with `expo-module-scripts`. ([#25423](https://github.com/expo/expo/pull/25423) by [@byCedric](https://github.com/byCedric))
+
+## 6.6.0 — 2023-11-14
+
+### 💡 Others
+
+- Update snapshot tests. ([#25211](https://github.com/expo/expo/pull/25211) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 6.5.0 — 2023-10-17
+
+### 💡 Others
+
 - Transpile for Node 18 (LTS). ([#24471](https://github.com/expo/expo/pull/24471) by [@EvanBacon](https://github.com/EvanBacon))
+- Improve `expo-modules-autolinking` integration from its new public exported APIs. ([#24650](https://github.com/expo/expo/pull/24650) by [@kudo](https://github.com/kudo))
 
 ## 6.4.1 — 2023-09-15
 

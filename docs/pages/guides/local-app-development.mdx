@@ -49,6 +49,27 @@ Install the LTS release of Node.js using a [version management tool](https://nod
 
 Install OpenJDK distribution called Azul Zulu using Homebrew. This distribution offers JDKs for both M1 and Intel Macs.
 
+<Tabs>
+
+<Tab label="SDK 50 and above">
+
+We recommend JDK 17. Run the following commands in a terminal window to install it:
+
+<Terminal
+  cmd={['$ brew tap homebrew/cask-versions', '$ brew install --cask zulu17']}
+  cmdCopy="brew tap homebrew/cask-versions && brew install --cask zulu17"
+/>
+
+After you install the JDK, add the `JAVA_HOME` environment variable in **~/.bash_profile** (or **~/.zshrc** if you use Zsh):
+
+```bash
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
+```
+
+</Tab>
+
+<Tab label="SDK 49 and below">
+
 We recommend JDK 11 (you may encounter problems with higher JDK versions). Run the following commands in a terminal window to install it:
 
 <Terminal
@@ -61,6 +82,10 @@ After you install the JDK, add the `JAVA_HOME` environment variable in **~/.bash
 ```bash
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-11.jdk/Contents/Home
 ```
+
+</Tab>
+
+</Tabs>
 
 </Step>
 
@@ -86,17 +111,33 @@ Install the LTS version of Node.js using Chocolatey:
 
 <Terminal cmd={['$ choco install -y nodejs']} />
 
-If you have already installed Node.js on your system, make sure the version is 16 or above. If you want to be able to switch between different versions, you might want to install Node.js using a version manager such as [`nvm-windows`](https://github.com/coreybutler/nvm-windows).
+If you have already installed Node.js on your system, make sure the version is 18 or above. If you want to be able to switch between different versions, you might want to install Node.js using a version manager such as [`nvm-windows`](https://github.com/coreybutler/nvm-windows).
 
 </Step>
 
 <Step label="2">
 
-Install [Java SE Development Kit (JDK)](https://openjdk.org/projects/jdk/11/):
+Install [Java SE Development Kit (JDK)](https://openjdk.org/):
+
+<Tabs>
+
+<Tab label="SDK 50 and above">
+
+For SDK 50 and above, install JDK version 17.
+
+<Terminal cmd={['$ choco install -y microsoft-openjdk17']} />
+
+</Tab>
+
+<Tab label="SDK 49 and below">
+
+For SDK 49 and below, install JDK version 11.
 
 <Terminal cmd={['$ choco install -y microsoft-openjdk11']} />
 
-If you already have JDK installed on your system, we recommend JDK11.
+</Tab>
+
+</Tabs>
 
 </Step>
 
@@ -114,7 +155,7 @@ To set up your development environment on Linux for Android, you will install No
 
 <Step label="1">
 
-Install Node.js 16 or above by following [installation instructions for your Linux distribution](https://nodejs.org/en/download/package-manager).
+Install Node.js 18 or above by following [installation instructions for your Linux distribution](https://nodejs.org/en/download/package-manager).
 
 </Step>
 
@@ -126,11 +167,23 @@ Follow [installation instructions from the Watchman installation guide](https://
 
 <Step label="3">
 
-Install Java SE Development Kit (JDK) version 11. You can download and install [OpenJDK](http://openjdk.java.net/) from [AdoptOpenJDK](https://adoptopenjdk.net/) or your system packager.
+Install [Java SE Development Kit (JDK)](https://openjdk.org/):
 
-<Terminal cmd={['$ choco install -y microsoft-openjdk11']} />
+<Tabs>
 
-If you already have JDK installed on your system, we recommend JDK11.
+<Tab label="SDK 50 and above">
+
+For SDK 50 and above, install JDK version 17. You can download and install [OpenJDK](http://openjdk.java.net/) from [AdoptOpenJDK](https://adoptopenjdk.net/) or your system packager.
+
+</Tab>
+
+<Tab label="SDK 49 and below">
+
+For SDK 49 and below, install JDK version 11. You can download and install [OpenJDK](http://openjdk.java.net/) from [AdoptOpenJDK](https://adoptopenjdk.net/) or your system packager.
+
+</Tab>
+
+</Tabs>
 
 </Step>
 
@@ -193,15 +246,19 @@ To build your project locally you can use compile commands from Expo CLI which g
     '# Build native Android project',
     '$ npx expo run:android',
     '# Build native iOS project',
-    '$ npx expo run:iOS',
+    '$ npx expo run:ios',
   ]}
 />
 
-The above commands compile your project into an app locally. You can also add the `--device` flag to create a debug build of your project and run it on a connected device. These compilation commands initially run `npx expo prebuild` to generate native directories (**android** and **ios**) before building.
+The above commands compile your project, using your locally installed Android SDK or Xcode, into a debug build of your app.
 
-To modify your project's configuration or native code after the first build, you will have to rebuild your project. Running `npx expo prebuild` again layers the changes on the top of existing files. It may also produce different results after the build.
+- These compilation commands initially run `npx expo prebuild` to generate native directories (**android** and **ios**) before building, if they do not exist yet. If they already exist, this will be skipped.
+- You can also add the `--device` flag to select a device to run the app on — you can select a physically connected device or emulator/simulator.
+- You can pass in `--variant release` (Android) or `--configuration Release` (iOS) to build a [production version of your app](/deploy/build-project/#production-builds-locally).
 
-To avoid this, add native directories to the project's **.gitignore** and use `npx expo pebuild --clean` command. This ensures that the project is always managed, and the [`--clean` flag](/workflow/prebuild/#clean) will delete existing directories before regenerating them. You can use [app config](/workflow/configuration/) or create a [config plugin](/config-plugins/introduction/) to modify your project's configuration or code inside the native directories.
+To modify your project's configuration or native code after the first build, you will have to rebuild your project. Running `npx expo prebuild` again layers the changes on top of existing files. It may also produce different results after the build.
+
+To avoid this, add native directories to the project's **.gitignore** and use `npx expo prebuild --clean` command. This ensures that the project is always managed, and the [`--clean` flag](/workflow/prebuild/#clean) will delete existing directories before regenerating them. You can use [app config](/workflow/configuration/) or create a [config plugin](/config-plugins/introduction/) to modify your project's configuration or code inside the native directories.
 
 To learn more about how compilation and prebuild works, see the following guides:
 
@@ -224,6 +281,14 @@ To learn more about how compilation and prebuild works, see the following guides
   Icon={BookOpen02Icon}
 />
 
+## Local builds with `expo-dev-client`
+
+If you install [`expo-dev-client`](/develop/development-builds/introduction/#what-is-expo-dev-client) to your project, then a debug build of your project will include the `expo-dev-client` UI and tooling, and we call these development builds.
+
+<Terminal cmd={['$ npx expo install expo-dev-client']} />
+
+To create a development build, you can use [local app compilation](#local-app-compilation) commands (`npx expo run:[android|ios]`) which will create a debug build and start the development server.
+
 ## Local builds with EAS
 
 <BoxLink
@@ -236,13 +301,4 @@ To learn more about how compilation and prebuild works, see the following guides
   }
   href="/build-reference/local-builds"
   Icon={BuildIcon}
-/>
-
-## Next steps
-
-<BoxLink
-  title="Production builds"
-  description="Learn how to create a production build for your app that is ready to be submitted to app stores."
-  href="/deploy/build-project/"
-  Icon={BookOpen02Icon}
 />

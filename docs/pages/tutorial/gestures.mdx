@@ -1,5 +1,6 @@
 ---
 title: Add gestures
+description: In this tutorial, learn how to implement gestures from React Native Gesture Handler and Reanimated libraries.
 ---
 
 import { SnackInline, Terminal } from '~/ui/components/Snippet';
@@ -66,9 +67,13 @@ To accomplish this, replace the root level `<View>` component in the **App.js** 
 
 export default function App() {
   return (
-    /* @info Replace the root level View component with GestureHandlerRootView. */<GestureHandlerRootView style={styles.container}> /* @end */
-    /* ...rest of the code remains */
-    /* @info */</GestureHandlerRootView>/* @end */
+    /* @info Replace the root level View component with GestureHandlerRootView. */
+    <GestureHandlerRootView style={styles.container}>
+    /* @end */
+      {/* ...rest of the code remains */}
+    /* @info */
+    </GestureHandlerRootView>
+    /* @end */
   )
 }
 ```
@@ -77,40 +82,38 @@ export default function App() {
 
 <Step label="2">
 
-## Create animated components
+## Use animated components
 
-Open the **EmojiSticker.js** file in the **components** directory. Inside it, import `Animated` from the `react-native-reanimated` library to create animated components.
+Open the **EmojiSticker.js** file in the **components** directory. Inside it, import `Animated` from the `react-native-reanimated` library to use animated components.
 
 ```jsx EmojiSticker.js
 import Animated from 'react-native-reanimated';
 ```
 
-To make a double tap gesture work, we will apply animations to the `<Image>` component by passing it as an argument to the `Animated.createAnimatedComponent()` method.
+The `Animated` component looks at the `style` prop of the component. It also determines which values to animate and applies updates to create an animation.
 
-```jsx EmojiSticker.js
-// after import statements, add the following line
+Reanimated exports animated components such as `<Animated.View>`, `<Animated.Text>`, or `<Animated.ScrollView>`. We will apply animations to the `<Animated.Image>` component to make a double tap gesture work.
 
-const AnimatedImage = Animated.createAnimatedComponent(Image);
-```
-
-The `createAnimatedComponent()` can wrap any component. It looks at the `style` prop of the component, determines which value is animated, and then applies updates to create an animation.
-
-Replace the `<Image>` component with `<AnimatedImage>`.
+Replace the `<Image>` component with `<Animated.Image>`.
 
 {/* prettier-ignore */}
 ```jsx EmojiSticker.js
 export default function EmojiSticker({ imageSize, stickerSource }) {
   return (
     <View style={{ top: -350 }}>
-      /* @info Replace the Image component with AnimatedImage. */<AnimatedImage /* @end */
+      /* @info Replace the Image component with Animated.Image. */
+      <Animated.Image
         source={stickerSource}
         resizeMode="contain"
         style={{ width: imageSize, height: imageSize }}
       />
+      /* @end */
     </View>
   );
 }
 ```
+
+> For a complete reference on the animated component API, see [React Native Reanimated](https://docs.swmansion.com/react-native-reanimated/docs/core/createAnimatedComponent) documentation.
 
 </Step>
 
@@ -120,17 +123,12 @@ export default function EmojiSticker({ imageSize, stickerSource }) {
 
 React Native Gesture Handler allows us to add behavior when it detects touch input, like a double tap event.
 
-In the **EmojiSticker.js** file, import `TapGestureHandler` from `react-native-gesture-handler` and the hooks below from `react-native-reanimated`.
-These hooks will animate the style on the `<AnimatedImage>` component for the sticker when the tap gesture is recognized.
+In the **EmojiSticker.js** file, import `Gesture` and `GestureDetector` from `react-native-gesture-handler` and the hooks below from `react-native-reanimated`.
+These hooks will animate the style on the `<Animated.Image>` component for the sticker when the tap gesture is recognized.
 
 ```jsx EmojiSticker.js
-import { TapGestureHandler } from 'react-native-gesture-handler';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  useAnimatedGestureHandler,
-  withSpring,
-} from 'react-native-reanimated';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 ```
 
 Inside the `<EmojiSticker>` component, create a reference called `scaleImage` using the `useSharedValue()` hook. It will take the value of `imageSize` as its initial value.
@@ -141,27 +139,27 @@ const scaleImage = useSharedValue(imageSize);
 
 Creating a shared value using the `useSharedValue()` hook has many advantages. It helps to mutate a piece of data and allows running animations based on the current value.
 A shared value can be accessed and modified using the `.value` property. It will scale the initial value of `scaleImage` so that when a user double-taps the sticker,
-it scales to twice its original size. To do this, we will create a function and call it `onDoubleTap()`, and this function will use the `useAnimatedGestureHandler()` hook
-to animate the transition while scaling the sticker image.
+it scales to twice its original size. To do this, we will create an object and call it `doubleTap`. This object will use the `Gesture.Tap()` to animate the transition while scaling the sticker image. The `numberOfTaps` method determines how many taps are required.
 
-Create the following function in the `<EmojiSticker>` component:
+Create the following object in the `<EmojiSticker>` component:
 
 ```jsx EmojiSticker.js
-const onDoubleTap = useAnimatedGestureHandler({
-  onActive: () => {
+const doubleTap = Gesture.Tap()
+  .numberOfTaps(2)
+  .onStart(() => {
     if (scaleImage.value !== imageSize * 2) {
       scaleImage.value = scaleImage.value * 2;
     }
-  },
-});
+  });
 ```
 
 To animate the transition, let's use a spring-based animation. This will make it feel alive because it's based on the real-world physics of a spring.
-We will use the `withSpring()` hook provided by `react-native-reanimated`.
+We will use the `withSpring()` function provided by `react-native-reanimated`.
 
 The `useAnimatedStyle()` hook from `react-native-reanimated` is used to create a style object that will be applied to the sticker image.
 It will update styles using the shared values when the animation happens. In this case, we are scaling the size of the image,
 which is done by manipulating the `width` and `height` properties. The initial values of these properties are set to `imageSize`.
+
 Create an `imageStyle` variable and add it to the `EmojiSticker` component:
 
 ```jsx EmojiSticker.js
@@ -173,7 +171,7 @@ const imageStyle = useAnimatedStyle(() => {
 });
 ```
 
-Next, wrap the `<AnimatedImage>` component that displays the sticker on the screen with the `<TapGestureHandler>` component.
+Next, wrap the `<Animated.Image>` component that displays the sticker on the screen with the `<GestureDetector>` component and modify the `style` prop on the `Animated.Image` to pass the `imageStyle`.
 
 <SnackInline
 label="Handling tap gesture"
@@ -202,13 +200,13 @@ export default function EmojiSticker({ imageSize, stickerSource }) {
   // ...rest of the code remains same
   return (
     <View style={{ top: -350 }}>
-      /* @info Wrap the AnimatedImage component with TapGestureHandler*/ <TapGestureHandler onGestureEvent={onDoubleTap} numberOfTaps={2}>/* @end */
-        <AnimatedImage
+      /* @info Wrap the Animated.Image component with GestureDetector. */<GestureDetector gesture={doubleTap}>/* @end */
+        <Animated.Image
           source={stickerSource}
           resizeMode="contain"
-          /* @info Modify the style prop on the AnimatedImage to pass the imageStyle.*/ style={[imageStyle, { width: imageSize, height: imageSize }]} /* @end */
+          style={/* @info Modify the style prop on the AnimatedImage to pass the imageStyle. */[imageStyle, { width: imageSize, height: imageSize }]/* @end */}
         />
-      /* @info */</TapGestureHandler>/* @end */
+      /* @info */</GestureDetector>/* @end */
     </View>
   );
 }
@@ -216,10 +214,9 @@ export default function EmojiSticker({ imageSize, stickerSource }) {
 
 </SnackInline>
 
-In the above snippet, the `onGestureEvent` prop takes the value of the `onDoubleTap()` function and triggers it when a user taps the sticker image.
-The `numberOfTaps` prop determines how many taps are required.
+In the above snippet, the `gesture` prop takes the value of the `doubleTap` which triggers a gesture when a user double-taps the sticker image.
 
-Let's take a look at our app on iOS, Android and the web:
+Let's take a look at our app on Android, iOS and the web:
 
 <Video file="tutorial/tap-gesture.mp4" />
 
@@ -231,31 +228,20 @@ Let's take a look at our app on iOS, Android and the web:
 
 ## Add a pan gesture
 
-A pan gesture allows recognizing a dragging gesture and tracking its movement. We will use this gesture handler to drag the sticker across the image.
+A pan gesture allows recognizing a dragging gesture and tracking its movement. We will use it to drag the sticker across the image.
 
-In the **EmojiSticker.js**, import `PanGestureHandler` from the `react-native-gesture-handler` library.
-
-{/* prettier-ignore */}
-```jsx EmojiSticker.js
-import { /* @info */ PanGestureHandler,/* @end */ TapGestureHandler} from "react-native-gesture-handler";
-```
-
-Create an `<AnimatedView>` component using the `Animated.createAnimatedComponent()` method. Then use it to wrap the `<TapGestureHandler>` component by replacing the `<View>` component.
+In the **EmojiSticker.js**, replace the `<View>` component with the `<Animated.View>` component.
 
 {/* prettier-ignore */}
 ```jsx EmojiSticker.js
-// ...rest of the code remains same
-/* @info */ const AnimatedView = Animated.createAnimatedComponent(View); /* @end */
-
 export default function EmojiSticker({ imageSize, stickerSource }) {
   // ...rest of the code remains same
-
   return (
-    /* @info Replace the View component with AnimatedView */<AnimatedView style={{ top: -350 }}>/* @end */
-      <TapGestureHandler onGestureEvent={onDoubleTap} numberOfTaps={2}>
+    /* @info Replace the View component with Animated.View. */<Animated.View style={{ top: -350 }}>/* @end */
+      <GestureDetector gesture={doubleTap}>
         {/* ...rest of the code remains same */}
-      </TapGestureHandler>
-    /* @info */</AnimatedView>/* @end */
+      </GestureDetector>
+    /* @info */</Animated.View>/* @end */
   );
 }
 ```
@@ -276,31 +262,23 @@ These translation values will move the sticker around the screen. Since the stic
 In the `useSharedValue()` hooks, we have set both translation variables to have an initial position of `0`.
 This means that the position the sticker is initially placed is considered the starting point. This value sets the initial position of the sticker when the gesture starts.
 
-In the previous step, we triggered the `onActive()` callback for the tap gesture inside the `useAnimatedGestureHandler()` function.
-Similarly, for the pan gesture, we have to specify two callbacks:
+In the previous step, we triggered the `onStart()` callback for the tap gesture chained to the `Gesture.Tap()` method.
+Similarly, for the pan gesture, we have to specify an `onChange()` callback which runs when the gesture is active and is moving.
 
-- `onStart()`: when the gesture starts or is at its initial position
-- `onActive()`: when the gesture is active and is moving
-
-Create an `onDrag()` method to handle the pan gesture.
+Create a `drag` object to handle the pan gesture.
 
 {/* prettier-ignore */}
 ```jsx EmojiSticker.js
-const onDrag = useAnimatedGestureHandler({
-  onStart: (event, context) => {
-    context.translateX = translateX.value;
-    context.translateY = translateY.value;
-  },
-  onActive: (event, context) => {
-    translateX.value = event.translationX + context.translateX;
-    translateY.value = event.translationY + context.translateY;
-  },
-});
+  const drag = Gesture.Pan()
+    .onChange((event) => {
+      translateX.value += event.changeX;
+      translateY.value += event.changeY;
+    });
 ```
 
-Both the `onStart` and `onActive` methods accept `event` and `context` as parameters. In the `onStart` method, we'll use `context` to store the initial values of `translateX` and `translateY`. In the `onActive` callback, we'll use the `event` to get the current position of the pan gesture and `context` to get the previously stored values of `translateX` and `translateY`.
+The `onChange()` callback accepts `event` as a parameter. `changeX` and `changeY` properties hold the change in position since the last event. They are used to update the values stored in `translateX` and `translateY`.
 
-Next, use the `useAnimatedStyle()` hook to return an array of transforms.For the `<AnimatedView>` component, we need to set the `transform` property to the `translateX` and `translateY` values. This will change the sticker's position when the gesture is active.
+Next, use the `useAnimatedStyle()` hook to return an array of transforms. For the `<Animated.View>` component, we need to set the `transform` property to the `translateX` and `translateY` values. This will change the sticker's position when the gesture is active.
 
 {/* prettier-ignore */}
 ```jsx EmojiSticker.js
@@ -318,8 +296,8 @@ const containerStyle = useAnimatedStyle(() => {
 });
 ```
 
-Then add the `containerStyle` from the above snippet on the `<AnimatedView>` component to apply the transform styles.
-Also, update the `<EmojiSticker>` component so that the `<PanGestureHandler>` component becomes the top-level component.
+Then add the `containerStyle` from the above snippet on the `<Animated.View>` component to apply the transform styles.
+Also, update the `<EmojiSticker>` component so that the `<GestureDetector>` component becomes the top-level component.
 
 <SnackInline
 label="Handle pan gesture"
@@ -348,24 +326,24 @@ export default function EmojiSticker({ imageSize, stickerSource }) {
   // rest of the code
 
   return (
-    /* @info Wrap all components inside PanGestureHandler. */<PanGestureHandler onGestureEvent={onDrag}>/* @end */
-      /* @info Add containerStyle to the AnimatedView style prop. */<AnimatedView style={[containerStyle, { top: -350 }]}>/* @end */
-        <TapGestureHandler onGestureEvent={onDoubleTap} numberOfTaps={2}>
-          <AnimatedImage
+    /* @info Wrap all components inside GestureDetector. */<GestureDetector gesture={drag}>/* @end */
+      <Animated.View style={/* @info Add containerStyle to the AnimatedView style prop. */[containerStyle, { top: -350 }]/* @end */}>
+        <GestureDetector gesture={doubleTap}>
+          <Animated.Image
             source={stickerSource}
             resizeMode="contain"
             style={[imageStyle, { width: imageSize, height: imageSize }]}
           />
-        </TapGestureHandler>
-      </AnimatedView>
-    /* @info */</PanGestureHandler>/* @end */
+        </GestureDetector>
+      </Animated.View>
+    /* @info */</GestureDetector>/* @end */
   );
 }
 ```
 
 </SnackInline>
 
-Let's take a look at our app on iOS, Android and the web:
+Let's take a look at our app on Android, iOS and the web:
 
 <Video file="tutorial/pan-gesture.mp4" />
 

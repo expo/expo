@@ -121,7 +121,7 @@ class AppContext(
       addActivityEventListener(reactLifecycleDelegate)
 
       // Registering modules has to happen at the very end of `AppContext` creation. Some modules need to access
-      // `AppContext` during their initialisation (or during `OnCreate` method), so we need to ensure all `AppContext`'s
+      // `AppContext` during their initialisation, so we need to ensure all `AppContext`'s
       // properties are initialized first. Not having that would trigger NPE.
       registry.register(ErrorManagerModule())
       registry.register(NativeModulesProxyModule())
@@ -129,6 +129,12 @@ class AppContext(
 
       logger.info("✅ AppContext was initialized")
     }
+  }
+
+  fun onCreate() = trace("AppContext.onCreate") {
+    registry.readyForPostingEvents()
+    registry.post(EventName.MODULE_CREATE)
+    registry.flushTheEventQueue()
   }
 
   /**
@@ -149,8 +155,7 @@ class AppContext(
             jsiInterop.installJSI(
               it,
               jniDeallocator,
-              jsContextProvider.jsCallInvokerHolder,
-              ReactNativeCompatibleHelper.getNativeMethodCallInvokerHolderImplCompatible(catalystInstance)
+              jsContextProvider.jsCallInvokerHolder
             )
             logger.info("✅ JSI interop was installed")
           }
@@ -296,6 +301,9 @@ class AppContext(
     modulesQueue.cancel(ContextDestroyedException())
     mainQueue.cancel(ContextDestroyedException())
     backgroundCoroutineScope.cancel(ContextDestroyedException())
+    if (::jsiInterop.isInitialized) {
+      jsiInterop.wasDeallocated()
+    }
     jniDeallocator.deallocate()
     logger.info("✅ AppContext was destroyed")
   }

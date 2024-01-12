@@ -28,7 +28,9 @@ function useFadeIn() {
 function ToastWrapper({ children }) {
     const inTabBar = react_1.default.useContext(bottom_tabs_1.BottomTabBarHeightContext);
     const Wrapper = inTabBar ? react_native_1.View : react_native_safe_area_context_1.SafeAreaView;
-    return (react_1.default.createElement(Wrapper, { collapsable: false, style: { flex: 1 } }, children));
+    return (<Wrapper collapsable={false} style={{ flex: 1 }}>
+      {children}
+    </Wrapper>);
 }
 exports.ToastWrapper = ToastWrapper;
 function Toast({ children, filename, warning, }) {
@@ -38,23 +40,26 @@ function Toast({ children, filename, warning, }) {
         return 'app' + filename.replace(/^\./, '');
     }, [filename]);
     const value = useFadeIn();
-    return (react_1.default.createElement(react_native_1.View, { style: styles.container },
-        react_1.default.createElement(react_native_1.Animated.View, { style: [
-                styles.toast,
-                // @ts-expect-error: fixed is supported on web.
-                {
-                    position: react_native_1.Platform.select({
-                        web: 'fixed',
-                        default: 'absolute',
-                    }),
-                    opacity: value,
-                },
-            ] },
-            !warning && react_1.default.createElement(react_native_1.ActivityIndicator, { color: "white" }),
-            warning && react_1.default.createElement(react_native_1.Image, { source: require('expo-router/assets/error.png'), style: styles.icon }),
-            react_1.default.createElement(react_native_1.View, { style: { marginLeft: 8 } },
-                react_1.default.createElement(react_native_1.Text, { style: styles.text }, children),
-                filenamePretty && react_1.default.createElement(react_native_1.Text, { style: styles.filename }, filenamePretty)))));
+    return (<react_native_1.View style={styles.container}>
+      <react_native_1.Animated.View style={[
+            styles.toast,
+            // @ts-expect-error: fixed is supported on web.
+            {
+                position: react_native_1.Platform.select({
+                    web: 'fixed',
+                    default: 'absolute',
+                }),
+                opacity: value,
+            },
+        ]}>
+        {!warning && <react_native_1.ActivityIndicator color="white"/>}
+        {warning && <react_native_1.Image source={require('expo-router/assets/error.png')} style={styles.icon}/>}
+        <react_native_1.View style={{ marginLeft: 8 }}>
+          <react_native_1.Text style={styles.text}>{children}</react_native_1.Text>
+          {filenamePretty && <react_native_1.Text style={styles.filename}>{filenamePretty}</react_native_1.Text>}
+        </react_native_1.View>
+      </react_native_1.Animated.View>
+    </react_native_1.View>);
 }
 exports.Toast = Toast;
 const styles = react_native_1.StyleSheet.create({

@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+## 1.10.0 - 2024-01-10
+
+### 🎉 New features
+
+- Added support for macOS and tvOS targets. ([#26287](https://github.com/expo/expo/pull/26287) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.9.0 — 2023-12-12
+
+### 🐛 Bug fixes
+
+- [iOS] Resolve `expo-modules-autolinking` from `expo` in the generated project integrator. ([#25817](https://github.com/expo/expo/pull/25817) by [@byCedric](https://github.com/byCedric))
+
+## 1.8.0 — 2023-11-14
+
+### 🎉 New features
+
+- Added Expo CLI devtools plugins support. ([#24649](https://github.com/expo/expo/pull/24649) by [@kudo](https://github.com/kudo))
+
+## 1.7.0 — 2023-10-17
+
+### 💡 Others
+
 - Transpile for Node 18 (LTS). ([#24471](https://github.com/expo/expo/pull/24471) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 1.6.0 — 2023-09-15

@@ -93,6 +93,7 @@ class ClipboardFileProvider : ContentProvider() {
           columns[i] = OpenableColumns.DISPLAY_NAME
           values[i++] = file.name
         }
+
         OpenableColumns.SIZE -> {
           columns[i] = OpenableColumns.SIZE
           values[i++] = file.length()
@@ -223,10 +224,12 @@ class ClipboardFileProvider : ContentProvider() {
         val externalFilesDirs: Array<File> = context.getExternalFilesDirs(null)
         externalFilesDirs.takeIf { it.isNotEmpty() }?.let { it[0] }
       }
+
       TAG_EXTERNAL_CACHE -> {
         val externalCacheDirs: Array<File> = context.externalCacheDirs
         externalCacheDirs.takeIf { it.isNotEmpty() }?.let { it[0] }
       }
+
       else -> null
     }
 
@@ -309,9 +312,9 @@ class ClipboardFileProvider : ContentProvider() {
       for (root in roots.entries) {
         val rootPath = root.value.path
         if (path.startsWith(rootPath) && (
-          mostSpecific == null ||
-            rootPath.length > mostSpecific.value.path.length
-          )
+            mostSpecific == null ||
+              rootPath.length > mostSpecific.value.path.length
+            )
         ) {
           mostSpecific = root
         }
@@ -348,7 +351,7 @@ class ClipboardFileProvider : ContentProvider() {
       } catch (e: IOException) {
         throw java.lang.IllegalArgumentException("Failed to resolve canonical path for $file")
       }
-      if (!file.path.startsWith(root.path)) {
+      if (!file.startsWith(root)) {
         throw SecurityException("Resolved path jumped beyond configured root")
       }
       return file

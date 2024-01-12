@@ -1,6 +1,9 @@
 ---
-title: Clearing bundler caches on macOS and Linux
+title: Clear bundler caches on macOS and Linux
+description: Learn how to clear the bundler when using Yarn or npm with Expo CLI or React Native CLI on macOS and Linux.
 ---
+
+import { Terminal } from '~/ui/components/Snippet';
 
 > Need to clear development caches on Windows? [Find the relevant commands here.](clear-cache-windows.mdx)
 
@@ -8,55 +11,87 @@ There are a number of different caches associated with your project that can pre
 
 To clear the various caches, run:
 
-### Expo CLI and Yarn
+## Expo CLI and Yarn
 
-```sh
-rm -rf node_modules # With Yarn workspaces, you may need to
-                    # delete node_modules in each workspace
-yarn cache clean
-yarn
-watchman watch-del-all
-rm -fr $TMPDIR/haste-map-*
-rm -rf $TMPDIR/metro-cache
-expo start --clear
-```
+<Terminal
+  cmd={[
+    '# With Yarn workspaces, you may need to delete node_modules in each workspace',
+    '$ rm -rf node_modules',
+    '',
+    '$ yarn cache clean',
+    '',
+    '$ yarn',
+    '',
+    '$ watchman watch-del-all',
+    '',
+    '$ rm -fr $TMPDIR/haste-map-*',
+    '',
+    '$ rm -rf $TMPDIR/metro-cache',
+    '',
+    '$ npx expo start --clear',
+  ]}
+/>
 
-### Expo CLI and npm
+## Expo CLI and npm
 
-```sh
-rm -rf node_modules
-npm cache clean --force
-npm install
-watchman watch-del-all
-rm -fr $TMPDIR/haste-map-*
-rm -rf $TMPDIR/metro-cache
-expo start --clear
-```
+<Terminal
+  cmd={[
+    '$ rm -rf node_modules',
+    '',
+    '$ npm cache clean --force',
+    '',
+    '$ npm install',
+    '',
+    '$ watchman watch-del-all',
+    '',
+    '$ rm -fr $TMPDIR/haste-map-*',
+    '',
+    '$ rm -rf $TMPDIR/metro-cache',
+    '',
+    '$ npx expo start --clear',
+  ]}
+/>
 
-### React Native CLI and Yarn
+## React Native CLI and Yarn
 
-```sh
-rm -rf node_modules # With Yarn workspaces, you may need to
-                    # delete node_modules in each workspace
-yarn cache clean
-yarn
-watchman watch-del-all
-rm -fr $TMPDIR/haste-map-*
-rm -rf $TMPDIR/metro-cache
-yarn start -- --reset-cache
-```
+<Terminal
+  cmd={[
+    '# With Yarn workspaces, you may need to delete node_modules in each workspace',
+    '$ rm -rf node_modules',
+    '',
+    '$ yarn cache clean',
+    '',
+    '$ yarn',
+    '',
+    '$ watchman watch-del-all',
+    '',
+    '$ rm -fr $TMPDIR/haste-map-*',
+    '',
+    '$ rm -rf $TMPDIR/metro-cache',
+    '',
+    '$ yarn start -- --reset-cache',
+  ]}
+/>
 
-### React Native CLI and npm
+## React Native CLI and npm
 
-```sh
-rm -rf node_modules
-npm cache clean --force
-npm install
-watchman watch-del-all
-rm -fr $TMPDIR/haste-map-*
-rm -rf $TMPDIR/metro-cache
-npm start -- --reset-cache
-```
+<Terminal
+  cmd={[
+    '$ rm -rf node_modules',
+    '',
+    '$ npm cache clean --force',
+    '',
+    '$ npm install',
+    '',
+    '$ watchman watch-del-all',
+    '',
+    '$ rm -fr $TMPDIR/haste-map-*',
+    '',
+    '$ rm -rf $TMPDIR/metro-cache',
+    '',
+    '$ npm start -- --reset-cache',
+  ]}
+/>
 
 ## What these commands are doing
 

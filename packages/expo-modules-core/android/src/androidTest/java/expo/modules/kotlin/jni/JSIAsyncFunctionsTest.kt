@@ -13,15 +13,18 @@ import org.junit.Test
 
 class JSIAsyncFunctionsTest {
   enum class SimpleEnumClass : Enumerable {
-    V1, V2
+    V1,
+    V2
   }
 
   enum class StringEnumClass(val value: String) : Enumerable {
-    K1("V1"), K2("V2")
+    K1("V1"),
+    K2("V2")
   }
 
   enum class IntEnumClass(val value: Int) : Enumerable {
-    K1(1), K2(2)
+    K1(1),
+    K2(2)
   }
 
   @Test
@@ -101,6 +104,20 @@ class JSIAsyncFunctionsTest {
 
     Truth.assertThat(k1).isEqualTo("v1")
     Truth.assertThat(k2).isEqualTo("v2")
+  }
+
+  @Test
+  fun set_should_be_convertible() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      AsyncFunction("setF") { a: Set<String> -> a }
+    }
+  ) { methodQueue ->
+    val value = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.setF(['s1', 's2', 's1'])").getArray()
+    Truth.assertThat(value).hasLength(2)
+
+    val mappedValue = value.map { it.getString() }
+    Truth.assertThat(mappedValue).containsExactly("s1", "s2")
   }
 
   @Test

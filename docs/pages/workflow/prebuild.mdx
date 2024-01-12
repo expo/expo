@@ -10,7 +10,7 @@ Before a native app can be compiled, the native source code must be generated. E
 1. The [app config][expo-config] file (**app.json**, **app.config.js**).
 2. Arguments passed to the `npx expo prebuild` command.
 3. Version of `expo` that's installed in the project and its corresponding [prebuild template](#templates).
-4. [Autolinking][autolinking], for linking [native modules][native-modules] found in the `package.json`.
+4. [Autolinking][autolinking], for linking [native modules][native-modules] found in the **package.json**.
 
 ## Usage
 
@@ -24,7 +24,16 @@ We highly recommend using prebuild for the reasons listed in the [pitch](#pitch)
 
 ### Usage with EAS Build
 
-You can configure EAS Build to run `npx expo prebuild` before building by [using the managed preset](/build-reference/ios-builds/).
+If your project does not contain **android** and **ios** directories, EAS Build will run Prebuild to generate these native directories before compilation. This is the default behavior for any project created using `npx create-expo-app`.
+
+For a project that has **android** and **ios** directories, EAS Build will not run Prebuild by default to avoid overwriting any changes you've made to the native directories.
+
+If you troubleshoot your app by [compiling it locally](/guides/local-app-development/#local-app-compilation) (running `npx expo prebuild`, or `npx expo run:android` or `npx expo run:ios`), you can still use Prebuild with EAS Build to generate fresh native directories during the build process. In this scenario, add the **android** and **ios** directories to **.gitignore** or **.easignore** files:
+
+```diff .gitignore
++ android
++ ios
+```
 
 ### Usage with Expo CLI run commands
 
@@ -108,7 +117,7 @@ Everything offered by Expo including [EAS][eas], Expo CLI, and the libraries in 
 
 A single native project on its own is complicated to maintain, scale, and grow. In a cross-platform app, you have multiple native projects that you must maintain and keep up to date with the latest operating system releases to avoid falling too far behind in any third-party dependencies. We created the _optional_ Expo Prebuild system to streamline this process. Below are a few issues we've identified with native development in the context of React Native and some corresponding reasons we believe Expo Prebuild solves these issues.
 
-> Prebuild can be used in any React Native project. For more information, see [adopting prebuild](/guides/adopting-prebuild).
+> Prebuild can be used in any React Native project. For more information, see [Adopt prebuild](/guides/adopting-prebuild).
 
 ### Sensible upgrades
 

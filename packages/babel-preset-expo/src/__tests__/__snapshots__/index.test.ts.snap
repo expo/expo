@@ -28,7 +28,7 @@ console.log('Calling InlineFuncFromFile()');
 console.log('Calling Boo.myFunc()');
 Boo.myFunc();
 
-_expoAsset.Asset.loadAsync([require("./assets/icon.png")]);
+_expoAsset.Asset.loadAsync([require('./assets/icon.png')]);
 }},{key:"render",value:
 
 function render(){
@@ -36,8 +36,8 @@ return(
 (0,_jsxRuntime.jsxs)(_reactNative.View,{children:[
 (0,_jsxRuntime.jsx)(_expoAppLoading.default,{}),
 (0,_jsxRuntime.jsx)(_vectorIcons.Ionicons,{name:"md-options",size:28}),
-(0,_jsxRuntime.jsx)(_fooView.default,{})]}));
-
+(0,_jsxRuntime.jsx)(_fooView.default,{})]}
+));
 
 }},{key:"unusedFunction",value:
 
@@ -77,7 +77,7 @@ console.log('Calling InlineFuncFromFile()');
 console.log('Calling Boo.myFunc()');
 Boo().myFunc();
 
-_expoAsset().Asset.loadAsync([require("./assets/icon.png")]);
+_expoAsset().Asset.loadAsync([require('./assets/icon.png')]);
 }},{key:"render",value:
 
 function render(){
@@ -85,8 +85,8 @@ return(
 (0,_jsxRuntime().jsxs)(_reactNative().View,{children:[
 (0,_jsxRuntime().jsx)(_expoAppLoading().default,{}),
 (0,_jsxRuntime().jsx)(_vectorIcons().Ionicons,{name:"md-options",size:28}),
-(0,_jsxRuntime().jsx)(_fooView().default,{})]}));
-
+(0,_jsxRuntime().jsx)(_fooView().default,{})]}
+));
 
 }},{key:"unusedFunction",value:
 
@@ -126,7 +126,7 @@ console.log('Calling InlineFuncFromFile()');
 console.log('Calling Boo.myFunc()');
 Boo.myFunc();
 
-_expoAsset.Asset.loadAsync([require("./assets/icon.png")]);
+_expoAsset.Asset.loadAsync([require('./assets/icon.png')]);
 }},{key:"render",value:
 
 function render(){
@@ -134,8 +134,8 @@ return(
 (0,_jsxRuntime.jsxs)(_reactNative.View,{children:[
 (0,_jsxRuntime.jsx)(_expoAppLoading.default,{}),
 (0,_jsxRuntime.jsx)(_vectorIcons.Ionicons,{name:"md-options",size:28}),
-(0,_jsxRuntime.jsx)(_fooView.default,{})]}));
-
+(0,_jsxRuntime.jsx)(_fooView.default,{})]}
+));
 
 }},{key:"unusedFunction",value:
 
@@ -175,7 +175,7 @@ console.log('Calling InlineFuncFromFile()');
 console.log('Calling Boo.myFunc()');
 Boo.myFunc();
 
-_expoAsset.Asset.loadAsync([require("./assets/icon.png")]);
+_expoAsset.Asset.loadAsync([require('./assets/icon.png')]);
 }},{key:"render",value:
 
 function render(){
@@ -183,8 +183,8 @@ return(
 (0,_jsxRuntime.jsxs)(_reactNative.View,{children:[
 (0,_jsxRuntime.jsx)(_expoAppLoading.default,{}),
 (0,_jsxRuntime.jsx)(_vectorIcons.Ionicons,{name:"md-options",size:28}),
-(0,_jsxRuntime.jsx)(_fooView.default,{})]}));
-
+(0,_jsxRuntime.jsx)(_fooView.default,{})]}
+));
 
 }},{key:"unusedFunction",value:
 
@@ -224,7 +224,7 @@ console.log('Calling InlineFuncFromFile()');
 console.log('Calling Boo.myFunc()');
 Boo().myFunc();
 
-_expoAsset.Asset.loadAsync([require("./assets/icon.png")]);
+_expoAsset.Asset.loadAsync([require('./assets/icon.png')]);
 }},{key:"render",value:
 
 function render(){
@@ -232,8 +232,8 @@ return(
 (0,_jsxRuntime().jsxs)(_reactNative().View,{children:[
 (0,_jsxRuntime().jsx)(_expoAppLoading().default,{}),
 (0,_jsxRuntime().jsx)(_vectorIcons().Ionicons,{name:"md-options",size:28}),
-(0,_jsxRuntime().jsx)(_fooView().default,{})]}));
-
+(0,_jsxRuntime().jsx)(_fooView().default,{})]}
+));
 
 }},{key:"unusedFunction",value:
 
@@ -245,34 +245,10 @@ function unusedFunction(){
 (0,_reactRedux().connect)()(Lazy);exports.default=_default;"
 `;
 
-exports[`metro aliases @expo/vector-icons 1`] = `
-"
-require("@expo/vector-icons");
-require("@expo/vector-icons");
-imposter.require('react-native-vector-icons');
-imposter.import('react-native-vector-icons');"
-`;
-
 exports[`metro composes with babel-plugin-module-resolver 1`] = `
 "
 require("react-native");
-require("@expo/vector-icons");"
-`;
-
-exports[`metro supports automatic JSX runtime 1`] = `
-"Object.defineProperty(exports,"__esModule",{value:true});exports.default=App;
-var _reactNative=require("react-native");var _jsxRuntime=require("react/jsx-runtime");
-function App(){
-return(0,_jsxRuntime.jsx)(_reactNative.View,{children:(0,_jsxRuntime.jsx)(_reactNative.Text,{children:"Hello World"})});
-}"
-`;
-
-exports[`metro supports classic JSX runtime 1`] = `
-"Object.defineProperty(exports,"__esModule",{value:true});exports.default=App;
-var _reactNative=require("react-native");
-function App(){
-return React.createElement(_reactNative.View,null,React.createElement(_reactNative.Text,null,"Hello World"));
-}"
+require("react-native-vector-icons");"
 `;
 
 exports[`metro supports disabling reanimated 1`] = `
@@ -284,11 +260,11 @@ console.log("Hey I'm running on the UI thread");
 `;
 
 exports[`metro supports reanimated worklets 1`] = `
-"var _worklet_2797951844470_init_data={code:"function someWorklet(greeting) {\\n  console.log(\\"Hey I'm running on the UI thread\\");\\n}",location:"[mock]/worklet.js",sourceMap:"{\\"version\\":3,\\"mappings\\":\\"AAAA;EAAAA;AACA\\",\\"names\\":[\\"console\\"],\\"sources\\":[\\"[mock]/worklet.js\\"]}"};var
-someWorklet=function(){var _e=[new global.Error(),1,-27];var _f=function _f(greeting){
+"var _worklet_549132292534_init_data={code:"function someWorklet(greeting){console.log(\\"Hey I'm running on the UI thread\\");}",location:"[mock]/worklet.js",sourceMap:"{\\"version\\":3,\\"mappings\\":\\"AAAA,+EACA\\",\\"names\\":[],\\"sources\\":[\\"[mock]/worklet.js\\"]}",version:"[GLOBAL]"};var
+someWorklet=function(){var _e=[new global.Error(),1,-27];var someWorklet=function someWorklet(greeting){
 
 console.log("Hey I'm running on the UI thread");
-};_f._closure={};_f.__initData=_worklet_2797951844470_init_data;_f.__workletHash=2797951844470;_f.__stackDetails=_e;_f.__version="3.3.0";return _f;}();"
+};someWorklet.__closure={};someWorklet.__workletHash=549132292534;someWorklet.__initData=_worklet_549132292534_init_data;someWorklet.__stackDetails=_e;return someWorklet;}();"
 `;
 
 exports[`metro transpiles non-standard exports 1`] = `"Object.defineProperty(exports,"__esModule",{value:true});exports.default=void 0;var _default=_interopRequireWildcard(require("./Animated"));exports.default=_default;function _getRequireWildcardCache(nodeInterop){if(typeof WeakMap!=="function")return null;var cacheBabelInterop=new WeakMap();var cacheNodeInterop=new WeakMap();return(_getRequireWildcardCache=function _getRequireWildcardCache(nodeInterop){return nodeInterop?cacheNodeInterop:cacheBabelInterop;})(nodeInterop);}function _interopRequireWildcard(obj,nodeInterop){if(!nodeInterop&&obj&&obj.__esModule){return obj;}if(obj===null||typeof obj!=="object"&&typeof obj!=="function"){return{default:obj};}var cache=_getRequireWildcardCache(nodeInterop);if(cache&&cache.has(obj)){return cache.get(obj);}var newObj={};var hasPropertyDescriptor=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var key in obj){if(key!=="default"&&Object.prototype.hasOwnProperty.call(obj,key)){var desc=hasPropertyDescriptor?Object.getOwnPropertyDescriptor(obj,key):null;if(desc&&(desc.get||desc.set)){Object.defineProperty(newObj,key,desc);}else{newObj[key]=obj[key];}}}newObj.default=obj;if(cache){cache.set(obj,newObj);}return newObj;}"`;
@@ -298,34 +274,39 @@ exports[`metro uses the platform's react-native import 1`] = `
 var _reactNative=require("react-native");"
 `;
 
-exports[`webpack aliases @expo/vector-icons 1`] = `
+exports[`metro+hermes composes with babel-plugin-module-resolver 1`] = `
 "
-import"@expo/vector-icons";
-require("@expo/vector-icons");
-imposter.require('react-native-vector-icons');
-imposter.import('react-native-vector-icons');"
+require("react-native");
+require("react-native-vector-icons");"
+`;
+
+exports[`metro+hermes supports disabling reanimated 1`] = `
+"
+function someWorklet(greeting){
+'worklet';
+console.log("Hey I'm running on the UI thread");
+}"
+`;
+
+exports[`metro+hermes supports reanimated worklets 1`] = `
+"var _worklet_549132292534_init_data={code:"function someWorklet(greeting){console.log(\\"Hey I'm running on the UI thread\\");}",location:"[mock]/worklet.js",sourceMap:"{\\"version\\":3,\\"mappings\\":\\"AAAA,+EACA\\",\\"names\\":[],\\"sources\\":[\\"[mock]/worklet.js\\"]}",version:"[GLOBAL]"};var
+someWorklet=function(){var _e=[new global.Error(),1,-27];var someWorklet=function(greeting){
+
+console.log("Hey I'm running on the UI thread");
+};someWorklet.__closure={};someWorklet.__workletHash=549132292534;someWorklet.__initData=_worklet_549132292534_init_data;someWorklet.__stackDetails=_e;return someWorklet;}();"
+`;
+
+exports[`metro+hermes transpiles non-standard exports 1`] = `"Object.defineProperty(exports,"__esModule",{value:true});exports.default=void 0;var _default=_interopRequireWildcard(require("./Animated"));exports.default=_default;function _getRequireWildcardCache(nodeInterop){if(typeof WeakMap!=="function")return null;var cacheBabelInterop=new WeakMap();var cacheNodeInterop=new WeakMap();return(_getRequireWildcardCache=function(nodeInterop){return nodeInterop?cacheNodeInterop:cacheBabelInterop;})(nodeInterop);}function _interopRequireWildcard(obj,nodeInterop){if(!nodeInterop&&obj&&obj.__esModule){return obj;}if(obj===null||typeof obj!=="object"&&typeof obj!=="function"){return{default:obj};}var cache=_getRequireWildcardCache(nodeInterop);if(cache&&cache.has(obj)){return cache.get(obj);}var newObj={};var hasPropertyDescriptor=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var key in obj){if(key!=="default"&&Object.prototype.hasOwnProperty.call(obj,key)){var desc=hasPropertyDescriptor?Object.getOwnPropertyDescriptor(obj,key):null;if(desc&&(desc.get||desc.set)){Object.defineProperty(newObj,key,desc);}else{newObj[key]=obj[key];}}}newObj.default=obj;if(cache){cache.set(obj,newObj);}return newObj;}"`;
+
+exports[`metro+hermes uses the platform's react-native import 1`] = `
+"
+var _reactNative=require("react-native");"
 `;
 
 exports[`webpack composes with babel-plugin-module-resolver 1`] = `
 "
 import"react-native";
-import"@expo/vector-icons";"
-`;
-
-exports[`webpack supports automatic JSX runtime 1`] = `
-"import Text from"react-native-web/dist/exports/Text";import View from"react-native-web/dist/exports/View";import{jsx as _jsx}from"react/jsx-runtime";
-
-export default function App(){
-return _jsx(View,{children:_jsx(Text,{children:"Hello World"})});
-}"
-`;
-
-exports[`webpack supports classic JSX runtime 1`] = `
-"import Text from"react-native-web/dist/exports/Text";import View from"react-native-web/dist/exports/View";
-
-export default function App(){
-return React.createElement(View,null,React.createElement(Text,null,"Hello World"));
-}"
+import'react-native-vector-icons';"
 `;
 
 exports[`webpack supports disabling reanimated 1`] = `
@@ -337,16 +318,16 @@ console.log("Hey I'm running on the UI thread");
 `;
 
 exports[`webpack supports reanimated worklets 1`] = `
-"var _worklet_2797951844470_init_data={code:"function someWorklet(greeting) {\\n  console.log(\\"Hey I'm running on the UI thread\\");\\n}",location:"[mock]/worklet.js",sourceMap:"{\\"version\\":3,\\"mappings\\":\\"AAAA;EAAAA;AACA\\",\\"names\\":[\\"console\\"],\\"sources\\":[\\"[mock]/worklet.js\\"]}"};var
-someWorklet=function(){var _e=[new global.Error(),1,-27];var _f=function _f(greeting){
+"var _worklet_549132292534_init_data={code:"function someWorklet(greeting){console.log(\\"Hey I'm running on the UI thread\\");}",location:"[mock]/worklet.js",sourceMap:"{\\"version\\":3,\\"mappings\\":\\"AAAA,+EACA\\",\\"names\\":[],\\"sources\\":[\\"[mock]/worklet.js\\"]}",version:"[GLOBAL]"};var
+someWorklet=function(){var _e=[new global.Error(),1,-27];var someWorklet=function someWorklet(greeting){
 
 console.log("Hey I'm running on the UI thread");
-};_f._closure={};_f.__initData=_worklet_2797951844470_init_data;_f.__workletHash=2797951844470;_f.__stackDetails=_e;_f.__version="3.3.0";return _f;}();"
+};someWorklet.__closure={};someWorklet.__workletHash=549132292534;someWorklet.__initData=_worklet_549132292534_init_data;someWorklet.__stackDetails=_e;return someWorklet;}();"
 `;
 
 exports[`webpack transpiles non-standard exports 1`] = `
-"import*as _default from"./Animated";export{_default as
-default};"
+"import*as _default from
+'./Animated';export{_default as default};"
 `;
 
 exports[`webpack uses the platform's react-native import 1`] = `"import View from"react-native-web/dist/exports/View";"`;

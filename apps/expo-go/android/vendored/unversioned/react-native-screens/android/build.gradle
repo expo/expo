@@ -1,0 +1,133 @@
+import com.android.Version
+
+buildscript {
+    ext {
+        rnsDefaultTargetSdkVersion = 34
+        rnsDefaultCompileSdkVersion = 34
+        rnsDefaultMinSdkVersion = 21
+        rnsDefaultKotlinVersion = '1.8.0'
+    }
+    ext.safeExtGet = {prop, fallback ->
+        rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+    }
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath('com.android.tools.build:gradle:4.2.2')
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', rnsDefaultKotlinVersion)}"
+        classpath "com.diffplug.spotless:spotless-plugin-gradle:6.11.0"
+    }
+}
+
+def isNewArchitectureEnabled() {
+    // To opt-in for the New Architecture, you can either:
+    // - Set `newArchEnabled` to true inside the `gradle.properties` file
+    // - Invoke gradle with `-newArchEnabled=true`
+    // - Set an environment variable `ORG_GRADLE_PROJECT_newArchEnabled=true`
+    return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
+}
+
+// spotless is only accessible within react-native-screens repo
+if (project == rootProject) {
+    apply from: 'spotless.gradle'
+}
+
+if (isNewArchitectureEnabled()) {
+    apply plugin: "com.facebook.react"
+}
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+def reactNativeArchitectures() {
+    def value = project.getProperties().get("reactNativeArchitectures")
+    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
+
+android {
+    compileSdkVersion safeExtGet('compileSdkVersion', rnsDefaultCompileSdkVersion)
+    def agpVersion = Version.ANDROID_GRADLE_PLUGIN_VERSION
+    if (agpVersion.tokenize('.')[0].toInteger() >= 7) {
+        namespace "com.swmansion.rnscreens"
+    }
+
+    // Used to override the NDK path/version on internal CI or by allowing
+    // users to customize the NDK path/version from their root project (e.g. for M1 support)
+    if (rootProject.hasProperty("ndkPath")) {
+        ndkPath rootProject.ext.ndkPath
+    }
+    if (rootProject.hasProperty("ndkVersion")) {
+        ndkVersion rootProject.ext.ndkVersion
+    }
+
+    defaultConfig {
+        minSdkVersion safeExtGet('minSdkVersion', rnsDefaultMinSdkVersion)
+        targetSdkVersion safeExtGet('targetSdkVersion', rnsDefaultTargetSdkVersion)
+        versionCode 1
+        versionName "1.0"
+        buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
+        ndk {
+            abiFilters (*reactNativeArchitectures())
+        }
+    }
+    lintOptions {
+        abortOnError false
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    packagingOptions {
+        // For some reason gradle only complains about the duplicated version of libreact_render libraries
+        // while there are more libraries copied in intermediates folder of the lib build directory, we exclude
+        // only the ones that make the build fail (ideally we should only include librnscreens_modules but we
+        // are only allowed to specify exclude patterns)
+        exclude "**/libreact_render*.so"
+    }
+    sourceSets.main {
+        ext.androidResDir = "src/main/res"
+        java {
+            if (isNewArchitectureEnabled()) {
+                srcDirs += [
+                    "src/fabric/java",
+                ]
+            } else {
+                srcDirs += [
+                    "src/paper/java",
+                    "build/generated/source/codegen/java"
+                ]
+            }
+
+        }
+        res {
+            if (safeExtGet('compileSdkVersion', rnsDefaultCompileSdkVersion) >= 33) {
+                srcDirs = ["${androidResDir}/base", "${androidResDir}/v33"]
+            } else {
+                srcDirs = ["${androidResDir}/base"]
+            }
+        }
+    }
+}
+
+repositories {
+    maven {
+        // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+        // Matches the RN Hello World template
+        // https://github.com/facebook/react-native/blob/1e8f3b11027fe0a7514b4fc97d0798d3c64bc895/local-cli/templates/HelloWorld/android/build.gradle#L21
+        url "$projectDir/../node_modules/react-native/android"
+    }
+    mavenCentral()
+    mavenLocal()
+    google()
+}
+
+dependencies {
+    implementation 'com.facebook.react:react-native:+'
+    implementation 'androidx.appcompat:appcompat:1.5.0'
+    implementation 'androidx.fragment:fragment:1.3.6'
+    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    implementation 'com.google.android.material:material:1.9.0'
+    implementation "androidx.core:core-ktx:1.8.0"
+}

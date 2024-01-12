@@ -3,23 +3,9 @@ import java.nio.file.Paths
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
-apply plugin: "de.undercouch.download"
 
 group = 'host.exp.exponent'
-version = '13.3.0'
-
-def REACT_NATIVE_BUILD_FROM_SOURCE = findProject(":ReactAndroid") != null
-def REACT_NATIVE_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
-  ? findProject(":ReactAndroid").getProjectDir().parent
-  : new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).parent
-def RN_SO_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
-  ? Paths.get(findProject(":ReactAndroid").getProjectDir().toString(), "build", "intermediates", "library_*", "*", "jni")
-  : "${buildDir}/react/jni"
-
-def reactProperties = new Properties()
-file("$REACT_NATIVE_DIR/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
-def REACT_NATIVE_VERSION = System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: reactProperties.getProperty("VERSION_NAME")
-def REACT_NATIVE_TARGET_VERSION = REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
+version = '13.6.0'
 
 def reactNativeArchitectures() {
     def value = project.getProperties().get("reactNativeArchitectures")
@@ -58,7 +44,6 @@ buildscript {
 
   dependencies {
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${getKotlinVersion()}")
-    classpath("de.undercouch:gradle-download-task:5.3.0")
   }
 }
 
@@ -83,11 +68,11 @@ if (!safeExtGet("expoProvidesDefaultConfig", false)) {
 android {
   // Remove this if and it's contents, when support for SDK49 is dropped
   if (!safeExtGet("expoProvidesDefaultConfig", false)) {
-    compileSdkVersion safeExtGet("compileSdkVersion", 33)
+    compileSdkVersion safeExtGet("compileSdkVersion", 34)
 
     defaultConfig {
       minSdkVersion safeExtGet("minSdkVersion", 23)
-      targetSdkVersion safeExtGet("targetSdkVersion", 33)
+      targetSdkVersion safeExtGet("targetSdkVersion", 34)
     }
 
     publishing {
@@ -123,25 +108,19 @@ android {
   namespace "expo.modules.gl"
   defaultConfig {
     versionCode 31
-    versionName "13.3.0"
+    versionName "13.6.0"
 
     externalNativeBuild {
       cmake {
         abiFilters (*reactNativeArchitectures())
-        arguments "-DANDROID_STL=c++_shared",
-          "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
-          "-DRN_SO_DIR=${RN_SO_DIR}"
+        arguments "-DANDROID_STL=c++_shared"
       }
     }
   }
 
   externalNativeBuild {
     cmake {
-      if (REACT_NATIVE_TARGET_VERSION >= 71) {
-        path "CMakeLists.txt"
-      } else {
-        path "legacy/CMakeLists.txt"
-      }
+      path "CMakeLists.txt"
     }
   }
 
@@ -174,17 +153,5 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   }
 
-  // Remove this when we drop SDK 47
-  if (REACT_NATIVE_TARGET_VERSION >= 71) {
-    compileOnly 'com.facebook.react:react-android'
-  }
-}
-
-// Remove this when we drop SDK 47
-if (REACT_NATIVE_TARGET_VERSION < 71) {
-  project.ext.extraLegacyReactNativeLibs = [
-    'prepareDoubleConversion',
-    'prepareFolly',
-  ]
-  applyLegacyReactNativeLibsExtractionPlugin()
+  compileOnly 'com.facebook.react:react-android'
 }

@@ -13,14 +13,14 @@ import expo.modules.kotlin.providers.AppContextProvider
 import java.io.File
 
 internal class MediaHandler(
-  private val appContextProvider: AppContextProvider,
+  private val appContextProvider: AppContextProvider
 ) {
   private val context: Context
     get() = requireNotNull(appContextProvider.appContext.reactContext) { "React Application Context is null" }
 
   internal suspend fun readExtras(
     bareResult: List<Pair<MediaType, Uri>>,
-    options: ImagePickerOptions,
+    options: ImagePickerOptions
   ): ImagePickerResponse {
     val results = bareResult.map { (mediaType, uri) ->
       when (mediaType) {
@@ -40,14 +40,15 @@ internal class MediaHandler(
 
   private suspend fun handleImage(
     sourceUri: Uri,
-    options: ImagePickerOptions,
+    options: ImagePickerOptions
   ): ImagePickerAsset {
     val exporter: ImageExporter = if (options.quality == ImagePickerConstants.MAXIMUM_QUALITY) {
       RawImageExporter()
     } else {
       CompressionImageExporter(appContextProvider, options.quality)
     }
-    val outputFile = createOutputFile(cacheDirectory, getType(context.contentResolver, sourceUri).toImageFileExtension())
+    val mimeType = getType(context.contentResolver, sourceUri)
+    val outputFile = createOutputFile(cacheDirectory, mimeType.toImageFileExtension())
 
     val exportedImage = exporter.exportAsync(sourceUri, outputFile, context.contentResolver)
     val base64 = options.base64.takeIf { it }
@@ -65,9 +66,10 @@ internal class MediaHandler(
       height = exportedImage.height,
       fileName = fileData?.fileName,
       filesize = fileData?.filesize,
+      mimeType = mimeType,
       base64 = base64,
       exif = exif,
-      assetId = sourceUri.getMediaStoreAssetId(),
+      assetId = sourceUri.getMediaStoreAssetId()
     )
   }
 
@@ -85,7 +87,7 @@ internal class MediaHandler(
   }
 
   private suspend fun handleVideo(
-    sourceUri: Uri,
+    sourceUri: Uri
   ): ImagePickerAsset {
     val outputFile = createOutputFile(cacheDirectory, ".mp4")
     copyFile(sourceUri, outputFile, context.contentResolver)
@@ -97,6 +99,7 @@ internal class MediaHandler(
       }
 
       val fileData = getAdditionalFileData(sourceUri)
+      val mimeType = getType(context.contentResolver, sourceUri)
 
       return ImagePickerAsset(
         type = MediaType.VIDEO,
@@ -105,6 +108,7 @@ internal class MediaHandler(
         height = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT),
         fileName = fileData?.fileName,
         filesize = fileData?.filesize,
+        mimeType = mimeType,
         duration = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_DURATION),
         rotation = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION),
         assetId = sourceUri.getMediaStoreAssetId()

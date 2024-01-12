@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '4.2.1'
+version = '4.5.1'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 if (expoModulesCorePlugin.exists()) {
@@ -53,11 +53,11 @@ afterEvaluate {
 android {
   // Remove this if and it's contents, when support for SDK49 is dropped
   if (!safeExtGet("expoProvidesDefaultConfig", false)) {
-    compileSdkVersion safeExtGet("compileSdkVersion", 33)
-    
+    compileSdkVersion safeExtGet("compileSdkVersion", 34)
+
     defaultConfig {
       minSdkVersion safeExtGet("minSdkVersion", 23)
-      targetSdkVersion safeExtGet("targetSdkVersion", 33)
+      targetSdkVersion safeExtGet("targetSdkVersion", 34)
     }
 
     lintOptions {
@@ -80,7 +80,7 @@ android {
   namespace "expo.modules.devmenu"
   defaultConfig {
     versionCode 10
-    versionName '4.2.1'
+    versionName '4.5.1'
   }
 
   buildTypes {
@@ -165,8 +165,7 @@ dependencies {
   implementation 'com.squareup.okhttp3:okhttp:3.14.9'
   implementation 'com.google.code.gson:gson:2.8.6'
 
-  //noinspection GradleDynamicVersion
-  implementation 'com.facebook.react:react-native:+'
+  implementation 'com.facebook.react:react-android'
   implementation "androidx.transition:transition:1.1.0" // use by react-native-reanimated
 
   // Fixes

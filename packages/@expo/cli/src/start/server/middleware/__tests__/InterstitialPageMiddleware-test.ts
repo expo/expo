@@ -2,7 +2,6 @@ import { getConfig, getNameFromConfig } from '@expo/config';
 import { getRuntimeVersionNullableAsync } from '@expo/config-plugins/build/utils/Updates';
 import { vol } from 'memfs';
 
-import { asMock } from '../../../../__tests__/asMock';
 import { InterstitialPageMiddleware } from '../InterstitialPageMiddleware';
 import { ServerRequest, ServerResponse } from '../server.types';
 
@@ -38,7 +37,7 @@ afterAll(() => {
   process.chdir(originalCwd);
 });
 
-describe('_shouldHandleRequest', () => {
+describe('shouldHandleRequest', () => {
   const middleware = new InterstitialPageMiddleware('/');
   it(`returns false when the middleware should not handle`, () => {
     for (const req of [
@@ -46,20 +45,20 @@ describe('_shouldHandleRequest', () => {
       asReq({ url: 'http://localhost:8081' }),
       asReq({ url: 'http://localhost:8081/' }),
     ]) {
-      expect(middleware._shouldHandleRequest(req)).toBe(false);
+      expect(middleware.shouldHandleRequest(req)).toBe(false);
     }
   });
   it(`returns true when the middleware should handle`, () => {
     for (const req of [asReq({ url: 'http://localhost:8081/_expo/loading' })]) {
-      expect(middleware._shouldHandleRequest(req)).toBe(true);
+      expect(middleware.shouldHandleRequest(req)).toBe(true);
     }
   });
 });
 
 describe('_getProjectOptionsAsync', () => {
   it('returns the project settings from the config', async () => {
-    asMock(getNameFromConfig).mockReturnValueOnce({ appName: 'my-app' });
-    asMock(getRuntimeVersionNullableAsync).mockResolvedValueOnce('123');
+    jest.mocked(getNameFromConfig).mockReturnValueOnce({ appName: 'my-app' });
+    jest.mocked(getRuntimeVersionNullableAsync).mockResolvedValueOnce('123');
 
     const middleware = new InterstitialPageMiddleware('/');
 
@@ -78,8 +77,8 @@ describe('_getProjectOptionsAsync', () => {
     );
   });
   it('returns the project settings from the config with SDK version', async () => {
-    asMock(getNameFromConfig).mockReturnValueOnce({ appName: 'my-app' });
-    asMock(getRuntimeVersionNullableAsync).mockResolvedValueOnce(null);
+    jest.mocked(getNameFromConfig).mockReturnValueOnce({ appName: 'my-app' });
+    jest.mocked(getRuntimeVersionNullableAsync).mockResolvedValueOnce(null);
 
     const middleware = new InterstitialPageMiddleware('/');
 

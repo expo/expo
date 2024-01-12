@@ -144,8 +144,12 @@ export default function AnimationManager({ children: renderFunction, initial, tr
         out: animation?.animateOutClass,
         mounted: animation?.startingClass,
     };
-    return (React.createElement(React.Fragment, null, [...nodes]
-        .filter((n) => n.status !== 'errored')
-        .map((n) => (React.createElement("div", { className: animation?.containerClass, key: n.animationKey }, wrapNodeWithCallbacks(n)(classes[n.status], styles))))));
+    return (<>
+      {[...nodes]
+            .filter((n) => n.status !== 'errored')
+            .map((n) => (<div className={animation?.containerClass} key={n.animationKey}>
+            {wrapNodeWithCallbacks(n)(classes[n.status], styles)}
+          </div>))}
+    </>);
 }
 //# sourceMappingURL=AnimationManager.js.map

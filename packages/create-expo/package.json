@@ -1,6 +1,6 @@
 {
   "name": "create-expo",
-  "version": "2.1.1",
+  "version": "2.1.3",
   "bin": "./build/index.js",
   "main": "build",
   "description": "Create universal Expo apps",
@@ -24,17 +24,17 @@
   "scripts": {
     "build": "ncc build ./src/index.ts -o build/",
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
-    "prepare": "yarn run clean && yarn run build:prod",
+    "prepare": "expo-module clean && yarn run build:prod",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "typecheck": "expo-module typecheck",
     "test": "expo-module test",
     "test:e2e": "expo-module test --config e2e/jest.config.js",
-    "watch": "yarn run build -w",
+    "watch": "yarn run build --watch",
     "prepublishOnly": "expo-module prepublishOnly"
   },
   "devDependencies": {
-    "@expo/json-file": "8.2.37",
+    "@expo/json-file": "8.3.0",
     "@expo/package-manager": "^1.1.1",
     "@expo/spawn-async": "^1.7.0",
     "@types/debug": "^4.1.7",

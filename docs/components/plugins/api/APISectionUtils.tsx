@@ -35,7 +35,6 @@ import {
   OL,
   P,
   RawH3,
-  RawH4,
   UL,
   createPermalinkedComponent,
   DEMI,
@@ -57,8 +56,11 @@ export enum TypeDocKind {
   Method = 2048,
   Parameter = 32768,
   Accessor = 262144,
-  TypeAlias = 4194304,
+  TypeAlias = 2097152,
+  TypeAlias_Legacy = 4194304,
 }
+
+export const DEFAULT_BASE_NESTING_LEVEL = 2;
 
 export type MDComponents = ComponentProps<typeof ReactMarkdown>['components'];
 
@@ -151,6 +153,8 @@ const replaceableTypes: Partial<Record<string, string>> = {
 };
 
 const hardcodedTypeLinks: Record<string, string> = {
+  AsyncIterableIterator:
+    'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator',
   AVPlaybackSource: '/versions/latest/sdk/av/#avplaybacksource',
   AVPlaybackStatus: '/versions/latest/sdk/av/#avplaybackstatus',
   AVPlaybackStatusToSet: '/versions/latest/sdk/av/#avplaybackstatustoset',
@@ -163,6 +167,8 @@ const hardcodedTypeLinks: Record<string, string> = {
     'https://github.com/expo/expo/blob/main/packages/%40expo/config-types/src/ExpoConfig.ts',
   File: 'https://developer.mozilla.org/en-US/docs/Web/API/File',
   FileList: 'https://developer.mozilla.org/en-US/docs/Web/API/FileList',
+  IterableIterator:
+    'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator',
   Manifest: '/versions/latest/sdk/constants/#manifest',
   MediaTrackSettings: 'https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings',
   MessageEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent',
@@ -171,6 +177,8 @@ const hardcodedTypeLinks: Record<string, string> = {
   Partial: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype',
   Promise:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
+  ReactNode: 'https://reactnative.dev/docs/react-node',
+  ShareOptions: 'https://reactnative.dev/docs/share#share',
   SyntheticEvent: 'https://react.dev/reference/react-dom/components/common#react-event-object',
   View: 'https://reactnative.dev/docs/view',
   ViewProps: 'https://reactnative.dev/docs/view#props',
@@ -415,24 +423,34 @@ export const ParamsTableHeadRow = () => (
   </TableHead>
 );
 
-const InheritPermalink = createPermalinkedComponent(
-  createTextComponent(
-    TextElement.SPAN,
-    css({ fontSize: 'inherit', fontWeight: 'inherit', color: 'inherit' })
-  ),
-  { baseNestingLevel: 2 }
-);
+function createInheritPermalink(baseNestingLevel: number) {
+  return createPermalinkedComponent(
+    createTextComponent(
+      TextElement.SPAN,
+      css({ fontSize: 'inherit', fontWeight: 'inherit', color: 'inherit' })
+    ),
+    { baseNestingLevel }
+  );
+}
 
 export const BoxSectionHeader = ({
   text,
   exposeInSidebar,
+  className,
+  baseNestingLevel = DEFAULT_BASE_NESTING_LEVEL,
 }: {
   text: string;
   exposeInSidebar?: boolean;
+  className?: string;
+  baseNestingLevel?: number;
 }) => {
-  const TextWrapper = exposeInSidebar ? InheritPermalink : Fragment;
+  const TextWrapper = exposeInSidebar ? createInheritPermalink(baseNestingLevel) : Fragment;
   return (
-    <CALLOUT theme="secondary" weight="medium" css={STYLES_NESTED_SECTION_HEADER}>
+    <CALLOUT
+      theme="secondary"
+      weight="medium"
+      css={STYLES_NESTED_SECTION_HEADER}
+      className={className}>
       <TextWrapper>{text}</TextWrapper>
     </CALLOUT>
   );
@@ -451,7 +469,8 @@ export const listParams = (parameters: MethodParamData[]) =>
 export const renderDefaultValue = (defaultValue?: string) =>
   defaultValue && defaultValue !== '...' ? (
     <div css={defaultValueContainerStyle}>
-      <DEMI>Default:</DEMI> <CODE>{defaultValue}</CODE>
+      <DEMI className="!text-inherit">Default:</DEMI>{' '}
+      <CODE className="!text-inherit">{defaultValue}</CODE>
     </div>
   ) : undefined;
 
@@ -464,13 +483,14 @@ export const renderTypeOrSignatureType = (
     return (
       <CODE key={`signature-type-${signatures[0].name}`}>
         (
-        {signatures?.map(({ parameters }) =>
-          parameters?.map(param => (
-            <span key={`signature-param-${param.name}`}>
-              {param.name}
-              {param.flags?.isOptional && '?'}: {resolveTypeName(param.type)}
-            </span>
-          ))
+        {signatures?.map(
+          ({ parameters }) =>
+            parameters?.map(param => (
+              <span key={`signature-param-${param.name}`}>
+                {param.name}
+                {param.flags?.isOptional && '?'}: {resolveTypeName(param.type)}
+              </span>
+            ))
         )}
         ) =&gt; {signatures[0].type ? resolveTypeName(signatures[0].type) : 'void'}
       </CODE>
@@ -583,7 +603,7 @@ export const CommentTextBlock = ({
   const content = comment && comment.summary ? getCommentContent(comment.summary) : undefined;
 
   if (emptyCommentFallback && (!comment || !content || !content.length)) {
-    return <>{emptyCommentFallback}</>;
+    return <span className="text-tertiary">{emptyCommentFallback}</span>;
   }
 
   const paramTags = content ? getParamTags(content) : undefined;
@@ -640,16 +660,17 @@ export const CommentTextBlock = ({
   );
 };
 
-const getMonospaceHeader = (element: ComponentType<any>) => {
-  const level = parseInt(element?.displayName?.replace(/\D/g, '') ?? '0', 10);
+const getMonospaceHeader = (element: ComponentType<any>, baseNestingLevel: number) => {
   return createPermalinkedComponent(element, {
-    baseNestingLevel: level !== 0 ? level : undefined,
+    baseNestingLevel,
     sidebarType: HeadingType.InlineCode,
   });
 };
 
-export const H3Code = getMonospaceHeader(RawH3);
-export const H4Code = getMonospaceHeader(RawH4);
+export function getH3CodeWithBaseNestingLevel(baseNestingLevel: number) {
+  return getMonospaceHeader(RawH3, baseNestingLevel);
+}
+export const H3Code = getH3CodeWithBaseNestingLevel(3);
 
 export const getComponentName = (name?: string, children: PropData[] = []) => {
   if (name && name !== 'default') return name;
@@ -713,12 +734,10 @@ export const STYLES_APIBOX_WRAPPER = css({
   },
 });
 
-export const STYLE_APIBOX_NO_SPACING = css({ marginBottom: -spacing[5] });
-
 export const STYLES_NESTED_SECTION_HEADER = css({
   display: 'flex',
-  borderTop: `1px solid ${theme.border.default}`,
-  borderBottom: `1px solid ${theme.border.default}`,
+  borderTop: `1px solid ${theme.border.secondary}`,
+  borderBottom: `1px solid ${theme.border.secondary}`,
   margin: `${spacing[4]}px -${spacing[5]}px ${spacing[4]}px`,
   padding: `${spacing[2.5]}px ${spacing[5]}px`,
   backgroundColor: theme.background.subtle,

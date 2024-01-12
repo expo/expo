@@ -1,5 +1,7 @@
-import { FileCode01Icon, LayoutAlt01Icon, FolderIcon } from '@expo/styleguide-icons';
+import { FileCode01Icon, FolderIcon, LayoutAlt01Icon, PackageIcon } from '@expo/styleguide-icons';
 import { HTMLAttributes, ReactNode } from 'react';
+
+import { TextWithNote } from './TextWithNote';
 
 type FileTreeProps = HTMLAttributes<HTMLDivElement> & {
   files?: (string | [string, string])[];
@@ -26,7 +28,7 @@ export function FileTree({ files = [], ...rest }: FileTreeProps) {
  * @param files
  * @returns
  */
-function generateStructure(files: (string | [string, string])[]): FileObject[] {
+function generateStructure(files: FileTreeProps['files'] = []): FileObject[] {
   const structure: FileObject[] = [];
 
   function modifyPath(path: string, note?: string) {
@@ -83,35 +85,12 @@ function renderStructure(structure: FileObject[], level = 0): ReactNode {
   });
 }
 
-function TextWithNote({
-  name,
-  note,
-  className,
-}: {
-  name: string;
-  note?: string;
-  className: string;
-}) {
-  return (
-    <span className="flex items-center flex-1">
-      {/* File/folder name  */}
-      <code className={className}>{name}</code>
-
-      {note && (
-        <>
-          {/* divider pushing  */}
-          <span className="flex-1 border-b border-default opacity-60 mx-2 md:mx-3 min-w-[2rem]" />
-          {/* Optional note */}
-          <code className="text-default">{note}</code>
-        </>
-      )}
-    </span>
-  );
-}
-
 function getIconForFile(filename: string) {
   if (/_layout\.[jt]sx?/.test(filename)) {
     return LayoutAlt01Icon;
+  }
+  if (filename.startsWith('expo-')) {
+    return PackageIcon;
   }
   return FileCode01Icon;
 }

@@ -4,7 +4,7 @@ import type { ErrorBoundaryProps } from './exports';
 import { getContextKey } from './matchers';
 import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
 
-export type DynamicConvention = { name: string; deep: boolean };
+export type DynamicConvention = { name: string; deep: boolean; notFound?: boolean };
 
 export type LoadedRoute = {
   ErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
@@ -33,6 +33,8 @@ export type RouteNode = {
   generated?: boolean;
   /** Internal screens like the directory or the auto 404 should be marked as internal. */
   internal?: boolean;
+  /** File paths for async entry modules that should be included in the initial chunk request to ensure the runtime JavaScript matches the statically rendered HTML representation. */
+  entryPoints?: string[];
 };
 
 const CurrentRouteContext = React.createContext<RouteNode | null>(null);

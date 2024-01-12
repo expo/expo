@@ -7,7 +7,7 @@ import ExpoModulesTestCore
 import EXManifests
 
 class FileDownloaderSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     var testDatabaseDir: URL!
     var db: UpdatesDatabase!
     
@@ -37,7 +37,7 @@ class FileDownloaderSpec : ExpoSpec {
     
     describe("cache control") {
       it("works for legacy manifest") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try! UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0",
         ])
@@ -48,7 +48,7 @@ class FileDownloaderSpec : ExpoSpec {
       }
       
       it("works for new manifest") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try! UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/00000000-0000-0000-0000-000000000000",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0",
         ])
@@ -61,7 +61,7 @@ class FileDownloaderSpec : ExpoSpec {
     
     describe("extra headers") {
       it("works for object types") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try! UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/00000000-0000-0000-0000-000000000000",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0",
         ])
@@ -83,7 +83,7 @@ class FileDownloaderSpec : ExpoSpec {
       }
       
       it("override order") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try! UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/00000000-0000-0000-0000-000000000000",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0",
           UpdatesConfig.EXUpdatesConfigRequestHeadersKey: [
@@ -107,8 +107,9 @@ class FileDownloaderSpec : ExpoSpec {
     
     describe("get extra headers") {
       it("works") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try! UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
+          UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
         ])
         
         let launchedUpdateUUIDString = "7c1d2bd0-f88b-454d-998c-7fa92a924dbf"
@@ -142,8 +143,8 @@ class FileDownloaderSpec : ExpoSpec {
         )
         
         db.databaseQueue.sync {
-          try! db.setExtraParam(key: "hello", value: "world", withScopeKey: config.scopeKey!)
-          try! db.setExtraParam(key: "what", value: "123", withScopeKey: config.scopeKey!)
+          try! db.setExtraParam(key: "hello", value: "world", withScopeKey: config.scopeKey)
+          try! db.setExtraParam(key: "what", value: "123", withScopeKey: config.scopeKey)
 
           let extraHeaders = FileDownloader.extraHeadersForRemoteUpdateRequest(
             withDatabase: db,
@@ -159,8 +160,9 @@ class FileDownloaderSpec : ExpoSpec {
       }
       
       it("no launched or embedded update") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try! UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
+          UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
         ])
         
         db.databaseQueue.sync {
@@ -179,7 +181,7 @@ class FileDownloaderSpec : ExpoSpec {
     
     describe("asset extra headers") {
       it("override order") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try! UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/00000000-0000-0000-0000-000000000000",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0",
           UpdatesConfig.EXUpdatesConfigRequestHeadersKey: [
@@ -201,7 +203,7 @@ class FileDownloaderSpec : ExpoSpec {
       }
       
       it("object types") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try! UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/00000000-0000-0000-0000-000000000000",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0",
         ])

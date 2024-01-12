@@ -61,7 +61,7 @@ Later, we're going to write a test that's going to tap the button and check whet
 
 <Collapsible summary="👀 See the source code">
 
-```js App.js
+```jsx App.js
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -122,14 +122,14 @@ Let's add two development dependencies to the project - `jest` and `detox`. `jes
 
 <Terminal
   cmd={[
-    '# Install jest & detox',
+    '# Install jest and detox',
     '$ npm install --save-dev jest detox',
     '# Create Detox configuration files',
     '$ npx detox init -r jest',
   ]}
 />
 
-> See the official Detox docs at https://wix.github.io/Detox/docs/introduction/getting-started/ and https://wix.github.io/Detox/docs/guide/jest to learn about any potential updates to this process.
+> See the [Getting started](https://wix.github.io/Detox/docs/introduction/getting-started) and [Project setup](https://wix.github.io/Detox/docs/introduction/project-setup) guides in official Detox documentation to learn about any potential updates to this process.
 
 #### Configure Detox
 
@@ -428,7 +428,7 @@ In contrast to `applicationArchivePath`, the build artifacts defined at `buildAr
 
 If you run E2E tests locally, remember to add `artifacts` to `.gitignore`:
 
-```stylus .gitignore
+```sh .gitignore
 artifacts/
 ```
 

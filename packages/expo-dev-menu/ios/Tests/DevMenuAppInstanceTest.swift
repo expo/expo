@@ -19,7 +19,7 @@ class DevMenuAppInstanceTest: QuickSpec {
     }
   }
 
-  override func spec() {
+  override class func spec() {
     it("checks if `sendCloseEvent` sends correct event") {
       let mockedBridge = MockedBridge(delegate: nil, launchOptions: nil)!
       let appInstance = DevMenuAppInstance(

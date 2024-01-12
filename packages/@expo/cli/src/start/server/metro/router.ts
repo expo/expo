@@ -6,6 +6,7 @@ import resolveFrom from 'resolve-from';
 
 import { Log } from '../../../log';
 import { directoryExistsSync } from '../../../utils/dir';
+import { memoize } from '../../../utils/fn';
 
 const debug = require('debug')('expo:start:server:metro:router') as typeof console.log;
 
@@ -26,7 +27,7 @@ export function getAppRouterRelativeEntryPath(
   // It doesn't matter if the app folder exists.
   const appFolder = path.join(projectRoot, routerDirectory);
   const appRoot = path.relative(path.dirname(routerEntry), appFolder);
-  debug('routerEntry', routerEntry, appFolder, appRoot);
+  debug('expo-router entry', routerEntry, appFolder, appRoot);
   return appRoot;
 }
 
@@ -43,26 +44,22 @@ export function getRouterDirectoryModuleIdWithManifest(
   projectRoot: string,
   exp: ExpoConfig
 ): string {
-  return exp.extra?.router?.unstable_src ?? getRouterDirectory(projectRoot);
+  return exp.extra?.router?.root ?? getRouterDirectory(projectRoot);
 }
 
-export function getRouterDirectoryWithManifest(projectRoot: string, exp: ExpoConfig): string {
-  return path.join(projectRoot, getRouterDirectoryModuleIdWithManifest(projectRoot, exp));
-}
+const logSrcDir = memoize(() =>
+  Log.log(chalk.gray('Using src/app as the root directory for Expo Router.'))
+);
 
 export function getRouterDirectory(projectRoot: string): string {
   // more specific directories first
   if (directoryExistsSync(path.join(projectRoot, 'src/app'))) {
-    Log.log(chalk.gray('Using src/app as the root directory for Expo Router.'));
+    logSrcDir();
     return 'src/app';
   }
 
-  Log.debug('Using app as the root directory for Expo Router.');
+  debug('Using app as the root directory for Expo Router.');
   return 'app';
-}
-
-export function isApiRouteConvention(name: string): boolean {
-  return /\+api\.[tj]sx?$/.test(name);
 }
 
 export function getApiRoutesForDirectory(cwd: string) {

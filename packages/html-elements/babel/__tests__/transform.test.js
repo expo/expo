@@ -8,7 +8,7 @@ const options = {
   babelrc: false,
   presets: [
     [
-      require.resolve('metro-react-native-babel-preset'),
+      require.resolve('@react-native/babel-preset'),
       {
         useTransformReactJSXExperimental: false,
         disableImportExportTransform: true,
@@ -60,7 +60,7 @@ function App() {
 it(`Skips conversion in node modules`, () => {
   const sourceCode = `
 function App() {
-  return <a href="#">Link</a>;    
+  return <a href="#">Link</a>;
 }`;
   const { code } = babel.transform(sourceCode, {
     ...options,
@@ -72,7 +72,7 @@ function App() {
 it(`Converts basic link`, () => {
   const sourceCode = `
 function App() {
-  return <a href="#">Link</a>;    
+  return <a href="#">Link</a>;
 }`;
   const { code } = babel.transform(sourceCode, options);
   expect(code).toMatchSnapshot();
@@ -83,7 +83,7 @@ it(`Skips injecting the import if one is already present`, () => {
   const sourceCode = `
 import '@expo/html-elements';
 function App() {
-  return <a href="#">Link</a>;    
+  return <a href="#">Link</a>;
 }`;
   const { code } = babel.transform(sourceCode, options);
   expect(code).toMatchSnapshot();

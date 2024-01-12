@@ -2,7 +2,6 @@ import { css, Global } from '@emotion/react';
 import { ThemeProvider } from '@expo/styleguide';
 import { MDXProvider } from '@mdx-js/react';
 import * as Sentry from '@sentry/react';
-import { BrowserTracing } from '@sentry/tracing';
 import { AppProps } from 'next/app';
 import { Inter, Fira_Code } from 'next/font/google';
 
@@ -10,10 +9,12 @@ import { preprocessSentryError } from '~/common/sentry-utilities';
 import { useNProgress } from '~/common/use-nprogress';
 import DocumentationElements from '~/components/page-higher-order/DocumentationElements';
 import { AnalyticsProvider } from '~/providers/Analytics';
+import { CodeBlockSettingsProvider } from '~/providers/CodeBlockSettingsProvider';
 import { markdownComponents } from '~/ui/components/Markdown';
 
 import 'global-styles/global.css';
 import '@expo/styleguide/dist/expo-theme.css';
+import '@expo/styleguide-search-ui/dist/expo-search-ui.css';
 import 'tippy.js/dist/tippy.css';
 
 const isDev = process.env.NODE_ENV === 'development';
@@ -38,9 +39,10 @@ Sentry.init({
         /https:\/\/docs-expo-dev\.translate\.goog/,
         /https:\/\/translated\.turbopages\.org/,
         /https:\/\/docs\.expo\.dev\/index\.html/,
+        /https:\/\/expo\.nodejs\.cn/,
       ],
-  integrations: [new BrowserTracing()],
-  tracesSampleRate: 1.0,
+  integrations: [new Sentry.BrowserTracing()],
+  tracesSampleRate: 0.001,
 });
 
 const rootMarkdownComponents = {
@@ -55,19 +57,21 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <AnalyticsProvider>
       <ThemeProvider>
-        <MDXProvider components={rootMarkdownComponents}>
-          <Global
-            styles={css({
-              'html, body, kbd, button, input, select': {
-                fontFamily: regularFont.style.fontFamily,
-              },
-              'code, pre, table.diff': {
-                fontFamily: monospaceFont.style.fontFamily,
-              },
-            })}
-          />
-          <Component {...pageProps} />
-        </MDXProvider>
+        <CodeBlockSettingsProvider>
+          <MDXProvider components={rootMarkdownComponents}>
+            <Global
+              styles={css({
+                'html, body, kbd, button, input, select': {
+                  fontFamily: regularFont.style.fontFamily,
+                },
+                'code, pre, table.diff': {
+                  fontFamily: monospaceFont.style.fontFamily,
+                },
+              })}
+            />
+            <Component {...pageProps} />
+          </MDXProvider>
+        </CodeBlockSettingsProvider>
       </ThemeProvider>
     </AnalyticsProvider>
   );

@@ -6,8 +6,10 @@ sidebar_title: Module API
 
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 import { APIBox } from '~/components/plugins/APIBox';
-import { PlatformTags } from '~/ui/components/Tag';
+import { PlatformTags, StatusTag } from '~/ui/components/Tag';
+import { A, CALLOUT } from '~/ui/components/Text';
 import { APIMethod } from '~/components/plugins/api/APISectionMethods';
+import { FileTree } from '~/ui/components/FileTree';
 
 The native modules API is an abstraction layer on top of [JSI](https://reactnative.dev/architecture/glossary#javascript-interfaces-jsi) and other low-level primitives that React Native is built upon. It is built with modern languages (Swift and Kotlin) and provides an easy-to-use and convenient API that is consistent across platforms where possible.
 
@@ -125,19 +127,29 @@ It is recommended to use `AsyncFunction` over `Function` when it:
 <CodeBlocksTable>
 
 ```swift
-AsyncFunction("asyncFunction") { (message: String, promise: Promise) in
-  DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-    promise.resolve(message)
-  }
+AsyncFunction("asyncFunction") { (message: String) in
+  return message
 }
+
+// or
+
+AsyncFunction("asyncFunction") { (message: String, promise: Promise) in
+  promise.resolve(message)
+}
+
 ```
 
 ```kotlin
-AsyncFunction("asyncFunction") { message: String, promise: Promise ->
-  launch(Dispatchers.Main) {
-    promise.resolve(message)
-  }
+AsyncFunction("asyncFunction") { message: String ->
+  return@AsyncFunction message
 }
+
+// or
+
+AsyncFunction("asyncFunction") { message: String, promise: Promise ->
+  promise.resolve(message)
+}
+
 ```
 
 </CodeBlocksTable>
@@ -152,6 +164,24 @@ async function getMessageAsync() {
   return await MyModule.asyncFunction('bar');
 }
 ```
+
+It is possible to change the native queue of `AsyncFunction` by calling the `.runOnQueue` function on the result of that component.
+
+<CodeBlocksTable>
+
+```swift
+AsyncFunction("asyncFunction") { (message: String) in
+  return message
+}.runOnQueue(.main)
+```
+
+```kotlin
+AsyncFunction("asyncFunction") { message: String ->
+  return@AsyncFunction message
+}.runOnQueue(Queues.MAIN)
+```
+
+</CodeBlocksTable>
 
 ---
 
@@ -539,6 +569,7 @@ Some common iOS types from `CoreGraphics` and `UIKit` system frameworks are alre
 | `CGVector`              | `{ dx: number, dy: number }` or `number[]` with _dx_ and _dy_ vector differentials                                                                                                |
 | `CGRect`                | `{ x: number, y: number, width: number, height: number }` or `number[]` with _x_, _y_, _width_ and _height_ values                                                                |
 | `CGColor`<br/>`UIColor` | Color hex strings (`#RRGGBB`, `#RRGGBBAA`, `#RGB`, `#RGBA`), named colors following the [CSS3/SVG specification](https://www.w3.org/TR/css-color-3/#svg-color) or `"transparent"` |
+| `Data`                  | `Uint8Array` <StatusTag note="SDK 50+" />                                                                                                                                         |
 
 ---
 
@@ -551,6 +582,7 @@ Similarly, some common Android types from packages like `java.io`, `java.net`, o
 | `java.io.File`<br/>`java.nio.file.Path` (is only available on Android API 26) | `string` with a path to the file                                                                                                                                                  |
 | `android.graphics.Color`                                                      | Color hex strings (`#RRGGBB`, `#RRGGBBAA`, `#RGB`, `#RGBA`), named colors following the [CSS3/SVG specification](https://www.w3.org/TR/css-color-3/#svg-color) or `"transparent"` |
 | `kotlin.Pair<A, B>`                                                           | Array with two values, where the first one is of type _A_ and the second is of type _B_                                                                                           |
+| `kotlin.ByteArray`                                                            | `Uint8Array` <StatusTag note="SDK 50+" />                                                                                                                                         |
 
 </APIBox>
 <APIBox header="Records">
@@ -1122,17 +1154,63 @@ class MyModule : Module() {
 
 For more examples from real modules, you can refer to Expo modules that already use this API on GitHub:
 
-- `expo-battery` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-battery/ios))
-- `expo-cellular` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-cellular/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-cellular/android/src/main/java/expo/modules/cellular))
-- `expo-clipboard` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-clipboard/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-clipboard/android/src/main/java/expo/modules/clipboard))
-- `expo-crypto` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-crypto/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-crypto/android/src/main/java/expo/modules/crypto))
-- `expo-device` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-device/ios))
-- `expo-haptics` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-haptics/ios))
-- `expo-image-manipulator` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-image-manipulator/ios))
-- `expo-image-picker` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-image-picker/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-image-picker/android/src/main/java/expo/modules/imagepicker))
-- `expo-linear-gradient` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-linear-gradient/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-linear-gradient/android/src/main/java/expo/modules/lineargradient))
-- `expo-localization` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-localization/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-localization/android/src/main/java/expo/modules/localization))
-- `expo-store-review` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-store-review/ios))
-- `expo-system-ui` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-system-ui/ios/ExpoSystemUI))
-- `expo-video-thumbnails` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-video-thumbnails/ios))
-- `expo-web-browser` ([Swift](https://github.com/expo/expo/blob/main/packages/expo-web-browser/ios), [Kotlin](https://github.com/expo/expo/blob/main/packages/expo-web-browser/android/src/main/java/expo/modules/webbrowser))
+<FileTree
+  files={[
+    ['expo-battery', <A href="https://github.com/expo/expo/tree/main/packages/expo-battery/ios">Swift</A>],
+    [
+      'expo-cellular',
+      <CALLOUT>
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-cellular/android/src/main/java/expo/modules/cellular">Kotlin</A>,{' '}
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-cellular/ios">Swift</A>
+      </CALLOUT>
+    ],
+    [
+      'expo-clipboard',
+      <CALLOUT>
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-clipboard/android/src/main/java/expo/modules/clipboard">Kotlin</A>,{' '}
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-clipboard/ios">Swift</A>
+      </CALLOUT>
+    ],
+    [
+      'expo-crypto',
+      <CALLOUT>
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-crypto/android/src/main/java/expo/modules/crypto">Kotlin</A>,{' '}
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-crypto/ios">Swift</A>
+      </CALLOUT>
+    ],
+    ['expo-device', <A href="https://github.com/expo/expo/tree/main/packages/expo-device/ios">Swift</A>],
+    ['expo-haptics', <A href="https://github.com/expo/expo/tree/main/packages/expo-haptics/ios">Swift</A>],
+    ['expo-image-manipulator', <A href="https://github.com/expo/expo/tree/main/packages/expo-image-manipulator/ios">Swift</A>],
+    [
+      'expo-image-picker',
+      <CALLOUT>
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-image-picker/android/src/main/java/expo/modules/imagepicker">Kotlin</A>,{' '}
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-image-picker/ios">Swift</A>
+      </CALLOUT>
+    ],
+    [
+      'expo-linear-gradient',
+      <CALLOUT>
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-linear-gradient/android/src/main/java/expo/modules/lineargradient">Kotlin</A>,{' '}
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-linear-gradient/ios">Swift</A>
+      </CALLOUT>
+    ],
+    [
+      'expo-localization',
+      <CALLOUT>
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-localization/android/src/main/java/expo/modules/localization">Kotlin</A>,{' '}
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-localization/ios">Swift</A>
+      </CALLOUT>
+    ],
+    ['expo-store-review', <A href="https://github.com/expo/expo/tree/main/packages/expo-store-review/ios">Swift</A>],
+    ['expo-system-ui', <A href="https://github.com/expo/expo/tree/main/packages/expo-system-ui/ios/ExpoSystemUI">Swift</A>],
+    ['expo-video-thumbnails', <A href="https://github.com/expo/expo/tree/main/packages/expo-video-thumbnails/ios">Swift</A>],
+    [
+      'expo-web-browser',
+      <CALLOUT>
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-web-browser/android/src/main/java/expo/modules/webbrowser">Kotlin</A>,{' '}
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-web-browser/ios">Swift</A>
+      </CALLOUT>
+    ]
+  ]}
+/>

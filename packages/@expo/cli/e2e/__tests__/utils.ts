@@ -65,7 +65,7 @@ function isSpawnResult(errorOrResult: Error): errorOrResult is Error & SpawnResu
 }
 
 export async function installAsync(projectRoot: string, pkgs: string[] = []) {
-  return abortingSpawnAsync('yarn', pkgs, {
+  return abortingSpawnAsync('bun', ['install', ...pkgs], {
     cwd: projectRoot,
     stdio: ['ignore', 'pipe', 'pipe'],
   });
@@ -182,7 +182,7 @@ const testingLocally = !process.env.CI;
 export async function setupTestProjectAsync(
   name: string,
   fixtureName: string,
-  sdkVersion: string = '47.0.0'
+  sdkVersion: string = '49.0.0'
 ): Promise<string> {
   // If you're testing this locally, you can set the projectRoot to a local project (you created with expo init) to save time.
   const projectRoot = await createFromFixtureAsync(os.tmpdir(), {
@@ -239,4 +239,36 @@ export async function getPageHtml(output: string, route: string) {
 export function getRouterE2ERoot(): string {
   const root = path.join(__dirname, '../../../../../apps/router-e2e');
   return root;
+}
+
+export function getHtmlHelpers(outputDir: string) {
+  async function getScriptTagsAsync(name: string) {
+    const tags = (await getPageHtml(outputDir, name)).querySelectorAll('script').map((script) => {
+      expect(fs.existsSync(path.join(outputDir, script.attributes.src))).toBe(true);
+
+      return script.attributes.src;
+    });
+
+    ensureEntryChunk(tags[0]);
+
+    return tags;
+  }
+
+  function ensureEntryChunk(relativePath: string) {
+    expect(fs.readFileSync(path.join(outputDir, relativePath), 'utf8')).toMatch(
+      /__BUNDLE_START_TIME__/
+    );
+  }
+
+  return {
+    getScriptTagsAsync,
+  };
+}
+
+export function expectChunkPathMatching(name: string) {
+  return expect.stringMatching(
+    new RegExp(
+      `_expo\\/static\\/js\\/web\\/${name.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}-.*\\.js`
+    )
+  );
 }

@@ -1,29 +1,44 @@
-import React from 'react';
+import { ReactNode, PureComponent, useMemo, createRef } from 'react';
 
 import NativeVideoModule from './NativeVideoModule';
 import NativeVideoView from './NativeVideoView';
-import { VideoPlayer } from './VideoPlayer';
+import { VideoPlayer, VideoViewProps } from './VideoView.types';
 
 export function useVideoPlayer(source: string | null = null): VideoPlayer {
-  return React.useMemo(() => {
+  return useMemo(() => {
     return new NativeVideoModule.VideoPlayer(source);
   }, []);
 }
 
-export class VideoView extends React.PureComponent<any> {
-  nativeRef = React.createRef();
+export class VideoView extends PureComponent<VideoViewProps> {
+  nativeRef = createRef<any>();
 
   enterFullscreen() {
-    // @ts-expect-error
     this.nativeRef.current?.enterFullscreen();
   }
 
   exitFullscreen() {
-    // @ts-expect-error
     this.nativeRef.current?.exitFullscreen();
   }
 
-  render(): React.ReactNode {
+  /**
+   * Enters Picture in Picture (PiP) mode. Throws an exception if the device does not support PiP.
+   * > **Note:** Only one player can be in Picture in Picture (PiP) mode at a time.
+   * @platform ios 14+
+   */
+  startPictureInPicture() {
+    return this.nativeRef.current?.startPictureInPicture();
+  }
+
+  /**
+   * Exits Picture in Picture (PiP) mode.
+   * @platform ios 14+
+   */
+  stopPictureInPicture() {
+    return this.nativeRef.current?.stopPictureInPicture();
+  }
+
+  render(): ReactNode {
     const { player, ...props } = this.props;
     const playerId = getPlayerId(player);
 

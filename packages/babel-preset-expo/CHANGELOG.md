@@ -10,6 +10,67 @@
 
 ### 💡 Others
 
+## 10.0.1 - 2023-12-19
+
+### 💡 Others
+
+- Change `@babel/plugin-proposal-object-rest-spread` to `@babel/plugin-transform-object-rest-spread`. ([#26035](https://github.com/expo/expo/pull/26035) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 10.0.0 — 2023-12-12
+
+### 🛠 Breaking changes
+
+- Move `babel-plugin-module-resolver` alias for `react-native-vector-icons` to `@expo/vector-icons` to individual implementations in Metro (via `@expo/cli`) and `jest-expo`. ([#25512](https://github.com/expo/expo/pull/25512) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🎉 New features
+
+- Support caller option `supportsStaticESM` to disable cjs transforms. ([#25833](https://github.com/expo/expo/pull/25833) by [@EvanBacon](https://github.com/EvanBacon))
+- Inject async routes using caller. ([#25627](https://github.com/expo/expo/pull/25627) by [@EvanBacon](https://github.com/EvanBacon))
+- Use babel caller to determine the `expo-router` root directory. ([#25658](https://github.com/expo/expo/pull/25658) by [@EvanBacon](https://github.com/EvanBacon))
+- Moved `react-refresh` babel plugin from Metro/Webpack to `babel-preset-expo`. ([#25461](https://github.com/expo/expo/pull/25461) by [@EvanBacon](https://github.com/EvanBacon))
+- Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- Prevent enabling `react-refresh` in server environments. ([#25461](https://github.com/expo/expo/pull/25461) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Replace `@expo/babel-preset-cli` with `expo-module-scripts`. ([#25425](https://github.com/expo/expo/pull/25425) by [@byCedric](https://github.com/byCedric))
+- Update reanimated test snapshots. ([#25644](https://github.com/expo/expo/pull/25644) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 9.9.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Remove support for `native.useTransformReactJSXExperimental` and `web.useTransformReactJSXExperimental` option in favor of `jsxRuntime: 'classic'`. React support can no longer be removed. ([#25125](https://github.com/expo/expo/pull/25125) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🎉 New features
+
+- Rename `basePath` to `baseUrl` and expose to bundles with `process.env.EXPO_BASE_URL`. ([#25305](https://github.com/expo/expo/pull/25305) by [@EvanBacon](https://github.com/EvanBacon))
+- Add `Platform.OS` shaking without needing to enable experimental ESM transforms. ([#25171](https://github.com/expo/expo/pull/25171) by [@EvanBacon](https://github.com/EvanBacon))
+- Inline environment variables in production before the serializer to support source maps. ([#25239](https://github.com/expo/expo/pull/25239) by [@EvanBacon](https://github.com/EvanBacon))
+- Support all options in top-level object and in `native` and `web` sub-objects. ([#25172](https://github.com/expo/expo/pull/25172) by [@EvanBacon](https://github.com/EvanBacon))
+- Use the standard `@babel/preset-react` for all React transformations. ([#25125](https://github.com/expo/expo/pull/25125) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+- Only inline platforms when explicitly bundling for production. ([#25275](https://github.com/expo/expo/pull/25275) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix jsx dev transform with React components that are defined in the function parameters. ([#25235](https://github.com/expo/expo/pull/25235) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Drop unused `native.withDevTools` and `web.withDevTools` options. ([#25125](https://github.com/expo/expo/pull/25125) by [@EvanBacon](https://github.com/EvanBacon))
+- Migrate from `@babel/plugin-proposal-export-namespace-from` to `@babel/plugin-transform-export-namespace-from`. ([#25127](https://github.com/expo/expo/pull/25127) by [@EvanBacon](https://github.com/EvanBacon))
+- Update reanimated tests. ([#25126](https://github.com/expo/expo/pull/25126) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 9.8.0 — 2023-10-17
+
+### 🎉 New features
+
+- Automatically optimize transformations based on Hermes usage. ([#24672](https://github.com/expo/expo/pull/24672) by [@EvanBacon](https://github.com/EvanBacon))
+- Enable `expo-router` Babel features when available. ([#24779](https://github.com/expo/expo/pull/24779) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 9.7.0 — 2023-09-15
 
 ### 🛠 Breaking changes

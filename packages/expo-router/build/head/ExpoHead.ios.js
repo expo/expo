@@ -144,19 +144,19 @@ function isTruthy(value) {
 function HeadNative(props) {
     const isFocused = (0, core_1.useIsFocused)();
     if (!isFocused) {
-        return react_1.default.createElement(UnfocusedHead, null);
+        return <UnfocusedHead />;
     }
-    return react_1.default.createElement(FocusedHead, { ...props });
+    return <FocusedHead {...props}/>;
 }
 function UnfocusedHead(props) {
     const { children } = useMetaChildren(props.children);
-    return react_1.default.createElement(react_1.default.Fragment, null, children);
+    return <>{children}</>;
 }
 function FocusedHead(props) {
     const { metaChildren, children } = useMetaChildren(props.children);
     const activity = useActivityFromMetaChildren(metaChildren);
     useRegisterCurrentActivity(activity);
-    return react_1.default.createElement(react_1.default.Fragment, null, children);
+    return <>{children}</>;
 }
 // segments => activity
 const activities = new Map();

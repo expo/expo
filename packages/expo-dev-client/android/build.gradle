@@ -35,11 +35,11 @@ buildscript {
 android {
   // Remove this if and it's contents, when support for SDK49 is dropped
   if (!safeExtGet("expoProvidesDefaultConfig", false)) {
-    compileSdkVersion safeExtGet("compileSdkVersion", 33)
-    
+    compileSdkVersion safeExtGet("compileSdkVersion", 34)
+
     defaultConfig {
       minSdkVersion safeExtGet("minSdkVersion", 23)
-      targetSdkVersion safeExtGet("targetSdkVersion", 33)
+      targetSdkVersion safeExtGet("targetSdkVersion", 34)
     }
 
     lintOptions {
@@ -49,9 +49,9 @@ android {
   namespace "expo.modules.devclient"
   defaultConfig {
     minSdkVersion safeExtGet('minSdkVersion', 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 33)
+    targetSdkVersion safeExtGet("targetSdkVersion", 34)
     versionCode 1
-    versionName "3.1.1"
+    versionName "3.3.2"
 
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
@@ -119,8 +119,7 @@ dependencies {
   androidTestImplementation project(":expo-dev-launcher")
   androidTestImplementation project(":expo-manifests")
 
-  //noinspection GradleDynamicVersion
-  androidTestImplementation 'com.facebook.react:react-native:+'  // From node_modules
+  androidTestImplementation 'com.facebook.react:react-android'
 
   androidTestImplementation('androidx.test.espresso:espresso-core:3.4.0')
   androidTestImplementation('androidx.test:core:1.4.0')

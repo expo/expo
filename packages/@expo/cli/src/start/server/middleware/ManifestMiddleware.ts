@@ -1,19 +1,34 @@
-import { ExpoConfig, ExpoGoConfig, getConfig, ProjectConfig } from '@expo/config';
+import {
+  ExpoConfig,
+  ExpoGoConfig,
+  getConfig,
+  PackageJSONConfig,
+  ProjectConfig,
+} from '@expo/config';
+import { resolveEntryPoint } from '@expo/config/paths';
 import findWorkspaceRoot from 'find-yarn-workspace-root';
 import path from 'path';
-import resolveFrom from 'resolve-from';
 import { resolve } from 'url';
 
 import { ExpoMiddleware } from './ExpoMiddleware';
+import {
+  shouldEnableAsyncImports,
+  createBundleUrlPath,
+  getBaseUrlFromExpoConfig,
+  getAsyncRoutesFromExpoConfig,
+  createBundleUrlPathFromExpoConfig,
+} from './metroOptions';
 import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
-import { resolveAbsoluteEntryPoint } from './resolveEntryPoint';
 import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
 import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
+import { isEnableHermesManaged } from '../../../export/exportHermes';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
+import { CommandError } from '../../../utils/errors';
 import { stripExtension } from '../../../utils/url';
 import * as ProjectDevices from '../../project/devices';
 import { UrlCreator } from '../UrlCreator';
+import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
 import { getPlatformBundlers } from '../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
 
@@ -31,15 +46,18 @@ export function getWorkspaceRoot(projectRoot: string): string | null {
   }
 }
 
+const supportedPlatforms = ['ios', 'android', 'web', 'none'];
+
 export function getEntryWithServerRoot(
   projectRoot: string,
-  projectConfig: ProjectConfig,
-  platform: string
+  props: { platform: string; pkg?: PackageJSONConfig }
 ) {
-  return path.relative(
-    getMetroServerRoot(projectRoot),
-    resolveAbsoluteEntryPoint(projectRoot, platform, projectConfig)
-  );
+  if (!supportedPlatforms.includes(props.platform)) {
+    throw new CommandError(
+      `Failed to resolve the project's entry file: The platform "${props.platform}" is not supported.`
+    );
+  }
+  return path.relative(getMetroServerRoot(projectRoot), resolveEntryPoint(projectRoot, props));
 }
 
 export function getMetroServerRoot(projectRoot: string) {
@@ -53,73 +71,13 @@ export function getMetroServerRoot(projectRoot: string) {
 /** Get the main entry module ID (file) relative to the project root. */
 export function resolveMainModuleName(
   projectRoot: string,
-  projectConfig: ProjectConfig,
-  platform: string
+  props: { platform: string; pkg?: PackageJSONConfig }
 ): string {
-  const entryPoint = getEntryWithServerRoot(projectRoot, projectConfig, platform);
+  const entryPoint = getEntryWithServerRoot(projectRoot, props);
 
   debug(`Resolved entry point: ${entryPoint} (project root: ${projectRoot})`);
 
   return stripExtension(entryPoint, 'js');
-}
-
-export function shouldEnableAsyncImports(projectRoot: string): boolean {
-  if (env.EXPO_NO_METRO_LAZY) {
-    return false;
-  }
-
-  // `@expo/metro-runtime` includes support for the fetch + eval runtime code required
-  // to support async imports. If it's not installed, we can't support async imports.
-  // If it is installed, the user MUST import it somewhere in their project.
-  // Expo Router automatically pulls this in, so we can check for it.
-  return resolveFrom.silent(projectRoot, '@expo/metro-runtime') != null;
-}
-
-export function createBundleUrlPath({
-  platform,
-  mainModuleName,
-  mode,
-  minify = mode === 'production',
-  environment,
-  serializerOutput,
-  serializerIncludeMaps,
-  lazy,
-}: {
-  platform: string;
-  mainModuleName: string;
-  mode: string;
-  minify?: boolean;
-  environment?: string;
-  serializerOutput?: 'static';
-  serializerIncludeMaps?: boolean;
-  lazy?: boolean;
-}): string {
-  const queryParams = new URLSearchParams({
-    platform: encodeURIComponent(platform),
-    dev: String(mode !== 'production'),
-    // TODO: Is this still needed?
-    hot: String(false),
-  });
-
-  if (lazy) {
-    queryParams.append('lazy', String(lazy));
-  }
-
-  if (minify) {
-    queryParams.append('minify', String(minify));
-  }
-  if (environment) {
-    queryParams.append('resolver.environment', environment);
-    queryParams.append('transform.environment', environment);
-  }
-  if (serializerOutput) {
-    queryParams.append('serializer.output', serializerOutput);
-  }
-  if (serializerIncludeMaps) {
-    queryParams.append('serializer.map', String(serializerIncludeMaps));
-  }
-
-  return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
 }
 
 /** Info about the computer hosting the dev server. */
@@ -189,7 +147,12 @@ export abstract class ManifestMiddleware<
     const projectConfig = getConfig(this.projectRoot);
 
     // Read from headers
-    const mainModuleName = this.resolveMainModuleName(projectConfig, platform);
+    const mainModuleName = this.resolveMainModuleName({
+      pkg: projectConfig.pkg,
+      platform,
+    });
+
+    const isHermesEnabled = isEnableHermesManaged(projectConfig.exp, platform);
 
     // Create the manifest and set fields within it
     const expoGoConfig = this.getExpoGoConfig({
@@ -203,6 +166,14 @@ export abstract class ManifestMiddleware<
       platform,
       mainModuleName,
       hostname,
+      engine: isHermesEnabled ? 'hermes' : undefined,
+      baseUrl: getBaseUrlFromExpoConfig(projectConfig.exp),
+      asyncRoutes: getAsyncRoutesFromExpoConfig(
+        projectConfig.exp,
+        this.options.mode ?? 'development',
+        platform
+      ),
+      routerRoot: getRouterDirectoryModuleIdWithManifest(this.projectRoot, projectConfig.exp),
     });
 
     // Resolve all assets and set them on the manifest as URLs
@@ -217,8 +188,8 @@ export abstract class ManifestMiddleware<
   }
 
   /** Get the main entry module ID (file) relative to the project root. */
-  private resolveMainModuleName(projectConfig: ProjectConfig, platform: string): string {
-    let entryPoint = getEntryWithServerRoot(this.projectRoot, projectConfig, platform);
+  private resolveMainModuleName(props: { pkg: PackageJSONConfig; platform: string }): string {
+    let entryPoint = getEntryWithServerRoot(this.projectRoot, props);
 
     debug(`Resolved entry point: ${entryPoint} (project root: ${this.projectRoot})`);
 
@@ -253,10 +224,20 @@ export abstract class ManifestMiddleware<
     platform,
     mainModuleName,
     hostname,
+    engine,
+    baseUrl,
+    isExporting,
+    asyncRoutes,
+    routerRoot,
   }: {
     platform: string;
     hostname?: string | null;
     mainModuleName: string;
+    engine?: 'hermes';
+    baseUrl?: string;
+    asyncRoutes: boolean;
+    isExporting?: boolean;
+    routerRoot: string;
   }): string {
     const path = createBundleUrlPath({
       mode: this.options.mode ?? 'development',
@@ -264,6 +245,11 @@ export abstract class ManifestMiddleware<
       platform,
       mainModuleName,
       lazy: shouldEnableAsyncImports(this.projectRoot),
+      engine,
+      baseUrl,
+      isExporting: !!isExporting,
+      asyncRoutes,
+      routerRoot,
     });
 
     return (
@@ -273,30 +259,6 @@ export abstract class ManifestMiddleware<
         hostname,
       }) + path
     );
-  }
-
-  public _getBundleUrlPath({
-    platform,
-    mainModuleName,
-  }: {
-    platform: string;
-    mainModuleName: string;
-  }): string {
-    const queryParams = new URLSearchParams({
-      platform: encodeURIComponent(platform),
-      dev: String(this.options.mode !== 'production'),
-      // TODO: Is this still needed?
-      hot: String(false),
-    });
-    if (shouldEnableAsyncImports(this.projectRoot)) {
-      queryParams.append('lazy', String(true));
-    }
-
-    if (this.options.minify) {
-      queryParams.append('minify', String(this.options.minify));
-    }
-
-    return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
   }
 
   /** Log telemetry. */
@@ -358,10 +320,20 @@ export abstract class ManifestMiddleware<
   public getWebBundleUrl() {
     const platform = 'web';
     // Read from headers
-    const mainModuleName = this.resolveMainModuleName(this.initialProjectConfig, platform);
-    return this._getBundleUrlPath({
+    const mainModuleName = this.resolveMainModuleName({
+      pkg: this.initialProjectConfig.pkg,
+      platform,
+    });
+
+    return createBundleUrlPathFromExpoConfig(this.projectRoot, this.initialProjectConfig.exp, {
       platform,
       mainModuleName,
+      minify: this.options.minify,
+      lazy: shouldEnableAsyncImports(this.projectRoot),
+      mode: this.options.mode ?? 'development',
+      // Hermes doesn't support more modern JS features than most, if not all, modern browser.
+      engine: 'hermes',
+      isExporting: false,
     });
   }
 

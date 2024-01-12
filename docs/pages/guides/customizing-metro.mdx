@@ -295,23 +295,27 @@ Learn once, bundle everywhere!
 
 Universal Expo Metro is designed to be fully universal, meaning any web bundling features should also work on native too. Because of this, we make some breaking changes between the two bundler implementations, carefully check the difference if you're moving from webpack to Metro.
 
-| Feature           | Metro                               | webpack                |
-| ----------------- | ----------------------------------- | ---------------------- |
-| Start command     | `npx expo start`                    | `npx expo start`       |
-| Bundle command    | `npx expo export`                   | `npx expo export:web`  |
-| Output folder     | **dist**                            | **web-build**          |
-| Static folder     | **public**                          | **web**                |
-| Config file       | **metro.config.js**                 | **webpack.config.js**  |
-| Default config    | `@expo/metro-config`                | `@expo/webpack-config` |
-| Multi-platform    | <YesIcon />                         | <NoIcon />             |
-| Fast Refresh      | <YesIcon /> (`@expo/metro-runtime`) | <NoIcon />             |
-| Error Overlay     | <YesIcon /> (`@expo/metro-runtime`) | <NoIcon />             |
-| Deferred Bundling | <YesIcon /> (`@expo/metro-runtime`) | <NoIcon />             |
-| Global CSS        | <PendingIcon /> (Beta • SDK 49)     | <YesIcon />            |
-| CSS Modules       | <PendingIcon /> (Beta • SDK 49)     | <NoIcon />             |
-| Bundle Splitting  | <PendingIcon /> (pending native)    | <YesIcon />            |
-| Tree Shaking      | <NoIcon />                          | <YesIcon />            |
-| Asset Manifests   | <NoIcon />                          | <YesIcon />            |
+| Feature                  | Metro                               | webpack                |
+| ------------------------ | ----------------------------------- | ---------------------- |
+| Start command            | `npx expo start`                    | `npx expo start`       |
+| Bundle command           | `npx expo export`                   | `npx expo export:web`  |
+| Output folder            | **dist**                            | **web-build**          |
+| Static folder            | **public**                          | **web**                |
+| Config file              | **metro.config.js**                 | **webpack.config.js**  |
+| Default config           | `@expo/metro-config`                | `@expo/webpack-config` |
+| Multi-platform           | <YesIcon />                         | <NoIcon />             |
+| Lazy bundling            | <YesIcon />                         | <NoIcon />             |
+| Incremental Bundling     | <YesIcon />                         | <NoIcon />             |
+| Static Generation        | <YesIcon />                         | <NoIcon />             |
+| Fast Refresh             | <YesIcon /> (`@expo/metro-runtime`) | <NoIcon />             |
+| Error Overlay            | <YesIcon /> (`@expo/metro-runtime`) | <NoIcon />             |
+| Global CSS               | <YesIcon /> (SDK 50)                | <YesIcon />            |
+| CSS Modules              | <YesIcon /> (SDK 50)                | <NoIcon />             |
+| API Routes               | <YesIcon /> (SDK 50)                | <NoIcon />             |
+| Bundle Splitting         | <YesIcon /> (SDK 50 • web)          | <YesIcon />            |
+| Static Font Optimization | <YesIcon /> (SDK 50 • web)          | <NoIcon />             |
+| Tree Shaking             | <PendingIcon /> (Partial support)   | <YesIcon />            |
+| Asset Manifests          | <NoIcon />                          | <YesIcon />            |
 
 Note that aliases, resolution, and other bundler features are now universal across platforms as well!
 

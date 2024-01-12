@@ -17,6 +17,7 @@ export type CommandOptions = {
   skipRepoChecks: boolean;
   dry: boolean;
   force: boolean;
+  canary: boolean;
   deps: boolean;
 
   /* exclusive options that affect what the command does */
@@ -65,6 +66,11 @@ export type PublishState = {
    * Whether the package was requested to be published (was listed in command's arguments).
    */
   isRequested?: boolean;
+
+  /**
+   * Name of the tarball the package was packed to.
+   */
+  packageTarballFilename?: string;
 };
 
 export type BaseParcel<State> = {
