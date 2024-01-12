@@ -44,6 +44,7 @@
     "echarts-for-react": "^3.0.2",
     "lucide-react": "^0.292.0",
     "react-apexcharts": "^1.4.1",
+    "react-resizable-panels": "^1.0.8",
     "tailwind-merge": "^2.0.0",
     "tailwindcss-animate": "^1.0.7"
   },

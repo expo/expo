@@ -5,6 +5,10 @@ import React from 'react';
 import { FilteredModulesContext, useGraph } from '@/components/deps-context';
 import { Button } from '@/components/ui/button';
 
+export const unstable_settings = {
+  initialRouteName: 'graph',
+};
+
 export default function Layout() {
   const { modules, options } = useGraph();
 
