@@ -108,7 +108,7 @@ function LoadedLayout() {
 
   // const data = require('fixture.json');
   return (
-    <div className="flex flex-1 items-stretch flex-col h-full">
+    <div className="flex flex-1 items-stretch flex-col h-full max-h-screen overflow-y-scroll">
       <div className="flex p-2 px-4 gap-2 border-b border-b-[#ffffff1a] flex-row items-center justify-between flex-wrap">
         <Link href="/" className="flex items-center justify-between flex-row">
           <svg

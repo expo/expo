@@ -1,17 +1,62 @@
 import { MetroJsonModule } from '@/components/data';
 import { useGraph } from '@/components/deps-context';
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { useDynamicHeight } from '@/components/useDynamicHeight';
 import ReactECharts from 'echarts-for-react';
 import { useRouter } from 'expo-router';
 import React, { useMemo } from 'react';
+import { ScrollView } from 'react-native';
 
 export default function Route() {
   const { modules } = useGraph();
+  const [selectedModule, setSelectedModule] = React.useState<MetroJsonModule | null>(modules[23]);
+
+  // Prevent the graph from re-rendering when the selected module changes
+  const graphComp = useMemo(() => {
+    return <TreemapGraph setSelectedModule={setSelectedModule} modules={modules} />;
+  }, [modules]);
 
   return (
-    <div className="flex flex-1 flex-row">
-      <TreemapGraph modules={modules.filter((m) => m.nodeModuleName !== 'react-native')} />
-      <div className="flex flex-1 border-l border-l-[#ffffff1a]"></div>
+    <div className="flex flex-1 flex-row overflow-y-scroll absolute top-0 left-0 bottom-0 right-0">
+      <ResizablePanelGroup direction="horizontal" className="max-h-full">
+        <ResizablePanel className="flex">{graphComp}</ResizablePanel>
+        <ResizableHandle />
+        <ResizablePanel className="flex flex-1 items-stretch border-l border-l-[#ffffff1a]">
+          <ScrollView>{selectedModule && <ModuleInfoPanel module={selectedModule} />}</ScrollView>
+        </ResizablePanel>
+      </ResizablePanelGroup>
+    </div>
+  );
+}
+
+function ModuleInfoPanel({ module }: { module: MetroJsonModule }) {
+  return (
+    <div className="flex flex-1 flex-col">
+      <div className="p-2">
+        <h1 className="text-lg font-bold">{module.nodeModuleName}</h1>
+        <h3 className="text-md font-bold text-slate-400">{module.path}</h3>
+      </div>
+      <ModuleDepList name="References" deps={module.inverseDependencies} />
+      <ModuleDepList name="Dependencies" deps={module.dependencies} />
+    </div>
+  );
+}
+
+function ModuleDepList({ name, deps }: { name: string; deps: string[] }) {
+  return (
+    <div className="flex flex-col p-2 border-t border-t-[#ffffff1a]">
+      <h1 className="text-slate-400">
+        <span className="text-slate-200 font-bold">{deps.length}</span> {name}
+      </h1>
+      {deps && (
+        <ul>
+          {deps.map((dep) => (
+            <li className="text-sm" key={dep}>
+              {dep}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
@@ -69,9 +114,16 @@ function filterLinks(links: [number, number][]) {
   return uniqueLinks;
 }
 
-export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
+export function TreemapGraph({
+  modules,
+  setSelectedModule,
+}: {
+  modules: MetroJsonModule[];
+  setSelectedModule: (module: MetroJsonModule) => void;
+}) {
   const router = useRouter();
 
+  const chartRef = React.useRef<any>(null);
   const { data } = useMemo(() => {
     let nodeModuleIndex: { [key: string]: number } = {};
     let lastIndex = 0;
@@ -181,29 +233,54 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
 
   const containerHeight = useDynamicHeight(container, 300);
 
-  return (
-    <div className="flex-1" ref={container}>
+  React.useEffect(() => {
+    // console.log(
+    //   chartRef.current?.getEchartsInstance().setOption({
+    //     height: containerHeight.height,
+    //   })
+    // );
+    if (chartRef.current?.getEchartsInstance()?.setOption) {
+      chartRef.current?.getEchartsInstance().setOption({
+        height: containerHeight.height,
+        width: containerHeight.width,
+      });
+    }
+    if (chartRef.current?.ele.style) {
+      chartRef.current.ele.style.height = containerHeight.height + 'px';
+    }
+  }, [chartRef, containerHeight]);
+
+  const chartComp = useMemo(() => {
+    return (
       <ReactECharts
         lazyUpdate
-        opts={{
-          // renderer: 'svg',
-          // width: containerHeight.width,
-          height: containerHeight.height,
-          //   width: 'auto',
-        }}
+        ref={chartRef}
+        opts={
+          {
+            // renderer: 'svg',
+            // width: containerHeight.width,
+            //   height: 'auto',
+            //   width: 'auto',
+            //   width: 'auto',
+          }
+        }
         key="1"
         theme="dark"
         onEvents={{
           click(params) {
             console.log('click', params);
-            const isModified =
-              params.event.event.altKey || params.event.event.ctrlKey || params.event.event.metaKey;
-            if (params?.data?.moduleHref && isModified) {
-              router.push({
-                pathname: '/module/[id]',
-                params: { id: params.data.moduleHref },
-              });
-            }
+            // const isModified =
+            //   params.event.event.altKey || params.event.event.ctrlKey || params.event.event.metaKey;
+            const mod = modules.find((m) => m.path === params.data.id);
+            console.log('select', mod);
+            setSelectedModule(mod);
+            // if (params?.data?.moduleHref && isModified) {
+
+            //   router.push({
+            //     pathname: '/module/[id]',
+            //     params: { id: params.data.moduleHref },
+            //   });
+            // }
           },
         }}
         option={{
@@ -249,6 +326,12 @@ export function TreemapGraph({ modules }: { modules: MetroJsonModule[] }) {
           ],
         }}
       />
+    );
+  }, [container, data, setSelectedModule]);
+
+  return (
+    <div className="flex-1" ref={container}>
+      {chartComp}
     </div>
   );
 }
