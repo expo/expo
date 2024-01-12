@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+
 import {
   Sheet,
   SheetContent,
@@ -27,6 +28,7 @@ function uniq<T>(arr: T[]) {
 export default function Treemap() {
   const modules = useFilteredModules();
   const [isNodeModulesVisible, setIsNodeModulesVisible] = useState(true);
+  // const [disabledNodeModules, setDisabledNodeModules] = useState<string[]>([]);
   const [regexString, setRegExp] = useState<string>('');
   const [excludeString, setExcludeRegExp] = useState<string>('');
 
@@ -43,6 +45,10 @@ export default function Treemap() {
 
   const filteredModules = useMemo(() => {
     let filtered = filteredForNodeModules;
+
+    // if (disabledNodeModules.length > 0) {
+    //   filtered = filtered.filter((v) => !disabledNodeModules.includes(v.nodeModuleName));
+    // }
 
     if (regexString) {
       try {
@@ -63,7 +69,12 @@ export default function Treemap() {
     }
 
     return filtered;
-  }, [filteredForNodeModules, regexString, excludeString]);
+  }, [
+    // disabledNodeModules,
+    filteredForNodeModules,
+    regexString,
+    excludeString,
+  ]);
 
   return (
     <Sheet modal={false}>
@@ -91,36 +102,32 @@ export default function Treemap() {
             </span>
           </SheetDescription>
         </SheetHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="include" className="text-right">
-              Files to Include
-            </Label>
+        <div className="grid gap-2 py-4">
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="include">Files to Include</Label>
             <Input
               id="include"
               value={regexString}
               onChange={(e) => {
                 setRegExp(e.target.value);
               }}
-              placeholder=".*"
+              placeholder="e.g. react-native"
               className="col-span-3"
             />
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="exclude" className="text-right">
-              Files to Exclude
-            </Label>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="exclude">Files to Exclude</Label>
             <Input
               id="exclude"
               value={excludeString}
               onChange={(e) => {
                 setExcludeRegExp(e.target.value);
               }}
-              placeholder=".*"
+              placeholder="e.g. node_modules\/.*.ts"
               className="col-span-3"
             />
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
+          <div className="grid grid-cols-3 items-center gap-4">
             <Label
               htmlFor="node_modules"
               className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
@@ -141,9 +148,15 @@ export default function Treemap() {
               </Label>
               <Checkbox
                 id={name}
-                checked={true}
+                checked={!disabledNodeModules.includes(name)}
                 onCheckedChange={() => {
                   // TODO
+                  setDisabledNodeModules((modules) => {
+                    if (modules.includes(name)) {
+                      return modules.filter((v) => v !== name);
+                    }
+                    return [...modules, name];
+                  });
                 }}
               />
             </div>

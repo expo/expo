@@ -227,6 +227,7 @@ export function Profiler() {
         {
           type: 'custom',
           renderItem,
+
           itemStyle: {
             opacity: 1,
           },
