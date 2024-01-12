@@ -4,7 +4,7 @@ import type { ServerLike } from '../BundlerDevServer';
 
 const debug = require('debug')('expo:start:server:metro:waitForTypescript') as typeof console.log;
 
-type FileChangeEvent = {
+export type FileChangeEvent = {
   filePath: string;
   metadata?: {
     type: 'f' | 'd' | 'l'; // Regular file / Directory / Symlink

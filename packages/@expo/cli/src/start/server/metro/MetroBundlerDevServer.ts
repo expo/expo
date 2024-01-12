@@ -17,14 +17,18 @@ import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
-import { getRouterDirectoryModuleIdWithManifest, isApiRouteConvention } from './router';
+import {
+  getRouterDirectoryModuleIdWithManifest,
+  hasWarnedAboutApiRoutes,
+  isApiRouteConvention,
+  warnInvalidWebOutput,
+} from './router';
 import { serializeHtmlWithAssets } from './serializeHtml';
 import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 import { ExportAssetMap } from '../../../export/saveAssets';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
-import { warnInvalidWebOutput } from '../../../utils/api-routes';
 import { CommandError } from '../../../utils/errors';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
@@ -504,9 +508,16 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               // This is useful for testing but pretty suboptimal. Luckily our caching is pretty aggressive so it makes
               // up for a lot of the overhead.
               invalidateApiRouteCache();
-            } else {
+            } else if (!hasWarnedAboutApiRoutes()) {
               for (const event of events) {
-                if (isApiRouteConvention(event.filePath)) {
+                if (
+                  // If the user did not delete a file that matches the Expo Router API Route convention, then we should warn that
+                  // API Routes are not enabled in the project.
+                  event.metadata?.type !== 'd' &&
+                  // Ensure the file is in the project's routes directory to prevent false positives in monorepos.
+                  event.filePath.startsWith(appDir) &&
+                  isApiRouteConvention(event.filePath)
+                ) {
                   warnInvalidWebOutput();
                 }
               }

@@ -15,8 +15,8 @@ import { ForwardHtmlError } from './MetroBundlerDevServer';
 import { bundleApiRoute } from './bundleApiRoutes';
 import { fetchManifest } from './fetchRouterManifest';
 import { getErrorOverlayHtmlAsync, logMetroError, logMetroErrorAsync } from './metroErrorInterface';
+import { warnInvalidWebOutput } from './router';
 import { Log } from '../../../log';
-import { warnInvalidWebOutput } from '../../../utils/api-routes';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
