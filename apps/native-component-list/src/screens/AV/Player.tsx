@@ -39,7 +39,7 @@ interface Props {
   nextAsync?: () => void;
   setRateAsync: (rate: number, shouldCorrectPitch: boolean) => void;
   setIsMutedAsync: (isMuted: boolean) => void;
-  setPositionAsync: (position: number) => Promise<any>;
+  setPositionAsync: (position: number) => any;
   setIsLoopingAsync: (isLooping: boolean) => void;
   setVolume: (volume: number, audioPan?: number) => void;
 

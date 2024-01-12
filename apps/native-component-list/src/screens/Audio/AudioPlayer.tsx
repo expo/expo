@@ -1,90 +1,88 @@
-import { Asset } from 'expo-asset';
-import { useAudioPlayer } from 'expo-audio';
+import { addStatusUpdateListener, useAudioPlayer, AudioSource } from 'expo-audio';
 import { useEffect, useState } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 
 import Player from '../AV/Player';
 
-type PlaybackSource =
-  | number
-  | {
-      uri: string;
-      overrideFileExtensionAndroid?: string;
-      headers?: {
-        [fieldName: string]: string;
-      };
-    }
-  | Asset;
-
 type AudioPlayerProps = {
-  source: PlaybackSource;
+  source: AudioSource | string | number;
   style: StyleProp<ViewStyle>;
 };
 
 export default function AudioPlayer({ source, style }: AudioPlayerProps) {
+  const player = useAudioPlayer(source);
+
   const [state, setState] = useState({
     androidImplementation: 'SimpleExoPlayer',
-    isMuted: false,
-    isPlaying: false,
     isLoaded: true,
-    isLooping: false,
-    positionMillis: 0,
-    durationMillis: 0,
-    rate: 1,
-    volume: 1,
+    isLooping: player.isLooping,
+    positionMillis: player.currentPosition,
+    durationMillis: isNaN(player.duration) ? 0 : player.duration,
+    rate: player.rate,
+    volume: player.volume,
+    isPlaying: player.isPlaying,
     audioPan: 0,
     shouldCorrectPitch: false,
   });
 
-  const player = useAudioPlayer(
-    'https://p.scdn.co/mp3-preview/f7a8ab9c5768009b65a30e9162555e8f21046f46?cid=162b7dc01f3a4a2ca32ed3cec83d1e02'
-  );
+  const [isMuted, setMuted] = useState(false);
 
   useEffect(() => {
-    return () => player.pause();
+    const subscription = addStatusUpdateListener((status) => {
+      console.log({ status });
+      setState((state) => ({
+        ...state,
+        positionMillis: status.currentPosition ?? 0,
+        durationMillis: isNaN(status.duration) ? 0 : status.duration,
+        isPlaying: status.isPlaying,
+      }));
+    });
+    return () => {
+      subscription.remove();
+    };
   }, []);
 
   const play = () => {
     player.play();
-    setState({ ...state, isPlaying: true });
   };
 
   const pause = () => {
     player.pause();
-    setState({ ...state, isPlaying: false });
   };
 
   const setVolume = (volume: number) => {
-    player.setVolume(volume);
+    player.volume = volume;
     setState({ ...state, volume });
   };
 
-  const setIsMuted = () => {
-    player.isMuted = !player.isMuted;
-    setState({ ...state, isMuted: player.isMuted });
+  const setIsMuted = (isMuted: boolean) => {
+    player.isMuted = isMuted;
+    setMuted(player.isMuted);
   };
 
   const setIsLooping = (isLooping: boolean) => {
-    player.isLoopingEnabled(isLooping);
+    player.isLooping = isLooping;
     setState({ ...state, isLooping });
   };
 
   const setRate = (rate: number) => {
-    player.setRate(rate);
+    player.rate = rate;
     setState({ ...state, rate });
   };
 
   return (
     <Player
       {...state}
-      positionMillis={player.currentTime}
       rate={1}
+      isMuted={isMuted}
       style={style}
       playAsync={play}
       pauseAsync={pause}
-      replayAsync={() => {}}
+      replayAsync={() => {
+        return player.seekTo(0);
+      }}
       setPositionAsync={(position: number) => {
-        return new Promise(() => {});
+        return player.seekTo(position);
       }}
       setIsLoopingAsync={setIsLooping}
       setRateAsync={setRate}
