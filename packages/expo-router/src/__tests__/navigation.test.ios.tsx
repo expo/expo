@@ -11,6 +11,7 @@ import {
   Slot,
   usePathname,
 } from '../exports';
+import { Drawer } from '../layouts/Drawer';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { act, fireEvent, renderRouter, screen } from '../testing-library';
@@ -1174,5 +1175,72 @@ describe('consistent url encoding', () => {
     expect(component).toHaveTextContent(
       JSON.stringify({ local: { param: 'start%end' }, global: { param: 'start%end' } })
     );
+  });
+});
+
+describe('navigation action fallbacks', () => {
+  function runPushTest() {
+    act(() => router.navigate('/'));
+    expect(screen).toHavePathname('/');
+
+    // Go to one
+    act(() => router.navigate('/one'));
+    expect(screen).toHavePathname('/one');
+    expect(screen.getByTestId('one')).toBeOnTheScreen();
+
+    // Push to two. `PUSH` action should fall back to `NAVIGATE` action
+    act(() => router.push('/two'));
+    expect(screen).toHavePathname('/two');
+    expect(screen.getByTestId('two')).toBeOnTheScreen();
+  }
+
+  function runReplaceTest() {
+    act(() => router.navigate('/'));
+    expect(screen).toHavePathname('/');
+
+    // Go to one
+    act(() => router.navigate('/one'));
+    expect(screen).toHavePathname('/one');
+    expect(screen.getByTestId('one')).toBeOnTheScreen();
+
+    // Replace to two. `REPLACE` action should fall back to `JUMP_TO` action
+    act(() => router.replace('/two'));
+    expect(screen).toHavePathname('/two');
+    expect(screen.getByTestId('two')).toBeOnTheScreen();
+  }
+
+  function runRedirectionTest() {
+    act(() => router.navigate('/'));
+    expect(screen).toHavePathname('/');
+
+    // `<Redirect />` uses `REPLACE` action and should fall back to `JUMP_TO` action
+    act(() => router.navigate('/redirected'));
+    expect(screen).toHavePathname('/');
+  }
+
+  it('can fall back correctly for tab navigators', () => {
+    renderRouter({
+      _layout: () => <Tabs />,
+      one: () => <Text testID="one" />,
+      two: () => <Text testID="two" />,
+      redirected: () => <Redirect href="/" />,
+    });
+
+    runPushTest();
+    runReplaceTest();
+    runRedirectionTest();
+  });
+
+  it('can fall back correctly for drawer navigators', () => {
+    renderRouter({
+      _layout: () => <Drawer useLegacyImplementation={false} />,
+      one: () => <Text testID="one" />,
+      two: () => <Text testID="two" />,
+      redirected: () => <Redirect href="/" />,
+    });
+
+    runPushTest();
+    runReplaceTest();
+    runRedirectionTest();
   });
 });
