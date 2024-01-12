@@ -2,10 +2,9 @@ import { HomeFilledIcon, iconSize, RefreshIcon } from '@expo/styleguide-native';
 import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
 import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
 import * as Font from 'expo-font';
-import React, { Fragment, useContext, useEffect, useRef } from 'react';
+import React, { Fragment, useEffect, useRef } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import DevMenuBottomSheetContext from './DevMenuBottomSheetContext';
 import { DevMenuCloseButton } from './DevMenuCloseButton';
 import { DevMenuItem } from './DevMenuItem';
 import * as DevMenu from './DevMenuModule';
@@ -48,8 +47,6 @@ const MENU_ITEMS_ICON_MAPPINGS: {
 };
 
 export function DevMenuView({ uuid, task }: Props) {
-  const context = useContext(DevMenuBottomSheetContext);
-
   const [enableDevMenuTools, setEnableDevMenuTools] = React.useState(false);
   const [devMenuItems, setDevMenuItems] = React.useState<{ [key: string]: any }>({});
   const [isOnboardingFinished, setIsOnboardingFinished] = React.useState(false);
@@ -59,6 +56,18 @@ export function DevMenuView({ uuid, task }: Props) {
   const insets = useSafeAreaInsets();
 
   const prevUUIDRef = useRef(uuid);
+
+  useEffect(() => {
+    const closeSubscription = DevMenu.listenForCloseRequests(() => {
+      closeDevMenuAsync();
+      return new Promise<void>((resolve) => {
+        resolve();
+      });
+    });
+    return () => {
+      closeSubscription.remove();
+    };
+  }, []);
 
   useEffect(function didMount() {
     loadStateAsync();
@@ -75,14 +84,7 @@ export function DevMenuView({ uuid, task }: Props) {
     [uuid]
   );
 
-  async function collapse() {
-    if (context) {
-      await context.collapse();
-    }
-  }
-
-  async function collapseAndCloseDevMenuAsync() {
-    await collapse();
+  async function closeDevMenuAsync() {
     await DevMenu.closeAsync();
   }
 
@@ -122,12 +124,10 @@ export function DevMenuView({ uuid, task }: Props) {
   }
 
   function onAppReload() {
-    collapse();
     DevMenu.reloadAppAsync();
   }
 
   function onGoToHome() {
-    collapse();
     DevMenu.goToHomeAsync();
   }
 
@@ -149,7 +149,7 @@ export function DevMenuView({ uuid, task }: Props) {
   }
 
   return (
-    <View bg="secondary" flex="1" roundedTop="large" overflow="hidden" style={{ direction: 'ltr' }}>
+    <View bg="secondary" flex="1" style={{ direction: 'ltr', marginTop: insets.top }}>
       <DevMenuTaskInfo task={task} />
       <Divider />
       <View>
@@ -202,7 +202,7 @@ export function DevMenuView({ uuid, task }: Props) {
           </View>
         )}
       </View>
-      <DevMenuCloseButton onPress={collapseAndCloseDevMenuAsync} />
+      <DevMenuCloseButton onPress={closeDevMenuAsync} />
     </View>
   );
 }

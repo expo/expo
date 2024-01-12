@@ -47,12 +47,7 @@ export function DevMenuOnboarding({ onClose }: Props) {
   const { bottom } = useSafeAreaInsets();
 
   return (
-    <View
-      flex="1"
-      bg="default"
-      pt="medium"
-      px="large"
-      style={{ paddingBottom: bottom + scale.medium }}>
+    <View bg="default" pt="medium" px="large" style={{ paddingBottom: bottom + scale.medium }}>
       <View>
         <Text size="medium" maxFontSizeMultiplier={1.2}>
           This is the developer menu. It gives you access to useful tools in Expo Go.
