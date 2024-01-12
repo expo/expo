@@ -18,7 +18,7 @@ type AbsoluteRoute = DynamicRouteTemplate | StaticRoutes;
 type ExternalPathString = `${string}:${string}`;
 
 type ExpoRouterRoutes = DynamicRouteTemplate | StaticRoutes | RelativePathString;
-type AllRoutes = ExpoRouterRoutes | ExternalPathString;
+export type AllRoutes = ExpoRouterRoutes | ExternalPathString;
 
 /****************
  * Route Utils  *
