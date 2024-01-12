@@ -110,7 +110,7 @@ export function useMyDevToolsPlugin() {
 If you update the hook to return functions that will be called by the app, you will also need to update **src/index.ts** so it exports no-op functions when the app is not running in debug mode:
 ```diff src/index.ts
 if (process.env.NODE_ENV !== 'production') {
-  useMyDevToolsPlugin = require('./useMyDevToolsPlugin'). useMyDevToolsPlugin;
+  useMyDevToolsPlugin = require('./useMyDevToolsPlugin').useMyDevToolsPlugin;
 } else {
   useMyDevToolsPlugin = () => ({
 +    sendPing: () => {},
