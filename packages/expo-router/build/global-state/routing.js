@@ -222,7 +222,7 @@ function getNavigateAction(actionState, navigationState, type = 'NAVIGATE') {
             rootPayload.key = `${rootPayload.name}-${(0, non_secure_1.nanoid)()}`; // @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L406-L407
         }
     }
-    if (type === 'REPLACE' && navigationState.type === 'tab') {
+    if (type === 'REPLACE' && (navigationState.type === 'tab' || navigationState.type === 'drawer')) {
         type = 'JUMP_TO';
     }
     return {
