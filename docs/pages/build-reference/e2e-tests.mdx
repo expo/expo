@@ -7,6 +7,7 @@ description: Learn how to set up and run E2E tests on EAS Build with popular lib
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal, DiffBlock } from '~/ui/components/Snippet';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { Step } from '~/ui/components/Step';
 
 > **Warning** EAS Build support for E2E testing is in a _very early_ state. The intention of this guide is to explain how you can run E2E tests on the service today,
 > without all of the affordances that we plan to build in the future. This guide will evolve over time as support for testing workflows in EAS Build improves.
@@ -17,7 +18,8 @@ This guide explains how to run E2E tests with Detox in a bare workflow project. 
 
 ## Running iOS tests
 
-### 1. Initialize a new bare workflow project
+<Step label="1">
+### Initialize a new bare workflow project
 
 Let's start by initializing a new Expo project, installing and configuring `@config-plugins/detox`, and running `npx expo prebuild` to generate the native projects.
 
@@ -49,7 +51,10 @@ Run prebuild to generate the native projects:
 
 <Terminal cmd={['$ npx expo prebuild']} />
 
-### 2. Make home screen interactive
+</Step>
+
+<Step label="1">
+### Make home screen interactive
 
 The first step to writing E2E tests is to have something to test - we have an empty app, so let's make our app interactive. We can add a button and display some new text when it's pressed.
 Later, we're going to write a test that's going to tap the button and check whether the text has been displayed.
@@ -59,7 +64,7 @@ Later, we're going to write a test that's going to tap the button and check whet
   <img src="/static/images/eas-build/tests/02-hi.png" style={{ maxWidth: '45%' }} />
 </div>
 
-<Collapsible summary="👀 See the source code">
+<Collapsible summary="See the source code">
 
 ```jsx App.js
 import { StatusBar } from 'expo-status-bar';
@@ -114,7 +119,11 @@ const styles = StyleSheet.create({
 
 </Collapsible>
 
-### 3. Set up Detox
+</Step>
+
+<Step label="3">
+
+### Set up Detox
 
 #### Install dependencies
 
@@ -201,7 +210,10 @@ module.exports = {
 };
 ```
 
-### 4. Write E2E tests
+</Step>
+
+<Step label="4">
+### Write E2E tests
 
 Next, we'll add our first E2E tests. Delete the auto-generated **e2e/firstTest.e2e.js** and create our own **e2e/homeScreen.e2e.js** with the following contents:
 
@@ -233,7 +245,10 @@ There are two tests in the suite:
 
 Both tests assume the button has the `testID` set to `click-me-button`. See [the source code](#2-make-home-screen-interactive) for details.
 
-### 5. Configure EAS Build
+</Step>
+
+<Step label="5">
+### Configure EAS Build
 
 Now that we have configured Detox and written our first E2E test, let's configure EAS Build and run the tests in the cloud.
 
@@ -381,7 +396,11 @@ Edit **package.json** to use [EAS Build hooks](/build-reference/npm-hooks.mdx) t
 
 > Don't forget to add executable permissions to **eas-build-pre-install.sh** and **eas-build-on-success.sh**. Run `chmod +x eas-hooks/*.sh`.
 
-### 6. Run tests on EAS Build
+</Step>
+
+<Step label="6">
+
+### Run tests on EAS Build
 
 Running the tests on EAS Build is like running a regular build:
 
@@ -391,7 +410,10 @@ If you have set up everything correctly you should see the successful test resul
 
 <ImageSpotlight src="/static/images/eas-build/tests/03-logs.png" style={{ maxWidth: '90%' }} />
 
-### 7. Upload screenshots of failed test cases
+</Step>
+
+<Step label="7">
+### Upload screenshots of failed test cases
 
 > This step is optional but highly recommended.
 
@@ -447,6 +469,8 @@ Run an iOS build with the following command and wait for it to finish:
 After going to the build details page you should see that the build failed. Use the **"Download artifacts"** button to download and examine the screenshot:
 
 <ImageSpotlight src="/static/images/eas-build/tests/04-artifacts.png" style={{ maxWidth: '90%' }} />
+
+</Step>
 
 ## Repository
 
