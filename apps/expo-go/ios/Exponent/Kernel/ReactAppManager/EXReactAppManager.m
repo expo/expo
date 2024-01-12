@@ -139,7 +139,7 @@
 {
   // we allow the vanilla RN dev menu in some circumstances.
   BOOL isStandardDevMenuAllowed = false;
-  NSMutableDictionary *params = [NSMutableDictionary dictionaryWithDictionary:@{
+  return @{
     @"manifest": _appRecord.appLoader.manifest.rawManifestJSON,
     @"constants": @{
         @"linkingUri": RCTNullIfNil([EXKernelLinkingManager linkingUriForExperienceUri:_appRecord.appLoader.manifestUrl useLegacy:NO]),
@@ -147,7 +147,7 @@
         @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
         @"manifest": _appRecord.appLoader.manifest.rawManifestJSON,
         @"executionEnvironment": [self _executionEnvironment],
-        @"appOwnership": [self _appOwnership],
+        @"appOwnership": @"expo",
         @"isHeadless": @(_isHeadless),
         @"supportedExpoSdks": [EXVersions sharedInstance].versions[@"sdkVersions"],
     },
@@ -159,16 +159,11 @@
     @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
     @"singletonModules": [EXModuleRegistryProvider singletonModules],
     @"moduleRegistryDelegateClass": RCTNullIfNil([self moduleRegistryDelegateClass]),
-  }];
-  if ([@"expo" isEqualToString:[self _appOwnership]]) {
-    [params addEntriesFromDictionary:@{
-      @"fileSystemDirectories": @{
-          @"documentDirectory": [self scopedDocumentDirectory],
-          @"cachesDirectory": [self scopedCachesDirectory]
-      }
-    }];
-  }
-  return params;
+    @"fileSystemDirectories": @{
+        @"documentDirectory": [self scopedDocumentDirectory],
+        @"cachesDirectory": [self scopedCachesDirectory]
+    }
+  };
 }
 
 - (void)invalidate
@@ -603,7 +598,7 @@
   }
 
   expProps[@"shell"] = @(_appRecord == nil);
-  expProps[@"appOwnership"] = [self _appOwnership];
+  expProps[@"appOwnership"] = @"expo";
   if (_initialProps) {
     [expProps addEntriesFromDictionary:_initialProps];
   }
@@ -626,11 +621,6 @@
   }
   props[@"exp"] = expProps;
   return props;
-}
-
-- (NSString *)_appOwnership
-{
-  return @"expo";
 }
 
 - (NSString *)_executionEnvironment

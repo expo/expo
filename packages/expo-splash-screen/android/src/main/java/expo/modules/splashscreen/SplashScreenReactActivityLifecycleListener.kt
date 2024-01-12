@@ -8,9 +8,6 @@ import com.facebook.react.ReactRootView
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.splashscreen.singletons.SplashScreen
 
-// this needs to stay for versioning to work
-// EXPO_VERSIONING_NEEDS_PACKAGE_R
-
 class SplashScreenReactActivityLifecycleListener(activityContext: Context) : ReactActivityLifecycleListener {
   override fun onContentChanged(activity: Activity) {
     SplashScreen.show(

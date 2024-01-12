@@ -23,13 +23,14 @@ import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
 class UpdatesController {
   companion object {
     private var singletonInstance: IUpdatesController? = null
+    private var overrideConfiguration: UpdatesConfiguration? = null
 
     @JvmStatic val instance: IUpdatesController
       get() {
         return checkNotNull(singletonInstance) { "UpdatesController.instance was called before the module was initialized" }
       }
 
-    @JvmStatic fun initializeWithoutStarting(context: Context, configuration: Map<String, Any>? = null) {
+    @JvmStatic fun initializeWithoutStarting(context: Context) {
       if (singletonInstance == null) {
         var updatesDirectoryException: Exception? = null
         val updatesDirectory = try {
@@ -39,19 +40,11 @@ class UpdatesController {
           null
         }
 
-        val updatesConfigurationValidationResult = UpdatesConfiguration.getUpdatesConfigurationValidationResult(context, configuration)
-        singletonInstance = if (updatesConfigurationValidationResult == UpdatesConfigurationValidationResult.VALID && updatesDirectory != null) {
-          val updatesConfiguration = UpdatesConfiguration(context, null)
-          EnabledUpdatesController(context, updatesConfiguration, updatesDirectory)
-        } else {
+        val updatesConfiguration: UpdatesConfiguration? = overrideConfiguration ?: run {
           val logger = UpdatesLogger(context)
-          when (updatesConfigurationValidationResult) {
+          when (UpdatesConfiguration.getUpdatesConfigurationValidationResult(context, null)) {
             UpdatesConfigurationValidationResult.VALID -> {
-              // this means there was a storage error
-              logger.error(
-                "The expo-updates system is disabled due to a storage access error: ${updatesDirectoryException?.message ?: "Unknown Error"}",
-                UpdatesErrorCode.InitializationError
-              )
+              return@run UpdatesConfiguration(context, null)
             }
             UpdatesConfigurationValidationResult.INVALID_NOT_ENABLED -> logger.warn(
               "The expo-updates system is explicitly disabled. To enable it, set the enabled setting to true.",
@@ -66,7 +59,20 @@ class UpdatesController {
               UpdatesErrorCode.InitializationError
             )
           }
+          return@run null
+        }
 
+        singletonInstance = if (updatesConfiguration != null && updatesDirectory != null) {
+          EnabledUpdatesController(context, updatesConfiguration, updatesDirectory)
+        } else {
+          val logger = UpdatesLogger(context)
+          if (updatesDirectory == null) {
+            // this means there was a storage error
+            logger.error(
+              "The expo-updates system is disabled due to a storage access error: ${updatesDirectoryException?.message ?: "Unknown Error"}",
+              UpdatesErrorCode.InitializationError
+            )
+          }
           DisabledUpdatesController(context, updatesDirectoryException)
         }
       }
@@ -83,11 +89,14 @@ class UpdatesController {
         null
       }
 
-      val initialUpdatesConfiguration = if (UpdatesConfiguration.getUpdatesConfigurationValidationResult(context, null) == UpdatesConfigurationValidationResult.VALID) {
-        UpdatesConfiguration(context, null)
-      } else {
-        null
+      val initialUpdatesConfiguration = overrideConfiguration ?: run {
+        if (UpdatesConfiguration.getUpdatesConfigurationValidationResult(context, null) == UpdatesConfigurationValidationResult.VALID) {
+          UpdatesConfiguration(context, null)
+        } else {
+          null
+        }
       }
+
       val instance = UpdatesDevLauncherController(
         context,
         initialUpdatesConfiguration,
@@ -106,10 +115,33 @@ class UpdatesController {
      * @param context the base context of the application, ideally a [ReactApplication]
      * @param configuration map of configuration pairs to override those from AndroidManifest.xml
      */
-    @JvmStatic fun initialize(context: Context, configuration: Map<String, Any>? = null) {
+    @JvmStatic fun initialize(context: Context) {
       if (singletonInstance == null) {
-        initializeWithoutStarting(context, configuration)
+        initializeWithoutStarting(context)
         singletonInstance!!.start()
+      }
+    }
+
+    /**
+     * Overrides the [UpdatesConfiguration] that will be used inside [UpdatesController]
+     * This should be called as early as possible in the application's lifecycle.
+     * Can pass additional configuration to this method to set or override
+     * configuration values at runtime rather than just AndroidManifest.xml.
+     *
+     * @param context the base context of the application, ideally a [ReactApplication]
+     * @param configuration map of configuration pairs to override those from AndroidManifest.xml
+     */
+    @JvmStatic
+    fun overrideConfiguration(context: Context, configuration: Map<String, Any>) {
+      if (singletonInstance != null) {
+        throw AssertionError("The method should be called before UpdatesController.initialize()")
+      }
+      val updatesConfigurationValidationResult = UpdatesConfiguration.getUpdatesConfigurationValidationResult(context, configuration)
+      if (updatesConfigurationValidationResult == UpdatesConfigurationValidationResult.VALID) {
+        overrideConfiguration = UpdatesConfiguration(context, configuration)
+      } else {
+        val logger = UpdatesLogger(context)
+        logger.warn("Failed to overrideConfiguration: invalid configuration: ${updatesConfigurationValidationResult.name}")
       }
     }
   }

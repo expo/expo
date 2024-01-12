@@ -1,6 +1,6 @@
 {
   "name": "expo-font",
-  "platforms": ["ios", "android", "web"],
+  "platforms": ["ios", "android", "web", "macos", "tvos"],
   "android": {
     "modules": ["expo.modules.font.FontLoaderModule"]
   }

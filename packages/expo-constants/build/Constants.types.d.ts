@@ -2,17 +2,9 @@ import { ExpoConfig } from '@expo/config-types';
 import type { EASConfig as ManifestsEASConfig, ExpoGoConfig as ManifestsExpoGoConfig, ExpoUpdatesManifest, EmbeddedManifest, ManifestAsset as ManifestAssetForReExport, ManifestExtra as ManifestExtraForReExport, ClientScopingConfig as ClientScopingConfigForReExport, ExpoGoPackagerOpts as ExpoGoPackagerOptsForReExport } from 'expo-manifests';
 export declare enum AppOwnership {
     /**
-     * It is a [standalone app](/classic/building-standalone-apps#building-standalone-apps).
-     */
-    Standalone = "standalone",
-    /**
      * The experience is running inside of the Expo Go app.
      */
-    Expo = "expo",
-    /**
-     * It has been opened through a link from a standalone app.
-     */
-    Guest = "guest"
+    Expo = "expo"
 }
 export declare enum ExecutionEnvironment {
     Bare = "bare",
@@ -100,9 +92,7 @@ export interface NativeConstants {
      */
     name: 'ExponentConstants';
     /**
-     * Returns `expo`, `standalone`, or `guest`. This property only applies to the managed workflow
-     * and classic builds; for apps built with EAS Build and in bare workflow, the result is
-     * always `null`.
+     * Returns `expo` when running in Expo Go, otherwise `null`.
      */
     appOwnership: AppOwnership | null;
     debugMode: boolean;

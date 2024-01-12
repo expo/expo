@@ -1,11 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.resolveModulesAsync = void 0;
+const utils_1 = require("./utils");
 /**
  * Resolves search results to a list of platform-specific configuration.
  */
 async function resolveModulesAsync(searchResults, options) {
-    const platformLinking = require(`../platforms/${options.platform}`);
+    const platformLinking = (0, utils_1.getLinkingImplementationForPlatform)(options.platform);
     return (await Promise.all(Object.entries(searchResults).map(async ([packageName, revision]) => {
         const resolvedModule = await platformLinking.resolveModuleAsync(packageName, revision, options);
         return resolvedModule

@@ -13,6 +13,7 @@ import { SnippetHeader } from '~/ui/components/Snippet/SnippetHeader';
 import { CopyAction } from '~/ui/components/Snippet/actions/CopyAction';
 import { SettingsAction } from '~/ui/components/Snippet/actions/SettingsAction';
 import { CODE } from '~/ui/components/Text';
+import { TextTheme } from '~/ui/components/Text/types';
 
 // @ts-ignore Jest ESM issue https://github.com/facebook/jest/issues/9430
 const { default: testTippy } = tippy;
@@ -294,9 +295,9 @@ const codeBlockInlineContainerStyle = {
   padding: 0,
 };
 
-type CodeBlockProps = React.PropsWithChildren<{ inline?: boolean }>;
+type CodeBlockProps = React.PropsWithChildren<{ inline?: boolean; theme?: TextTheme }>;
 
-export const CodeBlock = ({ children, inline = false }: CodeBlockProps) => {
+export const CodeBlock = ({ children, theme, inline = false }: CodeBlockProps) => {
   const Element = inline ? 'span' : 'pre';
   return (
     <Element
@@ -306,7 +307,14 @@ export const CodeBlock = ({ children, inline = false }: CodeBlockProps) => {
         inline && codeBlockInlineContainerStyle,
       ]}
       {...attributes}>
-      <CODE css={[STYLES_CODE_BLOCK, inline && codeBlockInlineStyle, { fontSize: '80%' }]}>
+      <CODE
+        theme={theme}
+        css={[
+          STYLES_CODE_BLOCK,
+          inline && codeBlockInlineStyle,
+          { fontSize: '80%' },
+          theme && { color: 'inherit' },
+        ]}>
         {children}
       </CODE>
     </Element>

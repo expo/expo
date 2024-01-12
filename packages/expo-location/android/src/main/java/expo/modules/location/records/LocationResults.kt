@@ -184,7 +184,8 @@ internal class ReverseGeocodeResponse(
   @Field var postalCode: String?,
   @Field var name: String?,
   @Field var isoCountryCode: String,
-  @Field var timezone: String?
+  @Field var timezone: String?,
+  @Field var formattedAddress: String?
 ) : Record, Serializable {
   constructor(address: Address) : this(
     city = address.locality,
@@ -197,6 +198,23 @@ internal class ReverseGeocodeResponse(
     postalCode = address.postalCode,
     name = address.featureName,
     isoCountryCode = address.countryCode,
-    timezone = null
+    timezone = null,
+    formattedAddress = constructFormattedAddress(address)
   )
+
+  companion object {
+    fun constructFormattedAddress(address: Address): String? {
+      if (address.maxAddressLineIndex == -1) {
+        return null
+      }
+      val sb = StringBuilder()
+      for (i in 0..address.maxAddressLineIndex) {
+        sb.append(address.getAddressLine(i))
+        if (i < address.maxAddressLineIndex) {
+          sb.append(", ")
+        }
+      }
+      return sb.toString()
+    }
+  }
 }

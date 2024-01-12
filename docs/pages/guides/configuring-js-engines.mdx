@@ -49,14 +49,14 @@ You can run `npx expo prebuild -p android --clean` after the installation to pr
 To use a different engine on one specific platform, you can set the `"jsEngine"` value at the top level and then override it with a different value under the `"android"` or `"ios"` key. The value specified for the platform will take precedence over the common field.
 
 {/* prettier-ignore */}
-```js app.json
+```json app.json
 {
   "expo": {
     "jsEngine": "hermes",
     "ios": {
       /* @info jsEngine inside platform section will take precedence over the common field */
       "jsEngine": "jsc"
-    /* @end */
+      /* @end */
     }
   }
 }
