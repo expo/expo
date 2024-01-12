@@ -10,6 +10,15 @@ export function useVideoPlayer(source: string | null = null): VideoPlayer {
   }, []);
 }
 
+/**
+ * Returns whether the current device supports Picture in Picture (PiP) mode.
+ * @returns A `boolean` which is `true` if the device supports PiP mode, and `false` otherwise.
+ * @platform android, ios
+ */
+export function isPictureInPictureSupported(): Promise<boolean> {
+  return NativeVideoModule.isPictureInPictureSupported();
+}
+
 export class VideoView extends PureComponent<VideoViewProps> {
   nativeRef = createRef<any>();
 
@@ -19,15 +28,6 @@ export class VideoView extends PureComponent<VideoViewProps> {
 
   exitFullscreen() {
     this.nativeRef.current?.exitFullscreen();
-  }
-
-  /**
-   * Returns whether the current device supports Picture in Picture (PiP) mode.
-   * @returns A Promise that fulfills to `true` if the device supports PiP mode, and `false` otherwise.
-   * @platform android, ios
-   */
-  async isPictureInPictureSupportedAsync(): Promise<boolean> {
-    return this.nativeRef.current?.isPictureInPictureSupportedAsync();
   }
 
   /**

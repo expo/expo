@@ -29,7 +29,6 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   val onPictureInPictureStart by EventDispatcher<Unit>()
   val onPictureInPictureStop by EventDispatcher<Unit>()
 
-
   private val currentActivity = appContext.currentActivity
     ?: throw Exceptions.MissingActivity()
   private val decorView = currentActivity.window.decorView
@@ -120,7 +119,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   }
 
   fun enterPictureInPicture() {
-    if (!isPictureInPictureSupported()) {
+    if (!isPictureInPictureSupported(currentActivity)) {
       throw PictureInPictureUnsupportedException()
     }
 
@@ -162,14 +161,15 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   /**
    * For optimal picture in picture experience it's best to only have one view. This method
    * hides all children of the root view and makes the player the only visible child of the rootView.
-   * */
+   */
   fun layoutForPiPEnter() {
     playerView.useController = false
     (playerView.parent as? ViewGroup)?.removeView(playerView)
     for (i in 0 until rootView.childCount) {
-      if (rootView.getChildAt(i) == playerView) continue
-      rootViewChildrenOriginalVisibility.add(rootView.getChildAt(i).visibility)
-      rootView.getChildAt(i).visibility = View.GONE
+      if (rootView.getChildAt(i) != playerView) {
+        rootViewChildrenOriginalVisibility.add(rootView.getChildAt(i).visibility)
+        rootView.getChildAt(i).visibility = View.GONE
+      }
     }
     rootView.addView(playerView, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
   }
@@ -211,12 +211,6 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     }
   }
 
-  fun isPictureInPictureSupported(): Boolean {
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && currentActivity.packageManager.hasSystemFeature(
-      android.content.pm.PackageManager.FEATURE_PICTURE_IN_PICTURE
-    )
-  }
-
   override fun requestLayout() {
     super.requestLayout()
 
@@ -250,12 +244,18 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   override fun onDetachedFromWindow() {
     super.onDetachedFromWindow()
     (currentActivity as? FragmentActivity)?.let {
-      val fragment = it.supportFragmentManager.findFragmentByTag(pictureInPictureHelperTag ?: "")
-      if (fragment != null) {
-        it.supportFragmentManager.beginTransaction()
-          .remove(fragment)
-          .commitAllowingStateLoss()
-      }
+      val fragment = it.supportFragmentManager.findFragmentByTag(pictureInPictureHelperTag ?: "") ?: return
+      it.supportFragmentManager.beginTransaction()
+        .remove(fragment)
+        .commitAllowingStateLoss()
+    }
+  }
+
+  companion object {
+    fun isPictureInPictureSupported(currentActivity: Activity): Boolean {
+      return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && currentActivity.packageManager.hasSystemFeature(
+        android.content.pm.PackageManager.FEATURE_PICTURE_IN_PICTURE
+      )
     }
   }
 }

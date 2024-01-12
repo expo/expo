@@ -6,6 +6,10 @@ public final class VideoModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoVideo")
 
+    Function("isPictureInPictureSupported") {
+      return AVPictureInPictureController.isPictureInPictureSupported()
+    }
+
     View(VideoView.self) {
       Events(
         "onPictureInPictureStart",
@@ -53,11 +57,6 @@ public final class VideoModule: Module {
 
       Prop("startsPictureInPictureAutomatically") { (view, startsPictureInPictureAutomatically: Bool?) in
         view.startPictureInPictureAutomatically = startsPictureInPictureAutomatically ?? false
-      }
-
-      // TODO: Change this to a synchronous function once support for synchronous functions for views is added
-      AsyncFunction("isPictureInPictureSupportedAsync") { _ in
-        return AVPictureInPictureController.isPictureInPictureSupported()
       }
 
       AsyncFunction("enterFullscreen") { view in

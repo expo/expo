@@ -18,6 +18,10 @@ class VideoModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoVideo")
 
+    Function("isPictureInPictureSupported") {
+      return@Function VideoView.isPictureInPictureSupported(activity)
+    }
+
     View(VideoView::class) {
       Events(
         "onPictureInPictureStart",
@@ -57,11 +61,6 @@ class VideoModule : Module() {
 
       AsyncFunction("exitFullscreen") {
         throw MethodUnsupportedException("exitFullscreen")
-      }
-
-      // TODO: Change this to a synchronous function once support for synchronous functions for views is added
-      AsyncFunction("isPictureInPictureSupportedAsync") {view: VideoView ->
-        return@AsyncFunction view.isPictureInPictureSupported()
       }
 
       AsyncFunction("startPictureInPicture") { view: VideoView ->
