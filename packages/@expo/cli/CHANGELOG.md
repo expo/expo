@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Add default user to Android adb install command.
+- Add default user to Android adb install command. ([#26388](https://github.com/expo/expo/pull/26388) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
