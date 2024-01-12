@@ -30,7 +30,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/linking",
   "dependencies": {
-    "expo-constants": "~15.4.0",
+    "expo-constants": "~15.4.3",
     "invariant": "^2.2.4"
   },
   "devDependencies": {
