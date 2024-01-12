@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Bump `postcss` to 8.4.32.
+
 ## 0.17.1 - 2023-12-19
 
 ### 🎉 New features
