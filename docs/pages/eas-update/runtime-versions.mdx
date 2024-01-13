@@ -122,7 +122,7 @@ Enabling fingerprinting may lengthen build times, as the fingerprinting process 
 
 ### `"sdkVersion"` runtime version policy (deprecated)
 
-> **info** The `"sdkVersion"` runtime version policy is deprecated, and the `"appVersion"` policy is recommended instead. This policy should only be used if you are trying to test updates from a project with Expo Go on SDK 48 or lower.
+> **info** The `"sdkVersion"` runtime version policy is deprecated, and the `"appVersion"` policy is recommended instead. This policy should only be used for testing updates from a project with Expo Go on SDK 48 or lower.
 
 The `"sdkVersion"` policy will set the runtime version to the current SDK version of a project. For instance, if the project is on Expo SDK 1.0.0, the runtime version with this policy will be `"exposdk:1.0.0"`. This runtime version will update any time we update the project's Expo SDK. So, if we ran `expo upgrade` and installed Expo SDK 2.0.0, then the runtime version would become `"exposdk:2.0.0"`.
 
