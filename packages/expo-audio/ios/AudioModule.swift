@@ -32,11 +32,17 @@ public class AudioModule: Module {
     Class(AudioPlayer.self) {
       Constructor { (source: AudioSource?) -> AudioPlayer in
         let player = createAVPlayer(source: source)
-        player.publisher(for: \.currentItem).sink { [weak self] item in
-          if let seconds = item?.duration.seconds {
-            self?.sendEvent(statusUpdate, [
-              "duration": seconds * 1000,
-            ])
+        player.publisher(for: \.currentItem?.status).sink { [weak self] status in
+          guard let self else {
+            return
+          }
+          if let status {
+            if status == .readyToPlay {
+              print("ready to play")
+//              sendEvent(statusUpdate, [
+//                "duration": (player.currentItem?.duration.seconds ?? 0) * 1000,
+//              ])
+            }
           }
         }.store(in: &cancellables)
         return AudioPlayer(player)
@@ -140,7 +146,13 @@ public class AudioModule: Module {
     }
     return AVPlayer()
   }
+  
+  func test() {
+    print("test")
+  }
 }
+
+
 
 func statusToString(status: AVPlayer.Status) -> String {
   switch status {

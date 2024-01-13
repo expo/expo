@@ -1,5 +1,5 @@
 import { addStatusUpdateListener, useAudioPlayer, AudioSource } from 'expo-audio';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 
 import Player from '../AV/Player';
@@ -29,7 +29,6 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
 
   useEffect(() => {
     const subscription = addStatusUpdateListener((status) => {
-      console.log({ status });
       setState((state) => ({
         ...state,
         positionMillis: status.currentPosition ?? 0,
