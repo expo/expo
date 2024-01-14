@@ -8,7 +8,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 > Available from SDK 50 and above.
 
-Dev tools plugins are available in your local development environment to help you debug your app. They consist of a small amount of code you add to a project that enables two-way communication between the app and an external Chrome window. This setup provides display tools to inspect the app, trigger certain behaviors for testing, and more. Dev tools plugins are similar to Flipper plugins and are available in Expo Go and Development builds, and do not require adding native modules or config plugins to your project.
+Dev tools plugins are available in your local development environment to help you debug your app. They consist of a small amount of code you add to a project that enables two-way communication between the app and an external Chrome window. This setup provides display tools to inspect the app, trigger certain behaviors for testing, and more. Dev tools plugins are similar to Flipper plugins that are available in Development builds and Expo Go, and do not require adding native modules or config plugins to your project.
 
 ## Add a dev tools plugin to a project
 
@@ -16,7 +16,7 @@ To add a dev tool plugin to your app, install it as a package and add a small sn
 
 All [Expo dev tools plugins](#expo-dev-tools-plugins) and plugins created with [our creation tool](/create-devtools-plugins) export a hook that you can use to connect the plugin to your app. The hook and any functions returned from it will no-op when the app is not running in development mode.
 
-Some plugin hooks require parameters that relate to how the plugin inspects your app. For instance, a plugin for inspecting React Navigation state might require a reference to the navigation root.
+Some plugin hooks require parameters that relate to how the plugin inspects your app. For instance, a plugin for inspecting the React Navigation state might require a reference to the navigation root.
 
 To start using the plugin, use the hook in your app's root component:
 
@@ -44,6 +44,7 @@ export default App() {
     // send messages
     client?.sendMessage("ping", { from: "app" });
    }, []);
+
   return (/* rest of your app */)
 }
 ```
@@ -75,15 +76,16 @@ To use the plugin, start by installing the package:
 Pass the navigation root to the plugin in your app's entry point when running in development mode:
 
 <Tabs tabs={["Expo Router", "React Navigation"]}>
-  <Tab>
-  ```jsx app/_layout.js
+<Tab>
+
+```jsx app/_layout.js
   import { useEffect, useRef } from 'react';
   import { useRootNavigation, Slot } from 'expo-router';
   import { useReactNavigationDevTools } from '@dev-plugins/react-navigation';
 
-  export default Layout() {
-    const navigationRef = useRef(null);
-    const rootNavigation = useRootNavigation();
+export default Layout() {
+const navigationRef = useRef(null);
+const rootNavigation = useRootNavigation();
 
     useReactNavigationDevTools(navigationRef);
 
@@ -92,26 +94,32 @@ Pass the navigation root to the plugin in your app's entry point when running in
     }, [navigationRef.current]);
 
     return <Slot />;
-  }
+}
+```
 
-  ```
-  </Tab>
-  <Tab>
-  ```jsx App.js
-  import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
-  import { useReactNavigationDevTools } from '@dev-plugins/react-navigation';
+</Tab>
 
-  export default function App() {
-    const navigationRef = useNavigationContainerRef();
+<Tab>
 
-    useReactNavigationDevTools(navigationRef);
+{/* prettier-ignore */}
+```jsx App.js
+import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
+import { useReactNavigationDevTools } from '@dev-plugins/react-navigation';
 
-    return (
-      <NavigationContainer ref={navigationRef}>{/* ... */}</NavigationContainer>
-    );
-  }
-  ```
-  </Tab>
+export default function App() {
+  const navigationRef = useNavigationContainerRef();
+
+  useReactNavigationDevTools(navigationRef);
+
+return (
+    <NavigationContainer ref={navigationRef}>{/* ... */}</NavigationContainer>
+  );
+}
+
+```
+
+</Tab>
+
 </Tabs>
 
 In the terminal, run `npx expo start`, press <kbd>shift</kbd> + <kbd>m</kbd> to open the list of dev tools, and then select the React Navigation plugin. This will open the plugin's web interface, showing your navigation history as you navigate through your app.
@@ -138,11 +146,7 @@ const client = new ApolloClient({
 export default function App() {
   useApolloClientDevTools(client);
 
-  return (
-    <ApolloProvider>
-      {/* ... */}
-    </ApolloProvider>
-  )
+  return <ApolloProvider>{/* ... */}</ApolloProvider>;
 }
 ```
 
@@ -167,11 +171,7 @@ const queryClient = new QueryClient({});
 export default function App() {
   useReactQueryDevTools(queryClient);
 
-  return (
-    <QueryClientProvider>
-      {/* ... */}
-    </QueryClientProvider>
-  )
+  return <QueryClientProvider>{/* ... */}</QueryClientProvider>;
 }
 ```
 
@@ -185,7 +185,7 @@ To use the plugin, start by installing the package:
 
 <Terminal cmd={['$ npx expo install @dev-plugins/tinybase']} />
 
-Then pass your client instance to the plugin in your app's root component or where you wrap the rest of your app with store's `Provider`:
+Then pass your client instance to the plugin in your app's root component or where you wrap the rest of your app with the store's `Provider`:
 
 ```jsx App.js
 import { createStore } from 'tinybase';
@@ -197,11 +197,7 @@ const store = createStore().setValue('counter', 0);
 export default function App() {
   useTinyBaseDevTools(store);
 
-  return (
-    <Provider store={store}>
-      {/* ... */}
-    </Provider>
-  )
+  return <Provider store={store}>{/* ... */}</Provider>;
 }
 ```
 
