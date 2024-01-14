@@ -1,10 +1,11 @@
 import { css } from '@emotion/react';
 import { shadows, theme, typography } from '@expo/styleguide';
 import { borderRadius, breakpoints, spacing } from '@expo/styleguide-base';
-import type { ComponentProps, ComponentType } from 'react';
+import type { ComponentType, ComponentPropsWithoutRef } from 'react';
 import { Fragment } from 'react';
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown, { Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkSupsub from 'remark-supersub';
 
 import { APIDataType } from './APIDataType';
 
@@ -62,7 +63,10 @@ export enum TypeDocKind {
 
 export const DEFAULT_BASE_NESTING_LEVEL = 2;
 
-export type MDComponents = ComponentProps<typeof ReactMarkdown>['components'];
+export type MDComponents = Components & {
+  superscript: ComponentType<ComponentPropsWithoutRef<'sup'>>;
+  subscript: ComponentType<ComponentPropsWithoutRef<'sub'>>;
+};
 
 const getInvalidLinkMessage = (href: string) =>
   `Using "../" when linking other packages in doc comments produce a broken link! Please use "./" instead. Problematic link:\n\t${href}`;
@@ -100,7 +104,8 @@ export const mdComponents: MDComponents = {
   thead: ({ children }) => <TableHead>{children}</TableHead>,
   tr: ({ children }) => <Row>{children}</Row>,
   th: ({ children }) => <HeaderCell>{children}</HeaderCell>,
-  td: ({ children }) => <Cell>{children}</Cell>,
+  superscript: ({ children }) => <sub>{children}</sub>,
+  subscript: ({ children }) => <sup>{children}</sup>,
 };
 
 export const mdComponentsNoValidation: MDComponents = {
@@ -602,13 +607,13 @@ export const CommentTextBlock = ({
 }: CommentTextBlockProps) => {
   const content = comment && comment.summary ? getCommentContent(comment.summary) : undefined;
 
-  if (emptyCommentFallback && (!comment || !content || !content.length)) {
+  if (emptyCommentFallback && (!content || !content.length)) {
     return <span className="text-tertiary">{emptyCommentFallback}</span>;
   }
 
   const paramTags = content ? getParamTags(content) : undefined;
   const parsedContent = (
-    <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm]}>
+    <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm, remarkSupsub]}>
       {parseCommentContent(paramTags ? content?.replaceAll(PARAM_TAGS_REGEX, '') : content)}
     </ReactMarkdown>
   );

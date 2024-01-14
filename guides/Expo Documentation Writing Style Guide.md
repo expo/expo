@@ -334,6 +334,11 @@ Writing API documentation accurately and precisely helps developers use our APIs
       and their order (see `expo-notifications` source and doc page for an example usage).
 - When linking other SDK packages in a comment, use `./` instead of `../` at the beginning of the URL
   - For more information, check out [detect broken internal links in generated doc comments](https://github.com/expo/expo/pull/16771) PR on GitHub.
+- To add a subscript or superscript in the comment content use the following custom syntax:
+  ```md
+  21^st^ Century <!-- sup -->
+  H~2~O <!-- sub -->
+  ```
 
 ## Accuracy
 
