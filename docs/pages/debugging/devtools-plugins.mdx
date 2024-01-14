@@ -14,7 +14,7 @@ Dev tools plugins are available in your local development environment to help yo
 
 To add a dev tool plugin to your app, install it as a package and add a small snippet to connect the code to your app. This code is invoked from the app's root component to establish a two-way communication between your app and the plugin. Then, the plugin can inspect aspects of your app for the entire time your app runs in development mode.
 
-All [Expo dev tools plugins](#expo-dev-tools-plugins) and plugins created with [our creation tool](/create-devtools-plugins) export a hook that you can use to connect the plugin to your app. The hook and any functions returned from it will no-op when the app is not running in development mode.
+All [Expo dev tools plugins](#expo-dev-tools-plugins) and plugins created with [our creation tool](/debugging/create-devtools-plugins) export a hook that you can use to connect the plugin to your app. The hook and any functions returned from it will no-op when the app is not running in development mode.
 
 Some plugin hooks require parameters that relate to how the plugin inspects your app. For instance, a plugin for inspecting React Navigation state might require a reference to the navigation root.
 
