@@ -5,6 +5,7 @@ description: Learn how to create a dev tools plugin to enhance your development 
 
 import { Terminal } from '~/ui/components/Snippet';
 import { APIBox } from '~/components/plugins/APIBox';
+import { Step } from '~/ui/components/Step';
 
 > **warning** Dev Tools plugins are compatible with SDK 50 and above.
 
@@ -22,6 +23,7 @@ A plugin consists of three key elements:
 
 Plugins can be distributed on npm or included inside your app's monorepo. They typically export a single hook that can be used in your app's root component to initiate two-way communication with the web interface when your app is running in debug mode.
 
+<Step label="1">
 ## Create a plugin
 
 ### Create a new plugin project
@@ -124,13 +126,21 @@ if (process.env.NODE_ENV !== 'production') {
 }
 ```
 
-### Test a plugin
+</Step>
+
+<Step label="2">
+
+## Test a plugin
 
 Since the plugin web UI is an Expo app, you can test it just like you would any other Expo app, with `npx expo start`, except that you will run it in the browser only. The template includes a convenience command to run the plugin in local development mode:
 
 <Terminal cmd={['$ npm run web:dev']} />
 
-### Build a plugin for distribution
+</Step>
+
+<Step label="3">
+
+## Build a plugin for distribution
 
 To prepare your plugin for distribution or use within your monorepo, you will need to build the plugin with the following command:
 
@@ -138,7 +148,11 @@ To prepare your plugin for distribution or use within your monorepo, you will ne
 
 This command will build the hook code into the **build** directory, and the web user interface into the **dist** directory.
 
-### Use the plugin
+</Step>
+
+<Step label="4">
+
+## Use the plugin
 
 Import the plugin's hook into your app's root component and call it to connect your app to the plugin:
 
@@ -161,3 +175,5 @@ export default function App() {
   );
 }
 ```
+
+</Step>
