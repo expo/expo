@@ -26,13 +26,13 @@ Plugins can be distributed on npm or included inside your app's monorepo. They t
 
 ### Create a new plugin project
 
-`create-dev-plugin` will setup a new plugin project for you. Run the following command to create a new plugin project:
+`create-dev-plugin` will set up a new plugin project for you. Run the following command to create a new plugin project:
 
 <Terminal cmd={['$ npx create-dev-plugin@latest']} />
 
-`create-dev-plugin` will prompt you for a name of your plugin, a description, and the name of the hook that will be used by consumers of your plugin.
+`create-dev-plugin` will prompt you for the name of your plugin, a description, and the name of the hook that will be used by consumers of your plugin.
 
-The plugin project will contain the following folders:
+The plugin project will contain the following directories:
 
 - **src** - this exports the hook that will be used inside the consuming app to connect it to the plugin.
 - **webui** - this contains the web user interface for the plugin.
@@ -45,7 +45,7 @@ The client object returned by `useDevToolsPluginClient` includes:
 
 <APIBox header="addMessageListener">
 
-Listens for a message matching the type string and invokes the callback with the message data.
+Listens for a message matching the typed string and invokes the callback with the message data.
 
 ```jsx
 const client = useDevToolsPluginClient('my-devtools-plugin');
@@ -58,7 +58,7 @@ client.addMessageListener('ping', data => {
 
 <APIBox header="sendMessage">
 
-Listens for a message matching the type string and invokes the callback with the message data.
+Listens for a message matching the typed string and invokes the callback with the message data.
 
 ```jsx
 const client = useDevToolsPluginClient('my-devtools-plugin');
@@ -94,7 +94,7 @@ export default function App() {
 }
 ```
 
-Edit the hook in the **src** folder to customize what diagnostic information is sent to the plugin or how the app should respond to any messages from the web user interface:
+Edit the hook in the **src** directory to customize what diagnostic information is sent to the plugin or how the app should respond to any messages from the web user interface:
 
 ```tsx src/useMyDevToolsPlugin.ts
 import { useDevToolsPluginClient } from 'expo/devtools';
@@ -132,13 +132,13 @@ Since the plugin web UI is an Expo app, you can test it just like you would any 
 
 ### Build a plugin for distribution
 
-To prepare your plugin for distribution or for use within your monorepo, you will need to build the plugin with the following command:
+To prepare your plugin for distribution or use within your monorepo, you will need to build the plugin with the following command:
 
 <Terminal cmd={['$ npm run build:all']} />
 
-This command will build the hook code into the **build** folder, and the web user interface into the **dist** folder.
+This command will build the hook code into the **build** directory, and the web user interface into the **dist** directory.
 
-### Use your plugin
+### Use the plugin
 
 Import the plugin's hook into your app's root component and call it to connect your app to the plugin:
 
@@ -151,7 +151,12 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Button title="Ping" onPress={() => { sendPing(); }}>
+      <Button
+        title="Ping"
+        onPress={() => {
+          sendPing();
+        }}
+      />
     </View>
   );
 }
