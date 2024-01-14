@@ -1,11 +1,11 @@
 import fs from 'fs-extra';
 import path from 'path';
 
+import { ClientBuilder, ClientBuildFlavor, Platform } from './types';
 import { podInstallAsync } from '../CocoaPods';
 import { EXPO_DIR, EXPO_GO_IOS_DIR } from '../Constants';
 import { iosAppVersionAsync } from '../ProjectVersions';
 import { spawnAsync } from '../Utils';
-import { ClientBuilder, ClientBuildFlavor, Platform } from './types';
 
 export default class IosClientBuilder implements ClientBuilder {
   platform: Platform = 'ios';

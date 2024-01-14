@@ -94,10 +94,10 @@
     "@types/node-fetch": "^2.6.2",
     "@types/semver": "^7.5.0",
     "@types/uuid": "^9.0.2",
-    "eslint": "^8.29.0",
-    "eslint-config-universe": "^11.1.1",
+    "eslint": "^8.56.0",
+    "eslint-config-universe": "^12.0.0",
     "eslint-plugin-lodash": "^7.4.0",
-    "prettier": "^2.8.1",
+    "prettier": "^3.1.1",
     "taskr": "1.1.0",
     "typescript": "^5.1.3"
   }

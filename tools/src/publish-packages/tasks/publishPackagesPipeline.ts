@@ -1,8 +1,5 @@
 import chalk from 'chalk';
 
-import logger from '../../Logger';
-import { Task } from '../../TasksRunner';
-import { CommandOptions, Parcel, TaskArgs } from '../types';
 import { addPublishedLabelToPullRequests } from './addPublishedLabelToPullRequests';
 import { checkEnvironmentTask } from './checkEnvironmentTask';
 import { checkPackagesIntegrity } from './checkPackagesIntegrity';
@@ -21,6 +18,9 @@ import { updateIosProjects } from './updateIosProjects';
 import { updateModuleTemplate } from './updateModuleTemplate';
 import { updatePackageVersions } from './updatePackageVersions';
 import { updateWorkspaceProjects } from './updateWorkspaceProjects';
+import logger from '../../Logger';
+import { Task } from '../../TasksRunner';
+import { CommandOptions, Parcel, TaskArgs } from '../types';
 
 const { cyan, yellow } = chalk;
 

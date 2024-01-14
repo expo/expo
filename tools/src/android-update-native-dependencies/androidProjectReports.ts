@@ -4,19 +4,19 @@ import glob from 'glob-promise';
 import ora from 'ora';
 import * as path from 'path';
 
-import * as Directories from '../Directories';
-import logger from '../Logger';
-import { spawnAsync, SpawnResult } from '../Utils';
 import {
   AndroidProjectReport,
   GradleDependency,
   RawGradleDependency,
   RawGradleReport,
 } from './types';
+import * as Directories from '../Directories';
+import logger from '../Logger';
+import { spawnAsync, SpawnResult } from '../Utils';
 
 export const REVISIONS = ['release', 'milestone', 'integration'] as const;
 
-export type Revision = typeof REVISIONS[number];
+export type Revision = (typeof REVISIONS)[number];
 
 export interface GradleTaskOptions {
   revision: Revision;

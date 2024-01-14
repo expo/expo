@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 
+import { selectPackagesToPublish } from './selectPackagesToPublish';
 import { UNPUBLISHED_VERSION_NAME } from '../../Changelogs';
 import { link } from '../../Formatter';
 import * as GitHub from '../../GitHub';
@@ -8,7 +9,6 @@ import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { runWithSpinner } from '../../Utils';
 import { Parcel, TaskArgs } from '../types';
-import { selectPackagesToPublish } from './selectPackagesToPublish';
 
 // https://github.com/expo/expo/pulls?q=label:published
 const PUBLISHED_LABEL_NAME = 'published';

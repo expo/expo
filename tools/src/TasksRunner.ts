@@ -79,7 +79,10 @@ export class TaskError<TaskType extends { name: string }> extends Error {
   readonly stderr?: string;
   readonly stack?: string;
 
-  constructor(readonly task: TaskType, error: Error) {
+  constructor(
+    readonly task: TaskType,
+    error: Error
+  ) {
     super(error.message);
     this.stderr = (error as any).stderr;
     this.stack = error.stack;

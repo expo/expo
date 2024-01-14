@@ -256,8 +256,8 @@ function sortVersionsAsc(a: string, b: string): number {
   return a === UNPUBLISHED_VERSION_NAME
     ? 1
     : b === UNPUBLISHED_VERSION_NAME
-    ? -1
-    : semver.compare(a, b);
+      ? -1
+      : semver.compare(a, b);
 }
 
 /**

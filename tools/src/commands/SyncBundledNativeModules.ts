@@ -137,10 +137,13 @@ async function compareAndConfirmAsync(
   current: BundledNativeModulesList,
   next: BundledNativeModulesList
 ): Promise<void> {
-  const currentMap = current.reduce((acc, i) => {
-    acc[i.npmPackage] = i;
-    return acc;
-  }, {} as Record<string, NativeModule>);
+  const currentMap = current.reduce(
+    (acc, i) => {
+      acc[i.npmPackage] = i;
+      return acc;
+    },
+    {} as Record<string, NativeModule>
+  );
 
   logger.info('Changes:');
   let hasChanges = false;

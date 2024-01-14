@@ -1,6 +1,11 @@
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 
+import {
+  createParcelsForDependenciesOf,
+  createParcelsForGraphNodes,
+  loadRequestedParcels,
+} from './loadRequestedParcels';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { runWithSpinner } from '../../Utils';
@@ -13,11 +18,6 @@ import {
   validateVersion,
 } from '../helpers';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-import {
-  createParcelsForDependenciesOf,
-  createParcelsForGraphNodes,
-  loadRequestedParcels,
-} from './loadRequestedParcels';
 
 const { green, cyan } = chalk;
 

@@ -2,10 +2,10 @@ import chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import { PACKAGES_DIR, EXPO_DIR } from '../Constants';
 import configureModule from './configureModule';
 import fetchTemplate from './fetchTemplate';
 import promptQuestionsAsync from './promptQuestionsAsync';
+import { PACKAGES_DIR, EXPO_DIR } from '../Constants';
 
 const TEMPLATE_PACKAGE_NAME = 'expo-module-template';
 

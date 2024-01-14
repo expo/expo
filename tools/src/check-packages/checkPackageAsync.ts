@@ -1,10 +1,10 @@
 import chalk from 'chalk';
 
-import logger from '../Logger';
-import { Package } from '../Packages';
 import checkUniformityAsync from './checkUniformityAsync';
 import runPackageScriptAsync from './runPackageScriptAsync';
 import { ActionOptions } from './types';
+import logger from '../Logger';
+import { Package } from '../Packages';
 
 const { green } = chalk;
 

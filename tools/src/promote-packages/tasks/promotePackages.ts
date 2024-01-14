@@ -1,13 +1,13 @@
 import chalk from 'chalk';
 
+import { findPackagesToPromote } from './findPackagesToPromote';
+import { prepareParcels } from './prepareParcels';
+import { selectPackagesToPromote } from './selectPackagesToPromote';
 import logger from '../../Logger';
 import * as Npm from '../../Npm';
 import { Task } from '../../TasksRunner';
 import { formatVersionChange } from '../helpers';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-import { findPackagesToPromote } from './findPackagesToPromote';
-import { prepareParcels } from './prepareParcels';
-import { selectPackagesToPromote } from './selectPackagesToPromote';
 
 const { yellow, red, green, cyan } = chalk;
 

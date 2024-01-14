@@ -1,8 +1,8 @@
+import { loadRequestedParcels } from './loadRequestedParcels';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { isParcelUnpublished, printPackageParcel } from '../helpers';
 import { Parcel, TaskArgs } from '../types';
-import { loadRequestedParcels } from './loadRequestedParcels';
 
 /**
  * Lists packages that have any unpublished changes.

@@ -25,7 +25,7 @@ const excludedInTests = [
 
 const testTypes = ['local', 'instrumented', 'spotless'] as const;
 const testTypeSet = new Set(testTypes);
-type TestType = typeof testTypes[number];
+type TestType = (typeof testTypes)[number];
 
 function consoleErrorOutput(output: string, label: string, colorifyLine: (string) => string): void {
   const lines = output.trim().split(/\r\n?|\n/g);

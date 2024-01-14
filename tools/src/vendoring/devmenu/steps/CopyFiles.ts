@@ -2,8 +2,8 @@ import chalk from 'chalk';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { toRepoPath, findFiles } from '../utils';
 import { Task } from './Task';
+import { toRepoPath, findFiles } from '../utils';
 
 export type CopyFilesSettings = {
   from?: string;
