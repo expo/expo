@@ -1,11 +1,6 @@
 import chalk from 'chalk';
 import semver from 'semver';
 
-import Git from '../../Git';
-import logger from '../../Logger';
-import { sdkVersionAsync } from '../../ProjectVersions';
-import { Task } from '../../TasksRunner';
-import { CommandOptions, Parcel, TaskArgs } from '../types';
 import { checkEnvironmentTask } from './checkEnvironmentTask';
 import { checkPackageAccess } from './checkPackageAccess';
 import { loadRequestedParcels } from './loadRequestedParcels';
@@ -15,6 +10,11 @@ import { updateBundledNativeModulesFile } from './updateBundledNativeModulesFile
 import { updateModuleTemplate } from './updateModuleTemplate';
 import { updatePackageVersions } from './updatePackageVersions';
 import { updateWorkspaceProjects } from './updateWorkspaceProjects';
+import Git from '../../Git';
+import logger from '../../Logger';
+import { sdkVersionAsync } from '../../ProjectVersions';
+import { Task } from '../../TasksRunner';
+import { CommandOptions, Parcel, TaskArgs } from '../types';
 
 const { cyan } = chalk;
 
