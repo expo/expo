@@ -73,6 +73,21 @@ export class Image extends React.PureComponent<ImageProps> {
   }
 
   /**
+   * Asynchronously generates a [Blurhash](https://blurha.sh) from an image.
+   * @param url - The URL of the image to generate a blurhash from.
+   * @param numberOfComponents - The number of components to encode the blurhash with.
+   * Must be between 1 and 9. Defaults to `[4, 3]`.
+   * @platform ios
+   * @return A promise resolving to the blurhash string.
+   */
+  static async getBlurhashAsync(
+    url: string,
+    numberOfComponents: [number, number] | { width: number; height: number }
+  ): Promise<string | null> {
+    return await ExpoImageModule.getBlurhashAsync(url, numberOfComponents);
+  }
+
+  /**
    * Asynchronously starts playback of the view's image if it is animated.
    * @platform android
    * @platform ios
