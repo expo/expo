@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Add expo-linking as optional peer dependency
+- Remove expo-linking dependency and use React Native Linking instead.
 
 ## 6.8.2 — 2023-12-15
 
