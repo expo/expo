@@ -190,6 +190,7 @@ export type TypeGeneralData = {
   type: TypeDefinitionData;
   typeParameter?: TypeGeneralData[];
   kind: TypeDocKind;
+  variant?: string;
 };
 
 export type TypeDeclarationContentData = {

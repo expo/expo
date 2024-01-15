@@ -137,9 +137,10 @@ const renderAPI = (
 
     const types = filterDataByKind(
       data,
-      TypeDocKind.TypeAlias || TypeDocKind.TypeAlias_Legacy,
+      [TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy],
       entry =>
         !isProp(entry) &&
+        !(entry?.variant === 'reference') &&
         !!(
           entry.type.declaration ||
           entry.type.types ||
