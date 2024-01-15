@@ -1,6 +1,6 @@
 import Constants from 'expo-constants';
-import * as Linking from 'expo-linking';
 import { Platform } from 'expo-modules-core';
+import { Linking } from 'react-native';
 
 import StoreReview from './ExpoStoreReview';
 
