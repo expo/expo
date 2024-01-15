@@ -13,6 +13,10 @@
 - Removed deprecated `global.ExpoModules`. ([#26027](https://github.com/expo/expo/pull/26027) by [@tsapeta](https://github.com/tsapeta))
 - Remove most of Constants.appOwnership. ([#26313](https://github.com/expo/expo/pull/26313) by [@wschurman](https://github.com/wschurman))
 
+## 1.11.6 - 2024-01-12
+
+_This version does not introduce any user-facing changes._
+
 ## 1.11.5 - 2024-01-10
 
 ### 🎉 New features
