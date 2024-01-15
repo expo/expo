@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed build error on AGP 8.2. ([#26362](https://github.com/expo/expo/pull/26362) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 15.4.4 — 2024-01-15
+
+### 🐛 Bug fixes
+
+- Fixed build error on AGP 8.2. ([#26362](https://github.com/expo/expo/pull/26362) by [@kudo](https://github.com/kudo))
 
 ## 15.4.3 — 2024-01-10
 
