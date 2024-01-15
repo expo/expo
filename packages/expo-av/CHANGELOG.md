@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Improve precision for syncing two videos and updating new video position when user sets tolerances to 0 ([#26018](https://github.com/expo/expo/pull/26018) by [@jpudysz](https://github.com/jpudysz))
+- [Android] Add `Events` `to AVModule` to prevent event emitter warning.
 
 ### 💡 Others
 
