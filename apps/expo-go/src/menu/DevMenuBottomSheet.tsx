@@ -1,7 +1,9 @@
 import BottomSheet, {
   BottomSheetBackdrop,
+  BottomSheetBackdropProps,
   BottomSheetView,
   useBottomSheetDynamicSnapPoints,
+  useBottomSheetSpringConfigs,
 } from '@gorhom/bottom-sheet';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -67,17 +69,31 @@ function DevMenuBottomSheet({ children, uuid }: Props) {
     };
   }, []);
 
+  const renderBackdrop = useCallback(
+    (props: BottomSheetBackdropProps) => (
+      <BottomSheetBackdrop {...props} opacity={0.5} appearsOnIndex={0} disappearsOnIndex={-1} />
+    ),
+    []
+  );
+
   const { animatedHandleHeight, animatedSnapPoints, animatedContentHeight, handleContentLayout } =
     useBottomSheetDynamicSnapPoints(initialSnapPoints);
+
+  const animationConfigs = useBottomSheetSpringConfigs({
+    damping: 80,
+    overshootClamping: true,
+    restDisplacementThreshold: 0.1,
+    restSpeedThreshold: 0.1,
+    stiffness: 250,
+  });
 
   return (
     <BottomSheet
       key={uuid}
       ref={bottomSheetRef}
-      backdropComponent={(props) => (
-        <BottomSheetBackdrop {...props} opacity={0.5} appearsOnIndex={0} disappearsOnIndex={-1} />
-      )}
+      backdropComponent={renderBackdrop}
       handleComponent={null}
+      animationConfigs={animationConfigs}
       // TODO: (gabrieldonadel) remove type assertion after upgrading @gorhom/bottom-sheet
       snapPoints={animatedSnapPoints as (string | number)[] | SharedValue<(string | number)[]>}
       handleHeight={animatedHandleHeight}
