@@ -195,23 +195,38 @@ Add the following snippet in the global scope as early as possible in your appli
 ```js
 import * as Updates from 'expo-updates';
 
-const { metadata, extra } = Updates.manifest;
+const manifest = Updates.manifest;
+const metadata = "metadata" in manifest ? manifest.metadata : undefined;
+const extra = "metadata" in manifest ? manifest.extra : undefined;
+const updateGroup =
+  metadata && "updateGroup" in metadata ? metadata.updateGroup : undefined;
 
 Sentry.init({
   // dsn, release, dist, etc...
 });
 
-Sentry.configureScope(scope => {
-  scope.setTag('expo-update-group-id', metadata?.updateGroup);
-  scope.setTag('expo-update-id', Updates.updateId);
-  // This will be `true` if the update is the one embedded in the build, and not one downloaded from the updates server.
-  scope.setTag('expo-is-embedded-update', Updates.isEmbeddedLaunch);
-  scope.setTag(
-    'expo-update-debug-url',
-    Updates.isEmbeddedLaunch
-      ? 'not applicable for embedded updates'
-      : `https://expo.dev/accounts/${extra?.expoClient?.owner}/projects/${extra?.expoClient?.slug}/updates/${metadata?.updateGroup}`
-  );
+Sentry.configureScope((scope) => {
+  scope.setTag("expo-update-id", Updates.updateId);
+  scope.setTag("expo-is-embedded-update", Updates.isEmbeddedLaunch);
+
+  if (typeof updateGroup === "string") {
+    scope.setTag("expo-update-group-id", updateGroup);
+
+    const owner = extra?.expoClient?.owner ?? "[account]";
+    const slug = extra?.expoClient?.slug ?? "[project]";
+    scope.setTag(
+      "expo-update-debug-url",
+      `https://expo.dev/accounts/${owner}/projects/${slug}/updates/${updateGroup}`
+    );
+  } else if (Updates.isEmbeddedLaunch) {
+    // This will be `true` if the update is the one embedded in the build, and not one downloaded from the updates server.
+    if (Updates.isEmbeddedLaunch) {
+      scope.setTag(
+        "expo-update-debug-url",
+        "not applicable for embedded updates"
+      );
+    }
+  }
 });
 ```
 
@@ -224,6 +239,8 @@ Once configured, information about the associated update will show up in an erro
 </Tab>
 
 <Tab label="SDK 49 and below">
+
+> `sentry-expo` has been merged into `@sentry/react-native` and is now depreacted. We recommend upgrading to SDK 50 to use `@sentry/react-native` for the best experience. If you're already using `sentry-expo`, [learn how to migrate](https://expo.fyi/sentry-expo-migration).
 
 <Step label="1">
 
