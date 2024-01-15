@@ -4,7 +4,7 @@ import { selectAssetSource } from './AssetSources';
 import * as AssetUris from './AssetUris';
 import * as ImageAssets from './ImageAssets';
 import { getLocalAssetUri } from './LocalAssets';
-import { downloadAsync, IS_ENV_WITH_UPDATES_ENABLED } from './PlatformUtils';
+import { downloadAsync, IS_ENV_WITH_LOCAL_ASSETS } from './PlatformUtils';
 import resolveAssetSource from './resolveAssetSource';
 /**
  * The `Asset` class represents an asset in your app. It gives metadata about the asset (such as its
@@ -114,7 +114,7 @@ export class Asset {
         }
         // Outside of the managed env we need the moduleId to initialize the asset
         // because resolveAssetSource depends on it
-        if (!IS_ENV_WITH_UPDATES_ENABLED) {
+        if (!IS_ENV_WITH_LOCAL_ASSETS) {
             // null-check is performed above with `getAssetByID`.
             const { uri } = resolveAssetSource(virtualAssetModule);
             const asset = new Asset({

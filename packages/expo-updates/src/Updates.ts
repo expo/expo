@@ -1,4 +1,4 @@
-import { CodedError, UnavailabilityError } from 'expo-modules-core';
+import { CodedError } from 'expo-modules-core';
 
 import ExpoUpdates from './ExpoUpdates';
 import {
@@ -153,9 +153,6 @@ const manualUpdatesInstructions =
  * proper instance of `ReactNativeHost`.
  */
 export async function reloadAsync(): Promise<void> {
-  if (!ExpoUpdates.reload) {
-    throw new UnavailabilityError('Updates', 'reloadAsync');
-  }
   if (
     (__DEV__ || isUsingDeveloperTool) &&
     !shouldDeferToNativeForAPIMethodAvailabilityInDevelopment
@@ -184,9 +181,6 @@ export async function reloadAsync(): Promise<void> {
  * timeout communicating with the server. It also rejects when expo-updates is not enabled.
  */
 export async function checkForUpdateAsync(): Promise<UpdateCheckResult> {
-  if (!ExpoUpdates.checkForUpdateAsync) {
-    throw new UnavailabilityError('Updates', 'checkForUpdateAsync');
-  }
   if (
     (__DEV__ || isUsingDeveloperTool) &&
     !shouldDeferToNativeForAPIMethodAvailabilityInDevelopment
@@ -198,11 +192,13 @@ export async function checkForUpdateAsync(): Promise<UpdateCheckResult> {
   }
 
   const result = await ExpoUpdates.checkForUpdateAsync();
-  if (result.manifestString) {
-    result.manifest = JSON.parse(result.manifestString);
-    delete result.manifestString;
+  if ('manifestString' in result) {
+    const { manifestString, ...rest } = result;
+    return {
+      ...rest,
+      manifest: JSON.parse(manifestString),
+    };
   }
-
   return result;
 }
 
@@ -212,10 +208,6 @@ export async function checkForUpdateAsync(): Promise<UpdateCheckResult> {
  * This method cannot be used in Expo Go or development mode. It also rejects when expo-updates is not enabled.
  */
 export async function getExtraParamsAsync(): Promise<Record<string, string>> {
-  if (!ExpoUpdates.getExtraParamsAsync) {
-    throw new UnavailabilityError('Updates', 'getExtraParamsAsync');
-  }
-
   return await ExpoUpdates.getExtraParamsAsync();
 }
 
@@ -230,10 +222,6 @@ export async function setExtraParamAsync(
   key: string,
   value: string | null | undefined
 ): Promise<void> {
-  if (!ExpoUpdates.setExtraParamAsync) {
-    throw new UnavailabilityError('Updates', 'setExtraParamAsync');
-  }
-
   return await ExpoUpdates.setExtraParamAsync(key, value ?? null);
 }
 
@@ -247,9 +235,6 @@ export async function setExtraParamAsync(
  * The promise rejects if there is an unexpected error in retrieving the logs.
  */
 export async function readLogEntriesAsync(maxAge: number = 3600000): Promise<UpdatesLogEntry[]> {
-  if (!ExpoUpdates.readLogEntriesAsync) {
-    throw new UnavailabilityError('Updates', 'readLogEntriesAsync');
-  }
   return await ExpoUpdates.readLogEntriesAsync(maxAge);
 }
 
@@ -265,9 +250,6 @@ export async function readLogEntriesAsync(maxAge: number = 3600000): Promise<Upd
  *
  */
 export async function clearLogEntriesAsync(): Promise<void> {
-  if (!ExpoUpdates.clearLogEntriesAsync) {
-    throw new UnavailabilityError('Updates', 'clearLogEntriesAsync');
-  }
   await ExpoUpdates.clearLogEntriesAsync();
 }
 
@@ -286,9 +268,6 @@ export async function clearLogEntriesAsync(): Promise<void> {
  * timeout communicating with the server. It also rejects when expo-updates is not enabled.
  */
 export async function fetchUpdateAsync(): Promise<UpdateFetchResult> {
-  if (!ExpoUpdates.fetchUpdateAsync) {
-    throw new UnavailabilityError('Updates', 'fetchUpdateAsync');
-  }
   if (
     (__DEV__ || isUsingDeveloperTool) &&
     !shouldDeferToNativeForAPIMethodAvailabilityInDevelopment
@@ -300,11 +279,13 @@ export async function fetchUpdateAsync(): Promise<UpdateFetchResult> {
   }
 
   const result = await ExpoUpdates.fetchUpdateAsync();
-  if (result.manifestString) {
-    result.manifest = JSON.parse(result.manifestString);
-    delete result.manifestString;
+  if ('manifestString' in result) {
+    const { manifestString, ...rest } = result;
+    return {
+      ...rest,
+      manifest: JSON.parse(manifestString),
+    };
   }
-
   return result;
 }
 
@@ -320,7 +301,14 @@ export function clearUpdateCacheExperimentalAsync(_sdkVersion?: string) {
 /**
  * @hidden
  */
-export function transformNativeStateMachineContext(originalNativeContext: any) {
+export function transformNativeStateMachineContext(
+  originalNativeContext: UpdatesNativeStateMachineContext & {
+    latestManifestString?: string;
+    downloadedManifestString?: string;
+    lastCheckForUpdateTimeString?: string;
+    rollbackString?: string;
+  }
+): UpdatesNativeStateMachineContext {
   const nativeContext = { ...originalNativeContext };
   if (nativeContext.latestManifestString) {
     nativeContext.latestManifest = JSON.parse(nativeContext.latestManifestString);
@@ -345,10 +333,6 @@ export function transformNativeStateMachineContext(originalNativeContext: any) {
  * @hidden
  */
 export async function getNativeStateMachineContextAsync(): Promise<UpdatesNativeStateMachineContext> {
-  // Return the current state machine context
-  if (!ExpoUpdates.getNativeStateMachineContextAsync) {
-    throw new UnavailabilityError('Updates', 'getNativeStateMachineContextAsync');
-  }
   const nativeContext = await ExpoUpdates.getNativeStateMachineContextAsync();
   return transformNativeStateMachineContext(nativeContext);
 }
