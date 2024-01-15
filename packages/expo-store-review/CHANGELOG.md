@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Remove expo-linking dependency and use React Native Linking instead.
+- Remove expo-linking dependency and use React Native Linking instead. ([#26428](https://github.com/expo/expo/pull/26428) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 6.8.2 — 2023-12-15
 
