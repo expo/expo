@@ -21,9 +21,9 @@ public class AudioModule: Module {
       }
     }
     
-    Function("setIsAudioActive") { (active: Bool?)  in
+    Function("setIsAudioActive") { (active: Bool)  in
       do {
-        try AVAudioSession.sharedInstance().setActive(active ?? true)
+        try AVAudioSession.sharedInstance().setActive(active)
       } catch {
         throw PlayerException()
       }
@@ -33,6 +33,7 @@ public class AudioModule: Module {
       Constructor { (source: AudioSource?) -> AudioPlayer in
         let player = AudioPlayer(createAVPlayer(source: source))
         
+        // Gets the duration of the item on load
         player.pointer.publisher(for: \.currentItem?.status).sink { [weak self] status in
           guard let self, let status else {
             return
@@ -48,6 +49,7 @@ public class AudioModule: Module {
         return player
       }
       
+      // Needed to differentiate status updates when there is multiple player instances.
       Property("id") { player in
         player.sharedObjectId
       }
@@ -133,16 +135,17 @@ public class AudioModule: Module {
   private func registerTimeObserver(player: AudioPlayer, for id: Int) {
     let interval = CMTime(seconds: 1, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
     timeTokens[player.sharedObjectId] = player.pointer.addPeriodicTimeObserver(forInterval: interval, queue: nil) { [weak self] time in
+      let avPlayer = player.pointer
       self?.sendEvent(statusUpdate,
         [
           "id": id,
           "currentPosition": time.seconds * 1000,
-          "status": statusToString(status: player.pointer.status),
-          "timeControlStatus": timeControlStatusString(status: player.pointer.timeControlStatus),
-          "reasonForWaitingToPlay": reasonForWaitingToPlayString(status: player.pointer.reasonForWaitingToPlay),
-          "isMuted": player.pointer.isMuted,
-          "duration": (player.pointer.currentItem?.duration.seconds ?? 0) * 1000,
-          "isPlaying": player.pointer.timeControlStatus == .playing,
+          "status": statusToString(status: avPlayer.status),
+          "timeControlStatus": timeControlStatusString(status: avPlayer.timeControlStatus),
+          "reasonForWaitingToPlay": reasonForWaitingToPlayString(status: avPlayer.reasonForWaitingToPlay),
+          "isMuted": avPlayer.isMuted,
+          "duration": (avPlayer.currentItem?.duration.seconds ?? 0) * 1000,
+          "isPlaying": avPlayer.timeControlStatus == .playing,
           "isLooping": self?.isLooping ?? false
         ]
       )
