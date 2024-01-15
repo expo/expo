@@ -1,4 +1,4 @@
-import { CodedError, UnavailabilityError } from 'expo-modules-core';
+import { CodedError } from 'expo-modules-core';
 import ExpoUpdates from './ExpoUpdates';
 /**
  * Whether expo-updates is enabled. This may be false in a variety of cases including:
@@ -121,9 +121,6 @@ const manualUpdatesInstructions = 'To test usage of the expo-updates JS API in y
  * proper instance of `ReactNativeHost`.
  */
 export async function reloadAsync() {
-    if (!ExpoUpdates.reload) {
-        throw new UnavailabilityError('Updates', 'reloadAsync');
-    }
     if ((__DEV__ || isUsingDeveloperTool) &&
         !shouldDeferToNativeForAPIMethodAvailabilityInDevelopment) {
         throw new CodedError('ERR_UPDATES_DISABLED', `You cannot use the Updates module in development mode in a production app. ${manualUpdatesInstructions}`);
@@ -146,17 +143,17 @@ export async function reloadAsync() {
  * timeout communicating with the server. It also rejects when expo-updates is not enabled.
  */
 export async function checkForUpdateAsync() {
-    if (!ExpoUpdates.checkForUpdateAsync) {
-        throw new UnavailabilityError('Updates', 'checkForUpdateAsync');
-    }
     if ((__DEV__ || isUsingDeveloperTool) &&
         !shouldDeferToNativeForAPIMethodAvailabilityInDevelopment) {
         throw new CodedError('ERR_UPDATES_DISABLED', `You cannot check for updates in development mode. ${manualUpdatesInstructions}`);
     }
     const result = await ExpoUpdates.checkForUpdateAsync();
-    if (result.manifestString) {
-        result.manifest = JSON.parse(result.manifestString);
-        delete result.manifestString;
+    if ('manifestString' in result) {
+        const { manifestString, ...rest } = result;
+        return {
+            ...rest,
+            manifest: JSON.parse(manifestString),
+        };
     }
     return result;
 }
@@ -166,9 +163,6 @@ export async function checkForUpdateAsync() {
  * This method cannot be used in Expo Go or development mode. It also rejects when expo-updates is not enabled.
  */
 export async function getExtraParamsAsync() {
-    if (!ExpoUpdates.getExtraParamsAsync) {
-        throw new UnavailabilityError('Updates', 'getExtraParamsAsync');
-    }
     return await ExpoUpdates.getExtraParamsAsync();
 }
 /**
@@ -179,9 +173,6 @@ export async function getExtraParamsAsync() {
  * This method cannot be used in Expo Go or development mode. It also rejects when expo-updates is not enabled.
  */
 export async function setExtraParamAsync(key, value) {
-    if (!ExpoUpdates.setExtraParamAsync) {
-        throw new UnavailabilityError('Updates', 'setExtraParamAsync');
-    }
     return await ExpoUpdates.setExtraParamAsync(key, value ?? null);
 }
 /**
@@ -194,9 +185,6 @@ export async function setExtraParamAsync(key, value) {
  * The promise rejects if there is an unexpected error in retrieving the logs.
  */
 export async function readLogEntriesAsync(maxAge = 3600000) {
-    if (!ExpoUpdates.readLogEntriesAsync) {
-        throw new UnavailabilityError('Updates', 'readLogEntriesAsync');
-    }
     return await ExpoUpdates.readLogEntriesAsync(maxAge);
 }
 /**
@@ -211,9 +199,6 @@ export async function readLogEntriesAsync(maxAge = 3600000) {
  *
  */
 export async function clearLogEntriesAsync() {
-    if (!ExpoUpdates.clearLogEntriesAsync) {
-        throw new UnavailabilityError('Updates', 'clearLogEntriesAsync');
-    }
     await ExpoUpdates.clearLogEntriesAsync();
 }
 /**
@@ -231,17 +216,17 @@ export async function clearLogEntriesAsync() {
  * timeout communicating with the server. It also rejects when expo-updates is not enabled.
  */
 export async function fetchUpdateAsync() {
-    if (!ExpoUpdates.fetchUpdateAsync) {
-        throw new UnavailabilityError('Updates', 'fetchUpdateAsync');
-    }
     if ((__DEV__ || isUsingDeveloperTool) &&
         !shouldDeferToNativeForAPIMethodAvailabilityInDevelopment) {
         throw new CodedError('ERR_UPDATES_DISABLED', `You cannot fetch updates in development mode. ${manualUpdatesInstructions}`);
     }
     const result = await ExpoUpdates.fetchUpdateAsync();
-    if (result.manifestString) {
-        result.manifest = JSON.parse(result.manifestString);
-        delete result.manifestString;
+    if ('manifestString' in result) {
+        const { manifestString, ...rest } = result;
+        return {
+            ...rest,
+            manifest: JSON.parse(manifestString),
+        };
     }
     return result;
 }
@@ -278,10 +263,6 @@ export function transformNativeStateMachineContext(originalNativeContext) {
  * @hidden
  */
 export async function getNativeStateMachineContextAsync() {
-    // Return the current state machine context
-    if (!ExpoUpdates.getNativeStateMachineContextAsync) {
-        throw new UnavailabilityError('Updates', 'getNativeStateMachineContextAsync');
-    }
     const nativeContext = await ExpoUpdates.getNativeStateMachineContextAsync();
     return transformNativeStateMachineContext(nativeContext);
 }

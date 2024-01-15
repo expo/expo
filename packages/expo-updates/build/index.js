@@ -4,4 +4,5 @@ export * from './UpdatesHooks';
 export * from './Updates.types';
 export * from './UseUpdates';
 export * from './UseUpdates.types';
+export * from './ExpoUpdatesModule.types';
 //# sourceMappingURL=index.js.map
