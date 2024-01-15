@@ -1,8 +1,17 @@
 import Constants from 'expo-constants';
-import * as Linking from 'expo-linking';
 import { Platform } from 'expo-modules-core';
 
 import StoreReview from './ExpoStoreReview';
+
+type LinkingType = typeof import('expo-linking');
+let Linking: LinkingType | undefined;
+try {
+  Linking = require('expo-linking');
+} catch {
+  throw new Error(
+    'Unable to find expo-linking. expo-store-review has a peer dependency on expo-linking and it must be installed to use this module'
+  );
+}
 
 // @needsAudit
 /**
@@ -30,7 +39,7 @@ export async function requestReview(): Promise<void> {
   }
   // If StoreReview is unavailable then get the store URL from `app.config.js` or `app.json` and open the store
   const url = storeUrl();
-  if (url) {
+  if (url && Linking) {
     const supported = await Linking.canOpenURL(url);
     if (!supported) {
       console.warn("Expo.StoreReview.requestReview(): Can't open store url: ", url);
