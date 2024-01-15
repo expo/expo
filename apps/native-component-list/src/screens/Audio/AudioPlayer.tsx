@@ -1,5 +1,6 @@
-import { addStatusUpdateListener, useAudioPlayer, AudioSource } from 'expo-audio';
-import { useEffect, useRef, useState } from 'react';
+import { useAudioPlayer, AudioSource } from 'expo-audio';
+import { StatusEvent } from 'expo-audio/build/AudioModule.types';
+import { useCallback, useState } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 
 import Player from '../AV/Player';
@@ -10,12 +11,22 @@ type AudioPlayerProps = {
 };
 
 export default function AudioPlayer({ source, style }: AudioPlayerProps) {
-  const player = useAudioPlayer(source);
+  const player = useAudioPlayer(
+    source,
+    useCallback((status: StatusEvent) => {
+      setState({
+        ...state,
+        ...status,
+        positionMillis: status.currentPosition ?? 0,
+        durationMillis: isNaN(status.duration) ? 0 : status.duration,
+      });
+    }, [])
+  );
 
   const [state, setState] = useState({
     androidImplementation: 'SimpleExoPlayer',
     isLoaded: true,
-    isLooping: player.isLooping,
+    isLooping: false,
     positionMillis: player.currentPosition,
     durationMillis: isNaN(player.duration) ? 0 : player.duration,
     rate: player.rate,
@@ -26,20 +37,6 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
   });
 
   const [isMuted, setMuted] = useState(false);
-
-  useEffect(() => {
-    const subscription = addStatusUpdateListener((status) => {
-      setState((state) => ({
-        ...state,
-        positionMillis: status.currentPosition ?? 0,
-        durationMillis: isNaN(status.duration) ? 0 : status.duration,
-        isPlaying: status.isPlaying,
-      }));
-    });
-    return () => {
-      subscription.remove();
-    };
-  }, []);
 
   const play = () => {
     player.play();

@@ -1,4 +1,9 @@
+import { NativeModule } from 'react-native';
+
+import { AudioSource } from './Audio.types';
+
 export type StatusEvent = {
+  id: number;
   currentPosition: number;
   status: string;
   timeControlStatus: string;
@@ -6,9 +11,28 @@ export type StatusEvent = {
   isMuted: boolean;
   duration: number;
   isPlaying: boolean;
+  isLooping: boolean;
 };
 
-export declare class AudioPlayer {
+export type AudioCategory =
+  | 'ambient'
+  | 'multiRoute'
+  | 'playAndRecord'
+  | 'playback'
+  | 'record'
+  | 'soloAmbient';
+
+export interface AudioModule extends NativeModule {
+  setIsAudioActive(enabled: boolean): void;
+  setCategory(category: AudioCategory): void;
+
+  readonly AudioPlayer: AudioPlayer;
+}
+
+export interface AudioPlayer {
+  new (source: AudioSource | string | number | null): AudioPlayer;
+
+  id: number;
   /**
    * Boolean value whether the player is currently playing.
    */
