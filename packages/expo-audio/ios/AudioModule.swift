@@ -1,7 +1,7 @@
 import ExpoModulesCore
 import Combine
 
-let statusUpdate = "onPlaybackStatusUpdate"
+private let statusUpdate = "onPlaybackStatusUpdate"
 
 public class AudioModule: Module {
   private var timeTokens = [Int: Any?]()
@@ -115,7 +115,11 @@ public class AudioModule: Module {
   
   private func addPlaybackEndNotification(player: AudioPlayer) {
     NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: player.pointer.currentItem)
-    NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player.pointer.currentItem, queue: nil) { [weak self] _ in
+    NotificationCenter.default.addObserver(
+      forName: .AVPlayerItemDidPlayToEndTime,
+      object: player.pointer.currentItem,
+      queue: nil
+    ) { [weak self] _ in
       guard let self else {
         return
       }
@@ -130,70 +134,19 @@ public class AudioModule: Module {
     let interval = CMTime(seconds: 1, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
     timeTokens[player.sharedObjectId] = player.pointer.addPeriodicTimeObserver(forInterval: interval, queue: nil) { [weak self] time in
       self?.sendEvent(statusUpdate,
-                      [
-                        "id": id,
-                        "currentPosition": time.seconds * 1000,
-                        "status": statusToString(status: player.pointer.status),
-                        "timeControlStatus": timeControlStatusString(status: player.pointer.timeControlStatus),
-                        "reasonForWaitingToPlay": reasonForWaitingToPlayString(status: player.pointer.reasonForWaitingToPlay),
-                        "isMuted": player.pointer.isMuted,
-                        "duration": (player.pointer.currentItem?.duration.seconds ?? 0) * 1000,
-                        "isPlaying": player.pointer.timeControlStatus == .playing,
-                        "isLooping": self?.isLooping ?? false
-                      ]
+        [
+          "id": id,
+          "currentPosition": time.seconds * 1000,
+          "status": statusToString(status: player.pointer.status),
+          "timeControlStatus": timeControlStatusString(status: player.pointer.timeControlStatus),
+          "reasonForWaitingToPlay": reasonForWaitingToPlayString(status: player.pointer.reasonForWaitingToPlay),
+          "isMuted": player.pointer.isMuted,
+          "duration": (player.pointer.currentItem?.duration.seconds ?? 0) * 1000,
+          "isPlaying": player.pointer.timeControlStatus == .playing,
+          "isLooping": self?.isLooping ?? false
+        ]
       )
     }
   }
-  
-  private func createAVPlayer(source: AudioSource?) -> AVPlayer {
-    if let source, let url = source.uri {
-      do {
-        return try AVPlayer(url: url)
-      } catch {
-        return AVPlayer()
-      }
-    }
-    return AVPlayer()
-  }
 }
 
-
-
-func statusToString(status: AVPlayer.Status) -> String {
-  switch status {
-  case .readyToPlay:
-    return "readyToPlay"
-  case .failed:
-    return "failed"
-  case .unknown:
-    return "unknown"
-  }
-}
-
-func timeControlStatusString(status: AVPlayer.TimeControlStatus) -> String {
-  switch status {
-  case .playing:
-    return "playing"
-  case .paused:
-    return "paused"
-  case .waitingToPlayAtSpecifiedRate:
-    return "waitingToPlayAtSpecifiedRate"
-  }
-}
-
-func reasonForWaitingToPlayString(status: AVPlayer.WaitingReason?) -> String {
-  guard let status else {
-    return "unknown"
-  }
-  
-  switch status {
-  case .evaluatingBufferingRate:
-    return "evaluatingBufferingRate"
-  case .noItemToPlay:
-    return "noItemToPlay"
-  case .toMinimizeStalls:
-    return "toMinimizeStalls"
-  default:
-    return "unknown"
-  }
-}
