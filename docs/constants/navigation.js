@@ -391,6 +391,7 @@ const general = [
         makePage('guides/using-nextjs.mdx'),
         makePage('guides/using-sentry.mdx'),
         makePage('guides/typescript.mdx'),
+        makePage('guides/in-app-purchases.mdx'),
       ]),
       makeSection('Expo accounts', [
         makePage('accounts/account-types.mdx'),

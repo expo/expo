@@ -1,0 +1,51 @@
+---
+title: Use In-app purchase
+description: Learn about how to use in-app purchases in your Expo app.
+hideTOC: true
+---
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { CODE } from '~/ui/components/Text';
+import { BookOpen02Icon, GithubIcon } from '@expo/styleguide-icons';
+
+In-app purchases (IAP) are transactions within a mobile or desktop application where users can buy digital goods or additional features. This guide provides a list of popular libraries and tutorials for implementing IAP in your Expo app.
+
+> In-app purchase libraries require configuring custom native code. Native code is not configurable when using Expo Go. Instead, create a [development build](/develop/development-builds/introduction/), which will allow you to use a native library in your project.
+
+## Tutorial
+
+<BoxLink
+  title="Expo In-App Purchase Tutorial"
+  description={
+    <>
+      The getting started guide for in-app purchases and subscriptions with{' '}
+      <CODE>react-native-purchases</CODE> library and RevenueCat.
+    </>
+  }
+  href="https://www.revenuecat.com/blog/engineering/expo-in-app-purchase-tutorial/"
+  Icon={BookOpen02Icon}
+/>
+
+## Libraries
+
+<BoxLink
+  title={
+    <>
+      <CODE>react-native-purchases</CODE>
+    </>
+  }
+  description="An open-source framework that provides a wrapper around Google Play Billing, StoreKit and RevenueCat. This library is a client for RevenueCat's subscription and purchase tracking system."
+  href="https://github.com/RevenueCat/react-native-purchases"
+  Icon={GithubIcon}
+/>
+
+<BoxLink
+  title={
+    <>
+      <CODE>react-native-iap</CODE>
+    </>
+  }
+  description="A React Native library to access In-app purchases capabilities in your Android and iOS apps."
+  href="https://github.com/dooboolab-community/react-native-iap"
+  Icon={GithubIcon}
+/>
