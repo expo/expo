@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add expo-linking as optional peer dependency
+
 ## 6.8.2 — 2023-12-15
 
 _This version does not introduce any user-facing changes._
