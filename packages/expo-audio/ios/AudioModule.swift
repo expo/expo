@@ -26,48 +26,32 @@ public class AudioModule: Module {
         try AVAudioSession.sharedInstance().setActive(active ?? true)
       } catch {
         throw PlayerException()
-      } 
+      }
     }
     
     Class(AudioPlayer.self) {
       Constructor { (source: AudioSource?) -> AudioPlayer in
-        let player = createAVPlayer(source: source)
-        player.publisher(for: \.currentItem?.status).sink { [weak self] status in
-          guard let self else {
+        let player = AudioPlayer(createAVPlayer(source: source))
+        
+        player.pointer.publisher(for: \.currentItem?.status).sink { [weak self] status in
+          guard let self, let status else {
             return
           }
-          if let status {
-            if status == .readyToPlay {
-              print("ready to play")
-//              sendEvent(statusUpdate, [
-//                "duration": (player.currentItem?.duration.seconds ?? 0) * 1000,
-//              ])
-            }
+          if status == .readyToPlay {
+            let duration = (player.pointer.currentItem?.duration.seconds ?? 0) * 1000
+            self.sendEvent(statusUpdate, [
+              "id": player.sharedObjectId,
+              "duration": duration
+            ])
           }
         }.store(in: &cancellables)
-        return AudioPlayer(player)
+        return player
       }
       
-      Function("play") { (player: AudioPlayer) in
-        NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player.pointer.currentItem, queue: nil) { [weak self] _ in
-          guard let self else {
-            return
-          }
-          player.pointer.seek(to: CMTime.zero)
-          if isLooping {
-            player.pointer.play()
-          }
-        }
-       
-        player.pointer.play()
-        registerTimeObserver(player: player)
+      Property("id") { player in
+        player.sharedObjectId
       }
-    
-      Function("pause") { (player: AudioPlayer) in
-        player.pointer.pause()
-        player.pointer.removeTimeObserver(timeTokens[player.sharedObjectId])
-      }
-    
+      
       Property("isLooping") {
         self.isLooping
       }.set { (isLooping: Bool) in
@@ -107,7 +91,17 @@ public class AudioModule: Module {
       }.set { (player, volume: Double) in
         player.pointer.volume = Float(volume)
       }
-            
+      
+      Function("play") { (player: AudioPlayer) in
+        addPlaybackEndNotification(player: player)
+        player.pointer.play()
+        registerTimeObserver(player: player, for: player.sharedObjectId)
+      }
+      
+      Function("pause") { (player: AudioPlayer) in
+        player.pointer.pause()
+      }
+      
       AsyncFunction("seekTo") { (player: AudioPlayer, seconds: Double) in
         await player.pointer.currentItem?.seek(
           to: CMTime(
@@ -118,24 +112,39 @@ public class AudioModule: Module {
       }
     }
   }
-
-  func registerTimeObserver(player: AudioPlayer) {
+  
+  private func addPlaybackEndNotification(player: AudioPlayer) {
+    NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: player.pointer.currentItem)
+    NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player.pointer.currentItem, queue: nil) { [weak self] _ in
+      guard let self else {
+        return
+      }
+      player.pointer.seek(to: CMTime.zero)
+      if isLooping {
+        player.pointer.play()
+      }
+    }
+  }
+  
+  private func registerTimeObserver(player: AudioPlayer, for id: Int) {
     let interval = CMTime(seconds: 1, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
     timeTokens[player.sharedObjectId] = player.pointer.addPeriodicTimeObserver(forInterval: interval, queue: nil) { [weak self] time in
       self?.sendEvent(statusUpdate,
-        [
-          "currentPosition": time.seconds * 1000,
-          "status": statusToString(status: player.pointer.status),
-          "timeControlStatus": timeControlStatusString(status: player.pointer.timeControlStatus),
-          "reasonForWaitingToPlay": reasonForWaitingToPlayString(status: player.pointer.reasonForWaitingToPlay),
-          "isMuted": player.pointer.isMuted,
-          "duration": (player.pointer.currentItem?.duration.seconds ?? 0) * 1000,
-          "isPlaying": player.pointer.timeControlStatus == .playing,
-        ]
+                      [
+                        "id": id,
+                        "currentPosition": time.seconds * 1000,
+                        "status": statusToString(status: player.pointer.status),
+                        "timeControlStatus": timeControlStatusString(status: player.pointer.timeControlStatus),
+                        "reasonForWaitingToPlay": reasonForWaitingToPlayString(status: player.pointer.reasonForWaitingToPlay),
+                        "isMuted": player.pointer.isMuted,
+                        "duration": (player.pointer.currentItem?.duration.seconds ?? 0) * 1000,
+                        "isPlaying": player.pointer.timeControlStatus == .playing,
+                        "isLooping": self?.isLooping ?? false
+                      ]
       )
     }
   }
-
+  
   private func createAVPlayer(source: AudioSource?) -> AVPlayer {
     if let source, let url = source.uri {
       do {
@@ -145,10 +154,6 @@ public class AudioModule: Module {
       }
     }
     return AVPlayer()
-  }
-  
-  func test() {
-    print("test")
   }
 }
 
