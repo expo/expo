@@ -9,13 +9,19 @@ type PlatformTagsProps = {
 };
 
 export const PlatformTags = ({ prefix, platforms }: PlatformTagsProps) => {
-  return platforms?.length ? (
+  if (!platforms?.length) return null;
+
+  return (
     <CALLOUT tag="span" className="flex items-center mb-2">
-      {prefix && <DEMI className="!text-inherit">{prefix}&ensp;</DEMI>}
-      {platforms.map(platform => {
-        return <PlatformTag key={platform} platform={platform} />;
-      })}
+      {prefix && (
+        <DEMI theme="secondary" className="!text-inherit !font-medium">
+          {prefix}&ensp;
+        </DEMI>
+      )}
+      {platforms.map(platform => (
+        <PlatformTag key={platform} platform={platform} />
+      ))}
       {prefix && <br />}
     </CALLOUT>
-  ) : null;
+  );
 };
