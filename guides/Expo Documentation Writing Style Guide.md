@@ -314,7 +314,7 @@ Writing API documentation accurately and precisely helps developers use our APIs
     - Used for adding a description to the method arguments, syntax:
       - `@param [param_name] [description]`
   - `@default`
-    - Currently doesn’t support formatting, all of the content will be placed directly in the `InlineCode` block, so there is no need to wrap the value with ``` manually.
+    - Currently, does not support Markdown formatting, all the content will be placed directly in the `InlineCode` block, so there is no need to wrap the value with ``` manually.
   - `@platform`
     - Available platforms: `android` , `ios` , `web` and `expo` (Expo Go).
     - You can also specify the minimum platform version, range, or add any other comment to the label, for example, `@platform ios 11+`.

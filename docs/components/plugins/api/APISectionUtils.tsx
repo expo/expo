@@ -1,9 +1,9 @@
 import { css } from '@emotion/react';
 import { shadows, theme, typography } from '@expo/styleguide';
 import { borderRadius, breakpoints, spacing } from '@expo/styleguide-base';
-import type { ComponentType, ComponentPropsWithoutRef } from 'react';
+import type { ComponentType } from 'react';
 import { Fragment } from 'react';
-import ReactMarkdown, { Components } from 'react-markdown';
+import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkSupsub from 'remark-supersub';
 
@@ -63,10 +63,7 @@ export enum TypeDocKind {
 
 export const DEFAULT_BASE_NESTING_LEVEL = 2;
 
-export type MDComponents = Components & {
-  superscript: ComponentType<ComponentPropsWithoutRef<'sup'>>;
-  subscript: ComponentType<ComponentPropsWithoutRef<'sub'>>;
-};
+export type MDComponents = Components;
 
 const getInvalidLinkMessage = (href: string) =>
   `Using "../" when linking other packages in doc comments produce a broken link! Please use "./" instead. Problematic link:\n\t${href}`;
@@ -104,8 +101,8 @@ export const mdComponents: MDComponents = {
   thead: ({ children }) => <TableHead>{children}</TableHead>,
   tr: ({ children }) => <Row>{children}</Row>,
   th: ({ children }) => <HeaderCell>{children}</HeaderCell>,
-  superscript: ({ children }) => <sub>{children}</sub>,
-  subscript: ({ children }) => <sup>{children}</sup>,
+  sup: ({ children }) => <sup>{children}</sup>,
+  sub: ({ children }) => <sub>{children}</sub>,
 };
 
 export const mdComponentsNoValidation: MDComponents = {
