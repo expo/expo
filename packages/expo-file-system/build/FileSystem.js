@@ -159,7 +159,7 @@ export async function readDirectoryAsync(fileUri) {
 /**
  * Gets the available internal disk storage size, in bytes. This returns the free space on the data partition that hosts all of the internal storage for all apps on the device.
  * @return Returns a Promise that resolves to the number of bytes available on the internal disk, or JavaScript's [`MAX_SAFE_INTEGER`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER)
- * if the capacity is greater than 2<sup>53</sup> - 1 bytes.
+ * if the capacity is greater than 2^53^ - 1 bytes.
  */
 export async function getFreeDiskStorageAsync() {
     if (!ExponentFileSystem.getFreeDiskStorageAsync) {
@@ -170,7 +170,7 @@ export async function getFreeDiskStorageAsync() {
 /**
  * Gets total internal disk storage size, in bytes. This is the total capacity of the data partition that hosts all the internal storage for all apps on the device.
  * @return Returns a Promise that resolves to a number that specifies the total internal disk storage capacity in bytes, or JavaScript's [`MAX_SAFE_INTEGER`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER)
- * if the capacity is greater than 2<sup>53</sup> - 1 bytes.
+ * if the capacity is greater than 2^53^ - 1 bytes.
  */
 export async function getTotalDiskCapacityAsync() {
     if (!ExponentFileSystem.getTotalDiskCapacityAsync) {

@@ -8417,6 +8417,13 @@ remark-stringify@^11.0.0:
     mdast-util-to-markdown "^2.0.0"
     unified "^11.0.0"
 
+remark-supersub@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/remark-supersub/-/remark-supersub-1.0.0.tgz#b2009884781961a37990f5581360cbe0e1632ab1"
+  integrity sha512-3SYsphMqpAWbr8AZozdcypozinl/lly3e7BEwPG3YT5J9uZQaDcELBF6/sr/OZoAlFxy2nhNFWSrZBu/ZPRT3Q==
+  dependencies:
+    unist-util-visit "^4.0.0"
+
 remark-validate-links@^13.0.0:
   version "13.0.0"
   resolved "https://registry.yarnpkg.com/remark-validate-links/-/remark-validate-links-13.0.0.tgz#25174801f67a11b8cb82263b90596d59c16c3f22"

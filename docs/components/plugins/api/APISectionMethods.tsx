@@ -1,5 +1,4 @@
 import { CornerDownRightIcon } from '@expo/styleguide-icons';
-import ReactMarkdown from 'react-markdown';
 
 import { APIDataType } from '~/components/plugins/api/APIDataType';
 import {
@@ -16,7 +15,6 @@ import {
   CommentTextBlock,
   getMethodName,
   getTagNamesList,
-  mdComponents,
   renderParams,
   resolveTypeName,
   STYLES_APIBOX,
@@ -25,7 +23,6 @@ import {
   TypeDocKind,
   getH3CodeWithBaseNestingLevel,
   getTagData,
-  getCommentContent,
   BoxSectionHeader,
 } from '~/components/plugins/api/APISectionUtils';
 import { H2, LI, UL, MONOSPACE } from '~/ui/components/Text';
@@ -88,11 +85,7 @@ export const renderMethod = (
               </UL>
               <>
                 <br />
-                {returnComment ? (
-                  <ReactMarkdown components={mdComponents}>
-                    {getCommentContent(returnComment.content)}
-                  </ReactMarkdown>
-                ) : undefined}
+                {returnComment && <CommentTextBlock comment={{ summary: returnComment.content }} />}
               </>
             </>
           )}
