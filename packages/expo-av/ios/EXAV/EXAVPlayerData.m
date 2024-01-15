@@ -1,6 +1,7 @@
 // Copyright 2017-present 650 Industries. All rights reserved.
 
 #import <EXAV/EXAVPlayerData.h>
+#import <EXAV/EXResourceLoaderDelegate.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 
 // This struct is passed between the MTAudioProcessingTap callbacks.
@@ -13,6 +14,7 @@ typedef struct AVAudioTapProcessorContext {
 NSString *const EXAVPlayerDataStatusIsLoadedKeyPath = @"isLoaded";
 NSString *const EXAVPlayerDataStatusURIKeyPath = @"uri";
 NSString *const EXAVPlayerDataStatusHeadersKeyPath = @"headers";
+NSString *const EXAVPlayerDataStatusDrmKeyPath = @"drm";
 NSString *const EXAVPlayerDataStatusProgressUpdateIntervalMillisKeyPath = @"progressUpdateIntervalMillis";
 NSString *const EXAVPlayerDataStatusDurationMillisKeyPath = @"durationMillis";
 NSString *const EXAVPlayerDataStatusPositionMillisKeyPath = @"positionMillis";
@@ -96,7 +98,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
   
     _url = [NSURL URLWithString:[source objectForKey:EXAVPlayerDataStatusURIKeyPath]];
     _headers = [self validatedRequestHeaders:source[EXAVPlayerDataStatusHeadersKeyPath]];
-  
+    _drmConfigs = extractDRMDictionary(source);
     _timeObserver = nil;
     _finishObserver = nil;
     _playbackStalledObserver = nil;
@@ -127,6 +129,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
 - (void)_loadNewPlayer
 {
   NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
+
   NSURL *assetUrl = _url;
 
   // Ideally we would load the _url directly into the [AVURLAsset URLAssetWithURL:...], but iOS 17 introduced changes/bug, which breaks creating
@@ -141,18 +144,31 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
     assetUrl = temporaryFileUrl;
   }
 
-  AVURLAsset *avAsset = [AVURLAsset URLAssetWithURL:assetUrl options:@{AVURLAssetHTTPCookiesKey : cookies, @"AVURLAssetHTTPHeaderFieldsKey": _headers}];
+  _avAsset = [AVURLAsset URLAssetWithURL:assetUrl options:@{AVURLAssetHTTPCookiesKey : cookies, @"AVURLAssetHTTPHeaderFieldsKey": _headers}];
+    NSLog(@"DRM Dictionary: %@", _drmConfigs);
+    if ([_drmConfigs count] > 0) {
+        NSLog(@"The dictionary has data");
+        NSString *licenseServer = _drmConfigs[@"licenseServer"];
+        NSString *certificateStringUrl = _drmConfigs[@"certificateUrl"];
+        NSURL *certificateURL = [NSURL URLWithString:[certificateStringUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        NSURL *keyServerUrl = [NSURL URLWithString:[licenseServer stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        BOOL base64Cert = [[_drmConfigs objectForKey:@"base64Cert"] boolValue];
+        dispatch_queue_t resourceLoaderQueue = dispatch_queue_create("fairplay.queue", NULL);
+        _resourceLoaderDelegate = [[EXResourceLoaderDelegate alloc] initWithCertificateData:certificateURL keyServerURL:keyServerUrl base64Cert:base64Cert];
+        [_avAsset.resourceLoader setDelegate:_resourceLoaderDelegate queue:resourceLoaderQueue];
+    }
+  
   // unless we preload, the asset will not necessarily load the duration by the time we try to play it.
   // http://stackoverflow.com/questions/20581567/avplayer-and-avfoundationerrordomain-code-11819
   EX_WEAKIFY(self);
-  [avAsset loadValuesAsynchronouslyForKeys:@[ @"duration" ] completionHandler:^{
+  [_avAsset loadValuesAsynchronouslyForKeys:@[ @"duration" ] completionHandler:^{
     EX_ENSURE_STRONGIFY(self);
 
     // We prepare three items for AVQueuePlayer, so when the first finishes playing,
     // second can start playing and the third can start preparing to play.
-    AVPlayerItem *firstplayerItem = [AVPlayerItem playerItemWithAsset:avAsset];
-    AVPlayerItem *secondPlayerItem = [AVPlayerItem playerItemWithAsset:avAsset];
-    AVPlayerItem *thirdPlayerItem = [AVPlayerItem playerItemWithAsset:avAsset];
+    AVPlayerItem *firstplayerItem = [AVPlayerItem playerItemWithAsset:_avAsset];
+    AVPlayerItem *secondPlayerItem = [AVPlayerItem playerItemWithAsset:_avAsset];
+    AVPlayerItem *thirdPlayerItem = [AVPlayerItem playerItemWithAsset:_avAsset];
     self.items = @[firstplayerItem, secondPlayerItem, thirdPlayerItem];
     self.player = [AVQueuePlayer queuePlayerWithItems:@[firstplayerItem, secondPlayerItem, thirdPlayerItem]];
     if (self.player) {
@@ -1135,6 +1151,7 @@ void EXTapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudio
   return validatedHeaders;
 }
 
+
 // http://blog.ablepear.com/2010/08/how-to-get-file-extension-for-mime-type.html
 - (NSString *)_fileExtensionForMimeType:(NSString *)mimeType {
   CFStringRef cfMimeType = (__bridge CFStringRef)mimeType;
@@ -1181,5 +1198,17 @@ void EXTapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudio
     self.errorCallback(errorMessage);
   }
 }
-
+NSDictionary *extractDRMDictionary(NSDictionary *source) {
+    NSDictionary *headers = source[@"headers"];
+    
+    if (headers && [headers isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *drm = headers[@"drm"];
+        
+        if (drm && [drm isKindOfClass:[NSDictionary class]]) {
+            return drm;
+        }
+    }
+    
+    return [NSDictionary dictionary]; // Return an empty dictionary if drm is not found
+}
 @end

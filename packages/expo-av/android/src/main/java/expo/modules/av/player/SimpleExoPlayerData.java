@@ -3,14 +3,10 @@ package expo.modules.av.player;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 import android.view.Surface;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.MediaItem;
@@ -18,6 +14,7 @@ import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.drm.DrmSessionEventListener;
 import com.google.android.exoplayer2.source.LoadEventInfo;
 import com.google.android.exoplayer2.source.MediaLoadData;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -35,20 +32,29 @@ import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.upstream.RawResourceDataSource;
 import com.google.android.exoplayer2.util.Util;
 import com.google.android.exoplayer2.video.VideoSize;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import expo.modules.av.AVManagerInterface;
 import expo.modules.av.AudioFocusNotAcquiredException;
 import expo.modules.av.player.datasource.DataSourceFactoryProvider;
 
 class SimpleExoPlayerData extends PlayerData
-  implements Player.Listener, MediaSourceEventListener {
+  implements Player.Listener, MediaSourceEventListener, DrmSessionEventListener {
 
+  private static final String PROP_DRM = "drm";
+  private static final String PROP_DRM_TYPE = "type";
+  private static final String PROP_DRM_LICENSE_SERVER = "licenseServer";
+  private static final String PROP_DRM_HEADERS = "drmHeaders";
   private static final String IMPLEMENTATION_NAME = "SimpleExoPlayer";
   private static final String TAG = SimpleExoPlayerData.class.getSimpleName();
 
@@ -60,12 +66,19 @@ class SimpleExoPlayerData extends PlayerData
   private Integer mLastPlaybackState = null;
   private boolean mIsLooping = false;
   private boolean mIsLoading = true;
+  private UUID drmUUID = null;
+  private String drmLicenseUrl = null;
+  private Map<String, String>  drmLicenseHeader = null;
   private final Context mReactContext;
 
-  SimpleExoPlayerData(final AVManagerInterface avModule, final Context context, final Uri uri, final String overridingExtension, final Map<String, Object> requestHeaders) {
+  SimpleExoPlayerData(final AVManagerInterface avModule, final Context context, final Uri uri, final String overridingExtension, final Map<String, Object> requestHeaders ) {
     super(avModule, uri, requestHeaders);
     mReactContext = context;
     mOverridingExtension = overridingExtension;
+    if(requestHeaders.containsKey(PROP_DRM)){
+      this.setDRM((Map<String, Object>) requestHeaders.get(PROP_DRM));
+    }
+
   }
 
   @Override
@@ -86,32 +99,26 @@ class SimpleExoPlayerData extends PlayerData
     final TrackSelector trackSelector = new DefaultTrackSelector(context, new AdaptiveTrackSelection.Factory());
 
     // Create the player
-    mSimpleExoPlayer = new SimpleExoPlayer.Builder(context)
-        .setTrackSelector(trackSelector)
-        .setBandwidthMeter(bandwidthMeter)
-        .build();
+     mSimpleExoPlayer = new SimpleExoPlayer.Builder(context)
+         .setTrackSelector(trackSelector)
+         .setBandwidthMeter(bandwidthMeter)
+         .build();
 
-    mSimpleExoPlayer.addListener(this);
-
-    // Produces DataSource instances through which media data is loaded.
     final DataSource.Factory dataSourceFactory = mAVModule.getModuleRegistry()
-        .getModule(DataSourceFactoryProvider.class)
-        .createFactory(
-            mReactContext,
-            mAVModule.getModuleRegistry(),
-            Util.getUserAgent(context, "yourApplicationName"),
-            mRequestHeaders,
-            bandwidthMeter.getTransferListener());
-    try {
-      // This is the MediaSource representing the media to be played.
-      final MediaSource source = buildMediaSource(mUri, mOverridingExtension, dataSourceFactory);
-
-      // Prepare the player with the source.
-      mSimpleExoPlayer.prepare(source);
-      setStatus(status, null);
-    } catch (IllegalStateException e) {
-      onFatalError(e);
-    }
+      .getModule(DataSourceFactoryProvider.class)
+      .createFactory(
+        mReactContext,
+        mAVModule.getModuleRegistry(),
+        Util.getUserAgent(context, "yourApplicationName"),
+        mRequestHeaders,
+        bandwidthMeter.getTransferListener());
+//    DefaultHttpDataSource.Factory dataSourceFactory = new DefaultHttpDataSource.Factory();
+    MediaSource mediaSource = buildMediaSource(mUri, mOverridingExtension, dataSourceFactory);
+    mSimpleExoPlayer.setMediaSource(mediaSource);
+    mSimpleExoPlayer.addListener(this);
+    mSimpleExoPlayer.setPlayWhenReady(true);
+    mSimpleExoPlayer.prepare();
+    setStatus(status,null);
   }
 
   @Override
@@ -373,34 +380,6 @@ class SimpleExoPlayerData extends PlayerData
 
   // endregion
 
-  private MediaSource buildMediaSource(@NonNull Uri uri, String overrideExtension, DataSource.Factory factory) {
-    try {
-      if (uri.getScheme() == null) {
-        int resourceId = mReactContext.getResources().getIdentifier(uri.toString(), "raw", mReactContext.getPackageName());
-        DataSpec dataSpec = new DataSpec(RawResourceDataSource.buildRawResourceUri(resourceId));
-        final RawResourceDataSource rawResourceDataSource = new RawResourceDataSource(mReactContext);
-        rawResourceDataSource.open(dataSpec);
-        uri = rawResourceDataSource.getUri();
-      }
-    } catch (Exception e) {
-      Log.e(TAG, "Error reading raw resource from ExoPlayer", e);
-    }
-    @C.ContentType int type = TextUtils.isEmpty(overrideExtension) ? Util.inferContentType(String.valueOf(uri)) : Util.inferContentType("." + overrideExtension);
-    switch (type) {
-      case C.TYPE_SS:
-        return new SsMediaSource.Factory(new DefaultSsChunkSource.Factory(factory), factory).createMediaSource(MediaItem.fromUri(uri));
-      case C.TYPE_DASH:
-        return new DashMediaSource.Factory(new DefaultDashChunkSource.Factory(factory), factory).createMediaSource(MediaItem.fromUri(uri));
-      case C.TYPE_HLS:
-        return new HlsMediaSource.Factory(factory).createMediaSource(MediaItem.fromUri(uri));
-      case C.TYPE_OTHER:
-        return new ProgressiveMediaSource.Factory(factory).createMediaSource(MediaItem.fromUri(uri));
-      default: {
-        throw new IllegalStateException("Content of this type is unsupported at the moment. Unsupported type: " + type);
-      }
-    }
-  }
-
   // region MediaSourceEventListener
 
   @Override
@@ -429,4 +408,67 @@ class SimpleExoPlayerData extends PlayerData
   }
 
   // endregion
+
+  public void setDRM(final Map<String, Object>  drm) {
+    if (drm != null) {
+      String drmType =(String)drm.get(PROP_DRM_TYPE);
+      String drmLicenseServer =  (String)drm.get(PROP_DRM_LICENSE_SERVER);
+      HashMap<String,String> drmHeaders = (HashMap<String, String>) drm.get(PROP_DRM_HEADERS);
+      if (drmType != null && drmLicenseServer != null && Util.getDrmUuid(drmType) != null) {
+          UUID drmUUID = Util.getDrmUuid(drmType);
+          setDrmType(drmUUID);
+          setDrmLicenseUrl(drmLicenseServer);
+          setDrmLicenseHeader(drmHeaders);
+
+      }
+    }
+  }
+  private MediaSource buildMediaSource(@NonNull Uri uri, String overrideExtension, DataSource.Factory factory) {
+    try {
+      if (uri.getScheme() == null) {
+        int resourceId = mReactContext.getResources().getIdentifier(uri.toString(), "raw", mReactContext.getPackageName());
+        DataSpec dataSpec = new DataSpec(RawResourceDataSource.buildRawResourceUri(resourceId));
+        final RawResourceDataSource rawResourceDataSource = new RawResourceDataSource(mReactContext);
+        rawResourceDataSource.open(dataSpec);
+        uri = rawResourceDataSource.getUri();
+      }
+    } catch (Exception e) {
+      Log.e(TAG, "Error reading raw resource from ExoPlayer", e);
+    }
+    MediaItem mediaItem = MediaItem.fromUri(uri);
+    if(drmUUID != null){
+      MediaItem.DrmConfiguration.Builder drmConfigBuilder = new MediaItem.DrmConfiguration.Builder(drmUUID).setLicenseUri(drmLicenseUrl).setLicenseRequestHeaders(drmLicenseHeader);
+      mediaItem = new MediaItem.Builder()
+        .setUri(uri)
+        .setDrmConfiguration(drmConfigBuilder.build())
+        .build();
+    }
+    @C.ContentType int type = TextUtils.isEmpty(overrideExtension) ? Util.inferContentType(String.valueOf(uri)) : Util.inferContentType("." + overrideExtension);
+    switch (type) {
+      case C.TYPE_SS:
+        return new SsMediaSource.Factory(new DefaultSsChunkSource.Factory(factory), factory).createMediaSource(mediaItem);
+      case C.TYPE_DASH:
+        return new DashMediaSource.Factory(new DefaultDashChunkSource.Factory(factory), factory).createMediaSource(mediaItem);
+      case C.TYPE_HLS:
+        return new HlsMediaSource.Factory(factory).createMediaSource(mediaItem);
+      case C.TYPE_OTHER:
+        return new ProgressiveMediaSource.Factory(factory).createMediaSource(mediaItem);
+      default: {
+        throw new IllegalStateException("Content of this type is unsupported at the moment. Unsupported type: " + type);
+      }
+    }
+  }
+
+  public void setDrmType(UUID drmType) {
+    this.drmUUID = drmType;
+  }
+
+  public void setDrmLicenseUrl(String licenseUrl) {
+      this.drmLicenseUrl = licenseUrl;
+  }
+
+  public void setDrmLicenseHeader(Map<String, String> header){
+      this.drmLicenseHeader = header;
+  }
+
 }

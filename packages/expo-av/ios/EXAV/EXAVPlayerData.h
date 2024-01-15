@@ -4,13 +4,17 @@
 
 #import <EXAV/EXAV.h>
 #import <EXAV/EXAudioSampleCallback.h>
+#import <EXAV/EXResourceLoaderDelegate.h>
 
 @interface EXAVPlayerData : NSObject <EXAVObject>
 
 @property (nonatomic, strong) AVQueuePlayer *player;
 @property (nonatomic, strong) NSURL *url;
 @property (nonatomic, strong) NSDictionary *headers;
+@property (nonatomic, strong) AVURLAsset *avAsset;
+@property (nonatomic, strong) NSDictionary *drmConfigs; 
 @property (nonatomic, strong) EXAudioSampleCallback *sampleBufferCallback;
+@property (nonatomic, strong) EXResourceLoaderDelegate *resourceLoaderDelegate;
 @property (nonatomic, strong) void (^statusUpdateCallback)(NSDictionary *);
 @property (nonatomic, strong) void (^metadataUpdateCallback)(NSDictionary *);
 @property (nonatomic, strong) void (^errorCallback)(NSString *);
