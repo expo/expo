@@ -72,13 +72,13 @@ export const reduceUpdatesStateFromContext: (
   const availableUpdate = context?.latestManifest
     ? updateFromManifest(context?.latestManifest)
     : context.rollback
-    ? updateFromRollback(context.rollback)
-    : undefined;
+      ? updateFromRollback(context.rollback)
+      : undefined;
   const downloadedUpdate = context?.downloadedManifest
     ? updateFromManifest(context?.downloadedManifest)
     : context.rollback
-    ? updateFromRollback(context.rollback)
-    : undefined;
+      ? updateFromRollback(context.rollback)
+      : undefined;
   return {
     ...updatesState,
     isUpdateAvailable: context.isUpdateAvailable,
