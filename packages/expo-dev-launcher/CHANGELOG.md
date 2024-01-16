@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed HMR not working on Android.
+- Fixed HMR not working on Android. ([#26441](https://github.com/expo/expo/pull/26441) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
