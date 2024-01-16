@@ -10,7 +10,7 @@ type Props = {
   platforms?: CommentTagData[];
 };
 
-export const APISectionPlatformTags = ({ comment, prefix, platforms }: Props) => {
+export const APISectionPlatformTags = ({ comment, platforms, prefix = 'Only for:' }: Props) => {
   const platformsData = platforms || getAllTagData('platform', comment);
   const platformNames = platformsData?.map(platformData => getCommentContent(platformData.content));
 

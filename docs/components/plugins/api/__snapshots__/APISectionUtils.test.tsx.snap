@@ -18,7 +18,7 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
     data-text="true"
   >
     <span
-      class="!text-inherit css-1n5kx9e-TextComponent"
+      class="!text-inherit !font-medium css-1ibdfwu-TextComponent"
       data-text="true"
     >
       Only for:
@@ -145,11 +145,19 @@ exports[`APISectionUtils.resolveTypeName Promise 1`] = `
   >
     Promise
   </a>
-  &lt;
+  <span
+    class="text-quaternary"
+  >
+    &lt;
+  </span>
   <span>
     void
   </span>
-  &gt;
+  <span
+    class="text-quaternary"
+  >
+    &gt;
+  </span>
 </div>
 `;
 
@@ -163,7 +171,11 @@ exports[`APISectionUtils.resolveTypeName Promise with custom type 1`] = `
   >
     Promise
   </a>
-  &lt;
+  <span
+    class="text-quaternary"
+  >
+    &lt;
+  </span>
   <span>
     <a
       class="css-1na8e0o-A"
@@ -172,47 +184,83 @@ exports[`APISectionUtils.resolveTypeName Promise with custom type 1`] = `
       AppleAuthenticationCredential
     </a>
   </span>
-  &gt;
+  <span
+    class="text-quaternary"
+  >
+    &gt;
+  </span>
 </div>
 `;
 
 exports[`APISectionUtils.resolveTypeName Record 1`] = `
 <div>
   Record
-  &lt;
+  <span
+    class="text-quaternary"
+  >
+    &lt;
+  </span>
   <span>
     string
-    , 
+    <span
+      class="text-quaternary"
+    >
+      , 
+    </span>
   </span>
   <span>
     any
   </span>
-  &gt;
+  <span
+    class="text-quaternary"
+  >
+    &gt;
+  </span>
 </div>
 `;
 
 exports[`APISectionUtils.resolveTypeName Record with union 1`] = `
 <div>
   Record
-  &lt;
+  <span
+    class="text-quaternary"
+  >
+    &lt;
+  </span>
   <span>
     string
-    , 
+    <span
+      class="text-quaternary"
+    >
+      , 
+    </span>
   </span>
   <span>
     <span>
       number
-       | 
+      <span
+        class="text-quaternary"
+      >
+         | 
+      </span>
     </span>
     <span>
       boolean
-       | 
+      <span
+        class="text-quaternary"
+      >
+         | 
+      </span>
     </span>
     <span>
       string
     </span>
   </span>
-  &gt;
+  <span
+    class="text-quaternary"
+  >
+    &gt;
+  </span>
 </div>
 `;
 
@@ -261,7 +309,11 @@ exports[`APISectionUtils.resolveTypeName custom type with single pick 1`] = `
   >
     Pick
   </a>
-  &lt;
+  <span
+    class="text-quaternary"
+  >
+    &lt;
+  </span>
   <span>
     <a
       class="css-1na8e0o-A"
@@ -269,22 +321,38 @@ exports[`APISectionUtils.resolveTypeName custom type with single pick 1`] = `
     >
       FontResource
     </a>
-    , 
+    <span
+      class="text-quaternary"
+    >
+      , 
+    </span>
   </span>
   <span>
     'display'
   </span>
-  &gt;
+  <span
+    class="text-quaternary"
+  >
+    &gt;
+  </span>
 </div>
 `;
 
 exports[`APISectionUtils.resolveTypeName function 1`] = `
 <div>
-  () =&gt;
+  <span
+    class="text-quaternary"
+  >
+    () =&gt;
+  </span>
    
   <span>
     void
-     | 
+    <span
+      class="text-quaternary"
+    >
+       | 
+    </span>
   </span>
   <span>
     <a
@@ -299,10 +367,19 @@ exports[`APISectionUtils.resolveTypeName function 1`] = `
 
 exports[`APISectionUtils.resolveTypeName function with arguments 1`] = `
 <div>
-  (
+  <span
+    class="text-quaternary"
+  >
+    (
+  </span>
   <span>
     error
-    : 
+    <span
+      class="text-quaternary"
+    >
+      :
+    </span>
+     
     <a
       class="css-1na8e0o-A"
       href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error"
@@ -312,12 +389,25 @@ exports[`APISectionUtils.resolveTypeName function with arguments 1`] = `
       Error
     </a>
   </span>
-  ) 
-  =&gt;
+  <span
+    class="text-quaternary"
+  >
+    )
+  </span>
+   
+  <span
+    class="text-quaternary"
+  >
+    =&gt;
+  </span>
    
   <span>
     void
-     | 
+    <span
+      class="text-quaternary"
+    >
+       | 
+    </span>
   </span>
   <span>
     <a
@@ -332,10 +422,19 @@ exports[`APISectionUtils.resolveTypeName function with arguments 1`] = `
 
 exports[`APISectionUtils.resolveTypeName function with non-linkable custom type 1`] = `
 <div>
-  (
+  <span
+    class="text-quaternary"
+  >
+    (
+  </span>
   <span>
     error
-    : 
+    <span
+      class="text-quaternary"
+    >
+      :
+    </span>
+     
     <a
       class="css-1na8e0o-A"
       href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error"
@@ -345,8 +444,17 @@ exports[`APISectionUtils.resolveTypeName function with non-linkable custom type 
       Error
     </a>
   </span>
-  ) 
-  =&gt;
+  <span
+    class="text-quaternary"
+  >
+    )
+  </span>
+   
+  <span
+    class="text-quaternary"
+  >
+    =&gt;
+  </span>
    
   void
 </div>
@@ -366,7 +474,11 @@ exports[`APISectionUtils.resolveTypeName generic type 2`] = `
   >
     PagedInfo
   </a>
-  &lt;
+  <span
+    class="text-quaternary"
+  >
+    &lt;
+  </span>
   <span>
     <a
       class="css-1na8e0o-A"
@@ -375,7 +487,11 @@ exports[`APISectionUtils.resolveTypeName generic type 2`] = `
       Asset
     </a>
   </span>
-  &gt;
+  <span
+    class="text-quaternary"
+  >
+    &gt;
+  </span>
 </div>
 `;
 
@@ -389,7 +505,11 @@ exports[`APISectionUtils.resolveTypeName generic type in Promise 1`] = `
   >
     Promise
   </a>
-  &lt;
+  <span
+    class="text-quaternary"
+  >
+    &lt;
+  </span>
   <span>
     <a
       class="css-1na8e0o-A"
@@ -397,7 +517,11 @@ exports[`APISectionUtils.resolveTypeName generic type in Promise 1`] = `
     >
       PagedInfo
     </a>
-    &lt;
+    <span
+      class="text-quaternary"
+    >
+      &lt;
+    </span>
     <span>
       <a
         class="css-1na8e0o-A"
@@ -406,16 +530,28 @@ exports[`APISectionUtils.resolveTypeName generic type in Promise 1`] = `
         Asset
       </a>
     </span>
+    <span
+      class="text-quaternary"
+    >
+      &gt;
+    </span>
+  </span>
+  <span
+    class="text-quaternary"
+  >
     &gt;
   </span>
-  &gt;
 </div>
 `;
 
 exports[`APISectionUtils.resolveTypeName object reflection 1`] = `
 <div>
-  {
+  <span
+    class="text-quaternary"
+  >
+    {
 
+  </span>
   <span>
       
     target: 
@@ -431,14 +567,22 @@ exports[`APISectionUtils.resolveTypeName object reflection 1`] = `
     
 
   </span>
-  }
+  <span
+    class="text-quaternary"
+  >
+    }
+  </span>
 </div>
 `;
 
 exports[`APISectionUtils.resolveTypeName props with multiple omits 1`] = `
 <div>
   StyleProp
-  &lt;
+  <span
+    class="text-quaternary"
+  >
+    &lt;
+  </span>
   <span>
     <a
       class="css-1na8e0o-A"
@@ -448,7 +592,11 @@ exports[`APISectionUtils.resolveTypeName props with multiple omits 1`] = `
     >
       Omit
     </a>
-    &lt;
+    <span
+      class="text-quaternary"
+    >
+      &lt;
+    </span>
     <span>
       <a
         class="css-1na8e0o-A"
@@ -458,31 +606,55 @@ exports[`APISectionUtils.resolveTypeName props with multiple omits 1`] = `
       >
         ViewStyle
       </a>
-      , 
+      <span
+        class="text-quaternary"
+      >
+        , 
+      </span>
     </span>
     <span>
       <span>
         'backgroundColor'
-         | 
+        <span
+          class="text-quaternary"
+        >
+           | 
+        </span>
       </span>
       <span>
         'borderRadius'
       </span>
     </span>
+    <span
+      class="text-quaternary"
+    >
+      &gt;
+    </span>
+  </span>
+  <span
+    class="text-quaternary"
+  >
     &gt;
   </span>
-  &gt;
 </div>
 `;
 
 exports[`APISectionUtils.resolveTypeName query type 1`] = `
 <div>
   React.ComponentProps
-  &lt;
+  <span
+    class="text-quaternary"
+  >
+    &lt;
+  </span>
   <span>
     View
   </span>
-  &gt;
+  <span
+    class="text-quaternary"
+  >
+    &gt;
+  </span>
 </div>
 `;
 
@@ -514,7 +686,11 @@ exports[`APISectionUtils.resolveTypeName union 1`] = `
     >
       SpeechEventCallback
     </a>
-     | 
+    <span
+      class="text-quaternary"
+    >
+       | 
+    </span>
   </span>
   <span>
     null
@@ -532,7 +708,11 @@ exports[`APISectionUtils.resolveTypeName union of array values 1`] = `
     >
       ResultSetError
     </a>
-     | 
+    <span
+      class="text-quaternary"
+    >
+       | 
+    </span>
   </span>
   <span>
     <a
@@ -551,7 +731,11 @@ exports[`APISectionUtils.resolveTypeName union with array 1`] = `
 <div>
   <span>
     number[]
-     | 
+    <span
+      class="text-quaternary"
+    >
+       | 
+    </span>
   </span>
   <span>
     null
@@ -569,7 +753,11 @@ exports[`APISectionUtils.resolveTypeName union with custom type and array 1`] = 
       AssetRef
       []
     </a>
-     | 
+    <span
+      class="text-quaternary"
+    >
+       | 
+    </span>
   </span>
   <span>
     <a

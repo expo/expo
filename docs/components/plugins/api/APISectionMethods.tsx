@@ -61,7 +61,7 @@ export const renderMethod = (
           key={`method-signature-${method.name || name}-${parameters?.length || 0}`}
           css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
           <APISectionDeprecationNote comment={comment} />
-          <APISectionPlatformTags comment={comment} prefix="Only for:" />
+          <APISectionPlatformTags comment={comment} />
           <HeaderComponent tags={getTagNamesList(comment)}>
             <MONOSPACE weight="medium" css={!exposeInSidebar && STYLES_NOT_EXPOSED_HEADER}>
               {getMethodName(method as MethodDefinitionData, apiName, name, parameters)}
