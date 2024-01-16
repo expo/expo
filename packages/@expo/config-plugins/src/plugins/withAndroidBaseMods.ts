@@ -111,7 +111,15 @@ const defaultProviders = {
     },
     async write() {},
   }),
-
+  finalized: provider<unknown>({
+    getFilePath() {
+      return '';
+    },
+    async read() {
+      return { filePath: '', modResults: {} };
+    },
+    async write() {},
+  }),
   // Append a rule to supply gradle.properties data to mods on `mods.android.gradleProperties`
   manifest: provider<Manifest.AndroidManifest>({
     isIntrospective: true,

@@ -15,6 +15,7 @@ var _exportNames = {
   withRunOnce: true,
   createRunOncePlugin: true,
   withDangerousMod: true,
+  withFinalizedMod: true,
   withMod: true,
   withBaseMod: true,
   withAppDelegate: true,
@@ -130,6 +131,12 @@ Object.defineProperty(exports, "withExpoPlist", {
   enumerable: true,
   get: function () {
     return _iosPlugins().withExpoPlist;
+  }
+});
+Object.defineProperty(exports, "withFinalizedMod", {
+  enumerable: true,
+  get: function () {
+    return _withFinalizedMod().withFinalizedMod;
   }
 });
 Object.defineProperty(exports, "withGradleProperties", {
@@ -338,6 +345,13 @@ function _withRunOnce() {
 function _withDangerousMod() {
   const data = require("./plugins/withDangerousMod");
   _withDangerousMod = function () {
+    return data;
+  };
+  return data;
+}
+function _withFinalizedMod() {
+  const data = require("./plugins/withFinalizedMod");
+  _withFinalizedMod = function () {
     return data;
   };
   return data;
