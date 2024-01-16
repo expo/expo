@@ -1,7 +1,6 @@
 {
-  "name": "expo-device",
-  "platforms": ["ios", "android", "web", "tvos"],
-  "ios": {
+  "platforms": ["apple", "android", "web"],
+  "apple": {
     "modules": ["DeviceModule"]
   },
   "android": {
