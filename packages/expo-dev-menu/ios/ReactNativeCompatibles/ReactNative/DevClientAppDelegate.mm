@@ -89,4 +89,28 @@
 }
 #endif // RCT_NEW_ARCH_ENABLED
 
+#pragma mark - Remove these method when we drop SDK 49
+
+- (UIView *)createRootViewWithBridge:(RCTBridge *)bridge
+                          moduleName:(NSString *)moduleName
+                           initProps:(NSDictionary *)initProps
+{
+  return [super createRootViewWithBridge:bridge moduleName:moduleName initProps:initProps];
+}
+
+- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
+{
+  return [super sourceURLForBridge:bridge];
+}
+
+- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
+{
+  return [super extraModulesForBridge:bridge];
+}
+
+- (BOOL)bridge:(RCTBridge *)bridge didNotFindModule:(NSString *)moduleName
+{
+  return [super bridge:bridge didNotFindModule:moduleName];
+}
+
 @end
