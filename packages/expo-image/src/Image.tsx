@@ -80,11 +80,11 @@ export class Image extends React.PureComponent<ImageProps> {
    * @platform ios
    * @return A promise resolving to the blurhash string.
    */
-  static async getBlurhashAsync(
+  static async generateBlurhashAsyncAsync(
     url: string,
     numberOfComponents: [number, number] | { width: number; height: number }
   ): Promise<string | null> {
-    return await ExpoImageModule.getBlurhashAsync(url, numberOfComponents);
+    return await ExpoImageModule.generateBlurhashAsyncAsync(url, numberOfComponents);
   }
 
   /**

@@ -130,12 +130,11 @@ public final class ImageModule: Module {
       }
     }
 
-    AsyncFunction("getBlurhashAsync") {
-      (url: URL, numberOfComponents: CGSize, promise: Promise) in
-      var downloader = SDWebImageDownloader()
-      var parsedNumberOfComponents = (Int(numberOfComponents.width), Int(numberOfComponents.height))
+    AsyncFunction("generateBlurhashAsync") { (url: URL, numberOfComponents: CGSize, promise: Promise) in
+      let downloader = SDWebImageDownloader()
+      let parsedNumberOfComponents = (Int(numberOfComponents.width), Int(numberOfComponents.height))
       downloader.downloadImage(with: url, progress: nil, completed: { image, _, _, _ in
-        DispatchQueue.global(qos: .userInitiated).async {
+        DispatchQueue.global().async {
           if let downloadedImage = image {
             let blurhashString = blurhash(fromImage: downloadedImage, numberOfComponents: parsedNumberOfComponents)
             promise.resolve(blurhashString)

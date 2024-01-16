@@ -197,13 +197,17 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
       });
     });
 
-    t.describe('getBlurhashAsync', async () => {
+    t.describe('generateBlurhashAsync', async () => {
       t.it('returns a correct blurhash for url', async () => {
-        const result = await Image.getBlurhashAsync(REMOTE_KNOWN_SOURCE.uri, [4, 3]);
+        const result = await Image.generateBlurhashAsync(REMOTE_KNOWN_SOURCE.uri, [4, 3]);
         t.expect(result).toBe(REMOTE_KNOWN_SOURCE.blurhash);
       });
       t.it('rejects on a missing url', async () => {
-        await throws(Image.getBlurhashAsync(NON_EXISTENT_SOURCE.uri, [4, 3]));
+        await t
+          .expect(async () => {
+            await Image.generateBlurhashAsync(NON_EXISTENT_SOURCE.uri, [4, 3]);
+          })
+          .rejects.toThrow();
       });
     });
   });
