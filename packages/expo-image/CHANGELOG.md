@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Adds new prop `decodeFormat` to specify the format that should be used during the decoding process.
+
 ### 🐛 Bug fixes
 
 - Fixed ResizeObserver attaching on every image transition. ([#25819](https://github.com/expo/expo/pull/25819) by [@aleqsio](https://github.com/aleqsio))
