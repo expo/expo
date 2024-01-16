@@ -37,12 +37,6 @@
 
 #endif
 
-@interface RCTAppDelegate (DevClientAppDelegate)
-
-- (void)unstable_registerLegacyComponents;
-
-@end
-
 @implementation DevClientAppDelegate {
 #if RCT_NEW_ARCH_ENABLED
   RCTHost *_reactHost;
@@ -72,7 +66,6 @@
                                                                contextContainer:_contextContainer];
   self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
 
-  [self unstable_registerLegacyComponents];
   [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
 #endif
 
