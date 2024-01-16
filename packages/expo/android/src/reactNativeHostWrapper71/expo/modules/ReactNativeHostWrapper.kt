@@ -23,6 +23,10 @@ class ReactNativeHostWrapper(
     return invokeDelegateMethod("getReactPackageTurboModuleManagerDelegateBuilder")
   }
 
+  override fun getJSIModulePackage(): JSIModulePackage? {
+    return invokeDelegateMethod("getJSIModulePackage")
+  }
+
   override fun getShouldRequireActivity(): Boolean {
     return host.shouldRequireActivity
   }
@@ -30,13 +34,7 @@ class ReactNativeHostWrapper(
   override fun getSurfaceDelegateFactory(): SurfaceDelegateFactory {
     return host.surfaceDelegateFactory
   }
-
   override fun getRedBoxHandler(): RedBoxHandler? {
     return invokeDelegateMethod("getRedBoxHandler")
-  }
-
-  @Suppress("DEPRECATION")
-  override fun getUIImplementationProvider(): com.facebook.react.uimanager.UIImplementationProvider {
-    return invokeDelegateMethod("getUIImplementationProvider")
   }
 }
