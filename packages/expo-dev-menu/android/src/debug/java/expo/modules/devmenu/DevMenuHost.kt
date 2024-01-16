@@ -3,15 +3,10 @@ package expo.modules.devmenu
 import android.app.Application
 import android.content.Context
 import android.util.Log
-import com.facebook.react.ReactApplication
 import com.facebook.react.ReactInstanceManager
-import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
-import com.facebook.react.ReactPackageTurboModuleManagerDelegate
-import com.facebook.react.bridge.JSIModulePackage
 import com.facebook.react.bridge.JavaScriptExecutorFactory
-import com.facebook.react.config.ReactFeatureFlags
-import com.facebook.react.defaults.DefaultJSIModulePackage
+import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.devsupport.DevMenuReactInternalSettings
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.shell.MainReactPackage
@@ -29,7 +24,7 @@ import java.io.InputStreamReader
 /**
  * Class that represents react host used by dev menu.
  */
-class DevMenuHost(application: Application) : ReactNativeHost(application) {
+class DevMenuHost(application: Application) : DefaultReactNativeHost(application) {
 
   override fun getPackages(): List<ReactPackage> {
     val packages = mutableListOf(
@@ -112,20 +107,4 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
 
     return reactInstanceManager
   }
-
-  override fun getReactPackageTurboModuleManagerDelegateBuilder(): ReactPackageTurboModuleManagerDelegate.Builder? {
-    if (!ReactFeatureFlags.useTurboModules) {
-      return null
-    }
-    val appHost = (application as ReactApplication)?.reactNativeHost ?: return null
-    val method = ReactNativeHost::class.java.getDeclaredMethod("getReactPackageTurboModuleManagerDelegateBuilder")
-    method.isAccessible = true
-    return method.invoke(appHost) as ReactPackageTurboModuleManagerDelegate.Builder
-  }
-  override fun getJSIModulePackage(): JSIModulePackage? =
-    if (ReactFeatureFlags.enableFabricRenderer) {
-      DefaultJSIModulePackage(this)
-    } else {
-      null
-    }
 }

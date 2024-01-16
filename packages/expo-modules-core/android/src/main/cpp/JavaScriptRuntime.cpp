@@ -35,7 +35,7 @@ namespace {
  */
 class SyncCallInvoker : public react::CallInvoker {
 public:
-  void invokeAsync(std::function<void()> &&func) override {
+  void invokeAsync(std::function<void()> &&func) noexcept override {
     func();
   }
 

@@ -75,18 +75,6 @@ public interface ReactNativeHostHandler {
   //region event listeners
 
   /**
-   * Given chance for JSI modules to register, e.g. for react-native-reanimated
-   *
-   * @param useDeveloperSupport true if {@link ReactNativeHost} enabled developer support
-   */
-  default void onRegisterJSIModules(
-    ReactApplicationContext reactApplicationContext,
-    JavaScriptContextHolder jsContext,
-    boolean useDeveloperSupport
-  ) {
-  }
-
-  /**
    * Callback before {@link ReactInstanceManager} creation
    */
   default void onWillCreateReactInstanceManager(boolean useDeveloperSupport) {}

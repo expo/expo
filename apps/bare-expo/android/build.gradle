@@ -33,15 +33,6 @@ buildscript {
     }
 }
 
-
-def packageJsonFile = new File(rootProject.projectDir, '../package.json')
-def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
-
-// [Custom]
-ext {
-    reactNativeVersion = packageJson.dependencies["react-native"]
-}
-
 allprojects {
     // [Custom]
     configurations.all {

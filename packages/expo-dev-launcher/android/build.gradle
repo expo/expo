@@ -86,7 +86,9 @@ android {
         srcDirs += "src/expo-45"
 
         def rnVersion = getRNVersion()
-        if (rnVersion >= versionToNumber(0, 72, 0)) {
+        if (rnVersion >= versionToNumber(0, 74, 0)) {
+          srcDirs += "src/react-native-74"
+        } else if (rnVersion >= versionToNumber(0, 72, 0)) {
           srcDirs += "src/react-native-72"
         } else if (rnVersion >= versionToNumber(0, 69, 0)) {
           srcDirs += "src/react-native-69"

@@ -1,11 +1,13 @@
 package expo.modules
 
 import android.app.Application
+import com.facebook.react.JSEngineResolutionAlgorithm
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
+import com.facebook.react.bridge.JSIModulePackage
 import com.facebook.react.common.SurfaceDelegateFactory
 import com.facebook.react.devsupport.DevSupportManagerFactory
-import com.facebook.react.devsupport.RedBoxHandler
+import com.facebook.react.devsupport.interfaces.RedBoxHandler
 
 class ReactNativeHostWrapper(
   application: Application,
@@ -23,6 +25,14 @@ class ReactNativeHostWrapper(
     return invokeDelegateMethod("getReactPackageTurboModuleManagerDelegateBuilder")
   }
 
+  override fun getJSIModulePackage(): JSIModulePackage? {
+    return invokeDelegateMethod("getJSIModulePackage")
+  }
+
+  override fun getJSEngineResolutionAlgorithm(): JSEngineResolutionAlgorithm? {
+    return invokeDelegateMethod("getJSEngineResolutionAlgorithm")
+  }
+
   override fun getShouldRequireActivity(): Boolean {
     return host.shouldRequireActivity
   }
@@ -30,13 +40,7 @@ class ReactNativeHostWrapper(
   override fun getSurfaceDelegateFactory(): SurfaceDelegateFactory {
     return host.surfaceDelegateFactory
   }
-
   override fun getRedBoxHandler(): RedBoxHandler? {
     return invokeDelegateMethod("getRedBoxHandler")
-  }
-
-  @Suppress("DEPRECATION")
-  override fun getUIImplementationProvider(): com.facebook.react.uimanager.UIImplementationProvider {
-    return invokeDelegateMethod("getUIImplementationProvider")
   }
 }

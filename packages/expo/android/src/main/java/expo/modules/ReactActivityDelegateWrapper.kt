@@ -212,7 +212,7 @@ class ReactActivityDelegateWrapper(
      */
     if (delegate.reactInstanceManager.currentReactContext == null) {
       val reactContextListener = object : ReactInstanceEventListener {
-        override fun onReactContextInitialized(context: ReactContext?) {
+        override fun onReactContextInitialized(context: ReactContext) {
           delegate.reactInstanceManager.removeReactInstanceEventListener(this)
           delegate.onActivityResult(requestCode, resultCode, data)
         }
