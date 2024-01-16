@@ -3,7 +3,6 @@ import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
 import fs from 'fs-extra';
-import glob from 'glob-promise';
 import path from 'path';
 import semver from 'semver';
 
