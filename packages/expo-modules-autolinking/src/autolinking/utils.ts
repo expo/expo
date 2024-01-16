@@ -5,6 +5,7 @@ export function getLinkingImplementationForPlatform(platform: SupportedPlatform)
     case 'ios':
     case 'macos':
     case 'tvos':
+    case 'apple':
       return require('../platforms/apple');
     case 'android':
       return require('../platforms/android');
