@@ -8,7 +8,7 @@ import {
   STYLES_APIBOX,
   H3Code,
 } from '~/components/plugins/api/APISectionUtils';
-import { H2, BOLD, P, MONOSPACE } from '~/ui/components/Text';
+import { H2, DEMI, P, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionConstantsProps = {
   data: ConstantDefinitionData[];
@@ -21,7 +21,7 @@ const renderConstant = (
 ): JSX.Element => (
   <div key={`constant-definition-${name}`} css={STYLES_APIBOX} className="[&>*:last-child]:!mb-0">
     <APISectionDeprecationNote comment={comment} />
-    <APISectionPlatformTags comment={comment} prefix="Only for:" />
+    <APISectionPlatformTags comment={comment} />
     <H3Code tags={getTagNamesList(comment)}>
       <MONOSPACE weight="medium">
         {apiName ? `${apiName}.` : ''}
@@ -30,7 +30,7 @@ const renderConstant = (
     </H3Code>
     {type && (
       <P>
-        <BOLD>Type:</BOLD> <APIDataType typeDefinition={type} />
+        <DEMI theme="secondary">Type:</DEMI> <APIDataType typeDefinition={type} />
       </P>
     )}
     {comment && (

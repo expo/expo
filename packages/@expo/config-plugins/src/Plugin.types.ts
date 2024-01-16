@@ -116,7 +116,7 @@ export interface ModConfig {
      */
     dangerous?: Mod<unknown>;
     /**
-     * A finalized mod to run after all the other platform mods have been run.
+     * Dangerously make a modification after all the other platform mods have been run.
      */
     finalized?: Mod<unknown>;
     /**
@@ -170,7 +170,7 @@ export interface ModConfig {
      */
     dangerous?: Mod<unknown>;
     /**
-     * A finalized mod to run after all the other platform mods have been run.
+     * Dangerously make a modification after all the other platform mods have been run.
      */
     finalized?: Mod<unknown>;
     /**

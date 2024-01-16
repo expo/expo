@@ -134,7 +134,7 @@ function sortMods(commands, precedences) {
   return dedupedCommands.sort(([keyA], [keyB]) => {
     const precedenceA = precedences[keyA] || 0;
     const precedenceB = precedences[keyB] || 0;
-    return precedenceB - precedenceA;
+    return precedenceA - precedenceB;
   });
 }
 function getRawClone({
@@ -148,11 +148,11 @@ function getRawClone({
 const precedences = {
   ios: {
     // dangerous runs first
-    dangerous: 2,
+    dangerous: -2,
     // run the XcodeProject mod second because many plugins attempt to read from it.
-    xcodeproj: 1,
+    xcodeproj: -1,
     // put the finalized mod at the last
-    finalized: -1
+    finalized: 1
   }
 };
 /**
@@ -180,8 +180,8 @@ async function evalModsAsync(config, {
       // Move dangerous item to the first position and finalized item to the last position if it exists.
       // This ensures that all dangerous code runs first and finalized applies last.
       entries = sortMods(entries, (_precedences$platform = precedences[platformName]) !== null && _precedences$platform !== void 0 ? _precedences$platform : {
-        dangerous: 1,
-        finalized: -1
+        dangerous: -1,
+        finalized: 1
       });
       debug(`run in order: ${entries.map(([name]) => name).join(', ')}`);
       const platformProjectRoot = _path().default.join(projectRoot, platformName);

@@ -1,9 +1,6 @@
 import Constants from 'expo-constants';
-export declare const IS_EXPO_GO: boolean;
-export declare const IS_BARE_ENV_WITH_UPDATES: boolean;
-export declare const IS_ENV_WITH_UPDATES_ENABLED: boolean;
-export declare const IS_BARE_ENV_WITHOUT_UPDATES: boolean;
-export declare function getLocalAssets(): any;
+export declare const IS_ENV_WITH_LOCAL_ASSETS: boolean;
+export declare function getLocalAssets(): Record<string, string>;
 export declare function getManifest2(): typeof Constants.__unsafeNoWarnManifest2;
 export declare const manifestBaseUrl: string | null;
 /**
