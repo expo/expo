@@ -181,7 +181,6 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
 
         if (Platform.OS === 'android' || Platform.OS === 'ios') {
           const path = await Image.getCachePathAsync(REMOTE_KNOWN_SOURCE.uri);
-          console.log('prefetching', path);
           t.expect(typeof path).toBe('string');
         }
       });
