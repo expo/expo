@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Added `templateChecksum` for prebuild to check the current template version. ([#26414](https://github.com/expo/expo/pull/26414) by [@kudo](https://github.com/kudo))
+
 ## 0.16.8 — 2024-01-15
 
 ### 🐛 Bug fixes
