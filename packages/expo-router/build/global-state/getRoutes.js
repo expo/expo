@@ -84,7 +84,22 @@ function getDirectoryTree(contextModule, options) {
             }
         }
         else if (meta.isApi) {
-            // TODO
+            for (const leaf of leaves) {
+                let nodes = leaf.files.get(meta.name);
+                if (!nodes) {
+                    nodes = [];
+                    leaf.files.set(meta.name, [node]);
+                }
+                else {
+                    const existing = nodes[0];
+                    if (process.env.NODE_ENV === 'production') {
+                        nodes[0] = node;
+                    }
+                    else {
+                        throw new Error(`The API route "${filePath}" and ${existing.contextKey} conflict in "${meta.dirname}. Please remove one of these files.`);
+                    }
+                }
+            }
         }
         else {
             hasRoutes ||= leaves.length > 0;
@@ -287,6 +302,9 @@ function getFileMeta(key, options) {
         }
         else {
             specificity = -1;
+        }
+        if (isApi && specificity !== 0) {
+            throw new Error(`Api routes cannot have platform extensions. Please remove ${platform} from ./${key}`);
         }
         name = name.replace(new RegExp(`.${platform}$`), '');
     }
