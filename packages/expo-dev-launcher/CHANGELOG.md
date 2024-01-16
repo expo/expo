@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed HMR not working on Android.
+
 ### 💡 Others
 
 - Remove classic updates. ([#26036](https://github.com/expo/expo/pull/26036), [#26230](https://github.com/expo/expo/pull/26230) by [@wschurman](https://github.com/wschurman))
