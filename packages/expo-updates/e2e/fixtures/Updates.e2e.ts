@@ -185,6 +185,8 @@ describe('Basic tests', () => {
     jestExpect(message).toBe('test');
 
     // give the app time to load the new update in the background
+    await setTimeout(5000);
+
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1);
 
     // restart the app so it will launch the new update
@@ -229,6 +231,8 @@ describe('Basic tests', () => {
     jestExpect(message).toBe('test');
 
     // give the app time to load the new update in the background
+    await setTimeout(5000);
+
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1);
 
     // restart the app to verify the new update isn't used
@@ -284,7 +288,10 @@ describe('Basic tests', () => {
     await device.launchApp({
       newInstance: true,
     });
+
     // give the app time to load the new update in the background
+    await setTimeout(5000);
+
     await waitForAppToBecomeVisible();
     const message = await testElementValueAsync('updateString');
     jestExpect(message).toBe('test');
@@ -366,6 +373,8 @@ describe('Basic tests', () => {
     jestExpect(message).toBe('test');
 
     // give the app time to load the new update in the background
+    await setTimeout(5000);
+
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(4);
 
     // restart the app so it will launch the new update
@@ -406,6 +415,8 @@ describe('Basic tests', () => {
     jestExpect(firstMessage).toBe('test');
 
     // give the app time to load the new update in the background (i.e. to make sure it doesn't)
+    await setTimeout(5000);
+
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(0);
 
     // restart the app and make sure it's still running the initial update
@@ -445,6 +456,8 @@ describe('Basic tests', () => {
     jestExpect(message).toBe('test');
 
     // give the app time to load the new update in the background
+    await setTimeout(5000);
+
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1);
 
     // restart the app so it will launch the new update
@@ -1025,6 +1038,8 @@ describe('Asset deletion recovery tests', () => {
     await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
 
     // give the app time to load the new update in the background
+    await setTimeout(5000);
+
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1); // only the bundle should be new
 
     // Stop and restart the app so it will launch the new update. Immediately send it a message to
