@@ -44,10 +44,9 @@ const withPatchPlugin = (config, props) => {
 exports.withPatchPlugin = withPatchPlugin;
 exports.default = exports.withPatchPlugin;
 const withPatchMod = (config, { platform, props }) => {
-    return (0, config_plugins_1.withMod)(config, {
+    return (0, config_plugins_1.withFinalizedMod)(config, [
         platform,
-        mod: 'finalized',
-        action: async (config) => {
+        async (config) => {
             const projectRoot = config.modRequest.projectRoot;
             const templateChecksum = config._internal?.templateChecksum ?? '';
             const patchFilePath = await determinePatchFilePathAsync(projectRoot, platform, templateChecksum, props);
@@ -61,7 +60,7 @@ const withPatchMod = (config, { platform, props }) => {
             }
             return config;
         },
-    });
+    ]);
 };
 function createPatchPlugin(platform, props) {
     const platformName = platform.charAt(0).toUpperCase() + platform.slice(1);

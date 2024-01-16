@@ -1,6 +1,6 @@
 import {
   WarningAggregator,
-  withMod,
+  withFinalizedMod,
   withRunOnce,
   type ConfigPlugin,
   type ModPlatform,
@@ -36,10 +36,9 @@ const withPatchMod: ConfigPlugin<{ platform: ModPlatform; props: PatchPluginProp
   config,
   { platform, props }
 ) => {
-  return withMod(config, {
+  return withFinalizedMod(config, [
     platform,
-    mod: 'finalized',
-    action: async (config) => {
+    async (config) => {
       const projectRoot = config.modRequest.projectRoot;
       const templateChecksum = config._internal?.templateChecksum ?? '';
       const patchFilePath = await determinePatchFilePathAsync(
@@ -63,7 +62,7 @@ const withPatchMod: ConfigPlugin<{ platform: ModPlatform; props: PatchPluginProp
       }
       return config;
     },
-  });
+  ]);
 };
 
 function createPatchPlugin(
