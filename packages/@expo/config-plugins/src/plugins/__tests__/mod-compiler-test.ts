@@ -180,9 +180,9 @@ describe(sortMods, () => {
     const sortedCommands = sortMods(commands, precedences);
 
     expect(sortedCommands).toEqual([
-      ['command3', { data: 'command3Data' }],
-      ['command1', { data: 'command1Data' }],
       ['command2', { data: 'command2Data' }],
+      ['command1', { data: 'command1Data' }],
+      ['command3', { data: 'command3Data' }],
     ]);
   });
 
@@ -203,12 +203,12 @@ describe(sortMods, () => {
     const sortedCommands = sortMods(commands, precedences);
 
     expect(sortedCommands).toEqual([
-      ['command3', { data: 'command3Data' }],
-      ['command1', { data: 'command1Data' }],
       ['command2', { data: 'command2Data' }],
       ['command4', { data: 'command4Data' }],
       ['command5', { data: 'command5Data' }],
       ['command6', { data: 'command6Data' }],
+      ['command1', { data: 'command1Data' }],
+      ['command3', { data: 'command3Data' }],
     ]);
   });
 
@@ -241,13 +241,13 @@ describe(sortMods, () => {
     const sortedCommands = sortMods(commands, precedences);
 
     expect(sortedCommands).toEqual([
-      ['command2', { data: 'command2Data' }],
       ['command1', { data: 'command1Data' }],
       ['command3', { data: 'command3Data' }],
+      ['command2', { data: 'command2Data' }],
     ]);
   });
 
-  it('should sort negative precedence values at last', () => {
+  it('should sort negative precedence values at first', () => {
     const commands = [
       ['command1', { data: 'command1Data' }],
       ['command2', { data: 'command2Data' }],
@@ -266,12 +266,12 @@ describe(sortMods, () => {
     const sortedCommands = sortMods(commands, precedences);
 
     expect(sortedCommands).toEqual([
-      ['command3', { data: 'command3Data' }],
-      ['command2', { data: 'command2Data' }],
+      ['command4', { data: 'command4Data' }],
+      ['command5', { data: 'command5Data' }],
       ['command1', { data: 'command1Data' }],
       ['command6', { data: 'command6Data' }],
-      ['command5', { data: 'command5Data' }],
-      ['command4', { data: 'command4Data' }],
+      ['command2', { data: 'command2Data' }],
+      ['command3', { data: 'command3Data' }],
     ]);
   });
 });
