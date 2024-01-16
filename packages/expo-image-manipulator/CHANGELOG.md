@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 11.8.0 — 2023-12-12
+
+### 🐛 Bug fixes
+
 - [iOS] Fix an issue where the image is manipulated on a background thread. ([#25756](https://github.com/expo/expo/pull/25756) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others

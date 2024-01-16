@@ -179,9 +179,11 @@ export default class CameraScreen extends React.Component<object, State> {
   takeVideo = async () => {
     const result = await this.recordVideo();
     if (result?.uri) {
+      const splitUri = result.uri.split('.');
+      const extension = splitUri[splitUri.length - 1];
       await FileSystem.moveAsync({
         from: result.uri,
-        to: `${FileSystem.documentDirectory}photos/${Date.now()}.${result.uri.split('.')[1]}`,
+        to: `${FileSystem.documentDirectory}photos/${Date.now()}.${extension}`,
       });
     }
   };
@@ -326,7 +328,7 @@ export default class CameraScreen extends React.Component<object, State> {
             <MaterialCommunityIcons name="stop-circle" size={64} color="red" />
           ) : (
             <Ionicons
-              name="ios-radio-button-on"
+              name="radio-button-on"
               size={64}
               color={this.state.mode === 'picture' ? 'white' : 'red'}
             />

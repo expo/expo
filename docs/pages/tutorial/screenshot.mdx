@@ -98,12 +98,10 @@ export default function App() {
       <View style={styles.imageContainer}>
         /* @info Add a View component to wrap the ImageViewer and EmojiSticker inside it. */<View ref={imageRef} collapsable={false}>/* @end */
           <ImageViewer placeholderImageSource={PlaceholderImage} selectedImage={selectedImage} />
-          {pickedEmoji !== null ? (
-            <EmojiSticker imageSize={40} stickerSource={pickedEmoji} />
-          ) : null}
+          {pickedEmoji && <EmojiSticker imageSize={40} stickerSource={pickedEmoji} />}
         /* @info */</View>/* @end */
       </View>
-      /* ...rest of the code remains same */
+      {/* ...rest of the code remains same */}
     </GestureHandlerRootView>
   );
 }

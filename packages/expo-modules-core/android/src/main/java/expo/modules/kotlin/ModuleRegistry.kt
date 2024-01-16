@@ -16,6 +16,10 @@ class ModuleRegistry(
   @PublishedApi
   internal val registry = mutableMapOf<String, ModuleHolder<*>>()
 
+  private val eventQueue = mutableListOf<PostponedEvent>()
+
+  private var isReadyForPostingEvents = false
+
   fun <T : Module> register(module: T) = trace("ModuleRegistry.register(${module.javaClass})") {
     module._appContext = requireNotNull(appContext.get()) { "Cannot create a module for invalid app context." }
 
@@ -30,7 +34,6 @@ class ModuleRegistry(
     }
 
     holder.apply {
-      post(EventName.MODULE_CREATE)
       registerContracts()
     }
 
@@ -43,7 +46,7 @@ class ModuleRegistry(
 
   fun register(provider: ModulesProvider) = apply {
     provider.getModulesList().forEach { type ->
-      val module = type.newInstance()
+      val module = type.getDeclaredConstructor().newInstance()
       register(module)
     }
   }
@@ -73,20 +76,30 @@ class ModuleRegistry(
   }
 
   fun post(eventName: EventName) {
+    if (addToQueueIfNeeded(eventName)) {
+      return
+    }
+
     forEach {
       it.post(eventName)
     }
   }
 
-  @Suppress("UNCHECKED_CAST")
   fun <Sender> post(eventName: EventName, sender: Sender) {
+    if (addToQueueIfNeeded(eventName, sender)) {
+      return
+    }
+
     forEach {
       it.post(eventName, sender)
     }
   }
 
-  @Suppress("UNCHECKED_CAST")
   fun <Sender, Payload> post(eventName: EventName, sender: Sender, payload: Payload) {
+    if (addToQueueIfNeeded(eventName, sender, payload)) {
+      return
+    }
+
     forEach {
       it.post(eventName, sender, payload)
     }
@@ -97,5 +110,61 @@ class ModuleRegistry(
   fun cleanUp() {
     registry.clear()
     logger.info("✅ ModuleRegistry was destroyed")
+  }
+
+  /**
+   * Tell the modules registry it can handle events as they come, without adding them to the event queue.
+   */
+  fun readyForPostingEvents() = synchronized(this) {
+    isReadyForPostingEvents = true
+  }
+
+  fun flushTheEventQueue() = synchronized(this) {
+    eventQueue.forEach { event ->
+      forEach {
+        event.post(it)
+      }
+    }
+    eventQueue.clear()
+  }
+
+  /**
+   * It’s important that the [EventName.MODULE_CREATE] event is emitted first by the registry.
+   * However, some events like [EventName.ACTIVITY_ENTERS_FOREGROUND] are automatically emitted when the catalyst instance is created.
+   * To ensure the correct order of events, we capture all events that are emitted
+   * during the initialization phase and send them back to the modules later.
+   * This way, we can ensure that the order of events is correct.
+   */
+  private fun addToQueueIfNeeded(
+    eventName: EventName,
+    sender: Any? = null,
+    payload: Any? = null
+  ): Boolean = synchronized(this) {
+    if (isReadyForPostingEvents) {
+      return false
+    }
+
+    eventQueue.add(PostponedEvent(eventName, sender, payload))
+    return true
+  }
+
+  data class PostponedEvent(
+    val eventName: EventName,
+    val sender: Any? = null,
+    val payload: Any? = null
+  ) {
+    fun post(moduleHolder: ModuleHolder<*>) {
+      if (sender != null && payload != null) {
+        moduleHolder.post(eventName, sender, payload)
+        return
+      }
+
+      if (sender != null) {
+        moduleHolder.post(eventName, sender)
+        return
+      }
+
+      moduleHolder.post(eventName)
+    }
   }
 }

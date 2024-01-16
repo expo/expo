@@ -39,7 +39,7 @@ class DevMenuDevOptionsDelegate {
     }
     let port = bundleURL.port ?? Int(RCT_METRO_PORT)
     let host = bundleURL.host ?? "localhost"
-    let openURL = "http://\(host):\(port)/inspector?applicationId=\(Bundle.main.bundleIdentifier ?? "")"
+    let openURL = "http://\(host):\(port)/_expo/debugger?applicationId=\(Bundle.main.bundleIdentifier ?? "")"
     guard let url = URL(string: openURL) else {
       NSLog("[DevMenu] Invalid openJSInspector URL: $@", openURL)
       return

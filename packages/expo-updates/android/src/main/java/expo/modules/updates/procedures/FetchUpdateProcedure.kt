@@ -69,12 +69,12 @@ class FetchUpdateProcedure(
                 )
               }
 
-              val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
+              val update = updateResponse.manifestUpdateResponsePart?.update
                 ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
 
               return Loader.OnUpdateResponseLoadedResult(
                 shouldDownloadManifestIfPresentInResponse = selectionPolicy.shouldLoadNewUpdate(
-                  updateManifest.updateEntity,
+                  update.updateEntity,
                   launchedUpdate,
                   updateResponse.responseHeaderData?.manifestFilters
                 )

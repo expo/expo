@@ -99,6 +99,8 @@ const home = [
         makePage('debugging/errors-and-warnings.mdx'),
         makePage('debugging/runtime-issues.mdx'),
         makePage('debugging/tools.mdx'),
+        makePage('debugging/devtools-plugins.mdx'),
+        makePage('debugging/create-devtools-plugins.mdx'),
       ],
       { expanded: false }
     ),
@@ -165,6 +167,7 @@ const general = [
         makePage('workflow/common-development-errors.mdx'),
         makePage('workflow/android-studio-emulator.mdx'),
         makePage('workflow/ios-simulator.mdx'),
+        makePage('guides/new-architecture.mdx'),
       ],
       { expanded: false }
     ),
@@ -195,6 +198,7 @@ const general = [
       makePage('router/reference/redirects.mdx'),
       makePage('router/reference/static-rendering.mdx'),
       makePage('router/reference/async-routes.mdx'),
+      makePage('router/reference/api-routes.mdx'),
       makePage('router/reference/sitemap.mdx'),
       makePage('router/reference/typed-routes.mdx'),
       makePage('router/reference/authentication.mdx'),
@@ -242,6 +246,7 @@ const general = [
     makePage('build/updates.mdx'),
     makePage('build/building-on-ci.mdx'),
     makePage('build/building-from-github.mdx'),
+    makePage('build/orbit.mdx'),
     makeGroup(
       'App Signing',
       [
@@ -463,7 +468,6 @@ const preview = [
     makePage('preview/support.mdx'),
     makePage('router/reference/not-found.mdx'),
     { expanded: true },
-    makeSection('Expo Router', [makePage('preview/api-routes.mdx')]),
   ]),
 ];
 

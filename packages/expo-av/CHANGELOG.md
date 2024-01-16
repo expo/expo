@@ -8,6 +8,25 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Improve precision for syncing two videos and updating new video position when user sets tolerances to 0 ([#26018](https://github.com/expo/expo/pull/26018) by [@jpudysz](https://github.com/jpudysz))
+- [Android] Add `Events` `to AVModule` to prevent event emitter warning. ([#26434](https://github.com/expo/expo/pull/26434) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+## 13.10.2 - 2024-01-10
+
+### 💡 Others
+
+- Replace deprecated `com.facebook.react:react-native:+` Android dependency with `com.facebook.react:react-android`. ([#26237](https://github.com/expo/expo/pull/26237) by [@kudo](https://github.com/kudo))
+
+## 13.10.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 13.10.0 — 2023-12-12
+
+### 🐛 Bug fixes
+
 - [iOS] Fix base64 audio playback on iOS 17. ([#25414](https://github.com/expo/expo/pull/25414) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others

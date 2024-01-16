@@ -44,7 +44,7 @@ on:
       - packages/expo-updates/**
       - templates/expo-template-bare-minimum/**
   schedule:
-    - cron: '0 18 * * MON' # 18:00 UTC every Monday
+    - cron: '0 22 * * SUN' # 22:00 UTC every Sunday
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -62,7 +62,6 @@ jobs:
     env:
       UPDATES_PORT: 4747
     steps:
-
       - name: 👀 Checkout
         uses: actions/checkout@v3
       - name: ⬢ Setup Node
@@ -123,6 +122,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_api }}
+          MATRIX_CONTEXT: ${{ toJson(matrix) }}
         with:
           channel: '#expo-sdk'
           status: ${{ job.status }}

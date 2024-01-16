@@ -17,6 +17,9 @@ const additionalProjectProps = {
     sdkVersion: '48.0.0',
   },
   projectRoot,
+  hasUnusedStaticConfig: false,
+  staticConfigPath: null,
+  dynamicConfigPath: null,
 };
 
 describe('runAsync', () => {

@@ -19,8 +19,6 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import java.text.DecimalFormatSymbols
 import java.util.*
 
-// EXPO_VERSIONING_NEEDS_PACKAGE_R
-
 // must be kept in sync with https://github.com/facebook/react-native/blob/main/ReactAndroid/src/main/java/com/facebook/react/modules/i18nmanager/I18nUtil.java
 private const val SHARED_PREFS_NAME = "com.facebook.react.modules.i18nmanager.I18nUtil"
 private const val KEY_FOR_PREFS_ALLOWRTL = "RCTI18nUtil_allowRTL"
@@ -129,9 +127,13 @@ class LocalizationModule : Module() {
         else -> "metric"
       }
     } else {
-      if (getRegionCode(locale).equals("uk")) "uk"
-      else if (USES_IMPERIAL.contains(getRegionCode(locale))) "us"
-      else "metric"
+      if (getRegionCode(locale).equals("uk")) {
+        "uk"
+      } else if (USES_IMPERIAL.contains(getRegionCode(locale))) {
+        "us"
+      } else {
+        "metric"
+      }
     }
   }
 
@@ -158,7 +160,7 @@ class LocalizationModule : Module() {
 
             // currency symbol can be localized to display locale (1st on the list) or to the locale for the currency (as done here).
             "currencySymbol" to Currency.getInstance(locale).getSymbol(locale),
-            "temperatureUnit" to getTemperatureUnit(locale),
+            "temperatureUnit" to getTemperatureUnit(locale)
           )
         )
       } catch (e: Exception) {

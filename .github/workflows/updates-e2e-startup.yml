@@ -18,7 +18,7 @@ on:
       - packages/expo-updates-interface/**
       - packages/expo-updates/**
   schedule:
-    - cron: '0 18 * * MON' # 18:00 UTC every Monday
+    - cron: '0 20 * * SUN' # 20:00 UTC every Sunday
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -96,6 +96,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_api }}
+          MATRIX_CONTEXT: ${{ toJson(matrix) }}
         with:
           channel: '#expo-sdk'
           status: ${{ job.status }}

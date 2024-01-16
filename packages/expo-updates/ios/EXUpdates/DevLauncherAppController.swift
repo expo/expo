@@ -21,7 +21,8 @@ import ExpoModulesCore
 public final class DevLauncherAppController: NSObject, InternalAppControllerInterface, UpdatesExternalInterface {
   public weak var bridge: AnyObject?
 
-  public var delegate: AppControllerDelegate?
+  public weak var delegate: AppControllerDelegate?
+  public weak var updatesExternalInterfaceDelegate: (any EXUpdatesInterface.UpdatesExternalInterfaceDelegate)?
 
   public func launchAssetUrl() -> URL? {
     return launcher?.launchAssetUrl
@@ -48,7 +49,6 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
 
   private var previousUpdatesConfiguration: UpdatesConfig?
   private var config: UpdatesConfig?
-  private let isMissingRuntimeVersion: Bool
 
   private var directoryDatabaseException: Error?
   public let updatesDirectory: URL? // internal for E2E test
@@ -65,18 +65,16 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
     initialUpdatesConfiguration: UpdatesConfig?,
     updatesDirectory: URL?,
     updatesDatabase: UpdatesDatabase,
-    directoryDatabaseException: Error?,
-    isMissingRuntimeVersion: Bool
+    directoryDatabaseException: Error?
   ) {
     self.config = initialUpdatesConfiguration
     self.updatesDirectory = updatesDirectory
     self.database = updatesDatabase
     self.directoryDatabaseException = directoryDatabaseException
     self.isEmergencyLaunch = directoryDatabaseException != nil
-    self.isMissingRuntimeVersion = isMissingRuntimeVersion
 
     self.defaultSelectionPolicy = SelectionPolicyFactory.filterAwarePolicy(
-      withRuntimeVersion: initialUpdatesConfiguration.let { it in it.runtimeVersionRealized } ?? "1"
+      withRuntimeVersion: initialUpdatesConfiguration.let { it in it.runtimeVersion } ?? "1"
     )
 
     super.init()
@@ -110,12 +108,44 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
       return
     }
 
-    if !UpdatesConfig.canCreateValidConfiguration(mergingOtherDictionary: configuration) {
+    // swiftlint:disable:next identifier_name
+    let updatesConfigurationValidationResult = UpdatesConfig.getUpdatesConfigurationValidationResult(mergingOtherDictionary: configuration)
+    switch updatesConfigurationValidationResult {
+    case .Valid:
+      break
+    case .InvalidNotEnabled:
+      errorBlock(NSError(
+        domain: DevLauncherAppController.ErrorDomain,
+        code: ErrorCode.invalidUpdateURL.rawValue,
+        userInfo: [
+          NSLocalizedDescriptionKey: "Failed to read stored updates: configuration object is not enabled"
+        ]
+      ))
+      return
+    case .InvalidPlistError:
+      errorBlock(NSError(
+        domain: DevLauncherAppController.ErrorDomain,
+        code: ErrorCode.invalidUpdateURL.rawValue,
+        userInfo: [
+          NSLocalizedDescriptionKey: "Failed to read stored updates: invalid Expo.plist"
+        ]
+      ))
+      return
+    case .InvalidMissingURL:
       errorBlock(NSError(
         domain: DevLauncherAppController.ErrorDomain,
         code: ErrorCode.invalidUpdateURL.rawValue,
         userInfo: [
           NSLocalizedDescriptionKey: "Failed to read stored updates: configuration object must include a valid update URL"
+        ]
+      ))
+      return
+    case .InvalidMissingRuntimeVersion:
+      errorBlock(NSError(
+        domain: DevLauncherAppController.ErrorDomain,
+        code: ErrorCode.invalidUpdateURL.rawValue,
+        userInfo: [
+          NSLocalizedDescriptionKey: "Failed to read stored updates: configuration object must include a valid runtime version"
         ]
       ))
       return
@@ -267,30 +297,24 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
   }
 
   public func getConstantsForModule() -> UpdatesModuleConstants {
-    let embeddedUpdate: Update?
-    if isStarted {
-      embeddedUpdate = self.config.let { it in EmbeddedAppLoader.embeddedManifest(withConfig: it, database: self.database) }
-    } else {
-      embeddedUpdate = nil
-    }
-
     return UpdatesModuleConstants(
       launchedUpdate: launcher?.launchedUpdate,
-      embeddedUpdate: embeddedUpdate,
+      embeddedUpdate: nil, // no embedded update in debug builds
       isEmergencyLaunch: isEmergencyLaunch,
       isEnabled: true,
-      releaseChannel: self.config?.releaseChannel ?? "default",
       isUsingEmbeddedAssets: isUsingEmbeddedAssets(),
-      runtimeVersion: self.config?.runtimeVersionRaw ?? "1",
+      runtimeVersion: self.config?.runtimeVersion ?? "1",
       checkOnLaunch: self.config?.checkOnLaunch ?? CheckAutomaticallyConfig.Always,
       requestHeaders: self.config?.requestHeaders ?? [:],
       assetFilesMap: assetFilesMap(),
-      isMissingRuntimeVersion: self.isMissingRuntimeVersion
+      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: true
     )
   }
 
   public func requestRelaunch(success successBlockArg: @escaping () -> Void, error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void) {
-    errorBlockArg(NotAvailableInDevClientException())
+    self.updatesExternalInterfaceDelegate.let { it in
+      it.updatesExternalInterfaceDidRequestRelaunch(_: self)
+    }
   }
 
   public func checkForUpdate(success successBlockArg: @escaping (CheckForUpdateResult) -> Void, error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void) {

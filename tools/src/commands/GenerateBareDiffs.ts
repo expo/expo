@@ -146,6 +146,9 @@ async function action({ check = false }: ActionOptions) {
         logger.log(
           `expo-template-bare-minimum has changed. Run 'et generate-bare-diffs' to regenerate them.`
         );
+        logger.log(
+          'If this check is failing in CI but the diffs have not changed, check that your version of git matches the version used in CI.'
+        );
         process.exit(1);
       }
 

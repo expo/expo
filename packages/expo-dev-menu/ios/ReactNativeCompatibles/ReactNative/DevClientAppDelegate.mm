@@ -37,12 +37,6 @@
 
 #endif
 
-@interface RCTAppDelegate (DevClientAppDelegate)
-
-- (void)unstable_registerLegacyComponents;
-
-@end
-
 @implementation DevClientAppDelegate {
 #if RCT_NEW_ARCH_ENABLED
   RCTHost *_reactHost;
@@ -72,7 +66,6 @@
                                                                contextContainer:_contextContainer];
   self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
 
-  [self unstable_registerLegacyComponents];
   [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
 #endif
 
@@ -95,5 +88,29 @@
   return RCTAppSetupDefaultJsExecutorFactory(bridge, turboModuleManager, _runtimeScheduler);
 }
 #endif // RCT_NEW_ARCH_ENABLED
+
+#pragma mark - Remove these method when we drop SDK 49
+
+- (UIView *)createRootViewWithBridge:(RCTBridge *)bridge
+                          moduleName:(NSString *)moduleName
+                           initProps:(NSDictionary *)initProps
+{
+  return [super createRootViewWithBridge:bridge moduleName:moduleName initProps:initProps];
+}
+
+- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
+{
+  return [super sourceURLForBridge:bridge];
+}
+
+- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
+{
+  return [super extraModulesForBridge:bridge];
+}
+
+- (BOOL)bridge:(RCTBridge *)bridge didNotFindModule:(NSString *)moduleName
+{
+  return [super bridge:bridge didNotFindModule:moduleName];
+}
 
 @end

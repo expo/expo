@@ -117,7 +117,6 @@ internal class GetAssetsQueryTests {
 
   @Test(expected = IllegalArgumentException::class)
   fun `test if invalid order throws`() {
-
     val options = AssetsOptions(
       first = 21.0,
       after = "invalidStringValue",

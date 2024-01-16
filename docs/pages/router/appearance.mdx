@@ -15,12 +15,9 @@ There are three major elements that you can use to customize the appearance of y
 
 ## Fonts
 
-> In Expo Router v3 and greater, you can import SplashScreen from `expo-splash-screen` directly.
-
 Expo Router extends the `expo-splash-screen` API to prevent white flash. Use it in conjunction with `expo-font` to keep the splash screen visible while fonts are loading:
 
-```js app/_layout.js
-import { Text, View } from 'react-native';
+```jsx app/_layout.js
 import {
   /* @info Import `SplashScreen` from `expo-router` instead of `expo-splash-screen` */
   SplashScreen,
@@ -73,12 +70,16 @@ We recommend you use Expo Image for the best cross-platform experience:
 
 ## Splash screen
 
+> In Expo Router v3 and greater, you can import SplashScreen from `expo-splash-screen` directly.
+
+
 Splash screens are required on native platforms. Expo Router automatically orchestrates the native splash screen to keep it visible until the first route is rendered, this applies to any route that the user deep links into. To enable this functionality, install expo-splash-screen in your project.
 
 The default behavior is to hide the splash screen when the first route is rendered, this is optimal for the majority of routes. For some routes, you may want to prolong the splash screen until additional data or asset loading has concluded. This can be achieved with the `SplashScreen` module from `expo-router`. If `SplashScreen.preventAutoHideAsync` is called before the splash screen is hidden, then the splash screen will remain visible until the `SplashScreen.hideAsync()` function has been invoked.
 
-```js app/index.tsx
-import { SplashScreen } from 'expo-router';
+```jsx app/index.tsx
+import { Text } from 'react-native';
+import * as SplashScreen from 'expo-splash-screen';
 
 /* @info Prevent hiding the splash screen after the navigation has mounted. */
 SplashScreen.preventAutoHideAsync();

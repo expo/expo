@@ -87,7 +87,7 @@ function getAndroidManifestTemplate(config) {
       android:usesCleartextTraffic="true"
     >
       <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="YOUR-APP-URL-HERE"/>
-      <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="YOUR-APP-SDK-VERSION-HERE"/>
+      <meta-data android:name="expo.modules.updates.EXPO_RUNTIME_VERSION" android:value="YOUR-APP-RUNTIME-VERSION-HERE"/>
       <activity
         android:name=".MainActivity"
         android:label="@string/app_name"
@@ -138,6 +138,18 @@ function sortAndroidManifest(obj) {
 }
 const defaultProviders = {
   dangerous: (0, _createBaseMod().provider)({
+    getFilePath() {
+      return '';
+    },
+    async read() {
+      return {
+        filePath: '',
+        modResults: {}
+      };
+    },
+    async write() {}
+  }),
+  finalized: (0, _createBaseMod().provider)({
     getFilePath() {
       return '';
     },

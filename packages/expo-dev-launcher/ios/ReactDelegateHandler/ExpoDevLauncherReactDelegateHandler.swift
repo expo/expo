@@ -48,6 +48,7 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
     if let sharedController = UpdatesControllerRegistry.sharedInstance.controller {
       // for some reason the swift compiler and bridge are having issues here
       EXDevLauncherController.sharedInstance().updatesInterface = sharedController
+      sharedController.updatesExternalInterfaceDelegate = EXDevLauncherController.sharedInstance()
     }
     return EXDevLauncherDeferredRCTBridge(delegate: self.bridgeDelegateHandler, launchOptions: launchOptions)
   }
@@ -80,14 +81,11 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
     let bridge = bridgeDelegateHandler.createBridgeAndSetAdapter(launchOptions: developmentClientController.getLaunchOptions())
     developmentClientController.appBridge = bridge
 
-    guard let rootView = bridgeDelegateHandler.createRootView(
+    let rootView = bridgeDelegateHandler.createRootView(
       with: bridge,
-      // swiftlint:disable:next force_unwrapping
-      moduleName: self.rootViewModuleName!,
-      initProps: self.rootViewInitialProperties
-    ) else {
-      return
-    }
+      moduleName: self.rootViewModuleName ?? "",
+      initProps: self.rootViewInitialProperties ?? [:]
+    )
     rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white
     let window = getWindow()
 

@@ -13,15 +13,18 @@ import org.junit.Test
 
 class JSIAsyncFunctionsTest {
   enum class SimpleEnumClass : Enumerable {
-    V1, V2
+    V1,
+    V2
   }
 
   enum class StringEnumClass(val value: String) : Enumerable {
-    K1("V1"), K2("V2")
+    K1("V1"),
+    K2("V2")
   }
 
   enum class IntEnumClass(val value: Int) : Enumerable {
-    K1(1), K2(2)
+    K1(1),
+    K2(2)
   }
 
   @Test

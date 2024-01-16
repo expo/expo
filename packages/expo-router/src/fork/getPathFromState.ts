@@ -1,7 +1,12 @@
 import { PathConfig, PathConfigMap, validatePathConfig } from '@react-navigation/core';
 import type { NavigationState, PartialState, Route } from '@react-navigation/routers';
 
-import { matchDeepDynamicRouteName, matchDynamicName, matchGroupName } from '../matchers';
+import {
+  matchDeepDynamicRouteName,
+  matchDynamicName,
+  matchGroupName,
+  testNotFound,
+} from '../matchers';
 
 type Options<ParamList extends object> = {
   initialRouteName?: string;
@@ -232,8 +237,7 @@ function walkConfigItems(
 
     if (route.params) {
       const params = processParamsWithUserSettings(configItem, route.params);
-      // TODO: Does this need to be a null check?
-      if (pattern) {
+      if (pattern !== undefined && pattern !== null) {
         Object.assign(collectedParams, params);
       }
       if (deepEqual(focusedRoute, route)) {
@@ -408,7 +412,15 @@ function decodeParams(params: Record<string, string>) {
   const parsed: Record<string, any> = {};
 
   for (const [key, value] of Object.entries(params)) {
-    parsed[key] = decodeURIComponent(value);
+    try {
+      if (Array.isArray(value)) {
+        parsed[key] = value.map((v) => decodeURIComponent(v));
+      } else {
+        parsed[key] = decodeURIComponent(value);
+      }
+    } catch {
+      parsed[key] = value;
+    }
   }
 
   return parsed;
@@ -522,7 +534,9 @@ function getParamsWithConventionsCollapsed({
   // Deep Dynamic Routes
   if (segments.some((segment) => segment.startsWith('*'))) {
     // NOTE(EvanBacon): Drop the param name matching the wildcard route name -- this is specific to Expo Router.
-    const name = matchDeepDynamicRouteName(routeName) ?? routeName;
+    const name = testNotFound(routeName)
+      ? 'not-found'
+      : matchDeepDynamicRouteName(routeName) ?? routeName;
     delete processedParams[name];
   }
 

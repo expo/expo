@@ -6,11 +6,38 @@
 
 ### 🎉 New features
 
-- Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+### 🐛 Bug fixes
+
+- Fixed ResizeObserver attaching on every image transition. ([#25819](https://github.com/expo/expo/pull/25819) by [@aleqsio](https://github.com/aleqsio))
+- [Android] Fixed the tine color was applied to the mask element. ([#26323](https://github.com/expo/expo/pull/26323) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+## 1.10.3 - 2024-01-12
+
+_This version does not introduce any user-facing changes._
+
+## 1.10.2 - 2024-01-10
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed the issue with the application of tint color when an element does not have a style assigned to it. ([#26251](https://github.com/expo/expo/pull/26251) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed the tint color wasn't applied to the root element. ([#26339](https://github.com/expo/expo/pull/26339) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed that the tint color on SVGs can't be changed dynamically. ([#26350](https://github.com/expo/expo/pull/26350) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
+
+- Replace deprecated `com.facebook.react:react-native:+` Android dependency with `com.facebook.react:react-android`. ([#26237](https://github.com/expo/expo/pull/26237) by [@kudo](https://github.com/kudo))
+
+## 1.10.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 1.10.0 — 2023-12-12
+
+### 🎉 New features
+
+- Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 1.9.0 — 2023-11-14
 

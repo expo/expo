@@ -1,6 +1,7 @@
 import React, { Text } from 'react-native';
 
 import { Slot, router, useGlobalSearchParams } from '../exports';
+import { Drawer } from '../layouts/Drawer';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { Redirect } from '../link/Link';
@@ -16,7 +17,7 @@ it('404', async () => {
   expect(await screen.findByText('Unmatched Route')).toBeOnTheScreen();
   expect(screen).toHavePathname('/404');
   expect(screen).toHaveSegments(['+not-found']);
-  expect(screen).toHaveSearchParams({ 'not-found': '404' });
+  expect(screen).toHaveSearchParams({ 'not-found': ['404'] });
 });
 
 it('can render a route', async () => {
@@ -153,11 +154,11 @@ it('deep linking nested groups', async () => {
   );
 
   // Start in a deeply nested navigator
-  expect(await screen.getByTestId('OtherTabsHome')).toBeOnTheScreen();
+  expect(screen.getByTestId('OtherTabsHome')).toBeOnTheScreen();
 
   act(() => router.replace('/(app)/(tabs)/home'));
 
-  expect(await screen.getByTestId('Home')).toBeOnTheScreen();
+  expect(screen.getByTestId('Home')).toBeOnTheScreen();
 
   expect(RootLayout).toHaveBeenCalledTimes(1);
   expect(AppLayout).toHaveBeenCalledTimes(2);
@@ -166,4 +167,46 @@ it('deep linking nested groups', async () => {
   expect(OtherTabsLayout).toHaveBeenCalledTimes(1);
   expect(NestedTabsLayout).toHaveBeenCalledTimes(1);
   expect(OtherTabsIndex).toHaveBeenCalledTimes(1);
+});
+
+it('can navigate across the drawer navigator', () => {
+  renderRouter({
+    _layout: () => <Stack />,
+    index: () => <Text testID="index" />,
+    '(group)/_layout': () => <Drawer useLegacyImplementation={false} />,
+    '(group)/one': () => <Text testID="one" />,
+    '(group)/two': () => <Text testID="two" />,
+    '(group_two)/three': () => <Text testID="three" />,
+    '(group_two)/_layout': () => <Drawer useLegacyImplementation={false} />,
+    '(group_two)/nested/folder/_layout': () => <Drawer useLegacyImplementation={false} />,
+    '(group_two)/nested/folder/four': () => <Text testID="four" />,
+  });
+
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('index')).toBeOnTheScreen();
+
+  // Navigate to a drawer screen
+  act(() => router.push('/one'));
+  expect(screen).toHavePathname('/one');
+  expect(screen.getByTestId('one')).toBeOnTheScreen();
+
+  // Navigate within the drawer
+  act(() => router.push('/two'));
+  expect(screen).toHavePathname('/two');
+  expect(screen.getByTestId('two')).toBeOnTheScreen();
+
+  // Navigate to a different drawer
+  act(() => router.push('/three'));
+  expect(screen).toHavePathname('/three');
+  expect(screen.getByTestId('three')).toBeOnTheScreen();
+
+  // Navigate to a nested folder
+  act(() => router.push('/nested/folder/four'));
+  expect(screen).toHavePathname('/nested/folder/four');
+  expect(screen.getByTestId('four')).toBeOnTheScreen();
+
+  // Navigate back to one
+  act(() => router.push('/one'));
+  expect(screen).toHavePathname('/one');
+  expect(screen.getByTestId('one')).toBeOnTheScreen();
 });

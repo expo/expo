@@ -31,35 +31,33 @@ class MainActivity : ReactActivity() {
    * which allows you to enable New Architecture with a single boolean flags [fabricEnabled]
    */
   override fun createReactActivityDelegate(): ReactActivityDelegate {
-      return ReactActivityDelegateWrapper(
-            this,
-            BuildConfig.IS_NEW_ARCHITECTURE_ENABLED,
-            object : DefaultReactActivityDelegate(
-                this,
-                mainComponentName,
-                fabricEnabled
-            ) {
-                override fun onCreate(savedInstanceState: Bundle?) {
-                    super.onCreate(savedInstanceState)
+    return ReactActivityDelegateWrapper(
+      this,
+      BuildConfig.IS_NEW_ARCHITECTURE_ENABLED,
+      object : DefaultReactActivityDelegate(
+        this,
+        mainComponentName,
+        fabricEnabled
+      ) {
+        override fun onCreate(savedInstanceState: Bundle?) {
+          super.onCreate(savedInstanceState)
 
-                    // Hacky way to prevent onboarding DevMenuActivity breaks detox testing,
-                    // we do this by setting the dev-menu internal setting.
-                    val intent: Intent = getIntent()
-                    val action: String? = intent.action
-                    val initialUri: Uri? = intent.data
-                    if (action == Intent.ACTION_VIEW &&
-                        initialUri != null &&
-                        initialUri.host == "test-suite"
-                    ) {
-                        val devMenuPrefKey = "expo.modules.devmenu.sharedpreferences"
-                        val pref: SharedPreferences =
-                            applicationContext.getSharedPreferences(devMenuPrefKey, MODE_PRIVATE)
-                        pref.edit().putBoolean("isOnboardingFinished", true).apply()
-                    }
-                }
-            }
-        )
-
+          // Hacky way to prevent onboarding DevMenuActivity breaks detox testing,
+          // we do this by setting the dev-menu internal setting.
+          val intent: Intent = getIntent()
+          val action: String? = intent.action
+          val initialUri: Uri? = intent.data
+          if (action == Intent.ACTION_VIEW &&
+            initialUri != null &&
+            initialUri.host == "test-suite"
+          ) {
+            val devMenuPrefKey = "expo.modules.devmenu.sharedpreferences"
+            val pref: SharedPreferences =
+              applicationContext.getSharedPreferences(devMenuPrefKey, MODE_PRIVATE)
+            pref.edit().putBoolean("isOnboardingFinished", true).apply()
+          }
+        }
+      }
+    )
   }
-
 }

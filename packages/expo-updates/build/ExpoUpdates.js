@@ -1,3 +1,6 @@
-import { NativeModulesProxy } from 'expo-modules-core';
-export default NativeModulesProxy.ExpoUpdates ?? {};
+import { requireNativeModule } from 'expo-modules-core';
+/**
+ * @internal
+ */
+export default requireNativeModule('ExpoUpdates');
 //# sourceMappingURL=ExpoUpdates.js.map

@@ -18,7 +18,7 @@ private inline fun withCryptoModuleMock(
 ) = ModuleMock.createMock(
   CryptoModuleTestInterface::class,
   CryptoModule(),
-  block = block,
+  block = block
 )
 
 @RunWith(RobolectricTestRunner::class)

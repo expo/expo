@@ -22,6 +22,7 @@ public:
 
   // sqlite3 bindings
   int sqlite3_bind_parameter_index(const std::string &name);
+  int sqlite3_clear_bindings();
   int sqlite3_column_count();
   std::string sqlite3_column_name(int index);
   int sqlite3_finalize();

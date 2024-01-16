@@ -6,11 +6,86 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- [expo-updates] Migrate to requireNativeModule/requireOptionalNativeModule. ([#25648](https://github.com/expo/expo/pull/25648) by [@wschurman](https://github.com/wschurman))
+- Remove implicit dependency on expo-updates to do runtime version check at runtime. ([#26080](https://github.com/expo/expo/pull/26080) by [@wschurman](https://github.com/wschurman))
+
+### 📚 3rd party library updates
+
+- Update react-native to 0.73.2. ([#26311](https://github.com/expo/expo/pull/26311) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 50.0.0-preview.11 - 2024-01-15
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.10 - 2024-01-12
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.9 - 2024-01-10
+
+### 🎉 New features
+
+- Added support for macOS platform. ([#26283](https://github.com/expo/expo/pull/26283) by [@tsapeta](https://github.com/tsapeta))
+
+### 💡 Others
+
+- Replace deprecated `com.facebook.react:react-native:+` Android dependency with `com.facebook.react:react-android`. ([#26237](https://github.com/expo/expo/pull/26237) by [@kudo](https://github.com/kudo))
+
+## 50.0.0-preview.8 - 2024-01-05
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.7 - 2023-12-21
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.6 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.5 - 2023-12-19
+
+### 🎉 New features
+
+- Added support for React Native 0.73.1. ([#25998](https://github.com/expo/expo/pull/25998) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 50.0.0-preview.4 — 2023-12-15
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.3 — 2023-12-14
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.2 — 2023-12-13
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.1 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.0 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-beta.0 — 2023-12-12
+
+### 🎉 New features
+
 - Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
 - [Android] Fixed `concurrentRoot` is missing from intialProps when running on New Architecture mode. ([#25415](https://github.com/expo/expo/pull/25415) by [@kudo](https://github.com/kudo))
+- Use explicit `@expo/metro-config` dependendecy to avoid unexpected versions in monorepos. ([#25804](https://github.com/expo/expo/pull/25804) by [@byCedric](https://github.com/byCedric))
+- Fixed `Unable to resolve "fbemitter"` issue when using DevTools Plugins. ([#25856](https://github.com/expo/expo/pull/25856) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

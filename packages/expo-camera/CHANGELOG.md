@@ -6,9 +6,19 @@
 
 ### 🎉 New features
 
-- Methods `stopRecording`, `pausePreview` and `resumePreview` have been updated to return promises. ([#25737](https://github.com/expo/expo/pull/25737) by [@lukmccall](https://github.com/lukmccall))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 14.0.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.0 — 2023-12-12
+
+### 🎉 New features
+
+- Methods `stopRecording`, `pausePreview` and `resumePreview` have been updated to return promises. ([#25737](https://github.com/expo/expo/pull/25737) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 

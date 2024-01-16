@@ -1,6 +1,6 @@
 {
   "name": "babel-preset-expo",
-  "version": "9.9.0",
+  "version": "10.0.0",
   "description": "The Babel preset for Expo projects",
   "main": "build/index.js",
   "files": [
@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@babel/plugin-proposal-decorators": "^7.12.9",
-    "@babel/plugin-proposal-object-rest-spread": "^7.12.13",
+    "@babel/plugin-transform-object-rest-spread": "^7.12.13",
     "@babel/plugin-transform-export-namespace-from": "^7.22.11",
     "@babel/preset-env": "^7.20.0",
     "@babel/preset-react": "^7.22.15",

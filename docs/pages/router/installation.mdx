@@ -60,13 +60,20 @@ To create a new project, run the following command:
 
 You'll need to install the following dependencies:
 
-<Terminal
-  cmd={[
-    '$ npx expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar react-native-gesture-handler',
-  ]}
-/>
+<Tabs>
+  <Tab label="SDK 50 and above">
+    <Terminal cmd={['$ npx expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar']} />
 
-The above command will install versions of these libraries that are compatible with the Expo SDK version your project is using.
+    The above command will install versions of these libraries that are compatible with the Expo SDK version your project is using.
+
+  </Tab>
+  <Tab label="SDK 49 and below">
+    <Terminal cmd={['$ npx expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar react-native-gesture-handler']} />
+
+    The above command will install versions of these libraries that are compatible with the Expo SDK version your project is using.
+
+  </Tab>
+</Tabs>
 
 </Step>
 
@@ -78,7 +85,7 @@ The above command will install versions of these libraries that are compatible w
 
 <Tab label="SDK 49 and above">
 
-    Use the `expo-router/entry` file in the **package.json**. The initial client file is [**app/_layout.js**](/router/advanced/root-layout).
+    For the property `main`, use the `expo-router/entry` as its value in the **package.json**. The initial client file is [**app/_layout.js**](/router/advanced/root-layout).
 
     ```json package.json
     {
@@ -142,12 +149,45 @@ Then, enable [Metro web](/guides/customizing-metro/#adding-web-support-to-metro)
 
 ### Modify babel.config.js
 
+<Tabs>
+
+<Tab label="SDK 50 and above">
+
+Ensure you use `babel-preset-expo` as the `preset`, in the **babel.config.js** file or delete the file:
+
+```js babel.config.js
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: ['babel-preset-expo'],
+  };
+};
+```
+
+If you're upgrading from a version of Expo Router that is older than v3, remove the `plugins: ['expo-router/babel']`. `expo-router/babel` was merged in `babel-preset-expo` in SDK 50 (Expo Router v3).
+
+</Tab>
+
+<Tab label="SDK 49 and below">
+
 Add `expo-router/babel` plugin as the last item in the `plugins` array to your project's **babel.config.js**:
 
 {/* prettier-ignore */}
 ```js babel.config.js
-plugins: ['expo-router/babel']
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: ['babel-preset-expo'],
+    /* @info Add the following line. */
+    plugins: ['expo-router/babel'],
+    /* @end */
+  };
+};
 ```
+
+</Tab>
+
+</Tabs>
 
 </Step>
 
@@ -161,34 +201,75 @@ After updating the Babel config file, run the following command to clear the bun
 
 </Step>
 
-## For Expo SDK below 49
+<Step label="7">
 
-Expo Router requires at least `metro@0.76.0`. If you are using Expo SDK version below 49, you will need to force upgrade your `metro` version by setting a Yarn resolution or npm override.
+### Update resolutions
 
 <Tabs>
 
-<Tab label="Yarn">
+  <Tab label="SDK 50 and above">
+    If you're upgrading from an older version of Expo Router, ensure you remove all outdated Yarn
+    resolutions or npm overrides in your **package.json**. Specifically remove `metro`,
+    `metro-resolver`, `react-refresh` resolutions from your **package.json**.
+  </Tab>
 
-    ```json package.json
-    {
-      "resolutions": {
-        "metro": "0.76.0",
-        "metro-resolver": "0.76.0"
-      }
-    }
-    ```
+  <Tab label="SDK 49">
+    Expo Router requires at least `react-refresh@0.14.0`. React Native hasn't upgraded as of SDK 49 / Expo Router v2, so you need to force upgrade your `react-refresh` version by setting a Yarn resolution or npm override.
 
-</Tab>
+    <Tabs>
+      <Tab label="Yarn">
+          ```json package.json
+          {
+            /* @hide ... */
+            /* @end */
+            "resolutions": {
+              "react-refresh": "~0.14.0"
+            }
+          }
+          ```
+      </Tab>
+      <Tab label="npm">
+          ```json package.json
+          {
+            /* @hide ... */
+            /* @end */
+            "overrides": {
+              "react-refresh": "~0.14.0"
+            }
+          }
+          ```
+      </Tab>
+    </Tabs>
 
-<Tab label="npm">
-    ```json package.json
-    {
-      "overrides": {
-        "metro": "0.76.0",
-        "metro-resolver": "0.76.0"
-      }
-    }
-    ```
-</Tab>
+  </Tab>
 
+  <Tab label="SDK 48 and below">
+
+    Expo Router requires at least `metro@0.76.0`. If you are using Expo SDK version below 49, you will need to force upgrade your `metro` version by setting a Yarn resolution or npm override.
+
+    <Tabs>
+      <Tab label="Yarn">
+        ```json package.json
+        {
+          "resolutions": {
+            "metro": "0.76.0",
+            "metro-resolver": "0.76.0"
+          }
+        }
+        ```
+      </Tab>
+      <Tab label="npm">
+          ```json package.json
+          {
+            "overrides": {
+              "metro": "0.76.0",
+              "metro-resolver": "0.76.0"
+            }
+          }
+          ```
+      </Tab>
+    </Tabs>
+
+  </Tab>
 </Tabs>
+</Step>
