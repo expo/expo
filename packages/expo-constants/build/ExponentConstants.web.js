@@ -73,11 +73,11 @@ export default {
         // TODO: Bacon: The android version isn't very accurate either, maybe we could try and guess this value.
         return null;
     },
-    // get manifest(): WebManifest {
-    //   // This is defined by @expo/webpack-config or babel-preset-expo.
-    //   // If your site is bundled with a different config then you may not have access to the app.json automatically.
-    //   return process.env.APP_MANIFEST || {};
-    // },
+    get manifest() {
+        // This is defined by @expo/webpack-config or babel-preset-expo.
+        // If your site is bundled with a different config then you may not have access to the app.json automatically.
+        return process.env.APP_MANIFEST || {};
+    },
     get manifest2() {
         return null;
     },

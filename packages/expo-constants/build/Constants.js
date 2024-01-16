@@ -78,6 +78,16 @@ Object.defineProperties(constants, {
         },
         enumerable: false,
     },
+    manifest: {
+        get() {
+            const maybeManifest = getManifest();
+            if (!maybeManifest || !isEmbeddedManifest(maybeManifest)) {
+                return null;
+            }
+            return maybeManifest;
+        },
+        enumerable: true,
+    },
     manifest2: {
         get() {
             const maybeManifest = getManifest();

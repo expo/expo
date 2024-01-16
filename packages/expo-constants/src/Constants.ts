@@ -124,6 +124,16 @@ Object.defineProperties(constants, {
     },
     enumerable: false,
   },
+  manifest: {
+    get(): EmbeddedManifest | null {
+      const maybeManifest = getManifest();
+      if (!maybeManifest || !isEmbeddedManifest(maybeManifest)) {
+        return null;
+      }
+      return maybeManifest;
+    },
+    enumerable: true,
+  },
   manifest2: {
     get(): ExpoUpdatesManifest | null {
       const maybeManifest = getManifest();
