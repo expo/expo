@@ -1,6 +1,6 @@
 {
-  "platforms": ["ios", "android", "macos", "tvos"],
-  "ios": {
+  "platforms": ["apple", "android"],
+  "apple": {
     "podspecPath": "./ExpoModulesCore.podspec"
   }
 }

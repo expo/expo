@@ -45,7 +45,7 @@ module Expo
           modules_provider_path = autolinking_manager.modules_provider_path(target)
 
           # Run `expo-modules-autolinking` command to generate the file
-          autolinking_manager.generate_package_list(target_name, modules_provider_path)
+          autolinking_manager.generate_modules_provider(target_name, modules_provider_path)
 
           # PBXGroup for generated files per target
           generated_target_group = generated_group.find_subpath(target_name, true)
@@ -212,8 +212,9 @@ module Expo
 
     # Generates the support script that is executed by the build script phase.
     def self.generate_support_script(autolinking_manager, modules_provider_path)
-      args = autolinking_manager.base_command_args.map { |arg| "\"#{arg}\"" }.join(' ')
+      args = autolinking_manager.base_command_args.map { |arg| "\"#{arg}\"" }
       platform = autolinking_manager.platform_name.downcase
+      package_names = autolinking_manager.packages_to_generate.map { |package| "\"#{package.name}\"" }
 
       <<~SUPPORT_SCRIPT
       #!/usr/bin/env bash
@@ -259,7 +260,13 @@ module Expo
         fi
       }
 
-      with_node --no-warnings --eval "require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))" generate-package-list #{args} --target "#{modules_provider_path}" --platform "#{platform}"
+      with_node \\
+        --no-warnings \\
+        --eval "require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))" \\
+        generate-modules-provider #{args.join(' ')} \\
+        --target "#{modules_provider_path}" \\
+        --platform "apple" \\
+        --packages #{package_names.join(' ')}
       SUPPORT_SCRIPT
     end
 

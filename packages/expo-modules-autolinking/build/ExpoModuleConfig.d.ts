@@ -1,4 +1,4 @@
-import { AndroidGradlePluginDescriptor, RawExpoModuleConfig, SupportedPlatform } from './types';
+import { AndroidGradlePluginDescriptor, RawExpoModuleConfig, RawModuleConfigApple, SupportedPlatform } from './types';
 /**
  * A class that wraps the raw config (`expo-module.json` or `unimodule.json`).
  */
@@ -10,29 +10,33 @@ export declare class ExpoModuleConfig {
      */
     supportsPlatform(platform: SupportedPlatform): boolean;
     /**
+     * Returns the generic config for all Apple platforms with a fallback to the legacy iOS config.
+     */
+    getAppleConfig(): RawModuleConfigApple | null;
+    /**
      * Returns a list of names of Swift native modules classes to put to the generated modules provider file.
      */
-    iosModules(): string[];
+    appleModules(): string[];
     /**
      * Returns a list of names of Swift classes that receives AppDelegate life-cycle events.
      */
-    iosAppDelegateSubscribers(): string[];
+    appleAppDelegateSubscribers(): string[];
     /**
      * Returns a list of names of Swift classes that implement `ExpoReactDelegateHandler`.
      */
-    iosReactDelegateHandlers(): string[];
+    appleReactDelegateHandlers(): string[];
     /**
      * Returns podspec paths defined by the module author.
      */
-    iosPodspecPaths(): string[];
+    applePodspecPaths(): string[];
     /**
      * Returns the product module names, if defined by the module author.
      */
-    iosSwiftModuleNames(): string[];
+    appleSwiftModuleNames(): string[];
     /**
      * Returns whether this module will be added only to the debug configuration
      */
-    iosDebugOnly(): boolean;
+    appleDebugOnly(): boolean;
     /**
      * Returns a list of names of Kotlin native modules classes to put to the generated package provider file.
      */
