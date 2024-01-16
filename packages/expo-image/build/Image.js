@@ -67,8 +67,8 @@ export class Image extends React.PureComponent {
      * @platform ios
      * @return A promise resolving to the blurhash string.
      */
-    static async generateBlurhashAsyncAsync(url, numberOfComponents) {
-        return await ExpoImageModule.generateBlurhashAsyncAsync(url, numberOfComponents);
+    static async generateBlurhashAsync(url, numberOfComponents) {
+        return await ExpoImageModule.generateBlurhashAsync(url, numberOfComponents);
     }
     /**
      * Asynchronously starts playback of the view's image if it is animated.

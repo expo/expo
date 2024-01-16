@@ -52,7 +52,7 @@ export declare class Image extends React.PureComponent<ImageProps> {
      * @platform ios
      * @return A promise resolving to the blurhash string.
      */
-    static generateBlurhashAsyncAsync(url: string, numberOfComponents: [number, number] | {
+    static generateBlurhashAsync(url: string, numberOfComponents: [number, number] | {
         width: number;
         height: number;
     }): Promise<string | null>;
