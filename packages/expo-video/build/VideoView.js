@@ -9,7 +9,8 @@ export function useVideoPlayer(source = null) {
 /**
  * Returns whether the current device supports Picture in Picture (PiP) mode.
  * @returns A `boolean` which is `true` if the device supports PiP mode, and `false` otherwise.
- * @platform android, ios
+ * @platform android
+ * @platform ios
  */
 export function isPictureInPictureSupported() {
     return NativeVideoModule.isPictureInPictureSupported();
@@ -25,14 +26,16 @@ export class VideoView extends PureComponent {
     /**
      * Enters Picture in Picture (PiP) mode. Throws an exception if the device does not support PiP.
      * > **Note:** Only one player can be in Picture in Picture (PiP) mode at a time.
-     * @platform android, ios 14+
+     * @platform android
+     * @platform ios 14+
      */
     startPictureInPicture() {
         return this.nativeRef.current?.startPictureInPicture();
     }
     /**
      * Exits Picture in Picture (PiP) mode.
-     * @platform android, ios 14+
+     * @platform android
+     * @platform ios 14+
      */
     stopPictureInPicture() {
         return this.nativeRef.current?.stopPictureInPicture();
