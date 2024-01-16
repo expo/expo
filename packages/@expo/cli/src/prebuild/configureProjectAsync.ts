@@ -15,9 +15,11 @@ export async function configureProjectAsync(
   {
     platforms,
     exp,
+    templateChecksum,
   }: {
     platforms: ModPlatform[];
     exp?: ExpoConfig;
+    templateChecksum?: string;
   }
 ): Promise<ExpoConfig> {
   let bundleIdentifier: string | undefined;
@@ -36,6 +38,12 @@ export async function configureProjectAsync(
     packageName,
     bundleIdentifier,
   });
+
+  if (templateChecksum) {
+    // Prepare template checksum for the patch mods
+    config._internal = config._internal ?? {};
+    config._internal.templateChecksum = templateChecksum;
+  }
 
   // compile all plugins and mods
   config = await compileModsAsync(config, {

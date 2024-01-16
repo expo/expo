@@ -1,9 +1,10 @@
 import { JSONValue } from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
+import crypto from 'crypto';
 import fs from 'fs';
 import slugify from 'slugify';
-import { Stream } from 'stream';
+import { PassThrough, Stream } from 'stream';
 import tar from 'tar';
 import { promisify } from 'util';
 
@@ -97,19 +98,19 @@ const pipeline = promisify(Stream.pipeline);
 export async function downloadAndExtractNpmModuleAsync(
   npmName: string,
   props: ExtractProps
-): Promise<void> {
+): Promise<string> {
   const url = await getNpmUrlAsync(npmName);
 
   debug('Fetch from URL:', url);
-  await extractNpmTarballFromUrlAsync(url, props);
+  return await extractNpmTarballFromUrlAsync(url, props);
 }
 
 export async function extractLocalNpmTarballAsync(
   tarFilePath: string,
   props: ExtractProps
-): Promise<void> {
+): Promise<string> {
   const readStream = fs.createReadStream(tarFilePath);
-  await extractNpmTarballAsync(readStream, props);
+  return await extractNpmTarballAsync(readStream, props);
 }
 
 type ExtractProps = {
@@ -117,6 +118,8 @@ type ExtractProps = {
   cwd: string;
   strip?: number;
   fileList?: string[];
+  /** The checksum algorithm to use when verifying the tarball. */
+  checksumAlgorithm?: string;
 };
 
 async function createUrlStreamAsync(url: string) {
@@ -131,20 +134,30 @@ async function createUrlStreamAsync(url: string) {
 export async function extractNpmTarballFromUrlAsync(
   url: string,
   props: ExtractProps
-): Promise<void> {
-  await extractNpmTarballAsync(await createUrlStreamAsync(url), props);
+): Promise<string> {
+  return await extractNpmTarballAsync(await createUrlStreamAsync(url), props);
 }
 
+/**
+ * Extracts a tarball stream to a directory and returns the checksum of the tarball.
+ */
 export async function extractNpmTarballAsync(
   stream: NodeJS.ReadableStream,
   props: ExtractProps
-): Promise<void> {
+): Promise<string> {
   const { cwd, strip, name, fileList = [] } = props;
 
   await ensureDirectoryAsync(cwd);
 
+  const hash = crypto.createHash(props.checksumAlgorithm ?? 'md5');
+  const transformStream = new PassThrough();
+  transformStream.on('data', (chunk) => {
+    hash.update(chunk);
+  });
+
   await pipeline(
     stream,
+    transformStream,
     tar.extract(
       {
         cwd,
@@ -155,4 +168,6 @@ export async function extractNpmTarballAsync(
       fileList
     )
   );
+
+  return hash.digest('hex');
 }
