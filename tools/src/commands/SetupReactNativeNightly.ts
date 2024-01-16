@@ -54,14 +54,12 @@ async function main() {
   await workspaceInstallAsync();
 
   await patchAndroidCallInvokerHolderAsync();
-  await patchIosNewArchFlagsAsync(path.join(EXPO_DIR, 'node_modules', 'react-native-reanimated'));
 
   const patches = [
     'datetimepicker.patch',
     'react-native-gesture-handler.patch',
     'react-native-reanimated.patch',
     'react-native-safe-area-context.patch',
-    'react-native-screens.patch',
   ];
   await Promise.all(
     patches.map(async (patch) => {
@@ -175,30 +173,6 @@ async function patchAndroidCallInvokerHolderAsync() {
       },
     ]);
   }
-}
-
-async function patchIosNewArchFlagsAsync(packageRoot: string) {
-  const podspecPath = await glob('*.podspec', { cwd: packageRoot, absolute: true });
-  await transformFileAsync(podspecPath[0], [
-    {
-      find: "new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'",
-      replaceWith:
-        "new_arch_enabled = ENV['USE_NEW_ARCH'] != nil ? ENV['USE_NEW_ARCH'] == '1' : ENV['RCT_NEW_ARCH_ENABLED'] == '1'",
-    },
-  ]);
-
-  const files = await glob('**/*.{h,cpp,m,mm}', { cwd: packageRoot, absolute: true });
-  const regexp = /RCT_NEW_ARCH_ENABLED/g;
-  await Promise.all(
-    files.map((file) =>
-      transformFileAsync(file, [
-        {
-          find: regexp,
-          replaceWith: 'USE_NEW_ARCH',
-        },
-      ])
-    )
-  );
 }
 
 async function updateExpoModulesAsync() {
