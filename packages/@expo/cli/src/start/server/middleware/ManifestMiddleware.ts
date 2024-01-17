@@ -29,7 +29,7 @@ import { stripExtension } from '../../../utils/url';
 import * as ProjectDevices from '../../project/devices';
 import { UrlCreator } from '../UrlCreator';
 import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
-import { getPlatformBundlers } from '../platformBundlers';
+import { getPlatformBundlers, PlatformBundlers } from '../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
 
 const debug = require('debug')('expo:start:server:middleware:manifest') as typeof console.log;
@@ -123,6 +123,7 @@ export abstract class ManifestMiddleware<
   TManifestRequestInfo extends ManifestRequestInfo,
 > extends ExpoMiddleware {
   private initialProjectConfig: ProjectConfig;
+  private platformBundlers: PlatformBundlers;
 
   constructor(
     protected projectRoot: string,
@@ -136,6 +137,7 @@ export abstract class ManifestMiddleware<
       ['/', '/manifest', '/index.exp']
     );
     this.initialProjectConfig = getConfig(projectRoot);
+    this.platformBundlers = getPlatformBundlers(projectRoot, this.initialProjectConfig.exp);
   }
 
   /** Exposed for testing. */
@@ -359,9 +361,10 @@ export abstract class ManifestMiddleware<
 
   /** Exposed for testing. */
   async checkBrowserRequestAsync(req: ServerRequest, res: ServerResponse, next: ServerNext) {
-    // Read the config
-    const bundlers = getPlatformBundlers(this.projectRoot, this.initialProjectConfig.exp);
-    if (bundlers.web === 'metro' && this.initialProjectConfig.exp.platforms?.includes('web')) {
+    if (
+      this.platformBundlers.web === 'metro' &&
+      this.initialProjectConfig.exp.platforms?.includes('web')
+    ) {
       // NOTE(EvanBacon): This effectively disables the safety check we do on custom runtimes to ensure
       // the `expo-platform` header is included. When `web.bundler=web`, if the user has non-standard Expo
       // code loading then they'll get a web bundle without a clear assertion of platform support.
