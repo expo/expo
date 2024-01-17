@@ -1,14 +1,15 @@
 import { EventEmitter } from 'expo-modules-core';
 import { useMemo, useEffect } from 'react';
 import AudioModule from './AudioModule';
+import RecordingModule from './RecordingModule';
 import { resolveSource } from './utils/resolveSource';
-const emitter = new EventEmitter(AudioModule);
+const audioEmitter = new EventEmitter(AudioModule);
+const recordingEmitter = new EventEmitter(RecordingModule);
 export function useAudioPlayer(source = null, statusListener) {
     const player = useMemo(() => new AudioModule.AudioPlayer(resolveSource(source)), [source]);
     useEffect(() => {
         const subscription = addStatusUpdateListener((status) => {
             if (status.id === player.id) {
-                console.log(status);
                 statusListener?.(status);
             }
         });
@@ -16,8 +17,14 @@ export function useAudioPlayer(source = null, statusListener) {
     }, [player.id]);
     return player;
 }
+export function useAudioRecorder(url = null) {
+    return useMemo(() => new RecordingModule.AudioRecorder(url), [url]);
+}
 export function addStatusUpdateListener(listener) {
-    return emitter.addListener('onPlaybackStatusUpdate', listener);
+    return audioEmitter.addListener('onPlaybackStatusUpdate', listener);
+}
+export function addRecordingStatusListener(listener) {
+    return recordingEmitter.addListener('onRecordingStatusUpdate', listener);
 }
 export function setIsAudioActive(enabled) {
     AudioModule.setIsAudioActive(enabled);

@@ -1,5 +1,5 @@
 import { useAudioPlayer, AudioSource } from 'expo-audio';
-import { StatusEvent } from 'expo-audio/build/AudioModule.types';
+import { AudioStatus } from 'expo-audio/build/AudioModule.types';
 import { useCallback, useEffect, useState } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 
@@ -13,12 +13,14 @@ type AudioPlayerProps = {
 export default function AudioPlayer({ source, style }: AudioPlayerProps) {
   const player = useAudioPlayer(
     source,
-    useCallback((status: StatusEvent) => {
+    useCallback((status: AudioStatus) => {
       setState({
         ...state,
         ...status,
         positionMillis: status.currentPosition ?? 0,
         durationMillis: isNaN(status.totalDuration) ? 0 : status.totalDuration,
+        rate: player.rate,
+        volume: player.volume,
       });
     }, [])
   );

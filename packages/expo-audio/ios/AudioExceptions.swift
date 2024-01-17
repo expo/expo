@@ -11,3 +11,9 @@ internal class PlayerException: Exception {
     ""
   }
 }
+
+internal class AudioPermissionsException: Exception {
+  override var reason: String {
+    "Recording permission has not been grated"
+  }
+}
