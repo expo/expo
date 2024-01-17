@@ -52,7 +52,7 @@ beforeEach(() => {
 async function getStartedDevServer(options: Partial<BundlerStartOptions> = {}) {
   const devServer = new MetroBundlerDevServer(
     '/',
-    getPlatformBundlers({ web: { bundler: 'metro' } })
+    getPlatformBundlers(__dirname, { web: { bundler: 'metro' } })
   );
   devServer['getAvailablePortAsync'] = jest.fn(() => Promise.resolve(3000));
   // Tested in the superclass
