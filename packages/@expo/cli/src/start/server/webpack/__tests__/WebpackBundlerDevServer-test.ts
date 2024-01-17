@@ -13,6 +13,7 @@ jest.mock('../compile', () => ({
 }));
 
 const originalCwd = process.cwd();
+const defaultPlatformBundlers = getPlatformBundlers(__dirname, { web: { bundler: 'webpack' } });
 
 beforeEach(() => {
   process.chdir('/');
@@ -23,7 +24,7 @@ afterAll(() => {
 });
 
 async function getStartedDevServer(options: Partial<BundlerStartOptions> = {}) {
-  const devServer = new WebpackBundlerDevServer('/', getPlatformBundlers({}));
+  const devServer = new WebpackBundlerDevServer('/', defaultPlatformBundlers);
   devServer['getAvailablePortAsync'] = jest.fn(() => Promise.resolve(3000));
   // Tested in the superclass
   devServer['postStartAsync'] = jest.fn(async () => {});
@@ -33,7 +34,7 @@ async function getStartedDevServer(options: Partial<BundlerStartOptions> = {}) {
 
 describe('bundleAsync', () => {
   it(`bundles in dev mode`, async () => {
-    const devServer = new WebpackBundlerDevServer('/', getPlatformBundlers({}));
+    const devServer = new WebpackBundlerDevServer('/', defaultPlatformBundlers);
 
     devServer['clearWebProjectCacheAsync'] = jest.fn();
     devServer['loadConfigAsync'] = jest.fn(async () => ({}));
@@ -89,12 +90,12 @@ describe('startAsync', () => {
 describe('getProjectConfigFilePath', () => {
   it(`loads from project`, async () => {
     vol.fromJSON({ 'webpack.config.js': '{}' }, '/');
-    const devServer = new WebpackBundlerDevServer('/', getPlatformBundlers({}));
+    const devServer = new WebpackBundlerDevServer('/', defaultPlatformBundlers);
     expect(devServer.getProjectConfigFilePath()).toBe('/webpack.config.js');
   });
   it(`cannot load from project`, async () => {
     vol.fromJSON({ 'package.json': '{}' }, '/');
-    const devServer = new WebpackBundlerDevServer('/', getPlatformBundlers({}));
+    const devServer = new WebpackBundlerDevServer('/', defaultPlatformBundlers);
     expect(devServer.getProjectConfigFilePath()).toBe(null);
   });
 });

@@ -20,12 +20,6 @@ describe(resolveOptionsAsync, () => {
     );
   });
 
-  it(`asserts not-configured platform`, async () => {
-    await expect(resolveOptionsAsync('/', { '--platform': ['web'] })).rejects.toThrow(
-      /^Platform "web" is not configured to use the Metro bundler in the project Expo config\./
-    );
-  });
-
   it(`allows multiple platform flags`, async () => {
     await expect(
       resolveOptionsAsync('/', { '--platform': ['android', 'ios'] })
@@ -46,7 +40,7 @@ describe(resolveOptionsAsync, () => {
     await expect(
       resolveOptionsAsync('/', { '--platform': ['android', 'all'] })
     ).resolves.toMatchObject({
-      platforms: ['android', 'ios'],
+      platforms: ['android', 'ios', 'web'],
     });
   });
 
@@ -82,7 +76,7 @@ describe(resolveOptionsAsync, () => {
       sourceMaps: false,
       maxWorkers: undefined,
       outputDir: 'dist',
-      platforms: ['ios', 'android'],
+      platforms: ['ios', 'android', 'web'],
     });
   });
   it(`parses default options with web enabled`, async () => {
