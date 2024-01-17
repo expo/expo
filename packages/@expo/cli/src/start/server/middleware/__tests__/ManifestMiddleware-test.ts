@@ -1,15 +1,11 @@
-import { ExpoConfig, getConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
 import { vol } from 'memfs';
 
 import * as Log from '../../../../log';
 import * as ProjectDevices from '../../../project/devices';
 import { getPlatformBundlers } from '../../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../../webTemplate';
-import {
-  ManifestMiddleware,
-  ManifestMiddlewareOptions,
-  ManifestRequestInfo,
-} from '../ManifestMiddleware';
+import { ManifestMiddleware, ManifestRequestInfo } from '../ManifestMiddleware';
 import { ServerHeaders, ServerRequest, ServerResponse } from '../server.types';
 
 jest.mock('../../webTemplate', () => ({
@@ -46,15 +42,6 @@ jest.mock('../../../project/devices', () => ({
 }));
 
 class MockManifestMiddleware extends ManifestMiddleware<any> {
-  constructor(
-    protected projectRoot: string,
-    protected options: ManifestMiddlewareOptions,
-    exp?: Partial<ExpoConfig>
-  ) {
-    super(projectRoot, options);
-    if (exp) Object.assign(this.initialProjectConfig.exp, exp);
-  }
-
   public _getManifestResponseAsync(
     options: ManifestRequestInfo
   ): Promise<{ body: string; version: string; headers: ServerHeaders }> {
@@ -82,16 +69,23 @@ describe('checkBrowserRequestAsync', () => {
       android: 'metro',
     });
 
-    const middleware = new MockManifestMiddleware(
-      '/',
+    jest.mocked(getConfig).mockReturnValueOnce(
+      // @ts-expect-error
       {
-        constructUrl: createConstructUrl(),
-        mode: 'development',
-      },
-      {
-        platforms: ['ios', 'android', 'web'],
+        pkg: {},
+        exp: {
+          sdkVersion: '45.0.0',
+          name: 'my-app',
+          slug: 'my-app',
+          platforms: ['ios', 'android', 'web'],
+        },
       }
     );
+
+    const middleware = new MockManifestMiddleware('/', {
+      constructUrl: createConstructUrl(),
+      mode: 'development',
+    });
 
     const res = asRes({
       setHeader: jest.fn(),

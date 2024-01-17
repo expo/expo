@@ -122,7 +122,7 @@ export type ManifestMiddlewareOptions = {
 export abstract class ManifestMiddleware<
   TManifestRequestInfo extends ManifestRequestInfo,
 > extends ExpoMiddleware {
-  protected initialProjectConfig: ProjectConfig;
+  private initialProjectConfig: ProjectConfig;
 
   constructor(
     protected projectRoot: string,
