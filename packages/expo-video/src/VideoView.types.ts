@@ -36,7 +36,7 @@ export declare class VideoPlayer {
   /**
    * Replaces the current source with a new one.
    */
-  replace(source: string): void;
+  replace(source: VideoSource): void;
 
   /**
    * Seeks the playback by the given number of seconds.
@@ -127,3 +127,27 @@ export interface VideoViewProps extends ViewProps {
    */
   startsPictureInPictureAutomatically?: boolean;
 }
+
+/**
+ * Specifies which type of DRM to use. Android supports Widevine, PlayReady and ClearKey.
+ * @platform android
+ * */
+type DRMType = 'clearkey' | 'fairplay' | 'widevine' | 'playready';
+
+type DRM = {
+  type: DRMType;
+  /**
+   * Determines the license server URL.
+   */
+  licenseServer: string;
+  /**
+   * Determines headers sent to the license server on license requests.
+   * */
+  headers?: { [key: string]: string };
+  /**
+   * Specifies whether the DRM is a multi-key DRM.
+   * @platform android
+   */
+};
+
+export type VideoSource = string | { uri: string; drm?: DRM } | null;

@@ -1,9 +1,30 @@
 import { VideoView, useVideoPlayer } from '@expo/video';
+import { VideoSource } from '@expo/video/build/VideoView.types';
+import { Picker } from '@react-native-picker/picker';
+import { Platform } from 'expo-modules-core';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { PixelRatio, ScrollView, StyleSheet, View, Text } from 'react-native';
 
 import Button from '../../components/Button';
 import TitledSwitch from '../../components/TitledSwitch';
+
+const bigBuckBunnySource: VideoSource =
+  'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+
+const elephantsDreamSource: VideoSource =
+  'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4';
+
+const androidDrmSource: VideoSource = {
+  uri: 'https://media.axprod.net/TestVectors/v7-MultiDRM-SingleKey/Manifest.mpd',
+  drm: {
+    type: 'widevine',
+    headers: {
+      'X-AxDRM-Message':
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJzaW9uIjoxLCJjb21fa2V5X2lkIjoiYjMzNjRlYjUtNTFmNi00YWUzLThjOTgtMzNjZWQ1ZTMxYzc4IiwibWVzc2FnZSI6eyJ0eXBlIjoiZW50aXRsZW1lbnRfbWVzc2FnZSIsImtleXMiOlt7ImlkIjoiOWViNDA1MGQtZTQ0Yi00ODAyLTkzMmUtMjdkNzUwODNlMjY2IiwiZW5jcnlwdGVkX2tleSI6ImxLM09qSExZVzI0Y3Iya3RSNzRmbnc9PSJ9XX19.4lWwW46k-oWcah8oN18LPj5OLS5ZU-_AQv7fe0JhNjA',
+    },
+    licenseServer: 'https://drm-widevine-licensing.axtest.net/AcquireLicense',
+  },
+};
 
 export default function VideoScreen() {
   const ref = useRef<VideoView>(null);
@@ -11,6 +32,7 @@ export default function VideoScreen() {
   const [allowPictureInPicture, setAllowPictureInPicture] = React.useState(true);
   const [startPictureInPictureAutomatically, setStartPictureInPictureAutomatically] =
     React.useState(false);
+  const [selectedSource, setSelectedSource] = React.useState<VideoSource>(bigBuckBunnySource);
   const [showNativeControls, setShowNativeControls] = React.useState(true);
   const [requiresLinearPlayback, setRequiresLinearPlayback] = React.useState(false);
 
@@ -18,9 +40,7 @@ export default function VideoScreen() {
     ref.current?.enterFullscreen();
   }, [ref]);
 
-  const player = useVideoPlayer(
-    'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
-  );
+  const player = useVideoPlayer(selectedSource);
 
   const togglePlayer = useCallback(() => {
     if (player.isPlaying) {
@@ -29,12 +49,6 @@ export default function VideoScreen() {
       player.play();
     }
   }, [player]);
-
-  const replaceItem = useCallback(() => {
-    player.replace(
-      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4'
-    );
-  }, []);
 
   const seekBy = useCallback(() => {
     player.seekBy(10);
@@ -85,8 +99,22 @@ export default function VideoScreen() {
       />
       <ScrollView>
         <Text>PictureInPicture Active: {isInPictureInPicture ? 'Yes' : 'No'}</Text>
+        <Text>VideoSource:</Text>
+        <Picker
+          style={styles.picker}
+          mode="dropdown"
+          selectedValue={selectedSource}
+          onValueChange={(value: VideoSource) => {
+            player.replace(value);
+            setSelectedSource(value);
+          }}>
+          <Picker.Item label="Big Buck Bunny" value={bigBuckBunnySource} />
+          <Picker.Item label="Elephants Dream" value={elephantsDreamSource} />
+          {Platform.OS === 'android' && (
+            <Picker.Item label="Tears of Steel (DRM protected)" value={androidDrmSource} />
+          )}
+        </Picker>
         <Button style={styles.button} title="Toggle" onPress={togglePlayer} />
-        <Button style={styles.button} title="Replace" onPress={replaceItem} />
         <Button style={styles.button} title="Seek by 10 seconds" onPress={seekBy} />
         <Button style={styles.button} title="Replay" onPress={replay} />
         <Button style={styles.button} title="Toggle mute" onPress={toggleMuted} />
@@ -142,6 +170,10 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
+  },
+  picker: {
+    alignSelf: 'stretch',
+    backgroundColor: '#e0e0e0',
   },
   switch: {
     flexDirection: 'column',

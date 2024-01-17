@@ -1,8 +1,9 @@
 import { ReactNode, PureComponent } from 'react';
-import { VideoPlayer, VideoViewProps } from './VideoView.types';
-export declare function useVideoPlayer(source?: string | null): VideoPlayer;
+import { VideoPlayer, VideoSource, VideoViewProps } from './VideoView.types';
+export declare function useVideoPlayer(source: VideoSource): VideoPlayer;
 export declare class VideoView extends PureComponent<VideoViewProps> {
     nativeRef: import("react").RefObject<any>;
+    replace(source: VideoSource): void;
     enterFullscreen(): void;
     exitFullscreen(): void;
     /**

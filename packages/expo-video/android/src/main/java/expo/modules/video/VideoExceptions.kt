@@ -7,3 +7,6 @@ internal class FullScreenVideoViewNotFoundException :
 
 internal class VideoViewNotFoundException(id: String) :
   CodedException("VideoView with id: $id not found")
+
+internal class UnsupportedDRMTypeException(type: DRMType) :
+  CodedException("DRM type `$type` is not supported on Android")
