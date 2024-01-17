@@ -1,6 +1,6 @@
 import { useAudioPlayer, AudioSource } from 'expo-audio';
 import { StatusEvent } from 'expo-audio/build/AudioModule.types';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 
 import Player from '../AV/Player';
@@ -18,7 +18,7 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
         ...state,
         ...status,
         positionMillis: status.currentPosition ?? 0,
-        durationMillis: isNaN(status.duration) ? 0 : status.duration,
+        durationMillis: isNaN(status.totalDuration) ? 0 : status.totalDuration,
       });
     }, [])
   );
@@ -28,7 +28,7 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
     isLoaded: true,
     isLooping: false,
     positionMillis: player.currentPosition,
-    durationMillis: isNaN(player.duration) ? 0 : player.duration,
+    durationMillis: isNaN(player.totalDuration) ? 0 : player.totalDuration,
     rate: player.rate,
     volume: player.volume,
     isPlaying: player.isPlaying,
@@ -37,14 +37,6 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
   });
 
   const [isMuted, setMuted] = useState(false);
-
-  const play = () => {
-    player.play();
-  };
-
-  const pause = () => {
-    player.pause();
-  };
 
   const setVolume = (volume: number) => {
     player.volume = volume;
@@ -66,14 +58,18 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
     setState({ ...state, rate });
   };
 
+  useEffect(() => {
+    return () => player.pause();
+  }, []);
+
   return (
     <Player
       {...state}
       rate={1}
       isMuted={isMuted}
       style={style}
-      playAsync={play}
-      pauseAsync={pause}
+      playAsync={() => player.play()}
+      pauseAsync={() => player.pause()}
       replayAsync={() => {
         return player.seekTo(0);
       }}
