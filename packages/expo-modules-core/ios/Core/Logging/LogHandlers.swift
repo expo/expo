@@ -5,9 +5,8 @@ import os.log
 public func createOSLogHandler(category: String) -> LogHandler {
   if #available(macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0, *) {
     return OSLogHandler(category: category)
-  } else {
-    return PrintLogHandler()
   }
+  return PrintLogHandler()
 }
 
 public func createPersistentFileLogHandler(category: String) -> LogHandler {

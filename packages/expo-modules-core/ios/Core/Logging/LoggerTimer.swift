@@ -2,7 +2,6 @@
 
 import Foundation
 
-
 typealias LoggerTimerStopBlock = () -> Void
 
 /**
