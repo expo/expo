@@ -7,9 +7,10 @@ export type StatusEvent = {
     timeControlStatus: string;
     reasonForWaitingToPlay: string;
     isMuted: boolean;
-    duration: number;
+    totalDuration: number;
     isPlaying: boolean;
     isLooping: boolean;
+    isLoaded: boolean;
 };
 export type AudioCategory = 'ambient' | 'multiRoute' | 'playAndRecord' | 'playback' | 'record' | 'soloAmbient';
 export interface AudioModule extends NativeModule {
@@ -43,7 +44,7 @@ export interface AudioPlayer {
     /**
      * The total duration of the audio, in seconds.
      */
-    duration: number;
+    totalDuration: number;
     /**
      * The current volume of the audio.
      */

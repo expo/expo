@@ -6,7 +6,10 @@ private let statusUpdate = "onPlaybackStatusUpdate"
 public class AudioModule: Module {
   private var timeTokens = [Int: Any?]()
   private var isLooping = false
+  
+  // Observers
   private var cancellables = Set<AnyCancellable>()
+  private var endObservers = [Int: NSObjectProtocol]()
   
   public func definition() -> ModuleDefinition {
     Name("ExpoAudio")
@@ -29,6 +32,13 @@ public class AudioModule: Module {
       }
     }
     
+    OnDestroy {
+      for observer in endObservers.values {
+        NotificationCenter.default.removeObserver(observer)
+      }
+      cancellables.removeAll()
+    }
+    
     Class(AudioPlayer.self) {
       Constructor { (source: AudioSource?) -> AudioPlayer in
         let player = AudioPlayer(createAVPlayer(source: source))
@@ -39,10 +49,8 @@ public class AudioModule: Module {
             return
           }
           if status == .readyToPlay {
-            let duration = (player.pointer.currentItem?.duration.seconds ?? 0) * 1000
-            self.sendEvent(statusUpdate, [
-              "id": player.sharedObjectId,
-              "duration": duration
+            self.updatePlayerStatus(player: player, with: [
+              "isLoaded": true
             ])
           }
         }.store(in: &cancellables)
@@ -64,21 +72,21 @@ public class AudioModule: Module {
         player.pointer.currentItem?.status == .readyToPlay
       }
       
-      Property("isPlaying") { (player: AudioPlayer) in
+      Property("isPlaying") { player in
         return player.pointer.timeControlStatus == .playing
       }
       
-      Property("isMuted") { (player: AudioPlayer) in
+      Property("isMuted") { player in
         player.pointer.isMuted
       }.set { (player, isMuted: Bool) in
         player.pointer.isMuted = isMuted
       }
       
-      Property("currentPosition") { (player: AudioPlayer) -> Double in
-        player.pointer.currentTime().seconds
+      Property("currentPosition") { player in
+        player.pointer.currentItem?.currentTime().seconds
       }
       
-      Property("duration") { player in
+      Property("totalDuration") { player in
         player.pointer.currentItem?.duration.seconds
       }
       
@@ -94,13 +102,13 @@ public class AudioModule: Module {
         player.pointer.volume = Float(volume)
       }
       
-      Function("play") { (player: AudioPlayer) in
+      Function("play") { player in
         addPlaybackEndNotification(player: player)
         player.pointer.play()
         registerTimeObserver(player: player, for: player.sharedObjectId)
       }
       
-      Function("pause") { (player: AudioPlayer) in
+      Function("pause") { player in
         player.pointer.pause()
       }
       
@@ -116,8 +124,10 @@ public class AudioModule: Module {
   }
   
   private func addPlaybackEndNotification(player: AudioPlayer) {
-    NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: player.pointer.currentItem)
-    NotificationCenter.default.addObserver(
+    if let previous = endObservers[player.sharedObjectId] {
+      NotificationCenter.default.removeObserver(previous)
+    }
+    endObservers[player.sharedObjectId] = NotificationCenter.default.addObserver(
       forName: .AVPlayerItemDidPlayToEndTime,
       object: player.pointer.currentItem,
       queue: nil
@@ -125,9 +135,14 @@ public class AudioModule: Module {
       guard let self else {
         return
       }
-      player.pointer.seek(to: CMTime.zero)
+      
       if isLooping {
+        player.pointer.seek(to: CMTime.zero)
         player.pointer.play()
+      } else {
+        updatePlayerStatus(player: player, with: [
+          "isPlaying": false,
+        ])
       }
     }
   }
@@ -135,21 +150,31 @@ public class AudioModule: Module {
   private func registerTimeObserver(player: AudioPlayer, for id: Int) {
     let interval = CMTime(seconds: 1, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
     timeTokens[player.sharedObjectId] = player.pointer.addPeriodicTimeObserver(forInterval: interval, queue: nil) { [weak self] time in
-      let avPlayer = player.pointer
-      self?.sendEvent(statusUpdate,
-        [
-          "id": id,
-          "currentPosition": time.seconds * 1000,
-          "status": statusToString(status: avPlayer.status),
-          "timeControlStatus": timeControlStatusString(status: avPlayer.timeControlStatus),
-          "reasonForWaitingToPlay": reasonForWaitingToPlayString(status: avPlayer.reasonForWaitingToPlay),
-          "isMuted": avPlayer.isMuted,
-          "duration": (avPlayer.currentItem?.duration.seconds ?? 0) * 1000,
-          "isPlaying": avPlayer.timeControlStatus == .playing,
-          "isLooping": self?.isLooping ?? false
-        ]
-      )
+      self?.updatePlayerStatus(player: player, with: [
+        "currentPosition": time.seconds * 1000,
+      ])
     }
+  }
+  
+  private func updatePlayerStatus(player: AudioPlayer, with dict: [String: Any]) {
+    let avPlayer = player.pointer
+    var body: [String: Any] = [
+      "id": player.sharedObjectId,
+      "currentPosition": (avPlayer.currentItem?.currentTime().seconds ?? 0) * 1000,
+      "status": statusToString(status: avPlayer.status),
+      "timeControlStatus": timeControlStatusString(status: avPlayer.timeControlStatus),
+      "reasonForWaitingToPlay": reasonForWaitingToPlayString(status: avPlayer.reasonForWaitingToPlay),
+      "isMuted": avPlayer.isMuted,
+      "totalDuration": (avPlayer.currentItem?.duration.seconds ?? 0) * 1000,
+      "isPlaying": player.pointer.timeControlStatus == .playing,
+      "isLooping": isLooping,
+      "isLoaded": avPlayer.currentItem?.status == .readyToPlay
+    ]
+    
+    body.merge(dict) { _, new in
+      new
+    }
+    sendEvent(statusUpdate, body)
   }
 }
 

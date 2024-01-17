@@ -8,6 +8,7 @@ export function useAudioPlayer(source = null, statusListener) {
     useEffect(() => {
         const subscription = addStatusUpdateListener((status) => {
             if (status.id === player.id) {
+                console.log(status);
                 statusListener?.(status);
             }
         });
