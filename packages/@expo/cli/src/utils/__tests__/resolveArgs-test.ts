@@ -55,6 +55,29 @@ describe(_resolveStringOrBooleanArgs, () => {
       _resolveStringOrBooleanArgs({ '--basic': Boolean }, ['foobar', 'root', '--basic'])
     ).toThrow(/Unknown argument: root/);
   });
+  it(`prefers last argument when arguments are repeated and 'lastArgTakesPrecedence' is set to true`, () => {
+    expect(
+      _resolveStringOrBooleanArgs(
+        { '--basic': Boolean },
+        ['--basic', 'true', '--basic', 'false', 'root'],
+        /* lastArgTakesPrecedence */ true
+      )
+    ).toEqual({
+      args: { '--basic': 'false' },
+      projectRoot: 'root',
+    });
+
+    expect(
+      _resolveStringOrBooleanArgs(
+        { '--basic': Boolean },
+        ['--basic', 'true', '--basic', 'false', 'root'],
+        /* lastArgTakesPrecedence */ false
+      )
+    ).toEqual({
+      args: { '--basic': 'true' },
+      projectRoot: 'root',
+    });
+  });
 });
 
 describe(assertUnknownArgs, () => {
@@ -95,6 +118,26 @@ describe(resolveStringOrBooleanArgsAsync, () => {
         '--device': 'my-device',
         '--no-bundler': true,
         '--scheme': true,
+      },
+      projectRoot: 'custom-root',
+    });
+  });
+
+  it(`prefers last argument, when argument is repeated`, async () => {
+    await expect(
+      resolveStringOrBooleanArgsAsync(
+        ['--dev=false', '--minify=false', '--minify', 'true', '--dev', 'true', 'custom-root'],
+        {
+          '--dev': Boolean,
+        },
+        {
+          '--minify': Boolean,
+        }
+      )
+    ).resolves.toEqual({
+      args: {
+        '--minify': 'true',
+        '--dev': 'true',
       },
       projectRoot: 'custom-root',
     });
