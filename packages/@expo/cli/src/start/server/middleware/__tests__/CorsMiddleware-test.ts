@@ -10,7 +10,7 @@ describe(createCorsMiddleware, () => {
 
   let resHeaders: Record<string, string> = {};
   let res: ServerResponse;
-  let next: ServerNext;
+  let next: jest.Mock<ServerNext>;
 
   beforeEach(() => {
     resHeaders = {};
@@ -70,6 +70,19 @@ describe(createCorsMiddleware, () => {
     expect(next).toHaveBeenCalled();
   });
 
+  it(`should allow CORS from expo-router's origin to a full URL request`, () => {
+    // Though browsers don't send the full URL in the Origin header, we should support it
+    const origin = 'https://example.org/foo/bar?alpha=beta#gamma';
+    const middleware = createCorsMiddleware({ ...config, extra: { router: { origin } } });
+    middleware(
+      asRequest({ url: 'http://localhost:8081/foo/bar?alpha=beta#gamma', headers: { origin } }),
+      res,
+      next
+    );
+    expect(resHeaders['Access-Control-Allow-Origin']).toBe(origin);
+    expect(next).toHaveBeenCalled();
+  });
+
   it('should prevent metro reset the hardcoded CORS header', () => {
     const origin = 'http://localhost:8082/';
     middleware(
@@ -87,6 +100,19 @@ describe(createCorsMiddleware, () => {
   it('should show explicit error from disallowed CORS', () => {
     const origin = 'https://example.org/';
     middleware(asRequest({ url: 'http://localhost:8081/', headers: { origin } }), res, next);
+    expect(resHeaders['Access-Control-Allow-Origin']).toBeUndefined();
+    expect(next).toHaveBeenCalled();
+    expect(next.mock.calls[0][0]).toBeInstanceOf(Error);
+  });
+
+  it('should show explicit error from disallowed CORS to a full URL request', () => {
+    // Though browsers don't send the full URL in the Origin header, we should support it
+    const origin = 'https://example.org/foo/bar?alpha=beta#gamma';
+    middleware(
+      asRequest({ url: 'http://localhost:8081/foo/bar?alpha=beta#gamma', headers: { origin } }),
+      res,
+      next
+    );
     expect(resHeaders['Access-Control-Allow-Origin']).toBeUndefined();
     expect(next).toHaveBeenCalled();
     expect(next.mock.calls[0][0]).toBeInstanceOf(Error);
