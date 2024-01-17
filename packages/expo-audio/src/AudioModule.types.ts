@@ -1,8 +1,9 @@
 import { NativeModule } from 'react-native';
 
 import { AudioSource } from './Audio.types';
+import { PermissionResponse } from 'expo-modules-core';
 
-export type StatusEvent = {
+export type AudioStatus = {
   id: number;
   currentPosition: number;
   status: string;
@@ -13,6 +14,12 @@ export type StatusEvent = {
   isPlaying: boolean;
   isLooping: boolean;
   isLoaded: boolean;
+};
+
+export type RecordingStatus = {
+  isFinished: boolean;
+  hasError: boolean;
+  error: string | null;
 };
 
 export type AudioCategory =
@@ -29,6 +36,15 @@ export interface AudioModule extends NativeModule {
 
   readonly AudioPlayer: AudioPlayer;
 }
+
+export interface RecordingModule extends NativeModule {
+  requestRecordingPermissionsAsync(): Promise<RecordingPermissionResponse>;
+  getRecordingPermissionsAsync(): Promise<RecordingPermissionResponse>;
+
+  readonly AudioRecorder: AudioRecorder;
+}
+
+export type RecordingPermissionResponse = PermissionResponse;
 
 export interface AudioPlayer {
   new (source: AudioSource | string | number | null): AudioPlayer;
@@ -86,6 +102,43 @@ export interface AudioPlayer {
 
   /**
    * Seeks the playback by the given number of seconds.
+   * @param seconds The number of seconds to seek by.
    */
   seekTo(seconds: number): Promise<void>;
+}
+
+export interface AudioRecorder {
+  new (url: string | null): AudioRecorder;
+
+  /**
+   * The current length of the recording, in seconds.
+   */
+  currentTime: number;
+
+  /**
+   * Boolean value indicating whether the recording is in progress.
+   */
+  isRecording: boolean;
+
+  /**
+   * Starts the recording.
+   */
+  record(): void;
+
+  /**
+   * Stop the recording.
+   */
+  stop(): void;
+
+  /**
+   * Starts the recording at the given time.
+   * @param seconds The time in seconds to start recording at.
+   */
+  startRecordingAtTime(seconds: number): void;
+
+  /**
+   * Stops the recording once the specified time has elapsed.
+   * @param seconds The time in seconds to stop recording at.
+   */
+  recordForDuration(seconds: number): void;
 }
