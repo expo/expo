@@ -215,6 +215,7 @@ exceptions:
   - '.*Transporter.*'
   - '.*TTF.*'
   - '.*Turtle.*'
+  - '.*TV.*'
   - '.*TypeScript.*'
   - '.*TypeScript module.*'
   - '.*Update.*'
@@ -245,3 +246,4 @@ exceptions:
   - Two-factor
   - (experimental support)
   - How can I implement a custom
+  - Drizzle ORM
