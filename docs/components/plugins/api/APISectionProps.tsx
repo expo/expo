@@ -1,5 +1,7 @@
 import { mergeClasses } from '@expo/styleguide';
 
+import { ELEMENT_SPACING, STYLES_SECONDARY } from './styles';
+
 import {
   DefaultPropsDefinitionData,
   PropData,
@@ -10,7 +12,6 @@ import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDe
 import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import {
   CommentTextBlock,
-  ELEMENT_SPACING,
   getCommentContent,
   getCommentOrSignatureComment,
   getH3CodeWithBaseNestingLevel,
@@ -22,7 +23,6 @@ import {
   STYLES_APIBOX_NESTED,
   STYLES_NESTED_SECTION_HEADER,
   STYLES_NOT_EXPOSED_HEADER,
-  STYLES_SECONDARY,
   TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
 import { CODE, H2, H3, H4, LI, MONOSPACE, P, UL } from '~/ui/components/Text';
@@ -128,25 +128,24 @@ export const renderProp = (
       css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}
       className="!pb-4 [&>*:last-child]:!mb-0">
       <APISectionDeprecationNote comment={extractedComment} />
-      <APISectionPlatformTags comment={comment} prefix="Only for:" />
+      <APISectionPlatformTags comment={comment} />
       <HeaderComponent tags={getTagNamesList(comment)}>
         <MONOSPACE weight="medium" css={!exposeInSidebar && STYLES_NOT_EXPOSED_HEADER}>
           {name}
         </MONOSPACE>
       </HeaderComponent>
       <P className={mergeClasses(extractedComment && ELEMENT_SPACING)}>
-        {flags?.isOptional && <span css={STYLES_SECONDARY}>Optional&emsp;&bull;&emsp;</span>}
-        <span css={STYLES_SECONDARY}>Type:</span>{' '}
+        {flags?.isOptional && <span className={STYLES_SECONDARY}>Optional&emsp;&bull;&emsp;</span>}
+        <span className={STYLES_SECONDARY}>Type:</span>{' '}
         {renderTypeOrSignatureType(type, extractedSignatures)}
         {defaultValue && defaultValue !== UNKNOWN_VALUE ? (
           <span>
-            <span css={STYLES_SECONDARY}>&emsp;&bull;&emsp;Default:</span>{' '}
+            <span className={STYLES_SECONDARY}>&emsp;&bull;&emsp;Default:</span>{' '}
             <CODE>{defaultValue}</CODE>
           </span>
         ) : null}
       </P>
       <CommentTextBlock comment={extractedComment} includePlatforms={false} />
-      {/*{!extractedComment && <br />}*/}
     </div>
   );
 };

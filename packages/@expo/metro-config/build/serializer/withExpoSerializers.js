@@ -127,11 +127,12 @@ function createDefaultExportCustomSerializer(config, configOptions = {}) {
       debugId = (0, _debugId().stringToUUID)(outputCode);
       return debugId;
     };
+    let premodulesToBundle = [...preModules];
     let bundleCode = null;
     let bundleMap = null;
     if ((_config$serializer2 = config.serializer) !== null && _config$serializer2 !== void 0 && _config$serializer2.customSerializer) {
       var _config$serializer3;
-      const bundle = await ((_config$serializer3 = config.serializer) === null || _config$serializer3 === void 0 ? void 0 : _config$serializer3.customSerializer(entryPoint, preModules, graph, options));
+      const bundle = await ((_config$serializer3 = config.serializer) === null || _config$serializer3 === void 0 ? void 0 : _config$serializer3.customSerializer(entryPoint, premodulesToBundle, graph, options));
       if (typeof bundle === 'string') {
         bundleCode = bundle;
       } else {
@@ -140,7 +141,6 @@ function createDefaultExportCustomSerializer(config, configOptions = {}) {
       }
     } else {
       const debugId = loadDebugId();
-      let premodulesToBundle = [...preModules];
       if (configOptions.unstable_beforeAssetSerializationPlugins) {
         for (const plugin of configOptions.unstable_beforeAssetSerializationPlugins) {
           premodulesToBundle = plugin({
@@ -168,7 +168,7 @@ function createDefaultExportCustomSerializer(config, configOptions = {}) {
     // Exports....
 
     if (!bundleMap) {
-      bundleMap = (0, _sourceMapString().default)([...preModules, ...(0, _serializeChunks().getSortedModules)([...graph.dependencies.values()], options)], {
+      bundleMap = (0, _sourceMapString().default)([...premodulesToBundle, ...(0, _serializeChunks().getSortedModules)([...graph.dependencies.values()], options)], {
         // TODO: Surface this somehow.
         excludeSource: false,
         // excludeSource: options.serializerOptions?.excludeSource,

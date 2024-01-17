@@ -4,12 +4,12 @@ import glob from 'glob-promise';
 import inquirer from 'inquirer';
 import path from 'path';
 
+import { copyVendoredFilesAsync } from './common';
+import { VendoringModuleConfig } from './types';
 import { podInstallAsync, Podspec, readPodspecAsync } from '../CocoaPods';
 import { EXPO_GO_IOS_DIR } from '../Constants';
 import logger from '../Logger';
 import { arrayize, searchFilesAsync } from '../Utils';
-import { copyVendoredFilesAsync } from './common';
-import { VendoringModuleConfig } from './types';
 
 export async function vendorAsync(
   sourceDirectory: string,

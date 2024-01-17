@@ -11,6 +11,13 @@
 ### 💡 Others
 
 - Remove classic updates SDK version. ([#26061](https://github.com/expo/expo/pull/26061) by [@wschurman](https://github.com/wschurman))
+- Added `templateChecksum` for prebuild to check the current template version. ([#26414](https://github.com/expo/expo/pull/26414) by [@kudo](https://github.com/kudo))
+
+## 0.16.8 - 2024-01-15
+
+### 🐛 Bug fixes
+
+- Add default user to Android adb install command. ([#26388](https://github.com/expo/expo/pull/26388) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.16.7 - 2024-01-10
 
@@ -43,6 +50,7 @@
 - Add missing `find-yarn-workspace-root` dependency. ([#25991](https://github.com/expo/expo/pull/25991) by [@byCedric](https://github.com/byCedric))
 - Add missing `lodash.debounce` dependency. ([#25990](https://github.com/expo/expo/pull/25990) by [@byCedric](https://github.com/byCedric))
 - Add missing `@react-native/dev-middleware` dependency. ([#26000](https://github.com/expo/expo/pull/26000) by [@byCedric](https://github.com/byCedric))
+- Warn users if they are using an incorrect `web.output` with API Routes. ([#25931](https://github.com/expo/expo/pull/25931) by [@marklawlor](https://github.com/marklawlor))
 
 ## 0.16.3 — 2023-12-15
 
@@ -98,6 +106,7 @@ _This version does not introduce any user-facing changes._
 
 ### 💡 Others
 
+- Export generated expo router type. ([#24999](https://github.com/expo/expo/pull/24999) by [@hichemfantar](https://github.com/hichemfantar))
 - Prevent showing log events for source maps in development. ([#25830](https://github.com/expo/expo/pull/25830) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove unused Metro `extraNodeModules` augmentation for web resolution in favor of standard aliases. ([#25506](https://github.com/expo/expo/pull/25506) by [@EvanBacon](https://github.com/EvanBacon))
 - Consolidate logic for resolving Node.js built-in shims in browser environments. ([#25511](https://github.com/expo/expo/pull/25511) by [@EvanBacon](https://github.com/EvanBacon))

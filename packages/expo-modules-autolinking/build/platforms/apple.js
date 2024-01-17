@@ -9,7 +9,7 @@ const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
 const indent = '  ';
 async function findPodspecFiles(revision) {
-    const configPodspecPaths = revision.config?.iosPodspecPaths();
+    const configPodspecPaths = revision.config?.applePodspecPaths();
     if (configPodspecPaths && configPodspecPaths.length) {
         return configPodspecPaths;
     }
@@ -39,16 +39,16 @@ async function resolveModuleAsync(packageName, revision, options) {
         podName: path_1.default.basename(podspecFile, path_1.default.extname(podspecFile)),
         podspecDir: path_1.default.dirname(path_1.default.join(revision.path, podspecFile)),
     }));
-    const swiftModuleNames = getSwiftModuleNames(pods, revision.config?.iosSwiftModuleNames());
+    const swiftModuleNames = getSwiftModuleNames(pods, revision.config?.appleSwiftModuleNames());
     return {
         packageName,
         pods,
         swiftModuleNames,
         flags: options.flags,
-        modules: revision.config?.iosModules() ?? [],
-        appDelegateSubscribers: revision.config?.iosAppDelegateSubscribers() ?? [],
-        reactDelegateHandlers: revision.config?.iosReactDelegateHandlers() ?? [],
-        debugOnly: revision.config?.iosDebugOnly() ?? false,
+        modules: revision.config?.appleModules() ?? [],
+        appDelegateSubscribers: revision.config?.appleAppDelegateSubscribers() ?? [],
+        reactDelegateHandlers: revision.config?.appleReactDelegateHandlers() ?? [],
+        debugOnly: revision.config?.appleDebugOnly() ?? false,
     };
 }
 exports.resolveModuleAsync = resolveModuleAsync;
