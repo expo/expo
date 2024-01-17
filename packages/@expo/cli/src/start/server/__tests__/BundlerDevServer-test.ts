@@ -27,7 +27,7 @@ jest.mock('../../platforms/android/AndroidPlatformManager', () => {
 });
 
 const originalCwd = process.cwd();
-const defaultPlatformBundlers = getPlatformBundlers(__dirname, { web: { bundler: 'metro' } });
+const defaultPlatformBundlers = getPlatformBundlers('/', { web: { bundler: 'metro' } });
 
 beforeAll(() => {
   process.chdir('/');

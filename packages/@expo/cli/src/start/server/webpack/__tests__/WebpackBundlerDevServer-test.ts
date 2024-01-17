@@ -13,7 +13,7 @@ jest.mock('../compile', () => ({
 }));
 
 const originalCwd = process.cwd();
-const defaultPlatformBundlers = getPlatformBundlers(__dirname, { web: { bundler: 'webpack' } });
+const defaultPlatformBundlers = getPlatformBundlers('/', { web: { bundler: 'webpack' } });
 
 beforeEach(() => {
   process.chdir('/');
