@@ -43,7 +43,7 @@
     "resolve-from": "^5.0.0",
     "semver": "7.5.3",
     "slugify": "^1.3.4",
-    "sucrase": "^3.20.0"
+    "sucrase": "3.34.0"
   },
   "devDependencies": {
     "@types/require-from-string": "^1.2.1",
