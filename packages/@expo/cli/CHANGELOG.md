@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Update `expo customize` to show `public` instead of `web` when Metro web is used.
 - Supported extra CORS requests to dev-server from the expo-router's `origin` and `headOrigin` settings. ([#26463](https://github.com/expo/expo/pull/26463) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
