@@ -143,6 +143,8 @@ const general = [
         makePage('workflow/web.mdx'),
         makePage('guides/progressive-web-apps.mdx'),
         makePage('distribution/publishing-websites.mdx'),
+        makePage('distribution/publishing-websites-webpack.mdx'),
+        makePage('guides/customizing-metro.mdx'),
         makePage('guides/customizing-webpack.mdx'),
       ],
       { expanded: false }
@@ -329,6 +331,7 @@ const general = [
     ]),
     makeGroup('Reference', [
       makePage('eas-update/migrate-from-classic-updates.mdx'),
+      makePage('eas-update/custom-updates-server.mdx'),
       makePage('eas-update/codepush.mdx'),
       makePage('eas-update/updating-your-app.mdx'),
       makePage('eas-update/faq.mdx'),
@@ -367,7 +370,6 @@ const general = [
     makePage('distribution/introduction.mdx'),
     makePage('distribution/app-stores.mdx'),
     makePage('distribution/runtime-versions.mdx'),
-    makePage('distribution/custom-updates-server.mdx'),
     makePage('distribution/app-transfers.mdx'),
   ]),
   makeSection(
