@@ -3,14 +3,15 @@ title: Publish websites with Metro
 description: Different ways to publish the Expo web app with third-party services.
 ---
 
-import { APIBox } from '~/components/plugins/APIBox';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs, TabsGroup } from '~/ui/components/Tabs';
-import { Table, TableHead, Row, HeaderCell } from '~/ui/components/Table';
 import { Terminal } from '~/ui/components/Snippet';
-import { YesIcon, NoIcon, PendingIcon } from '~/ui/components/DocIcons';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+
+> **warning** In SDK 50 and above, `metro` is the default bundler for web apps. The previous documentation for publishing with `webpack` is available [here](/distribution/publishing-websites-webpack/).
 
 A web app created using Expo can be served locally for testing out the production behavior. Once the testing phase checks out, you can choose from a variety of third-party services to host it.
+
 
 ## Output targets
 
@@ -90,6 +91,12 @@ Open [`http://localhost:5000`](http://localhost:5000) to see your project in act
 
 </Tab>
 
+<Tab label="server">
+
+There is no prebuilt solution. You will need to create your own server to serve the static files and API routes.
+
+</Tab>
+
 <Tab label="static">
 
 <Terminal cmd={['$ npx serve dist']} />
@@ -98,11 +105,6 @@ Open [`http://localhost:5000`](http://localhost:5000) to see your project in act
 
 </Tab>
 
-<Tab label="server">
-
-There is no prebuilt solution. You will need to create your own server to serve the static files and API routes.
-
-</Tab>
 
 </Tabs>
 

@@ -3,12 +3,9 @@ title: Publish websites with Webpack
 description: Different ways to publish the Expo web app with third-party services with webpack.
 ---
 
-import { APIBox } from '~/components/plugins/APIBox';
 import { Step } from '~/ui/components/Step';
-import { Tab, Tabs, TabsGroup } from '~/ui/components/Tabs';
-import { Table, TableHead, Row, HeaderCell } from '~/ui/components/Table';
 import { Terminal } from '~/ui/components/Snippet';
-import { YesIcon, NoIcon, PendingIcon } from '~/ui/components/DocIcons';
+import { NoIcon } from '~/ui/components/DocIcons';
 
 > **warning** In SDK 50 and above, publishing with `webpack` is deprecated.
 
@@ -30,13 +27,6 @@ The resulting project files are in the **web-build** directory. Any files inside
 
 If you make changes to your project, rebuild it for production. Do not edit the **web-build** directory directly.
 
-> **Tip:** If you want to serve your site in a subfolder, add its path to your **package.json** as shown below:
->
-> ```json package.json
-> {
->   "homepage": "/path/to/subfolder"
-> }
-> ```
 
 ## Serve locally
 
@@ -47,6 +37,16 @@ Run the following command to serve the single-page application:
 <Terminal cmd={['$ npx serve web-build --single']} />
 
 Open [`http://localhost:5000`](http://localhost:5000) to see your project in action. This method is **HTTP only**, so permissions, camera, location, and many other things won't work.
+
+## Server a subfolder
+
+ If you want to serve your site in a subfolder, add its path to your **package.json** as shown below:
+
+ ```json package.json
+ {
+   "homepage": "/path/to/subfolder"
+ }
+ ```
 
 ## Hosting on third-party services
 
