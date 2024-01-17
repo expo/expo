@@ -467,7 +467,7 @@ export async function withMetroMultiPlatformAsync(
   // @ts-expect-error: Invalidate the cache when the location of expo-router changes on-disk.
   config.transformer._expoRouterPath = resolveFrom.silent(projectRoot, 'expo-router');
 
-  if (platformBundlers.web === 'metro') {
+  if (platformBundlers.web === 'metro' && isExporting) {
     await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
   }
 
