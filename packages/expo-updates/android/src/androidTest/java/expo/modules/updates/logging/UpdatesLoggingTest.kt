@@ -30,7 +30,7 @@ class UpdatesLoggingTest {
 
   @Test
   fun testLogEntryConversion() {
-    val entry = UpdatesLogEntry(12345678, "Test message", "NoUpdatesAvailable", "warn", null, null, null)
+    val entry = UpdatesLogEntry(12345678, "Test message", "NoUpdatesAvailable", "warn", null, null, null, null)
     val json = entry.asString()
     val entryCopy = UpdatesLogEntry.create(json)
     Assert.assertEquals(entry.message, entryCopy?.message)
@@ -41,7 +41,7 @@ class UpdatesLoggingTest {
     Assert.assertNull(entryCopy?.assetId)
     Assert.assertNull(entryCopy?.stacktrace)
 
-    val entry2 = UpdatesLogEntry(12345678, "Test message", "UpdateFailedToLoad", "fatal", "myUpdateId", "myAssetId", listOf("stack frame 1", "stack frame 2"))
+    val entry2 = UpdatesLogEntry(12345678, "Test message", "UpdateFailedToLoad", "fatal", null, "myUpdateId", "myAssetId", listOf("stack frame 1", "stack frame 2"))
     val json2 = entry2.asString()
     val entryCopy2 = UpdatesLogEntry.create(json2)
     Assert.assertEquals(entry2.message, entryCopy2?.message)
@@ -68,7 +68,7 @@ class UpdatesLoggingTest {
     val instrumentationContext = InstrumentationRegistry.getInstrumentation().context
     val logger = UpdatesLogger(instrumentationContext)
     val now = Date()
-    val expectedLogEntry = UpdatesLogEntry(now.time, "Test message", UpdatesErrorCode.JSRuntimeError.code, LogType.Warn.type, null, null, null)
+    val expectedLogEntry = UpdatesLogEntry(now.time, "Test message", UpdatesErrorCode.JSRuntimeError.code, LogType.Warn.type, null, null, null, null)
     logger.warn("Test message", UpdatesErrorCode.JSRuntimeError)
     asyncTestUtil.waitForTimeout(500)
     val sinceThen = Date(now.time - 5000)
@@ -97,9 +97,9 @@ class UpdatesLoggingTest {
     val logs = UpdatesLogReader(instrumentationContext).getLogEntries(sinceThen)
     Assert.assertTrue(logs.isNotEmpty())
 
-    val actualLogEntry = UpdatesTimerEntry.create(logs[logs.size - 1]) as UpdatesTimerEntry
-    Assert.assertEquals("testlabel", actualLogEntry.label)
-    Assert.assertTrue(actualLogEntry.duration >= 300)
+    val actualLogEntry = UpdatesLogEntry.create(logs[logs.size - 1]) as UpdatesLogEntry
+    Assert.assertEquals("testlabel", actualLogEntry.message)
+    Assert.assertTrue(actualLogEntry.duration!! >= 300)
   }
 
   @Test

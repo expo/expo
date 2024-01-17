@@ -25,7 +25,7 @@ class UpdatesLogger(context: Context) {
     updateId: String?,
     assetId: String?
   ) {
-    logger.trace(logEntryString(message, code, LogType.Trace, updateId, assetId))
+    logger.trace(logEntryString(message, code, LogType.Trace, null, updateId, assetId))
   }
 
   fun debug(
@@ -41,7 +41,7 @@ class UpdatesLogger(context: Context) {
     updateId: String?,
     assetId: String?
   ) {
-    logger.debug(logEntryString(message, code, LogType.Debug, updateId, assetId))
+    logger.debug(logEntryString(message, code, LogType.Debug, null, updateId, assetId))
   }
 
   fun info(
@@ -57,7 +57,7 @@ class UpdatesLogger(context: Context) {
     updateId: String?,
     assetId: String?
   ) {
-    logger.info(logEntryString(message, code, LogType.Info, updateId, assetId))
+    logger.info(logEntryString(message, code, LogType.Info, null, updateId, assetId))
   }
 
   fun warn(
@@ -73,7 +73,7 @@ class UpdatesLogger(context: Context) {
     updateId: String?,
     assetId: String?
   ) {
-    logger.warn(logEntryString(message, code, LogType.Warn, updateId, assetId))
+    logger.warn(logEntryString(message, code, LogType.Warn, null, updateId, assetId))
   }
 
   fun error(
@@ -91,7 +91,7 @@ class UpdatesLogger(context: Context) {
     assetId: String?,
     exception: Exception? = null
   ) {
-    logger.error(logEntryString(message, code, LogType.Error, updateId, assetId, exception))
+    logger.error(logEntryString(message, code, LogType.Error, null, updateId, assetId, exception))
   }
 
   fun fatal(
@@ -109,12 +109,12 @@ class UpdatesLogger(context: Context) {
     assetId: String?,
     exception: Exception? = null
   ) {
-    logger.fatal(logEntryString(message, code, LogType.Fatal, updateId, assetId, exception))
+    logger.fatal(logEntryString(message, code, LogType.Fatal, null, updateId, assetId, exception))
   }
 
   fun startTimer(label: String): LoggerTimer {
     return logger.startTimer { duration ->
-      UpdatesTimerEntry(label, duration).asString()
+      logEntryString(label, UpdatesErrorCode.None, LogType.Timer, duration, null, null, null)
     }
   }
 
@@ -131,6 +131,7 @@ class UpdatesLogger(context: Context) {
     message: String,
     code: UpdatesErrorCode,
     level: LogType,
+    duration: Long?,
     updateId: String?,
     assetId: String?,
     exception: Exception? = null
@@ -155,6 +156,7 @@ class UpdatesLogger(context: Context) {
       message,
       code.code,
       level.type,
+      duration,
       updateId,
       assetId,
       stacktrace
