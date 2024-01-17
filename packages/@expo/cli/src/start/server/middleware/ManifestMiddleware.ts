@@ -122,7 +122,7 @@ export type ManifestMiddlewareOptions = {
 export abstract class ManifestMiddleware<
   TManifestRequestInfo extends ManifestRequestInfo,
 > extends ExpoMiddleware {
-  private initialProjectConfig: ProjectConfig;
+  protected initialProjectConfig: ProjectConfig;
 
   constructor(
     protected projectRoot: string,
@@ -361,7 +361,7 @@ export abstract class ManifestMiddleware<
   async checkBrowserRequestAsync(req: ServerRequest, res: ServerResponse, next: ServerNext) {
     // Read the config
     const bundlers = getPlatformBundlers(this.projectRoot, this.initialProjectConfig.exp);
-    if (bundlers.web === 'metro') {
+    if (bundlers.web === 'metro' && this.initialProjectConfig.exp.platforms?.includes('web')) {
       // NOTE(EvanBacon): This effectively disables the safety check we do on custom runtimes to ensure
       // the `expo-platform` header is included. When `web.bundler=web`, if the user has non-standard Expo
       // code loading then they'll get a web bundle without a clear assertion of platform support.

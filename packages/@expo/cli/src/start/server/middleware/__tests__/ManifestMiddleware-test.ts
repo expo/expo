@@ -1,11 +1,15 @@
-import { getConfig } from '@expo/config';
+import { ExpoConfig, getConfig } from '@expo/config';
 import { vol } from 'memfs';
 
 import * as Log from '../../../../log';
 import * as ProjectDevices from '../../../project/devices';
 import { getPlatformBundlers } from '../../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../../webTemplate';
-import { ManifestMiddleware, ManifestRequestInfo } from '../ManifestMiddleware';
+import {
+  ManifestMiddleware,
+  ManifestMiddlewareOptions,
+  ManifestRequestInfo,
+} from '../ManifestMiddleware';
 import { ServerHeaders, ServerRequest, ServerResponse } from '../server.types';
 
 jest.mock('../../webTemplate', () => ({
@@ -42,6 +46,15 @@ jest.mock('../../../project/devices', () => ({
 }));
 
 class MockManifestMiddleware extends ManifestMiddleware<any> {
+  constructor(
+    protected projectRoot: string,
+    protected options: ManifestMiddlewareOptions,
+    exp?: Partial<ExpoConfig>
+  ) {
+    super(projectRoot, options);
+    if (exp) Object.assign(this.initialProjectConfig.exp, exp);
+  }
+
   public _getManifestResponseAsync(
     options: ManifestRequestInfo
   ): Promise<{ body: string; version: string; headers: ServerHeaders }> {
@@ -69,10 +82,16 @@ describe('checkBrowserRequestAsync', () => {
       android: 'metro',
     });
 
-    const middleware = new MockManifestMiddleware('/', {
-      constructUrl: createConstructUrl(),
-      mode: 'development',
-    });
+    const middleware = new MockManifestMiddleware(
+      '/',
+      {
+        constructUrl: createConstructUrl(),
+        mode: 'development',
+      },
+      {
+        platforms: ['ios', 'android', 'web'],
+      }
+    );
 
     const res = asRes({
       setHeader: jest.fn(),
@@ -87,7 +106,12 @@ describe('checkBrowserRequestAsync', () => {
     ).toBe(true);
 
     expect(createTemplateHtmlFromExpoConfigAsync).toHaveBeenCalledWith('/', {
-      exp: { name: 'my-app', sdkVersion: '45.0.0', slug: 'my-app' },
+      exp: {
+        name: 'my-app',
+        sdkVersion: '45.0.0',
+        slug: 'my-app',
+        platforms: ['ios', 'android', 'web'],
+      },
       scripts: [
         // NOTE(EvanBacon): Browsers won't pass the `expo-platform` header so we need to
         // provide the `platform=web` query parameter in order for the multi-platform dev server
