@@ -144,9 +144,17 @@ const general = [
         makePage('guides/progressive-web-apps.mdx'),
         makePage('distribution/publishing-websites.mdx'),
         makePage('distribution/publishing-websites-webpack.mdx'),
-        makePage('guides/customizing-metro.mdx'),
         makePage('guides/customizing-webpack.mdx'),
-        makePage('guides/web-performance.mdx'),
+      ],
+      { expanded: false }
+    ),
+    makeGroup(
+      'Bundling',
+      [
+        makePage('guides/customizing-metro.mdx'),
+        makePage('guides/analyzing-bundles.mdx'),
+        makePage('guides/tree-shaking.mdx'),
+        makePage('guides/minify.mdx'),
       ],
       { expanded: false }
     ),
