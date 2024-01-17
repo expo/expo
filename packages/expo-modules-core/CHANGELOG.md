@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Add timer capability to Logger. ([#26454](https://github.com/expo/expo/pull/26454) by [@wschurman](https://github.com/wschurman))
+
 ### 🐛 Bug fixes
 
 - Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357) by [@kudo](https://github.com/kudo))
