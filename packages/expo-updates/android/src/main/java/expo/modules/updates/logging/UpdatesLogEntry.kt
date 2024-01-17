@@ -1,10 +1,15 @@
 package expo.modules.updates.logging
 
+import expo.modules.core.logging.LogType
 import expo.modules.jsonutils.getNullable
 import expo.modules.jsonutils.require
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+
+interface UpdatesLoggerEntry {
+  fun asString(): String
+}
 
 /**
  * Schema for the fields in expo-updates log message JSON strings
@@ -17,8 +22,8 @@ data class UpdatesLogEntry(
   val updateId: String?,
   val assetId: String?,
   val stacktrace: List<String>?
-) {
-  fun asString(): String {
+) : UpdatesLoggerEntry {
+  override fun asString(): String {
     return JSONObject(
       mapOf(
         "timestamp" to timestamp,
@@ -33,7 +38,7 @@ data class UpdatesLogEntry(
       if (assetId != null) {
         put("assetId", assetId)
       }
-      if (stacktrace != null && stacktrace.isNotEmpty()) {
+      if (!stacktrace.isNullOrEmpty()) {
         put("stacktrace", JSONArray(stacktrace))
       }
     }.toString()
@@ -53,6 +58,35 @@ data class UpdatesLogEntry(
           jsonObject.getNullable<JSONArray>("stacktrace")?.let { jsonArray ->
             List(jsonArray.length()) { i -> jsonArray.getString(i) }
           }
+        )
+      } catch (e: JSONException) {
+        null
+      }
+    }
+  }
+}
+
+data class UpdatesTimerEntry(
+  val label: String,
+  val duration: Long
+) : UpdatesLoggerEntry {
+  override fun asString(): String {
+    return JSONObject(
+      mapOf(
+        "label" to label,
+        "duration" to duration,
+        "level" to LogType.Timer.type
+      )
+    ).toString()
+  }
+
+  companion object {
+    fun create(json: String): UpdatesTimerEntry? {
+      return try {
+        val jsonObject = JSONObject(json)
+        UpdatesTimerEntry(
+          jsonObject.require("label"),
+          jsonObject.require("duration")
         )
       } catch (e: JSONException) {
         null

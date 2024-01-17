@@ -1,5 +1,3 @@
-@file:Suppress("UnusedImport") // this needs to stay for versioning to work
-
 package expo.modules.updates
 
 import android.content.Context
@@ -34,8 +32,6 @@ import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.statemachine.UpdatesStateValue
 import java.io.File
 import java.lang.ref.WeakReference
-
-// this needs to stay for versioning to work
 
 /**
  * Updates controller for applications that have updates enabled and properly-configured.

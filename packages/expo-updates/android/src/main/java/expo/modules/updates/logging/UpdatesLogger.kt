@@ -1,18 +1,16 @@
 package expo.modules.updates.logging
 
 import android.content.Context
+import expo.modules.core.logging.LogHandlers
 import expo.modules.core.logging.LogType
 import expo.modules.core.logging.Logger
-import expo.modules.core.logging.LoggerOptions
-import java.lang.Exception
-import java.util.*
+import expo.modules.core.logging.LoggerTimer
+import java.util.Date
 
 /**
  * Class that implements logging for expo-updates with its own logcat tag
  */
-class UpdatesLogger(
-  context: Context
-) {
+class UpdatesLogger(context: Context) {
 
   fun trace(
     message: String,
@@ -114,12 +112,19 @@ class UpdatesLogger(
     logger.fatal(logEntryString(message, code, LogType.Fatal, updateId, assetId, exception))
   }
 
+  fun startTimer(label: String): LoggerTimer {
+    return logger.startTimer { duration ->
+      UpdatesTimerEntry(label, duration).asString()
+    }
+  }
+
   // Private methods and fields
 
   private val logger = Logger(
-    EXPO_UPDATES_LOGGING_TAG,
-    context,
-    LoggerOptions.union(listOf(LoggerOptions.logToOS, LoggerOptions.logToFile))
+    listOf(
+      LogHandlers.createOSLogHandler(EXPO_UPDATES_LOGGING_TAG),
+      LogHandlers.createPersistentFileLogHandler(context, EXPO_UPDATES_LOGGING_TAG)
+    )
   )
 
   private fun logEntryString(

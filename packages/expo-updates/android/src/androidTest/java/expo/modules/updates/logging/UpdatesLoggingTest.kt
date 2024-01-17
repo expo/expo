@@ -82,6 +82,27 @@ class UpdatesLoggingTest {
   }
 
   @Test
+  fun testTimer() {
+    val asyncTestUtil = AsyncTestUtil()
+    val instrumentationContext = InstrumentationRegistry.getInstrumentation().context
+    val logger = UpdatesLogger(instrumentationContext)
+    val now = Date()
+
+    val timer = logger.startTimer("testlabel")
+    asyncTestUtil.waitForTimeout(300)
+    timer.stop()
+
+    asyncTestUtil.waitForTimeout(500)
+    val sinceThen = Date(now.time - 5000)
+    val logs = UpdatesLogReader(instrumentationContext).getLogEntries(sinceThen)
+    Assert.assertTrue(logs.isNotEmpty())
+
+    val actualLogEntry = UpdatesTimerEntry.create(logs[logs.size - 1]) as UpdatesTimerEntry
+    Assert.assertEquals("testlabel", actualLogEntry.label)
+    Assert.assertTrue(actualLogEntry.duration >= 300)
+  }
+
+  @Test
   fun testLogReaderTimeLimit() {
     val asyncTestUtil = AsyncTestUtil()
     val instrumentationContext = InstrumentationRegistry.getInstrumentation().context
@@ -124,7 +145,7 @@ class UpdatesLoggingTest {
     Assert.assertEquals("Message 2", UpdatesLogEntry.create(purgedLogs[0])?.message)
   }
 
-  // TODO: Reenale this after upgrading react-native to 0.73
+  // TODO: Re-enable this after upgrading react-native to 0.73
   // @Test
   // fun testBridgeMethods() {
   //   val asyncTestUtil = AsyncTestUtil()
