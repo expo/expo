@@ -100,6 +100,19 @@ function wrapForTerminal(message: string): string {
   return wrapAnsi(message, process.stdout.columns || 80);
 }
 
+/** Create the bash install command from a given set of packages and settings. */
+export function createInstallCommand({
+  packages,
+}: {
+  packages: {
+    file: string;
+    pkg: string;
+    version?: string | undefined;
+  }[];
+}) {
+  return 'npx expo install ' + packages.map(({ pkg }) => pkg).join(' ');
+}
+
 /** Install packages in the project. */
 async function installPackagesAsync(projectRoot: string, { packages }: { packages: string[] }) {
   const packagesStr = chalk.bold(packages.join(', '));
