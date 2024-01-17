@@ -51,8 +51,8 @@ export function ErrorToast(props: Props) {
                 backgroundColor: pressed
                   ? '#323232'
                   : hovered
-                  ? '#111111'
-                  : LogBoxStyle.getBackgroundColor(),
+                    ? '#111111'
+                    : LogBoxStyle.getBackgroundColor(),
               },
             ]}>
             <Count count={totalLogCount} level={level} />
