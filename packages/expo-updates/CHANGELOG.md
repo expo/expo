@@ -7,7 +7,7 @@
 ### 🎉 New features
 
 - Add more failure logs in asset download. ([#26268](https://github.com/expo/expo/pull/26268) by [@wschurman](https://github.com/wschurman))
-- Add timer capability to Logger. ([#26454](https://github.com/expo/expo/pull/26454) by [@wschurman](https://github.com/wschurman))
+- Add timer capability to Logger. ([#26454](https://github.com/expo/expo/pull/26454), [#26477](https://github.com/expo/expo/pull/26477) by [@wschurman](https://github.com/wschurman))
 
 ### 🛠 Breaking changes
 

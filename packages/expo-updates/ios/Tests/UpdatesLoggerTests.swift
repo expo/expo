@@ -51,4 +51,32 @@ class EXUpdatesLoggerTests: XCTestCase {
     XCTAssertTrue(logEntry2?.assetId == "myAssetId")
     XCTAssertNil(logEntry2?.stacktrace)
   }
+
+  func test_TimerWorks() {
+    let logger = UpdatesLogger()
+    let logReader = UpdatesLogReader()
+
+    // Mark the date
+    let epoch = Date()
+
+    let timer = logger.startTimer(label: "testlabel")
+    RunLoop.current.run(until: Date().addingTimeInterval(1))
+    timer.stop()
+
+    // Use reader to retrieve messages
+    let logEntries: [String] = logReader.getLogEntries(newerThan: epoch)
+
+    // Verify number of log entries and decoded values
+    XCTAssertTrue(logEntries.count == 1)
+    
+    let logEntryText: String = logEntries[0]
+    let logEntry = UpdatesLogEntry.create(from: logEntryText)
+    XCTAssertTrue(logEntry?.message == "testlabel")
+    XCTAssertTrue(logEntry?.code == UpdatesErrorCode.none.asString)
+    XCTAssertTrue(logEntry?.level == "\(LogType.timer)")
+    XCTAssertNil(logEntry?.updateId)
+    XCTAssertNil(logEntry?.assetId)
+    XCTAssertNil(logEntry?.stacktrace)
+    XCTAssertGreaterThanOrEqual(logEntry!.duration!, Double(300))
+  }
 }
