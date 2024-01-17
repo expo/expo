@@ -143,6 +143,7 @@ const general = [
         makePage('workflow/web.mdx'),
         makePage('guides/progressive-web-apps.mdx'),
         makePage('distribution/publishing-websites.mdx'),
+        makePage('distribution/publishing-websites-webpack.mdx'),
         makePage('guides/customizing-metro.mdx'),
         makePage('guides/customizing-webpack.mdx'),
         makePage('guides/web-performance.mdx'),

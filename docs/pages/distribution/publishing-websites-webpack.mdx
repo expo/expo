@@ -1,112 +1,52 @@
 ---
-title: Publish websites with Metro
-description: Different ways to publish the Expo web app with third-party services.
+title: Publish websites with Webpack
+description: Different ways to publish the Expo web app with third-party services with webpack.
 ---
 
 import { Step } from '~/ui/components/Step';
-import { Tab, Tabs, TabsGroup } from '~/ui/components/Tabs';
 import { Terminal } from '~/ui/components/Snippet';
-import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { NoIcon } from '~/ui/components/DocIcons';
 
-> **warning** In SDK 50 and above, `metro` is the default bundler for web apps. The previous documentation for publishing with `webpack` is available [here](/distribution/publishing-websites-webpack/).
+> **warning** **Deprecation**: In SDK 50 and above, publishing with `webpack` is deprecated.
 
 A web app created using Expo can be served locally for testing out the production behavior. Once the testing phase checks out, you can choose from a variety of third-party services to host it.
 
+| Bundler   | Expo Router | API Routes | Description                                                                                |
+| --------- | ----------- | ---------- | ------------------------------------------------------------------------------------------ |
+| `webpack` | <NoIcon />  | <NoIcon /> | Outputs a Single Page Application (SPA) with a single **index.html** in the output folder. |
 
-## Output targets
+## Create a web build
 
-The [`web.output`](/versions/latest/config/app/#output) target can be configured in the [app config](/workflow/configuration/) to set the export method for the web app:
+Creating a web build of the project is the first step to publishing a web app. Whether you want to serve it locally or host it on a third-party service, you have to export all JavaScript and assets of a project. This is known as a static bundle. It can be exported by running the following command:
 
-```json app.json
-{
-  "expo": {
-    "web": {
-      "output": "server",
-      "bundler": "metro"
-    }
-  }
-}
-```
+Run the webpack export command to compile the project for web:
 
+<Terminal cmd={['$ npx expo export:web']} />
 
-Expo Router supports three output targets for web apps.
+The resulting project files are in the **web-build** directory. Any files inside the **web** directory are also copied to the **web-build** directory.
 
-| Output             | Expo Router | API Routes  |  Description                                                                                                                   |
-| ------------------ | ----------- | ----------- |  ----------------------------------------------------------------------------------------------------------------------------- |
-| `single` (default) | <YesIcon /> | <NoIcon />  |  Outputs a Single Page Application (SPA) with a single **index.html** in the output folder and has no statically indexable HTML. |
-| `server`           | <YesIcon /> | <YesIcon /> |  Creates **client** and **server** directories. Client files are output as separate HTML files. API routes as separate JavaScript files for hosting with a custom Node.js server.   |
-| `static`           | <YesIcon /> | <NoIcon />  |  Outputs separate HTML files for every route in the **app** directory.                                                             |
+If you make changes to your project, rebuild it for production. Do not edit the **web-build** directory directly.
 
-## Create a build
-
-Creating a build of the project is the first step to publishing a web app. Whether you want to serve it locally or host it on a third-party service, you'll need to export all JavaScript and assets of a project. This is known as a static bundle. It can be exported by running the following command:
-
-<TabsGroup>
-
-<Tabs>
-
-<Tab label={`single`}>
-
-Run the universal export command to compile the project for web:
-
-<Terminal cmd={['$ npx expo export -p web']} />
-
-The resulting project files are located in the **dist** directory. Any files inside the **public** directory are also copied to the **dist** directory.
-
-</Tab>
-
-<Tab label={`server`}>
-
-Run the universal export command to compile the project for web:
-
-<Terminal cmd={['$ npx expo export -p web']} />
-
-The resulting project files are located in the **dist** directory. Any files inside the **public** directory are also copied to the **dist** directory.
-
-</Tab>
-
-<Tab label={`static`}>
-
-Run the universal export command to compile the project for web:
-
-<Terminal cmd={['$ npx expo export -p web']} />
-
-The resulting project files are located in the **dist** directory. Any files inside the **public** directory are also copied to the **dist** directory.
-
-</Tab>
-
-</Tabs>
 
 ## Serve locally
 
 Use [Serve CLI](https://www.npmjs.com/package/serve) to quickly test locally how your website will be hosted in production. Run the following command to serve the static bundle:
 
-<Tabs>
+Run the following command to serve the single-page application:
 
-<Tab label="single">
+<Terminal cmd={['$ npx serve web-build --single']} />
 
-<Terminal cmd={['$ npx serve dist --single']} />
+Open [`http://localhost:5000`](http://localhost:5000) to see your project in action. This method is **HTTP only**, so permissions, camera, location, and many other things won't work.
 
-Open [`http://localhost:5000`](http://localhost:5000) to see your project in action. This method is **HTTP only**, so permissions, camera, location, and many other secure features will not work.
+## Server a subfolder
 
-</Tab>
+ If you want to serve your site in a subfolder, add its path to your **package.json** as shown below:
 
-<Tab label="server">
-
-There is no prebuilt solution. You will need to create your own server to serve the static files and API routes.
-
-</Tab>
-
-<Tab label="static">
-
-<Terminal cmd={['$ npx serve dist']} />
-
-Open [`http://localhost:5000`](http://localhost:5000) to see your project in action. This method is **HTTP only**, so permissions, camera, location, and many other secure features will work.
-
-</Tab>
-
-
-</Tabs>
+ ```json package.json
+ {
+   "homepage": "/path/to/subfolder"
+ }
+ ```
 
 ## Hosting on third-party services
 
@@ -128,15 +68,15 @@ Install the Netlify CLI by running the following command:
 
 Configure redirects for single-page applications.
 
-> If your app uses [static rendering](/router/reference/static-rendering), then you can skip this step.
+If your app implements any navigation, you'll need to configure Netlify to redirect requests to the single **web-build/index.html** file. This can be done in Netlify by creating a **./public/\_redirects** file and redirecting all requests to **/index.html**.
 
-`expo.web.output: 'single'` generates a single-page application. It means there's only one **dist/index.html** file to which all requests must be redirected. This can be done in Netlify by creating a **./public/\_redirects** file and redirecting all requests to **/index.html**.
+Navigate inside the **web-build** directory and run the following command to create **\_redirects** file with follwing rule:
 
-```sh public/_redirects
+```bash web/_redirects
 /*    /index.html   200
 ```
 
-If you modify this file, you must rebuild your project with `npx expo export -p web` to have it safely copied into the **dist** directory.
+If you modify this file, you must rebuild your project with `npx expo export:web` to have it safely copied into the **web-build** directory.
 
 </Step>
 
@@ -144,9 +84,9 @@ If you modify this file, you must rebuild your project with `npx expo export -p 
 
 Deploy the web build folder by running the following command:
 
-<Terminal cmd={['$ netlify deploy --dir dist']} />
+<Terminal cmd={['$ netlify deploy --dir web-build']} />
 
-You'll see a URL that you can use to view your project online.
+You will see a URL that you can use to view your project online.
 
 </Step>
 
@@ -170,14 +110,12 @@ Install the [Vercel CLI](https://vercel.com/docs/cli).
 
 </Step>
 <Step label="2">
-  Configure redirects for single-page applications.
-
-  Create a **vercel.json** file at the root of your app and add the following configuration:
+  Configure redirects for single-page applications. Create a **vercel.json** file at the root of your app and add the following:
 
   ```json vercel.json
   {
-    "buildCommand": "expo export -p web",
-    "outputDirectory": "dist",
+    "buildCommand": "expo export:web",
+    "outputDirectory": "web-build",
     "devCommand": "expo",
     "cleanUrls": true,
     "framework": null,
@@ -190,8 +128,6 @@ Install the [Vercel CLI](https://vercel.com/docs/cli).
   }
   ```
 
-  If your app uses [static rendering](/router/reference/static-rendering), then you may want to add additional [dynamic route configuration](/router/reference/static-rendering#dynamic-routes).
-
 </Step>
 
 <Step label="3">
@@ -201,13 +137,13 @@ Install the [Vercel CLI](https://vercel.com/docs/cli).
 
 <Terminal cmd={['$ vercel']} />
 
-You'll now see a URL that you can use to view your project online. Paste that URL into your browser when the build is complete, and you'll see your deployed app.
+You will now see a URL that you can use to view your project online. Paste that URL into your browser when the build is complete, and see your deployed app.
 
 </Step>
 
 ### AWS Amplify Console
 
-The [AWS Amplify Console](https://console.amplify.aws) provides a Git-based workflow for continuously deploying and hosting full-stack serverless web apps. Amplify deploys your PWA from a repository instead of from your computer. In this guide, we'll use a GitHub repository. Before starting, [create a new repo on GitHub](https://github.com/new).
+The [AWS Amplify Console](https://console.amplify.aws) provides a Git-based workflow for continuously deploying and hosting full-stack serverless web apps. Amplify deploys your PWA from a repository instead of your computer, so you must use a GitHub repository. Before starting, [create a new repo on GitHub](https://github.com/new).
 
 <Step label="1">
 
@@ -217,7 +153,7 @@ Add the [**amplify-explicit.yml**](https://github.com/expo/amplify-demo/blob/mas
 
 <Step label="2">
 
-Push your local Expo project to a GitHub repository. If you haven't pushed to GitHub yet, follow [GitHub's guide to add an existing project to GitHub](https://docs.github.com/en/get-started/importing-your-projects-to-github/importing-source-code-to-github/adding-locally-hosted-code-to-github).
+Push your local Expo project to a GitHub repository. If you have not pushed to GitHub yet, follow [GitHub's guide to add an existing project to GitHub](https://docs.github.com/en/get-started/importing-your-projects-to-github/importing-source-code-to-github/adding-locally-hosted-code-to-github).
 
 </Step>
 
@@ -246,8 +182,6 @@ Follow the steps in the **Learn how to get the most out of Amplify Hosting** dro
 ### GitHub Pages
 
 [GitHub Pages](https://pages.github.com/) allows you to publish a website directly from a GitHub repository.
-
-> **warning** Expo Router websites do not support deployment to GitHub Pages yet.
 
 <Step label="1">
 
@@ -341,8 +275,7 @@ Then, initialize your firebase project to host by running the command:
 
 The settings will depend on how you built your Expo website:
 
-1. When asked about the public path, make sure to specify the **dist** directory.
-2. When prompted **Configure as a single-page app (rewrite all urls to /index.html)**, only select **Yes** if you used `web.output: "single"` (default). Otherwise, select **No**.
+When asked about the public path, make sure to specify the **web-build** directory. Also, when prompted **Configure as a single-page app (rewrite all urls to /index.html)**, select **Yes**.
 
 </Step>
 
@@ -354,7 +287,7 @@ In the existing `scripts` property of **package.json**, add `predeploy` and `dep
 ```json package.json
 "scripts": {
   /* @hide ... */ /* @end */
-  "predeploy": "expo export -p web",
+  "predeploy": "expo export:web",
   "deploy-hosting": "npm run predeploy && firebase deploy --only hosting",
 }
 ```
@@ -401,5 +334,3 @@ In case you want to change the header for hosting add the following config for `
 ```
 
 </Step>
-
-</TabsGroup>
