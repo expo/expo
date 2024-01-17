@@ -55,26 +55,14 @@ describe(_resolveStringOrBooleanArgs, () => {
       _resolveStringOrBooleanArgs({ '--basic': Boolean }, ['foobar', 'root', '--basic'])
     ).toThrow(/Unknown argument: root/);
   });
-  it(`prefers last argument when arguments are repeated and 'lastArgTakesPrecedence' is set to true`, () => {
+  it(`prefers last argument when arguments are repeated`, () => {
     expect(
       _resolveStringOrBooleanArgs(
         { '--basic': Boolean },
         ['--basic', 'true', '--basic', 'false', 'root'],
-        /* lastArgTakesPrecedence */ true
       )
     ).toEqual({
       args: { '--basic': 'false' },
-      projectRoot: 'root',
-    });
-
-    expect(
-      _resolveStringOrBooleanArgs(
-        { '--basic': Boolean },
-        ['--basic', 'true', '--basic', 'false', 'root'],
-        /* lastArgTakesPrecedence */ false
-      )
-    ).toEqual({
-      args: { '--basic': 'true' },
       projectRoot: 'root',
     });
   });

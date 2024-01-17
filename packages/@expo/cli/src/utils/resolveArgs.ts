@@ -50,7 +50,7 @@ export async function resolveStringOrBooleanArgsAsync(
   args = collapseAliases(extraArgs, args);
 
   // Resolve all of the string or boolean arguments and the project root.
-  return _resolveStringOrBooleanArgs({ ...rawMap, ...extraArgs }, args, /* lastArgTakesPrecedence */ true);
+  return _resolveStringOrBooleanArgs({ ...rawMap, ...extraArgs }, args);
 }
 
 /**
@@ -92,7 +92,6 @@ export async function resolveCustomBooleanArgsAsync(
 export function _resolveStringOrBooleanArgs(
   arg: Spec,
   args: string[],
-  lastArgTakesPrecedence = false,
 ) {
   // Default project root, if a custom one is defined then it will overwrite this.
   let projectRoot: string = '.';
@@ -111,16 +110,16 @@ export function _resolveStringOrBooleanArgs(
     if (value.startsWith('--')) {
       // If we ever find an argument then it must be a boolean because we are checking in reverse
       // and removing arguments from the array if we find a string.
-      // We only override arguments that are already set when `lastArgTakesPrecedence` is false
-      if (!(value in settings) || !lastArgTakesPrecedence) {
+      // We don't override arguments that are already set
+      if (!(value in settings)) {
         settings[value] = true;
       }
     } else {
       // Get the previous argument in the array.
       const nextValue = i > 0 ? args[i - 1] : null;
       if (nextValue && possibleArgs.includes(nextValue)) {
-        // We only override arguments that are already set when `lastArgTakesPrecedence` is false
-        if (!(nextValue in settings) || !lastArgTakesPrecedence) {
+        // We don't override arguments that are already set
+        if (!(nextValue in settings)) {
           settings[nextValue] = value;
         }
         i--;
