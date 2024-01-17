@@ -275,6 +275,7 @@ redirects[eas-update/eas-update-and-eas-cli]=eas-update/eas-cli
 redirects[eas-update/debug-updates]=eas-update/debug
 redirects[eas-update/how-eas-update-works]=eas-update/how-it-works
 redirects[eas-update/migrate-to-eas-update]=eas-update/migrate-from-classic-updates
+redirects[distribution/custom-updates-server]=eas-update/custom-updates-server
 
 # Redirects after Expo Router docs reorganization from Home to Guides
 redirects[routing/next-steps]=router/introduction

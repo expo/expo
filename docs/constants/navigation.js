@@ -322,6 +322,7 @@ const general = [
     ]),
     makeGroup('Reference', [
       makePage('eas-update/migrate-from-classic-updates.mdx'),
+      makePage('eas-update/custom-updates-server.mdx'),
       makePage('eas-update/codepush.mdx'),
       makePage('eas-update/updating-your-app.mdx'),
       makePage('eas-update/faq.mdx'),
@@ -360,7 +361,6 @@ const general = [
     makePage('distribution/introduction.mdx'),
     makePage('distribution/app-stores.mdx'),
     makePage('distribution/runtime-versions.mdx'),
-    makePage('distribution/custom-updates-server.mdx'),
     makePage('distribution/app-transfers.mdx'),
   ]),
   makeSection(
