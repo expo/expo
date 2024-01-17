@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 - [expo-updates] Migrate to requireNativeModule/requireOptionalNativeModule. ([#25648](https://github.com/expo/expo/pull/25648) by [@wschurman](https://github.com/wschurman))
@@ -16,6 +18,14 @@
 ### 📚 3rd party library updates
 
 - Update react-native to 0.73.2. ([#26311](https://github.com/expo/expo/pull/26311) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 50.0.0-preview.11 - 2024-01-15
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.10 - 2024-01-12
+
+_This version does not introduce any user-facing changes._
 
 ## 50.0.0-preview.9 - 2024-01-10
 

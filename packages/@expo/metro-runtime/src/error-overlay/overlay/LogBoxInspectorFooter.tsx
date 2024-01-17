@@ -54,8 +54,8 @@ function FooterButton({ text, onPress }: { onPress: () => void; text: string }) 
               backgroundColor: pressed
                 ? '#323232'
                 : hovered
-                ? '#111111'
-                : LogBoxStyle.getBackgroundColor(),
+                  ? '#111111'
+                  : LogBoxStyle.getBackgroundColor(),
             },
           ]}>
           <View style={buttonStyles.content}>

@@ -398,9 +398,9 @@ async function prepareLocalUpdatesModule(repoRoot: string) {
   const originalExpoModuleConfig = JSON.parse(originalExpoModuleConfigJsonString);
   const expoModuleConfig = {
     ...originalExpoModuleConfig,
-    ios: {
-      ...originalExpoModuleConfig.ios,
-      modules: [...originalExpoModuleConfig.ios.modules, 'E2ETestModule'],
+    apple: {
+      ...originalExpoModuleConfig.apple,
+      modules: [...originalExpoModuleConfig.apple.modules, 'E2ETestModule'],
     },
     android: {
       ...originalExpoModuleConfig.android,

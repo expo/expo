@@ -349,6 +349,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/archive/workflow/customizing/': '/workflow/customizing/',
   '/errors-and-warnings/': '/debugging/errors-and-warnings/',
   '/guides/education': '/additional-resources/',
+  '/guides/web-performance/': '/guides/analyzing-bundles/',
 
   // Classic updates moved to archive
   '/guides/configuring-ota-updates/': '/archive/classic-updates/getting-started/',
@@ -405,6 +406,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/eas-update/debug-updates/': '/eas-update/debug/',
   '/eas-update/how-eas-update-works/': '/eas-update/how-it-works/',
   '/eas-update/migrate-to-eas-update/': '/eas-update/migrate-from-classic-updates/',
+  '/distribution/custom-updates-server/': '/eas-update/custom-updates-server/',
 
   // Expo Router Advanced guides
   '/router/advance/root-layout': '/router/advanced/root-layout/',

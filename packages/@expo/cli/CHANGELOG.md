@@ -6,14 +6,21 @@
 
 ### 🎉 New features
 
-### 🐛 Bug fixes
+- Supported extra CORS requests to dev-server from the expo-router's `origin` and `headOrigin` settings. ([#26463](https://github.com/expo/expo/pull/26463) by [@kudo](https://github.com/kudo))
 
-- Add default user to Android adb install command. ([#26388](https://github.com/expo/expo/pull/26388) by [@EvanBacon](https://github.com/EvanBacon))
+### 🐛 Bug fixes
 
 ### 💡 Others
 
 - Move `@expo/server` to be a dependency of `expo-router`. ([#25937](https://github.com/expo/expo/pull/25937) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove classic updates SDK version. ([#26061](https://github.com/expo/expo/pull/26061) by [@wschurman](https://github.com/wschurman))
+- Added `templateChecksum` for prebuild to check the current template version. ([#26414](https://github.com/expo/expo/pull/26414) by [@kudo](https://github.com/kudo))
+
+## 0.16.8 - 2024-01-15
+
+### 🐛 Bug fixes
+
+- Add default user to Android adb install command. ([#26388](https://github.com/expo/expo/pull/26388) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.16.7 - 2024-01-10
 
@@ -46,6 +53,7 @@
 - Add missing `find-yarn-workspace-root` dependency. ([#25991](https://github.com/expo/expo/pull/25991) by [@byCedric](https://github.com/byCedric))
 - Add missing `lodash.debounce` dependency. ([#25990](https://github.com/expo/expo/pull/25990) by [@byCedric](https://github.com/byCedric))
 - Add missing `@react-native/dev-middleware` dependency. ([#26000](https://github.com/expo/expo/pull/26000) by [@byCedric](https://github.com/byCedric))
+- Warn users if they are using an incorrect `web.output` with API Routes. ([#25931](https://github.com/expo/expo/pull/25931) by [@marklawlor](https://github.com/marklawlor))
 
 ## 0.16.3 — 2023-12-15
 

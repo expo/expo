@@ -12,7 +12,7 @@ import {
 const indent = '  ';
 
 async function findPodspecFiles(revision: PackageRevision): Promise<string[]> {
-  const configPodspecPaths = revision.config?.iosPodspecPaths();
+  const configPodspecPaths = revision.config?.applePodspecPaths();
   if (configPodspecPaths && configPodspecPaths.length) {
     return configPodspecPaths;
   }
@@ -54,17 +54,17 @@ export async function resolveModuleAsync(
     podspecDir: path.dirname(path.join(revision.path, podspecFile)),
   }));
 
-  const swiftModuleNames = getSwiftModuleNames(pods, revision.config?.iosSwiftModuleNames());
+  const swiftModuleNames = getSwiftModuleNames(pods, revision.config?.appleSwiftModuleNames());
 
   return {
     packageName,
     pods,
     swiftModuleNames,
     flags: options.flags,
-    modules: revision.config?.iosModules() ?? [],
-    appDelegateSubscribers: revision.config?.iosAppDelegateSubscribers() ?? [],
-    reactDelegateHandlers: revision.config?.iosReactDelegateHandlers() ?? [],
-    debugOnly: revision.config?.iosDebugOnly() ?? false,
+    modules: revision.config?.appleModules() ?? [],
+    appDelegateSubscribers: revision.config?.appleAppDelegateSubscribers() ?? [],
+    reactDelegateHandlers: revision.config?.appleReactDelegateHandlers() ?? [],
+    debugOnly: revision.config?.appleDebugOnly() ?? false,
   };
 }
 

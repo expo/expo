@@ -1,14 +1,9 @@
 package expo.modules.devlauncher.launcher
 
 import android.app.Application
-import com.facebook.react.ReactApplication
-import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
-import com.facebook.react.ReactPackageTurboModuleManagerDelegate
-import com.facebook.react.bridge.JSIModulePackage
 import com.facebook.react.bridge.JavaScriptExecutorFactory
-import com.facebook.react.config.ReactFeatureFlags
-import com.facebook.react.defaults.DefaultJSIModulePackage
+import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.shell.MainReactPackage
 import devmenu.com.th3rdwave.safeareacontext.SafeAreaProviderManager
 import expo.modules.adapters.react.ModuleRegistryAdapter
@@ -25,7 +20,7 @@ import expo.modules.kotlin.ModulesProvider
 class DevLauncherClientHost(
   application: Application,
   private val launcherIp: String?
-) : ReactNativeHost(application) {
+) : DefaultReactNativeHost(application) {
 
   init {
     if (useDeveloperSupport) {
@@ -71,21 +66,4 @@ class DevLauncherClientHost(
   override fun getJSMainModuleName() = "index"
 
   override fun getBundleAssetName() = "expo_dev_launcher_android.bundle"
-
-  override fun getReactPackageTurboModuleManagerDelegateBuilder(): ReactPackageTurboModuleManagerDelegate.Builder? {
-    if (!ReactFeatureFlags.useTurboModules) {
-      return null
-    }
-    val appHost = (application as ReactApplication)?.reactNativeHost ?: return null
-    val method = ReactNativeHost::class.java.getDeclaredMethod("getReactPackageTurboModuleManagerDelegateBuilder")
-    method.isAccessible = true
-    return method.invoke(appHost) as ReactPackageTurboModuleManagerDelegate.Builder
-  }
-
-  override fun getJSIModulePackage(): JSIModulePackage? =
-    if (ReactFeatureFlags.enableFabricRenderer) {
-      DefaultJSIModulePackage(this)
-    } else {
-      null
-    }
 }

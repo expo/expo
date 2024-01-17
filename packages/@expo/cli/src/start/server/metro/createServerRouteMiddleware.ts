@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import type { ProjectConfig } from '@expo/config';
 import requireString from 'require-from-string';
 import resolve from 'resolve';
 import resolveFrom from 'resolve-from';
@@ -14,6 +15,7 @@ import { ForwardHtmlError } from './MetroBundlerDevServer';
 import { bundleApiRoute } from './bundleApiRoutes';
 import { fetchManifest } from './fetchRouterManifest';
 import { getErrorOverlayHtmlAsync, logMetroError, logMetroErrorAsync } from './metroErrorInterface';
+import { warnInvalidWebOutput } from './router';
 import { Log } from '../../../log';
 import { CommandError } from '../../../utils/errors';
 
@@ -34,6 +36,7 @@ export function createRouteHandlerMiddleware(
     baseUrl: string;
     getWebBundleUrl: () => string;
     getStaticPageAsync: (pathname: string) => Promise<{ content: string }>;
+    config: ProjectConfig;
   }
 ) {
   if (!resolveFrom.silent(projectRoot, 'expo-router')) {
@@ -121,6 +124,11 @@ export function createRouteHandlerMiddleware(
         logMetroError(projectRoot, { error });
       },
       async getApiRoute(route) {
+        const { exp } = options.config;
+        if (exp.web?.output !== 'server') {
+          warnInvalidWebOutput();
+        }
+
         const resolvedFunctionPath = await resolveAsync(route.page, {
           extensions: ['.js', '.jsx', '.ts', '.tsx'],
           basedir: options.appDir,
