@@ -108,6 +108,7 @@ export async function loadMetroConfigAsync(
 
   config = await withMetroMultiPlatformAsync(projectRoot, {
     config,
+    exp,
     platformBundlers,
     isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
     webOutput: exp.web?.output ?? 'single',

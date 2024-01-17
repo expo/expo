@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { ExpoConfig, Platform } from '@expo/config';
 import fs from 'fs';
 import { ConfigT } from 'metro-config';
 import { Resolution, ResolutionContext, CustomResolutionContext } from 'metro-resolver';
@@ -425,6 +426,7 @@ export async function withMetroMultiPlatformAsync(
   projectRoot: string,
   {
     config,
+    exp,
     platformBundlers,
     isTsconfigPathsEnabled,
     webOutput,
@@ -432,6 +434,7 @@ export async function withMetroMultiPlatformAsync(
     isExporting,
   }: {
     config: ConfigT;
+    exp: ExpoConfig;
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
     webOutput?: 'single' | 'static' | 'server';
@@ -467,7 +470,7 @@ export async function withMetroMultiPlatformAsync(
   // @ts-expect-error: Invalidate the cache when the location of expo-router changes on-disk.
   config.transformer._expoRouterPath = resolveFrom.silent(projectRoot, 'expo-router');
 
-  if (platformBundlers.web === 'metro' && isExporting) {
+  if (exp.platforms?.includes('web') && platformBundlers.web === 'metro') {
     await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
   }
 
@@ -481,7 +484,9 @@ export async function withMetroMultiPlatformAsync(
   await setupNodeExternals(projectRoot);
 
   let expoConfigPlatforms = Object.entries(platformBundlers)
-    .filter(([, bundler]) => bundler === 'metro')
+    .filter(
+      ([platform, bundler]) => bundler === 'metro' && exp.platforms?.includes(platform as Platform)
+    )
     .map(([platform]) => platform);
 
   if (Array.isArray(config.resolver.platforms)) {

@@ -9,6 +9,7 @@ jest.mock('@expo/config', () => ({
       sdkVersion: '45.0.0',
       name: 'my-app',
       slug: 'my-app',
+      platforms: ['ios', 'android'],
     },
   })),
 }));
@@ -40,7 +41,7 @@ describe(resolveOptionsAsync, () => {
     await expect(
       resolveOptionsAsync('/', { '--platform': ['android', 'all'] })
     ).resolves.toMatchObject({
-      platforms: ['android', 'ios', 'web'],
+      platforms: ['android', 'ios'],
     });
   });
 
@@ -76,13 +77,13 @@ describe(resolveOptionsAsync, () => {
       sourceMaps: false,
       maxWorkers: undefined,
       outputDir: 'dist',
-      platforms: ['ios', 'android', 'web'],
+      platforms: ['ios', 'android'],
     });
   });
   it(`parses default options with web enabled`, async () => {
     jest.mocked(getConfig).mockReturnValueOnce({
       // @ts-expect-error
-      exp: { web: { bundler: 'metro' } },
+      exp: { web: { bundler: 'metro' }, platforms: ['ios', 'android', 'web'] },
     });
     await expect(resolveOptionsAsync('/', {})).resolves.toEqual(
       expect.objectContaining({
