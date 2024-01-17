@@ -7,9 +7,10 @@ description: Learn about different Metro bundler configurations that can be cust
 
 import { Terminal } from '~/ui/components/Snippet';
 import { YesIcon, NoIcon, PendingIcon } from '~/ui/components/DocIcons';
-import { Step } from '~/ui/components/Step';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { BookOpen02Icon } from '@expo/styleguide-icons';
 
-Expo CLI uses Metro during [`npx expo start`](/more/expo-cli/#develop) and [`npx expo export`](/more/expo-cli/#exporting) to bundle your JavaScript code and assets. Metro is built and optimized for React Native, and used for large-scale applications such as Facebook and Instagram.
+Expo CLI uses Metro during [`npx expo start`](/more/expo-cli/#develop) and [`npx expo export`](/more/expo-cli/#exporting) to bundle your JavaScript code and assets. Metro is built and optimized for React Native and used for large-scale applications such as Facebook and Instagram.
 
 ## Customizing
 
@@ -59,17 +60,27 @@ module.exports = config;
 
 ## Bundle splitting
 
-Starting in Expo SDK 50, Expo CLI will automatically split bundles based on async imports (web-only for now).
+From SDK 50, Expo CLI automatically splits bundles based on async imports (web-only).
 
-This technique can be used in conjunction with Expo Router to automatically split the bundle based on route files in the `app/` directory. This will only load the the code required for the current route, and defer loading additional JavaScript until the user navigates to different pages. Learn more in [Async Routes](/router/reference/async-routes).
+This technique can be used with Expo Router to automatically split the bundle based on route files in the **app/** directory. It will only load the the code required for the current route, and defer loading additional JavaScript until the user navigates to different pages. See [Async Routes](/router/reference/async-routes) for more information.
 
 ## Tree shaking
 
-Learn more about tree shaking in the [bundle size guide](/guides/bundle-size).
+<BoxLink
+  title="Tree shaking"
+  description="Learn about how Expo CLI optimizes production JavaScript bundles."
+  href="/guides/tree-shaking/"
+  Icon={BookOpen02Icon}
+/>
 
 ## Minification
 
-Learn more about customizing the minifier in the [minification guide](/guides/minify).
+<BoxLink
+  title="Minifying JavaScript"
+  description="Learn about customizing the JavaScript minification process in Expo CLI with Metro bundler."
+  href="/guides/minify/"
+  Icon={BookOpen02Icon}
+/>
 
 ## Source map exploration
 
@@ -173,7 +184,7 @@ You can deploy the website using any popular web host by following a guide from 
 
 #### Static files
 
-Expo's Metro implementation supports hosting static files from the dev server by putting them in the root **public/** directory. It is similar to many other web frameworks. In Expo webpack, the **web** directory is default.
+Expo's Metro implementation supports hosting static files from the dev server by putting them in the root **public/** directory. It is similar to many other web frameworks. In Expo webpack, the **web** directory is the default.
 
 When exporting with `npx expo export`, the contents of the **public** directory are copied into the **dist/** directory. It means your app can expect to fetch these assets relative to the host URL. The most common example of this is the **public/favicon.ico** which is used by websites to render the tab icon.
 
@@ -187,10 +198,10 @@ In the future, this will work universally across platforms with EAS Update hosti
 
 Expo's Metro config has experimental support for the `compilerOptions.paths` and `compilerOptions.baseUrl` fields in the project's `tsconfig.json` (or `jsconfig.json`) file. This enables absolute imports and aliases in the project. Learn more in the [TypeScript guide](/guides/typescript).
 
-These feature requires additional setup in bare projects. See the [versioned Metro setup guide](/versions/latest/config/metro#bare-workflow-setup) for more information.
+This feature requires additional setup in bare projects. See the [Metro setup guide](/versions/latest/config/metro#bare-workflow-setup) for more information.
 
 ## CSS
 
 > Available in SDK 49 and higher.
 
-Expo's Metro config offers support for CSS on web. See the versioned [Metro CSS guide](/versions/latest/config/metro#css) for more information.
+Expo's Metro config offers support for CSS on web. See the [Metro CSS guide](/versions/latest/config/metro#css) for more information.
