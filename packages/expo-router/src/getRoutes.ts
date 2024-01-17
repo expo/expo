@@ -13,16 +13,28 @@ export type Options = {
   ignoreRequireErrors?: boolean;
   ignoreEntryPoints?: boolean;
   /* Used using testing for easier comparison */
-  unstable_stripLoadRoute?: boolean;
+  internal_stripLoadRoute?: boolean;
 };
 
 type DirectoryNode = {
   layout?: RouteNode[];
+  name: string; // Just used for debugging
   files: Map<string, RouteNode[]>;
   subdirectories: Map<string, DirectoryNode>;
 };
 
-/** Given a Metro context module, return an array of nested routes. */
+/**
+ * Given a Metro context module, return an array of nested routes.
+ *
+ * This is a two step process:
+ *  1. Convert the RequireContext keys (file paths) into a directory tree.
+ *      - This should extrapolate array syntax into multiple routes
+ *      - Routes are given a specificity score
+ *  2. Flatten the directory tree into routes
+ *      - Routes in directories without _layout files are hoisted to the nearest _layout
+ *      - The name of the route is relative to the nearest _layout
+ *      - If multiple routes have the same name, the most specific route is used
+ */
 export function getRoutes(contextModule: RequireContext, options: Options = {}): RouteNode | null {
   const directoryTree = getDirectoryTree(contextModule, options);
 
@@ -34,12 +46,16 @@ export function getRoutes(contextModule: RequireContext, options: Options = {}):
   return flattenDirectoryTreeToRoutes(directoryTree, options);
 }
 
+/**
+ * Converts a RequireContext keys (file paths) into a directory tree.
+ */
 function getDirectoryTree(contextModule: RequireContext, options: Options) {
   const ignoreList = getIgnoreList(options);
   let hasRoutes = false;
   let hasLayout = false;
 
   const directory: DirectoryNode = {
+    name: '/',
     files: new Map(),
     subdirectories: new Map(),
   };
@@ -57,26 +73,30 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
     }
 
     // A single file may be extrapolated into multiple routes if it contains array syntax
-    const leaves: DirectoryNode[] = [];
+    const leaves: Set<DirectoryNode> = new Set();
     for (const key of extrapolateGroups(meta.key)) {
       let directoryNode = directory;
 
       // Traverse the directory tree to its leaf node, creating any missing directories along the way
       const subdirectoryParts = key.replace(meta.filename, '').split('/').filter(Boolean);
+      let name = '/';
+
       for (const part of subdirectoryParts) {
-        let child = directoryNode.subdirectories.get(part);
-        if (!child) {
-          child = {
+        name += part + '/';
+        let subDirectory = directoryNode.subdirectories.get(part);
+        if (!subDirectory) {
+          subDirectory = {
+            name,
             files: new Map(),
             subdirectories: new Map(),
           };
-          directoryNode.subdirectories.set(part, child);
+          directoryNode.subdirectories.set(part, subDirectory);
         }
-        directoryNode = child;
+        directoryNode = subDirectory;
       }
 
       // Add the leaf node to the list of leaves
-      leaves.push(directoryNode);
+      leaves.add(directoryNode);
     }
 
     const node: RouteNode = {
@@ -92,23 +112,26 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
         }
       },
       contextKey: filePath,
-      entryPoints: [filePath],
-      route: meta.name, // This is overwritten during hoisting
+      entryPoints: [filePath], // Additional entry points are added during hoisting
+      route: meta.name, // This is overwritten during hoisting based upon the _layout
       dynamic: null, // This is calculated during hoisting
-      children: [],
+      children: [], // While we are building the directory tree, we don't know the node's children just yet. This is added during hoisting
     };
 
     if (meta.isLayout) {
-      hasLayout ||= leaves.length > 0;
+      hasLayout ||= leaves.size > 0;
       for (const leaf of leaves) {
         leaf.layout ??= [];
 
         const existing = leaf.layout[meta.specificity];
 
         if (existing) {
-          throw new Error(
-            `The layouts "${filePath}" and ${existing.contextKey} conflict in "${meta.dirname}. Please remove one of these files.`
-          );
+          // In production, use the first route found
+          if (process.env.NODE_ENV !== 'production') {
+            throw new Error(
+              `The layouts "${filePath}" and ${existing.contextKey} conflict. Please remove or rename one of these files.`
+            );
+          }
         } else {
           leaf.layout[meta.specificity] = node;
         }
@@ -126,13 +149,13 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
             nodes[0] = node;
           } else {
             throw new Error(
-              `The API route "${filePath}" and ${existing.contextKey} conflict in "${meta.dirname}. Please remove one of these files.`
+              `The API route "${filePath}" and ${existing.contextKey} conflict. Please remove or rename one of these files.`
             );
           }
         }
       }
     } else {
-      hasRoutes ||= leaves.length > 0;
+      hasRoutes ||= leaves.size > 0;
       for (const leaf of leaves) {
         let nodes = leaf.files.get(meta.name);
 
@@ -147,9 +170,12 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           nodes[meta.specificity] = node;
         } else {
           if (existing) {
-            throw new Error(
-              `The routes "${filePath}" and ${existing.contextKey} conflict in "${meta.dirname}. Please remove one of these files.`
-            );
+            // In production, use the first route found
+            if (process.env.NODE_ENV !== 'production') {
+              throw new Error(
+                `The route files "${filePath}" and ${existing.contextKey} conflict. Please remove or rename one of these files.`
+              );
+            }
           } else {
             nodes[meta.specificity] = node;
           }
@@ -158,7 +184,12 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
     }
   }
 
-  // If there are no layout files, add the global default
+  // If there are no routes/layouts then we should display the tutorial.
+  if (!hasLayout && !hasRoutes) {
+    return null;
+  }
+
+  // If there are no top-level _layout, add a default _layout
   if (!directory.layout) {
     directory.layout = [
       {
@@ -177,11 +208,6 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
     ];
   }
 
-  // If there are no routes
-  if (!hasLayout && !hasRoutes) {
-    return null;
-  }
-
   // Only include the sitemap if there are routes.
   if (hasRoutes) {
     appendSitemapRoute(directory);
@@ -192,49 +218,9 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
   return directory;
 }
 
-function appendSitemapRoute(directory: DirectoryNode) {
-  if (directory.files.has('_sitemap')) {
-    return;
-  }
-
-  directory.files.set('_sitemap', [
-    {
-      loadRoute() {
-        const { Sitemap, getNavOptions } = require('../views/Sitemap');
-        return { default: Sitemap, getNavOptions };
-      },
-      route: '_sitemap',
-      contextKey: './_sitemap.tsx',
-      generated: true,
-      internal: true,
-      dynamic: null,
-      children: [],
-      entryPoints: ['expo-router/build/views/Sitemap.js'],
-    },
-  ]);
-}
-
-function appendNotFoundRoute(directory: DirectoryNode) {
-  if (directory.files.has('+not-found')) {
-    return;
-  }
-
-  directory.files.set('+not-found', [
-    {
-      loadRoute() {
-        return { default: require('../views/Unmatched').Unmatched };
-      },
-      route: '+not-found',
-      contextKey: './+not-found.tsx',
-      generated: true,
-      internal: true,
-      dynamic: [{ name: '+not-found', deep: true, notFound: true }],
-      children: [],
-      entryPoints: ['expo-router/build/views/Unmatched.js'],
-    },
-  ]);
-}
-
+/**
+ * Flatten the directory tree into routes, hoisting routes to the nearest _layout.
+ */
 function flattenDirectoryTreeToRoutes(
   directory: DirectoryNode,
   options: Options,
@@ -249,7 +235,8 @@ function flattenDirectoryTreeToRoutes(
    * All routes get "hoisted" to the nearest layout.
    */
   if (directory.layout) {
-    const layout = getMostSpecific(directory.layout);
+    // TODO: In this implementation, everything has a specificity of 0. When we introduce Platform Routes, we need to pick the most specific layout.
+    const layout = directory.layout[0];
 
     // The first _layout is the root layout. It doesn't have a parent
     if (nearestLayout) {
@@ -262,7 +249,7 @@ function flattenDirectoryTreeToRoutes(
     pathToRemove = nearestLayout.route ? `${nearestLayout.route}/` : '';
     nearestLayout.route = newRoute;
 
-    nearestLayout.dynamic = generateDynamic(nearestLayout.route);
+    nearestLayout.dynamic = getDynamicConvention(nearestLayout.route);
 
     if (nearestLayout.entryPoints) {
       // Track this _layout's entryPoints so that child routes can inherit them
@@ -272,16 +259,17 @@ function flattenDirectoryTreeToRoutes(
       delete nearestLayout.entryPoints;
     }
 
-    if (options.unstable_stripLoadRoute) {
+    if (options.internal_stripLoadRoute) {
       delete (nearestLayout as any).loadRoute;
     }
   }
 
   // This should never occur, but it makes the type system happy
-  if (!nearestLayout) return null;
+  if (!nearestLayout) throw new Error('Expo Router Internal Error: No nearest layout');
 
   for (const routes of directory.files.values()) {
-    const route = getMostSpecific(routes);
+    // TODO: In this implementation, everything has a specificity of 0. When we introduce Platform Routes, we need to pick the most specific route.
+    const route = routes[0];
 
     // `route` is the absolute pathname. We need to make this relative to the parent layout
     const name = route.route.replace(pathToRemove, '');
@@ -292,10 +280,10 @@ function flattenDirectoryTreeToRoutes(
       childEntryPoints.add(route.entryPoints[0]);
     }
 
-    const child = {
+    const child: RouteNode = {
       ...route,
       route: name,
-      dynamic: generateDynamic(name),
+      dynamic: getDynamicConvention(name),
       entryPoints: [...childEntryPoints],
     };
 
@@ -303,7 +291,7 @@ function flattenDirectoryTreeToRoutes(
       delete (child as any).entryPoints;
     }
 
-    if (options.unstable_stripLoadRoute) {
+    if (options.internal_stripLoadRoute) {
       delete (child as any).loadRoute;
     }
 
@@ -318,22 +306,12 @@ function flattenDirectoryTreeToRoutes(
   return nearestLayout;
 }
 
-function getMostSpecific(routes: RouteNode[]) {
-  const route = routes[routes.length - 1];
-
-  if (!routes[0]) {
-    throw new Error(`${route.contextKey} does not contain a non-platform fallback route`);
-  }
-
-  return routes[routes.length - 1];
-}
-
 function getFileMeta(key: string, options: Options) {
   // Remove the leading `./`
   key = key.replace(/^\.\//, '');
 
   const parts = key.split('/');
-  const dirname = parts.slice(0, -1).join('/');
+  const dirname = parts.slice(0, -1).join('/') || './';
   const filename = parts[parts.length - 1];
   const filepathWithoutExtensions = removeSupportedExtensions(key);
   const filenameWithoutExtensions = removeSupportedExtensions(filename);
@@ -394,10 +372,10 @@ function extrapolateGroups(key: string, keys: Set<string> = new Set()): Set<stri
   return keys;
 }
 
-function generateDynamic(path: string) {
-  const dynamic: RouteNode['dynamic'] = path
+function getDynamicConvention(path: string): DynamicConvention[] | null {
+  const dynamic = path
     .split('/')
-    .map((part) => {
+    .map((part): DynamicConvention | null => {
       if (part === '+not-found') {
         return {
           name: '+not-found',
@@ -419,4 +397,47 @@ function generateDynamic(path: string) {
   }
 
   return dynamic;
+}
+
+function appendSitemapRoute(directory: DirectoryNode) {
+  if (directory.files.has('_sitemap')) {
+    return;
+  }
+
+  directory.files.set('_sitemap', [
+    {
+      loadRoute() {
+        const { Sitemap, getNavOptions } = require('./views/Sitemap');
+        return { default: Sitemap, getNavOptions };
+      },
+      route: '_sitemap',
+      contextKey: './_sitemap.tsx',
+      generated: true,
+      internal: true,
+      dynamic: null,
+      children: [],
+      entryPoints: ['expo-router/build/views/Sitemap.js'],
+    },
+  ]);
+}
+
+function appendNotFoundRoute(directory: DirectoryNode) {
+  if (directory.files.has('+not-found')) {
+    return;
+  }
+
+  directory.files.set('+not-found', [
+    {
+      loadRoute() {
+        return { default: require('./views/Unmatched').Unmatched };
+      },
+      route: '+not-found',
+      contextKey: './+not-found.tsx',
+      generated: true,
+      internal: true,
+      dynamic: [{ name: '+not-found', deep: true, notFound: true }],
+      children: [],
+      entryPoints: ['expo-router/build/views/Unmatched.js'],
+    },
+  ]);
 }
