@@ -89,10 +89,7 @@ export async function resolveCustomBooleanArgsAsync(
   };
 }
 
-export function _resolveStringOrBooleanArgs(
-  arg: Spec,
-  args: string[],
-) {
+export function _resolveStringOrBooleanArgs(arg: Spec, args: string[]) {
   // Default project root, if a custom one is defined then it will overwrite this.
   let projectRoot: string = '.';
   // The resolved arguments.

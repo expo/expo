@@ -57,10 +57,13 @@ describe(_resolveStringOrBooleanArgs, () => {
   });
   it(`prefers last argument when arguments are repeated`, () => {
     expect(
-      _resolveStringOrBooleanArgs(
-        { '--basic': Boolean },
-        ['--basic', 'true', '--basic', 'false', 'root'],
-      )
+      _resolveStringOrBooleanArgs({ '--basic': Boolean }, [
+        '--basic',
+        'true',
+        '--basic',
+        'false',
+        'root',
+      ])
     ).toEqual({
       args: { '--basic': 'false' },
       projectRoot: 'root',
