@@ -5,9 +5,9 @@ description: Learn about different webpack bundler configurations that can be cu
 
 import { Terminal } from '~/ui/components/Snippet';
 
-> Expo Webpack has been deprecated in favor of [Expo Router](/router/introduction/). Learn how to [migrate from Expo Webpack to Expo Router](/router/migrate/from-expo-webpack/).
+> **warning** Expo Webpack has been deprecated in favor of [Expo Router](/router/introduction/). Learn how to [migrate from Expo Webpack to Expo Router](/router/migrate/from-expo-webpack/).
 
-When you run `npx expo start --web` or `expo export:web` the CLI will check to see if your project has a **webpack.config.js** in the root directory. If the project doesn't then Expo will use the default `@expo/webpack-config` (preferred).
+When you run `npx expo start --web` or `expo export:web` the CLI checks to see if your project has a **webpack.config.js** in the root directory. If the file doesn't exist in your project, then Expo uses the default `@expo/webpack-config` (preferred).
 
 To edit the config, install `@expo/webpack-config` as a dev dependency and create a template **webpack.config.js** at the root of your project. This can be done by running the following command:
 
