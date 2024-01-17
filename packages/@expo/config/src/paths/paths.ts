@@ -39,8 +39,8 @@ export function resolveEntryPoint(
   const platforms = !platform
     ? []
     : nativePlatforms.includes(platform)
-    ? [platform, 'native']
-    : [platform];
+      ? [platform, 'native']
+      : [platform];
   const extensions = getBareExtensions(platforms);
 
   // If the config doesn't define a custom entry then we want to look at the `package.json`s `main` field, and try again.

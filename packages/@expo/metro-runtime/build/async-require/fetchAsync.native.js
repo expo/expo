@@ -22,7 +22,7 @@ function fetchAsync(url) {
     let completeListener = null;
     let responseListener = null;
     return new Promise((resolve, reject) => {
-        const addListener = RCTNetworking_1.default.addListener;
+        const addListener = RCTNetworking_1.default.addListener.bind(RCTNetworking_1.default);
         dataListener = addListener('didReceiveNetworkData', ([requestId, response]) => {
             if (requestId === id) {
                 responseText = response;

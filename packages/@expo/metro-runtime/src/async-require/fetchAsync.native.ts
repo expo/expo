@@ -22,7 +22,7 @@ export function fetchAsync(
   let completeListener: Subscriber | null = null;
   let responseListener: Subscriber | null = null;
   return new Promise<{ body: string; headers: Record<string, string> }>((resolve, reject) => {
-    const addListener = Networking.addListener as (
+    const addListener = Networking.addListener.bind(Networking) as (
       event: string,
       callback: (props: [string, any, any]) => any
     ) => Subscriber;
