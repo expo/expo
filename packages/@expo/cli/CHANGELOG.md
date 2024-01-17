@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Default `web.bundler` to `metro` if missing and/or `@expo/webpack-config` is not installed
+- Default `web.bundler` to `metro` if missing and/or `@expo/webpack-config` is not installed ([#26452](https://github.com/expo/expo/pull/26452) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
