@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Pin `sucrase@3.34.0` to avoid yarn v1 incompatibilities with `@isaacs/cliui` module aliases
+
 ### 💡 Others
 
 ## 8.5.3 - 2024-01-05
