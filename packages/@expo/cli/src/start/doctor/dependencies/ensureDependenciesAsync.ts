@@ -83,9 +83,7 @@ export async function ensureDependenciesAsync(
     title = '';
   }
 
-  const installCommand = createInstallCommand({
-    packages: missing,
-  });
+  const installCommand = 'npx expo install ' + missing.map(({ pkg }) => pkg).join(', ');
 
   const disableMessage = warningMessage;
 
@@ -100,29 +98,6 @@ export async function ensureDependenciesAsync(
 /**  Wrap long messages to fit smaller terminals. */
 function wrapForTerminal(message: string): string {
   return wrapAnsi(message, process.stdout.columns || 80);
-}
-
-/** Create the bash install command from a given set of packages and settings. */
-export function createInstallCommand({
-  packages,
-}: {
-  packages: {
-    file: string;
-    pkg: string;
-    version?: string | undefined;
-  }[];
-}) {
-  return (
-    'npx expo install ' +
-    packages
-      .map(({ pkg, version }) => {
-        if (version) {
-          return [pkg, version].join('@');
-        }
-        return pkg;
-      })
-      .join(' ')
-  );
 }
 
 /** Install packages in the project. */
