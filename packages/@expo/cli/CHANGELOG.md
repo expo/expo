@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Default `web.bundler` to `metro` if missing and/or `@expo/webpack-config` is not installed
+
 ### 💡 Others
 
 - Remove classic updates SDK version. ([#26061](https://github.com/expo/expo/pull/26061) by [@wschurman](https://github.com/wschurman))

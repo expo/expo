@@ -104,7 +104,7 @@ export async function loadMetroConfigAsync(
     }
   }
 
-  const platformBundlers = getPlatformBundlers(exp);
+  const platformBundlers = getPlatformBundlers(projectRoot, exp);
 
   config = await withMetroMultiPlatformAsync(projectRoot, {
     config,

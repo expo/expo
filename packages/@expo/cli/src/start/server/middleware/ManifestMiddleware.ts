@@ -360,7 +360,7 @@ export abstract class ManifestMiddleware<
   /** Exposed for testing. */
   async checkBrowserRequestAsync(req: ServerRequest, res: ServerResponse, next: ServerNext) {
     // Read the config
-    const bundlers = getPlatformBundlers(this.initialProjectConfig.exp);
+    const bundlers = getPlatformBundlers(this.projectRoot, this.initialProjectConfig.exp);
     if (bundlers.web === 'metro') {
       // NOTE(EvanBacon): This effectively disables the safety check we do on custom runtimes to ensure
       // the `expo-platform` header is included. When `web.bundler=web`, if the user has non-standard Expo
