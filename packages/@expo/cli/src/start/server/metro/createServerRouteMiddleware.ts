@@ -4,11 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
 import type { ProjectConfig } from '@expo/config';
-import { ExpoResponse } from '@expo/server';
-import { createRequestHandler } from '@expo/server/build/vendor/http';
 import requireString from 'require-from-string';
 import resolve from 'resolve';
+import resolveFrom from 'resolve-from';
 import { promisify } from 'util';
 
 import { ForwardHtmlError } from './MetroBundlerDevServer';
@@ -17,6 +17,7 @@ import { fetchManifest } from './fetchRouterManifest';
 import { getErrorOverlayHtmlAsync, logMetroError, logMetroErrorAsync } from './metroErrorInterface';
 import { warnInvalidWebOutput } from './router';
 import { Log } from '../../../log';
+import { CommandError } from '../../../utils/errors';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
@@ -38,6 +39,16 @@ export function createRouteHandlerMiddleware(
     config: ProjectConfig;
   }
 ) {
+  if (!resolveFrom.silent(projectRoot, 'expo-router')) {
+    throw new CommandError(
+      'static and server rendering requires the expo-router package to be installed in your project.'
+    );
+  }
+
+  const { ExpoResponse } = require('expo-router/server') as typeof import('expo-router/server');
+  const { createRequestHandler } =
+    require('@expo/server/build/vendor/http') as typeof import('@expo/server/build/vendor/http');
+
   return createRequestHandler(
     { build: '' },
     {
