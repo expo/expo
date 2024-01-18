@@ -10,4 +10,5 @@ export type AudioSource = {
      */
     headers?: Record<string, string>;
 };
+export type PitchCorrectionQuality = 'low' | 'medium' | 'high';
 //# sourceMappingURL=Audio.types.d.ts.map

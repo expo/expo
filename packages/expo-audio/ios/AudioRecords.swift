@@ -7,7 +7,7 @@ enum AudioCategory: String, Enumerable {
   case playback
   case record
   case soloAmbient
-
+  
   func toAVCategory() -> AVAudioSession.Category {
     switch self {
     case .ambient:
@@ -22,6 +22,23 @@ enum AudioCategory: String, Enumerable {
       return .record
     case .soloAmbient:
       return .soloAmbient
+    }
+  }
+}
+
+enum PitchCorrectionQuality: String, Enumerable {
+  case low
+  case medium
+  case high
+  
+  func toPitchAlgorithm() -> AVAudioTimePitchAlgorithm {
+    switch self {
+    case .low:
+      return .timeDomain
+    case .medium:
+      return .varispeed
+    case .high:
+      return .spectral
     }
   }
 }

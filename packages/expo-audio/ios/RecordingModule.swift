@@ -2,7 +2,7 @@ import ExpoModulesCore
 
 private let status = "onRecordingStatusUpdate"
 
-public class RecorderModule: Module, RecordingResultHandler {
+public class RecordingModule: Module, RecordingResultHandler {
   private lazy var recordingDelegate = {
     RecordingDelegate(resultHandler: self)
   }()
@@ -82,7 +82,8 @@ public class RecorderModule: Module, RecordingResultHandler {
   func didFinish(_ recorder: AVAudioRecorder, successfully flag: Bool) {
     sendEvent(status, [
       "isFinished": true,
-      "hasError": false
+      "hasError": false,
+      "url": recorder.url
     ])
   }
   
@@ -90,7 +91,8 @@ public class RecorderModule: Module, RecordingResultHandler {
     sendEvent(status, [
       "isFinished": true,
       "hasError": true,
-      "error": error?.localizedDescription
+      "error": error?.localizedDescription,
+      "url": nil
     ])
   }
   
@@ -98,7 +100,7 @@ public class RecorderModule: Module, RecordingResultHandler {
     let recorder = {
       if let url {
         do {
-          return try AVAudioRecorder(url: url, format: .init())
+          return try AVAudioRecorder(url: url, settings: [AVFormatIDKey: kAudioFormatLinearPCM, AVSampleRateKey: 8.0, AVNumberOfChannelsKey: 64])
         } catch {
           return AVAudioRecorder()
         }

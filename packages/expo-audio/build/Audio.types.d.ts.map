@@ -1,1 +1,1 @@
-{"version":3,"file":"Audio.types.d.ts","sourceRoot":"","sources":["../src/Audio.types.ts"],"names":[],"mappings":"AAAA,MAAM,MAAM,WAAW,GAAG;IACxB;;;OAGG;IACH,GAAG,CAAC,EAAE,MAAM,CAAC;IACb;;;OAGG;IACH,OAAO,CAAC,EAAE,MAAM,CAAC,MAAM,EAAE,MAAM,CAAC,CAAC;CAClC,CAAC"}
+{"version":3,"file":"Audio.types.d.ts","sourceRoot":"","sources":["../src/Audio.types.ts"],"names":[],"mappings":"AAAA,MAAM,MAAM,WAAW,GAAG;IACxB;;;OAGG;IACH,GAAG,CAAC,EAAE,MAAM,CAAC;IACb;;;OAGG;IACH,OAAO,CAAC,EAAE,MAAM,CAAC,MAAM,EAAE,MAAM,CAAC,CAAC;CAClC,CAAC;AAEF,MAAM,MAAM,sBAAsB,GAAG,KAAK,GAAG,QAAQ,GAAG,MAAM,CAAC"}
