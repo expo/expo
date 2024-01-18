@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix naming of web files.
+- Fix naming of web files. ([#26505](https://github.com/expo/expo/pull/26505) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
