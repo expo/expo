@@ -17,6 +17,7 @@
 ### 💡 Others
 
 - Added `templateChecksum` for prebuild to check the current template version. ([#26414](https://github.com/expo/expo/pull/26414) by [@kudo](https://github.com/kudo))
+- Clean up manual package install command ([#26457](https://github.com/expo/expo/pull/26457) by [@marklawlor](https://github.com/marklawlor))
 
 ## 0.16.8 — 2024-01-15
 
