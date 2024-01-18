@@ -6,14 +6,14 @@ internal class InvalidCategoryException: GenericException<String> {
   }
 }
 
-internal class PlayerException: Exception {
+internal class AudioStateException: GenericException<String> {
   override var reason: String {
-    ""
+    "Failed to change audio state: \(param)"
   }
 }
 
 internal class AudioPermissionsException: Exception {
   override var reason: String {
-    "Recording permission has not been grated"
+    "Recording permission has not been granted"
   }
 }
