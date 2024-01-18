@@ -104,7 +104,7 @@ class EXUpdatesLogReaderTests: XCTestCase {
   func logErrorSync(message: String, code: UpdatesErrorCode) {
     let expectation = self.expectation(description: "error logged")
     let persistentLog = PersistentFileLog(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY)
-    let logEntryString = "xx" + UpdatesLogger().logEntryString(message: message, code: code, level: .error, updateId: nil, assetId: nil)
+    let logEntryString = "xx" + UpdatesLogger().logEntryString(message: message, code: code, level: .error, duration: nil, updateId: nil, assetId: nil)
     persistentLog.appendEntry(entry: logEntryString) {_ in
       expectation.fulfill()
     }
@@ -114,7 +114,7 @@ class EXUpdatesLogReaderTests: XCTestCase {
   func logWarnSync(message: String, code: UpdatesErrorCode, updateId: String?, assetId: String?) {
     let expectation = self.expectation(description: "error logged")
     let persistentLog = PersistentFileLog(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY)
-    let logEntryString = "xx" + UpdatesLogger().logEntryString(message: message, code: code, level: .warn, updateId: updateId, assetId: assetId)
+    let logEntryString = "xx" + UpdatesLogger().logEntryString(message: message, code: code, level: .warn, duration: nil, updateId: updateId, assetId: assetId)
     persistentLog.appendEntry(entry: logEntryString) {_ in
       expectation.fulfill()
     }
