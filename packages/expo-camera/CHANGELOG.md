@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix naming of web files.
+
 ### 💡 Others
 
 ## 14.0.1 - 2023-12-19
