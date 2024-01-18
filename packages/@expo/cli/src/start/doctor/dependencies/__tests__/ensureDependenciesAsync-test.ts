@@ -160,6 +160,6 @@ describe(createInstallCommand, () => {
           { pkg: 'other', file: '' },
         ],
       })
-    ).toBe('npx expo install bacon@~1.0.0 other');
+    ).toBe('npx expo install bacon other');
   });
 });
