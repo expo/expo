@@ -11,7 +11,5 @@ func createAVPlayer(source: AudioSource?) -> AVPlayer {
     }
     return AVPlayer()
   }()
-  player.currentItem?.audioTimePitchAlgorithm = .varispeed
-  
   return player
 }

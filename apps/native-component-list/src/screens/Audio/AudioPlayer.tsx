@@ -19,7 +19,6 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
         ...status,
         positionMillis: status.currentPosition ?? 0,
         durationMillis: isNaN(status.totalDuration) ? 0 : status.totalDuration,
-        rate: player.rate,
         volume: player.volume,
       });
     }, [])
@@ -27,18 +26,17 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
 
   const [state, setState] = useState({
     androidImplementation: 'SimpleExoPlayer',
-    isLoaded: true,
-    isLooping: false,
+    isLoaded: player.isLoaded,
+    isLooping: player.isLooping,
+    isMuted: player.isMuted,
     positionMillis: player.currentPosition,
     durationMillis: isNaN(player.totalDuration) ? 0 : player.totalDuration,
     rate: player.rate,
     volume: player.volume,
     isPlaying: player.isPlaying,
     audioPan: 0,
-    shouldCorrectPitch: false,
+    shouldCorrectPitch: player.shouldCorrectPitch,
   });
-
-  const [isMuted, setMuted] = useState(false);
 
   const setVolume = (volume: number) => {
     player.volume = volume;
@@ -47,7 +45,7 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
 
   const setIsMuted = (isMuted: boolean) => {
     player.isMuted = isMuted;
-    setMuted(player.isMuted);
+    setState({ ...state, isMuted });
   };
 
   const setIsLooping = (isLooping: boolean) => {
@@ -58,18 +56,16 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
   const setRate = (rate: number, shouldCorrectPitch: boolean) => {
     player.shouldCorrectPitch = shouldCorrectPitch;
     player.setRate(rate);
-    setState({ ...state, rate: player.rate });
+    setState({ ...state, rate: player.rate, shouldCorrectPitch });
   };
 
   useEffect(() => {
-    return () => player.pause();
+    return () => player.destroy();
   }, []);
 
   return (
     <Player
       {...state}
-      rate={1}
-      isMuted={isMuted}
       style={style}
       playAsync={() => player.play()}
       pauseAsync={() => player.pause()}
