@@ -5,13 +5,12 @@ description: Learn how to set up and use environment variables with EAS Update.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
-import { Step } from '~/ui/components/Step';
 
 ## Using .env files with EAS Update
 
-The [Environment variables in Expo guide](/guides/environment-variables) describes how to use **.env** files to set and use environment variables within your JavaScript code. The Expo CLI will substitute properly-prefixed variables in your code (for example,`process.env.EXPO_PUBLIC_VARNAME`) with the corresponding environment variable values in **.env** files present on your development machine.
+[Environment variables in Expo](/guides/environment-variables) describes how to use **.env** files to set and use environment variables within your JavaScript code. The Expo CLI will substitute properly prefixed variables in your code (for example,`process.env.EXPO_PUBLIC_VARNAME`) with the corresponding environment variable values in **.env** files present on your development machine.
 
-When you run `eas update`, any **.env** files present will be evaluated when your JavaScript is bundled. Therefore, any `EXPO_PUBLIC_` variables in your application code will be replaced inline with the corresponding values from your **.env** files that are present on the machine from which the update is published, whether that is your local machine or your CI/ CD server.
+When you run `eas update`, any **.env** files present will be evaluated when your JavaScript is bundled. Any `EXPO_PUBLIC_` variables in your application code will be replaced inline with the corresponding values from your **.env** files that are present on the machine from which the update is published, whether that is your local machine or your CI/ CD server.
 
 > When publishing with EAS Update, `EXPO_PUBLIC_` variables in **.env** files will only be used when bundling your app's JavaScript. They will not be available when evaluating **app.config.js**.
 
