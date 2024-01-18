@@ -1,7 +1,6 @@
 {
   "name": "expo-docs",
-  "version": "49.0.0",
-  "betaVersion": "50.0.0",
+  "version": "50.0.0",
   "private": true,
   "type": "module",
   "scripts": {
