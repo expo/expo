@@ -6,6 +6,7 @@ private let statusUpdate = "onPlaybackStatusUpdate"
 public class AudioModule: Module {
   private var timeTokens = [Int: Any?]()
   private var isLooping = false
+  private var shouldCorrectPitch = false
   
   // Observers
   private var cancellables = Set<AnyCancellable>()
@@ -82,6 +83,12 @@ public class AudioModule: Module {
         player.pointer.isMuted = isMuted
       }
       
+      Property("shouldCorrectPitch") {
+        self.shouldCorrectPitch
+      }.set { shouldCorrectPitch in
+        self.shouldCorrectPitch = shouldCorrectPitch
+      }
+      
       Property("currentPosition") { player in
         player.pointer.currentItem?.currentTime().seconds
       }
@@ -92,8 +99,6 @@ public class AudioModule: Module {
       
       Property("rate") { player in
         player.pointer.rate
-      }.set { (player, rate: Double) in
-        player.pointer.rate = rate < 0 ? 0.0 : Float(min(rate, 2.0))
       }
       
       Property("volume") { player in
@@ -105,7 +110,15 @@ public class AudioModule: Module {
       Function("play") { player in
         addPlaybackEndNotification(player: player)
         player.pointer.play()
+        player.pointer.currentItem?.audioTimePitchAlgorithm = .timeDomain
         registerTimeObserver(player: player, for: player.sharedObjectId)
+      }
+      
+      Function("setRate") { (player, rate: Double, pitchCorrectionQuality: PitchCorrectionQuality?) in
+        player.pointer.rate = rate < 0 ? 0.0 : Float(min(rate, 2.0))
+        if shouldCorrectPitch {
+          player.pointer.currentItem?.audioTimePitchAlgorithm = pitchCorrectionQuality?.toPitchAlgorithm() ?? PitchCorrectionQuality.medium.toPitchAlgorithm()
+        }
       }
       
       Function("pause") { player in
@@ -168,7 +181,9 @@ public class AudioModule: Module {
       "totalDuration": (avPlayer.currentItem?.duration.seconds ?? 0) * 1000,
       "isPlaying": player.pointer.timeControlStatus == .playing,
       "isLooping": isLooping,
-      "isLoaded": avPlayer.currentItem?.status == .readyToPlay
+      "isLoaded": avPlayer.currentItem?.status == .readyToPlay,
+      "rate": avPlayer.rate,
+      "shouldCorrectPitch": shouldCorrectPitch
     ]
     
     body.merge(dict) { _, new in

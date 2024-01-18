@@ -1,7 +1,7 @@
+import { PermissionResponse } from 'expo-modules-core';
 import { NativeModule } from 'react-native';
 
-import { AudioSource } from './Audio.types';
-import { PermissionResponse } from 'expo-modules-core';
+import { AudioSource, PitchCorrectionQuality } from './Audio.types';
 
 export type AudioStatus = {
   id: number;
@@ -14,6 +14,8 @@ export type AudioStatus = {
   isPlaying: boolean;
   isLooping: boolean;
   isLoaded: boolean;
+  rate: number;
+  shouldCorrectPitch: boolean;
 };
 
 export type RecordingStatus = {
@@ -91,6 +93,11 @@ export interface AudioPlayer {
   rate: number;
 
   /**
+   * Boolean value whether the player should correct the pitch.
+   */
+  shouldCorrectPitch: boolean;
+
+  /**
    * Resumes the player.
    */
   play(): void;
@@ -105,6 +112,13 @@ export interface AudioPlayer {
    * @param seconds The number of seconds to seek by.
    */
   seekTo(seconds: number): Promise<void>;
+
+  /**
+   * Sets the current playback rate of the audio.
+   * @param rate The playback rate of the audio.
+   * @param pitchCorrectionQuality The quality of the pitch correction.
+   */
+  setRate(second: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;
 }
 
 export interface AudioRecorder {

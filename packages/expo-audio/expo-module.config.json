@@ -1,6 +1,6 @@
 {
   "platforms": ["ios"],
   "ios": {
-    "modules": ["AudioModule", "RecorderModule"]
+    "modules": ["AudioModule", "RecordingModule"]
   }
 }

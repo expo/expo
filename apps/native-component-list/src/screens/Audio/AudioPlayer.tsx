@@ -7,7 +7,7 @@ import Player from '../AV/Player';
 
 type AudioPlayerProps = {
   source: AudioSource | string | number;
-  style: StyleProp<ViewStyle>;
+  style?: StyleProp<ViewStyle>;
 };
 
 export default function AudioPlayer({ source, style }: AudioPlayerProps) {
@@ -55,9 +55,10 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
     setState({ ...state, isLooping });
   };
 
-  const setRate = (rate: number) => {
-    player.rate = rate;
-    setState({ ...state, rate });
+  const setRate = (rate: number, shouldCorrectPitch: boolean) => {
+    player.shouldCorrectPitch = shouldCorrectPitch;
+    player.setRate(rate);
+    setState({ ...state, rate: player.rate });
   };
 
   useEffect(() => {
