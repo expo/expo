@@ -4,7 +4,7 @@ sidebar_title: Expo Webpack
 description: Learn how to migrate a website using Expo Webpack to Expo Router.
 ---
 
-import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
+import { NoIcon, PendingIcon, YesIcon } from '~/ui/components/DocIcons';
 import { Terminal } from '~/ui/components/Snippet';
 
 The original **Expo for web** version was based on Webpack 4 and focused primarily on building single-page applications (SPAs). This approach was based on [Create React App](https://create-react-app.dev/) and enabled building simple web apps with Expo SDK and React Native for web.
@@ -31,28 +31,28 @@ Ultimately as a full universal framework, Expo Router is a substantially more ro
 
 Unlike `@expo/webpack-config`, Expo Router uses the same CLI commands and features for web and native. Refer to the table below for more information on the differences between Expo Router and `@expo/webpack-config`.
 
-| Feature                  | Expo Router                         | `@expo/webpack-config` |
-| ------------------------ | ----------------------------------- | ---------------------- |
-| Start command            | `npx expo start`                    | `npx expo start`       |
-| Bundle command           | `npx expo export`                   | `npx expo export:web`  |
-| Output folder            | **dist**                            | **web-build**          |
-| Static folder            | **public**                          | **web**                |
-| Config file              | **metro.config.js**                 | **webpack.config.js**  |
-| Default config           | `@expo/metro-config`                | `@expo/webpack-config` |
-| Bundle Splitting         | <YesIcon /> (SDK 50 • web)          | <YesIcon />            |
-| Global CSS               | <YesIcon /> (SDK 50)                | <YesIcon />            |
-| Multi-platform           | <YesIcon />                         | <NoIcon />             |
-| Fast Refresh             | <YesIcon />                         | <NoIcon />             |
-| Error Overlay            | <YesIcon />                         | <NoIcon />             |
-| Lazy bundling            | <YesIcon />                         | <NoIcon />             |
-| Incremental Bundling     | <YesIcon />                         | <NoIcon />             |
-| Static Generation        | <YesIcon />                         | <NoIcon />             |
-| Environment Variables    | <YesIcon />                         | <NoIcon />            |
-| `tsconfig.json` paths    | <YesIcon />                         | <NoIcon />            |
-| CSS Modules              | <YesIcon /> (web)                   | <NoIcon />             |
-| API Routes               | <YesIcon /> (SDK 50)                | <NoIcon />             |
-| Static Font Optimization | <YesIcon /> (SDK 50 • web)          | <NoIcon />             |
-| Tree Shaking             | <PendingIcon /> (Partial support)   | <YesIcon />            |
+| Feature                  | Expo Router                       | `@expo/webpack-config` |
+| ------------------------ | --------------------------------- | ---------------------- |
+| Start command            | `npx expo start`                  | `npx expo start`       |
+| Bundle command           | `npx expo export`                 | `npx expo export:web`  |
+| Output folder            | **dist**                          | **web-build**          |
+| Static folder            | **public**                        | **web**                |
+| Config file              | **metro.config.js**               | **webpack.config.js**  |
+| Default config           | `@expo/metro-config`              | `@expo/webpack-config` |
+| Bundle Splitting         | <YesIcon /> (SDK 50 • web)        | <YesIcon />            |
+| Global CSS               | <YesIcon /> (SDK 50)              | <YesIcon />            |
+| Multi-platform           | <YesIcon />                       | <NoIcon />             |
+| Fast Refresh             | <YesIcon />                       | <NoIcon />             |
+| Error Overlay            | <YesIcon />                       | <NoIcon />             |
+| Lazy bundling            | <YesIcon />                       | <NoIcon />             |
+| Incremental Bundling     | <YesIcon />                       | <NoIcon />             |
+| Static Generation        | <YesIcon />                       | <NoIcon />             |
+| Environment Variables    | <YesIcon />                       | <NoIcon />             |
+| `tsconfig.json` paths    | <YesIcon />                       | <NoIcon />             |
+| CSS Modules              | <YesIcon /> (web)                 | <NoIcon />             |
+| API Routes               | <YesIcon /> (SDK 50)              | <NoIcon />             |
+| Static Font Optimization | <YesIcon /> (SDK 50 • web)        | <NoIcon />             |
+| Tree Shaking             | <PendingIcon /> (Partial support) | <YesIcon />            |
 
 ## HTML template
 
