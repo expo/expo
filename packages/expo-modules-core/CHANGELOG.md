@@ -8,7 +8,7 @@
 
 ### 🎉 New features
 
-- Add timer capability to Logger. ([#26454](https://github.com/expo/expo/pull/26454) by [@wschurman](https://github.com/wschurman))
+- Add timer capability to Logger. ([#26454](https://github.com/expo/expo/pull/26454), [#26477](https://github.com/expo/expo/pull/26477) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 
