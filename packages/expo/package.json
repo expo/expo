@@ -70,7 +70,7 @@
     "expo-file-system": "~16.0.4",
     "expo-font": "~11.10.2",
     "expo-keep-awake": "~12.8.2",
-    "expo-modules-autolinking": "1.10.1",
+    "expo-modules-autolinking": "1.10.2",
     "expo-modules-core": "1.11.7",
     "fbemitter": "^3.0.0",
     "whatwg-url-without-unicode": "8.0.0-3"
