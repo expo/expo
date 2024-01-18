@@ -45,7 +45,7 @@ it('runs `npx expo export:web --help`', async () => {
   expect(results.stdout).toMatchInlineSnapshot(`
     "
       Info
-        Export the static files of the web app for hosting on a web server
+        (Deprecated) Bundle the static files of the web app with Webpack for hosting on a web server
 
       Usage
         $ npx expo export:web <dir>

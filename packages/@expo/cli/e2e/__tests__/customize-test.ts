@@ -71,9 +71,13 @@ it(
   async () => {
     const projectRoot = await setupTestProjectAsync('basic-customize', 'with-blank');
     // `npx expo customize index.html serve.json babel.config.js`
-    await execa('node', [bin, 'customize', 'web/index.html', 'web/serve.json', 'babel.config.js'], {
-      cwd: projectRoot,
-    });
+    await execa(
+      'node',
+      [bin, 'customize', 'public/index.html', 'public/serve.json', 'babel.config.js'],
+      {
+        cwd: projectRoot,
+      }
+    );
 
     const files = klawSync(projectRoot)
       .map((entry) => {
@@ -90,8 +94,8 @@ it(
       'babel.config.js',
       'bun.lockb',
       'package.json',
-      'web/index.html',
-      'web/serve.json',
+      'public/index.html',
+      'public/serve.json',
     ]);
   },
   // Could take 45s depending on how fast npm installs
