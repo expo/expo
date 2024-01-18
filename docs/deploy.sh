@@ -347,6 +347,9 @@ redirects[guides/authentication.md]=guides/authentication
 redirects[versions/latest/workflow/linking/]=guides/linking
 redirects[versions/latest/sdk/overview]=versions/latest
 
+# Deprecated webpack
+redirects[guides/customizing-webpack]=archive/customizing-webpack
+
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
 do

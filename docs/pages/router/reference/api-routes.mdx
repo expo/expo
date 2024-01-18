@@ -182,8 +182,6 @@ API Routes are bundled with Expo CLI and [Metro bundler](/guides/customizing-met
 
 ## Security
 
-> **warning** While in beta, server code may leak into the client bundle. This won't happen in the stable release.
-
 Route handlers are executed in a sandboxed environment that is isolated from the client code. It means you can safely store sensitive data in the route handlers without exposing it to the client.
 
 - Client code that imports code with a secret is included in the client bundle. It applies to **all files** in the **app directory** even though they are not a route handler file (such as suffixed with **+api.js**).
