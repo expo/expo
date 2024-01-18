@@ -7,7 +7,7 @@ afterEach(() => {
   process.env.NODE_ENV = originalEnv;
 });
 
-describe.only('duplicate routes', () => {
+describe('duplicate routes', () => {
   it(`doesn't throw if there are no duplicate routes`, () => {
     expect(() => {
       getRoutes(
@@ -30,7 +30,7 @@ describe.only('duplicate routes', () => {
         })
       );
     }).toThrowErrorMatchingInlineSnapshot(
-      `"The route files "./a.tsx" and ./a.js conflict. Please remove or rename one of these files."`
+      `"The route files "./a.tsx" and ./a.js conflict on the route "/a". Please remove or rename one of these files."`
     );
   });
 
@@ -56,11 +56,11 @@ describe.only('duplicate routes', () => {
         })
       );
     }).toThrowErrorMatchingInlineSnapshot(
-      `"The route files "./test/b.js" and ./test/b.tsx conflict. Please remove or rename one of these files."`
+      `"The route files "./test/b.js" and ./test/b.tsx conflict on the route "/test/b". Please remove or rename one of these files."`
     );
   });
 
-  it.only(`doesn't throw if similarly named routes are in different groupings`, () => {
+  it(`doesn't throw if similarly named routes are in different groupings`, () => {
     expect(() => {
       getRoutes(
         inMemoryContext({
@@ -68,7 +68,9 @@ describe.only('duplicate routes', () => {
           './(a,b)/b.tsx': () => null,
         })
       );
-    }).not.toThrow();
+    }).toThrowErrorMatchingInlineSnapshot(
+      `"The route files "./(a,b)/b.tsx" and ./(a)/b.tsx conflict on the route "/(a)/b". Please remove or rename one of these files."`
+    );
   });
 });
 

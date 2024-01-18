@@ -157,11 +157,12 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
     } else {
       hasRoutes ||= leaves.size > 0;
       for (const leaf of leaves) {
-        let nodes = leaf.files.get(meta.name);
+        const name = `${leaf.name}${meta.name}`;
+        let nodes = leaf.files.get(name);
 
         if (!nodes) {
           nodes = [];
-          leaf.files.set(meta.name, nodes);
+          leaf.files.set(name, nodes);
         }
 
         const existing = nodes[meta.specificity];
@@ -173,7 +174,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
             // In production, use the first route found
             if (process.env.NODE_ENV !== 'production') {
               throw new Error(
-                `The route files "${filePath}" and ${existing.contextKey} conflict. Please remove or rename one of these files.`
+                `The route files "${filePath}" and ${existing.contextKey} conflict on the route "${name}". Please remove or rename one of these files.`
               );
             }
           } else {
@@ -317,9 +318,6 @@ function getFileMeta(key: string, options: Options) {
   const filenameWithoutExtensions = removeSupportedExtensions(filename);
   const isLayout = filename.startsWith('_layout.');
   const isApi = key.match(/\+api\.[jt]sx?$/);
-  const name = isLayout
-    ? filepathWithoutExtensions.replace(/\/?_layout$/, '')
-    : filepathWithoutExtensions;
 
   if (filenameWithoutExtensions.startsWith('(') && filenameWithoutExtensions.endsWith(')')) {
     throw new Error(`Invalid route ./${key}. Routes cannot end with \`(group)\` syntax`);
@@ -327,7 +325,7 @@ function getFileMeta(key: string, options: Options) {
 
   return {
     key,
-    name,
+    name: filenameWithoutExtensions,
     specificity: 0,
     dirname,
     filename,
