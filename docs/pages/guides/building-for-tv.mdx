@@ -17,9 +17,9 @@ Using the React Native TV library as the `react-native` dependency in an Expo pr
 The necessary changes to the native Android and iOS files are minimal and can be automated with a [config plugin](https://github.com/react-native-tvos/config-tv/tree/main/packages/config-tv) if you use [prebuild](/workflow/prebuild/). Below is a list of changes made by the config plugins, which you can alternatively apply manually:
 
 - Android:
-  - **AndroidManifest.xml** is modified
-  - The default phone portrait orientation is removed
-  - The required intent for TV apps is added
+  - **AndroidManifest.xml** is modified:
+    - The default phone portrait orientation is removed
+    - The required intent for TV apps is added
   - **MainApplication.kt** is modified to remove unsupported Flipper invocations
 - iOS:
   - **ios/Podfile** is modified to target tvOS instead of iOS
@@ -48,10 +48,10 @@ You will need:
 
 ## Limitations
 
-Certain Expo tools are not yet supported at this time, most notably:
+Certain Expo modules are not supported at this time, most notably:
 
 - `expo-dev-client`
-- Expo Router
+- `expo-router`
 
 <Step label="1">
 
@@ -92,7 +92,7 @@ When installed, the plugin will modify the project for TV when either:
 - The environment variable `EXPO_TV` is set to `1`
 - The plugin parameter `isTV` is set to `true`
 
-Optionally, set the `showVerboseWarnings` property to `true` to see additional information during prebuild.
+Make sure that this plugin appears in `app.json`. It is recommended to set the `showVerboseWarnings` property to `true` to see additional information during prebuild.
 
 ```json app.json
 {
@@ -221,7 +221,7 @@ The following example **eas.json** shows how to extend existing profiles (`devel
 
 <BoxLink
   title="IgniteTV"
-  description="A complete example is available at GitHub."
-  href="https://github.com/douglowder/IgniteTV"
+  description="A complete example is available on GitHub."
+  href="https://github.com/react-native-tvos/IgniteTV"
   Icon={GithubIcon}
 />
