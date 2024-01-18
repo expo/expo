@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [Android] Adds new prop `decodeFormat` to specify the format that should be used during the decoding process.
+- [Android] Adds new prop `decodeFormat` to specify the format that should be used during the decoding process. ([#26442](https://github.com/expo/expo/pull/26442) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
