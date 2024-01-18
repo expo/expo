@@ -6,6 +6,7 @@ description: Learn about how Expo CLI optimizes production JavaScript bundles.
 
 import { Tab, Tabs } from '~/ui/components/Tabs';
 import { Step } from '~/ui/components/Step';
+import { Collapsible } from '~/ui/components/Collapsible';
 
 Tree shaking (also referred to as _dead code removal_) is a technique to remove unused code from the production bundle. Expo CLI employs different techniques, including [minification](/guides/minify), to improve startup time by removing unused code.
 
@@ -35,17 +36,11 @@ The production bundle will remove the conditional based on the platform:
 console.log('Hello on iOS');
 ```
 
-### Enable platform shaking
+This optimization is production only and runs on a per-file basis. If you re-export `Platform.OS` from a different module, it will not be removed from the production bundle.
 
-<Tabs>
+<Collapsible summary="Enable platform shaking (SDK 49 and lower)">
 
-<Tab label="Expo SDK 50 and greater">
-
-Platform shaking is enabled by default in Expo SDK 50 and only applied when bundling for production.
-
-</Tab>
-
-<Tab label="Expo SDK 49 and lower">
+> Platform shaking is enabled by default in Expo SDK 50 and greater.
 
 To remove code based on the `Platform` module from `react-native`, add the following to **metro.config.js**:
 
@@ -95,9 +90,7 @@ module.exports = function (api) {
 };
 ```
 
-</Tab>
-
-</Tabs>
+</Collapsible>
 
 ## Remove development-only code
 
