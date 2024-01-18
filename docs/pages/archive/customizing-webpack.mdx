@@ -5,7 +5,21 @@ description: Learn about different webpack bundler configurations that can be cu
 
 import { Terminal } from '~/ui/components/Snippet';
 
-> **warning** Expo Webpack has been deprecated in favor of [Expo Router](/router/introduction/). Learn how to [migrate from Expo Webpack to Expo Router](/router/migrate/from-expo-webpack/).
+> **warning** **Deprecation**: In SDK 50 and above, Expo Webpack has been deprecated in favor of [Expo Router](/router/introduction/). Learn how to [migrate from Expo Webpack to Expo Router](/router/migrate/from-expo-webpack/).
+
+To enable Webpack web support, modify your [app config](/workflow/configuration) using the `expo.web.bundler` field:
+
+```json app.json
+{
+  "expo": {
+    "web": {
+      "bundler": "webpack"
+    }
+  }
+}
+```
+
+## Customizing the Webpack config
 
 When you run `npx expo start --web` or `expo export:web` the CLI checks to see if your project has a **webpack.config.js** in the root directory. If the file doesn't exist in your project, then Expo uses the default `@expo/webpack-config` (preferred).
 

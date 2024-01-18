@@ -438,4 +438,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/v49.0.0/sdk': '/versions/v49.0.0',
   '/versions/v47.0.0/sdk': '/versions/v47.0.0',
   '/versions/v46.0.0/sdk': '/versions/v46.0.0',
+
+  // Deprecated Webpack support
+  '/guides/customizing-webpack': '/archive/customizing-webpack',
 };
