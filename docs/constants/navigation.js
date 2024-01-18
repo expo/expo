@@ -141,10 +141,9 @@ const general = [
       'Web',
       [
         makePage('workflow/web.mdx'),
-        makePage('guides/progressive-web-apps.mdx'),
         makePage('distribution/publishing-websites.mdx'),
-        makePage('distribution/publishing-websites-webpack.mdx'),
-        makePage('guides/customizing-webpack.mdx'),
+        makePage('guides/customizing-metro.mdx'),
+        makePage('guides/progressive-web-apps.mdx'),
       ],
       { expanded: false }
     ),
@@ -497,6 +496,8 @@ const archive = [
     makePage('archive/expo-cli.mdx'),
     makePage('archive/managed-vs-bare.mdx'),
     makePage('archive/notification-channels.mdx'),
+    makePage('archive/publishing-websites-webpack.mdx'),
+    makePage('archive/customizing-webpack.mdx'),
     makePage('archive/glossary.mdx'),
   ]),
 ];
