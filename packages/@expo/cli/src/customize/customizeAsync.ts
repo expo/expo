@@ -25,7 +25,9 @@ export async function customizeAsync(files: string[], options: Options, extras: 
   // the query and select functions.
   const props: DestinationResolutionProps = {
     webStaticPath:
-      exp.web?.staticPath ?? getPlatformBundlers(exp).web === 'webpack' ? 'web' : 'public',
+      exp.web?.staticPath ?? getPlatformBundlers(projectRoot, exp).web === 'webpack'
+        ? 'web'
+        : 'public',
   };
 
   // If the user provided files, we'll generate them without prompting.
