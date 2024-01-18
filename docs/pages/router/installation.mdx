@@ -16,7 +16,7 @@ Find the steps below to create a new project with Expo Router library or add it 
 
 We recommend creating a new Expo app using `create-expo-app`. This will create a minimal project with the Expo Router library already installed. To create a project, run the command:
 
-<Terminal cmd={['$ npx create-expo-app@latest --template tabs@49']} />
+<Terminal cmd={['$ npx create-expo-app@latest --template tabs@50']} />
 
 </Step>
 
@@ -37,6 +37,7 @@ Ensure the version of Expo Router is compatible with the Expo SDK version your p
 
 | Expo SDK | Expo Router |
 | -------- | ----------- |
+| 50.0.0   | 3.0.0       |
 | 49.0.0   | 2.0.0       |
 | 48.0.0   | 1.0.0       |
 
@@ -207,11 +208,13 @@ After updating the Babel config file, run the following command to clear the bun
 
 <Tabs>
 
-  <Tab label="SDK 50 and above">
-    If you're upgrading from an older version of Expo Router, ensure you remove all outdated Yarn
-    resolutions or npm overrides in your **package.json**. Specifically remove `metro`,
-    `metro-resolver`, `react-refresh` resolutions from your **package.json**.
-  </Tab>
+{' '}
+
+<Tab label="SDK 50 and above">
+  If you're upgrading from an older version of Expo Router, ensure you remove all outdated Yarn
+  resolutions or npm overrides in your **package.json**. Specifically remove `metro`,
+  `metro-resolver`, `react-refresh` resolutions from your **package.json**.
+</Tab>
 
   <Tab label="SDK 49">
     Expo Router requires at least `react-refresh@0.14.0`. React Native hasn't upgraded as of SDK 49 / Expo Router v2, so you need to force upgrade your `react-refresh` version by setting a Yarn resolution or npm override.
