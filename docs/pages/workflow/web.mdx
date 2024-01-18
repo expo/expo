@@ -1,5 +1,5 @@
 ---
-title: Develop for web
+title: Develop websites with Expo
 sidebar_title: Develop websites
 description: Learn how to develop your app for the web so you can build a universal app.
 hideTOC: true
@@ -11,7 +11,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { CODE } from '~/ui/components/Text';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
-[Expo CLI](/more/expo-cli/#develop) supports building high-fidelity, full-stack websites with React.
+Expo has first-class support for building full-stack websites with React. Expo websites can be [statically rendered](/router/reference/static-rendering) for SEO and performance, or client-rendered for a more app-like experience in the browser.
 
 <Tabs>
 
@@ -27,13 +27,15 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
     }
     ```
 
-    > React Native for web is used to power the [X](https://x.com/) (formerly Twitter) website.
+    React Native for web (RNW) is a set of component libraries such as `<View>`, and `<Text>`, that wrap `react-dom` primitives such as `<div>`, `<p>`, and `<img>`. RNW is optional when developing for web since you can use React DOM directly, but we often recommended it when building across platforms as it maximizes code reuse.
+
+    > React Native for web is used to power the entire [**𝕏** / Twitter](https://x.com/) website.
 
 </Tab>
 
 <Tab label="Web-only">
 
-    Alternatively, you can write web-only React components such as `<div>`, `<p>`, and so on. However, these won't render on native platforms.
+    Alternatively, you can write web-only React DOM components such as `<div>`, `<p>`, and so on, however, these components won't render on native platforms.
 
     ```jsx app/index.js
     export default function Page() {
@@ -41,11 +43,15 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
     }
     ```
 
+    Building web-only components is fully supported by Expo, however, you may want to organize your code to better support building for both web and native platforms simultaneously. Learn more in [platform-specific modules](/router/advanced/platform-specific-modules).
+
 </Tab>
 
 </Tabs>
 
-Libraries in the Expo SDK are built to support both browser and server rendering environments.
+All of the libraries in the Expo SDK are built to support both browser and server rendering environments (when applicable). Libraries are also optimized for the individual platforms they target.
+
+Development features like Fast Refresh, debugging, environment variables, and [bundling](/guides/customizing-metro) are also fully universal, enabling a unified developer experience. Expo CLI **automatically optimizes code** for individual platforms when you build for production, using techniques like [platform shaking](/guides/tree-shaking#platform-shaking).
 
 ## Getting started
 
