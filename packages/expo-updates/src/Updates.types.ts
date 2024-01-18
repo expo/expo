@@ -175,7 +175,7 @@ export type UpdateFetchResultFailure = {
 /**
  * The roll back to embedded result of fetching a new update.
  */
-type UpdateFetchResultRollBackToEmbedded = {
+export type UpdateFetchResultRollBackToEmbedded = {
   /**
    * Whether the fetched update is new (that is, a different version than what's currently running).
    * Always `false` when `isRollBackToEmbedded` is `true`.

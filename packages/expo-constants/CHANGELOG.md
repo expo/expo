@@ -8,12 +8,21 @@
 
 ### 🐛 Bug fixes
 
-- Fixed build error on AGP 8.2. ([#26362](https://github.com/expo/expo/pull/26362) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
 
 - [expo-updates] Migrate to requireNativeModule/requireOptionalNativeModule. ([#25648](https://github.com/expo/expo/pull/25648) by [@wschurman](https://github.com/wschurman))
 - Remove most of Constants.appOwnership. ([#26313](https://github.com/expo/expo/pull/26313) by [@wschurman](https://github.com/wschurman))
+- Improve updates types and clarity in expo-asset. ([#26337](https://github.com/expo/expo/pull/26337) by [@wschurman](https://github.com/wschurman))
+
+## 15.4.5 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 15.4.4 - 2024-01-15
+
+### 🐛 Bug fixes
+
+- Fixed build error on AGP 8.2. ([#26362](https://github.com/expo/expo/pull/26362) by [@kudo](https://github.com/kudo))
 
 ## 15.4.3 - 2024-01-10
 

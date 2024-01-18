@@ -33,7 +33,7 @@ Usage
   $ npx expo <command>
 
 Commands
-  start, export, export:web
+  start, export
   run:ios, run:android, prebuild
   install, customize, config
   login, logout, whoami, register
@@ -330,7 +330,7 @@ export default function Blog() {
 
 ### Exporting with webpack
 
-> webpack is only supported for the Web platform.
+> **warning** **Deprecation**: In SDK 50 and above, Expo Webpack has been deprecated in favor of universal Metro (`npx expo export`). Learn more in [migrating from Webpack to Expo Router](/router/migrate/from-expo-webpack).
 
 You can export the JavaScript and assets for your web app using webpack by running the following:
 
@@ -500,8 +500,8 @@ From here, you can choose to generate basic project files like:
 | `EXPO_USE_TYPED_ROUTES`             | **boolean** | Use `expo.experiments.typedRoutes` to enable statically typed routes in Expo Router.                                                                                                                                                                                                                                                                                                 |
 | `EXPO_METRO_UNSTABLE_ERRORS`        | **boolean** | <StatusTag status="experimental" /><br/>Enable unstable error message improvements in Metro bundler. The features behind this flag are subject to removal and may be upstreamed.                                                                                                                                                                                                     |
 | `EXPO_USE_METRO_WORKSPACE_ROOT`     | **boolean** | Enable auto server root detection for Metro. This will change the server root to the workspace root. Useful for monorepos.                                                                                                                                                                                                                                                           |
-| `EXPO_USE_UNSTABLE_DEBUGGER`        | **boolean** | <StatusTag status="experimental" /><br/>Enable the experimental debugger from React Native.                                                                                                                                                                                                                                                                              |
-| `EXPO_ADB_USER`                     | **string** | <StatusTag status="SDK 50+" /><br/>Set the `user` number that should be passed to `--user` with ADB commands. Used for installing APKs on Android devices with multiple profiles. Defaults to `0`.                                                                                                                                                                                                                                                                              |
+| `EXPO_USE_UNSTABLE_DEBUGGER`        | **boolean** | <StatusTag status="experimental" /><br/>Enable the experimental debugger from React Native.                                                                                                                                                                                                                                                                                          |
+| `EXPO_ADB_USER`                     | **string**  | <StatusTag status="SDK 50+" /><br/>Set the `user` number that should be passed to `--user` with ADB commands. Used for installing APKs on Android devices with multiple profiles. Defaults to `0`.                                                                                                                                                                                   |
 
 ## Telemetry
 

@@ -9,9 +9,21 @@ module Expo
     # The directory where the podspec is
     attr_reader :podspec_dir
 
+    # Specification of the pod.
+    attr_reader :spec
+
     def initialize(json)
       @pod_name = json['podName']
       @podspec_dir = json['podspecDir']
+      @spec = get_podspec_for_pod(self)
+    end
+
+    # Checks whether the podspec declares support for the given platform.
+    # It compares not only the platform name, but also the deployment target.
+    def supports_platform?(platform)
+      return platform && @spec.available_platforms().any? do |available_platform|
+        next platform.supports?(available_platform)
+      end
     end
 
   end # class PackagePod
@@ -52,3 +64,8 @@ module Expo
   end # class Package
 
 end # module Expo
+
+private def get_podspec_for_pod(pod)
+  podspec_file_path = File.join(pod.podspec_dir, pod.pod_name + ".podspec")
+  return Pod::Specification.from_file(podspec_file_path)
+end

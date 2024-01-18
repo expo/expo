@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Add more failure logs in asset download. ([#26268](https://github.com/expo/expo/pull/26268) by [@wschurman](https://github.com/wschurman))
+- Add timer capability to Logger. ([#26454](https://github.com/expo/expo/pull/26454), [#26477](https://github.com/expo/expo/pull/26477) by [@wschurman](https://github.com/wschurman))
 
 ### 🛠 Breaking changes
 
@@ -24,6 +25,11 @@
 - [Android] Remove try/catch in expo-updates module constants block. ([#26228](https://github.com/expo/expo/pull/26228) by [@wschurman](https://github.com/wschurman))
 - Rename native classes. ([#26234](https://github.com/expo/expo/pull/26234), [#26235](https://github.com/expo/expo/pull/26235) by [@wschurman](https://github.com/wschurman))
 - Remove support for multiple runtime versions. ([#26258](https://github.com/expo/expo/pull/26258) by [@wschurman](https://github.com/wschurman))
+- Improve updates types and clarity in expo-asset. ([#26337](https://github.com/expo/expo/pull/26337) by [@wschurman](https://github.com/wschurman))
+
+## 0.24.8 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
 
 ## 0.24.7 - 2024-01-10
 

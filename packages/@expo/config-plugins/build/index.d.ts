@@ -19,6 +19,7 @@ export * from './Plugin.types';
 export { withPlugins } from './plugins/withPlugins';
 export { withRunOnce, createRunOncePlugin } from './plugins/withRunOnce';
 export { withDangerousMod } from './plugins/withDangerousMod';
+export { withFinalizedMod } from './plugins/withFinalizedMod';
 export { withMod, withBaseMod } from './plugins/withMod';
 export { withAppDelegate, withInfoPlist, withEntitlementsPlist, withExpoPlist, withXcodeProject, withPodfileProperties, } from './plugins/ios-plugins';
 export { withAndroidManifest, withStringsXml, withAndroidColors, withAndroidColorsNight, withAndroidStyles, withMainActivity, withMainApplication, withProjectBuildGradle, withAppBuildGradle, withSettingsGradle, withGradleProperties, } from './plugins/android-plugins';

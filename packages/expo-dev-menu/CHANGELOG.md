@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 - Remove classic updates SDK version. ([#26061](https://github.com/expo/expo/pull/26061) by [@wschurman](https://github.com/wschurman))
@@ -15,6 +17,10 @@
 ### 📚 3rd party library updates
 
 - Update react-native to 0.73.2. ([#26311](https://github.com/expo/expo/pull/26311) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 4.5.4 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
 
 ## 4.5.3 - 2024-01-10
 

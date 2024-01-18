@@ -1,8 +1,10 @@
 package expo.modules
 
 import android.app.Application
+import com.facebook.react.JSEngineResolutionAlgorithm
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
+import com.facebook.react.bridge.UIManagerProvider
 import com.facebook.react.common.SurfaceDelegateFactory
 import com.facebook.react.devsupport.DevSupportManagerFactory
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
@@ -21,6 +23,14 @@ class ReactNativeHostWrapper(
 
   override fun getReactPackageTurboModuleManagerDelegateBuilder(): ReactPackageTurboModuleManagerDelegate.Builder? {
     return invokeDelegateMethod("getReactPackageTurboModuleManagerDelegateBuilder")
+  }
+
+  override fun getUIManagerProvider(): UIManagerProvider? {
+    return invokeDelegateMethod("getUIManagerProvider")
+  }
+
+  override fun getJSEngineResolutionAlgorithm(): JSEngineResolutionAlgorithm? {
+    return invokeDelegateMethod("getJSEngineResolutionAlgorithm")
   }
 
   override fun getShouldRequireActivity(): Boolean {
