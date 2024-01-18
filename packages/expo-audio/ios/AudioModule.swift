@@ -5,8 +5,6 @@ private let statusUpdate = "onPlaybackStatusUpdate"
 
 public class AudioModule: Module {
   private var timeTokens = [Int: Any?]()
-  private var isLooping = false
-  private var shouldCorrectPitch = false
   
   // Observers
   private var cancellables = Set<AnyCancellable>()
@@ -27,7 +25,7 @@ public class AudioModule: Module {
     
     Function("setIsAudioActive") { (active: Bool)  in
       do {
-        try AVAudioSession.sharedInstance().setActive(active)
+        try AVAudioSession.sharedInstance().setActive(active, options: [.notifyOthersOnDeactivation])
       } catch {
         throw PlayerException()
       }
@@ -37,6 +35,7 @@ public class AudioModule: Module {
       for observer in endObservers.values {
         NotificationCenter.default.removeObserver(observer)
       }
+      timeTokens.removeAll()
       cancellables.removeAll()
     }
     
@@ -63,18 +62,22 @@ public class AudioModule: Module {
         player.sharedObjectId
       }
       
-      Property("isLooping") {
-        self.isLooping
-      }.set { (isLooping: Bool) in
-        self.isLooping = isLooping
+      Property("isBuffering") { player in
+        player.isBuffering
+      }
+      
+      Property("isLooping") { player in
+        player.isLooping
+      }.set { (player, isLooping: Bool) in
+        player.isLooping = isLooping
       }
       
       Property("isLoaded") { player in
-        player.pointer.currentItem?.status == .readyToPlay
+        player.isLoaded
       }
       
       Property("isPlaying") { player in
-        return player.pointer.timeControlStatus == .playing
+        player.isPlaying
       }
       
       Property("isMuted") { player in
@@ -83,10 +86,10 @@ public class AudioModule: Module {
         player.pointer.isMuted = isMuted
       }
       
-      Property("shouldCorrectPitch") {
-        self.shouldCorrectPitch
-      }.set { shouldCorrectPitch in
-        self.shouldCorrectPitch = shouldCorrectPitch
+      Property("shouldCorrectPitch") { player in
+        player.shouldCorrectPitch
+      }.set { (player, shouldCorrectPitch: Bool) in
+        player.shouldCorrectPitch = shouldCorrectPitch
       }
       
       Property("currentPosition") { player in
@@ -109,20 +112,30 @@ public class AudioModule: Module {
       
       Function("play") { player in
         addPlaybackEndNotification(player: player)
-        player.pointer.play()
-        player.pointer.currentItem?.audioTimePitchAlgorithm = .timeDomain
         registerTimeObserver(player: player, for: player.sharedObjectId)
+        player.pointer.play()
       }
       
       Function("setRate") { (player, rate: Double, pitchCorrectionQuality: PitchCorrectionQuality?) in
-        player.pointer.rate = rate < 0 ? 0.0 : Float(min(rate, 2.0))
-        if shouldCorrectPitch {
-          player.pointer.currentItem?.audioTimePitchAlgorithm = pitchCorrectionQuality?.toPitchAlgorithm() ?? PitchCorrectionQuality.medium.toPitchAlgorithm()
+        let playerRate = rate < 0 ? 0.0 : Float(min(rate, 2.0))
+        player.pointer.rate = playerRate
+        if player.shouldCorrectPitch {
+          player.pitchCorrectionQuality = pitchCorrectionQuality?.toPitchAlgorithm() ?? .varispeed
+          player.pointer.currentItem?.audioTimePitchAlgorithm = player.pitchCorrectionQuality
         }
       }
       
       Function("pause") { player in
         player.pointer.pause()
+      }
+      
+      Function("destroy") { player in
+        let id = player.sharedObjectId
+        if let token = timeTokens[id] {
+          player.pointer.removeTimeObserver(token)
+        }
+        player.pointer.pause()
+        SharedObjectRegistry.delete(id)
       }
       
       AsyncFunction("seekTo") { (player: AudioPlayer, seconds: Double) in
@@ -149,7 +162,7 @@ public class AudioModule: Module {
         return
       }
       
-      if isLooping {
+      if player.isLooping {
         player.pointer.seek(to: CMTime.zero)
         player.pointer.play()
       } else {
@@ -180,10 +193,11 @@ public class AudioModule: Module {
       "isMuted": avPlayer.isMuted,
       "totalDuration": (avPlayer.currentItem?.duration.seconds ?? 0) * 1000,
       "isPlaying": player.pointer.timeControlStatus == .playing,
-      "isLooping": isLooping,
+      "isLooping": player.isLooping,
       "isLoaded": avPlayer.currentItem?.status == .readyToPlay,
       "rate": avPlayer.rate,
-      "shouldCorrectPitch": shouldCorrectPitch
+      "shouldCorrectPitch": player.shouldCorrectPitch,
+      "isBuffering": player.isBuffering
     ]
     
     body.merge(dict) { _, new in

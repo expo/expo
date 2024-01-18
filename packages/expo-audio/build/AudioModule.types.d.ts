@@ -11,6 +11,7 @@ export type AudioStatus = {
     totalDuration: number;
     isPlaying: boolean;
     isLooping: boolean;
+    isBuffering: boolean;
     isLoaded: boolean;
     rate: number;
     shouldCorrectPitch: boolean;
@@ -36,21 +37,25 @@ export interface AudioPlayer {
     new (source: AudioSource | string | number | null): AudioPlayer;
     id: number;
     /**
-     * Boolean value whether the player is currently playing.
+     * Boolean value indicating whether the player is currently playing.
      */
     isPlaying: boolean;
     /**
-     * Boolean value whether the player is currently muted.
+     * Boolean value indicating whether the player is currently muted.
      */
     isMuted: boolean;
     /**
-     * Boolean value whether the player is currently looping.
+     * Boolean value indicating whether the player is currently looping.
      */
     isLooping: boolean;
     /**
-     * Boolean value whether the player is finished loading.
+     * Boolean value indicating whether the player is finished loading.
      */
     isLoaded: boolean;
+    /**
+     * Boolean value indicating whether the player is buffering.
+     */
+    isBuffering: boolean;
     /**
      * The current position through the audio item, in seconds.
      */
@@ -90,6 +95,10 @@ export interface AudioPlayer {
      * @param pitchCorrectionQuality The quality of the pitch correction.
      */
     setRate(second: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;
+    /**
+     * Destroys the player and frees up resources.
+     */
+    destroy(): void;
 }
 export interface AudioRecorder {
     new (url: string | null): AudioRecorder;

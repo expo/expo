@@ -100,7 +100,12 @@ public class RecordingModule: Module, RecordingResultHandler {
     let recorder = {
       if let url {
         do {
-          return try AVAudioRecorder(url: url, settings: [AVFormatIDKey: kAudioFormatLinearPCM, AVSampleRateKey: 8.0, AVNumberOfChannelsKey: 64])
+          return try AVAudioRecorder(url: url, settings: [
+            AVFormatIDKey: kAudioFormatLinearPCM,
+            AVSampleRateKey: 8.0,
+            AVNumberOfChannelsKey: 64,
+            AVAudioBitRateStrategy_Variable: AVEncoderAudioQualityKey,
+          ])
         } catch {
           return AVAudioRecorder()
         }
