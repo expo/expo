@@ -27,7 +27,7 @@ public class AudioModule: Module {
       do {
         try AVAudioSession.sharedInstance().setActive(active, options: [.notifyOthersOnDeactivation])
       } catch {
-        throw PlayerException()
+        throw AudioStateException(error.localizedDescription)
       }
     }
     

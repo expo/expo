@@ -73,7 +73,7 @@ export interface AudioPlayer {
      */
     rate: number;
     /**
-     * Boolean value whether the player should correct the pitch.
+     * A boolean describing if we are correcting the pitch for a changed rate.
      */
     shouldCorrectPitch: boolean;
     /**

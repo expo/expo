@@ -4,7 +4,9 @@ func createAVPlayer(source: AudioSource?) -> AVPlayer {
   let player: AVPlayer = {
     if let source, let url = source.uri {
       do {
-        return try AVPlayer(url: url)
+        let asset = AVURLAsset(url: url, options: source.headers)
+        let item = AVPlayerItem(asset: asset)
+        return try AVPlayer(playerItem: item)
       } catch {
         return AVPlayer()
       }
