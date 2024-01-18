@@ -8,7 +8,6 @@
 
 ### 🐛 Bug fixes
 
-- Fixed HMR not working on Android. ([#26441](https://github.com/expo/expo/pull/26441) by [@lukmccall](https://github.com/lukmccall))
 - Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
@@ -19,6 +18,12 @@
 ### 📚 3rd party library updates
 
 - Update react-native to 0.73.2. ([#26311](https://github.com/expo/expo/pull/26311) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 3.6.3 - 2024-01-18
+
+### 🐛 Bug fixes
+
+- Fixed HMR not working on Android. ([#26441](https://github.com/expo/expo/pull/26441) by [@lukmccall](https://github.com/lukmccall))
 
 ## 3.6.2 - 2024-01-10
 

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 12.8.2 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
 ## 12.8.1 - 2024-01-10
 
 ### 🎉 New features
