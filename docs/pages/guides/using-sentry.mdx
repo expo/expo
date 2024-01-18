@@ -161,9 +161,9 @@ import { Button } from 'react-native';
 
 ## Usage with Expo Router
 
-If your app uses [Expo Router](/router/introduction), then you can configure Sentry to automatically capture the current route and pass it along with your error reports.
+If your app uses [Expo Router](/router/introduction), then you can configure Sentry to automatically capture the current route and pass it along with your error reports. To set this up, configure Sentry in the [Root Layout route](/router/advanced/root-layout) and add routing instrumentation.
 
-Configure Sentry in the [Root Layout route](/router/advanced/root-layout):
+<Collapsible summary="Example configuration that instruments Sentry for Expo Router">
 
 ```tsx app/_layout.tsx
 import { Slot, useRootNavigation } from 'expo-router';
@@ -201,6 +201,8 @@ function RootLayout() {
 // Wrap the Root Layout route component with `Sentry.wrap` to capture gesture info and profiling data.
 export default Sentry.wrap(RootLayout);
 ```
+
+</Collapsible>
 
 ## Usage with EAS Build
 
