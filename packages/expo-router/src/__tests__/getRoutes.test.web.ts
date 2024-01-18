@@ -59,51 +59,53 @@ describe('getRoutes', () => {
       contextKey: './_layout.tsx',
       dynamic: null,
       generated: true,
-      route: '_layout',
+      route: '',
     });
   });
 
-  it.only(`should ensure routes are present on all _layout leaves`, () => {
+  it(`should ensure grouped routes expanded to all possible routes`, () => {
     expect(
       getRoutes(
         inMemoryContext({
-          './(a,b,c)/page': () => null,
-          './(c)/_layout': () => null,
+          './(a,b)/(c,d)/page': () => null,
         }),
         { internal_stripLoadRoute: true, internal_skipGenerated: true }
       )
     ).toEqual({
       children: [
         {
-          contextKey: './(a,b,c)/page.js',
+          contextKey: './(a,b)/(c,d)/page.js',
           dynamic: null,
-          entryPoints: ['expo-router/build/views/Navigator.js', './(a,b,c)/page.js'],
-          route: '(a,b,c)/page',
+          entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/(c,d)/page.js'],
+          route: '(a)/(c)/page',
           children: [],
         },
         {
-          contextKey: './(c)/_layout.js',
+          contextKey: './(a,b)/(c,d)/page.js',
           dynamic: null,
-          route: '(c)/_layout',
-          children: [
-            {
-              children: [],
-              contextKey: './(a,b,c)/page.js',
-              dynamic: null,
-              entryPoints: [
-                'expo-router/build/views/Navigator.js',
-                './(c)/_layout.js',
-                './(a,b,c)/page.js',
-              ],
-              route: '(a,b,c)/page',
-            },
-          ],
+          entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/(c,d)/page.js'],
+          route: '(a)/(d)/page',
+          children: [],
+        },
+        {
+          contextKey: './(a,b)/(c,d)/page.js',
+          dynamic: null,
+          entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/(c,d)/page.js'],
+          route: '(b)/(c)/page',
+          children: [],
+        },
+        {
+          contextKey: './(a,b)/(c,d)/page.js',
+          dynamic: null,
+          entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/(c,d)/page.js'],
+          route: '(b)/(d)/page',
+          children: [],
         },
       ],
       contextKey: './_layout.tsx',
       dynamic: null,
       generated: true,
-      route: '_layout',
+      route: '',
     });
   });
 
@@ -147,17 +149,15 @@ describe('getRoutes', () => {
           contextKey: './(app)/index.js',
           dynamic: null,
           entryPoints: ['./_layout.js', './(app)/index.js'],
-          route: 'index',
+          route: '(app)/index',
         },
       ],
       contextKey: './_layout.js',
       dynamic: null,
-      route: '_layout',
+      route: '',
     });
   });
-});
 
-describe('tutorial', () => {
   it(`will throw if a route ends in group syntax`, () => {
     expect(() => {
       getRoutes(
@@ -168,6 +168,50 @@ describe('tutorial', () => {
     }).toThrowErrorMatchingInlineSnapshot(
       `"Invalid route ./(a)/(b).tsx. Routes cannot end with '(group)' syntax"`
     );
+  });
+
+  it(`should name routes relative to the closest _layout`, () => {
+    expect(
+      getRoutes(
+        inMemoryContext({
+          './(b)/_layout': () => null,
+          './(a,b)/page': () => null, // /(b)/page should have a different route name as it
+        }),
+        { internal_stripLoadRoute: true, internal_skipGenerated: true }
+      )
+    ).toEqual({
+      children: [
+        {
+          contextKey: './(b)/_layout.js',
+          dynamic: null,
+          route: '(b)',
+          children: [
+            {
+              contextKey: './(a,b)/page.js',
+              dynamic: null,
+              entryPoints: [
+                'expo-router/build/views/Navigator.js',
+                './(b)/_layout.js',
+                './(a,b)/page.js',
+              ],
+              route: 'page',
+              children: [],
+            },
+          ],
+        },
+        {
+          contextKey: './(a,b)/page.js',
+          dynamic: null,
+          entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/page.js'],
+          route: '(a)/page',
+          children: [],
+        },
+      ],
+      contextKey: './_layout.tsx',
+      dynamic: null,
+      generated: true,
+      route: '',
+    });
   });
 });
 
@@ -280,13 +324,13 @@ describe('+html', () => {
           contextKey: './folder/+html.js',
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './folder/+html.js'],
-          route: '+html',
+          route: 'folder/+html',
         },
       ],
       contextKey: './_layout.tsx',
       dynamic: null,
       generated: true,
-      route: '_layout',
+      route: '',
     });
   });
 });
@@ -333,13 +377,13 @@ describe('+not-found', () => {
           contextKey: './(app)/index.js',
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
-          route: 'index',
+          route: '(app)/index',
         },
       ],
       contextKey: './_layout.tsx',
       dynamic: null,
       generated: true,
-      route: '_layout',
+      route: '',
     });
   });
 
@@ -404,13 +448,13 @@ describe('entry points', () => {
           children: [],
           contextKey: './(app)/index.js',
           dynamic: null,
-          route: 'index',
+          route: '(app)/index',
         },
       ],
       contextKey: './_layout.tsx',
       dynamic: null,
       generated: true,
-      route: '_layout',
+      route: '',
     });
   });
 
@@ -429,22 +473,22 @@ describe('entry points', () => {
       contextKey: './_layout.tsx',
       dynamic: null,
       generated: true,
-      route: '_layout',
+      route: '',
       children: [
         {
           contextKey: './a/_layout.js',
           dynamic: null,
-          route: '_layout',
+          route: 'a',
           children: [
             {
               contextKey: './a/b/_layout.js',
               dynamic: null,
-              route: '_layout',
+              route: 'b',
               children: [
                 {
                   contextKey: './a/b/(c,d)/_layout.js',
                   dynamic: null,
-                  route: '_layout',
+                  route: '(c)',
                   children: [
                     {
                       children: [],
@@ -455,18 +499,6 @@ describe('entry points', () => {
                         './a/_layout.js',
                         './a/b/_layout.js',
                         './a/b/(c,d)/_layout.js',
-                        './a/b/(c,d)/e.js',
-                      ],
-                      route: 'e',
-                    },
-                    {
-                      children: [],
-                      contextKey: './a/b/(c,d)/e.js',
-                      dynamic: null,
-                      entryPoints: [
-                        'expo-router/build/views/Navigator.js',
-                        './a/_layout.js',
-                        './a/b/_layout.js',
                         './a/b/(c,d)/e.js',
                       ],
                       route: 'e',
@@ -476,7 +508,7 @@ describe('entry points', () => {
                 {
                   contextKey: './a/b/(c,d)/_layout.js',
                   dynamic: null,
-                  route: '_layout',
+                  route: '(d)',
                   children: [
                     {
                       children: [],
@@ -487,18 +519,6 @@ describe('entry points', () => {
                         './a/_layout.js',
                         './a/b/_layout.js',
                         './a/b/(c,d)/_layout.js',
-                        './a/b/(c,d)/e.js',
-                      ],
-                      route: 'e',
-                    },
-                    {
-                      children: [],
-                      contextKey: './a/b/(c,d)/e.js',
-                      dynamic: null,
-                      entryPoints: [
-                        'expo-router/build/views/Navigator.js',
-                        './a/_layout.js',
-                        './a/b/_layout.js',
                         './a/b/(c,d)/e.js',
                       ],
                       route: 'e',
@@ -567,7 +587,7 @@ describe('dynamic routes', () => {
       contextKey: './_layout.tsx',
       dynamic: null,
       generated: true,
-      route: '_layout',
+      route: '',
     });
   });
 });
