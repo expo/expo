@@ -30,6 +30,27 @@ console.log('a long string to collapse');
 
 The default minification of Expo CLI is sufficient for most projects. However, you can customize the minifier to optimize for speed or remove additional features like logs.
 
+## Remove console logs
+
+You may want to remove console logs from your production build. This can be done by using the `drop_console` option in the Terser minifier config.
+
+```js metro.config.js
+const { getDefaultConfig } = require('expo/metro-config');
+
+const config = getDefaultConfig(__dirname);
+
+config.transformer.minifierConfig = {
+  compress: {
+    // The option below removes console logs from production
+    drop_console: true,
+  },
+};
+
+module.exports = config;
+```
+
+You can also pass an array of console types to drop if you want to preserve certain logs. For example: `drop_console: ['log', 'info']` will remove `console.log` and `console.info` but preserve `console.warn` and `console.error`.
+
 ## Customizing the minifier
 
 Different minifiers have tradeoffs between speed and compression. You can customize the minifier used by Expo CLI by modifying the **metro.config.js** file in your project.
