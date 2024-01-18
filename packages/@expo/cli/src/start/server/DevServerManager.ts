@@ -123,7 +123,7 @@ export class DevServerManager {
       skipPlugins: true,
       skipSDKVersionRequirement: true,
     });
-    const bundler = getPlatformBundlers(exp).web;
+    const bundler = getPlatformBundlers(this.projectRoot, exp).web;
     debug(`Starting ${bundler} dev server for web`);
     return this.startAsync([
       {
@@ -164,7 +164,7 @@ export class DevServerManager {
       sdkVersion: exp.sdkVersion ?? null,
     });
 
-    const platformBundlers = getPlatformBundlers(exp);
+    const platformBundlers = getPlatformBundlers(this.projectRoot, exp);
 
     // Start all dev servers...
     for (const { type, options } of startOptions) {

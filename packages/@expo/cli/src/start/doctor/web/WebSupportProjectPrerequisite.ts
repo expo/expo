@@ -58,7 +58,7 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
       { file: 'react-dom/package.json', pkg: 'react-dom' },
     ];
 
-    const bundler = getPlatformBundlers(exp).web;
+    const bundler = getPlatformBundlers(this.projectRoot, exp).web;
     // Only include webpack-config if bundler is webpack.
     if (bundler === 'webpack') {
       requiredPackages.push(
@@ -69,6 +69,11 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
           dev: true,
         }
       );
+    } else if (bundler === 'metro') {
+      requiredPackages.push({
+        file: '@expo/metro-runtime/package.json',
+        pkg: '@expo/metro-runtime',
+      });
     }
 
     try {

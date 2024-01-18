@@ -72,7 +72,7 @@ export async function startAsync(
   require('@expo/env').load(projectRoot);
   const { exp, pkg } = profile(getConfig)(projectRoot);
 
-  const platformBundlers = getPlatformBundlers(exp);
+  const platformBundlers = getPlatformBundlers(projectRoot, exp);
 
   const [defaultOptions, startOptions] = await getMultiBundlerStartOptions(
     projectRoot,
