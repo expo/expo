@@ -1953,8 +1953,8 @@ SPEC CHECKSUMS:
   EXNotifications: 6e3b49fa7f916bc2783d37fbd5599509b160776c
   Expo: 5096704437d0388c1ae6c622c8fd6d1b61889a53
   expo-dev-client: 62325d7ddd0b339eb2e50e472b2e058e222c1c2d
-  expo-dev-launcher: 7b7e7c64a999c123201689fc36d9a6003149e32a
-  expo-dev-menu: 0898881a6e3a546d1c933044c1d912920e3bf4e4
+  expo-dev-launcher: e8901e4c4dc46c5c48939c8e6a98ab6dbd08a839
+  expo-dev-menu: bbb2b4dfdf7ecee57d165a8069fd6fc3634874d8
   expo-dev-menu-interface: 3c36b4d5032397e022958a2041afe91a130ea74c
   ExpoAppleAuthentication: 4fc9972356977f009911f2f3a5f56319c2a5b11b
   ExpoBackgroundFetch: 094377b73648adb55032a440f50cad1a5d3c3a89
@@ -1980,14 +1980,14 @@ SPEC CHECKSUMS:
   ExpoLocalization: b3b77d35b8c7653700ae3045bf6d8175ab91d042
   ExpoMailComposer: 1f980bbdd0647500178625f453e509cef1282d43
   ExpoMaps: e9e83d84c3af7c25fc4a139917239881e319e08a
-  ExpoModulesCore: 67e0691f804f3fdb7b2827b1cc3d9ac1385fd3e2
+  ExpoModulesCore: fdc0871aabd9a27e89849e809e5d3af520f10c9f
   ExpoModulesTestCore: 0fe626daae71122fbc305d7fbb87b1afd283e4c5
   ExpoNetwork: 97d7774ab8f62e35f08db77fbef0388d5e1f2c76
   ExpoPrint: e7ecdd682436eb5a74b744c4ce36dc490df851b7
   ExpoRandom: f0cd58e154e463d913462f3b445870b12d1c2f12
   ExpoScreenCapture: c3c120b095594bf7ae003251c1b89260566587f6
   ExpoScreenOrientation: b536311828c68fbe8ce5d5c46dadf14933a37812
-  ExpoSecureStore: 684e61c2fb2d5e61fee11b3bbd2c67610cd808b8
+  ExpoSecureStore: 20f5c59ba616b13794f2d42e97198cee70dab273
   ExpoSensors: 773adb32167d5d3c28280697ceee342b88f606ab
   ExpoSharing: 752ad6ae2b693de9cd4e7fddb78297bdc658b815
   ExpoSMS: aca5b62dbfef73670cb35d0ebd9a2017899bbb2d
@@ -2085,6 +2085,6 @@ SPEC CHECKSUMS:
   Yoga: e64aa65de36c0832d04e8c7bd614396c77a80047
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: f25025f67ea11b94e7d9346c35ac31dfcd6677fc
+PODFILE CHECKSUM: 32480cfddc480a6497831faceff7275431fe44b9
 
 COCOAPODS: 1.14.2
