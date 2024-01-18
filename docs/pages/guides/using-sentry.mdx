@@ -121,9 +121,6 @@ module.exports = config;
 
 ### Initialize Sentry
 
-<Tabs>
-<Tab label="Standard">
-
 Add the following to your app's main file such as **App.js**:
 
 ```js
@@ -135,7 +132,7 @@ Sentry.init({
 });
 ```
 
-Now wrap the root component of your app with Sentry. This may be **App.js** or **index.js** depending on your project.
+Now wrap the root component of your app with Sentry. This may be **App.js** or **index.js** depending on your project, or in [**app/\_layout.js** with Expo Router](https://docs.expo.dev/router/layouts/#create-a-layout-route).
 
 ```js
 import * as Sentry from '@sentry/react-native';
@@ -145,9 +142,24 @@ import * as Sentry from '@sentry/react-native';
 export default Sentry.wrap(App);
 ```
 
-</Tab>
+</Step>
 
-<Tab label="Expo Router">
+<Step label="6">
+
+### Verify the configuration
+
+Create a new release build of your app and verify that it uploads source maps correctly. You may want to add a button in your app to test that it is working and sourcemaps are wired up as expected, for example:
+
+```jsx
+import { Button } from 'react-native';
+
+// Inside some component
+<Button title="Press me" onPress={() => throw new Error('Hello, Sentry!')} />;
+```
+
+</Step>
+
+## Usage with Expo Router
 
 If your app uses [Expo Router](/router/introduction), then you can configure Sentry to automatically capture the current route and pass it along with your error reports.
 
@@ -189,27 +201,6 @@ function RootLayout() {
 // Wrap the Root Layout route component with `Sentry.wrap` to capture gesture info and profiling data.
 export default Sentry.wrap(RootLayout);
 ```
-
-</Tab>
-
-</Tabs>
-
-</Step>
-
-<Step label="6">
-
-### Verify the configuration
-
-Create a new release build of your app and verify that it uploads source maps correctly. You may want to add a button in your app to test that it is working and sourcemaps are wired up as expected, for example:
-
-```jsx
-import { Button } from 'react-native';
-
-// Inside some component
-<Button title="Press me" onPress={() => throw new Error('Hello, Sentry!')} />;
-```
-
-</Step>
 
 ## Usage with EAS Build
 
