@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 7.8.4 — 2024-01-18
+
+### 💡 Others
+
 - Added a `finalized` mod that will run after all the other mods. ([#26413](https://github.com/expo/expo/pull/26413) by [@kudo](https://github.com/kudo))
 
 ## 7.8.3 — 2024-01-05
