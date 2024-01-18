@@ -94,7 +94,11 @@ module.exports = function (api) {
 
 ## Remove development-only code
 
-In your project, there might be code designed help with the development process. It should be excluded from the production bundle. To handle these scenarios, use the `process.env.NODE_ENV `environment variable or the non-standard `__DEV__` global boolean. For example:
+In your project, there might be code designed help with the development process. It should be excluded from the production bundle. To handle these scenarios, use the `process.env.NODE_ENV `environment variable or the non-standard `__DEV__` global boolean.
+
+<Step label="1">
+
+For example, the following code snippet will be removed from the production bundle:
 
 ```js Input
 if (process.env.NODE_ENV === 'development') {
@@ -106,9 +110,33 @@ if (__DEV__) {
 }
 ```
 
+</Step>
+
+<Step label="2">
+
+After _constants folding_ takes place, the conditions can be evaluated statically:
+
+```js Post constants folding
+if ('production' === 'development') {
+  console.log('Hello in development');
+}
+
+if (false) {
+  console.log('Another development-only conditional...');
+}
+```
+
+</Step>
+
+<Step label="3">
+
+The unreachable conditions are removed during [minification](/guides/minify):
+
 ```js Output (production)
 /* @hide Empty file */
 ```
+
+</Step>
 
 To improve speed, Expo CLI only performs code elimination in production builds. Conditionals from the above code snippet are kept in development builds.
 
