@@ -96,6 +96,12 @@ describe('API Route output warning', () => {
   });
 
   async function mockMetroStatic() {
+    vol.fromJSON(
+      {
+        'node_modules/expo-router/package.json': JSON.stringify({}),
+      },
+      '/'
+    );
     jest.mocked(getConfig).mockReturnValue({
       // @ts-expect-error
       exp: {
@@ -213,6 +219,7 @@ describe('getStaticResourcesAsync', () => {
     vol.fromJSON(
       {
         'index.js': '',
+        'node_modules/expo-router/package.json': JSON.stringify({}),
         'package.json': JSON.stringify({}),
       },
       '/'
@@ -258,6 +265,7 @@ describe('getStaticResourcesAsync', () => {
     vol.fromJSON(
       {
         'index.js': '',
+        'node_modules/expo-router/package.json': JSON.stringify({}),
         'package.json': JSON.stringify({}),
       },
       '/'
