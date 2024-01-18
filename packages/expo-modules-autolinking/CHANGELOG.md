@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Introduced a universal `"apple"` platform as a replacement for `"ios"`, `"macos"` and `"tvos"`. ([#26398](https://github.com/expo/expo/pull/26398) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 1.10.1 - 2024-01-18
+
+### 🎉 New features
+
+- Introduced a universal `"apple"` platform as a replacement for `"ios"`, `"macos"` and `"tvos"`. ([#26398](https://github.com/expo/expo/pull/26398) by [@tsapeta](https://github.com/tsapeta))
 
 ## 1.10.0 - 2024-01-10
 

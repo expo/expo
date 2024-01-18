@@ -7,7 +7,7 @@
     "expo-module": "bin/expo-module.js"
   },
   "scripts": {
-    "lint": "expo-module lint ."
+    "lint": "expo-module eslint ."
   },
   "repository": {
     "type": "git",

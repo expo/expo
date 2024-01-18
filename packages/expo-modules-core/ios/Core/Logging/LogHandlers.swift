@@ -2,12 +2,21 @@
 
 import os.log
 
+public func createOSLogHandler(category: String) -> LogHandler {
+  if #available(macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0, *) {
+    return OSLogHandler(category: category)
+  }
+  return PrintLogHandler()
+}
+
+public func createPersistentFileLogHandler(category: String) -> LogHandler {
+  return PersistentFileLogHandler(category: category)
+}
+
 /**
  The protocol that needs to be implemented by log handlers.
  */
-internal protocol LogHandler {
-  init(category: String)
-
+public protocol LogHandler {
   func log(type: LogType, _ message: String)
 }
 
@@ -31,8 +40,6 @@ internal class OSLogHandler: LogHandler {
  Simple log handler that forwards all logs to `print` function.
  */
 internal class PrintLogHandler: LogHandler {
-  required init(category: String) {}
-
   func log(type: LogType, _ message: String) {
     print(message)
   }
