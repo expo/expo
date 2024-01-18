@@ -12,6 +12,10 @@
 
 - Remove most of Constants.appOwnership. ([#26313](https://github.com/expo/expo/pull/26313) by [@wschurman](https://github.com/wschurman))
 
+## 11.10.2 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
 ## 11.10.1 - 2024-01-10
 
 ### 🎉 New features
