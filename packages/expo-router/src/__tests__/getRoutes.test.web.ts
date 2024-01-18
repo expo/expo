@@ -7,20 +7,177 @@ afterEach(() => {
   process.env.NODE_ENV = originalEnv;
 });
 
-describe('duplicate routes', () => {
-  it(`doesn't throw if there are no duplicate routes`, () => {
+describe('getRoutes', () => {
+  it(`should append a _layout, sitemap and +not-found`, () => {
+    expect(
+      getRoutes(
+        inMemoryContext({
+          './(app)/index': () => null,
+        }),
+        { internal_stripLoadRoute: true }
+      )
+    ).toEqual({
+      children: [
+        {
+          children: [],
+          contextKey: './_sitemap.tsx',
+          dynamic: null,
+          entryPoints: [
+            'expo-router/build/views/Navigator.js',
+            'expo-router/build/views/Sitemap.js',
+          ],
+          generated: true,
+          internal: true,
+          route: '_sitemap',
+        },
+        {
+          children: [],
+          contextKey: './+not-found.tsx',
+          dynamic: [
+            {
+              deep: true,
+              name: '+not-found',
+              notFound: true,
+            },
+          ],
+          entryPoints: [
+            'expo-router/build/views/Navigator.js',
+            'expo-router/build/views/Unmatched.js',
+          ],
+          generated: true,
+          internal: true,
+          route: '+not-found',
+        },
+        {
+          children: [],
+          contextKey: './(app)/index.js',
+          dynamic: null,
+          entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
+          route: '(app)/index',
+        },
+      ],
+      contextKey: './_layout.tsx',
+      dynamic: null,
+      generated: true,
+      route: '_layout',
+    });
+  });
+
+  it.only(`should ensure routes are present on all _layout leaves`, () => {
+    expect(
+      getRoutes(
+        inMemoryContext({
+          './(a,b,c)/page': () => null,
+          './(c)/_layout': () => null,
+        }),
+        { internal_stripLoadRoute: true, internal_skipGenerated: true }
+      )
+    ).toEqual({
+      children: [
+        {
+          contextKey: './(a,b,c)/page.js',
+          dynamic: null,
+          entryPoints: ['expo-router/build/views/Navigator.js', './(a,b,c)/page.js'],
+          route: '(a,b,c)/page',
+          children: [],
+        },
+        {
+          contextKey: './(c)/_layout.js',
+          dynamic: null,
+          route: '(c)/_layout',
+          children: [
+            {
+              children: [],
+              contextKey: './(a,b,c)/page.js',
+              dynamic: null,
+              entryPoints: [
+                'expo-router/build/views/Navigator.js',
+                './(c)/_layout.js',
+                './(a,b,c)/page.js',
+              ],
+              route: '(a,b,c)/page',
+            },
+          ],
+        },
+      ],
+      contextKey: './_layout.tsx',
+      dynamic: null,
+      generated: true,
+      route: '_layout',
+    });
+  });
+
+  it(`should not append a _layout if there already is a top level layout`, () => {
+    expect(
+      getRoutes(
+        inMemoryContext({
+          './(app)/index': () => null,
+          './_layout': () => null,
+        }),
+        { internal_stripLoadRoute: true }
+      )
+    ).toEqual({
+      children: [
+        {
+          children: [],
+          contextKey: './_sitemap.tsx',
+          dynamic: null,
+          entryPoints: ['./_layout.js', 'expo-router/build/views/Sitemap.js'],
+          generated: true,
+          internal: true,
+          route: '_sitemap',
+        },
+        {
+          children: [],
+          contextKey: './+not-found.tsx',
+          dynamic: [
+            {
+              deep: true,
+              name: '+not-found',
+              notFound: true,
+            },
+          ],
+          entryPoints: ['./_layout.js', 'expo-router/build/views/Unmatched.js'],
+          generated: true,
+          internal: true,
+          route: '+not-found',
+        },
+        {
+          children: [],
+          contextKey: './(app)/index.js',
+          dynamic: null,
+          entryPoints: ['./_layout.js', './(app)/index.js'],
+          route: 'index',
+        },
+      ],
+      contextKey: './_layout.js',
+      dynamic: null,
+      route: '_layout',
+    });
+  });
+});
+
+describe('tutorial', () => {
+  it(`will throw if a route ends in group syntax`, () => {
     expect(() => {
       getRoutes(
         inMemoryContext({
-          a: () => null,
-          b: () => null,
-          '/c/d/e.js': () => null,
-          'f/g.tsx': () => null,
+          './(a)/(b).tsx': () => null,
         })
       );
-    }).not.toThrow();
+    }).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid route ./(a)/(b).tsx. Routes cannot end with '(group)' syntax"`
+    );
   });
+});
 
+describe('tutorial', () => {
+  it(`will return null if there are no _layout or routes`, () => {
+    expect(getRoutes(inMemoryContext({}))).toBeNull();
+  });
+});
+
+describe('duplicate routes', () => {
   it(`throws if there are duplicate routes`, () => {
     expect(() => {
       getRoutes(
@@ -46,17 +203,28 @@ describe('duplicate routes', () => {
     }).not.toThrow();
   });
 
+  it(`will not throw if the routes are in separate groups`, () => {
+    expect(() => {
+      getRoutes(
+        inMemoryContext({
+          './(a)/c': () => null,
+          './(b)/c': () => null,
+        })
+      );
+    }).not.toThrow();
+  });
+
   it(`throws if there are duplicate nested routes`, () => {
     expect(() => {
       getRoutes(
         inMemoryContext({
           'a.js': () => null,
-          './test/b.tsx': () => null,
-          './test/b.js': () => null,
+          './test/folder/b.tsx': () => null,
+          './test/folder/b.js': () => null,
         })
       );
     }).toThrowErrorMatchingInlineSnapshot(
-      `"The route files "./test/b.js" and ./test/b.tsx conflict on the route "/test/b". Please remove or rename one of these files."`
+      `"The route files "./test/folder/b.js" and ./test/folder/b.tsx conflict on the route "/test/folder/b". Please remove or rename one of these files."`
     );
   });
 
@@ -72,206 +240,337 @@ describe('duplicate routes', () => {
       `"The route files "./(a,b)/b.tsx" and ./(a)/b.tsx conflict on the route "/(a)/b". Please remove or rename one of these files."`
     );
   });
+
+  it(`will not throw of the groupings are present at different levels`, () => {
+    expect(() => {
+      getRoutes(
+        inMemoryContext({
+          './(a)/test/c': () => null,
+          './test/(a)/c': () => null,
+        })
+      );
+    }).not.toThrow();
+  });
 });
 
-// export function getTreeForKeys(keys: string[]) {
-//   const routes = keys.map((normalizedName) =>
-//     asFileNode({
-//       normalizedName,
-//     })
-//   );
-//   return getRecursiveTree(routes).children;
-// }
+describe('+html', () => {
+  it(`should ignore top-level +html files`, () => {
+    expect(
+      getRoutes(
+        inMemoryContext({
+          './+html': () => null,
+        }),
+        { internal_stripLoadRoute: true }
+      )
+    ).toEqual(null);
+  });
 
-// describe(getRecursiveTree, () => {
-//   it(`should assert using deprecated layout route format`, () => {
-//     expect(() => getTreeForKeys(['(app)', '(app)/index'])).toThrowError(
-//       /Using deprecated Layout Route format/
-//     );
-//   });
+  it(`allows nested +html routes`, () => {
+    expect(
+      getRoutes(
+        inMemoryContext({
+          './folder/+html': () => null,
+        }),
+        { internal_stripLoadRoute: true, internal_skipGenerated: true }
+      )
+    ).toEqual({
+      children: [
+        {
+          children: [],
+          contextKey: './folder/+html.js',
+          dynamic: null,
+          entryPoints: ['expo-router/build/views/Navigator.js', './folder/+html.js'],
+          route: '+html',
+        },
+      ],
+      contextKey: './_layout.tsx',
+      dynamic: null,
+      generated: true,
+      route: '_layout',
+    });
+  });
+});
 
-//   it(`should return a layout route`, () => {
-//     expect(getTreeForKeys(['(app)/_layout', '(app)/index'])).toEqual([
-//       {
-//         children: [
-//           {
-//             children: [],
-//             name: 'index',
-//             node: expect.objectContaining({
-//               normalizedName: '(app)/index',
-//             }),
-//             parents: ['', '(app)'],
-//           },
-//         ],
-//         name: '(app)',
-//         node: expect.objectContaining({
-//           normalizedName: '(app)/_layout',
-//         }),
-//         parents: [''],
-//       },
-//     ]);
-//   });
+describe('+not-found', () => {
+  it(`should not append a +not-found if there already is a top level +not+found`, () => {
+    expect(
+      getRoutes(
+        inMemoryContext({
+          './(app)/index': () => null,
+          './+not-found': () => null,
+        }),
+        { internal_stripLoadRoute: true }
+      )
+    ).toEqual({
+      children: [
+        {
+          children: [],
+          contextKey: './+not-found.js',
+          dynamic: [
+            {
+              deep: true,
+              name: '+not-found',
+              notFound: true,
+            },
+          ],
+          entryPoints: ['expo-router/build/views/Navigator.js', './+not-found.js'],
+          route: '+not-found',
+        },
+        {
+          children: [],
+          contextKey: './_sitemap.tsx',
+          dynamic: null,
+          entryPoints: [
+            'expo-router/build/views/Navigator.js',
+            'expo-router/build/views/Sitemap.js',
+          ],
+          generated: true,
+          internal: true,
+          route: '_sitemap',
+        },
+        {
+          children: [],
+          contextKey: './(app)/index.js',
+          dynamic: null,
+          entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
+          route: 'index',
+        },
+      ],
+      contextKey: './_layout.tsx',
+      dynamic: null,
+      generated: true,
+      route: '_layout',
+    });
+  });
 
-//   it(`should return a layout route using alternative format`, () => {
-//     expect(getTreeForKeys(['(app)/_layout', '(app)/index'])).toEqual([
-//       {
-//         children: [
-//           {
-//             children: [],
-//             name: 'index',
-//             node: expect.objectContaining({
-//               normalizedName: '(app)/index',
-//             }),
-//             parents: ['', '(app)'],
-//           },
-//         ],
-//         name: '(app)',
-//         node: expect.objectContaining({
-//           normalizedName: '(app)/_layout',
-//         }),
-//         parents: [''],
-//       },
-//     ]);
-//   });
-// });
+  it(`should not match top-level deep dynamic with nested index`, () => {
+    let routes = getRoutes(
+      inMemoryContext({
+        './(group)/+not-found/(group)/index.tsx': () => null,
+        './+not-found/index.tsx': () => null,
+        './+not-found/(group)/index.tsx': () => null,
+        './(group1)/+not-found/(group2)/index.tsx': () => null,
+        './(group1)/+not-found/(group2)/(group3)/index.tsx': () => null,
+      }),
+      { internal_stripLoadRoute: true }
+    );
 
-// describe(getUserDefinedTopLevelNotFoundRoute, () => {
-//   it(`should match top-level not found files`, () => {
-//     ['./+not-found.tsx', './(group)/+not-found.tsx', './(group)/(2)/+not-found.tsx'].forEach(
-//       (name) => {
-//         expect(getUserDefinedTopLevelNotFoundRoute(getExactRoutes(ctx(name))!)).toEqual(
-//           expect.objectContaining({
-//             contextKey: name,
-//           })
-//         );
-//       }
-//     );
-//   });
-//   it(`should not match top-level deep dynamic with nested index`, () => {
-//     [
-//       './(group)/+not-found/(group).tsx',
-//       './(group)/+not-found/(group)/index.tsx',
-//       './+not-found/index.tsx',
-//       './+not-found/(group)/index.tsx',
-//       './(group1)/+not-found/(group2)/index.tsx',
-//       './(group1)/+not-found/(group2)/(group3)/index.tsx',
-//     ].forEach((name) => {
-//       expect(getUserDefinedTopLevelNotFoundRoute(getExactRoutes(ctx(name))!)).toEqual(null);
-//     });
-//   });
+    expect(routes).not.toBeNull();
+    routes = routes!;
 
-//   it(`should return a basic not-found route`, () => {
-//     const routes = getExactRoutes(ctx('./+not-found.js'))!;
-//     expect(getUserDefinedTopLevelNotFoundRoute(routes)).toEqual(routes.children[0]);
-//   });
-//   it(`does not return a nested not-found route `, () => {
-//     expect(
-//       getUserDefinedTopLevelNotFoundRoute(getExactRoutes(ctx('./home/+not-found.js'))!)
-//     ).toEqual(null);
-//   });
+    const notFound = routes.children.find((route) => route.route === '+not-found')!;
 
-//   it(`should return a not-found route when nested in groups without layouts`, () => {
-//     expect(
-//       getUserDefinedTopLevelNotFoundRoute(
-//         getExactRoutes(ctx('./(group)/(another)/+not-found.tsx'))!
-//       )
-//     ).toEqual(
-//       expect.objectContaining({
-//         route: '(group)/(another)/+not-found',
-//       })
-//     );
-//   });
-//   it(`does not return a top-level not-found`, () => {
-//     expect(
-//       getUserDefinedTopLevelNotFoundRoute(
-//         getExactRoutes(ctx('./home/_layout.tsx', './home/+not-found.tsx'))
-//       )
-//     ).toEqual(null);
-//   });
-// });
+    // Ensure this is the generated +not-found
+    expect(notFound.generated).toBeTruthy();
+    expect(notFound.internal).toBeTruthy();
+    expect(notFound.entryPoints).toContain('expo-router/build/views/Unmatched.js');
+  });
+});
 
-// describe(getExactRoutes, () => {
-//   // NOTE(EvanBacon): This tests when all you have is a root layout.
-//   it(`automatically blocks +html file`, () => {
-//     expect(
-//       dropFunctions(getExactRoutes(ctx('./+html.js', './other/+html.js', './_layout.tsx'))!)
-//     ).toEqual({
-//       children: [
-//         {
-//           children: [],
+describe('entry points', () => {
+  it('should allow skipping entry point logic', () => {
+    expect(
+      getRoutes(
+        inMemoryContext({
+          './(app)/index': () => null,
+        }),
+        { internal_stripLoadRoute: true, ignoreEntryPoints: true }
+      )
+    ).toEqual({
+      children: [
+        {
+          children: [],
+          contextKey: './_sitemap.tsx',
+          dynamic: null,
+          generated: true,
+          internal: true,
+          route: '_sitemap',
+        },
+        {
+          children: [],
+          contextKey: './+not-found.tsx',
+          dynamic: [
+            {
+              deep: true,
+              name: '+not-found',
+              notFound: true,
+            },
+          ],
+          generated: true,
+          internal: true,
+          route: '+not-found',
+        },
+        {
+          children: [],
+          contextKey: './(app)/index.js',
+          dynamic: null,
+          route: 'index',
+        },
+      ],
+      contextKey: './_layout.tsx',
+      dynamic: null,
+      generated: true,
+      route: '_layout',
+    });
+  });
 
-//           entryPoints: ['./_layout.tsx', './other/+html.js'],
-//           contextKey: './other/+html.js',
-//           dynamic: null,
-//           route: 'other/+html',
-//         },
-//       ],
-//       contextKey: './_layout.tsx',
-//       dynamic: null,
-//       route: '',
-//     });
-//   });
+  it(`should append add entry points for all parent _layouts`, () => {
+    expect(
+      getRoutes(
+        inMemoryContext({
+          './a/_layout': () => null,
+          './a/b/_layout': () => null,
+          './a/b/(c,d)/_layout': () => null,
+          './a/b/(c,d)/e': () => null,
+        }),
+        { internal_stripLoadRoute: true, internal_skipGenerated: true }
+      )
+    ).toEqual({
+      contextKey: './_layout.tsx',
+      dynamic: null,
+      generated: true,
+      route: '_layout',
+      children: [
+        {
+          contextKey: './a/_layout.js',
+          dynamic: null,
+          route: '_layout',
+          children: [
+            {
+              contextKey: './a/b/_layout.js',
+              dynamic: null,
+              route: '_layout',
+              children: [
+                {
+                  contextKey: './a/b/(c,d)/_layout.js',
+                  dynamic: null,
+                  route: '_layout',
+                  children: [
+                    {
+                      children: [],
+                      contextKey: './a/b/(c,d)/e.js',
+                      dynamic: null,
+                      entryPoints: [
+                        'expo-router/build/views/Navigator.js',
+                        './a/_layout.js',
+                        './a/b/_layout.js',
+                        './a/b/(c,d)/_layout.js',
+                        './a/b/(c,d)/e.js',
+                      ],
+                      route: 'e',
+                    },
+                    {
+                      children: [],
+                      contextKey: './a/b/(c,d)/e.js',
+                      dynamic: null,
+                      entryPoints: [
+                        'expo-router/build/views/Navigator.js',
+                        './a/_layout.js',
+                        './a/b/_layout.js',
+                        './a/b/(c,d)/e.js',
+                      ],
+                      route: 'e',
+                    },
+                  ],
+                },
+                {
+                  contextKey: './a/b/(c,d)/_layout.js',
+                  dynamic: null,
+                  route: '_layout',
+                  children: [
+                    {
+                      children: [],
+                      contextKey: './a/b/(c,d)/e.js',
+                      dynamic: null,
+                      entryPoints: [
+                        'expo-router/build/views/Navigator.js',
+                        './a/_layout.js',
+                        './a/b/_layout.js',
+                        './a/b/(c,d)/_layout.js',
+                        './a/b/(c,d)/e.js',
+                      ],
+                      route: 'e',
+                    },
+                    {
+                      children: [],
+                      contextKey: './a/b/(c,d)/e.js',
+                      dynamic: null,
+                      entryPoints: [
+                        'expo-router/build/views/Navigator.js',
+                        './a/_layout.js',
+                        './a/b/_layout.js',
+                        './a/b/(c,d)/e.js',
+                      ],
+                      route: 'e',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+  });
+});
 
-//   it(`should allow skipping entry point logic`, () => {
-//     expect(
-//       dropFunctions(getExactRoutes(ctx('./some/nested/value.tsx'), { ignoreEntryPoints: true })!)
-//     ).toEqual({
-//       children: [
-//         {
-//           children: [],
-//           contextKey: './some/nested/value.tsx',
-//           dynamic: null,
-//           route: 'some/nested/value',
-//         },
-//       ],
-//       contextKey: './_layout.tsx',
-//       dynamic: null,
-//       generated: true,
-//       route: '',
-//     });
-//   });
-// });
-
-// describe(getRoutes, () => {
-//   // NOTE(EvanBacon): This tests when all you have is a root layout.
-//   it(`should allow a custom root _layout route`, () => {
-//     expect(dropFunctions(getRoutes(ctx('./_layout.tsx'))!)).toEqual({
-//       children: [
-//         {
-//           children: [],
-//           entryPoints: ['./_layout.tsx', 'expo-router/build/views/Unmatched.js'],
-//           contextKey: './+not-found.tsx',
-//           dynamic: [{ deep: true, name: '+not-found', notFound: true }],
-//           generated: true,
-//           internal: true,
-//           route: '+not-found',
-//         },
-//       ],
-//       contextKey: './_layout.tsx',
-//       dynamic: null,
-//       route: '',
-//     });
-//   });
-
-//   it(`should support a single nested route without layouts`, () => {
-//     expect(dropFunctions(getRoutes(ctx('./some/nested/value.tsx'))!)).toEqual({
-//       children: [
-//         {
-//           children: [],
-//           contextKey: './some/nested/value.tsx',
-//           dynamic: null,
-//           route: 'some/nested/value',
-//           entryPoints: ['expo-router/build/views/Navigator.js', './some/nested/value.tsx'],
-//         },
-//         ROUTE_DIRECTORY,
-//         ROUTE_NOT_FOUND,
-//       ],
-//       contextKey: './_layout.tsx',
-//       dynamic: null,
-//       generated: true,
-//       route: '',
-//     });
-//   });
+describe('dynamic routes', () => {
+  it('parses dynamic routes', () => {
+    expect(
+      getRoutes(
+        inMemoryContext({
+          './[single]': () => null,
+          './a/b/c/[single]': () => null,
+          './[...catchAll]': () => null,
+        }),
+        { internal_stripLoadRoute: true, internal_skipGenerated: true }
+      )
+    ).toEqual({
+      children: [
+        {
+          children: [],
+          contextKey: './[single].js',
+          dynamic: [
+            {
+              deep: false,
+              name: 'single',
+            },
+          ],
+          entryPoints: ['expo-router/build/views/Navigator.js', './[single].js'],
+          route: '[single]',
+        },
+        {
+          children: [],
+          contextKey: './[...catchAll].js',
+          dynamic: [
+            {
+              deep: true,
+              name: 'catchAll',
+            },
+          ],
+          entryPoints: ['expo-router/build/views/Navigator.js', './[...catchAll].js'],
+          route: '[...catchAll]',
+        },
+        {
+          children: [],
+          contextKey: './a/b/c/[single].js',
+          dynamic: [
+            {
+              deep: false,
+              name: 'single',
+            },
+          ],
+          entryPoints: ['expo-router/build/views/Navigator.js', './a/b/c/[single].js'],
+          route: 'a/b/c/[single]',
+        },
+      ],
+      contextKey: './_layout.tsx',
+      dynamic: null,
+      generated: true,
+      route: '_layout',
+    });
+  });
+});
 
 //   it(`get dynamic routes`, () => {
 //     expect(dropFunctions(getRoutes(ctx('./[dynamic].tsx', './[...deep].tsx'))!)).toEqual(

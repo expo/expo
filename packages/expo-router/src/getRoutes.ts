@@ -14,6 +14,7 @@ export type Options = {
   ignoreEntryPoints?: boolean;
   /* Used using testing for toEqual() comparison */
   internal_stripLoadRoute?: boolean;
+  internal_skipGenerated?: boolean;
 };
 
 type DirectoryNode = {
@@ -59,7 +60,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
   }
 
   const rootDirectory: DirectoryNode = {
-    name: '/',
+    name: '',
     files: new Map(),
     subdirectories: new Map(),
   };
@@ -72,7 +73,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
       continue;
     }
 
-    const meta = getFileMeta(filePath, options);
+    const meta = getFileMeta(filePath);
 
     // This is a file that should be ignored. e.g maybe it has an invalid platform?
     if (meta.specificity < 0) {
@@ -199,7 +200,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           // In production, use the first route found
           if (process.env.NODE_ENV !== 'production') {
             throw new Error(
-              `The route files "${filePath}" and ${existing.contextKey} conflict on the route "${name}". Please remove or rename one of these files.`
+              `The route files "${filePath}" and ${existing.contextKey} conflict on the route "/${name}". Please remove or rename one of these files.`
             );
           }
         } else {
@@ -225,7 +226,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
         // Generate a fake file name for the directory
         contextKey: './_layout.tsx',
         entryPoints: ['expo-router/build/views/Navigator.js'],
-        route: '',
+        route: '_layout',
         generated: true,
         dynamic: null,
         children: [],
@@ -234,12 +235,13 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
   }
 
   // Only include the sitemap if there are routes.
-  if (hasRoutes) {
+  if (hasRoutes && !options.internal_skipGenerated) {
     appendSitemapRoute(rootDirectory);
   }
 
-  appendNotFoundRoute(rootDirectory);
-
+  if (!options.internal_skipGenerated) {
+    appendNotFoundRoute(rootDirectory);
+  }
   return rootDirectory;
 }
 
@@ -254,7 +256,13 @@ function flattenDirectoryTreeToRoutes(
   /* Routes need to contain the entryPoints of their parent layouts */
   entryPoints: string[] = [],
   /* Route names are relative to their layout */
-  pathToRemove = ''
+  pathToRemove = '',
+  /*
+   * The directory tree may contain duplicate routes, as extrapolateGroups creates multiple leafs
+   * These leafs may not be needed, so we track which routes have already been added to the nearestLayout
+   * We could search the children array, but this is faster
+   */
+  childrenMap = new Map<RouteNode, Set<RouteNode>>()
 ) {
   /**
    * All routes get "hoisted" to the nearest layout.
@@ -268,6 +276,9 @@ function flattenDirectoryTreeToRoutes(
       nearestLayout.children.push(layout);
     }
     nearestLayout = layout;
+
+    // setup the children tracking for de-duping
+    childrenMap.set(nearestLayout, new Set());
 
     // `route` is the absolute pathname. We need to make this relative to the parent layout
     const newRoute = nearestLayout.route.replace(pathToRemove, '');
@@ -296,6 +307,9 @@ function flattenDirectoryTreeToRoutes(
     // TODO(Platform Routes): We need to pick the most specific layout and ensure that all routes have a non-platform route.
     const route = routes[0];
 
+    // This route already exists in the nearest layout, we can skip it
+    if (childrenMap.get(nearestLayout)?.has(route)) continue;
+
     // `route` is the absolute pathname. We need to make this relative to the parent layout
     const name = route.route.replace(pathToRemove, '');
 
@@ -321,41 +335,49 @@ function flattenDirectoryTreeToRoutes(
     }
 
     nearestLayout.children.push(child);
+
+    // Track that this route has already been added to this layout
+    childrenMap.get(nearestLayout)?.add(route);
   }
 
   // Recursively flatten the subdirectories
   for (const child of directory.subdirectories.values()) {
-    flattenDirectoryTreeToRoutes(child, options, nearestLayout, entryPoints, pathToRemove);
+    flattenDirectoryTreeToRoutes(
+      child,
+      options,
+      nearestLayout,
+      entryPoints,
+      pathToRemove,
+      childrenMap
+    );
   }
 
   return nearestLayout;
 }
 
-function getFileMeta(key: string, options: Options) {
+function getFileMeta(key: string) {
   // Remove the leading `./`
   key = key.replace(/^\.\//, '');
 
   const parts = key.split('/');
   const dirname = parts.slice(0, -1).join('/') || './';
   const filename = parts[parts.length - 1];
-  const filepathWithoutExtensions = removeSupportedExtensions(key);
   const filenameWithoutExtensions = removeSupportedExtensions(filename);
-  const isLayout = filename.startsWith('_layout.');
+  const isLayout = filenameWithoutExtensions === '_layout';
   const isApi = key.match(/\+api\.[jt]sx?$/);
 
   if (filenameWithoutExtensions.startsWith('(') && filenameWithoutExtensions.endsWith(')')) {
-    throw new Error(`Invalid route ./${key}. Routes cannot end with \`(group)\` syntax`);
+    throw new Error(`Invalid route ./${key}. Routes cannot end with '(group)' syntax`);
   }
 
   return {
     key,
-    name: filenameWithoutExtensions,
+    name: removeSupportedExtensions(key),
     specificity: 0,
     dirname,
     filename,
     isLayout,
     isApi,
-    filepathWithoutExtensions,
   };
 }
 
@@ -427,44 +449,40 @@ function getDynamicConvention(path: string): DynamicConvention[] | null {
 }
 
 function appendSitemapRoute(directory: DirectoryNode) {
-  if (directory.files.has('_sitemap')) {
-    return;
-  }
-
-  directory.files.set('_sitemap', [
-    {
-      loadRoute() {
-        const { Sitemap, getNavOptions } = require('./views/Sitemap');
-        return { default: Sitemap, getNavOptions };
+  if (!directory.files.has('_sitemap')) {
+    directory.files.set('_sitemap', [
+      {
+        loadRoute() {
+          const { Sitemap, getNavOptions } = require('./views/Sitemap');
+          return { default: Sitemap, getNavOptions };
+        },
+        route: '_sitemap',
+        contextKey: './_sitemap.tsx',
+        generated: true,
+        internal: true,
+        dynamic: null,
+        children: [],
+        entryPoints: ['expo-router/build/views/Sitemap.js'],
       },
-      route: '_sitemap',
-      contextKey: './_sitemap.tsx',
-      generated: true,
-      internal: true,
-      dynamic: null,
-      children: [],
-      entryPoints: ['expo-router/build/views/Sitemap.js'],
-    },
-  ]);
+    ]);
+  }
 }
 
 function appendNotFoundRoute(directory: DirectoryNode) {
-  if (directory.files.has('+not-found')) {
-    return;
-  }
-
-  directory.files.set('+not-found', [
-    {
-      loadRoute() {
-        return { default: require('./views/Unmatched').Unmatched };
+  if (!directory.files.has('+not-found')) {
+    directory.files.set('+not-found', [
+      {
+        loadRoute() {
+          return { default: require('./views/Unmatched').Unmatched };
+        },
+        route: '+not-found',
+        contextKey: './+not-found.tsx',
+        generated: true,
+        internal: true,
+        dynamic: [{ name: '+not-found', deep: true, notFound: true }],
+        children: [],
+        entryPoints: ['expo-router/build/views/Unmatched.js'],
       },
-      route: '+not-found',
-      contextKey: './+not-found.tsx',
-      generated: true,
-      internal: true,
-      dynamic: [{ name: '+not-found', deep: true, notFound: true }],
-      children: [],
-      entryPoints: ['expo-router/build/views/Unmatched.js'],
-    },
-  ]);
+    ]);
+  }
 }
