@@ -26,6 +26,7 @@ import expo.modules.image.events.OkHttpProgressListener
 import expo.modules.image.okhttp.GlideUrlWrapper
 import expo.modules.image.records.CachePolicy
 import expo.modules.image.records.ContentPosition
+import expo.modules.image.records.DecodeFormat
 import expo.modules.image.records.ImageErrorEvent
 import expo.modules.image.records.ImageLoadEvent
 import expo.modules.image.records.ImageProgressEvent
@@ -161,6 +162,12 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     }
 
   internal var allowDownscaling: Boolean = true
+    set(value) {
+      field = value
+      shouldRerender = true
+    }
+
+  internal var decodeFormat: DecodeFormat = DecodeFormat.ARGB_8888
     set(value) {
       field = value
       shouldRerender = true
@@ -540,6 +547,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
         .downsample(downsampleStrategy)
         .addListener(GlideRequestListener(WeakReference(this)))
         .encodeQuality(100)
+        .format(decodeFormat.toGlideFormat())
         .apply(propOptions)
 
       tintColor?.let {
