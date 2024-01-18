@@ -1,4 +1,5 @@
 const { withWatchPlugins } = require('jest-expo/config');
+
 const createJestPreset = require('../createJestPreset');
 
 console.warn(

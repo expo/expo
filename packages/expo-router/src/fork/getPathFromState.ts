@@ -156,9 +156,9 @@ function processParamsWithUserSettings(configItem: ConfigItem, params: Record<st
       stringify?.[key]
         ? stringify[key](value)
         : // Preserve rest params
-        Array.isArray(value)
-        ? value
-        : String(value),
+          Array.isArray(value)
+          ? value
+          : String(value),
     ])
   );
 }

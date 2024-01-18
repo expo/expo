@@ -4,7 +4,7 @@ const findYarnWorkspaceRoot = require('find-yarn-workspace-root');
 const fs = require('fs');
 const path = require('path');
 
-module.exports = function(basePreset) {
+module.exports = function (basePreset) {
   // Explicitly catch and log errors since Jest sometimes suppresses error messages
   try {
     return _createJestPreset(basePreset);
@@ -41,12 +41,12 @@ function _createBabelConfiguration() {
 }
 
 function _createTypeScriptConfiguration() {
-  let tsConfigFileName = 'tsconfig.json';
+  const tsConfigFileName = 'tsconfig.json';
   // The path to tsconfig.json is resolved relative to cwd
-  let tsConfigPath = path.resolve(tsConfigFileName);
+  const tsConfigPath = path.resolve(tsConfigFileName);
 
-  let jestTsConfigDirectory = path.join('.expo');
-  let jestTsConfig = {
+  const jestTsConfigDirectory = path.join('.expo');
+  const jestTsConfig = {
     extends: tsConfigPath,
     compilerOptions: {
       // Explicitly specify "module" so that ts-jest doesn't provide its default
@@ -59,11 +59,11 @@ function _createTypeScriptConfiguration() {
     },
   };
 
-  let jestTsConfigJson = JSON.stringify(jestTsConfig, null, 2);
+  const jestTsConfigJson = JSON.stringify(jestTsConfig, null, 2);
   // The TypeScript configuration needs to be under the project directory so that TypeScript finds
   // type declaration packages that are installed in the project or workspace root (writing it to a
   // temporary directory would not work, for example)
-  let jestTsConfigPath = path.join(jestTsConfigDirectory, 'tsconfig.jest.json');
+  const jestTsConfigPath = path.join(jestTsConfigDirectory, 'tsconfig.jest.json');
 
   // NOTE: remove this existsSync call once we require Node 10.12+
   if (!fs.existsSync(jestTsConfigPath)) {
@@ -82,21 +82,21 @@ function _createTypeScriptConfiguration() {
  */
 function _getDefaultTypeRoots(currentDirectory) {
   currentDirectory = path.resolve(currentDirectory);
-  let typeRoots = ['./node_modules/@types'];
+  const typeRoots = ['./node_modules/@types'];
 
   // If the TypeScript configuration is in a subdirectory of a package, find the package's directory
   // since find-yarn-workspace-root works only from workspace packages
-  let packageDirectory = _findPackageDirectory(currentDirectory);
+  const packageDirectory = _findPackageDirectory(currentDirectory);
   if (!packageDirectory) {
     return typeRoots;
   }
 
-  let workspaceRootPath = findYarnWorkspaceRoot(packageDirectory);
+  const workspaceRootPath = findYarnWorkspaceRoot(packageDirectory);
 
   // If the TypeScript configuration is in a Yarn workspace, workspace's npm dependencies may be
   // installed in the workspace root. If the configuration is in a non-workspace package, its
   // dependencies are installed only in the package's directory.
-  let rootPath = workspaceRootPath || packageDirectory;
+  const rootPath = workspaceRootPath || packageDirectory;
 
   let relativeAncestorDirectoryPath = '..';
   while (currentDirectory !== rootPath) {
