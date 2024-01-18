@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed a list of packages to include in the generated modules provider for tvOS and macOS platforms. ([#26497](https://github.com/expo/expo/pull/26497) by [@tsapeta](https://github.com/tsapeta))
-
 ### 💡 Others
+
+## 1.10.2 - 2024-01-18
+
+### 🐛 Bug fixes
+
+- Fixed a list of packages to include in the generated modules provider for tvOS and macOS platforms. ([#26497](https://github.com/expo/expo/pull/26497) by [@tsapeta](https://github.com/tsapeta))
 
 ## 1.10.1 - 2024-01-18
 
