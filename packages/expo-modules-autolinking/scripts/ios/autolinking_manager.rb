@@ -123,7 +123,13 @@ module Expo
 
     # Filters only these packages that needs to be included in the generated modules provider.
     public def packages_to_generate
-      @packages.select { |package| package.modules.any? }
+      platform = @target_definition.platform
+
+      @packages.select do |package|
+        # Check whether the package has any module to autolink
+        # and if there is any pod that supports target's platform.
+        package.modules.any? && package.pods.any? { |pod| pod.supports_platform?(platform) }
+      end
     end
 
     # Returns the provider name which is also a name of the generated file
