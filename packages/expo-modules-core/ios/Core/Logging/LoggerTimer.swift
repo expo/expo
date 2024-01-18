@@ -16,7 +16,7 @@ public class LoggerTimer {
   /**
    End the timer and log a timer entry.
    */
-  func stop() {
+  public func stop() {
     self.stopBlock()
   }
 }
