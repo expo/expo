@@ -458,15 +458,11 @@ Add the following to your project's **app.json** or **app.config.js** file:
 
 ## Source maps
 
-{/* TODO: Drop `expo publish` mention */}
-
-With the `postPublish` hook in place, now all you need to do is run `expo publish` and the source maps will be uploaded automatically. We automatically assign a unique release version for Sentry each time you hit publish, based on the version you specify in **app.json** and a release id on our backend -- this means that if you forget to update the version but hit publish, you will still get a unique Sentry release.
-
-> This hook can also be used as a `postExport` hook if you're [self-hosting your updates](../distribution/custom-updates-server.mdx).
+With the `postPublish` hook in place, now all you need to do is run `expo-cli publish` and the source maps will be uploaded automatically. We automatically assign a unique release version for Sentry each time you hit publish, based on the version you specify in **app.json** and a release id on our backend -- this means that if you forget to update the version but hit publish, you will still get a unique Sentry release.
 
 ### Uploading source maps at build time
 
-With `expo-updates`, release builds of both Android and iOS apps will create and embed a new update from your JavaScript source at build-time. **This new update will not be published automatically** and will exist only in the binary with which it was bundled. Since it isn't published, the source maps aren't uploaded in the usual way like they are when you run `expo publish` (actually, we are relying on Sentry's native scripts to handle that). Because of this you have some extra things to be aware of:
+With `expo-updates`, release builds of both Android and iOS apps will create and embed a new update from your JavaScript source at build-time. **This new update will not be published automatically** and will exist only in the binary with which it was bundled. Since it isn't published, the source maps aren't uploaded in the usual way like they are when you run `expo-cli publish` (actually, we are relying on Sentry's native scripts to handle that). Because of this you have some extra things to be aware of:
 
 - Your `release` will automatically be set to Sentry's expected value- `${bundleIdentifier}@${version}+${buildNumber}` (iOS) or `${androidPackage}@${version}+${versionCode}` (Android).
 - Your `dist` will automatically be set to Sentry's expected value: `${buildNumber}` (iOS) or `${versionCode}` (Android).
