@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- When repeated, later boolean arguments on `export:embed`, `run android`, and `run ios` should take precedence ([#26471](https://github.com/expo/expo/pull/26471) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 - Added `templateChecksum` for prebuild to check the current template version. ([#26414](https://github.com/expo/expo/pull/26414) by [@kudo](https://github.com/kudo))
