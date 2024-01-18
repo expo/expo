@@ -5,6 +5,7 @@ description: Learn about how Expo CLI optimizes production JavaScript bundles.
 ---
 
 import { Tab, Tabs } from '~/ui/components/Tabs';
+import { Step } from '~/ui/components/Step';
 
 Tree shaking (also referred to as _dead code removal_) is a technique to remove unused code from the production bundle. Expo CLI employs different techniques, including [minification](/guides/minify), to improve startup time by removing unused code.
 
@@ -120,7 +121,9 @@ To improve speed, Expo CLI only performs code elimination in production builds. 
 
 ## Custom code removal
 
-With Expo SDK 50, `EXPO_PUBLIC_` environment variables are inlined before minification process. It allows using them to remove code from the production bundle. For example:
+With Expo SDK 50, `EXPO_PUBLIC_` environment variables are inlined before the minification process. This means they can be used to remove code from the production bundle. For example:
+
+<Step label="1">
 
 {/* prettier-ignore */}
 ```js .env
@@ -133,6 +136,10 @@ if (!process.env.EXPO_PUBLIC_DISABLE_FEATURE) {
 }
 ```
 
+</Step>
+
+<Step label="2">
+
 The above input code snippet is transformed to the following after `babel-preset-expo`:
 
 ```js Post babel-preset-expo
@@ -141,19 +148,27 @@ if (!'true') {
 }
 ```
 
-The above code snippet is then minified:
+</Step>
+
+<Step label="3">
+The above code snippet is then minified, which removes the unused conditional:
 
 ```js Post minifier
 // Empty file
 ```
 
-This does not apply to server code as environment variables are not inlined in server bundles.
+</Step>
+
+- This system does not apply to server code as environment variables are not inlined in server bundles.
+- Library authors should not use `EXPO_PUBLIC_` environment variables as they only run in application code for security reasons.
 
 ## Remove unused imports and exports
 
 As of Expo SDK 50, unused imports and exports are not removed from the production bundle. We plan to add this feature to all platforms in a future release.
 
 ## Barrel files
+
+> As of Expo SDK 50, there are no built-in optimizations for barrel files.
 
 Barrel files export all of the modules in a directory. They are used to make importing modules easier. For example, a component-based icon library does the following:
 
@@ -163,15 +178,16 @@ export { default as IconB } from './IconB';
 export { default as IconC } from './IconC';
 ```
 
-To reduce the bundle size, identify which of these modules you are using and try to import them directly.
-
-It looks convenient when quickly importing files through barrel files, especially, in the early stages of development and you are yet to release a minimum viable product or project. So avoid adding them prematurely and strictly adhere to a "no barrel files" policy during the initial phases of the development cycle.
-
-> As of Expo SDK 50, there are no built-in bundler optimizations for barrel files.
+To reduce the bundle size, identify which of these modules you are using and try to import them directly. Learn more in [analyzing bundle size](/guides/analyzing-bundles).
 
 ## React Native web imports
 
 `babel-preset-expo` provides a built-in optimization for the `react-native-web` barrel file. If you import `react-native` directly using ESM, then the barrel file will be removed from the production bundle.
+
+<Tabs>
+<Tab label="ESM">
+
+If you import `react-native` using the static `import` syntax, the barrel file will be removed.
 
 ```js Input
 import { View, Image } from 'react-native';
@@ -182,12 +198,20 @@ import View from 'react-native-web/dist/exports/View';
 import Image from 'react-native-web/dist/exports/Image';
 ```
 
+</Tab>
+
+<Tab label="CJS">
+
 If you import `react-native` using `require()`, the barrel file will be left as-is in the production bundle.
 
-```js
+```js Input
 const { View, Image } = require('react-native');
 ```
 
 ```js Output (web)
 const { View, Image } = require('react-native-web');
 ```
+
+</Tab>
+
+</Tabs>
