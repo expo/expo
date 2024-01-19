@@ -145,7 +145,8 @@ function getNavigateAction(state: ResultState, parentState: NavigationState, typ
   const routesAreEqual = parentState.routes[parentState.index] === currentRoute;
 
   // If there is nested state and the routes are equal, we should keep going down the tree
-  if (route.state && routesAreEqual && currentRoute.state) {
+  // unless the type is push, in which case we should just push the state
+  if (route.state && routesAreEqual && currentRoute.state && type !== 'PUSH') {
     return getNavigateAction(route.state, currentRoute.state as any, type);
   }
 
