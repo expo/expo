@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On `iOS`, set `httpMethod` on upload requests.
+
 ### 💡 Others
 
 ## 16.0.4 - 2024-01-18
