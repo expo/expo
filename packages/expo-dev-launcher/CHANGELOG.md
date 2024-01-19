@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add possibility to disable the generated `exp+slug` scheme. ([#24976](https://github.com/expo/expo/pull/24976) by [@sync](https://github.com/sync))
+
 ### 🐛 Bug fixes
 
 - Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357) by [@kudo](https://github.com/kudo))
