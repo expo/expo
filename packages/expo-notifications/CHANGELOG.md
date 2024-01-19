@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Remove `.native` hardcoded platform imports
+- Remove `.native` hardcoded platform imports ([#26511](https://github.com/expo/expo/pull/26511) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
