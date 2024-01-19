@@ -1,12 +1,16 @@
-export default {
+import { UnavailabilityError } from 'expo-modules-core';
+const notificationCategoriesModule = {
     async getNotificationCategoriesAsync() {
         return [];
     },
-    async setNotificationCategoryAsync(identifier, actions, options) {
-        return null;
+    async setNotificationCategoryAsync() {
+        throw new UnavailabilityError('Notifications', 'setNotificationCategoryAsync');
     },
-    async deleteNotificationCategoryAsync(identifier) {
+    async deleteNotificationCategoryAsync() {
         return false;
     },
+    addListener() { },
+    removeListeners() { },
 };
+export default notificationCategoriesModule;
 //# sourceMappingURL=NotificationCategoriesModule.js.map
