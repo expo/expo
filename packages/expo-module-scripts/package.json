@@ -27,7 +27,7 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-module-scripts#readme",
   "dependencies": {
     "@babel/cli": "^7.23.4",
-    "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
+    "@babel/plugin-transform-export-namespace-from": "^7.23.4",
     "@babel/preset-env": "^7.23.8",
     "@babel/preset-typescript": "^7.23.3",
     "@expo/npm-proofread": "^1.0.1",
