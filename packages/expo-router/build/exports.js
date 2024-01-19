@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useFocusEffect = exports.useNavigation = exports.SplashScreen = exports.ErrorBoundary = exports.Unmatched = exports.ExpoRoot = exports.Slot = exports.Navigator = exports.withLayoutContext = exports.Redirect = exports.Link = exports.router = exports.useRootNavigationState = exports.useRootNavigation = exports.useSegments = exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.usePathname = exports.useUnstableGlobalHref = exports.useRouter = void 0;
+exports.useFocusEffect = exports.useNavigation = exports.SplashScreen = exports.ErrorBoundary = exports.Unmatched = exports.ExpoRoot = exports.Slot = exports.Navigator = exports.withLayoutContext = exports.Redirect = exports.Link = exports.router = exports.useRootNavigationState = exports.useRootNavigation = exports.useSegments = exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.useNavigationContainerRef = exports.usePathname = exports.useUnstableGlobalHref = exports.useRouter = void 0;
 // Expo Router API
 const Navigator_1 = require("./views/Navigator");
 Object.defineProperty(exports, "Navigator", { enumerable: true, get: function () { return Navigator_1.Navigator; } });
@@ -9,6 +9,7 @@ var hooks_1 = require("./hooks");
 Object.defineProperty(exports, "useRouter", { enumerable: true, get: function () { return hooks_1.useRouter; } });
 Object.defineProperty(exports, "useUnstableGlobalHref", { enumerable: true, get: function () { return hooks_1.useUnstableGlobalHref; } });
 Object.defineProperty(exports, "usePathname", { enumerable: true, get: function () { return hooks_1.usePathname; } });
+Object.defineProperty(exports, "useNavigationContainerRef", { enumerable: true, get: function () { return hooks_1.useNavigationContainerRef; } });
 Object.defineProperty(exports, "useGlobalSearchParams", { enumerable: true, get: function () { return hooks_1.useGlobalSearchParams; } });
 Object.defineProperty(exports, "useLocalSearchParams", { enumerable: true, get: function () { return hooks_1.useLocalSearchParams; } });
 Object.defineProperty(exports, "useSegments", { enumerable: true, get: function () { return hooks_1.useSegments; } });
