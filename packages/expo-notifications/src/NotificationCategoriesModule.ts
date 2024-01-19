@@ -1,7 +1,7 @@
 import { NotificationAction } from './Notifications.types';
 
 export default {
-  async getNotificationCategoriesAsync(): Promise<never[]> {
+  async getNotificationCategoriesAsync(): Promise<NotificationCategory[]> {
     return [];
   },
   async setNotificationCategoryAsync(
