@@ -105,12 +105,19 @@
 
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
-  return [super extraModulesForBridge:bridge];
+  // Since we defined this selector but pretend that we don't implement it,
+  // we should also fallthrough modouleProvider case at
+  // https://github.com/facebook/react-native/blob/fd0ca4dd6209d79ac8c93dbffac2e3dca1caeadc/packages/react-native/React/CxxBridge/RCTCxxBridge.mm#L774-L778
+  RCTBridgeModuleListProvider moduleProvider = [bridge valueForKey:@"_moduleProvider"];
+  if (moduleProvider) {
+    return moduleProvider();
+  }
+  return @[];
 }
 
 - (BOOL)bridge:(RCTBridge *)bridge didNotFindModule:(NSString *)moduleName
 {
-  return [super bridge:bridge didNotFindModule:moduleName];
+  return NO;
 }
 
 @end
