@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Allow the file extension to be specified for `renderRouter`'s filepaths
+- Allow the file extension to be specified for `renderRouter`'s filepaths ([#26510](https://github.com/expo/expo/pull/26510) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 
