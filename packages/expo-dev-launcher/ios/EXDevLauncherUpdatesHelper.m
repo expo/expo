@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
     @"EXUpdatesHasEmbeddedUpdate": @(NO),
     @"EXUpdatesEnabled": @(YES),
     @"EXUpdatesRequestHeaders": requestHeaders,
+    @"EXUpdatesRuntimeVersion": @"1.0.0",
   };
 }
 

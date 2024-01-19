@@ -60,6 +60,7 @@ fun createUpdatesConfigurationWithUrl(url: Uri, projectUrl: Uri, installationID:
     "launchWaitMs" to 60000,
     "checkOnLaunch" to "ALWAYS",
     "enabled" to true,
-    "requestHeaders" to requestHeaders
+    "requestHeaders" to requestHeaders,
+    "runtimeVersion" to "1.0.0"
   )
 }
