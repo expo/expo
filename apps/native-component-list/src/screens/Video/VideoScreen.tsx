@@ -1,9 +1,8 @@
-import { VideoView, useVideoPlayer } from '@expo/video';
-import { VideoSource } from '@expo/video/build/VideoView.types';
+import { useVideoPlayer, VideoView, VideoSource } from '@expo/video';
 import { Picker } from '@react-native-picker/picker';
 import { Platform } from 'expo-modules-core';
 import React, { useCallback, useEffect, useRef } from 'react';
-import { PixelRatio, ScrollView, StyleSheet, View, Text } from 'react-native';
+import { PixelRatio, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import Button from '../../components/Button';
 import TitledSwitch from '../../components/TitledSwitch';
@@ -14,6 +13,7 @@ const bigBuckBunnySource: VideoSource =
 const elephantsDreamSource: VideoSource =
   'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4';
 
+// source: https://reference.dashif.org/dash.js/latest/samples/drm/widevine.html
 const androidDrmSource: VideoSource = {
   uri: 'https://media.axprod.net/TestVectors/v7-MultiDRM-SingleKey/Manifest.mpd',
   drm: {
@@ -25,6 +25,13 @@ const androidDrmSource: VideoSource = {
     licenseServer: 'https://drm-widevine-licensing.axtest.net/AcquireLicense',
   },
 };
+const videoLabels: string[] = ['Big Buck Bunny', 'Elephants Dream'];
+const videoSources: VideoSource[] = [bigBuckBunnySource, elephantsDreamSource];
+
+if (Platform.OS === 'android') {
+  videoLabels.push('Tears of Steel (DRM protected)');
+  videoSources.push(androidDrmSource);
+}
 
 export default function VideoScreen() {
   const ref = useRef<VideoView>(null);
@@ -32,7 +39,7 @@ export default function VideoScreen() {
   const [allowPictureInPicture, setAllowPictureInPicture] = React.useState(true);
   const [startPictureInPictureAutomatically, setStartPictureInPictureAutomatically] =
     React.useState(false);
-  const [selectedSource, setSelectedSource] = React.useState<VideoSource>(bigBuckBunnySource);
+  const [selectedSource, setSelectedSource] = React.useState<number>(0);
   const [showNativeControls, setShowNativeControls] = React.useState(true);
   const [requiresLinearPlayback, setRequiresLinearPlayback] = React.useState(false);
 
@@ -40,7 +47,7 @@ export default function VideoScreen() {
     ref.current?.enterFullscreen();
   }, [ref]);
 
-  const player = useVideoPlayer(selectedSource);
+  const player = useVideoPlayer(videoSources[selectedSource]);
 
   const togglePlayer = useCallback(() => {
     if (player.isPlaying) {
@@ -101,18 +108,17 @@ export default function VideoScreen() {
         <Text>PictureInPicture Active: {isInPictureInPicture ? 'Yes' : 'No'}</Text>
         <Text>VideoSource:</Text>
         <Picker
+          itemStyle={Platform.OS === 'ios' && { height: 150 }}
           style={styles.picker}
           mode="dropdown"
           selectedValue={selectedSource}
-          onValueChange={(value: VideoSource) => {
-            player.replace(value);
+          onValueChange={(value: number) => {
             setSelectedSource(value);
+            player.replace(videoSources[value]);
           }}>
-          <Picker.Item label="Big Buck Bunny" value={bigBuckBunnySource} />
-          <Picker.Item label="Elephants Dream" value={elephantsDreamSource} />
-          {Platform.OS === 'android' && (
-            <Picker.Item label="Tears of Steel (DRM protected)" value={androidDrmSource} />
-          )}
+          {videoSources.map((source, index) => (
+            <Picker.Item key={index} label={videoLabels[index]} value={index} />
+          ))}
         </Picker>
         <Button style={styles.button} title="Toggle" onPress={togglePlayer} />
         <Button style={styles.button} title="Seek by 10 seconds" onPress={seekBy} />

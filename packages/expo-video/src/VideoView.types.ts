@@ -132,22 +132,38 @@ export interface VideoViewProps extends ViewProps {
  * Specifies which type of DRM to use. Android supports Widevine, PlayReady and ClearKey.
  * @platform android
  * */
-type DRMType = 'clearkey' | 'fairplay' | 'widevine' | 'playready';
+type DRMType = 'clearkey' | 'fairplay' | 'playready' | 'widevine';
 
 type DRM = {
   type: DRMType;
+
   /**
    * Determines the license server URL.
    */
   licenseServer: string;
+
   /**
    * Determines headers sent to the license server on license requests.
-   * */
+   */
   headers?: { [key: string]: string };
+
   /**
    * Specifies whether the DRM is a multi-key DRM.
    * @platform android
    */
+  multiKey?: boolean;
+
+  /**
+   * Specifies the content ID of the stream.
+   * @platform ios
+   */
+  contentId?: string;
+
+  /**
+   * Specifies the certificate URL for the FairPlay DRM.
+   * @platform ios
+   */
+  certificateUrl?: string;
 };
 
 export type VideoSource = string | { uri: string; drm?: DRM } | null;

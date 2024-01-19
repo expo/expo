@@ -3,4 +3,6 @@
 import AVFoundation
 import ExpoModulesCore
 
-internal final class VideoPlayer: SharedRef<AVPlayer> {}
+internal final class VideoPlayer: SharedRef<AVPlayer> {
+  let contentKeyManager = ContentKeyManager()
+}
