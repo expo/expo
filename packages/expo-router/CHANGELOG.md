@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Allow the file extension to be specified for `renderRouter`'s filepaths
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
