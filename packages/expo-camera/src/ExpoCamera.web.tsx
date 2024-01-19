@@ -9,7 +9,7 @@ import {
   CameraPictureOptions,
   CameraType,
 } from './Camera.types';
-import CameraManager from './ExponentCameraManager.web';
+import CameraManager from './ExpoCameraManager.web';
 import { capture } from './WebCameraUtils';
 import { PictureSizes } from './WebConstants';
 import { useWebCameraStream } from './useWebCameraStream';
