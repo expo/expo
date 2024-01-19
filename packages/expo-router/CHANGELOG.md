@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 3.4.4 - 2024-01-18
+
+### 🐛 Bug fixes
+
+- Fixed `router.push` issues encountered when the route is the same screen, but with different params, the route wouldn't get pushed to the stack. `router.push` now adds the screen to the stack if the screen is the same but the params changed. by [@kennethstarkrl](https://github.com/kennethstarkrl))
+
 ## 3.4.3 - 2024-01-18
 
 _This version does not introduce any user-facing changes._
