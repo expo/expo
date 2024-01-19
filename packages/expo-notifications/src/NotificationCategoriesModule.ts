@@ -1,8 +1,8 @@
 import { NotificationAction } from './Notifications.types';
 
 export default {
-  async getNotificationCategoriesAsync(): Promise<null> {
-    return null;
+  async getNotificationCategoriesAsync(): Promise<never[]> {
+    return [];
   },
   async setNotificationCategoryAsync(
     identifier: string,
@@ -11,7 +11,7 @@ export default {
   ): Promise<null> {
     return null;
   },
-  async deleteNotificationCategoryAsync(identifier: string): Promise<null> {
-    return null;
+  async deleteNotificationCategoryAsync(identifier: string): Promise<boolean> {
+    return false;
   },
 };

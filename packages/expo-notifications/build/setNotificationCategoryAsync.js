@@ -1,5 +1,5 @@
 import { UnavailabilityError } from 'expo-modules-core';
-import NotificationCategoriesModule from './NotificationCategoriesModule.native';
+import NotificationCategoriesModule from './NotificationCategoriesModule';
 /**
  * Sets the new notification category.
  * @param identifier A string to associate as the ID of this category. You will pass this string in as the `categoryIdentifier`

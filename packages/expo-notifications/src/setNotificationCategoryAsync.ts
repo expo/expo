@@ -1,6 +1,6 @@
 import { UnavailabilityError } from 'expo-modules-core';
 
-import NotificationCategoriesModule from './NotificationCategoriesModule.native';
+import NotificationCategoriesModule from './NotificationCategoriesModule';
 import {
   NotificationCategory,
   NotificationAction,
@@ -23,7 +23,7 @@ export default async function setNotificationCategoryAsync(
   identifier: string,
   actions: NotificationAction[],
   options?: NotificationCategoryOptions
-): Promise<NotificationCategory> {
+): Promise<NotificationCategory | null> {
   if (!NotificationCategoriesModule.setNotificationCategoryAsync) {
     throw new UnavailabilityError('Notifications', 'setNotificationCategoryAsync');
   }
