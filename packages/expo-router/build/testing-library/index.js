@@ -17,7 +17,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.renderRouter = void 0;
+exports.renderRouter = exports.getMockContext = void 0;
 /// <reference types="../../types/jest" />
 require("./expect");
 const react_native_1 = require("@testing-library/react-native");
@@ -34,22 +34,25 @@ __exportStar(require("@testing-library/react-native"), exports);
 function isOverrideContext(context) {
     return Boolean(typeof context === 'object' && 'appDir' in context);
 }
+function getMockContext(context) {
+    if (typeof context === 'string') {
+        return (0, context_stubs_1.requireContext)(path_1.default.resolve(process.cwd(), context));
+    }
+    else if (isOverrideContext(context)) {
+        return (0, context_stubs_1.requireContextWithOverrides)(context.appDir, context.overrides);
+    }
+    else {
+        return (0, context_stubs_1.inMemoryContext)(context);
+    }
+}
+exports.getMockContext = getMockContext;
 function renderRouter(context = './app', { initialUrl = '/', ...options } = {}) {
     jest.useFakeTimers();
-    let ctx;
+    const mockContext = getMockContext(context);
     // Reset the initial URL
     (0, mocks_1.setInitialUrl)(initialUrl);
     // Force the render to be synchronous
     process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
-    if (typeof context === 'string') {
-        ctx = (0, context_stubs_1.requireContext)(path_1.default.resolve(process.cwd(), context));
-    }
-    else if (isOverrideContext(context)) {
-        ctx = (0, context_stubs_1.requireContextWithOverrides)(context.appDir, context.overrides);
-    }
-    else {
-        ctx = (0, context_stubs_1.inMemoryContext)(context);
-    }
     getLinkingConfig_1.stateCache.clear();
     let location;
     if (typeof initialUrl === 'string') {
@@ -58,7 +61,7 @@ function renderRouter(context = './app', { initialUrl = '/', ...options } = {}) 
     else if (initialUrl instanceof URL) {
         location = initialUrl;
     }
-    const result = (0, react_native_1.render)(<ExpoRoot_1.ExpoRoot context={ctx} location={location}/>, {
+    const result = (0, react_native_1.render)(<ExpoRoot_1.ExpoRoot context={mockContext} location={location}/>, {
         ...options,
     });
     return Object.assign(result, {
