@@ -34,7 +34,7 @@ export const EXCLUDED_PACKAGE_SLUGS = [
 ];
 
 const EXPO_ROOT_DIR = Directories.getExpoRepositoryRootDir();
-const ANDROID_DIR = Directories.getAndroidDir();
+const ANDROID_DIR = Directories.getExpoGoAndroidDir();
 
 const REACT_ANDROID_PKG = {
   name: 'ReactAndroid',

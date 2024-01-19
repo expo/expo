@@ -293,18 +293,21 @@ index 595dd5831c..0000000000
 -  }
 -}
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
-index 6536fc03ad..34a7ca8314 100644
+index 6536fc03ad..04b326127b 100644
 --- a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
-@@ -18,7 +18,7 @@
+@@ -18,9 +18,9 @@
      </intent>
    </queries>
  
 -  <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme" android:usesCleartextTraffic="true">
 +  <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme">
      <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="YOUR-APP-URL-HERE"/>
-     <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="YOUR-APP-SDK-VERSION-HERE"/>
+-    <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="YOUR-APP-SDK-VERSION-HERE"/>
++    <meta-data android:name="expo.modules.updates.EXPO_RUNTIME_VERSION" android:value="YOUR-APP-RUNTIME-VERSION-HERE"/>
      <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
+       <intent-filter>
+         <action android:name="android.intent.action.MAIN"/>
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainActivity.java b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainActivity.java
 deleted file mode 100644
 index 7e2823fb6c..0000000000
@@ -1218,6 +1221,21 @@ index 9f116db7f2..5a1db7145b 100644
 -  <string>UIStatusBarStyleDefault</string>
  </dict>
  </plist>
+diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Supporting/Expo.plist b/templates/expo-template-bare-minimum/ios/HelloWorld/Supporting/Expo.plist
+index 03410dc8b3..f4f9f60993 100644
+--- a/templates/expo-template-bare-minimum/ios/HelloWorld/Supporting/Expo.plist
++++ b/templates/expo-template-bare-minimum/ios/HelloWorld/Supporting/Expo.plist
+@@ -2,8 +2,8 @@
+ <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+ <plist version="1.0">
+ <dict>
+-        <key>EXUpdatesSDKVersion</key>
+-        <string>YOUR-APP-SDK-VERSION-HERE</string>
++        <key>EXUpdatesRuntimeVersion</key>
++        <string>YOUR-APP-RUNTIME-VERSION-HERE</string>
+         <key>EXUpdatesURL</key>
+         <string>YOUR-APP-URL-HERE</string>
+ </dict>
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
 index e523ea5cac..b3978b9515 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile
@@ -1289,7 +1307,7 @@ index 9430b0f9b6..07c9fce65d 100644
 +
 +module.exports = config;
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index d1fcd513cc..a0b1b85c0a 100644
+index d1fcd513cc..150bb72764 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -1312,7 +1330,7 @@ index d1fcd513cc..a0b1b85c0a 100644
 +    "expo-status-bar": "~1.11.0",
      "react": "18.2.0",
 -    "react-native": "0.71.14"
-+    "react-native": "0.73.1"
++    "react-native": "0.73.2"
    },
    "devDependencies": {
      "@babel/core": "^7.20.0"

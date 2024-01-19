@@ -18,7 +18,7 @@ internal protocol UpdatesStateChangeDelegate: AnyObject {
 /**
  All the possible states the machine can take.
  */
-internal enum UpdatesStateValue: String {
+internal enum UpdatesStateValue: String, CaseIterable {
   case idle
   case checking
   case downloading
@@ -287,6 +287,12 @@ extension UpdatesStateContext {
  in a production app, instantiated as a property of AppController.
  */
 internal class UpdatesStateMachine {
+  private let validUpdatesStateValues: Set<UpdatesStateValue>
+
+  required init(validUpdatesStateValues: Set<UpdatesStateValue>) {
+    self.validUpdatesStateValues = validUpdatesStateValues
+  }
+
   private let logger = UpdatesLogger()
 
   private lazy var serialExecutorQueue: StateMachineSerialExecutorQueue = {
@@ -371,8 +377,13 @@ internal class UpdatesStateMachine {
       assertionFailure("UpdatesState: invalid transition requested: state = \(state), event = \(event.type)")
       return false
     }
+    let newStateValue = UpdatesStateMachine.updatesStateTransitions[event.type] ?? .idle
+    if !validUpdatesStateValues.contains(newStateValue) {
+      assertionFailure("UpdatesState: invalid transition requested: state = \(state), event = \(event.type)")
+      return false
+    }
     // Successful transition
-    state = UpdatesStateMachine.updatesStateTransitions[event.type] ?? .idle
+    state = newStateValue
     return true
   }
 

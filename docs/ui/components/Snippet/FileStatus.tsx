@@ -25,7 +25,7 @@ export const FileStatus = ({ type }: FileStatusProps) => {
 
   return (
     <div css={[tagStyle, labelSpecificTagStyle]}>
-      <FOOTNOTE css={labelStyle} className="!text-[inherit] !font-semibold">
+      <FOOTNOTE css={labelStyle} className="!text-inherit !font-semibold">
         {labels[type as keyof typeof labels]}
       </FOOTNOTE>
     </div>

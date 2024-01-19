@@ -32,7 +32,6 @@ export const ConfigPluginProperties = ({ children, properties }: Props) => (
             <Cell>
               {!!property.platform && (
                 <APISectionPlatformTags
-                  prefix="Only for:"
                   platforms={[
                     { content: [{ kind: 'text', text: property.platform }], tag: 'platform' },
                   ]}

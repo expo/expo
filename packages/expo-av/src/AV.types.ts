@@ -4,7 +4,7 @@ import ExponentAV from './ExponentAV';
 
 // @needsAudit
 /**
- * Check [official Apple documentation](https://developer.apple.com/documentation/avfoundation/avaudiotimepitchalgorithmlowqualityzerolatency) for more information.
+ * Check [official Apple documentation](https://developer.apple.com/documentation/avfoundation/audio_settings/time_pitch_algorithm_settings) for more information.
  */
 export enum PitchCorrectionQuality {
   /**

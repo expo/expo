@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 3.1.1 - 2024-01-18
+
+### 🐛 Bug fixes
+
+- Fixed lazy component errors on Android. ([#26464](https://github.com/expo/expo/pull/26464) by [@kudo](https://github.com/kudo))
+
 ## 3.1.0 — 2023-12-12
 
 ### 🎉 New features

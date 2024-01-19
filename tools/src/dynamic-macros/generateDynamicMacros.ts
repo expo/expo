@@ -3,10 +3,10 @@ import chalk from 'chalk';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { Directories } from '../expotools';
 import AndroidMacrosGenerator from './AndroidMacrosGenerator';
 import IosMacrosGenerator from './IosMacrosGenerator';
 import macros from './macros';
+import { Directories } from '../expotools';
 
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 

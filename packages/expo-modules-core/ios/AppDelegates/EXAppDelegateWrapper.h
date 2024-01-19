@@ -1,8 +1,9 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+#import <ExpoModulesCore/Platform.h>
+
 #if __cplusplus
 
-#import <UIKit/UIKit.h>
 #import <ExpoModulesCore/EXReactDelegateWrapper.h>
 
 #if __has_include(<React-RCTAppDelegate/RCTAppDelegate.h>)

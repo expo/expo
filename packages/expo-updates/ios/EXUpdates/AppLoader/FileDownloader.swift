@@ -110,7 +110,7 @@ public final class FileDownloader {
 
   public static let assetFilesQueue: DispatchQueue = DispatchQueue(label: "expo.controller.AssetFilesQueue")
 
-  public func downloadFile(
+  public func downloadAsset(
     fromURL url: URL,
     verifyingHash expectedBase64URLEncodedSHA256Hash: String?,
     toPath destinationPath: String,
@@ -124,7 +124,7 @@ public final class FileDownloader {
     ) { data, response in
       guard let data = data else {
         let errorMessage = String(
-          format: "File download response was empty for URL: %@",
+          format: "Asset download response was empty for URL: %@",
           url.absoluteString
         )
         self.logger.error(message: errorMessage, code: UpdatesErrorCode.assetsFailedToLoad)
@@ -140,7 +140,8 @@ public final class FileDownloader {
       if let expectedBase64URLEncodedSHA256Hash = expectedBase64URLEncodedSHA256Hash,
         expectedBase64URLEncodedSHA256Hash != hashBase64String {
         let errorMessage = String(
-          format: "File download was successful but base64url-encoded SHA-256 did not match expected; expected: %@; actual: %@",
+          format: "Asset download was successful but base64url-encoded SHA-256 did not match expected; URL: %@; expected hash: %@; actual hash: %@",
+          url.absoluteString,
           expectedBase64URLEncodedSHA256Hash,
           hashBase64String
         )
@@ -159,11 +160,11 @@ public final class FileDownloader {
         return
       } catch {
         let errorMessage = String(
-          format: "Could not write to path %@: %@",
+          format: "Could not write downloaded asset file to path %@: %@",
           destinationPath,
           error.localizedDescription
         )
-        self.logger.error(message: errorMessage, code: UpdatesErrorCode.unknown)
+        self.logger.error(message: errorMessage, code: UpdatesErrorCode.assetsFailedToLoad)
         errorBlock(NSError(
           domain: ErrorDomain,
           code: FileDownloaderErrorCode.FileWriteError.rawValue,
@@ -175,6 +176,7 @@ public final class FileDownloader {
         return
       }
     } errorBlock: { error in
+      self.logger.error(message: error.localizedDescription, code: UpdatesErrorCode.assetsFailedToLoad)
       errorBlock(error)
     }
   }
@@ -302,14 +304,7 @@ public final class FileDownloader {
     request.setValue("BARE", forHTTPHeaderField: "Expo-Updates-Environment")
     request.setValue(EASClientID.uuid().uuidString, forHTTPHeaderField: "EAS-Client-ID")
     request.setValue("true", forHTTPHeaderField: "Expo-JSON-Error")
-    request.setValue(config.expectsSignedManifest ? "true" : "false", forHTTPHeaderField: "Expo-Accept-Signature")
-    request.setValue(config.releaseChannel, forHTTPHeaderField: "Expo-Release-Channel")
-
-    if let runtimeVersion = config.runtimeVersionRaw {
-      request.setValue(runtimeVersion, forHTTPHeaderField: "Expo-Runtime-Version")
-    } else {
-      request.setValue(config.sdkVersion, forHTTPHeaderField: "Expo-SDK-Version")
-    }
+    request.setValue(config.runtimeVersion, forHTTPHeaderField: "Expo-Runtime-Version")
 
     if let previousFatalError = ErrorRecovery.consumeErrorLog() {
       // some servers can have max length restrictions for headers,
@@ -741,36 +736,6 @@ public final class FileDownloader {
     )
   }
 
-  private func extractUpdateResponseDictionary(parsedJson: Any) throws -> [String: Any] {
-    if let parsedJson = parsedJson as? [String: Any] {
-      return parsedJson
-    }
-
-    if let parsedJson = parsedJson as? [Any] {
-      // TODO: either add support for runtimeVersion or deprecate multi-manifests
-      for providedManifest in parsedJson {
-        if let providedManifest = providedManifest as? [String: Any],
-          let sdkVersion: String = providedManifest.optionalValue(forKey: "sdkVersion"),
-          let supportedSdkVersions = config.sdkVersion?.components(separatedBy: ","),
-          supportedSdkVersions.contains(sdkVersion) {
-          return providedManifest
-        }
-      }
-    }
-
-    throw NSError(
-      domain: ErrorDomain,
-      code: FileDownloaderErrorCode.NoCompatibleUpdateError.rawValue,
-      userInfo: [
-        NSLocalizedDescriptionKey: String(
-          format: "No compatible update found at %@. Only %@ are supported.",
-          config.updateUrl.absoluteString,
-          config.sdkVersion ?? "(missing sdkVersion field)"
-        )
-      ]
-    )
-  }
-
   private func createUpdate(
     manifest: [String: Any],
     responsePartInfo: ResponsePartInfo,
@@ -782,10 +747,12 @@ public final class FileDownloader {
   ) {
     var mutableManifest = manifest
 
-    // There are a few cases in Expo Go where we still want to use the unsigned manifest anyway, so don't mark it as unverified.
-    if config.expectsSignedManifest {
-      mutableManifest["isVerified"] = false
-    }
+    // Set the isVerified field in the manifest itself so that it is stored in the database.
+    // Note that this is not considered for code signature verification.
+    // currently this is only used by Expo Go, but moving it out of the library would require
+    // also storing the signature so database-loaded-update validity could be derived at load
+    // time.
+    mutableManifest["isVerified"] = false
 
     // check code signing if code signing is configured
     // 1. verify the code signing signature (throw if invalid)

@@ -1,18 +1,18 @@
 import fs from 'fs-extra';
 import path from 'path';
 
+import { ClientBuilder, ClientBuildFlavor, Platform } from './types';
 import { podInstallAsync } from '../CocoaPods';
-import { EXPO_DIR, IOS_DIR } from '../Constants';
+import { EXPO_DIR, EXPO_GO_IOS_DIR } from '../Constants';
 import { iosAppVersionAsync } from '../ProjectVersions';
 import { spawnAsync } from '../Utils';
-import { ClientBuilder, ClientBuildFlavor, Platform } from './types';
 
 export default class IosClientBuilder implements ClientBuilder {
   platform: Platform = 'ios';
 
   getAppPath(): string {
     return path.join(
-      IOS_DIR,
+      EXPO_GO_IOS_DIR,
       'simulator-build',
       'Build',
       'Products',
@@ -30,7 +30,7 @@ export default class IosClientBuilder implements ClientBuilder {
   }
 
   async buildAsync(flavor: ClientBuildFlavor = ClientBuildFlavor.VERSIONED) {
-    await podInstallAsync(IOS_DIR, {
+    await podInstallAsync(EXPO_GO_IOS_DIR, {
       stdio: 'inherit',
     });
     await spawnAsync('fastlane', ['ios', 'create_simulator_build', `flavor:${flavor}`], {

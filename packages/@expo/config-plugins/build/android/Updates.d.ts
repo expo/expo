@@ -7,10 +7,8 @@ export declare enum Config {
     ENABLED = "expo.modules.updates.ENABLED",
     CHECK_ON_LAUNCH = "expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH",
     LAUNCH_WAIT_MS = "expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS",
-    SDK_VERSION = "expo.modules.updates.EXPO_SDK_VERSION",
     RUNTIME_VERSION = "expo.modules.updates.EXPO_RUNTIME_VERSION",
     UPDATE_URL = "expo.modules.updates.EXPO_UPDATE_URL",
-    RELEASE_CHANNEL = "expo.modules.updates.EXPO_RELEASE_CHANNEL",
     UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY = "expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY",
     CODE_SIGNING_CERTIFICATE = "expo.modules.updates.CODE_SIGNING_CERTIFICATE",
     CODE_SIGNING_METADATA = "expo.modules.updates.CODE_SIGNING_METADATA"

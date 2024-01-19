@@ -2,15 +2,15 @@ import { ExpoConfig } from '@expo/config-types';
 // @ts-ignore -- optional interface, will gracefully degrade to `any` if not installed
 import type { Manifest as DevLauncherManifest } from 'expo-dev-launcher';
 import type {
-  BareManifest,
+  EmbeddedManifest,
   EASConfig,
   ExpoGoConfig,
-  NewManifest,
+  ExpoUpdatesManifest,
   // @ts-ignore -- optional interface, will gracefully degrade to `any` if not installed
 } from 'expo-manifests';
 import { CodedError, requireOptionalNativeModule } from 'expo-modules-core';
 // @ts-ignore -- optional interface, will gracefully degrade to `any` if not installed
-import type { Manifest as UpdatesManifest } from 'expo-updates';
+import type { Manifest as UpdatesManifest, ExpoUpdatesModule } from 'expo-updates';
 import { Platform, NativeModules } from 'react-native';
 
 import {
@@ -44,7 +44,7 @@ if (!ExponentConstants) {
   );
 }
 
-const ExpoUpdates = requireOptionalNativeModule('ExpoUpdates');
+const ExpoUpdates = requireOptionalNativeModule<ExpoUpdatesModule>('ExpoUpdates');
 
 let rawUpdatesManifest: UpdatesManifest | null = null;
 // If expo-updates defines a non-empty manifest, prefer that one
@@ -113,9 +113,9 @@ Object.defineProperties(constants, {
    * `expo-asset` uses it to prevent users from seeing mentioned warning.
    */
   __unsafeNoWarnManifest: {
-    get(): BareManifest | null {
+    get(): EmbeddedManifest | null {
       const maybeManifest = getManifest(true);
-      if (!maybeManifest || !isBareManifest(maybeManifest)) {
+      if (!maybeManifest || !isEmbeddedManifest(maybeManifest)) {
         return null;
       }
       return maybeManifest;
@@ -123,9 +123,9 @@ Object.defineProperties(constants, {
     enumerable: false,
   },
   __unsafeNoWarnManifest2: {
-    get(): NewManifest | null {
+    get(): ExpoUpdatesManifest | null {
       const maybeManifest = getManifest(true);
-      if (!maybeManifest || !isManifest(maybeManifest)) {
+      if (!maybeManifest || !isExpoUpdatesManifest(maybeManifest)) {
         return null;
       }
       return maybeManifest;
@@ -133,14 +133,14 @@ Object.defineProperties(constants, {
     enumerable: false,
   },
   manifest: {
-    get(): BareManifest | null {
+    get(): EmbeddedManifest | null {
       if (__DEV__ && !warnedAboutManifestField) {
         console.warn(`Constants.manifest has been deprecated in favor of Constants.expoConfig.`);
         warnedAboutManifestField = true;
       }
 
       const maybeManifest = getManifest();
-      if (!maybeManifest || !isBareManifest(maybeManifest)) {
+      if (!maybeManifest || !isEmbeddedManifest(maybeManifest)) {
         return null;
       }
       return maybeManifest;
@@ -148,9 +148,9 @@ Object.defineProperties(constants, {
     enumerable: true,
   },
   manifest2: {
-    get(): NewManifest | null {
+    get(): ExpoUpdatesManifest | null {
       const maybeManifest = getManifest();
-      if (!maybeManifest || !isManifest(maybeManifest)) {
+      if (!maybeManifest || !isExpoUpdatesManifest(maybeManifest)) {
         return null;
       }
       return maybeManifest;
@@ -171,15 +171,15 @@ Object.defineProperties(constants, {
         return null;
       }
 
-      // if running an embedded update, maybeManifest is a BareManifest which doesn't have
+      // if running an embedded update, maybeManifest is a EmbeddedManifest which doesn't have
       // the expo config. Instead, the embedded expo-constants app.config should be used.
       if (ExpoUpdates && ExpoUpdates.isEmbeddedLaunch) {
         return rawAppConfig;
       }
 
-      if (isManifest(maybeManifest)) {
+      if (isExpoUpdatesManifest(maybeManifest)) {
         return maybeManifest.extra?.expoClient ?? null;
-      } else if (isBareManifest(maybeManifest)) {
+      } else if (isEmbeddedManifest(maybeManifest)) {
         return maybeManifest as any;
       }
 
@@ -194,9 +194,9 @@ Object.defineProperties(constants, {
         return null;
       }
 
-      if (isManifest(maybeManifest)) {
+      if (isExpoUpdatesManifest(maybeManifest)) {
         return maybeManifest.extra?.expoGo ?? null;
-      } else if (isBareManifest(maybeManifest)) {
+      } else if (isEmbeddedManifest(maybeManifest)) {
         return maybeManifest as any;
       }
 
@@ -211,9 +211,9 @@ Object.defineProperties(constants, {
         return null;
       }
 
-      if (isManifest(maybeManifest)) {
+      if (isExpoUpdatesManifest(maybeManifest)) {
         return maybeManifest.extra?.eas ?? null;
-      } else if (isBareManifest(maybeManifest)) {
+      } else if (isEmbeddedManifest(maybeManifest)) {
         return maybeManifest as any;
       }
 
@@ -232,11 +232,11 @@ Object.defineProperties(constants, {
   },
 });
 
-function isBareManifest(manifest: RawManifest): manifest is BareManifest {
-  return !isManifest(manifest);
+function isEmbeddedManifest(manifest: RawManifest): manifest is EmbeddedManifest {
+  return !isExpoUpdatesManifest(manifest);
 }
 
-function isManifest(manifest: RawManifest): manifest is NewManifest {
+function isExpoUpdatesManifest(manifest: RawManifest): manifest is ExpoUpdatesManifest {
   return 'metadata' in manifest;
 }
 

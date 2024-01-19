@@ -1,7 +1,6 @@
 {
   "name": "expo-docs",
-  "version": "49.0.0",
-  "betaVersion": "50.0.0",
+  "version": "50.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -18,7 +17,6 @@
     "watch": "tsc --noEmit -w",
     "test": "yarn generate-static-resoures && node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "schema-sync": "node --async-stack-traces --unhandled-rejections=strict ./scripts/schema-sync.cjs",
-    "resource-specs-sync": "node --async-stack-traces --unhandled-rejections=strict ./scripts/resource-specs-sync.mjs",
     "remove-version": "node --unhandled-rejections=strict ./scripts/remove-version.js",
     "generate-static-resoures": "rimraf public/static/constants && node --unhandled-rejections=strict ./scripts/generate-static-resources.js",
     "postinstall": "node --async-stack-traces --unhandled-rejections=strict ./scripts/copy-latest.js && yarn generate-static-resoures"
@@ -85,7 +83,7 @@
     "autoprefixer": "^10.4.16",
     "axios": "^1.6.2",
     "danger": "^11.3.0",
-    "eslint": "^8.52.0",
+    "eslint": "^8.56.0",
     "eslint-config-next": "^14.0.2",
     "eslint-config-universe": "^12.0.0",
     "eslint-plugin-lodash": "^7.4.0",
@@ -97,10 +95,11 @@
     "next-router-mock": "^0.9.10",
     "postcss": "^8.4.31",
     "postcss-import": "^15.1.0",
-    "prettier": "^3.0.3",
+    "prettier": "^3.1.1",
     "puppeteer": "^21.4.0",
     "react-test-renderer": "^18.2.0",
     "rehype-slug": "^6.0.0",
+    "remark-supersub": "^1.0.0",
     "remark-cli": "^12.0.0",
     "remark-validate-links": "^13.0.0",
     "rimraf": "^5.0.5",
