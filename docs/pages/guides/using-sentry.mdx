@@ -166,7 +166,7 @@ If your app uses [Expo Router](/router/introduction), then you can configure Sen
 <Collapsible summary="Example configuration that instruments Sentry for Expo Router">
 
 ```tsx app/_layout.tsx
-import { Slot, useRootNavigation } from 'expo-router';
+import { Slot, useNavigationContainerRef } from 'expo-router';
 import React from 'react';
 import * as Sentry from 'sentry-expo';
 
@@ -187,7 +187,7 @@ Sentry.init({
 
 function RootLayout() {
   // Capture the NavigationContainer ref and register it with the instrumentation.
-  const ref = useRootNavigation();
+  const ref = useNavigationContainerRef();
 
   React.useEffect(() => {
     if (ref) {

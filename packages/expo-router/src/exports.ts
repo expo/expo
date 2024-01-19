@@ -5,6 +5,7 @@ export {
   useRouter,
   useUnstableGlobalHref,
   usePathname,
+  useNavigationContainerRef,
   useGlobalSearchParams,
   useLocalSearchParams,
   useSegments,

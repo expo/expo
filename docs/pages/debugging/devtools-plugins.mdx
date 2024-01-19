@@ -79,21 +79,16 @@ Pass the navigation root to the plugin in your app's entry point when running in
 <Tab>
 
 ```jsx app/_layout.js
-  import { useEffect, useRef } from 'react';
-  import { useRootNavigation, Slot } from 'expo-router';
-  import { useReactNavigationDevTools } from '@dev-plugins/react-navigation';
+import { useEffect, useRef } from 'react';
+import { useNavigationContainerRef, Slot } from 'expo-router';
+import { useReactNavigationDevTools } from '@dev-plugins/react-navigation';
 
 export default Layout() {
-const navigationRef = useRef(null);
-const rootNavigation = useRootNavigation();
+  const navigationRef = useNavigationContainerRef();
 
-    useReactNavigationDevTools(navigationRef);
+  useReactNavigationDevTools(navigationRef);
 
-    useEffect(() => {
-      navigationRef.current = rootNavigation;
-    }, [navigationRef.current]);
-
-    return <Slot />;
+  return <Slot />;
 }
 ```
 
