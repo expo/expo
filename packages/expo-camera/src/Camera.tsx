@@ -14,7 +14,7 @@ import {
   VideoCodec,
 } from './Camera.types';
 import ExpoCamera from './ExpoCamera';
-import CameraManager from './ExponentCameraManager';
+import CameraManager from './ExpoCameraManager';
 import { ConversionTables, ensureNativeProps } from './utils/props';
 
 const EventThrottleMs = 500;
