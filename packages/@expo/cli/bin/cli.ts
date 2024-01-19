@@ -27,6 +27,7 @@ const commands: { [command: string]: () => Promise<Command> } = {
   export: () => import('../src/export/index.js').then((i) => i.expoExport),
   'export:web': () => import('../src/export/web/index.js').then((i) => i.expoExportWeb),
   'export:embed': () => import('../src/export/embed/index.js').then((i) => i.expoExportEmbed),
+  'verify-native-assets': () => import('../src/verifyNativeAssets/index.js').then((i) => i.expoVerifyNativeAssets),
 
   // Auxiliary commands
   install: () => import('../src/install/index.js').then((i) => i.expoInstall),
