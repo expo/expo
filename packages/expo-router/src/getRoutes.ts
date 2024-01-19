@@ -24,6 +24,8 @@ type DirectoryNode = {
   subdirectories: Map<string, DirectoryNode>;
 };
 
+export const ROUTES_EXCLUSION_REGEX = /([^/]*?\+[^/]*?)\.[tj]sx?$/; // Ignore all files that start with '+' e.g /folder/(group)/+html.tsx
+
 /**
  * Given a Metro context module, return an array of nested routes.
  *
@@ -51,11 +53,11 @@ export function getRoutes(contextModule: RequireContext, options: Options = {}):
  * Converts the RequireContext keys (file paths) into a directory tree.
  */
 function getDirectoryTree(contextModule: RequireContext, options: Options) {
-  const ignoreList = [/^\.\/\+html\.[tj]sx?$/];
+  const ignoreList = [ROUTES_EXCLUSION_REGEX];
   if (options.ignore) {
     ignoreList.push(...options.ignore);
   }
-  if (options.preserveApiRoutes !== true) {
+  if (!options.preserveApiRoutes) {
     ignoreList.push(/\+api\.[tj]sx?$/);
   }
 
@@ -80,6 +82,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
     }
 
     const node: RouteNode = {
+      type: meta.isApi ? 'api' : meta.isLayout ? 'layout' : 'route',
       loadRoute() {
         if (options.ignoreRequireErrors) {
           try {
@@ -134,7 +137,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           // In production, use the first route found
           if (process.env.NODE_ENV !== 'production') {
             throw new Error(
-              `The layouts "${filePath}" and ${existing.contextKey} conflict. Please remove or rename one of these files.`
+              `The layouts "${filePath}" and "${existing.contextKey}" conflict on the route "/${route}". Please remove or rename one of these files.`
             );
           }
         } else {
@@ -145,21 +148,23 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           hasLayout ||= true;
         }
       } else if (meta.isApi) {
-        let nodes = directory.files.get(route);
+        const fileKey = `${route}+api`;
+        let nodes = directory.files.get(fileKey);
 
         if (!nodes) {
           nodes = [];
-          directory.files.set(route, nodes);
+          directory.files.set(fileKey, nodes);
         }
 
         // TODO(Platform Route): Throw error if specificity > 0, as you cannot specify platform extensions for api routes
 
         const existing = nodes[0];
+
         if (existing) {
           // In production, use the first route found
-          if (process.env.NODE_ENV === 'production') {
+          if (process.env.NODE_ENV !== 'production') {
             throw new Error(
-              `The API route "${filePath}" and ${existing.contextKey} conflict. Please remove or rename one of these files.`
+              `The API route file "${filePath}" and "${existing.contextKey}" conflict on the route "/${route}". Please remove or rename one of these files.`
             );
           }
         } else {
@@ -184,7 +189,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           // In production, use the first route found
           if (process.env.NODE_ENV !== 'production') {
             throw new Error(
-              `The route files "${filePath}" and ${existing.contextKey} conflict on the route "/${route}". Please remove or rename one of these files.`
+              `The route files "${filePath}" and "${existing.contextKey}" conflict on the route "/${route}". Please remove or rename one of these files.`
             );
           }
         } else {
@@ -204,6 +209,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
   if (!rootDirectory.layout) {
     rootDirectory.layout = [
       {
+        type: 'layout',
         loadRoute: () => ({
           default: (require('./views/Navigator') as typeof import('./views/Navigator'))
             .DefaultNavigator,
@@ -287,9 +293,17 @@ function flattenDirectoryTreeToRoutes(
     const route = routeNode.route.replace(pathToRemove, '');
 
     // Merge the entryPoints of the parent layout(s) with the child route
-    const childEntryPoints = options.ignoreEntryPoints
-      ? undefined
-      : [...entryPoints, ...(routeNode.entryPoints || [])];
+    let childEntryPoints: string[] | undefined = undefined;
+
+    if (!options.ignoreEntryPoints) {
+      if (routeNode.type === 'api') {
+        childEntryPoints = routeNode.entryPoints;
+      } else if (routeNode.entryPoints) {
+        childEntryPoints = [...entryPoints, ...routeNode.entryPoints];
+      } else {
+        childEntryPoints = [...entryPoints];
+      }
+    }
 
     routeNode = {
       ...routeNode,
@@ -320,7 +334,7 @@ function getFileMeta(key: string) {
   const filename = parts[parts.length - 1];
   const filenameWithoutExtensions = removeSupportedExtensions(filename);
   const isLayout = filenameWithoutExtensions === '_layout';
-  const isApi = filenameWithoutExtensions.match(/\+api$/);
+  const isApi = filename.match(/\+api\.[jt]sx?$/);
 
   if (filenameWithoutExtensions.startsWith('(') && filenameWithoutExtensions.endsWith(')')) {
     throw new Error(`Invalid route ./${key}. Routes cannot end with '(group)' syntax`);
@@ -409,6 +423,7 @@ function appendSitemapRoute(directory: DirectoryNode) {
           return { default: Sitemap, getNavOptions };
         },
         route: '_sitemap',
+        type: 'route',
         contextKey: './_sitemap.tsx',
         generated: true,
         internal: true,
@@ -427,6 +442,7 @@ function appendNotFoundRoute(directory: DirectoryNode) {
         loadRoute() {
           return { default: require('./views/Unmatched').Unmatched };
         },
+        type: 'route',
         route: '+not-found',
         contextKey: './+not-found.tsx',
         generated: true,

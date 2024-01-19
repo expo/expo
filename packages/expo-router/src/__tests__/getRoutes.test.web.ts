@@ -19,6 +19,7 @@ describe('getRoutes', () => {
     ).toEqual({
       children: [
         {
+          type: 'route',
           children: [],
           contextKey: './_sitemap.tsx',
           dynamic: null,
@@ -31,6 +32,7 @@ describe('getRoutes', () => {
           route: '_sitemap',
         },
         {
+          type: 'route',
           children: [],
           contextKey: './+not-found.tsx',
           dynamic: [
@@ -49,6 +51,7 @@ describe('getRoutes', () => {
           route: '+not-found',
         },
         {
+          type: 'route',
           children: [],
           contextKey: './(app)/index.js',
           dynamic: null,
@@ -74,6 +77,7 @@ describe('getRoutes', () => {
     ).toEqual({
       children: [
         {
+          type: 'route',
           contextKey: './(a,b)/(c,d)/page.js',
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/(c,d)/page.js'],
@@ -81,6 +85,7 @@ describe('getRoutes', () => {
           children: [],
         },
         {
+          type: 'route',
           contextKey: './(a,b)/(c,d)/page.js',
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/(c,d)/page.js'],
@@ -88,6 +93,7 @@ describe('getRoutes', () => {
           children: [],
         },
         {
+          type: 'route',
           contextKey: './(a,b)/(c,d)/page.js',
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/(c,d)/page.js'],
@@ -95,6 +101,7 @@ describe('getRoutes', () => {
           children: [],
         },
         {
+          type: 'route',
           contextKey: './(a,b)/(c,d)/page.js',
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/(c,d)/page.js'],
@@ -121,6 +128,7 @@ describe('getRoutes', () => {
     ).toEqual({
       children: [
         {
+          type: 'route',
           children: [],
           contextKey: './_sitemap.tsx',
           dynamic: null,
@@ -130,6 +138,7 @@ describe('getRoutes', () => {
           route: '_sitemap',
         },
         {
+          type: 'route',
           children: [],
           contextKey: './+not-found.tsx',
           dynamic: [
@@ -145,6 +154,7 @@ describe('getRoutes', () => {
           route: '+not-found',
         },
         {
+          type: 'route',
           children: [],
           contextKey: './(app)/index.js',
           dynamic: null,
@@ -187,6 +197,7 @@ describe('getRoutes', () => {
           route: '(b)',
           children: [
             {
+              type: 'route',
               contextKey: './(a,b)/page.js',
               dynamic: null,
               entryPoints: [
@@ -200,6 +211,7 @@ describe('getRoutes', () => {
           ],
         },
         {
+          type: 'route',
           contextKey: './(a,b)/page.js',
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/page.js'],
@@ -320,6 +332,7 @@ describe('+html', () => {
     ).toEqual({
       children: [
         {
+          type: 'route',
           children: [],
           contextKey: './folder/+html.js',
           dynamic: null,
@@ -592,44 +605,71 @@ describe('dynamic routes', () => {
   });
 });
 
-//   it(`get dynamic routes`, () => {
-//     expect(dropFunctions(getRoutes(ctx('./[dynamic].tsx', './[...deep].tsx'))!)).toEqual(
-//       expect.objectContaining({
-//         generated: true,
-//         children: [
-//           {
-//             children: [],
-//             contextKey: './[dynamic].tsx',
-//             dynamic: [
-//               {
-//                 deep: false,
-//                 name: 'dynamic',
-//               },
-//             ],
+describe('api routes', () => {
+  it('should ignore api routes by default', () => {
+    expect(
+      getRoutes(
+        inMemoryContext({
+          './(app)/page': () => null,
+          './(app)/page+api': () => null,
+        }),
+        { internal_stripLoadRoute: true, internal_skipGenerated: true }
+      )
+    ).toEqual({
+      children: [
+        {
+          type: 'route',
+          children: [],
+          contextKey: './(app)/page.js',
+          dynamic: null,
+          entryPoints: ['expo-router/build/views/Navigator.js', './(app)/page.js'],
+          route: '(app)/page',
+        },
+      ],
+      type: 'layout',
+      contextKey: './_layout.tsx',
+      dynamic: null,
+      generated: true,
+      route: '',
+    });
+  });
 
-//             entryPoints: ['expo-router/build/views/Navigator.js', './[dynamic].tsx'],
-//             route: '[dynamic]',
-//           },
-//           {
-//             children: [],
-//             contextKey: './[...deep].tsx',
-//             dynamic: [
-//               {
-//                 deep: true,
-//                 name: 'deep',
-//               },
-//             ],
-
-//             entryPoints: ['expo-router/build/views/Navigator.js', './[...deep].tsx'],
-//             route: '[...deep]',
-//           },
-//           ROUTE_DIRECTORY,
-//           ROUTE_NOT_FOUND,
-//           // No 404 route because we have a dynamic route
-//         ],
-//       })
-//     );
-//   });
+  it('should include api routes is preserveApiRoutes is enabled', () => {
+    expect(
+      getRoutes(
+        inMemoryContext({
+          './(app)/page': () => null,
+          './(app)/page+api': () => null,
+        }),
+        { internal_stripLoadRoute: true, internal_skipGenerated: true, preserveApiRoutes: true }
+      )
+    ).toEqual({
+      children: [
+        {
+          type: 'route',
+          children: [],
+          contextKey: './(app)/page.js',
+          dynamic: null,
+          entryPoints: ['expo-router/build/views/Navigator.js', './(app)/page.js'],
+          route: '(app)/page',
+        },
+        {
+          type: 'api',
+          children: [],
+          contextKey: './(app)/page+api.js',
+          dynamic: null,
+          entryPoints: ['./(app)/page+api.js'],
+          route: '(app)/page',
+        },
+      ],
+      type: 'layout',
+      contextKey: './_layout.tsx',
+      dynamic: null,
+      generated: true,
+      route: '',
+    });
+  });
+});
 
 //   it(`should convert a complex context module routes`, () => {
 //     expect(
