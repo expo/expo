@@ -65,7 +65,7 @@ Now, we can remove the `alert` on the `<Button>` component and update the `onPre
 
 {/* prettier-ignore */}
 ```jsx Button.js
-<Pressable style={styles.button} /* @info Replace the alert() with the onPress.*/ onPress={onPress}/* @end */ >
+<Pressable style={styles.button} /* @info Replace the alert() with the onPress.*/ onPress={onPress}/* @end */ />
 ```
 
 Next, update **App.js** to conditionally render the `<Button>` component based on the value of `showAppOptions`. Also, move the buttons in the conditional operator block.
