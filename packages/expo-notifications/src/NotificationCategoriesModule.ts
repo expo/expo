@@ -8,7 +8,7 @@ export default {
     identifier: string,
     actions: NotificationAction[],
     options?: object
-  ): Promise<null> {
+  ): Promise<NotificationCategory | null> {
     return null;
   },
   async deleteNotificationCategoryAsync(identifier: string): Promise<boolean> {
