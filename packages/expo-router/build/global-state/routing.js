@@ -139,7 +139,8 @@ function getNavigateAction(state, parentState, type = 'NAVIGATE') {
     const currentRoute = parentState.routes.find((parentRoute) => parentRoute.name === route.name);
     const routesAreEqual = parentState.routes[parentState.index] === currentRoute;
     // If there is nested state and the routes are equal, we should keep going down the tree
-    if (route.state && routesAreEqual && currentRoute.state) {
+    // unless the type is push, in which case we should just push the state
+    if (route.state && routesAreEqual && currentRoute.state && type !== 'PUSH') {
         return getNavigateAction(route.state, currentRoute.state, type);
     }
     // Either we reached the bottom of the state or the point where the routes diverged
