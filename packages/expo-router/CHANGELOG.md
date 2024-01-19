@@ -6,9 +6,14 @@
 
 ### 🎉 New features
 
+- Add `useNavigationContainerRef` to access the root NavigationContainer ref.
+
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Deprecate `useRootNavigation` in favor of `useNavigationContainerRef`.
 
 ## 3.4.3 - 2024-01-18
 
