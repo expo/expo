@@ -349,6 +349,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/archive/workflow/customizing/': '/workflow/customizing/',
   '/errors-and-warnings/': '/debugging/errors-and-warnings/',
   '/guides/education': '/additional-resources/',
+  '/guides/web-performance/': '/guides/analyzing-bundles/',
 
   // Classic updates moved to archive
   '/guides/configuring-ota-updates/': '/archive/classic-updates/getting-started/',
@@ -437,4 +438,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/v49.0.0/sdk': '/versions/v49.0.0',
   '/versions/v47.0.0/sdk': '/versions/v47.0.0',
   '/versions/v46.0.0/sdk': '/versions/v46.0.0',
+
+  // Deprecated Webpack support
+  '/guides/customizing-webpack': '/archive/customizing-webpack',
 };

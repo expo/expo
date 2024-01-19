@@ -146,6 +146,7 @@ redirects[distribution/uploading-apps]=submit/introduction
 redirects[guides/setup-native-firebase]=guides/using-firebase
 redirects[guides/using-clojurescript]=guides/overview
 redirects[distribution/hosting-your-app]=distribution/publishing-websites
+redirects[guides/web-performance/]=guides/analyzing-bundles
 
 # Redirects after adding Home to the docs
 redirects[next-steps/additional-resources]=additional-resources
@@ -345,6 +346,9 @@ redirects[versions/v46.0.0/sdk]=versions/v46.0.0
 redirects[guides/authentication.md]=guides/authentication
 redirects[versions/latest/workflow/linking/]=guides/linking
 redirects[versions/latest/sdk/overview]=versions/latest
+
+# Deprecated webpack
+redirects[guides/customizing-webpack]=archive/customizing-webpack
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys

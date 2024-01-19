@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Add timer capability to Logger. ([#26454](https://github.com/expo/expo/pull/26454), [#26477](https://github.com/expo/expo/pull/26477) by [@wschurman](https://github.com/wschurman))
+
 ### 🐛 Bug fixes
 
 - Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357) by [@kudo](https://github.com/kudo))
@@ -16,6 +18,10 @@
 
 - Removed deprecated `global.ExpoModules`. ([#26027](https://github.com/expo/expo/pull/26027) by [@tsapeta](https://github.com/tsapeta))
 - Remove most of Constants.appOwnership. ([#26313](https://github.com/expo/expo/pull/26313) by [@wschurman](https://github.com/wschurman))
+
+## 1.11.7 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
 
 ## 1.11.6 - 2024-01-12
 

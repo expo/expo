@@ -7,7 +7,7 @@ import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 import { NoIcon } from '~/ui/components/DocIcons';
 
-> **warning** **Deprecation**: In SDK 50 and above, publishing with `webpack` is deprecated.
+> **warning** **Deprecated**: In SDK 50 and above, publishing with `webpack` is deprecated in favor of `metro`. Learn more in [migrating from Webpack to Expo Router](/router/migrate/from-expo-webpack).
 
 A web app created using Expo can be served locally for testing out the production behavior. Once the testing phase checks out, you can choose from a variety of third-party services to host it.
 
@@ -27,7 +27,6 @@ The resulting project files are in the **web-build** directory. Any files inside
 
 If you make changes to your project, rebuild it for production. Do not edit the **web-build** directory directly.
 
-
 ## Serve locally
 
 Use [Serve CLI](https://www.npmjs.com/package/serve) to quickly test locally how your website will be hosted in production. Run the following command to serve the static bundle:
@@ -40,13 +39,13 @@ Open [`http://localhost:5000`](http://localhost:5000) to see your project in act
 
 ## Server a subfolder
 
- If you want to serve your site in a subfolder, add its path to your **package.json** as shown below:
+If you want to serve your site in a subfolder, add its path to your **package.json** as shown below:
 
- ```json package.json
- {
-   "homepage": "/path/to/subfolder"
- }
- ```
+```json package.json
+{
+  "homepage": "/path/to/subfolder"
+}
+```
 
 ## Hosting on third-party services
 
@@ -112,21 +111,21 @@ Install the [Vercel CLI](https://vercel.com/docs/cli).
 <Step label="2">
   Configure redirects for single-page applications. Create a **vercel.json** file at the root of your app and add the following:
 
-  ```json vercel.json
-  {
-    "buildCommand": "expo export:web",
-    "outputDirectory": "web-build",
-    "devCommand": "expo",
-    "cleanUrls": true,
-    "framework": null,
-    "rewrites": [
-      {
-        "source": "/:path*",
-        "destination": "/"
-      }
-    ]
-  }
-  ```
+```json vercel.json
+{
+  "buildCommand": "expo export:web",
+  "outputDirectory": "web-build",
+  "devCommand": "expo",
+  "cleanUrls": true,
+  "framework": null,
+  "rewrites": [
+    {
+      "source": "/:path*",
+      "destination": "/"
+    }
+  ]
+}
+```
 
 </Step>
 

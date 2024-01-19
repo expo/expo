@@ -141,12 +141,19 @@ const general = [
       'Web',
       [
         makePage('workflow/web.mdx'),
-        makePage('guides/progressive-web-apps.mdx'),
         makePage('distribution/publishing-websites.mdx'),
-        makePage('distribution/publishing-websites-webpack.mdx'),
         makePage('guides/customizing-metro.mdx'),
-        makePage('guides/customizing-webpack.mdx'),
-        makePage('guides/web-performance.mdx'),
+        makePage('guides/progressive-web-apps.mdx'),
+      ],
+      { expanded: false }
+    ),
+    makeGroup(
+      'Bundling',
+      [
+        makePage('guides/customizing-metro.mdx'),
+        makePage('guides/analyzing-bundles.mdx'),
+        makePage('guides/tree-shaking.mdx'),
+        makePage('guides/minify.mdx'),
       ],
       { expanded: false }
     ),
@@ -391,6 +398,7 @@ const general = [
         makePage('guides/using-eslint.mdx'),
         makePage('guides/using-nextjs.mdx'),
         makePage('guides/using-sentry.mdx'),
+        makePage('guides/building-for-tv.mdx'),
         makePage('guides/typescript.mdx'),
       ]),
       makeSection('Expo accounts', [
@@ -489,6 +497,8 @@ const archive = [
     makePage('archive/expo-cli.mdx'),
     makePage('archive/managed-vs-bare.mdx'),
     makePage('archive/notification-channels.mdx'),
+    makePage('archive/publishing-websites-webpack.mdx'),
+    makePage('archive/customizing-webpack.mdx'),
     makePage('archive/glossary.mdx'),
   ]),
 ];

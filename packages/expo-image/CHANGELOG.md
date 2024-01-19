@@ -6,12 +6,18 @@
 
 ### 🎉 New features
 
+- [Android] Adds new prop `decodeFormat` to specify the format that should be used during the decoding process. ([#26442](https://github.com/expo/expo/pull/26442) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🐛 Bug fixes
 
 - Fixed ResizeObserver attaching on every image transition. ([#25819](https://github.com/expo/expo/pull/25819) by [@aleqsio](https://github.com/aleqsio))
 - [Android] Fixed the tine color was applied to the mask element. ([#26323](https://github.com/expo/expo/pull/26323) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
+
+## 1.10.4 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
 
 ## 1.10.3 - 2024-01-12
 

@@ -10,8 +10,29 @@
 
 ### 💡 Others
 
+## 0.17.1 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 0.17.0 - 2024-01-18
+
+### 🎉 New features
+
+- Update `expo customize` to show `public` instead of `web` when Metro web is used. ([#26473](https://github.com/expo/expo/pull/26473) by [@EvanBacon](https://github.com/EvanBacon))
+- Supported extra CORS requests to dev-server from the expo-router's `origin` and `headOrigin` settings. ([#26463](https://github.com/expo/expo/pull/26463) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Default `web.bundler` to `metro` if missing and/or `@expo/webpack-config` is not installed ([#26452](https://github.com/expo/expo/pull/26452) by [@marklawlor](https://github.com/marklawlor))
+- When repeated, later boolean arguments on `export:embed`, `run android`, and `run ios` should take precedence ([#26471](https://github.com/expo/expo/pull/26471) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Hide the deprecated `export:web` command from the general help output. ([#26480](https://github.com/expo/expo/pull/26480) by [@EvanBacon](https://github.com/EvanBacon))
+- Move `@expo/server` to be a dependency of `expo-router`. ([#25937](https://github.com/expo/expo/pull/25937) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove classic updates SDK version. ([#26061](https://github.com/expo/expo/pull/26061) by [@wschurman](https://github.com/wschurman))
 - Added `templateChecksum` for prebuild to check the current template version. ([#26414](https://github.com/expo/expo/pull/26414) by [@kudo](https://github.com/kudo))
+- Clean up manual package install command ([#26457](https://github.com/expo/expo/pull/26457) by [@marklawlor](https://github.com/marklawlor))
 
 ## 0.16.8 - 2024-01-15
 

@@ -19,6 +19,18 @@
 
 - Update react-native to 0.73.2. ([#26311](https://github.com/expo/expo/pull/26311) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
+## 50.0.2 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.1 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
 ## 50.0.0-preview.11 - 2024-01-15
 
 _This version does not introduce any user-facing changes._

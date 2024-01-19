@@ -552,7 +552,15 @@ Shared dependencies of async bundles are merged into a single chunk to reduce th
 
 As of SDK 50, the chunk splitting heuristic cannot be customized. For example:
 
-```js
+<FileTree files={['math.js', 'index.js']} />
+
+```js math.js
+export function add(a, b) {
+  return a + b;
+}
+```
+
+```js index.js
 import '@expo/metro-runtime';
 
 // This will be split into a separate chunk.
@@ -561,7 +569,8 @@ import('./math').then(math => {
 });
 ```
 
-When you run `npx expo export -p web`, the bundles are split into multiple files, and the entry bundle is added to the main HTML file.
+When you run `npx expo export -p web`, the bundles are split into multiple files, and the entry bundle is added to the main HTML file. `@expo/metro-runtime` adds the runtime code that loads and evaluates the async bundles.
+
 
 ## Source map debug ID
 

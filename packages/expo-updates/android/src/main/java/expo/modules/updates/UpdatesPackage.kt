@@ -1,5 +1,3 @@
-@file:Suppress("UnusedImport") // this needs to stay for versioning to work
-
 package expo.modules.updates
 
 import android.content.Context
@@ -18,8 +16,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-
-// these unused imports must stay because of versioning
 
 /**
  * Defines the internal and exported modules for expo-updates, as well as the auto-setup behavior in
