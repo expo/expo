@@ -1,17 +1,19 @@
-import { NotificationAction } from './Notifications.types';
+import { UnavailabilityError } from 'expo-modules-core';
 
-export default {
-  async getNotificationCategoriesAsync(): Promise<NotificationCategory[]> {
+import { NotificationCategoriesModule } from './NotificationCategoriesModule.types';
+
+const notificationCategoriesModule: NotificationCategoriesModule = {
+  async getNotificationCategoriesAsync() {
     return [];
   },
-  async setNotificationCategoryAsync(
-    identifier: string,
-    actions: NotificationAction[],
-    options?: object
-  ): Promise<NotificationCategory | null> {
-    return null;
+  async setNotificationCategoryAsync() {
+    throw new UnavailabilityError('Notifications', 'setNotificationCategoryAsync');
   },
-  async deleteNotificationCategoryAsync(identifier: string): Promise<boolean> {
+  async deleteNotificationCategoryAsync() {
     return false;
   },
+  addListener() {},
+  removeListeners() {},
 };
+
+export default notificationCategoriesModule;
