@@ -32,6 +32,7 @@ func createUrlRequest(url: URL, headers: [String: String]?) -> URLRequest {
 
 func createUploadTask(session: URLSession, targetUrl: URL, sourceUrl: URL, options: UploadOptions) -> URLSessionUploadTask {
   var request = createUrlRequest(url: targetUrl, headers: options.headers)
+  request.httpMethod = options.httpMethod.rawValue
 
   switch options.uploadType {
   case .binaryContent:
