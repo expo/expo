@@ -357,7 +357,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/distribution/release-channels/': '/archive/classic-updates/release-channels/',
   '/distribution/advanced-release-channels/': '/archive/classic-updates/advanced-release-channels/',
   '/distribution/optimizing-updates/': '/archive/classic-updates/optimizing-updates/',
-  '/eas-update/custom-updates-server/': '/distribution/custom-updates-server/',
   '/guides/offline-support/': '/archive/classic-updates/offline-support/',
   '/guides/preloading-and-caching-assets/':
     '/archive/classic-updates/preloading-and-caching-assets/',
