@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357) by [@kudo](https://github.com/kudo))
+- Fixed missing `runtimeVersion` error when loading app with `expo-updates` and `expo-dev-client`. ([#26524](https://github.com/expo/expo/pull/26524) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
