@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing `router.navigate` type generation. ([#26151](https://github.com/expo/expo/pull/26151) by [@alexandernanberg](https://github.com/alexandernanberg))
+
 ### 💡 Others
 
 ## 0.17.1 - 2024-01-18
