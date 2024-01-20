@@ -14,6 +14,7 @@ import {
   downloadAndExtractNpmModuleAsync,
   getResolvedTemplateName,
 } from './utils/npm';
+import { getGithubUrlInfo } from './utils/github';
 
 const debug = require('debug')('expo:init:template') as typeof console.log;
 
@@ -51,6 +52,19 @@ function deepMerge(target: any, source: any) {
 
 export function resolvePackageModuleId(moduleId: string) {
   if (
+    // Supports github repository URLs
+    moduleId.startsWith('https://github.com')
+  ) {
+    const info = getGithubUrlInfo(moduleId);
+    if (!info) {
+      throw new Error('Invalid GitHub url, both repository owner and name are required.');
+    }
+
+    debug('Resolved moduleId to repository path:', moduleId, info);
+    return { type: 'repository', uri: info } as const;
+  }
+
+  if (
     // Supports `file:./path/to/template.tgz`
     moduleId?.startsWith('file:') ||
     // Supports `../path/to/template.tgz`
@@ -62,11 +76,11 @@ export function resolvePackageModuleId(moduleId: string) {
       moduleId = moduleId.substring(5);
     }
     debug(`Resolved moduleId to file path:`, moduleId);
-    return { type: 'file', uri: path.resolve(moduleId) };
-  } else {
-    debug(`Resolved moduleId to NPM package:`, moduleId);
-    return { type: 'npm', uri: moduleId };
+    return { type: 'file', uri: path.resolve(moduleId) } as const;
   }
+
+  debug(`Resolved moduleId to NPM package:`, moduleId);
+  return { type: 'npm', uri: moduleId } as const;
 }
 
 /**

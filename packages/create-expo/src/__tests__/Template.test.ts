@@ -9,7 +9,7 @@ describe(resolvePackageModuleId, () => {
       type: 'file',
       uri: expect.stringMatching('./path/to/template.tgz'),
     });
-    expect(path.isAbsolute(result.uri)).toBe(true);
+    expect(result.type === 'file' && path.isAbsolute(result.uri)).toBe(true);
   });
   it(`resolves darwin local path`, () => {
     expect(resolvePackageModuleId('./path/to/template.tgz')).toEqual({
@@ -32,5 +32,24 @@ describe(resolvePackageModuleId, () => {
       type: 'npm',
       uri: 'basic',
     });
+  });
+  it('resolves github repository url', () => {
+    expect(
+      resolvePackageModuleId(
+        'https://github.com/expo/expo/tree/sdk-49/templates/expo-template-bare-minimum'
+      )
+    ).toEqual({
+      type: 'repository',
+      uri: {
+        owner: 'expo',
+        name: 'expo',
+        ref: 'sdk-49',
+        folder: 'templates/expo-template-bare-minimum',
+      },
+    });
+  });
+  it('throws for invalid github repository url', () => {
+    expect(() => resolvePackageModuleId('https://github.com')).toThrow('Invalid GitHub url');
+    expect(() => resolvePackageModuleId('https://github.com/expo')).toThrow('Invalid GitHub url');
   });
 });
