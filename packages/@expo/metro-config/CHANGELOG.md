@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove lazy loading in build process for easier development.
+
 ## 0.17.3 - 2024-01-18
 
 ### 🐛 Bug fixes
