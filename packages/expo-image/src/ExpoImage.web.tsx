@@ -108,7 +108,7 @@ export default function ExpoImage({
           (className, style) => (
             <ImageWrapper
               {...props}
-              ref={nativeViewRef}
+              ref={nativeViewRef as React.Ref<HTMLImageElement> | undefined}
               source={placeholder?.[0]}
               style={{
                 objectFit: imagePlaceholderContentFit,
@@ -138,7 +138,7 @@ export default function ExpoImage({
       (className, style) => (
         <ImageWrapper
           {...props}
-          ref={nativeViewRef}
+          ref={nativeViewRef as React.Ref<HTMLImageElement> | undefined}
           source={selectedSource || placeholder?.[0]}
           events={{
             onError: [onErrorAdapter(onError), onLoadEnd, onErrorInner],
