@@ -6,15 +6,19 @@
 
 ### 🎉 New features
 
-- Add `useNavigationContainerRef` to access the root NavigationContainer ref. ([#26529](https://github.com/expo/expo/pull/26529) by [@EvanBacon](https://github.com/EvanBacon))
-
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
-- Deprecate `useRootNavigation` in favor of `useNavigationContainerRef`. ([#26529](https://github.com/expo/expo/pull/26529) by [@EvanBacon](https://github.com/EvanBacon))
+## 3.4.4 — 2024-01-20
 
+### 🎉 New features
+
+- Add `useNavigationContainerRef` to access the root NavigationContainer ref. ([#26529](https://github.com/expo/expo/pull/26529) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Deprecate `useRootNavigation` in favor of `useNavigationContainerRef`. ([#26529](https://github.com/expo/expo/pull/26529) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.4.3 — 2024-01-18
 
