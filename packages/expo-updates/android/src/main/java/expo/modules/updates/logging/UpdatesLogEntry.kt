@@ -14,9 +14,10 @@ data class UpdatesLogEntry(
   val message: String,
   val code: String,
   val level: String,
+  val duration: Long?,
   val updateId: String?,
   val assetId: String?,
-  val stacktrace: List<String>?,
+  val stacktrace: List<String>?
 ) {
   fun asString(): String {
     return JSONObject(
@@ -27,13 +28,16 @@ data class UpdatesLogEntry(
         "level" to level
       )
     ).apply {
+      if (duration != null) {
+        put("duration", duration)
+      }
       if (updateId != null) {
         put("updateId", updateId)
       }
       if (assetId != null) {
         put("assetId", assetId)
       }
-      if (stacktrace != null && stacktrace.isNotEmpty()) {
+      if (!stacktrace.isNullOrEmpty()) {
         put("stacktrace", JSONArray(stacktrace))
       }
     }.toString()
@@ -48,6 +52,7 @@ data class UpdatesLogEntry(
           jsonObject.require("message"),
           jsonObject.require("code"),
           jsonObject.require("level"),
+          jsonObject.getNullable("duration"),
           jsonObject.getNullable("updateId"),
           jsonObject.getNullable("assetId"),
           jsonObject.getNullable<JSONArray>("stacktrace")?.let { jsonArray ->

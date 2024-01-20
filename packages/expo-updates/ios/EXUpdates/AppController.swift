@@ -2,6 +2,7 @@
 
 // swiftlint:disable line_length
 // swiftlint:disable force_unwrapping
+// swiftlint:disable identifier_name
 
 import Foundation
 import ExpoModulesCore
@@ -11,7 +12,6 @@ public struct UpdatesModuleConstants {
   let embeddedUpdate: Update?
   let isEmergencyLaunch: Bool
   let isEnabled: Bool
-  let releaseChannel: String
   let isUsingEmbeddedAssets: Bool
   let runtimeVersion: String?
   let checkOnLaunch: CheckAutomaticallyConfig
@@ -25,7 +25,14 @@ public struct UpdatesModuleConstants {
    */
   let assetFilesMap: [String: Any]?
 
-  let isMissingRuntimeVersion: Bool
+  /**
+   Whether the JS API methods should allow calling the native module methods and thus the methods
+   on the controller in development. For non-expo development we want to throw
+   at the JS layer since there isn't a controller set up. But for development within Expo Go
+   or a Dev Client, which have their own controller/JS API implementations, we want the JS API
+   calls to go through.
+   */
+  let shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: Bool
 }
 
 public enum CheckForUpdateResult {
@@ -137,46 +144,29 @@ public class AppController: NSObject {
     assert(_sharedInstance != nil, "AppController.sharedInstace was called before the module was initialized")
     return _sharedInstance!
   }
+  private static var _overrideConfig: UpdatesConfig?
 
-  public static func initializeWithoutStarting(configuration: [String: Any]?) {
+  public static func initializeWithoutStarting() {
     if _sharedInstance != nil {
       return
     }
 
     let logger = UpdatesLogger()
 
-    // swiftlint:disable:next identifier_name
-    let updatesConfigurationValidationResult = UpdatesConfig.getUpdatesConfigurationValidationResult(mergingOtherDictionary: configuration)
-    if updatesConfigurationValidationResult == UpdatesConfigurationValidationResult.Valid {
-      var config: UpdatesConfig?
-      do {
-        config = try UpdatesConfig.configWithExpoPlist(mergingOtherDictionary: configuration)
-      } catch {
-        NSException(
-          name: .internalInconsistencyException,
-          reason: "Cannot load configuration from Expo.plist. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."
-        )
-        .raise()
-      }
-
-      let updatesDatabase = UpdatesDatabase()
-      do {
-        let directory = try initializeUpdatesDirectory()
-        try initializeUpdatesDatabase(updatesDatabase: updatesDatabase, inUpdatesDirectory: directory)
-        _sharedInstance = EnabledAppController(config: config!, database: updatesDatabase, updatesDirectory: directory)
-      } catch {
-        logger.error(
-          message: "The expo-updates system is disabled due to an error during initialization: \(error.localizedDescription)",
-          code: .initializationError
-        )
-        _sharedInstance = DisabledAppController(error: error, isMissingRuntimeVersion: UpdatesConfig.isMissingRuntimeVersion(mergingOtherDictionary: configuration))
-        return
-      }
-    } else {
+    // swiftlint:disable closure_body_length
+    let config = _overrideConfig != nil ? _overrideConfig : {
+      let updatesConfigurationValidationResult = UpdatesConfig.getUpdatesConfigurationValidationResult(mergingOtherDictionary: nil)
       switch updatesConfigurationValidationResult {
       case .Valid:
-        assertionFailure("Valid case should be handled above")
-        break
+        guard let config = try? UpdatesConfig.configWithExpoPlist(mergingOtherDictionary: nil) else {
+          NSException(
+            name: .internalInconsistencyException,
+            reason: "Cannot load configuration from Expo.plist. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."
+          )
+          .raise()
+          return nil
+        }
+        return config
       case .InvalidPlistError:
         logger.warn(
           message: "The expo-updates system is disabled due to an invalid configuration. Ensure a valid Expo.plist is present in the application bundle.",
@@ -198,8 +188,42 @@ public class AppController: NSObject {
           code: .initializationError
         )
       }
+      return nil
+    }()
+    // swiftlint:enable closure_body_length
 
-      _sharedInstance = DisabledAppController(error: nil, isMissingRuntimeVersion: UpdatesConfig.isMissingRuntimeVersion(mergingOtherDictionary: configuration))
+    if let config = config {
+      let updatesDatabase = UpdatesDatabase()
+      do {
+        let directory = try initializeUpdatesDirectory()
+        try initializeUpdatesDatabase(updatesDatabase: updatesDatabase, inUpdatesDirectory: directory)
+        _sharedInstance = EnabledAppController(config: config, database: updatesDatabase, updatesDirectory: directory)
+      } catch {
+        logger.error(
+          message: "The expo-updates system is disabled due to an error during initialization: \(error.localizedDescription)",
+          code: .initializationError
+        )
+        _sharedInstance = DisabledAppController(error: error)
+        return
+      }
+    } else {
+      _sharedInstance = DisabledAppController(error: nil)
+    }
+  }
+
+  public static func overrideConfiguration(configuration: [String: Any]?) {
+    if _sharedInstance != nil {
+      fatalError("The method should be called before AppController.initializeWithoutStarting()")
+    }
+    let updatesConfigurationValidationResult = UpdatesConfig.getUpdatesConfigurationValidationResult(mergingOtherDictionary: configuration)
+    if updatesConfigurationValidationResult == UpdatesConfigurationValidationResult.Valid {
+      do {
+        _overrideConfig = try UpdatesConfig.configWithExpoPlist(mergingOtherDictionary: configuration)
+      } catch {
+        UpdatesLogger().warn(message: "Failed to overrideConfiguration: invalid configuration: Cannot load configuration from Expo.plist")
+      }
+    } else {
+      UpdatesLogger().warn(message: "Failed to overrideConfiguration: \(updatesConfigurationValidationResult)")
     }
   }
 
@@ -225,8 +249,7 @@ public class AppController: NSObject {
       initialUpdatesConfiguration: config,
       updatesDirectory: updatesDirectory,
       updatesDatabase: updatesDatabase,
-      directoryDatabaseException: directoryDatabaseException,
-      isMissingRuntimeVersion: UpdatesConfig.isMissingRuntimeVersion(mergingOtherDictionary: nil)
+      directoryDatabaseException: directoryDatabaseException
     )
     _sharedInstance = appController
     return appController
@@ -256,5 +279,6 @@ public class AppController: NSObject {
   }
 }
 
+// swiftlint:enable identifier_name
 // swiftlint:enable force_unwrapping
 // swiftlint:enable line_length

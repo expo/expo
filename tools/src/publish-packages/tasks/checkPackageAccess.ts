@@ -1,12 +1,12 @@
 import chalk from 'chalk';
 
+import { checkEnvironmentTask } from './checkEnvironmentTask';
+import { loadRequestedParcels } from './loadRequestedParcels';
 import logger from '../../Logger';
 import * as Npm from '../../Npm';
 import { Task } from '../../TasksRunner';
 import { runWithSpinner } from '../../Utils';
 import { Parcel, TaskArgs } from '../types';
-import { checkEnvironmentTask } from './checkEnvironmentTask';
-import { loadRequestedParcels } from './loadRequestedParcels';
 
 /**
  * Checks if the currently logged in user has access to publish packages.

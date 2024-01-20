@@ -1,10 +1,8 @@
 package expo.modules.updates
 
 import android.content.Context
-import expo.modules.updates.UpdatesConfiguration.CheckAutomaticallyConfiguration
-import expo.modules.updates.db.entity.AssetEntity
-import android.os.AsyncTask
 import android.net.ConnectivityManager
+import android.os.AsyncTask
 import android.util.Base64
 import android.util.Log
 import com.facebook.react.ReactNativeHost
@@ -12,14 +10,14 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
+import expo.modules.updates.UpdatesConfiguration.CheckAutomaticallyConfiguration
+import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import org.apache.commons.io.FileUtils
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.*
-import java.lang.ClassCastException
-import java.lang.Exception
 import java.lang.ref.WeakReference
 import java.security.DigestInputStream
 import java.security.MessageDigest
@@ -130,16 +128,15 @@ object UpdatesUtils {
       if (expectedBase64URLEncodedHash != null && expectedBase64URLEncodedHash != hashBase64String) {
         throw IOException("File download was successful but base64url-encoded SHA-256 did not match expected; expected: $expectedBase64URLEncodedHash; actual: $hashBase64String")
       }
-
       // only rename after the hash has been verified
       // Since renameTo() does not expose detailed errors, and can fail if source and destination
       // are not on the same mount point, we do a copyTo followed by delete
+      // if there are two assets with identical content, they will be written to the same file path,
+      // so we allow overwrites
       try {
-        tmpFile.copyTo(destination)
+        tmpFile.copyTo(destination, true)
       } catch (e: NoSuchFileException) {
         throw IOException("File download was successful, but temp file ${tmpFile.absolutePath} does not exist")
-      } catch (e: FileAlreadyExistsException) {
-        throw IOException("File download was successful, but file already exists at ${destination.absolutePath}")
       } catch (e: Exception) {
         throw IOException("File download was successful, but an exception occurred: $e")
       } finally {
@@ -158,7 +155,9 @@ object UpdatesUtils {
     return if (asset.key == null) {
       // create a filename that's unlikely to collide with any other asset
       "asset-" + Date().time + "-" + Random().nextInt() + fileExtension
-    } else asset.key + fileExtension
+    } else {
+      asset.key + fileExtension
+    }
   }
 
   fun sendEventToReactNative(

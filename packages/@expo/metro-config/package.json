@@ -1,6 +1,6 @@
 {
   "name": "@expo/metro-config",
-  "version": "0.16.0",
+  "version": "0.17.0",
   "description": "A Metro config for running React Native projects with the Metro bundler",
   "main": "build/ExpoMetroConfig.js",
   "scripts": {
@@ -35,29 +35,31 @@
   ],
   "dependencies": {
     "@babel/core": "^7.20.0",
-    "@babel/generator": "~7.20.5",
+    "@babel/generator": "^7.20.5",
     "@babel/parser": "^7.20.0",
     "@babel/types": "^7.20.0",
     "@expo/config": "~8.5.0",
     "@expo/env": "~0.2.0",
     "@expo/json-file": "~8.3.0",
+    "@expo/spawn-async": "^1.7.2",
     "babel-preset-fbjs": "^3.4.0",
     "chalk": "^4.1.0",
     "debug": "^4.3.2",
     "find-yarn-workspace-root": "~2.0.0",
+    "fs-extra": "^9.1.0",
     "getenv": "^1.0.0",
+    "glob": "^7.2.3",
     "jsc-safe-url": "^0.2.4",
     "lightningcss": "~1.19.0",
-    "path-to-regexp": "~1.8.0",
-    "postcss": "~8.4.21",
+    "postcss": "~8.4.32",
     "resolve-from": "^5.0.0",
-    "sucrase": "^3.20.0"
+    "sucrase": "3.34.0"
   },
   "peerDependencies": {
     "@react-native/babel-preset": "*"
   },
   "devDependencies": {
-    "@types/path-to-regexp": "^1.7.0",
+    "@jridgewell/trace-mapping": "^0.3.20",
     "expo-module-scripts": "^3.3.0",
     "sass": "^1.60.0"
   },

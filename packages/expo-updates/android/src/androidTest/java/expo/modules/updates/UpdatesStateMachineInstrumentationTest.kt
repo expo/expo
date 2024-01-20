@@ -37,6 +37,7 @@ class UpdatesStateMachineInstrumentationTest {
   }
 
   private val androidContext = InstrumentationRegistry.getInstrumentation().context
+
   // Test classes
   class TestStateChangeEventSender : UpdatesStateChangeEventSender {
     var lastEventType: UpdatesStateEventType? = null
@@ -52,14 +53,14 @@ class UpdatesStateMachineInstrumentationTest {
   @Test
   fun test_defaultState() {
     val testStateChangeEventSender = TestStateChangeEventSender()
-    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender)
+    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender, UpdatesStateValue.values().toSet())
     Assert.assertEquals(UpdatesStateValue.Idle, machine.getState())
   }
 
   @Test
   fun test_handleCheckAndCheckCompleteAvailable() {
     val testStateChangeEventSender = TestStateChangeEventSender()
-    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender)
+    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender, UpdatesStateValue.values().toSet())
 
     machine.processEventTest(UpdatesStateEvent.Check())
 
@@ -82,7 +83,7 @@ class UpdatesStateMachineInstrumentationTest {
   @Test
   fun test_handleCheckCompleteUnavailable() {
     val testStateChangeEventSender = TestStateChangeEventSender()
-    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender)
+    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender, UpdatesStateValue.values().toSet())
 
     machine.processEventTest(UpdatesStateEvent.Check())
 
@@ -102,7 +103,7 @@ class UpdatesStateMachineInstrumentationTest {
   @Test
   fun test_handleDownloadAndDownloadComplete() {
     val testStateChangeEventSender = TestStateChangeEventSender()
-    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender)
+    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender, UpdatesStateValue.values().toSet())
 
     machine.processEventTest(UpdatesStateEvent.Download())
 
@@ -127,7 +128,7 @@ class UpdatesStateMachineInstrumentationTest {
   @Test
   fun test_handleRollback() {
     val testStateChangeEventSender = TestStateChangeEventSender()
-    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender)
+    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender, UpdatesStateValue.values().toSet())
     val commitTime = Date()
     machine.processEventTest(UpdatesStateEvent.Check())
 
@@ -146,7 +147,7 @@ class UpdatesStateMachineInstrumentationTest {
   @Test
   fun test_checkError() {
     val testStateChangeEventSender = TestStateChangeEventSender()
-    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender)
+    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender, UpdatesStateValue.values().toSet())
 
     machine.processEventTest(UpdatesStateEvent.Check())
 
@@ -167,7 +168,7 @@ class UpdatesStateMachineInstrumentationTest {
   @Test
   fun test_invalidTransitions() {
     val testStateChangeEventSender = TestStateChangeEventSender()
-    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender)
+    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender, UpdatesStateValue.values().toSet())
     machine.processEventTest(UpdatesStateEvent.Check())
     Assert.assertEquals(UpdatesStateValue.Checking, machine.getState())
 
@@ -181,5 +182,18 @@ class UpdatesStateMachineInstrumentationTest {
       machine.processEventTest(UpdatesStateEvent.DownloadComplete())
     }
     Assert.assertEquals(UpdatesStateValue.Checking, machine.getState())
+  }
+
+  @Test
+  fun test_invalidStateValues() {
+    val testStateChangeEventSender = TestStateChangeEventSender()
+    // can only be idle
+    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender, setOf(UpdatesStateValue.Idle))
+
+    // Test invalid value and ensure that state does not change
+    Assert.assertThrows(AssertionError::class.java) {
+      machine.processEventTest(UpdatesStateEvent.Download())
+    }
+    Assert.assertEquals(UpdatesStateValue.Idle, machine.getState())
   }
 }

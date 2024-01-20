@@ -211,8 +211,11 @@ class SQLiteModuleNext : Module() {
         // expo-modules-core AnyTypeConverter casts JavaScript Number to Kotlin Double,
         // here to cast as Long if the value is an integer.
         val normalizedParam =
-          if (param is Double && param.toDouble() % 1.0 == 0.0) param.toLong()
-          else param
+          if (param is Double && param.toDouble() % 1.0 == 0.0) {
+            param.toLong()
+          } else {
+            param
+          }
         statement.ref.bindStatementParam(index, normalizedParam)
       }
     }
@@ -228,12 +231,15 @@ class SQLiteModuleNext : Module() {
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
     }
     val firstRowValues: SQLiteColumnValues =
-      if (ret == NativeDatabaseBinding.SQLITE_ROW) statement.ref.getColumnValues()
-      else arrayListOf()
+      if (ret == NativeDatabaseBinding.SQLITE_ROW) {
+        statement.ref.getColumnValues()
+      } else {
+        arrayListOf()
+      }
     return mapOf(
       "lastInsertRowId" to database.ref.sqlite3_last_insert_rowid().toInt(),
       "changes" to database.ref.sqlite3_changes(),
-      "firstRowValues" to firstRowValues,
+      "firstRowValues" to firstRowValues
     )
   }
 
@@ -314,7 +320,7 @@ class SQLiteModuleNext : Module() {
           "databaseFilePath" to databaseFilePath,
           "tableName" to tableName,
           "rowId" to rowID,
-          "typeId" to SQLAction.fromCode(operationType).value,
+          "typeId" to SQLAction.fromCode(operationType).value
         )
       )
     }

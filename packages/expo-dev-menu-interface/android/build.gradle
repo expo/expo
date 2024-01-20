@@ -54,7 +54,7 @@ android {
   // Remove this if and it's contents, when support for SDK49 is dropped
   if (!safeExtGet("expoProvidesDefaultConfig", false)) {
     compileSdkVersion safeExtGet("compileSdkVersion", 34)
-    
+
     defaultConfig {
       minSdkVersion safeExtGet("minSdkVersion", 23)
       targetSdkVersion safeExtGet("targetSdkVersion", 34)
@@ -90,8 +90,7 @@ android {
 }
 
 dependencies {
-  //noinspection GradleDynamicVersion
-  implementation 'com.facebook.react:react-native:+'
+  implementation 'com.facebook.react:react-android'
 
   implementation 'com.squareup.okhttp3:okhttp:3.14.9'
 

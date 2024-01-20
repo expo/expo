@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- Fix naming of web files. ([#26505](https://github.com/expo/expo/pull/26505) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
+
+## 14.0.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
 
 ## 14.0.0 — 2023-12-12
 

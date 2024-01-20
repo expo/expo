@@ -14,8 +14,8 @@ echo " ☛  Bootstrapping Expo in ${CURRENT_ENV} mode"
 "$DIR/start-metro.sh" "$port"
 
 if [ "${CURRENT_ENV}" = "test" ]; then
-    if command -v applesimutils > /dev/null; then 
-    # if brew ls --versions applesimutils > /dev/null; then 
+    if command -v applesimutils > /dev/null; then
+    # if brew ls --versions applesimutils > /dev/null; then
         echo " ✅ Detox simulators are installed"
     else
         echo "Detox simulators are not installed, installing..."
@@ -37,17 +37,17 @@ if [ "${CURRENT_ENV}" = "test" ]; then
     echo " ☛  Starting Detox in watch mode"
     # Run our default E2E tests
     yarn run ios:detox:test:debug --watch
-else 
+else
 
     echo " ☛  Running the iOS project..."
-    
+
     # CONNECTED_DEVICE=$(node ios-deploy -c | grep -oE 'Found ([0-9A-Za-z\-]+)' | sed 's/Found //g')
     # if [ -z "${CONNECTED_DEVICE}" ]; then
         # Build and run the iOS project using `react-native run-ios`
-        node "node_modules/react-native/cli.js" run-ios --no-packager --port "$port"
+        yarn react-native run-ios --no-packager --port "$port"
     # else
     #     # Build and run the iOS project using `react-native run-ios`
-    #     node "node_modules/react-native/cli.js" run-ios --no-packager --udid ${CONNECTED_DEVICE} --port ${port}
+    #     yarn react-native run-ios --no-packager --udid ${CONNECTED_DEVICE} --port ${port}
     # fi
 fi
 

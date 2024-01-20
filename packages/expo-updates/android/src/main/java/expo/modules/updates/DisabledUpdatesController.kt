@@ -3,18 +3,23 @@ package expo.modules.updates
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import com.facebook.react.ReactApplication
 import com.facebook.react.ReactInstanceManager
+import com.facebook.react.ReactNativeHost
+import com.facebook.react.bridge.WritableMap
 import expo.modules.kotlin.exception.CodedException
-import expo.modules.updates.UpdatesConfiguration.Companion.UPDATES_CONFIGURATION_RELEASE_CHANNEL_DEFAULT_VALUE
+import expo.modules.kotlin.exception.toCodedException
 import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.launcher.NoDatabaseLauncher
+import expo.modules.updates.logging.UpdatesLogger
+import expo.modules.updates.procedures.RecreateReactContextProcedure
+import expo.modules.updates.statemachine.UpdatesStateChangeEventSender
 import expo.modules.updates.statemachine.UpdatesStateContext
+import expo.modules.updates.statemachine.UpdatesStateEventType
+import expo.modules.updates.statemachine.UpdatesStateMachine
+import expo.modules.updates.statemachine.UpdatesStateValue
 import java.io.File
-
-// this needs to stay for versioning to work
-/* ktlint-disable no-unused-imports */
-import expo.modules.updates.UpdatesConfiguration
-/* ktlint-enable no-unused-imports */
+import java.lang.ref.WeakReference
 
 /**
  * Updates controller for applications that either disable updates explicitly or have an error
@@ -25,9 +30,18 @@ import expo.modules.updates.UpdatesConfiguration
  */
 class DisabledUpdatesController(
   private val context: Context,
-  private val fatalException: Exception?,
-  private val isMissingRuntimeVersion: Boolean
-) : IUpdatesController {
+  private val fatalException: Exception?
+) : IUpdatesController, UpdatesStateChangeEventSender {
+  private val reactNativeHost: WeakReference<ReactNativeHost>? = if (context is ReactApplication) {
+    WeakReference(context.reactNativeHost)
+  } else {
+    null
+  }
+  private val logger = UpdatesLogger(context)
+
+  // disabled controller state machine can only be idle or restarting
+  private val stateMachine = UpdatesStateMachine(context, this, setOf(UpdatesStateValue.Idle, UpdatesStateValue.Restarting))
+
   private var isStarted = false
   private var launcher: Launcher? = null
   private var isLoaderTaskFinished = false
@@ -75,22 +89,33 @@ class DisabledUpdatesController(
       embeddedUpdate = null,
       isEmergencyLaunch = isEmergencyLaunch,
       isEnabled = false,
-      releaseChannel = UPDATES_CONFIGURATION_RELEASE_CHANNEL_DEFAULT_VALUE,
       isUsingEmbeddedAssets = launcher?.isUsingEmbeddedAssets ?: false,
       runtimeVersion = null,
       checkOnLaunch = UpdatesConfiguration.CheckAutomaticallyConfiguration.NEVER,
       requestHeaders = mapOf(),
       localAssetFiles = launcher?.localAssetFiles,
-      isMissingRuntimeVersion = isMissingRuntimeVersion,
+      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = false
     )
   }
 
   override fun relaunchReactApplicationForModule(callback: IUpdatesController.ModuleCallback<Unit>) {
-    callback.onFailure(UpdatesDisabledException("You cannot reload when expo-updates is not enabled."))
+    val procedure = RecreateReactContextProcedure(
+      reactNativeHost,
+      object : Launcher.LauncherCallback {
+        override fun onFailure(e: Exception) {
+          callback.onFailure(e.toCodedException())
+        }
+
+        override fun onSuccess() {
+          callback.onSuccess(Unit)
+        }
+      }
+    )
+    stateMachine.queueExecution(procedure)
   }
 
   override fun getNativeStateMachineContext(callback: IUpdatesController.ModuleCallback<UpdatesStateContext>) {
-    callback.onFailure(UpdatesDisabledException("You cannot check for updates when expo-updates is not enabled."))
+    callback.onSuccess(stateMachine.context)
   }
 
   override fun checkForUpdate(
@@ -128,5 +153,16 @@ class DisabledUpdatesController(
 
   companion object {
     private val TAG = DisabledUpdatesController::class.java.simpleName
+  }
+
+  override fun sendUpdateStateChangeEventToBridge(
+    eventType: UpdatesStateEventType,
+    context: UpdatesStateContext
+  ) {
+    sendEventToJS(EnabledUpdatesController.UPDATES_STATE_CHANGE_EVENT_NAME, eventType.type, context.writableMap)
+  }
+
+  private fun sendEventToJS(eventName: String, eventType: String, params: WritableMap?) {
+    UpdatesUtils.sendEventToReactNative(reactNativeHost, logger, eventName, eventType, params)
   }
 }

@@ -137,9 +137,10 @@ const renderAPI = (
 
     const types = filterDataByKind(
       data,
-      TypeDocKind.TypeAlias,
+      [TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy],
       entry =>
         !isProp(entry) &&
+        !(entry?.variant === 'reference') &&
         !!(
           entry.type.declaration ||
           entry.type.types ||
@@ -151,10 +152,10 @@ const renderAPI = (
 
     const props = filterDataByKind(
       data,
-      [TypeDocKind.TypeAlias, TypeDocKind.Interface],
+      [TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy, TypeDocKind.Interface],
       entry =>
         isProp(entry) &&
-        (entry.kind === TypeDocKind.TypeAlias
+        ([TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy].includes(entry.kind)
           ? !!(entry.type.types || entry.type.declaration?.children)
           : true)
     );
@@ -185,7 +186,7 @@ const renderAPI = (
     );
     const componentsProps = filterDataByKind(
       props,
-      [TypeDocKind.TypeAlias, TypeDocKind.Interface],
+      [TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy, TypeDocKind.Interface],
       entry => componentsPropNames.includes(entry.name)
     );
 

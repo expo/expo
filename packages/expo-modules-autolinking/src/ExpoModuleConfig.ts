@@ -1,4 +1,9 @@
-import { AndroidGradlePluginDescriptor, RawExpoModuleConfig, SupportedPlatform } from './types';
+import {
+  AndroidGradlePluginDescriptor,
+  RawExpoModuleConfig,
+  RawModuleConfigApple,
+  SupportedPlatform,
+} from './types';
 
 function arrayize<T>(value: T[] | T | undefined): T[] {
   if (Array.isArray(value)) {
@@ -17,52 +22,67 @@ export class ExpoModuleConfig {
    * Whether the module supports given platform.
    */
   supportsPlatform(platform: SupportedPlatform): boolean {
-    return this.rawConfig.platforms?.includes(platform) ?? false;
+    const supportedPlatforms = this.rawConfig.platforms ?? [];
+
+    if (platform === 'apple') {
+      // Apple platform is supported when any of iOS, macOS and tvOS is supported.
+      return supportedPlatforms.some((supportedPlatform) => {
+        return ['apple', 'ios', 'macos', 'tvos'].includes(supportedPlatform);
+      });
+    }
+    return supportedPlatforms.includes(platform);
+  }
+
+  /**
+   * Returns the generic config for all Apple platforms with a fallback to the legacy iOS config.
+   */
+  getAppleConfig(): RawModuleConfigApple | null {
+    return this.rawConfig.apple ?? this.rawConfig.ios ?? null;
   }
 
   /**
    * Returns a list of names of Swift native modules classes to put to the generated modules provider file.
    */
-  iosModules() {
-    const iosConfig = this.rawConfig.ios;
+  appleModules() {
+    const appleConfig = this.getAppleConfig();
 
     // `modulesClassNames` is a legacy name for the same config.
-    return iosConfig?.modules ?? iosConfig?.modulesClassNames ?? [];
+    return appleConfig?.modules ?? appleConfig?.modulesClassNames ?? [];
   }
 
   /**
    * Returns a list of names of Swift classes that receives AppDelegate life-cycle events.
    */
-  iosAppDelegateSubscribers(): string[] {
-    return this.rawConfig.ios?.appDelegateSubscribers ?? [];
+  appleAppDelegateSubscribers(): string[] {
+    return this.getAppleConfig()?.appDelegateSubscribers ?? [];
   }
 
   /**
    * Returns a list of names of Swift classes that implement `ExpoReactDelegateHandler`.
    */
-  iosReactDelegateHandlers(): string[] {
-    return this.rawConfig.ios?.reactDelegateHandlers ?? [];
+  appleReactDelegateHandlers(): string[] {
+    return this.getAppleConfig()?.reactDelegateHandlers ?? [];
   }
 
   /**
    * Returns podspec paths defined by the module author.
    */
-  iosPodspecPaths(): string[] {
-    return arrayize(this.rawConfig.ios?.podspecPath);
+  applePodspecPaths(): string[] {
+    return arrayize(this.getAppleConfig()?.podspecPath);
   }
 
   /**
    * Returns the product module names, if defined by the module author.
    */
-  iosSwiftModuleNames(): string[] {
-    return arrayize(this.rawConfig.ios?.swiftModuleName);
+  appleSwiftModuleNames(): string[] {
+    return arrayize(this.getAppleConfig()?.swiftModuleName);
   }
 
   /**
    * Returns whether this module will be added only to the debug configuration
    */
-  iosDebugOnly(): boolean {
-    return this.rawConfig.ios?.debugOnly ?? false;
+  appleDebugOnly(): boolean {
+    return this.getAppleConfig()?.debugOnly ?? false;
   }
 
   /**

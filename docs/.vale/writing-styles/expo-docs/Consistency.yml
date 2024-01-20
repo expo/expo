@@ -20,7 +20,6 @@ swap:
   eas metadata: EAS Metadata
   eas submit: EAS Submit
   eas update: EAS Update
-  eslint: ESLint
   expo cli: Expo CLI
   expo go: Expo Go
   expo sdk: Expo SDK

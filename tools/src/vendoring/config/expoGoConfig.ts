@@ -4,7 +4,13 @@ import minimatch from 'minimatch';
 import path from 'path';
 
 import { Podspec } from '../../CocoaPods';
-import { EXPO_DIR, EXPOTOOLS_DIR, REACT_NATIVE_SUBMODULE_DIR } from '../../Constants';
+import {
+  EXPO_DIR,
+  EXPO_GO_ANDROID_DIR,
+  EXPO_GO_IOS_DIR,
+  EXPOTOOLS_DIR,
+  REACT_NATIVE_SUBMODULE_DIR,
+} from '../../Constants';
 import logger from '../../Logger';
 import { transformFileAsync } from '../../Transforms';
 import { applyPatchAsync } from '../../Utils';
@@ -14,10 +20,10 @@ const config: VendoringTargetConfig = {
   name: 'Expo Go',
   platforms: {
     ios: {
-      targetDirectory: 'ios/vendored/unversioned',
+      targetDirectory: path.join(EXPO_GO_IOS_DIR, 'vendored/unversioned'),
     },
     android: {
-      targetDirectory: 'android/vendored/unversioned',
+      targetDirectory: path.join(EXPO_GO_ANDROID_DIR, 'vendored/unversioned'),
     },
   },
   modules: {
@@ -177,7 +183,7 @@ const config: VendoringTargetConfig = {
               // react-native root dir is in react-native-lab/react-native
               paths: 'build.gradle',
               find: /\b(def reactNativeRootDir)\s*=.+$/gm,
-              replaceWith: `$1 = Paths.get(projectDir.getPath(), '../../../../../react-native-lab/react-native/packages/react-native').toFile()`,
+              replaceWith: `$1 = Paths.get(projectDir.getPath(), '../../../../../../../react-native-lab/react-native/packages/react-native').toFile()`,
             },
             {
               // no-op for extracting tasks

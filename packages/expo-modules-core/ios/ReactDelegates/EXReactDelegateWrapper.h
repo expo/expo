@@ -1,8 +1,8 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <UIKit/UIKit.h>
 #import <React/RCTBridge.h>
 #import <React/RCTRootView.h>
+#import <ExpoModulesCore/Platform.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

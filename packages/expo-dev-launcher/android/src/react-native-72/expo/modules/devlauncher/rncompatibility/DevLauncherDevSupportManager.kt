@@ -1,8 +1,9 @@
 package expo.modules.devlauncher.rncompatibility
 
 import android.content.Context
-import android.os.Handler;
-import android.os.Looper;
+import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import com.facebook.common.logging.FLog
@@ -48,7 +49,7 @@ class DevLauncherDevSupportManager(
   redBoxHandler: RedBoxHandler?,
   devBundleDownloadListener: DevBundleDownloadListener?,
   minNumShakes: Int,
-  customPackagerCommandHandlers: MutableMap<String, RequestHandler>?,
+  customPackagerCommandHandlers: MutableMap<String, RequestHandler>?
 ) : DevSupportManagerBase(
   applicationContext,
   reactInstanceManagerHelper,
@@ -63,9 +64,11 @@ class DevLauncherDevSupportManager(
 ),
   DevLauncherKoinComponent {
   private val controller: DevLauncherControllerInterface? by optInject()
+
   // copied from https://github.com/facebook/react-native/blob/aa4da248c12e3ba41ecc9f1c547b21c208d9a15f/ReactAndroid/src/main/java/com/facebook/react/devsupport/BridgeDevSupportManager.java#L65
   private var mIsSamplingProfilerEnabled = false
-  private val devSettings: DevLauncherInternalSettingsWrapper = DevLauncherInternalSettingsWrapper(getDevSettings())
+  private val devSettings: DevLauncherInternalSettingsWrapper =
+    DevLauncherInternalSettingsWrapper(getDevSettings())
 
   // copied from https://github.com/facebook/react-native/blob/aa4da248c12e3ba41ecc9f1c547b21c208d9a15f/ReactAndroid/src/main/java/com/facebook/react/devsupport/BridgeDevSupportManager.java#L88-L128
   init {
@@ -84,17 +87,24 @@ class DevLauncherDevSupportManager(
     }
 
     addCustomDevOption(
-      if (mIsSamplingProfilerEnabled) applicationContext!!.getString(
-        R.string.catalyst_sample_profiler_disable
-      ) else applicationContext!!.getString(
-        R.string.catalyst_sample_profiler_enable
-      )
+      if (mIsSamplingProfilerEnabled) {
+        applicationContext!!.getString(
+          R.string.catalyst_sample_profiler_disable
+        )
+      } else {
+        applicationContext!!.getString(
+          R.string.catalyst_sample_profiler_enable
+        )
+      }
     ) { toggleJSSamplingProfiler() }
   }
 
   override fun showNewJavaError(message: String?, e: Throwable) {
     if (!DevLauncherController.wasInitialized()) {
-      Log.e("DevLauncher", "DevLauncher wasn't initialized. Couldn't intercept native error handling.")
+      Log.e(
+        "DevLauncher",
+        "DevLauncher wasn't initialized. Couldn't intercept native error handling."
+      )
       super.showNewJavaError(message, e)
       return
     }
@@ -121,7 +131,8 @@ class DevLauncherDevSupportManager(
       object : CallbackWithBundleLoader {
         override fun onSuccess(bundleLoader: JSBundleLoader) {
           bundleLoader.loadScript(currentContext!!.catalystInstance)
-          var bundleURL = controller?.manifest?.getBundleURL() ?: devServerHelper.getDevServerSplitBundleURL(bundlePath)
+          val bundleURL = controller?.manifest?.getBundleURL()
+            ?: devServerHelper.getDevServerSplitBundleURL(bundlePath)
           currentContext!!
             .getJSModule(HMRClient::class.java)
             .registerBundle(bundleURL)
@@ -179,7 +190,8 @@ class DevLauncherDevSupportManager(
       val executor = WebsocketJavaScriptExecutor()
       val future = SimpleSettableFuture<Boolean>()
       executor.connect(
-        devServerHelper.websocketProxyURL, getExecutorConnectCallback(future)
+        devServerHelper.websocketProxyURL,
+        getExecutorConnectCallback(future)
       )
       // TODO(t9349129) Don't use timeout
       try {
@@ -220,6 +232,32 @@ class DevLauncherDevSupportManager(
     }
   }
 
+  override fun getSourceUrl(): String {
+    return controller?.manifest?.getBundleURL() ?: super.getSourceUrl()
+  }
+
+  override fun getSourceMapUrl(): String {
+    val defaultValue = super.getSourceMapUrl()
+    val bundleURL = controller?.manifest?.getBundleURL()
+      ?: return defaultValue
+
+    val parsedURL = Uri.parse(bundleURL)
+    val customOptions = parsedURL.queryParameterNames.mapNotNull { key ->
+      if (key.startsWith("transform")) {
+        key to requireNotNull(parsedURL.getQueryParameter(key))
+      } else {
+        null
+      }
+    }.ifEmpty {
+      return defaultValue
+    }
+
+    val customOptionsString = customOptions.joinToString("&") { (key, value) ->
+      "$key=$value"
+    }
+    return "$defaultValue&$customOptionsString"
+  }
+
   // copied from https://github.com/facebook/react-native/blob/aa4da248c12e3ba41ecc9f1c547b21c208d9a15f/ReactAndroid/src/main/java/com/facebook/react/devsupport/BridgeDevSupportManager.java#L233-L277
   /** Starts of stops the sampling profiler  */
   private fun toggleJSSamplingProfiler() {
@@ -247,7 +285,9 @@ class DevLauncherDevSupportManager(
     } else {
       try {
         val outputPath: String = File.createTempFile(
-          "sampling-profiler-trace", ".cpuprofile", applicationContext.cacheDir
+          "sampling-profiler-trace",
+          ".cpuprofile",
+          applicationContext.cacheDir
         ).path
         javaScriptExecutorFactory.stopSamplingProfiler(outputPath)
         handler.post {

@@ -291,6 +291,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/v41.0.0/sdk/permissions/': '/guides/permissions/',
   '/versions/v42.0.0/sdk/permissions/': '/guides/permissions/',
   '/versions/v43.0.0/sdk/permissions/': '/guides/permissions/',
+  '/versions/v46.0.0/sdk/permissions/': '/guides/permissions/',
+  '/versions/v47.0.0/sdk/permissions/': '/guides/permissions/',
   '/versions/latest/sdk/permissions/': '/guides/permissions/',
 
   // Redirect bare guides to unified workflow guides
@@ -347,6 +349,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/archive/workflow/customizing/': '/workflow/customizing/',
   '/errors-and-warnings/': '/debugging/errors-and-warnings/',
   '/guides/education': '/additional-resources/',
+  '/guides/web-performance/': '/guides/analyzing-bundles/',
 
   // Classic updates moved to archive
   '/guides/configuring-ota-updates/': '/archive/classic-updates/getting-started/',
@@ -354,7 +357,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/distribution/release-channels/': '/archive/classic-updates/release-channels/',
   '/distribution/advanced-release-channels/': '/archive/classic-updates/advanced-release-channels/',
   '/distribution/optimizing-updates/': '/archive/classic-updates/optimizing-updates/',
-  '/eas-update/custom-updates-server/': '/distribution/custom-updates-server/',
   '/guides/offline-support/': '/archive/classic-updates/offline-support/',
   '/guides/preloading-and-caching-assets/':
     '/archive/classic-updates/preloading-and-caching-assets/',
@@ -387,8 +389,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/using-preact/': '/guides/overview/',
   '/versions/latest/sdk/shared-element/': '/versions/latest/',
   '/workflow/hermes/': '/guides/using-hermes/',
-
-  // Push notifications
   '/config/app/': '/workflow/configuration/',
   '/versions/latest/sdk/settings/': '/versions/latest/',
   '/archive/expokit/eject/': '/archive/glossary/#eject',
@@ -405,6 +405,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/eas-update/debug-updates/': '/eas-update/debug/',
   '/eas-update/how-eas-update-works/': '/eas-update/how-it-works/',
   '/eas-update/migrate-to-eas-update/': '/eas-update/migrate-from-classic-updates/',
+  '/distribution/custom-updates-server/': '/eas-update/custom-updates-server/',
 
   // Expo Router Advanced guides
   '/router/advance/root-layout': '/router/advanced/root-layout/',
@@ -416,4 +417,27 @@ const RENAMED_PAGES: Record<string, string> = {
   '/router/advance/platform-specific-modules': '/router/advanced/platform-specific-modules/',
   '/router/advance/shared-routes': '/router/advanced/shared-routes/',
   '/router/advance/router-settings': '/router/advanced/router-settings/',
+
+  // Redirects as per Algolia 404 report
+  '/workflow/build/building-on-ci': '/build/building-on-ci/',
+  'versions/latest/sdk/filesystem.md': '/versions/latest/sdk/filesystem/',
+  '/versions/v49.0.0/sdk/filesystem.md': '/versions/v49.0.0/sdk/filesystem/',
+  '/versions/v48.0.0/sdk/filesystem.md': '/versions/v48.0.0/sdk/filesystem/',
+  '/versions/v47.0.0/sdk/filesystem.md': '/versions/v47.0.0/sdk/filesystem/',
+  '/versions/v46.0.0/sdk/filesystem.md': '/versions/latest/sdk/filesystem/',
+  '/versions/v50.0.0/sdk/taskmanager': '/versions/v50.0.0/sdk/task-manager/',
+  '/versions/v49.0.0/sdk/taskmanager': '/versions/v49.0.0/sdk/task-manager/',
+  '/versions/v48.0.0/sdk/taskmanager': '/versions/v48.0.0/sdk/task-manager/',
+  '/versions/v47.0.0/sdk/taskmanager': '/versions/v48.0.0/sdk/task-manager/',
+  '/versions/v46.0.0/sdk/taskmanager': '/versions/latest/sdk/task-manager/',
+  '/task-manager/': '/versions/latest/sdk/task-manager',
+  'versions/v48.0.0/sdk': '/versions/latest',
+  'versions/v48.0.0/sdk/config/app': '/versions/v48.0.0/sdk/config/app/',
+  '/versions/v50.0.0/sdk': '/versions/v50.0.0',
+  '/versions/v49.0.0/sdk': '/versions/v49.0.0',
+  '/versions/v47.0.0/sdk': '/versions/v47.0.0',
+  '/versions/v46.0.0/sdk': '/versions/v46.0.0',
+
+  // Deprecated Webpack support
+  '/guides/customizing-webpack': '/archive/customizing-webpack',
 };

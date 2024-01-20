@@ -38,6 +38,7 @@ class ReactActivityDelegateWrapper(
   private val host: ReactNativeHost by lazy {
     invokeDelegateMethod("getReactNativeHost")
   }
+
   /**
    * When the app delay for `loadApp`, the ReactInstanceManager's lifecycle will be disrupted.
    * This flag indicates we should emit `onResume` after `loadApp`.
@@ -137,7 +138,10 @@ class ReactActivityDelegateWrapper(
       // That's not ideal but works.
       val launchOptions = composeLaunchOptions() as Bundle? // composeLaunchOptions() is nullable but older react-native declares as nonnull.
       val reactDelegate = object : ReactDelegate(
-        plainActivity, reactNativeHost, mainComponentName, launchOptions
+        plainActivity,
+        reactNativeHost,
+        mainComponentName,
+        launchOptions
       ) {
         override fun createRootView(): ReactRootView {
           return this@ReactActivityDelegateWrapper.createRootView()
@@ -208,7 +212,7 @@ class ReactActivityDelegateWrapper(
      */
     if (delegate.reactInstanceManager.currentReactContext == null) {
       val reactContextListener = object : ReactInstanceEventListener {
-        override fun onReactContextInitialized(context: ReactContext?) {
+        override fun onReactContextInitialized(context: ReactContext) {
           delegate.reactInstanceManager.removeReactInstanceEventListener(this)
           delegate.onActivityResult(requestCode, resultCode, data)
         }

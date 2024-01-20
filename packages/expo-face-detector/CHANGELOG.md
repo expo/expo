@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 12.6.1 - 2023-12-19
+
+### 🛠 Breaking changes
+
+- `expo-face-detector` is now deprecated. We recommed using [react-native-vision-camera](https://github.com/mrousavy/react-native-vision-camera) instead. ([#26026](https://github.com/expo/expo/pull/26026) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 12.6.0 — 2023-11-14
 
 ### 🛠 Breaking changes

@@ -6,9 +6,9 @@ description: Learn about the current build server infrastructure when using EAS.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
-import { HardwareList, BuildResourceList } from '~/ui/components/utils/infrastructure';
+import { BuildResourceList } from '~/ui/components/utils/infrastructure';
 
-> This document was last updated on **November 28, 2023**.
+> This document was last updated on **January 17th, 2024**.
 
 ## Builder IP addresses
 
@@ -30,9 +30,9 @@ When selecting an image for the build you can use the full name provided below o
 
 Android builders run on virtual machines in an isolated environment. Every build gets its own dedicated VM instance.
 
-- Hardware:
+- Build resources:
 
-  <HardwareList platform="android" />
+  <BuildResourceList platform="android" />
 
 - [npm cache deployed with Kubernetes](/build-reference/caching/#javascript-dependencies)
 - [Maven cache deployed with Kubernetes](/build-reference/caching/#android-dependencies)
@@ -74,7 +74,6 @@ Android builders run on virtual machines in an isolated environment. Every build
 - pnpm 8.9.2
 - npm 9.8.1
 - Java 17
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
@@ -91,7 +90,6 @@ Android builders run on virtual machines in an isolated environment. Every build
 - pnpm 8.7.5
 - npm 9.8.1
 - Java 11
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
@@ -108,7 +106,6 @@ Android builders run on virtual machines in an isolated environment. Every build
 - pnpm 7.0.0
 - npm 9.8.1
 - Java 8
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
@@ -125,7 +122,6 @@ Android builders run on virtual machines in an isolated environment. Every build
 - pnpm 7.0.0
 - npm 9.8.1
 - Java 11
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
@@ -142,7 +138,6 @@ Android builders run on virtual machines in an isolated environment. Every build
 - pnpm 7.0.0
 - npm 9.8.1
 - Java 8
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
@@ -159,7 +154,6 @@ Android builders run on virtual machines in an isolated environment. Every build
 - pnpm 7.0.0
 - npm 9.8.1
 - Java 11
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
@@ -176,18 +170,19 @@ Android builders run on virtual machines in an isolated environment. Every build
 - pnpm 7.0.0
 - npm 9.8.1
 - Java 8
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
 
 ## iOS build server configurations
 
-iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build gets its own fresh macOS VM. For more information, see [see iOS-specific resource class](/eas/json/#resourceclass-2).
+iOS builder VMs run on Mac mini hosts in an isolated environment. Every build gets its own fresh macOS VM. For more information, see [iOS-specific resource classes](/eas/json/#resourceclass-2).
 
 - Hardware:
 
-  <HardwareList platform="ios" />
+  - M1 3.2GHz 8-Core, 16 GB RAM
+  - M2 3.9GHz 8-Core, 24 GB RAM
+  - M2 Pro 3.9GHz 12-Core, 32 GB RAM
 
 - Build resources:
 
@@ -213,7 +208,43 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
 
 ### iOS server images
 
-#### `macos-ventura-13.6-xcode-15.0` (`latest`)
+#### `macos-ventura-13.6-xcode-15.2` (`latest`)
+
+<Collapsible summary="Details">
+
+- macOS Ventura 13.6
+- Xcode 15.2 (15C500b)
+- Node.js 18.18.0
+- Bun 1.0.23
+- Yarn 1.22.21
+- pnpm 8.14.1
+- npm 9.8.1
+- fastlane 2.219.0
+- CocoaPods 1.14.3
+- Ruby 2.7
+- node-gyp 10.0.1
+
+</Collapsible>
+
+#### `macos-ventura-13.6-xcode-15.1`
+
+<Collapsible summary="Details">
+
+- macOS Ventura 13.6
+- Xcode 15.1 (15C65)
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
+- pnpm 8.12.1
+- npm 9.8.1
+- fastlane 2.217.0
+- CocoaPods 1.14.3
+- Ruby 2.7
+- node-gyp 10.0.1
+
+</Collapsible>
+
+#### `macos-ventura-13.6-xcode-15.0`
 
 <Collapsible summary="Details">
 
@@ -227,7 +258,6 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
 - fastlane 2.216.0
 - CocoaPods 1.13.0
 - Ruby 2.7
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
@@ -246,7 +276,6 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
 - fastlane 2.213.0
 - CocoaPods 1.12.1
 - Ruby 2.7
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
@@ -265,7 +294,6 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
 - fastlane 2.212.2
 - CocoaPods 1.12.0
 - Ruby 2.7
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
@@ -284,7 +312,6 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
 - fastlane 2.211.0
 - CocoaPods 1.11.3
 - Ruby 2.7
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
@@ -303,7 +330,6 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
 - fastlane 2.210.1
 - CocoaPods 1.11.3
 - Ruby 2.7
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
@@ -322,7 +348,6 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
 - fastlane 2.210.0
 - CocoaPods 1.11.3
 - Ruby 2.7
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
@@ -341,7 +366,6 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
 - fastlane 2.205.2
 - CocoaPods 1.11.3
 - Ruby 2.7
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
@@ -360,7 +384,6 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
 - fastlane 2.205.2
 - CocoaPods 1.11.3
 - Ruby 2.7
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>
@@ -379,7 +402,6 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
 - fastlane 2.201.0
 - CocoaPods 1.11.2
 - Ruby 2.7
-- Python 3.12.0
 - node-gyp 10.0.1
 
 </Collapsible>

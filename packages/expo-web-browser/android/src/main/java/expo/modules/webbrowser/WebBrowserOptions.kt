@@ -11,5 +11,5 @@ internal data class OpenBrowserOptions(
   @Field var enableDefaultShareMenuItem: Boolean = false,
   @Field var enableBarCollapsing: Boolean = false,
   @Field var showInRecents: Boolean = false,
-  @Field(key = "createTask") var shouldCreateTask: Boolean = true,
+  @Field(key = "createTask") var shouldCreateTask: Boolean = true
 ) : Record
