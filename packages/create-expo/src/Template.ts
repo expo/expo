@@ -8,13 +8,13 @@ import path from 'path';
 import { Log } from './log';
 import { formatRunCommand, PackageManagerName } from './resolvePackageManager';
 import { env } from './utils/env';
+import { downloadAndExtractGitHubRepositoryAsync, getGithubUrlInfo } from './utils/github';
 import {
   applyBetaTag,
   applyKnownNpmPackageNameRules,
   downloadAndExtractNpmModuleAsync,
   getResolvedTemplateName,
 } from './utils/npm';
-import { getGithubUrlInfo } from './utils/github';
 
 const debug = require('debug')('expo:init:template') as typeof console.log;
 
@@ -97,19 +97,24 @@ export async function extractAndPrepareTemplateAppAsync(
 
   const { type, uri } = resolvePackageModuleId(npmPackage || 'expo-template-blank');
 
-  const resolvedUri = type === 'file' ? uri : getResolvedTemplateName(applyBetaTag(uri));
-
-  await downloadAndExtractNpmModuleAsync(resolvedUri, {
-    cwd: projectRoot,
-    name: projectName,
-    disableCache: type === 'file',
-  });
+  if (type === 'repository') {
+    await downloadAndExtractGitHubRepositoryAsync(uri, {
+      cwd: projectRoot,
+      name: projectName,
+    });
+  } else {
+    const resolvedUri = type === 'file' ? uri : getResolvedTemplateName(applyBetaTag(uri));
+    await downloadAndExtractNpmModuleAsync(resolvedUri, {
+      cwd: projectRoot,
+      name: projectName,
+      disableCache: type === 'file',
+    });
+  }
 
   await sanitizeTemplateAsync(projectRoot);
 
   return projectRoot;
 }
-
 /**
  * Sanitize a template (or example) with expected `package.json` properties and files.
  */

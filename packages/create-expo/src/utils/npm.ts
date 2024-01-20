@@ -7,13 +7,14 @@ import tar from 'tar';
 import { promisify } from 'util';
 
 import { env } from './env';
+import { fileExistsAsync } from './fs';
 import { createEntryResolver, createFileTransform } from '../createFileTransform';
 import { ALIASES } from '../legacyTemplates';
 import { Log } from '../log';
 
 const debug = require('debug')('expo:init:npm') as typeof console.log;
 
-type ExtractProps = {
+export type ExtractProps = {
   name: string;
   cwd: string;
   strip?: number;
@@ -139,7 +140,7 @@ export async function extractNpmTarballAsync(
   );
 }
 
-async function npmPackAsync(
+export async function npmPackAsync(
   packageName: string,
   cwd: string | undefined = undefined,
   ...props: string[]
@@ -245,15 +246,6 @@ function sanitizeNpmPackageFilename(item: NpmPackageInfo): NpmPackageInfo {
   }
 
   return item;
-}
-
-async function fileExistsAsync(path: string): Promise<boolean> {
-  try {
-    const stat = await fs.promises.stat(path);
-    return stat.isFile();
-  } catch {
-    return false;
-  }
 }
 
 export async function downloadAndExtractNpmModuleAsync(
