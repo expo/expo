@@ -242,7 +242,7 @@ import * as Updates from 'expo-updates';
 
 const manifest = Updates.manifest;
 const metadata = 'metadata' in manifest ? manifest.metadata : undefined;
-const extra = 'metadata' in manifest ? manifest.extra : undefined;
+const extra = 'extra' in manifest ? manifest.extra : undefined;
 const updateGroup = metadata && 'updateGroup' in metadata ? metadata.updateGroup : undefined;
 
 Sentry.init({
