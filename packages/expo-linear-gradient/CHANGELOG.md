@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- On `Android`, remove type annotation on `View`.
+
 ## 12.7.0 — 2023-11-14
 
 ### 🛠 Breaking changes

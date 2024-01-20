@@ -9,6 +9,7 @@
 -keep enum * implements expo.modules.kotlin.types.Enumerable {
   *;
 }
+-keepnames class * implements java.io.Serializable
 
 -keep,allowoptimization,allowobfuscation class * extends expo.modules.kotlin.modules.Module {
   public <init>();
