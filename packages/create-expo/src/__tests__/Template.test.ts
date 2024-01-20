@@ -45,6 +45,7 @@ describe(resolvePackageModuleId, () => {
         name: 'expo',
         ref: 'sdk-49',
         folder: 'templates/expo-template-bare-minimum',
+        url: 'https://github.com/expo/expo/tree/sdk-49/templates/expo-template-bare-minimum',
       },
     });
   });
