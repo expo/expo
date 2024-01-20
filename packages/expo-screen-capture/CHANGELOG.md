@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix screenshot listener not being called on Android 34.
+- Fix screenshot listener not being called on Android 34. ([#26549](https://github.com/expo/expo/pull/26549) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
