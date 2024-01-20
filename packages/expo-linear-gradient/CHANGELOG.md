@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- On `Android`, remove type annotation on `View`.
+- On `Android`, remove type annotation on `View`. ([#26545](https://github.com/expo/expo/pull/26545) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 12.7.0 — 2023-11-14
 
