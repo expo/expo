@@ -1,10 +1,11 @@
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
+import { type Ora } from 'ora';
 import os from 'os';
 import path from 'path';
 
 import { env } from './env';
-import { fileExistsAsync } from './fs';
+import { fileExistsAsync, folderExistsAsync } from './fs';
 import { type ExtractProps, extractLocalNpmTarballAsync, npmPackAsync } from './npm';
 import { Log } from '../log';
 
@@ -71,7 +72,7 @@ function getTemporaryCacheFilePath(info: GitHubRepoInfo) {
 
 export async function downloadAndExtractGitHubRepositoryAsync(
   info: GitHubRepoInfo,
-  props: ExtractProps
+  props: ExtractProps & { spinner: Ora }
 ) {
   const cachePath = getTemporaryCacheFilePath(info);
   await fs.promises.mkdir(cachePath, { recursive: true });
@@ -82,6 +83,7 @@ export async function downloadAndExtractGitHubRepositoryAsync(
   try {
     const fileExists = await fileExistsAsync(cachePath);
     if (env.EXPO_NO_CACHE || !fileExists) {
+      props.spinner.text = 'Cloning GitHub repository';
       await cloneGitHubRepositoryAsync(info, cachePath);
     }
   } catch (error: unknown) {
@@ -93,25 +95,35 @@ export async function downloadAndExtractGitHubRepositoryAsync(
   let templatePath = cachePath;
   if (info.folder) {
     templatePath = path.join(cachePath, info.folder);
-    if (!(await fileExistsAsync(templatePath))) {
+    if (!(await folderExistsAsync(templatePath))) {
+      debug('Could not find folder:', templatePath);
       throw new Error(`Could not find folder ${info.folder} in cloned GitHub repository`);
     }
   }
 
   // Create a new tarball from template folder
-  const tarballInfo = await npmPackAsync('', templatePath);
+  props.spinner.text = 'Creating template from GitHub repository';
+  const tarballInfo = await npmPackAsync('.', templatePath);
   const tarballFile = tarballInfo?.[0].filename;
   if (!tarballFile) {
     throw new Error('Could not create tarball from GitHub repository');
   }
 
-  await extractLocalNpmTarballAsync(path.join(cachePath, tarballFile), {
-    cwd: props.cwd,
-    name: props.name,
-  });
+  try {
+    await extractLocalNpmTarballAsync(path.join(templatePath, tarballFile), {
+      cwd: props.cwd,
+      name: props.name,
+    });
+  } finally {
+    await fs.promises.rm(path.join(templatePath, tarballFile), { force: true });
+  }
 }
 
 async function cloneGitHubRepositoryAsync(info: GitHubRepoInfo, dir: string) {
+  // Force clean this directory before cloning
+  await fs.promises.rm(dir, { recursive: true, force: true });
+  await fs.promises.mkdir(dir, { recursive: true });
+
   const cloneArgs = [
     'clone',
     `git@github.com:${info.owner}/${info.name}.git`,
@@ -125,6 +137,6 @@ async function cloneGitHubRepositoryAsync(info: GitHubRepoInfo, dir: string) {
 
   debug('Cloning GitHub repository: git', cloneArgs.join(' '));
 
-  await spawnAsync('git', cloneArgs);
+  await spawnAsync('git', cloneArgs, { stdio: env.EXPO_DEBUG ? 'inherit' : 'ignore' });
   // TODO: error handling
 }

@@ -89,7 +89,7 @@ export function resolvePackageModuleId(moduleId: string) {
  */
 export async function extractAndPrepareTemplateAppAsync(
   projectRoot: string,
-  { npmPackage }: { npmPackage?: string | null }
+  { npmPackage, spinner }: { npmPackage?: string | null; spinner: ora.Ora }
 ) {
   const projectName = path.basename(projectRoot);
 
@@ -99,6 +99,7 @@ export async function extractAndPrepareTemplateAppAsync(
 
   if (type === 'repository') {
     await downloadAndExtractGitHubRepositoryAsync(uri, {
+      spinner,
       cwd: projectRoot,
       name: projectName,
     });
