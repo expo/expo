@@ -3,7 +3,6 @@ package expo.modules.lineargradient
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
-
 class LinearGradientModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoLinearGradient")
