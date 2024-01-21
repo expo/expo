@@ -90,7 +90,6 @@ export type IBImageView = IBItem<
   },
   {
     rect: IBRect[];
-    color: IBColor[];
   }
 >;
 
@@ -354,14 +353,6 @@ export function applyImageToSplashScreenXML(
           y: 0.0,
           width,
           height,
-        },
-      },
-    ],
-    color: [
-      {
-        $: {
-          key: 'backgroundColor',
-          systemColor: 'systemBackgroundColor',
         },
       },
     ],
