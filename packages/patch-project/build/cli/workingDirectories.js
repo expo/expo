@@ -8,9 +8,9 @@ const assert_1 = __importDefault(require("assert"));
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
 const dir_1 = require("./dir");
-const WORKING_DIR_ROOT = '.prebuildPatch-tmp';
+const WORKING_DIR_ROOT = '.patch-project-tmp';
 /**
- * Create working directories for the prebuild-patch process.
+ * Create working directories for the patch-project process.
  */
 async function createWorkingDirectoriesAsync(projectRoot, platform) {
     // We put the temporary working directories inside the project root so moving files is fast.

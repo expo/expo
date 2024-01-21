@@ -17,13 +17,13 @@ import { resolveFromExpoCli } from './resolveFromExpoCli';
 import { createWorkingDirectoriesAsync, type WorkingDirectories } from './workingDirectories';
 import { addAllToGitIndexAsync, commitAsync, diffAsync, initializeGitRepoAsync } from '../gitPatch';
 
-const debug = require('debug')('prebuild-patch') as typeof console.log;
+const debug = require('debug')('patch-project') as typeof console.log;
 const globAsync = promisify(glob);
 
 /**
- * Entry point into the prebuild-patch process.
+ * Entry point into the patch-project process.
  */
-export async function prebuildPatchAsync(
+export async function patchProjectAsync(
   projectRoot: string,
   options: {
     /** List of platforms to prebuild. */
@@ -62,7 +62,7 @@ export async function prebuildPatchAsync(
       await removePatchFilesAsync(patchRoot, platform);
       await fs.mkdir(path.join(projectRoot, patchRoot), { recursive: true });
 
-      await prebuildPatchForPlatformAsync({
+      await patchProjectForPlatformAsync({
         projectRoot,
         platform,
         workingDirectories,
@@ -76,7 +76,7 @@ export async function prebuildPatchAsync(
   }
 }
 
-async function prebuildPatchForPlatformAsync({
+async function patchProjectForPlatformAsync({
   projectRoot,
   platform,
   workingDirectories,
@@ -89,7 +89,7 @@ async function prebuildPatchForPlatformAsync({
   workingDirectories: WorkingDirectories;
   patchRoot: string;
   exp: ExpoConfig;
-  options: Omit<Parameters<typeof prebuildPatchAsync>[1], 'platforms'>;
+  options: Omit<Parameters<typeof patchProjectAsync>[1], 'platforms'>;
 }): Promise<void> {
   const { diffDir, originDir } = workingDirectories;
 

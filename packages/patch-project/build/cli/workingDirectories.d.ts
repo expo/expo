@@ -12,7 +12,7 @@ export interface WorkingDirectories {
     tmpDir: string;
 }
 /**
- * Create working directories for the prebuild-patch process.
+ * Create working directories for the patch-project process.
  */
 export declare function createWorkingDirectoriesAsync(projectRoot: string, platform: ModPlatform): Promise<WorkingDirectories>;
 export declare function ensureAsync(path: string): Promise<string>;

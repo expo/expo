@@ -6,7 +6,7 @@ import { existsSync } from 'fs';
 import path from 'path';
 
 import * as logger from './logger';
-import { prebuildPatchAsync } from './prebuildPatchAsync';
+import { patchProjectAsync } from './patchProjectAsync';
 
 (async () => {
   const args = arg({
@@ -23,7 +23,7 @@ import { prebuildPatchAsync } from './prebuildPatchAsync';
   if (args['--help']) {
     printHelp(
       `(Experimental) Generate patch files for iOS and Android native projects to persist changes made manually after prebuild`,
-      chalk`npx prebuild-patch {dim <dir>}`,
+      chalk`npx patch-project {dim <dir>}`,
       [
         chalk`<dir>                                    Directory of the Expo project. {dim Default: Current working directory}`,
         `--clean                                  Delete the native folders after the conversion`,
@@ -41,7 +41,7 @@ import { prebuildPatchAsync } from './prebuildPatchAsync';
   }
 
   try {
-    await prebuildPatchAsync(projectRoot, {
+    await patchProjectAsync(projectRoot, {
       // Parsed options
       clean: !!args['--clean'],
       platforms: resolvePlatformOption(args['--platform']),

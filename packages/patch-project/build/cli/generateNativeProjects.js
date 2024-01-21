@@ -41,7 +41,7 @@ async function generateNativeProjectsAsync(projectRoot, exp, options) {
 }
 exports.generateNativeProjectsAsync = generateNativeProjectsAsync;
 /**
- * Sanity check for the native project before attempting to run prebuild-patch.
+ * Sanity check for the native project before attempting to run patch-project.
  */
 async function platformSanityCheckAsync({ exp, projectRoot, platform, }) {
     // Check platform directory exists and is not empty.

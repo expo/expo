@@ -4,16 +4,17 @@ import fs from 'fs/promises';
 import path from 'path';
 import rimraf from 'rimraf';
 
-import { addLinkedPackagesAsync, overwriteLocalPackagesFilesAsync } from './localPackages';
-const localExpoCli = path.join(__dirname, '../../../cli/build/bin/cli');
+import { addLinkedPackagesAsync, packBareTemplateTarballAsync } from './localPackages';
+const localExpoCli = path.join(__dirname, '../../../@expo/cli/build/bin/cli');
 
 const originalCI = process.env.CI;
 
-describe('prebuild-patch', () => {
+describe('patch-project', () => {
   jest.setTimeout(600000);
   const tmpDir = require('temp-dir');
-  const projectName = 'prebuild-patch-test';
+  const projectName = 'patch-project-test';
   const projectRoot = path.join(tmpDir, projectName);
+  let templateTarball;
 
   beforeAll(async () => {
     process.env.CI = '1';
@@ -34,12 +35,17 @@ describe('prebuild-patch', () => {
     const appConfig = JSON.parse(appConfigContents);
     appConfig.expo.android.package = 'com.expo.test';
     appConfig.expo.ios.bundleIdentifier = 'com.expo.test';
+    appConfig.expo.runtimeVersion = {
+      policy: 'appVersion',
+    };
     appConfigContents = JSON.stringify(appConfig, null, 2);
     await fs.writeFile(appConfigPath, appConfigContents, 'utf8');
 
     // Add local packages
-    await addLinkedPackagesAsync(projectRoot, ['@expo/prebuild-patch']);
-    await overwriteLocalPackagesFilesAsync(projectRoot, ['@expo/cli', '@expo/config-plugins']);
+    await addLinkedPackagesAsync(projectRoot, ['patch-project']);
+
+    // Create a tarball of the local template
+    templateTarball = await packBareTemplateTarballAsync(projectRoot);
   });
 
   afterAll(async () => {
@@ -47,12 +53,21 @@ describe('prebuild-patch', () => {
     rimraf.sync(projectRoot);
   });
 
-  it('runs `prebuild-patch` should convert a project to CNG patches`', async () => {
+  it('runs `patch-project` should convert a project to CNG patches`', async () => {
     await fs.rm(path.join(projectRoot, 'cng-patches'), { recursive: true, force: true });
 
     await spawnAsync(
       'node',
-      [localExpoCli, 'prebuild', '--platform', 'android', '--clean', '--no-install'],
+      [
+        localExpoCli,
+        'prebuild',
+        '--platform',
+        'android',
+        '--clean',
+        '--no-install',
+        '--template',
+        templateTarball,
+      ],
       {
         cwd: projectRoot,
       }
@@ -64,9 +79,13 @@ describe('prebuild-patch', () => {
     contents = contents.replace('org.webkit:android-jsc:+', 'org.webkit:android-jsc-intl:+');
     await fs.writeFile(appGradlePath, contents, 'utf8');
 
-    await spawnAsync('bunx', ['prebuild-patch', '--clean', '--platform', 'android'], {
-      cwd: projectRoot,
-    });
+    await spawnAsync(
+      'bunx',
+      ['patch-project', '--clean', '--platform', 'android', '--template', templateTarball],
+      {
+        cwd: projectRoot,
+      }
+    );
 
     let androidDirExists;
     try {
@@ -88,12 +107,21 @@ describe('prebuild-patch', () => {
 +def jscFlavor = 'org.webkit:android-jsc-intl:+'`);
   });
 
-  it('runs `prebuild-patch` should convert a project to CNG patches` and `npx expo prebuild` should apply the patches', async () => {
+  it('runs `patch-project` should convert a project to CNG patches` and `npx expo prebuild` should apply the patches', async () => {
     await fs.rm(path.join(projectRoot, 'cng-patches'), { recursive: true, force: true });
 
     await spawnAsync(
       'node',
-      [localExpoCli, 'prebuild', '--platform', 'android', '--clean', '--no-install'],
+      [
+        localExpoCli,
+        'prebuild',
+        '--platform',
+        'android',
+        '--clean',
+        '--no-install',
+        '--template',
+        templateTarball,
+      ],
       {
         cwd: projectRoot,
       }
@@ -108,20 +136,36 @@ describe('prebuild-patch', () => {
     );
     await fs.writeFile(appGradlePath, patchedContents, 'utf8');
 
-    await spawnAsync('bunx', ['prebuild-patch', '--clean', '--platform', 'android'], {
-      cwd: projectRoot,
-    });
+    await spawnAsync(
+      'bunx',
+      ['patch-project', '--clean', '--platform', 'android', '--template', templateTarball],
+      {
+        cwd: projectRoot,
+      }
+    );
 
     // Use the withPatchPlugin
     let appConfigContents = await fs.readFile(path.join(projectRoot, 'app.json'), 'utf8');
     const appConfig = JSON.parse(appConfigContents);
-    appConfig.expo.plugins = ['@expo/prebuild-patch'];
+    appConfig.expo.plugins = ['patch-project'];
     appConfigContents = JSON.stringify(appConfig, null, 2);
     await fs.writeFile(path.join(projectRoot, 'app.json'), appConfigContents, 'utf8');
 
-    await spawnAsync('node', [localExpoCli, 'prebuild', '--platform', 'android', '--no-install'], {
-      cwd: projectRoot,
-    });
+    await spawnAsync(
+      'node',
+      [
+        localExpoCli,
+        'prebuild',
+        '--platform',
+        'android',
+        '--no-install',
+        '--template',
+        templateTarball,
+      ],
+      {
+        cwd: projectRoot,
+      }
+    );
 
     const contents2 = await fs.readFile(appGradlePath, 'utf8');
     expect(contents2).toBe(patchedContents);

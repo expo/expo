@@ -32,7 +32,7 @@ const chalk_1 = __importDefault(require("chalk"));
 const fs_1 = require("fs");
 const path_1 = __importDefault(require("path"));
 const logger = __importStar(require("./logger"));
-const prebuildPatchAsync_1 = require("./prebuildPatchAsync");
+const patchProjectAsync_1 = require("./patchProjectAsync");
 (async () => {
     const args = (0, arg_1.default)({
         // Types
@@ -45,7 +45,7 @@ const prebuildPatchAsync_1 = require("./prebuildPatchAsync");
         '-p': '--platform',
     });
     if (args['--help']) {
-        printHelp(`(Experimental) Generate patch files for iOS and Android native projects to persist changes made manually after prebuild`, (0, chalk_1.default) `npx prebuild-patch {dim <dir>}`, [
+        printHelp(`(Experimental) Generate patch files for iOS and Android native projects to persist changes made manually after prebuild`, (0, chalk_1.default) `npx patch-project {dim <dir>}`, [
             (0, chalk_1.default) `<dir>                                    Directory of the Expo project. {dim Default: Current working directory}`,
             `--clean                                  Delete the native folders after the conversion`,
             `--template <template>                    Project template to clone from. File path pointing to a local tar file or a github repo`,
@@ -58,7 +58,7 @@ const prebuildPatchAsync_1 = require("./prebuildPatchAsync");
         logger.exit(`Invalid project root: ${projectRoot}`);
     }
     try {
-        await (0, prebuildPatchAsync_1.prebuildPatchAsync)(projectRoot, {
+        await (0, patchProjectAsync_1.patchProjectAsync)(projectRoot, {
             // Parsed options
             clean: !!args['--clean'],
             platforms: resolvePlatformOption(args['--platform']),

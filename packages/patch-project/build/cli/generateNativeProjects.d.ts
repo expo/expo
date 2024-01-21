@@ -14,7 +14,7 @@ export declare function generateNativeProjectsAsync(projectRoot: string, exp: Ex
     templateDirectory: string;
 }): Promise<string>;
 /**
- * Sanity check for the native project before attempting to run prebuild-patch.
+ * Sanity check for the native project before attempting to run patch-project.
  */
 export declare function platformSanityCheckAsync({ exp, projectRoot, platform, }: {
     exp: ExpoConfig;
