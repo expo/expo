@@ -1,25 +1,26 @@
 import fs from 'node:fs';
 import path from 'path';
 
-import type { ctx } from '../../_ctx';
 import { RouteNode } from '../Route';
 import { getRoutes } from '../getRoutes';
 import { isTypedRoutesFilename, removeSupportedExtensions } from '../matchers';
+import { RequireContext } from '../types';
 
 // /[...param1]/ - Match [...param1]
 export const CATCH_ALL = /\[\.\.\..+?\]/g;
 // /[param1] - Match [param1]
 export const SLUG = /\[.+?\]/g;
 
-export function getTypedRoutesDeclarationFile(context: typeof ctx) {
+export function getTypedRoutesDeclarationFile(ctx: RequireContext) {
   const staticRoutes = new Set<string>();
   const dynamicRoutes = new Set<string>();
   const dynamicRouteContextKeys = new Set<string>();
 
   walkRoutes(
-    getRoutes(context, {
+    getRoutes(ctx, {
       ignoreEntryPoints: true,
       ignoreRequireErrors: true,
+      importMode: 'async',
     }),
     staticRoutes,
     dynamicRoutes,

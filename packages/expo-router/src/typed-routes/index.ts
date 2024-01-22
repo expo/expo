@@ -2,8 +2,15 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { getTypedRoutesDeclarationFile } from './generate';
-import { ctx } from '../../_ctx';
 import { isTypedRoutesFilename } from '../matchers';
+import requireContext from '../testing-library/require-context-ponyfill';
+
+const ctx = requireContext(
+  process.env.EXPO_ROUTER_APP_ROOT,
+  true,
+  // Ignore root `./+html.js` and API route files `./generate+api.tsx`.
+  /^(?:\.\/)(?!(?:(?:(?:.*\+api)|(?:\+html)))\.[tj]sx?$).*\.[tj]sx?$/
+);
 
 export function getWatchHandler(outputDir: string) {
   const routeFiles = new Set(ctx.keys().filter((key) => isTypedRoutesFilename(key)));
@@ -12,11 +19,13 @@ export function getWatchHandler(outputDir: string) {
     let shouldRegenerate = false;
 
     if (type === 'delete') {
+      ctx.__delete(filePath);
       if (routeFiles.has(filePath)) {
         routeFiles.delete(filePath);
         shouldRegenerate = true;
       }
     } else if (type === 'add') {
+      ctx.__add(filePath);
       shouldRegenerate = isTypedRoutesFilename(filePath);
     } else {
       shouldRegenerate = routeFiles.has(filePath);

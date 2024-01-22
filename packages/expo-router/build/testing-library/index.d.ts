@@ -19,7 +19,11 @@ export declare function getMockConfig(context: MockContextConfig): {
     initialRouteName?: string | undefined;
     screens: Record<string, import("../getReactNavigationConfig").Screen>;
 };
-export declare function getMockContext(context: MockContextConfig): import("../types").RequireContext;
+export declare function getMockContext(context: MockContextConfig): ((id: string) => any) & {
+    keys: () => string[];
+    resolve: (key: string) => string;
+    id: string;
+};
 export declare function renderRouter(context?: MockContextConfig, { initialUrl, ...options }?: RenderRouterOptions): Result;
 export declare const testRouter: {
     /** Navigate to the provided pathname and the pathname */

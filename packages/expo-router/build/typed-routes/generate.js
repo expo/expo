@@ -12,13 +12,14 @@ const matchers_1 = require("../matchers");
 exports.CATCH_ALL = /\[\.\.\..+?\]/g;
 // /[param1] - Match [param1]
 exports.SLUG = /\[.+?\]/g;
-function getTypedRoutesDeclarationFile(context) {
+function getTypedRoutesDeclarationFile(ctx) {
     const staticRoutes = new Set();
     const dynamicRoutes = new Set();
     const dynamicRouteContextKeys = new Set();
-    walkRoutes((0, getRoutes_1.getRoutes)(context, {
+    walkRoutes((0, getRoutes_1.getRoutes)(ctx, {
         ignoreEntryPoints: true,
         ignoreRequireErrors: true,
+        importMode: 'async',
     }), staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
     // If the user has expo-router v3+ installed, we can use the types from the package
     return (node_fs_1.default

@@ -1,9 +1,8 @@
 /* eslint-disable */
+import type { ReactNode } from 'react';
+import type { TextProps, GestureResponderEvent } from 'react-native';
 
 declare namespace ExpoRouter {
-  import type { ReactNode } from 'react';
-  import type { TextProps, GestureResponderEvent } from 'react-native';
-
   type StaticRoutes = string;
   type DynamicRoutes<T extends string> = string;
   type DynamicRouteTemplate = never;

@@ -44,9 +44,13 @@ export async function setupTypedRoutes(options: SetupTypedRoutesOptions) {
 }
 
 async function typedRoutes(
-  typedRoutesModule: any,
-  { server, metro, typesDirectory, projectRoot }: SetupTypedRoutesOptions
+  typedRoutesModulePath: any,
+  { server, metro, typesDirectory, projectRoot, routerDirectory }: SetupTypedRoutesOptions
 ) {
+  process.env.EXPO_ROUTER_APP_ROOT = routerDirectory;
+
+  const typedRoutesModule = require(typedRoutesModulePath);
+
   if (metro && server) {
     // Setup out watcher first
     metroWatchTypeScriptFiles({
