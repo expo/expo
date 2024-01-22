@@ -157,9 +157,6 @@ dependencies {
         implementation jscFlavor
     }
 
-    // Flipper
-    implementation("com.facebook.react:flipper-integration")
-
     // LeakCanary 2 dependency
 //    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
 

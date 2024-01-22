@@ -145,7 +145,7 @@ export class DevServerManagerActions {
         {
           title: 'Open React devtools',
           value: 'openReactDevTools',
-          action: this.openReactDevToolsAsync,
+          action: this.openReactDevToolsAsync.bind(this),
         },
         // TODO: Maybe a "View Source" option to open code.
       ];

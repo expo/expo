@@ -6,6 +6,9 @@
 
 ### 🎉 New features
 
+- Add `useNavigationContainerRef` to access the root NavigationContainer ref. ([#26529](https://github.com/expo/expo/pull/26529) by [@EvanBacon](https://github.com/EvanBacon))
+
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
@@ -15,6 +18,7 @@
 ### 🐛 Bug fixes
 
 - Fixed `router.push` issues encountered when the route is the same screen, but with different params, the route wouldn't get pushed to the stack. `router.push` now adds the screen to the stack if the screen is the same but the params changed. by [@kennethstarkrl](https://github.com/kennethstarkrl))
+- Deprecate `useRootNavigation` in favor of `useNavigationContainerRef`. ([#26529](https://github.com/expo/expo/pull/26529) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.4.3 - 2024-01-18
 
