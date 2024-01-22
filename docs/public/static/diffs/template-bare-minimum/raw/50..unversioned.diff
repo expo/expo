@@ -1,3 +1,16 @@
+diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
+index a265c80fa9..a5123eed53 100644
+--- a/templates/expo-template-bare-minimum/android/app/build.gradle
++++ b/templates/expo-template-bare-minimum/android/app/build.gradle
+@@ -90,8 +90,6 @@ android {
+         targetSdkVersion rootProject.ext.targetSdkVersion
+         versionCode 1
+         versionName "1.0"
+-
+-        buildConfigField("boolean", "REACT_NATIVE_UNSTABLE_USE_RUNTIME_SCHEDULER_ALWAYS", (findProperty("reactNative.unstable_useRuntimeSchedulerAlways") ?: true).toString())
+     }
+     signingConfigs {
+         debug {
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
 index 34a7ca8314..04b326127b 100644
 --- a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
@@ -11,6 +24,28 @@ index 34a7ca8314..04b326127b 100644
      <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
        <intent-filter>
          <action android:name="android.intent.action.MAIN"/>
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
+index 8258c40ed4..87fedbbfde 100644
+--- a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
++++ b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
+@@ -9,7 +9,6 @@ import com.facebook.react.ReactApplication
+ import com.facebook.react.ReactNativeHost
+ import com.facebook.react.ReactPackage
+ import com.facebook.react.ReactHost
+-import com.facebook.react.config.ReactFeatureFlags
+ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
+ import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
+ import com.facebook.react.defaults.DefaultReactNativeHost
+@@ -45,9 +44,6 @@ class MainApplication : Application(), ReactApplication {
+   override fun onCreate() {
+     super.onCreate()
+     SoLoader.init(this, false)
+-    if (!BuildConfig.REACT_NATIVE_UNSTABLE_USE_RUNTIME_SCHEDULER_ALWAYS) {
+-      ReactFeatureFlags.unstable_useRuntimeSchedulerAlways = false
+-    }
+     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+       // If you opted-in for the New Architecture, we load the native entry point for this app.
+       load()
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Supporting/Expo.plist b/templates/expo-template-bare-minimum/ios/HelloWorld/Supporting/Expo.plist
 index 03410dc8b3..f4f9f60993 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/Supporting/Expo.plist
@@ -27,14 +62,14 @@ index 03410dc8b3..f4f9f60993 100644
          <string>YOUR-APP-URL-HERE</string>
  </dict>
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 5029c75e79..150bb72764 100644
+index 442e1c5722..150bb72764 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
  {
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
--  "version": "50.0.26",
+-  "version": "50.0.30",
 +  "version": "50.0.17",
    "main": "index.js",
    "scripts": {
@@ -43,7 +78,7 @@ index 5029c75e79..150bb72764 100644
      "web": "expo start --web"
    },
    "dependencies": {
--    "expo": "~50.0.0-preview.11",
+-    "expo": "~50.0.2",
 -    "expo-status-bar": "~1.11.1",
 +    "expo": "~50.0.0-preview.4",
 +    "expo-status-bar": "~1.11.0",

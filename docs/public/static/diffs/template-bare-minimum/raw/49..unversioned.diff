@@ -1,5 +1,5 @@
 diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
-index 7105aaaa3f..a265c80fa9 100644
+index 7105aaaa3f..a5123eed53 100644
 --- a/templates/expo-template-bare-minimum/android/app/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/app/build.gradle
 @@ -1,4 +1,5 @@
@@ -32,7 +32,16 @@ index 7105aaaa3f..a265c80fa9 100644
  
      namespace "com.helloworld"
      defaultConfig {
-@@ -141,33 +143,22 @@ dependencies {
+@@ -88,8 +90,6 @@ android {
+         targetSdkVersion rootProject.ext.targetSdkVersion
+         versionCode 1
+         versionName "1.0"
+-
+-        buildConfigField("boolean", "REACT_NATIVE_UNSTABLE_USE_RUNTIME_SCHEDULER_ALWAYS", (findProperty("reactNative.unstable_useRuntimeSchedulerAlways") ?: true).toString())
+     }
+     signingConfigs {
+         debug {
+@@ -141,33 +141,22 @@ dependencies {
      def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
      def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
      def isWebpAnimatedEnabled = (findProperty('expo.webp.animated') ?: "") == "true";
@@ -70,7 +79,7 @@ index 7105aaaa3f..a265c80fa9 100644
  
      if (hermesEnabled.toBoolean()) {
          implementation("com.facebook.react:hermes-android")
-@@ -176,5 +167,5 @@ dependencies {
+@@ -176,5 +165,5 @@ dependencies {
      }
  }
  
@@ -399,10 +408,10 @@ index e7f376902d..0000000000
 -}
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
 new file mode 100644
-index 0000000000..8258c40ed4
+index 0000000000..87fedbbfde
 --- /dev/null
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
-@@ -0,0 +1,65 @@
+@@ -0,0 +1,61 @@
 +package com.helloworld
 +
 +import android.app.Application
@@ -414,7 +423,6 @@ index 0000000000..8258c40ed4
 +import com.facebook.react.ReactNativeHost
 +import com.facebook.react.ReactPackage
 +import com.facebook.react.ReactHost
-+import com.facebook.react.config.ReactFeatureFlags
 +import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
 +import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 +import com.facebook.react.defaults.DefaultReactNativeHost
@@ -450,9 +458,6 @@ index 0000000000..8258c40ed4
 +  override fun onCreate() {
 +    super.onCreate()
 +    SoLoader.init(this, false)
-+    if (!BuildConfig.REACT_NATIVE_UNSTABLE_USE_RUNTIME_SCHEDULER_ALWAYS) {
-+      ReactFeatureFlags.unstable_useRuntimeSchedulerAlways = false
-+    }
 +    if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
 +      // If you opted-in for the New Architecture, we load the native entry point for this app.
 +      load()

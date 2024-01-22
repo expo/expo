@@ -22,7 +22,6 @@ const withBuildProperties = (config, props) => {
     //
     // plugins order matter: the later one would run first
     config = (0, android_1.withAndroidPurgeProguardRulesOnce)(config);
-    config = (0, android_1.withAndroidFlipper)(config, pluginConfig);
     config = (0, ios_1.withIosBuildProperties)(config, pluginConfig);
     config = (0, ios_1.withIosDeploymentTarget)(config, pluginConfig);
     return config;
