@@ -79,16 +79,13 @@ export function createFileTransform(name: string) {
   };
 }
 
-export function createGlobFilter(
-  globPattern: string,
-  options?: PicomatchOptions
-): ExtractOptions['filter'] {
-  const filter = picomatch(globPattern, options);
+export function createGlobFilter(globPattern: string, options?: PicomatchOptions) {
+  const matcher = picomatch(globPattern, options);
 
   debug('filter: created for pattern %s (%s)', globPattern);
 
-  return (path) => {
-    const included = filter(path);
+  return (path: string) => {
+    const included = matcher(path);
     debug('filter: %s - %s', included ? 'include' : 'exclude', path);
     return included;
   };
