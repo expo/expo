@@ -54,6 +54,7 @@ async function main() {
 
   const patches = [
     'datetimepicker.patch',
+    'lottie-react-native.patch',
     'react-native-gesture-handler.patch',
     'react-native-reanimated.patch',
     'react-native-safe-area-context.patch',

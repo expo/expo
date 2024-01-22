@@ -1,0 +1,32 @@
+--- a/node_modules/lottie-react-native/android/src/main/java/com/airbnb/android/react/lottie/LottieAnimationViewPropertyManager.kt
++++ b/node_modules/lottie-react-native/android/src/main/java/com/airbnb/android/react/lottie/LottieAnimationViewPropertyManager.kt
+@@ -18,7 +18,6 @@ import com.facebook.react.bridge.ReadableArray
+ import com.facebook.react.bridge.ReadableMap
+ import com.facebook.react.bridge.ReadableType
+ import com.facebook.react.views.text.ReactFontManager
+-import com.facebook.react.views.text.TextAttributeProps.UNSET
+ import com.facebook.react.util.RNLog
+ import java.lang.ref.WeakReference
+ import java.util.regex.Pattern
+@@ -69,7 +68,7 @@ class LottieAnimationViewPropertyManager(view: LottieAnimationView) {
+         view.setFontAssetDelegate(object : FontAssetDelegate() {
+             override fun fetchFont(fontFamily: String): Typeface {
+                 return ReactFontManager.getInstance()
+-                    .getTypeface(fontFamily, UNSET, UNSET, view.context.assets)
++                    .getTypeface(fontFamily, -1, -1, view.context.assets)
+             }
+         
+             override fun fetchFont(fontFamily: String, fontStyle: String, fontName: String): Typeface {
+@@ -80,10 +79,10 @@ class LottieAnimationViewPropertyManager(view: LottieAnimationView) {
+                     "Medium" -> 500
+                     "Bold" -> 700
+                     "Black" -> 900
+-                    else -> UNSET
++                    else -> -1
+                 }
+                 return ReactFontManager.getInstance()
+-                    .getTypeface(fontName, UNSET, weight, view.context.assets)
++                    .getTypeface(fontName, -1, weight, view.context.assets)
+             }
+         })
+     }
