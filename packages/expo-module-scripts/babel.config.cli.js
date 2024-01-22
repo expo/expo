@@ -15,7 +15,7 @@ module.exports = function (api) {
     ],
     plugins: [
       require('babel-plugin-dynamic-import-node'),
-      require('@babel/plugin-proposal-export-namespace-from'),
+      require('@babel/plugin-transform-export-namespace-from'),
       [
         require('@babel/plugin-transform-modules-commonjs'),
         {
