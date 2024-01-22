@@ -37,7 +37,7 @@
     "semver": "^7.5.3"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-export-namespace-from": "^7.18.6",
+    "@babel/plugin-transform-export-namespace-from": "^7.23.4",
     "@react-navigation/bottom-tabs": "^6.0.9",
     "@react-navigation/core": "6.4.0",
     "@react-navigation/native": "6.0.13",
