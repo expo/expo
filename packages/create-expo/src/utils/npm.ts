@@ -3,11 +3,10 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { Stream } from 'stream';
-import tar, { type ExtractOptions } from 'tar';
+import tar from 'tar';
 import { promisify } from 'util';
 
 import { env } from './env';
-import { fileExistsAsync } from './fs';
 import { createEntryResolver, createFileTransform } from '../createFileTransform';
 import { ALIASES } from '../legacyTemplates';
 import { Log } from '../log';
@@ -20,7 +19,7 @@ export type ExtractProps = {
   strip?: number;
   fileList?: string[];
   disableCache?: boolean;
-  filter?: ExtractOptions['filter'];
+  filter?: tar.ExtractOptions['filter'];
 };
 
 // @ts-ignore
@@ -142,7 +141,7 @@ export async function extractNpmTarballAsync(
   );
 }
 
-export async function npmPackAsync(
+async function npmPackAsync(
   packageName: string,
   cwd: string | undefined = undefined,
   ...props: string[]
@@ -248,6 +247,15 @@ function sanitizeNpmPackageFilename(item: NpmPackageInfo): NpmPackageInfo {
   }
 
   return item;
+}
+
+async function fileExistsAsync(path: string): Promise<boolean> {
+  try {
+    const stat = await fs.promises.stat(path);
+    return stat.isFile();
+  } catch {
+    return false;
+  }
 }
 
 export async function downloadAndExtractNpmModuleAsync(

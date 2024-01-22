@@ -85,6 +85,7 @@ export async function createAsync(inputPath: string, options: Options): Promise<
 
 async function createTemplateAsync(inputPath: string, props: Options): Promise<void> {
   let resolvedTemplate: string | null = null;
+  // @ts-ignore: This guards against someone passing --template without a name after it.
   if (props.template === true) {
     resolvedTemplate = await promptTemplateAsync();
   } else {
