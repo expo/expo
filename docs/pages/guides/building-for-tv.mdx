@@ -10,7 +10,7 @@ import { GithubIcon } from '@expo/styleguide-icons';
 
 > **Warning** TV development is available only in SDK 50 and later, and is still considered experimental. Not all Expo features and SDK modules are available on TV.
 
-React Native is supported on Android TV and Apple TV through the [React Native TV project](https://github.com/react-native-tvos/react-native-tvos).  This technology extends beyond TV, offering a comprehensive core repo fork with support for phone and TV targets, including Hermes and Fabric.
+React Native is supported on Android TV and Apple TV through the [React Native TV project](https://github.com/react-native-tvos/react-native-tvos). This technology extends beyond TV, offering a comprehensive core repo fork with support for phone and TV targets, including Hermes and Fabric.
 
 Using the React Native TV library as the `react-native` dependency in an Expo project, it becomes capable of targeting both mobile (Android, iOS) and TV (Android TV, Apple TV) devices.
 
@@ -77,6 +77,7 @@ In **package.json**, modify the `react-native` dependency to use the TV repo, an
   }
 }
 ```
+
 </Step>
 
 <Step label="2">
@@ -127,11 +128,7 @@ Set the `EXPO_TV` environment variable, and run prebuild to make the TV modifica
 
 Start an Android TV emulator and use the following command to start the app on the emulator:
 
-<Terminal
-  cmd={[
-    'npx expo run:android'
-  ]}
-/>
+<Terminal cmd={['npx expo run:android']} />
 
 </Step>
 <Step label="5">
@@ -140,11 +137,7 @@ Start an Android TV emulator and use the following command to start the app on t
 
 Run the following command to build and run the app on an Apple TV simulator:
 
-<Terminal
-  cmd={[
-    'npx expo run:ios'
-  ]}
-/>
+<Terminal cmd={['npx expo run:ios']} />
 
 </Step>
 <Step label="6">
@@ -159,7 +152,7 @@ You can revert the changes for TV and go back to phone development by unsetting 
 
 <Step label="7">
 
-## Create EAS build profiles for both TV and phone
+## Create EAS Build profiles for both TV and phone
 
 Since the TV build is driven by the value of an environment variable, it is easy to set up EAS Build profiles that build from the same source but target TV instead of phone.
 

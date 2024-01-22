@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed crash when launching React DevTools. ([#26550](https://github.com/expo/expo/pull/26550) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.17.1 - 2024-01-18

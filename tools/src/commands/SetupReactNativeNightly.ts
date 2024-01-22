@@ -52,8 +52,6 @@ async function main() {
   logger.info('Yarning...');
   await workspaceInstallAsync();
 
-  await patchAndroidCallInvokerHolderAsync();
-
   const patches = [
     'datetimepicker.patch',
     'react-native-gesture-handler.patch',
@@ -112,66 +110,6 @@ async function addPinnedPackagesAsync(packages: Record<string, string>) {
     json.resolutions[name] = version;
   }
   await JsonFile.writeAsync(workspacePackageJsonPath, json);
-}
-
-async function patchAndroidCallInvokerHolderAsync() {
-  const nodeModulesDir = path.join(EXPO_DIR, 'node_modules');
-  const targetFiles = [
-    path.join(
-      EXPO_DIR,
-      'packages',
-      'expo-modules-core',
-      'android/src/main/java/expo/modules/adapters/react/services/UIManagerModuleWrapper.java'
-    ),
-    path.join(
-      EXPO_DIR,
-      'packages',
-      'expo-modules-core',
-      'android/src/main/java/expo/modules/core/interfaces/JavaScriptContextProvider.java'
-    ),
-    path.join(
-      EXPO_DIR,
-      'packages',
-      'expo-modules-core',
-      'android/src/main/java/expo/modules/core/interfaces/JavaScriptContextProvider.java'
-    ),
-    path.join(
-      EXPO_DIR,
-      'packages',
-      'expo-modules-core',
-      'android/src/main/java/expo/modules/kotlin/jni/JSIInteropModuleRegistry.kt'
-    ),
-    path.join(
-      EXPO_DIR,
-      'packages',
-      'expo-av',
-      'android/src/main/java/expo/modules/av/AVManager.java'
-    ),
-    path.join(
-      nodeModulesDir,
-      'react-native-reanimated',
-      'android/src/paper/java/com/swmansion/reanimated/NativeProxy.java'
-    ),
-    path.join(
-      nodeModulesDir,
-      'react-native-reanimated',
-      'android/src/fabric/java/com/swmansion/reanimated/NativeProxy.java'
-    ),
-    path.join(
-      nodeModulesDir,
-      '@shopify/react-native-skia',
-      'android/src/main/java/com/shopify/reactnative/skia/SkiaManager.java'
-    ),
-  ];
-
-  for (const file of targetFiles) {
-    await transformFileAsync(file, [
-      {
-        find: /^(import )(com\.facebook\.react\.turbomodule\.core\.CallInvokerHolderImpl)(;?)$/gm,
-        replaceWith: '$1com.facebook.react.internal.turbomodule.core.CallInvokerHolderImpl$3',
-      },
-    ]);
-  }
 }
 
 async function updateExpoModulesAsync() {
