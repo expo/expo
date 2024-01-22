@@ -118,25 +118,7 @@ async function updateExpoModulesAsync() {
 }
 
 async function updateBareExpoAsync(nightlyVersion: string) {
-  const root = path.join(EXPO_DIR, 'apps', 'bare-expo');
-
-  // Flipper was removed in 0.74
-  await transformFileAsync(path.join(root, 'ios', 'Podfile'), [
-    {
-      find: `flipper_config = ENV['NO_FLIPPER'] == "1" || ENV['CI'] ? FlipperConfiguration.disabled : FlipperConfiguration.enabled`,
-      replaceWith: '',
-    },
-    {
-      find: /:flipper_configuration => FlipperConfiguration.disabled,/g,
-      replaceWith: '',
-    },
-  ]);
-  await transformFileAsync(path.join(root, 'android', 'app', 'build.gradle'), [
-    {
-      find: `implementation("com.facebook.react:flipper-integration")`,
-      replaceWith: '',
-    },
-  ]);
+  // no-op currently
 }
 
 async function queryNpmDistTagVersionAsync(pkg: string, distTag: string) {
