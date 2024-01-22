@@ -11,7 +11,7 @@ index 4e6ce00391..bc0b76356d 100644
  android/app/build
  android/.gradle
 diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
-index 189390e7e3..a265c80fa9 100644
+index 189390e7e3..a5123eed53 100644
 --- a/templates/expo-template-bare-minimum/android/app/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/app/build.gradle
 @@ -1,17 +1,8 @@
@@ -113,12 +113,11 @@ index 189390e7e3..a265c80fa9 100644
  
      namespace "com.helloworld"
      defaultConfig {
-@@ -120,15 +90,8 @@ android {
-         targetSdkVersion rootProject.ext.targetSdkVersion
+@@ -121,15 +91,6 @@ android {
          versionCode 1
          versionName "1.0"
--    }
- 
+     }
+-
 -    splits {
 -        abi {
 -            reset()
@@ -126,11 +125,11 @@ index 189390e7e3..a265c80fa9 100644
 -            universalApk false  // If true, also generate a universal APK
 -            include (*reactNativeArchitectures())
 -        }
-+        buildConfigField("boolean", "REACT_NATIVE_UNSTABLE_USE_RUNTIME_SCHEDULER_ALWAYS", (findProperty("reactNative.unstable_useRuntimeSchedulerAlways") ?: true).toString())
-     }
+-    }
      signingConfigs {
          debug {
-@@ -151,22 +114,6 @@ android {
+             storeFile file('debug.keystore')
+@@ -151,22 +112,6 @@ android {
              proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
          }
      }
@@ -153,7 +152,7 @@ index 189390e7e3..a265c80fa9 100644
  }
  
  // Apply static values from `gradle.properties` to the `android.packagingOptions`
-@@ -196,35 +143,22 @@ dependencies {
+@@ -196,35 +141,22 @@ dependencies {
      def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
      def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
      def isWebpAnimatedEnabled = (findProperty('expo.webp.animated') ?: "") == "true";
@@ -193,7 +192,7 @@ index 189390e7e3..a265c80fa9 100644
  
      if (hermesEnabled.toBoolean()) {
          implementation("com.facebook.react:hermes-android")
-@@ -233,5 +167,5 @@ dependencies {
+@@ -233,5 +165,5 @@ dependencies {
      }
  }
  
@@ -533,10 +532,10 @@ index 31c2b288c1..0000000000
 -}
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
 new file mode 100644
-index 0000000000..8258c40ed4
+index 0000000000..87fedbbfde
 --- /dev/null
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
-@@ -0,0 +1,65 @@
+@@ -0,0 +1,61 @@
 +package com.helloworld
 +
 +import android.app.Application
@@ -548,7 +547,6 @@ index 0000000000..8258c40ed4
 +import com.facebook.react.ReactNativeHost
 +import com.facebook.react.ReactPackage
 +import com.facebook.react.ReactHost
-+import com.facebook.react.config.ReactFeatureFlags
 +import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
 +import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 +import com.facebook.react.defaults.DefaultReactNativeHost
@@ -584,9 +582,6 @@ index 0000000000..8258c40ed4
 +  override fun onCreate() {
 +    super.onCreate()
 +    SoLoader.init(this, false)
-+    if (!BuildConfig.REACT_NATIVE_UNSTABLE_USE_RUNTIME_SCHEDULER_ALWAYS) {
-+      ReactFeatureFlags.unstable_useRuntimeSchedulerAlways = false
-+    }
 +    if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
 +      // If you opted-in for the New Architecture, we load the native entry point for this app.
 +      load()
