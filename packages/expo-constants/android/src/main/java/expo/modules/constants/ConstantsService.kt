@@ -35,7 +35,6 @@ open class ConstantsService(private val context: Context) : InternalModule, Cons
   override fun getExportedInterfaces(): List<Class<*>> = listOf(ConstantsInterface::class.java)
 
   override fun getConstants(): Map<String, Any?> {
-
     return mutableMapOf(
       "sessionId" to sessionId,
       "executionEnvironment" to ExecutionEnvironment.BARE.string,
@@ -52,7 +51,6 @@ open class ConstantsService(private val context: Context) : InternalModule, Cons
   override fun getAppScopeKey(): String? = context.packageName
 
   override fun getDeviceName(): String = Build.MODEL
-
 
   override fun getStatusBarHeight() = statusBarHeightInternal
 

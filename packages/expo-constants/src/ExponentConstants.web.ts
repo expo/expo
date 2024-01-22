@@ -1,17 +1,9 @@
-import {
-  ExecutionEnvironment,
-  NativeConstants,
-  PlatformManifest,
-  WebManifest,
-} from './Constants.types';
-
-const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
+import { ExecutionEnvironment, NativeConstants, WebManifest } from './Constants.types';
 
 declare let __DEV__: boolean;
 declare let process: { env: any };
 declare let navigator: Navigator;
 declare let location: Location;
-declare let localStorage: Storage;
 
 const _sessionId = (Date.now() + '-' + Math.floor(Math.random() * 1000000000)).toString();
 

@@ -1,5 +1,4 @@
-import { ExecutionEnvironment, } from './Constants.types';
-const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
+import { ExecutionEnvironment } from './Constants.types';
 const _sessionId = (Date.now() + '-' + Math.floor(Math.random() * 1000000000)).toString();
 function getBrowserName() {
     if (typeof navigator !== 'undefined' && typeof navigator.userAgent === 'string') {
