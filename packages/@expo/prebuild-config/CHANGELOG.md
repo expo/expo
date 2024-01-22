@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed splash screen backgroundColor not applied, by reverting [#25971](https://github.com/expo/expo/pull/25971). ([#26536](https://github.com/expo/expo/pull/26536) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 - Remove classic updates SDK version. ([#26061](https://github.com/expo/expo/pull/26061) by [@wschurman](https://github.com/wschurman))

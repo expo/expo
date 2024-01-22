@@ -1,5 +1,5 @@
 import { UnavailabilityError } from 'expo-modules-core';
-import BackgroundNotificationTasksModule from './BackgroundNotificationTasksModule.native';
+import BackgroundNotificationTasksModule from './BackgroundNotificationTasksModule';
 /**
  * Used to unregister tasks registered with `registerTaskAsync` method.
  * @param taskName The string you passed to `registerTaskAsync` as the `taskName` parameter.
