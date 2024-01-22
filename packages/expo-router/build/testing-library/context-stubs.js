@@ -7,14 +7,19 @@ exports.requireContextWithOverrides = exports.inMemoryContext = exports.requireC
 const path_1 = __importDefault(require("path"));
 const require_context_ponyfill_1 = __importDefault(require("./require-context-ponyfill"));
 exports.requireContext = require_context_ponyfill_1.default;
+const validExtensions = ['.js', '.jsx', '.ts', '.tsx'];
 function inMemoryContext(context) {
     return Object.assign(function (id) {
-        id = id.replace(/^\.\//, '').replace(/\.js$/, '');
+        id = id.replace(/^\.\//, '').replace(/\.\w*$/, '');
         return typeof context[id] === 'function' ? { default: context[id] } : context[id];
     }, {
-        keys: () => Object.keys(context).map((key) => './' + key + '.js'),
         resolve: (key) => key,
         id: '0',
+        keys: () => Object.keys(context).map((key) => {
+            const ext = path_1.default.extname(key);
+            key = key.replace(/^\.\//, '');
+            return validExtensions.includes(ext) ? `./${key}` : `./${key}.js`;
+        }),
     });
 }
 exports.inMemoryContext = inMemoryContext;
