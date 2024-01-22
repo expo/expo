@@ -52,18 +52,6 @@ async function isValidGitHubRepoAsync({
   return response.ok;
 }
 
-function getTemporaryCacheFilePath(info: GitHubRepoInfo) {
-  // This is cleared when the device restarts
-  return path.join(
-    os.tmpdir(),
-    '.create-expo-app',
-    'github-template-cache',
-    info.owner,
-    info.name,
-    info.branch || ''
-  );
-}
-
 // See: https://github.com/expo/expo/blob/a5a6eecb082b2c7a7fc9956141738231c7df473f/packages/%40expo/cli/src/utils/npm.ts#L134-L139
 async function extractRemoteGitHubTarballAsync(
   url: string,
@@ -105,10 +93,8 @@ export async function downloadAndExtractGitHubRepositoryAsync(
   debug('Resolved GitHub repository', info);
 
   const url = `https://codeload.github.com/${info.owner}/${info.name}/tar.gz/${info.branch}`;
-  const cachePath = getTemporaryCacheFilePath(info);
 
   debug('Downloading GitHub repository from:', url);
 
-  await fs.promises.mkdir(cachePath, { recursive: true });
   await extractRemoteGitHubTarballAsync(url, info, props);
 }
