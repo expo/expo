@@ -9,6 +9,7 @@ import android.view.View
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.common.UIManagerType
@@ -141,6 +142,7 @@ class AppContext(
    * Initializes a JSI part of the module registry.
    * It will be a NOOP if the remote debugging was activated.
    */
+  @OptIn(FrameworkAPI::class)
   fun installJSIInterop() = synchronized(this) {
     trace("AppContext.installJSIInterop") {
       try {

@@ -1,6 +1,7 @@
 package expo.modules.kotlin.jni
 
 import com.facebook.jni.HybridData
+import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import com.facebook.soloader.SoLoader
 import expo.modules.core.interfaces.DoNotStrip
@@ -29,6 +30,7 @@ class JSIInteropModuleRegistry(appContext: AppContext) : Destructible {
   /**
    * Initializes the `ExpoModulesHostObject` and adds it to the global object.
    */
+  @OptIn(FrameworkAPI::class)
   external fun installJSI(
     jsRuntimePointer: Long,
     jniDeallocator: JNIDeallocator,
