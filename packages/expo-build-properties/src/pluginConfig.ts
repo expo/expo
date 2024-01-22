@@ -180,12 +180,18 @@ export interface ExtraIosPodDependency {
   /**
    * Version of the pod.
    * CocoaPods supports various [versioning options](https://guides.cocoapods.org/using/the-podfile.html#pod).
-   * @example `~> 0.1.2`
+   * @example
+   * ```
+   * ~> 0.1.2
+   * ```
    */
   version?: string;
   /**
    * Build configurations for which the pod should be installed.
-   * @example `['Debug', 'Release']`
+   * @example
+   * ```
+   * ['Debug', 'Release']
+   * ```
    */
   configurations?: string[];
   /**
@@ -194,22 +200,32 @@ export interface ExtraIosPodDependency {
   modular_headers?: boolean;
   /**
    * Custom source to search for this dependency.
-   * @example `https://github.com/CocoaPods/Specs.git`
+   * @example
+   * ```
+   * https://github.com/CocoaPods/Specs.git
+   * ```
    */
   source?: string;
   /**
    * Custom local filesystem path to add the dependency.
-   * @example `~/Documents/AFNetworking`
+   * @example
+   * ```
+   * ~/Documents/AFNetworking
+   * ```
    */
   path?: string;
   /**
    * Custom podspec path.
-   * @example `https://example.com/JSONKit.podspec`
+   * @example
+   * ```https://example.com/JSONKit.podspec```
    */
   podspec?: string;
   /**
    * Test specs can be optionally included via the :testspecs option. By default, none of a Pod's test specs are included.
-   * @example `['UnitTests', 'SomeOtherTests']`
+   * @example
+   * ```
+   * ['UnitTests', 'SomeOtherTests']
+   * ```
    */
   testspecs?: string[];
   /**
