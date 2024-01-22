@@ -17,7 +17,7 @@
  * not using typed routes (or before they are generated in development).
  * @template T This type parameter can be ignored - it is only a stub
  * for compatibility with the typed route system.
- */ export type SearchParams<T = any> = Record<string, string | string[]>;
+ */ export type SearchParams<T = any> = Record<string, (string | string | number)[]>;
 /**
  * @description An object representing a route and its query parameters when
  * not using typed routes (or before they are generated in development).
