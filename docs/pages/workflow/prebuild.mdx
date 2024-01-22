@@ -93,7 +93,7 @@ You can customize how the native folders are generated while remaining in the ma
 
 Prebuild generates template files before modifying them with config plugins. The template files are based on the Expo SDK version and come from the npm package [`expo-template-bare-minimum`][template]. You can change the template used by passing `--template /path/to/template.tgz` to the `npx expo prebuild` command. This is not generally recommended because the base modifiers in `@expo/prebuild-config` make some undocumented assumptions about the template files, so it may be tricky to maintain your custom template.
 
-> **Note:** In network environments where all packages are downloaded from a private registry and npm public registry access is blocked, a locally-available template must be passed to the prebuild command. Learn more about [using a local version of the default template](https://expo.fyi/prebuild-without-npm-access).
+> **Note:** In network environments where all packages are downloaded from a private registry and npm public registry access is blocked, a locally-available template must be passed to the prebuild command. [Learn more about using a local version of the default template](https://expo.fyi/prebuild-without-npm-access).
 
 ## Side effects
 
