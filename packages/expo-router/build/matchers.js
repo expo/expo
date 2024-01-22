@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stripInvisibleSegmentsFromPath = exports.stripGroupSegmentsFromPath = exports.removeFileSystemDots = exports.removeSupportedExtensions = exports.getContextKey = exports.getNameFromFilePath = exports.matchArrayGroupName = exports.matchGroupName = exports.testNotFound = exports.matchDeepDynamicRouteName = exports.matchDynamicName = void 0;
+exports.isTypedRoutesFilename = exports.stripInvisibleSegmentsFromPath = exports.stripGroupSegmentsFromPath = exports.removeFileSystemDots = exports.removeSupportedExtensions = exports.getContextKey = exports.getNameFromFilePath = exports.matchArrayGroupName = exports.matchGroupName = exports.testNotFound = exports.matchDeepDynamicRouteName = exports.matchDynamicName = void 0;
 /** Match `[page]` -> `page` */
 function matchDynamicName(name) {
     // Don't match `...` or `[` or `]` inside the brackets
@@ -68,4 +68,13 @@ function stripInvisibleSegmentsFromPath(path) {
     return stripGroupSegmentsFromPath(path).replace(/\/?index$/, '');
 }
 exports.stripInvisibleSegmentsFromPath = stripInvisibleSegmentsFromPath;
+function isTypedRoutesFilename(name) {
+    /**
+     * Match:
+     *  - _layout files, +html, +not-found, string+api, etc
+     *  - Routes can still use `+`, but it cannot be in the last segment.
+     */
+    return name.match(/(_layout|[^/]*?\+[^/]*?)\.[tj]sx?$/) === null;
+}
+exports.isTypedRoutesFilename = isTypedRoutesFilename;
 //# sourceMappingURL=matchers.js.map

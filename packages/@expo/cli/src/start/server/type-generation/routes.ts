@@ -7,6 +7,8 @@ import { directoryExistsAsync } from '../../../utils/dir';
 import { unsafeTemplate } from '../../../utils/template';
 import { ServerLike } from '../BundlerDevServer';
 import { metroWatchTypeScriptFiles } from '../metro/metroWatchTypeScriptFiles';
+import resolveFrom from 'resolve-from';
+import { legacy } from 'resolve.exports';
 
 // /test/[...param1]/[param2]/[param3] - captures ["param1", "param2", "param3"]
 export const CAPTURE_DYNAMIC_PARAMS = /\[(?:\.{3})?(\w*?)[\]$]/g;
@@ -34,7 +36,33 @@ export interface SetupTypedRoutesOptions {
   routerDirectory: string;
 }
 
-export async function setupTypedRoutes({
+export async function setupTypedRoutes(options: SetupTypedRoutesOptions) {
+  const typedRoutesModule = resolveFrom.silent(
+    options.projectRoot,
+    'expo-router/build/typed-routes'
+  );
+  return typedRoutesModule ? typedRoutes(typedRoutesModule, options) : legacyTypedRoutes(options);
+}
+
+async function typedRoutes(
+  typedRoutesModule: any,
+  { server, metro, typesDirectory, projectRoot }: SetupTypedRoutesOptions
+) {
+  if (metro && server) {
+    // Setup out watcher first
+    metroWatchTypeScriptFiles({
+      projectRoot,
+      server,
+      metro,
+      eventTypes: ['add', 'delete', 'change'],
+      callback: typedRoutesModule.getWatchHandler(typesDirectory),
+    });
+  }
+
+  typedRoutesModule.regenerateDeclarations(typesDirectory);
+}
+
+async function legacyTypedRoutes({
   server,
   metro,
   typesDirectory,

@@ -15,4 +15,5 @@ export declare function removeSupportedExtensions(name: string): string;
 export declare function removeFileSystemDots(filePath: string): string;
 export declare function stripGroupSegmentsFromPath(path: string): string;
 export declare function stripInvisibleSegmentsFromPath(path: string): string;
+export declare function isTypedRoutesFilename(name: string): boolean;
 //# sourceMappingURL=matchers.d.ts.map
