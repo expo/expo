@@ -7,11 +7,13 @@ exports.regenerateDeclarations = exports.getWatchHandler = void 0;
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 const generate_1 = require("./generate");
+const _ctx_shared_1 = require("../../_ctx-shared");
 const matchers_1 = require("../matchers");
 const require_context_ponyfill_1 = __importDefault(require("../testing-library/require-context-ponyfill"));
-const ctx = (0, require_context_ponyfill_1.default)(process.env.EXPO_ROUTER_APP_ROOT, true, 
-// Ignore root `./+html.js` and API route files `./generate+api.tsx`.
-/^(?:\.\/)(?!(?:(?:(?:.*\+api)|(?:\+html)))\.[tj]sx?$).*\.[tj]sx?$/);
+const ctx = (0, require_context_ponyfill_1.default)(process.env.EXPO_ROUTER_APP_ROOT, true, _ctx_shared_1.EXPO_ROUTER_CTX_IGNORE);
+/**
+ * Generate a Metro watch handler that regenerates the typed routes declaration file
+ */
 function getWatchHandler(outputDir) {
     const routeFiles = new Set(ctx.keys().filter((key) => (0, matchers_1.isTypedRoutesFilename)(key)));
     return async function callback({ filePath, type }) {
@@ -36,6 +38,9 @@ function getWatchHandler(outputDir) {
     };
 }
 exports.getWatchHandler = getWatchHandler;
+/**
+ * A throttled function that regenerates the typed routes declaration file
+ */
 exports.regenerateDeclarations = throttle((outputDir) => {
     const file = (0, generate_1.getTypedRoutesDeclarationFile)(ctx);
     if (!file)

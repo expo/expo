@@ -2,16 +2,15 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { getTypedRoutesDeclarationFile } from './generate';
+import { EXPO_ROUTER_CTX_IGNORE } from '../../_ctx-shared';
 import { isTypedRoutesFilename } from '../matchers';
 import requireContext from '../testing-library/require-context-ponyfill';
 
-const ctx = requireContext(
-  process.env.EXPO_ROUTER_APP_ROOT,
-  true,
-  // Ignore root `./+html.js` and API route files `./generate+api.tsx`.
-  /^(?:\.\/)(?!(?:(?:(?:.*\+api)|(?:\+html)))\.[tj]sx?$).*\.[tj]sx?$/
-);
+const ctx = requireContext(process.env.EXPO_ROUTER_APP_ROOT, true, EXPO_ROUTER_CTX_IGNORE);
 
+/**
+ * Generate a Metro watch handler that regenerates the typed routes declaration file
+ */
 export function getWatchHandler(outputDir: string) {
   const routeFiles = new Set(ctx.keys().filter((key) => isTypedRoutesFilename(key)));
 
@@ -37,6 +36,9 @@ export function getWatchHandler(outputDir: string) {
   };
 }
 
+/**
+ * A throttled function that regenerates the typed routes declaration file
+ */
 export const regenerateDeclarations = throttle((outputDir: string) => {
   const file = getTypedRoutesDeclarationFile(ctx);
   if (!file) return;

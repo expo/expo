@@ -3,20 +3,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTypedRoutesDeclarationFile = exports.SLUG = exports.CATCH_ALL = void 0;
+exports.getTypedRoutesDeclarationFile = void 0;
 const node_fs_1 = __importDefault(require("node:fs"));
 const path_1 = __importDefault(require("path"));
 const getRoutes_1 = require("../getRoutes");
 const matchers_1 = require("../matchers");
 // /[...param1]/ - Match [...param1]
-exports.CATCH_ALL = /\[\.\.\..+?\]/g;
+const CATCH_ALL = /\[\.\.\..+?\]/g;
 // /[param1] - Match [param1]
-exports.SLUG = /\[.+?\]/g;
+const SLUG = /\[.+?\]/g;
 function getTypedRoutesDeclarationFile(ctx) {
     const staticRoutes = new Set();
     const dynamicRoutes = new Set();
     const dynamicRouteContextKeys = new Set();
-    walkRoutes((0, getRoutes_1.getRoutes)(ctx, {
+    walkRouteNode((0, getRoutes_1.getRoutes)(ctx, {
         ignoreEntryPoints: true,
         ignoreRequireErrors: true,
         importMode: 'async',
@@ -32,34 +32,44 @@ function getTypedRoutesDeclarationFile(ctx) {
         .replace('type DynamicRouteTemplate = never;', `type DynamicRouteTemplate = ${setToUnionType(dynamicRouteContextKeys)};`));
 }
 exports.getTypedRoutesDeclarationFile = getTypedRoutesDeclarationFile;
-function walkRoutes(routeNode, staticRoutes, dynamicRoutes, dynamicRouteContextKeys) {
+/**
+ * Walks a RouteNode tree and adds the routes to the provided sets
+ */
+function walkRouteNode(routeNode, staticRoutes, dynamicRoutes, dynamicRouteContextKeys) {
     if (!routeNode)
         return;
-    addRoute(routeNode, staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
+    addRouteNode(routeNode, staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
     for (const child of routeNode.children) {
-        walkRoutes(child, staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
+        walkRouteNode(child, staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
     }
 }
-const setToUnionType = (set) => {
-    return set.size > 0 ? [...set].map((s) => `\`${s}\``).join(' | ') : 'never';
-};
-function addRoute(route, staticRoutes, dynamicRoutes, dynamicRouteContextKeys) {
-    if (!route)
+/**
+ * Given a RouteNode, adds the route to the correct sets
+ * Modifies the RouteNode.route to be a typed-route string
+ */
+function addRouteNode(routeNode, staticRoutes, dynamicRoutes, dynamicRouteContextKeys) {
+    if (!routeNode)
         return;
-    if (!(0, matchers_1.isTypedRoutesFilename)(route.contextKey))
+    if (!(0, matchers_1.isTypedRoutesFilename)(routeNode.contextKey))
         return;
-    let routePath = (0, matchers_1.removeSupportedExtensions)(route.contextKey)
+    let routePath = (0, matchers_1.removeSupportedExtensions)(routeNode.contextKey)
         .replace(/^\./, '') // Remove the leading ./
         .replace(/\/?index$/, ''); // replace /index with /
     routePath ||= '/'; // or default to '/'
-    if (route.dynamic) {
+    if (routeNode.dynamic) {
         dynamicRouteContextKeys.add(routePath);
         dynamicRoutes.add(`${routePath
-            .replaceAll(exports.CATCH_ALL, '${CatchAllRoutePart<T>}')
-            .replaceAll(exports.SLUG, '${SingleRoutePart<T>}')}`);
+            .replaceAll(CATCH_ALL, '${CatchAllRoutePart<T>}')
+            .replaceAll(SLUG, '${SingleRoutePart<T>}')}`);
     }
     else {
         staticRoutes.add(routePath);
     }
 }
+/**
+ * Converts a Set to a TypeScript union type
+ */
+const setToUnionType = (set) => {
+    return set.size > 0 ? [...set].map((s) => `\`${s}\``).join(' | ') : 'never';
+};
 //# sourceMappingURL=generate.js.map
