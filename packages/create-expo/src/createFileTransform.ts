@@ -1,7 +1,7 @@
 import Minipass from 'minipass';
 import path from 'path';
 import picomatch, { type PicomatchOptions } from 'picomatch';
-import { type ExtractOptions, type ReadEntry } from 'tar';
+import { type ReadEntry } from 'tar';
 
 const debug = require('debug')('expo:init:fileTransform') as typeof console.log;
 

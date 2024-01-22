@@ -1,7 +1,4 @@
-import fs from 'fs';
 import fetch from 'node-fetch';
-import os from 'os';
-import path from 'path';
 
 import { extractNpmTarballAsync, type ExtractProps } from './npm';
 import { createGlobFilter } from '../createFileTransform';
@@ -24,9 +21,10 @@ async function getGitHubRepoAsync(url: URL): Promise<GitHubRepoInfo | undefined>
   // https://github.com/:owner/:my-cool-example-repo-name.
   if (t === undefined) {
     const response = await fetch(`https://api.github.com/repos/${owner}/${name}`);
-    if (response.status !== 200) {
+    if (!response.ok) {
       return;
     }
+
     const info = await response.json();
     return { owner, name, branch: info['default_branch'], filePath };
   }
@@ -63,11 +61,13 @@ async function extractRemoteGitHubTarballAsync(
   if (!response.ok) throw new Error(`Unexpected response: ${response.statusText} (${url})`);
   if (!response.body) throw new Error(`Unexpected response: no response body (${url})`);
 
-  const directory = repo.filePath.replace(/^\//, '');
+  // Extract the (sub)directory into non-empty path segments
+  const directory = repo.filePath.replace(/^\//, '').split('/').filter(Boolean);
   // Remove the (sub)directory paths, and the root folder added by GitHub
-  const strip = directory.split('/').filter(Boolean).length + 1;
+  const strip = directory.length + 1;
   // Only extract the (sub)directory paths
-  const filter = strip > 1 ? createGlobFilter(`*/${directory}/**`) : undefined;
+  const filter =
+    directory.length >= 1 ? createGlobFilter(`*/${directory.join('/')}/**`) : undefined;
 
   await extractNpmTarballAsync(response.body, { ...props, filter, strip });
 }
@@ -90,10 +90,9 @@ export async function downloadAndExtractGitHubRepositoryAsync(
     );
   }
 
-  debug('Resolved GitHub repository', info);
-
   const url = `https://codeload.github.com/${info.owner}/${info.name}/tar.gz/${info.branch}`;
 
+  debug('Resolved GitHub repository', info);
   debug('Downloading GitHub repository from:', url);
 
   await extractRemoteGitHubTarballAsync(url, info, props);
