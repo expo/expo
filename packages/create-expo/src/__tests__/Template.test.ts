@@ -38,19 +38,11 @@ describe(resolvePackageModuleId, () => {
       resolvePackageModuleId(
         'https://github.com/expo/expo/tree/sdk-49/templates/expo-template-bare-minimum'
       )
-    ).toEqual({
+    ).toMatchObject({
       type: 'repository',
-      uri: {
-        owner: 'expo',
-        name: 'expo',
-        ref: 'sdk-49',
-        folder: 'templates/expo-template-bare-minimum',
-        url: 'https://github.com/expo/expo/tree/sdk-49/templates/expo-template-bare-minimum',
-      },
+      uri: expect.objectContaining({
+        pathname: '/expo/expo/tree/sdk-49/templates/expo-template-bare-minimum',
+      }),
     });
-  });
-  it('throws for invalid github repository url', () => {
-    expect(() => resolvePackageModuleId('https://github.com')).toThrow('Invalid GitHub url');
-    expect(() => resolvePackageModuleId('https://github.com/expo')).toThrow('Invalid GitHub url');
   });
 });

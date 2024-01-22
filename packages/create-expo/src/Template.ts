@@ -119,6 +119,7 @@ export async function extractAndPrepareTemplateAppAsync(
 
   return projectRoot;
 }
+
 /**
  * Sanitize a template (or example) with expected `package.json` properties and files.
  */
