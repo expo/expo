@@ -23,7 +23,7 @@ class StoreReviewModule : Module() {
     Name("ExpoStoreReview")
 
     AsyncFunction("isAvailableAsync") {
-      return@AsyncFunction Build.VERSION.SDK_INT >= 21 && isPlayStoreInstalled()
+      return@AsyncFunction Build.VERSION.SDK_INT >= 21 && isPlayStoreInstalled() && isInstalledViaGooglePlay()
     }
 
     AsyncFunction("requestReview") { promise: Promise ->
@@ -60,5 +60,17 @@ class StoreReviewModule : Module() {
     true
   } catch (e: PackageManager.NameNotFoundException) {
     false
+  }
+
+  private fun isInstalledViaGooglePlay(): Boolean {
+    try {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+          val info = context.packageManager.getInstallSourceInfo(context.packageName)
+          return "com.android.vending" == info.installingPackageName
+      }
+      return "com.android.vending" == context.packageManager.getInstallerPackageName(context.packageName)
+    } catch (e:PackageManager.NameNotFoundException) {
+      return false
+    }
   }
 }
