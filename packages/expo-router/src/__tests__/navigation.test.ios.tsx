@@ -810,6 +810,44 @@ it('can push the same route multiple times', () => {
   expect(screen.getByTestId('index')).toBeOnTheScreen();
 });
 
+it('can continue to push with same path but different params', async () => }
+  renderRouter({
+      _layout: () => <Slot />,
+      '(group)/[value]/one': () => <Text testID="one" />,
+      '(group)/[value]/two': () => <Text testID="two" />,
+      '(group)/[value]/three': () => <Text testID="three" />,
+      '(group)/[value]/four': () => <Text testID="four" />,},
+    {initialUrl: '/test/one'}
+  );
+
+  expect(screen).toHavePathname('/test/one');
+  expect(screen.getByTestId('one')).toBeOnTheScreen();
+
+  act(() => router.push('/test/two'));
+  expect(screen).toHavePathname('/test/two');
+  expect(screen.getByTestId('two')).toBeOnTheScreen();
+
+  act(() => router.push('../apple/one?orange=1'));
+  expect(screen).toHavePathname('/apple/one');
+  expect(screen.getByTestId('one')).toBeOnTheScreen();
+
+  act(() => router.push('./two'));
+  expect(screen).toHavePathname('/apple/two');
+  expect(screen.getByTestId('two')).toBeOnTheScreen();
+
+  act(() => router.push('./three'));
+  expect(screen).toHavePathname('/apple/three');
+  expect(screen.getByTestId('three')).toBeOnTheScreen();
+
+  act(() => router.push('./banana/four'));
+  expect(screen).toHavePathname('/apple/banana/four');
+  expect(screen.getByTestId('four')).toBeOnTheScreen();
+
+  act(() => router.push('./three'));
+  expect(screen).toHavePathname('/apple/banana/three');
+  expect(screen.getByTestId('three')).toBeOnTheScreen();
+});
+
 it('can push relative links from index routes', async () => {
   renderRouter({
     _layout: () => <Slot />,
