@@ -11,6 +11,10 @@ type Result = ReturnType<typeof render> & {
     getSegments(): string[];
     getSearchParams(): Record<string, string | string[]>;
 };
+export declare function getMockContext(context: string | Record<string, FileStub> | {
+    appDir: string;
+    overrides: Record<string, FileStub>;
+}): import("../types").RequireContext;
 export declare function renderRouter(context?: string, options?: RenderRouterOptions): Result;
 export declare function renderRouter(context: Record<string, FileStub>, options?: RenderRouterOptions): Result;
 export declare function renderRouter(context: {
