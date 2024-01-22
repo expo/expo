@@ -76,10 +76,10 @@ async function extractRemoteGitHubTarballAsync(
   if (!response.body) throw new Error(`Unexpected response: no response body (${url})`);
 
   const directory = repo.filePath.replace(/^\//, '');
-  // Only extract the (sub)directory paths
-  const filter = createGlobFilter(`*/${directory}/**`);
   // Remove the (sub)directory paths, and the root folder added by GitHub
   const strip = directory.split('/').filter(Boolean).length + 1;
+  // Only extract the (sub)directory paths
+  const filter = strip > 1 ? createGlobFilter(`*/${directory}/**`) : undefined;
 
   await extractNpmTarballAsync(response.body, { ...props, filter, strip });
 }
