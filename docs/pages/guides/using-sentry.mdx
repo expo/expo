@@ -154,7 +154,7 @@ Create a new release build of your app and verify that it uploads source maps co
 import { Button } from 'react-native';
 
 // Inside some component
-<Button title="Press me" onPress={() => throw new Error('Hello, Sentry!')} />;
+<Button title="Press me" onPress={() => { throw new Error('Hello, Sentry!')}; } />;
 ```
 
 </Step>
@@ -168,7 +168,7 @@ If your app uses [Expo Router](/router/introduction), then you can configure Sen
 ```tsx app/_layout.tsx
 import { Slot, useNavigationContainerRef } from 'expo-router';
 import React from 'react';
-import * as Sentry from 'sentry-expo';
+import * as Sentry from '@sentry/react-native';
 
 // Construct a new instrumentation instance. This is needed to communicate between the integration and React
 const routingInstrumentation = new Sentry.ReactNavigationInstrumentation();
@@ -238,6 +238,7 @@ Configuring Sentry to tag your scope with information about your update allows t
 Add the following snippet in the global scope as early as possible in your application's lifecycle.
 
 ```js
+import * as Sentry from '@sentry/react-native';
 import * as Updates from 'expo-updates';
 
 const manifest = Updates.manifest;
