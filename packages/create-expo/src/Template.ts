@@ -8,7 +8,7 @@ import path from 'path';
 import { Log } from './log';
 import { formatRunCommand, PackageManagerName } from './resolvePackageManager';
 import { env } from './utils/env';
-import { downloadAndExtractGitHubRepositoryAsync, getGithubUrlInfo } from './utils/github';
+import { downloadAndExtractGitHubRepositoryAsync } from './utils/github';
 import {
   applyBetaTag,
   applyKnownNpmPackageNameRules,
@@ -55,13 +55,17 @@ export function resolvePackageModuleId(moduleId: string) {
     // Supports github repository URLs
     moduleId.startsWith('https://github.com')
   ) {
-    const info = getGithubUrlInfo(moduleId);
-    if (!info) {
-      throw new Error('Invalid GitHub url, both repository owner and name are required.');
+    try {
+      const uri = new URL(moduleId);
+      debug('Resolved moduleId to repository path:', moduleId);
+      return { type: 'repository', uri } as const;
+    } catch (error: any) {
+      if (error.code === 'ERR_INVALID_URL') {
+        throw new Error(`Invalid URL: "${moduleId}" provided`);
+      } else {
+        throw error;
+      }
     }
-
-    debug('Resolved moduleId to repository path:', moduleId, info);
-    return { type: 'repository', uri: info } as const;
   }
 
   if (
@@ -89,7 +93,7 @@ export function resolvePackageModuleId(moduleId: string) {
  */
 export async function extractAndPrepareTemplateAppAsync(
   projectRoot: string,
-  { npmPackage, spinner }: { npmPackage?: string | null; spinner: ora.Ora }
+  { npmPackage }: { npmPackage?: string | null }
 ) {
   const projectName = path.basename(projectRoot);
 
@@ -99,7 +103,6 @@ export async function extractAndPrepareTemplateAppAsync(
 
   if (type === 'repository') {
     await downloadAndExtractGitHubRepositoryAsync(uri, {
-      spinner,
       cwd: projectRoot,
       name: projectName,
     });

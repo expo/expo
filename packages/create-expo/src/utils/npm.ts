@@ -3,7 +3,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { Stream } from 'stream';
-import tar from 'tar';
+import tar, { type ExtractOptions } from 'tar';
 import { promisify } from 'util';
 
 import { env } from './env';
@@ -20,6 +20,7 @@ export type ExtractProps = {
   strip?: number;
   fileList?: string[];
   disableCache?: boolean;
+  filter?: ExtractOptions['filter'];
 };
 
 // @ts-ignore
@@ -122,7 +123,7 @@ export async function extractNpmTarballAsync(
   if (!stream) {
     throw new Error('Missing stream');
   }
-  const { cwd, strip, name, fileList = [] } = props;
+  const { cwd, strip, name, fileList = [], filter } = props;
 
   await fs.promises.mkdir(cwd, { recursive: true });
 
@@ -131,6 +132,7 @@ export async function extractNpmTarballAsync(
     tar.extract(
       {
         cwd,
+        filter,
         transform: createFileTransform(name),
         onentry: createEntryResolver(name),
         strip: strip ?? 1,

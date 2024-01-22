@@ -105,11 +105,7 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
   });
 
   await withSectionLog(
-    (spinner) =>
-      Template.extractAndPrepareTemplateAppAsync(projectRoot, {
-        spinner,
-        npmPackage: resolvedTemplate,
-      }),
+    () => Template.extractAndPrepareTemplateAppAsync(projectRoot, { npmPackage: resolvedTemplate }),
     {
       pending: chalk.bold('Locating project files.'),
       success: 'Downloaded and extracted project files.',

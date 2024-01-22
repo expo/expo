@@ -1,60 +1,55 @@
-import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
-import { type Ora } from 'ora';
+import fetch from 'node-fetch';
 import os from 'os';
 import path from 'path';
 
-import { env } from './env';
-import { fileExistsAsync, folderExistsAsync } from './fs';
-import { type ExtractProps, extractLocalNpmTarballAsync, npmPackAsync } from './npm';
-import { Log } from '../log';
+import { extractNpmTarballAsync, type ExtractProps } from './npm';
+import { createGlobFilter } from '../createFileTransform';
 
 const debug = require('debug')('expo:init:github') as typeof console.log;
 
-/**
- * This GitHub URL pattern should only be applied to the pathname of a URL.
- * It matches the following patterns:
- *   - `github.com/<owner>/<name>` → [, owner, name]
- *   - `github.com/<owner>/<name>/tree/<ref>` → [, owner, name, ref]
- *   - `github.com/<owner>/<name>/tree/<ref>/<folder>` → [, owner, name, ref, folder]
- */
-const GITHUB_URL_PATTERN = /([^\\/]+)\/([^\\/]+)(?:\/tree\/([^\\/]+)(?:\/(.*))?)?/;
-
 type GitHubRepoInfo = {
-  /** The full parsed GitHub URL */
-  url: string;
-  /** The owner of the repository */
   owner: string;
-  /** The name of the repository */
   name: string;
-  /** The git reference, either branch, tag, or commit */
-  ref?: string;
-  /** The (sub)folder of the repository to use */
-  folder?: string;
+  branch: string;
+  filePath: string;
 };
 
-/**
- * Parse a GitHub URL into the repository owner and name.
- * URLs may also contain a git reference, and possible (sub)folder.
- * The following URLs are supported:
- *   - `github.com/<owner>/<name>`
- *   - `github.com/<owner>/<name>/tree/<ref>`
- *   - `github.com/<owner>/<name>/tree/<ref>/<folder>`
- * @todo(cedric): add support for releases? https://github.com/expo/expo-github-action/archive/refs/tags/8.2.1.tar.gz
- */
-export function getGithubUrlInfo(uri: string): GitHubRepoInfo | null {
-  try {
-    const { pathname } = new URL(uri, 'https://github.com');
-    const [, owner, name, ref, folder] = pathname.match(GITHUB_URL_PATTERN) || [];
+// See: https://github.com/expo/expo/blob/a5a6eecb082b2c7a7fc9956141738231c7df473f/packages/%40expo/cli/src/prebuild/resolveTemplate.ts#L60-L84
+async function getGitHubRepoAsync(url: URL): Promise<GitHubRepoInfo | undefined> {
+  const [, owner, name, t, branch, ...file] = url.pathname.split('/');
+  const filePath = file.join('/');
 
-    if (owner && name) {
-      return { url: uri, owner, name, ref, folder };
+  // Support repos whose entire purpose is to be an example, e.g.
+  // https://github.com/:owner/:my-cool-example-repo-name.
+  if (t === undefined) {
+    const response = await fetch(`https://api.github.com/repos/${owner}/${name}`);
+    if (response.status !== 200) {
+      return;
     }
-  } catch {
-    // Pass-through
+    const info = await response.json();
+    return { owner, name, branch: info['default_branch'], filePath };
   }
 
-  return null;
+  if (owner && name && branch && t === 'tree') {
+    return { owner, name, branch, filePath };
+  }
+
+  return undefined;
+}
+
+// See: https://github.com/expo/expo/blob/a5a6eecb082b2c7a7fc9956141738231c7df473f/packages/%40expo/cli/src/prebuild/resolveTemplate.ts#L86-L91
+async function isValidGitHubRepoAsync({
+  owner,
+  name,
+  branch,
+  filePath,
+}: GitHubRepoInfo): Promise<boolean> {
+  const contentsUrl = `https://api.github.com/repos/${owner}/${name}/contents`;
+  const packagePath = `${filePath ? `/${filePath}` : ''}/package.json`;
+
+  const response = await fetch(contentsUrl + packagePath + `?ref=${branch}`);
+  return response.ok;
 }
 
 function getTemporaryCacheFilePath(info: GitHubRepoInfo) {
@@ -65,78 +60,55 @@ function getTemporaryCacheFilePath(info: GitHubRepoInfo) {
     'github-template-cache',
     info.owner,
     info.name,
-    info.ref || '',
-    info.folder || ''
+    info.branch || ''
   );
 }
 
-export async function downloadAndExtractGitHubRepositoryAsync(
-  info: GitHubRepoInfo,
-  props: ExtractProps & { spinner: Ora }
-) {
-  const cachePath = getTemporaryCacheFilePath(info);
-  await fs.promises.mkdir(cachePath, { recursive: true });
+// See: https://github.com/expo/expo/blob/a5a6eecb082b2c7a7fc9956141738231c7df473f/packages/%40expo/cli/src/utils/npm.ts#L134-L139
+async function extractRemoteGitHubTarballAsync(
+  url: string,
+  repo: GitHubRepoInfo,
+  props: ExtractProps
+): Promise<void> {
+  const response = await fetch(url);
 
-  debug('Looking for GitHub repository:', info.url);
+  if (!response.ok) throw new Error(`Unexpected response: ${response.statusText} (${url})`);
+  if (!response.body) throw new Error(`Unexpected response: no response body (${url})`);
 
-  // Clone the repository first, using the right ref if provided
-  try {
-    const fileExists = await fileExistsAsync(cachePath);
-    if (env.EXPO_NO_CACHE || !fileExists) {
-      props.spinner.text = 'Cloning GitHub repository';
-      await cloneGitHubRepositoryAsync(info, cachePath);
-    }
-  } catch (error: unknown) {
-    Log.error('Error cloning GitHub repository: ' + info.url);
-    throw error;
-  }
+  const directory = repo.filePath.replace(/^\//, '');
+  // Only extract the (sub)directory paths
+  const filter = createGlobFilter(`*/${directory}/**`);
+  // Remove the (sub)directory paths, and the root folder added by GitHub
+  const strip = directory.split('/').filter(Boolean).length + 1;
 
-  // Locate the subfolder to use as template
-  let templatePath = cachePath;
-  if (info.folder) {
-    templatePath = path.join(cachePath, info.folder);
-    if (!(await folderExistsAsync(templatePath))) {
-      debug('Could not find folder:', templatePath);
-      throw new Error(`Could not find folder ${info.folder} in cloned GitHub repository`);
-    }
-  }
-
-  // Create a new tarball from template folder
-  props.spinner.text = 'Creating template from GitHub repository';
-  const tarballInfo = await npmPackAsync('.', templatePath);
-  const tarballFile = tarballInfo?.[0].filename;
-  if (!tarballFile) {
-    throw new Error('Could not create tarball from GitHub repository');
-  }
-
-  try {
-    await extractLocalNpmTarballAsync(path.join(templatePath, tarballFile), {
-      cwd: props.cwd,
-      name: props.name,
-    });
-  } finally {
-    await fs.promises.rm(path.join(templatePath, tarballFile), { force: true });
-  }
+  await extractNpmTarballAsync(response.body, { ...props, filter, strip });
 }
 
-async function cloneGitHubRepositoryAsync(info: GitHubRepoInfo, dir: string) {
-  // Force clean this directory before cloning
-  await fs.promises.rm(dir, { recursive: true, force: true });
-  await fs.promises.mkdir(dir, { recursive: true });
+export async function downloadAndExtractGitHubRepositoryAsync(
+  repoUrl: URL,
+  props: ExtractProps
+): Promise<void> {
+  debug('Looking for GitHub repository');
 
-  const cloneArgs = [
-    'clone',
-    `git@github.com:${info.owner}/${info.name}.git`,
-    dir,
-    '--depth=1',
-    '--single-branch',
-  ];
-  if (info.ref) {
-    cloneArgs.push('--branch', info.ref);
+  const info = await getGitHubRepoAsync(repoUrl);
+  if (!info) {
+    throw new Error(`Invalid URL: "${repoUrl}". Only GitHub repositories are supported.`);
   }
 
-  debug('Cloning GitHub repository: git', cloneArgs.join(' '));
+  const isValid = await isValidGitHubRepoAsync(info);
+  if (!isValid) {
+    throw new Error(
+      `Could not to locate repository for "${repoUrl}", ensure this repository exists`
+    );
+  }
 
-  await spawnAsync('git', cloneArgs, { stdio: env.EXPO_DEBUG ? 'inherit' : 'ignore' });
-  // TODO: error handling
+  debug('Resolved GitHub repository', info);
+
+  const url = `https://codeload.github.com/${info.owner}/${info.name}/tar.gz/${info.branch}`;
+  const cachePath = getTemporaryCacheFilePath(info);
+
+  debug('Downloading GitHub repository from:', url);
+
+  await fs.promises.mkdir(cachePath, { recursive: true });
+  await extractRemoteGitHubTarballAsync(url, info, props);
 }
