@@ -60,14 +60,6 @@ export interface PluginConfigTypeAndroid {
      */
     packagingOptions?: PluginConfigTypeAndroidPackagingOptions;
     /**
-     * By default, Flipper is enabled with the version that comes bundled with `react-native`.
-     *
-     * Use this to change the [Flipper](https://fbflipper.com/) version when
-     * running your app on Android. You can set the `flipper` property to a
-     * semver string and specify an alternate Flipper version.
-     */
-    flipper?: string;
-    /**
      * Enable the Network Inspector.
      *
      * @default true
@@ -125,21 +117,8 @@ export interface PluginConfigTypeIos {
     /**
      * Enable [`use_frameworks!`](https://guides.cocoapods.org/syntax/podfile.html#use_frameworks_bang)
      * in `Podfile` to use frameworks instead of static libraries for Pods.
-     *
-     * > You cannot use `useFrameworks` and `flipper` at the same time, and
-     * doing so will generate an error.
      */
     useFrameworks?: 'static' | 'dynamic';
-    /**
-     * Enable [Flipper](https://fbflipper.com/) when running your app on iOS in
-     * Debug mode. Setting `true` enables the default version of Flipper, while
-     * setting a semver string will enable a specific version of Flipper you've
-     * declared in your **package.json**. The default for this configuration is `false`.
-     *
-     * > You cannot use `flipper` at the same time as `useFrameworks`, and
-     * doing so will generate an error.
-     */
-    flipper?: boolean | string;
     /**
      * Enable the Network Inspector.
      *

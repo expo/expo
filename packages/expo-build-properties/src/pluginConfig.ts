@@ -81,15 +81,6 @@ export interface PluginConfigTypeAndroid {
   packagingOptions?: PluginConfigTypeAndroidPackagingOptions;
 
   /**
-   * By default, Flipper is enabled with the version that comes bundled with `react-native`.
-   *
-   * Use this to change the [Flipper](https://fbflipper.com/) version when
-   * running your app on Android. You can set the `flipper` property to a
-   * semver string and specify an alternate Flipper version.
-   */
-  flipper?: string;
-
-  /**
    * Enable the Network Inspector.
    *
    * @default true
@@ -150,22 +141,8 @@ export interface PluginConfigTypeIos {
   /**
    * Enable [`use_frameworks!`](https://guides.cocoapods.org/syntax/podfile.html#use_frameworks_bang)
    * in `Podfile` to use frameworks instead of static libraries for Pods.
-   *
-   * > You cannot use `useFrameworks` and `flipper` at the same time, and
-   * doing so will generate an error.
    */
   useFrameworks?: 'static' | 'dynamic';
-
-  /**
-   * Enable [Flipper](https://fbflipper.com/) when running your app on iOS in
-   * Debug mode. Setting `true` enables the default version of Flipper, while
-   * setting a semver string will enable a specific version of Flipper you've
-   * declared in your **package.json**. The default for this configuration is `false`.
-   *
-   * > You cannot use `flipper` at the same time as `useFrameworks`, and
-   * doing so will generate an error.
-   */
-  flipper?: boolean | string;
 
   /**
    * Enable the Network Inspector.
@@ -353,11 +330,6 @@ const schema: JSONSchemaType<PluginConfigType> = {
         enableShrinkResourcesInReleaseBuilds: { type: 'boolean', nullable: true },
         extraProguardRules: { type: 'string', nullable: true },
 
-        flipper: {
-          type: 'string',
-          nullable: true,
-        },
-
         packagingOptions: {
           type: 'object',
           properties: {
@@ -413,11 +385,6 @@ const schema: JSONSchemaType<PluginConfigType> = {
         newArchEnabled: { type: 'boolean', nullable: true },
         deploymentTarget: { type: 'string', pattern: '\\d+\\.\\d+', nullable: true },
         useFrameworks: { type: 'string', enum: ['static', 'dynamic'], nullable: true },
-
-        flipper: {
-          type: ['boolean', 'string'],
-          nullable: true,
-        },
 
         networkInspector: { type: 'boolean', nullable: true },
 
@@ -514,12 +481,6 @@ export function validateConfig(config: any): PluginConfigType {
   }
 
   maybeThrowInvalidVersions(config);
-
-  // explicitly block using use_frameworks and Flipper in iOS
-  // https://github.com/facebook/flipper/issues/2414
-  if (Boolean(config.ios?.flipper) && config.ios?.useFrameworks !== undefined) {
-    throw new Error('`ios.flipper` cannot be enabled when `ios.useFrameworks` is set.');
-  }
 
   if (
     config.android?.enableShrinkResourcesInReleaseBuilds === true &&
