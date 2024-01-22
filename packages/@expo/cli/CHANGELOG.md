@@ -25,6 +25,7 @@
 - Only show "Web is waiting" message after project is initialized with web. ([#26694](https://github.com/expo/expo/pull/26694) by [@byCedric](https://github.com/byCedric))
 - [Android] correct drawable types in updates embedded manifest. ([#26676](https://github.com/expo/expo/pull/26676) by [@douglowder](https://github.com/douglowder))
 - Fix progress bar locking in at `100%` when bundling app. ([#26775](https://github.com/expo/expo/pull/26775) by [@byCedric](https://github.com/byCedric))
+- Keep typed routes in-sync with current Expo Router version
 
 ### 💡 Others
 

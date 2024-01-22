@@ -2,13 +2,12 @@ import fs from 'fs/promises';
 import debounce from 'lodash.debounce';
 import { Server } from 'metro';
 import path from 'path';
+import resolveFrom from 'resolve-from';
 
 import { directoryExistsAsync } from '../../../utils/dir';
 import { unsafeTemplate } from '../../../utils/template';
 import { ServerLike } from '../BundlerDevServer';
 import { metroWatchTypeScriptFiles } from '../metro/metroWatchTypeScriptFiles';
-import resolveFrom from 'resolve-from';
-import { legacy } from 'resolve.exports';
 
 // /test/[...param1]/[param2]/[param3] - captures ["param1", "param2", "param3"]
 export const CAPTURE_DYNAMIC_PARAMS = /\[(?:\.{3})?(\w*?)[\]$]/g;
