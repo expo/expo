@@ -1,9 +1,8 @@
 import { StatusWaitingIcon } from '@expo/styleguide-icons';
-import { useState, useEffect } from 'react';
 
 import { ElementType } from '~/types/common';
 import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
-import { Cell, HeaderCell, Row, Table, TableHead, TableLayout } from '~/ui/components/Table';
+import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { A, H4 } from '~/ui/components/Text';
 
 const platforms = [
@@ -52,29 +51,10 @@ type Props = {
 type PlatformProps = Omit<Props, 'title'>;
 
 const PlatformsSection = (props: Props) => {
-  const [tableLayout, setTableLayout] = useState(TableLayout.Fixed);
-
-  useEffect(() => {
-    function handleResize() {
-      if (window.innerWidth <= 480) {
-        setTableLayout(TableLayout.Auto);
-      } else {
-        setTableLayout(TableLayout.Fixed);
-      }
-    }
-
-    // Add event listener
-    window.addEventListener('resize', handleResize);
-
-    handleResize();
-
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
   return (
     <>
       <H4 className="mb-1">{props.title || 'Platform Compatibility'}</H4>
-      <Table layout={tableLayout}>
+      <Table className="table-fixed max-sm-gutters:table-auto">
         <TableHead>
           <Row>
             {platforms.map(({ title }) => (

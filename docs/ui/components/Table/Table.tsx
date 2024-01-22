@@ -4,22 +4,17 @@ import { borderRadius, spacing } from '@expo/styleguide-base';
 import type { PropsWithChildren } from 'react';
 
 import { TableHeaders } from './TableHeaders';
-import { TableLayout, TextAlign } from './types';
+import { TextAlign } from './types';
 
 type TableProps = PropsWithChildren<{
   headers?: string[];
   headersAlign?: TextAlign[];
-  layout?: TableLayout;
+  className?: string;
 }>;
 
-export const Table = ({
-  children,
-  headers = [],
-  headersAlign,
-  layout = TableLayout.Auto,
-}: TableProps) => (
+export const Table = ({ children, headers = [], headersAlign, className }: TableProps) => (
   <div css={tableWrapperStyle}>
-    <table css={[tableStyle, { tableLayout: layout }]}>
+    <table css={tableStyle} className={className}>
       {headers.length ? (
         <>
           <TableHeaders headers={headers} headersAlign={headersAlign} />
