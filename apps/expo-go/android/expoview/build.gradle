@@ -36,7 +36,7 @@ afterEvaluate {
     publications {
       // use `versionedRelease` configuration when publishing to maven
       versionedRelease(MavenPublication) {
-        from components.versionedRelease
+        from components.release
       }
     }
     repositories {
@@ -136,22 +136,6 @@ android {
       consumerProguardFiles('proguard-rules.pro')
     }
   }
-
-  // WHEN_VERSIONING_REMOVE_FROM_HERE
-  flavorDimensions "versioning"
-  productFlavors {
-    versioned {
-      dimension "versioning"
-    }
-    unversioned {
-      getIsDefault().set(true)
-      dimension "versioning"
-    }
-  }
-  // WHEN_VERSIONING_REMOVE_TO_HERE
-
-  // use `versionedRelease` configuration when publishing to maven
-  defaultPublishConfig "versionedRelease"
 
   publishing {
     singleVariant("release") {
@@ -374,8 +358,7 @@ project.afterEvaluate {
   //     /home/runner/work/expo/expo/node_modules/hermes-engine/android/hermes-release.aar
   // ```
   // For the workaround, we just pretend we don't have local aar dependencies.
-  tasks.findByName("bundleVersionedReleaseLocalLintAar")?.localAarDeps?.setFrom([])
-  tasks.findByName("bundleUnversionedReleaseLocalLintAar")?.localAarDeps?.setFrom([])
+  tasks.findByName("bundleReleaseLocalLintAar")?.localAarDeps?.setFrom([])
 }
 
 useVendoredModulesForExpoView('unversioned')

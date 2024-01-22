@@ -7,9 +7,11 @@ description: Learn how to set up and run E2E tests on EAS Build with popular lib
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal, DiffBlock } from '~/ui/components/Snippet';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { Step } from '~/ui/components/Step';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { GithubIcon } from '@expo/styleguide-icons';
 
-> **Warning** EAS Build support for E2E testing is in a _very early_ state. The intention of this guide is to explain how you can run E2E tests on the service today,
-> without all of the affordances that we plan to build in the future. This guide will evolve over time as support for testing workflows in EAS Build improves.
+> **Warning** EAS Build support for E2E testing is in a _very early_ state. This guide intends to explain how you can run E2E tests on the service today, without all of the affordances that we plan to build in the future. This guide will evolve over time as support for testing workflows in EAS Build improves.
 
 With EAS Build, you can build a workflow for running E2E tests for your application. In this guide, you will learn how to use one of the most popular libraries ([Detox](https://wix.github.io/Detox)) to do that.
 
@@ -17,7 +19,8 @@ This guide explains how to run E2E tests with Detox in a bare workflow project. 
 
 ## Running iOS tests
 
-### 1. Initialize a new bare workflow project
+<Step label="1">
+### Initialize a new bare workflow project
 
 Let's start by initializing a new Expo project, installing and configuring `@config-plugins/detox`, and running `npx expo prebuild` to generate the native projects.
 
@@ -49,19 +52,21 @@ Run prebuild to generate the native projects:
 
 <Terminal cmd={['$ npx expo prebuild']} />
 
-### 2. Make home screen interactive
+</Step>
 
-The first step to writing E2E tests is to have something to test - we have an empty app, so let's make our app interactive. We can add a button and display some new text when it's pressed.
-Later, we're going to write a test that's going to tap the button and check whether the text has been displayed.
+<Step label="2">
+### Make home screen interactive
+
+The first step to writing E2E tests is to have something to test &mdash; have an empty app, so let's make our app interactive. You can add a button and display some new text when it's pressed. Later, you will write a test that simulates tapping the button and verifies if the text is displayed as expected.
 
 <div style={{ display: 'flex', justifyContent: 'center' }}>
   <img src="/static/images/eas-build/tests/01-click-me.png" style={{ maxWidth: '45%' }} />
   <img src="/static/images/eas-build/tests/02-hi.png" style={{ maxWidth: '45%' }} />
 </div>
 
-<Collapsible summary="👀 See the source code">
+<Collapsible summary="See the source code">
 
-```js App.js
+```jsx App.js
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -114,7 +119,11 @@ const styles = StyleSheet.create({
 
 </Collapsible>
 
-### 3. Set up Detox
+</Step>
+
+<Step label="3">
+
+### Set up Detox
 
 #### Install dependencies
 
@@ -133,11 +142,11 @@ Let's add two development dependencies to the project - `jest` and `detox`. `jes
 
 #### Configure Detox
 
-Detox requires you to specify both the build command and path to the binary produced by it. Technically, the build command is not necessary when running tests on EAS Build, but allows you to run tests locally (for example, using `npx detox build --configuration ios.release`).
+Detox requires you to specify both the build command and the path to the binary produced by it. Technically, the build command is not necessary when running tests on EAS Build, but allows you to run tests locally (for example, using `npx detox build --configuration ios.release`).
 
-Edit **detox.config.js** and replace the configuration with:
+Update **.detoxrc.js** with the following configuration with:
 
-```js detox.config.js
+```js .detoxrc.js
 /** @type {Detox.DetoxConfig} */
 module.exports = {
   logger: {
@@ -201,11 +210,14 @@ module.exports = {
 };
 ```
 
-### 4. Write E2E tests
+</Step>
 
-Next, we'll add our first E2E tests. Delete the auto-generated **e2e/firstTest.e2e.js** and create our own **e2e/homeScreen.e2e.js** with the following contents:
+<Step label="4">
+### Write E2E tests
 
-```js e2e/homeScreen.e2e.js
+Next, add your first E2E tests. Delete the auto-generated **e2e/starter.test.js** and create our own **e2e/homeScreen.test.js** with the following snippet:
+
+```js e2e/homeScreen.test.js
 describe('Home screen', () => {
   beforeAll(async () => {
     await device.launchApp();
@@ -231,15 +243,18 @@ There are two tests in the suite:
 - One that checks whether the "Click me" button is visible on the home screen.
 - Another that verifies that tapping the button triggers displaying "Hi!".
 
-Both tests assume the button has the `testID` set to `click-me-button`. See [the source code](#2-make-home-screen-interactive) for details.
+Both tests assume the button has the `testID` set to `click-me-button`. See the [source code](#see-the-source-code) for details.
 
-### 5. Configure EAS Build
+</Step>
 
-Now that we have configured Detox and written our first E2E test, let's configure EAS Build and run the tests in the cloud.
+<Step label="5">
+### Configure EAS Build
+
+After configuring Detox and writing the initial E2E test, the next step is to configure EAS Build and execute the tests in the cloud.
 
 #### Create eas.json
 
-The following command creates [eas.json](/build/eas-json.mdx) in the project's root directory:
+The following command creates [**eas.json**](/build/eas-json/) in the project's root directory:
 
 <Terminal cmd={['$ eas build:configure']} />
 
@@ -247,8 +262,8 @@ The following command creates [eas.json](/build/eas-json.mdx) in the project's r
 
 There are a few more steps to configure EAS Build for running E2E tests as part of the build:
 
-- Android tests:
-  - Tests are run in the Android Emulator. You will define a build profile that builds your app for the emulator (produces an `apk` file).
+- Android test:
+  - Tests are run in the Android Emulator. You will define a build profile that builds your app for the emulator (produces a **.apk** file).
   - Install the emulator and all its system dependencies.
 - iOS test:
   - Tests are run in the iOS Simulator. You will define a build profile that builds your app for the simulator.
@@ -273,7 +288,7 @@ Edit **eas.json** and add the `test` build profile:
 }
 ```
 
-Create **eas-hooks/eas-build-pre-install.sh** that installs the necessary tools and dependencies for the given platform:
+Create **eas-hooks/eas-build-pre-install.sh** to install the necessary tools and dependencies for the given platform:
 
 ```sh eas-hooks/eas-build-pre-install.sh
 #!/usr/bin/env bash
@@ -318,7 +333,10 @@ fi
 
 ```
 
-Next, create **eas-hooks/eas-build-on-success.sh** with the following contents. The script runs different commands for Android and iOS. For iOS, the only command is `detox test`. For Android, it's a bit more complicated. You'll have to start the emulator before running the tests as `detox` sometimes seems to be having problems with starting the emulator on its own and it can get stuck on running the first test from your test suite. After the `detox test` run, there is a command that kills the previously started emulator.
+Next, create **eas-hooks/eas-build-on-success.sh** and add the code snippet as shown below. The script runs different commands for Android and iOS.
+
+- For Android, you have to manually start the emulator before running the tests as `detox` occasionally encounters issues initiating the emulator independently, which can cause a hang during the first test of your suite. After completing the `detox test`, there is a command that kills the previously started emulator.
+- For iOS, the only command is `detox test`.
 
 ```sh eas-hooks/eas-build-on-success.sh
 #!/usr/bin/env bash
@@ -368,7 +386,7 @@ else
 fi
 ```
 
-Edit **package.json** to use [EAS Build hooks](/build-reference/npm-hooks.mdx) to run the above scripts on EAS Build:
+Update **package.json** to use [EAS Build hooks](/build-reference/npm-hooks/) to run the above scripts on EAS Build:
 
 ```json package.json
 {
@@ -381,7 +399,11 @@ Edit **package.json** to use [EAS Build hooks](/build-reference/npm-hooks.mdx) t
 
 > Don't forget to add executable permissions to **eas-build-pre-install.sh** and **eas-build-on-success.sh**. Run `chmod +x eas-hooks/*.sh`.
 
-### 6. Run tests on EAS Build
+</Step>
+
+<Step label="6">
+
+### Run tests on EAS Build
 
 Running the tests on EAS Build is like running a regular build:
 
@@ -391,15 +413,18 @@ If you have set up everything correctly you should see the successful test resul
 
 <ImageSpotlight src="/static/images/eas-build/tests/03-logs.png" style={{ maxWidth: '90%' }} />
 
-### 7. Upload screenshots of failed test cases
+</Step>
+
+<Step label="7">
+### Upload screenshots of failed test cases
 
 > This step is optional but highly recommended.
 
-When an E2E test case fails, it can be helpful to see the screenshot of the application state. EAS Build makes it easy to upload any arbitrary build artifacts using the [`buildArtifactPaths`](/build-reference/eas-json.mdx#buildartifactpaths) field in **eas.json**.
+When an E2E test case fails, it can be helpful to see the screenshot of the application state. EAS Build makes it easy to upload any arbitrary build artifacts using [`buildArtifactPaths`](/eas/json/#buildartifactpaths) in **eas.json**.
 
 #### Take screenshots for failed tests
 
-Detox supports taking in-test screenshots of the device. The [**detox.config.js** sample](/build-reference/e2e-tests/#configure-detox) above includes a line to configure Detox to take screenshots of failed tests.
+Detox supports taking in-test screenshots of the device. The [**.detoxrc.js** sample](/build-reference/e2e-tests/#configure-detox) above includes a configuration for Detox to take screenshots of failed tests.
 
 #### Configure EAS Build for screenshots upload
 
@@ -424,9 +449,9 @@ Edit **eas.json** and add `buildArtifactPaths` to the `test` build profile:
 }
 ```
 
-In contrast to `applicationArchivePath`, the build artifacts defined at `buildArtifactPaths` will be uploaded even if the build fails. All `.png` files from the `artifacts` directory will be packed into a tarball and uploaded to AWS S3. You can download them later from the build details page.
+In contrast to `applicationArchivePath`, the build artifacts defined at `buildArtifactPaths` will be uploaded even if the build fails. All **.png** files from the **artifacts** directory will be packed into a tarball and uploaded to AWS S3. You can download them later from the build details page.
 
-If you run E2E tests locally, remember to add `artifacts` to `.gitignore`:
+If you run E2E tests locally, remember to add **artifacts** to **.gitignore**:
 
 ```sh .gitignore
 artifacts/
@@ -436,7 +461,7 @@ artifacts/
 
 To test the new configuration, let's break a test and see that EAS Build uploads the screenshots.
 
-Edit **e2e/homeScreen.e2e.js** and make the following change:
+Edit **e2e/homeScreen.test.js** and make the following change:
 
 <DiffBlock source="/static/diffs/e2e-tests-homescreen.diff" />
 
@@ -448,25 +473,32 @@ After going to the build details page you should see that the build failed. Use 
 
 <ImageSpotlight src="/static/images/eas-build/tests/04-artifacts.png" style={{ maxWidth: '90%' }} />
 
+</Step>
+
 ## Repository
 
-The full example from this guide is available at https://github.com/expo/eas-tests-example.
+<BoxLink
+  title="Example repository"
+  description="Complete example from this guide is available at GitHub."
+  href="https://github.com/expo/eas-tests-example"
+  Icon={GithubIcon}
+/>
 
 ## Alternative approaches
 
 ### Using development builds to speed up test run time
 
-The above guide explains how to run E2E tests against a release build of your project, which requires executing a full native build before each test run. Re-building the native app each time you run E2E tests may not be desirable if only the project JavaScript or assets have changed. However, this is necessary for release builds because the app JavaScript bundle is embedded into the binary.
+The above guide explains how to run E2E tests against a release build of your project, which requires executing a fully native build before each test run. Re-building the native app each time you run E2E tests may not be desirable if only the project JavaScript or assets have changed. However, this is necessary for release builds because the app JavaScript bundle is embedded into the binary.
 
-Instead, we can use [development builds](/develop/development-builds/introduction/) to load from a local development server or from [published updates](/eas-update/introduction/) to save time and CI resources. This can be done by having your E2E test runner invoke the app with a URL that points to a specific update bundle URL, as described in the [development builds deep linking URLs guide](/develop/development-builds/development-workflows/#deep-linking-urls).
+Instead, use [development builds](/develop/development-builds/introduction/) to load from a local development server or from [published updates](/eas-update/introduction/) to save time and CI resources. This can be done by having your E2E test runner invoke the app with a URL that points to a specific update bundle URL, as described in the [development builds deep linking URLs guide](/develop/development-builds/development-workflows/#deep-linking-urls).
 
 Development builds typically display an onboarding welcome screen when an app is launched for the first time, which intends to provide context about the `expo-dev-client` UI for developers. However, it can interfere with your E2E tests (which expect to interact with your app and not an onboarding screen). To skip the onboarding screen in a test environment, the query parameter `disableOnboarding=1` can be appended to the project URL (an EAS Update URL or a local development server URL).
 
-An example of such a Detox test is shown below. Full example code is available on the [eas-tests-example](https://github.com/expo/eas-tests-example) repository.
+An example of such a Detox test is shown below. Full example code is available on the [`eas-tests-example`](https://github.com/expo/eas-tests-example) repository.
 
-<Collapsible summary="e2e/homeScreen.e2e.js">
+<Collapsible summary="e2e/homeScreen.test.js">
 
-```js
+```js e2e/homeScreen.test.js
 /* @info New line */
 const { openApp } = require('./utils/openApp');
 /* @end */
@@ -491,7 +523,7 @@ describe('Home screen', () => {
 
 <Collapsible summary="e2e/utils/openApp.js (new file)">
 
-```js
+```js e2e/utils/openApp.js
 const appConfig = require('../../../app.json');
 const { resolveConfig } = require('detox/internals');
 
@@ -549,9 +581,9 @@ const sleep = t => new Promise(res => setTimeout(res, t));
 
 </Collapsible>
 
-<Collapsible summary="detox.config.js">
+<Collapsible summary=".detoxrc.js">
 
-```js
+```js .detoxrc.js
 /** @type {Detox.DetoxConfig} */
 module.exports = {
   logger: {
@@ -635,7 +667,7 @@ module.exports = {
 
 <Collapsible summary="eas-hooks/eas-build-on-success.sh">
 
-```sh
+```sh eas-hooks/eas-build-on-success.sh
 #!/usr/bin/env bash
 
 function cleanup()
@@ -694,7 +726,7 @@ fi
 
 <Collapsible summary="eas.json">
 
-```json
+```json eas.json
 {
   "build": {
     "test": {

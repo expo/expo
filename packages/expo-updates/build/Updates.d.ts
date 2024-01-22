@@ -169,7 +169,12 @@ export declare function clearUpdateCacheExperimentalAsync(_sdkVersion?: string):
 /**
  * @hidden
  */
-export declare function transformNativeStateMachineContext(originalNativeContext: any): any;
+export declare function transformNativeStateMachineContext(originalNativeContext: UpdatesNativeStateMachineContext & {
+    latestManifestString?: string;
+    downloadedManifestString?: string;
+    lastCheckForUpdateTimeString?: string;
+    rollbackString?: string;
+}): UpdatesNativeStateMachineContext;
 /**
  * @hidden
  */

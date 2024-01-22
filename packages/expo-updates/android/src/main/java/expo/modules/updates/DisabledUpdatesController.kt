@@ -1,5 +1,3 @@
-@file:Suppress("UnusedImport") // this needs to stay for versioning to work
-
 package expo.modules.updates
 
 import android.content.Context
@@ -19,6 +17,7 @@ import expo.modules.updates.statemachine.UpdatesStateChangeEventSender
 import expo.modules.updates.statemachine.UpdatesStateContext
 import expo.modules.updates.statemachine.UpdatesStateEventType
 import expo.modules.updates.statemachine.UpdatesStateMachine
+import expo.modules.updates.statemachine.UpdatesStateValue
 import java.io.File
 import java.lang.ref.WeakReference
 
@@ -39,7 +38,9 @@ class DisabledUpdatesController(
     null
   }
   private val logger = UpdatesLogger(context)
-  private val stateMachine = UpdatesStateMachine(context, this)
+
+  // disabled controller state machine can only be idle or restarting
+  private val stateMachine = UpdatesStateMachine(context, this, setOf(UpdatesStateValue.Idle, UpdatesStateValue.Restarting))
 
   private var isStarted = false
   private var launcher: Launcher? = null

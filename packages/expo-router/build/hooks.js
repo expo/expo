@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.usePathname = exports.useSegments = exports.useUnstableGlobalHref = exports.useRouter = exports.useRootNavigation = exports.useRouteInfo = exports.useRootNavigationState = void 0;
+exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.usePathname = exports.useSegments = exports.useUnstableGlobalHref = exports.useRouter = exports.useNavigationContainerRef = exports.useRootNavigation = exports.useRouteInfo = exports.useRootNavigationState = void 0;
 const native_1 = require("@react-navigation/native");
 const react_1 = __importDefault(require("react"));
 const router_store_1 = require("./global-state/router-store");
@@ -15,10 +15,16 @@ function useRouteInfo() {
     return (0, router_store_1.useStoreRouteInfo)();
 }
 exports.useRouteInfo = useRouteInfo;
+/** @deprecated use `useNavigationContainerRef()` instead, which returns a React ref. */
 function useRootNavigation() {
     return router_store_1.store.navigationRef.current;
 }
 exports.useRootNavigation = useRootNavigation;
+/** @return the root `<NavigationContainer />` ref for the app. The `ref.current` may be `null` if the `<NavigationContainer />` hasn't mounted yet. */
+function useNavigationContainerRef() {
+    return router_store_1.store.navigationRef;
+}
+exports.useNavigationContainerRef = useNavigationContainerRef;
 function useRouter() {
     return react_1.default.useMemo(() => ({
         push: router_store_1.store.push,

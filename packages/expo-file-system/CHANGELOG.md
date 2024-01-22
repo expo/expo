@@ -8,7 +8,19 @@
 
 ### 🐛 Bug fixes
 
+- On `iOS`, set `httpMethod` on upload requests. ([#26516](https://github.com/expo/expo/pull/26516) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
+
+## 16.0.4 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.3 - 2024-01-10
+
+### 🎉 New features
+
+- Added support for macOS platform. ([#26253](https://github.com/expo/expo/pull/26253) by [@tsapeta](https://github.com/tsapeta))
 
 ## 16.0.2 - 2023-12-19
 

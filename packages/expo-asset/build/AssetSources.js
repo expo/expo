@@ -1,10 +1,7 @@
 import { Platform } from 'expo-modules-core';
 import { PixelRatio, NativeModules } from 'react-native';
 import AssetSourceResolver from './AssetSourceResolver';
-import { getManifest, getManifest2, manifestBaseUrl } from './PlatformUtils';
-// Fast lookup check if asset map has any overrides in the manifest.
-// This value will always be either null or an absolute URL, e.g. `https://expo.dev/`
-const assetMapOverride = getManifest().assetMapOverride;
+import { getManifest2, manifestBaseUrl } from './PlatformUtils';
 /**
  * Selects the best file for the given asset (ex: choosing the best scale for images) and returns
  * a { uri, hash } pair for the specific asset file.
@@ -12,10 +9,6 @@ const assetMapOverride = getManifest().assetMapOverride;
  * If the asset isn't an image with multiple scales, the first file is selected.
  */
 export function selectAssetSource(meta) {
-    // Override with the asset map in manifest if available
-    if (assetMapOverride && assetMapOverride.hasOwnProperty(meta.hash)) {
-        meta = { ...meta, ...assetMapOverride[meta.hash] };
-    }
     // This logic is based on that of AssetSourceResolver, with additional support for file hashes and
     // explicitly provided URIs
     const scale = AssetSourceResolver.pickScale(meta.scales, PixelRatio.get());
@@ -24,12 +17,6 @@ export function selectAssetSource(meta) {
     // Allow asset processors to directly provide the URL to load
     const uri = meta.fileUris ? meta.fileUris[index] ?? meta.fileUris[0] : meta.uri;
     if (uri) {
-        return { uri: resolveUri(uri), hash };
-    }
-    // Check if the assetUrl was overridden in the manifest
-    const assetUrlOverride = getManifest().assetUrlOverride;
-    if (assetUrlOverride) {
-        const uri = pathJoin(assetUrlOverride, hash);
         return { uri: resolveUri(uri), hash };
     }
     const fileScale = scale === 1 ? '' : `@${scale}x`;
@@ -49,10 +36,7 @@ export function selectAssetSource(meta) {
     const manifest2 = getManifest2();
     const devServerUrl = manifest2?.extra?.expoGo?.developer
         ? 'http://' + manifest2.extra.expoGo.debuggerHost
-        : // For assets during development, we use the development server's URL origin
-            getManifest().developer
-                ? getManifest().bundleUrl
-                : null;
+        : null;
     if (devServerUrl) {
         const baseUrl = new URL(meta.httpServerLocation + suffix, devServerUrl);
         baseUrl.searchParams.set('platform', Platform.OS);

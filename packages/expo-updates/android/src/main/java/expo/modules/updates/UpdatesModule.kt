@@ -1,5 +1,3 @@
-@file:Suppress("UnusedImport") // this needs to stay for versioning to work
-
 package expo.modules.updates
 
 import android.content.Context
@@ -17,8 +15,6 @@ import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.statemachine.UpdatesStateContext
 import java.util.Date
-
-// these unused imports must stay because of versioning
 
 /**
  * Exported module which provides to the JS runtime information about the currently running update
@@ -43,6 +39,7 @@ class UpdatesModule : Module() {
         val embeddedUpdate = constantsForModule.embeddedUpdate
         val isEmbeddedLaunch = launchedUpdate?.id?.equals(embeddedUpdate?.id) ?: false
 
+        // keep these keys in sync with ExpoGoUpdatesModule
         this["isEmergencyLaunch"] = constantsForModule.isEmergencyLaunch
         this["isEmbeddedLaunch"] = isEmbeddedLaunch
         this["isEnabled"] = constantsForModule.isEnabled

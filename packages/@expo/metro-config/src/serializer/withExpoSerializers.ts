@@ -107,13 +107,15 @@ export function createDefaultExportCustomSerializer(
       return debugId;
     };
 
+    let premodulesToBundle = [...preModules];
+
     let bundleCode: string | null = null;
     let bundleMap: string | null = null;
 
     if (config.serializer?.customSerializer) {
       const bundle = await config.serializer?.customSerializer(
         entryPoint,
-        preModules,
+        premodulesToBundle,
         graph,
         options
       );
@@ -125,7 +127,6 @@ export function createDefaultExportCustomSerializer(
       }
     } else {
       const debugId = loadDebugId();
-      let premodulesToBundle = [...preModules];
       if (configOptions.unstable_beforeAssetSerializationPlugins) {
         for (const plugin of configOptions.unstable_beforeAssetSerializationPlugins) {
           premodulesToBundle = plugin({ graph, premodules: [...premodulesToBundle], debugId });
@@ -153,7 +154,7 @@ export function createDefaultExportCustomSerializer(
 
     if (!bundleMap) {
       bundleMap = sourceMapString(
-        [...preModules, ...getSortedModules([...graph.dependencies.values()], options)],
+        [...premodulesToBundle, ...getSortedModules([...graph.dependencies.values()], options)],
         {
           // TODO: Surface this somehow.
           excludeSource: false,

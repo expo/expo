@@ -2,11 +2,11 @@
 
 import Foundation
 
-@objc
+@objc(EXDevMenuSelectionList)
 public class DevMenuSelectionList: DevMenuScreenItem, DevMenuCallableProvider {
-  @objc
+  @objc(EXDevMenuItem)
   public class Item: NSObject, DevMenuDataSourceItem {
-    @objc
+    @objc(EXDevMenuTag)
     public class Tag: NSObject {
       @objc
       public var text: () -> String = { "" }

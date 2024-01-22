@@ -4,6 +4,31 @@
 
 ### 🛠 Breaking changes
 
+- Removed `ReactNativeHostHandler.onRegisterJSIModules` interface. ([#26357](https://github.com/expo/expo/pull/26357) by [@kudo](https://github.com/kudo))
+
+### 🎉 New features
+
+- Add timer capability to Logger. ([#26454](https://github.com/expo/expo/pull/26454), [#26477](https://github.com/expo/expo/pull/26477) by [@wschurman](https://github.com/wschurman))
+
+### 🐛 Bug fixes
+
+- Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Removed deprecated `global.ExpoModules`. ([#26027](https://github.com/expo/expo/pull/26027) by [@tsapeta](https://github.com/tsapeta))
+- Remove most of Constants.appOwnership. ([#26313](https://github.com/expo/expo/pull/26313) by [@wschurman](https://github.com/wschurman))
+
+## 1.11.7 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 1.11.6 - 2024-01-12
+
+_This version does not introduce any user-facing changes._
+
+## 1.11.5 - 2024-01-10
+
 ### 🎉 New features
 
 - Added support for macOS platform. ([#26186](https://github.com/expo/expo/pull/26186) by [@tsapeta](https://github.com/tsapeta))
@@ -15,7 +40,6 @@
 
 ### 💡 Others
 
-- Removed deprecated `global.ExpoModules`. ([#26027](https://github.com/expo/expo/pull/26027) by [@tsapeta](https://github.com/tsapeta))
 - Replace deprecated `com.facebook.react:react-native:+` Android dependency with `com.facebook.react:react-android`. ([#26237](https://github.com/expo/expo/pull/26237) by [@kudo](https://github.com/kudo))
 
 ## 1.11.4 - 2023-12-21

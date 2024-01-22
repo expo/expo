@@ -146,6 +146,7 @@ redirects[distribution/uploading-apps]=submit/introduction
 redirects[guides/setup-native-firebase]=guides/using-firebase
 redirects[guides/using-clojurescript]=guides/overview
 redirects[distribution/hosting-your-app]=distribution/publishing-websites
+redirects[guides/web-performance/]=guides/analyzing-bundles
 
 # Redirects after adding Home to the docs
 redirects[next-steps/additional-resources]=additional-resources
@@ -249,7 +250,6 @@ redirects[guides/setting-up-continuous-integration]=build/building-on-ci
 redirects[distribution/release-channels]=archive/classic-updates/release-channels
 redirects[distribution/advanced-release-channels]=archive/classic-updates/advanced-release-channels
 redirects[distribution/optimizing-updates]=archive/classic-updates/optimizing-updates
-redirects[eas-update/custom-updates-server]=distribution/custom-updates-server
 redirects[guides/offline-support]=archive/classic-updates/offline-support
 redirects[guides/preloading-and-caching-assets]=archive/classic-updates/preloading-and-caching-assets
 redirects[guides/configuring-updates]=archive/classic-updates/configuring-updates
@@ -275,6 +275,7 @@ redirects[eas-update/eas-update-and-eas-cli]=eas-update/eas-cli
 redirects[eas-update/debug-updates]=eas-update/debug
 redirects[eas-update/how-eas-update-works]=eas-update/how-it-works
 redirects[eas-update/migrate-to-eas-update]=eas-update/migrate-from-classic-updates
+redirects[distribution/custom-updates-server]=eas-update/custom-updates-server
 
 # Redirects after Expo Router docs reorganization from Home to Guides
 redirects[routing/next-steps]=router/introduction
@@ -344,6 +345,9 @@ redirects[versions/v46.0.0/sdk]=versions/v46.0.0
 redirects[guides/authentication.md]=guides/authentication
 redirects[versions/latest/workflow/linking/]=guides/linking
 redirects[versions/latest/sdk/overview]=versions/latest
+
+# Deprecated webpack
+redirects[guides/customizing-webpack]=archive/customizing-webpack
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys

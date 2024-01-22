@@ -51,8 +51,6 @@ open class ConstantsService(private val context: Context) : InternalModule, Cons
   // Just use package name in vanilla React Native apps.
   override fun getAppScopeKey(): String? = context.packageName
 
-  override fun getAppOwnership() = "guest"
-
   override fun getDeviceName(): String = Build.MODEL
 
 

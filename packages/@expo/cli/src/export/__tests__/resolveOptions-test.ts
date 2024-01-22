@@ -9,6 +9,7 @@ jest.mock('@expo/config', () => ({
       sdkVersion: '45.0.0',
       name: 'my-app',
       slug: 'my-app',
+      platforms: ['ios', 'android'],
     },
   })),
 }));
@@ -21,6 +22,10 @@ describe(resolveOptionsAsync, () => {
   });
 
   it(`asserts not-configured platform`, async () => {
+    jest.mocked(getConfig).mockReturnValueOnce({
+      // @ts-expect-error
+      exp: { web: { bundler: 'webpack' }, platforms: ['ios', 'android', 'web'] },
+    });
     await expect(resolveOptionsAsync('/', { '--platform': ['web'] })).rejects.toThrow(
       /^Platform "web" is not configured to use the Metro bundler in the project Expo config\./
     );
@@ -88,7 +93,7 @@ describe(resolveOptionsAsync, () => {
   it(`parses default options with web enabled`, async () => {
     jest.mocked(getConfig).mockReturnValueOnce({
       // @ts-expect-error
-      exp: { web: { bundler: 'metro' } },
+      exp: { web: { bundler: 'metro' }, platforms: ['ios', 'android', 'web'] },
     });
     await expect(resolveOptionsAsync('/', {})).resolves.toEqual(
       expect.objectContaining({
