@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix proguard rules so `Serializable` types are not obfuscated. ([#26545](https://github.com/expo/expo/pull/26545) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 1.11.7 — 2024-01-18
