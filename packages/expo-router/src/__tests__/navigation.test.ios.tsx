@@ -812,7 +812,7 @@ it('can push the same route multiple times', () => {
 
 it('can continue to push with same path but different params', async () => }
   renderRouter({
-      _layout: () => <Slot />,
+      _layout: () => <Drawer />,
       '(group)/[value]/one': () => <Text testID="one" />,
       '(group)/[value]/two': () => <Text testID="two" />,
       '(group)/[value]/three': () => <Text testID="three" />,
