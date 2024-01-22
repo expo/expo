@@ -73,13 +73,11 @@ abstract_target 'Expo Go' do
       # These actions are specified in `versioned-react-native/ABI*/postinstalls.rb` files.
       run_versioned_postinstalls!(pod_name, target_installation_result)
 
-      # Needed for Reanimated to compile
+      # Enable hermes debugger even on release builds
       if pod_name == 'React-hermes' || pod_name == 'hermes-engine'
         target_installation_result.native_target.build_configurations.each do |config|
-          if "Debug" == config.name
-            config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
-            config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << "HERMES_ENABLE_DEBUGGER=1"
-          end
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << "HERMES_ENABLE_DEBUGGER=1"
         end
       end
 
