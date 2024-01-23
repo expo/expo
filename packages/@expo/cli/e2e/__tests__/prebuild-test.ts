@@ -226,7 +226,7 @@ it(
     const templateUrl = `https://github.com/expo/expo/tree/sdk-${expoSdkVersion}/templates/expo-template-bare-minimum`;
     console.log('Using github template for SDK', expoSdkVersion, ':', templateUrl);
 
-    await execa('node', [bin, 'prebuild', '--template', templateUrl], {
+    await execa('node', [bin, 'prebuild', '--no-install', '--template', templateUrl], {
       cwd: projectRoot,
     });
 
@@ -266,6 +266,7 @@ it(
         "android/app/debug.keystore",
         "android/app/proguard-rules.pro",
         "android/app/src/debug/AndroidManifest.xml",
+        "android/app/src/debug/java/com/example/minimal/ReactNativeFlipper.java",
         "android/app/src/main/AndroidManifest.xml",
         "android/app/src/main/java/com/example/minimal/MainActivity.java",
         "android/app/src/main/java/com/example/minimal/MainApplication.java",
@@ -285,6 +286,7 @@ it(
         "android/app/src/main/res/values/strings.xml",
         "android/app/src/main/res/values/styles.xml",
         "android/app/src/main/res/values-night/colors.xml",
+        "android/app/src/release/java/com/example/minimal/ReactNativeFlipper.java",
         "android/build.gradle",
         "android/gradle/wrapper/gradle-wrapper.jar",
         "android/gradle/wrapper/gradle-wrapper.properties",
@@ -319,6 +321,6 @@ it(
       ]
     `);
   },
-  // Could take 45s depending on how fast npm installs
-  60 * 1000
+  // Could take 1-2m depending on how fast github returns the tarball of expo/expo
+  2 * 60 * 1000
 );
