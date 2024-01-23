@@ -80,4 +80,5 @@ final class ProcedureContext: StateMachineProcedureContext {
  */
 protocol StateMachineProcedure {
   func run(procedureContext: ProcedureContext)
+  func getLoggerTimerLabel() -> String
 }
