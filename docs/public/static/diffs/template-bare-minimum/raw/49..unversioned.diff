@@ -1,5 +1,5 @@
 diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
-index 7105aaaa3f..a265c80fa9 100644
+index 7105aaaa3f..a058ef6c4b 100644
 --- a/templates/expo-template-bare-minimum/android/app/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/app/build.gradle
 @@ -1,4 +1,5 @@
@@ -32,7 +32,16 @@ index 7105aaaa3f..a265c80fa9 100644
  
      namespace "com.helloworld"
      defaultConfig {
-@@ -141,33 +143,22 @@ dependencies {
+@@ -88,8 +90,6 @@ android {
+         targetSdkVersion rootProject.ext.targetSdkVersion
+         versionCode 1
+         versionName "1.0"
+-
+-        buildConfigField("boolean", "REACT_NATIVE_UNSTABLE_USE_RUNTIME_SCHEDULER_ALWAYS", (findProperty("reactNative.unstable_useRuntimeSchedulerAlways") ?: true).toString())
+     }
+     signingConfigs {
+         debug {
+@@ -141,34 +141,21 @@ dependencies {
      def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
      def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
      def isWebpAnimatedEnabled = (findProperty('expo.webp.animated') ?: "") == "true";
@@ -66,11 +75,11 @@ index 7105aaaa3f..a265c80fa9 100644
 -        exclude group:'com.squareup.okhttp3', module:'okhttp'
 -    }
 -    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}")
-+    implementation("com.facebook.react:flipper-integration")
- 
+-
      if (hermesEnabled.toBoolean()) {
          implementation("com.facebook.react:hermes-android")
-@@ -176,5 +167,5 @@ dependencies {
+     } else {
+@@ -176,5 +163,5 @@ dependencies {
      }
  }
  
@@ -399,10 +408,10 @@ index e7f376902d..0000000000
 -}
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
 new file mode 100644
-index 0000000000..8258c40ed4
+index 0000000000..95ef45de96
 --- /dev/null
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
-@@ -0,0 +1,65 @@
+@@ -0,0 +1,57 @@
 +package com.helloworld
 +
 +import android.app.Application
@@ -414,11 +423,9 @@ index 0000000000..8258c40ed4
 +import com.facebook.react.ReactNativeHost
 +import com.facebook.react.ReactPackage
 +import com.facebook.react.ReactHost
-+import com.facebook.react.config.ReactFeatureFlags
 +import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
 +import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 +import com.facebook.react.defaults.DefaultReactNativeHost
-+import com.facebook.react.flipper.ReactNativeFlipper
 +import com.facebook.soloader.SoLoader
 +
 +import expo.modules.ApplicationLifecycleDispatcher
@@ -450,15 +457,9 @@ index 0000000000..8258c40ed4
 +  override fun onCreate() {
 +    super.onCreate()
 +    SoLoader.init(this, false)
-+    if (!BuildConfig.REACT_NATIVE_UNSTABLE_USE_RUNTIME_SCHEDULER_ALWAYS) {
-+      ReactFeatureFlags.unstable_useRuntimeSchedulerAlways = false
-+    }
 +    if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
 +      // If you opted-in for the New Architecture, we load the native entry point for this app.
 +      load()
-+    }
-+    if (BuildConfig.DEBUG) {
-+      ReactNativeFlipper.initializeFlipper(this, reactNativeHost.reactInstanceManager)
 +    }
 +    ApplicationLifecycleDispatcher.onApplicationCreate(this)
 +  }
@@ -904,10 +905,10 @@ index 03410dc8b3..f4f9f60993 100644
          <string>YOUR-APP-URL-HERE</string>
  </dict>
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
-index 2402cc34b2..b3978b9515 100644
+index 2402cc34b2..eaf07ca4c2 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile
 +++ b/templates/expo-template-bare-minimum/ios/Podfile
-@@ -7,7 +7,7 @@ podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties
+@@ -7,36 +7,12 @@ podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties
  ENV['RCT_NEW_ARCH_ENABLED'] = podfile_properties['newArchEnabled'] == 'true' ? '1' : '0'
  ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] = podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
  
@@ -916,7 +917,36 @@ index 2402cc34b2..b3978b9515 100644
  install! 'cocoapods',
    :deterministic_uuids => false
  
-@@ -44,13 +44,9 @@ target 'HelloWorld' do
+ prepare_react_native_project!
+ 
+-# If you are using a `react-native-flipper` your iOS build will fail when `NO_FLIPPER=1` is set.
+-# because `react-native-flipper` depends on (FlipperKit,...), which will be excluded. To fix this,
+-# you can also exclude `react-native-flipper` in `react-native.config.js`
+-#
+-# ```js
+-# module.exports = {
+-#   dependencies: {
+-#     ...(process.env.NO_FLIPPER ? { 'react-native-flipper': { platforms: { ios: null } } } : {}),
+-#   }
+-# }
+-# ```
+-flipper_config = FlipperConfiguration.disabled
+-if ENV['NO_FLIPPER'] == '1' then
+-  # Explicitly disabled through environment variables
+-  flipper_config = FlipperConfiguration.disabled
+-elsif podfile_properties.key?('ios.flipper') then
+-  # Configure Flipper in Podfile.properties.json
+-  if podfile_properties['ios.flipper'] == 'true' then
+-    flipper_config = FlipperConfiguration.enabled(["Debug", "Release"])
+-  elsif podfile_properties['ios.flipper'] != 'false' then
+-    flipper_config = FlipperConfiguration.enabled(["Debug", "Release"], { 'Flipper' => podfile_properties['ios.flipper'] })
+-  end
+-end
+-
+ target 'HelloWorld' do
+   use_expo_modules!
+   config = use_native_modules!
+@@ -44,17 +20,11 @@ target 'HelloWorld' do
    use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
    use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
  
@@ -929,8 +959,12 @@ index 2402cc34b2..b3978b9515 100644
 -    :fabric_enabled => flags[:fabric_enabled],
      # An absolute path to your application root.
      :app_path => "#{Pod::Config.instance.installation_root}/..",
-     # Note that if you have use_frameworks! enabled, Flipper will not work if enabled
-@@ -63,7 +59,6 @@ target 'HelloWorld' do
+-    # Note that if you have use_frameworks! enabled, Flipper will not work if enabled
+-    :flipper_configuration => flipper_config
+   )
+ 
+   post_install do |installer|
+@@ -63,7 +33,6 @@ target 'HelloWorld' do
        config[:reactNativePath],
        :mac_catalyst_enabled => false
      )
@@ -939,7 +973,7 @@ index 2402cc34b2..b3978b9515 100644
      # This is necessary for Xcode 14, because it signs resource bundles by default
      # when building for devices.
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 50e94a0837..a0b1b85c0a 100644
+index 50e94a0837..150bb72764 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -962,7 +996,7 @@ index 50e94a0837..a0b1b85c0a 100644
 +    "expo-status-bar": "~1.11.0",
      "react": "18.2.0",
 -    "react-native": "0.72.6"
-+    "react-native": "0.73.1"
++    "react-native": "0.73.2"
    },
    "devDependencies": {
      "@babel/core": "^7.20.0"

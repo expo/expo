@@ -1,3 +1,25 @@
+diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
+index a265c80fa9..a058ef6c4b 100644
+--- a/templates/expo-template-bare-minimum/android/app/build.gradle
++++ b/templates/expo-template-bare-minimum/android/app/build.gradle
+@@ -90,8 +90,6 @@ android {
+         targetSdkVersion rootProject.ext.targetSdkVersion
+         versionCode 1
+         versionName "1.0"
+-
+-        buildConfigField("boolean", "REACT_NATIVE_UNSTABLE_USE_RUNTIME_SCHEDULER_ALWAYS", (findProperty("reactNative.unstable_useRuntimeSchedulerAlways") ?: true).toString())
+     }
+     signingConfigs {
+         debug {
+@@ -158,8 +156,6 @@ dependencies {
+         }
+     }
+ 
+-    implementation("com.facebook.react:flipper-integration")
+-
+     if (hermesEnabled.toBoolean()) {
+         implementation("com.facebook.react:hermes-android")
+     } else {
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
 index 34a7ca8314..04b326127b 100644
 --- a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
@@ -11,6 +33,39 @@ index 34a7ca8314..04b326127b 100644
      <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
        <intent-filter>
          <action android:name="android.intent.action.MAIN"/>
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
+index 8258c40ed4..95ef45de96 100644
+--- a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
++++ b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
+@@ -9,11 +9,9 @@ import com.facebook.react.ReactApplication
+ import com.facebook.react.ReactNativeHost
+ import com.facebook.react.ReactPackage
+ import com.facebook.react.ReactHost
+-import com.facebook.react.config.ReactFeatureFlags
+ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
+ import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
+ import com.facebook.react.defaults.DefaultReactNativeHost
+-import com.facebook.react.flipper.ReactNativeFlipper
+ import com.facebook.soloader.SoLoader
+ 
+ import expo.modules.ApplicationLifecycleDispatcher
+@@ -45,16 +43,10 @@ class MainApplication : Application(), ReactApplication {
+   override fun onCreate() {
+     super.onCreate()
+     SoLoader.init(this, false)
+-    if (!BuildConfig.REACT_NATIVE_UNSTABLE_USE_RUNTIME_SCHEDULER_ALWAYS) {
+-      ReactFeatureFlags.unstable_useRuntimeSchedulerAlways = false
+-    }
+     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+       // If you opted-in for the New Architecture, we load the native entry point for this app.
+       load()
+     }
+-    if (BuildConfig.DEBUG) {
+-      ReactNativeFlipper.initializeFlipper(this, reactNativeHost.reactInstanceManager)
+-    }
+     ApplicationLifecycleDispatcher.onApplicationCreate(this)
+   }
+ 
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Supporting/Expo.plist b/templates/expo-template-bare-minimum/ios/HelloWorld/Supporting/Expo.plist
 index 03410dc8b3..f4f9f60993 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/Supporting/Expo.plist
@@ -26,15 +81,59 @@ index 03410dc8b3..f4f9f60993 100644
          <key>EXUpdatesURL</key>
          <string>YOUR-APP-URL-HERE</string>
  </dict>
+diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
+index b3978b9515..eaf07ca4c2 100644
+--- a/templates/expo-template-bare-minimum/ios/Podfile
++++ b/templates/expo-template-bare-minimum/ios/Podfile
+@@ -13,30 +13,6 @@ install! 'cocoapods',
+ 
+ prepare_react_native_project!
+ 
+-# If you are using a `react-native-flipper` your iOS build will fail when `NO_FLIPPER=1` is set.
+-# because `react-native-flipper` depends on (FlipperKit,...), which will be excluded. To fix this,
+-# you can also exclude `react-native-flipper` in `react-native.config.js`
+-#
+-# ```js
+-# module.exports = {
+-#   dependencies: {
+-#     ...(process.env.NO_FLIPPER ? { 'react-native-flipper': { platforms: { ios: null } } } : {}),
+-#   }
+-# }
+-# ```
+-flipper_config = FlipperConfiguration.disabled
+-if ENV['NO_FLIPPER'] == '1' then
+-  # Explicitly disabled through environment variables
+-  flipper_config = FlipperConfiguration.disabled
+-elsif podfile_properties.key?('ios.flipper') then
+-  # Configure Flipper in Podfile.properties.json
+-  if podfile_properties['ios.flipper'] == 'true' then
+-    flipper_config = FlipperConfiguration.enabled(["Debug", "Release"])
+-  elsif podfile_properties['ios.flipper'] != 'false' then
+-    flipper_config = FlipperConfiguration.enabled(["Debug", "Release"], { 'Flipper' => podfile_properties['ios.flipper'] })
+-  end
+-end
+-
+ target 'HelloWorld' do
+   use_expo_modules!
+   config = use_native_modules!
+@@ -49,8 +25,6 @@ target 'HelloWorld' do
+     :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
+     # An absolute path to your application root.
+     :app_path => "#{Pod::Config.instance.installation_root}/..",
+-    # Note that if you have use_frameworks! enabled, Flipper will not work if enabled
+-    :flipper_configuration => flipper_config
+   )
+ 
+   post_install do |installer|
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index ec2759d642..a0b1b85c0a 100644
+index 442e1c5722..150bb72764 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
  {
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
--  "version": "50.0.22",
+-  "version": "50.0.30",
 +  "version": "50.0.17",
    "main": "index.js",
    "scripts": {
@@ -43,10 +142,10 @@ index ec2759d642..a0b1b85c0a 100644
      "web": "expo start --web"
    },
    "dependencies": {
--    "expo": "~50.0.0-preview.8",
+-    "expo": "~50.0.2",
 -    "expo-status-bar": "~1.11.1",
 +    "expo": "~50.0.0-preview.4",
 +    "expo-status-bar": "~1.11.0",
      "react": "18.2.0",
-     "react-native": "0.73.1"
+     "react-native": "0.73.2"
    },
