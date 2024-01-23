@@ -5,6 +5,7 @@ import fs from 'fs/promises';
 import { sync as globSync } from 'glob';
 import klawSync from 'klaw-sync';
 import path from 'path';
+import semver from 'semver';
 
 import {
   bin,
@@ -203,6 +204,117 @@ it(
         "ios/basicprebuild.xcodeproj/project.xcworkspace/contents.xcworkspacedata",
         "ios/basicprebuild.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist",
         "ios/basicprebuild.xcodeproj/xcshareddata/xcschemes/basicprebuild.xcscheme",
+        "package.json",
+      ]
+    `);
+  },
+  // Could take 45s depending on how fast npm installs
+  60 * 1000
+);
+
+it(
+  'runs `npx expo prebuild --template <github-url>`',
+  async () => {
+    const projectRoot = await setupTestProjectAsync('github-template-prebuild', 'with-blank');
+
+    const expoPackage = require(path.join(projectRoot, 'package.json')).dependencies.expo;
+    const expoSdkVersion = semver.minVersion(expoPackage)?.major;
+    if (!expoSdkVersion) {
+      throw new Error('Could not determine Expo SDK major version from template');
+    }
+
+    const templateUrl = `https://github.com/expo/expo/tree/sdk-${expoSdkVersion}/templates/expo-template-bare-minimum`;
+    console.log('Using github template for SDK', expoSdkVersion, ':', templateUrl);
+
+    await execa('node', [bin, 'prebuild', '--template', templateUrl], {
+      cwd: projectRoot,
+    });
+
+    // List output files with sizes for snapshotting.
+    // This is to make sure that any changes to the output are intentional.
+    // Posix path formatting is used to make paths the same across OSes.
+    const files = klawSync(projectRoot)
+      .map((entry) => {
+        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
+          return null;
+        }
+        return path.posix.relative(projectRoot, entry.path);
+      })
+      .filter(Boolean);
+
+    const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
+
+    // Added new packages
+    expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
+      'expo',
+      'react',
+      'react-native',
+    ]);
+
+    // Updated scripts
+    expect(pkg.scripts).toStrictEqual({
+      android: 'expo run:android',
+      ios: 'expo run:ios',
+    });
+
+    // If this changes then everything else probably changed as well.
+    expect(files).toMatchInlineSnapshot(`
+      [
+        "App.js",
+        "android/.gitignore",
+        "android/app/build.gradle",
+        "android/app/debug.keystore",
+        "android/app/proguard-rules.pro",
+        "android/app/src/debug/AndroidManifest.xml",
+        "android/app/src/main/AndroidManifest.xml",
+        "android/app/src/main/java/com/example/minimal/MainActivity.java",
+        "android/app/src/main/java/com/example/minimal/MainApplication.java",
+        "android/app/src/main/res/drawable/rn_edit_text_material.xml",
+        "android/app/src/main/res/drawable/splashscreen.xml",
+        "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+        "android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png",
+        "android/app/src/main/res/mipmap-mdpi/ic_launcher.png",
+        "android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png",
+        "android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
+        "android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png",
+        "android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png",
+        "android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png",
+        "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
+        "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png",
+        "android/app/src/main/res/values/colors.xml",
+        "android/app/src/main/res/values/strings.xml",
+        "android/app/src/main/res/values/styles.xml",
+        "android/app/src/main/res/values-night/colors.xml",
+        "android/build.gradle",
+        "android/gradle/wrapper/gradle-wrapper.jar",
+        "android/gradle/wrapper/gradle-wrapper.properties",
+        "android/gradle.properties",
+        "android/gradlew",
+        "android/gradlew.bat",
+        "android/settings.gradle",
+        "app.json",
+        "bun.lockb",
+        "ios/.gitignore",
+        "ios/.xcode.env",
+        "ios/Podfile",
+        "ios/Podfile.properties.json",
+        "ios/githubtemplateprebuild/AppDelegate.h",
+        "ios/githubtemplateprebuild/AppDelegate.mm",
+        "ios/githubtemplateprebuild/Images.xcassets/AppIcon.appiconset/Contents.json",
+        "ios/githubtemplateprebuild/Images.xcassets/Contents.json",
+        "ios/githubtemplateprebuild/Images.xcassets/SplashScreenBackground.imageset/Contents.json",
+        "ios/githubtemplateprebuild/Images.xcassets/SplashScreenBackground.imageset/image.png",
+        "ios/githubtemplateprebuild/Info.plist",
+        "ios/githubtemplateprebuild/SplashScreen.storyboard",
+        "ios/githubtemplateprebuild/Supporting/Expo.plist",
+        "ios/githubtemplateprebuild/githubtemplateprebuild-Bridging-Header.h",
+        "ios/githubtemplateprebuild/githubtemplateprebuild.entitlements",
+        "ios/githubtemplateprebuild/main.m",
+        "ios/githubtemplateprebuild/noop-file.swift",
+        "ios/githubtemplateprebuild.xcodeproj/project.pbxproj",
+        "ios/githubtemplateprebuild.xcodeproj/project.xcworkspace/contents.xcworkspacedata",
+        "ios/githubtemplateprebuild.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist",
+        "ios/githubtemplateprebuild.xcodeproj/xcshareddata/xcschemes/githubtemplateprebuild.xcscheme",
         "package.json",
       ]
     `);
