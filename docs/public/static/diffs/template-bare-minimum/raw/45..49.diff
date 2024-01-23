@@ -1892,7 +1892,7 @@ index aef81ec589..f8e88bbe0c 100644
  #else
    return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
  #endif
-@@ -101,43 +54,4 @@ - (void)application:(UIApplication *)application didReceiveRemoteNotification:(N
+@@ -101,43 +54,4 @@
    return [super application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
  }
  
