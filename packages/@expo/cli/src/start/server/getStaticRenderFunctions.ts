@@ -10,7 +10,7 @@ import path from 'path';
 import requireString from 'require-from-string';
 import resolveFrom from 'resolve-from';
 
-import { logMetroError } from './metro/metroErrorInterface';
+import { logMetroError, logMetroErrorAsync } from './metro/metroErrorInterface';
 import { getMetroServerRoot } from './middleware/ManifestMiddleware';
 import { createBundleUrlPath } from './middleware/metroOptions';
 import { stripAnsi } from '../../utils/ansi';
@@ -19,7 +19,39 @@ import { SilentError } from '../../utils/errors';
 import { memoize } from '../../utils/fn';
 import { profile } from '../../utils/profile';
 
+type StaticRenderOptions = {
+  // Ensure the style format is `css-xxxx` (prod) instead of `css-view-xxxx` (dev)
+  dev?: boolean;
+  minify?: boolean;
+  platform?: string;
+  environment?: 'node';
+  engine?: 'hermes';
+  baseUrl: string;
+  routerRoot: string;
+};
+
+class MetroNodeError extends Error {
+  constructor(
+    message: string,
+    public rawObject: any
+  ) {
+    super(message);
+  }
+}
+
 const debug = require('debug')('expo:start:server:node-renderer') as typeof console.log;
+
+const cachedSourceMaps: Map<string, { url: string; map: string }> = new Map();
+
+// Support unhandled rejections
+require('source-map-support').install({
+  retrieveSourceMap(source: string) {
+    if (cachedSourceMaps.has(source)) {
+      return cachedSourceMaps.get(source);
+    }
+    return null;
+  },
+});
 
 function wrapBundle(str: string) {
   // Skip the metro runtime so debugging is a bit easier.
@@ -40,17 +72,6 @@ const getRenderModuleId = (projectRoot: string): string => {
   return moduleId;
 };
 
-type StaticRenderOptions = {
-  // Ensure the style format is `css-xxxx` (prod) instead of `css-view-xxxx` (dev)
-  dev?: boolean;
-  minify?: boolean;
-  platform?: string;
-  environment?: 'node';
-  engine?: 'hermes';
-  baseUrl: string;
-  routerRoot: string;
-};
-
 const moveStaticRenderFunction = memoize(async (projectRoot: string, requiredModuleId: string) => {
   // Copy the file into the project to ensure it works in monorepos.
   // This means the file cannot have any relative imports.
@@ -68,7 +89,7 @@ async function getStaticRenderFunctionsContentAsync(
   projectRoot: string,
   devServerUrl: string,
   { dev = false, minify = false, environment, baseUrl, routerRoot }: StaticRenderOptions
-): Promise<string> {
+): Promise<{ src: string; filename: string }> {
   const root = getMetroServerRoot(projectRoot);
   const requiredModuleId = getRenderModuleId(root);
   let moduleId = requiredModuleId;
@@ -136,20 +157,17 @@ export async function createMetroEndpointAsync(
     isExporting: true,
     asyncRoutes: false,
     routerRoot,
+    inlineSourceMap: false,
   });
 
-  const url = new URL(urlFragment.replace(/^\//, ''), devServerUrl).toString();
+  let url: string;
+  if (devServerUrl) {
+    url = new URL(urlFragment.replace(/^\//, ''), devServerUrl).toString();
+  } else {
+    url = '/' + urlFragment.replace(/^\/+/, '');
+  }
   debug('fetching from Metro:', root, serverPath, url);
   return url;
-}
-
-class MetroNodeError extends Error {
-  constructor(
-    message: string,
-    public rawObject: any
-  ) {
-    super(message);
-  }
 }
 
 export async function requireFileContentsWithMetro(
@@ -157,7 +175,7 @@ export async function requireFileContentsWithMetro(
   devServerUrl: string,
   absoluteFilePath: string,
   props: StaticRenderOptions
-): Promise<string> {
+): Promise<{ src: string; filename: string }> {
   const url = await createMetroEndpointAsync(projectRoot, devServerUrl, absoluteFilePath, props);
 
   const res = await fetch(url);
@@ -179,7 +197,10 @@ export async function requireFileContentsWithMetro(
 
   const content = await res.text();
 
-  return wrapBundle(content);
+  const map = await fetch(url.replace('.bundle?', '.map?')).then((r) => r.json());
+  cachedSourceMaps.set(url, { url: projectRoot, map });
+
+  return { src: wrapBundle(content), filename: url };
 }
 
 export async function getStaticRenderFunctions(
@@ -187,20 +208,21 @@ export async function getStaticRenderFunctions(
   devServerUrl: string,
   options: StaticRenderOptions
 ): Promise<Record<string, (...args: any[]) => Promise<any>>> {
-  const scriptContents = await getStaticRenderFunctionsContentAsync(
+  const { src: scriptContents, filename } = await getStaticRenderFunctionsContentAsync(
     projectRoot,
     devServerUrl,
     options
   );
 
-  return evalMetroAndWrapFunctions(projectRoot, scriptContents);
+  return evalMetroAndWrapFunctions(projectRoot, scriptContents, filename);
 }
 
 function evalMetroAndWrapFunctions<T = Record<string, (...args: any[]) => Promise<any>>>(
   projectRoot: string,
-  script: string
+  script: string,
+  filename: string
 ): Promise<T> {
-  const contents = evalMetro(script);
+  const contents = evalMetro(projectRoot, script, filename);
 
   // wrap each function with a try/catch that uses Metro's error formatter
   return Object.keys(contents).reduce((acc, key) => {
@@ -221,6 +243,28 @@ function evalMetroAndWrapFunctions<T = Record<string, (...args: any[]) => Promis
   }, {} as any);
 }
 
-function evalMetro(src: string) {
-  return profile(requireString, 'eval-metro-bundle')(src);
+function evalMetro(projectRoot: string, src: string, filename: string) {
+  const originalConsole = {
+    log: console.log,
+    warn: console.warn,
+    error: console.error,
+  };
+  try {
+    return profile(requireString, 'eval-metro-bundle')(src, filename);
+  } catch (error: any) {
+    // Format any errors that were thrown in the global scope of the evaluation.
+    if (error instanceof Error) {
+      logMetroErrorAsync({ projectRoot, error }).catch((internalError) => {
+        debug('Failed to log metro error:', internalError);
+        throw error;
+      });
+    } else {
+      throw error;
+    }
+  } finally {
+    // Restore the original console in case it was modified.
+    console.log = originalConsole.log;
+    console.warn = originalConsole.warn;
+    console.error = originalConsole.error;
+  }
 }
