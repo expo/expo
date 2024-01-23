@@ -4,6 +4,7 @@ import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
 import expo.modules.core.logging.LogType
 import expo.modules.core.logging.PersistentFileLog
+import expo.modules.updates.UpdatesModule
 import expo.modules.updates.logging.UpdatesLogger.Companion.EXPO_UPDATES_LOGGING_TAG
 import expo.modules.updates.logging.UpdatesLogger.Companion.MAX_FRAMES_IN_STACKTRACE
 import org.junit.Assert
@@ -145,42 +146,41 @@ class UpdatesLoggingTest {
     Assert.assertEquals("Message 2", UpdatesLogEntry.create(purgedLogs[0])?.message)
   }
 
-  // TODO: Re-enable this after upgrading react-native to 0.73
-  // @Test
-  // fun testBridgeMethods() {
-  //   val asyncTestUtil = AsyncTestUtil()
-  //   val instrumentationContext = InstrumentationRegistry.getInstrumentation().context
-  //   val logger = UpdatesLogger(instrumentationContext)
-  //   logger.warn("Test message", UpdatesErrorCode.JSRuntimeError)
-  //   val entries = UpdatesModule.readLogEntries(
-  //     instrumentationContext,
-  //     1000L,
-  //   )
-  //   Assert.assertNotNull(entries)
-  //   Assert.assertEquals(1, entries.size)
-  //   val bundle = entries[0]
-  //   Assert.assertEquals("Test message", bundle.getString("message"))
+  @Test
+  fun testBridgeMethods() {
+    val asyncTestUtil = AsyncTestUtil()
+    val instrumentationContext = InstrumentationRegistry.getInstrumentation().context
+    val logger = UpdatesLogger(instrumentationContext)
+    logger.warn("Test message", UpdatesErrorCode.JSRuntimeError)
+    val entries = UpdatesModule.readLogEntries(
+      instrumentationContext,
+      1000L
+    )
+    Assert.assertNotNull(entries)
+    Assert.assertEquals(1, entries.size)
+    val bundle = entries[0]
+    Assert.assertEquals("Test message", bundle.getString("message"))
 
-  //   var rejected = false
-  //   asyncTestUtil.asyncMethodRunning = true
-  //   UpdatesModule.clearLogEntries(instrumentationContext) { error ->
-  //     if (error != null) {
-  //       rejected = true
-  //       asyncTestUtil.asyncMethodRunning = false
-  //     }
-  //     asyncTestUtil.asyncMethodRunning = false
-  //   }
-  //   asyncTestUtil.waitForAsyncMethodToFinish("clearLogEntriesAsync timed out", 1000)
-  //   Assert.assertFalse(rejected)
+    var rejected = false
+    asyncTestUtil.asyncMethodRunning = true
+    UpdatesModule.clearLogEntries(instrumentationContext) { error ->
+      if (error != null) {
+        rejected = true
+        asyncTestUtil.asyncMethodRunning = false
+      }
+      asyncTestUtil.asyncMethodRunning = false
+    }
+    asyncTestUtil.waitForAsyncMethodToFinish("clearLogEntriesAsync timed out", 1000)
+    Assert.assertFalse(rejected)
 
-  //   val entries2 = UpdatesModule.readLogEntries(
-  //     instrumentationContext,
-  //     1000L
-  //   )
-  //   asyncTestUtil.waitForAsyncMethodToFinish("readLogEntriesAsync timed out", 1000000)
-  //   Assert.assertNotNull(entries2)
-  //   Assert.assertEquals(0, entries2.size)
-  // }
+    val entries2 = UpdatesModule.readLogEntries(
+      instrumentationContext,
+      1000L
+    )
+    asyncTestUtil.waitForAsyncMethodToFinish("readLogEntriesAsync timed out", 1000000)
+    Assert.assertNotNull(entries2)
+    Assert.assertEquals(0, entries2.size)
+  }
 
   internal class AsyncTestUtil {
     var asyncMethodRunning = false
