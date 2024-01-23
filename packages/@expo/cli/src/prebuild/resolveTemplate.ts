@@ -8,8 +8,10 @@ import semver from 'semver';
 
 import { fetchAsync } from '../api/rest/client';
 import * as Log from '../log';
+import { createGlobFilter } from '../utils/createFileTransform';
 import { AbortCommandError, CommandError } from '../utils/errors';
 import {
+  ExtractProps,
   downloadAndExtractNpmModuleAsync,
   extractLocalNpmTarballAsync,
   extractNpmTarballFromUrlAsync,
@@ -91,21 +93,30 @@ function hasRepo({ username, name, branch, filePath }: RepoInfo) {
 }
 
 async function downloadAndExtractRepoAsync(
-  root: string,
-  { username, name, branch, filePath }: RepoInfo
+  { username, name, branch, filePath }: RepoInfo,
+  props: ExtractProps
 ): Promise<string> {
-  const projectName = path.basename(root);
-
-  const strip = filePath ? filePath.split('/').length + 1 : 1;
-
   const url = `https://codeload.github.com/${username}/${name}/tar.gz/${branch}`;
+
   debug('Downloading tarball from:', url);
-  return await extractNpmTarballFromUrlAsync(url, {
-    cwd: root,
-    name: projectName,
-    strip,
-    fileList: [`${name}-${branch}${filePath ? `/${filePath}` : ''}`],
-  });
+
+  // Extract the (sub)directory into non-empty path segments
+  const directory = filePath.replace(/^\//, '').split('/').filter(Boolean);
+  // Remove the (sub)directory paths, and the root folder added by GitHub
+  const strip = directory.length + 1;
+  // Only extract the relevant (sub)directories, ignoring irrelevant files
+  // The filder auto-ignores dotfiles, unless explicitly included
+  const filter = createGlobFilter(
+    !directory.length
+      ? ['*/**', '*/ios/.xcode.env']
+      : [`*/${directory.join('/')}/**`, `*/${directory.join('/')}/ios/.xcode.env`],
+    {
+      // Always ignore the `.xcworkspace` folder
+      ignore: ['**/ios/*.xcworkspace/**'],
+    }
+  );
+
+  return await extractNpmTarballFromUrlAsync(url, { ...props, strip, filter });
 }
 
 export async function resolveTemplateArgAsync(
@@ -179,5 +190,8 @@ export async function resolveTemplateArgAsync(
     `Downloading files from repo ${chalk.cyan(template)}. This might take a moment.`
   );
 
-  return await downloadAndExtractRepoAsync(templateDirectory, repoInfo);
+  return await downloadAndExtractRepoAsync(repoInfo, {
+    cwd: templateDirectory,
+    name: appName,
+  });
 }
