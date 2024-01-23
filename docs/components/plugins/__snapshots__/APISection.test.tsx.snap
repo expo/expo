@@ -1038,7 +1038,7 @@ properties.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -1458,7 +1458,7 @@ value depending on the state of the credential.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -1699,7 +1699,7 @@ refresh operation.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -1987,7 +1987,7 @@ sign-in operation.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -2309,7 +2309,7 @@ sign-out operation.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -2628,7 +2628,7 @@ for more details.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -3090,7 +3090,7 @@ may be
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -3503,7 +3503,7 @@ for more details.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -3817,7 +3817,7 @@ for more details.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -4148,7 +4148,7 @@ for more details.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -4320,7 +4320,7 @@ OAuth 2.0 protocol
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -7252,7 +7252,7 @@ Same as
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -7961,7 +7961,7 @@ This uses both
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -8320,7 +8320,7 @@ code.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -8601,7 +8601,7 @@ in order to enable/disable the permission.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -8785,7 +8785,7 @@ in order to enable/disable the permission.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -8912,7 +8912,7 @@ in order to enable/disable the permission.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -9045,7 +9045,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -9216,7 +9216,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
         class="css-1uyflf8-Table"
       >
         <table
-          class="css-txbaae-Table"
+          class="css-e41t9x-Table"
         >
           <thead
             class="bg-subtle border-b border-b-default border-solid"
@@ -9343,7 +9343,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -9622,7 +9622,7 @@ you don't get this value.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -10409,7 +10409,7 @@ exports[`APISection expo-pedometer 1`] = `
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -10998,7 +10998,7 @@ available on this device.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -11277,7 +11277,7 @@ provided with a single argument that is
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -11558,7 +11558,7 @@ in order to enable/disable the permission.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -11688,7 +11688,7 @@ in order to enable/disable the permission.
         class="css-1uyflf8-Table"
       >
         <table
-          class="css-txbaae-Table"
+          class="css-e41t9x-Table"
         >
           <thead
             class="bg-subtle border-b border-b-default border-solid"
@@ -11916,7 +11916,7 @@ in order to enable/disable the permission.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
