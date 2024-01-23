@@ -9,6 +9,7 @@ import inquirer from 'inquirer';
 import fetch from 'node-fetch';
 import os from 'os';
 import path from 'path';
+import semver from 'semver';
 import { v4 as uuidv4 } from 'uuid';
 
 import { EXPO_DIR, EXPO_GO_IOS_DIR } from '../Constants';
@@ -140,7 +141,6 @@ async function iosBuildAndSubmitAsync() {
   const credentialsDir = path.join(projectDir, 'credentials');
   const fastlaneMatchBucketCopyPath = path.join(credentialsDir, 'fastlane-match');
   const releaseSecretsPath = path.join(credentialsDir, 'secrets');
-  const isDarwin = os.platform() === 'darwin';
 
   logger.info('Preparing credentials');
   try {
@@ -182,12 +182,20 @@ async function iosBuildAndSubmitAsync() {
         stdio: isDebug ? 'inherit' : 'pipe',
       }
     );
+    const { stdout: opensslVersionCommandOutput } = await spawnAsync('openssl', ['--version'], {
+      stdio: isDebug ? 'inherit' : 'pipe',
+    });
+    const opensslVersionRegex = /OpenSSL\s(\d+\.\d+\.\d+)/;
+    const matches = opensslVersionCommandOutput.match(opensslVersionRegex);
+    assert(matches, 'Could not parse openssl version');
+    const opensslVersion = matches[1];
+    const isOpensslVersionAbove1 = semver.satisfies(opensslVersion, '>1');
     await spawnAsync(
       'openssl',
       [
         'pkcs12',
         '-export',
-        ...(isDarwin ? [] : ['-legacy']),
+        ...(isOpensslVersionAbove1 ? ['-legacy'] : []),
         '-out',
         p12KeystorePath,
         '-inkey',
