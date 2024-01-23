@@ -63,7 +63,7 @@ describe('bare project test', () => {
     const contents = await fs.readFile(filePath, 'utf8');
     await fs.writeFile(
       filePath,
-      modifyPodfileContents(contents, /(:fabric_enabled)\s*=>.*,$/gm, '$1 => false,')
+      modifyPodfileContents(contents, /(:path)\s*=>.*,$/gm, `$1 => ../node_modules/react-native,`)
     );
     const hash2 = await createProjectHashAsync(projectRoot);
     expect(hash).not.toBe(hash2);
@@ -75,7 +75,7 @@ describe('bare project test', () => {
     const contents = await fs.readFile(filePath, 'utf8');
     await fs.writeFile(
       filePath,
-      modifyPodfileContents(contents, /(:fabric_enabled)\s*=>.*,$/gm, '$1 => false,')
+      modifyPodfileContents(contents, /(:path)\s*=>.*,$/gm, `$1 => config[:reactNativePath],`)
     );
     await fs.writeFile(filePath, contents);
     const hash2 = await createProjectHashAsync(projectRoot, { platforms: ['android'] });
