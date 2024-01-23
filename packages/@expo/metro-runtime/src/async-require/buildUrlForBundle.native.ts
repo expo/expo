@@ -6,6 +6,10 @@
  */
 
 export function buildUrlForBundle(bundlePath: string): string {
+  if (bundlePath.match(/^https?:\/\//)) {
+    return bundlePath;
+  }
+
   if (process.env.NODE_ENV === 'production') {
     if (typeof location !== 'undefined') {
       return joinComponents(location.origin, bundlePath);
