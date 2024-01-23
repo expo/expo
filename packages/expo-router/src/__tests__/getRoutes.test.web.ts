@@ -62,6 +62,7 @@ describe('getRoutes', () => {
       contextKey: './_layout.tsx',
       dynamic: null,
       generated: true,
+      type: 'layout',
       route: '',
     });
   });
@@ -112,6 +113,7 @@ describe('getRoutes', () => {
       contextKey: './_layout.tsx',
       dynamic: null,
       generated: true,
+      type: 'layout',
       route: '',
     });
   });
@@ -164,7 +166,58 @@ describe('getRoutes', () => {
       ],
       contextKey: './_layout.js',
       dynamic: null,
+      type: 'layout',
       route: '',
+    });
+  });
+
+  it(`allows index routes be one level higher in the file-tree than their subroutes`, () => {
+    expect(
+      getRoutes(
+        inMemoryContext({
+          './[a].tsx': () => null, // In v2 this would error and require moving to ./[a]/index.tsx
+          './[a]/[b].tsx': () => null, //
+        }),
+        { internal_stripLoadRoute: true, internal_skipGenerated: true }
+      )
+    ).toEqual({
+      children: [
+        {
+          children: [],
+          contextKey: './[a].tsx',
+          dynamic: [
+            {
+              deep: false,
+              name: 'a',
+            },
+          ],
+          entryPoints: ['expo-router/build/views/Navigator.js', './[a].tsx'],
+          route: '[a]',
+          type: 'route',
+        },
+        {
+          children: [],
+          contextKey: './[a]/[b].tsx',
+          dynamic: [
+            {
+              deep: false,
+              name: 'a',
+            },
+            {
+              deep: false,
+              name: 'b',
+            },
+          ],
+          entryPoints: ['expo-router/build/views/Navigator.js', './[a]/[b].tsx'],
+          route: '[a]/[b]',
+          type: 'route',
+        },
+      ],
+      contextKey: './_layout.tsx',
+      dynamic: null,
+      generated: true,
+      route: '',
+      type: 'layout',
     });
   });
 
@@ -172,11 +225,11 @@ describe('getRoutes', () => {
     expect(() => {
       getRoutes(
         inMemoryContext({
-          './(a)/(b).tsx': () => null,
+          './folder/(b).tsx': () => null,
         })
       );
     }).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid route ./(a)/(b).tsx. Routes cannot end with '(group)' syntax"`
+      `"Invalid route ./folder/(b).tsx. Routes cannot end with '(group)' syntax"`
     );
   });
 
@@ -193,6 +246,7 @@ describe('getRoutes', () => {
       children: [
         {
           contextKey: './(b)/_layout.js',
+          type: 'layout',
           dynamic: null,
           route: '(b)',
           children: [
@@ -220,6 +274,7 @@ describe('getRoutes', () => {
         },
       ],
       contextKey: './_layout.tsx',
+      type: 'layout',
       dynamic: null,
       generated: true,
       route: '',
@@ -243,7 +298,7 @@ describe('duplicate routes', () => {
         })
       );
     }).toThrowErrorMatchingInlineSnapshot(
-      `"The route files "./a.tsx" and ./a.js conflict on the route "/a". Please remove or rename one of these files."`
+      `"The route files "./a.tsx" and "./a.js" conflict on the route "/a". Please remove or rename one of these files."`
     );
   });
 
@@ -280,7 +335,7 @@ describe('duplicate routes', () => {
         })
       );
     }).toThrowErrorMatchingInlineSnapshot(
-      `"The route files "./test/folder/b.js" and ./test/folder/b.tsx conflict on the route "/test/folder/b". Please remove or rename one of these files."`
+      `"The route files "./test/folder/b.js" and "./test/folder/b.tsx" conflict on the route "/test/folder/b". Please remove or rename one of these files."`
     );
   });
 
@@ -293,7 +348,7 @@ describe('duplicate routes', () => {
         })
       );
     }).toThrowErrorMatchingInlineSnapshot(
-      `"The route files "./(a,b)/b.tsx" and ./(a)/b.tsx conflict on the route "/(a)/b". Please remove or rename one of these files."`
+      `"The route files "./(a,b)/b.tsx" and "./(a)/b.tsx" conflict on the route "/(a)/b". Please remove or rename one of these files."`
     );
   });
 
@@ -321,30 +376,17 @@ describe('+html', () => {
     ).toEqual(null);
   });
 
-  it(`allows nested +html routes`, () => {
-    expect(
+  it(`errors if there are nested +html routes`, () => {
+    expect(() => {
       getRoutes(
         inMemoryContext({
           './folder/+html': () => null,
         }),
         { internal_stripLoadRoute: true, internal_skipGenerated: true }
-      )
-    ).toEqual({
-      children: [
-        {
-          type: 'route',
-          children: [],
-          contextKey: './folder/+html.js',
-          dynamic: null,
-          entryPoints: ['expo-router/build/views/Navigator.js', './folder/+html.js'],
-          route: 'folder/+html',
-        },
-      ],
-      contextKey: './_layout.tsx',
-      dynamic: null,
-      generated: true,
-      route: '',
-    });
+      );
+    }).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid route ./folder/+html.js. Route nodes cannot start with the '+' character. "Please rename to folder/html.js""`
+    );
   });
 });
 
@@ -362,6 +404,7 @@ describe('+not-found', () => {
       children: [
         {
           children: [],
+          type: 'route',
           contextKey: './+not-found.js',
           dynamic: [
             {
@@ -375,6 +418,7 @@ describe('+not-found', () => {
         },
         {
           children: [],
+          type: 'route',
           contextKey: './_sitemap.tsx',
           dynamic: null,
           entryPoints: [
@@ -387,6 +431,7 @@ describe('+not-found', () => {
         },
         {
           children: [],
+          type: 'route',
           contextKey: './(app)/index.js',
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
@@ -394,6 +439,7 @@ describe('+not-found', () => {
         },
       ],
       contextKey: './_layout.tsx',
+      type: 'layout',
       dynamic: null,
       generated: true,
       route: '',
@@ -437,14 +483,17 @@ describe('entry points', () => {
       children: [
         {
           children: [],
+          type: 'route',
           contextKey: './_sitemap.tsx',
           dynamic: null,
           generated: true,
           internal: true,
           route: '_sitemap',
+          entryPoints: undefined,
         },
         {
           children: [],
+          type: 'route',
           contextKey: './+not-found.tsx',
           dynamic: [
             {
@@ -456,22 +505,26 @@ describe('entry points', () => {
           generated: true,
           internal: true,
           route: '+not-found',
+          entryPoints: undefined,
         },
         {
           children: [],
+          type: 'route',
           contextKey: './(app)/index.js',
           dynamic: null,
           route: '(app)/index',
+          entryPoints: undefined,
         },
       ],
       contextKey: './_layout.tsx',
+      type: 'layout',
       dynamic: null,
       generated: true,
       route: '',
     });
   });
 
-  it(`should append add entry points for all parent _layouts`, () => {
+  it(`should append entry points for all parent _layouts`, () => {
     expect(
       getRoutes(
         inMemoryContext({
@@ -484,27 +537,32 @@ describe('entry points', () => {
       )
     ).toEqual({
       contextKey: './_layout.tsx',
+      type: 'layout',
       dynamic: null,
       generated: true,
       route: '',
       children: [
         {
           contextKey: './a/_layout.js',
+          type: 'layout',
           dynamic: null,
           route: 'a',
           children: [
             {
               contextKey: './a/b/_layout.js',
+              type: 'layout',
               dynamic: null,
               route: 'b',
               children: [
                 {
                   contextKey: './a/b/(c,d)/_layout.js',
+                  type: 'layout',
                   dynamic: null,
                   route: '(c)',
                   children: [
                     {
                       children: [],
+                      type: 'route',
                       contextKey: './a/b/(c,d)/e.js',
                       dynamic: null,
                       entryPoints: [
@@ -520,11 +578,13 @@ describe('entry points', () => {
                 },
                 {
                   contextKey: './a/b/(c,d)/_layout.js',
+                  type: 'layout',
                   dynamic: null,
                   route: '(d)',
                   children: [
                     {
                       children: [],
+                      type: 'route',
                       contextKey: './a/b/(c,d)/e.js',
                       dynamic: null,
                       entryPoints: [
@@ -562,6 +622,7 @@ describe('dynamic routes', () => {
       children: [
         {
           children: [],
+          type: 'route',
           contextKey: './[single].js',
           dynamic: [
             {
@@ -574,6 +635,7 @@ describe('dynamic routes', () => {
         },
         {
           children: [],
+          type: 'route',
           contextKey: './[...catchAll].js',
           dynamic: [
             {
@@ -586,6 +648,7 @@ describe('dynamic routes', () => {
         },
         {
           children: [],
+          type: 'route',
           contextKey: './a/b/c/[single].js',
           dynamic: [
             {
@@ -598,6 +661,7 @@ describe('dynamic routes', () => {
         },
       ],
       contextKey: './_layout.tsx',
+      type: 'layout',
       dynamic: null,
       generated: true,
       route: '',

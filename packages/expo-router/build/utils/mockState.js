@@ -23,7 +23,7 @@ function configFromFs(map = []) {
         };
         return acc;
     }, {});
-    return (0, getLinkingConfig_1.getNavigationConfig)((0, getRoutes_1.getExactRoutes)(createMockContextModule(ctx)));
+    return (0, getLinkingConfig_1.getNavigationConfig)((0, getRoutes_1.getRoutes)(createMockContextModule(ctx)));
 }
 exports.configFromFs = configFromFs;
 //# sourceMappingURL=mockState.js.map

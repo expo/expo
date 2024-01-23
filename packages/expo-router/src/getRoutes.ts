@@ -24,8 +24,6 @@ type DirectoryNode = {
   subdirectories: Map<string, DirectoryNode>;
 };
 
-export const ROUTES_EXCLUSION_REGEX = /([^/]*?\+[^/]*?)\.[tj]sx?$/; // Ignore all files that start with '+' e.g /folder/(group)/+html.tsx
-
 /**
  * Given a Metro context module, return an array of nested routes.
  *
@@ -53,7 +51,8 @@ export function getRoutes(contextModule: RequireContext, options: Options = {}):
  * Converts the RequireContext keys (file paths) into a directory tree.
  */
 function getDirectoryTree(contextModule: RequireContext, options: Options) {
-  const ignoreList = [ROUTES_EXCLUSION_REGEX];
+  const ignoreList: RegExp[] = [/^\.\/\+html\.[tj]sx?$/]; // Ignore the top level ./+html file
+
   if (options.ignore) {
     ignoreList.push(...options.ignore);
   }
@@ -338,6 +337,14 @@ function getFileMeta(key: string) {
 
   if (filenameWithoutExtensions.startsWith('(') && filenameWithoutExtensions.endsWith(')')) {
     throw new Error(`Invalid route ./${key}. Routes cannot end with '(group)' syntax`);
+  }
+
+  // Nested routes cannot start with the '+' character, except for the '+not-found' route
+  if (!isApi && filename.startsWith('+') && filenameWithoutExtensions !== '+not-found') {
+    const renamedRoute = [...parts.slice(0, -1), filename.slice(1)].join('/');
+    throw new Error(
+      `Invalid route ./${key}. Route nodes cannot start with the '+' character. "Please rename to ${renamedRoute}"`
+    );
   }
 
   return {
