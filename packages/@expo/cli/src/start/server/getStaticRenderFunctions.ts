@@ -244,6 +244,11 @@ function evalMetroAndWrapFunctions<T = Record<string, (...args: any[]) => Promis
 }
 
 function evalMetro(projectRoot: string, src: string, filename: string) {
+  const originalConsole = {
+    log: console.log,
+    warn: console.warn,
+    error: console.error,
+  };
   try {
     return profile(requireString, 'eval-metro-bundle')(src, filename);
   } catch (error: any) {
@@ -256,5 +261,10 @@ function evalMetro(projectRoot: string, src: string, filename: string) {
     } else {
       throw error;
     }
+  } finally {
+    // Restore the original console in case it was modified.
+    console.log = originalConsole.log;
+    console.warn = originalConsole.warn;
+    console.error = originalConsole.error;
   }
 }
