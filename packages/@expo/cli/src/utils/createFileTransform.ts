@@ -1,7 +1,7 @@
 import { IOSConfig } from '@expo/config-plugins';
 import Minipass from 'minipass';
 import path from 'path';
-import picomatch, { type PicomatchOptions } from 'picomatch';
+import picomatch from 'picomatch';
 import { ReadEntry } from 'tar';
 
 const debug = require('debug')('expo:file-transform') as typeof console.log;
@@ -95,10 +95,17 @@ export function createFileTransform(name: string) {
   };
 }
 
-export function createGlobFilter(globPattern: string, options?: PicomatchOptions) {
+export function createGlobFilter(
+  globPattern: picomatch.Glob,
+  options?: picomatch.PicomatchOptions
+) {
   const matcher = picomatch(globPattern, options);
 
-  debug('filter: created for pattern %s (%s)', globPattern);
+  debug(
+    'filter: created for pattern(s) "%s" (%s)',
+    Array.isArray(globPattern) ? globPattern.join('", "') : globPattern,
+    options
+  );
 
   return (path: string) => {
     const included = matcher(path);

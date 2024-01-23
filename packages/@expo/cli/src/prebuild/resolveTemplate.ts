@@ -105,17 +105,16 @@ async function downloadAndExtractRepoAsync(
   // Remove the (sub)directory paths, and the root folder added by GitHub
   const strip = directory.length + 1;
   // Only extract the relevant (sub)directories, ignoring irrelevant files
-  const filter = createGlobFilter(!directory.length ? '*/**' : `*/${directory.join('/')}/**`, {
-    // Enable dotfiles for `.xcode.env`
-    dot: true,
-    // Keep this up to date with the `.npmignore` files in expo/expo/templates/<template>/.npmignore
-    ignore: [
-      '**/.gitattributes',
-      '**/.npmignore',
-      '**/ios/HelloWorld.xcworkspace/**',
-      '**/ios/.xcode.env.local',
-    ],
-  });
+  // The filder auto-ignores dotfiles, unless explicitly included
+  const filter = createGlobFilter(
+    !directory.length
+      ? ['*/**', '*/ios/.xcode.env']
+      : [`*/${directory.join('/')}/**`, `*/${directory.join('/')}/ios/.xcode.env`],
+    {
+      // Always ignore the `.xcworkspace` folder
+      ignore: ['**/ios/*.xcworkspace/**'],
+    }
+  );
 
   return await extractNpmTarballFromUrlAsync(url, { ...props, strip, filter });
 }
