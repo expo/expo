@@ -45,13 +45,19 @@ export function fetchThenEvalAsync(url: string): Promise<void> {
           // the user experience doesn't feel bad. This can be tested by loading a split bundle that results in a missing module error from Metro.
           if ('message' in error) {
             throw new Error(
-              'Error fetching split bundle from Metro (check terminal):\n' + error.message
+              'Failed to load split bundle from Metro ' +
+                url +
+                ' (check terminal for more info).\n(load: ' +
+                error.message +
+                ')'
             );
           }
         }
       }
 
-      throw new Error(`Failed to load bundle for ${url}: ${body}`);
+      throw new Error(
+        `Failed to load split bundle from Metro ${url} (check terminal for more info).\n${body}`
+      );
     }
   });
 }
