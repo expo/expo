@@ -34,8 +34,8 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "expo-json-utils": "~0.12.0",
-    "@expo/config": "~8.5.0"
+    "@expo/config": "~8.5.0",
+    "expo-json-utils": "~0.12.0"
   },
   "devDependencies": {
     "expo-module-scripts": "^3.0.0"

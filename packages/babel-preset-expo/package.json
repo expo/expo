@@ -42,11 +42,11 @@
   },
   "dependencies": {
     "@babel/plugin-proposal-decorators": "^7.12.9",
-    "@babel/plugin-transform-object-rest-spread": "^7.12.13",
     "@babel/plugin-transform-export-namespace-from": "^7.22.11",
+    "@babel/plugin-transform-object-rest-spread": "^7.12.13",
+    "@babel/plugin-transform-parameters": "^7.22.15",
     "@babel/preset-env": "^7.20.0",
     "@babel/preset-react": "^7.22.15",
-    "@babel/plugin-transform-parameters": "^7.22.15",
     "@react-native/babel-preset": "^0.73.18",
     "babel-plugin-react-native-web": "~0.18.10",
     "react-refresh": "0.14.0"
