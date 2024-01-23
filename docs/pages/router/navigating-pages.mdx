@@ -81,7 +81,6 @@ export function logout() {
 
 The `router` object is immutable and contains the following functions:
 
-- **navigate**: `(href: Href) => void` Navigate to a route using the default behavior. You can provide a full path like **/profile/settings** or a relative path like **../settings**. Navigate to dynamic routes by passing an object like `{ pathname: 'profile', params: { id: '123' } }`.
 - **push**: `(href: Href) => void` Navigate to a route by always pushing onto the stack. You can provide a full path like **/profile/settings** or a relative path like **../settings**. Navigate to dynamic routes by passing an object like `{ pathname: 'profile', params: { id: '123' } }`.
 - **replace**: `(href: Href) => void` Navigate to a route by substituting the current route with a new one. This is useful for redirects.
 - **back**: `() => void` Navigate back to previous route.
