@@ -132,7 +132,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       );
       if (contents) {
         files.set(artifactFilename, {
-          contents,
+          contents: contents.src,
           targetDomain: 'server',
         });
       }

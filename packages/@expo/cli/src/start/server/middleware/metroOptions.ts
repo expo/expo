@@ -25,6 +25,7 @@ export type ExpoMetroOptions = {
   isExporting: boolean;
   /** Module ID relative to the projectRoot for the Expo Router app directory. */
   routerRoot: string;
+  inlineSourceMap?: boolean;
 };
 
 export type SerializerOptions = {
@@ -115,6 +116,7 @@ export function getMetroDirectBundleOptions(
     baseUrl,
     routerRoot,
     isExporting,
+    inlineSourceMap,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
@@ -148,7 +150,7 @@ export function getMetroDirectBundleOptions(
     entryFile: mainModuleName,
     dev,
     minify: !isHermes && (minify ?? !dev),
-    inlineSourceMap: false,
+    inlineSourceMap: inlineSourceMap ?? false,
     lazy,
     unstable_transformProfile: isHermes ? 'hermes-stable' : 'default',
     customTransformOptions: {
@@ -204,6 +206,7 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
     asyncRoutes,
     baseUrl,
     routerRoot,
+    inlineSourceMap,
     isExporting,
   } = withDefaults(options);
 
@@ -218,6 +221,10 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
   // Lazy bundling must be disabled for bundle splitting to work.
   if (!isExporting && lazy) {
     queryParams.append('lazy', String(lazy));
+  }
+
+  if (inlineSourceMap) {
+    queryParams.append('inlineSourceMap', String(inlineSourceMap));
   }
 
   if (minify) {
