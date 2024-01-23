@@ -496,7 +496,7 @@ index b510364404..0000000000
 -  }
 -}
 diff --git a/templates/expo-template-bare-minimum/android/build.gradle b/templates/expo-template-bare-minimum/android/build.gradle
-index bf861dbf33..02a88dad0a 100644
+index bf861dbf33..513b766148 100644
 --- a/templates/expo-template-bare-minimum/android/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/build.gradle
 @@ -2,26 +2,26 @@
@@ -504,10 +504,11 @@ index bf861dbf33..02a88dad0a 100644
  buildscript {
      ext {
 -        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '33.0.0'
-+        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '34.0.0'
-         minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '21')
+-        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '21')
 -        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '33')
 -        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '33')
++        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '34.0.0'
++        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '23')
 +        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '34')
 +        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
          kotlinVersion = findProperty('android.kotlinVersion') ?: '1.8.10'
