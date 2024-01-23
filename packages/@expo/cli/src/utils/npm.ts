@@ -120,6 +120,8 @@ type ExtractProps = {
   fileList?: string[];
   /** The checksum algorithm to use when verifying the tarball. */
   checksumAlgorithm?: string;
+  /** An optional filter to selectively extract specific paths */
+  filter?: tar.ExtractOptions['filter'];
 };
 
 async function createUrlStreamAsync(url: string) {
@@ -145,7 +147,7 @@ export async function extractNpmTarballAsync(
   stream: NodeJS.ReadableStream,
   props: ExtractProps
 ): Promise<string> {
-  const { cwd, strip, name, fileList = [] } = props;
+  const { cwd, strip, name, fileList = [], filter } = props;
 
   await ensureDirectoryAsync(cwd);
 
@@ -161,6 +163,7 @@ export async function extractNpmTarballAsync(
     tar.extract(
       {
         cwd,
+        filter,
         transform: createFileTransform(name),
         onentry: createEntryResolver(name),
         strip: strip ?? 1,
