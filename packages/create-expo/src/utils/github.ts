@@ -65,9 +65,17 @@ async function extractRemoteGitHubTarballAsync(
   const directory = repo.filePath.replace(/^\//, '').split('/').filter(Boolean);
   // Remove the (sub)directory paths, and the root folder added by GitHub
   const strip = directory.length + 1;
-  // Only extract the (sub)directory paths
-  const filter =
-    directory.length >= 1 ? createGlobFilter(`*/${directory.join('/')}/**`) : undefined;
+  // Only extract the relevant (sub)directories, ignoring irrelevant files
+  // The filder auto-ignores dotfiles, unless explicitly included
+  const filter = createGlobFilter(
+    !directory.length
+      ? ['*/**', '*/ios/.xcode.env']
+      : [`*/${directory.join('/')}/**`, `*/${directory.join('/')}/ios/.xcode.env`],
+    {
+      // Always ignore the `.xcworkspace` folder
+      ignore: ['**/ios/*.xcworkspace/**'],
+    }
+  );
 
   await extractNpmTarballAsync(response.body, { ...props, filter, strip });
 }
