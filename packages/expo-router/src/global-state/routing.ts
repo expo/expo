@@ -138,33 +138,67 @@ function rewriteNavigationStateToParams(
   return JSON.parse(JSON.stringify(params));
 }
 
-function getNavigateAction(state: ResultState, parentState: NavigationState, type = 'NAVIGATE') {
-  const route = state.routes[state.routes.length - 1]!;
+function getNavigateAction(state, parentState, type = 'NAVIGATE') {
+    const route = state.routes[state.routes.length - 1];
+    const currentRoute = parentState.routes.reverse().find((parentRoute) => parentRoute.name === route.name);
+    const routesAreEqual = areObjectsEqual(route, currentRoute,["key", "screen","state"], ["params"]);
+    const routesParamsAreEqual = areObjectsEqual(route.params, currentRoute.params,["key","screen","params"], ["params"]);
 
-  const currentRoute = parentState.routes.find((parentRoute) => parentRoute.name === route.name);
-  const routesAreEqual = parentState.routes[parentState.index] === currentRoute;
+    // If there is nested state and the routes and params are equal, we should keep going down the tree
+    if (route.state && routesAreEqual && routesParamsAreEqual && currentRoute.state) {
+        return getNavigateAction(route.state, currentRoute.state, type);
+    }
+    // Either we reached the bottom of the state or the point where the routes diverged
+    const { screen, params } = rewriteNavigationStateToParams(state);
+    if (type === 'PUSH' && parentState.type !== 'stack') {
+        type = 'NAVIGATE';
+    }
+    else if (type === 'REPLACE' && parentState.type === 'tab') {
+        type = 'JUMP_TO';
+    }
+    return {
+        type,
+        target: parentState.key,
+        payload: {
+            name: screen,
+            params,
+        },
+    };
+}
+function areObjectsEqual(obj1, obj2, keysToSkip = [], subKeysToSkip = []) {
+    // Base case checks
+    if (obj1 === obj2) {
+        return true;
+    }
 
-  // If there is nested state and the routes are equal, we should keep going down the tree
-  // unless the type is push, in which case we should just push the state
-  if (route.state && routesAreEqual && currentRoute.state && type !== 'PUSH') {
-    return getNavigateAction(route.state, currentRoute.state as any, type);
-  }
+    if (obj1 == null || obj2 == null || typeof obj1 !== 'object' || typeof obj2 !== 'object') {
+        return false;
+    }
 
-  // Either we reached the bottom of the state or the point where the routes diverged
-  const { screen, params } = rewriteNavigationStateToParams(state);
+    // Prepare the keys list, excluding any keys that should be skipped
+    const keys1 = Object.keys(obj1).filter(key => !keysToSkip.includes(key));
+    const keys2 = Object.keys(obj2).filter(key => !keysToSkip.includes(key));
 
-  if (type === 'PUSH' && parentState.type !== 'stack') {
-    type = 'NAVIGATE';
-  } else if (type === 'REPLACE' && parentState.type === 'tab') {
-    type = 'JUMP_TO';
-  }
+    // Check if both objects have the same number of keys
+    if (keys1.length !== keys2.length) {
+        return false;
+    }
 
-  return {
-    type,
-    target: parentState.key,
-    payload: {
-      name: screen,
-      params,
-    },
-  };
+    // Recursively compare each key in the objects
+    for (let key of keys1) {
+        if (!keys2.includes(key)) {
+            return false;
+        }
+
+        if (typeof obj1[key] === 'object' && typeof obj2[key] === 'object') {
+            // If it's a nested object, and the key should be skipped in the nested object, skip the comparison
+            if (!subKeysToSkip.includes(key) && !areObjectsEqual(obj1[key], obj2[key], keysToSkip, subKeysToSkip)) {
+                return false;
+            }
+        } else if (obj1[key] !== obj2[key]) {
+            return false;
+        }
+    }
+
+    return true;
 }
