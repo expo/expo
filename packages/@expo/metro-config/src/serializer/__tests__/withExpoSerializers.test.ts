@@ -130,7 +130,7 @@ describe('serializes', () => {
     });
   });
 
-  /*   describe('debugId', () => {
+  describe('debugId', () => {
     describe('legacy serializer', () => {
       it(`serializes with debugId annotation`, async () => {
         const artifacts = await serializeTo({
@@ -583,6 +583,14 @@ describe('serializes', () => {
     expect(bundle.map).toMatch(/debugId/);
   });
 
+  // Serialize to a split bundle
+  async function serializeSplitAsync(fs: Record<string, string>) {
+    return await serializeTo({
+      fs,
+      options: { platform: 'web', dev: false, output: 'static' },
+    });
+  }
+
   it(`bundle splits an async import`, async () => {
     const artifacts = await serializeSplitAsync({
       'index.js': `
@@ -878,5 +886,5 @@ describe('serializes', () => {
     // });
     // // Ensure the dedupe chunk isn't run, just loaded.
     // expect(artifacts[3].source).not.toMatch(/TEST_RUN_MODULE/);
-  }); */
+  });
 });
