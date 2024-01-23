@@ -11,6 +11,9 @@ internal class DevLauncherInternalSettings(
   private var packagerConnectionSettings = DevLauncherPackagerConnectionSettings(context, debugServerHost)
 
   override fun getPackagerConnectionSettings() = packagerConnectionSettings
+
+  @Suppress("FunctionName")
+  fun public_getPackagerConnectionSettings() = getPackagerConnectionSettings()
 }
 
 /**
