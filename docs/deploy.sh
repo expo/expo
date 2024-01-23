@@ -304,6 +304,8 @@ redirects[versions/latest/sdk/util]=versions/latest
 redirects[versions/v45.0.0/sdk/google-sign-in]=guides/google-authentication
 redirects[versions/v44.0.0/sdk/google]=guides/google-authentication
 redirects[versions/latest/introduction/faq]=faq
+redirects[versions/v50.0.0/sdk/in-app-purchases]=guides/in-app-purchases/
+redirects[versions/latest/sdk/in-app-purchases]=guides/in-app-purchases/
 
 # Redirects based on Sentry reports
 redirects[push-notifications]=push-notifications/overview
