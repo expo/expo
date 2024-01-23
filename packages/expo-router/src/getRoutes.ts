@@ -290,40 +290,34 @@ function contextModuleToFileNodes(
   const nodes = files.map((key) => {
     // In development, check if the file exports a default component
     // this helps keep things snappy when creating files. In production we load all screens lazily.
-    try {
-      if (process.env.NODE_ENV === 'development') {
-        // If the user has set the `EXPO_ROUTER_IMPORT_MODE` to `sync` then we should
-        // filter the missing routes.
-        if (EXPO_ROUTER_IMPORT_MODE === 'sync') {
-          const isApi = key.match(/\+api\.[jt]sx?$/);
-          if (!isApi && !contextModule(key)?.default) {
-            return null;
-          }
+    if (process.env.NODE_ENV === 'development') {
+      // If the user has set the `EXPO_ROUTER_IMPORT_MODE` to `sync` then we should
+      // filter the missing routes.
+      if (EXPO_ROUTER_IMPORT_MODE === 'sync') {
+        const isApi = key.match(/\+api\.[jt]sx?$/);
+        if (!isApi && !contextModule(key)?.default) {
+          return null;
         }
       }
-      const node: FileNode = {
-        loadRoute() {
-          if (options.ignoreRequireErrors) {
-            try {
-              return contextModule(key);
-            } catch {
-              return {};
-            }
-          } else {
-            return contextModule(key);
-          }
-        },
-        normalizedName: getNameFromFilePath(key),
-        filePath: key,
-        contextKey: key,
-      };
-
-      return node;
-    } catch (error) {
-      // Probably this won't stop metro from freaking out but it's worth a try.
-      console.warn('Error loading route "' + key + '"', error);
     }
-    return null;
+    const node: FileNode = {
+      loadRoute() {
+        if (options.ignoreRequireErrors) {
+          try {
+            return contextModule(key);
+          } catch {
+            return {};
+          }
+        } else {
+          return contextModule(key);
+        }
+      },
+      normalizedName: getNameFromFilePath(key),
+      filePath: key,
+      contextKey: key,
+    };
+
+    return node;
   });
 
   return nodes.filter(Boolean) as FileNode[];

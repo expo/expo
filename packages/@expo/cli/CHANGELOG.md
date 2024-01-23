@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix stack traces for Node.js errors.
 - Fixed crash when launching React DevTools. ([#26550](https://github.com/expo/expo/pull/26550) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others

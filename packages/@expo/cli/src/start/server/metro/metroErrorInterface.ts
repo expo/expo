@@ -10,8 +10,8 @@ import { StackFrame } from 'stacktrace-parser';
 import terminalLink from 'terminal-link';
 
 import { Log } from '../../../log';
+import { SilentError } from '../../../utils/errors';
 import { createMetroEndpointAsync } from '../getStaticRenderFunctions';
-// import type { CodeFrame, MetroStackFrame } from '@expo/metro-runtime/symbolicate';
 
 type CodeFrame = {
   content: string;
@@ -50,6 +50,10 @@ export async function logMetroErrorWithStack(
     error: Error;
   }
 ) {
+  if (error instanceof SilentError) {
+    return;
+  }
+
   // process.stdout.write('\u001b[0m'); // Reset attributes
   // process.stdout.write('\u001bc'); // Reset the terminal
 
@@ -142,6 +146,10 @@ export async function logMetroErrorWithStack(
 }
 
 export async function logMetroError(projectRoot: string, { error }: { error: Error }) {
+  if (error instanceof SilentError) {
+    return;
+  }
+
   const { LogBoxLog, parseErrorStack } = require(
     resolveFrom(projectRoot, '@expo/metro-runtime/symbolicate')
   );
@@ -170,7 +178,7 @@ export async function logMetroError(projectRoot: string, { error }: { error: Err
 }
 
 /** @returns the html required to render the static metro error as an SPA. */
-export function logFromError({ error, projectRoot }: { error: Error; projectRoot: string }): {
+function logFromError({ error, projectRoot }: { error: Error; projectRoot: string }): {
   symbolicated: any;
   symbolicate: (type: string, callback: () => void) => void;
   codeFrame: CodeFrame;
