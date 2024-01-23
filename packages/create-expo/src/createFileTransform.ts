@@ -1,6 +1,9 @@
 import Minipass from 'minipass';
 import path from 'path';
-import { ReadEntry } from 'tar';
+import picomatch, { type PicomatchOptions } from 'picomatch';
+import { type ReadEntry } from 'tar';
+
+const debug = require('debug')('expo:init:fileTransform') as typeof console.log;
 
 export function sanitizedName(name: string) {
   return name
@@ -73,5 +76,17 @@ export function createFileTransform(name: string) {
       return new Transformer(name);
     }
     return undefined;
+  };
+}
+
+export function createGlobFilter(globPattern: string, options?: PicomatchOptions) {
+  const matcher = picomatch(globPattern, options);
+
+  debug('filter: created for pattern %s (%s)', globPattern);
+
+  return (path: string) => {
+    const included = matcher(path);
+    debug('filter: %s - %s', included ? 'include' : 'exclude', path);
+    return included;
   };
 }
