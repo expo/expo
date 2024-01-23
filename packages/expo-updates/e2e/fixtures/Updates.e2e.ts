@@ -13,7 +13,6 @@ const TIMEOUT_BIAS = process.env.CI ? 10 : 1;
 
 const checkNumAssetsAsync = async () => {
   await element(by.id('readAssetFiles')).tap();
-  await setTimeout(20 * TIMEOUT_BIAS);
   await waitFor(element(by.id('activity')))
     .not.toBeVisible()
     .withTimeout(2000);
@@ -23,7 +22,6 @@ const checkNumAssetsAsync = async () => {
 
 const clearNumAssetsAsync = async () => {
   await element(by.id('clearAssetFiles')).tap();
-  await setTimeout(20 * TIMEOUT_BIAS);
   await waitFor(element(by.id('activity')))
     .not.toBeVisible()
     .withTimeout(2000);
@@ -44,9 +42,30 @@ const waitForAsynchronousTaskCompletion = async (timeout: number = 1000) => {
     .withTimeout(timeout);
 };
 
+const waitForExpectationAsync = async (
+  expectation: () => void,
+  { timeout, interval }: { timeout: number; interval: number }
+) => {
+  const maxTries = Math.ceil(timeout / interval);
+  let tryNumber = 0;
+  while (true) {
+    tryNumber += 1;
+
+    try {
+      expectation();
+      return;
+    } catch (e) {
+      if (tryNumber >= maxTries) {
+        throw e;
+      }
+    }
+
+    await setTimeout(interval);
+  }
+};
+
 const readLogEntriesAsync = async () => {
   await element(by.id('readLogEntries')).tap();
-  await setTimeout(20 * TIMEOUT_BIAS);
   await waitFor(element(by.id('activity')))
     .not.toBeVisible()
     .withTimeout(2000);
@@ -57,14 +76,6 @@ const readLogEntriesAsync = async () => {
     console.warn(`Error in parsing logs: ${e}`);
     return [];
   }
-};
-
-const clearLogEntriesAsync = async () => {
-  await element(by.id('clearLogEntries')).tap();
-  await setTimeout(20 * TIMEOUT_BIAS);
-  await waitFor(element(by.id('activity')))
-    .not.toBeVisible()
-    .withTimeout(2000);
 };
 
 const waitForAppToBecomeVisible = async () => {
@@ -185,8 +196,13 @@ describe('Basic tests', () => {
     jestExpect(message).toBe('test');
 
     // give the app time to load the new update in the background
-    await setTimeout(5000);
-
+    await waitForExpectationAsync(
+      () => jestExpect(Server.getRequestedStaticFilesLength()).toBe(1),
+      {
+        timeout: 10000,
+        interval: 1000,
+      }
+    );
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1);
 
     // restart the app so it will launch the new update
@@ -231,8 +247,13 @@ describe('Basic tests', () => {
     jestExpect(message).toBe('test');
 
     // give the app time to load the new update in the background
-    await setTimeout(5000);
-
+    await waitForExpectationAsync(
+      () => jestExpect(Server.getRequestedStaticFilesLength()).toBe(1),
+      {
+        timeout: 10000,
+        interval: 1000,
+      }
+    );
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1);
 
     // restart the app to verify the new update isn't used
@@ -289,13 +310,18 @@ describe('Basic tests', () => {
       newInstance: true,
     });
 
-    // give the app time to load the new update in the background
-    await setTimeout(5000);
-
     await waitForAppToBecomeVisible();
     const message = await testElementValueAsync('updateString');
     jestExpect(message).toBe('test');
 
+    // give the app time to load the new update in the background
+    await waitForExpectationAsync(
+      () => jestExpect(Server.getRequestedStaticFilesLength()).toBe(4),
+      {
+        timeout: 10000,
+        interval: 1000,
+      }
+    );
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(4);
 
     // restart the app so it will launch the new update
@@ -373,8 +399,13 @@ describe('Basic tests', () => {
     jestExpect(message).toBe('test');
 
     // give the app time to load the new update in the background
-    await setTimeout(5000);
-
+    await waitForExpectationAsync(
+      () => jestExpect(Server.getRequestedStaticFilesLength()).toBe(4),
+      {
+        timeout: 10000,
+        interval: 1000,
+      }
+    );
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(4);
 
     // restart the app so it will launch the new update
@@ -416,7 +447,6 @@ describe('Basic tests', () => {
 
     // give the app time to load the new update in the background (i.e. to make sure it doesn't)
     await setTimeout(5000);
-
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(0);
 
     // restart the app and make sure it's still running the initial update
@@ -456,8 +486,13 @@ describe('Basic tests', () => {
     jestExpect(message).toBe('test');
 
     // give the app time to load the new update in the background
-    await setTimeout(5000);
-
+    await waitForExpectationAsync(
+      () => jestExpect(Server.getRequestedStaticFilesLength()).toBe(1),
+      {
+        timeout: 10000,
+        interval: 1000,
+      }
+    );
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1);
 
     // restart the app so it will launch the new update
@@ -1038,8 +1073,13 @@ describe('Asset deletion recovery tests', () => {
     await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
 
     // give the app time to load the new update in the background
-    await setTimeout(5000);
-
+    await waitForExpectationAsync(
+      () => jestExpect(Server.getRequestedStaticFilesLength()).toBe(1),
+      {
+        timeout: 10000,
+        interval: 1000,
+      }
+    );
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1); // only the bundle should be new
 
     // Stop and restart the app so it will launch the new update. Immediately send it a message to
