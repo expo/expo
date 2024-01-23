@@ -47,10 +47,18 @@ async function typedRoutes(
   typedRoutesModulePath: any,
   { server, metro, typesDirectory, projectRoot, routerDirectory }: SetupTypedRoutesOptions
 ) {
+  /**
+   * Expo Router uses EXPO_ROUTER_APP_ROOT in multiple places to determine the root of the project.
+   * In apps compiled by Metro, this code is compiled away. But Typed Routes run in NodeJS with no compilation
+   * so we need to explicitly set it.
+   */
   process.env.EXPO_ROUTER_APP_ROOT = routerDirectory;
 
   const typedRoutesModule = require(typedRoutesModulePath);
 
+  /**
+   * Typed Routes can be run with out Metro or a Server, e.g. `expo customize tsconfig.json`
+   */
   if (metro && server) {
     // Setup out watcher first
     metroWatchTypeScriptFiles({
@@ -75,8 +83,10 @@ async function legacyTypedRoutes({
   const { filePathToRoute, staticRoutes, dynamicRoutes, addFilePath, isRouteFile } =
     getTypedRoutesUtils(routerDirectory);
 
+  /**
+   * Typed Routes can be run with out Metro or a Server, e.g. `expo customize tsconfig.json`
+   */
   if (metro && server) {
-    // Setup out watcher first
     metroWatchTypeScriptFiles({
       projectRoot,
       server,

@@ -68,12 +68,12 @@ function stripInvisibleSegmentsFromPath(path) {
     return stripGroupSegmentsFromPath(path).replace(/\/?index$/, '');
 }
 exports.stripInvisibleSegmentsFromPath = stripInvisibleSegmentsFromPath;
+/**
+ * Match:
+ *  - _layout files, +html, +not-found, string+api, etc
+ *  - Routes can still use `+`, but it cannot be in the last segment.
+ */
 function isTypedRoutesFilename(name) {
-    /**
-     * Match:
-     *  - _layout files, +html, +not-found, string+api, etc
-     *  - Routes can still use `+`, but it cannot be in the last segment.
-     */
     return name.match(/(_layout|[^/]*?\+[^/]*?)\.[tj]sx?$/) === null;
 }
 exports.isTypedRoutesFilename = isTypedRoutesFilename;
