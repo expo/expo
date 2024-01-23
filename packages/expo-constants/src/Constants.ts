@@ -91,8 +91,6 @@ let rawManifest: RawManifest | null = rawUpdatesManifest ?? rawDevLauncherManife
 
 const { name, appOwnership, ...nativeConstants } = (ExponentConstants || {}) as any;
 
-let warnedAboutManifestField = false;
-
 const constants: Constants = {
   ...nativeConstants,
   // Ensure this is null in bare workflow
@@ -100,12 +98,6 @@ const constants: Constants = {
 };
 
 Object.defineProperties(constants, {
-  installationId: {
-    get() {
-      return nativeConstants.installationId;
-    },
-    enumerable: false,
-  },
   /**
    * Use `manifest` property by default.
    * This property is only used for internal purposes.
@@ -134,11 +126,6 @@ Object.defineProperties(constants, {
   },
   manifest: {
     get(): EmbeddedManifest | null {
-      if (__DEV__ && !warnedAboutManifestField) {
-        console.warn(`Constants.manifest has been deprecated in favor of Constants.expoConfig.`);
-        warnedAboutManifestField = true;
-      }
-
       const maybeManifest = getManifest();
       if (!maybeManifest || !isEmbeddedManifest(maybeManifest)) {
         return null;

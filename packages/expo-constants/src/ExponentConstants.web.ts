@@ -1,17 +1,9 @@
-import {
-  ExecutionEnvironment,
-  NativeConstants,
-  PlatformManifest,
-  WebManifest,
-} from './Constants.types';
-
-const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
+import { ExecutionEnvironment, NativeConstants, WebManifest } from './Constants.types';
 
 declare let __DEV__: boolean;
 declare let process: { env: any };
 declare let navigator: Navigator;
 declare let location: Location;
-declare let localStorage: Storage;
 
 const _sessionId = (Date.now() + '-' + Math.floor(Math.random() * 1000000000)).toString();
 
@@ -45,35 +37,15 @@ export default {
   get executionEnvironment() {
     return ExecutionEnvironment.Bare;
   },
-  get installationId(): string {
-    let installationId;
-    try {
-      installationId = localStorage.getItem(ID_KEY);
-      if (installationId == null || typeof installationId !== 'string') {
-        installationId = (Date.now() + '-' + Math.floor(Math.random() * 1000000000)).toString();
-        localStorage.setItem(ID_KEY, installationId as string);
-      }
-    } catch {
-      installationId = _sessionId;
-    } finally {
-      return installationId;
-    }
-  },
   get sessionId(): string {
     return _sessionId;
-  },
-  get platform(): PlatformManifest {
-    return { web: typeof navigator !== 'undefined' ? { ua: navigator.userAgent } : undefined };
   },
   get isHeadless(): boolean {
     if (typeof navigator === 'undefined') return true;
 
     return /\bHeadlessChrome\//.test(navigator.userAgent);
   },
-  get isDevice(): true {
-    // TODO: Bacon: Possibly want to add information regarding simulators
-    return true;
-  },
+
   get expoVersion(): string | null {
     return (this.manifest as any)!.sdkVersion || null;
   },
@@ -91,12 +63,6 @@ export default {
   },
   get deviceName(): string | undefined {
     return getBrowserName();
-  },
-  get nativeAppVersion(): null {
-    return null;
-  },
-  get nativeBuildVersion(): null {
-    return null;
   },
   get systemFonts(): string[] {
     // TODO: Bacon: Maybe possible.
