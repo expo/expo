@@ -34,7 +34,7 @@
 {
   [super viewDidLoad];
 
-  [self _maybeRebuildRootView];
+  [self _rebuildRootView];
   [self.view addSubview:_reactRootView];
 }
 
@@ -57,7 +57,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
   [super viewWillAppear:animated];
-  [self _maybeRebuildRootView];
+  [self _rebuildRootView];
   [self _forceRootViewToRenderHack];
   [_reactRootView becomeFirstResponder];
 }
@@ -132,30 +132,25 @@
   }
 }
 
-- (void)_maybeRebuildRootView
+- (void)_rebuildRootView
 {
   RCTBridge *mainBridge = [[EXDevMenuManager sharedInstance] mainBridge];
 
-  // Main bridge might change if the home bridge restarted for some reason (e.g. due to an error)
-  if (!_reactRootView || _reactRootView.bridge != mainBridge) {
-    if (_reactRootView) {
-      [_reactRootView removeFromSuperview];
-      _reactRootView = nil;
-    }
-    _hasCalledJSLoadedNotification = NO;
+  if (_reactRootView) {
+    [_reactRootView removeFromSuperview];
+    _reactRootView = nil;
+  }
+  _hasCalledJSLoadedNotification = NO;
 
-    _reactRootView = [[RCTRootView alloc] initWithBridge:mainBridge moduleName:@"HomeMenu" initialProperties:[self _getInitialPropsForVisibleApp]];
+  _reactRootView = [[RCTRootView alloc] initWithBridge:mainBridge moduleName:@"HomeMenu" initialProperties:[self _getInitialPropsForVisibleApp]];
 
-    // By default react root view has white background,
-    // however devmenu's bottom sheet looks better with partially visible experience.
-    _reactRootView.backgroundColor = [UIColor clearColor];
+  // By default react root view has white background,
+  // however devmenu's bottom sheet looks better with partially visible experience.
+  _reactRootView.backgroundColor = [UIColor clearColor];
 
-    if ([self isViewLoaded]) {
-      [self.view addSubview:_reactRootView];
-      [self.view setNeedsLayout];
-    }
-  } else if (_reactRootView) {
-    _reactRootView.appProperties = [self _getInitialPropsForVisibleApp];
+  if ([self isViewLoaded]) {
+    [self.view addSubview:_reactRootView];
+    [self.view setNeedsLayout];
   }
 }
 
