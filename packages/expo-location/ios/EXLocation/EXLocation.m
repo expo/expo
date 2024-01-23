@@ -567,7 +567,7 @@ EX_EXPORT_METHOD_AS(hasStartedGeofencingAsync,
     @"coords": @{
         @"latitude": @(location.coordinate.latitude),
         @"longitude": @(location.coordinate.longitude),
-        @"altitude": @(location.altitude),
+        @"altitude": @(location.ellipsoidalAltitude),
         @"accuracy": @(location.horizontalAccuracy),
         @"altitudeAccuracy": @(location.verticalAccuracy),
         @"heading": @(location.course),
