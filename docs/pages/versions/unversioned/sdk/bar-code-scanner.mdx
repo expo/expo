@@ -17,6 +17,7 @@ import {
   ConfigPluginProperties,
 } from '~/components/plugins/ConfigSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+import { PlatformTags } from '~/ui/components/Tag';
 
 `expo-barcode-scanner` provides a React component that renders a viewfinder for the device's camera (either front or back) and will scan bar codes that show up in the frame.
 
@@ -27,6 +28,10 @@ import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permiss
 > **info** Only one active `BarCodeScanner` preview is currently supported.
 
 When using navigation, the best practice is to unmount any previously rendered `BarCodeScanner` component so the following screens can use their own `BarCodeScanner` without any issue.
+
+#### Known issues&ensp;<PlatformTags platforms={['android', 'ios']} />
+
+The `BarCodeScanner` component has difficulty scanning barcodes with black backgrounds. This is a limitation due to the underlying ZXing library. It is also an issue discussed on a [Stack Overflow thread](https://stackoverflow.com/questions/41518373/zxing-library-not-scanning-qr-code-black-background-and-white-codenegative-scan). To work around this, your app should allow users to capture the barcode image and then invert the colors of the image before passing it to the `BarCodeScanner`.
 
 ## Installation
 
