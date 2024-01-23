@@ -181,7 +181,7 @@ dependencies {
   // Needed by gesture handler
   implementation "androidx.core:core-ktx:1.6.0"
 
-  api "androidx.browser:browser:1.2.0"
+  api "androidx.browser:browser:1.6.0"
 
   testImplementation "com.google.truth:truth:1.1.2"
   testImplementation "org.robolectric:robolectric:4.10"

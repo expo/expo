@@ -14,6 +14,7 @@
 ### 💡 Others
 
 - Remove classic updates SDK version. ([#26061](https://github.com/expo/expo/pull/26061) by [@wschurman](https://github.com/wschurman))
+- Updated `androidx.browser:browser` to `1.6.0` [#26619](https://github.com/expo/expo/pull/26619) by [@zoontek](https://github.com/zoontek)
 
 ### 📚 3rd party library updates
 
