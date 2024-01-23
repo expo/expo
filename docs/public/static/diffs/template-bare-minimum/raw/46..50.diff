@@ -1536,7 +1536,7 @@ index f35d996202..73b37e4d99 100644
            The item below with state_pressed="false" and state_focused="false" causes a NullPointerException.
            NullPointerException:tempt to invoke virtual method 'android.graphics.drawable.Drawable android.graphics.drawable.Drawable$ConstantState.newDrawable(android.content.res.Resources)'
 diff --git a/templates/expo-template-bare-minimum/android/build.gradle b/templates/expo-template-bare-minimum/android/build.gradle
-index f259b31a11..02a88dad0a 100644
+index f259b31a11..513b766148 100644
 --- a/templates/expo-template-bare-minimum/android/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/build.gradle
 @@ -1,72 +1,40 @@
@@ -1547,14 +1547,15 @@ index f259b31a11..02a88dad0a 100644
  buildscript {
      ext {
 -        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '31.0.0'
-+        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '34.0.0'
-         minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '21')
+-        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '21')
 -        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '31')
 -        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '31')
 -        if (findProperty('android.kotlinVersion')) {
 -            kotlinVersion = findProperty('android.kotlinVersion')
 -        }
 -        frescoVersion = findProperty('expo.frescoVersion') ?: '2.5.0'
++        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '34.0.0'
++        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '23')
 +        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '34')
 +        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
 +        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.8.10'
@@ -2482,7 +2483,7 @@ index 9430b0f9b6..07c9fce65d 100644
 +
 +module.exports = config;
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index d5ca09a584..442e1c5722 100644
+index d5ca09a584..a828360d9b 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -2490,7 +2491,7 @@ index d5ca09a584..442e1c5722 100644
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "46.0.37",
-+  "version": "50.0.30",
++  "version": "50.0.31",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -2505,7 +2506,7 @@ index d5ca09a584..442e1c5722 100644
 -    "react-dom": "18.0.0",
 -    "react-native": "0.69.9",
 -    "react-native-web": "~0.18.7"
-+    "expo": "~50.0.2",
++    "expo": "~50.0.3",
 +    "expo-status-bar": "~1.11.1",
 +    "react": "18.2.0",
 +    "react-native": "0.73.2"
