@@ -5,7 +5,7 @@ on:
   pull_request:
     paths:
       - .github/workflows/ios-unit-tests.yml
-      - ios/**
+      - apps/expo-go/ios/**
       - packages/**/ios/**
       - tools/src/dynamic-macros/**
       - tools/src/commands/IosGenerateDynamicMacros.ts
@@ -19,7 +19,7 @@ on:
     branches: [main]
     paths:
       - .github/workflows/ios-unit-tests.yml
-      - ios/**
+      - apps/expo-go/ios/**
       - packages/**/ios/**
       - tools/src/dynamic-macros/**
       - tools/src/commands/IosGenerateDynamicMacros.ts

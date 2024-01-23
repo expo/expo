@@ -6,13 +6,13 @@ on:
     paths:
       - .github/workflows/client-android-eas.yml
       - apps/eas-expo-go/**
-      - android/**
+      - apps/expo-go/android/**
   push:
     branches: [main, sdk-*]
     paths:
       - .github/workflows/client-android-eas.yml
       - apps/eas-expo-go/**
-      - android/**
+      - apps/expo-go/android/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
