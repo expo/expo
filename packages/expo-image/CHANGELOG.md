@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Web] Fixed `nativeViewRef` invalid prop warning. ([#25922](https://github.com/expo/expo/pull/25922) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
-
 ### 💡 Others
+
+## 1.10.5 — 2024-01-23
+
+### 🐛 Bug fixes
+
+- [Web] Fixed `nativeViewRef` invalid prop warning. ([#25922](https://github.com/expo/expo/pull/25922) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ## 1.10.4 — 2024-01-18
 

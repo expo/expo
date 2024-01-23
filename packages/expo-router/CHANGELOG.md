@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Remove error hiding system. ([#26607](https://github.com/expo/expo/pull/26607) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 💡 Others
+
+## 3.4.5 — 2024-01-23
+
+### 🐛 Bug fixes
+
+- Remove error hiding system. ([#26607](https://github.com/expo/expo/pull/26607) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.4.4 — 2024-01-20
 

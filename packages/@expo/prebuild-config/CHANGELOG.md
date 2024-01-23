@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed splash screen backgroundColor not applied, by reverting [#25971](https://github.com/expo/expo/pull/25971). ([#26536](https://github.com/expo/expo/pull/26536) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 6.7.4 — 2024-01-23
+
+### 🐛 Bug fixes
+
+- Fixed splash screen backgroundColor not applied, by reverting [#25971](https://github.com/expo/expo/pull/25971). ([#26536](https://github.com/expo/expo/pull/26536) by [@kudo](https://github.com/kudo))
 
 ## 6.7.3 — 2024-01-05
 

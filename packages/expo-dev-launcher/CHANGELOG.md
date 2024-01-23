@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed unable to load dev client bundle on device. ([#26630](https://github.com/expo/expo/pull/26630) by [@lukmccall](https://github.com/lukmccall))
-
 ### 💡 Others
+
+## 3.6.4 — 2024-01-23
+
+### 🐛 Bug fixes
+
+- [Android] Fixed unable to load dev client bundle on device. ([#26630](https://github.com/expo/expo/pull/26630) by [@lukmccall](https://github.com/lukmccall))
 
 ## 3.6.3 — 2024-01-18
 

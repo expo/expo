@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add error handling for Metro build errors in split chunks. ([#26609](https://github.com/expo/expo/pull/26609) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 3.1.2 — 2024-01-23
+
+### 🎉 New features
+
+- Add error handling for Metro build errors in split chunks. ([#26609](https://github.com/expo/expo/pull/26609) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.1.1 — 2024-01-18
 

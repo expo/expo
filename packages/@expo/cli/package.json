@@ -1,6 +1,6 @@
 {
   "name": "@expo/cli",
-  "version": "0.17.1",
+  "version": "0.17.2",
   "description": "The Expo CLI",
   "main": "build/bin/cli",
   "bin": {
@@ -49,7 +49,7 @@
     "@expo/osascript": "^2.0.31",
     "@expo/package-manager": "^1.1.1",
     "@expo/plist": "^0.1.0",
-    "@expo/prebuild-config": "6.7.3",
+    "@expo/prebuild-config": "6.7.4",
     "@expo/rudder-sdk-node": "1.1.1",
     "@expo/spawn-async": "1.5.0",
     "@expo/xcpretty": "^4.3.0",
