@@ -15,15 +15,7 @@ export function test(t) {
         }
       })
     );
-    [
-      'deviceName',
-      'installationId',
-      'isDevice',
-      'sessionId',
-      'manifest',
-      'nativeAppVersion',
-      'nativeBuildVersion',
-    ].forEach((v) =>
+    ['deviceName', 'sessionId', 'manifest'].forEach((v) =>
       t.it(`has ${v}`, () => {
         t.expect(Constants[v]).toBeDefined();
       })

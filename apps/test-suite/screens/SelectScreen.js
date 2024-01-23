@@ -189,7 +189,8 @@ export default class SelectScreen extends React.PureComponent {
 function Footer({ buttonTitle, canRunTests, onToggle, onRun }) {
   const { bottom, left, right } = useSafeArea();
 
-  const isRunningInDetox = Constants.manifest && Constants.manifest.slug === 'bare-expo';
+  const isRunningInDetox =
+    Constants.__unsafeNoWarnManifest && Constants.__unsafeNoWarnManifest.slug === 'bare-expo';
   const paddingVertical = 16;
 
   return (
