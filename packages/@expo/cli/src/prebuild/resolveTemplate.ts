@@ -8,6 +8,7 @@ import semver from 'semver';
 
 import { fetchAsync } from '../api/rest/client';
 import * as Log from '../log';
+import { createGlobFilter } from '../utils/createFileTransform';
 import { AbortCommandError, CommandError } from '../utils/errors';
 import {
   downloadAndExtractNpmModuleAsync,
@@ -95,16 +96,23 @@ async function downloadAndExtractRepoAsync(
   { username, name, branch, filePath }: RepoInfo
 ): Promise<string> {
   const projectName = path.basename(root);
-
-  const strip = filePath ? filePath.split('/').length + 1 : 1;
-
   const url = `https://codeload.github.com/${username}/${name}/tar.gz/${branch}`;
+
   debug('Downloading tarball from:', url);
+
+  // Extract the (sub)directory into non-empty path segments
+  const directory = filePath.replace(/^\//, '').split('/').filter(Boolean);
+  // Remove the (sub)directory paths, and the root folder added by GitHub
+  const strip = directory.length + 1;
+  // Only extract the (sub)directory paths
+  const filter =
+    directory.length >= 1 ? createGlobFilter(`*/${directory.join('/')}/**`) : undefined;
+
   return await extractNpmTarballFromUrlAsync(url, {
     cwd: root,
     name: projectName,
     strip,
-    fileList: [`${name}-${branch}${filePath ? `/${filePath}` : ''}`],
+    filter,
   });
 }
 
