@@ -30,8 +30,8 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "devDependencies": {
-    "expo-module-scripts": "^3.0.0",
-    "expo-crypto": "^12.2.1"
+    "expo-crypto": "^12.2.1",
+    "expo-module-scripts": "^3.0.0"
   },
   "peerDependencies": {
     "expo-crypto": "^12.2.1"
