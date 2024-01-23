@@ -1,3 +1,6 @@
-import { EXPO_ROUTER_CTX_IGNORE } from './_ctx-shared';
-
-export const ctx = require.context(process.env.EXPO_ROUTER_APP_ROOT, true, EXPO_ROUTER_CTX_IGNORE);
+export const ctx = require.context(
+  process.env.EXPO_ROUTER_APP_ROOT,
+  true,
+  // Ignore root `./+html.js` and API route files `./generate+api.tsx`.
+  /^(?:\.\/)(?!(?:(?:(?:.*\+api)|(?:\+html)))\.[tj]sx?$).*\.[tj]sx?$/
+);
