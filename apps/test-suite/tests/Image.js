@@ -203,7 +203,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
         t.expect(result).toBe(REMOTE_KNOWN_SOURCE.blurhash);
       });
       t.it('rejects on a missing url', async () => {
-        await throws(Image.getBlurhashAsync(NON_EXISTENT_SOURCE.uri, [4, 3]));
+        await throws(Image.generateBlurhashAsync(NON_EXISTENT_SOURCE.uri, [4, 3]));
       });
     });
   });
