@@ -14,14 +14,15 @@ type Subscriber = { remove: () => void };
 
 export function fetchAsync(
   url: string
-): Promise<{ body: string; headers: Record<string, string> }> {
+): Promise<{ body: string; status: number; headers: Record<string, string> }> {
   let id: string | null = null;
+  let statusCode: number | null = null;
   let responseText: string | null = null;
   let headers: Record<string, string> = {};
   let dataListener: Subscriber | null = null;
   let completeListener: Subscriber | null = null;
   let responseListener: Subscriber | null = null;
-  return new Promise<{ body: string; headers: Record<string, string> }>((resolve, reject) => {
+  return new Promise<{ body: string; status: number; headers: Record<string, string> }>((resolve, reject) => {
     const addListener = Networking.addListener.bind(Networking) as (
       event: string,
       callback: (props: [string, any, any]) => any
@@ -35,6 +36,7 @@ export function fetchAsync(
       'didReceiveNetworkResponse',
       ([requestId, status, responseHeaders]) => {
         if (requestId === id) {
+          statusCode = status;
           headers = responseHeaders;
         }
       }
@@ -44,7 +46,7 @@ export function fetchAsync(
         if (error) {
           reject(error);
         } else {
-          resolve({ body: responseText!, headers });
+          resolve({ body: responseText!, status: statusCode!, headers });
         }
       }
     });

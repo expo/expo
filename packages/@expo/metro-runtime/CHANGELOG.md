@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add error handling for Metro build errors in split chunks.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
