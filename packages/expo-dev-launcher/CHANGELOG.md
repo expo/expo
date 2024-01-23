@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357) by [@kudo](https://github.com/kudo))
+- [Android] Fixed unable to load dev client bundle on device. ([#26630](https://github.com/expo/expo/pull/26630) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 

@@ -75,6 +75,11 @@ fun injectDebugServerHost(
     val mSettingsField = devServerHelper.javaClass.getDeclaredField("mSettings")
     mSettingsField.isAccessible = true
     mSettingsField[devServerHelper] = settings
+
+    val packagerConnectionSettingsField = devServerHelper.javaClass.getDeclaredField("mPackagerConnectionSettings")
+    packagerConnectionSettingsField.isAccessible = true
+    packagerConnectionSettingsField[devServerHelper] = settings.public_getPackagerConnectionSettings()
+
     // set useDeveloperSupport to true in case it was previously set to false from loading a published app
     val mUseDeveloperSupportField = instanceManager.javaClass.getDeclaredField("mUseDeveloperSupport")
     mUseDeveloperSupportField.isAccessible = true
