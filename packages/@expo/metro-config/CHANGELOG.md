@@ -10,6 +10,7 @@
 
 ### 💡 Others
 
+- Uncomment all Metro tests. ([#26610](https://github.com/expo/expo/pull/26610) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove lazy loading in build process for easier development. ([#26559](https://github.com/expo/expo/pull/26559) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.17.3 - 2024-01-18
