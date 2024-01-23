@@ -609,7 +609,7 @@ index aef81ec589..a6e13e11ab 100644
  @interface AppDelegate () <RCTCxxBridgeDelegate, RCTTurboModuleManagerDelegate> {
    RCTTurboModuleManager *_turboModuleManager;
    RCTSurfacePresenterBridgeAdapter *_bridgeAdapter;
-@@ -43,7 +45,8 @@
+@@ -43,7 +45,8 @@ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(
    bridge.surfacePresenter = _bridgeAdapter.surfacePresenter;
  #endif
  
@@ -619,7 +619,7 @@ index aef81ec589..a6e13e11ab 100644
  
    rootView.backgroundColor = [UIColor whiteColor];
    self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-@@ -63,6 +66,26 @@
+@@ -63,6 +66,26 @@ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(
    return @[];
  }
  
