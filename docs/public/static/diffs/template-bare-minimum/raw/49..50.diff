@@ -482,7 +482,7 @@ index b510364404..0000000000
 -  }
 -}
 diff --git a/templates/expo-template-bare-minimum/android/build.gradle b/templates/expo-template-bare-minimum/android/build.gradle
-index bf861dbf33..02a88dad0a 100644
+index bf861dbf33..513b766148 100644
 --- a/templates/expo-template-bare-minimum/android/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/build.gradle
 @@ -2,26 +2,26 @@
@@ -490,10 +490,11 @@ index bf861dbf33..02a88dad0a 100644
  buildscript {
      ext {
 -        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '33.0.0'
-+        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '34.0.0'
-         minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '21')
+-        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '21')
 -        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '33')
 -        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '33')
++        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '34.0.0'
++        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '23')
 +        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '34')
 +        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
          kotlinVersion = findProperty('android.kotlinVersion') ?: '1.8.10'
@@ -911,7 +912,7 @@ index 2402cc34b2..b3978b9515 100644
      # This is necessary for Xcode 14, because it signs resource bundles by default
      # when building for devices.
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 50e94a0837..ec2759d642 100644
+index 50e94a0837..a828360d9b 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -919,7 +920,7 @@ index 50e94a0837..ec2759d642 100644
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "49.0.24",
-+  "version": "50.0.22",
++  "version": "50.0.31",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -930,11 +931,11 @@ index 50e94a0837..ec2759d642 100644
 -    "expo": "~49.0.18",
 -    "expo-splash-screen": "~0.20.5",
 -    "expo-status-bar": "~1.6.0",
-+    "expo": "~50.0.0-preview.8",
++    "expo": "~50.0.3",
 +    "expo-status-bar": "~1.11.1",
      "react": "18.2.0",
 -    "react-native": "0.72.6"
-+    "react-native": "0.73.1"
++    "react-native": "0.73.2"
    },
    "devDependencies": {
      "@babel/core": "^7.20.0"

@@ -639,7 +639,7 @@ index b510364404..0000000000
 -  }
 -}
 diff --git a/templates/expo-template-bare-minimum/android/build.gradle b/templates/expo-template-bare-minimum/android/build.gradle
-index e5fda82878..02a88dad0a 100644
+index e5fda82878..513b766148 100644
 --- a/templates/expo-template-bare-minimum/android/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/build.gradle
 @@ -2,28 +2,26 @@
@@ -647,14 +647,15 @@ index e5fda82878..02a88dad0a 100644
  buildscript {
      ext {
 -        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '33.0.0'
-+        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '34.0.0'
-         minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '21')
+-        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '21')
 -        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '33')
 -        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '33')
 -        if (findProperty('android.kotlinVersion')) {
 -            kotlinVersion = findProperty('android.kotlinVersion')
 -        }
 -        frescoVersion = findProperty('expo.frescoVersion') ?: '2.5.0'
++        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '34.0.0'
++        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '23')
 +        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '34')
 +        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
 +        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.8.10'
@@ -1289,7 +1290,7 @@ index 9430b0f9b6..07c9fce65d 100644
 +
 +module.exports = config;
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index d1fcd513cc..ec2759d642 100644
+index d1fcd513cc..a828360d9b 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -1297,7 +1298,7 @@ index d1fcd513cc..ec2759d642 100644
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "48.0.21",
-+  "version": "50.0.22",
++  "version": "50.0.31",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -1308,11 +1309,11 @@ index d1fcd513cc..ec2759d642 100644
 -    "expo": "~48.0.21",
 -    "expo-splash-screen": "~0.18.2",
 -    "expo-status-bar": "~1.4.4",
-+    "expo": "~50.0.0-preview.8",
++    "expo": "~50.0.3",
 +    "expo-status-bar": "~1.11.1",
      "react": "18.2.0",
 -    "react-native": "0.71.14"
-+    "react-native": "0.73.1"
++    "react-native": "0.73.2"
    },
    "devDependencies": {
      "@babel/core": "^7.20.0"
