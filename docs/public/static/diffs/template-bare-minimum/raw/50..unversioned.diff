@@ -126,14 +126,14 @@ index b3978b9515..eaf07ca4c2 100644
  
    post_install do |installer|
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 442e1c5722..150bb72764 100644
+index a828360d9b..150bb72764 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
  {
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
--  "version": "50.0.30",
+-  "version": "50.0.31",
 +  "version": "50.0.17",
    "main": "index.js",
    "scripts": {
@@ -142,7 +142,7 @@ index 442e1c5722..150bb72764 100644
      "web": "expo start --web"
    },
    "dependencies": {
--    "expo": "~50.0.2",
+-    "expo": "~50.0.3",
 -    "expo-status-bar": "~1.11.1",
 +    "expo": "~50.0.0-preview.4",
 +    "expo-status-bar": "~1.11.0",
