@@ -11,6 +11,7 @@ import * as Log from '../log';
 import { createGlobFilter } from '../utils/createFileTransform';
 import { AbortCommandError, CommandError } from '../utils/errors';
 import {
+  ExtractProps,
   downloadAndExtractNpmModuleAsync,
   extractLocalNpmTarballAsync,
   extractNpmTarballFromUrlAsync,
@@ -92,10 +93,9 @@ function hasRepo({ username, name, branch, filePath }: RepoInfo) {
 }
 
 async function downloadAndExtractRepoAsync(
-  root: string,
-  { username, name, branch, filePath }: RepoInfo
+  { username, name, branch, filePath }: RepoInfo,
+  props: ExtractProps
 ): Promise<string> {
-  const projectName = path.basename(root);
   const url = `https://codeload.github.com/${username}/${name}/tar.gz/${branch}`;
 
   debug('Downloading tarball from:', url);
@@ -108,12 +108,7 @@ async function downloadAndExtractRepoAsync(
   const filter =
     directory.length >= 1 ? createGlobFilter(`*/${directory.join('/')}/**`) : undefined;
 
-  return await extractNpmTarballFromUrlAsync(url, {
-    cwd: root,
-    name: projectName,
-    strip,
-    filter,
-  });
+  return await extractNpmTarballFromUrlAsync(url, { ...props, strip, filter });
 }
 
 export async function resolveTemplateArgAsync(
@@ -187,5 +182,8 @@ export async function resolveTemplateArgAsync(
     `Downloading files from repo ${chalk.cyan(template)}. This might take a moment.`
   );
 
-  return await downloadAndExtractRepoAsync(templateDirectory, repoInfo);
+  return await downloadAndExtractRepoAsync(repoInfo, {
+    cwd: templateDirectory,
+    name: appName,
+  });
 }

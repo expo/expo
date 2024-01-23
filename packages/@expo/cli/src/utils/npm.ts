@@ -113,7 +113,7 @@ export async function extractLocalNpmTarballAsync(
   return await extractNpmTarballAsync(readStream, props);
 }
 
-type ExtractProps = {
+export type ExtractProps = {
   name: string;
   cwd: string;
   strip?: number;
