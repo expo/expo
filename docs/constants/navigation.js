@@ -400,6 +400,7 @@ const general = [
         makePage('guides/using-sentry.mdx'),
         makePage('guides/building-for-tv.mdx'),
         makePage('guides/typescript.mdx'),
+        makePage('guides/in-app-purchases.mdx'),
       ]),
       makeSection('Expo accounts', [
         makePage('accounts/account-types.mdx'),

@@ -349,6 +349,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/archive/workflow/customizing/': '/workflow/customizing/',
   '/errors-and-warnings/': '/debugging/errors-and-warnings/',
   '/guides/education': '/additional-resources/',
+  '/versions/latest/sdk/in-app-purchases/': '/guides/in-app-purchases/',
+  '/versions/v50.0.0/sdk/in-app-purchases/': '/guides/in-app-purchases/',
   '/guides/web-performance/': '/guides/analyzing-bundles/',
 
   // Classic updates moved to archive

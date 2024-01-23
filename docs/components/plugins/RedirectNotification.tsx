@@ -1,9 +1,13 @@
 import { useRouter } from 'next/compat/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, PropsWithChildren } from 'react';
 
 import { Callout } from '~/ui/components/Callout';
 
-export default function VersionedRedirectNotification({ showForQuery = 'redirected' }) {
+type Props = PropsWithChildren<{
+  showForQuery?: string;
+}>;
+
+export default function RedirectNotification({ showForQuery = 'redirected', children }: Props) {
   const router = useRouter();
   const [visible, setVisible] = useState(false);
 
@@ -14,12 +18,7 @@ export default function VersionedRedirectNotification({ showForQuery = 'redirect
   }, [router?.query]);
 
   if (visible) {
-    return (
-      <Callout type="warning">
-        The page you are looking for does not exist in this SDK version. It may have been deprecated
-        or added in a newer SDK version.
-      </Callout>
-    );
+    return <Callout type="warning">{children}</Callout>;
   }
 
   return null;
