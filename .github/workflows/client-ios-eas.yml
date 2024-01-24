@@ -17,7 +17,7 @@ on:
     paths:
       - .github/workflows/client-ios-eas.yml
       - apps/eas-expo-go/**
-      - ios/**
+      - apps/expo-go/ios/**
       - tools/src/dynamic-macros/**
       - tools/src/commands/IosGenerateDynamicMacros.ts
       - secrets/**
