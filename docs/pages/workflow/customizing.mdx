@@ -21,7 +21,7 @@ Creating a local module allows you to write custom Swift and Kotlin code that yo
 
 ## Manage custom native projects
 
-If you want to opt out of CNG and instead directly manage the code and configuration inside your Android and iOS native projects, you can generate native directories by running `npx expo prebuild` or `npx expo run:[android|iOS]` (which will run `prebuild` automatically). You can also use development builds in this context &mdash; run `npx expo install expo-dev-client` before `prebuild` or `run`.
+You can opt out of CNG by directly managing code and configuration inside **android** and **ios** directories. To generate these directories, run `npx expo prebuild` or [compile your app locally](/guides/local-app-development/#local-app-compilation) (`npx expo run android` or `npx expo run ios`). You can also create a development build before compiling your app locally. To do so, run `npx expo install expo-dev-client` before `prebuild` or `run`.
 
 <Terminal
   cmd={[
