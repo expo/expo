@@ -31,6 +31,7 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 private const val TAG = "ActivityResultRegistry"
+
 // Use upper 16 bits for request codes
 private const val INITIAL_REQUEST_CODE_VALUE = 0x00010000
 

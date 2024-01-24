@@ -1,6 +1,5 @@
 package expo.modules.kotlin.types
 
-import android.view.View
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.jni.ExpectedType
 import kotlin.reflect.KClass

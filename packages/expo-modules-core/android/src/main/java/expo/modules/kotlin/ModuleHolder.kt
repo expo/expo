@@ -1,6 +1,5 @@
 package expo.modules.kotlin
 
-import android.view.View
 import com.facebook.react.bridge.ReadableArray
 import expo.modules.kotlin.events.BasicEventListener
 import expo.modules.kotlin.events.EventListenerWithPayload
@@ -13,7 +12,6 @@ import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.tracing.trace
 import kotlinx.coroutines.launch
-import kotlin.reflect.KClass
 
 class ModuleHolder<T : Module>(val module: T) {
   val definition = module.definition()
