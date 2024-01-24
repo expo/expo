@@ -3,14 +3,23 @@ import { DeviceEventEmitter } from 'react-native';
 import ExpoDevMenu from './ExpoDevMenu';
 import { ExpoDevMenuItem } from './ExpoDevMenu.types';
 
+/**
+ * A method that opens development client menu when called.
+ */
 export function openMenu(): void {
   ExpoDevMenu.openMenu();
 }
 
+/**
+ * A method that hides development client menu when called.
+ */
 export function hideMenu(): void {
   ExpoDevMenu.hideMenu();
 }
 
+/**
+ * A method that closes development client menu when called.
+ */
 export function closeMenu(): void {
   ExpoDevMenu.closeMenu();
 }
@@ -34,6 +43,10 @@ registerCallbackListener();
 
 let handlers = new Map<string, () => void>();
 
+/**
+ * A method allowing to specify custom entries in the development client menu.
+ * @param items
+ */
 export async function registerDevMenuItems(items: ExpoDevMenuItem[]) {
   if (!__DEV__) {
     // resolve undefined
