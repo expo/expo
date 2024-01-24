@@ -23,6 +23,8 @@ class PushTokenModule : Module(), PushTokenListener {
   override fun definition() = ModuleDefinition {
     Name("ExpoPushTokenManager")
 
+    Events("onDevicePushToken")
+
     OnCreate {
       eventEmitter = appContext.legacyModule()
         ?: throw ModuleNotFoundException(EventEmitter::class)

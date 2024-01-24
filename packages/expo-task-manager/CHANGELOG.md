@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On `Android`, added events to module definition to clear warnings.
+
 ### 💡 Others
 
 ## 11.7.0 — 2023-11-14
