@@ -11,7 +11,7 @@ export const name = 'Image';
 const REMOTE_SOURCE = { uri: 'https://source.unsplash.com/random' };
 const REMOTE_KNOWN_SOURCE = {
   uri: 'https://images.unsplash.com/photo-1701743805362-86796f50a0c2?w=1080',
-  blurhash: 'LPCGGRxa9GWB01WBs:R*_2ayV@WB',
+  blurhash: 'LPC6uxxa9GWB01WBs:R*?uayV@WB',
 };
 const NON_EXISTENT_SOURCE = { uri: 'file://non_existent_path.jpg' };
 const ANIMATED_IMAGE_SOURCE = {
