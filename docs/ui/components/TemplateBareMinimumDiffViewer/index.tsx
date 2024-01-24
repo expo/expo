@@ -1,6 +1,7 @@
 import { css } from '@emotion/react';
 import { spacing } from '@expo/styleguide-base';
 import { useRouter } from 'next/compat/router';
+import { useEffect } from 'react';
 
 import { VersionSelector } from './VersionSelector';
 
@@ -25,6 +26,14 @@ export const TemplateBareMinimumDiffViewer = () => {
 
   const fromVersion = router?.query.fromSdk || lastTwoProductionVersions[0];
   const toVersion = router?.query.toSdk || lastTwoProductionVersions[1];
+
+  // Ensure that URL always contains from and to SDK version, even on first load
+  // to avoid copying links that would change with new SDK versions.
+  useEffect(() => {
+    if (router?.isReady && (!router?.query.fromSdk || !router?.query.toSdk)) {
+      router?.push({ query: { fromSdk: fromVersion, toSdk: toVersion } });
+    }
+  }, [router?.query.fromSdk, router?.query.toSdk, router?.isReady]);
 
   // remove unversioned if this environment doesn't show it in the SDK reference
   if (!VERSIONS.find((version: string) => version === 'unversioned')) {
