@@ -60,6 +60,22 @@ it('works with only layouts', () => {
   });
 });
 
+it('allows spaces in the filename', () => {
+  const generated = getGeneratedRoutes(
+    inMemoryContext({
+      'hello world': () => null,
+      '[hello world]': () => null,
+      '[...hello world]': () => null,
+    })
+  );
+
+  expect(generated).toEqual({
+    staticRoutes: ['/hello world', '/_sitemap'],
+    dynamicRoutes: ['/${SingleRoutePart<T>}', '/${CatchAllRoutePart<T>}'],
+    dynamicRouteTemplates: ['/[hello world]', '/[...hello world]'],
+  });
+});
+
 //TODO: This should error
 it('expands groups - invalid group syntax', () => {
   const generated = getGeneratedRoutes(inMemoryContext({ '(a,b,c)': () => null }));
