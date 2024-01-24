@@ -5,7 +5,7 @@ description: Learn how to add custom native code to your Expo project.
 
 import { Terminal } from '~/ui/components/Snippet';
 
-Just as Expo projects can use third-party React Native packages containing native code, Expo projects are also ready for you to add your own custom native code to your project. Once you create your first [development build](/develop/development-builds/introduction/), you can use any native library or custom native code in your local development environment, as well as in your production app. Development builds work just like Expo Go, allowing you to quickly run your app from the [Expo CLI](/more/expo-cli/), except they include all your specific native dependencies and customizations, and not just what is included with the latest [Expo SDK](/versions/latest/).
+Expo projects can use both third-party React Native libraries with native code and your own custom native code. Creating a [development build](/workflow/overview/#development-builds) allows you to include your specific native dependencies and customizations and not what's in the latest [Expo SDK](/versions/latest/). These native customizations can be any React Native library or your own custom native code.
 
 For most third-party native modules, thanks to [autolinking](/modules/autolinking/), all you need to do is install the package and create a new development build in order to start using the module's functionality. Some modules will also require you setup a [config-plugin](/config-plugins/introduction) to take care of other native customizations. For writing your own custom native code, there are different options depending on how you want to interact with native code in general.
 
