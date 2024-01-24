@@ -10,7 +10,9 @@
 
 ### 💡 Others
 
-## 13.2.1 — 2024-01-10
+- Remove `onDatabaseChange` event from legacy API as it is not supported natively. ([#26655](https://github.com/expo/expo/pull/26655) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 13.2.1 - 2024-01-10
 
 ### 🐛 Bug fixes
 
