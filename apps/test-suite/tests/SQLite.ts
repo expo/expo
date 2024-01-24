@@ -9,6 +9,7 @@ export const name = 'SQLite';
 const VERSION = '3.42.0';
 
 // TODO: Only tests successful cases, needs to test error cases like bad database name etc.
+
 export function test(t) {
   t.describe('SQLite', () => {
     t.it('should be able to drop + create a table, insert, query', async () => {

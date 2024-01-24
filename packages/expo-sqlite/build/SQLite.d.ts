@@ -37,14 +37,6 @@ export declare class SQLiteDatabase {
      */
     deleteAsync(): Promise<void>;
     /**
-     * Used to listen to changes in the database.
-     * @param callback A function that receives the `tableName` and `rowId` of the modified data.
-     */
-    onDatabaseChange(cb: (result: {
-        tableName: string;
-        rowId: number;
-    }) => void): import("expo-modules-core").Subscription;
-    /**
      * Creates a new transaction with Promise support.
      * @param asyncCallback A `SQLTransactionAsyncCallback` function that can perform SQL statements in a transaction.
      * @param readOnly true if all the SQL statements in the callback are read only.
