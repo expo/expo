@@ -212,22 +212,22 @@ const Home = () => {
             <APIGridCell
               title="Image"
               link="/versions/latest/sdk/image/"
-              icon={<Image03DuotoneIcon className="h-16 w-16" />}
+              icon={<Image03DuotoneIcon className="size-16" />}
             />
             <APIGridCell
               title="Camera"
               link="/versions/latest/sdk/camera"
-              icon={<CameraPlusDuotoneIcon className="h-16 w-16" />}
+              icon={<CameraPlusDuotoneIcon className="size-16" />}
             />
             <APIGridCell
               title="Notifications"
               link="/versions/latest/sdk/notifications"
-              icon={<NotificationMessageDuotoneIcon className="h-16 w-16" />}
+              icon={<NotificationMessageDuotoneIcon className="size-16" />}
             />
             <APIGridCell
               title="View all APIs"
               link="/versions/latest/"
-              icon={<DocsLogo className="h-16 w-16" />}
+              icon={<DocsLogo className="size-16" />}
             />
           </Row>
         </CellContainer>

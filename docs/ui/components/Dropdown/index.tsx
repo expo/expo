@@ -37,7 +37,7 @@ export function Dropdown({
           collisionPadding={collisionPadding}
           {...rest}>
           <Arrow asChild>
-            <div className="relative -top-1 h-2.5 w-2.5 rotate-45 border-b border-r border-default bg-default" />
+            <div className="relative -top-1 size-2.5 rotate-45 border-b border-r border-default bg-default" />
           </Arrow>
           {children}
         </Content>

@@ -71,7 +71,7 @@ export const FeedbackDialog = ({ pathname }: Props) => {
             {isSuccess ? (
               <>
                 <div className="px-6 py-12 flex flex-col items-center">
-                  <div className="flex bg-success border-2 border-success w-[72px] h-[72px] rounded-full items-center justify-center">
+                  <div className="flex bg-success border-2 border-success size-[72px] rounded-full items-center justify-center">
                     <CheckIcon className="text-icon-success icon-2xl" />
                   </div>
                   <RawH2 className="!mt-5 !mb-2">Feedback received</RawH2>

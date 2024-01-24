@@ -23,7 +23,7 @@ export default class DocsDocument extends Document {
         <Head>
           <Global styles={[globalNProgress, globalPrism, globalTippy, globalDiff, globalExtras]} />
         </Head>
-        <body>
+        <body className="text-pretty">
           <BlockingSetInitialColorMode />
           <Main />
           <NextScript />
