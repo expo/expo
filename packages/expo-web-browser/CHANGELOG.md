@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 12.8.2 — 2024-01-24
+
+### 💡 Others
+
 - Updated `androidx.browser:browser` to `1.6.0` [#26619](https://github.com/expo/expo/pull/26619) by [@zoontek](https://github.com/zoontek)
 
 ## 12.8.1 — 2023-12-19
