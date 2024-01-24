@@ -57,6 +57,11 @@ open class NotificationsHandler : Module(), NotificationListener {
   override fun definition() = ModuleDefinition {
     Name("ExpoNotificationsHandlerModule")
 
+    Events(
+      "onHandleNotification",
+      "onHandleNotificationTimeout"
+    )
+
     OnCreate {
       moduleRegistry = appContext.legacyModuleRegistry
 
