@@ -6,7 +6,7 @@ on:
     branches: [main]
     paths:
       - .github/workflows/android-unit-tests.yml
-      - android/**
+      - apps/expo-go/android/**
       - fastlane/**
       - packages/**/android/**
       - tools/**
@@ -15,7 +15,7 @@ on:
   pull_request:
     paths:
       - .github/workflows/android-unit-tests.yml
-      - android/**
+      - apps/expo-go/android/**
       - fastlane/**
       - packages/**/android/**
       - tools/**

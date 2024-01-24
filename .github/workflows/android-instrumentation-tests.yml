@@ -6,7 +6,7 @@ on:
     branches: [main]
     paths:
       - .github/workflows/android-instrumentation-tests.yml
-      - android/**
+      - apps/expo-go/android/**
       - fastlane/**
       # - packages/**/android/**
       - packages/expo-eas-client/android/**
@@ -19,7 +19,7 @@ on:
   pull_request:
     paths:
       - .github/workflows/android-instrumentation-tests.yml
-      - android/**
+      - apps/expo-go/android/**
       - fastlane/**
       # - packages/**/android/**
       - packages/expo-eas-client/android/**
