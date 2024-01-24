@@ -11,6 +11,13 @@ type Result = ReturnType<typeof render> & {
     getSegments(): string[];
     getSearchParams(): Record<string, string | string[]>;
 };
+export declare function getMockConfig(context: string | Record<string, FileStub> | {
+    appDir: string;
+    overrides: Record<string, FileStub>;
+}): {
+    initialRouteName?: string | undefined;
+    screens: Record<string, import("../getReactNavigationConfig").Screen>;
+};
 export declare function getMockContext(context: string | Record<string, FileStub> | {
     appDir: string;
     overrides: Record<string, FileStub>;

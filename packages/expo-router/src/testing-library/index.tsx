@@ -14,7 +14,8 @@ import {
 import { setInitialUrl } from './mocks';
 import { ExpoRoot } from '../ExpoRoot';
 import getPathFromState from '../fork/getPathFromState';
-import { stateCache } from '../getLinkingConfig';
+import { getNavigationConfig, stateCache } from '../getLinkingConfig';
+import { getExactRoutes } from '../getRoutes';
 import { store } from '../global-state/router-store';
 
 // re-export everything
@@ -35,6 +36,14 @@ function isOverrideContext(
   context: object
 ): context is { appDir: string; overrides: Record<string, FileStub> } {
   return Boolean(typeof context === 'object' && 'appDir' in context);
+}
+export function getMockConfig(
+  context:
+    | string
+    | Record<string, FileStub>
+    | { appDir: string; overrides: Record<string, FileStub> }
+) {
+  return getNavigationConfig(getExactRoutes(getMockContext(context))!);
 }
 
 export function getMockContext(
