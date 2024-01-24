@@ -10,5 +10,3 @@ inline fun <T> Dynamic.recycle(block: Dynamic.() -> T): T {
     this.recycle()
   }
 }
-
-val DynamicNull = DynamicFromObject(null)

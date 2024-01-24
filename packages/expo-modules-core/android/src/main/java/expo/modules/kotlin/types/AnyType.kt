@@ -68,6 +68,6 @@ class AnyType(
     val kClass = kType.classifier as? KClass<*> ?: return false
     val jClass = kClass.java
 
-    return View::class.java.isAssignableFrom(jClass)
+    return T::class.java.isAssignableFrom(jClass)
   }
 }

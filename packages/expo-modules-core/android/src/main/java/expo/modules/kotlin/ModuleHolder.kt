@@ -113,8 +113,4 @@ class ModuleHolder<T : Module>(val module: T) {
       }
     }
   }
-
-  fun viewClass(): KClass<out View>? {
-    return definition.viewManagerDefinition?.viewType?.kotlin
-  }
 }

@@ -30,6 +30,10 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
+private const val TAG = "ActivityResultRegistry"
+// Use upper 16 bits for request codes
+private const val INITIAL_REQUEST_CODE_VALUE = 0x00010000
+
 /**
  * A registry that stores activity result callbacks ([ActivityResultCallback]) for
  * [AppContextActivityResultCaller.registerForActivityResult] registered calls.
@@ -60,10 +64,6 @@ import kotlin.collections.HashMap
 class AppContextActivityResultRegistry(
   private val currentActivityProvider: CurrentActivityProvider
 ) {
-  private val LOG_TAG = "ActivityResultRegistry"
-
-  // Use upper 16 bits for request codes
-  private val INITIAL_REQUEST_CODE_VALUE = 0x00010000
   private var random: Random = Random()
 
   private val requestCodeToKey: MutableMap<Int, String> = HashMap()
@@ -215,7 +215,6 @@ class AppContextActivityResultRegistry(
         val requestCode = keyToRequestCode[key]
           ?: throw IllegalStateException("Attempting to launch an unregistered ActivityResultLauncher with contract $contract and input $input. You must ensure the ActivityResultLauncher is registered before calling launch()")
 
-        @Suppress("UNCHECKED_CAST")
         keyToCallbacksAndContract[key] = CallbacksAndContract(fallbackCallback, callback, contract)
         keyToInputParam[key] = input
         launchedKeys.add(key)
@@ -274,7 +273,7 @@ class AppContextActivityResultRegistry(
     }
     keyToCallbacksAndContract.remove(key)
     if (pendingResults.containsKey(key)) {
-      Log.w(LOG_TAG, "Dropping pending result for request $key : ${pendingResults.getParcelable<ActivityResult>(key)}")
+      Log.w(TAG, "Dropping pending result for request $key : ${pendingResults.getParcelable<ActivityResult>(key)}")
       pendingResults.remove(key)
     }
     keyToLifecycleContainers[key]?.let {
