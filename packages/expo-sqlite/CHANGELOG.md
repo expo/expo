@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove `onDatabaseChange` event from legacy API as it is not supported natively.
+
 ## 13.2.1 - 2024-01-10
 
 ### 🐛 Bug fixes
