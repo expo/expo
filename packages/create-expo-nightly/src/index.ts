@@ -36,7 +36,7 @@ const program = new Command(packageJSON.name)
     'The Android applicationId and iOS bundleIdentifier.',
     'dev.expo.testnightlies'
   )
-  .option('--prebuild', 'To run prebuild steps.')
+  .option('--no-prebuild', 'Skip running the prebuild step.')
   .option('--enable-new-architecture', 'Enable the New Architecture mode.')
   .parse(process.argv);
 
