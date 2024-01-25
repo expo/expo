@@ -154,9 +154,9 @@ jobs:
         working-directory: packages/create-expo-nightly
       - name: 🤖 Build Android project
         run: |
-          ./gradlew ":app:assemble$VARIANT" --no-daemon
+          cd android && ./gradlew ":app:assemble$VARIANT" --no-daemon
         shell: bash
-        working-directory: ${{ runner.temp }}/test-nightlies/android
+        working-directory: ${{ runner.temp }}/test-nightlies
         env:
           EXPO_DEBUG: 1
           NODE_ENV: production
@@ -172,9 +172,9 @@ jobs:
           jq '.expo.plugins[0][1].android.newArchEnabled = true' app.json > app.json.tmp
           mv -f app.json.tmp app.json
           npx expo prebuild -p ios --clean --no-install --template expo-template-bare-minimum-*.tgz
-          ./gradlew ":app:assemble$VARIANT" --no-daemon
+          cd android && ./gradlew ":app:assemble$VARIANT" --no-daemon
         shell: bash
-        working-directory: ${{ runner.temp }}/test-nightlies/android
+        working-directory: ${{ runner.temp }}/test-nightlies
         env:
           EXPO_DEBUG: 1
           NODE_ENV: production
