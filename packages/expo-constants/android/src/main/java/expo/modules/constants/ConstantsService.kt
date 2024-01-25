@@ -56,7 +56,7 @@ open class ConstantsService(private val context: Context) : InternalModule, Cons
 
   override fun getIsDevice(): Boolean {
     // Kept for compatibility with older expo-modules-core. TODO: remove in SDK 51
-    return true;
+    return true
   }
 
   override fun getSystemVersion(): String = Build.VERSION.RELEASE
