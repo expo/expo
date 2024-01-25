@@ -141,10 +141,12 @@ function getNavigateAction(state, parentState, type = 'NAVIGATE') {
     const previousRoute = parentState.routes.findLast((parentRoute) => {
         return areRoutesEqual(route, parentRoute);
     });
-    if (previousRoute) {
-        const routesAreEqual = areRoutesEqual(parentState.routes[parentState.index], previousRoute);
-        // If there is nested state and the routes are equal, we should keep going down the tree
-        if (route.state && routesAreEqual && previousRoute?.state) {
+    if (route.state && previousRoute?.state) {
+        /**
+         * We want to target the closest navigator
+         */
+        const shouldTargetLowerNavigator = areRoutesEqual(parentState.routes[parentState.index], previousRoute);
+        if (shouldTargetLowerNavigator) {
             return getNavigateAction(route.state, previousRoute.state, type);
         }
     }
