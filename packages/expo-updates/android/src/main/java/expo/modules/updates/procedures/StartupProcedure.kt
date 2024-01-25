@@ -37,6 +37,8 @@ class StartupProcedure(
   private val logger: UpdatesLogger,
   private val callback: StartupProcedureCallback
 ) : StateMachineProcedure() {
+  override val loggerTimerLabel = "timer-startup"
+
   interface StartupProcedureCallback {
     fun onFinished()
 

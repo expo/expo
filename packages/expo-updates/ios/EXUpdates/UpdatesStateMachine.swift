@@ -296,17 +296,20 @@ internal class UpdatesStateMachine {
   private let logger = UpdatesLogger()
 
   private lazy var serialExecutorQueue: StateMachineSerialExecutorQueue = {
-    return StateMachineSerialExecutorQueue(stateMachineProcedureContext: StateMachineProcedureContext(
-      processStateEventCallback: { event in
-        self.processEvent(event)
-      },
-      getCurrentStateCallback: {
-        return self.state
-      },
-      resetStateCallback: {
-        return self.reset()
-      }
-    ))
+    return StateMachineSerialExecutorQueue(
+      updatesLogger: logger,
+      stateMachineProcedureContext: StateMachineProcedureContext(
+        processStateEventCallback: { event in
+          self.processEvent(event)
+        },
+        getCurrentStateCallback: {
+          return self.state
+        },
+        resetStateCallback: {
+          return self.reset()
+        }
+      )
+    )
   }()
 
   // MARK: - Public methods and properties

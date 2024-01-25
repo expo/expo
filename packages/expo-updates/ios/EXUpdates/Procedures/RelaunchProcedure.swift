@@ -47,6 +47,10 @@ final class RelaunchProcedure: StateMachineProcedure {
     self.errorBlock = errorBlock
   }
 
+  func getLoggerTimerLabel() -> String {
+    "timer-relaunch"
+  }
+
   func run(procedureContext: ProcedureContext) {
     procedureContext.processStateEvent(UpdatesStateEventRestart())
     let launcherWithDatabase = AppLauncherWithDatabase(

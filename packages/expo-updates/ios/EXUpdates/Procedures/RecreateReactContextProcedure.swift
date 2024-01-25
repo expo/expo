@@ -17,6 +17,10 @@ final class RecreateReactContextProcedure: StateMachineProcedure {
     self.errorBlock = errorBlock
   }
 
+  func getLoggerTimerLabel() -> String {
+    "timer-recreate-react-context"
+  }
+
   func run(procedureContext: ProcedureContext) {
     procedureContext.processStateEvent(UpdatesStateEventRestart())
 

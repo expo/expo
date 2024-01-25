@@ -31,6 +31,8 @@ class RelaunchProcedure(
   private val shouldRunReaper: Boolean,
   private val callback: Launcher.LauncherCallback
 ) : StateMachineProcedure() {
+  override val loggerTimerLabel = "timer-relaunch"
+
   override fun run(procedureContext: ProcedureContext) {
     val host = reactNativeHost?.get()
     if (host == null) {

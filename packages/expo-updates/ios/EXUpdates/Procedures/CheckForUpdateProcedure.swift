@@ -31,6 +31,10 @@ final class CheckForUpdateProcedure: StateMachineProcedure {
     self.errorBlock = errorBlock
   }
 
+  func getLoggerTimerLabel() -> String {
+    "timer-check-for-update"
+  }
+
   func run(procedureContext: ProcedureContext) {
     procedureContext.processStateEvent(UpdatesStateEventCheck())
 

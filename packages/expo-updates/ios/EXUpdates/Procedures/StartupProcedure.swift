@@ -32,6 +32,10 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
     self.errorRecovery.delegate = self
   }
 
+  func getLoggerTimerLabel() -> String {
+    "timer-startup"
+  }
+
   internal weak var delegate: StartupProcedureDelegate?
 
   // swiftlint:disable implicitly_unwrapped_optional
