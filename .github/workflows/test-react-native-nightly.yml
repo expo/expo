@@ -58,7 +58,7 @@ jobs:
         if: steps.workspace-modules-cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 🍏 Create iOS Project
-        run: yarn prepare && bun build/index.js ${{ matrix.variant == 'new-arch' && '--enable-new-architecture' || '' }} ${{ runner.temp }}
+        run: yarn prepare && bun build/index.js --expo-repo ${{ github.workspace }} ${{ matrix.variant == 'new-arch' && '--enable-new-architecture' || '' }} ${{ runner.temp }}
         working-directory: packages/create-expo-nightly
       - name: 🍏 Build iOS Project
         run: |
