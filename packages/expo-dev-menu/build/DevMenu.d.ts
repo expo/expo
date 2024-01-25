@@ -15,5 +15,5 @@ export declare function closeMenu(): void;
  * A method allowing to specify custom entries in the development client menu.
  * @param items
  */
-export declare function registerDevMenuItems(items: ExpoDevMenuItem[]): Promise<any>;
+export declare function registerDevMenuItems(items: ExpoDevMenuItem[]): Promise<void>;
 //# sourceMappingURL=DevMenu.d.ts.map

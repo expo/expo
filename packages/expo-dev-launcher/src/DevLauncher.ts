@@ -9,9 +9,8 @@ export type Manifest = ExpoUpdatesManifest;
 
 export { disableErrorHandling } from './DevLauncherErrorManager';
 
-// @needsAudit
 /**
- * @deprecated
+ * @hidden
  */
 export function registerErrorHandlers() {
   console.warn(
@@ -26,7 +25,9 @@ export function isDevelopmentBuild(): boolean {
   return !!NativeModules.EXDevLauncher;
 }
 
-// @docsMissing
+/**
+ * @hidden
+ */
 export type DevLauncherExtension = {
   navigateToLauncherAsync: () => Promise<void>;
 };

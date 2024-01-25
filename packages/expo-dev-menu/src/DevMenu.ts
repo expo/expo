@@ -47,7 +47,7 @@ let handlers = new Map<string, () => void>();
  * A method allowing to specify custom entries in the development client menu.
  * @param items
  */
-export async function registerDevMenuItems(items: ExpoDevMenuItem[]) {
+export async function registerDevMenuItems(items: ExpoDevMenuItem[]): Promise<void> {
   if (!__DEV__) {
     // resolve undefined
     return;
