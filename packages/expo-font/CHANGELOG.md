@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix iOS support font variants (i.e. tabular-nums) ([#26697](https://github.com/expo/expo/pull/26697) by [@robwalkerco](https://github.com/robwalkerco))
+- Fix iOS support for font variants (i.e. tabular-nums) ([#26697](https://github.com/expo/expo/pull/26697) by [@robwalkerco](https://github.com/robwalkerco))
 
 ### 💡 Others
 
