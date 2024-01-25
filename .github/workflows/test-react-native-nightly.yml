@@ -63,7 +63,7 @@ jobs:
         run: |
           DEVICE_ID=$(defaults read com.apple.iphonesimulator CurrentDeviceUDID || xcrun simctl list devices available -j | jq -r '.devices | to_entries[] | .value[] | select(.isAvailable == true) | .udid' | head -n 1)
           CONFIGURATION="${{ matrix.build-type == 'release' && 'Release' || 'Debug' }}"
-          xcodebuild -workspace ios/testnightlies.xcworkspace -scheme testnightlies -configuration $CONFIGURATION -sdk iphonesimulator -destination "id=$DEVICE_ID" -derivedDataPath "ios/build" | xcpretty
+          xcodebuild -workspace ios/testnightlies.xcworkspace -scheme testnightlies -configuration $CONFIGURATION -sdk iphonesimulator -destination "id=$DEVICE_ID" -derivedDataPath "ios/build"
         shell: bash
         working-directory: ${{ runner.temp }}/test-nightlies
         env:
