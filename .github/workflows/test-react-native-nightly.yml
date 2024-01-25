@@ -42,7 +42,7 @@ jobs:
         with:
           ruby-version: 3.2.2
       - name: 💎 Install CocoaPods globally
-      - run: gem install cocoapods
+        run: gem install cocoapods
       - name: ♻️ Restore workspace node modules
         # Use restore only cache here because we don't want to nightly react-native version saving back to the cache
         uses: actions/cache/restore@v3
