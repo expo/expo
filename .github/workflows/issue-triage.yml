@@ -242,7 +242,7 @@ jobs:
               repo: context.repo.repo,
               body: `Hi there! It looks you are commenting on an issue that has been marked as resolved.
 
-              We beleive further discussion here is unhelpful and would recommend opening a new issue if you are still experiencing this problem or a related one.
+              If you are still experiencing this problem or a related one, please [open a new issue](https://github.com/expo/expo/issues/new/choose) and fill out the issue template.
             `})
             github.rest.issues.lock({
               issue_number: context.issue.number,
