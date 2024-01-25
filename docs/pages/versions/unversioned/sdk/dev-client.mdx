@@ -14,11 +14,13 @@ import {
 } from '~/components/plugins/ConfigSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-`expo-dev-client` is a library which can be installed in any Expo and React Native project to create a [development build](/workflow/overview/#development-builds).
+`expo-dev-client` adds various useful development tools to your debug builds:
 
-A development build is a debug build of your app that provides a flexible, reliable and a complete development environment. `expo-dev-client` provides an extensible in-app development tools UI, launcher UI for that debug build and ability to load project using Expo CLI. These debug builds are also shareable with your team or on multiple devices when working or reviewing that app is in development.
+- a configurable launcher UI, so you can launch updates (such as from [PR previews](/develop/development-builds/development-workflows#pr-previews)) and switch between development servers without needing to recompile the native app
+- improved debugging tools (such as support support for [inspecting network requests](/debugging/tools/#inspecting-network-requests))
+- [a powerful and extensible developer menu UI](/debugging/tools#developer-menu)
 
-After adding this library, the app's release builds are not affected other than a few header files.
+Expo documentation refers to debug builds that include `expo-dev-client` as [development builds](/develop/development-builds/introduction/).
 
 <PlatformsSection android emulator ios simulator />
 
