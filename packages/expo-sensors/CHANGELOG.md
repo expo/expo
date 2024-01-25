@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- On `Android`, add event name to definition in the `DeviceMotionModule`.
+- On `Android`, add event name to definition in the `DeviceMotionModule`. ([#26679](https://github.com/expo/expo/pull/26679) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
