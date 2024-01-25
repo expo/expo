@@ -1,4 +1,4 @@
-name: Test on React Native nightly build for Expo Modules
+name: Test React Native nightly build for Expo Modules
 
 on:
   workflow_dispatch: {}
