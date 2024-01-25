@@ -1,0 +1,144 @@
+name: Test on React Native nightly build for Expo Modules
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: '0 10 * * *' # 10:00 AM UTC time every Saturday
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/test-react-native-nightly.yml
+  pull_request:
+    paths:
+      - .github/workflows/test-react-native-nightly.yml
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+strategy:
+  fail-fast: true
+  max-parallel: 2
+  matrix:
+    build-type: [debug, release]
+    variant: [old-arch, new-arch]
+
+jobs:
+  ios-build:
+    runs-on: macos-13
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v3
+      - name: 🔨 Switch to Xcode 14.3
+        run: sudo xcode-select --switch /Applications/Xcode_14.3.app
+      - name: 🍺 Install required tools
+        run: |
+          brew install watchman || true
+      - name: 🚀 Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 💎 Setup Ruby and install gems
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          ruby-version: 3.2.2
+      - name: ♻️ Restore workspace node modules
+        # Use restore only cache here because we don't want to nightly react-native version saving back to the cache
+        uses: actions/cache/restore@v3
+        id: workspace-modules-cache
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+            packages/@expo/*/node_modules
+          key: ${{ runner.os }}-workspace-modules-${{ hashFiles('yarn.lock') }}
+      - name: 🧶 Install node modules in root dir
+        if: steps.workspace-modules-cache.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
+      - name: 🍏 Create iOS Project
+        run: yarn prepare && bun build/index.js ${{ matrix.variant == 'new-arch' && '--enable-new-architecture' || '' }} ${{ runner.temp }}
+        working-directory: packages/create-expo-nightly
+      - name: 🍏 Build iOS Project
+        run: |
+          DEVICE_ID=`defaults read com.apple.iphonesimulator CurrentDeviceUDID`
+          CONFIGURATION="${{ matrix.build-type == 'release' && 'Release' || 'Debug' }}"
+          xcodebuild -workspace ios/testnightlies.xcworkspace -scheme testnightlies -configuration $CONFIGURATION -sdk iphonesimulator -destination "id=$DEVICE_ID" -derivedDataPath "ios/build" | xcpretty
+        shell: bash
+        working-directory: ${{ runner.temp }}/test-nightlies
+        env:
+          EXPO_DEBUG: 1
+          NODE_ENV: production
+      - name: 📸 Upload builds
+        uses: actions/upload-artifact@v3
+        with:
+          name: ios-builds-${{ matrix.variant }}-${{ matrix.build-type }}
+          path: ${{ runner.temp }}/ios/build/testnightlies.app
+      # - name: 🔔 Notify on Slack
+      #   uses: 8398a7/action-slack@v3
+      #   if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main')
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}
+      #   with:
+      #     channel: '#expo-ios'
+      #     status: ${{ job.status }}
+      #     fields: job,message,ref,eventName,author,took
+      #     author_name: Test React Native Nightly (iOS)
+      #
+  # android-build:
+  #   runs-on: ubuntu-22.04
+  #   env:
+  #     ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
+  #     GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
+  #   steps:
+  #     - name: 👀 Checkout
+  #       uses: actions/checkout@v3
+  #       with:
+  #         submodules: true
+  #     - name: ⬢ Setup Node
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: 18
+  #     - name: 🔨 Use JDK 17
+  #       uses: actions/setup-java@v3
+  #       with:
+  #         distribution: 'temurin'
+  #         java-version: '17'
+  #     - name: ➕ Add `bin` to GITHUB_PATH
+  #       run: echo "$(pwd)/bin" >> $GITHUB_PATH
+  #     - name: ♻️ Restore caches
+  #       uses: ./.github/actions/expo-caches
+  #       id: expo-caches
+  #       with:
+  #         gradle: 'true'
+  #         yarn-tools: 'true'
+  #     - name: ⚙️ Setup react-native nightly
+  #       run: et setup-react-native-nightly
+  #     - name: ⚛️ Display React Native config
+  #       run: yarn react-native config
+  #       working-directory: apps/bare-expo
+  #     - name: 🛠️ Generate dynamic macros
+  #       run: expotools android-generate-dynamic-macros --configuration release --bare
+  #     - name: 🤖 Build Android project
+  #       run: ./gradlew -DtestBuildType=release :app:assembleRelease :app:assembleAndroidTest --no-daemon
+  #       working-directory: apps/bare-expo/android
+  #     - name: 📸 Upload builds
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: bare-expo-android-builds
+  #         path: apps/bare-expo/android/app/build/outputs/apk
+  #     - name: 🔔 Notify on Slack
+  #       uses: 8398a7/action-slack@v3
+  #       if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main')
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_android }}
+  #         MATRIX_CONTEXT: ${{ toJson(matrix) }}
+  #       with:
+  #         channel: '#expo-android'
+  #         status: ${{ job.status }}
+  #         fields: job,message,ref,eventName,author,took
+  #         author_name: Test Suite Nightly (Android)
