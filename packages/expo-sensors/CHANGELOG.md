@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On `Android`, add event name to definition in the `DeviceMotionModule`.
+
 ### 💡 Others
 
 ## 12.9.0 — 2023-12-12
