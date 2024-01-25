@@ -69,8 +69,13 @@ class LocationHelpers {
     fun requestSingleLocation(locationProvider: FusedLocationProviderClient, locationRequest: CurrentLocationRequest, promise: Promise) {
       try {
         locationProvider.getCurrentLocation(locationRequest, null)
-          .addOnSuccessListener {
-            promise.resolve(LocationResponse(it))
+          .addOnSuccessListener { location: Location? ->
+            if (location == null) {
+              promise.reject(CurrentLocationIsUnavailableException())
+              return@addOnSuccessListener
+            }
+
+            promise.resolve(LocationResponse(location))
           }
           .addOnFailureListener {
             promise.reject(LocationRequestRejectedException(it))
@@ -166,7 +171,8 @@ class LocationHelpers {
     }
 
     fun isAnyProviderAvailable(context: Context?): Boolean {
-      val locationManager = context?.getSystemService(Context.LOCATION_SERVICE) as? LocationManager ?: return false
+      val locationManager = context?.getSystemService(Context.LOCATION_SERVICE) as? LocationManager
+        ?: return false
       return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
@@ -177,7 +183,8 @@ class LocationHelpers {
           contextPermissions,
           object : Promise {
             override fun resolve(value: Any?) {
-              val result = value as? Bundle ?: throw ConversionException(Any::class.java, Bundle::class.java, "value returned by the permission promise is not a Bundle")
+              val result = value as? Bundle
+                ?: throw ConversionException(Any::class.java, Bundle::class.java, "value returned by the permission promise is not a Bundle")
               continuation.resume(PermissionRequestResponse(result))
             }
 
@@ -197,7 +204,10 @@ class LocationHelpers {
           contextPermissions,
           object : Promise {
             override fun resolve(value: Any?) {
-              it.resume(value as? Bundle ?: throw ConversionException(Any::class.java, Bundle::class.java, "value returned by the permission promise is not a Bundle"))
+              it.resume(
+                value as? Bundle
+                  ?: throw ConversionException(Any::class.java, Bundle::class.java, "value returned by the permission promise is not a Bundle")
+              )
             }
 
             override fun reject(code: String, message: String?, cause: Throwable?) {
