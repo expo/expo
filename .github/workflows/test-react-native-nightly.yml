@@ -41,8 +41,8 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.2.2
-      - name: 💎 Install CocoaPods globally
-        run: gem install cocoapods
+      - name: 💎 Install Ruby gems
+        run: gem install cocoapods xcpretty
       - name: ♻️ Restore workspace node modules
         # Use restore only cache here because we don't want to nightly react-native version saving back to the cache
         uses: actions/cache/restore@v3
@@ -61,9 +61,11 @@ jobs:
         working-directory: packages/create-expo-nightly
       - name: 🍏 Build iOS Project
         run: |
-          DEVICE_ID=$(defaults read com.apple.iphonesimulator CurrentDeviceUDID || xcrun simctl list devices available -j | jq -r '.devices | to_entries[] | .value[] | select(.isAvailable == true) | .udid' | head -n 1)
+          echo "Available simulators"
+          xcrun simctl list devices available -j | jq -r '.devices | to_entries[] | select(.value | length > 0)'
+          DEVICE_ID=$(defaults read com.apple.iphonesimulator CurrentDeviceUDID || xcrun simctl list devices available -j | jq -r '.devices | to_entries[] | select(.value | length > 0) | .value[] | select(.isAvailable == true) | .udid' | head -n 1)
           CONFIGURATION="${{ matrix.build-type == 'release' && 'Release' || 'Debug' }}"
-          xcodebuild -workspace ios/testnightlies.xcworkspace -scheme testnightlies -configuration $CONFIGURATION -sdk iphonesimulator -destination "id=$DEVICE_ID" -derivedDataPath "ios/build"
+          xcodebuild -workspace ios/testnightlies.xcworkspace -scheme testnightlies -configuration $CONFIGURATION -sdk iphonesimulator -destination "id=$DEVICE_ID" -derivedDataPath "ios/build" | xcpretty
         shell: bash
         working-directory: ${{ runner.temp }}/test-nightlies
         env:
