@@ -129,10 +129,7 @@ async function setupAppJsonAsync(
   // Add expo-build-properties plugin
   const plugins = exp.plugins ?? [];
   assert(isJSONArray(plugins));
-  plugins.push([
-    'expo-build-properties',
-    { android: { minSdkVersion: 23, newArchEnabled }, ios: { newArchEnabled } },
-  ]);
+  plugins.push(['expo-build-properties', { android: { newArchEnabled }, ios: { newArchEnabled } }]);
 
   // Add updates config
   exp.runtimeVersion = {
