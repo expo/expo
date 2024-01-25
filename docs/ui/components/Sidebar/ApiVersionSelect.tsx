@@ -30,7 +30,7 @@ export function ApiVersionSelect() {
         </label>
         <select
           id="api-version-select"
-          className="absolute opacity-0 inset-0 w-full h-full text-xs cursor-pointer"
+          className="absolute opacity-0 inset-0 size-full text-xs cursor-pointer"
           value={version}
           onChange={event => setVersion(event.target.value)}>
           {VERSIONS.map(version => (

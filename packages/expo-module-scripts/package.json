@@ -7,7 +7,7 @@
     "expo-module": "bin/expo-module.js"
   },
   "scripts": {
-    "lint": "expo-module lint ."
+    "lint": "expo-module eslint ."
   },
   "repository": {
     "type": "git",
@@ -26,10 +26,10 @@
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-module-scripts#readme",
   "dependencies": {
-    "@babel/cli": "^7.1.2",
-    "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
-    "@babel/preset-env": "^7.20.2",
-    "@babel/preset-typescript": "^7.12.12",
+    "@babel/cli": "^7.23.4",
+    "@babel/plugin-transform-export-namespace-from": "^7.23.4",
+    "@babel/preset-env": "^7.23.8",
+    "@babel/preset-typescript": "^7.23.3",
     "@expo/npm-proofread": "^1.0.1",
     "@testing-library/react-hooks": "^7.0.1",
     "@tsconfig/node18": "^18.2.2",

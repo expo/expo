@@ -48,7 +48,7 @@
     @"ExpoBridgeModule",
     @"EXNativeModulesProxy",
     @"ViewManagerAdapter_",
-    @"ExpoModulesCore"
+    @"ExpoModulesCore",
     @"EXReactNativeEventEmitter"
   ];
   NSArray<Class> *filteredModuleList = [modules filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable clazz, NSDictionary<NSString *,id> * _Nullable bindings) {

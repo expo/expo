@@ -38,4 +38,14 @@ config.serializer.getPolyfills = () => {
   return require(path.join(reactNativeRoot, 'rn-get-polyfills'))();
 };
 
+// Minimize the "watched" folders that Metro crawls through to speed up Metro in big monorepos.
+// Note, omitting folders disables Metro from resolving files within these folders
+// This also happens when symlinks falls within these folders, but the real location doesn't.
+config.watchFolders = [
+  __dirname, // Allow Metro to resolve all files within this project
+  path.join(monorepoRoot, 'packages'), // Allow Metro to resolve all workspace files of the monorepo
+  path.join(monorepoRoot, 'node_modules'), // Allow Metro to resolve "shared" `node_modules` of the monorepo
+  path.join(monorepoRoot, 'react-native-lab'), // Allow Metro to resolve `react-native-lab/react-native` files
+];
+
 module.exports = config;

@@ -38,7 +38,7 @@ react {
   codegenDir = new File(projectRoot, "../../react-native-lab/react-native/packages/react-native-codegen")
 
   // Expo Go does not require JS bundling from build, we set all variants as debuggableVariants
-  debuggableVariants = ["versionedDebug", "versionedRelease", "unversionedDebug", "unversionedRelease"]
+  debuggableVariants = ["debug", "release"]
 
   cliFile = new File(["node", "--print", "require.resolve('@expo/cli')"].execute(null, rootDir).text.trim())
   bundleCommand = "export:embed"
@@ -79,17 +79,15 @@ android {
 
   defaultConfig {
     applicationId 'host.exp.exponent'
-    // ADD VERSIONS HERE
-    // BEGIN VERSIONS
     versionCode 221
     versionName '2.30.5'
-    // END VERSIONS
 
     multiDexEnabled true
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     // Deprecated. Used by net.openid:appauth
     manifestPlaceholders = [
-        'appAuthRedirectScheme': 'host.exp.exponent'
+        'appAuthRedirectScheme': 'host.exp.exponent',
+        'appLabel': '@string/versioned_app_name'
     ]
   }
   dexOptions {
@@ -126,36 +124,9 @@ android {
       firebaseCrashlytics {
         nativeSymbolUploadEnabled shouldUploadCrashlytics
         mappingFileUploadEnabled shouldUploadCrashlytics
-      }
-    }
-  }
 
-  flavorDimensions "versioning"
-  productFlavors {
-    versioned {
-      dimension "versioning"
-      manifestPlaceholders = [appLabel:"@string/versioned_app_name"]
-      firebaseCrashlytics {
-        unstrippedNativeLibsDir file("${buildDir}/intermediates/merged_native_libs/versionedRelease/out/lib")
+        unstrippedNativeLibsDir file("${buildDir}/intermediates/merged_native_libs/release/out/lib")
       }
-    }
-    unversioned {
-      dimension "versioning"
-      getIsDefault().set(true)
-      manifestPlaceholders = [appLabel: "@string/unversioned_app_name"]
-      firebaseCrashlytics {
-        unstrippedNativeLibsDir file("${buildDir}/intermediates/merged_native_libs/unversionedRelease/out/lib")
-      }
-    }
-  }
-
-  // `productFlavors` must be defined before this block
-  defaultConfig {
-    if (android.productFlavors.empty) {
-      // when preparing shell app, the above flavor declarations  are removed
-      // this falls back :expoview to versioned flavor
-      missingDimensionStrategy 'versioning', 'versioned'
-      manifestPlaceholders = [appLabel:"@string/versioned_app_name"]
     }
   }
 
@@ -321,15 +292,9 @@ dependencies {
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'org.mockito:mockito-core:1.10.19'
 
-  // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
-
-  // BEGIN_SDK_UNVERSIONED
   implementation(project(':expoview'))
 
   implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
-  // END_SDK_UNVERSIONED
-
-  // ADD_NEW_SDKS_HERE
 }
 
 // This has to be down here for some reason
@@ -337,8 +302,7 @@ apply plugin: 'com.google.gms.google-services'
 
 def ensureCrashlyticsDir = tasks.register('ensureCrashlyticsDir') {
   doLast {
-    Files.createDirectories(Paths.get("${buildDir}/intermediates/merged_native_libs/versionedRelease/out/lib"))
-    Files.createDirectories(Paths.get("${buildDir}/intermediates/merged_native_libs/unversionedRelease/out/lib"))
+    Files.createDirectories(Paths.get("${buildDir}/intermediates/merged_native_libs/release/out/lib"))
   }
 }
 preBuild.dependsOn(ensureCrashlyticsDir)

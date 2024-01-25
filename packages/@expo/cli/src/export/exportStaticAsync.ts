@@ -309,8 +309,8 @@ export function getHtmlFiles({
             baseUrl === ''
               ? 'index'
               : baseUrl.endsWith('/')
-              ? baseUrl + 'index'
-              : baseUrl.slice(0, -1);
+                ? baseUrl + 'index'
+                : baseUrl.slice(0, -1);
         }
 
         // This should never happen, the type of `string | object` originally comes from React Navigation.

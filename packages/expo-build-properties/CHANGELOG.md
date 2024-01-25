@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Removed Flipper support. ([#26581](https://github.com/expo/expo/pull/26581) by [@kudo](https://github.com/kudo))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

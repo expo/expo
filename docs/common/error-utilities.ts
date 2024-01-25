@@ -349,6 +349,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/archive/workflow/customizing/': '/workflow/customizing/',
   '/errors-and-warnings/': '/debugging/errors-and-warnings/',
   '/guides/education': '/additional-resources/',
+  '/versions/latest/sdk/in-app-purchases/': '/guides/in-app-purchases/',
+  '/versions/v50.0.0/sdk/in-app-purchases/': '/guides/in-app-purchases/',
+  '/guides/web-performance/': '/guides/analyzing-bundles/',
 
   // Classic updates moved to archive
   '/guides/configuring-ota-updates/': '/archive/classic-updates/getting-started/',
@@ -356,7 +359,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/distribution/release-channels/': '/archive/classic-updates/release-channels/',
   '/distribution/advanced-release-channels/': '/archive/classic-updates/advanced-release-channels/',
   '/distribution/optimizing-updates/': '/archive/classic-updates/optimizing-updates/',
-  '/eas-update/custom-updates-server/': '/distribution/custom-updates-server/',
   '/guides/offline-support/': '/archive/classic-updates/offline-support/',
   '/guides/preloading-and-caching-assets/':
     '/archive/classic-updates/preloading-and-caching-assets/',
@@ -405,6 +407,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/eas-update/debug-updates/': '/eas-update/debug/',
   '/eas-update/how-eas-update-works/': '/eas-update/how-it-works/',
   '/eas-update/migrate-to-eas-update/': '/eas-update/migrate-from-classic-updates/',
+  '/distribution/custom-updates-server/': '/eas-update/custom-updates-server/',
 
   // Expo Router Advanced guides
   '/router/advance/root-layout': '/router/advanced/root-layout/',
@@ -436,4 +439,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/v49.0.0/sdk': '/versions/v49.0.0',
   '/versions/v47.0.0/sdk': '/versions/v47.0.0',
   '/versions/v46.0.0/sdk': '/versions/v46.0.0',
+
+  // Deprecated Webpack support
+  '/guides/customizing-webpack': '/archive/customizing-webpack',
 };

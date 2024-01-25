@@ -21,11 +21,10 @@ import { getMetroProperties } from '../../../utils/analytics/getMetroProperties'
 import { createDebuggerTelemetryMiddleware } from '../../../utils/analytics/metroDebuggerMiddleware';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { env } from '../../../utils/env';
+import { createCorsMiddleware } from '../middleware/CorsMiddleware';
 import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
 import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware, replaceMiddlewareWith } from '../middleware/mutations';
-import { remoteDevtoolsCorsMiddleware } from '../middleware/remoteDevtoolsCorsMiddleware';
-import { remoteDevtoolsSecurityHeadersMiddleware } from '../middleware/remoteDevtoolsSecurityHeadersMiddleware';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { suppressRemoteDebuggingErrorMiddleware } from '../middleware/suppressErrorMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
@@ -106,10 +105,11 @@ export async function loadMetroConfigAsync(
     }
   }
 
-  const platformBundlers = getPlatformBundlers(exp);
+  const platformBundlers = getPlatformBundlers(projectRoot, exp);
 
   config = await withMetroMultiPlatformAsync(projectRoot, {
     config,
+    exp,
     platformBundlers,
     isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
     webOutput: exp.web?.output ?? 'single',
@@ -183,15 +183,12 @@ export async function instantiateMetroAsync(
       watchFolders: metroConfig.watchFolders,
     });
 
-  // securityHeadersMiddleware does not support cross-origin requests for remote devtools to get the sourcemap.
-  // We replace with the enhanced version.
+  // The `securityHeadersMiddleware` does not support cross-origin requests, we replace with the enhanced version.
   replaceMiddlewareWith(
     middleware as ConnectServer,
     securityHeadersMiddleware,
-    remoteDevtoolsSecurityHeadersMiddleware
+    createCorsMiddleware(exp)
   );
-
-  middleware.use(remoteDevtoolsCorsMiddleware);
 
   prependMiddleware(middleware, suppressRemoteDebuggingErrorMiddleware);
 

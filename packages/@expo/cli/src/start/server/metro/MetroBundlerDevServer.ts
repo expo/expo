@@ -17,7 +17,12 @@ import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
-import { getRouterDirectoryModuleIdWithManifest } from './router';
+import {
+  getRouterDirectoryModuleIdWithManifest,
+  hasWarnedAboutApiRoutes,
+  isApiRouteConvention,
+  warnInvalidWebOutput,
+} from './router';
 import { serializeHtmlWithAssets } from './serializeHtml';
 import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 import { ExportAssetMap } from '../../../export/saveAssets';
@@ -129,7 +134,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       );
       if (contents) {
         files.set(artifactFilename, {
-          contents,
+          contents: contents.src,
           targetDomain: 'server',
         });
       }
@@ -457,7 +462,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     // Append support for redirecting unhandled requests to the index.html page on web.
     if (this.isTargetingWeb()) {
-      const { exp } = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
+      const config = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
+      const { exp } = config;
       const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
 
       // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
@@ -477,6 +483,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             appDir,
             baseUrl,
             routerRoot,
+            config,
             getWebBundleUrl: manifestMiddleware.getWebBundleUrl.bind(manifestMiddleware),
             getStaticPageAsync: (pathname) => {
               return this.getStaticPageAsync(pathname, {
@@ -491,22 +498,35 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           })
         );
 
-        if (exp.web?.output === 'server') {
-          // NOTE(EvanBacon): We aren't sure what files the API routes are using so we'll just invalidate
-          // aggressively to ensure we always have the latest. The only caching we really get here is for
-          // cases where the user is making subsequent requests to the same API route without changing anything.
-          // This is useful for testing but pretty suboptimal. Luckily our caching is pretty aggressive so it makes
-          // up for a lot of the overhead.
-          observeAnyFileChanges(
-            {
-              metro,
-              server,
-            },
-            () => {
+        observeAnyFileChanges(
+          {
+            metro,
+            server,
+          },
+          (events) => {
+            if (exp.web?.output === 'server') {
+              // NOTE(EvanBacon): We aren't sure what files the API routes are using so we'll just invalidate
+              // aggressively to ensure we always have the latest. The only caching we really get here is for
+              // cases where the user is making subsequent requests to the same API route without changing anything.
+              // This is useful for testing but pretty suboptimal. Luckily our caching is pretty aggressive so it makes
+              // up for a lot of the overhead.
               invalidateApiRouteCache();
+            } else if (!hasWarnedAboutApiRoutes()) {
+              for (const event of events) {
+                if (
+                  // If the user did not delete a file that matches the Expo Router API Route convention, then we should warn that
+                  // API Routes are not enabled in the project.
+                  event.metadata?.type !== 'd' &&
+                  // Ensure the file is in the project's routes directory to prevent false positives in monorepos.
+                  event.filePath.startsWith(appDir) &&
+                  isApiRouteConvention(event.filePath)
+                ) {
+                  warnInvalidWebOutput();
+                }
+              }
             }
-          );
-        }
+          }
+        );
       } else {
         // This MUST run last since it's the fallback.
         middleware.use(

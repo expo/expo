@@ -11,6 +11,8 @@ class RecreateReactContextProcedure(
   private val reactNativeHost: WeakReference<ReactNativeHost>?,
   private val callback: Launcher.LauncherCallback
 ) : StateMachineProcedure() {
+  override val loggerTimerLabel = "timer-recreate-react-context"
+
   override fun run(procedureContext: ProcedureContext) {
     val host = reactNativeHost?.get()
     if (host == null) {

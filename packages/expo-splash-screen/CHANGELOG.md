@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 0.26.3 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 0.26.2 - 2024-01-10
+
+### 🐛 Bug fixes
+
+- Fixed return value of the `preventAutoHideAsync` function. ([#26348](https://github.com/expo/expo/pull/26348) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
 - Replace deprecated `com.facebook.react:react-native:+` Android dependency with `com.facebook.react:react-android`. ([#26237](https://github.com/expo/expo/pull/26237) by [@kudo](https://github.com/kudo))
 
 ## 0.26.1 - 2023-12-19

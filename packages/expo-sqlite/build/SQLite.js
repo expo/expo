@@ -1,9 +1,8 @@
 import './polyfillNextTick';
 import customOpenDatabase from '@expo/websql/custom';
-import { requireNativeModule, EventEmitter } from 'expo-modules-core';
+import { requireNativeModule } from 'expo-modules-core';
 import { Platform } from 'react-native';
 const ExpoSQLite = requireNativeModule('ExpoSQLite');
-const emitter = new EventEmitter(ExpoSQLite);
 function zipObject(keys, values) {
     const result = {};
     for (let i = 0; i < keys.length; i++) {
@@ -86,13 +85,6 @@ export class SQLiteDatabase {
         return ExpoSQLite.deleteAsync(this._name);
     }
     /**
-     * Used to listen to changes in the database.
-     * @param callback A function that receives the `tableName` and `rowId` of the modified data.
-     */
-    onDatabaseChange(cb) {
-        return emitter.addListener('onDatabaseChange', cb);
-    }
-    /**
      * Creates a new transaction with Promise support.
      * @param asyncCallback A `SQLTransactionAsyncCallback` function that can perform SQL statements in a transaction.
      * @param readOnly true if all the SQL statements in the callback are read only.
@@ -171,7 +163,6 @@ export function openDatabase(name, version = '1.0', description = name, size = 1
     db.execAsync = db._db.execAsync.bind(db._db);
     db.closeAsync = db._db.closeAsync.bind(db._db);
     db.closeSync = db._db.closeSync.bind(db._db);
-    db.onDatabaseChange = db._db.onDatabaseChange.bind(db._db);
     db.deleteAsync = db._db.deleteAsync.bind(db._db);
     db.transactionAsync = db._db.transactionAsync.bind(db._db);
     return db;

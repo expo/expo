@@ -1,18 +1,9 @@
-// @needsAudit
 export var AppOwnership;
 (function (AppOwnership) {
-    /**
-     * It is a [standalone app](/classic/building-standalone-apps#building-standalone-apps).
-     */
-    AppOwnership["Standalone"] = "standalone";
     /**
      * The experience is running inside of the Expo Go app.
      */
     AppOwnership["Expo"] = "expo";
-    /**
-     * It has been opened through a link from a standalone app.
-     */
-    AppOwnership["Guest"] = "guest";
 })(AppOwnership || (AppOwnership = {}));
 // @docsMissing
 export var ExecutionEnvironment;

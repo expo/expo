@@ -1,4 +1,4 @@
-import { getConfig, Platform } from '@expo/config';
+import { ExpoConfig, getConfig, Platform } from '@expo/config';
 
 import { getPlatformBundlers, PlatformBundlers } from '../start/server/platformBundlers';
 import { CommandError } from '../utils/errors';
@@ -17,11 +17,14 @@ export type Options = {
 
 /** Returns an array of platforms based on the input platform identifier and runtime constraints. */
 export function resolvePlatformOption(
+  exp: ExpoConfig,
   platformBundlers: PlatformBundlers,
   platform: string[] = ['all']
 ): Platform[] {
   const platformsAvailable: Partial<PlatformBundlers> = Object.fromEntries(
-    Object.entries(platformBundlers).filter(([, bundler]) => bundler === 'metro')
+    Object.entries(platformBundlers).filter(
+      ([platform, bundler]) => bundler === 'metro' && exp.platforms?.includes(platform as Platform)
+    )
   );
 
   if (!Object.keys(platformsAvailable).length) {
@@ -67,10 +70,10 @@ export function resolvePlatformOption(
 
 export async function resolveOptionsAsync(projectRoot: string, args: any): Promise<Options> {
   const { exp } = getConfig(projectRoot, { skipPlugins: true, skipSDKVersionRequirement: true });
-  const platformBundlers = getPlatformBundlers(exp);
+  const platformBundlers = getPlatformBundlers(projectRoot, exp);
 
   return {
-    platforms: resolvePlatformOption(platformBundlers, args['--platform']),
+    platforms: resolvePlatformOption(exp, platformBundlers, args['--platform']),
     outputDir: args['--output-dir'] ?? 'dist',
     minify: !args['--no-minify'],
     clear: !!args['--clear'],

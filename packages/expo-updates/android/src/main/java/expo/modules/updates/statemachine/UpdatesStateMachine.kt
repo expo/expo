@@ -15,19 +15,24 @@ class UpdatesStateMachine(
   private val changeEventSender: UpdatesStateChangeEventSender,
   private val validUpdatesStateValues: Set<UpdatesStateValue>
 ) {
-  private val serialExecutorQueue = StateMachineSerialExecutorQueue(object : StateMachineProcedure.StateMachineProcedureContext {
-    override fun processStateEvent(event: UpdatesStateEvent) {
-      this@UpdatesStateMachine.processEvent(event)
-    }
+  private val logger = UpdatesLogger(androidContext)
 
-    override fun getCurrentState(): UpdatesStateValue {
-      return state
-    }
+  private val serialExecutorQueue = StateMachineSerialExecutorQueue(
+    logger,
+    object : StateMachineProcedure.StateMachineProcedureContext {
+      override fun processStateEvent(event: UpdatesStateEvent) {
+        this@UpdatesStateMachine.processEvent(event)
+      }
 
-    override fun resetState() {
-      reset()
+      override fun getCurrentState(): UpdatesStateValue {
+        return state
+      }
+
+      override fun resetState() {
+        reset()
+      }
     }
-  })
+  )
 
   /**
    * Queue a StateMachineProcedure procedure for serial execution.
@@ -35,8 +40,6 @@ class UpdatesStateMachine(
   fun queueExecution(stateMachineProcedure: StateMachineProcedure) {
     serialExecutorQueue.queueExecution(stateMachineProcedure)
   }
-
-  private val logger = UpdatesLogger(androidContext)
 
   /**
    * The current state

@@ -1,5 +1,5 @@
 import { Navigator, Slot } from './views/Navigator';
-export { useRouter, useUnstableGlobalHref, usePathname, useGlobalSearchParams, useLocalSearchParams, useSegments, useRootNavigation, useRootNavigationState, } from './hooks';
+export { useRouter, useUnstableGlobalHref, usePathname, useNavigationContainerRef, useGlobalSearchParams, useLocalSearchParams, useSegments, useRootNavigation, useRootNavigationState, } from './hooks';
 export { router } from './imperative-api';
 export { Link, Redirect } from './link/Link';
 export { withLayoutContext } from './layouts/withLayoutContext';

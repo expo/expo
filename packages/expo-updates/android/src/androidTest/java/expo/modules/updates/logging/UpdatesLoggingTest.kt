@@ -4,6 +4,7 @@ import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
 import expo.modules.core.logging.LogType
 import expo.modules.core.logging.PersistentFileLog
+import expo.modules.updates.UpdatesModule
 import expo.modules.updates.logging.UpdatesLogger.Companion.EXPO_UPDATES_LOGGING_TAG
 import expo.modules.updates.logging.UpdatesLogger.Companion.MAX_FRAMES_IN_STACKTRACE
 import org.junit.Assert
@@ -30,7 +31,7 @@ class UpdatesLoggingTest {
 
   @Test
   fun testLogEntryConversion() {
-    val entry = UpdatesLogEntry(12345678, "Test message", "NoUpdatesAvailable", "warn", null, null, null)
+    val entry = UpdatesLogEntry(12345678, "Test message", "NoUpdatesAvailable", "warn", null, null, null, null)
     val json = entry.asString()
     val entryCopy = UpdatesLogEntry.create(json)
     Assert.assertEquals(entry.message, entryCopy?.message)
@@ -41,7 +42,7 @@ class UpdatesLoggingTest {
     Assert.assertNull(entryCopy?.assetId)
     Assert.assertNull(entryCopy?.stacktrace)
 
-    val entry2 = UpdatesLogEntry(12345678, "Test message", "UpdateFailedToLoad", "fatal", "myUpdateId", "myAssetId", listOf("stack frame 1", "stack frame 2"))
+    val entry2 = UpdatesLogEntry(12345678, "Test message", "UpdateFailedToLoad", "fatal", null, "myUpdateId", "myAssetId", listOf("stack frame 1", "stack frame 2"))
     val json2 = entry2.asString()
     val entryCopy2 = UpdatesLogEntry.create(json2)
     Assert.assertEquals(entry2.message, entryCopy2?.message)
@@ -68,7 +69,7 @@ class UpdatesLoggingTest {
     val instrumentationContext = InstrumentationRegistry.getInstrumentation().context
     val logger = UpdatesLogger(instrumentationContext)
     val now = Date()
-    val expectedLogEntry = UpdatesLogEntry(now.time, "Test message", UpdatesErrorCode.JSRuntimeError.code, LogType.Warn.type, null, null, null)
+    val expectedLogEntry = UpdatesLogEntry(now.time, "Test message", UpdatesErrorCode.JSRuntimeError.code, LogType.Warn.type, null, null, null, null)
     logger.warn("Test message", UpdatesErrorCode.JSRuntimeError)
     asyncTestUtil.waitForTimeout(500)
     val sinceThen = Date(now.time - 5000)
@@ -79,6 +80,27 @@ class UpdatesLoggingTest {
     Assert.assertEquals(expectedLogEntry.message, actualLogEntry.message)
     Assert.assertEquals(expectedLogEntry.code, actualLogEntry.code)
     Assert.assertEquals(expectedLogEntry.level, actualLogEntry.level)
+  }
+
+  @Test
+  fun testTimer() {
+    val asyncTestUtil = AsyncTestUtil()
+    val instrumentationContext = InstrumentationRegistry.getInstrumentation().context
+    val logger = UpdatesLogger(instrumentationContext)
+    val now = Date()
+
+    val timer = logger.startTimer("testlabel")
+    asyncTestUtil.waitForTimeout(300)
+    timer.stop()
+
+    asyncTestUtil.waitForTimeout(500)
+    val sinceThen = Date(now.time - 5000)
+    val logs = UpdatesLogReader(instrumentationContext).getLogEntries(sinceThen)
+    Assert.assertTrue(logs.isNotEmpty())
+
+    val actualLogEntry = UpdatesLogEntry.create(logs[logs.size - 1]) as UpdatesLogEntry
+    Assert.assertEquals("testlabel", actualLogEntry.message)
+    Assert.assertTrue(actualLogEntry.duration!! >= 300)
   }
 
   @Test
@@ -124,42 +146,41 @@ class UpdatesLoggingTest {
     Assert.assertEquals("Message 2", UpdatesLogEntry.create(purgedLogs[0])?.message)
   }
 
-  // TODO: Reenale this after upgrading react-native to 0.73
-  // @Test
-  // fun testBridgeMethods() {
-  //   val asyncTestUtil = AsyncTestUtil()
-  //   val instrumentationContext = InstrumentationRegistry.getInstrumentation().context
-  //   val logger = UpdatesLogger(instrumentationContext)
-  //   logger.warn("Test message", UpdatesErrorCode.JSRuntimeError)
-  //   val entries = UpdatesModule.readLogEntries(
-  //     instrumentationContext,
-  //     1000L,
-  //   )
-  //   Assert.assertNotNull(entries)
-  //   Assert.assertEquals(1, entries.size)
-  //   val bundle = entries[0]
-  //   Assert.assertEquals("Test message", bundle.getString("message"))
+  @Test
+  fun testBridgeMethods() {
+    val asyncTestUtil = AsyncTestUtil()
+    val instrumentationContext = InstrumentationRegistry.getInstrumentation().context
+    val logger = UpdatesLogger(instrumentationContext)
+    logger.warn("Test message", UpdatesErrorCode.JSRuntimeError)
+    val entries = UpdatesModule.readLogEntries(
+      instrumentationContext,
+      1000L
+    )
+    Assert.assertNotNull(entries)
+    Assert.assertEquals(1, entries.size)
+    val bundle = entries[0]
+    Assert.assertEquals("Test message", bundle.getString("message"))
 
-  //   var rejected = false
-  //   asyncTestUtil.asyncMethodRunning = true
-  //   UpdatesModule.clearLogEntries(instrumentationContext) { error ->
-  //     if (error != null) {
-  //       rejected = true
-  //       asyncTestUtil.asyncMethodRunning = false
-  //     }
-  //     asyncTestUtil.asyncMethodRunning = false
-  //   }
-  //   asyncTestUtil.waitForAsyncMethodToFinish("clearLogEntriesAsync timed out", 1000)
-  //   Assert.assertFalse(rejected)
+    var rejected = false
+    asyncTestUtil.asyncMethodRunning = true
+    UpdatesModule.clearLogEntries(instrumentationContext) { error ->
+      if (error != null) {
+        rejected = true
+        asyncTestUtil.asyncMethodRunning = false
+      }
+      asyncTestUtil.asyncMethodRunning = false
+    }
+    asyncTestUtil.waitForAsyncMethodToFinish("clearLogEntriesAsync timed out", 1000)
+    Assert.assertFalse(rejected)
 
-  //   val entries2 = UpdatesModule.readLogEntries(
-  //     instrumentationContext,
-  //     1000L
-  //   )
-  //   asyncTestUtil.waitForAsyncMethodToFinish("readLogEntriesAsync timed out", 1000000)
-  //   Assert.assertNotNull(entries2)
-  //   Assert.assertEquals(0, entries2.size)
-  // }
+    val entries2 = UpdatesModule.readLogEntries(
+      instrumentationContext,
+      1000L
+    )
+    asyncTestUtil.waitForAsyncMethodToFinish("readLogEntriesAsync timed out", 1000000)
+    Assert.assertNotNull(entries2)
+    Assert.assertEquals(0, entries2.size)
+  }
 
   internal class AsyncTestUtil {
     var asyncMethodRunning = false

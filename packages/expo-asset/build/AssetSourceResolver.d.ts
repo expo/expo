@@ -7,9 +7,9 @@ export type ResolvedAssetSource = {
     scale: number;
 };
 export default class AssetSourceResolver {
-    serverUrl: string;
-    jsbundleUrl?: string | null;
-    asset: PackagerAsset;
+    private readonly serverUrl;
+    private readonly jsbundleUrl;
+    readonly asset: PackagerAsset;
     constructor(serverUrl: string | undefined | null, jsbundleUrl: string | undefined | null, asset: PackagerAsset);
     isLoadedFromServer(): boolean;
     isLoadedFromFileSystem(): boolean;

@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 3.3.6 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 3.3.5 - 2024-01-10
+
+### 💡 Others
+
 - Replace deprecated `com.facebook.react:react-native:+` Android dependency with `com.facebook.react:react-android`. ([#26237](https://github.com/expo/expo/pull/26237) by [@kudo](https://github.com/kudo))
 
 ## 3.3.4 - 2023-12-21

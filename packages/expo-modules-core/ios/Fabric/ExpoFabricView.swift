@@ -21,11 +21,10 @@ public class ExpoFabricView: ExpoFabricViewObjC {
     return appContext?.moduleRegistry.get(moduleHolderForName: moduleName)
   }
 
-
   /**
    A dictionary of prop objects that contain prop setters.
    */
-  lazy var viewManagerPropDict: [String: AnyViewProp]? = moduleHolder?.viewManager?.propsDict()
+  lazy var viewManagerPropDict: [String: AnyViewProp]? = moduleHolder?.definition.view?.propsDict()
 
   // MARK: - Initializers
 
@@ -62,10 +61,10 @@ public class ExpoFabricView: ExpoFabricViewObjC {
    Calls lifecycle methods registered by `OnViewDidUpdateProps` definition component.
    */
   public override func viewDidUpdateProps() {
-    guard let view = contentView, let viewManager = moduleHolder?.definition.viewManager else {
+    guard let view = contentView, let viewDefinition = moduleHolder?.definition.view else {
       return
     }
-    viewManager.callLifecycleMethods(withType: .didUpdateProps, forView: view)
+    viewDefinition.callLifecycleMethods(withType: .didUpdateProps, forView: view)
   }
 
   /**
@@ -110,7 +109,7 @@ public class ExpoFabricView: ExpoFabricViewObjC {
     guard let appContext = appContext else {
       fatalError(Exceptions.AppContextLost().reason)
     }
-    guard let view = moduleHolder?.definition.viewManager?.createView(appContext: appContext) else {
+    guard let view = moduleHolder?.definition.view?.createView(appContext: appContext) else {
       fatalError("Cannot create a view from module '\(moduleName)'")
     }
     // Setting the content view automatically adds the view as a subview.
@@ -125,7 +124,7 @@ public class ExpoFabricView: ExpoFabricViewObjC {
     guard let view = contentView, let moduleHolder = moduleHolder else {
       return
     }
-    moduleHolder.viewManager?.eventNames.forEach { eventName in
+    moduleHolder.definition.view?.eventNames.forEach { eventName in
       installEventDispatcher(forEvent: eventName, onView: view) { [weak self] (body: [String: Any]) in
         if let self = self {
           self.dispatchEvent(eventName, payload: body)

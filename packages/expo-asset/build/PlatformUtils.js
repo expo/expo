@@ -1,29 +1,24 @@
 import computeMd5 from 'blueimp-md5';
-import Constants from 'expo-constants';
+import Constants, { AppOwnership } from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
 import { requireOptionalNativeModule } from 'expo-modules-core';
 import { getManifestBaseUrl } from './AssetUris';
 const ExpoUpdates = requireOptionalNativeModule('ExpoUpdates');
-// Constants.appOwnership is only available in managed apps (Expo client and standalone)
-export const IS_MANAGED_ENV = !!Constants.appOwnership;
-// In the future (SDK38+) expo-updates is likely to be used in managed apps, so we decide
-// that you are in a bare app with updates if you're not in a managed app and you have
-// local assets available.
-export const IS_BARE_ENV_WITH_UPDATES = !IS_MANAGED_ENV &&
-    !!ExpoUpdates?.isEnabled &&
-    // if expo-updates is installed but we're running directly from the embedded bundle, we don't want
-    // to override the AssetSourceResolver
-    !ExpoUpdates?.isUsingEmbeddedAssets;
-export const IS_ENV_WITH_UPDATES_ENABLED = IS_MANAGED_ENV || IS_BARE_ENV_WITH_UPDATES;
-// If it's not managed or bare w/ updates, then it must be bare w/o updates!
-export const IS_BARE_ENV_WITHOUT_UPDATES = !IS_MANAGED_ENV && !IS_BARE_ENV_WITH_UPDATES;
+const isRunningInExpoGo = Constants.appOwnership === AppOwnership.Expo;
+// expo-updates (and Expo Go expo-updates override) manages assets from updates and exposes
+// the ExpoUpdates.localAssets constant containing information about the assets.
+const expoUpdatesIsInstalledAndEnabled = !!ExpoUpdates?.isEnabled;
+const expoUpdatesIsUsingEmbeddedAssets = ExpoUpdates?.isUsingEmbeddedAssets;
+// if expo-updates is installed but we're running directly from the embedded bundle, we don't want
+// to override the AssetSourceResolver.
+const shouldUseUpdatesAssetResolution = expoUpdatesIsInstalledAndEnabled && !expoUpdatesIsUsingEmbeddedAssets;
+// Expo Go always uses the updates module for asset resolution (local assets) since it
+// overrides the expo-updates module.
+export const IS_ENV_WITH_LOCAL_ASSETS = isRunningInExpoGo || shouldUseUpdatesAssetResolution;
 // Get the localAssets property from the ExpoUpdates native module so that we do
 // not need to include expo-updates as a dependency of expo-asset
 export function getLocalAssets() {
     return ExpoUpdates?.localAssets ?? {};
-}
-export function getManifest() {
-    return Constants.__unsafeNoWarnManifest ?? {};
 }
 export function getManifest2() {
     return Constants.__unsafeNoWarnManifest2;

@@ -1,4 +1,4 @@
-import { getConfig } from '@expo/config';
+import { getConfig, getPackageJson } from '@expo/config';
 import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
 
@@ -113,11 +113,7 @@ export async function installPackagesAsync(
   }
 ): Promise<void> {
   // Read the project Expo config without plugins.
-  const { pkg } = getConfig(projectRoot, {
-    // Sometimes users will add a plugin to the config before installing the library,
-    // this wouldn't work unless we dangerously disable plugin serialization.
-    skipPlugins: true,
-  });
+  const pkg = getPackageJson(projectRoot);
 
   //assertNotInstallingExcludedPackages(projectRoot, packages, pkg);
 

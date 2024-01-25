@@ -1,13 +1,13 @@
 import chalk from 'chalk';
 import path from 'path';
 
+import { selectPackagesToPublish } from './selectPackagesToPublish';
 import { podInstallAsync } from '../../CocoaPods';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { filterAsync } from '../../Utils';
 import * as Workspace from '../../Workspace';
 import { Parcel, TaskArgs } from '../types';
-import { selectPackagesToPublish } from './selectPackagesToPublish';
 
 const { green } = chalk;
 

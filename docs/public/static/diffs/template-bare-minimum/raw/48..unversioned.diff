@@ -11,7 +11,7 @@ index 4e6ce00391..bc0b76356d 100644
  android/app/build
  android/.gradle
 diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
-index 189390e7e3..a265c80fa9 100644
+index 189390e7e3..a058ef6c4b 100644
 --- a/templates/expo-template-bare-minimum/android/app/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/app/build.gradle
 @@ -1,17 +1,8 @@
@@ -113,12 +113,11 @@ index 189390e7e3..a265c80fa9 100644
  
      namespace "com.helloworld"
      defaultConfig {
-@@ -120,15 +90,8 @@ android {
-         targetSdkVersion rootProject.ext.targetSdkVersion
+@@ -121,15 +91,6 @@ android {
          versionCode 1
          versionName "1.0"
--    }
- 
+     }
+-
 -    splits {
 -        abi {
 -            reset()
@@ -126,11 +125,11 @@ index 189390e7e3..a265c80fa9 100644
 -            universalApk false  // If true, also generate a universal APK
 -            include (*reactNativeArchitectures())
 -        }
-+        buildConfigField("boolean", "REACT_NATIVE_UNSTABLE_USE_RUNTIME_SCHEDULER_ALWAYS", (findProperty("reactNative.unstable_useRuntimeSchedulerAlways") ?: true).toString())
-     }
+-    }
      signingConfigs {
          debug {
-@@ -151,22 +114,6 @@ android {
+             storeFile file('debug.keystore')
+@@ -151,22 +112,6 @@ android {
              proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
          }
      }
@@ -153,7 +152,7 @@ index 189390e7e3..a265c80fa9 100644
  }
  
  // Apply static values from `gradle.properties` to the `android.packagingOptions`
-@@ -196,35 +143,22 @@ dependencies {
+@@ -196,36 +141,21 @@ dependencies {
      def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
      def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
      def isWebpAnimatedEnabled = (findProperty('expo.webp.animated') ?: "") == "true";
@@ -189,11 +188,11 @@ index 189390e7e3..a265c80fa9 100644
 -        exclude group:'com.squareup.okhttp3', module:'okhttp'
 -    }
 -    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}")
-+    implementation("com.facebook.react:flipper-integration")
- 
+-
      if (hermesEnabled.toBoolean()) {
          implementation("com.facebook.react:hermes-android")
-@@ -233,5 +167,5 @@ dependencies {
+     } else {
+@@ -233,5 +163,5 @@ dependencies {
      }
  }
  
@@ -293,18 +292,21 @@ index 595dd5831c..0000000000
 -  }
 -}
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
-index 6536fc03ad..34a7ca8314 100644
+index 6536fc03ad..04b326127b 100644
 --- a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
-@@ -18,7 +18,7 @@
+@@ -18,9 +18,9 @@
      </intent>
    </queries>
  
 -  <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme" android:usesCleartextTraffic="true">
 +  <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme">
      <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="YOUR-APP-URL-HERE"/>
-     <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="YOUR-APP-SDK-VERSION-HERE"/>
+-    <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="YOUR-APP-SDK-VERSION-HERE"/>
++    <meta-data android:name="expo.modules.updates.EXPO_RUNTIME_VERSION" android:value="YOUR-APP-RUNTIME-VERSION-HERE"/>
      <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
+       <intent-filter>
+         <action android:name="android.intent.action.MAIN"/>
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainActivity.java b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainActivity.java
 deleted file mode 100644
 index 7e2823fb6c..0000000000
@@ -530,10 +532,10 @@ index 31c2b288c1..0000000000
 -}
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
 new file mode 100644
-index 0000000000..8258c40ed4
+index 0000000000..95ef45de96
 --- /dev/null
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
-@@ -0,0 +1,65 @@
+@@ -0,0 +1,57 @@
 +package com.helloworld
 +
 +import android.app.Application
@@ -545,11 +547,9 @@ index 0000000000..8258c40ed4
 +import com.facebook.react.ReactNativeHost
 +import com.facebook.react.ReactPackage
 +import com.facebook.react.ReactHost
-+import com.facebook.react.config.ReactFeatureFlags
 +import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
 +import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 +import com.facebook.react.defaults.DefaultReactNativeHost
-+import com.facebook.react.flipper.ReactNativeFlipper
 +import com.facebook.soloader.SoLoader
 +
 +import expo.modules.ApplicationLifecycleDispatcher
@@ -581,15 +581,9 @@ index 0000000000..8258c40ed4
 +  override fun onCreate() {
 +    super.onCreate()
 +    SoLoader.init(this, false)
-+    if (!BuildConfig.REACT_NATIVE_UNSTABLE_USE_RUNTIME_SCHEDULER_ALWAYS) {
-+      ReactFeatureFlags.unstable_useRuntimeSchedulerAlways = false
-+    }
 +    if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
 +      // If you opted-in for the New Architecture, we load the native entry point for this app.
 +      load()
-+    }
-+    if (BuildConfig.DEBUG) {
-+      ReactNativeFlipper.initializeFlipper(this, reactNativeHost.reactInstanceManager)
 +    }
 +    ApplicationLifecycleDispatcher.onApplicationCreate(this)
 +  }
@@ -639,7 +633,7 @@ index b510364404..0000000000
 -  }
 -}
 diff --git a/templates/expo-template-bare-minimum/android/build.gradle b/templates/expo-template-bare-minimum/android/build.gradle
-index e5fda82878..02a88dad0a 100644
+index e5fda82878..513b766148 100644
 --- a/templates/expo-template-bare-minimum/android/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/build.gradle
 @@ -2,28 +2,26 @@
@@ -647,14 +641,15 @@ index e5fda82878..02a88dad0a 100644
  buildscript {
      ext {
 -        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '33.0.0'
-+        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '34.0.0'
-         minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '21')
+-        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '21')
 -        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '33')
 -        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '33')
 -        if (findProperty('android.kotlinVersion')) {
 -            kotlinVersion = findProperty('android.kotlinVersion')
 -        }
 -        frescoVersion = findProperty('expo.frescoVersion') ?: '2.5.0'
++        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '34.0.0'
++        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '23')
 +        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '34')
 +        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
 +        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.8.10'
@@ -1158,7 +1153,7 @@ index bf722cb92e..b93b7b2b0f 100644
    ],
    "info" : {
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
-index 9f116db7f2..5a1db7145b 100644
+index 9f116db7f2..552b63e06c 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
 @@ -2,6 +2,8 @@
@@ -1183,25 +1178,24 @@ index 9f116db7f2..5a1db7145b 100644
  	<key>CFBundleVersion</key>
  	<string>1</string>
  	<key>LSRequiresIPhoneOS</key>
-@@ -25,15 +27,9 @@
+@@ -25,11 +27,15 @@
  	<key>NSAppTransportSecurity</key>
  	<dict>
  		<key>NSAllowsArbitraryLoads</key>
 +		<false/>
 +		<key>NSAllowsLocalNetworking</key>
  		<true/>
--		<key>NSExceptionDomains</key>
--		<dict>
+ 		<key>NSExceptionDomains</key>
+ 		<dict>
 -			<key>localhost</key>
--			<dict>
--				<key>NSExceptionAllowsInsecureHTTPLoads</key>
--				<true/>
--			</dict>
--		</dict>
- 	</dict>
- 	<key>UILaunchStoryboardName</key>
- 	<string>SplashScreen</string>
-@@ -41,6 +37,8 @@
++			<key>exp.direct</key>
+ 			<dict>
++				<key>NSIncludesSubdomains</key>
++				<true/>
+ 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+ 				<true/>
+ 			</dict>
+@@ -41,6 +47,8 @@
  	<array>
  		<string>armv7</string>
  	</array>
@@ -1210,7 +1204,7 @@ index 9f116db7f2..5a1db7145b 100644
  	<key>UISupportedInterfaceOrientations</key>
  	<array>
  		<string>UIInterfaceOrientationPortrait</string>
-@@ -49,7 +47,5 @@
+@@ -49,7 +57,5 @@
  	</array>
  	<key>UIViewControllerBasedStatusBarAppearance</key>
  	<false/>
@@ -1218,11 +1212,26 @@ index 9f116db7f2..5a1db7145b 100644
 -  <string>UIStatusBarStyleDefault</string>
  </dict>
  </plist>
+diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Supporting/Expo.plist b/templates/expo-template-bare-minimum/ios/HelloWorld/Supporting/Expo.plist
+index 03410dc8b3..f4f9f60993 100644
+--- a/templates/expo-template-bare-minimum/ios/HelloWorld/Supporting/Expo.plist
++++ b/templates/expo-template-bare-minimum/ios/HelloWorld/Supporting/Expo.plist
+@@ -2,8 +2,8 @@
+ <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+ <plist version="1.0">
+ <dict>
+-        <key>EXUpdatesSDKVersion</key>
+-        <string>YOUR-APP-SDK-VERSION-HERE</string>
++        <key>EXUpdatesRuntimeVersion</key>
++        <string>YOUR-APP-RUNTIME-VERSION-HERE</string>
+         <key>EXUpdatesURL</key>
+         <string>YOUR-APP-URL-HERE</string>
+ </dict>
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
-index e523ea5cac..b3978b9515 100644
+index e523ea5cac..eaf07ca4c2 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile
 +++ b/templates/expo-template-bare-minimum/ios/Podfile
-@@ -1,14 +1,13 @@
+@@ -1,43 +1,18 @@
  require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
  require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
 -require File.join(File.dirname(`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"`), "native_modules")
@@ -1239,7 +1248,36 @@ index e523ea5cac..b3978b9515 100644
  install! 'cocoapods',
    :deterministic_uuids => false
  
-@@ -45,13 +44,9 @@ target 'HelloWorld' do
+ prepare_react_native_project!
+ 
+-# If you are using a `react-native-flipper` your iOS build will fail when `NO_FLIPPER=1` is set.
+-# because `react-native-flipper` depends on (FlipperKit,...), which will be excluded. To fix this,
+-# you can also exclude `react-native-flipper` in `react-native.config.js`
+-#
+-# ```js
+-# module.exports = {
+-#   dependencies: {
+-#     ...(process.env.NO_FLIPPER ? { 'react-native-flipper': { platforms: { ios: null } } } : {}),
+-#   }
+-# }
+-# ```
+-flipper_config = FlipperConfiguration.disabled
+-if ENV['NO_FLIPPER'] == '1' then
+-  # Explicitly disabled through environment variables
+-  flipper_config = FlipperConfiguration.disabled
+-elsif podfile_properties.key?('ios.flipper') then
+-  # Configure Flipper in Podfile.properties.json
+-  if podfile_properties['ios.flipper'] == 'true' then
+-    flipper_config = FlipperConfiguration.enabled(["Debug", "Release"])
+-  elsif podfile_properties['ios.flipper'] != 'false' then
+-    flipper_config = FlipperConfiguration.enabled(["Debug", "Release"], { 'Flipper' => podfile_properties['ios.flipper'] })
+-  end
+-end
+-
+ target 'HelloWorld' do
+   use_expo_modules!
+   config = use_native_modules!
+@@ -45,28 +20,19 @@ target 'HelloWorld' do
    use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
    use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
  
@@ -1252,8 +1290,11 @@ index e523ea5cac..b3978b9515 100644
 -    :fabric_enabled => flags[:fabric_enabled],
      # An absolute path to your application root.
      :app_path => "#{Pod::Config.instance.installation_root}/..",
-     # Note that if you have use_frameworks! enabled, Flipper will not work if enabled
-@@ -62,11 +57,8 @@ target 'HelloWorld' do
+-    # Note that if you have use_frameworks! enabled, Flipper will not work if enabled
+-    :flipper_configuration => flipper_config
+   )
+ 
+   post_install do |installer|
      react_native_post_install(
        installer,
        config[:reactNativePath],
@@ -1289,7 +1330,7 @@ index 9430b0f9b6..07c9fce65d 100644
 +
 +module.exports = config;
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index d1fcd513cc..a0b1b85c0a 100644
+index d1fcd513cc..150bb72764 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -1312,7 +1353,7 @@ index d1fcd513cc..a0b1b85c0a 100644
 +    "expo-status-bar": "~1.11.0",
      "react": "18.2.0",
 -    "react-native": "0.71.14"
-+    "react-native": "0.73.1"
++    "react-native": "0.73.2"
    },
    "devDependencies": {
      "@babel/core": "^7.20.0"

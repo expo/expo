@@ -27,6 +27,8 @@ export const APIDataType = ({ typeDefinition, inline = true }: APIDataTypeProps)
       {resolveTypeName(typeDefinition)}
     </CodeBlock>
   ) : (
-    <CODE key={typeDefinition.name}>{resolveTypeName(typeDefinition)}</CODE>
+    <CODE key={typeDefinition.name} className="[&>span]:!text-inherit">
+      {resolveTypeName(typeDefinition)}
+    </CODE>
   );
 };
