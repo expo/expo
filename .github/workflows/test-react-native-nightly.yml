@@ -74,7 +74,7 @@ jobs:
           CONFIGURATION: ${{ matrix.build-type == 'release' && 'Release' || 'Debug' }}
       - name: 📸 Upload builds
         uses: actions/upload-artifact@v3
-        if: ${{ matrix.build-type == 'release' }} # Only archive release builds
+        if: ${{ github.event_name == 'workflow_dispatch' && matrix.build-type == 'release' }} # Only archive release builds
         with:
           name: ios-builds-oldArch-${{ matrix.build-type }}
           path: ${{ runner.temp }}/test-nightlies/ios/build/**/testnightlies.app/
@@ -93,7 +93,7 @@ jobs:
           CONFIGURATION: ${{ matrix.build-type == 'release' && 'Release' || 'Debug' }}
       - name: 📸 Upload builds
         uses: actions/upload-artifact@v3
-        if: ${{ matrix.build-type == 'release' }} # Only archive release builds
+        if: ${{ github.event_name == 'workflow_dispatch' && matrix.build-type == 'release' }} # Only archive release builds
         with:
           name: ios-builds-newArch-${{ matrix.build-type }}
           path: ${{ runner.temp }}/test-nightlies/ios/build/**/testnightlies.app/
@@ -159,7 +159,7 @@ jobs:
           VARIANT: ${{ matrix.build-type == 'release' && 'Release' || 'Debug' }}
       - name: 📸 Upload builds
         uses: actions/upload-artifact@v3
-        if: ${{ matrix.build-type == 'release' }} # Only archive release builds
+        if: ${{ github.event_name == 'workflow_dispatch' && matrix.build-type == 'release' }} # Only archive release builds
         with:
           name: android-builds-oldArch-${{ matrix.build-type }}
           path: ${{ runner.temp }}/test-nightlies/android/app/build/outputs/apk/
@@ -177,7 +177,7 @@ jobs:
           VARIANT: ${{ matrix.build-type == 'release' && 'Release' || 'Debug' }}
       - name: 📸 Upload builds
         uses: actions/upload-artifact@v3
-        if: ${{ matrix.build-type == 'release' }} # Only archive release builds
+        if: ${{ github.event_name == 'workflow_dispatch' && matrix.build-type == 'release' }} # Only archive release builds
         with:
           name: android-builds-newArch-${{ matrix.build-type }}
           path: ${{ runner.temp }}/test-nightlies/android/app/build/outputs/apk/
