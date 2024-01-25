@@ -1,5 +1,5 @@
 <p>
-  <a href="https://docs.expo.dev/dversions/latest/sdk/dev-client/">
+  <a href="https://docs.expo.dev/versions/latest/sdk/dev-client/">
     <img
       src="../../.github/resources/expo-dev-client.svg"
       alt="expo-dev-client"
