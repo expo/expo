@@ -144,6 +144,11 @@ class AppContext(
    */
   @OptIn(FrameworkAPI::class)
   fun installJSIInterop() = synchronized(this) {
+    if (::jsiInterop.isInitialized) {
+      logger.warn("⚠️ JSI interop was already installed")
+      return
+    }
+
     trace("AppContext.installJSIInterop") {
       try {
         jsiInterop = JSIInteropModuleRegistry(this)
