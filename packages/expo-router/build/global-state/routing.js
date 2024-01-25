@@ -135,12 +135,16 @@ function rewriteNavigationStateToParams(state, params = {}) {
     return JSON.parse(JSON.stringify(params));
 }
 function getNavigateAction(state, parentState, type = 'NAVIGATE') {
+    // Get the current route, which will be the last in the stack
     const route = state.routes[state.routes.length - 1];
-    const currentRoute = parentState.routes.find((parentRoute) => parentRoute.name === route.name);
-    const routesAreEqual = parentState.routes[parentState.index] === currentRoute;
+    // Find the previous route in the parent state
+    const previousRoute = parentState.routes.find((parentRoute) => {
+        areRoutesEqual(parentRoute, route);
+    });
+    const routesAreEqual = areRoutesEqual(parentState.routes[parentState.index], previousRoute);
     // If there is nested state and the routes are equal, we should keep going down the tree
-    if (route.state && routesAreEqual && currentRoute.state) {
-        return getNavigateAction(route.state, currentRoute.state, type);
+    if (route.state && routesAreEqual && previousRoute?.state) {
+        return getNavigateAction(route.state, previousRoute.state, type);
     }
     // Either we reached the bottom of the state or the point where the routes diverged
     const { screen, params } = rewriteNavigationStateToParams(state);
@@ -158,5 +162,22 @@ function getNavigateAction(state, parentState, type = 'NAVIGATE') {
             params,
         },
     };
+}
+function areRoutesEqual(a = {}, b = {}) {
+    if (a.name !== b.name)
+        return false;
+    const paramsA = a.params;
+    const paramsB = b.params;
+    if (paramsA === paramsB)
+        return true;
+    if (!paramsA || !paramsB)
+        return false;
+    const keys = Object.keys(paramsA);
+    return (keys.length === Object.keys(paramsB).length &&
+        keys.every((key) => {
+            const valueA = a[key];
+            const valueB = b[key];
+            return valueA === valueB || valueA?.toString?.() === valueB?.toString?.();
+        }));
 }
 //# sourceMappingURL=routing.js.map
