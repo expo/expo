@@ -143,15 +143,16 @@ function getNavigateAction(state: ResultState, parentState: NavigationState, typ
   const route = state.routes[state.routes.length - 1]!;
 
   // Find the previous route in the parent state
-  const previousRoute = parentState.routes.find((parentRoute) => {
-    areRoutesEqual(parentRoute, route);
+  const previousRoute = parentState.routes.findLast((parentRoute) => {
+    return areRoutesEqual(route, parentRoute);
   });
 
-  const routesAreEqual = areRoutesEqual(parentState.routes[parentState.index], previousRoute);
-
-  // If there is nested state and the routes are equal, we should keep going down the tree
-  if (route.state && routesAreEqual && previousRoute?.state) {
-    return getNavigateAction(route.state, previousRoute.state as any, type);
+  if (previousRoute) {
+    const routesAreEqual = areRoutesEqual(parentState.routes[parentState.index], previousRoute);
+    // If there is nested state and the routes are equal, we should keep going down the tree
+    if (route.state && routesAreEqual && previousRoute?.state) {
+      return getNavigateAction(route.state, previousRoute.state as NavigationState, type);
+    }
   }
 
   // Either we reached the bottom of the state or the point where the routes diverged
@@ -187,14 +188,13 @@ function areRoutesEqual(
   if (paramsA === paramsB) return true;
   // If one is null, return false
   if (!paramsA || !paramsB) return false;
+
   // Otherwise compare both params objects
-  const keys = Object.keys(paramsA);
-  return (
-    keys.length === Object.keys(paramsB).length &&
-    keys.every((key) => {
-      const valueA = a[key];
-      const valueB = b[key];
-      return valueA === valueB || valueA?.toString?.() === valueB?.toString?.();
-    })
-  );
+  const keysA = Object.keys(paramsA);
+
+  return keysA.every((key) => {
+    const valueA = paramsA[key];
+    const valueB = paramsB[key];
+    return valueA === valueB || valueA?.toString?.() === valueB?.toString?.();
+  });
 }
