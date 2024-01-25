@@ -48,7 +48,17 @@ If you plan to contribute to Android, run `npm run setup:native`. This command d
 - Ensures your computer is set up for React Native (will install the Android NDK if it's not present)
 - Downloads the Node packages (`yarn install`)
 
-Make sure that you're using Java 11 (e.g. Azul Zulu JDK 11.0.15+10). `ANDROID_SDK_ROOT` environmental variable should be set or configured via `local.properties` file in `android` folder of the native project you're working with.
+We recommend JDK 17 (eg. zulu17). Run the following commands in a terminal window to install it:
+```sh
+brew tap homebrew/cask-versions
+brew install --cask zulu17
+```
+After you install the JDK, add the JAVA_HOME environment variable in ~/.bash_profile (or ~/.zshrc if you use Zsh):
+```sh
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
+```
+
+`ANDROID_SDK_ROOT` environmental variable should be set or configured via `local.properties` file in `android` folder of the native project you're working with.
 
 ### Set up iOS
 
