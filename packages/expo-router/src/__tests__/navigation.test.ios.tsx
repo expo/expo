@@ -13,6 +13,7 @@ import {
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { act, fireEvent, renderRouter, screen } from '../testing-library';
+import { store } from '../global-state/router-store';
 
 describe('hooks only', () => {
   it('can handle navigation between routes', async () => {
@@ -1173,5 +1174,105 @@ describe('consistent url encoding', () => {
     expect(component).toHaveTextContent(
       JSON.stringify({ local: { param: 'start%end' }, global: { param: 'start%end' } })
     );
+  });
+});
+
+it('should always push a new route', () => {
+  renderRouter({
+    _layout: () => <Stack initialRouteName="(tabs)" />,
+    '(tabs)_layout': () => <Tabs />,
+    '(tabs)/_layout': () => <Stack />,
+    '(tabs)/user/[id]/_layout': () => <Stack />,
+    '(tabs)/user/[id]/index': () => null,
+    '(tabs)/post/[id]/_layout': () => <Stack />,
+    '(tabs)/post/[id]/index': () => null,
+  });
+
+  // Initial stale state
+  expect(store.rootStateSnapshot()).toEqual({
+    routes: [{ name: '(tabs)_layout', path: '/' }],
+    stale: true,
+  });
+
+  // Need to push separately so a new state is generated every time, otherwise they are batched
+  act(() => router.push('/post/1'));
+  act(() => router.push('/user/1'));
+  act(() => router.push('/post/2'));
+  act(() => router.push('/user/1'));
+
+  expect(store.rootStateSnapshot()).toStrictEqual({
+    index: 4,
+    key: expect.any(String),
+    routeNames: ['(tabs)', '(tabs)_layout', '_sitemap', '+not-found'],
+    routes: [
+      {
+        key: expect.any(String),
+        name: '(tabs)_layout',
+        params: undefined,
+        path: '/',
+      },
+      {
+        key: expect.any(String),
+        name: '(tabs)',
+        params: {
+          id: '1',
+          params: {
+            id: '1',
+            params: {
+              id: '1',
+            },
+            screen: 'index',
+          },
+          screen: 'post/[id]',
+        },
+      },
+      {
+        key: expect.any(String),
+        name: '(tabs)',
+        params: {
+          id: '1',
+          params: {
+            id: '1',
+            params: {
+              id: '1',
+            },
+            screen: 'index',
+          },
+          screen: 'user/[id]',
+        },
+      },
+      {
+        key: expect.any(String),
+        name: '(tabs)',
+        params: {
+          id: '2',
+          params: {
+            id: '2',
+            params: {
+              id: '2',
+            },
+            screen: 'index',
+          },
+          screen: 'post/[id]',
+        },
+      },
+      {
+        key: expect.any(String),
+        name: '(tabs)',
+        params: {
+          id: '1',
+          params: {
+            id: '1',
+            params: {
+              id: '1',
+            },
+            screen: 'index',
+          },
+          screen: 'user/[id]',
+        },
+      },
+    ],
+    stale: false,
+    type: 'stack',
   });
 });
