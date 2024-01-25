@@ -55,7 +55,9 @@ async function runAsync(programName: string) {
   const nightlyVersion = await getNpmVersionAsync('react-native', 'nightly');
   console.log(
     chalk.cyan(
-      `Setting up app at ${chalk.bold(projectRoot)} with ${chalk.bold('react-native@' + nightlyVersion)}`
+      `Setting up app at ${chalk.bold(projectRoot)} with ${chalk.bold(
+        'react-native@' + nightlyVersion
+      )}`
     )
   );
   await createExpoApp(projectRoot, expoRepoPath, projectProps);
