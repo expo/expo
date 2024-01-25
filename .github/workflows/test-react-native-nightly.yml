@@ -114,10 +114,10 @@ jobs:
 
   android-build:
     strategy:
-    fail-fast: true
-    max-parallel: 1
-    matrix:
-      build-type: [debug, release]
+      fail-fast: true
+      max-parallel: 1
+      matrix:
+        build-type: [debug, release]
     runs-on: ubuntu-22.04
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
