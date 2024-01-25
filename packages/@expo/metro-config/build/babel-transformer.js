@@ -113,6 +113,10 @@ plugins, }) => {
             return { ast: null };
         }
         (0, node_assert_1.default)(result.ast);
+        // // @ts-expect-error
+        // if (!result.metadata) result.metadata = {};
+        // // @ts-expect-error
+        // result.metadata._yuiPhases = phases;
         return { ast: result.ast, metadata: result.metadata };
     }
     finally {
@@ -131,4 +135,11 @@ const babelTransformer = {
     getCacheKey,
 };
 module.exports = babelTransformer;
+function getProgramParent(path) {
+    let parent = path;
+    do {
+        if (parent.isProgram())
+            return parent;
+    } while ((parent = parent.parentPath));
+}
 //# sourceMappingURL=babel-transformer.js.map

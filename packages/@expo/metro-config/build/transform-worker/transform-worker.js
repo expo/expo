@@ -41,6 +41,21 @@ const worker = __importStar(require("./metro-transform-worker"));
 const postcss_1 = require("./postcss");
 const sass_1 = require("./sass");
 async function transform(config, projectRoot, filename, data, options) {
+    const startTime = Date.now();
+    const result = await transformInner(config, projectRoot, filename, data, options);
+    const endTime = Date.now();
+    const duration = endTime - startTime;
+    // @ts-expect-error
+    result.output[0].data.profiling = {
+        start: startTime,
+        end: endTime,
+        pid: process.pid,
+        duration,
+    };
+    return result;
+}
+exports.transform = transform;
+async function transformInner(config, projectRoot, filename, data, options) {
     const isCss = options.type !== 'asset' && /\.(s?css|sass)$/.test(filename);
     // If the file is not CSS, then use the default behavior.
     if (!isCss) {
@@ -168,7 +183,6 @@ async function transform(config, projectRoot, filename, data, options) {
         output,
     };
 }
-exports.transform = transform;
 /**
  * A custom Metro transformer that adds support for processing Expo-specific bundler features.
  * - Global CSS files on web.
