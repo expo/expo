@@ -16,7 +16,12 @@ import {
   reinstallPackagesAsync,
 } from './Packages';
 import { setDefaultVerbose } from './Processes';
-import { type ProjectProperties, createExpoApp, prebuildAppAsync } from './Project';
+import {
+  type ProjectProperties,
+  createExpoApp,
+  installCocoaPodsAsync,
+  prebuildAppAsync,
+} from './Project';
 import { checkRequiredToolsAsync } from './SanityChecks';
 
 const packageJSON = require('../package.json');
@@ -36,7 +41,7 @@ const program = new Command(packageJSON.name)
     'The Android applicationId and iOS bundleIdentifier.',
     'dev.expo.testnightlies'
   )
-  .option('--no-prebuild', 'Skip running the prebuild step.')
+  .option('--no-install', 'Skip installing CocoaPods.')
   .option('--enable-new-architecture', 'Enable the New Architecture mode.')
   .parse(process.argv);
 
@@ -78,10 +83,15 @@ async function runAsync(programName: string) {
   console.log(chalk.cyan(`Reinstalling packages`));
   await reinstallPackagesAsync(projectRoot);
 
-  if (programOpts.prebuild) {
-    console.log(chalk.cyan(`Running prebuild steps`));
-    const tarballPath = await packExpoBareTemplateTarballAsync(expoRepoPath, projectRoot);
-    await prebuildAppAsync(projectRoot, tarballPath);
+  console.log(chalk.cyan(`Running prebuild`));
+  const tarballPath = await packExpoBareTemplateTarballAsync(expoRepoPath, projectRoot);
+  await prebuildAppAsync(projectRoot, tarballPath);
+
+  if (programOpts.install) {
+    console.log(`Installing CocoaPods dependencies`);
+    console.time('Installed CocoaPods dependencies');
+    await installCocoaPodsAsync(projectRoot);
+    console.timeEnd('Installed CocoaPods dependencies');
   }
 }
 

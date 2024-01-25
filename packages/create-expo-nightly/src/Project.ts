@@ -98,11 +98,10 @@ export async function prebuildAppAsync(projectRoot: string, templateTarballPath:
   await runAsync('npx', ['expo', 'prebuild', '--no-install', '--template', templateTarballPath], {
     cwd: projectRoot,
   });
+}
 
-  console.log(`Installing CocoaPods dependencies`);
-  console.time('Installed CocoaPods dependencies');
+export async function installCocoaPodsAsync(projectRoot: string) {
   await runAsync('pod', ['install'], { cwd: path.join(projectRoot, 'ios') });
-  console.timeEnd('Installed CocoaPods dependencies');
 }
 
 /**
