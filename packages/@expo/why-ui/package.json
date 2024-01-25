@@ -49,6 +49,7 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-methods": "^7.18.6",
     "@tanstack/react-query": "^5.8.3",
     "@tanstack/react-table": "^8.10.7",
     "autoprefixer": "^10.4.16",
