@@ -12,16 +12,16 @@ on:
     paths:
       - .github/workflows/test-react-native-nightly.yml
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
-  cancel-in-progress: true
-
 strategy:
   fail-fast: true
   max-parallel: 2
   matrix:
     build-type: [debug, release]
     variant: [old-arch, new-arch]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   ios-build:
