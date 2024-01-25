@@ -204,8 +204,10 @@ class LocationHelpers {
           contextPermissions,
           object : Promise {
             override fun resolve(value: Any?) {
-              it.resume(value as? Bundle
-                ?: throw ConversionException(Any::class.java, Bundle::class.java, "value returned by the permission promise is not a Bundle"))
+              it.resume(
+                value as? Bundle
+                  ?: throw ConversionException(Any::class.java, Bundle::class.java, "value returned by the permission promise is not a Bundle")
+              )
             }
 
             override fun reject(code: String, message: String?, cause: Throwable?) {
