@@ -37,13 +37,12 @@ jobs:
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
-      - name: ➕ Add `bin` to GITHUB_PATH
-        run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - name: 💎 Setup Ruby and install gems
+      - name: 💎 Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          bundler-cache: true
           ruby-version: 3.2.2
+      - name: 💎 Install CocoaPods globally
+      - run: gem install cocoapods
       - name: ♻️ Restore workspace node modules
         # Use restore only cache here because we don't want to nightly react-native version saving back to the cache
         uses: actions/cache/restore@v3
