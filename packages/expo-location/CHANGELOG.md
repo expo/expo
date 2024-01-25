@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed: `NullPointerException: it must not be null`.
+
 ### 💡 Others
 
 ## 16.5.2 - 2024-01-10
