@@ -29,6 +29,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - Remove error hiding system. ([#26607](https://github.com/expo/expo/pull/26607) by [@EvanBacon](https://github.com/EvanBacon))
+- Make `@testing-library/jest-native` usage optional ([#26650](https://github.com/expo/expo/pull/26650) by [@marklawlor](https://github.com/marklawlor))
 
 ## 3.4.4 — 2024-01-20
 
