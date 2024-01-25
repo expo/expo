@@ -130,6 +130,21 @@ public final class ImageModule: Module {
       }
     }
 
+    AsyncFunction("generateBlurhashAsync") { (url: URL, numberOfComponents: CGSize, promise: Promise) in
+      let downloader = SDWebImageDownloader()
+      let parsedNumberOfComponents = (Int(numberOfComponents.width), Int(numberOfComponents.height))
+      downloader.downloadImage(with: url, progress: nil, completed: { image, _, _, _ in
+        DispatchQueue.global().async {
+          if let downloadedImage = image {
+            let blurhashString = blurhash(fromImage: downloadedImage, numberOfComponents: parsedNumberOfComponents)
+            promise.resolve(blurhashString)
+          } else {
+            promise.reject(BlurhashGenerationException())
+          }
+        }
+      })
+    }
+
     AsyncFunction("clearMemoryCache") { () -> Bool in
       SDImageCache.shared.clearMemory()
       return true
