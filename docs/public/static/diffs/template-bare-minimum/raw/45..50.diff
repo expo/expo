@@ -2263,7 +2263,7 @@ index bf722cb92e..b93b7b2b0f 100644
    ],
    "info" : {
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
-index 9f116db7f2..5a1db7145b 100644
+index 9f116db7f2..552b63e06c 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
 @@ -2,6 +2,8 @@
@@ -2288,25 +2288,24 @@ index 9f116db7f2..5a1db7145b 100644
  	<key>CFBundleVersion</key>
  	<string>1</string>
  	<key>LSRequiresIPhoneOS</key>
-@@ -25,15 +27,9 @@
+@@ -25,11 +27,15 @@
  	<key>NSAppTransportSecurity</key>
  	<dict>
  		<key>NSAllowsArbitraryLoads</key>
 +		<false/>
 +		<key>NSAllowsLocalNetworking</key>
  		<true/>
--		<key>NSExceptionDomains</key>
--		<dict>
+ 		<key>NSExceptionDomains</key>
+ 		<dict>
 -			<key>localhost</key>
--			<dict>
--				<key>NSExceptionAllowsInsecureHTTPLoads</key>
--				<true/>
--			</dict>
--		</dict>
- 	</dict>
- 	<key>UILaunchStoryboardName</key>
- 	<string>SplashScreen</string>
-@@ -41,6 +37,8 @@
++			<key>exp.direct</key>
+ 			<dict>
++				<key>NSIncludesSubdomains</key>
++				<true/>
+ 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+ 				<true/>
+ 			</dict>
+@@ -41,6 +47,8 @@
  	<array>
  		<string>armv7</string>
  	</array>
@@ -2315,7 +2314,7 @@ index 9f116db7f2..5a1db7145b 100644
  	<key>UISupportedInterfaceOrientations</key>
  	<array>
  		<string>UIInterfaceOrientationPortrait</string>
-@@ -49,7 +47,5 @@
+@@ -49,7 +57,5 @@
  	</array>
  	<key>UIViewControllerBasedStatusBarAppearance</key>
  	<false/>
