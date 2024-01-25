@@ -1,1 +1,1 @@
-{"version":3,"file":"mocks.d.ts","sourceRoot":"","sources":["../../src/testing-library/mocks.ts"],"names":[],"mappings":"AAAA,OAAO,4CAA4C,CAAC;AAsBpD,wBAAgB,aAAa,CAAC,KAAK,EAAE,MAAM,QAE1C"}
+{"version":3,"file":"mocks.d.ts","sourceRoot":"","sources":["../../src/testing-library/mocks.ts"],"names":[],"mappings":"AA2BA,wBAAgB,aAAa,CAAC,KAAK,EAAE,MAAM,QAE1C"}
