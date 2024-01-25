@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Add `Events` `to AVModule` to prevent event emitter warning. ([#26434](https://github.com/expo/expo/pull/26434) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 13.10.4 — 2024-01-25
+
+### 🐛 Bug fixes
+
+- [Android] Add `Events` `to AVModule` to prevent event emitter warning. ([#26434](https://github.com/expo/expo/pull/26434) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 13.10.3 — 2024-01-18
 
