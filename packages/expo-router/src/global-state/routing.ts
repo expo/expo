@@ -177,13 +177,17 @@ function areRoutesEqual(
   a: PartialRoute<any> | Route<any> = {},
   b: PartialRoute<any> | Route<any> = {}
 ) {
+  // If params if the names are different
   if (a.name !== b.name) return false;
 
   const paramsA = a.params;
   const paramsB = b.params;
 
+  // If both null return true
   if (paramsA === paramsB) return true;
+  // If one is null, return false
   if (!paramsA || !paramsB) return false;
+  // Otherwise compare both params objects
   const keys = Object.keys(paramsA);
   return (
     keys.length === Object.keys(paramsB).length &&
