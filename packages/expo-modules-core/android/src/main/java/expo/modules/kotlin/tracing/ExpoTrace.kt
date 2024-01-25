@@ -30,6 +30,7 @@ inline fun <T> trace(tag: String, blockName: String, crossinline block: () -> T)
  * <p>This call must be followed by a corresponding call to {@link #endTraceBlock()} on the same
  * thread.
  */
+@Suppress("NOTHING_TO_INLINE")
 inline fun beginTraceBlock(tag: String, blockName: String) {
   Trace.beginSection("[$tag] $blockName")
 }
@@ -37,6 +38,7 @@ inline fun beginTraceBlock(tag: String, blockName: String) {
 /**
  * Writes a trace message to indicate that a given section of code has ended.
  */
+@Suppress("NOTHING_TO_INLINE")
 inline fun endTraceBlock() {
   Trace.endSection()
 }
@@ -47,11 +49,13 @@ inline fun endTraceBlock() {
  * <p>Must be followed by a call to {@link #endAsyncTraceBlock(String, String, int)} with the same
  * tag, blockName and cookie.
  */
+@Suppress("NOTHING_TO_INLINE")
 inline fun beginAsyncTraceBlock(tag: String, blockName: String, cookie: Int = 0) =
   Trace.beginAsyncSection("[$tag] $blockName", cookie)
 
 /**
  * Writes a trace message to indicate that the current method has ended.
  */
+@Suppress("NOTHING_TO_INLINE")
 inline fun endAsyncTraceBlock(tag: String, blockName: String, cookie: Int = 0) =
   Trace.endAsyncSection("[$tag] $blockName", cookie)

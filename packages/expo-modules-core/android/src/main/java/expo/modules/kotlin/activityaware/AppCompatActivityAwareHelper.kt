@@ -12,7 +12,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 class AppCompatActivityAwareHelper : AppCompatActivityAware {
   val listeners = CopyOnWriteArrayList<OnActivityAvailableListener>()
 
-  var activityReference = WeakReference<AppCompatActivity>(null)
+  private var activityReference = WeakReference<AppCompatActivity>(null)
 
   fun dispatchOnActivityAvailable(activity: AppCompatActivity) {
     this.activityReference = WeakReference(activity)

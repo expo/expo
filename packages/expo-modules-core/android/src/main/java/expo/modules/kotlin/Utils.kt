@@ -4,7 +4,7 @@ import android.os.Looper
 import expo.modules.kotlin.exception.Exceptions
 
 object Utils {
-  @Suppress("UseExpressionBody")
+  @Suppress("NOTHING_TO_INLINE")
   inline fun assertMainThread() {
     if (Thread.currentThread() !== Looper.getMainLooper().thread) {
       throw Exceptions.IncorrectThreadException(

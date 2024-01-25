@@ -24,7 +24,6 @@ abstract class Module : AppContextProvider {
 
   private val moduleEventEmitter by lazy { appContext.eventEmitter(this) }
 
-  @Suppress("PropertyName")
   @PublishedApi
   internal lateinit var coroutineScopeDelegate: Lazy<CoroutineScope>
 

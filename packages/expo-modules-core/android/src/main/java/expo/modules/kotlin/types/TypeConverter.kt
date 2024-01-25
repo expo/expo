@@ -81,8 +81,6 @@ inline fun <reified T : Any> createTrivialTypeConverter(
   return object : DynamicAwareTypeConverters<T>(isOptional) {
     override fun convertFromDynamic(value: Dynamic): T = dynamicFallback(value)
     override fun getCppRequiredTypes(): ExpectedType = cppRequireType
-
-    @Suppress("UNCHECKED_CAST")
     override fun convertFromAny(value: Any): T = value as T
   }
 }

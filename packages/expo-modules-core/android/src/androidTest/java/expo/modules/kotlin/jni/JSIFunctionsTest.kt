@@ -542,7 +542,6 @@ class JSIFunctionsTest {
 
   @Test
   fun complex_types_should_be_convertible() {
-    @Suppress("EqualsOrHashCode")
     data class InlineRecord(@Field var name: String = "") : Record
 
     withJSIInterop(

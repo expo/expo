@@ -34,7 +34,7 @@ internal class DefaultAppContextActivityResultCaller(
    * For the time being [fallbackCallback] is not working.
    * There are some problems with saving and restoring the state of [activityResultsManager]
    * connected with [Activity]'s lifecycle and [AppContext] lifespan. So far, we've failed with identifying
-   * what parts of the application outlives the Activity destruction (especially [AppContext] and other [Bridge]-related parts).
+   * what parts of the application outlives the Activity destruction (especially [AppContext] and other bridge-related parts).
    */
   override suspend fun <I : Serializable, O> registerForActivityResult(
     contract: AppContextActivityResultContract<I, O>,

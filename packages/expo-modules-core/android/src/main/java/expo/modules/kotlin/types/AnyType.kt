@@ -1,6 +1,5 @@
 package expo.modules.kotlin.types
 
-import android.view.View
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.jni.ExpectedType
 import kotlin.reflect.KClass
@@ -68,6 +67,6 @@ class AnyType(
     val kClass = kType.classifier as? KClass<*> ?: return false
     val jClass = kClass.java
 
-    return View::class.java.isAssignableFrom(jClass)
+    return T::class.java.isAssignableFrom(jClass)
   }
 }
