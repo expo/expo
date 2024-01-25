@@ -48,7 +48,7 @@ const program = new Command(packageJSON.name)
 async function runAsync(programName: string) {
   const programOpts = program.opts();
   setDefaultVerbose(!!programOpts.verbose);
-  await checkRequiredToolsAsync(['bun', 'git', 'npm', 'pod', 'yarn']);
+  await checkRequiredToolsAsync(['bun', 'git', 'npm', 'yarn']);
 
   const projectName = programOpts.name;
   const projectRoot = path.join(path.resolve(program.args[0] || '.'), projectName);
@@ -88,10 +88,13 @@ async function runAsync(programName: string) {
   await prebuildAppAsync(projectRoot, tarballPath);
 
   if (programOpts.install) {
-    console.log(`Installing CocoaPods dependencies`);
-    console.time('Installed CocoaPods dependencies');
-    await installCocoaPodsAsync(projectRoot);
-    console.timeEnd('Installed CocoaPods dependencies');
+    if (process.platform === 'darwin') {
+      await checkRequiredToolsAsync(['pod']);
+      console.log(`Installing CocoaPods dependencies`);
+      console.time('Installed CocoaPods dependencies');
+      await installCocoaPodsAsync(projectRoot);
+      console.timeEnd('Installed CocoaPods dependencies');
+    }
   }
 }
 
