@@ -12,7 +12,7 @@
 ### 🐛 Bug fixes
 
 - Remove error hiding system. ([#26607](https://github.com/expo/expo/pull/26607) by [@EvanBacon](https://github.com/EvanBacon))
-- Fix `push` navigation incorrectly pushing while inside a group
+- Fix `push` navigation not adding to history while inside a group
 
 ### 💡 Others
 
