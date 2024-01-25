@@ -8,7 +8,7 @@ import Tabs from '../layouts/Tabs';
 import { act, renderRouter, screen } from '../testing-library';
 import { Slot } from '../views/Navigator';
 
-it.only('stacks should always push a new route', () => {
+it('stacks should always push a new route', () => {
   renderRouter({
     index: () => null,
     '(group)/_layout': () => <Stack />,
