@@ -38,7 +38,7 @@ export async function startInterfaceAsync(
   devServerManager: DevServerManager,
   options: Pick<StartOptions, 'devClient' | 'platforms'>
 ) {
-  const actions = new DevServerManagerActions(devServerManager);
+  const actions = new DevServerManagerActions(devServerManager, options);
 
   const isWebSocketsEnabled = devServerManager.getDefaultDevServer()?.isTargetingNative();
 
