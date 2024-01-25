@@ -26,7 +26,7 @@ enum BarcodeType: String, Enumerable {
   case codabar
   case code128
   case upca
-  
+
   func toMetadataObjectType() -> AVMetadataObject.ObjectType {
     if #available(iOS 15.4, *) {
       if self == .codabar {

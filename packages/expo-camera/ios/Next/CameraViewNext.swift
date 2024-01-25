@@ -217,7 +217,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
       self.session.commitConfiguration()
       self.session.startRunning()
       self.onCameraReady()
-      
+
       // Delay starting the scanner
       self.sessionQueue.asyncAfter(deadline: .now() + 0.5) {
         self.barcodeScanner.maybeStartBarCodeScanning()
