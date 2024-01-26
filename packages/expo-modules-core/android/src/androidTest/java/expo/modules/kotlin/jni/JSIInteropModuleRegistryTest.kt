@@ -1,21 +1,16 @@
-@file:OptIn(ExperimentalCoroutinesApi::class)
-
 package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import expo.modules.kotlin.jni.extensions.addSingleQuotes
 import org.junit.Test
 
 class JSIInteropModuleRegistryTest {
   @Test
-  fun module_should_be_registered() = withJSIInterop(
-    inlineModule {
-      Name("TestModule")
-      Function("syncFunction") { }
-      AsyncFunction("asyncFunction") {}
-    }
-  ) {
-    val value = evaluateScript("expo.modules.TestModule")
+  fun module_should_be_registered() = withSingleModule({
+    Function("syncFunction") {}
+    AsyncFunction("asyncFunction") {}
+  }) {
+    val value = evaluateScript(moduleRef)
     Truth.assertThat(value.isObject()).isTrue()
 
     val testModule = value.getObject()
@@ -29,24 +24,21 @@ class JSIInteropModuleRegistryTest {
     Truth.assertThat(asyncFunction.isFunction()).isTrue()
 
     Truth.assertThat(
-      evaluateScript("typeof expo.modules.TestModule.syncFunction").getString()
+      evaluateScript("typeof $moduleRef.syncFunction").getString()
     ).isEqualTo("function")
 
     Truth.assertThat(
-      evaluateScript("typeof expo.modules.TestModule.asyncFunction").getString()
+      evaluateScript("typeof $moduleRef.asyncFunction").getString()
     ).isEqualTo("function")
   }
 
   @Test
-  fun sync_functions_should_be_callable() = withJSIInterop(
-    inlineModule {
-      Name("TestModule")
-      Function("f1") { return@Function 20 }
-      Function("f2") { a: String -> return@Function a + a }
-    }
-  ) {
-    val f1Value = evaluateScript("expo.modules.TestModule.f1()")
-    val f2Value = evaluateScript("expo.modules.TestModule.f2(\"expo\")")
+  fun sync_functions_should_be_callable() = withSingleModule({
+    Function("f1") { return@Function 20 }
+    Function("f2") { a: String -> return@Function a + a }
+  }) {
+    val f1Value = call("f1")
+    val f2Value = call("f2", "expo".addSingleQuotes())
 
     Truth.assertThat(f1Value.isNumber()).isTrue()
     val unboxedF1Value = f1Value.getInt()
@@ -58,33 +50,28 @@ class JSIInteropModuleRegistryTest {
   }
 
   @Test
-  fun async_functions_should_be_callable() = withJSIInterop(
-    inlineModule {
-      Name("TestModule")
-      AsyncFunction("f") {
-        return@AsyncFunction 20
-      }
+  fun async_functions_should_be_callable() = withSingleModule({
+    AsyncFunction("f") {
+      return@AsyncFunction 20
     }
-  ) { methodQueue ->
-    val promiseResult = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.f()")
+  }) {
+    val promiseResult = callAsync("f")
     Truth.assertThat(promiseResult.isNumber()).isTrue()
     Truth.assertThat(global().getProperty("promiseResult").getInt()).isEqualTo(20)
   }
 
   @Test
-  fun constants_should_be_exported() = withJSIInterop(
-    inlineModule {
-      Name("TestModule")
-      Constants(
-        "c1" to 123,
-        "c2" to "string",
-        "c3" to mapOf("i1" to 123)
-      )
-    }
-  ) {
-    val c1Value = evaluateScript("expo.modules.TestModule.c1")
-    val c2Value = evaluateScript("expo.modules.TestModule.c2")
-    val i1Value = evaluateScript("expo.modules.TestModule.c3.i1")
+  fun constants_should_be_exported() = withSingleModule({
+    Name("TestModule")
+    Constants(
+      "c1" to 123,
+      "c2" to "string",
+      "c3" to mapOf("i1" to 123)
+    )
+  }) {
+    val c1Value = evaluateScript("$moduleRef.c1")
+    val c2Value = evaluateScript("$moduleRef.c2")
+    val i1Value = evaluateScript("$moduleRef.c3.i1")
 
     Truth.assertThat(c1Value.isNumber()).isTrue()
     val unboxedC1Value = c1Value.getInt()
