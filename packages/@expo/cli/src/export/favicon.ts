@@ -59,7 +59,10 @@ export async function getVirtualFaviconAssetsAsync(
   return injectFaviconTag;
 }
 
-export async function getFaviconFromExpoConfigAsync(projectRoot: string) {
+export async function getFaviconFromExpoConfigAsync(
+  projectRoot: string,
+  { force = false }: { force?: boolean } = {}
+) {
   const { exp } = getConfig(projectRoot);
 
   const src = exp.web?.favicon ?? null;
@@ -89,7 +92,7 @@ export async function getFaviconFromExpoConfigAsync(projectRoot: string) {
     return { source: faviconBuffer, path: 'favicon.ico' };
   } catch (error: any) {
     // Check for ENOENT
-    if (error.code === 'ENOENT') {
+    if (!force && error.code === 'ENOENT') {
       Log.warn(`Favicon source file in Expo config (web.favicon) does not exist: ${src}`);
       return null;
     }
