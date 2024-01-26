@@ -28,6 +28,7 @@ const native_1 = require("@react-navigation/native");
 const Linking = __importStar(require("expo-linking"));
 const href_1 = require("../link/href");
 const path_1 = require("../link/path");
+const matchers_1 = require("../matchers");
 const url_1 = require("../utils/url");
 function assertIsReady(store) {
     if (!store.navigationRef.isReady()) {
@@ -157,21 +158,15 @@ function rewriteNavigationStateToParams(state, params = {}) {
     }
     return JSON.parse(JSON.stringify(params));
 }
-function getNavigateAction(state, parentState, type = 'NAVIGATE') {
+function getNavigateAction(state, parentState, type = 'NAVIGATE', target = parentState.key) {
     // Get the current route, which will be the last in the stack
     const route = state.routes[state.routes.length - 1];
     // Find the previous route in the parent state
     const previousRoute = parentState.routes.findLast((parentRoute) => {
-        return areRoutesEqual(route, parentRoute);
+        return isSameRoute(route, parentRoute);
     });
     if (route.state && previousRoute?.state) {
-        /**
-         * We want to target the closest navigator
-         */
-        const shouldTargetLowerNavigator = areRoutesEqual(parentState.routes[parentState.index], previousRoute);
-        if (shouldTargetLowerNavigator) {
-            return getNavigateAction(route.state, previousRoute.state, type);
-        }
+        // return getNavigateAction(route.state, previousRoute.state as NavigationState, type, target);
     }
     // Either we reached the bottom of the state or the point where the routes diverged
     const { screen, params } = rewriteNavigationStateToParams(state);
@@ -183,31 +178,34 @@ function getNavigateAction(state, parentState, type = 'NAVIGATE') {
     }
     return {
         type,
-        target: parentState.key,
+        target,
         payload: {
             name: screen,
             params,
         },
     };
 }
-function areRoutesEqual(a = {}, b = {}) {
-    // If params if the names are different
+/**
+ * Routes match if they share the same name and their preferredId's match
+ * @see: https://github.com/react-navigation/react-navigation/blob/a2993721f59d92257cef5608c33a993f8d420a80/packages/routers/src/StackRouter.tsx#L378-L382
+ */
+function isSameRoute(a = {}, b = {}) {
     if (a.name !== b.name)
         return false;
-    const paramsA = a.params;
-    const paramsB = b.params;
-    // If both null return true
-    if (paramsA === paramsB)
-        return true;
-    // If one is null, return false
-    if (!paramsA || !paramsB)
+    if ('state' in b && b.state?.type !== 'stack')
         return false;
-    // Otherwise compare both params objects
-    const keysA = Object.keys(paramsA);
-    return keysA.every((key) => {
-        const valueA = paramsA[key];
-        const valueB = paramsB[key];
-        return valueA === valueB || valueA?.toString?.() === valueB?.toString?.();
-    });
+    return true;
+}
+function getId(a) {
+    return a.name
+        .split('/')
+        .map((segment) => {
+        const dynamicName = (0, matchers_1.matchDeepDynamicRouteName)(segment) ?? (0, matchers_1.matchDynamicName)(segment);
+        if (dynamicName) {
+            return a.params?.[dynamicName] ?? segment;
+        }
+    })
+        .filter(Boolean)
+        .join('-');
 }
 //# sourceMappingURL=routing.js.map

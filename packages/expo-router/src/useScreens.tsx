@@ -15,6 +15,7 @@ import {
   sortRoutesWithInitial,
   useRouteNode,
 } from './Route';
+import { generateDynamic } from './getRoutes';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
 import { Screen } from './primitives';
 import { EmptyRoute } from './views/EmptyRoute';
