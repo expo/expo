@@ -10,6 +10,7 @@
 
 ### 💡 Others
 
+- Remove `compare-urls` and `url` dependencies in favor of built-in URL support. ([#26702](https://github.com/expo/expo/pull/26702) by [@EvanBacon](https://github.com/EvanBacon))
 - Updated `androidx.browser:browser` to `1.6.0` [#26619](https://github.com/expo/expo/pull/26619) by [@zoontek](https://github.com/zoontek)
 
 ## 12.8.1 - 2023-12-19

@@ -1,4 +1,5 @@
 import { WebBrowserAuthSessionResult, WebBrowserOpenOptions, WebBrowserResult } from './WebBrowser.types';
+export declare function normalizeUrl(url: URL | Location): string;
 declare const _default: {
     readonly name: string;
     openBrowserAsync(url: string, browserParams?: WebBrowserOpenOptions): Promise<WebBrowserResult>;
