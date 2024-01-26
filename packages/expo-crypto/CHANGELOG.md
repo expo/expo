@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update error message to reflect that web crypto works on web with a localhost hostname and often doesn't require `https`.
+
 ## 12.8.0 — 2023-11-14
 
 ### 🛠 Breaking changes
