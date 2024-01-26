@@ -28,7 +28,7 @@ import {
   getCommentContent,
 } from '~/components/plugins/api/APISectionUtils';
 import { Cell, Row, Table } from '~/ui/components/Table';
-import { H2, BOLD, P, CODE, MONOSPACE } from '~/ui/components/Text';
+import { H2, BOLD, DEMI, P, CODE, MONOSPACE, CALLOUT } from '~/ui/components/Text';
 
 export type APISectionTypesProps = {
   data: TypeGeneralData[];
@@ -39,12 +39,7 @@ const defineLiteralType = (types: TypeDefinitionData[]): JSX.Element | null => {
     new Set(types.map((t: TypeDefinitionData) => t.value && typeof t.value))
   );
   if (uniqueTypes.length === 1 && uniqueTypes.filter(Boolean).length === 1) {
-    return (
-      <>
-        <CODE>{uniqueTypes[0]}</CODE>
-        {' - '}
-      </>
-    );
+    return <CODE>{uniqueTypes[0]}</CODE>;
   }
   return null;
 };
@@ -113,7 +108,7 @@ const renderType = ({
     return (
       <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} />
-        <APISectionPlatformTags comment={comment} prefix="Only for:" />
+        <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
           <MONOSPACE weight="medium">
             {name}
@@ -141,7 +136,7 @@ const renderType = ({
       return (
         <div key={`prop-type-definition-${name}`} css={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} />
-          <APISectionPlatformTags comment={comment} prefix="Only for:" />
+          <APISectionPlatformTags comment={comment} />
           <H3Code tags={getTagNamesList(comment)}>
             <MONOSPACE weight="medium">{name}</MONOSPACE>
           </H3Code>
@@ -168,39 +163,48 @@ const renderType = ({
         </div>
       );
     } else if (literalTypes.length) {
+      const acceptedLiteralTypes = defineLiteralType(literalTypes);
       return (
         <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} />
-          <APISectionPlatformTags comment={comment} prefix="Only for:" />
+          <APISectionPlatformTags comment={comment} />
           <H3Code tags={getTagNamesList(comment)}>
             <MONOSPACE weight="medium">{name}</MONOSPACE>
           </H3Code>
+          <CALLOUT className="mb-3">
+            <CALLOUT tag="span" theme="secondary" weight="semiBold">
+              Literal Type:{' '}
+            </CALLOUT>
+            {acceptedLiteralTypes ?? 'multiple types'}
+          </CALLOUT>
           <CommentTextBlock comment={comment} includePlatforms={false} />
           <P>
-            {defineLiteralType(literalTypes)}
             Acceptable values are:{' '}
             {literalTypes.map((lt, index) => (
               <span key={`${name}-literal-type-${index}`}>
                 <CODE>{resolveTypeName(lt)}</CODE>
-                {index + 1 !== literalTypes.length ? ', ' : '.'}
+                {index + 1 !== literalTypes.length ? <span>&ensp;</span> : ''}
               </span>
             ))}
           </P>
         </div>
       );
     }
-  } else if ((type.name === 'Record' && type.typeArguments) || type.type === 'reference') {
+  } else if (
+    (type.name === 'Record' && type.typeArguments) ||
+    ['array', 'reference'].includes(type.type)
+  ) {
     return (
-      <div key={`record-definition-${name}`} css={STYLES_APIBOX}>
+      <div key={`record-definition-${name}`} css={STYLES_APIBOX} className="[&>*:last-child]:!mb-0">
         <APISectionDeprecationNote comment={comment} />
-        <APISectionPlatformTags comment={comment} prefix="Only for:" />
+        <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
           <MONOSPACE weight="medium">{name}</MONOSPACE>
         </H3Code>
-        <div css={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-          <BOLD>Type: </BOLD>
+        <P className="mb-3">
+          <DEMI theme="secondary">Type: </DEMI>
           <APIDataType typeDefinition={type} />
-        </div>
+        </P>
         <CommentTextBlock comment={comment} includePlatforms={false} />
       </div>
     );
@@ -208,13 +212,13 @@ const renderType = ({
     return (
       <div key={`generic-type-definition-${name}`} css={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} />
-        <APISectionPlatformTags comment={comment} prefix="Only for:" />
+        <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
           <MONOSPACE weight="medium">{name}</MONOSPACE>
         </H3Code>
         <CommentTextBlock comment={comment} includePlatforms={false} />
         <P>
-          <BOLD>Type: </BOLD>
+          <DEMI theme="secondary">Type: </DEMI>
           <CODE>{type.name}</CODE>
         </P>
       </div>
@@ -223,7 +227,7 @@ const renderType = ({
     return (
       <div key={`conditional-type-definition-${name}`} css={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} />
-        <APISectionPlatformTags comment={comment} prefix="Only for:" />
+        <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
           <MONOSPACE weight="medium">
             {name}&lt;{type.checkType.name}&gt;
@@ -231,14 +235,14 @@ const renderType = ({
         </H3Code>
         <CommentTextBlock comment={comment} includePlatforms={false} />
         <P>
-          <BOLD>Generic: </BOLD>
+          <DEMI theme="secondary">Generic: </DEMI>
           <CODE>
             {type.checkType.name}
             {typeParameter && <> extends {resolveTypeName(typeParameter[0].type)}</>}
           </CODE>
         </P>
         <P>
-          <BOLD>Type: </BOLD>
+          <DEMI theme="secondary">Type: </DEMI>
           <CODE>
             {type.checkType.name}
             {typeParameter && <> extends {type.extendsType && resolveTypeName(type.extendsType)}</>}
@@ -247,6 +251,28 @@ const renderType = ({
             {' : '}
             {type.falseType && resolveTypeName(type.falseType)}
           </CODE>
+        </P>
+      </div>
+    );
+  } else if (type.type === 'templateLiteral' && type.tail) {
+    const possibleData = [type.head ?? '', ...type.tail.flat()].filter(
+      entry => typeof entry !== 'string'
+    );
+
+    if (possibleData.length === 0 || typeof possibleData[0] === 'string') {
+      return undefined;
+    }
+
+    return (
+      <div key={`conditional-type-definition-${name}`} css={STYLES_APIBOX}>
+        <APISectionDeprecationNote comment={comment} />
+        <APISectionPlatformTags comment={comment} />
+        <H3Code tags={getTagNamesList(comment)}>
+          <MONOSPACE weight="medium">{name}</MONOSPACE>
+        </H3Code>
+        <CommentTextBlock comment={comment} includePlatforms={false} />
+        <P>
+          String union of <CODE>{resolveTypeName(possibleData[0])}</CODE> values.
         </P>
       </div>
     );

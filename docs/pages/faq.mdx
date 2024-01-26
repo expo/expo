@@ -11,7 +11,7 @@ import {
   BellRinging04Icon,
 } from '@expo/styleguide-icons';
 
-This page lists some of the common questions and answers about Expo and related services. If you have a question that is not answered here, see [ Forums](https://forums.expo.io) for more common questions.
+This page lists some of the common questions and answers about Expo and related services. If you have a question that is not answered here, see [Forums](https://chat.expo.dev/) for more common questions.
 
 ## What is Expo used for?
 
@@ -99,7 +99,7 @@ Regardless of which CLI you use, you can use any part of the [Expo SDK](/version
 
 ## Is Expo Go open source?
 
-Yes, the source for Expo Go can be found in the [expo/expo GitHub repository](https://github.com/expo/expo) in the **home**, **android**, and **ios** directories. The Expo Go app is also built with Expo and React Native.
+Yes, the source for Expo Go can be found in the [expo/expo GitHub repository](https://github.com/expo/expo) in the **apps/expo-go** directory. The Expo Go app is also built with Expo and React Native.
 
 ## Is Expo eject deprecated?
 
@@ -109,7 +109,7 @@ Unlike the `expo eject` library, authors can configure their libraries to work w
 
 ## Limitations
 
-**Previously**, Expo had large native binary sizes and didn't support custom native code without "ejecting". These issues went away in December 2020 when we released [EAS Build](/build/index) which supports any React Native app. The concept of "ejecting" was replaced by the popular [Expo Prebuild](/workflow/prebuild) feature which has been around since SDK 41 (April 2021). The [`expo eject` command was fully deprecated](#is-expo-eject-deprecated) in Expo SDK 46 (August 2022).
+**Previously**, Expo had large native binary sizes and didn't support custom native code without "ejecting". These issues went away in December 2020 when we released [EAS Build](/build/introduction) which supports any React Native app. The concept of "ejecting" was replaced by the popular [Expo Prebuild](/workflow/prebuild) feature which has been around since SDK 41 (April 2021). The [`expo eject` command was fully deprecated](#is-expo-eject-deprecated) in Expo SDK 46 (August 2022).
 
 We believe Expo tools are a great option for anyone looking to create amazing cross-platform apps quickly. Nonetheless, everyone's project is unique, and there may be reasons Expo is not the right choice for what you're building. Reasons, why you may **not** want to use certain Expo tools with your project, are listed below:
 
@@ -149,7 +149,7 @@ For more information on what current limitations exist with EAS, see the followi
 
 Similar to [development builds](/develop/development-builds/introduction/), the bare workflow also provides access to the underlying native projects and any native code. It's a "bare" native project where you can make direct changes to the project's native **android** and **ios** directories rather than continuously generating them on demand using the [app config and prebuild](/workflow/prebuild).
 
-EAS Build is compatible with bare workflow projects if you check in the native directories, but no longer runs prebuild, as that could overwrite any manual customizations you've made to the native project files. You'll have to configure the native directories on your own with native tools such as Android Studio or Xcode.
+EAS Build is compatible with bare workflow projects if you check in the native directories, but no longer runs prebuild, as that could overwrite any manual customizations you have made to the native project files. You'll have to configure the native directories on your own with native tools such as Android Studio or Xcode.
 
 ### Expo Go
 

@@ -1,6 +1,6 @@
 {
   "name": "create-expo-module",
-  "version": "0.6.4",
+  "version": "0.6.7",
   "description": "The script to create the Expo module",
   "main": "build/create-expo-module.js",
   "types": "build/create-expo-module.d.ts",
@@ -33,10 +33,10 @@
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
-    "@expo/config": "~8.3.0",
+    "@expo/config": "~8.5.0",
     "@expo/json-file": "^8.2.37",
-    "@expo/spawn-async": "^1.5.0",
     "@expo/rudder-sdk-node": "^1.1.1",
+    "@expo/spawn-async": "^1.5.0",
     "chalk": "^4.1.2",
     "commander": "^8.3.0",
     "cross-spawn": "^7.0.3",
@@ -52,7 +52,6 @@
     "validate-npm-package-name": "^4.0.0"
   },
   "devDependencies": {
-    "@tsconfig/node14": "^1.0.3",
     "@types/ejs": "^3.1.0",
     "@types/find-up": "^4.0.0",
     "@types/prompts": "^2.0.14",

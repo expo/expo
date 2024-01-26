@@ -79,7 +79,8 @@ export default {
     },
     getServerResources() {
         const elements = getHeadElements();
-        return elements.map((element) => {
+        return elements
+            .map((element) => {
             switch (element.$$type) {
                 case 'style':
                     return `<style id="${element.id}" type="${element.type}">${element.children}</style>`;
@@ -88,7 +89,8 @@ export default {
                 default:
                     return '';
             }
-        });
+        })
+            .filter(Boolean);
     },
     resetServerContext() {
         serverContext.clear();

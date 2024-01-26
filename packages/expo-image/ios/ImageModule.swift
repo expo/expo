@@ -70,7 +70,9 @@ public final class ImageModule: Module {
       }
 
       Prop("enableLiveTextInteraction") { (view, enableLiveTextInteraction: Bool?) in
+        #if !os(tvOS)
         view.enableLiveTextInteraction = enableLiveTextInteraction ?? false
+        #endif
       }
 
       Prop("accessible") { (view, accessible: Bool?) in
@@ -85,13 +87,62 @@ public final class ImageModule: Module {
         view.recyclingKey = key
       }
 
+      Prop("allowDownscaling") { (view, allowDownscaling: Bool?) in
+        view.allowDownscaling = allowDownscaling ?? true
+      }
+
+      Prop("autoplay") { (view, autoplay: Bool?) in
+        view.autoplay = autoplay ?? true
+      }
+
+      AsyncFunction("startAnimating") { (view: ImageView) in
+        view.sdImageView.startAnimating()
+      }
+
+      AsyncFunction("stopAnimating") { (view: ImageView) in
+        view.sdImageView.stopAnimating()
+      }
+
       OnViewDidUpdateProps { view in
         view.reload()
       }
     }
 
-    Function("prefetch") { (urls: [URL]) in
-      SDWebImagePrefetcher.shared.prefetchURLs(urls)
+    AsyncFunction("prefetch") { (urls: [URL], cachePolicy: ImageCachePolicy, promise: Promise) in
+      var context = SDWebImageContext()
+      context[.storeCacheType] = cachePolicy.toSdCacheType().rawValue
+
+      var imagesLoaded = 0
+      var failed = false
+
+      urls.forEach { url in
+        SDWebImagePrefetcher.shared.prefetchURLs([url], context: context, progress: nil, completed: { loaded, skipped in
+          if skipped > 0 && !failed {
+            failed = true
+            promise.resolve(false)
+          } else {
+            imagesLoaded = imagesLoaded + 1
+            if imagesLoaded == urls.count {
+              promise.resolve(true)
+            }
+          }
+        })
+      }
+    }
+
+    AsyncFunction("generateBlurhashAsync") { (url: URL, numberOfComponents: CGSize, promise: Promise) in
+      let downloader = SDWebImageDownloader()
+      let parsedNumberOfComponents = (Int(numberOfComponents.width), Int(numberOfComponents.height))
+      downloader.downloadImage(with: url, progress: nil, completed: { image, _, _, _ in
+        DispatchQueue.global().async {
+          if let downloadedImage = image {
+            let blurhashString = blurhash(fromImage: downloadedImage, numberOfComponents: parsedNumberOfComponents)
+            promise.resolve(blurhashString)
+          } else {
+            promise.reject(BlurhashGenerationException())
+          }
+        }
+      })
     }
 
     AsyncFunction("clearMemoryCache") { () -> Bool in
@@ -104,10 +155,26 @@ public final class ImageModule: Module {
         promise.resolve(true)
       }
     }
+
+    AsyncFunction("getCachePathAsync") { (cacheKey: String, promise: Promise) in
+      /*
+       We need to check if the image exists in the cache first since `cachePath` will
+       return a path regardless of whether or not the image exists.
+       */
+      SDImageCache.shared.diskImageExists(withKey: cacheKey) { exists in
+        if exists {
+          let cachePath = SDImageCache.shared.cachePath(forKey: cacheKey)
+
+          promise.resolve(cachePath)
+        } else {
+          promise.resolve(nil)
+        }
+      }
+    }
   }
 
   static func registerCoders() {
-    if #available(iOS 14.0, *) {
+    if #available(iOS 14.0, tvOS 14.0, *) {
       // By default Animated WebP is not supported
       SDImageCodersManager.shared.addCoder(SDImageAWebPCoder.shared)
     } else {

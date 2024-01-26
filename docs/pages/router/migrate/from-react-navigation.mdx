@@ -23,9 +23,9 @@ If your app uses a custom `getPathFromState` or `getStateFromPath` component, it
 
 We recommend making the following modifications to your codebase before beginning the migration:
 
-- Split React Navigation screen components into individual files. For example if you have `<Stack.Screen component={HomeScreen} />`, then ensure the `HomeScreen` class is in its own file.
+- Split React Navigation screen components into individual files. For example, if you have `<Stack.Screen component={HomeScreen} />`, then ensure the `HomeScreen` class is in its own file.
 - Convert the project to [TypeScript](/guides/typescript#path-aliases). This will make it easier to spot errors that may occur during the migration.
-- Convert relative imports to [typed aliases](/guides/typescript#path-aliases), for example `../../components/button.tsx` to `@/components/button`, before starting the migration. This makes it easier to move screens around the filesystem without having to update the relative paths.
+- Convert relative imports to [typed aliases](/guides/typescript#path-aliases). For example, `../../components/button.tsx` to `@/components/button` before starting the migration. This makes it easier to move screens around the filesystem without having to update the relative paths.
 - Migrate away from `resetRoot`. This is used to "restart" the app while running. This is generally considered bad practice, and you should restructure your app's navigation so this never needs to happen.
 - Rename the initial route to `index`. Expo Router considers the route that is opened on launch to match `/`, React Navigation users will generally use something such as "Home" for the initial route.
 
@@ -33,9 +33,9 @@ We recommend making the following modifications to your codebase before beginnin
 
 Refactor screens to [use serializable top-level query parameters](https://reactnavigation.org/docs/params/#what-should-be-in-params). We recommend this in React Navigation as well.
 
-In Expo Router, search parameters can only serializable top-level values such as `number`, `boolean`, and `string`. React Navigation doesn't have the same restrictions, so users can sometimes pass invalid parameters like Functions, Objects, Maps, an so on.
+In Expo Router, search parameters can only serializable top-level values such as `number`, `boolean`, and `string`. React Navigation doesn't have the same restrictions, so users can sometimes pass invalid parameters like Functions, Objects, Maps, and so on.
 
-If your code has something similar to below:
+If your code has something similar to the below:
 
 ```js
 import { useNavigation } from '@react-navigation/native';
@@ -80,11 +80,11 @@ export default function App() {
 }
 ```
 
-### Copying screens to the app directory
+### Copy screens to the app directory
 
 Create an **app** directory at the root of your repo, or in a root **src** directory.
 
-Layout the structure of your app by creating files according to the [creating pages guide](/routing/create-pages/). Best practice dictates that you use kebab-case and lowercase letters for filenames.
+Layout the structure of your app by creating files according to the [creating pages guide](/router/create-pages/). Kebab-case and lowercase letters are considered best practice for route filenames.
 
 Replace navigators with directories, for example:
 
@@ -101,17 +101,15 @@ function HomeTabs() {
 
 function App() {
   return (
-    /* @info NavigationContainer is managed by Expo Router. */
+    // NavigationContainer is managed by Expo Router.
     <NavigationContainer
-      /* @end */
-
-      /* @info Delete the linking configuration, this is managed by Expo Router. */
       linking={
+        /* @info Delete the linking configuration, this is managed by Expo Router. */
         {
-          // ...
+          // ...linking configuration
         }
+        /* @end */
       }
-      /* @end */
     >
       <Stack.Navigator>
         /* @info Standard screens can be moved to files. */
@@ -120,13 +118,13 @@ function App() {
         <Stack.Screen name="Profile" component={Profile} />
         /* @info A screen that exports a navigator should be converted to a directory with a layout route. */
         <Stack.Screen
-          /* @end */
           name="Home"
           component={HomeTabs}
           options={{
             title: 'Home Screen',
           }}
         />
+          /* @end */
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -158,11 +156,9 @@ export default function RootLayout() {
     <Stack>
       <Stack.Screen
         name="(home)"
-        /* @info Options can be expressed using the Screen component on a navigator. This has the same types as React Navigation. */
-        options={{
+        options={/* @info Options can be expressed using the Screen component on a navigator. This has the same types as React Navigation. */{
           title: 'Home Screen',
-        }}
-        /* @end */
+        }/* @end */}
       />
     </Stack>
   );
@@ -179,9 +175,9 @@ export default function HomeLayout() {
 }
 ```
 
-### Using Expo Router hooks
+### Use Expo Router hooks
 
-React Navigation v6 and lower will pass the props `{ navigation, route }` to every screen. This pattern is going away in React Navigation, but we never introduced it to Expo Router.
+React Navigation v6 and lower will pass the props `{ navigation, route }` to every screen. This pattern is going away in React Navigation, and we never introduced it to the Expo Router.
 
 Instead, migrate `navigation` to the `useRouter` hook.
 
@@ -189,30 +185,44 @@ Instead, migrate `navigation` to the `useRouter` hook.
 + import { useRouter } from 'expo-router';
 
 export default function Page({
--    navigation
+-  navigation
 }) {
--    navigation.push('User', { user: 'bacon' });
+-  navigation.push('User', { user: 'bacon' });
 
-+    const router = useRouter();
-+    router.push('/users/bacon');
++  const router = useRouter();
++  router.push('/users/bacon');
 }
 ```
 
-Similarly, migrate from the `route` prop to the `useLocalSearchParams` hooks.
+Similarly, migrate from the `route` prop to the [`useLocalSearchParams`](/router/reference/hooks/#uselocalsearchparams) hook.
 
 ```diff
 + import { useLocalSearchParams } from 'expo-router';
 
 export default function Page({
--    route
+-  route
 }) {
--    const user = route?.params?.user;
+-  const user = route?.params?.user;
 
-+    const { user } = useLocalSearchParams();
++  const { user } = useLocalSearchParams();
 }
 ```
 
-### Migrating the Link component
+To access the [`navigation.navigate`](https://reactnavigation.org/docs/navigation-prop/#navigate), import the `navigation` prop from [`useNavigation`](/router/reference/hooks/#usenavigation) hook.
+
+```diff
++ import { useNavigation } from 'expo-router';
+
+export default function Page({
++  const navigation = useNavigation();
+
+  return (
+    <Button onPress={navigation.navigate('screenName')}>
+  )
+})
+```
+
+### Migrate the Link component
 
 React Navigation and Expo Router both provide Link components. However, Expo's Link component uses `href` instead of [`to`](https://reactnavigation.org/docs/use-link-props#to).
 
@@ -224,9 +234,9 @@ React Navigation and Expo Router both provide Link components. However, Expo's L
 <Link href="/settings" />
 ```
 
-React Navigation users will often create a custom Link component with the `useLinkProps` hook in order to control the child component. This isn't neccessary in Expo Router, instead use the `asChild` prop.
+React Navigation users will often create a custom Link component with the `useLinkProps` hook to control the child component. This isn't necessary in Expo Router, instead, use the `asChild` prop.
 
-### Sharing screens across navigators
+### Share screens across navigators
 
 It's common for React Navigation apps to reuse a set of routes across multiple navigators. This is generally used with tabs to ensure each tab can push any screen.
 
@@ -234,21 +244,21 @@ In Expo Router, you can either migrate to [shared routes](/router/advanced/share
 
 When you use groups or shared routes, you can navigate to specific tabs by using the fully qualified route name, for example, `/(home)/settings` instead of `/settings`.
 
-### Migrating screen tracking events
+### Migrate screen tracking events
 
 You may have your screen tracking setup according to our [React Navigation screen tracking guide](https://reactnavigation.org/docs/screen-tracking/), update it according to the [Expo Router screen tracking guide](/router/reference/screen-tracking).
 
-### Using platform-specifc components for screens
+### Use platform-specific components for screens
 
 Refer to the [platform-specific modules](/router/advanced/platform-specific-modules) guide for info on switching UI based on the platform.
 
-### Replacing the NavigationContainer
+### Replace the `NavigationContainer`
 
 The global React Navigation [`<NavigationContainer />`](https://reactnavigation.org/docs/navigation-container/) is completely managed in Expo Router. Expo Router provides systems for achieving the same functionality as the `NavigationContainer` without needing to use it directly.
 
 <Collapsible summary="API substitutions">
 
-### ref
+### Ref
 
 The `NavigationContainer` ref should not be accessed directly. Use the following methods instead.
 
@@ -304,7 +314,7 @@ Migrate the following `<NavigationContainer />` props:
 
 #### `initialState`
 
-In Expo Router, you can rehydrate your application state from a route string (for example, `/user/evanbacon`). Use [redirects](/docs/features/linking#redirect) to handle initial states. See [shared routes](/router/advanced/shared-routes/) for advanced redirects.
+In Expo Router, you can rehydrate your application state from a route string (for example, `/user/evanbacon`). Use [redirects](/router/reference/redirects/) to handle initial states. See [shared routes](/router/advanced/shared-routes/) for advanced redirects.
 
 Avoid using this pattern in favor of deep linking (for example, a user opens your app to `/profile` rather than from the home screen) as it is most analogous to the web. If an app crashes due to a particular screen, it's best to avoid automatically navigating back to that exact screen when the app starts as it may require reinstalling the app to fix.
 
@@ -317,14 +327,14 @@ Use the [`usePathname()`](/router/reference/hooks/#usepathname), [`useSegments()
 
 #### `onReady`
 
-In React Navigation, [`onReady`](https://reactnavigation.org/docs/navigation-container/#onready) is most often used to determine when the splash screen should hide or when to track screens using analytics. Expo Router has special handling for both these use cases. Assume the navigation is always ready in for navigation events in Expo Router.
+In React Navigation, [`onReady`](https://reactnavigation.org/docs/navigation-container/#onready) is most often used to determine when the splash screen should hide or when to track screens using analytics. Expo Router has special handling for both of these use cases. Assume the navigation is always ready for navigation events in the Expo Router.
 
 - See the [Screen Tracking guide](/router/reference/screen-tracking/) for info on migrating analytics from React Navigation.
-- See the [Splash Screen feature](/routing/appearance/#splash-screen) for info on handling the splash screen.
+- See the [Splash Screen feature](/router/appearance/#splash-screen) for info on handling the splash screen.
 
 #### `onUnhandledAction`
 
-Actions are always handled in Expo Router. Use [dynamic routes](/routing/create-pages/#dynamic-routes) and [404 screens](/routing/error-handling/#unmatched-routes) in favor of [`onUnhandledAction`](https://reactnavigation.org/docs/navigation-container/#onunhandledaction).
+Actions are always handled in Expo Router. Use [dynamic routes](/router/create-pages/#dynamic-routes) and [404 screens](/router/error-handling/#unmatched-routes) in favor of [`onUnhandledAction`](https://reactnavigation.org/docs/navigation-container/#onunhandledaction).
 
 #### `linking`
 
@@ -332,7 +342,7 @@ The [`linking`](https://reactnavigation.org/docs/navigation-container/#linking) 
 
 #### `fallback`
 
-The [`fallback`](https://reactnavigation.org/docs/navigation-container/#fallback) prop is automatically handled by Expo Router. Learn more in the [Splash Screen guide](/docs/features/splash.md).
+The [`fallback`](https://reactnavigation.org/docs/navigation-container/#fallback) prop is automatically handled by Expo Router. Learn more in the [Splash Screen](/router/appearance/#splash-screen) guide.
 
 #### `theme`
 
@@ -369,11 +379,11 @@ Use the [Head component](/router/reference/static-rendering#meta-tags) to set th
 
 #### `ref`
 
-Use the `useRootNavigation()` hook instead.
+Use the `useNavigationContainerRef()` hook instead.
 
 </Collapsible>
 
-### Rewriting custom navigators
+### Rewrite custom navigators
 
 If your project has a custom navigator, you can rewrite this or port it to Expo Router.
 
@@ -407,17 +417,14 @@ import { Navigator, usePathname, Slot, Link } from 'expo-router';
 
 export default function App() {
   return (
-    /* @info */
-    <Navigator router={TabRouter}>
-      /* @end */
+    /* @info */<Navigator router={TabRouter}>/* @end */
       <Header />
       <Slot />
     </Navigator>
   );
 }
 
-function Header() {
-  const { navigation, state, descriptors, router } = Navigator.useContext();
+function Header() {;
   const pathname = usePathname();
 
   return (
@@ -425,9 +432,7 @@ function Header() {
       <Link href="/">Home</Link>
       <Link
         href="/profile"
-        /* @info Use <code>pathname</code> to determine if the link is active. */
-        style={[pathname === '/profile' && { color: 'blue' }]}>
-        /* @end */
+        style={/* @info Use <code>pathname</code> to determine if the link is active. */[pathname === '/profile' && { color: 'blue' }]/* @end */}>
         Profile
       </Link>
       <Link href="/settings">Settings</Link>
@@ -440,11 +445,11 @@ function Header() {
 
 Expo Router wraps `expo-splash-screen` and adds special handling to ensure it's hidden after the navigation mounts, and whenever an unexpected error is caught. Simply migrate from importing `expo-splash-screen` to importing `SplashScreen` from `expo-router`.
 
-### Observing the navigation state
+### Navigation state observation
 
-If you're observing the navigation state directly, consider migrating to the `usePathname`, `useSegments`, and `useGlobalSearchParams` hooks.
+If you're observing the navigation state directly, migrate to the [`usePathname`](/router/reference/hooks/#usepathname), [`useSegments`](/router/reference/hooks/#usesegments), and [`useGlobalSearchParams`](/router/reference/hooks/#useglobalsearchparams) hooks.
 
-### Passing params to nested screens
+### Pass params to nested screens
 
 Instead of using the [nested screen navigation events](https://reactnavigation.org/docs/params/#passing-params-to-nested-navigators), use a qualified href:
 
@@ -459,10 +464,39 @@ navigation.navigate('Account', {
 router.push({ pathname: '/account/settings', params: { user: 'jane' } });
 ```
 
-### Setting initial routes for deep linking and server navigation
+### Set initial routes for deep linking and server navigation
 
 In React Navigation, you can use the `initialRouteName` property of the linking configuration. In Expo Router, use [layout settings](/router/advanced/router-settings).
 
-### Migrating TypeScript types
+### Reset navigation state
+
+You can use the [`reset`](https://reactnavigation.org/docs/navigation-actions/#reset) action from the React Navigation library to reset the navigation state. It is dispatched using the [`useNavigation`](/router/reference/hooks/#usenavigation) hook from Expo Router to access the `navigation` prop.
+
+In the below example, the `navigation` prop is accessible from the `useNavigation` hook and the `CommonActions.reset` action from `@react-navigation/native`. The object specified in the `reset` action replaces the existing navigation state with the new one.
+
+{/* prettier-ignore */}
+```jsx app/screen.js
+import { useNavigation } from 'expo-router'
+import { CommonActions } from '@react-navigation/native'
+
+export default function Screen() {
+  const navigation = useNavigation();
+
+  const handleResetAction = () => {
+    navigation.dispatch(CommonActions.reset({
+      routes: [{key: "(tabs)", name: "(tabs)"}]
+    }))
+  }
+
+  return (
+    <>
+      {/* ...rest of the code */}
+      <Button title='Reset' onPress={handleResetAction} />
+    </>
+  );
+}
+```
+
+### Migrate TypeScript types
 
 Expo Router can automatically generate [statically typed routes](/router/reference/typed-routes), this will ensure you can only navigate to valid routes.

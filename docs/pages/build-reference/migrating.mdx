@@ -4,8 +4,9 @@ description: A reference for migrating from "expo build" (classic builds) to EAS
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
+import { A } from '~/ui/components/Text';
 
-This page covers practical differences you should know when migrating your Expo [managed app](/archive/managed-vs-bare/#managed-workflow) from `expo build` (also known as **classic builds**) to EAS Build. If this is your first time using EAS Build, you can use this page as a companion to [Creating your first build](/build/setup).
+This page covers practical differences you should know when migrating your Expo [managed app](/archive/managed-vs-bare/#managed-workflow) from `expo build` (also known as **classic builds**) to EAS Build. If this is your first time using EAS Build, you can use this page as a companion to [Create your first build](/build/setup).
 
 One of the goals of EAS Build is to make it as easy as possible to migrate from `expo build`. For example, your app signing credentials will be automatically re-used, and the Expo SDK and your [app config](/workflow/configuration) (**app.json**) configuration will all work the same as before. However, some differences between the two build processes require additional configuration or small code changes.
 
@@ -35,9 +36,9 @@ The tradeoff when migrating from `expo build` is that you need to be careful whe
 
 If you use environment variables in your **app.config.js** or in your app source code (for example, with `babel-plugin-inline-dotenv`), you need to define these variables for your build profiles or in secrets, as described in [Environment variables and secrets](/build-reference/variables).
 
-### Custom `"main"` entry point in package.json is not supported
+### Custom `"main"` entry point in package.json is not supported for SDK 48 and below
 
-If your app depends on a custom `"main"` entry point, remove it from **package.json**. Then, create **index.js** at the root of your project and use [`registerRootComponent`](/versions/latest/sdk/register-root-component) to register your root component.
+If your app uses SDK 48 or below and depends on a custom `"main"` entry point, remove it from **package.json**. Then, create **index.js** at the root of your project and use [`registerRootComponent`](/versions/latest/sdk/register-root-component) to register your root component.
 
 For example, if your app's root component lives in **src/App.tsx**, the **index.js** should look like the following:
 
@@ -47,6 +48,8 @@ import App from './src/App';
 
 registerRootComponent(App);
 ```
+
+> **Note:** For SDK 49 and above, see [how to rename the main app file](/versions/latest/sdk/register-root-component/#what-if-i-want-to-name-my-main-app-file-something-other-than-appjs).
 
 ### The `--config` flag is not supported
 
@@ -111,7 +114,7 @@ If you are migrating from `expo build` and using `expo publish` to update your a
 
 ### No more automatic publishing before building
 
-With classic builds, the default behavior was to automatically publish your app with Classic Updates as an update prior to running a build. This had some unintended consequences. For example, sometimes developers would run a build and be surprised to learn that their existing app was updated as a side effect.
+With classic builds, the default behavior was to automatically publish your app with Classic Updates as an update before running a build. This had some unintended consequences. For example, sometimes developers would run a build and be surprised to learn that their existing app was updated as a side effect.
 
 With EAS Build, the Classic Update's `expo publish` command is not run as part of the build process. Instead, the JavaScript bundle is generated locally on EAS Build at build time and directly embedded in the app.
 
@@ -185,4 +188,4 @@ If you don't set up your **metro.config.js** file properly, your assets could fa
 
 For more information, see [troubleshooting runtime and build errors, and crashes](/build-reference/troubleshooting).
 
-> **info** Having trouble migrating? [Join us in the #eas channel on the Expo Discord](https://discord.com/invite/4gtbPAdpaE) and let us know, we'll do our best to help.
+> **info** Having trouble migrating? Join us in the #eas channel on the <A href="https://chat.expo.dev/" shouldLeakReferrer>Discord and Forums</A> and let us know.

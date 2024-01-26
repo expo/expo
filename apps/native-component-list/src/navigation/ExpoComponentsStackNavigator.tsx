@@ -57,6 +57,18 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/Camera/CameraScreenNext'));
+    },
+    name: 'Camera (next)',
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/Camera/CameraScreenNextBarcode'));
+    },
+    name: 'Camera (next barcode)',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/TextScreen'));
     },
     name: 'Text',
@@ -382,7 +394,13 @@ export const Screens = [
     getComponent() {
       return optionalRequire(() => require('../screens/AV/VideoScreen'));
     },
-    name: 'Video',
+    name: 'Video (expo-av)',
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/Video/VideoScreen'));
+    },
+    name: 'Video (expo-video)',
   },
   {
     getComponent() {

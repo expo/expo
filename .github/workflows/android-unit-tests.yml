@@ -6,7 +6,7 @@ on:
     branches: [main]
     paths:
       - .github/workflows/android-unit-tests.yml
-      - android/**
+      - apps/expo-go/android/**
       - fastlane/**
       - packages/**/android/**
       - tools/**
@@ -15,7 +15,7 @@ on:
   pull_request:
     paths:
       - .github/workflows/android-unit-tests.yml
-      - android/**
+      - apps/expo-go/android/**
       - fastlane/**
       - packages/**/android/**
       - tools/**
@@ -37,25 +37,24 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
       - name: 👀 Check out repository
         uses: actions/checkout@v3
         with:
           submodules: true
       - name: 🧹 Cleanup GitHub Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
-      - name: 🔨 Use JDK 11
+      - name: 🔨 Use JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: '17'
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
           yarn-workspace: 'true'
           yarn-tools: 'true'
-          hermes-engine-aar: 'true'
           react-native-gradle-downloads: 'true'
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
@@ -63,7 +62,7 @@ jobs:
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 🚨 Run Spotless lint check
-        working-directory: android
+        working-directory: apps/expo-go/android
         run: ./gradlew spotlessCheck || { echo '::error Spotless lint failed. Run `./gradlew spotlessApply` to automatically fix formatting.' && exit 1; }
       - name: 🎸 Run native Android unit tests
         timeout-minutes: 30

@@ -1,36 +1,42 @@
 import { ImageStyle as RNImageStyle, ViewProps, StyleProp, ViewStyle } from 'react-native';
+import ExpoImage from './ExpoImage';
 export type ImageSource = {
     /**
      * A string representing the resource identifier for the image,
-     * which could be an http address, a local file path, or the name of a static image resource.
+     * which could be an HTTPS address, a local file path, or the name of a static image resource.
      */
     uri?: string;
     /**
      * An object representing the HTTP headers to send along with the request for a remote image.
-     * @platform android
-     * @platform ios
+     * On web requires the `Access-Control-Allow-Origin` header returned by the server to include the current domain.
      */
     headers?: Record<string, string>;
     /**
      * Can be specified if known at build time, in which case the value
-     * will be used to set the default `<Image/>` component dimension
+     * will be used to set the default `<Image/>` component dimension.
      */
     width?: number;
     /**
      * Can be specified if known at build time, in which case the value
-     * will be used to set the default `<Image/>` component dimension
+     * will be used to set the default `<Image/>` component dimension.
      */
     height?: number;
     /**
-     * The blurhash string to use to generate the image. You can read more about the blurhash
-     * on [`woltapp/blurhash`](https://github.com/woltapp/blurhash) repo. Ignored when `uri` is provided.
+     * A string used to generate the image [`placeholder`](#placeholder). For example,
+     * `placeholder={blurhash}`.  If `uri` is provided as the value of the `source` prop,
+     * this is ignored since the `source` can only have `blurhash` or `uri`.
+     *
      * When using the blurhash, you should also provide `width` and `height` (higher values reduce performance),
      * otherwise their default value is `16`.
+     * For more information, see [`woltapp/blurhash`](https://github.com/woltapp/blurhash) repository.
      */
     blurhash?: string;
     /**
-     * The thumbhash string to use to generate the image placeholder. You can read more about thumbhash
-     * on the [`thumbhash website`](https://evanw.github.io/thumbhash/). Ignored when `uri` is provided.
+     * A string used to generate the image [`placeholder`](#placeholder). For example,
+     * `placeholder={thumbhash}`.  If `uri` is provided as the value of the `source` prop,
+     * this is ignored since the `source` can only have `thumbhash` or `uri`.
+     *
+     * For more information, see [`thumbhash website`](https://evanw.github.io/thumbhash/).
      */
     thumbhash?: string;
     /**
@@ -46,6 +52,12 @@ export type ImageSource = {
      * @platform web
      */
     webMaxViewportWidth?: number;
+    /**
+     * Whether the image is animated (an animated GIF or WebP for example).
+     * @platform android
+     * @platform ios
+     */
+    isAnimated?: boolean;
 };
 /**
  * @hidden
@@ -56,6 +68,12 @@ export type ImageStyle = RNImageStyle;
  * @hidden Described in the {@link ImageProps['contentFit']}
  */
 export type ImageContentFit = 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
+/**
+ * Determines which format should be used to decode the image.
+ * It's suggestion for the platform to use the specified format, but it's not guaranteed.
+ * @hidden Described in the {@link ImageProps['decodeFormat']}
+ */
+export type ImageDecodeFormat = 'argb' | 'rgb';
 /**
  * Some props are from React Native Image that Expo Image supports (more or less) for easier migration,
  * but all of them are deprecated and might be removed in the future.
@@ -94,8 +112,7 @@ export interface ImageProps extends ViewProps {
      */
     contentFit?: ImageContentFit;
     /**
-     * Determines how the placeholder should be resized to fit its container
-     * @hidden Described in the {@link ImageProps['contentFit']}
+     * Determines how the placeholder should be resized to fit its container. Available resize modes are the same as for the [`contentFit`](#contentfit) prop.
      * @default 'scale-down'
      */
     placeholderContentFit?: ImageContentFit;
@@ -170,6 +187,14 @@ export interface ImageProps extends ViewProps {
      * @platform ios
      */
     recyclingKey?: string | null;
+    /**
+     * Determines if an image should automatically begin playing if it is an
+     * animated image.
+     * @default true
+     * @platform android
+     * @platform ios
+     */
+    autoplay?: boolean;
     /**
      * Called when the image starts to load.
      */
@@ -254,9 +279,20 @@ export interface ImageProps extends ViewProps {
      *
      * Downscaling is never used when the `contentFit` prop is set to `none` or `fill`.
      * @default true
-     * @platform android
      */
     allowDownscaling?: boolean;
+    /**
+     * The format in which the image data should be decoded.
+     * It's not guaranteed that the platform will use the specified format.
+     *
+     * - `'argb'` - The image is decoded into a 32-bit color space with alpha channel (https://developer.android.com/reference/android/graphics/Bitmap.Config#ARGB_8888).
+     *
+     * - `'rgb'` - The image is decoded into a 16-bit color space without alpha channel (https://developer.android.com/reference/android/graphics/Bitmap.Config#RGB_565).
+     *
+     * @default 'argb'
+     * @platform android
+     */
+    decodeFormat?: ImageDecodeFormat;
 }
 /**
  * It narrows down some props to types expected by the native/web side.
@@ -268,6 +304,8 @@ export interface ImageNativeProps extends ImageProps {
     placeholder?: ImageSource[];
     contentPosition?: ImageContentPositionObject;
     transition?: ImageTransition | null;
+    autoplay?: boolean;
+    nativeViewRef?: React.RefObject<ExpoImage>;
 }
 /**
  * A value that represents the relative position of a single axis.
@@ -363,6 +401,7 @@ export type ImageLoadEventData = {
         width: number;
         height: number;
         mediaType: string | null;
+        isAnimated?: boolean;
     };
 };
 export type ImageProgressEventData = {

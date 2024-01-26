@@ -10,7 +10,7 @@ Classic Build service allows you to create standalone binaries for the Expo app 
 
 An Apple Developer account is required to build a standalone iOS app, but a Google Play Developer account is not required to build the standalone Android app. To submit to either app store, you need a developer account on that store.
 
-> We recommend that you read the [best practices about app stores](/distribution/app-stores) to ensure your app gets accepted into the Apple and Google stores. Once you've created an amazing app, EAS Build can help you build it and then submit it to the app stores.
+> We recommend that you read the [best practices about app stores](/distribution/app-stores) to ensure your app gets accepted into the Apple and Google stores. Once you have created an amazing app, EAS Build can help you build it and then submit it to the app stores.
 
 ## 1. Install Expo CLI
 
@@ -145,7 +145,7 @@ Note: Expo does not keep your Apple ID or your Apple ID password.
   I will provide all the credentials and files needed, Expo does limited validation
 ```
 
-If you are unfamiliar with iOS credentials, it is recommended to let Expo handle the creation & management of credentials. To learn more about them, refer to the [App Credentials documentation](/app-signing/app-credentials).
+If you are unfamiliar with iOS credentials, it is recommended to let Expo handle the creation and management of credentials. To learn more about them, refer to the [App Credentials documentation](/app-signing/app-credentials).
 
 If you are familiar with iOS credentials and plan to provide your own, use the [Apple Developer Portal](https://developer.apple.com/account/resources/certificates/list) to create them.
 
@@ -213,7 +213,7 @@ When the build process finishes, you will get a URL to your app file - an **.apk
 ### iOS
 
 - **To run it on your iOS Simulator**, first build your project with the simulator flag by running `expo build:ios -t simulator`, then download the artifact with the link printed when your build completes. To install the resulting **tar.gz** file, unzip it and drag and drop it into your iOS Simulator. If you'd like to install it from the command line, run `tar -xvzf your-app.tar.gz` to unpack the file, open a simulator, then run `xcrun simctl install booted <path to .app>`.
-- **To test a device build with Apple TestFlight**, download the **.ipa** file to your local machine. Within [App Store Connect](https://appstoreconnect.apple.com/apps), click the plus icon and create a New App. Make sure your `bundleIdentifier` matches what you've placed in **app.json**. Now, you need to use Xcode or [Transporter](https://apps.apple.com/app/transporter/id1450874784) (previously known as Application Loader) to upload the **.ipa** you got from `expo build:ios`. Once you do that, you can check the status of your build under `Activity`. Processing an app can take 10-15 minutes before it shows up under available builds.
+- **To test a device build with Apple TestFlight**, download the **.ipa** file to your local machine. Within [App Store Connect](https://appstoreconnect.apple.com/apps), click the plus icon and create a New App. Make sure your `bundleIdentifier` matches what you have placed in **app.json**. Now, you need to use Xcode or [Transporter](https://apps.apple.com/app/transporter/id1450874784) (previously known as Application Loader) to upload the **.ipa** you got from `expo build:ios`. Once you do that, you can check the status of your build under `Activity`. Processing an app can take 10-15 minutes before it shows up under available builds.
 
 ## 6. Submit it to the appropriate store
 

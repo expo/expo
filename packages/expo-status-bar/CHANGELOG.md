@@ -10,6 +10,30 @@
 
 ### 💡 Others
 
+## 1.11.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 1.11.0 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
+## 1.10.0 — 2023-11-14
+
+### 🐛 Bug fixes
+
+- Made the `setStatusBarHidden` methods `animation` parameter optional to match the documentation. ([#23866](https://github.com/expo/expo/pull/23866) by [@DoctorJohn](https://github.com/DoctorJohn))
+
+## 1.9.0 — 2023-10-17
+
+### 💡 Others
+
+- Ship untranspiled JSX to support custom handling of `jsx` and `createElement`. ([#24889](https://github.com/expo/expo/pull/24889) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 1.8.0 — 2023-09-15
+
+### 💡 Others
+
 - Reduce web bundle size. ([#24297](https://github.com/expo/expo/pull/24297) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 1.7.1 — 2023-08-02

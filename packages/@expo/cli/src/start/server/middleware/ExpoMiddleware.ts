@@ -14,7 +14,7 @@ export abstract class ExpoMiddleware {
    * Returns true when the middleware should handle the incoming server request.
    * Exposed for testing.
    */
-  _shouldHandleRequest(req: ServerRequest): boolean {
+  public shouldHandleRequest(req: ServerRequest): boolean {
     if (!req.url) {
       return false;
     }
@@ -58,7 +58,7 @@ export abstract class ExpoMiddleware {
       }
     };
     const middleware = async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
-      if (!this._shouldHandleRequest(req)) {
+      if (!this.shouldHandleRequest(req)) {
         return next();
       }
       return internalMiddleware(req, res, next);

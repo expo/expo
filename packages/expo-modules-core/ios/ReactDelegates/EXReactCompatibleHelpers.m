@@ -16,10 +16,10 @@
 
 UIView *EXAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary *initialProperties, BOOL fabricEnabled)
 {
-#if REACT_NATIVE_MINOR_VERSION >= 71
+  // Originally the EXAppSetupDefaultRootView is for backward compatible,
+  // it is now exactly the same as RCTAppSetupDefaultRootView.
+  // Would like to keep this file longer and see if we still need this in the future.
+  // Remove this when we drop SDK 49
   return RCTAppSetupDefaultRootView(bridge, moduleName, initialProperties, fabricEnabled);
-#else
-  return RCTAppSetupDefaultRootView(bridge, moduleName, initialProperties);
-#endif // REACT_NATIVE_MINOR_VERSION >= 71
 }
 

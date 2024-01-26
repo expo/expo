@@ -4,8 +4,6 @@ import tar from 'tar';
 import * as Log from '../../log';
 import { extractAsync } from '../tar';
 
-const asMock = (fn: any): jest.Mock => fn;
-
 jest.mock(`../../log`);
 
 function mockPlatform(value: typeof process.platform) {
@@ -18,9 +16,9 @@ describe(extractAsync, () => {
   const originalPlatform = process.platform;
 
   beforeEach(() => {
-    asMock(spawnAsync).mockClear();
-    asMock(tar.extract).mockClear();
-    asMock(Log.warn).mockClear();
+    jest.mocked(spawnAsync).mockClear();
+    jest.mocked(tar.extract).mockClear();
+    jest.mocked(Log.warn).mockClear();
   });
 
   afterAll(() => {
@@ -30,7 +28,7 @@ describe(extractAsync, () => {
   it('extracts a tar file using node module when native fails', async () => {
     // set to mac in order to test native tools.
     mockPlatform('darwin');
-    asMock(spawnAsync).mockImplementationOnce(() => {
+    jest.mocked(spawnAsync).mockImplementationOnce(() => {
       throw new Error('mock failure');
     });
 

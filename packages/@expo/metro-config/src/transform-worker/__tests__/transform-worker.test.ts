@@ -1,8 +1,8 @@
-import upstreamTransformer, { JsTransformOptions } from 'metro-transform-worker';
-
+import * as upstreamTransformer from '../metro-transform-worker';
+import type { JsTransformOptions } from '../metro-transform-worker';
 import { transform } from '../transform-worker';
 
-jest.mock('metro-transform-worker', () => ({
+jest.mock('../metro-transform-worker', () => ({
   transform: jest.fn(),
 }));
 
@@ -18,9 +18,8 @@ const doTransformForOutput = async (
   jest.mocked(upstreamTransformer.transform).mockResolvedValueOnce({
     dependencies: [],
     output: [
-      {
-        data: {},
-      },
+      // @ts-expect-error
+      {},
     ],
   });
   const output = await doTransform(filename, src, options);
@@ -218,9 +217,10 @@ describe('CSS Modules', () => {
   });
 });
 
+// TODO: Test +api files to ensure all extensions work
 describe('Expo Router server files (+html, +api)', () => {
+  const matchable = /> The server-only file was removed from the client JS bundle by Expo CLI/;
   it(`strips +html file from client bundles`, async () => {
-    const matchable = /\+html file was removed from the client/;
     for (const file of [
       'app/+html.js',
       'app/+html.ts',
@@ -236,6 +236,7 @@ describe('Expo Router server files (+html, +api)', () => {
             dev: true,
             minify: false,
             customTransformOptions: {
+              __proto__: null,
               environment: 'client',
             },
             platform: 'web',
@@ -253,6 +254,7 @@ describe('Expo Router server files (+html, +api)', () => {
             dev: true,
             minify: false,
             customTransformOptions: {
+              __proto__: null,
               environment: 'client',
             },
             platform,
@@ -268,6 +270,7 @@ describe('Expo Router server files (+html, +api)', () => {
           dev: false,
           minify: true,
           customTransformOptions: {
+            __proto__: null,
             environment: 'client',
           },
           platform: 'web',
@@ -275,7 +278,7 @@ describe('Expo Router server files (+html, +api)', () => {
       ).input
     ).toMatch('');
   });
-  it(`does nothing when custom transform options aren't defined`, async () => {
+  it(`modifies server files even if no server indication is provided`, async () => {
     expect(
       (
         await doTransformForOutput('app/+html.js', 'KEEP', {
@@ -284,7 +287,7 @@ describe('Expo Router server files (+html, +api)', () => {
           platform: 'web',
         })
       ).input
-    ).toMatch('KEEP');
+    ).toMatch(matchable);
   });
   it(`preserves when bundling for Node.js environments`, async () => {
     expect(
@@ -293,6 +296,7 @@ describe('Expo Router server files (+html, +api)', () => {
           dev: true,
           minify: false,
           customTransformOptions: {
+            __proto__: null,
             environment: 'node',
           },
           platform: 'ios',

@@ -25,7 +25,7 @@ You can read more about notification channels on the [Android developer website]
 
 Creating a channel is easy -- before you create a local notification (or receive a push notification), simply call the following method:
 
-```javascript
+```js
 if (Platform.OS === 'android') {
   Notifications.createChannelAndroidAsync('chat-messages', {
     name: 'Chat messages',
@@ -38,7 +38,7 @@ Creating a channel that already exists is essentially a no-op, so it's safe to c
 
 Then, when you want to send a notification for a chat message, either add the `channelId: 'chat-messages'` field to your [push notification message](../push-notifications/#message-format), or create a local notification like this:
 
-```javascript
+```js
 Notifications.presentLocalNotificationAsync({
   title: 'New Message',
   body: 'Message!!!!',
@@ -56,17 +56,17 @@ On devices with Android 7 and below, which don't support notification channels, 
 
 ## Updating an existing app to use channels
 
-If you have an existing Android app that relies on `sound`, `vibrate`, or `priority` settings for notifications, you'll need to update it to take advantage of channels, as those settings no longer have any effect on individual notifications. If you do not rely on those settings, you may want to update it anyway in order to give users more control over the different types of notifications your app presents. (Note that the client-side `priority` setting involved here only affects the notification's UI behavior and is distinct from [the `priority` of a push notification](../push-notifications/#message-format), which is not affected by notification channels.)
+If you have an existing Android app that relies on `sound`, `vibrate`, or `priority` settings for notifications, you'll need to update it to take advantage of channels, as those settings no longer have any effect on individual notifications. If you do not rely on those settings, you may want to update it anyway to give users more control over the different types of notifications your app presents. (Note that the client-side `priority` setting involved here only affects the notification's UI behavior and is distinct from [the `priority` of a push notification](../push-notifications/#message-format), which is not affected by notification channels.)
 
 To do this, first make sure you are using the latest minor update of `expo` for your SDK version. Notification channels are supported in SDKs 22 and above, so for example, if you're on SDK 27 you should `npm install`/`yarn add` `expo@^27.1.0`.
 
 Next, plan out the notification channels your app will need. These may correspond to the different permutations of the `sound`, `vibrate` and `priority` settings you used on individual notifications.
 
-Once you've decided on a set of channels, you need to add logic to your app to create them. We recommend simply creating all channels in `componentDidMount` of your app's root component; this way all users will be sure to get all channels and not miss any notifications.
+Once you have decided on a set of channels, you need to add logic to your app to create them. We recommend simply creating all channels in `componentDidMount` of your app's root component; this way all users will be sure to get all channels and not miss any notifications.
 
 For example, if this is your code before:
 
-```javascript
+```js
 _createNotificationAsync = () => {
   Notifications.presentLocalNotificationAsync({
     title: 'Reminder',
@@ -82,7 +82,7 @@ _createNotificationAsync = () => {
 
 You might change it to something like this:
 
-```javascript
+```js
 componentDidMount() {
   // ...
   if (Platform.OS === 'android') {
@@ -112,7 +112,7 @@ This will create a channel called "Reminders" with default settings of `max` pri
 
 ## Send channel notification with Expo API service
 
-```javascript
+```js
 [
   {
     to: 'ExponentPushToken[xxxxxx]',

@@ -4,11 +4,11 @@ import {
   History,
   withAndroidManifest,
   withDangerousMod,
-  withGradleProperties,
 } from 'expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
 
+import { renderQueryIntents, renderQueryPackages, renderQueryProviders } from './androidQueryUtils';
 import { appendContents, purgeContents } from './fileContentsUtils';
 import type { PluginConfigType } from './pluginConfig';
 
@@ -71,41 +71,6 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
   ],
   'withAndroidBuildProperties'
 );
-
-export const withAndroidFlipper: ConfigPlugin<PluginConfigType> = (config, props) => {
-  const ANDROID_FLIPPER_KEY = 'FLIPPER_VERSION';
-  const FLIPPER_FALLBACK = '0.125.0';
-
-  // when not set, make no changes
-  if (props.android?.flipper === undefined) {
-    return config;
-  }
-
-  return withGradleProperties(config, (c) => {
-    // check for Flipper version in package. If set, use that
-    let existing: string | undefined;
-
-    const found = c.modResults.find(
-      (item) => item.type === 'property' && item.key === ANDROID_FLIPPER_KEY
-    );
-    if (found && found.type === 'property') {
-      existing = found.value;
-    }
-
-    // strip key and re-add based on setting
-    c.modResults = c.modResults.filter(
-      (item) => !(item.type === 'property' && item.key === ANDROID_FLIPPER_KEY)
-    );
-
-    c.modResults.push({
-      type: 'property',
-      key: ANDROID_FLIPPER_KEY,
-      value: (props.android?.flipper ?? existing ?? FLIPPER_FALLBACK) as string,
-    });
-
-    return c;
-  });
-};
 
 /**
  * Appends `props.android.extraProguardRules` content into `android/app/proguard-rules.pro`
@@ -238,3 +203,30 @@ function setUsesCleartextTraffic(
 
   return androidManifest;
 }
+
+export const withAndroidQueries: ConfigPlugin<PluginConfigType> = (config, props) => {
+  return withAndroidManifest(config, (config) => {
+    if (props.android?.manifestQueries == null) {
+      return config;
+    }
+
+    const { manifestQueries } = props.android;
+
+    // Default template adds a single intent to the `queries` tag
+    const defaultIntents =
+      config.modResults.manifest.queries.map((q) => q.intent ?? []).flat() ?? [];
+
+    const additionalQueries: AndroidConfig.Manifest.ManifestQuery = {
+      package: renderQueryPackages(manifestQueries.package),
+      intent: [...defaultIntents, ...renderQueryIntents(manifestQueries.intent)],
+    };
+
+    const provider = renderQueryProviders(manifestQueries.provider);
+    if (provider != null) {
+      additionalQueries.provider = provider;
+    }
+
+    config.modResults.manifest.queries = [additionalQueries];
+    return config;
+  });
+};

@@ -3,6 +3,7 @@ title: Location
 description: A library that provides access to reading geolocation information, polling current location or subscribing location update events from the device.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-46/packages/expo-location'
 packageName: 'expo-location'
+iconUrl: '/static/images/packages/expo-location.png'
 ---
 
 import APISection from '~/components/plugins/APISection';
@@ -10,6 +11,7 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
 import { AndroidPermissions } from '~/components/plugins/permissions';
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
 `expo-location` allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
 
@@ -50,7 +52,7 @@ Another example can be stated using [available location accuracies](#accuracy). 
 
 To learn more on how to exclude a permission, see [Excluding Android permissions](/guides/permissions/#excluding-android-permissions).
 
-### Background Location Methods
+### Background Location methods
 
 To use Background Location methods, the following requirements apply:
 
@@ -58,7 +60,7 @@ To use Background Location methods, the following requirements apply:
 - **(_iOS only_)** `"location"` background mode must be specified in **Info.plist** file. See [background tasks configuration guide](task-manager.mdx#configuration).
 - Background location task must be defined in the top-level scope, using [TaskManager.defineTask](task-manager.mdx#taskmanagerdefinetasktaskname-taskexecutor).
 
-### Geofencing Methods
+### Geofencing methods
 
 To use Geofencing methods, the following requirements apply:
 
@@ -139,19 +141,27 @@ const styles = StyleSheet.create({
 
 ## Enabling Emulator Location
 
-### iOS Simulator
-
-With Simulator open, go to Debug > Location and choose any option besides "None" (obviously).
-
-![iOS Simulator location](/static/images/ios-simulator-location.png)
-
 ### Android Emulator
 
-Open Android Studio, and launch your AVD in the emulator. Then, on the options bar for your device, click the icon for "More" and navigate to the "Location" tab.
+Open Android Studio, and launch the Android Emulator. Inside it, go to **Settings** > **Location** and enable **Use location**.
 
-![Android Simulator location](/static/images/android-emulator-location.png)
+<ImageSpotlight
+  alt="Location settings in Android Emulator for versions 12 and higher"
+  src="/static/images/sdk/location/enable-android-emulator-location.png"
+  style={{ maxWidth: 360 }}
+/>
 
 If you don't receive the locations in the emulator, you may have to turn off "Improve Location Accuracy" in Settings - Location in the emulator. This will turn off Wi-Fi location and only use GPS. Then you can manipulate the location with GPS data through the emulator.
+
+### iOS Simulator
+
+With Simulator open, go to **Features** > **Location** and choose any option besides **None**.
+
+<ImageSpotlight
+  alt="Location settings in iOS simulator."
+  src="/static/images/sdk/location/ios-simulator-location.png"
+  style={{ maxWidth: 480 }}
+/>
 
 ## API
 

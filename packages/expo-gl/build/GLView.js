@@ -56,15 +56,16 @@ export class GLView extends React.Component {
     render() {
         const { onContextCreate, // eslint-disable-line no-unused-vars
         msaaSamples, enableExperimentalWorkletSupport, ...viewProps } = this.props;
-        return (React.createElement(View, { ...viewProps },
-            React.createElement(NativeView, { ref: this._setNativeRef, style: {
-                    flex: 1,
-                    ...(Platform.OS === 'ios'
-                        ? {
-                            backgroundColor: 'transparent',
-                        }
-                        : {}),
-                }, onSurfaceCreate: this._onSurfaceCreate, enableExperimentalWorkletSupport: enableExperimentalWorkletSupport, msaaSamples: Platform.OS === 'ios' ? msaaSamples : undefined })));
+        return (<View {...viewProps}>
+        <NativeView ref={this._setNativeRef} style={{
+                flex: 1,
+                ...(Platform.OS === 'ios'
+                    ? {
+                        backgroundColor: 'transparent',
+                    }
+                    : {}),
+            }} onSurfaceCreate={this._onSurfaceCreate} enableExperimentalWorkletSupport={enableExperimentalWorkletSupport} msaaSamples={Platform.OS === 'ios' ? msaaSamples : undefined}/>
+      </View>);
     }
     _setNativeRef = (nativeRef) => {
         if (this.props.nativeRef_EXPERIMENTAL) {

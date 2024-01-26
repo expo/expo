@@ -1,7 +1,7 @@
 //  Copyright (c) 2020 650 Industries, Inc. All rights reserved.
 
 import ExpoModulesTestCore
-import SQLite3
+import sqlite3
 
 @testable import EXUpdates
 
@@ -283,7 +283,7 @@ let UpdatesDatabaseV9Schema = """
 """
 
 class UpdatesDatabaseInitializationSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     var testDatabaseDir: URL!
 
     beforeEach {

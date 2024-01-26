@@ -1,31 +1,7 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deepEqual = exports.getPathDataFromState = void 0;
+exports.appendBaseUrl = exports.deepEqual = exports.getPathDataFromState = void 0;
 const core_1 = require("@react-navigation/core");
-const queryString = __importStar(require("query-string"));
 const matchers_1 = require("../matchers");
 const DEFAULT_SCREENS = {};
 const getActiveRoute = (state) => {
@@ -176,8 +152,7 @@ function walkConfigItems(route, focusedRoute, configs, { preserveDynamicRoutes, 
         pattern = inputPattern;
         if (route.params) {
             const params = processParamsWithUserSettings(configItem, route.params);
-            // TODO: Does this need to be a null check?
-            if (pattern) {
+            if (pattern !== undefined && pattern !== null) {
                 Object.assign(collectedParams, params);
             }
             if (deepEqual(focusedRoute, route)) {
@@ -302,7 +277,7 @@ function getPathFromResolvedState(state, configs, { preserveGroups, preserveDyna
                         delete focusedParams[param];
                     }
                 }
-                const query = queryString.stringify(focusedParams, { sort: false });
+                const query = new URLSearchParams(focusedParams).toString();
                 if (query) {
                     path += `?${query}`;
                 }
@@ -310,12 +285,22 @@ function getPathFromResolvedState(state, configs, { preserveGroups, preserveDyna
             break;
         }
     }
-    return { path: basicSanitizePath(path), params: decodeParams(allParams) };
+    return { path: appendBaseUrl(basicSanitizePath(path)), params: decodeParams(allParams) };
 }
 function decodeParams(params) {
     const parsed = {};
     for (const [key, value] of Object.entries(params)) {
-        parsed[key] = decodeURIComponent(value);
+        try {
+            if (Array.isArray(value)) {
+                parsed[key] = value.map((v) => decodeURIComponent(v));
+            }
+            else {
+                parsed[key] = decodeURIComponent(value);
+            }
+        }
+        catch {
+            parsed[key] = value;
+        }
     }
     return parsed;
 }
@@ -329,10 +314,16 @@ function getPathWithConventionsCollapsed({ pattern, routePath, params, preserveG
         // Since the page doesn't actually exist
         if (p.startsWith('*')) {
             if (preserveDynamicRoutes) {
+                if (name === 'not-found') {
+                    return '+not-found';
+                }
                 return `[...${name}]`;
             }
             if (params[name]) {
-                return params[name].join('/');
+                if (Array.isArray(params[name])) {
+                    return params[name].join('/');
+                }
+                return params[name];
             }
             if (i === 0) {
                 // This can occur when a wildcard matches all routes and the given path was `/`.
@@ -390,7 +381,9 @@ function getParamsWithConventionsCollapsed({ pattern, routeName, params, }) {
     // Deep Dynamic Routes
     if (segments.some((segment) => segment.startsWith('*'))) {
         // NOTE(EvanBacon): Drop the param name matching the wildcard route name -- this is specific to Expo Router.
-        const name = (0, matchers_1.matchDeepDynamicRouteName)(routeName) ?? routeName;
+        const name = (0, matchers_1.testNotFound)(routeName)
+            ? 'not-found'
+            : (0, matchers_1.matchDeepDynamicRouteName)(routeName) ?? routeName;
         delete processedParams[name];
     }
     return processedParams;
@@ -446,4 +439,13 @@ const createConfigItem = (config, parentPattern) => {
     };
 };
 const createNormalizedConfigs = (options, pattern) => Object.fromEntries(Object.entries(options).map(([name, c]) => [name, createConfigItem(c, pattern)]));
+function appendBaseUrl(path, baseUrl = process.env.EXPO_BASE_URL) {
+    if (process.env.NODE_ENV !== 'development') {
+        if (baseUrl) {
+            return `/${baseUrl.replace(/^\/+/, '').replace(/\/$/, '')}${path}`;
+        }
+    }
+    return path;
+}
+exports.appendBaseUrl = appendBaseUrl;
 //# sourceMappingURL=getPathFromState.js.map

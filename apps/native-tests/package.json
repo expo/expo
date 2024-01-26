@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "postinstall": "expo-yarn-workspaces postinstall",
     "start": "expo start --dev-client",
     "android": "expo run:android",
     "ios": "expo run:ios",
@@ -11,33 +10,24 @@
   },
   "dependencies": {
     "expo": "~50.0.0-alpha.0",
-    "expo-camera": "~13.6.0",
-    "expo-dev-client": "~3.1.0",
-    "expo-face-detector": "~12.4.0",
-    "expo-image": "~1.5.0",
-    "expo-notifications": "~0.23.0",
-    "expo-random": "~13.4.0",
-    "expo-splash-screen": "~0.22.0",
+    "expo-camera": "~14.0.0",
+    "expo-dev-client": "~3.3.0",
+    "expo-face-detector": "~12.6.0",
+    "expo-image": "~1.10.0",
+    "expo-notifications": "~0.27.0",
+    "expo-random": "~13.6.0",
+    "expo-splash-screen": "~0.26.0",
     "native-component-list": "*",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "0.72.4"
+    "react-native": "0.73.2"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"
   },
-  "expo-yarn-workspaces": {
-    "symlinks": [
-      "expo-constants",
-      "expo-camera",
-      "expo-updates",
-      "react-native-reanimated"
-    ]
-  },
   "expo": {
     "autolinking": {
       "exclude": [
-        "expo-branch",
         "expo-ads-facebook",
         "expo-ads-admob",
         "expo-apple-authentication",

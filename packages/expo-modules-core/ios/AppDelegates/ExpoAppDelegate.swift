@@ -1,4 +1,3 @@
-import UIKit
 import Dispatch
 import Foundation
 
@@ -18,6 +17,7 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
   @objc
   public let reactDelegate = ExpoReactDelegate(handlers: reactDelegateHandlers)
 
+  #if os(iOS) || os(tvOS)
   // MARK: - Initializing the App
 
   open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
@@ -317,6 +317,8 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
   }
 #endif
 
+  #endif // os(iOS)
+
   // MARK: - Statics
 
   @objc
@@ -339,6 +341,10 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
     return subscribers.first { String(describing: $0) == name }
   }
 
+  public static func getSubscriberOfType<Subscriber>(_ type: Subscriber.Type) -> Subscriber? {
+    return subscribers.first { $0 is Subscriber } as? Subscriber
+  }
+
   @objc
   public static func registerReactDelegateHandlersFrom(modulesProvider: ModulesProvider) {
     modulesProvider.getReactDelegateHandlers()
@@ -350,7 +356,8 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
       }
   }
 }
-#if !os(tvOS)
+
+#if os(iOS)
 private func allowedOrientations(for userInterfaceIdiom: UIUserInterfaceIdiom) -> UIInterfaceOrientationMask {
   // For now only iPad-specific orientations are supported
   let deviceString = userInterfaceIdiom == .pad ? "~pad" : ""
@@ -375,4 +382,4 @@ private func allowedOrientations(for userInterfaceIdiom: UIUserInterfaceIdiom) -
   }
   return mask
 }
-#endif
+#endif // os(iOS)

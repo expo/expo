@@ -9,6 +9,7 @@ import androidx.core.os.bundleOf
 import expo.modules.intentlauncher.exceptions.ActivityAlreadyStartedException
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
@@ -54,12 +55,21 @@ class IntentLauncherModule : Module() {
         }
       }
 
-      params.extra?.let { intent.putExtras(it.toBundle()) }
+      params.extra?.let {
+        val valuesList = it.mapValues { (_, value) ->
+          if (value is Double) value.toInt() else value
+        }
+        intent.putExtras(valuesList.toBundle())
+      }
       params.flags?.let { intent.addFlags(it) }
       params.category?.let { intent.addCategory(it) }
 
-      pendingPromise = promise
-      currentActivity.startActivityForResult(intent, REQUEST_CODE)
+      try {
+        currentActivity.startActivityForResult(intent, REQUEST_CODE)
+        pendingPromise = promise
+      } catch (e: Throwable) {
+        promise.reject(e.toCodedException())
+      }
     }
 
     OnActivityResult { _, payload ->

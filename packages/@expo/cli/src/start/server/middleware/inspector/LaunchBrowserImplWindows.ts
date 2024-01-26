@@ -4,8 +4,9 @@ import path from 'path';
 
 import {
   LaunchBrowserTypes,
-  type LaunchBrowserImpl,
+  type LaunchBrowser,
   type LaunchBrowserInstance,
+  LaunchBrowserTypesEnum,
 } from './LaunchBrowser.types';
 
 const IS_WSL = require('is-wsl') && !require('is-docker')();
@@ -15,18 +16,19 @@ const IS_WSL = require('is-wsl') && !require('is-docker')();
  *
  * To minimize the difference between Windows and WSL, the implementation wraps all spawn calls through powershell.
  */
-export default class LaunchBrowserImplWindows implements LaunchBrowserImpl, LaunchBrowserInstance {
+export default class LaunchBrowserImplWindows implements LaunchBrowser, LaunchBrowserInstance {
   private _appId: string | undefined;
   private _powershellEnv: { [key: string]: string } | undefined;
 
   MAP = {
-    [LaunchBrowserTypes.CHROME]: {
+    [LaunchBrowserTypesEnum.CHROME]: {
       appId: 'chrome',
-      fullName: 'Google Chrome',
     },
-    [LaunchBrowserTypes.EDGE]: {
+    [LaunchBrowserTypesEnum.EDGE]: {
       appId: 'msedge',
-      fullName: 'Microsoft Edge',
+    },
+    [LaunchBrowserTypesEnum.BRAVE]: {
+      appId: 'brave',
     },
   };
 
@@ -36,8 +38,12 @@ export default class LaunchBrowserImplWindows implements LaunchBrowserImpl, Laun
       const env = await this.getPowershellEnv();
       const { status } = await spawnAsync(
         'powershell.exe',
-        ['-c', `Get-Package -Name '${this.MAP[browserType].fullName}'`],
-        { env, stdio: 'ignore' }
+        ['-c', `Get-Package -Name '${browserType}'`],
+        {
+          // @ts-expect-error: Missing NODE_ENV
+          env,
+          stdio: 'ignore',
+        }
       );
       result = status === 0;
     } catch {
@@ -83,7 +89,11 @@ export default class LaunchBrowserImplWindows implements LaunchBrowserImpl, Laun
             '-c',
             `taskkill.exe /pid @(Get-WmiObject Win32_Process -Filter "name = '${this._appId}.exe' AND CommandLine LIKE '%chrome-devtools-frontend.appspot.com%'" | Select-Object -ExpandProperty ProcessId)`,
           ],
-          { env, stdio: 'ignore' }
+          {
+            // @ts-expect-error: Missing NODE_ENV
+            env,
+            stdio: 'ignore',
+          }
         );
       } catch {}
       this._appId = undefined;

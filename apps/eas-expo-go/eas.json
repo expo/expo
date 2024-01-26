@@ -9,26 +9,30 @@
     "base": {
       "credentialsSource": "local",
       "android": {
-        "image": "ubuntu-20.04-jdk-11-ndk-r21e",
+        "image": "ubuntu-22.04-jdk-17-ndk-r21e",
         "cache": {
-          "customPaths": ["../../android/prebuiltHermes"]
+          "customPaths": ["../expo-go/android/prebuiltHermes"]
         },
         "resourceClass": "large",
         "env": {
           "EAS_BUILD_PLATFORM": "android",
           "EAS_DANGEROUS_OVERRIDE_ANDROID_APPLICATION_ID": "host.exp.exponent",
-          "EXPO_ROOT_DIR": "/home/expo/workingdir/build"
+          "EXPO_ROOT_DIR": "/home/expo/workingdir/build",
+          "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
         }
       },
       "ios": {
         "cache": {
-          "key": "sdk49-0.72.3",
-          "customPaths": ["../../ios/Pods"]
+          "key": "sdk50-0.73.2",
+          "customPaths": ["../expo-go/ios/Pods"]
         },
-        "resourceClass": "m-medium",
+        "image": "macos-ventura-13.6-xcode-15.0",
+        "cocoapods": "1.14.2",
+        "resourceClass": "medium",
         "env": {
           "EAS_BUILD_PLATFORM": "ios",
-          "EXPO_ROOT_DIR": "/Users/expo/workingdir/build"
+          "EXPO_ROOT_DIR": "/Users/expo/workingdir/build",
+          "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
         }
       }
     },
@@ -38,11 +42,11 @@
         "EAS_BUILD_PROFILE": "versioned-client"
       },
       "android": {
-        "gradleCommand": ":app:assembleVersionedDebug",
+        "gradleCommand": ":app:assembleDebug",
         "withoutCredentials": true
       },
       "ios": {
-        "scheme": "Expo Go \\(versioned\\)",
+        "scheme": "Expo Go",
         "simulator": true,
         "buildConfiguration": "Release"
       }
@@ -59,11 +63,11 @@
         "EAS_BUILD_PROFILE": "unversioned-client"
       },
       "android": {
-        "gradleCommand": ":app:assembleUnversionedDebug",
+        "gradleCommand": ":app:assembleDebug",
         "withoutCredentials": true
       },
       "ios": {
-        "scheme": "Expo Go \\(unversioned\\)",
+        "scheme": "Expo Go",
         "simulator": true,
         "buildConfiguration": "Release"
       }
@@ -83,7 +87,7 @@
       },
       "ios": {
         "autoIncrement": "buildNumber",
-        "resourceClass": "m-large",
+        "resourceClass": "large",
         "cache": {
           "disabled": true
         },
@@ -101,10 +105,10 @@
           "disabled": true
         },
         "withoutCredentials": false,
-        "gradleCommand": ":app:assembleVersionedRelease"
+        "gradleCommand": ":app:assembleRelease"
       },
       "ios": {
-        "resourceClass": "m-large",
+        "resourceClass": "large",
         "autoIncrement": "buildNumber",
         "cache": {
           "disabled": true

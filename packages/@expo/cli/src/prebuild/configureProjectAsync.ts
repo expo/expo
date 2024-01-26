@@ -14,19 +14,23 @@ export async function configureProjectAsync(
   projectRoot: string,
   {
     platforms,
+    exp,
+    templateChecksum,
   }: {
     platforms: ModPlatform[];
+    exp?: ExpoConfig;
+    templateChecksum?: string;
   }
 ): Promise<ExpoConfig> {
   let bundleIdentifier: string | undefined;
   if (platforms.includes('ios')) {
     // Check bundle ID before reading the config because it may mutate the config if the user is prompted to define it.
-    bundleIdentifier = await getOrPromptForBundleIdentifier(projectRoot);
+    bundleIdentifier = await getOrPromptForBundleIdentifier(projectRoot, exp);
   }
   let packageName: string | undefined;
   if (platforms.includes('android')) {
     // Check package before reading the config because it may mutate the config if the user is prompted to define it.
-    packageName = await getOrPromptForPackage(projectRoot);
+    packageName = await getOrPromptForPackage(projectRoot, exp);
   }
 
   let { exp: config } = await getPrebuildConfigAsync(projectRoot, {
@@ -34,6 +38,12 @@ export async function configureProjectAsync(
     packageName,
     bundleIdentifier,
   });
+
+  if (templateChecksum) {
+    // Prepare template checksum for the patch mods
+    config._internal = config._internal ?? {};
+    config._internal.templateChecksum = templateChecksum;
+  }
 
   // compile all plugins and mods
   config = await compileModsAsync(config, {

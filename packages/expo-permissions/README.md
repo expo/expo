@@ -1,3 +1,0 @@
-# expo-permissions
-
-💡 This library has been replaced by module-specific permission methods. For example, you can use [`MediaLibrary.getPermissionsAsync()`](https://docs.expo.dev/versions/latest/sdk/media-library/#medialibrarygetpermissionsasyncwriteonly) and [`MediaLibrary.requestPermissionsAsync()`](https://docs.expo.dev/versions/latest/sdk/media-library/#medialibraryrequestpermissionsasyncwriteonly) to get and request permissions for [expo-media-library](https://docs.expo.dev/versions/latest/sdk/media-library/). Similar methods exist on all other Expo modules that require permissions.

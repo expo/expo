@@ -6,9 +6,10 @@ import * as SQLite from 'expo-sqlite';
 export const name = 'SQLite';
 
 // The version here needs to be the same as both the podspec and build.gradle for expo-sqlite
-const VERSION = '3.39.2';
+const VERSION = '3.42.0';
 
 // TODO: Only tests successful cases, needs to test error cases like bad database name etc.
+
 export function test(t) {
   t.describe('SQLite', () => {
     t.it('should be able to drop + create a table, insert, query', async () => {
@@ -71,25 +72,41 @@ export function test(t) {
       }
     });
 
-    t.it(`should use specified SQLite version: ${VERSION}`, () => {
+    t.it(`should use specified SQLite version: ${VERSION}`, async () => {
       const db = SQLite.openDatabase('test.db');
 
-      db.transaction((tx) => {
-        tx.executeSql('SELECT sqlite_version()', [], (_, results) => {
-          const queryVersion = results.rows._array[0]['sqlite_version()'];
-          t.expect(queryVersion).toEqual(VERSION);
-        });
+      await new Promise((resolve, reject) => {
+        db.transaction(
+          (tx) => {
+            tx.executeSql('SELECT sqlite_version()', [], (_, results) => {
+              const queryVersion = results.rows._array[0]['sqlite_version()'];
+              t.expect(queryVersion).toEqual(VERSION);
+            });
+          },
+          reject,
+          () => {
+            resolve(null);
+          }
+        );
       });
     });
 
-    t.it(`unixepoch() is supported`, () => {
+    t.it(`unixepoch() is supported`, async () => {
       const db = SQLite.openDatabase('test.db');
 
-      db.transaction((tx) => {
-        tx.executeSql('SELECT unixepoch()', [], (_, results) => {
-          const epoch = results.rows._array[0]['unixepoch()'];
-          t.expect(epoch).toBeTruthy();
-        });
+      await new Promise((resolve, reject) => {
+        db.transaction(
+          (tx) => {
+            tx.executeSql('SELECT unixepoch()', [], (_, results) => {
+              const epoch = results.rows._array[0]['unixepoch()'];
+              t.expect(epoch).toBeTruthy();
+            });
+          },
+          reject,
+          () => {
+            resolve(null);
+          }
+        );
       });
     });
 
@@ -654,22 +671,6 @@ export function test(t) {
           const result = await tx.executeSqlAsync('SELECT * FROM Users LIMIT 1');
           const currentUser = result.rows[0].name;
           t.expect(currentUser).toEqual('Tim Duncan');
-        });
-      });
-
-      t.it('should load crsqlite extension correctly', async () => {
-        const db = SQLite.openDatabase('test.db');
-        await db.transactionAsync(async (tx) => {
-          await tx.executeSqlAsync('DROP TABLE IF EXISTS foo;', []);
-          await tx.executeSqlAsync('create table foo (a primary key, b);', []);
-          await tx.executeSqlAsync('select crsql_as_crr("foo");', []);
-          await tx.executeSqlAsync('insert into foo (a,b) values (?, ?);', [1, 2]);
-          await tx.executeSqlAsync('insert into foo (a,b) values (?, ?);', [3, 4]);
-          const result = await tx.executeSqlAsync('select * from crsql_changes;', []);
-          const table = result.rows[0].table;
-          const value = result.rows[0].val;
-          t.expect(table).toEqual('foo');
-          t.expect(value).toEqual(2);
         });
       });
 

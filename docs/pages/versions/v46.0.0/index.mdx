@@ -3,12 +3,15 @@ title: Reference
 hideTOC: true
 ---
 
-import VersionedRedirectNotification from '~/components/plugins/VersionedRedirectNotification';
+import RedirectNotification from '~/components/plugins/RedirectNotification';
 import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { CODE } from '~/ui/components/Text';
 
-<VersionedRedirectNotification />
+<RedirectNotification>
+  The page you are looking for does not exist in this SDK version. It may have been deprecated or
+  added to a newer SDK version.
+</RedirectNotification>
 
 The Expo SDK provides access to device and system functionality such as contacts, camera, gyroscope, GPS location, and so on, in the form of packages. You can install any Expo SDK package using the `npx expo install` command. For example, three different packages are installed using the following command:
 
@@ -16,7 +19,7 @@ The Expo SDK provides access to device and system functionality such as contacts
 
 After installing one or more packages, you can import them into your JavaScript code:
 
-```javascript
+```js
 import { Camera } from 'expo-camera';
 import * as Contacts from 'expo-contacts';
 import { Gyroscope } from 'expo-sensors';
@@ -38,8 +41,8 @@ The easiest way to create a bare React Native app with support for the Expo SDK 
   href="/bare/installing-expo-modules"
   description={
     <>
-      Projects that were created with <CODE>npx react-native init</CODE> require
-      additional setup to use the Expo SDK.
+      Projects that were created with <CODE>npx react-native init</CODE> require additional setup to
+      use the Expo SDK.
     </>
   }
 />

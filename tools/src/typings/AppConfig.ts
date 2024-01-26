@@ -32,8 +32,12 @@ export default interface AppConfig extends JSONObject {
 
     extra?: {
       eas?: {
-        projectId: string;
+        projectId?: string;
       };
+    };
+
+    updates?: {
+      url?: string;
     };
   };
 }

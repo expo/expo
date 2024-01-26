@@ -25,7 +25,7 @@ class DeviceModule : Module() {
     PHONE(1),
     TABLET(2),
     DESKTOP(3),
-    TV(4);
+    TV(4)
   }
 
   private val context: Context
@@ -58,10 +58,11 @@ class DeviceModule : Module() {
         "osInternalBuildId" to Build.ID,
         "osBuildFingerprint" to Build.FINGERPRINT,
         "platformApiLevel" to Build.VERSION.SDK_INT,
-        "deviceName" to if (Build.VERSION.SDK_INT <= 31)
+        "deviceName" to if (Build.VERSION.SDK_INT <= 31) {
           Settings.Secure.getString(context.contentResolver, "bluetooth_name")
-        else
+        } else {
           Settings.Global.getString(context.contentResolver, Settings.Global.DEVICE_NAME)
+        }
       )
     }
 
@@ -123,11 +124,7 @@ class DeviceModule : Module() {
 
   private val systemName: String
     get() {
-      return if (Build.VERSION.SDK_INT < 23) {
-        "Android"
-      } else {
-        Build.VERSION.BASE_OS.takeIf { it.isNotEmpty() } ?: "Android"
-      }
+      return Build.VERSION.BASE_OS.takeIf { it.isNotEmpty() } ?: "Android"
     }
 
   companion object {

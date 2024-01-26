@@ -1,6 +1,5 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-// swiftlint:disable identifier_name
 // swiftlint:disable legacy_objc_type
 
 // this class uses an abstract class pattern
@@ -30,8 +29,8 @@ public final class EmbeddedAppLoader: AppLoader {
 
   private static let ErrorDomain = "EXUpdatesEmbeddedAppLoader"
 
-  private static var embeddedManifestInternal: Update?
-  public static func embeddedManifest(withConfig config: UpdatesConfig, database: UpdatesDatabase?) -> Update? {
+  private static var embeddedManifestInternal: EmbeddedUpdate?
+  public static func embeddedManifest(withConfig config: UpdatesConfig, database: UpdatesDatabase?) -> EmbeddedUpdate? {
     guard config.hasEmbeddedUpdate else {
       return nil
     }
@@ -96,7 +95,7 @@ public final class EmbeddedAppLoader: AppLoader {
     var mutableManifest = manifestDictionary
     // automatically verify embedded manifest since it was already codesigned
     mutableManifest["isVerified"] = true
-    embeddedManifestInternal = Update.update(withEmbeddedManifest: mutableManifest, config: config, database: database)
+    embeddedManifestInternal = Update.update(withRawEmbeddedManifest: mutableManifest, config: config, database: database)
     return embeddedManifestInternal
   }
 
@@ -129,35 +128,8 @@ public final class EmbeddedAppLoader: AppLoader {
   }
 
   override public func downloadAsset(_ asset: UpdateAsset) {
-    let destinationUrl = directory.appendingPathComponent(asset.filename)
     FileDownloader.assetFilesQueue.async {
-      if FileManager.default.fileExists(atPath: destinationUrl.path) {
-        DispatchQueue.global().async {
-          self.handleAssetDownloadAlreadyExists(asset)
-        }
-      } else {
-        let mainBundleFilename = asset.mainBundleFilename.require("embedded asset mainBundleFilename must be nonnull")
-        let bundlePath = UpdatesUtils.path(forBundledAsset: asset).require(
-          String(
-            format: "Could not find the expected embedded asset in NSBundle %@.%@. " +
-              "Check that expo-updates is installed correctly, and verify that assets are present in the ipa file.",
-            mainBundleFilename,
-            asset.type ?? ""
-          )
-        )
-
-        do {
-          try FileManager.default.copyItem(atPath: bundlePath, toPath: destinationUrl.path)
-          let data = try NSData(contentsOfFile: bundlePath) as Data
-          DispatchQueue.global().async {
-            self.handleAssetDownload(withData: data, response: nil, asset: asset)
-          }
-        } catch {
-          DispatchQueue.global().async {
-            self.handleAssetDownload(withError: error, asset: asset)
-          }
-        }
-      }
+      self.handleAssetDownloadAlreadyExists(asset)
     }
   }
 
@@ -171,3 +143,6 @@ public final class EmbeddedAppLoader: AppLoader {
     preconditionFailure("Should not call EmbeddedAppLoader#loadUpdateFromUrl")
   }
 }
+
+// swiftlint:enable legacy_objc_type
+// swiftlint:enable unavailable_function

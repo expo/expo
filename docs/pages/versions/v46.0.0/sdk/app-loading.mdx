@@ -8,9 +8,9 @@ import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-> **Deprecated.** Use **expo-splash-screen** directly instead: `SplashScreen.preventAutoHideAsync()` and `SplashScreen.hideAsync()`. [Learn more](/versions/latest/sdk/splash-screen/).
+> **warning** **Deprecated** Use [**expo-splash-screen**](/versions/latest/sdk/splash-screen/#usage) instead (`SplashScreen.preventAutoHideAsync()` and `SplashScreen.hideAsync()`).
 
-**`expo-app-loading`** tells `expo-splash-screen` to keep the splash screen visible while the AppLoading component is mounted.
+**`expo-app-loading`** tells `expo-splash-screen` to keep the splash screen visible while the `AppLoading` component is mounted.
 
 This is useful to download and cache fonts, logos, icon images and other assets that you want to be sure the user has on their device for an optimal experience.
 
@@ -23,7 +23,7 @@ This is useful to download and cache fonts, logos, icon images and other assets 
 ## Usage
 
 {/* prettier-ignore */}
-```javascript
+```js
 import React from 'react';
 import { Image, Text, View } from 'react-native';
 import { Asset } from 'expo-asset';

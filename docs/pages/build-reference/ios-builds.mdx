@@ -5,11 +5,11 @@ description: Learn how an iOS project is built on EAS Build.
 
 This page describes the process of building iOS projects with EAS Build. You may want to read this if you are interested in the implementation details of the build service.
 
-## Build Process
+## Build process
 
 Let's take a closer look at the steps for building iOS projects with EAS Build. We'll first run some steps on your local machine to prepare the project and then we'll build the project on a remote service.
 
-### Local Steps
+### Local steps
 
 The first phase happens on your computer. EAS CLI is in charge of completing the following steps:
 
@@ -22,7 +22,7 @@ The first phase happens on your computer. EAS CLI is in charge of completing the
 1. Create the tarball containing a copy of the repository. Actual behavior depends on the [VCS workflow](https://expo.fyi/eas-vcs-workflow) you are using.
 1. Upload the project tarball to a private AWS S3 bucket and send the build request to EAS Build.
 
-### Remote Steps
+### Remote steps
 
 In this next phase, this is what happens when EAS Build picks up your request:
 
@@ -31,7 +31,7 @@ In this next phase, this is what happens when EAS Build picks up your request:
    - Every build gets its own fresh macOS VM with all build tools installed there (Xcode, Fastlane, and so on).
 
 1. Download the project tarball from a private AWS S3 bucket and unpack it.
-1. [Create **.npmrc**](build-reference/private-npm-packages) if `NPM_TOKEN` is set.
+1. [Create **.npmrc**](/build-reference/private-npm-packages) if `NPM_TOKEN` is set.
 1. Run the `eas-build-pre-install` script from **package.json** if defined.
 1. Run `npm install` in the project root (or `yarn install` if **yarn.lock** exists).
 1. Run `npx expo-doctor` to diagnose potential issues with your project configuration.
@@ -60,7 +60,7 @@ In this next phase, this is what happens when EAS Build picks up your request:
 1. Run the `eas-build-on-complete` script from **package.json** if defined. The `EAS_BUILD_STATUS` env variable is set to either `finished` or `errored`.
 1. Upload the build artifacts archive to a private AWS S3 bucket if `buildArtifactPaths` is specified in the build profile.
 
-## Building iOS Projects With Fastlane
+## Building iOS projects with Fastlane
 
 We're using [Fastlane](https://fastlane.tools/) for building iOS projects. To be more precise, we're using the `fastlane gym` command ([see the Fastlane docs to learn more](https://docs.fastlane.tools/actions/gym/)). This command allows you to declare the build configuration in **Gymfile**.
 

@@ -10,7 +10,7 @@
 // swiftlint:disable file_length
 
 import Foundation
-import SQLite3
+import sqlite3
 import EXManifests
 
 internal enum UpdatesDatabaseError: Error {
@@ -398,15 +398,6 @@ public final class UpdatesDatabase: NSObject {
     let rows = try execute(sql: sql, withArgs: [status.rawValue])
     return rows.map { row in
       update(withRow: row, config: config)
-    }
-  }
-
-  public func allUpdateIds(withStatus status: UpdateStatus) throws -> [UUID] {
-    let sql = "SELECT id FROM updates WHERE status = ?1;"
-    let rows = try execute(sql: sql, withArgs: [status.rawValue])
-    return rows.map { row in
-      // swiftlint:disable:next force_cast
-      row["id"] as! UUID
     }
   }
 

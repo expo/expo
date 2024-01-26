@@ -1,4 +1,4 @@
-import { EventEmitter, Subscription, UnavailabilityError, uuidv4 } from 'expo-modules-core';
+import { EventEmitter, Subscription, UnavailabilityError, uuid } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import ExponentFileSystem from './ExponentFileSystem';
@@ -54,8 +54,10 @@ export const documentDirectory = normalizeEndingSlash(ExponentFileSystem.documen
  */
 export const cacheDirectory = normalizeEndingSlash(ExponentFileSystem.cacheDirectory);
 
-// @docsMissing
-export const { bundledAssets, bundleDirectory } = ExponentFileSystem;
+/**
+ * URI to the directory where assets bundled with the application are stored.
+ */
+export const bundleDirectory = normalizeEndingSlash(ExponentFileSystem.bundleDirectory);
 
 /**
  * Get metadata information about a file, directory or external content/asset.
@@ -206,7 +208,7 @@ export async function readDirectoryAsync(fileUri: string): Promise<string[]> {
 /**
  * Gets the available internal disk storage size, in bytes. This returns the free space on the data partition that hosts all of the internal storage for all apps on the device.
  * @return Returns a Promise that resolves to the number of bytes available on the internal disk, or JavaScript's [`MAX_SAFE_INTEGER`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER)
- * if the capacity is greater than 2<sup>53</sup> - 1 bytes.
+ * if the capacity is greater than 2^53^ - 1 bytes.
  */
 export async function getFreeDiskStorageAsync(): Promise<number> {
   if (!ExponentFileSystem.getFreeDiskStorageAsync) {
@@ -218,7 +220,7 @@ export async function getFreeDiskStorageAsync(): Promise<number> {
 /**
  * Gets total internal disk storage size, in bytes. This is the total capacity of the data partition that hosts all the internal storage for all apps on the device.
  * @return Returns a Promise that resolves to a number that specifies the total internal disk storage capacity in bytes, or JavaScript's [`MAX_SAFE_INTEGER`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER)
- * if the capacity is greater than 2<sup>53</sup> - 1 bytes.
+ * if the capacity is greater than 2^53^ - 1 bytes.
  */
 export async function getTotalDiskCapacityAsync(): Promise<number> {
   if (!ExponentFileSystem.getTotalDiskCapacityAsync) {
@@ -346,7 +348,7 @@ export function createUploadTask(
 export abstract class FileSystemCancellableNetworkTask<
   T extends DownloadProgressData | UploadProgressData,
 > {
-  private _uuid = uuidv4();
+  private _uuid = uuid.v4();
   protected taskWasCanceled = false;
   private emitter = new EventEmitter(ExponentFileSystem);
   private subscription?: Subscription | null;

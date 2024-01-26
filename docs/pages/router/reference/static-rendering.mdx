@@ -54,30 +54,43 @@ You can also [learn more](/guides/customizing-metro/) about customizing Metro.
 </Step>
 
 <Step label="3">
-  Expo Router requires at least `react-refresh@0.14.0`. React Native hasn't upgraded yet, so you need to force upgrade your `react-refresh` version by setting a Yarn resolution or npm override.
+  Ensure Fast Refresh is configured.
 
   <Tabs>
-    <Tab label="Yarn">
-        ```json package.json
-        {
-          /* @hide ... */
-          /* @end */
-          "resolutions": {
-            "react-refresh": "~0.14.0"
-          }
-        }
-        ```
+    <Tab label="Expo Router v3">
+
+        Expo Router requires at least `react-refresh@0.14.0` this is available in SDK 50. Ensure you **do not** have any overrides or resolutions for `react-refresh` in your **package.json**.
+
     </Tab>
-    <Tab label="npm">
-        ```json package.json
-        {
-          /* @hide ... */
-          /* @end */
-          "overrides": {
-            "react-refresh": "~0.14.0"
+    <Tab label="Expo Router v2">
+
+    Expo Router requires at least `react-refresh@0.14.0`. React Native hasn't upgraded as of SDK 49 / Expo Router v2, so you need to force upgrade your `react-refresh` version by setting a Yarn resolution or npm override.
+
+    <Tabs>
+      <Tab label="Yarn">
+          ```json package.json
+          {
+            /* @hide ... */
+            /* @end */
+            "resolutions": {
+              "react-refresh": "~0.14.0"
+            }
           }
-        }
-        ```
+          ```
+      </Tab>
+      <Tab label="npm">
+          ```json package.json
+          {
+            /* @hide ... */
+            /* @end */
+            "overrides": {
+              "react-refresh": "~0.14.0"
+            }
+          }
+          ```
+      </Tab>
+    </Tabs>
+
     </Tab>
   </Tabs>
 </Step>
@@ -193,16 +206,8 @@ export default function Root({ children }: PropsWithChildren) {
       <head>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
-        {/*
-          This viewport disables scaling which makes the mobile website act more like a native app.
-          However this does reduce built-in accessibility. If you want to enable scaling, use this instead:
-            <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-        */}
-        <meta
-          name="viewport"
-          content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1.00001,viewport-fit=cover"
-        />
         {/*
           Disable body scrolling on web. This makes ScrollView components work closer to how they do on native.
           However, body scrolling is often nice to have for mobile web. If you want to enable it, remove this line.
@@ -229,7 +234,7 @@ The exports from `expo-router/html` are related to the Root HTML component.
 
 - `ScrollViewStyleReset`: Root style-reset for full-screen [React Native web apps](https://necolas.github.io/react-native-web/docs/setup/#root-element) with a root `<ScrollView />` should use the following styles to ensure native parity.
 
-## Meta Tags
+## Meta tags
 
 You can add meta tags to your pages with the `<Head />` module from `expo-router`:
 
@@ -354,4 +359,4 @@ You can deploy your statically rendered website to any static hosting service. H
 - [Render](https://render.com/)
 - [Surge](https://surge.sh/)
 
-> Note: You don't need to add Single-Page Application styled redirects to your static hosting service. The static website is not a single-page application. It is a collection of static HTML files.
+> **Note:** You don't need to add Single-Page Application styled redirects to your static hosting service. The static website is not a single-page application. It is a collection of static HTML files.

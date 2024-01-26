@@ -9,13 +9,17 @@ Expo Router relies on your file system, which can present challenges when settin
 
 ## Configuration
 
-Before you proceed, ensure you've set up `jest-expo` according to the [Unit Testing](/develop/testing) and [`@testing-library/react-native`](https://callstack.github.io/react-native-testing-library/docs/getting-started).
+Before you proceed, ensure you have set up `jest-expo` according to the [Unit Testing](/develop/unit-testing/) and [`@testing-library/react-native`](https://callstack.github.io/react-native-testing-library/docs/getting-started).
 
-## renderRouter()
+### Jest Native Matchers (optional)
 
-`renderRouter` extends the functionality of [`render`](https://callstack.github.io/react-native-testing-library/docs/api#render) to simplify testing with Expo Router. It returns the the same query object as [`render`](https://callstack.github.io/react-native-testing-library/docs/api#render), and is compatible with [`screen`](https://callstack.github.io/react-native-testing-library/docs/api#screen), allowing you to use the standard [query API](https://callstack.github.io/react-native-testing-library/docs/api-queries) to locate components.
+[`@testing-library/jest-native`](https://testing-library.com/docs/ecosystem-jest-native/) provides custom Jest matchers that can be used to extend the functionality of `@testing-library/react-native`. If installed, Expo Router will automatically perform the `@testing-library/jest-native` setup.
 
-`renderRouter` accepts the same [options](https://callstack.github.io/react-native-testing-library/docs/api#render-options) as `render` and introduces an additional option `initialRoute`, which sets an initial route for simulating deep-linking.
+## `renderRouter`
+
+`renderRouter` extends the functionality of [`render`](https://callstack.github.io/react-native-testing-library/docs/api#render) to simplify testing with Expo Router. It returns the same query object as [`render`](https://callstack.github.io/react-native-testing-library/docs/api#render), and is compatible with [`screen`](https://callstack.github.io/react-native-testing-library/docs/api#screen), allowing you to use the standard [query API](https://callstack.github.io/react-native-testing-library/docs/api-queries) to locate components.
+
+`renderRouter` accepts the same [options](https://callstack.github.io/react-native-testing-library/docs/api#render-options) as `render` and introduces an additional option `initialUrl`, which sets an initial route for simulating deep-linking.
 
 <APIBox header="Inline file system">
 
@@ -36,7 +40,7 @@ it('my-test', async () => {
       '(group)/b': MockComponent,
     },
     {
-      initialRoute: '/folder/a',
+      initialUrl: '/folder/a',
     }
   );
 
@@ -61,7 +65,7 @@ it('my-test', async () => {
 
 </APIBox>
 
-<APIBox header="Path to fixture with overrides">
+<APIBox header="Path to the fixture with overrides">
 
 `renderRouter({ appDir: string, overrides: Record<string, ReactComponent>}, options: RenderOptions)`
 
@@ -94,6 +98,17 @@ expect(screen).toHavePathname('/my-router');
 ```
 
 </APIBox>
+
+<APIBox header="toHavePathnameWithParams()">
+
+Assert the current pathname, including URL parameters, against a given string. This is useful to assert the appearance of URL in a web browser.
+
+```tsx app.test.ts
+expect(screen).toHavePathnameWithParams('/my-router?hello=world');
+```
+
+</APIBox>
+
 <APIBox header="toHaveSegments()">
 
 Assert the current segments against an array of strings. The matcher uses the value of the [`useSegments`](/router/reference/hooks/#usesegments) hook on the current `screen`.
@@ -120,6 +135,18 @@ Assert the current global search parameters against an object. The matcher uses 
 
 ```tsx app.test.ts
 expect(screen).useGlobalSearchParams({ first: 'abc' });
+```
+
+</APIBox>
+
+<APIBox header="toHaveRouterState()">
+
+An advanced matcher that asserts the current router state against an object.
+
+```tsx app.test.ts
+expect(screen).toHaveRouterState({
+  routes: [{ name: 'index', path: '/' }],
+});
 ```
 
 </APIBox>

@@ -39,8 +39,8 @@ export async function showLoginPromptAsync({
 
   Log.log(
     hasCredentials
-      ? `Logging in to EAS with email or username (exit and run 'eas login' for other options)`
-      : `Log in to EAS with email or username (exit and run 'eas login' for other options)`
+      ? `Logging in to EAS with email or username (exit and run 'npx expo login' for other options)`
+      : `Log in to EAS with email or username (exit and run 'npx expo login' for other options)`
   );
 
   let username = options.username;

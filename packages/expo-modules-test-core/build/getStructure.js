@@ -139,8 +139,7 @@ function parseClosureTypes(structureObject) {
     const parameters = closure['key.substructure']
         ?.filter((s) => s['key.kind'] === 'source.lang.swift.decl.var.parameter')
         .map((p) => ({ name: p['key.name'], typename: p['key.typename'] }));
-    // TODO: Figure out if possible
-    const returnType = 'unknown';
+    const returnType = closure?.['key.typename'] ?? 'unknown';
     return { parameters, returnType };
 }
 // Used for functions,async functions, all of shape Identifier(name, closure or function)
@@ -182,24 +181,32 @@ function findAndParseView(moduleDefinition, file) {
     const { view: _, ...definition } = parseModuleDefinition(viewModuleDefinition, file);
     return definition;
 }
-function omitViewFromClosureArguments(definitions) {
+function omitParamsFromClosureArguments(definitions, paramsToOmit) {
     return definitions.map((d) => ({
         ...d,
         types: {
             ...d.types,
-            parameters: d.types?.parameters?.filter((t, idx) => idx !== 0 && t.name !== 'view'),
+            parameters: d.types?.parameters?.filter((t, idx) => idx !== 0 && !paramsToOmit.includes(t.name)) ?? [],
         },
     }));
 }
+// Some blocks have additional modifiers like runOnQueue – we may need to do additional traversing to get to the function definition
+function parseBlockModifiers(structureObject) {
+    if (structureObject['key.name']?.includes('runOnQueue')) {
+        return structureObject['key.substructure'][0];
+    }
+    return structureObject;
+}
 function parseModuleDefinition(moduleDefinition, file) {
+    const preparedModuleDefinition = moduleDefinition.map(parseBlockModifiers);
     const parsedDefinition = {
-        name: findNamedDefinitionsOfType('Name', moduleDefinition, file)?.[0]?.name,
-        functions: findNamedDefinitionsOfType('Function', moduleDefinition, file),
-        asyncFunctions: findNamedDefinitionsOfType('AsyncFunction', moduleDefinition, file),
-        events: findGroupedDefinitionsOfType('Events', moduleDefinition, file),
-        properties: findNamedDefinitionsOfType('Property', moduleDefinition, file),
-        props: omitViewFromClosureArguments(findNamedDefinitionsOfType('Prop', moduleDefinition, file)),
-        view: findAndParseView(moduleDefinition, file),
+        name: findNamedDefinitionsOfType('Name', preparedModuleDefinition, file)?.[0]?.name,
+        functions: findNamedDefinitionsOfType('Function', preparedModuleDefinition, file),
+        asyncFunctions: omitParamsFromClosureArguments(findNamedDefinitionsOfType('AsyncFunction', preparedModuleDefinition, file), ['promise']),
+        events: findGroupedDefinitionsOfType('Events', preparedModuleDefinition, file),
+        properties: findNamedDefinitionsOfType('Property', preparedModuleDefinition, file),
+        props: omitParamsFromClosureArguments(findNamedDefinitionsOfType('Prop', preparedModuleDefinition, file), ['view']),
+        view: findAndParseView(preparedModuleDefinition, file),
     };
     return parsedDefinition;
 }

@@ -7,7 +7,8 @@ description: Learn how to setup push notifications, get credentials for developm
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import { BoxLink } from '~/ui/components/BoxLink';
+
+> Expo Notifications only supports the **Cloud Messaging API (Legacy)** key at this time. This key is deprecated by Firebase. However, it will continue to work until June 20, 2024. We will provide information on migrating to the new v1 key in the future.
 
 To utilize Expo's push notification service, you must configure your app by installing a set of libraries, implementing functions to handle notifications, and setting up credentials for Android and iOS. Once you have completed the steps mentioned in this guide, you'll be able to test sending and receiving notifications on a device.
 
@@ -28,7 +29,7 @@ Run the following command to install the `expo-notifications`, `expo-device` and
 
 <Terminal cmd={['$ npx expo install expo-notifications expo-device expo-constants']} />
 
-- [`expo-notifications`](/versions/latest/sdk/notifications) library is used to request a user's permission and to fetch the `ExpoPushToken`. It is not supported on an Android Emulator or an iOS simulator.
+- [`expo-notifications`](/versions/latest/sdk/notifications) library is used to request a user's permission and to fetch the `ExpoPushToken`. It is not supported on an Android Emulator or an iOS Simulator.
 - [`expo-device`](/versions/latest/sdk/device) is used to check whether the app is running on a physical device.
 - [`expo-constants`](/versions/latest/sdk/constants) is used to get the `projectId` value from the app config.
 
@@ -45,7 +46,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Text, View, Button, Platform } from 'react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
-import Constants from "expo-constants";
+import Constants from 'expo-constants';
 
 /* @info This handler determines how your app handles notifications that come in while the app is foregrounded. */
 Notifications.setNotificationHandler({
@@ -80,6 +81,18 @@ async function sendPushNotification(expoPushToken) {
 
 async function registerForPushNotificationsAsync() {
   let token;
+
+  /* @info On Android, you need to specify a channel. */
+  if (Platform.OS === 'android') {
+    Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    });
+  }
+  /* @end */
+
   /* @info You should make sure the app is running on a physical device since push notifications don't work on an emulator/simulator. */
   if (Device.isDevice) {
     /* @end */
@@ -103,18 +116,7 @@ async function registerForPushNotificationsAsync() {
     alert('Must use physical device for Push Notifications');
   }
 
-  /* @info On Android, you need to specify a channel. */
-  if (Platform.OS === 'android') {
-    Notifications.setNotificationChannelAsync('default', {
-      name: 'default',
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#FF231F7C',
-    });
-  }
-  /* @end */
-
-  return token;
+  return token.data;
 }
 
 export default function App() {
@@ -215,16 +217,16 @@ For Android, you need to configure **Firebase Cloud Messaging (FCM)** to get you
 
    ```json google-services.json
    {
-      "client": [
-        {
-          "api_key": [
-            {
-              "current_key" "<your Google Cloud Platform API key>",
-            }
-          ]
-        }
-      ]
-    }
+     "client": [
+       {
+         "api_key": [
+           {
+             "current_key": "<your Google Cloud Platform API key>"
+           }
+         ]
+       }
+     ]
+   }
    ```
 
 6. Firebase also creates an API key in the Google Cloud Platform Credentials console with a name like **Android key (auto-created by Firebase)**. This could be a different key than the one found in **google-services.json**.
@@ -256,8 +258,6 @@ For Expo to send push notifications from our servers and use your credentials, y
 4. In your [Expo account's](https://expo.dev/) dashboard, select your project, and click on **Credentials** in the navigation menu. Then, click on your **Application Identifier** that follows the pattern: `com.company.app`.
 
 5. Under **Service Credentials** > **FCM Server Key**, click **Add a FCM Server Key** > **Google Cloud Messaging Token** and add the **Server key** from **step 3**.
-
-> Expo Notifications only supports the **Cloud Messaging API (Legacy)** key at this time. This key is deprecated by Firebase. However, it will continue to work until June 30, 2024. We will provide information on migrating to the new v1 key in the future.
 
 ### iOS
 
@@ -307,11 +307,3 @@ After sending the notification from the tool, you should see the notification on
 />
 
 </Step>
-
-## Next step
-
-<BoxLink
-  title="Send notifications using Expo's Push API"
-  description="Learn how to set your back-end using Expo's Push API, implementation practices, common errors and security best practices."
-  href="/push-notifications/sending-notifications"
-/>

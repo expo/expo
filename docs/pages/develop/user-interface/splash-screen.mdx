@@ -7,8 +7,6 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import Video from '~/components/plugins/Video';
 import { Terminal } from '~/ui/components/Snippet';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 A splash screen, also known as a launch screen, is the first screen a user sees when they open your app. It stays visible while the app is loading. You can also control the behavior of when a splash screen disappears by using the native [SplashScreen API](/versions/latest/sdk/splash-screen).
 
@@ -30,7 +28,7 @@ Android screen sizes vary greatly with the massive variety of devices on the mar
 
 ### iOS
 
-The [iOS Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/foundations/layout#specifications) list the device's screen sizes. In the video example, we use `1242` pixels wide (the width of the widest iPhone at the moment of writing) and `2436` pixels tall (the height of the tallest iPhone at the moment of writing). Expo will resize the image for you depending on the size of the device's size, and you can specify the strategy used to resize the image with [`splash.resizeMode`](/versions/latest/config/app/#resizemode).
+Expo will resize the image for your app depending on the size of the device's screen. You can specify the strategy used to resize the image with [`splash.resizeMode`](/versions/latest/config/app/#resizemode). You can see the [Device screens and sizes specifications](https://developer.apple.com/design/human-interface-guidelines/layout#Specifications) from the iOS Human Interface Guidelines for an up-to-date list of screen sizes.
 
 ## Export the splash image as a .png
 
@@ -50,7 +48,9 @@ Open the **app.json** and add the path as the value of `splash.image` to point t
 }
 ```
 
-Reopen the Expo Go and launch your project. You should see your new splash screen. However, there may be a delay before it appears in Expo Go. This doesn't happen in development builds or standalone apps. For more information, see [Differences between environments](#differences-between-environments-on-ios).
+Previewing the splash image is limited to Expo Go local development, standalone builds, and development builds. Published updates loaded in Expo Go will not show the splash image. For more information, see [Differences between environments](#differences-between-environments).
+
+To preview the splash image in Expo Go, reopen Expo Go and launch your project from the Expo CLI. You should see your new splash screen. However, there may be a delay before it appears.
 
 > On Android, you must press the notification drawer's refresh button. On iOS, it's required to close and re-open the Expo Go to see changes to the splash screen from the **app.json**.
 
@@ -133,19 +133,19 @@ Depending on the `resizeMode` you will get the following behavior on Android:
 - **cover** - This mode has the limitations as **contain** for the same reasons.
 - **native** - In this mode, your app will be leveraging Android's ability to present a static bitmap while the application is starting up. Android (unlike iOS) does not support stretching the provided image, so the application will present the given image centered on the screen. By default `splash.image` would be used as the `xxxdpi` resource. It's up to you to provide graphics that meet your expectations and fit the screen dimension. To achieve this, use different resolutions for [different device DPIs](/versions/latest/config/app/#mdpi) such as from `mdpi` to `xxxhdpi`.
 
-### Differences between environments on iOS
+### Differences between environments
 
 Your app can be opened from the Expo Go or in a standalone app, and it can be either published or in development. There are slight differences in the splash screen behavior between these environments.
 
 <ImageSpotlight
-  alt="iOS splash screen behavior"
+  alt="splash screen behavior"
   src="https://media.giphy.com/media/l378l98EI0VQdwRzy/giphy.gif"
 />
 
 {/* TODO: (@aman) Remove the second item in the list below. The published app in Expo Go is deprecated. Instead, replace it with development builds using expo-dev-client. */}
 
-- **On the left**, the Expo Go loads the project currently in development. Notice that on the bottom of the splash screen, you see an information bar that shows information relevant to preparing the JavaScript and downloading it to the device. We see an orange screen before the splash image appears because the background color is set immediately. However, the image needs to be downloaded.
-- **In the middle**, Expo Go loads a published app. Notice that again the splash image does not appear immediately.
+- **On the left**, Expo Go loads the project currently in development. Notice that on the bottom of the splash screen there is an information bar that shows information relevant to preparing the JavaScript and downloading it to the device. We see an orange screen before the splash image appears because the background color is set immediately. However, the image needs to be downloaded.
+- **In the middle**, Expo Go loads a published app. Notice that the splash image does not appear immediately or may not appear at all.
 - **On the right** is a standalone app. Notice that the splash image appears immediately.
 
 ### iOS caching
@@ -155,12 +155,3 @@ In custom iOS builds, launch screens can sometimes remain cached between builds,
 <Terminal cmd={['$ npx expo run:ios --no-build-cache']} />
 
 See [Apple's guide on testing launch screens](https://developer.apple.com/documentation/technotes/tn3118-debugging-your-apps-launch-screen) for more information.
-
-## Next step
-
-<BoxLink
-  title="App icons"
-  description="An app's icon is what your app users see on their device's home screen and app stores. Learn about how to customize your app's icon and what are the different requirements for Android and iOS."
-  href="/develop/user-interface/app-icons"
-  Icon={BookOpen02Icon}
-/>

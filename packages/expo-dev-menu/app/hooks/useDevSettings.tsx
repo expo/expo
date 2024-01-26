@@ -17,7 +17,7 @@ const defaultDevSettings: DevMenu.DevSettings = {
   isJSInspectorAvailable: false,
 };
 
-const DevSettingsContext = React.createContext<DevMenu.DevSettings>(defaultDevSettings);
+const DevSettingsContext = React.createContext<DevMenu.DevSettings | undefined>(defaultDevSettings);
 
 export type DevSettingsProviderProps = {
   children: React.ReactNode;

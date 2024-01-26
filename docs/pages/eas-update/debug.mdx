@@ -6,6 +6,7 @@ description: Learn how to debug EAS Update.
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
+import Video from '~/components/plugins/Video';
 
 This guide shows how to verify our configuration so that we can find the source of problems like an app not showing a published update. It's important to tell the current state of our app at any given time, so EAS Update was built with this in mind. Once we know which updates are running on which builds, we can make changes so that our apps are in the state we expect.
 
@@ -79,7 +80,7 @@ The displayed deployment has the correct channel, but it is not linked to a bran
 
 ### Missing deployment
 
-If our deployment is not displayed, it means our build is not configured properly for EAS Update. To fix this, [configure our channel](/#configure-channel), [configure our runtime version](/#configure-runtime-version) and verify our [general configuration](/debug-advanced/#verifying-app-configuration). We'll need to rebuild our app after making these changes.
+If our deployment is not displayed, it means our build is not configured properly for EAS Update. To fix this, [configure our channel](/#configure-channel), [configure our runtime version](/#configure-runtime-version) and verify our [general configuration](/eas-update/debug-advanced/#verifying-app-configuration). We'll need to rebuild our app after making these changes.
 
 ## Solutions
 
@@ -143,6 +144,6 @@ To create and publish an update, we can run the following command:
 
 After publishing, the output will display the branch and the runtime version. This information can help us verify that we're creating an update with the configuration we expect.
 
-## Next steps
+## Video walkthrough
 
-Read the [advanced guide](/eas-update/debug-advanced) to debug EAS Update when the basic steps don't resolve your issue.
+<Video url="https://www.youtube.com/embed/m9PLTr3t3S4" />

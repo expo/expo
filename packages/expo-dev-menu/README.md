@@ -10,7 +10,9 @@ You can find more information in the [Expo documentation](https://docs.expo.dev/
 
 The `expo-dev-menu` repository consists of two different parts, the exported package, which includes the native functions, located in the `android`, `ios` and `src` folders and the Dev Menu interface, located under the `app` folder.
 
-Local development is usually done through `bare-expo`.
+Local development is usually done through [`bare-expo`](/apps/bare-expo).
+
+First, make sure to `yarn` and `yarn start` in `expo-dev-menu` which will add the port for the dev menu packager to [`dev-menu-packager-host`](./assets/dev-menu-packager-host`). This is bundled into the native code in `bare-expo` so need to be done first.
 
 To use `dev-client` when running `bare-expo` on Android, open [MainApplication.java](/apps/bare-expo/android/app/src/main/java/dev/expo/payments/MainApplication.java) and set the `USE_DEV_CLIENT` value to `true`.
 
@@ -25,6 +27,8 @@ To use `dev-client` when running `bare-expo` on iOS, open [AppDelegate.mm](/apps
 - BOOL useDevClient = NO;
 + BOOL useDevClient = YES;
 ```
+
+Then build the native apps with `npx pod-install && yarn ios` or `yarn android`.
 
 ### Making JavaScript changes inside the `app` folder
 

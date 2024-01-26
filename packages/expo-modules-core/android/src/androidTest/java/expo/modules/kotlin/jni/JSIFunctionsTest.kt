@@ -11,6 +11,7 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.typedarray.Float32Array
 import expo.modules.kotlin.typedarray.Int32Array
 import expo.modules.kotlin.typedarray.Int8Array
+import expo.modules.kotlin.typedarray.TypedArray
 import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.Enumerable
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,15 +19,18 @@ import org.junit.Test
 
 class JSIFunctionsTest {
   enum class SimpleEnumClass : Enumerable {
-    V1, V2
+    V1,
+    V2
   }
 
   enum class StringEnumClass(val value: String) : Enumerable {
-    K1("V1"), K2("V2")
+    K1("V1"),
+    K2("V2")
   }
 
   enum class IntEnumClass(val value: Int) : Enumerable {
-    K1(1), K2(2)
+    K1(1),
+    K2(2)
   }
 
   @Test
@@ -342,6 +346,25 @@ class JSIFunctionsTest {
   }
 
   @Test
+  fun typed_arrays_should_be_returnable() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Function("genericTypedArray") { typedArray: TypedArray ->
+        typedArray
+      }
+      Function("intTypedArray") { typedArray: Int32Array ->
+        typedArray
+      }
+    }
+  ) {
+    val isArray = evaluateScript("expo.modules.TestModule.genericTypedArray(new Int32Array([1,2,3]))").isTypedArray()
+    val isArray2 = evaluateScript("expo.modules.TestModule.intTypedArray(new Int32Array([1,2,3]))").isTypedArray()
+
+    Truth.assertThat(isArray).isTrue()
+    Truth.assertThat(isArray2).isTrue()
+  }
+
+  @Test
   fun typed_arrays_should_not_copy_content() = withJSIInterop(
     inlineModule {
       Name("TestModule")
@@ -519,7 +542,6 @@ class JSIFunctionsTest {
 
   @Test
   fun complex_types_should_be_convertible() {
-    @Suppress("EqualsOrHashCode")
     data class InlineRecord(@Field var name: String = "") : Record
 
     withJSIInterop(

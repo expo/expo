@@ -121,7 +121,11 @@ EX_EXPORT_METHOD_AS(saveCalendarAsync,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  if (![self _checkCalendarPermissions:reject]) {
+  NSString *type = details[@"entityType"];
+  if ([type isEqualToString:@"event"] && ![self _checkCalendarPermissions:reject]) {
+    return;
+  }
+  if ([type isEqualToString:@"reminder"] && ![self _checkRemindersPermissions:reject]) {
     return;
   }
 
@@ -129,7 +133,6 @@ EX_EXPORT_METHOD_AS(saveCalendarAsync,
   NSString *title = details[@"title"];
   NSNumber *color = details[@"color"];
   NSString *sourceId = details[@"sourceId"];
-  NSString *type = details[@"entityType"];
   NSString *calendarId = details[@"id"];
 
   if (calendarId) {
@@ -381,11 +384,11 @@ EX_EXPORT_METHOD_AS(saveEventAsync,
     calendarEvent.recurrenceRules = nil;
   }
 
-  NSURL *URL = [NSURL URLWithString:[url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]]];
-  if (URL) {
-    calendarEvent.URL = URL;
-  } else if (details[@"url"] == [NSNull null]) {
-    calendarEvent.URL = nil;
+  if (url) {
+    NSURLComponents *URLComponents = [NSURLComponents componentsWithString:url];
+    if (URLComponents && URLComponents.URL) {
+      calendarEvent.URL = URLComponents.URL;
+    }
   }
 
   if (startDate) {
@@ -498,7 +501,7 @@ EX_EXPORT_METHOD_AS(getRemindersAsync,
   NSDate *startDate = [EXUtilities NSDate:startDateStr];
   NSDate *endDate = [EXUtilities NSDate:endDateStr];
 
-  if (calendars.count) {
+  if (calendars && calendars.count) {
     reminderCalendars = [[NSMutableArray alloc] init];
     NSArray *deviceCalendars = [self.eventStore calendarsForEntityType:EKEntityTypeReminder];
 
@@ -651,11 +654,11 @@ EX_EXPORT_METHOD_AS(saveReminderAsync,
     reminder.recurrenceRules = nil;
   }
 
-  NSURL *URL = [NSURL URLWithString:[url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]]];
-  if (URL) {
-    reminder.URL = URL;
-  } else if (details[@"url"] == [NSNull null]) {
-    reminder.URL = nil;
+  if (url) {
+    NSURLComponents *URLComponents = [NSURLComponents componentsWithString:url];
+    if (URLComponents && URLComponents.URL) {
+      reminder.URL = URLComponents.URL;
+    }
   }
 
   if (startDate) {
@@ -773,7 +776,7 @@ EX_EXPORT_METHOD_AS(requestCalendarPermissionsAsync,
   [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[EXCalendarPermissionRequester class]
                                                                resolve:resolve
-                                                                reject:reject];
+                                                                reject:reject];  
 }
 
 EX_EXPORT_METHOD_AS(getRemindersPermissionsAsync,

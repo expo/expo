@@ -18,7 +18,7 @@ internal protocol UpdatesStateChangeDelegate: AnyObject {
 /**
  All the possible states the machine can take.
  */
-internal enum UpdatesStateValue: String {
+internal enum UpdatesStateValue: String, CaseIterable {
   case idle
   case checking
   case downloading
@@ -169,7 +169,7 @@ internal struct UpdatesStateContextRollback {
 /**
  The state machine context, with information that will be readable from JS.
  */
-internal struct UpdatesStateContext {
+public struct UpdatesStateContext {
   let isUpdateAvailable: Bool
   let isUpdatePending: Bool
   let isRollback: Bool
@@ -287,23 +287,52 @@ extension UpdatesStateContext {
  in a production app, instantiated as a property of AppController.
  */
 internal class UpdatesStateMachine {
+  private let validUpdatesStateValues: Set<UpdatesStateValue>
+
+  required init(validUpdatesStateValues: Set<UpdatesStateValue>) {
+    self.validUpdatesStateValues = validUpdatesStateValues
+  }
+
   private let logger = UpdatesLogger()
 
-  init(changeEventDelegate: (any UpdatesStateChangeDelegate)) {
-    self.changeEventDelegate = changeEventDelegate
-  }
+  private lazy var serialExecutorQueue: StateMachineSerialExecutorQueue = {
+    return StateMachineSerialExecutorQueue(
+      updatesLogger: logger,
+      stateMachineProcedureContext: StateMachineProcedureContext(
+        processStateEventCallback: { event in
+          self.processEvent(event)
+        },
+        getCurrentStateCallback: {
+          return self.state
+        },
+        resetStateCallback: {
+          return self.reset()
+        }
+      )
+    )
+  }()
 
   // MARK: - Public methods and properties
 
   /**
+   Queue a StateMachineProcedure procedure for serial execution.
+   */
+  func queueExecution(stateMachineProcedure: StateMachineProcedure) {
+    serialExecutorQueue.queueExecution(stateMachineProcedure: stateMachineProcedure)
+  }
+
+  /**
    In production, this is the AppController instance.
    */
-  private weak var changeEventDelegate: (any UpdatesStateChangeDelegate)?
+  internal weak var changeEventDelegate: (any UpdatesStateChangeDelegate)?
 
   /**
    The current state
    */
-  internal var state: UpdatesStateValue = .idle
+  private var state: UpdatesStateValue = .idle
+  internal func getStateForTesting() -> UpdatesStateValue {
+    return state
+  }
 
   /**
    The context
@@ -311,21 +340,22 @@ internal class UpdatesStateMachine {
   internal var context: UpdatesStateContext = UpdatesStateContext()
 
   /**
-   Called after the app restarts (reloadAsync()) to reset the machine to its
-   starting state.
+   Reset the machine to its starting state. Should only be called after the app restarts (reloadAsync()).
    */
-  internal func reset() {
+  private func reset() {
     state = .idle
     context = UpdatesStateContext()
     logger.info(message: "Updates state is reset, state = \(state), context = \(context)")
     sendChangeEventToJS()
   }
+  internal func resetForTesting() {
+    reset()
+  }
 
   /**
-   Called by AppLoaderTask delegate methods in AppController during the initial
-   background check for updates, and called by checkForUpdateAsync(), fetchUpdateAsync(), and reloadAsync().
+   Transition the state machine forward to a new state.
    */
-  internal func processEvent(_ event: UpdatesStateEvent) {
+  private func processEvent(_ event: UpdatesStateEvent) {
     // Execute state transition
     if transition(event) {
       // Only change context if transition succeeds
@@ -334,6 +364,9 @@ internal class UpdatesStateMachine {
       // Send change event
       sendChangeEventToJS(event)
     }
+  }
+  internal func processEventForTesting(_ event: UpdatesStateEvent) {
+    processEvent(event)
   }
 
   // MARK: - Private methods
@@ -344,15 +377,16 @@ internal class UpdatesStateMachine {
   private func transition(_ event: UpdatesStateEvent) -> Bool {
     let allowedEvents: Set<UpdatesStateEventType> = UpdatesStateMachine.updatesStateAllowedEvents[state] ?? []
     if !allowedEvents.contains(event.type) {
-      // Uncomment the line below to halt execution on invalid state transitions,
-      // very useful for testing
-      /*
       assertionFailure("UpdatesState: invalid transition requested: state = \(state), event = \(event.type)")
-       */
+      return false
+    }
+    let newStateValue = UpdatesStateMachine.updatesStateTransitions[event.type] ?? .idle
+    if !validUpdatesStateValues.contains(newStateValue) {
+      assertionFailure("UpdatesState: invalid transition requested: state = \(state), event = \(event.type)")
       return false
     }
     // Successful transition
-    state = UpdatesStateMachine.updatesStateTransitions[event.type] ?? .idle
+    state = newStateValue
     return true
   }
 
@@ -439,7 +473,7 @@ internal class UpdatesStateMachine {
    If the machine receives an unexpected event, an assertion failure will occur
    and the app will crash.
    */
-  static let updatesStateAllowedEvents: [UpdatesStateValue: Set<UpdatesStateEventType>] = [
+  private static let updatesStateAllowedEvents: [UpdatesStateValue: Set<UpdatesStateEventType>] = [
     .idle: [.check, .download, .restart],
     .checking: [.checkCompleteAvailable, .checkCompleteUnavailable, .checkError],
     .downloading: [.downloadComplete, .downloadError],
@@ -450,7 +484,7 @@ internal class UpdatesStateMachine {
    For this state machine, each event has only one destination state that the
    machine will transition to.
    */
-  static let updatesStateTransitions: [UpdatesStateEventType: UpdatesStateValue] = [
+  private static let updatesStateTransitions: [UpdatesStateEventType: UpdatesStateValue] = [
     .check: .checking,
     .checkCompleteAvailable: .idle,
     .checkCompleteUnavailable: .idle,

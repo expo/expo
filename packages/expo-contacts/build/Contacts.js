@@ -1,4 +1,4 @@
-import { PermissionStatus, UnavailabilityError, uuidv4, } from 'expo-modules-core';
+import { PermissionStatus, UnavailabilityError, uuid } from 'expo-modules-core';
 import { Platform, Share } from 'react-native';
 import ExpoContacts from './ExpoContacts';
 export { PermissionStatus };
@@ -9,6 +9,7 @@ export { PermissionStatus };
 export async function isAvailableAsync() {
     return !!ExpoContacts.getContactsAsync;
 }
+// @docsMissing
 export async function shareContactAsync(contactId, message, shareOptions = {}) {
     if (Platform.OS === 'ios') {
         const url = await writeContactToFileAsync({
@@ -222,7 +223,7 @@ export async function addExistingGroupToContainerAsync(groupId, containerId) {
     return await ExpoContacts.addExistingGroupToContainerAsync(groupId, containerId);
 }
 /**
- * Create a group with a name, and add it to a container. If the container is undefined, the default container will be targeted.
+ * Create a group with a name, and add it to a container. If the container is `undefined`, the default container will be targeted.
  * @param name Name of the new group.
  * @param containerId The container you to add membership to.
  * @return A promise that fulfills with ID of the new group.
@@ -236,7 +237,7 @@ export async function createGroupAsync(name, containerId) {
     if (!ExpoContacts.createGroupAsync) {
         throw new UnavailabilityError('Contacts', 'createGroupAsync');
     }
-    name = name || uuidv4();
+    name = name || uuid.v4();
     if (!containerId) {
         containerId = await getDefaultContainerIdAsync();
     }

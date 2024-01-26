@@ -16,6 +16,7 @@ internal enum UpdatesErrorCode: Int {
   case jsRuntimeError = 7
   case unknown = 8
   case updateCodeSigningError = 9
+  case initializationError = 10
 
   // Because this enum is exported to Objective-C,
   // the usual "\(UpdatesErrorCode.NoUpdatesAvailable)"
@@ -41,6 +42,8 @@ internal enum UpdatesErrorCode: Int {
       return "AssetsFailedToLoad"
     case .jsRuntimeError:
       return "JSRuntimeError"
+    case .initializationError:
+      return "InitializationError"
     case .unknown:
       return "Unknown"
     }

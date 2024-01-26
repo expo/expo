@@ -10,7 +10,7 @@ To create an update of your app, run `expo publish`. If you're using release cha
 
 Updates are controlled by the `updates` settings in app.json, which handle the initial app load, and the Updates SDK module, which allows you to fetch updates asynchronously from your JS.
 
-## Automatic Updates
+## Automatic updates
 
 If your **app.json** does not contain an `updates.fallbackToCacheTimeout` field it will default to `0` and `expo-updates` will attempt to start your app immediately with a cached bundle while downloading a newer one in the background for future use. When using this configuration, users that download the app from a store and launch it for the first time will always see the version of the app that the binary was built against. `Updates.addListener` provides a hook to let you respond when the new bundle is finished downloading. You can use this to notify users that they should restart the app, and you can also restart it programmatically with `Updates.reloadAsync()`, eg: in response to a prompt to the user.
 
@@ -18,7 +18,7 @@ You can also set a nonzero timeout, in which case Expo will attempt to download 
 
 In Expo Go, the latest published bundle of your app will always be launched (unless the request times out or network connection is unavailable), regardless of the `updates` settings in your app config.
 
-## Manual Updates
+## Manual updates
 
 In standalone apps, it is also possible to turn off automatic updates, and to instead control updates entirely within your JS code. This is desirable if you want some custom logic around fetching updates (for example, only over Wi-Fi).
 
@@ -26,7 +26,7 @@ Setting `updates.checkAutomatically` to `"ON_ERROR_RECOVERY"` in app.json will p
 
 You can then use the `expo-updates` module to download new updates and, if appropriate, notify the user to reload their app.
 
-```javascript
+```js
 import * as Updates from 'expo-updates';
 
 try {
@@ -45,7 +45,7 @@ Checking for an update uses a device's bandwidth and battery life like any netwo
 
 Note that `checkAutomatically: "ON_ERROR_RECOVERY"` will be ignored in Expo Go, although the imperative Updates methods will still function normally.
 
-## Disabling Updates
+## Disabling updates
 
 It is possible to entirely disable updates in an app, by setting `updates.enabled` to `false` in **app.json**. This will ignore all code paths that fetch app bundles from Expo's servers. In this case, all updates to your app will need to be routed through the iOS App Store and/or Google Play Store.
 

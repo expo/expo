@@ -9,10 +9,9 @@ import APISection from '~/components/plugins/APISection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { ConfigReactNative } from '~/components/plugins/ConfigSection';
-
 import { Terminal } from '~/ui/components/Snippet';
 
-`AuthSession` is the easiest way to add web browser based authentication (for example, browser-based OAuth flows) to your app, built on top of [WebBrowser](webbrowser.mdx) and [Crypto](crypto.mdx). If you would like to understand how it does this, read this document from top to bottom. If you just want to use it, jump to the [Authentication Guide](/guides/authentication).
+`AuthSession` enables web browser-based authentication (for example, browser-based OAuth flows) in your app by utilizing [WebBrowser](webbrowser.mdx) and [Crypto](crypto.mdx). For implementation details, refer to this reference, and for usage, see the [Authentication](/guides/authentication/) guide.
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -59,7 +58,7 @@ You can test it to ensure it works like this:
 }
 ```
 
-In order to be able to deep link back into your app, you will need to set a `scheme` in your project **app.config.js**, or **app.json**, and then build your standalone app (it can't be updated with an update). If you do not include a scheme, the authentication flow will complete but it will be unable to pass the information back into your application and the user will have to manually exit the authentication modal (resulting in a cancelled event).
+To be able to deep link back into your app, you will need to set a `scheme` in your project **app.config.js**, or **app.json**, and then build your standalone app (it can't be updated with an update). If you do not include a scheme, the authentication flow will complete but it will be unable to pass the information back into your application and the user will have to manually exit the authentication modal (resulting in a canceled event).
 
 ## Guides
 
@@ -158,7 +157,7 @@ A hook used for opinionated Facebook authentication that works across platforms.
 
 A [`DiscoveryDocument`](#discoverydocument) object containing the discovery URLs used for Facebook auth.
 
-## Proxy Service
+## Proxy service
 
 > **warning** **Deprecated:** Expo proxy service is deprecated and will be removed in the future. See [blog post](https://blog.expo.dev/security-advisory-for-developers-using-authsessions-useproxy-options-and-auth-expo-io-e470fe9346df) for more information.
 

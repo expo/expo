@@ -7,12 +7,13 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
+import { A } from '~/ui/components/Text';
 
 EAS Build allows you to build a ready-to-submit binary of your app for the Google Play Store or Apple App Store. In this guide, let's learn how to do that.
 
 Alternatively, if you prefer to install the app directly to your Android device/emulator or install it in the iOS Simulator, we will point you toward resources that explain how to do that.
 
-For a small app, builds for Android and iOS platforms trigger within a few minutes. If you encounter any issues along the way, you can reach out on the [Expo forums](https://forums.expo.dev/) or [Discord](https://chat.expo.dev/).
+For a small app, builds for Android and iOS platforms trigger within a few minutes. If you encounter any issues along the way, you can reach out on <A href="https://chat.expo.dev/" shouldLeakReferrer>Discord and Forums</A>.
 
 ## Prerequisites
 
@@ -51,7 +52,7 @@ EAS CLI is the command-line app that you will use to interact with EAS services 
 
 You can also use the above command to check if a new version of EAS CLI is available. We encourage you to always stay up to date with the latest version.
 
-> We recommend using `npm` instead of `yarn` for global package installations. You may alternatively use `npx eas-cli@latest`, just remember to use that instead of `eas` whenever it's called for in the documentation.
+> We recommend using `npm` instead of `yarn` for global package installations. You may alternatively use `npx eas-cli@latest`. Remember to use that instead of `eas` whenever it's called for in the documentation.
 
 </Step>
 
@@ -69,11 +70,11 @@ You can check whether you are logged in by running `eas whoami`.
 <Step label="3">
 ## Configure the project
 
-To configure an iOS or an Android project for EAS Build, run the following command:
+To configure an Android or an iOS project for EAS Build, run the following command:
 
 <Terminal cmd={['$ eas build:configure']} />
 
-If you'd like to learn more about what happens behind the scenes, you can read the [build configuration process reference](/build-reference/build-configuration).
+To learn more about what happens behind the scenes, see [build configuration process reference](/build-reference/build-configuration).
 
 Additional configuration may be required for some scenarios:
 
@@ -175,14 +176,14 @@ To learn how to install the app directly to your Android device/iOS Simulator, n
 
 ## Next steps
 
-We walked you through the steps for creating your first build with EAS Build without going into too much depth on any particular part of the process.
+We walked you through the steps to create your first build with EAS Build without going into too much depth on any particular part of the process.
 
 When you are ready to learn more, we recommend proceeding through the **Start Building** section of this documentation to learn about topics such as:
 
 - [Configuration with eas.json](/build/eas-json)
 - [Internal distribution](/build/internal-distribution)
 - [Updates](/build/updates)
-- [Automating submissions](/build/automating-submissions)
+- [Automating submissions](/build/automate-submissions)
 - [Triggering builds from CI](/build/building-on-ci)
 
 You may also want to dig through the reference section to learn more about the topics that interest you most, such as:

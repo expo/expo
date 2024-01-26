@@ -1,5 +1,6 @@
 ---
 title: metro.config.js
+description: A reference of available configurations in Metro.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
@@ -54,7 +55,7 @@ For security purposes, client environment variables are inlined in the bundle, w
 
 > **info** CSS support is under development and currently only works on web.
 
-Expo supports CSS in your project. You can import CSS files from any component. CSS Modules are also supported. To enable CSS, configure your `metro.config.js` as follows, setting `isCSSEnabled` to `true`:
+Expo supports CSS in your project. You can import CSS files from any component. CSS Modules are also supported. To enable CSS, configure your **metro.config.js** as follows, setting `isCSSEnabled` to `true`:
 
 ```js metro.config.js
 const { getDefaultConfig } = require('expo/metro-config');
@@ -90,7 +91,7 @@ Here, we'll define a global style for the class name `.container`:
 
 We can then use the class name in our component by importing the stylesheet and using `.container`:
 
-```js App.js
+```jsx App.js
 import './styles.css';
 import { View } from 'react-native';
 
@@ -143,7 +144,7 @@ Flipping the extension, for example, `App.ios.module.css` will not work and resu
 
 > You cannot pass styles to the `className` prop of a React Native or React Native for web component. Instead, you must use the `style` prop.
 
-```js App.js
+```jsx App.js
 import styles, { unstable_styles } from './App.module.css';
 
 export default function Page() {
@@ -198,7 +199,7 @@ To setup, install the `sass` package in your project:
 
 <Terminal cmd={['$ yarn add -D sass']} />
 
-Then, ensure [CSS is setup](#css) in the `metro.config.js` file.
+Then, ensure [CSS is setup](#css) in the **metro.config.js** file.
 
 - When `sass` is installed, then modules without extensions will be resolved in the following order: `scss`, `sass`, `css`.
 - Only use the intended syntax with `sass` files.
@@ -302,7 +303,7 @@ const ctx = require.context(
 if (ctx.keys().length) ctx(ctx.keys()[0]);
 ```
 
-#### Tailwind Usage
+#### Tailwind usage
 
 You can use Tailwind with React DOM elements as-is:
 
@@ -340,9 +341,9 @@ Projects that don't use [Expo Prebuild](/workflow/prebuild) must configure nativ
 
 These modifications are meant to replace `npx react-native bundle` and `npx react-native start` with `npx expo export:embed` and `npx expo start` respectively.
 
-### `metro.config.js`
+### metro.config.js
 
-Ensure the `metro.config.js` extends `expo/metro-config`:
+Ensure the **metro.config.js** extends `expo/metro-config`:
 
 ```js
 const { getDefaultConfig } = require('expo/metro-config');
@@ -370,7 +371,7 @@ react {
 
 In your `ios/<Project>.xcodeproj/project.pbxproj` file, replace the following scripts:
 
-#### "Start Packager"
+#### `"Start Packager"`
 
 ```diff
 +			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\nexport RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\"\necho \"export RCT_METRO_PORT=${RCT_METRO_PORT}\" > `$NODE_BINARY --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/.packager.env'\"`\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n  if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then\n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  else\n    open `$NODE_BINARY --print \"require('path').dirname(require.resolve('expo/package.json')) + '/scripts/launchPackager.command'\"` || echo \"Can't start packager automatically\"\n  fi\nfi\n";
@@ -442,7 +443,7 @@ fi
 
 > You can set `CLI_PATH`, `BUNDLE_COMMAND`, and `ENTRY_FILE` environment variables to overwrite these defaults.
 
-### Custom Entry File
+### Custom entry file
 
 By default, React Native only supports using a root `index.js` file as the entry file (or platform-specific variation like `index.ios.js`). Expo projects allow using any entry file, but this requires addition bare setup.
 

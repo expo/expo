@@ -13,6 +13,7 @@ The default file format used when building Android apps with EAS Build is an [An
 To generate an **.apk**, modify the [**eas.json**](/build/eas-json) by adding one of the following properties in a build profile:
 
 - `developmentClient` to `true` (**default**)
+- `distribution` to `internal`
 - `android.buildType` to `apk`
 - `android.gradleCommand` to `:app:assembleRelease`, `:app:assembleDebug` or any other gradle command that produces **.apk**
 
@@ -32,6 +33,9 @@ To generate an **.apk**, modify the [**eas.json**](/build/eas-json) by adding on
     "preview3": {
       "developmentClient": true
     },
+    "preview4": {
+      "distribution": "internal"
+    },
     "production": {}
   }
 }
@@ -45,7 +49,7 @@ Remember that you can name the profile whatever you like. We named the profile `
 
 ## Installing your build
 
-### Emulator ("Virtual device")
+### Emulator (virtual device)
 
 > If you haven't installed or run an Android Emulator before, follow the [Android Studio emulator guide](/workflow/android-studio-emulator) before proceeding.
 

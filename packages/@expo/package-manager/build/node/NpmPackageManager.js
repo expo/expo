@@ -11,12 +11,9 @@ const BasePackageManager_1 = require("./BasePackageManager");
 const nodeWorkspaces_1 = require("../utils/nodeWorkspaces");
 const spawn_1 = require("../utils/spawn");
 class NpmPackageManager extends BasePackageManager_1.BasePackageManager {
-    constructor() {
-        super(...arguments);
-        this.name = 'npm';
-        this.bin = 'npm';
-        this.lockFile = nodeWorkspaces_1.NPM_LOCK_FILE;
-    }
+    name = 'npm';
+    bin = 'npm';
+    lockFile = nodeWorkspaces_1.NPM_LOCK_FILE;
     workspaceRoot() {
         const root = (0, nodeWorkspaces_1.findYarnOrNpmWorkspaceRoot)(this.ensureCwdDefined('workspaceRoot'));
         if (root) {

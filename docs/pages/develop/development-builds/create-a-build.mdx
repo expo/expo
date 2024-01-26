@@ -6,25 +6,52 @@ sidebar_title: Create a build
 
 import { Terminal } from '~/ui/components/Snippet';
 import { Tab, Tabs } from '~/ui/components/Tabs';
-import { BoxLink } from '~/ui/components/BoxLink';
 import { Step } from '~/ui/components/Step';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import Video from '~/components/plugins/Video';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
 
-Development builds can be created with [EAS Build](/build/introduction/) or [locally](/develop/development-builds/development-workflows/#build-locally-with-android-studio-and-xcode) on your computer if you have Android Studio and Xcode installed.
+Development builds can be created with [EAS Build](/build/introduction/) or [locally](/guides/local-app-development/) on your computer if you have Android Studio and Xcode installed.
 
-<Video url="https://www.youtube.com/embed/LUFHXsBcW6w" />
+In this guide, you'll find information on creating a development build with EAS and installing it on an emulator/simulator or a physical device to continue developing your app.
 
-In this guide, you'll find information on how to create a development build and then install it on an emulator/simulator or a physical device to continue developing your app.
+> If you are looking to create a development build **locally**, rather than remotely on EAS, you can [create local builds with `npx expo run:[android|ios]`](/guides/local-app-development/#local-builds-with-expo-dev-client) or with [`eas build --local`](/build-reference/local-builds/).
+
+## Prerequisites
+
+You need to initialize your project with Expo. If you still need to do so, see the [initializing steps](/get-started/create-a-project/#initialize-a-new-project) if you are starting a new project.
+
+We also recommend installing EAS CLI as a global npm dependency by running the following command:
+
+<Terminal cmd={['$ npm install -g eas-cli']} />
 
 <Step label="1">
 
-## Initialize EAS Build
+## Install expo-dev-client
 
-We recommend EAS Build to manage your native projects. It allows a smooth experience, especially if you do not have experience with Xcode and Android studio builds or do not have them installed locally on your computer.
+To initialize a development build, you need to install the `expo-dev-client` library in your project:
 
-EAS Build is created by running the `eas build` command. It also creates an [**eas.json**](/build/eas-json/) file at the root of your project directory with three build profiles automatically: `development`, `preview` and `production`. A minimal configuration is shown below:
+<Terminal cmd={['$ npx expo install expo-dev-client']} />
+
+</Step>
+
+<Step label="2">
+
+## Login to your Expo account
+
+Logging into your Expo account will be useful when creating a build or submitting your app to the app stores.
+
+If you are already signed in to an Expo account using Expo CLI, you can skip the steps described in this section. If you are not, run the following command to log in:
+
+<Terminal cmd={['$ eas login']} />
+
+You can check whether you are logged in by running `eas whoami`.
+
+</Step>
+
+<Step label="3">
+
+## Link your project with EAS
+
+When you run the `eas build` command, it will link your project to a new or existing project on EAS and create an [**eas.json**](/build/eas-json/) file at the root of your project directory. The **eas.json** includes with three default build profiles &mdash; `development`, `preview`, and `production`. A minimal configuration is shown below:
 
 ```json eas.json
 {
@@ -43,14 +70,14 @@ EAS Build is created by running the `eas build` command. It also creates an [**e
 
 The `development` profile sets the following options:
 
-- [`developmentClient`](/build-reference/eas-json/#developmentclient) to `true` to create a Debug build. This allows the `expo-dev-client` library to choose the update to load in your app and provide tools to help you develop it. It also generates a build artifact that you can install on a device or emulator/simulator.
-- [`distribution`](/build-reference/eas-json/#distribution) to `internal` makes the build ready for [internal distribution](/build/internal-distribution/).
+- [`developmentClient`](/eas/json/#developmentclient) to `true` to create a Debug build. It allows the `expo-dev-client` library to choose the update to load in your app and provides tools to help you develop it. It also generates a build artifact you can install on a device or emulator/simulator.
+- [`distribution`](/eas/json/#distribution) to `internal` makes the build ready for [internal distribution](/build/internal-distribution/).
 
 > iOS builds where `developmentClient` is set to `true` on the build profile should always be distributed as `internal`. If you are distributing for TestFlight, you have to set the distribution to `store`.
 
 </Step>
 
-<Step label="2">
+<Step label="4">
 
 ## Create a build for emulator/simulator
 
@@ -98,7 +125,7 @@ Then, run the following command to create the development build on an iOS Simula
 
 <Terminal cmd={['$ eas build --profile development-simulator --platform ios']} />
 
-After the build is complete, the CLI will prompt you to automatically download and install the it on the iOS Simulator. When prompted, press <kbd>Y</kbd> to directly install it on the simulator.
+After the build is complete, the CLI will prompt you to automatically download and install it on the iOS Simulator. When prompted, press <kbd>Y</kbd> to directly install it on the simulator.
 
 See [Installing build on the simulator](/build-reference/simulators/#installing-build-on-the-simulator) for more information.
 
@@ -108,7 +135,7 @@ See [Installing build on the simulator](/build-reference/simulators/#installing-
 
 </Step>
 
-<Step label="3">
+<Step label="5">
 
 ## Create a build for the device
 
@@ -150,13 +177,8 @@ You can also find this QR code on the build page in the [Expo dashboard](https:/
 
 </Tabs>
 
+## Video walkthrough
+
+<Video url="https://www.youtube.com/embed/LUFHXsBcW6w" />
+
 </Step>
-
-## Next step
-
-<BoxLink
-  title="Share with your team"
-  description="Learn about how you can install and share a development build with your team or run it on multiple devices."
-  href="/develop/development-builds/share-with-your-team"
-  Icon={BookOpen02Icon}
-/>

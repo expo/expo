@@ -1,23 +1,24 @@
+import { S3 } from '@aws-sdk/client-s3';
 import { Command } from '@expo/commander';
 import plist from '@expo/plist';
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
-import aws from 'aws-sdk';
 import fs, { mkdirp } from 'fs-extra';
 import glob from 'glob-promise';
 import inquirer from 'inquirer';
 import fetch from 'node-fetch';
 import os from 'os';
 import path from 'path';
+import semver from 'semver';
 import { v4 as uuidv4 } from 'uuid';
 
-import { EXPO_DIR } from '../Constants';
+import { EXPO_DIR, EXPO_GO_IOS_DIR } from '../Constants';
 import Git from '../Git';
 import logger from '../Logger';
 import { androidAppVersionAsync, iosAppVersionAsync } from '../ProjectVersions';
 import { modifySdkVersionsAsync } from '../Versions';
 
-const s3Client = new aws.S3({ region: 'us-east-1' });
+const s3Client = new S3({ region: 'us-east-1' });
 
 const RELEASE_BUILD_PROFILE = 'release-client';
 const PUBLISH_CLIENT_BUILD_PROFILE = 'publish-client';
@@ -140,7 +141,6 @@ async function iosBuildAndSubmitAsync() {
   const credentialsDir = path.join(projectDir, 'credentials');
   const fastlaneMatchBucketCopyPath = path.join(credentialsDir, 'fastlane-match');
   const releaseSecretsPath = path.join(credentialsDir, 'secrets');
-  const isDarwin = os.platform() === 'darwin';
 
   logger.info('Preparing credentials');
   try {
@@ -182,12 +182,20 @@ async function iosBuildAndSubmitAsync() {
         stdio: isDebug ? 'inherit' : 'pipe',
       }
     );
+    const { stdout: opensslVersionCommandOutput } = await spawnAsync('openssl', ['--version'], {
+      stdio: isDebug ? 'inherit' : 'pipe',
+    });
+    const opensslVersionRegex = /OpenSSL\s(\d+\.\d+\.\d+)/;
+    const matches = opensslVersionCommandOutput.match(opensslVersionRegex);
+    assert(matches, 'Could not parse openssl version');
+    const opensslVersion = matches[1];
+    const isOpensslVersionAbove1 = semver.satisfies(opensslVersion, '>1');
     await spawnAsync(
       'openssl',
       [
         'pkcs12',
         '-export',
-        ...(isDarwin ? [] : ['-legacy']),
+        ...(isOpensslVersionAbove1 ? ['-legacy'] : []),
         '-out',
         p12KeystorePath,
         '-inkey',
@@ -362,7 +370,7 @@ async function androidAPKBuildAndPublishAsync() {
 }
 
 async function internalRemoveBackgroundPermissionsFromInfoPlistAsync(): Promise<void> {
-  const INFO_PLIST_PATH = path.join(EXPO_DIR, 'ios/Exponent/Supporting/Info.plist');
+  const INFO_PLIST_PATH = path.join(EXPO_GO_IOS_DIR, 'Exponent/Supporting/Info.plist');
   const rawPlist = await fs.readFile(INFO_PLIST_PATH, 'utf-8');
   const parsedPlist = plist.parse(rawPlist);
 
@@ -401,14 +409,12 @@ async function internalIosSimulatorPublishAsync() {
   const file = fs.createReadStream(tmpTarGzPath);
 
   logger.info(`Uploading Exponent-${appVersion}.tar.gz to S3`);
-  await s3Client
-    .putObject({
-      Bucket: 'exp-ios-simulator-apps',
-      Key: `Exponent-${appVersion}.tar.gz`,
-      Body: file,
-      ACL: 'public-read',
-    })
-    .promise();
+  await s3Client.putObject({
+    Bucket: 'exp-ios-simulator-apps',
+    Key: `Exponent-${appVersion}.tar.gz`,
+    Body: file,
+    ACL: 'public-read',
+  });
 
   logger.info('Updating versions endpoint');
   await modifySdkVersionsAsync(sdkVersion, (sdkVersions) => {
@@ -433,14 +439,12 @@ async function internalAndroidAPKPublishAsync() {
   const file = fs.createReadStream(artifactPaths[0]);
 
   logger.info(`Uploading Exponent-${appVersion}.apk to S3`);
-  await s3Client
-    .putObject({
-      Bucket: 'exp-android-apks',
-      Key: `Exponent-${appVersion}.apk`,
-      Body: file,
-      ACL: 'public-read',
-    })
-    .promise();
+  await s3Client.putObject({
+    Bucket: 'exp-android-apks',
+    Key: `Exponent-${appVersion}.apk`,
+    Body: file,
+    ACL: 'public-read',
+  });
 
   logger.info('Updating versions endpoint');
   await modifySdkVersionsAsync(sdkVersion, (sdkVersions) => {

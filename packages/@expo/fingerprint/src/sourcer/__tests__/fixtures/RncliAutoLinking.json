@@ -21,6 +21,21 @@
           "cmakeListsPath": "/root/node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/CMakeLists.txt"
         }
       }
+    },
+    "react-native-navigation-bar-color": {
+      "root": "/root/node_modules/react-native-navigation-bar-color",
+      "name": "react-native-navigation-bar-color",
+      "platforms": {
+        "ios": null,
+        "android": {
+          "sourceDir": "/root/node_modules/react-native-navigation-bar-color/android",
+          "packageImportPath": "import com.thebylito.navigationbarcolor.NavigationBarColorPackage;",
+          "packageInstance": "new NavigationBarColorPackage()",
+          "buildTypes": [],
+          "componentDescriptors": [],
+          "cmakeListsPath": "/root/node_modules/react-native-navigation-bar-color/android/build/generated/source/codegen/jni/CMakeLists.txt"
+        }
+      }
     }
   },
   "commands": [

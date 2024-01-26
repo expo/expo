@@ -43,6 +43,14 @@ export const Header = ({
             theme="quaternary"
             css={hideOnMobileStyle}
             className="px-2 text-secondary"
+            href="https://expo.dev/changelog">
+            Changelog
+          </Button>
+          <Button
+            openInNewTab
+            theme="quaternary"
+            css={hideOnMobileStyle}
+            className="px-2 text-secondary"
             leftSlot={<Star01Icon className="icon-sm" />}
             href="https://github.com/expo/expo">
             Star Us on GitHub
@@ -85,7 +93,7 @@ export const Header = ({
         <div css={mobileSidebarStyle}>
           <SidebarHead sidebarActiveGroup={sidebarActiveGroup} />
           {sidebar}
-          <SidebarFooter />
+          <SidebarFooter isMobileMenuVisible={isMobileMenuVisible} />
         </div>
       )}
     </>

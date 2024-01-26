@@ -1,6 +1,5 @@
 import { getConfig } from '@expo/config';
 
-import { asMock } from '../../__tests__/asMock';
 import { resolveOptionsAsync } from '../resolveOptions';
 
 jest.mock('@expo/config', () => ({
@@ -10,6 +9,7 @@ jest.mock('@expo/config', () => ({
       sdkVersion: '45.0.0',
       name: 'my-app',
       slug: 'my-app',
+      platforms: ['ios', 'android'],
     },
   })),
 }));
@@ -22,6 +22,10 @@ describe(resolveOptionsAsync, () => {
   });
 
   it(`asserts not-configured platform`, async () => {
+    jest.mocked(getConfig).mockReturnValueOnce({
+      // @ts-expect-error
+      exp: { web: { bundler: 'webpack' }, platforms: ['ios', 'android', 'web'] },
+    });
     await expect(resolveOptionsAsync('/', { '--platform': ['web'] })).rejects.toThrow(
       /^Platform "web" is not configured to use the Metro bundler in the project Expo config\./
     );
@@ -59,7 +63,7 @@ describe(resolveOptionsAsync, () => {
         '--clear': true,
         '--dev': true,
         '--dump-assetmap': true,
-        '--dump-sourcemap': true,
+        '--source-maps': true,
         '--max-workers': 2,
       })
     ).resolves.toEqual({
@@ -67,7 +71,7 @@ describe(resolveOptionsAsync, () => {
       dev: true,
       minify: true,
       dumpAssetmap: true,
-      dumpSourcemap: true,
+      sourceMaps: true,
       maxWorkers: 2,
       outputDir: 'foobar',
       platforms: ['android'],
@@ -80,16 +84,16 @@ describe(resolveOptionsAsync, () => {
       dev: false,
       minify: true,
       dumpAssetmap: false,
-      dumpSourcemap: false,
+      sourceMaps: false,
       maxWorkers: undefined,
       outputDir: 'dist',
       platforms: ['ios', 'android'],
     });
   });
   it(`parses default options with web enabled`, async () => {
-    asMock(getConfig).mockReturnValueOnce({
+    jest.mocked(getConfig).mockReturnValueOnce({
       // @ts-expect-error
-      exp: { web: { bundler: 'metro' } },
+      exp: { web: { bundler: 'metro' }, platforms: ['ios', 'android', 'web'] },
     });
     await expect(resolveOptionsAsync('/', {})).resolves.toEqual(
       expect.objectContaining({

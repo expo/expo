@@ -29,11 +29,7 @@ data class ResponseHeaderData(
    * field in the metadata must either be missing or equal for the update to be included.
    * The client library must store the manifest filters until it is overwritten by a newer response.
    */
-  private val manifestFiltersRaw: String? = null,
-  /**
-   * Classic updates Expo Go manifest signature
-   */
-  val manifestSignature: String? = null,
+  private val manifestFiltersRaw: String? = null
 ) {
   val protocolVersion = protocolVersionRaw?.let { Integer.valueOf(it) }
 

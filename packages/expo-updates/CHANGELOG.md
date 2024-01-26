@@ -6,15 +6,195 @@
 
 ### 🎉 New features
 
+- Add more failure logs in asset download. ([#26268](https://github.com/expo/expo/pull/26268) by [@wschurman](https://github.com/wschurman))
+- Add timer capability to Logger. ([#26454](https://github.com/expo/expo/pull/26454), [#26477](https://github.com/expo/expo/pull/26477) by [@wschurman](https://github.com/wschurman))
+
+### 🛠 Breaking changes
+
+- Deprecated `UpdatesController.initialize(Context, Map)` and replaced with `UpdatesController.overrideConfiguration()` method to prevent ANR when overriding the `UpdatesConfiguration` on Android. [#26093](https://github.com/expo/expo/pull/26093) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Fix development status for modern updates. ([#26042](https://github.com/expo/expo/pull/26042) by [@wschurman](https://github.com/wschurman))
+- [Android] correct drawable types in updates embedded manifest. ([#26676](https://github.com/expo/expo/pull/26676) by [@douglowder](https://github.com/douglowder))
+
+### 💡 Others
+
+- [ios] Remove unnecessary delegate from FileDownloader. ([#25783](https://github.com/expo/expo/pull/25783) by [@wschurman](https://github.com/wschurman))
+- Migrate to requireNativeModule/requireOptionalNativeModule. ([#25648](https://github.com/expo/expo/pull/25648) by [@wschurman](https://github.com/wschurman))
+- Remove classic updates. ([#26036](https://github.com/expo/expo/pull/26036), [#26037](https://github.com/expo/expo/pull/26037), [#26048](https://github.com/expo/expo/pull/26048), [#26059](https://github.com/expo/expo/pull/26059), [#26061](https://github.com/expo/expo/pull/26061), [#26065](https://github.com/expo/expo/pull/26065), [#26080](https://github.com/expo/expo/pull/26080), [#26230](https://github.com/expo/expo/pull/26230) by [@wschurman](https://github.com/wschurman))
+- [Android] Remove try/catch in expo-updates module constants block. ([#26228](https://github.com/expo/expo/pull/26228) by [@wschurman](https://github.com/wschurman))
+- Rename native classes. ([#26234](https://github.com/expo/expo/pull/26234), [#26235](https://github.com/expo/expo/pull/26235) by [@wschurman](https://github.com/wschurman))
+- Remove support for multiple runtime versions. ([#26258](https://github.com/expo/expo/pull/26258) by [@wschurman](https://github.com/wschurman))
+- Improve updates types and clarity in expo-asset. ([#26337](https://github.com/expo/expo/pull/26337) by [@wschurman](https://github.com/wschurman))
+
+## 0.24.8 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 0.24.7 - 2024-01-10
+
+### 🎉 New features
+
+- Added `AppController.overrideConfiguration()` to override the `UpdatesConfig` on iOS. ([#26093](https://github.com/expo/expo/pull/26093) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Fix metro asset call in embedded manifest creation step. ([#26307](https://github.com/expo/expo/pull/26307) by [@wschurman](https://github.com/wschurman))
+- [expo-updates] dev launcher updates controller should not read embedded manifest. ([#26336](https://github.com/expo/expo/pull/26336) by [@douglowder](https://github.com/douglowder))
+
+### 💡 Others
+
+- Replace deprecated `com.facebook.react:react-native:+` Android dependency with `com.facebook.react:react-android`. ([#26237](https://github.com/expo/expo/pull/26237) by [@kudo](https://github.com/kudo))
+
+## 0.24.5 - 2023-12-21
+
+_This version does not introduce any user-facing changes._
+
+## 0.24.4 - 2023-12-19
+
+### 🐛 Bug fixes
+
+- Add relaunch to disabled and dev client controllers. ([#25973](https://github.com/expo/expo/pull/25973) by [@wschurman](https://github.com/wschurman))
+
+## 0.24.3 — 2023-12-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.18.18 — 2023-12-15
+
+### 🐛 Bug fixes
+
+- [Android] overwrite duplicates when copying assets. ([#25898](https://github.com/expo/expo/pull/25898) by [@douglowder](https://github.com/douglowder))
+
+## 0.24.2 — 2023-12-13
+
+### 🐛 Bug fixes
+
+- [Android] overwrite duplicates when copying assets. ([#25898](https://github.com/expo/expo/pull/25898) by [@douglowder](https://github.com/douglowder))
+
+## 0.24.1 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
+## 0.24.0 — 2023-12-12
+
+### 🛠 Breaking changes
+
+- Add state machine procedure serial runner. ([#25386](https://github.com/expo/expo/pull/25386), [#25431](https://github.com/expo/expo/pull/25431) by [@wschurman](https://github.com/wschurman))
+
+### 🎉 New features
+
+- [Android] Asset exclusion on Android part 2. ([#25504](https://github.com/expo/expo/pull/25504) by [@douglowder](https://github.com/douglowder))
+- Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- [Android] Fix interaction between reload JS API and ErrorRecovery. ([#25651](https://github.com/expo/expo/pull/25651) by [@wschurman](https://github.com/wschurman))
+- [Android] Fix wait notify bug in launch asset when enabled. ([#25676](https://github.com/expo/expo/pull/25676) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- Update E2E tests to use local copies of `@expo/metro-config`, `@expo/env`, `@expo/config`. ([#25430](https://github.com/expo/expo/pull/25430) by [@EvanBacon](https://github.com/EvanBacon))
+- Add e2e tests for disabled mode. ([#25301](https://github.com/expo/expo/pull/25301) by [@wschurman](https://github.com/wschurman))
+- Modify E2E manual test for asset exclusion. ([#25406](https://github.com/expo/expo/pull/25406) by [@douglowder](https://github.com/douglowder))
+- Move tvOS compile test out of updates E2E test matrix. ([#25438](https://github.com/expo/expo/pull/25438) by [@douglowder](https://github.com/douglowder))
+- Assert valid state transitions in debug. ([#25474](https://github.com/expo/expo/pull/25474) by [@wschurman](https://github.com/wschurman))
+- Improve JS API error messages and documentation for Expo Go and Dev Client. ([#25751](https://github.com/expo/expo/pull/25751) by [@wschurman](https://github.com/wschurman))
+- Warn when expo-updates starts in disabled mode. ([#25793](https://github.com/expo/expo/pull/25793) by [@wschurman](https://github.com/wschurman))
+
+## 0.23.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Split updates controllers depending on configuration, changing native public API. ([#25085](https://github.com/expo/expo/pull/25085), [#25192](https://github.com/expo/expo/pull/25192) by [@wschurman](https://github.com/wschurman))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🎉 New features
+
+- [iOS] Make asset exclusion work. ([#25216](https://github.com/expo/expo/pull/25216) by [@douglowder](https://github.com/douglowder))
+- [Android] Asset exclusion on Android part 1. ([#25277](https://github.com/expo/expo/pull/25277) by [@douglowder](https://github.com/douglowder))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix the E2E tests. ([#24865](https://github.com/expo/expo/pull/24865) by [@douglowder](https://github.com/douglowder))
+- [Android] Simplify UpdatesUtils.parseDateString, fix UpdatesLoggingTest. ([#24951](https://github.com/expo/expo/pull/24951) by [@douglowder](https://github.com/douglowder))
+- [iOS] Fix expo-localization tvOS compile, add CI. ([#25082](https://github.com/expo/expo/pull/25082) by [@douglowder](https://github.com/douglowder))
+- Fix instrumentation tests. ([#25367](https://github.com/expo/expo/pull/25367) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- Android: Stub expo-updates in Expo Go and remove service pattern. ([#24890](https://github.com/expo/expo/pull/24890) by [@wschurman](https://github.com/wschurman))
+- iOS: Refactor responsibility of app controller. ([#24934](https://github.com/expo/expo/pull/24934), [#24949](https://github.com/expo/expo/pull/24949) by [@wschurman](https://github.com/wschurman))
+- Android: Refactor responsibility of app controller. ([#24954](https://github.com/expo/expo/pull/24954), [#24975](https://github.com/expo/expo/pull/24975), [#25043](https://github.com/expo/expo/pull/25043) by [@wschurman](https://github.com/wschurman))
+- Android: Backport ExpoGoUpdatesModule to SDK 49. ([#24974](https://github.com/expo/expo/pull/24974) by [@wschurman](https://github.com/wschurman))
+- Remove unused `storedUpdateIdsWithConfiguration` method. ([#25194](https://github.com/expo/expo/pull/25194) by [@wschurman](https://github.com/wschurman))
+- Remove ability for embedded manifests to be legacy manifests. ([#25195](https://github.com/expo/expo/pull/25195) by [@wschurman](https://github.com/wschurman))
+- Convert e2e setup scripts to typescript. ([#25271](https://github.com/expo/expo/pull/25271) by [@wschurman](https://github.com/wschurman))
+
+### ⚠️ Notices
+
+- Deprecated `useUpdateEvents()` and `addListener()` in favor of the new `useUpdates()` API. ([#25345](https://github.com/expo/expo/pull/25345) by [@douglowder](https://github.com/douglowder))
+
+## 0.18.17 — 2023-10-25
+
+### 🐛 Bug fixes
+
+- [Android] Simplify UpdatesUtils.parseDateString, fix UpdatesLoggingTest. ([#24951](https://github.com/expo/expo/pull/24951) by [@douglowder](https://github.com/douglowder))
+
+## 0.22.0 — 2023-10-17
+
+### 🐛 Bug fixes
+
+- Add missing export in checkForUpdateAsync result. (by [@douglowder](https://github.com/douglowder)) ([#24503](https://github.com/expo/expo/pull/24503) by [@douglowder](https://github.com/douglowder))
+- [Android] embedded loader should load images at all scales. ([#24549](https://github.com/expo/expo/pull/24549) by [@douglowder](https://github.com/douglowder))
+
+### 💡 Others
+
+- Transpile for Node 18 (LTS). ([#24471](https://github.com/expo/expo/pull/24471) by [@EvanBacon](https://github.com/EvanBacon))
+- iOS: Stub expo-updates in Expo Go and remove service pattern. ([#24860](https://github.com/expo/expo/pull/24860) by [@wschurman](https://github.com/wschurman))
+
+## 0.18.16 — 2023-10-05
+
+### 🐛 Bug fixes
+
+- Add missing export in checkForUpdateAsync result. (by [@douglowder](https://github.com/douglowder)) ([#24503](https://github.com/expo/expo/pull/24503) by [@douglowder](https://github.com/douglowder))
+- [Android] embedded loader should load images at all scales. ([#24549](https://github.com/expo/expo/pull/24549) by [@douglowder](https://github.com/douglowder))
+
+## 0.18.14 — 2023-09-27
+
+_This version does not introduce any user-facing changes._
+
+## 0.21.1 — 2023-09-18
+
+_This version does not introduce any user-facing changes._
+
+## 0.18.13 — 2023-09-15
+
+### 🐛 Bug fixes
+
+- [iOS] remove force unwrap in download handler. ([#24299](https://github.com/expo/expo/pull/24299) by [@douglowder](https://github.com/douglowder))
+- Fix updates enabled defaulting on iOS. ([#24327](https://github.com/expo/expo/pull/24327) by [@wschurman](https://github.com/wschurman))
+- [Android] Make scopekey only required when getting database entity. ([#24466](https://github.com/expo/expo/pull/24466) by [@wschurman](https://github.com/wschurman))
+
+## 0.21.0 — 2023-09-15
+
+### 🎉 New features
+
 - Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
 - Fix updates enabled defaulting on iOS. ([#24327](https://github.com/expo/expo/pull/24327) by [@wschurman](https://github.com/wschurman))
+- [Android] Make scopekey only required when getting database entity. ([#24466](https://github.com/expo/expo/pull/24466) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 
 - Update E2E test. ([#24272](https://github.com/expo/expo/pull/24272) by [@EvanBacon](https://github.com/EvanBacon))
+- [iOS] Disable packager and bundle JS when `EX_UPDATES_NATIVE_DEBUG` set. ([#24366](https://github.com/expo/expo/pull/24366) by [@douglowder](https://github.com/douglowder))
+- Add Apple TV to Updates E2E (build only). ([#24411](https://github.com/expo/expo/pull/24411) by [@douglowder](https://github.com/douglowder))
+- Add `sqlite3` to the podspec to use newer version that the built in. ([#24375](https://github.com/expo/expo/pull/24375) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.20.0 — 2023-09-04
 
@@ -22,6 +202,7 @@
 
 - Change source of truth for constants types. ([#24049](https://github.com/expo/expo/pull/24049) by [@wschurman](https://github.com/wschurman))
 - Remove classic manifest types and classic updates. ([#24053](https://github.com/expo/expo/pull/24053), [#24066](https://github.com/expo/expo/pull/24066) by [@wschurman](https://github.com/wschurman))
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
 
 ### 🎉 New features
 
@@ -34,6 +215,7 @@
 - [Android] Fixed the `node` execution on Windows. ([#23983](https://github.com/expo/expo/pull/23983) by [@kudo](https://github.com/kudo))
 - Bare update manifest non-nullability parity. ([#23166](https://github.com/expo/expo/pull/23166) by [@wschurman](https://github.com/wschurman))
 - Support importing assets from out of the project root when working in monorepos. ([#24090](https://github.com/expo/expo/pull/24090) by [@EvanBacon](https://github.com/EvanBacon))
+- Prevent failed updates from passing checkForUpdateAsync(). ([#24112](https://github.com/expo/expo/pull/24112) by [@douglowder](https://github.com/douglowder))
 
 ## 0.19.1 — 2023-08-02
 

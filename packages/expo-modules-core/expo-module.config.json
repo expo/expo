@@ -1,7 +1,6 @@
 {
-  "name": "expo-modules-core",
-  "platforms": ["ios", "android"],
-  "ios": {
+  "platforms": ["apple", "android"],
+  "apple": {
     "podspecPath": "./ExpoModulesCore.podspec"
   }
 }

@@ -12,19 +12,19 @@ class MockExpoMiddleware extends ExpoMiddleware {
   }
 }
 
-describe('_shouldHandleRequest', () => {
+describe('shouldHandleRequest', () => {
   const middleware = new MockExpoMiddleware('/', ['/', '/index.html']);
   it('returns false when the request url is not defined', () => {
-    expect(middleware._shouldHandleRequest(asReq({}))).toBe(false);
+    expect(middleware.shouldHandleRequest(asReq({}))).toBe(false);
   });
 
   it('returns false when the request url is not provided', () => {
-    expect(middleware._shouldHandleRequest(asReq({ url: '/foo' }))).toBe(false);
+    expect(middleware.shouldHandleRequest(asReq({ url: '/foo' }))).toBe(false);
   });
 
   it('returns true when the request url is `/`, or `/index.html`', () => {
-    expect(middleware._shouldHandleRequest(asReq({ url: '/' }))).toBe(true);
-    expect(middleware._shouldHandleRequest(asReq({ url: '/index.html' }))).toBe(true);
+    expect(middleware.shouldHandleRequest(asReq({ url: '/' }))).toBe(true);
+    expect(middleware.shouldHandleRequest(asReq({ url: '/index.html' }))).toBe(true);
   });
 });
 

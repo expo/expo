@@ -82,14 +82,14 @@ export const expoStart: Command = async (argv) => {
   }
 
   const projectRoot = getProjectRoot(args);
-  const { resolveOptionsAsync } = await import('./resolveOptions');
+  const { resolveOptionsAsync } = await import('./resolveOptions.js');
   const options = await resolveOptionsAsync(projectRoot, args).catch(logCmdError);
 
   if (options.offline) {
-    const { disableNetwork } = await import('../api/settings');
+    const { disableNetwork } = await import('../api/settings.js');
     disableNetwork();
   }
 
-  const { startAsync } = await import('./startAsync');
+  const { startAsync } = await import('./startAsync.js');
   return startAsync(projectRoot, options, { webOnly: false }).catch(logCmdError);
 };

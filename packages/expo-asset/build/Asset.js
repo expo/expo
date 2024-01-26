@@ -1,24 +1,17 @@
+import { getAssetByID } from '@react-native/assets-registry/registry';
 import { Platform } from 'expo-modules-core';
-import { getAssetByID } from 'react-native/Libraries/Image/AssetRegistry';
 import { selectAssetSource } from './AssetSources';
 import * as AssetUris from './AssetUris';
 import * as ImageAssets from './ImageAssets';
 import { getLocalAssetUri } from './LocalAssets';
-import { downloadAsync, IS_ENV_WITH_UPDATES_ENABLED } from './PlatformUtils';
+import { downloadAsync, IS_ENV_WITH_LOCAL_ASSETS } from './PlatformUtils';
 import resolveAssetSource from './resolveAssetSource';
-// @needsAudit
 /**
  * The `Asset` class represents an asset in your app. It gives metadata about the asset (such as its
  * name and type) and provides facilities to load the asset data.
  */
 export class Asset {
-    /**
-     * @private
-     */
     static byHash = {};
-    /**
-     * @private
-     */
     static byUri = {};
     /**
      * The name of the asset file without the extension. Also without the part from `@` onward in the
@@ -56,13 +49,11 @@ export class Asset {
      * If the asset is an image, the height of the image data divided by the scale factor. The scale factor is the number after `@` in the filename, or `1` if not present.
      */
     height = null;
-    // @docsMissing
     downloading = false;
-    // @docsMissing
-    downloaded = false;
     /**
-     * @private
+     * Whether the asset has finished downloading from a call to [`downloadAsync()`](#downloadasync).
      */
+    downloaded = false;
     _downloadCallbacks = [];
     constructor({ name, type, hash = null, uri, width, height }) {
         this.name = name;
@@ -123,7 +114,8 @@ export class Asset {
         }
         // Outside of the managed env we need the moduleId to initialize the asset
         // because resolveAssetSource depends on it
-        if (!IS_ENV_WITH_UPDATES_ENABLED) {
+        if (!IS_ENV_WITH_LOCAL_ASSETS) {
+            // null-check is performed above with `getAssetByID`.
             const { uri } = resolveAssetSource(virtualAssetModule);
             const asset = new Asset({
                 name: meta.name,
@@ -221,7 +213,7 @@ export class Asset {
                     this.name = AssetUris.getFilename(this.uri);
                 }
             }
-            this.localUri = await downloadAsync(this.uri, this.hash, this.type, this.name);
+            this.localUri = await downloadAsync(this.uri, this.hash, this.type);
             this.downloaded = true;
             this._downloadCallbacks.forEach(({ resolve }) => resolve());
         }

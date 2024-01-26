@@ -5,14 +5,15 @@ export type UrlObject = {
     pathname: string;
     readonly params: SearchParams;
     segments: string[];
+    isIndex: boolean;
 };
 export declare function getRouteInfoFromState(getPathFromState: (state: State, asPath: boolean) => {
     path: string;
     params: any;
-}, state: State): UrlObject;
+}, state: State, baseUrl?: string): UrlObject;
 export declare function getNormalizedStatePath({ path: statePath, params, }: {
     path: string;
     params: any;
-}): Pick<UrlObject, 'segments' | 'params'>;
+}, baseUrl?: string): Pick<UrlObject, 'segments' | 'params'>;
 export {};
 //# sourceMappingURL=LocationProvider.d.ts.map

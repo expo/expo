@@ -1,8 +1,12 @@
 import { PathConfig, PathConfigMap, validatePathConfig } from '@react-navigation/core';
 import type { NavigationState, PartialState, Route } from '@react-navigation/routers';
-import * as queryString from 'query-string';
 
-import { matchDeepDynamicRouteName, matchDynamicName, matchGroupName } from '../matchers';
+import {
+  matchDeepDynamicRouteName,
+  matchDynamicName,
+  matchGroupName,
+  testNotFound,
+} from '../matchers';
 
 type Options<ParamList extends object> = {
   initialRouteName?: string;
@@ -152,9 +156,9 @@ function processParamsWithUserSettings(configItem: ConfigItem, params: Record<st
       stringify?.[key]
         ? stringify[key](value)
         : // Preserve rest params
-        Array.isArray(value)
-        ? value
-        : String(value),
+          Array.isArray(value)
+          ? value
+          : String(value),
     ])
   );
 }
@@ -233,8 +237,7 @@ function walkConfigItems(
 
     if (route.params) {
       const params = processParamsWithUserSettings(configItem, route.params);
-      // TODO: Does this need to be a null check?
-      if (pattern) {
+      if (pattern !== undefined && pattern !== null) {
         Object.assign(collectedParams, params);
       }
       if (deepEqual(focusedRoute, route)) {
@@ -393,7 +396,7 @@ function getPathFromResolvedState(
           }
         }
 
-        const query = queryString.stringify(focusedParams, { sort: false });
+        const query = new URLSearchParams(focusedParams).toString();
         if (query) {
           path += `?${query}`;
         }
@@ -402,14 +405,22 @@ function getPathFromResolvedState(
     }
   }
 
-  return { path: basicSanitizePath(path), params: decodeParams(allParams) };
+  return { path: appendBaseUrl(basicSanitizePath(path)), params: decodeParams(allParams) };
 }
 
 function decodeParams(params: Record<string, string>) {
   const parsed: Record<string, any> = {};
 
   for (const [key, value] of Object.entries(params)) {
-    parsed[key] = decodeURIComponent(value);
+    try {
+      if (Array.isArray(value)) {
+        parsed[key] = value.map((v) => decodeURIComponent(v));
+      } else {
+        parsed[key] = decodeURIComponent(value);
+      }
+    } catch {
+      parsed[key] = value;
+    }
   }
 
   return parsed;
@@ -440,10 +451,16 @@ function getPathWithConventionsCollapsed({
       // Since the page doesn't actually exist
       if (p.startsWith('*')) {
         if (preserveDynamicRoutes) {
+          if (name === 'not-found') {
+            return '+not-found';
+          }
           return `[...${name}]`;
         }
         if (params[name]) {
-          return params[name].join('/');
+          if (Array.isArray(params[name])) {
+            return params[name].join('/');
+          }
+          return params[name];
         }
         if (i === 0) {
           // This can occur when a wildcard matches all routes and the given path was `/`.
@@ -517,7 +534,9 @@ function getParamsWithConventionsCollapsed({
   // Deep Dynamic Routes
   if (segments.some((segment) => segment.startsWith('*'))) {
     // NOTE(EvanBacon): Drop the param name matching the wildcard route name -- this is specific to Expo Router.
-    const name = matchDeepDynamicRouteName(routeName) ?? routeName;
+    const name = testNotFound(routeName)
+      ? 'not-found'
+      : matchDeepDynamicRouteName(routeName) ?? routeName;
     delete processedParams[name];
   }
 
@@ -609,3 +628,15 @@ const createNormalizedConfigs = (
   Object.fromEntries(
     Object.entries(options).map(([name, c]) => [name, createConfigItem(c, pattern)])
   );
+
+export function appendBaseUrl(
+  path: string,
+  baseUrl: string | undefined = process.env.EXPO_BASE_URL
+) {
+  if (process.env.NODE_ENV !== 'development') {
+    if (baseUrl) {
+      return `/${baseUrl.replace(/^\/+/, '').replace(/\/$/, '')}${path}`;
+    }
+  }
+  return path;
+}

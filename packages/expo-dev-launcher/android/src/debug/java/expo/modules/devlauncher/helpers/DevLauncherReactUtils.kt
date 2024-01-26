@@ -17,7 +17,7 @@ fun injectReactInterceptor(
   reactNativeHost: ReactNativeHost,
   url: Uri
 ): Boolean {
-  val port = if (url.port != -1) url.port else HttpUrl.defaultPort(url.scheme)
+  val port = if (url.port != -1) url.port else HttpUrl.defaultPort(url.scheme ?: "http")
   val debugServerHost = url.host + ":" + port
   // We need to remove "/" which is added to begin of the path by the Uri
   // and the bundle type
@@ -75,6 +75,11 @@ fun injectDebugServerHost(
     val mSettingsField = devServerHelper.javaClass.getDeclaredField("mSettings")
     mSettingsField.isAccessible = true
     mSettingsField[devServerHelper] = settings
+
+    val packagerConnectionSettingsField = devServerHelper.javaClass.getDeclaredField("mPackagerConnectionSettings")
+    packagerConnectionSettingsField.isAccessible = true
+    packagerConnectionSettingsField[devServerHelper] = settings.public_getPackagerConnectionSettings()
+
     // set useDeveloperSupport to true in case it was previously set to false from loading a published app
     val mUseDeveloperSupportField = instanceManager.javaClass.getDeclaredField("mUseDeveloperSupport")
     mUseDeveloperSupportField.isAccessible = true

@@ -11,7 +11,7 @@ class SingleType(
   /**
    * Types of generic parameters.
    */
-  val parameterTypes: Array<ExpectedType>? = null
+  private val parameterTypes: Array<ExpectedType>? = null
 ) {
   /**
    * The representation of the type.
@@ -46,7 +46,7 @@ class ExpectedType(
   /**
    * A convenient property to return combined int value of expected types.
    */
-  val innerCombinedTypes: Int = innerPossibleTypes.fold(0) { acc, current -> acc or current.getCppType() }
+  private val innerCombinedTypes: Int = innerPossibleTypes.fold(0) { acc, current -> acc or current.getCppType() }
 
   // Needed by JNI
   @DoNotStrip
@@ -62,7 +62,8 @@ class ExpectedType(
 
   operator fun plus(other: ExpectedType): ExpectedType {
     return ExpectedType(
-      *this.innerPossibleTypes, *other.innerPossibleTypes
+      *this.innerPossibleTypes,
+      *other.innerPossibleTypes
     )
   }
 
@@ -73,15 +74,6 @@ class ExpectedType(
 
     fun forPrimitiveArray(parameterType: ExpectedType) = ExpectedType(
       SingleType(CppType.PRIMITIVE_ARRAY, arrayOf(parameterType))
-    )
-
-    // We are not using all types here to provide a similar behaviour to the bridge implementation
-    fun forAny() = ExpectedType(
-      CppType.READABLE_MAP,
-      CppType.READABLE_ARRAY,
-      CppType.STRING,
-      CppType.BOOLEAN,
-      CppType.DOUBLE
     )
 
     fun forEnum() = ExpectedType(

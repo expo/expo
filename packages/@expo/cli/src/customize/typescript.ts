@@ -4,10 +4,10 @@ import { Log } from '../log';
 
 export async function typescript(projectRoot: string) {
   const { TypeScriptProjectPrerequisite } = await import(
-    '../start/doctor/typescript/TypeScriptProjectPrerequisite'
+    '../start/doctor/typescript/TypeScriptProjectPrerequisite.js'
   );
-  const { MetroBundlerDevServer } = await import('../start/server/metro/MetroBundlerDevServer');
-  const { getPlatformBundlers } = await import('../start/server/platformBundlers');
+  const { MetroBundlerDevServer } = await import('../start/server/metro/MetroBundlerDevServer.js');
+  const { getPlatformBundlers } = await import('../start/server/platformBundlers.js');
 
   try {
     await new TypeScriptProjectPrerequisite(projectRoot).bootstrapAsync();
@@ -20,9 +20,7 @@ export async function typescript(projectRoot: string) {
   }
 
   const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
-  await new MetroBundlerDevServer(
-    projectRoot,
-    getPlatformBundlers(exp),
-    true
-  ).startTypeScriptServices();
+  await new MetroBundlerDevServer(projectRoot, getPlatformBundlers(projectRoot, exp), {
+    isDevClient: true,
+  }).startTypeScriptServices();
 }

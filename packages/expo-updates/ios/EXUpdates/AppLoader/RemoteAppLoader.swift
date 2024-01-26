@@ -49,8 +49,7 @@ public final class RemoteAppLoader: AppLoader {
         let responseHeaderData = remoteUpdateResponse.responseHeaderData {
         strongSelf.database.databaseQueue.async {
           do {
-            // swiftlint:disable:next force_unwrapping
-            try strongSelf.database.setMetadata(withResponseHeaderData: responseHeaderData, scopeKey: strongSelf.config.scopeKey!)
+            try strongSelf.database.setMetadata(withResponseHeaderData: responseHeaderData, scopeKey: strongSelf.config.scopeKey)
             successBlockArg(updateResponse)
           } catch {
             NSLog("Error persisting header data to disk: %@", error.localizedDescription)
@@ -109,7 +108,7 @@ public final class RemoteAppLoader: AppLoader {
           return
         }
 
-        self.downloader.downloadFile(
+        self.downloader.downloadAsset(
           fromURL: assetUrl,
           verifyingHash: asset.expectedHash,
           toPath: urlOnDisk.path,

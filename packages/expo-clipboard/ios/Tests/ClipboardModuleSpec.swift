@@ -6,12 +6,12 @@ import UIKit
 import MobileCoreServices
 
 class ClipboardModuleSpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
     let appContext = AppContext.create()
     let holder = ModuleHolder(appContext: appContext, module: ClipboardModule(appContext: appContext))
 
     func testModuleFunction<T>(_ functionName: String, args: [Any], _ block: @escaping (T?) -> Void) {
-      waitUntil(timeout: .seconds(2)) { done in
+      waitUntil(timeout: .seconds(3)) { done in
         holder.call(function: functionName, args: args) { result in
           let value = try! result.get()
           expect(value).to(beAKindOf(T?.self))
@@ -22,9 +22,11 @@ class ClipboardModuleSpec: ExpoSpec {
     }
 
     func expectModuleFunctionThrows<T>(_ functionName: String, args: [Any], exception: T.Type) where T: Exception {
-      waitUntil(timeout: .seconds(2)) { done in
+      waitUntil(timeout: .seconds(3)) { done in
         holder.call(function: functionName, args: args) { result in
-          expect(result).to(beFailure(exception: exception))
+          expect(result).to(beFailure { error in
+            expect(error.rootCause is T).to(beTrue())
+          })
           done()
         }
       }
@@ -302,18 +304,5 @@ class ClipboardModuleSpec: ExpoSpec {
         }
       }
     }
-  }
-}
-
-// TODO: (barthap) Replace this with built-in beFailure() when upgraded to Nimble 10.0
-func beFailure<Success, Failure, T: Exception>(exception: T.Type) -> Nimble.Predicate<Result<Success, Failure>> {
-  return Predicate.simple("be \(exception)") { actualExpression in
-    guard let actual = try actualExpression.evaluate(),
-          case let .failure(error) = actual,
-          (error as? Exception)?.rootCause is T
-    else {
-      return .doesNotMatch
-    }
-    return .matches
   }
 }

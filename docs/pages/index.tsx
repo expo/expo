@@ -1,20 +1,22 @@
 import { css } from '@emotion/react';
-import { Button, theme, typography } from '@expo/styleguide';
+import { Button, DocsLogo, theme, typography } from '@expo/styleguide';
 import { spacing, breakpoints, borderRadius } from '@expo/styleguide-base';
 import {
   ArrowUpRightIcon,
   ArrowRightIcon,
+  CameraPlusDuotoneIcon,
   DiscordIcon,
-  DiscourseIcon,
   GithubIcon,
+  Image03DuotoneIcon,
+  NotificationMessageDuotoneIcon,
   RedditIcon,
-  TwitterIcon,
+  XLogoIcon,
 } from '@expo/styleguide-icons';
 import type { PropsWithChildren } from 'react';
 import { Row, ScreenClassProvider } from 'react-grid-system';
 
 import DocumentationPage from '~/components/DocumentationPage';
-import TALKS from '~/public/static/talks';
+import { TALKS } from '~/public/static/talks';
 import { AppJSBanner } from '~/ui/components/AppJSBanner';
 import {
   CellContainer,
@@ -25,10 +27,6 @@ import {
   TalkGridCell,
 } from '~/ui/components/Home';
 import {
-  APICameraIcon,
-  APIListIcon,
-  APIMapsIcon,
-  APINotificationsIcon,
   DevicesImage,
   DevicesImageMasks,
   OfficeHoursImage,
@@ -73,7 +71,7 @@ const Home = () => {
                 <RawH2>
                   <QuickStartIcon /> Quick Start
                 </RawH2>
-                <Terminal includeMargin={false} cmd={['$ npx create-expo-app my-app']} />
+                <Terminal cmd={['$ npx create-expo-app my-app']} />
               </div>
             </GridCell>
             <GridCell
@@ -192,7 +190,7 @@ const Home = () => {
               </div>
               <RawH3 css={css({ color: palette.purple11 })}>Chat with the community</RawH3>
               <P css={{ color: palette.purple11, ...typography.fontSizes[14] }}>
-                Join over 15,000 other developers
+                Join over 20,000 other developers
                 <br />
                 on the Expo Community Discord.
               </P>
@@ -211,18 +209,26 @@ const Home = () => {
         </Description>
         <CellContainer>
           <Row>
-            <APIGridCell title="Maps" link="/versions/latest/sdk/map-view" icon={<APIMapsIcon />} />
+            <APIGridCell
+              title="Image"
+              link="/versions/latest/sdk/image/"
+              icon={<Image03DuotoneIcon className="size-16" />}
+            />
             <APIGridCell
               title="Camera"
               link="/versions/latest/sdk/camera"
-              icon={<APICameraIcon />}
+              icon={<CameraPlusDuotoneIcon className="size-16" />}
             />
             <APIGridCell
               title="Notifications"
               link="/versions/latest/sdk/notifications"
-              icon={<APINotificationsIcon />}
+              icon={<NotificationMessageDuotoneIcon className="size-16" />}
             />
-            <APIGridCell title="View all APIs" link="/versions/latest/" icon={<APIListIcon />} />
+            <APIGridCell
+              title="View all APIs"
+              link="/versions/latest/"
+              icon={<DocsLogo className="size-16" />}
+            />
           </Row>
         </CellContainer>
         <div className="flex items-center gap-2">
@@ -267,29 +273,22 @@ export function JoinTheCommunity() {
             icon={<GithubIcon className="icon-lg text-palette-white" />}
           />
           <CommunityGridCell
-            title="Discord"
-            description="Join our Discord and chat with other Expo users."
+            title="Discord and Forums"
+            description="Join our Discord to chat with Expo users or ask questions."
             link="https://chat.expo.dev"
             icon={<DiscordIcon className="icon-lg text-palette-white" />}
             iconBackground="#3131E8"
+            shouldLeakReferrer
           />
         </Row>
         <Row>
           <CommunityGridCell
-            title="Twitter"
-            description="Follow Expo on Twitter for news and updates."
-            link="https://twitter.com/expo"
-            icon={<TwitterIcon className="icon-lg text-palette-white" />}
-            iconBackground="#1E8EF0"
+            title="X"
+            description="Follow Expo on X for news and updates."
+            link="https://x.com/expo"
+            icon={<XLogoIcon className="icon-lg text-palette-white" />}
+            iconBackground="#000000"
           />
-          <CommunityGridCell
-            title="Forums"
-            description="Ask or answer a question on the forums."
-            link="https://forums.expo.dev/"
-            icon={<DiscourseIcon className="icon-lg text-palette-white" />}
-          />
-        </Row>
-        <Row>
           <CommunityGridCell
             title="Reddit"
             description="Get the latest on r/expo."

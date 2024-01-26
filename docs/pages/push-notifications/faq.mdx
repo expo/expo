@@ -1,5 +1,5 @@
 ---
-title: Push notifications troubleshooting & FAQ
+title: Push notifications troubleshooting and FAQ
 sidebar_title: Troubleshooting and FAQ
 description: A collection of common questions about Expo's push notification service.
 ---
@@ -56,7 +56,7 @@ You can also narrow things even further by testing [local notifications](/versio
 
 1. Send a notification:
 
-```shell
+```sh
 curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/push/send" -d '{
   "to": "ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]",
   "title":"hello",
@@ -66,7 +66,7 @@ curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/pus
 
 2. Use the resulting ticket `id` to request the push receipt:
 
-```shell
+```sh
 curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/push/getReceipts" -d '{
   "ids": [
     "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
@@ -157,7 +157,7 @@ If the device you're experiencing this on hasn't been setup with a SIM card it l
 
 ### Sending notifications directly through FCM and APNs
 
-If you are not using [Expo's push notification service](/push-notifications/sending-notifications) and instead, would like to communicate with Google and Apple directly, see [Send notifications with FCM & APNs](/push-notifications/sending-notifications-custom), paying **special attention to the payload formats**, since providing different formats can result in unexpected behavior on both platforms.
+If you are not using [Expo's push notification service](/push-notifications/sending-notifications) and instead, would like to communicate with Google and Apple directly, see [Send notifications with FCM and APNs](/push-notifications/sending-notifications-custom), paying **special attention to the payload formats**, since providing different formats can result in unexpected behavior on both platforms.
 
 ### Notification icon on Android is a grey or white square
 

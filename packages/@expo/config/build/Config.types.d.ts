@@ -41,6 +41,18 @@ export interface ProjectConfig {
      * Returns null if no dynamic config file exists.
      */
     dynamicConfigObjectType: string | null;
+    /**
+     * Returns true if both a static and dynamic config are present, and the dynamic config is applied on top of the static.
+     * This is only used for expo-doctor diagnostic warnings. This flag may be true even in cases where all static config values are used.
+     * It only checks against a typical pattern for layering static and dynamic config, e.g.,:
+     * module.exports = ({ config }) => {
+        return {
+          ...config,
+          name: 'name overridden by dynamic config',
+        };
+      };
+     */
+    hasUnusedStaticConfig: boolean;
 }
 export type AppJSONConfig = {
     expo: ExpoConfig;
@@ -120,7 +132,7 @@ export declare enum ProjectPrivacy {
 }
 export type Platform = 'android' | 'ios' | 'web';
 export type ProjectTarget = 'managed' | 'bare';
-export type ConfigErrorCode = 'NO_APP_JSON' | 'NOT_OBJECT' | 'NO_EXPO' | 'MODULE_NOT_FOUND' | 'DEPRECATED' | 'INVALID_MODE' | 'INVALID_FORMAT' | 'INVALID_PLUGIN' | 'INVALID_CONFIG';
+export type ConfigErrorCode = 'NO_APP_JSON' | 'NOT_OBJECT' | 'NO_EXPO' | 'MODULE_NOT_FOUND' | 'DEPRECATED' | 'INVALID_MODE' | 'INVALID_FORMAT' | 'INVALID_PLUGIN' | 'INVALID_CONFIG' | 'ENTRY_NOT_FOUND';
 export type ConfigContext = {
     projectRoot: string;
     /**

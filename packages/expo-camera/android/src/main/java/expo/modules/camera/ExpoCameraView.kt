@@ -45,7 +45,7 @@ import expo.modules.kotlin.viewevent.EventDispatcher
 
 class ExpoCameraView(
   context: Context,
-  appContext: AppContext,
+  appContext: AppContext
 ) : ExpoView(context, appContext),
   LifecycleEventListener,
   BarCodeScannerAsyncTaskDelegate,
@@ -63,7 +63,7 @@ class ExpoCameraView(
 
   private val onCameraReady by EventDispatcher<Unit>()
   private val onMountError by EventDispatcher<CameraMountErrorEvent>()
-  private val onBarCodeScanned by EventDispatcher<BarCodeScannedEvent>(
+  private val onBarCodeScanned by EventDispatcher<BarcodeScannedEvent>(
     /**
      * We want every distinct barcode to be reported to the JS listener.
      * If we return some static value as a coalescing key there may be two barcode events
@@ -273,7 +273,7 @@ class ExpoCameraView(
       transformBarCodeScannerResultToViewCoordinates(barCode)
       val (cornerPoints, boundingBox) = getCornerPointsAndBoundingBox(barCode.cornerPoints, barCode.boundingBox)
       onBarCodeScanned(
-        BarCodeScannedEvent(
+        BarcodeScannedEvent(
           target = id,
           data = barCode.value,
           type = barCode.type,

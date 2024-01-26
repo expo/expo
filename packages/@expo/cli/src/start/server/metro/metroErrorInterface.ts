@@ -10,8 +10,8 @@ import { StackFrame } from 'stacktrace-parser';
 import terminalLink from 'terminal-link';
 
 import { Log } from '../../../log';
+import { SilentError } from '../../../utils/errors';
 import { createMetroEndpointAsync } from '../getStaticRenderFunctions';
-// import type { CodeFrame, MetroStackFrame } from '@expo/metro-runtime/symbolicate';
 
 type CodeFrame = {
   content: string;
@@ -25,6 +25,19 @@ type CodeFrame = {
 
 type MetroStackFrame = StackFrame & { collapse?: boolean };
 
+function fill(width: number): string {
+  return Array(width).join(' ');
+}
+
+function formatPaths(config: { filePath: string | null; line?: number; col?: number }) {
+  const filePath = chalk.reset(config.filePath);
+  return (
+    chalk.dim('(') +
+    filePath +
+    chalk.dim(`:${[config.line, config.col].filter(Boolean).join(':')})`)
+  );
+}
+
 export async function logMetroErrorWithStack(
   projectRoot: string,
   {
@@ -37,17 +50,72 @@ export async function logMetroErrorWithStack(
     error: Error;
   }
 ) {
-  const { getStackFormattedLocation } = require(resolveFrom(
-    projectRoot,
-    '@expo/metro-runtime/symbolicate'
-  ));
+  if (error instanceof SilentError) {
+    return;
+  }
+
+  // process.stdout.write('\u001b[0m'); // Reset attributes
+  // process.stdout.write('\u001bc'); // Reset the terminal
+
+  const { getStackFormattedLocation } = require(
+    resolveFrom(projectRoot, '@expo/metro-runtime/symbolicate')
+  );
 
   Log.log();
   Log.log(chalk.red('Metro error: ') + error.message);
   Log.log();
 
   if (codeFrame) {
-    Log.log(codeFrame.content);
+    const maxWarningLineLength = Math.max(200, process.stdout.columns);
+
+    const lineText = codeFrame.content;
+    const isPreviewTooLong = codeFrame.content
+      .split('\n')
+      .some((line) => line.length > maxWarningLineLength);
+    const column = codeFrame.location?.column;
+    // When the preview is too long, we skip reading the file and attempting to apply
+    // code coloring, this is because it can get very slow.
+    if (isPreviewTooLong) {
+      let previewLine = '';
+      let cursorLine = '';
+
+      const formattedPath = formatPaths({
+        filePath: codeFrame.fileName,
+        line: codeFrame.location?.row,
+        col: codeFrame.location?.column,
+      });
+      // Create a curtailed preview line like:
+      // `...transition:'fade'},k._updatePropsStack=function(){clearImmediate(k._updateImmediate),k._updateImmediate...`
+      // If there is no text preview or column number, we can't do anything.
+      if (lineText && column != null) {
+        const rangeWindow = Math.round(
+          Math.max(codeFrame.fileName?.length ?? 0, Math.max(80, process.stdout.columns)) / 2
+        );
+        let minBounds = Math.max(0, column - rangeWindow);
+        const maxBounds = Math.min(minBounds + rangeWindow * 2, lineText.length);
+        previewLine = lineText.slice(minBounds, maxBounds);
+
+        // If we splice content off the start, then we should append `...`.
+        // This is unlikely to happen since we limit the activation size.
+        if (minBounds > 0) {
+          // Adjust the min bounds so the cursor is aligned after we add the "..."
+          minBounds -= 3;
+          previewLine = chalk.dim('...') + previewLine;
+        }
+        if (maxBounds < lineText.length) {
+          previewLine += chalk.dim('...');
+        }
+
+        // If the column property could be found, then use that to fix the cursor location which is often broken in regex.
+        cursorLine = (column == null ? '' : fill(column) + chalk.reset('^')).slice(minBounds);
+
+        Log.log(
+          [formattedPath, '', previewLine, cursorLine, chalk.dim('(error truncated)')].join('\n')
+        );
+      }
+    } else {
+      Log.log(codeFrame.content);
+    }
   }
 
   if (stack?.length) {
@@ -78,10 +146,13 @@ export async function logMetroErrorWithStack(
 }
 
 export async function logMetroError(projectRoot: string, { error }: { error: Error }) {
-  const { LogBoxLog, parseErrorStack } = require(resolveFrom(
-    projectRoot,
-    '@expo/metro-runtime/symbolicate'
-  ));
+  if (error instanceof SilentError) {
+    return;
+  }
+
+  const { LogBoxLog, parseErrorStack } = require(
+    resolveFrom(projectRoot, '@expo/metro-runtime/symbolicate')
+  );
 
   const stack = parseErrorStack(error.stack);
 
@@ -107,15 +178,14 @@ export async function logMetroError(projectRoot: string, { error }: { error: Err
 }
 
 /** @returns the html required to render the static metro error as an SPA. */
-export function logFromError({ error, projectRoot }: { error: Error; projectRoot: string }): {
+function logFromError({ error, projectRoot }: { error: Error; projectRoot: string }): {
   symbolicated: any;
   symbolicate: (type: string, callback: () => void) => void;
   codeFrame: CodeFrame;
 } {
-  const { LogBoxLog, parseErrorStack } = require(resolveFrom(
-    projectRoot,
-    '@expo/metro-runtime/symbolicate'
-  ));
+  const { LogBoxLog, parseErrorStack } = require(
+    resolveFrom(projectRoot, '@expo/metro-runtime/symbolicate')
+  );
 
   const stack = parseErrorStack(error.stack);
 
@@ -155,9 +225,11 @@ export async function logMetroErrorAsync({
 export async function getErrorOverlayHtmlAsync({
   error,
   projectRoot,
+  routerRoot,
 }: {
   error: Error;
   projectRoot: string;
+  routerRoot: string;
 }) {
   const log = logFromError({ projectRoot, error });
 
@@ -187,7 +259,8 @@ export async function getErrorOverlayHtmlAsync({
       dev: true,
       platform: 'web',
       minify: false,
-      environment: 'node',
+      baseUrl: '',
+      routerRoot,
     }
   );
 

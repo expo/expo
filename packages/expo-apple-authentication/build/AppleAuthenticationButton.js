@@ -31,6 +31,6 @@ export default function AppleAuthenticationButton({ onPress, ...restProps }) {
         }
         return null;
     }
-    return React.createElement(ExpoAppleAuthenticationButton, { onButtonPress: onPress, ...restProps });
+    return <ExpoAppleAuthenticationButton onButtonPress={onPress} {...restProps}/>;
 }
 //# sourceMappingURL=AppleAuthenticationButton.js.map

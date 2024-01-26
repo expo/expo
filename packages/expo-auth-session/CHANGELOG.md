@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+- Remove most of Constants.appOwnership. ([#26313](https://github.com/expo/expo/pull/26313) by [@wschurman](https://github.com/wschurman))
+
+## 5.4.0 — 2023-12-12
+
+### 💡 Others
+
+- Added dependency on `expo-application` as it's no longer a dependency of the `expo` package. ([#25583](https://github.com/expo/expo/pull/25583) by [@tsapeta](https://github.com/tsapeta))
+
+## 5.3.0 — 2023-11-14
+
+### 💡 Others
+
+- Migrate to new standard `URL` support on native. ([#24941](https://github.com/expo/expo/pull/24941) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 5.2.2 — 2023-10-17
+
+_This version does not introduce any user-facing changes._
+
+## 5.2.1 — 2023-09-16
+
+_This version does not introduce any user-facing changes._
+
 ## 5.2.0 — 2023-09-04
 
 ### 🛠 Breaking changes

@@ -53,7 +53,6 @@ export function getTestModules() {
     require('./tests/Constants'),
     require('./tests/FileSystem'),
     require('./tests/Font'),
-    require('./tests/Permissions'),
     require('./tests/ImagePicker'),
     optionalRequire(() => require('./tests/Image'))
   );
@@ -73,6 +72,10 @@ export function getTestModules() {
     require('./tests/Clipboard'),
     optionalRequire(() => require('./tests/SQLite'))
   );
+
+  if (['android', 'ios'].includes(Platform.OS)) {
+    modules.push(require('./tests/SQLiteNext'));
+  }
 
   if (Platform.OS === 'android') {
     modules.push(require('./tests/JSC'));

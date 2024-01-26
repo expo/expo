@@ -5,9 +5,7 @@ description: Learn about what are plugins and mods when creating a config plugin
 
 import { YesIcon, NoIcon, WarningIcon } from '~/ui/components/DocIcons';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { BoxLink } from '~/ui/components/BoxLink';
 import { FileTree } from '~/ui/components/FileTree';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 Plugins are **synchronous** functions that accept an [`ExpoConfig`](/versions/latest/config/app/) and return a modified [`ExpoConfig`](/versions/latest/config/app/).
 
@@ -185,7 +183,7 @@ module.exports = {
 ## How mods work
 
 - The config is read using [`getPrebuildConfig`](https://github.com/expo/expo-cli/blob/43a6162edd646b550c1b7eae6039daf1aaec4fb0/packages/prebuild-config/src/getPrebuildConfig.ts#L12) from `@expo/prebuild-config`.
-- All of the core functionality supported by Expo is added via plugins in `withIosExpoPlugins`. This is stuff like name, version, icons, locales, etc.
+- All of the core functionality supported by Expo is added via plugins in `withIosExpoPlugins`. This includes name, version, icons, locales, and so on.
 - The config is passed to the compiler `compileModsAsync`
 - The compiler adds base mods that are responsible for reading data (like **Info.plist**), executing a named mod (like `mods.ios.infoPlist`), then writing the results to the file system.
 - The compiler iterates over all the mods and asynchronously evaluates them, providing some base props like the `projectRoot`.
@@ -498,20 +496,11 @@ Here is what the serialized config would look like:
 ## Why app.plugin.js for plugins
 
 Config resolution searches for a file named **app.plugin.js** first when a Node module ID is provided as a plugin.
-This is because Node environments are often different to iOS, Android, or web JS environments and therefore require different transpilation presets (ex: `module.exports` instead of `import/export`).
+This is because Node environments are often different to iOS, Android, or web JS environments and therefore require different transpilation presets (for example, `module.exports` instead of `import/export`).
 
 Because of this reasoning, the root of a Node module is searched instead of right next to the **index.js**.
 Imagine you had a TypeScript Node module where the transpiled main file was located at **build/index.js**,
 if app config plugin resolution searched for **build/app.plugin.js** you'd lose the ability to transpile the file differently.
-
-## Next step
-
-<BoxLink
-  title="Development and debugging"
-  description="Learn about development best practices and debugging techniques for app config plugins."
-  href="/config-plugins/development-and-debugging"
-  Icon={BookOpen02Icon}
-/>
 
 [xml2js]: https://www.npmjs.com/package/xml2js
 [expo-plist]: https://www.npmjs.com/package/@expo/plist

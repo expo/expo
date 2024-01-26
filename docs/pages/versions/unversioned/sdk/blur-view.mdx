@@ -10,17 +10,23 @@ import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
-import { PlatformTags } from '~/ui/components/Tag';
 
 A React component that blurs everything underneath the view. Common usage of this is for navigation bars, tab bars, and modals.
 
-> **info** `BlurView` on Android is computationally expensive, so it is recommended not to render more than a few `BlurView` components at once.
+> **info** `BlurView` on Android is an experimental feature. To enable it use the [`experimentalBlurMethod`](#experimentalblurmethod) prop.
 
 <PlatformsSection emulator android ios simulator web />
 
-#### Known issues&ensp;<PlatformTags platforms={['android']} />
+#### Known issues
 
-`BlurView` may render incorrectly during screen transitions made by `react-native-screens`.
+The blur effect does not update when `BlurView` is rendered before dynamic content is rendered using, for example, `FlatList`. To fix this, make sure that `BlurView` is rendered after the dynamic content component. For example:
+
+```jsx
+<View>
+  <FlatList />
+  <BlurView />
+</View>
+```
 
 ## Installation
 
@@ -39,7 +45,7 @@ export default function App() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.background}>
-        {[...Array(20).keys()].map((i) => (
+        {[...Array(20).keys()].map(i => (
           <View
             key={`box-${i}`}
             style={[styles.box, i % 2 === 1 ? styles.boxOdd : styles.boxEven]}

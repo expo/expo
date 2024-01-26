@@ -5,8 +5,6 @@ description: Learn how to add safe areas for your Expo project and other best pr
 
 import { Terminal, SnackInline } from '~/ui/components/Snippet';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 Creating a safe area is a great way to ensure that your app's content is appropriately positioned around notches, status bars, home indicators, and other device and operating system interface elements.
 
@@ -22,7 +20,7 @@ The content is positioned at the top of the screen in the above example. On Andr
 
 ## Use `react-native-safe-area-context`
 
-[`react-native-safe-area-context`](https://github.com/th3rdwave/react-native-safe-area-context) provides a flexible API for accessing device-safe area inset information for both Android and iOS. It also provides a SafeAreaView component that you can use in place of View to inset your views to account for safe areas automatically.
+[`react-native-safe-area-context`](https://github.com/th3rdwave/react-native-safe-area-context) provides a flexible API for accessing device-safe area inset information for both Android and iOS. It also provides a `SafeAreaView` component that you can use in place of View to inset your views to account for safe areas automatically.
 
 Using the library, the result of the previous example changes as it displays the content inside a safe area, as shown below:
 
@@ -111,12 +109,3 @@ By default, React Navigation supports safe areas and uses `react-native-safe-are
 ## Usage with web
 
 If you are targeting the web, you must set up `<SafeAreaProvider>` as described in the [hooks section](#use-usesafeareainsets-hook). If you are doing server-side rendering (SSR), we recommend checking out the [Web SSR section](https://github.com/th3rdwave/react-native-safe-area-context#web-ssr) in the library's documentation.
-
-## Next step
-
-<BoxLink
-  title="Fonts"
-  description="Learn more about different ways to import a custom font and use it in your app."
-  href="/develop/user-interface/fonts"
-  Icon={BookOpen02Icon}
-/>

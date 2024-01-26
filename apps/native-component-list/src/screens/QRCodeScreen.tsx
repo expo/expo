@@ -197,7 +197,7 @@ function QRCodeView() {
             disabled={type !== CameraType.back}
             onPress={onFlashToggle}
             isActive={isLit}
-            iconName="ios-flashlight"
+            iconName="flashlight"
           />
         </View>
       )}
@@ -214,7 +214,7 @@ function OverlayView({
   children?: React.ReactNode;
 }) {
   const [isOverlayActive, setOverlayActive] = React.useState(false);
-  const timer = React.useRef<number | undefined>();
+  const timer = React.useRef<ReturnType<typeof setInterval>>();
   const opacity = React.useRef(new Animated.Value(0));
 
   React.useEffect(() => {

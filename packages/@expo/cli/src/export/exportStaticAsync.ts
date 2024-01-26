@@ -6,47 +6,86 @@
  */
 import assert from 'assert';
 import chalk from 'chalk';
-import fs from 'fs';
+import { RouteNode } from 'expo-router/build/Route';
 import path from 'path';
-import prettyBytes from 'pretty-bytes';
+import resolveFrom from 'resolve-from';
 import { inspect } from 'util';
 
 import { getVirtualFaviconAssetsAsync } from './favicon';
+import { persistMetroAssetsAsync } from './persistMetroAssets';
+import { ExportAssetMap, getFilesFromSerialAssets } from './saveAssets';
 import { Log } from '../log';
 import { DevServerManager } from '../start/server/DevServerManager';
-import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
+import {
+  ExpoRouterRuntimeManifest,
+  MetroBundlerDevServer,
+} from '../start/server/metro/MetroBundlerDevServer';
+import { ExpoRouterServerManifestV1 } from '../start/server/metro/fetchRouterManifest';
 import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
+import { getApiRoutesForDirectory } from '../start/server/metro/router';
+import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import { learnMore } from '../utils/link';
+import { getFreePortAsync } from '../utils/port';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
-type Options = { outputDir: string; minify: boolean; includeMaps: boolean };
+type Options = {
+  files?: ExportAssetMap;
+  outputDir: string;
+  minify: boolean;
+  exportServer: boolean;
+  baseUrl: string;
+  includeSourceMaps: boolean;
+  entryPoint?: string;
+  clear: boolean;
+  asyncRoutes: boolean;
+  routerRoot: string;
+  maxWorkers?: number;
+};
+
+type HtmlRequestLocation = {
+  /** The output file path name to use relative to the static folder. */
+  filePath: string;
+  /** The pathname to make requests to in order to fetch the HTML. */
+  pathname: string;
+  /** The runtime route node object, used to associate async modules with the static HTML. */
+  route: RouteNode;
+};
 
 /** @private */
 export async function unstable_exportStaticAsync(projectRoot: string, options: Options) {
-  Log.warn(
-    `Experimental static rendering is enabled. ` +
+  Log.log(
+    `Static rendering is enabled. ` +
       learnMore('https://docs.expo.dev/router/reference/static-rendering/')
   );
+
+  // Useful for running parallel e2e tests in CI.
+  const port = await getFreePortAsync(8082);
 
   // TODO: Prevent starting the watcher.
   const devServerManager = new DevServerManager(projectRoot, {
     minify: options.minify,
     mode: 'production',
+    port,
     location: {},
+    resetDevServer: options.clear,
+    maxWorkers: options.maxWorkers,
   });
   await devServerManager.startAsync([
     {
       type: 'metro',
       options: {
+        port,
         location: {},
         isExporting: true,
+        resetDevServer: options.clear,
+        maxWorkers: options.maxWorkers,
       },
     },
   ]);
 
   try {
-    await exportFromServerAsync(projectRoot, devServerManager, options);
+    return await exportFromServerAsync(projectRoot, devServerManager, options);
   } finally {
     await devServerManager.stopAsync();
   }
@@ -62,60 +101,133 @@ export async function getFilesToExportFromServerAsync(
   {
     manifest,
     renderAsync,
+    // Servers can handle group routes automatically and therefore
+    // don't require the build-time generation of every possible group
+    // variation.
+    exportServer,
+    // name : contents
+    files = new Map(),
   }: {
-    manifest: any;
-    renderAsync: (pathname: string) => Promise<string>;
+    manifest: ExpoRouterRuntimeManifest;
+    renderAsync: (requestLocation: HtmlRequestLocation) => Promise<string>;
+    exportServer?: boolean;
+    files?: ExportAssetMap;
   }
-): Promise<Map<string, string>> {
-  // name : contents
-  const files = new Map<string, string>();
-
+): Promise<ExportAssetMap> {
   await Promise.all(
-    getHtmlFiles({ manifest }).map(async (outputPath) => {
-      const pathname = outputPath.replace(/(?:index)?\.html$/, '');
-      try {
-        files.set(outputPath, '');
-        const data = await renderAsync(pathname);
-        files.set(outputPath, data);
-      } catch (e: any) {
-        await logMetroErrorAsync({ error: e, projectRoot });
-        throw new Error('Failed to statically export route: ' + pathname);
+    getHtmlFiles({ manifest, includeGroupVariations: !exportServer }).map(
+      async ({ route, filePath, pathname }) => {
+        try {
+          const targetDomain = exportServer ? 'server' : 'client';
+          files.set(filePath, { contents: '', targetDomain });
+          const data = await renderAsync({ route, filePath, pathname });
+          files.set(filePath, {
+            contents: data,
+            routeId: pathname,
+            targetDomain,
+          });
+        } catch (e: any) {
+          await logMetroErrorAsync({ error: e, projectRoot });
+          throw new Error('Failed to statically export route: ' + pathname);
+        }
       }
-    })
+    )
   );
 
   return files;
 }
 
+function modifyRouteNodeInRuntimeManifest(
+  manifest: ExpoRouterRuntimeManifest,
+  callback: (route: RouteNode) => any
+) {
+  const iterateScreens = (screens: ExpoRouterRuntimeManifest['screens']) => {
+    Object.values(screens).map((value) => {
+      if (typeof value !== 'string') {
+        if (value._route) callback(value._route);
+        iterateScreens(value.screens);
+      }
+    });
+  };
+
+  iterateScreens(manifest.screens);
+}
+
+// TODO: Do this earlier in the process.
+function makeRuntimeEntryPointsAbsolute(manifest: ExpoRouterRuntimeManifest, appDir: string) {
+  modifyRouteNodeInRuntimeManifest(manifest, (route) => {
+    if (Array.isArray(route.entryPoints)) {
+      route.entryPoints = route.entryPoints.map((entryPoint) => {
+        if (entryPoint.startsWith('.')) {
+          return path.resolve(appDir, entryPoint);
+        } else if (!path.isAbsolute(entryPoint)) {
+          return resolveFrom(appDir, entryPoint);
+        }
+        return entryPoint;
+      });
+    }
+  });
+}
+
 /** Perform all fs commits */
-export async function exportFromServerAsync(
+async function exportFromServerAsync(
   projectRoot: string,
   devServerManager: DevServerManager,
-  { outputDir, minify, includeMaps }: Options
-): Promise<void> {
-  const injectFaviconTag = await getVirtualFaviconAssetsAsync(projectRoot, outputDir);
+  {
+    outputDir,
+    baseUrl,
+    exportServer,
+    minify,
+    includeSourceMaps,
+    routerRoot,
+    asyncRoutes,
+    files = new Map(),
+  }: Options
+): Promise<ExportAssetMap> {
+  const appDir = path.join(projectRoot, routerRoot);
+  const injectFaviconTag = await getVirtualFaviconAssetsAsync(projectRoot, {
+    outputDir,
+    baseUrl,
+    files,
+  });
 
   const devServer = devServerManager.getDefaultDevServer();
   assert(devServer instanceof MetroBundlerDevServer);
 
-  const [resources, { manifest, renderAsync }] = await Promise.all([
-    devServer.getStaticResourcesAsync({ mode: 'production', minify, includeMaps }),
+  const [resources, { manifest, serverManifest, renderAsync }] = await Promise.all([
+    devServer.getStaticResourcesAsync({
+      isExporting: true,
+      mode: 'production',
+      minify,
+      includeSourceMaps,
+      baseUrl,
+      asyncRoutes,
+      routerRoot,
+    }),
     devServer.getStaticRenderFunctionAsync({
       mode: 'production',
       minify,
+      baseUrl,
+      routerRoot,
     }),
   ]);
 
+  makeRuntimeEntryPointsAbsolute(manifest, appDir);
+
   debug('Routes:\n', inspect(manifest, { colors: true, depth: null }));
 
-  const files = await getFilesToExportFromServerAsync(projectRoot, {
+  await getFilesToExportFromServerAsync(projectRoot, {
+    files,
     manifest,
-    async renderAsync(pathname: string) {
+    exportServer,
+    async renderAsync({ pathname, route }) {
       const template = await renderAsync(pathname);
-      let html = await devServer.composeResourcesWithHtml({
+      let html = await serializeHtmlWithAssets({
         mode: 'production',
-        resources,
+        resources: resources.artifacts,
         template,
+        baseUrl,
+        route,
       });
 
       if (injectFaviconTag) {
@@ -126,132 +238,226 @@ export async function exportFromServerAsync(
     },
   });
 
-  resources.forEach((resource) => {
-    files.set(
-      resource.filename,
-      modifyBundlesWithSourceMaps(resource.filename, resource.source, includeMaps)
-    );
+  getFilesFromSerialAssets(resources.artifacts, {
+    platform: 'web',
+    includeSourceMaps,
+    files,
   });
 
-  fs.mkdirSync(path.join(outputDir), { recursive: true });
-
-  Log.log('');
-  Log.log(chalk.bold`Exporting ${files.size} files:`);
-  await Promise.all(
-    [...files.entries()]
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(async ([file, contents]) => {
-        const length = Buffer.byteLength(contents, 'utf8');
-        Log.log(file, chalk.gray`(${prettyBytes(length)})`);
-        const outputPath = path.join(outputDir, file);
-        await fs.promises.mkdir(path.dirname(outputPath), { recursive: true });
-        await fs.promises.writeFile(outputPath, contents);
-      })
-  );
-  Log.log('');
-}
-
-export function modifyBundlesWithSourceMaps(
-  filename: string,
-  source: string,
-  includeMaps: boolean
-): string {
-  if (filename.endsWith('.js')) {
-    // If the bundle ends with source map URLs then update them to point to the correct location.
-
-    // TODO: basePath support
-    const normalizedFilename = '/' + filename.replace(/^\/+/, '');
-    //# sourceMappingURL=//localhost:8085/index.map?platform=web&dev=false&hot=false&lazy=true&minify=true&resolver.environment=client&transform.environment=client&serializer.output=static
-    //# sourceURL=http://localhost:8085/index.bundle//&platform=web&dev=false&hot=false&lazy=true&minify=true&resolver.environment=client&transform.environment=client&serializer.output=static
-    return source.replace(/^\/\/# (sourceMappingURL|sourceURL)=.*$/gm, (...props) => {
-      if (includeMaps) {
-        if (props[1] === 'sourceURL') {
-          return `//# ${props[1]}=` + normalizedFilename;
-        } else if (props[1] === 'sourceMappingURL') {
-          const mapName = normalizedFilename + '.map';
-          return `//# ${props[1]}=` + mapName;
-        }
-      }
-      return '';
+  if (resources.assets) {
+    // TODO: Collect files without writing to disk.
+    // NOTE(kitten): Re. above, this is now using `files` except for iOS catalog output, which isn't used here
+    await persistMetroAssetsAsync(resources.assets, {
+      files,
+      platform: 'web',
+      outputDirectory: outputDir,
+      baseUrl,
     });
   }
-  return source;
+
+  if (exportServer) {
+    const apiRoutes = await exportApiRoutesAsync({
+      outputDir,
+      server: devServer,
+      routerRoot,
+      manifest: serverManifest,
+      baseUrl,
+    });
+
+    // Add the api routes to the files to export.
+    for (const [route, contents] of apiRoutes) {
+      files.set(route, contents);
+    }
+  } else {
+    warnPossibleInvalidExportType(appDir);
+  }
+
+  return files;
 }
 
-export function getHtmlFiles({ manifest }: { manifest: any }): string[] {
-  const htmlFiles = new Set<string>();
+export function getHtmlFiles({
+  manifest,
+  includeGroupVariations,
+}: {
+  manifest: ExpoRouterRuntimeManifest;
+  includeGroupVariations?: boolean;
+}): HtmlRequestLocation[] {
+  const htmlFiles = new Set<Omit<HtmlRequestLocation, 'pathname'>>();
 
-  function traverseScreens(screens: string | { screens: any; path: string }, basePath = '') {
+  function traverseScreens(
+    screens: ExpoRouterRuntimeManifest['screens'],
+    route: RouteNode | null,
+    baseUrl = ''
+  ) {
     for (const value of Object.values(screens)) {
+      let leaf: string | null = null;
       if (typeof value === 'string') {
-        let filePath = basePath + value;
-        if (value === '') {
+        leaf = value;
+      } else if (Object.keys(value.screens).length === 0) {
+        leaf = value.path;
+        route = value._route ?? null;
+      }
+
+      if (leaf != null) {
+        let filePath = baseUrl + leaf;
+        if (leaf === '') {
           filePath =
-            basePath === ''
+            baseUrl === ''
               ? 'index'
-              : basePath.endsWith('/')
-              ? basePath + 'index'
-              : basePath.slice(0, -1);
+              : baseUrl.endsWith('/')
+                ? baseUrl + 'index'
+                : baseUrl.slice(0, -1);
         }
-        // TODO: Dedupe requests for alias routes.
-        addOptionalGroups(filePath);
+
+        // This should never happen, the type of `string | object` originally comes from React Navigation.
+        if (!route) {
+          throw new Error(
+            `Internal error: Route not found for "${filePath}" while collecting static export paths.`
+          );
+        }
+
+        if (includeGroupVariations) {
+          // TODO: Dedupe requests for alias routes.
+          addOptionalGroups(filePath, route);
+        } else {
+          htmlFiles.add({
+            filePath,
+            route,
+          });
+        }
       } else if (typeof value === 'object' && value?.screens) {
-        const newPath = basePath + value.path + '/';
-        traverseScreens(value.screens, newPath);
+        const newPath = baseUrl + value.path + '/';
+        traverseScreens(value.screens, value._route ?? null, newPath);
       }
     }
   }
 
-  function addOptionalGroups(path: string) {
+  function addOptionalGroups(path: string, route: RouteNode) {
     const variations = getPathVariations(path);
     for (const variation of variations) {
-      htmlFiles.add(variation);
+      htmlFiles.add({ filePath: variation, route });
     }
   }
 
-  traverseScreens(manifest.screens);
+  traverseScreens(manifest.screens, null);
 
-  return Array.from(htmlFiles).map((value) => {
-    const parts = value.split('/');
+  return uniqueBy(Array.from(htmlFiles), (value) => value.filePath).map((value) => {
+    const parts = value.filePath.split('/');
     // Replace `:foo` with `[foo]` and `*foo` with `[...foo]`
     const partsWithGroups = parts.map((part) => {
-      if (part.startsWith(':')) {
+      if (part === '*not-found') {
+        return `+not-found`;
+      } else if (part.startsWith(':')) {
         return `[${part.slice(1)}]`;
       } else if (part.startsWith('*')) {
         return `[...${part.slice(1)}]`;
       }
       return part;
     });
-    return partsWithGroups.join('/') + '.html';
+    const filePathLocation = partsWithGroups.join('/');
+    const filePath = filePathLocation + '.html';
+    return {
+      ...value,
+      filePath,
+      pathname: filePathLocation.replace(/(\/?index)?$/, ''),
+    };
   });
+}
+
+function uniqueBy<T>(array: T[], key: (value: T) => string): T[] {
+  const seen = new Set<string>();
+  const result: T[] = [];
+  for (const value of array) {
+    const id = key(value);
+    if (!seen.has(id)) {
+      seen.add(id);
+      result.push(value);
+    }
+  }
+  return result;
 }
 
 // Given a route like `(foo)/bar/(baz)`, return all possible variations of the route.
 // e.g. `(foo)/bar/(baz)`, `(foo)/bar/baz`, `foo/bar/(baz)`, `foo/bar/baz`,
 export function getPathVariations(routePath: string): string[] {
-  const variations = new Set<string>([routePath]);
+  const variations = new Set<string>();
   const segments = routePath.split('/');
 
-  function generateVariations(segments: string[], index: number): void {
-    if (index >= segments.length) {
+  function generateVariations(segments: string[], current = ''): void {
+    if (segments.length === 0) {
+      if (current) variations.add(current);
       return;
     }
 
-    const newSegments = [...segments];
-    while (
-      index < newSegments.length &&
-      matchGroupName(newSegments[index]) &&
-      newSegments.length > 1
-    ) {
-      newSegments.splice(index, 1);
-      variations.add(newSegments.join('/'));
-      generateVariations(newSegments, index + 1);
+    const [head, ...rest] = segments;
+
+    if (matchGroupName(head)) {
+      const groups = head.slice(1, -1).split(',');
+
+      if (groups.length > 1) {
+        for (const group of groups) {
+          // If there are multiple groups, recurse on each group.
+          generateVariations([`(${group.trim()})`, ...rest], current);
+        }
+        return;
+      } else {
+        // Start a fork where this group is included
+        generateVariations(rest, current ? `${current}/(${groups[0]})` : `(${groups[0]})`);
+        // This code will continue and add paths without this group included`
+      }
+    } else if (current) {
+      current = `${current}/${head}`;
+    } else {
+      current = head;
     }
 
-    generateVariations(segments, index + 1);
+    generateVariations(rest, current);
   }
 
-  generateVariations(segments, 0);
+  generateVariations(segments);
 
   return Array.from(variations);
+}
+
+async function exportApiRoutesAsync({
+  outputDir,
+  server,
+  routerRoot,
+  baseUrl,
+  ...props
+}: {
+  outputDir: string;
+  server: MetroBundlerDevServer;
+  routerRoot: string;
+  manifest: ExpoRouterServerManifestV1;
+  baseUrl: string;
+}): Promise<ExportAssetMap> {
+  const { manifest, files } = await server.exportExpoRouterApiRoutesAsync({
+    mode: 'production',
+    routerRoot,
+    outputDir: '_expo/functions',
+    prerenderManifest: props.manifest,
+    baseUrl,
+  });
+
+  Log.log(chalk.bold`Exporting ${files.size} API Routes.`);
+
+  files.set('_expo/routes.json', {
+    contents: JSON.stringify(manifest, null, 2),
+    targetDomain: 'server',
+  });
+
+  return files;
+}
+
+function warnPossibleInvalidExportType(appDir: string) {
+  const apiRoutes = getApiRoutesForDirectory(appDir);
+  if (apiRoutes.length) {
+    // TODO: Allow API Routes for native-only.
+    Log.warn(
+      chalk.yellow`Skipping export for API routes because \`web.output\` is not "server". You may want to remove the routes: ${apiRoutes
+        .map((v) => path.relative(appDir, v))
+        .join(', ')}`
+    );
+  }
 }

@@ -8,7 +8,7 @@ import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.loader.FileDownloader.AssetDownloadCallback
 import expo.modules.updates.loader.FileDownloader.RemoteUpdateDownloadCallback
-import expo.modules.updates.manifest.EmbeddedManifest
+import expo.modules.updates.manifest.EmbeddedManifestUtils
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import java.io.File
@@ -25,7 +25,7 @@ class RemoteLoader internal constructor(
   configuration: UpdatesConfiguration,
   database: UpdatesDatabase,
   private val mFileDownloader: FileDownloader,
-  updatesDirectory: File?,
+  updatesDirectory: File,
   private val launchedUpdate: UpdateEntity?,
   private val loaderFiles: LoaderFiles
 ) : Loader(context, configuration, database, updatesDirectory, loaderFiles) {
@@ -34,7 +34,7 @@ class RemoteLoader internal constructor(
     configuration: UpdatesConfiguration,
     database: UpdatesDatabase,
     fileDownloader: FileDownloader,
-    updatesDirectory: File?,
+    updatesDirectory: File,
     launchedUpdate: UpdateEntity?
   ) : this(context, configuration, database, fileDownloader, updatesDirectory, launchedUpdate, LoaderFiles())
 
@@ -44,7 +44,7 @@ class RemoteLoader internal constructor(
     configuration: UpdatesConfiguration,
     callback: RemoteUpdateDownloadCallback
   ) {
-    val embeddedUpdate = loaderFiles.readEmbeddedManifest(context, configuration)?.updateEntity
+    val embeddedUpdate = loaderFiles.readEmbeddedUpdate(context, configuration)?.updateEntity
     val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(database, configuration, launchedUpdate, embeddedUpdate)
     mFileDownloader.downloadRemoteUpdate(configuration, extraHeaders, context, callback)
   }
@@ -59,10 +59,6 @@ class RemoteLoader internal constructor(
     mFileDownloader.downloadAsset(assetEntity, updatesDirectory, configuration, context, callback)
   }
 
-  override fun shouldSkipAsset(assetEntity: AssetEntity): Boolean {
-    return false
-  }
-
   companion object {
     private val TAG = RemoteLoader::class.java.simpleName
 
@@ -71,7 +67,7 @@ class RemoteLoader internal constructor(
       configuration: UpdatesConfiguration,
       database: UpdatesDatabase,
       selectionPolicy: SelectionPolicy,
-      directory: File?,
+      directory: File,
       launchedUpdate: UpdateEntity?,
       loaderResult: LoaderResult,
       onComplete: (availableUpdate: UpdateEntity?, didRollBackToEmbedded: Boolean) -> Unit
@@ -99,7 +95,7 @@ class RemoteLoader internal constructor(
       configuration: UpdatesConfiguration,
       database: UpdatesDatabase,
       selectionPolicy: SelectionPolicy,
-      directory: File?,
+      directory: File,
       launchedUpdate: UpdateEntity?,
       updateDirective: UpdateDirective.RollBackToEmbeddedUpdateDirective,
       onComplete: (didRollBackToEmbedded: Boolean) -> Unit
@@ -109,12 +105,7 @@ class RemoteLoader internal constructor(
         return
       }
 
-      val embeddedUpdate = EmbeddedManifest.get(context, configuration)!!.updateEntity
-      if (embeddedUpdate == null) {
-        onComplete(false)
-        return
-      }
-
+      val embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, configuration)!!.updateEntity
       val manifestFilters = ManifestMetadata.getManifestFilters(database, configuration)
       if (!selectionPolicy.shouldLoadRollBackToEmbeddedDirective(updateDirective, embeddedUpdate, launchedUpdate, manifestFilters)) {
         onComplete(false)

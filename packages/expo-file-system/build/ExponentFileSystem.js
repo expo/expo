@@ -1,11 +1,5 @@
-import { NativeModulesProxy } from 'expo-modules-core';
+import { requireOptionalNativeModule } from 'expo-modules-core';
 import ExponentFileSystemShim from './ExponentFileSystemShim';
-let platformModule;
-if (NativeModulesProxy.ExponentFileSystem) {
-    platformModule = NativeModulesProxy.ExponentFileSystem;
-}
-else {
-    platformModule = ExponentFileSystemShim;
-}
-export default platformModule;
+export default requireOptionalNativeModule('ExponentFileSystem') ??
+    ExponentFileSystemShim;
 //# sourceMappingURL=ExponentFileSystem.js.map

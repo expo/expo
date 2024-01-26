@@ -1,6 +1,6 @@
 {
   "name": "expo-asset",
-  "version": "8.12.0",
+  "version": "9.0.1",
   "description": "An Expo universal module to download assets and pass them into other APIs",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -37,18 +37,17 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
+    "@react-native/assets-registry": "~0.73.1",
     "blueimp-md5": "^2.10.0",
+    "expo-constants": "~15.4.0",
+    "expo-file-system": "~16.0.0",
     "invariant": "^2.2.4",
-    "md5-file": "^3.2.3",
-    "path-browserify": "^1.0.0",
-    "url-parse": "^1.5.9",
-    "expo-constants": "~15.0.0",
-    "expo-file-system": "~15.6.0"
+    "md5-file": "^3.2.3"
   },
   "devDependencies": {
     "@testing-library/react-hooks": "^7.0.1",
+    "@types/blueimp-md5": "^2.18.2",
     "@types/react-native__assets": "~1.0.0",
-    "@types/url-parse": "^1.4.1",
     "expo-module-scripts": "^3.0.0"
   }
 }

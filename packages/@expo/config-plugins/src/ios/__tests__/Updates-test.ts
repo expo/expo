@@ -21,41 +21,44 @@ describe('iOS Updates config', () => {
     vol.reset();
   });
 
-  it('sets the correct values in Expo.plist', () => {
+  it('sets the correct values in Expo.plist', async () => {
     vol.fromJSON({
       '/app/hello': fsReal.readFileSync(sampleCodeSigningCertificatePath, 'utf-8'),
     });
 
-    expect(
-      Updates.setUpdatesConfig(
-        '/app',
-        {
-          sdkVersion: '37.0.0',
-          slug: 'my-app',
-          owner: 'owner',
-          updates: {
-            enabled: false,
-            fallbackToCacheTimeout: 2000,
-            checkAutomatically: 'ON_ERROR_RECOVERY',
-            codeSigningCertificate: 'hello',
-            codeSigningMetadata: {
-              alg: 'rsa-v1_5-sha256',
-              keyid: 'test',
-            },
-            requestHeaders: {
-              'expo-channel-name': 'test',
-              testheader: 'test',
-            },
+    const config = await Updates.setUpdatesConfigAsync(
+      '/app',
+      {
+        sdkVersion: '37.0.0',
+        runtimeVersion: {
+          policy: 'sdkVersion',
+        },
+        slug: 'my-app',
+        owner: 'owner',
+        updates: {
+          enabled: false,
+          fallbackToCacheTimeout: 2000,
+          checkAutomatically: 'ON_ERROR_RECOVERY',
+          codeSigningCertificate: 'hello',
+          codeSigningMetadata: {
+            alg: 'rsa-v1_5-sha256',
+            keyid: 'test',
+          },
+          requestHeaders: {
+            'expo-channel-name': 'test',
+            testheader: 'test',
           },
         },
-        {} as any,
-        '0.11.0'
-      )
-    ).toMatchObject({
+      },
+      {} as any,
+      '0.11.0'
+    );
+
+    expect(config).toMatchObject({
       EXUpdatesEnabled: false,
       EXUpdatesCheckOnLaunch: 'ERROR_RECOVERY_ONLY',
       EXUpdatesLaunchWaitMs: 2000,
-      EXUpdatesSDKVersion: '37.0.0',
+      EXUpdatesRuntimeVersion: 'exposdk:37.0.0',
       EXUpdatesCodeSigningCertificate: fsReal.readFileSync(
         sampleCodeSigningCertificatePath,
         'utf-8'

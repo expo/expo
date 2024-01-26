@@ -1,5 +1,6 @@
 import { ExpoConfig } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
+import chalk from 'chalk';
 
 import { clearNativeFolder, promptToClearMalformedNativeProjectsAsync } from './clearNativeFolder';
 import { configureProjectAsync } from './configureProjectAsync';
@@ -7,11 +8,13 @@ import { ensureConfigAsync } from './ensureConfigAsync';
 import { assertPlatforms, ensureValidPlatforms, resolveTemplateOption } from './resolveOptions';
 import { updateFromTemplateAsync } from './updateFromTemplate';
 import { installAsync } from '../install/installAsync';
+import { Log } from '../log';
 import { env } from '../utils/env';
 import { setNodeEnv } from '../utils/nodeEnv';
 import { clearNodeModulesAsync } from '../utils/nodeModules';
 import { logNewSection } from '../utils/ora';
 import { profile } from '../utils/profile';
+import { confirmAsync } from '../utils/prompts';
 
 const debug = require('debug')('expo:prebuild') as typeof console.log;
 
@@ -63,7 +66,7 @@ export async function prebuildAsync(
   require('@expo/env').load(projectRoot);
 
   if (options.clean) {
-    const { maybeBailOnGitStatusAsync } = await import('../utils/git');
+    const { maybeBailOnGitStatusAsync } = await import('../utils/git.js');
     // Clean the project folders...
     if (await maybeBailOnGitStatusAsync()) {
       return null;
@@ -84,41 +87,66 @@ export async function prebuildAsync(
   const { exp, pkg } = await ensureConfigAsync(projectRoot, { platforms: options.platforms });
 
   // Create native projects from template.
-  const { hasNewProjectFiles, needsPodInstall, hasNewDependencies } = await updateFromTemplateAsync(
-    projectRoot,
-    {
+  const { hasNewProjectFiles, needsPodInstall, templateChecksum, changedDependencies } =
+    await updateFromTemplateAsync(projectRoot, {
       exp,
       pkg,
       template: options.template != null ? resolveTemplateOption(options.template) : undefined,
       platforms: options.platforms,
       skipDependencyUpdate: options.skipDependencyUpdate,
-    }
-  );
+    });
 
   // Install node modules
   if (options.install) {
-    if (hasNewDependencies && options.packageManager?.npm) {
-      await clearNodeModulesAsync(projectRoot);
-    }
+    if (changedDependencies.length) {
+      if (options.packageManager?.npm) {
+        await clearNodeModulesAsync(projectRoot);
+      }
 
-    await installAsync([], {
-      npm: !!options.packageManager?.npm,
-      yarn: !!options.packageManager?.yarn,
-      pnpm: !!options.packageManager?.pnpm,
-      bun: !!options.packageManager?.bun,
-      silent: !(env.EXPO_DEBUG || env.CI),
-    });
+      Log.log(chalk.gray(chalk`Dependencies in the {bold package.json} changed:`));
+      Log.log(chalk.gray('  ' + changedDependencies.join(', ')));
+
+      // Installing dependencies is a legacy feature from the unversioned
+      // command. We know opt to not change dependencies unless a template
+      // indicates a new dependency is required, or if the core dependencies are wrong.
+      if (
+        await confirmAsync({
+          message: `Install the updated dependencies?`,
+          initial: true,
+        })
+      ) {
+        await installAsync([], {
+          npm: !!options.packageManager?.npm,
+          yarn: !!options.packageManager?.yarn,
+          pnpm: !!options.packageManager?.pnpm,
+          bun: !!options.packageManager?.bun,
+          silent: !(env.EXPO_DEBUG || env.CI),
+        });
+      }
+    }
   }
 
-  // Apply Expo config to native projects
-  const configSyncingStep = logNewSection('Config syncing');
+  // Apply Expo config to native projects. Prevent log-spew from ora when running in debug mode.
+  const configSyncingStep: { succeed(text?: string): unknown; fail(text?: string): unknown } =
+    env.EXPO_DEBUG
+      ? {
+          succeed(text) {
+            Log.log(text!);
+          },
+          fail(text) {
+            Log.error(text!);
+          },
+        }
+      : logNewSection('Running prebuild');
   try {
     await profile(configureProjectAsync)(projectRoot, {
       platforms: options.platforms,
+      exp,
+      templateChecksum,
     });
-    configSyncingStep.succeed('Config synced');
+    configSyncingStep.succeed('Finished prebuild');
   } catch (error) {
-    configSyncingStep.fail('Config sync failed');
+    configSyncingStep.fail('Prebuild failed');
     throw error;
   }
 
@@ -126,7 +154,7 @@ export async function prebuildAsync(
   let podsInstalled: boolean = false;
   // err towards running pod install less because it's slow and users can easily run npx pod-install afterwards.
   if (options.platforms.includes('ios') && options.install && needsPodInstall) {
-    const { installCocoaPodsAsync } = await import('../utils/cocoapods');
+    const { installCocoaPodsAsync } = await import('../utils/cocoapods.js');
 
     podsInstalled = await installCocoaPodsAsync(projectRoot);
   } else {

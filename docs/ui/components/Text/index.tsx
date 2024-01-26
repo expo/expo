@@ -28,7 +28,7 @@ export const createPermalinkedComponent = (
   }
 ) => {
   const { baseNestingLevel, sidebarType = HeadingType.Text } = options || {};
-  return ({ children, level, id, ...props }: PermalinkedComponentProps) => {
+  return ({ children, level, id, className, ...props }: PermalinkedComponentProps) => {
     const cleanChildren = React.Children.map(children, child => {
       if (React.isValidElement(child) && child?.props?.href) {
         isDev &&
@@ -123,7 +123,6 @@ const linkStyled = css({
 const codeStyle = css({
   borderColor: theme.border.secondary,
   borderRadius: borderRadius.sm,
-  verticalAlign: 'initial',
   wordBreak: 'unset',
 });
 
@@ -142,7 +141,7 @@ export const kbdStyle = css({
 });
 
 const { h1, h2, h3, h4, h5 } = typography.headers.default;
-const codeInHeaderStyle = { '& code': { fontSize: '95%' } };
+const codeInHeaderStyle = { '& code': { fontSize: '90%' } };
 
 const h1Style = {
   ...h1,
@@ -233,12 +232,14 @@ export const MONOSPACE = createTextComponent(TextElement.CODE);
 
 const isExternalLink = (href?: string) => href?.includes('://');
 
-export const A = (props: LinkBaseProps & { isStyled?: boolean }) => {
-  const { isStyled, openInNewTab, ...rest } = props;
+export const A = (props: LinkBaseProps & { isStyled?: boolean; shouldLeakReferrer?: boolean }) => {
+  const { isStyled, openInNewTab, shouldLeakReferrer, ...rest } = props;
+
   return (
     <LinkBase
       css={[link, !isStyled && linkStyled]}
-      openInNewTab={openInNewTab ?? isExternalLink(props.href)}
+      {...(shouldLeakReferrer && { target: '_blank', referrerPolicy: 'origin' })}
+      openInNewTab={(!shouldLeakReferrer && openInNewTab) ?? isExternalLink(props.href)}
       {...rest}
     />
   );

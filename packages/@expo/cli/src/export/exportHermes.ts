@@ -1,55 +1,11 @@
-import type { ExpoConfig, Platform } from '@expo/config';
-import spawnAsync from '@expo/spawn-async';
+import { ExpoConfig } from '@expo/config';
 import fs from 'fs-extra';
-import os from 'os';
 import path from 'path';
-import process from 'process';
 
-import {
-  importMetroSourceMapComposeSourceMapsFromProject,
-  resolveFromProject,
-} from '../start/server/metro/resolveFromProject';
-
-export function importHermesCommandFromProject(projectRoot: string): string {
-  const platformExecutable = getHermesCommandPlatform();
-  const hermescLocations = [
-    // Override hermesc dir by environment variables
-    process.env['REACT_NATIVE_OVERRIDE_HERMES_DIR']
-      ? `${process.env['REACT_NATIVE_OVERRIDE_HERMES_DIR']}/build/bin/hermesc`
-      : '',
-
-    // Building hermes from source
-    'react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc',
-
-    // Prebuilt hermesc in official react-native 0.69+
-    `react-native/sdks/hermesc/${platformExecutable}`,
-
-    // Legacy hermes-engine package
-    `hermes-engine/${platformExecutable}`,
-  ];
-
-  for (const location of hermescLocations) {
-    try {
-      return resolveFromProject(projectRoot, location);
-    } catch {}
-  }
-  throw new Error('Cannot find the hermesc executable.');
-}
-
-function getHermesCommandPlatform(): string {
-  switch (os.platform()) {
-    case 'darwin':
-      return 'osx-bin/hermesc';
-    case 'linux':
-      return 'linux64-bin/hermesc';
-    case 'win32':
-      return 'win64-bin/hermesc.exe';
-    default:
-      throw new Error(`Unsupported host platform for Hermes compiler: ${os.platform()}`);
-  }
-}
-
-export function isEnableHermesManaged(expoConfig: ExpoConfig, platform: Platform): boolean {
+export function isEnableHermesManaged(
+  expoConfig: Partial<Pick<ExpoConfig, 'ios' | 'android' | 'jsEngine'>>,
+  platform: string
+): boolean {
   switch (platform) {
     case 'android': {
       return (expoConfig.android?.jsEngine ?? expoConfig.jsEngine) !== 'jsc';
@@ -60,56 +16,6 @@ export function isEnableHermesManaged(expoConfig: ExpoConfig, platform: Platform
     default:
       return false;
   }
-}
-
-interface HermesBundleOutput {
-  hbc: Uint8Array;
-  sourcemap: string;
-}
-export async function buildHermesBundleAsync(
-  projectRoot: string,
-  code: string,
-  map: string,
-  optimize: boolean = false
-): Promise<HermesBundleOutput> {
-  const tempDir = path.join(os.tmpdir(), `expo-bundler-${process.pid}`);
-  await fs.ensureDir(tempDir);
-  try {
-    const tempBundleFile = path.join(tempDir, 'index.bundle');
-    const tempSourcemapFile = path.join(tempDir, 'index.bundle.map');
-    await fs.writeFile(tempBundleFile, code);
-    await fs.writeFile(tempSourcemapFile, map);
-
-    const tempHbcFile = path.join(tempDir, 'index.hbc');
-    const hermesCommand = importHermesCommandFromProject(projectRoot);
-    const args = ['-emit-binary', '-out', tempHbcFile, tempBundleFile, '-output-source-map'];
-    if (optimize) {
-      args.push('-O');
-    }
-    await spawnAsync(hermesCommand, args);
-
-    const [hbc, sourcemap] = await Promise.all([
-      fs.readFile(tempHbcFile),
-      createHermesSourcemapAsync(projectRoot, map, `${tempHbcFile}.map`),
-    ]);
-    return {
-      hbc,
-      sourcemap,
-    };
-  } finally {
-    await fs.remove(tempDir);
-  }
-}
-
-export async function createHermesSourcemapAsync(
-  projectRoot: string,
-  sourcemap: string,
-  hermesMapFile: string
-): Promise<string> {
-  const composeSourceMaps = importMetroSourceMapComposeSourceMapsFromProject(projectRoot);
-  const bundlerSourcemap = JSON.parse(sourcemap);
-  const hermesSourcemap = await fs.readJSON(hermesMapFile);
-  return JSON.stringify(composeSourceMaps([bundlerSourcemap, hermesSourcemap]));
 }
 
 export function parseGradleProperties(content: string): Record<string, string> {

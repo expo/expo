@@ -429,6 +429,9 @@ EX_EXPORT_MODULE(ExponentAV);
 {
   NSNumber *interruptionType = [[notification userInfo] objectForKey:AVAudioSessionInterruptionTypeKey];
   if (interruptionType.unsignedIntegerValue == AVAudioSessionInterruptionTypeBegan) {
+    if (_audioRecorder && [_audioRecorder isRecording]) {
+      [self _deactivateAudioSession];
+    }
     _currentAudioSessionMode = EXAVAudioSessionModeInactive;
   }
   

@@ -1,5 +1,6 @@
 ---
 title: Error recovery
+description: Learn how to take advantage of using built-in error recovery when using expo-updates library.
 ---
 
 import { Tab, Tabs } from '~/ui/components/Tabs';
@@ -61,7 +62,7 @@ If an error is caught before the "content appeared" event has fired, AND this is
 
 ## Error stacktraces
 
-If your app encounters a fatal JS error, and the error recovery system cannot recover, it will re-throw the original exception in order to cause a crash. The stacktrace will look similar to this:
+If your app encounters a fatal JS error, and the error recovery system cannot recover, it will re-throw the original exception to cause a crash. The stacktrace will look similar to this:
 
 <Tabs tabs={["iOS", "Android"]}>
 
@@ -110,7 +111,7 @@ AndroidRuntime: 	at com.facebook.react.bridge.queue.MessageQueueThreadImpl$4.run
 AndroidRuntime: 	at java.lang.Thread.run(Thread.java:923)
 ```
 
-On Android, the stacktrace of the original exception is preserved. Depending on your crash reporting service, you may or may not need to reproduce the crash locally in order to see more information about the underlying error.
+On Android, the stacktrace of the original exception is preserved. Depending on your crash reporting service, you may or may not need to reproduce the crash locally to see more information about the underlying error.
 
 </Tab>
 

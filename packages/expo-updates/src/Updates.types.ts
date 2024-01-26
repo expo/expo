@@ -1,9 +1,11 @@
-import { NewManifest, BareManifest } from 'expo-manifests';
+import { ExpoUpdatesManifest, EmbeddedManifest } from 'expo-manifests';
 
-export type Manifest = NewManifest | BareManifest;
+export type Manifest = ExpoUpdatesManifest | EmbeddedManifest;
 
 /**
- * The types of update-related events.
+ * The types of update-related events, used with `addListener()` and `useUpdateEvents()`.
+ * @deprecated These APIs are deprecated and will be removed in a future release corresponding with SDK 51.
+ * Use [`useUpdates()`](#useupdates) instead.
  */
 export enum UpdateEventType {
   /**
@@ -22,7 +24,36 @@ export enum UpdateEventType {
   ERROR = 'error',
 }
 
-type UpdateCheckResultRollBackToEmbedded = {
+export enum UpdateCheckResultNotAvailableReason {
+  /**
+   * No update manifest or rollback directive received from the update server.
+   */
+  NO_UPDATE_AVAILABLE_ON_SERVER = 'noUpdateAvailableOnServer',
+  /**
+   * An update manifest was received from the update server, but the update is not launchable,
+   * or does not pass the configured selection policy.
+   */
+  UPDATE_REJECTED_BY_SELECTION_POLICY = 'updateRejectedBySelectionPolicy',
+  /**
+   * An update manifest was received from the update server, but the update has been previously
+   * launched on this device and never successfully launched.
+   */
+  UPDATE_PREVIOUSLY_FAILED = 'updatePreviouslyFailed',
+  /**
+   * A rollback directive was received from the update server, but the directive does not pass
+   * the configured selection policy.
+   */
+  ROLLBACK_REJECTED_BY_SELECTION_POLICY = 'rollbackRejectedBySelectionPolicy',
+  /**
+   * A rollback directive was received from the update server, but this app has no embedded update.
+   */
+  ROLLBACK_NO_EMBEDDED = 'rollbackNoEmbeddedConfiguration',
+}
+
+/**
+ * The update check result when a rollback directive is received.
+ */
+export type UpdateCheckResultRollBack = {
   /**
    * Whether an update is available. This property is false for a roll back update.
    */
@@ -35,12 +66,16 @@ type UpdateCheckResultRollBackToEmbedded = {
    * Whether a roll back to embedded update is available.
    */
   isRollBackToEmbedded: true;
+  /**
+   * If no new update is found, this contains one of several enum values indicating the reason.
+   */
+  reason: undefined;
 };
 
 /**
- * The successful result of checking for a new update.
+ * The update check result when a new update is found on the server.
  */
-export type UpdateCheckResultSuccess = {
+export type UpdateCheckResultAvailable = {
   /**
    * Whether an update is available. This property is false for a roll back update.
    */
@@ -53,12 +88,16 @@ export type UpdateCheckResultSuccess = {
    * Whether a roll back to embedded update is available.
    */
   isRollBackToEmbedded: false;
+  /**
+   * If no new update is found, this contains one of several enum values indicating the reason.
+   */
+  reason: undefined;
 };
 
 /**
- * The failed result of checking for a new update.
+ * The update check result if no new update was found.
  */
-export type UpdateCheckResultFailure = {
+export type UpdateCheckResultNotAvailable = {
   /**
    * Whether an update is available. This property is false for a roll back update.
    */
@@ -71,15 +110,29 @@ export type UpdateCheckResultFailure = {
    * Whether a roll back to embedded update is available.
    */
   isRollBackToEmbedded: false;
+  /**
+   * If no new update is found, this contains one of several enum values indicating the reason.
+   */
+  reason: UpdateCheckResultNotAvailableReason;
 };
 
 /**
  * The result of checking for a new update.
  */
 export type UpdateCheckResult =
-  | UpdateCheckResultRollBackToEmbedded
-  | UpdateCheckResultSuccess
-  | UpdateCheckResultFailure;
+  | UpdateCheckResultRollBack
+  | UpdateCheckResultAvailable
+  | UpdateCheckResultNotAvailable;
+
+/**
+ * @deprecated
+ */
+export type UpdateCheckResultSuccess = UpdateCheckResultAvailable;
+
+/**
+ * @deprecated
+ */
+export type UpdateCheckResultFailure = UpdateCheckResultNotAvailable;
 
 /**
  * The successful result of fetching a new update.
@@ -87,7 +140,7 @@ export type UpdateCheckResult =
 export type UpdateFetchResultSuccess = {
   /**
    * Whether the fetched update is new (that is, a different version than what's currently running).
-   * False when roll back to embedded is true.
+   * Always `true` when `isRollBackToEmbedded` is `false`.
    */
   isNew: true;
   /**
@@ -106,7 +159,7 @@ export type UpdateFetchResultSuccess = {
 export type UpdateFetchResultFailure = {
   /**
    * Whether the fetched update is new (that is, a different version than what's currently running).
-   * False when roll back to embedded is true.
+   * Always `false` when `isRollBackToEmbedded` is `true`.
    */
   isNew: false;
   /**
@@ -122,10 +175,10 @@ export type UpdateFetchResultFailure = {
 /**
  * The roll back to embedded result of fetching a new update.
  */
-type UpdateFetchResultRollBackToEmbedded = {
+export type UpdateFetchResultRollBackToEmbedded = {
   /**
    * Whether the fetched update is new (that is, a different version than what's currently running).
-   * False when roll back to embedded is true.
+   * Always `false` when `isRollBackToEmbedded` is `true`.
    */
   isNew: false;
   /**
@@ -178,7 +231,7 @@ export type UpdatesLogEntry = {
    */
   message: string;
   /**
-   * One of the defined code values for expo-updates log entries.
+   * One of the defined code values for `expo-updates` log entries.
    */
   code: UpdatesLogEntryCode;
   /**
@@ -194,7 +247,7 @@ export type UpdatesLogEntry = {
    */
   assetId?: string;
   /**
-   * If present, an iOS or Android native stack trace associated with this log entry.
+   * If present, an Android or iOS native stack trace associated with this log entry.
    */
   stacktrace?: string[];
 };
@@ -212,6 +265,7 @@ export enum UpdatesLogEntryCode {
   UPDATE_FAILED_TO_LOAD = 'UpdateFailedToLoad',
   ASSETS_FAILED_TO_LOAD = 'AssetsFailedToLoad',
   JS_RUNTIME_ERROR = 'JSRuntimeError',
+  INITIALIZATION_ERROR = 'InitializationError',
   UNKNOWN = 'Unknown',
 }
 
@@ -229,7 +283,9 @@ export enum UpdatesLogEntryLevel {
 
 /**
  * The possible settings that determine if expo-updates will check for updates on app startup.
- * By default, Expo will check for updates every time the app is loaded. Set this to `ON_ERROR_RECOVERY` to disable automatic checking unless recovering from an error. Set this to `NEVER` to completely disable automatic checking. Must be one of `ON_LOAD` (default value), `ON_ERROR_RECOVERY`, `WIFI_ONLY`, or `NEVER`
+ * By default, Expo will check for updates every time the app is loaded.
+ * Set this to `ON_ERROR_RECOVERY` to disable automatic checking unless recovering from an error.
+ * Set this to `NEVER` to completely disable automatic checking.
  */
 export enum UpdatesCheckAutomaticallyValue {
   /**
@@ -241,7 +297,7 @@ export enum UpdatesCheckAutomaticallyValue {
    */
   ON_ERROR_RECOVERY = 'ON_ERROR_RECOVERY',
   /**
-   * Only checks for updates when the app starts and has a WiFi connection.
+   * Only checks for updates when the app starts and has a Wi-Fi connection.
    */
   WIFI_ONLY = 'WIFI_ONLY',
   /**
@@ -250,7 +306,6 @@ export enum UpdatesCheckAutomaticallyValue {
   NEVER = 'NEVER',
 }
 
-// @docsMissing
 /**
  * @hidden
  */

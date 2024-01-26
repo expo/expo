@@ -1,5 +1,6 @@
 ---
 title: Use an image picker
+description: In this tutorial, learn how to use Expo Image Picker.
 ---
 
 import { SnackInline, Terminal } from '~/ui/components/Snippet';
@@ -87,15 +88,15 @@ To call it, update the `onPress` property of the `<Button>` component in **compo
 
 {/* prettier-ignore */}
 ```jsx Button.js
-export default function Button({ label,  theme, /* @info Pass this prop to trigger the handler method from the parent component. */ onPress/* @end */}) {
+export default function Button({ label, theme, /* @info Pass this prop to trigger the handler method from the parent component. */onPress/* @end */}) {
   // ...rest of the code remains same
   if (theme === "primary") {
     return (
       <View>
-        /* ...rest of the code remains same */
+        {/* ...rest of the code remains same */}
         <Pressable
           style={[styles.button, { backgroundColor: '#fff' }]}
-          /* @info */ onPress={onPress} /* @end */
+          onPress={/* @info */onPress/* @end */}
         >
       </View>
     );
@@ -112,8 +113,8 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      /* ...rest of the code remains same */
-      <Button theme="primary" label="Choose a photo" /* @info */ onPress={pickImageAsync} /* @end */ />
+      {/* ...rest of the code remains same */}
+      <Button theme="primary" label="Choose a photo" onPress={/* @info */pickImageAsync/* @end */} />
     </View>
   );
 }
@@ -194,7 +195,7 @@ export default function App() {
         />
         /* @end */
       </View>
-      /* ...rest of the code remains same */
+      {/* ...rest of the code remains same */}
     </View>
   );
 }

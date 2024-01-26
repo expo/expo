@@ -44,7 +44,7 @@ class DevLauncherDevSupportManager(
   redBoxHandler: RedBoxHandler?,
   devBundleDownloadListener: DevBundleDownloadListener?,
   minNumShakes: Int,
-  customPackagerCommandHandlers: MutableMap<String, RequestHandler>?,
+  customPackagerCommandHandlers: MutableMap<String, RequestHandler>?
 ) : DevSupportManagerBase(
   applicationContext,
   reactInstanceManagerHelper,
@@ -58,6 +58,7 @@ class DevLauncherDevSupportManager(
 ),
   DevLauncherKoinComponent {
   private val controller: DevLauncherControllerInterface by inject()
+
   // copied from https://github.com/facebook/react-native/blob/aa4da248c12e3ba41ecc9f1c547b21c208d9a15f/ReactAndroid/src/main/java/com/facebook/react/devsupport/BridgeDevSupportManager.java#L65
   private var mIsSamplingProfilerEnabled = false
 
@@ -78,18 +79,25 @@ class DevLauncherDevSupportManager(
     }
 
     addCustomDevOption(
-      if (mIsSamplingProfilerEnabled) applicationContext!!.getString(
-        R.string.catalyst_sample_profiler_disable
-      ) else applicationContext!!.getString(
-        R.string.catalyst_sample_profiler_enable
-      )
+      if (mIsSamplingProfilerEnabled) {
+        applicationContext!!.getString(
+          R.string.catalyst_sample_profiler_disable
+        )
+      } else {
+        applicationContext!!.getString(
+          R.string.catalyst_sample_profiler_enable
+        )
+      }
     ) { toggleJSSamplingProfiler() }
     if (!devSettings.isDeviceDebugEnabled) {
       // For remote debugging, we open up Chrome running the app in a web worker.
       // Note that this requires async communication, which will not work for Turbo Modules.
       addCustomDevOption(
-        if (devSettings.isRemoteJSDebugEnabled) applicationContext.getString(R.string.catalyst_debug_stop)
-        else applicationContext.getString(R.string.catalyst_debug)
+        if (devSettings.isRemoteJSDebugEnabled) {
+          applicationContext.getString(R.string.catalyst_debug_stop)
+        } else {
+          applicationContext.getString(R.string.catalyst_debug)
+        }
       ) {
         devSettings.isRemoteJSDebugEnabled = !devSettings.isRemoteJSDebugEnabled
         handleReloadJS()
@@ -183,7 +191,8 @@ class DevLauncherDevSupportManager(
       val executor = WebsocketJavaScriptExecutor()
       val future = SimpleSettableFuture<Boolean>()
       executor.connect(
-        devServerHelper.websocketProxyURL, getExecutorConnectCallback(future)
+        devServerHelper.websocketProxyURL,
+        getExecutorConnectCallback(future)
       )
       // TODO(t9349129) Don't use timeout
       try {
@@ -246,7 +255,9 @@ class DevLauncherDevSupportManager(
     } else {
       try {
         val outputPath: String = File.createTempFile(
-          "sampling-profiler-trace", ".cpuprofile", applicationContext.cacheDir
+          "sampling-profiler-trace",
+          ".cpuprofile",
+          applicationContext.cacheDir
         )
           .path
         javaScriptExecutorFactory.stopSamplingProfiler(outputPath)

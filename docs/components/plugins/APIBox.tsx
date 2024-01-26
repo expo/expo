@@ -1,3 +1,4 @@
+import { mergeClasses } from '@expo/styleguide';
 import type { PropsWithChildren } from 'react';
 
 import {
@@ -17,7 +18,9 @@ type APIBoxProps = PropsWithChildren<{
 
 export const APIBox = ({ header, platforms, children, className }: APIBoxProps) => {
   return (
-    <div css={[STYLES_APIBOX, STYLES_APIBOX_WRAPPER]} className={className}>
+    <div
+      css={[STYLES_APIBOX, STYLES_APIBOX_WRAPPER]}
+      className={mergeClasses(className, '!pb-4 last:[&>*]:!mb-1')}>
       {platforms && <PlatformTags prefix="Only for:" platforms={platforms} />}
       {header && (
         <H3Code tags={platforms}>

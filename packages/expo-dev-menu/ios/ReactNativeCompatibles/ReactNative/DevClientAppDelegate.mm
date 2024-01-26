@@ -13,9 +13,11 @@
 #import <memory>
 
 #import <React/CoreModulesPlugins.h>
-#import <React/RCTFabricSurfaceHostingProxyRootView.h>
+#import <React/RCTComponentViewFactory.h>
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
+#import <ReactCommon/RCTContextContainerHandling.h>
+#import <ReactCommon/RCTHost.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <react/config/ReactNativeConfig.h>
 
@@ -34,12 +36,6 @@
 @end
 
 #endif
-
-@interface RCTAppDelegate (DevClientAppDelegate)
-
-- (void)unstable_registerLegacyComponents;
-
-@end
 
 @implementation DevClientAppDelegate {
 #if RCT_NEW_ARCH_ENABLED
@@ -70,7 +66,6 @@
                                                                contextContainer:_contextContainer];
   self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
 
-  [self unstable_registerLegacyComponents];
   [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
 #endif
 
@@ -93,5 +88,36 @@
   return RCTAppSetupDefaultJsExecutorFactory(bridge, turboModuleManager, _runtimeScheduler);
 }
 #endif // RCT_NEW_ARCH_ENABLED
+
+#pragma mark - Remove these method when we drop SDK 49
+
+- (UIView *)createRootViewWithBridge:(RCTBridge *)bridge
+                          moduleName:(NSString *)moduleName
+                           initProps:(NSDictionary *)initProps
+{
+  return [super createRootViewWithBridge:bridge moduleName:moduleName initProps:initProps];
+}
+
+- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
+{
+  return [super sourceURLForBridge:bridge];
+}
+
+- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
+{
+  // Since we defined this selector but pretend that we don't implement it,
+  // we should also fallthrough modouleProvider case at
+  // https://github.com/facebook/react-native/blob/fd0ca4dd6209d79ac8c93dbffac2e3dca1caeadc/packages/react-native/React/CxxBridge/RCTCxxBridge.mm#L774-L778
+  RCTBridgeModuleListProvider moduleProvider = [bridge valueForKey:@"_moduleProvider"];
+  if (moduleProvider) {
+    return moduleProvider();
+  }
+  return @[];
+}
+
+- (BOOL)bridge:(RCTBridge *)bridge didNotFindModule:(NSString *)moduleName
+{
+  return NO;
+}
 
 @end

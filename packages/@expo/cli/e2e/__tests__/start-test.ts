@@ -172,15 +172,15 @@ describe('server', () => {
 
       // URLs
       expect(manifest.launchAsset.url).toBe(
-        'http://127.0.0.1:8081/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false'
+        'http://127.0.0.1:8081/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false&transform.engine=hermes&transform.routerRoot=app'
       );
       expect(manifest.extra.expoGo.debuggerHost).toBe('127.0.0.1:8081');
       expect(manifest.extra.expoGo.mainModuleName).toBe('node_modules/expo/AppEntry');
       expect(manifest.extra.expoClient.hostUri).toBe('127.0.0.1:8081');
 
       // Manifest
-      expect(manifest.runtimeVersion).toBe('exposdk:47.0.0');
-      expect(manifest.extra.expoClient.sdkVersion).toBe('47.0.0');
+      expect(manifest.runtimeVersion).toBe('1.0');
+      expect(manifest.extra.expoClient.sdkVersion).toBe('49.0.0');
       expect(manifest.extra.expoClient.slug).toBe('basic-start');
       expect(manifest.extra.expoClient.name).toBe('basic-start');
 

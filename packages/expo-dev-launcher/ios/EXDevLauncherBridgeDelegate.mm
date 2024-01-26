@@ -1,5 +1,6 @@
 #import <EXDevLauncher/EXDevLauncherBridgeDelegate.h>
 #import <EXDevLauncher/EXDevLauncherController.h>
+#import <EXDevLauncher/EXDevLauncherRCTBridge.h>
 
 #import <React/RCTBundleURLProvider.h>
 #if __has_include(<React_RCTAppDelegate/RCTAppSetupUtils.h>)
@@ -21,13 +22,21 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   return [[EXDevLauncherController sharedInstance] sourceURLForBridge:bridge];
 }
 
+- (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions {
+   return [[EXDevLauncherRCTBridge alloc] initWithDelegate:delegate launchOptions:launchOptions];
+}
+
 - (RCTRootView *)createRootViewWithModuleName:(NSString *)moduleName launchOptions:(NSDictionary * _Nullable)launchOptions application:(UIApplication *)application{
     BOOL enableTM = NO;
 #if RCT_NEW_ARCH_ENABLED
     enableTM = YES;
 #endif
 
+#if REACT_NATIVE_MINOR_VERSION >= 74
+    RCTAppSetupPrepareApp(application, enableTM, facebook::react::EmptyReactNativeConfig());
+#else
     RCTAppSetupPrepareApp(application, enableTM);
+#endif
 
     self.bridge = [super createBridgeAndSetAdapterWithLaunchOptions:launchOptions];
 

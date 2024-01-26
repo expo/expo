@@ -1,5 +1,5 @@
 import './polyfillNextTick';
-import type { Query, ResultSet, ResultSetError, SQLiteCallback, SQLTransactionAsyncCallback, SQLTransactionAsync, SQLTransactionCallback, SQLTransactionErrorCallback } from './SQLite.types';
+import type { Query, ResultSet, ResultSetError, SQLiteCallback, SQLStatementArg, SQLTransactionAsyncCallback, SQLTransactionAsync, SQLTransactionCallback, SQLTransactionErrorCallback } from './SQLite.types';
 /** The database returned by `openDatabase()` */
 export declare class SQLiteDatabase {
     _name: string;
@@ -36,14 +36,6 @@ export declare class SQLiteDatabase {
      * > The database has to be closed prior to deletion.
      */
     deleteAsync(): Promise<void>;
-    /**
-     * Used to listen to changes in the database.
-     * @param callback A function that receives the `tableName` and `rowId` of the modified data.
-     */
-    onDatabaseChange(cb: (result: {
-        tableName: string;
-        rowId: number;
-    }) => void): import("expo-modules-core").Subscription;
     /**
      * Creates a new transaction with Promise support.
      * @param asyncCallback A `SQLTransactionAsyncCallback` function that can perform SQL statements in a transaction.
@@ -84,6 +76,6 @@ export declare class ExpoSQLTransactionAsync implements SQLTransactionAsync {
     private readonly db;
     private readonly readOnly;
     constructor(db: SQLiteDatabase, readOnly: boolean);
-    executeSqlAsync(sqlStatement: string, args?: (number | string)[]): Promise<ResultSet>;
+    executeSqlAsync(sqlStatement: string, args?: SQLStatementArg[]): Promise<ResultSet>;
 }
 //# sourceMappingURL=SQLite.d.ts.map

@@ -3,9 +3,10 @@ import {
   getPathFromState,
   useNavigationContainerRef,
 } from '@react-navigation/native';
+import * as SplashScreen from 'expo-splash-screen';
 import { useSyncExternalStore, useMemo, ComponentType, Fragment } from 'react';
 
-import { canGoBack, goBack, linkTo, push, replace, setParams } from './routing';
+import { canGoBack, goBack, linkTo, navigate, push, replace, setParams } from './routing';
 import { getSortedRoutes } from './sort-routes';
 import { UrlObject, getRouteInfoFromState } from '../LocationProvider';
 import { RouteNode } from '../Route';
@@ -15,7 +16,6 @@ import { ExpoLinkingOptions, getLinkingConfig } from '../getLinkingConfig';
 import { getRoutes } from '../getRoutes';
 import { RequireContext } from '../types';
 import { getQualifiedRouteComponent } from '../useScreens';
-import { _internal_maybeHideAsync } from '../views/Splash';
 
 /**
  * This is the global state for the router. It is used to keep track of the current route, and to provide a way to navigate to other routes.
@@ -46,6 +46,7 @@ export class RouterStore {
   push = push.bind(this);
   replace = replace.bind(this);
   setParams = setParams.bind(this);
+  navigate = navigate.bind(this);
 
   initialize(
     context: RequireContext,
@@ -62,7 +63,7 @@ export class RouterStore {
     this.rootStateSubscribers.clear();
     this.storeSubscribers.clear();
 
-    this.routeNode = getRoutes(context);
+    this.routeNode = getRoutes(context, { ignoreEntryPoints: true });
 
     this.rootComponent = this.routeNode ? getQualifiedRouteComponent(this.routeNode) : Fragment;
 
@@ -94,13 +95,14 @@ export class RouterStore {
       this.routeInfo = {
         unstable_globalHref: '',
         pathname: '',
+        isIndex: false,
         params: {},
         segments: [],
       };
     }
 
     /**
-     * Counter intuitively - this fires AFTER both React Navigations state change and the subsequent paint.
+     * Counter intuitively - this fires AFTER both React Navigation's state changes and the subsequent paint.
      * This poses a couple of issues for Expo Router,
      *   - Ensuring hooks (e.g. useSearchParams()) have data in the initial render
      *   - Reacting to state changes after a navigation event
@@ -116,7 +118,11 @@ export class RouterStore {
       if (!this.hasAttemptedToHideSplash) {
         this.hasAttemptedToHideSplash = true;
         // NOTE(EvanBacon): `navigationRef.isReady` is sometimes not true when state is called initially.
-        requestAnimationFrame(() => _internal_maybeHideAsync());
+        requestAnimationFrame(
+          () =>
+            // @ts-expect-error: This function is native-only and for internal-use only.
+            SplashScreen._internal_maybeHideAsync?.()
+        );
       }
 
       let shouldUpdateSubscribers = this.nextState === state;

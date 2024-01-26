@@ -1,9 +1,15 @@
 import { css } from '@emotion/react';
-import { shadows, theme } from '@expo/styleguide';
+import { LinkBase, shadows, theme } from '@expo/styleguide';
 import { borderRadius, spacing } from '@expo/styleguide-base';
 import { TriangleDownIcon } from '@expo/styleguide-icons';
+import { useRouter } from 'next/compat/router';
 import type { PropsWithChildren, ReactNode } from 'react';
+import React from 'react';
 
+import PermalinkIcon from '~/components/icons/Permalink';
+import withHeadingManager, {
+  HeadingManagerProps,
+} from '~/components/page-higher-order/withHeadingManager';
 import { DEMI } from '~/ui/components/Text';
 
 type CollapsibleProps = PropsWithChildren<{
@@ -18,19 +24,66 @@ type CollapsibleProps = PropsWithChildren<{
   testID?: string;
 }>;
 
-export function Collapsible({ summary, open, testID, children }: CollapsibleProps) {
-  return (
-    <details css={detailsStyle} open={open} data-testid={testID}>
-      <summary css={summaryStyle}>
-        <div css={markerWrapperStyle}>
-          <TriangleDownIcon className="icon-sm text-icon-default" css={markerStyle} />
+const Collapsible: React.FC<CollapsibleProps> = withHeadingManager(
+  (props: CollapsibleProps & HeadingManagerProps) => {
+    const { summary, testID, children } = props;
+
+    const router = useRouter();
+    const { asPath } = router || {};
+
+    // expand collapsible if the current hash matches the heading
+    React.useEffect(() => {
+      if (asPath) {
+        const splitUrl = asPath.split('#');
+        const hash = splitUrl.length ? splitUrl[1] : undefined;
+        if (hash && hash === heading.current.slug) {
+          setOpen(true);
+        }
+      }
+    }, [asPath]);
+
+    // track open state so we can collapse header if it is set to open by the URL hash
+    const [open, setOpen] = React.useState<boolean>(props.open ?? false);
+
+    const onToggle = (event: { preventDefault: () => void }) => {
+      event.preventDefault();
+      setOpen(!open);
+    };
+
+    const onClickIcon = (event: { stopPropagation?: () => void }) => {
+      event.stopPropagation && event.stopPropagation();
+      if (!open) {
+        setOpen(true);
+      }
+    };
+
+    // HeadingManager is used to generate a slug that corresponds to the collapsible summary.
+    // These are normally generated for MD (#) headings, but Collapsible doesn't have those.
+    // This is a ref because identical tags will keep incrementing the number if it is not.
+    const heading = React.useRef(props.headingManager.addHeading(summary, 1, undefined));
+
+    return (
+      <details id={heading.current.slug} css={detailsStyle} open={open} data-testid={testID}>
+        <summary css={summaryStyle} onClick={onToggle}>
+          <div css={markerWrapperStyle}>
+            <TriangleDownIcon className="icon-sm text-icon-default" css={markerStyle} />
+          </div>
+          <LinkBase href={'#' + heading.current.slug} ref={heading.current.ref}>
+            <DEMI>{summary}</DEMI>
+            <span css={STYLES_PERMALINK_ICON}>
+              <PermalinkIcon onClick={onClickIcon} />
+            </span>
+          </LinkBase>
+        </summary>
+        <div css={contentStyle} className="last:[&>*]:!mb-1">
+          {children}
         </div>
-        <DEMI>{summary}</DEMI>
-      </summary>
-      <div css={contentStyle}>{children}</div>
-    </details>
-  );
-}
+      </details>
+    );
+  }
+);
+
+export { Collapsible };
 
 const detailsStyle = css({
   overflow: 'hidden',
@@ -42,10 +95,6 @@ const detailsStyle = css({
 
   '&[open]': {
     boxShadow: shadows.xs,
-  },
-
-  'h4:first-child': {
-    marginTop: 0,
   },
 
   'h4 + &, p + &, li > &': {
@@ -100,7 +149,7 @@ const markerStyle = css({
 });
 
 const contentStyle = css({
-  padding: `${spacing[4]}px ${spacing[5]}px 0`,
+  padding: `${spacing[4]}px ${spacing[5]}px`,
 
   p: {
     marginLeft: 0,
@@ -110,3 +159,23 @@ const contentStyle = css({
     marginTop: 0,
   },
 });
+
+const STYLES_PERMALINK_ICON = css`
+  cursor: pointer;
+  vertical-align: middle;
+  display: inline-block;
+  width: 1.2em;
+  height: 1em;
+  padding: 0 0.2em;
+  visibility: hidden;
+
+  a:hover &,
+  a:focus-visible & {
+    visibility: visible;
+  }
+
+  svg {
+    width: 100%;
+    height: auto;
+  }
+`;

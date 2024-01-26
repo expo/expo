@@ -11,6 +11,7 @@ function arrayize(value) {
  * A class that wraps the raw config (`expo-module.json` or `unimodule.json`).
  */
 class ExpoModuleConfig {
+    rawConfig;
     constructor(rawConfig) {
         this.rawConfig = rawConfig;
     }
@@ -18,45 +19,58 @@ class ExpoModuleConfig {
      * Whether the module supports given platform.
      */
     supportsPlatform(platform) {
-        return this.rawConfig.platforms?.includes(platform) ?? false;
+        const supportedPlatforms = this.rawConfig.platforms ?? [];
+        if (platform === 'apple') {
+            // Apple platform is supported when any of iOS, macOS and tvOS is supported.
+            return supportedPlatforms.some((supportedPlatform) => {
+                return ['apple', 'ios', 'macos', 'tvos'].includes(supportedPlatform);
+            });
+        }
+        return supportedPlatforms.includes(platform);
+    }
+    /**
+     * Returns the generic config for all Apple platforms with a fallback to the legacy iOS config.
+     */
+    getAppleConfig() {
+        return this.rawConfig.apple ?? this.rawConfig.ios ?? null;
     }
     /**
      * Returns a list of names of Swift native modules classes to put to the generated modules provider file.
      */
-    iosModules() {
-        const iosConfig = this.rawConfig.ios;
+    appleModules() {
+        const appleConfig = this.getAppleConfig();
         // `modulesClassNames` is a legacy name for the same config.
-        return iosConfig?.modules ?? iosConfig?.modulesClassNames ?? [];
+        return appleConfig?.modules ?? appleConfig?.modulesClassNames ?? [];
     }
     /**
      * Returns a list of names of Swift classes that receives AppDelegate life-cycle events.
      */
-    iosAppDelegateSubscribers() {
-        return this.rawConfig.ios?.appDelegateSubscribers ?? [];
+    appleAppDelegateSubscribers() {
+        return this.getAppleConfig()?.appDelegateSubscribers ?? [];
     }
     /**
      * Returns a list of names of Swift classes that implement `ExpoReactDelegateHandler`.
      */
-    iosReactDelegateHandlers() {
-        return this.rawConfig.ios?.reactDelegateHandlers ?? [];
+    appleReactDelegateHandlers() {
+        return this.getAppleConfig()?.reactDelegateHandlers ?? [];
     }
     /**
      * Returns podspec paths defined by the module author.
      */
-    iosPodspecPaths() {
-        return arrayize(this.rawConfig.ios?.podspecPath);
+    applePodspecPaths() {
+        return arrayize(this.getAppleConfig()?.podspecPath);
     }
     /**
      * Returns the product module names, if defined by the module author.
      */
-    iosSwiftModuleNames() {
-        return arrayize(this.rawConfig.ios?.swiftModuleName);
+    appleSwiftModuleNames() {
+        return arrayize(this.getAppleConfig()?.swiftModuleName);
     }
     /**
      * Returns whether this module will be added only to the debug configuration
      */
-    iosDebugOnly() {
-        return this.rawConfig.ios?.debugOnly ?? false;
+    appleDebugOnly() {
+        return this.getAppleConfig()?.debugOnly ?? false;
     }
     /**
      * Returns a list of names of Kotlin native modules classes to put to the generated package provider file.

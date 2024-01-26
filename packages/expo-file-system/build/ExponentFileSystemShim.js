@@ -8,9 +8,6 @@ const platformModule = {
     get cacheDirectory() {
         return null;
     },
-    get bundledAssets() {
-        return null;
-    },
     get bundleDirectory() {
         return null;
     },

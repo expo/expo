@@ -129,6 +129,7 @@ exports[`transforms a global CSS file in dev for web 1`] = `
             "functionMap": null,
             "lineCount": 4,
             "map": [],
+            "skipCache": false,
           },
         },
         "type": "js/module",

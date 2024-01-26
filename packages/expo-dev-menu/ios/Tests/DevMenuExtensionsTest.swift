@@ -11,7 +11,7 @@ class DevMenuExtensionsTest: QuickSpec {
     }
   }
 
-  override func spec() {
+  override class func spec() {
     it("getAllItems should return nil when called without the bridge") {
       let settings = MockedSettings()
       let module = DevMenuExtensions()

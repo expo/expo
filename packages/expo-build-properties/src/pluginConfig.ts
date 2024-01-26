@@ -13,7 +13,7 @@ const EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS = {
     kotlinVersion: '1.6.10',
   },
   ios: {
-    deploymentTarget: '13.0',
+    deploymentTarget: '13.4',
   },
 };
 
@@ -81,15 +81,6 @@ export interface PluginConfigTypeAndroid {
   packagingOptions?: PluginConfigTypeAndroidPackagingOptions;
 
   /**
-   * By default, Flipper is enabled with the version that comes bundled with `react-native`.
-   *
-   * Use this to change the [Flipper](https://fbflipper.com/) version when
-   * running your app on Android. You can set the `flipper` property to a
-   * semver string and specify an alternate Flipper version.
-   */
-  flipper?: string;
-
-  /**
    * Enable the Network Inspector.
    *
    * @default true
@@ -122,6 +113,13 @@ export interface PluginConfigTypeAndroid {
    * @see [Android documentation](https://developer.android.com/guide/topics/manifest/application-element#usesCleartextTraffic)
    */
   usesCleartextTraffic?: boolean;
+  /**
+   * Specifies the set of other apps that an app intends to interact with. These other apps are specified by package name,
+   * by intent signature, or by provider authority.
+   *
+   *  @see [Android documentation](https://developer.android.com/guide/topics/manifest/queries-element)
+   */
+  manifestQueries?: PluginConfigTypeAndroidQueries;
 }
 
 /**
@@ -143,22 +141,8 @@ export interface PluginConfigTypeIos {
   /**
    * Enable [`use_frameworks!`](https://guides.cocoapods.org/syntax/podfile.html#use_frameworks_bang)
    * in `Podfile` to use frameworks instead of static libraries for Pods.
-   *
-   * > You cannot use `useFrameworks` and `flipper` at the same time, and
-   * doing so will generate an error.
    */
   useFrameworks?: 'static' | 'dynamic';
-
-  /**
-   * Enable [Flipper](https://fbflipper.com/) when running your app on iOS in
-   * Debug mode. Setting `true` enables the default version of Flipper, while
-   * setting a semver string will enable a specific version of Flipper you've
-   * declared in your **package.json**. The default for this configuration is `false`.
-   *
-   * > You cannot use `flipper` at the same time as `useFrameworks`, and
-   * doing so will generate an error.
-   */
-  flipper?: boolean | string;
 
   /**
    * Enable the Network Inspector.
@@ -196,12 +180,18 @@ export interface ExtraIosPodDependency {
   /**
    * Version of the pod.
    * CocoaPods supports various [versioning options](https://guides.cocoapods.org/using/the-podfile.html#pod).
-   * @example `~> 0.1.2`
+   * @example
+   * ```
+   * ~> 0.1.2
+   * ```
    */
   version?: string;
   /**
    * Build configurations for which the pod should be installed.
-   * @example `['Debug', 'Release']`
+   * @example
+   * ```
+   * ['Debug', 'Release']
+   * ```
    */
   configurations?: string[];
   /**
@@ -210,22 +200,32 @@ export interface ExtraIosPodDependency {
   modular_headers?: boolean;
   /**
    * Custom source to search for this dependency.
-   * @example `https://github.com/CocoaPods/Specs.git`
+   * @example
+   * ```
+   * https://github.com/CocoaPods/Specs.git
+   * ```
    */
   source?: string;
   /**
    * Custom local filesystem path to add the dependency.
-   * @example `~/Documents/AFNetworking`
+   * @example
+   * ```
+   * ~/Documents/AFNetworking
+   * ```
    */
   path?: string;
   /**
    * Custom podspec path.
-   * @example `https://example.com/JSONKit.podspec`
+   * @example
+   * ```https://example.com/JSONKit.podspec```
    */
   podspec?: string;
   /**
    * Test specs can be optionally included via the :testspecs option. By default, none of a Pod's test specs are included.
-   * @example `['UnitTests', 'SomeOtherTests']`
+   * @example
+   * ```
+   * ['UnitTests', 'SomeOtherTests']
+   * ```
    */
   testspecs?: string[];
   /**
@@ -279,6 +279,56 @@ export interface PluginConfigTypeAndroidPackagingOptions {
   doNotStrip?: string[];
 }
 
+export interface PluginConfigTypeAndroidQueries {
+  /**
+   * Specifies a single app that your app intends to access. This other app might integrate with your app, or your app might use services that the other app provides.
+   */
+  package: string[];
+  /**
+   * Specifies an intent filter signature. Your app can discover other apps that have matching <intent-filter> elements.
+   * These intents have restrictions compared to typical intent filter signatures.
+   *
+   * @see [Android documentation](https://developer.android.com/training/package-visibility/declaring#intent-filter-signature) for details
+   */
+  intent?: PluginConfigTypeAndroidQueriesIntent[];
+  /**
+   * Specifies one or more content provider authorities. Your app can discover other apps whose content providers use the specified authorities.
+   * There are some restrictions on the options that you can include in this <provider> element, compared to a typical <provider> manifest element. You may only specify the android:authorities attribute.
+   */
+  provider?: string[];
+}
+
+export interface PluginConfigTypeAndroidQueriesIntent {
+  /**
+   * A string naming the action to perform. Usually one of the platform-defined values, such as ACTION_SEND or ACTION_VIEW
+   */
+  action?: string;
+  /**
+   * A description of the data associated with the intent.
+   */
+  data?: PluginConfigTypeAndroidQueriesData;
+  /**
+   * Provides an additional way to characterize the activity handling the intent,
+   * usually related to the user gesture or location from which it's started.
+   */
+  category?: string | string[];
+}
+
+export interface PluginConfigTypeAndroidQueriesData {
+  /**
+   * Specify a URI scheme that is handled
+   */
+  scheme?: string;
+  /**
+   * Specify a URI authority host that is handled
+   */
+  host?: string;
+  /**
+   * Specify a MIME type that is handled
+   */
+  mimeType?: string;
+}
+
 const schema: JSONSchemaType<PluginConfigType> = {
   type: 'object',
   properties: {
@@ -296,11 +346,6 @@ const schema: JSONSchemaType<PluginConfigType> = {
         enableShrinkResourcesInReleaseBuilds: { type: 'boolean', nullable: true },
         extraProguardRules: { type: 'string', nullable: true },
 
-        flipper: {
-          type: 'string',
-          nullable: true,
-        },
-
         packagingOptions: {
           type: 'object',
           properties: {
@@ -317,6 +362,36 @@ const schema: JSONSchemaType<PluginConfigType> = {
         extraMavenRepos: { type: 'array', items: { type: 'string' }, nullable: true },
 
         usesCleartextTraffic: { type: 'boolean', nullable: true },
+
+        manifestQueries: {
+          required: ['package'],
+          type: 'object',
+          properties: {
+            package: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: false },
+            intent: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  action: { type: 'string', nullable: true },
+                  data: {
+                    type: 'object',
+                    properties: {
+                      scheme: { type: 'string', nullable: true },
+                      host: { type: 'string', nullable: true },
+                      mimeType: { type: 'string', nullable: true },
+                    },
+                    nullable: true,
+                  },
+                  category: { type: 'array', items: { type: 'string' }, nullable: true },
+                },
+              },
+              nullable: true,
+            },
+            provider: { type: 'array', items: { type: 'string' }, nullable: true },
+          },
+          nullable: true,
+        },
       },
       nullable: true,
     },
@@ -326,11 +401,6 @@ const schema: JSONSchemaType<PluginConfigType> = {
         newArchEnabled: { type: 'boolean', nullable: true },
         deploymentTarget: { type: 'string', pattern: '\\d+\\.\\d+', nullable: true },
         useFrameworks: { type: 'string', enum: ['static', 'dynamic'], nullable: true },
-
-        flipper: {
-          type: ['boolean', 'string'],
-          nullable: true,
-        },
 
         networkInspector: { type: 'boolean', nullable: true },
 
@@ -427,12 +497,6 @@ export function validateConfig(config: any): PluginConfigType {
   }
 
   maybeThrowInvalidVersions(config);
-
-  // explicitly block using use_frameworks and Flipper in iOS
-  // https://github.com/facebook/flipper/issues/2414
-  if (Boolean(config.ios?.flipper) && config.ios?.useFrameworks !== undefined) {
-    throw new Error('`ios.flipper` cannot be enabled when `ios.useFrameworks` is set.');
-  }
 
   if (
     config.android?.enableShrinkResourcesInReleaseBuilds === true &&

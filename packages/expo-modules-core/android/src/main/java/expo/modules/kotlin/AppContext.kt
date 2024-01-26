@@ -9,6 +9,8 @@ import android.view.View
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.common.annotations.FrameworkAPI
+import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.common.UIManagerType
@@ -16,7 +18,6 @@ import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.core.errors.ContextDestroyedException
 import expo.modules.core.errors.ModuleNotFoundException
 import expo.modules.core.interfaces.ActivityProvider
-import expo.modules.core.interfaces.JavaScriptContextProvider
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.camera.CameraViewInterface
 import expo.modules.interfaces.constants.ConstantsInterface
@@ -121,7 +122,7 @@ class AppContext(
       addActivityEventListener(reactLifecycleDelegate)
 
       // Registering modules has to happen at the very end of `AppContext` creation. Some modules need to access
-      // `AppContext` during their initialisation (or during `OnCreate` method), so we need to ensure all `AppContext`'s
+      // `AppContext` during their initialisation, so we need to ensure all `AppContext`'s
       // properties are initialized first. Not having that would trigger NPE.
       registry.register(ErrorManagerModule())
       registry.register(NativeModulesProxyModule())
@@ -131,26 +132,42 @@ class AppContext(
     }
   }
 
+  fun onCreate() = trace("AppContext.onCreate") {
+    registry.readyForPostingEvents()
+    registry.post(EventName.MODULE_CREATE)
+    registry.flushTheEventQueue()
+  }
+
   /**
    * Initializes a JSI part of the module registry.
    * It will be a NOOP if the remote debugging was activated.
    */
+  @OptIn(FrameworkAPI::class)
   fun installJSIInterop() = synchronized(this) {
+    if (::jsiInterop.isInitialized) {
+      logger.warn("⚠️ JSI interop was already installed")
+      return
+    }
+
     trace("AppContext.installJSIInterop") {
       try {
         jsiInterop = JSIInteropModuleRegistry(this)
         val reactContext = reactContextHolder.get() ?: return@trace
-        val jsContextProvider = legacyModule<JavaScriptContextProvider>() ?: return@trace
-        val jsContextHolder = jsContextProvider.javaScriptContextRef
-        val catalystInstance = reactContext.catalystInstance ?: return@trace
+        val jsContextHolder = reactContext.javaScriptContextHolder?.get() ?: return@trace
+
+        val jsCallInvokerHolder = reactContext.catalystInstance?.jsCallInvokerHolder
+        if (jsCallInvokerHolder !is CallInvokerHolderImpl) {
+          logger.warn("⚠️ Cannot install JSI interop: CallInvokerHolderImpl is not available")
+          return@trace
+        }
+
         jsContextHolder
           .takeIf { it != 0L }
           ?.let {
             jsiInterop.installJSI(
               it,
               jniDeallocator,
-              jsContextProvider.jsCallInvokerHolder,
-              ReactNativeCompatibleHelper.getNativeMethodCallInvokerHolderImplCompatible(catalystInstance)
+              jsCallInvokerHolder
             )
             logger.info("✅ JSI interop was installed")
           }
@@ -296,6 +313,9 @@ class AppContext(
     modulesQueue.cancel(ContextDestroyedException())
     mainQueue.cancel(ContextDestroyedException())
     backgroundCoroutineScope.cancel(ContextDestroyedException())
+    if (::jsiInterop.isInitialized) {
+      jsiInterop.wasDeallocated()
+    }
     jniDeallocator.deallocate()
     logger.info("✅ AppContext was destroyed")
   }

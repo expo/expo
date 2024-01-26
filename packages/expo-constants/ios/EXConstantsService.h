@@ -8,19 +8,13 @@
 NS_ASSUME_NONNULL_BEGIN
 
 FOUNDATION_EXPORT NSString * const EXConstantsExecutionEnvironmentBare;
-FOUNDATION_EXPORT NSString * const EXConstantsExecutionEnvironmentStandalone;
 FOUNDATION_EXPORT NSString * const EXConstantsExecutionEnvironmentStoreClient;
 
 @interface EXConstantsService : NSObject <EXInternalModule, EXConstantsInterface>
 
 - (NSString *)buildVersion;
 - (CGFloat)statusBarHeight;
-- (NSString *)iosVersion;
-- (NSString *)userInterfaceIdiom;
-- (BOOL)isDevice;
 - (NSArray<NSString *> *)systemFontNames;
-
-+ (NSString *)devicePlatform;
 + (NSNumber *)deviceYear;
 + (NSString *)deviceName;
 

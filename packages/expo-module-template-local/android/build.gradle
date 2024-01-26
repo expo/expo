@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = '<%- project.package %>'
-version = '0.3.0'
+version = '0.4.0'
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -68,9 +68,9 @@ android {
   namespace "<%- project.package %>"
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 33)
+    targetSdkVersion safeExtGet("targetSdkVersion", 34)
     versionCode 1
-    versionName "0.3.0"
+    versionName "0.4.0"
   }
   lintOptions {
     abortOnError false

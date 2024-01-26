@@ -1,3 +1,4 @@
+import Constants from 'expo-constants';
 import * as Font from 'expo-font';
 import { Platform } from 'react-native';
 
@@ -50,5 +51,12 @@ export async function test({ beforeEach, afterAll, describe, it, expect }) {
         expect(!!rule).toBe(true);
       }
     });
+
+    if (Platform.OS !== 'web' && Constants.expoConfig.slug === 'bare-expo') {
+      it(`isLoaded should support custom native fonts`, () => {
+        expect(Font.isLoaded('icomoon')).toBe(true);
+        expect(Font.isLoaded('NonExistedFont')).toBe(false);
+      });
+    }
   });
 }

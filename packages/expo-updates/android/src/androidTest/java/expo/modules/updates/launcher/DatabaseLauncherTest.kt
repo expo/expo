@@ -1,6 +1,7 @@
 package expo.modules.updates.launcher
 
 import android.content.Context
+import android.net.Uri
 import android.text.format.DateUtils
 import androidx.room.Room
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
@@ -9,7 +10,6 @@ import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
-import expo.modules.updates.db.enums.UpdateStatus
 import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.selectionpolicy.SelectionPolicy
@@ -43,69 +43,6 @@ class DatabaseLauncherTest {
   }
 
   @Test
-  fun testGetUpdateIds_EmptyDB() {
-    val launcher = DatabaseLauncher(
-      UpdatesConfiguration(null, null),
-      File("test"),
-      FileDownloader(context),
-      SelectionPolicy(
-        mockk(),
-        mockk(),
-        mockk()
-      )
-    )
-    val readyUpdateIds = launcher.getReadyUpdateIds(db)
-    Assert.assertEquals(0, readyUpdateIds.size)
-  }
-
-  @Test
-  fun testGetUpdateIds_DBWithOneUpdate() {
-    val testUpdate = UpdateEntity(UUID.randomUUID(), Date(), "1.0", "scopeKey", JSONObject("{}"))
-    testUpdate.lastAccessed = Date(Date().time - DateUtils.DAY_IN_MILLIS) // yesterday
-    testUpdate.status = UpdateStatus.READY
-    db.updateDao().insertUpdate(testUpdate)
-
-    val launcher = DatabaseLauncher(
-      UpdatesConfiguration(null, null),
-      File("test"),
-      FileDownloader(context),
-      SelectionPolicy(
-        mockk(),
-        mockk(),
-        mockk()
-      )
-    )
-    val readyUpdateIds = launcher.getReadyUpdateIds(db)
-    Assert.assertEquals(1, readyUpdateIds.size)
-  }
-
-  @Test
-  fun testGetUpdateIds_DBWithOneReadyUpdate() {
-    val testUpdate1 = UpdateEntity(UUID.randomUUID(), Date(), "1.0", "scopeKey", JSONObject("{}"))
-    testUpdate1.lastAccessed = Date(Date().time - DateUtils.DAY_IN_MILLIS) // yesterday
-    testUpdate1.status = UpdateStatus.READY
-    db.updateDao().insertUpdate(testUpdate1)
-
-    val testUpdate2 = UpdateEntity(UUID.randomUUID(), Date(), "1.0", "scopeKey", JSONObject("{}"))
-    testUpdate2.lastAccessed = Date(Date().time - DateUtils.DAY_IN_MILLIS) // yesterday
-    testUpdate2.status = UpdateStatus.PENDING
-    db.updateDao().insertUpdate(testUpdate2)
-
-    val launcher = DatabaseLauncher(
-      UpdatesConfiguration(null, null),
-      File("test"),
-      FileDownloader(context),
-      SelectionPolicy(
-        mockk(),
-        mockk(),
-        mockk()
-      )
-    )
-    val readyUpdateIds = launcher.getReadyUpdateIds(db)
-    Assert.assertEquals(1, readyUpdateIds.size)
-  }
-
-  @Test
   fun testLaunch_MarkUpdateAccessed() {
     val testUpdate = UpdateEntity(UUID.randomUUID(), Date(), "1.0", "scopeKey", JSONObject("{}"))
     testUpdate.lastAccessed = Date(Date().time - DateUtils.DAY_IN_MILLIS) // yesterday
@@ -118,7 +55,13 @@ class DatabaseLauncherTest {
     db.assetDao().insertAssets(listOf(testAsset), testUpdate)
 
     val launcher = DatabaseLauncher(
-      UpdatesConfiguration(null, null),
+      UpdatesConfiguration(
+        null,
+        mapOf(
+          "updateUrl" to Uri.parse("https://example.com"),
+          "hasEmbeddedUpdate" to false
+        )
+      ),
       File("test"),
       FileDownloader(context),
       SelectionPolicy(

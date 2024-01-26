@@ -3,7 +3,13 @@ import { Terminal } from 'metro-core';
 import path from 'path';
 
 import { logWarning, TerminalReporter } from './TerminalReporter';
-import { BuildPhase, BundleDetails, BundleProgress, SnippetError } from './TerminalReporter.types';
+import {
+  BuildPhase,
+  BundleDetails,
+  BundleProgress,
+  SnippetError,
+  TerminalReportableEvent,
+} from './TerminalReporter.types';
 import { NODE_STDLIB_MODULES } from './externals';
 import { learnMore } from '../../../utils/link';
 
@@ -36,6 +42,10 @@ export class MetroTerminalReporter extends TerminalReporter {
     const platform = env || getPlatformTagForBuildDetails(progress.bundleDetails);
     const inProgress = phase === 'in_progress';
 
+    const localPath = progress.bundleDetails.entryFile.startsWith(path.sep)
+      ? path.relative(this.projectRoot, progress.bundleDetails.entryFile)
+      : progress.bundleDetails.entryFile;
+
     if (!inProgress) {
       const status = phase === 'done' ? `Bundling complete ` : `Bundling failed `;
       const color = phase === 'done' ? chalk.green : chalk.red;
@@ -43,12 +53,8 @@ export class MetroTerminalReporter extends TerminalReporter {
       const startTime = this._bundleTimers.get(progress.bundleDetails.buildID!);
       const time = startTime != null ? chalk.dim(this._getElapsedTime(startTime) + 'ms') : '';
       // iOS Bundling complete 150ms
-      return color(platform + status) + time;
+      return color(platform + status) + time + chalk.reset.dim(' (' + localPath + ')');
     }
-
-    const localPath = progress.bundleDetails.entryFile.startsWith(path.sep)
-      ? path.relative(this.projectRoot, progress.bundleDetails.entryFile)
-      : progress.bundleDetails.entryFile;
 
     const filledBar = Math.floor(progress.ratio * MAX_PROGRESS_BAR_CHAR_WIDTH);
 
@@ -83,6 +89,10 @@ export class MetroTerminalReporter extends TerminalReporter {
     data: unknown[];
   }): boolean {
     return isAppRegistryStartupMessage(event.data);
+  }
+
+  shouldFilterBundleEvent(event: TerminalReportableEvent): boolean {
+    return 'bundleDetails' in event && event.bundleDetails?.bundleType === 'map';
   }
 
   /** Print the cache clear message. */
@@ -162,7 +172,7 @@ export function formatUsingNodeStandardLibraryError(
       ].join('\n');
     } else {
       return [
-        `You attempted attempted to import the Node standard library module "${chalk.bold(
+        `You attempted to import the Node standard library module "${chalk.bold(
           targetModuleName
         )}" from "${chalk.bold(relativePath)}".`,
         `It failed because the native React runtime does not include the Node standard library.`,

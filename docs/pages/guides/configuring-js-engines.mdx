@@ -30,7 +30,7 @@ To change the JavaScript engine in a bare React Native project, update the `exp
 
 It's important to highlight that changing the JS engine will require you to recompile development builds with `eas build` to work properly.
 
-## Using the V8 Engine
+## Using the V8 engine
 
 To use the V8 engine, you need to install [`react-native-v8`](https://github.com/Kudo/react-native-v8), an opt-in package that adds V8 runtime support for React Native. You can install it by running the following command:
 
@@ -49,14 +49,14 @@ You can run `npx expo prebuild -p android --clean` after the installation to pr
 To use a different engine on one specific platform, you can set the `"jsEngine"` value at the top level and then override it with a different value under the `"android"` or `"ios"` key. The value specified for the platform will take precedence over the common field.
 
 {/* prettier-ignore */}
-```js app.json
+```json app.json
 {
   "expo": {
     "jsEngine": "hermes",
     "ios": {
       /* @info jsEngine inside platform section will take precedence over the common field */
       "jsEngine": "jsc"
-    /* @end */
+      /* @end */
     }
   }
 }

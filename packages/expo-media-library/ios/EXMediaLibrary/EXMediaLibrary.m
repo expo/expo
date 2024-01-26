@@ -139,7 +139,21 @@ EX_EXPORT_METHOD_AS(presentPermissionsPickerAsync,
 #ifdef __IPHONE_14_0
   if (@available(iOS 14, *)) {
     dispatch_async(dispatch_get_main_queue(), ^{
-      [[PHPhotoLibrary sharedPhotoLibrary] presentLimitedLibraryPickerFromViewController:[[[[UIApplication sharedApplication] delegate] window] rootViewController]];
+      if ([PHPhotoLibrary authorizationStatusForAccessLevel:PHAccessLevelReadWrite] != PHAuthorizationStatusLimited) {
+        return reject(@"E_ACCESS_LEVEL_PERMISSIONS", @"Photo library permission isn't limited", nil);
+      }
+
+      UIViewController *rootViewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
+    
+      // Get the top-most presented view controller
+      UIViewController *topViewController = rootViewController;
+      while (topViewController.presentedViewController) {
+        topViewController = topViewController.presentedViewController;
+      }
+      
+      // Present the PHPickerViewController modally from the top-most view controller
+      [[PHPhotoLibrary sharedPhotoLibrary] presentLimitedLibraryPickerFromViewController:topViewController];
+
       resolve(nil);
     });
   } else {

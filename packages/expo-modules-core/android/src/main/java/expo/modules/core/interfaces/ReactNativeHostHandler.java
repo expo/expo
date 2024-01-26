@@ -1,9 +1,7 @@
 package expo.modules.core.interfaces;
 
 import com.facebook.react.ReactInstanceManager;
-import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
-import com.facebook.react.bridge.ReactApplicationContext;
 
 import androidx.annotation.Nullable;
 
@@ -11,7 +9,7 @@ public interface ReactNativeHostHandler {
   /**
    * Given chance for modules to customize {@link ReactInstanceManager}
    *
-   * @param useDeveloperSupport true if {@link ReactNativeHost} enabled developer support
+   * @param useDeveloperSupport true if {@link com.facebook.react.ReactNativeHost} enabled developer support
    * @return instance of {@link ReactInstanceManager}, or null if not to override
    */
   @Nullable
@@ -23,7 +21,7 @@ public interface ReactNativeHostHandler {
    * Given chance for modules to override react bundle file.
    * e.g. for expo-updates
    *
-   * @param useDeveloperSupport true if {@link ReactNativeHost} enabled developer support
+   * @param useDeveloperSupport true if {@link com.facebook.react.ReactNativeHost} enabled developer support
    * @return custom path to bundle file, or null if not to override
    */
   @Nullable
@@ -35,7 +33,7 @@ public interface ReactNativeHostHandler {
    * Given chance for modules to override react bundle asset name.
    * e.g. for expo-updates
    *
-   * @param useDeveloperSupport true if {@link ReactNativeHost} enabled developer support
+   * @param useDeveloperSupport true if {@link com.facebook.react.ReactNativeHost} enabled developer support
    * @return custom bundle asset name, or null if not to override
    */
   @Nullable
@@ -73,18 +71,6 @@ public interface ReactNativeHostHandler {
   default JavaScriptExecutorFactory getJavaScriptExecutorFactory() { return null; }
 
   //region event listeners
-
-  /**
-   * Given chance for JSI modules to register, e.g. for react-native-reanimated
-   *
-   * @param useDeveloperSupport true if {@link ReactNativeHost} enabled developer support
-   */
-  default void onRegisterJSIModules(
-    ReactApplicationContext reactApplicationContext,
-    JavaScriptContextHolder jsContext,
-    boolean useDeveloperSupport
-  ) {
-  }
 
   /**
    * Callback before {@link ReactInstanceManager} creation

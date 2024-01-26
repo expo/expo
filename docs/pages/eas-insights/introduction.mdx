@@ -1,7 +1,6 @@
 ---
 title: EAS Insights
 sidebar_title: Introduction
-hideTOC: true
 description: An introduction to EAS Insights which is a preview service for projects using the expo-insights library.
 ---
 
@@ -31,6 +30,7 @@ To use the `expo-insights`, make sure your app is linked to your EAS project in 
   cmd={[
     '# Install EAS CLI if you have not already',
     '$ npm i -g eas-cli',
+    '',
     '# Initialize your project EAS if you have not already ',
     '$ eas init',
     '',
@@ -39,4 +39,8 @@ To use the `expo-insights`, make sure your app is linked to your EAS project in 
   ]}
 />
 
-After installing the library, [create a new build](/workflow/customizing/). That's it! The module will automatically send events to EAS Insights when the app is launched.
+After installing the library, create a build either with [EAS](/build/setup/) or [locally](/guides/local-app-development/). The library will automatically send events to EAS Insights when the app is launched.
+
+### View insights
+
+To view insights data of your app, in the Expo dashboard, go to projects list, select your project and then select **Insights** from the navigation menu.

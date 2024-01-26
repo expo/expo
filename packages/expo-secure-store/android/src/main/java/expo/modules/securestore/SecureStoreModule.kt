@@ -2,7 +2,6 @@ package expo.modules.securestore
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.os.Build
 import android.preference.PreferenceManager
 import android.security.keystore.KeyPermanentlyInvalidatedException
 import android.util.Log
@@ -105,7 +104,9 @@ open class SecureStoreModule : Module() {
         "but it might be raised because the keychain used to decrypt this key has been invalidated and deleted." +
         " If you are confident that the keychain you provided is correct and want to avoid this error in the " +
         "future you should save a new value under this key or use `deleteItemImpl()` and remove the existing one."
-    } else { "" }
+    } else {
+      ""
+    }
 
     encryptedItemString ?: return null
 
@@ -125,24 +126,23 @@ open class SecureStoreModule : Module() {
         AESEncryptor.NAME -> {
           val secretKeyEntry = getPreferredKeyEntry(SecretKeyEntry::class.java, mAESEncryptor, options, requireAuthentication, usesKeystoreSuffix)
             ?: throw DecryptException("Could not find a keychain for key $key$legacyReadFailedWarning", key, options.keychainService)
-          return mAESEncryptor.decryptItem(encryptedItem, secretKeyEntry, options, authenticationHelper)
+          return mAESEncryptor.decryptItem(key, encryptedItem, secretKeyEntry, options, authenticationHelper)
         }
         HybridAESEncryptor.NAME -> {
           val privateKeyEntry = getPreferredKeyEntry(PrivateKeyEntry::class.java, hybridAESEncryptor, options, requireAuthentication, usesKeystoreSuffix)
             ?: throw DecryptException("Could not find a keychain for key $key$legacyReadFailedWarning", key, options.keychainService)
-          return hybridAESEncryptor.decryptItem(encryptedItem, privateKeyEntry, options, authenticationHelper)
+          return hybridAESEncryptor.decryptItem(key, encryptedItem, privateKeyEntry, options, authenticationHelper)
         }
         else -> {
           throw DecryptException("The item for key $key in SecureStore has an unknown encoding scheme $scheme)", key, options.keychainService)
         }
       }
+    } catch (e: KeyPermanentlyInvalidatedException) {
+      Log.w(TAG, "The requested key has been permanently invalidated. Returning null")
+      return null
+    } catch (e: BadPaddingException) {
+      throw (DecryptException("Could not decrypt the value with provided keychain $legacyReadFailedWarning", key, options.keychainService, e))
     } catch (e: GeneralSecurityException) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && e is KeyPermanentlyInvalidatedException) {
-        Log.w(TAG, "The requested key has been permanently invalidated. Returning null")
-        return null
-      } else if (e is BadPaddingException) {
-        throw (DecryptException("Could not decrypt the value with provided keychain $legacyReadFailedWarning", key, options.keychainService, e))
-      }
       throw (DecryptException(e.message, key, options.keychainService, e))
     } catch (e: CodedException) {
       throw e
@@ -175,36 +175,24 @@ open class SecureStoreModule : Module() {
        versions we store an asymmetric key pair and use hybrid encryption. We store the scheme we
        use in the encrypted JSON item so that we know how to decode and decrypt it when reading
        back a value.
-      */
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        val secretKeyEntry: SecretKeyEntry = getKeyEntry(SecretKeyEntry::class.java, mAESEncryptor, options, options.requireAuthentication)
-        val encryptedItem = mAESEncryptor.createEncryptedItem(value, secretKeyEntry, options.requireAuthentication, options.authenticationPrompt, authenticationHelper)
-        encryptedItem.put(SCHEME_PROPERTY, AESEncryptor.NAME)
-        saveEncryptedItem(encryptedItem, prefs, keychainAwareKey, options.requireAuthentication, options.keychainService)
-      } else {
-        val privateKeyEntry: PrivateKeyEntry = getKeyEntry(PrivateKeyEntry::class.java, hybridAESEncryptor, options, options.requireAuthentication)
-        val encryptedItem = hybridAESEncryptor.createEncryptedItem(value, privateKeyEntry, options.requireAuthentication, options.authenticationPrompt, authenticationHelper)
-        encryptedItem.put(SCHEME_PROPERTY, HybridAESEncryptor.NAME)
-        saveEncryptedItem(encryptedItem, prefs, keychainAwareKey, options.requireAuthentication, options.keychainService)
-      }
+       */
+      val secretKeyEntry: SecretKeyEntry = getKeyEntry(SecretKeyEntry::class.java, mAESEncryptor, options, options.requireAuthentication)
+      val encryptedItem = mAESEncryptor.createEncryptedItem(value, secretKeyEntry, options.requireAuthentication, options.authenticationPrompt, authenticationHelper)
+      encryptedItem.put(SCHEME_PROPERTY, AESEncryptor.NAME)
+      saveEncryptedItem(encryptedItem, prefs, keychainAwareKey, options.requireAuthentication, options.keychainService)
 
       // If a legacy value exists under this key we remove it to avoid unexpected errors in the future
       if (prefs.contains(key)) {
         prefs.edit().remove(key).apply()
       }
-    } catch (e: GeneralSecurityException) {
-      val isInvalidationException = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && e is KeyPermanentlyInvalidatedException
-
-      if (isInvalidationException && !keyIsInvalidated) {
-        // If the key has been invalidated by the OS we try to reinitialize it in the save retry.
+    } catch (e: KeyPermanentlyInvalidatedException) {
+      if (!keyIsInvalidated) {
         Log.w(TAG, "Key has been invalidated, retrying with the key deleted")
-        setItemImpl(key, value, options, true)
-      } else if (isInvalidationException) {
-        // If reinitialization of the key fails, reject the promise
-        throw EncryptException("Encryption Failed. The key $key has been permanently invalidated and cannot be reinitialized", key, options.keychainService, e)
-      } else {
-        throw EncryptException(e.message, key, options.keychainService, e)
+        return setItemImpl(key, value, options, true)
       }
+      throw EncryptException("Encryption Failed. The key $key has been permanently invalidated and cannot be reinitialized", key, options.keychainService, e)
+    } catch (e: GeneralSecurityException) {
+      throw EncryptException(e.message, key, options.keychainService, e)
     } catch (e: CodedException) {
       throw e
     } catch (e: Exception) {

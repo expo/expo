@@ -38,7 +38,7 @@ The following describes how a conformant Expo Updates client library MUST retrie
 
 The primary consumers of this spec are Expo Application Services and organizations that wish to manage their own update server to satisfy internal requirements.
 
-## Manifest Request
+## Manifest request
 
 A conformant client library MUST make a GET request with the headers:
 
@@ -66,7 +66,7 @@ expo-runtime-version: *
 expo-expect-signature: sig, keyid="root", alg="rsa-v1_5-sha256"
 ```
 
-## Manifest Response
+## Manifest response
 
 A conformant server MUST return a response structured in at least one of two ways. A conformant server MAY support either or both response structures, and when an unsupported response structure is requested the server SHOULD respond with an HTTP `406` error status.
 
@@ -75,7 +75,7 @@ A conformant server MUST return a response structured in at least one of two way
 
 The choice of manifest and headers are dependent on the values of the request headers. A conformant server MUST respond with a manifest for the most recent update, ordered by creation time, satisfying all parameters and constraints imposed by the [request headers](#manifest-request). The server MAY use any properties of the request like its headers and source IP address to choose amongst several updates that all satisfy the request's constraints.
 
-### Manifest Response Headers
+### Manifest response headers
 
 ```
 expo-protocol-version: 0
@@ -98,11 +98,11 @@ expo-signature: *
   - `keyid` MAY contain the keyId of the key the server used to sign the response. The client SHOULD use the certificate that matches this `keyid` to verify the signature.
   - `alg` MAY contain the algorithm the server used to sign the response. The client SHOULD use this field only if it matches the algorithm defined for the certificate matching `keyid`.
 
-### Manifest Response Body
+### Manifest response body
 
 The body of the response MUST be a manifest, which is defined as JSON conforming to both the following `Manifest` definition expressed in [TypeScript](https://www.typescriptlang.org/) and the detailed descriptions for each field:
 
-```typescript
+```ts
 type Manifest = {
   id: string;
   createdAt: string;
@@ -151,7 +151,7 @@ type Asset = {
 }
 ```
 
-### Multipart Manifest Response
+### Multipart manifest response
 
 A manifest response of this format is defined by the `multipart/mixed` MIME type as defined by [RFC 2046](https://tools.ietf.org/html/rfc2046#section-5.1).
 
@@ -172,11 +172,11 @@ Each part is defined as follows:
    - MUST have part header `content-type: application/json`.
    - The [manifest extensions](#manifest-extensions) MUST be sent in the part body.
 
-### Manifest Extensions
+### Manifest extensions
 
 Defined as JSON conforming to both the following `ManifestExtensions` definition expressed in [TypeScript](https://www.typescriptlang.org/) and the detailed descriptions for each field:
 
-```typescript
+```ts
 type ManifestExtensions = {
   assetRequestHeaders: ExpoAssetHeaderDictionary;
   ...
@@ -191,7 +191,7 @@ type ExpoAssetHeaderDictionary = {
 
 - `assetRequestHeaders`: MAY contain a dictionary of header (key, value) pairs to include with asset requests. Key and value MUST both be strings.
 
-## Asset Request
+## Asset request
 
 A conformant client library MUST make a GET request to the asset URLs specified by the manifest. The client library SHOULD include a header accepting the asset's content type as specified in the manifest. Additionally, the client library SHOULD specify the compression encoding the client library is capable of handling.
 
@@ -204,11 +204,11 @@ accept-encoding: br, gzip
 
 A conformant client library MUST also include any header (key, value) pairs included in [`assetRequestHeaders`](#manifest-extensions) for this asset key.
 
-## Asset Response
+## Asset response
 
 An asset located at a particular URL MUST NOT be changed or removed since client libraries may fetch assets for any update at any time. A conformant client MUST verify that the base64url-encoded SHA-256 hash of the asset matches the `hash` field for the asset from the manifest.
 
-### Asset Response Headers
+### Asset response headers
 
 The asset MUST be encoded using a compression format that the client supports according to the request's `accept-encoding` header. The server MAY serve uncompressed assets. The response MUST include a `content-type` header with the MIME type of the asset.
 For example:
@@ -228,10 +228,10 @@ cache-control: public, max-age=31536000, immutable
 
 Assets SHOULD be capable of being served with [Gzip](https://www.gnu.org/software/gzip/) and [Brotli](https://github.com/google/brotli) compression.
 
-## Code Signing
+## Code signing
 
 Expo Updates supports code signing the manifest. This also transitively signs the assets since their hashes are present in the manifest and verified by a conformant client. A conformant client MAY request the manifest be signed using a private key, and then MUST verify the signature of the manifest using the corresponding code signing certificate before it is used or any corresponding assets are downloaded. The client MUST verify that the signing certificate is either a self-signed, trusted root certificate or is in a certificate chain signed by a trusted root certificate. In either case, the root certificate MUST be embedded in the application or device's operating system.
 
-## Client Library
+## Client library
 
 See the [reference client library](https://github.com/expo/expo/tree/main/packages/expo-updates).

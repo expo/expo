@@ -1,10 +1,17 @@
+import CountingSet from 'metro/src/lib/CountingSet';
+
 import { getCssSerialAssets, fileNameFromContents, JSModule } from '../getCssDeps';
 
 describe(fileNameFromContents, () => {
   it('returns the filename from the filepath', () => {
     expect(fileNameFromContents({ filepath: '/', src: 'foo' })).toMatchInlineSnapshot(
-      `"-1effb2475fcfba4f9e8b8a1dbc8f3caf"`
+      `"-acbd18db4cc2f85cedef654fccc4a4d8"`
     );
+  });
+  it('returns the filename from the filepath with encoded path', () => {
+    expect(
+      fileNameFromContents({ filepath: 'node_modules%5Cexpo-router%5Centry.js', src: 'foo' })
+    ).toBe('entry-acbd18db4cc2f85cedef654fccc4a4d8');
   });
 });
 
@@ -18,7 +25,7 @@ const fooModule: JSModule = {
       },
     ],
   ]),
-  inverseDependencies: new Set(),
+  inverseDependencies: new CountingSet(),
   output: [
     {
       type: 'js/module',
@@ -41,7 +48,7 @@ const fooModule: JSModule = {
 const barModule: JSModule = {
   path: '/root/bar',
   dependencies: new Map(),
-  inverseDependencies: new Set(['/root/foo']),
+  inverseDependencies: new CountingSet(['/root/foo']),
   output: [
     {
       type: 'js/module',
@@ -72,7 +79,7 @@ describe(getCssSerialAssets, () => {
       )
     ).toEqual([
       {
-        filename: '_expo/static/css/foobar-572ab956c69cfba498b99ddeaa42abd8.css',
+        filename: '_expo/static/css/foobar-fee1d601d0689f88ee4e04e21e7a7128.css',
         metadata: {
           hmrId: 'foobar_js',
         },

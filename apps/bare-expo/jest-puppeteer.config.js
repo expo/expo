@@ -50,7 +50,7 @@ module.exports = {
       ? ['--ignore-certificate-errors', '--no-sandbox', '--disable-setuid-sandbox']
       : ['--ignore-certificate-errors'],
     ignoreHTTPSErrors: true,
-    headless: true,
+    headless: 'new',
   },
 };
 

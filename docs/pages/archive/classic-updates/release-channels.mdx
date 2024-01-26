@@ -44,13 +44,13 @@ Set your release channel in the build profile in **eas.json**:
 
 Then, build your standalone app by running `eas build --profile <your-build-profile>` with the EAS CLI. The binary produced will only pull releases published under the specified release channel. If you do not specify a release channel, your binary will pull releases from the `default` release channel.
 
-## Access Channel from Code
+## Access channel from code
 
 You can access the release channel your update is published under with the `Updates.releaseChannel` field from [expo-updates](/versions/latest/sdk/updates.mdx).
 
 > In development in Expo Go, `Updates.releaseChannel` is always `'default'`.
 
-## Example Workflow
+## Example workflow
 
 Consider a situation where you have a Staging stack for testing on Expo Go, and a Production stack for pushing through TestFlight, then promoting to the App Store.
 
@@ -81,7 +81,7 @@ You can continue updating v1 of your app with `expo publish --release-channel pr
 
 You can edit the native project's release channel by modifying the `EXUpdatesReleaseChannel` key in **Expo.plist** (iOS) or the `releaseChannel` meta-data tag value in **AndroidManifest.xml** (Android). [Read this guide](./updating-your-app) for more information on configuring updates in a bare app.
 
-## Using release channels for Environment Variable Configuration
+## Using release channels for Environment Variable configuration
 
 Environment variables don't exist explicitly, but you can utilize release channels to make that happen!
 
@@ -107,7 +107,7 @@ Say you have a workflow of releasing builds like this:
   ]}
 />
 
-You can create a function that looks for the specific release and adjust your app's behaviour accordingly:
+You can create a function that looks for the specific release and adjust your app's behavior accordingly:
 
 ```js
 import * as Updates from 'expo-updates';

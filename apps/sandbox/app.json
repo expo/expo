@@ -4,6 +4,7 @@
     "slug": "sandbox",
     "privacy": "public",
     "sdkVersion": "UNVERSIONED",
+    "scheme": "sandbox",
 
     "version": "1.0.0",
     "orientation": "portrait",
@@ -21,9 +22,18 @@
     "ios": {
       "supportsTablet": true
     },
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "origin": "https://naviloop.netlify.app/",
+          "asyncRoutes": true
+        }
+      ]
+    ],
     "web": {
       "bundler": "metro",
-      "output": "static"
+      "output": "server"
     }
   }
 }

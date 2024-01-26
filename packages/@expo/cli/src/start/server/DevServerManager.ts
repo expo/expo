@@ -3,6 +3,7 @@ import assert from 'assert';
 import chalk from 'chalk';
 
 import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
+import DevToolsPluginManager from './DevToolsPluginManager';
 import { getPlatformBundlers } from './platformBundlers';
 import { Log } from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
@@ -35,6 +36,7 @@ const BUNDLERS = {
 /** Manages interacting with multiple dev servers. */
 export class DevServerManager {
   private projectPrerequisites: ProjectPrerequisite<any, void>[] = [];
+  public readonly devtoolsPluginManager: DevToolsPluginManager;
 
   private notifier: FileNotifier | null = null;
 
@@ -44,6 +46,7 @@ export class DevServerManager {
     public options: BundlerStartOptions
   ) {
     this.notifier = this.watchBabelConfig();
+    this.devtoolsPluginManager = new DevToolsPluginManager(projectRoot);
   }
 
   private watchBabelConfig() {
@@ -120,7 +123,7 @@ export class DevServerManager {
       skipPlugins: true,
       skipSDKVersionRequirement: true,
     });
-    const bundler = getPlatformBundlers(exp).web;
+    const bundler = getPlatformBundlers(this.projectRoot, exp).web;
     debug(`Starting ${bundler} dev server for web`);
     return this.startAsync([
       {
@@ -161,16 +164,15 @@ export class DevServerManager {
       sdkVersion: exp.sdkVersion ?? null,
     });
 
-    const platformBundlers = getPlatformBundlers(exp);
+    const platformBundlers = getPlatformBundlers(this.projectRoot, exp);
 
     // Start all dev servers...
     for (const { type, options } of startOptions) {
       const BundlerDevServerClass = await BUNDLERS[type]();
-      const server = new BundlerDevServerClass(
-        this.projectRoot,
-        platformBundlers,
-        !!options?.devClient
-      );
+      const server = new BundlerDevServerClass(this.projectRoot, platformBundlers, {
+        devToolsPluginManager: this.devtoolsPluginManager,
+        isDevClient: !!options?.devClient,
+      });
       await server.startAsync(options ?? this.options);
       devServers.push(server);
     }

@@ -97,7 +97,7 @@ describe('_getBundleStatusMessage', () => {
           'done'
         )
       )
-    ).toMatchInlineSnapshot(`"Android Bundling complete 100ms"`);
+    ).toMatchInlineSnapshot(`"Android Bundling complete 100ms (./index.js)"`);
   });
   it(`should format failed loading`, () => {
     expect(
@@ -116,7 +116,7 @@ describe('_getBundleStatusMessage', () => {
           'failed'
         )
       )
-    ).toMatchInlineSnapshot(`"Android Bundling failed 100ms"`);
+    ).toMatchInlineSnapshot(`"Android Bundling failed 100ms (./index.js)"`);
   });
 });
 
@@ -170,7 +170,7 @@ describe(formatUsingNodeStandardLibraryError, () => {
       targetModuleName: 'path',
     } as any);
     expect(stripAnsi(format)).toMatchInlineSnapshot(`
-      "You attempted attempted to import the Node standard library module "path" from "App.js".
+      "You attempted to import the Node standard library module "path" from "App.js".
       It failed because the native React runtime does not include the Node standard library.
       Learn more: https://docs.expo.dev/workflow/using-libraries/#using-third-party-libraries"
     `);

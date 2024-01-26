@@ -24,7 +24,7 @@ type ExpoCliStateObject = {
   };
 };
 
-const EXPO_HOME_PATH = Directories.getExpoHomeJSDir();
+const EXPO_HOME_PATH = Directories.getExpoGoDir();
 const { EXPO_HOME_DEV_ACCOUNT_USERNAME, EXPO_HOME_DEV_ACCOUNT_PASSWORD } = process.env;
 
 /**
@@ -85,34 +85,9 @@ async function setExpoCliStateAsync(newState: object): Promise<void> {
 }
 
 /**
- * Deletes kernel fields that needs to be removed from published manifest.
- */
-function deleteKernelFields(appJson: AppConfig): void {
-  console.log(`Deleting kernel-related fields...`);
-
-  // @tsapeta: Using `delete` keyword here would change the order of keys in app.json.
-  appJson.expo.kernel = undefined;
-  appJson.expo.isKernel = undefined;
-  appJson.expo.ios.publishBundlePath = undefined;
-  appJson.expo.android.publishBundlePath = undefined;
-}
-
-/**
- * Restores kernel fields that have been removed in previous steps - we don't want them to be present in published manifest.
- */
-function restoreKernelFields(appJson: AppConfig, appJsonBackup: AppConfig): void {
-  console.log('Restoring kernel-related fields...');
-
-  appJson.expo.kernel = appJsonBackup.expo.kernel;
-  appJson.expo.isKernel = appJsonBackup.expo.isKernel;
-  appJson.expo.ios.publishBundlePath = appJsonBackup.expo.ios.publishBundlePath;
-  appJson.expo.android.publishBundlePath = appJsonBackup.expo.android.publishBundlePath;
-}
-
-/**
  * Publishes dev home app on EAS Update.
  */
-async function publishAppAsync({
+async function publishAppOnDevelopmentBranchAsync({
   slug,
   message,
 }: {
@@ -121,11 +96,12 @@ async function publishAppAsync({
 }): Promise<{ createdUpdateGroupId: string }> {
   console.log(`Publishing ${chalk.green(slug)}...`);
 
-  const result = await EASUpdate.publishProjectWithEasCliAsync(EXPO_HOME_PATH, {
+  const result = await EASUpdate.setAuthAndPublishProjectWithEasCliAsync(EXPO_HOME_PATH, {
     userpass: {
       username: EXPO_HOME_DEV_ACCOUNT_USERNAME!,
       password: EXPO_HOME_DEV_ACCOUNT_PASSWORD!,
     },
+    branch: 'development',
     message,
   });
 
@@ -189,8 +165,6 @@ async function action(options: ActionOptions): Promise<void> {
   console.log(`Modifying home's slug to ${chalk.green(slug)}...`);
   appJson.expo.slug = slug;
 
-  deleteKernelFields(appJson);
-
   // Save the modified `appJson` to the file so it'll be used as a manifest.
   await appJsonFile.writeAsync(appJson);
 
@@ -203,10 +177,9 @@ async function action(options: ActionOptions): Promise<void> {
     });
   }
 
-  const createdUpdateGroupId = (await publishAppAsync({ slug, message: expoHomeHashNode.hash }))
-    .createdUpdateGroupId;
-
-  restoreKernelFields(appJson, appJsonBackup);
+  const createdUpdateGroupId = (
+    await publishAppOnDevelopmentBranchAsync({ slug, message: expoHomeHashNode.hash })
+  ).createdUpdateGroupId;
 
   console.log(`Restoring home's slug to ${chalk.green(appJsonBackup.expo.slug)}...`);
   appJson.expo.slug = appJsonBackup.expo.slug;
@@ -228,7 +201,7 @@ async function action(options: ActionOptions): Promise<void> {
   console.log(
     chalk.yellow(
       `Finished publishing. Remember to commit changes of ${chalk.magenta(
-        'home/app.json'
+        'apps/expo-go/app.json'
       )} and ${chalk.magenta('dev-home-config.json')}.`
     )
   );

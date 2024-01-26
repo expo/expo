@@ -3,13 +3,68 @@ package expo.modules.kotlin.types
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.jni.ExpectedType
-import expo.modules.kotlin.jni.SingleType
 import kotlin.reflect.KType
+
+private fun createDeferredValue(
+  value: Any,
+  wasConverted: Boolean,
+  typeConverter: TypeConverter<*>,
+  expectedType: ExpectedType,
+  context: AppContext?
+): DeferredValue {
+  for (type in expectedType.getPossibleTypes()) {
+    if (type.expectedCppType.clazz.isInstance(value)) {
+      return if (wasConverted) {
+        UnconvertedValue(value, typeConverter, context)
+      } else {
+        val convertedValue = tryToConvert(typeConverter, value, context) ?: continue
+        ConvertedValue(convertedValue)
+      }
+    }
+  }
+
+  return IncompatibleValue
+}
+
+private fun tryToConvert(typeConverter: TypeConverter<*>, value: Any, context: AppContext?): Any? {
+  return try {
+    if (typeConverter.isTrivial()) {
+      value
+    } else {
+      typeConverter.convert(value, context)
+    }
+  } catch (e: Throwable) {
+    null
+  }
+}
+
+private fun createDeferredValues(
+  value: Any,
+  context: AppContext?,
+  list: List<Pair<ExpectedType, TypeConverter<*>>>,
+  typeList: List<KType>
+): List<DeferredValue> {
+  var wasConverted = false
+  val result = list.map { (expectedType, converter) ->
+    val deferredValue = createDeferredValue(value, wasConverted, converter, expectedType, context)
+    if (deferredValue is ConvertedValue) {
+      wasConverted = true
+    }
+
+    deferredValue
+  }
+
+  if (!wasConverted) {
+    throw TypeCastException("Cannot cast '$value' to 'Either<${typeList.joinToString(separator = ", ") { it.toString() }}>'")
+  }
+
+  return result
+}
 
 @EitherType
 class EitherTypeConverter<FirstType : Any, SecondType : Any>(
   converterProvider: TypeConverterProvider,
-  eitherType: KType,
+  eitherType: KType
 ) : NullAwareTypeConverter<Either<FirstType, SecondType>>(eitherType.isMarkedNullable) {
   private val firstJavaType = requireNotNull(eitherType.arguments.getOrNull(0)?.type)
   private val secondJavaType = requireNotNull(eitherType.arguments.getOrNull(1)?.type)
@@ -23,27 +78,23 @@ class EitherTypeConverter<FirstType : Any, SecondType : Any>(
   private val secondType = secondTypeConverter.getCppRequiredTypes()
 
   override fun convertNonOptional(value: Any, context: AppContext?): Either<FirstType, SecondType> {
-    val convertValueIfNeeded = Convert@{ types: Array<out SingleType>, converter: TypeConverter<*> ->
-      for (singleType in types) {
-        if (singleType.expectedCppType.clazz.isInstance(value)) {
-          return@Convert if (firstTypeConverter.isTrivial()) {
-            Either<FirstType, SecondType>(value)
-          } else {
-            Either(converter.convert(value)!!)
-          }
-        }
-      }
-      null
-    }
+    val typeList = listOf(firstJavaType, secondJavaType)
 
-    return convertValueIfNeeded(
-      firstType.getPossibleTypes(),
-      firstTypeConverter
-    ) ?: convertValueIfNeeded(
-      secondType.getPossibleTypes(),
-      secondTypeConverter
+    val deferredValues = createDeferredValues(
+      value,
+      context,
+      listOf(
+        firstType to firstTypeConverter,
+        secondType to secondTypeConverter
+      ),
+      typeList
     )
-      ?: throw TypeCastException("Cannot cast '$value' to 'Either<$firstJavaType, $secondJavaType>'")
+
+    return Either(
+      value,
+      deferredValues.toMutableList(),
+      typeList
+    )
   }
 
   override fun getCppRequiredTypes(): ExpectedType = firstType + secondType
@@ -54,7 +105,7 @@ class EitherTypeConverter<FirstType : Any, SecondType : Any>(
 @EitherType
 class EitherOfThreeTypeConverter<FirstType : Any, SecondType : Any, ThirdType : Any>(
   converterProvider: TypeConverterProvider,
-  eitherType: KType,
+  eitherType: KType
 ) : NullAwareTypeConverter<EitherOfThree<FirstType, SecondType, ThirdType>>(eitherType.isMarkedNullable) {
   private val firstJavaType = requireNotNull(eitherType.arguments.getOrNull(0)?.type)
   private val secondJavaType = requireNotNull(eitherType.arguments.getOrNull(1)?.type)
@@ -73,30 +124,23 @@ class EitherOfThreeTypeConverter<FirstType : Any, SecondType : Any, ThirdType : 
   private val thirdType = thirdTypeConverter.getCppRequiredTypes()
 
   override fun convertNonOptional(value: Any, context: AppContext?): EitherOfThree<FirstType, SecondType, ThirdType> {
-    val convertValueIfNeeded = Convert@{ types: Array<out SingleType>, converter: TypeConverter<*> ->
-      for (singleType in types) {
-        if (singleType.expectedCppType.clazz.isInstance(value)) {
-          return@Convert if (firstTypeConverter.isTrivial()) {
-            EitherOfThree<FirstType, SecondType, ThirdType>(value)
-          } else {
-            EitherOfThree(converter.convert(value)!!)
-          }
-        }
-      }
-      null
-    }
-
-    return convertValueIfNeeded(
-      firstType.getPossibleTypes(),
-      firstTypeConverter
-    ) ?: convertValueIfNeeded(
-      secondType.getPossibleTypes(),
-      secondTypeConverter
-    ) ?: convertValueIfNeeded(
-      thirdType.getPossibleTypes(),
-      thirdTypeConverter
+    val typeList = listOf(firstJavaType, secondJavaType, thirdJavaType)
+    val deferredValues = createDeferredValues(
+      value,
+      context,
+      listOf(
+        firstType to firstTypeConverter,
+        secondType to secondTypeConverter,
+        thirdType to thirdTypeConverter
+      ),
+      typeList
     )
-      ?: throw TypeCastException("Cannot cast '$value' to 'EitherOfThree<$firstJavaType, $secondJavaType, $thirdJavaType>'")
+
+    return EitherOfThree(
+      value,
+      deferredValues.toMutableList(),
+      typeList
+    )
   }
 
   override fun getCppRequiredTypes(): ExpectedType = firstType + secondType + thirdType
@@ -105,7 +149,7 @@ class EitherOfThreeTypeConverter<FirstType : Any, SecondType : Any, ThirdType : 
 @EitherType
 class EitherOfFourTypeConverter<FirstType : Any, SecondType : Any, ThirdType : Any, FourthType : Any>(
   converterProvider: TypeConverterProvider,
-  eitherType: KType,
+  eitherType: KType
 ) : NullAwareTypeConverter<EitherOfFour<FirstType, SecondType, ThirdType, FourthType>>(eitherType.isMarkedNullable) {
   private val firstJavaType = requireNotNull(eitherType.arguments.getOrNull(0)?.type)
   private val secondJavaType = requireNotNull(eitherType.arguments.getOrNull(1)?.type)
@@ -129,33 +173,24 @@ class EitherOfFourTypeConverter<FirstType : Any, SecondType : Any, ThirdType : A
   private val fourthType = fourthTypeConverter.getCppRequiredTypes()
 
   override fun convertNonOptional(value: Any, context: AppContext?): EitherOfFour<FirstType, SecondType, ThirdType, FourthType> {
-    val convertValueIfNeeded = Convert@{ types: Array<out SingleType>, converter: TypeConverter<*> ->
-      for (singleType in types) {
-        if (singleType.expectedCppType.clazz.isInstance(value)) {
-          return@Convert if (firstTypeConverter.isTrivial()) {
-            EitherOfFour<FirstType, SecondType, ThirdType, FourthType>(value)
-          } else {
-            EitherOfFour(converter.convert(value)!!)
-          }
-        }
-      }
-      null
-    }
-
-    return convertValueIfNeeded(
-      firstType.getPossibleTypes(),
-      firstTypeConverter
-    ) ?: convertValueIfNeeded(
-      secondType.getPossibleTypes(),
-      secondTypeConverter
-    ) ?: convertValueIfNeeded(
-      thirdType.getPossibleTypes(),
-      thirdTypeConverter
-    ) ?: convertValueIfNeeded(
-      fourthType.getPossibleTypes(),
-      fourthTypeConverter
+    val typeList = listOf(firstJavaType, secondJavaType, thirdJavaType, fourthJavaType)
+    val deferredValues = createDeferredValues(
+      value,
+      context,
+      listOf(
+        firstType to firstTypeConverter,
+        secondType to secondTypeConverter,
+        thirdType to thirdTypeConverter,
+        fourthType to fourthTypeConverter
+      ),
+      listOf(firstJavaType, secondJavaType, thirdJavaType, fourthJavaType)
     )
-      ?: throw TypeCastException("Cannot cast '$value' to 'EitherOfFourth<$firstJavaType, $secondJavaType, $thirdJavaType, $fourthJavaType>'")
+
+    return EitherOfFour(
+      value,
+      deferredValues.toMutableList(),
+      typeList
+    )
   }
 
   override fun getCppRequiredTypes(): ExpectedType = firstType + secondType + thirdType

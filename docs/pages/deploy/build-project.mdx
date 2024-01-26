@@ -8,15 +8,15 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 import { BoxLink } from '~/ui/components/BoxLink';
-import { BuildIcon, EasSubmitIcon, EasMetadataIcon, BookOpen02Icon } from '@expo/styleguide-icons';
+import { BookOpen02Icon } from '@expo/styleguide-icons';
 
-EAS Build allows you to build a native app binary that is signed for app store submission. These types of builds are called **production builds**.
+Whether you have built a native app binary using [EAS](/build/setup/) or [locally](/guides/local-app-development/), the next step in your app development journey is to submit your app to the stores. To do so, you need to create a **production build**.
 
-## Production builds
+Production builds are submitted to app stores for release to the general public or as part of a store-facilitated testing process such as TestFlight. This guide explains how to create production builds with [EAS](#production-builds-using-eas) and [locally](#production-builds-locally). It is also possible to create production builds for Expo apps with any CI service capable of compiling Android and iOS apps.
 
-Production builds are submitted to app stores for release to the general public or as part of a store-facilitated testing process such as TestFlight.
+## Production builds using EAS
 
-These builds must be installed through their respective app stores. They cannot be installed directly on your Android Emulator or device, or iOS Simulator or device. The only exception to this is if you explicitly set `"buildType": "apk"` for Android on your build profile. However, it is recommended to use **aab** when submitting to stores, and this is the default configuration.
+Production builds must be installed through their respective app stores. They cannot be installed directly on your Android Emulator or device, or iOS Simulator or device. The only exception to this is if you explicitly set `"buildType": "apk"` for Android on your build profile. However, it is recommended to use **aab** when submitting to stores, and this is the default configuration.
 
 ### `eas.json` configuration
 
@@ -77,12 +77,12 @@ Whether you have experience with generating app signing credentials or not, EAS 
 ### Android app signing credentials
 
 - If you have not yet generated a keystore for your app, you can let EAS CLI take care of that for you by selecting `Generate new keystore`, and then you are done. The keystore is stored securely on EAS servers.
-- If you want to manually generate your keystore, please see the [manual Android credentials guide](/app-signing/local-credentials#android-credentials) for more information.
+- If you want to manually generate your keystore, see the [manual Android credentials guide](/app-signing/local-credentials#android-credentials) for more information.
 
 ### iOS app signing credentials
 
 - If you have not generated a provisioning profile and/or distribution certificate yet, you can let EAS CLI take care of that for you by signing into your Apple Developer Program account and following the prompts.
-- If you want to rather manually generate your credentials, refer to the [manual iOS credentials guide](/app-signing/local-credentials#ios-credentials) for more information.
+- If you want to manually generate your credentials, see the [manual iOS credentials guide](/app-signing/local-credentials#ios-credentials) for more information.
 
 ## Wait for the build to complete
 
@@ -92,14 +92,29 @@ By default, the `eas build` command will wait for your build to complete, but yo
 
 If you are a member of an organization and your build is on its behalf, you will find the build details on [the build dashboard for that account](https://expo.dev/accounts/[account]/builds).
 
-## Next steps
+## Production builds locally
+
+To create a production build locally, see the following React Native guides for more information on the necessary steps that are required for Android and iOS.
+
+These guides assume your project has **android** and/or **ios** directories containing the respective native projects. If you use [Continuous Native Generation](/workflow/continuous-native-generation) then you will need to run [prebuild](/workflow/prebuild) to generate the directories before following the guides.
+
+> **Note**: Following the guide below, in step four, when you build the release **.aab** for Android, use `npx expo run:android --variant release` command instead of `npx react-native build-android --mode=release`.
 
 <BoxLink
-  title="App Store submissions"
-  description="Learn how to submit your app to app stores using EAS Submit."
-  Icon={EasSubmitIcon}
-  href="/deploy/submit-to-app-stores/"
+  title="Publishing to Google Play Store"
+  description="Learn how to publish an app to Google Play Store by following the necessary steps manually."
+  Icon={BookOpen02Icon}
+  href="https://reactnative.dev/docs/signed-apk-android"
 />
+
+<BoxLink
+  title="Publishing to Apple App Store"
+  description="Learn how to publish an app to Apple App Store by following the necessary steps manually."
+  Icon={BookOpen02Icon}
+  href="https://reactnative.dev/docs/publishing-to-app-store"
+/>
+
+## Next step
 
 <BoxLink
   title="App stores best practices"

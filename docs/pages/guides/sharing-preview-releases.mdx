@@ -1,14 +1,14 @@
 ---
 title: Share pre-release versions of your app
+description: Learn about various methods to share pre-release versions of your app for internal distribution and TestFlight.
 sidebar_title: Share preview releases
 ---
 
 import Video from '~/components/plugins/Video';
 
-During the development process you'll want to share your progress with both technical and non-technical stakeholders of the project to gather feedback and test it,
-and there are several official approaches you can take for doing this.
+During the development process you'll want to share your progress with both technical and non-technical stakeholders of the project to gather feedback and test it, and there are several official approaches you can take for doing this.
 
-## Internal Distribution
+## Internal distribution
 
 Android and iOS both offer ways to install a build of your application directly on devices. This gives you full control of putting specific builds on devices, allowing you to iterate quickly and have multiple builds of your application available for review at the same time.
 
@@ -19,9 +19,9 @@ APKs can be installed directly to an Android device over USB, by downloading the
 once the user accepts the security warning for installing an app that has not gone through Play Store review.
 AAB (Android app bundle) binaries of your application must be distributed through the Play Store.
 
-### iOS Ad Hoc Distribution
+### iOS ad hoc distribution
 
-Apple offers [Ad Hoc provisioning profiles](https://help.apple.com/xcode/mac/current/#/dev7ccaf4d3c) to distribute your app to test devices once they have been registered
+Apple offers [ad hoc provisioning profiles](https://help.apple.com/xcode/mac/current/#/dev7ccaf4d3c) to distribute your app to test devices once they have been registered
 to your Apple Developer account. This method requires a paid Apple Developer account and that account will only be able to use this method to distribute
 to at most 100 iPhones per year.
 
@@ -32,7 +32,7 @@ Setting up Ad Hoc certificates correctly can be intimidating if you haven't done
 If you're using [EAS Build](/build/internal-distribution.mdx), which is optimized for Expo and React Native projects, we'll handle the time-consuming parts
 of setting up Ad Hoc credentials for you.
 
-### iOS Enterprise Distribution
+### iOS enterprise distribution
 
 If your app is only intended to be used internally and will not be distributed through the App Store, you should use Enterprise distribution.
 Unlike Ad Hoc Distribution, there is no limit to the number of devices that can install your application, and you will not need to manage the UDIDs of each device.

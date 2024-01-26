@@ -4,9 +4,35 @@
 
 ### 🛠 Breaking changes
 
-- Remove deprecated `makeUrl` function. ([#24300](https://github.com/expo/expo/pull/24300) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 6.2.2 - 2024-01-12
+
+_This version does not introduce any user-facing changes._
+
+## 6.2.1 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
+## 6.2.0 — 2023-11-14
+
+### 💡 Others
+
+- Migrate to new standard `URL` support on native. ([#24941](https://github.com/expo/expo/pull/24941) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 6.1.1 — 2023-10-17
+
+_This version does not introduce any user-facing changes._
+
+## 6.1.0 — 2023-09-15
+
+### 🛠 Breaking changes
+
+- Remove deprecated `makeUrl` function. ([#24300](https://github.com/expo/expo/pull/24300) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 

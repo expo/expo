@@ -38,11 +38,15 @@ export const INTERNAL_CALLSITES_REGEX = new RegExp(
     `\\[native code\\]`,
     // Hide react-dom (web)
     'node_modules/react-dom/.+\\.js$',
+    // Hide node.js evaluation code
+    'node_modules/require-from-string/.+\\.js$',
     // Block expo's metro-runtime
-    '@expo/metro-runtime/.+\\.js$',
     '@expo/metro-runtime/.+\\.ts',
     // Block upstream metro-runtime
     '/metro-runtime/.+\\.js$',
+
+    // Block all whatwg polyfills
+    'node_modules/whatwg-.+\\.js$',
   ].join('|')
 );
 

@@ -3,6 +3,7 @@ title: Location
 description: A library that provides access to reading geolocation information, polling current location or subscribing location update events from the device.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-49/packages/expo-location'
 packageName: 'expo-location'
+iconUrl: '/static/images/packages/expo-location.png'
 ---
 
 import APISection from '~/components/plugins/APISection';
@@ -93,7 +94,7 @@ Learn how to configure the native projects in the [installation instructions in 
 
 </ConfigReactNative>
 
-### Background Location Methods
+### Background Location methods
 
 To use Background Location methods, the following requirements apply:
 
@@ -101,7 +102,7 @@ To use Background Location methods, the following requirements apply:
 - **(_iOS only_)** `"location"` background mode must be specified in **Info.plist** file. See [background tasks configuration guide](task-manager.mdx#configuration).
 - Background location task must be defined in the top-level scope, using [TaskManager.defineTask](task-manager.mdx#taskmanagerdefinetasktaskname-taskexecutor).
 
-### Geofencing Methods
+### Geofencing methods
 
 To use Geofencing methods, the following requirements apply:
 
@@ -182,16 +183,6 @@ const styles = StyleSheet.create({
 
 ## Enable Emulator Location
 
-### iOS Simulator
-
-With Simulator open, go to **Features** > **Location** and choose any option besides **None**.
-
-<ImageSpotlight
-  alt="Location settings in iOS simulator."
-  src="/static/images/sdk/location/ios-simulator-location.png"
-  style={{ maxWidth: 480 }}
-/>
-
 ### Android Emulator
 
 Open Android Studio, and launch the Android Emulator. Inside it, go to **Settings** > **Location** and enable **Use location**.
@@ -205,6 +196,16 @@ Open Android Studio, and launch the Android Emulator. Inside it, go to **Setting
 If you don't receive the locations in the emulator, you may have to turn off the **Improve Location Accuracy** setting. This will turn off Wi-Fi location and only use GPS. Then you can manipulate the location with GPS data through the emulator.
 
 For Android 12 and higher, go to **Settings** > **Location** > **Location Services** > **Google Location Accuracy**, and turn off **Improve Location Accuracy**. For Android 11 and lower, go to **Settings** > **Location** > **Advanced** > **Google Location Accuracy**, and turn off **Google Location Accuracy**.
+
+### iOS Simulator
+
+With Simulator open, go to **Features** > **Location** and choose any option besides **None**.
+
+<ImageSpotlight
+  alt="Location settings in iOS simulator."
+  src="/static/images/sdk/location/ios-simulator-location.png"
+  style={{ maxWidth: 480 }}
+/>
 
 ## API
 

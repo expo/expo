@@ -7,18 +7,20 @@ export default class ExpoCheckbox extends React.PureComponent {
     };
     render() {
         const { color, disabled, onChange, onValueChange, style, value, ...other } = this.props;
-        return (React.createElement(Pressable, { ...other, disabled: disabled, 
-            // Announces "checked" status and "checkbox" as the focused element
-            accessibilityRole: "checkbox", accessibilityState: { disabled, checked: value }, style: [
+        return (<Pressable {...other} disabled={disabled} 
+        // Announces "checked" status and "checkbox" as the focused element
+        accessibilityRole="checkbox" accessibilityState={{ disabled, checked: value }} style={[
                 styles.root,
                 style,
                 value && styles.checked,
                 !!color && { backgroundColor: value ? color : undefined, borderColor: color },
                 disabled && styles.disabled,
                 value && disabled && styles.checkedAndDisabled,
-            ], onPress: this.handleChange }, value && (React.createElement(Image, { source: {
-                uri: checkmarkBase64,
-            }, style: StyleSheet.absoluteFill }))));
+            ]} onPress={this.handleChange}>
+        {value && (<Image source={{
+                    uri: checkmarkBase64,
+                }} style={StyleSheet.absoluteFill}/>)}
+      </Pressable>);
     }
 }
 const defaultEnabledColor = Platform.select({

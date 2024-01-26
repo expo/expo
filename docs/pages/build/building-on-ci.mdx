@@ -17,7 +17,7 @@ To trigger EAS builds from a CI environment, we first need to configure our app 
 
 If you have run `eas build -p [all|ios|android]` successfully before, then you can continue.
 
-If you haven't done this yet, please refer to the [Creating your first build](setup.mdx) guide and return here when you're ready.
+If you haven't done this yet, see [Create your first build](setup.mdx) guide and return here when you're ready.
 
 ## Configure your app for CI
 
@@ -54,10 +54,14 @@ Now that we're authenticated with Expo CLI, we can create the build step.
 To trigger new builds, we will add this script to our configuration:
 
 ```sh
-npx eas-cli build --platform all --non-interactive
+npx eas-cli build --platform all --non-interactive --no-wait
 ```
 
-This will trigger a new build on EAS and print the URLs for the built files after the build completes.
+This will trigger a new build on EAS. A URL will be printed, linking to the build's progress in the EAS dashboard.
+
+> **info** The `--no-wait` flag exits the step once the build has been triggered. You are not billed for CI execution time while EAS performs the build. However, your CI will report that the build job is passing only if triggering EAS Build is successful.
+>
+> If you need to add another CI step to run once the build is complete, remove this flag.
 
 <Collapsible summary="Travis CI">
 
@@ -81,7 +85,7 @@ jobs:
       node_js: lts/*
       script:
         - npm ci
-        - npx eas-cli build --platform all --non-interactive
+        - npx eas-cli build --platform all --non-interactive --no-wait
 ```
 
 </Collapsible>
@@ -112,7 +116,7 @@ eas-build:
   stage: build
   script:
     - apk add --no-cache bash
-    - npx eas-cli build --platform all --non-interactive
+    - npx eas-cli build --platform all --non-interactive --no-wait
 ```
 
 </Collapsible>
@@ -138,7 +142,7 @@ pipelines:
         script:
           - apk add --no-cache bash
           - npm ci
-          - npx eas-cli build --platform all --non-interactive
+          - npx eas-cli build --platform all --non-interactive --no-wait
 ```
 
 </Collapsible>
@@ -166,7 +170,7 @@ jobs:
           command: npm ci
       - run:
           name: Trigger build
-          command: npx eas-cli build --platform all --non-interactive
+          command: npx eas-cli build --platform all --non-interactive --no-wait
 
 workflows:
   build_app:
@@ -208,7 +212,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Build on EAS
-        run: eas build --platform all --non-interactive
+        run: eas build --platform all --non-interactive --no-wait
 ```
 
 </Collapsible>

@@ -16,7 +16,9 @@ export const HeaderCell = ({ children, align = 'left' }: HeaderCellProps) => (
 
 const tableHeadersCellStyle = css({
   padding: spacing[4],
-  fontWeight: 600,
+  fontSize: '0.875rem',
+  fontWeight: 500,
+  color: theme.text.secondary,
   verticalAlign: 'middle',
   borderRight: `1px solid ${theme.border.default}`,
 

@@ -17,7 +17,7 @@ import java.io.File
 
 class CameraViewModule : Module() {
   override fun definition() = ModuleDefinition {
-    Name("ExponentCamera")
+    Name("ExpoCamera")
 
     Constants(
       "Type" to mapOf(
@@ -48,7 +48,7 @@ class CameraViewModule : Module() {
         "720p" to VIDEO_720P,
         "480p" to VIDEO_480P,
         "4:3" to VIDEO_4x3
-      ),
+      )
     )
 
     AsyncFunction("pausePreview") { viewTag: Int ->
@@ -114,7 +114,7 @@ class CameraViewModule : Module() {
       return@AsyncFunction view.cameraView.supportedAspectRatios.map { it.toString() }
     }.runOnQueue(Queues.MAIN)
 
-    AsyncFunction("getAvailablePictureSizes") { ratio: String?, viewTag: Int ->
+    AsyncFunction("getAvailablePictureSizes") { ratio: String, viewTag: Int ->
       val view = findView(viewTag)
 
       if (!view.cameraView.isCameraOpened) {

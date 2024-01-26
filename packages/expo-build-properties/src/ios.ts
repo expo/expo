@@ -15,15 +15,6 @@ export const withIosBuildProperties = createBuildPodfilePropsConfigPlugin<Plugin
       propValueGetter: (config) => config.ios?.useFrameworks,
     },
     {
-      propName: 'ios.flipper',
-      propValueGetter: (config) => {
-        if (typeof config.ios?.flipper === 'string' || typeof config.ios?.flipper === 'boolean') {
-          return config.ios.flipper.toString();
-        }
-        return undefined;
-      },
-    },
-    {
       propName: 'EX_DEV_CLIENT_NETWORK_INSPECTOR',
       propValueGetter: (config) => (config.ios?.networkInspector ?? true).toString(),
     },

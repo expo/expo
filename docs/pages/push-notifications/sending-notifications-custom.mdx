@@ -8,7 +8,7 @@ You may need finer-grained control over your notifications, so communicating dir
 
 ## How to write FCM and APNs servers
 
-Before communicating directly with FCM & APNs, there is one client-side change you'll need to make in your app. When using Expo's notification service, you collect the `ExponentPushToken` with [`getExpoPushTokenAsync`](/versions/latest/sdk/notifications/#getexpopushtokenasyncoptions-expotokenoptions-expopushtoken). Now that you're not using Expo's notification service, you'll need to collect the native device token instead with [`getDevicePushTokenAsync`](/versions/latest/sdk/notifications/#getdevicepushtokenasync-devicepushtoken).
+Before communicating directly with FCM and APNs, there is one client-side change you'll need to make in your app. When using Expo's notification service, you collect the `ExponentPushToken` with [`getExpoPushTokenAsync`](/versions/latest/sdk/notifications/#getexpopushtokenasyncoptions-expotokenoptions-expopushtoken). Now that you're not using Expo's notification service, you'll need to collect the native device token instead with [`getDevicePushTokenAsync`](/versions/latest/sdk/notifications/#getdevicepushtokenasync-devicepushtoken).
 
 ```diff
 import * as Notifications from 'expo-notifications';
@@ -130,7 +130,7 @@ APNs provide their full list of supported fields in the [notification payload](h
 
 ## Payload formats
 
-The examples in the previous section provide the bare minimum notification requests. You may have to send category identifiers, custom sounds, icons, custom key-value pairs, and so on. [`expo-notifications` documents](/versions/latest/sdk/notifications/#managing-notification-categories-interactive-notifications) all the fields it supports, and below are the example payloads Expo sends in its notifications service:
+The examples in the previous section provide the bare minimum notification requests. You may have to send category identifiers, custom sounds, icons, custom key-value pairs, and so on. [`expo-notifications` documents](/versions/latest/sdk/notifications/#manage-notification-categories-interactive-notifications) all the fields it supports, and below are the example payloads Expo sends in its notifications service:
 
 ### Android
 

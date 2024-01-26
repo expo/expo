@@ -11,11 +11,11 @@ import {
   requireContext,
   requireContextWithOverrides,
 } from './context-stubs';
-import { initialUrlRef } from './mocks';
+import { setInitialUrl } from './mocks';
 import { ExpoRoot } from '../ExpoRoot';
+import getPathFromState from '../fork/getPathFromState';
 import { stateCache } from '../getLinkingConfig';
 import { store } from '../global-state/router-store';
-import { RequireContext } from '../types';
 
 // re-export everything
 export * from '@testing-library/react-native';
@@ -26,6 +26,7 @@ type RenderRouterOptions = Parameters<typeof render>[1] & {
 
 type Result = ReturnType<typeof render> & {
   getPathname(): string;
+  getPathnameWithParams(): string;
   getSegments(): string[];
   getSearchParams(): Record<string, string | string[]>;
 };
@@ -34,6 +35,21 @@ function isOverrideContext(
   context: object
 ): context is { appDir: string; overrides: Record<string, FileStub> } {
   return Boolean(typeof context === 'object' && 'appDir' in context);
+}
+
+export function getMockContext(
+  context:
+    | string
+    | Record<string, FileStub>
+    | { appDir: string; overrides: Record<string, FileStub> }
+) {
+  if (typeof context === 'string') {
+    return requireContext(path.resolve(process.cwd(), context));
+  } else if (isOverrideContext(context)) {
+    return requireContextWithOverrides(context.appDir, context.overrides);
+  } else {
+    return inMemoryContext(context);
+  }
 }
 
 export function renderRouter(context?: string, options?: RenderRouterOptions): Result;
@@ -54,24 +70,13 @@ export function renderRouter(
 ): Result {
   jest.useFakeTimers();
 
-  let ctx: RequireContext;
+  const mockContext = getMockContext(context);
 
   // Reset the initial URL
-  initialUrlRef.value = initialUrl as any;
+  setInitialUrl(initialUrl);
 
   // Force the render to be synchronous
-  process.env.EXPO_ROUTER_IMPORT_MODE_WEB = 'sync';
-  process.env.EXPO_ROUTER_IMPORT_MODE_IOS = 'sync';
-  process.env.EXPO_ROUTER_IMPORT_MODE_ANDROID = 'sync';
-
-  if (typeof context === 'string') {
-    ctx = requireContext(path.resolve(process.cwd(), context));
-  } else if (isOverrideContext(context)) {
-    ctx = requireContextWithOverrides(context.appDir, context.overrides);
-  } else {
-    ctx = inMemoryContext(context);
-  }
-
+  process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
   stateCache.clear();
 
   let location: URL | undefined;
@@ -82,7 +87,7 @@ export function renderRouter(
     location = initialUrl;
   }
 
-  const result = render(<ExpoRoot context={ctx} location={location} />, {
+  const result = render(<ExpoRoot context={mockContext} location={location} />, {
     ...options,
   });
 
@@ -95,6 +100,9 @@ export function renderRouter(
     },
     getSearchParams(this: RenderResult): Record<string, string | string[]> {
       return store.routeInfoSnapshot().params;
+    },
+    getPathnameWithParams(this: RenderResult): string {
+      return getPathFromState(store.rootState!, store.linking!.config);
     },
   });
 }

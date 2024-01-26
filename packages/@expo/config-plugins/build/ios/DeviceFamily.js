@@ -83,7 +83,11 @@ function setDeviceFamily(config, {
     // Guessing that this is the best way to emulate Xcode.
     // Using `project.addToBuildSettings` modifies too many targets.
     if (typeof (buildSettings === null || buildSettings === void 0 ? void 0 : buildSettings.PRODUCT_NAME) !== 'undefined') {
-      buildSettings.TARGETED_DEVICE_FAMILY = deviceFamilies;
+      if (typeof (buildSettings === null || buildSettings === void 0 ? void 0 : buildSettings.TVOS_DEPLOYMENT_TARGET) !== 'undefined') {
+        buildSettings.TARGETED_DEVICE_FAMILY = '3';
+      } else {
+        buildSettings.TARGETED_DEVICE_FAMILY = deviceFamilies;
+      }
     }
   }
   return project;

@@ -10,11 +10,17 @@ import {
   useCurrentTheme,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { TextInput as NativeTextInput, Platform, StyleSheet } from 'react-native';
+import {
+  ImageStyle,
+  TextInput as NativeTextInput,
+  Platform,
+  StyleProp,
+  StyleSheet,
+} from 'react-native';
 
+import { ActivityIndicator } from './ActivityIndicator';
 import { debounce } from '../functions/debounce';
 import { validateUrl } from '../functions/validateUrl';
-import { ActivityIndicator } from './ActivityIndicator';
 
 type UrlDropdownProps = {
   isLoading?: boolean;
@@ -47,7 +53,7 @@ export function UrlDropdown({ onSubmit, isLoading, inputValue, setInputValue }: 
   const rotate = open ? '90deg' : '0deg';
   // slight visual adjustment for centering icon
   const translateX = -3;
-  const arrowStyle = { transform: [{ translateX }, { rotate }] };
+  const arrowStyle: StyleProp<ImageStyle> = { transform: [{ translateX }, { rotate }] };
 
   const onConnectPress = () => {
     onSubmit(inputValue);
