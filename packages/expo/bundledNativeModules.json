@@ -18,7 +18,7 @@
   "expo-asset": "~9.0.2",
   "expo-auth-session": "~5.4.0",
   "expo-av": "~13.10.4",
-  "expo-background-fetch": "~11.8.0",
+  "expo-background-fetch": "~11.8.1",
   "expo-barcode-scanner": "~12.9.2",
   "expo-battery": "~7.7.2",
   "expo-blur": "~12.9.1",
