@@ -19,6 +19,6 @@ export declare class Try extends React.Component<{
         error: Error;
     };
     retry: () => Promise<void>;
-    render(): string | number | boolean | React.ReactFragment | JSX.Element | null | undefined;
+    render(): string | number | boolean | JSX.Element | React.ReactFragment | null | undefined;
 }
 //# sourceMappingURL=Try.d.ts.map

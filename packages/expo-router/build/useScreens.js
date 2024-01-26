@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createGetIdForRoute = exports.getQualifiedRouteComponent = exports.useSortedScreens = void 0;
 const react_1 = __importDefault(require("react"));
 const Route_1 = require("./Route");
+const getRoutes_1 = require("./getRoutes");
 const import_mode_1 = __importDefault(require("./import-mode"));
 const primitives_1 = require("./primitives");
 const EmptyRoute_1 = require("./views/EmptyRoute");
@@ -137,30 +138,64 @@ function getQualifiedRouteComponent(value) {
 exports.getQualifiedRouteComponent = getQualifiedRouteComponent;
 /** @returns a function which provides a screen id that matches the dynamic route name in params. */
 function createGetIdForRoute(route) {
-    if (!route.dynamic?.length) {
-        return undefined;
+    const exclude = new Set();
+    const include = new Map();
+    if (route.dynamic) {
+        for (const segment of route.dynamic) {
+            include.set(segment.name, segment);
+        }
     }
-    return ({ params }) => {
-        const getPreferredId = (segment) => {
-            // Params can be undefined when there are no params in the route.
-            const preferredId = params?.[segment.name];
-            // If the route has a dynamic segment, use the matching parameter
-            // as the screen id. This enables pushing a screen like `/[user]` multiple times
-            // when the user is different.
-            if (preferredId) {
-                if (!Array.isArray(preferredId)) {
-                    return preferredId;
+    /**
+     * Child routes IDs are a combination of their dynamic segments and the search parameters
+     * As search parameters can be anything, we build an exclude list of its parents dynamic segments.
+     **/
+    if (route.children?.length === 0) {
+        exclude.add('screen');
+        exclude.add('params');
+        const contextDynamic = (0, getRoutes_1.generateDynamic)(route.contextKey);
+        if (contextDynamic) {
+            for (const segment of contextDynamic) {
+                if (!include.has(segment.name)) {
+                    exclude.add(segment.name);
                 }
-                else if (preferredId.length) {
-                    // Deep dynamic routes will return as an array, so we'll join them to create a
-                    // fully qualified string.
-                    return preferredId.join('/');
-                }
-                // Empty arrays...
             }
-            return segment.deep ? `[...${segment.name}]` : `[${segment.name}]`;
-        };
-        return route.dynamic?.map((segment) => getPreferredId(segment)).join('/');
+        }
+    }
+    return ({ params = {} } = {}) => {
+        let segments = [];
+        const unprocessedParams = new Set(Object.keys(params));
+        for (const dynamic of include.values()) {
+            unprocessedParams.delete(dynamic.name);
+            const value = params?.[dynamic.name];
+            if (Array.isArray(value) && value.length > 0) {
+                // If we are an array with a value
+                segments.push(value.join('/'));
+            }
+            else if (value && !Array.isArray(value)) {
+                // If we have a value and not an empty array
+                segments.push(value);
+            }
+            else if (dynamic.deep) {
+                segments.push(`[...${dynamic.name}]`);
+            }
+            else {
+                segments.push(`[${dynamic.name}]`);
+            }
+        }
+        let id = segments.join('/');
+        segments = [];
+        if (route.children?.length === 0) {
+            for (const key of unprocessedParams) {
+                if (exclude.has(key)) {
+                    continue;
+                }
+                segments.push(`${key}=${params[key]}`);
+            }
+        }
+        if (segments.length) {
+            id = `${id}?${segments.join('&')}`;
+        }
+        return id || undefined;
     };
 }
 exports.createGetIdForRoute = createGetIdForRoute;
