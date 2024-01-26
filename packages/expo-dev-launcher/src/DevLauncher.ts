@@ -19,7 +19,7 @@ export function registerErrorHandlers() {
 }
 
 /**
- * A method returning a boolean indicating if the current application is a development build.
+ * A method that returns a boolean to indicate if the current application is a development build.
  */
 export function isDevelopmentBuild(): boolean {
   return !!NativeModules.EXDevLauncher;
