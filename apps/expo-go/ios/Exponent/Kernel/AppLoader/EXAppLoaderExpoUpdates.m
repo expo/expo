@@ -342,7 +342,8 @@ NS_ASSUME_NONNULL_BEGIN
     EXUpdatesConfig.EXUpdatesConfigEnabledKey: @YES,
     EXUpdatesConfig.EXUpdatesConfigLaunchWaitMsKey: launchWaitMs,
     EXUpdatesConfig.EXUpdatesConfigCheckOnLaunchKey: shouldCheckOnLaunch ? EXUpdatesConfig.EXUpdatesConfigCheckOnLaunchValueAlways : EXUpdatesConfig.EXUpdatesConfigCheckOnLaunchValueNever,
-    EXUpdatesConfig.EXUpdatesConfigRequestHeadersKey: [self _requestHeaders]
+    EXUpdatesConfig.EXUpdatesConfigRequestHeadersKey: [self _requestHeaders],
+    EXUpdatesConfig.EXUpdatesConfigRuntimeVersionKey: [NSString stringWithFormat:@"exposdk:%@", [EXVersions sharedInstance].temporarySdkVersion],
   }];
 
   // in Expo Go, embed the Expo Root Certificate and get the Expo Go intermediate certificate and development certificates
