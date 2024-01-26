@@ -374,7 +374,7 @@ function getStateFromPathWithConfigs(
 
   // We match the whole path against the regex instead of segments
   // This makes sure matches such as wildcard will catch any unmatched routes, even if nested
-  const routes = matchAgainstConfigs(formattedPaths.nonstandardPathname, configs);
+  const routes = matchAgainstConfigs(formattedPaths.nonstandardPathname, formattedPaths.inputPathnameWithoutHash = '', configs);
 
   if (routes == null) {
     return undefined;
@@ -394,7 +394,7 @@ const joinPaths = (...paths: string[]): string =>
     .filter(Boolean)
     .join('/');
 
-function matchAgainstConfigs(remaining: string, configs: RouteConfig[]): ParsedRoute[] | undefined {
+function matchAgainstConfigs(remaining: string, path: string, configs: RouteConfig[]): ParsedRoute[] | undefined {
   let routes: ParsedRoute[] | undefined;
   let remainingPath = remaining;
 
@@ -437,7 +437,7 @@ function matchAgainstConfigs(remaining: string, configs: RouteConfig[]): ParsedR
 
       const segments = config.path.split('/');
 
-      const params: Record<string, any> = {};
+      let params: Record<string, any> = {};
 
       segments
         .filter((p) => p.match(/^[:*]/))
@@ -453,7 +453,12 @@ function matchAgainstConfigs(remaining: string, configs: RouteConfig[]): ParsedR
             params[key] = config.parse?.[key] ? config.parse[key](value) : value;
           }
         });
-
+    
+      const queryParams = parseQueryParams(path, null);
+      if (queryParams) {
+          params = Object.assign(Object.create(null), params, queryParams) as Record<string, any>;
+      }
+      
       if (params && Object.keys(params).length) {
         return { name, params };
       }
