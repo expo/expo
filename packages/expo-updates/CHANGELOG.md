@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] correct drawable types in updates embedded manifest. ([#26676](https://github.com/expo/expo/pull/26676) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 0.24.8 — 2024-01-18
