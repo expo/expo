@@ -5,6 +5,7 @@ import path from 'path';
 
 import { getUserDefinedFile } from './publicFolder';
 import { ExportAssetMap } from './saveAssets';
+import { Log } from '../log';
 
 const debug = require('debug')('expo:favicon') as typeof console.log;
 
@@ -70,19 +71,28 @@ export async function getFaviconFromExpoConfigAsync(projectRoot: string) {
   const cacheType = 'favicon';
 
   const size = dims[dims.length - 1];
-  const { source } = await generateImageAsync(
-    { projectRoot, cacheType },
-    {
-      resizeMode: 'contain',
-      src,
-      backgroundColor: 'transparent',
-      width: size,
-      height: size,
-      name: `favicon-${size}.png`,
+  try {
+    const { source } = await generateImageAsync(
+      { projectRoot, cacheType },
+      {
+        resizeMode: 'contain',
+        src,
+        backgroundColor: 'transparent',
+        width: size,
+        height: size,
+        name: `favicon-${size}.png`,
+      }
+    );
+
+    const faviconBuffer = await generateFaviconAsync(source, dims);
+
+    return { source: faviconBuffer, path: 'favicon.ico' };
+  } catch (error: any) {
+    // Check for ENOENT
+    if (error.code === 'ENOENT') {
+      Log.warn(`Favicon source file in Expo config (web.favicon) does not exist: ${src}`);
+      return null;
     }
-  );
-
-  const faviconBuffer = await generateFaviconAsync(source, dims);
-
-  return { source: faviconBuffer, path: 'favicon.ico' };
+    throw error;
+  }
 }
