@@ -33,7 +33,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/background-fetch/",
   "dependencies": {
-    "expo-task-manager": "~11.7.0"
+    "expo-task-manager": "~11.7.2"
   },
   "devDependencies": {
     "expo-module-scripts": "^3.0.0"
