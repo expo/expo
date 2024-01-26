@@ -202,7 +202,6 @@ class DatabaseLauncher(
       fileDownloader.downloadAsset(
         asset,
         updatesDirectory,
-        configuration,
         context,
         object : AssetDownloadCallback {
           override fun onFailure(e: Exception, assetEntity: AssetEntity) {
