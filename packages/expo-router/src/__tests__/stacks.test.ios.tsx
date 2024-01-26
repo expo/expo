@@ -92,3 +92,27 @@ test('pop', () => {
   act(() => router.pop(2));
   expect(screen).toHavePathname('/a');
 });
+
+test('popToTop', () => {
+  renderRouter(
+    {
+      a: () => null,
+      b: () => null,
+      c: () => null,
+      d: () => null,
+    },
+    {
+      initialUrl: '/a',
+    }
+  );
+
+  act(() => router.push('/b'));
+  act(() => router.push('/c'));
+  act(() => router.push('/d'));
+
+  expect(screen).toHavePathname('/d');
+
+  act(() => router.popToTop());
+  expect(screen).toHavePathname('/a');
+  expect(router.canPop()).toBe(false);
+});
