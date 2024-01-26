@@ -10,7 +10,7 @@ export { disableErrorHandling } from './DevLauncherErrorManager';
  */
 export declare function registerErrorHandlers(): void;
 /**
- * A method returning a boolean indicating if the current application is a development build.
+ * A method that returns a boolean to indicate if the current application is a development build.
  */
 export declare function isDevelopmentBuild(): boolean;
 /**

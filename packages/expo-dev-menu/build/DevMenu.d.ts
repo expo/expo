@@ -12,7 +12,7 @@ export declare function hideMenu(): void;
  */
 export declare function closeMenu(): void;
 /**
- * A method allowing to specify custom entries in the development client menu.
+ * A method that allows to specify custom entries in the development client menu.
  * @param items
  */
 export declare function registerDevMenuItems(items: ExpoDevMenuItem[]): Promise<void>;

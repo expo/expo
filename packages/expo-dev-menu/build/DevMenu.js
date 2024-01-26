@@ -33,7 +33,7 @@ function registerCallbackListener() {
 registerCallbackListener();
 let handlers = new Map();
 /**
- * A method allowing to specify custom entries in the development client menu.
+ * A method that allows to specify custom entries in the development client menu.
  * @param items
  */
 export async function registerDevMenuItems(items) {
