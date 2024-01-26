@@ -2,6 +2,7 @@ const {
   createMetroServerAndBundleRequestAsync,
   exportEmbedAssetsAsync,
 } = require('@expo/cli/build/src/export/embed/exportEmbedAsync');
+const { drawableFileTypes } = require('@expo/cli/build/src/export/metroAssetLocalPath');
 const { resolveEntryPoint } = require('@expo/config/paths');
 const crypto = require('crypto');
 const fs = require('fs');
@@ -117,8 +118,6 @@ function getRelativeEntryPoint(projectRoot, platform) {
   process.exit(1);
 });
 
-// See https://developer.android.com/guide/topics/resources/drawable-resource.html
-const drawableFileTypes = new Set(['gif', 'jpeg', 'jpg', 'png', 'svg', 'webp', 'xml']);
 function getAndroidResourceFolderName(asset) {
   return drawableFileTypes.has(asset.type) ? 'drawable' : 'raw';
 }
