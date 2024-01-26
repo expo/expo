@@ -85,7 +85,6 @@ private extension UIColor {
     }
     guard UIColor.responds(to: selector) else { return nil }
     
-    // should be unretained? https://stackoverflow.com/questions/33527382/performselector-for-static-methods-with-swift/33527499#33527499
     return UIColor.perform(selector).takeUnretainedValue() as? UIColor
   }
 }
