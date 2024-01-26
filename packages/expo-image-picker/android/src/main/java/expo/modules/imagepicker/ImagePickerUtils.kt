@@ -88,7 +88,7 @@ internal fun Uri.toMediaType(contentResolver: ContentResolver): MediaType {
 internal fun String.toBitmapCompressFormat(): Bitmap.CompressFormat = when {
   this.endsWith("png", ignoreCase = true) ||
     this.endsWith("gif", ignoreCase = true) ||
-    this.endsWith("bmp", ignoreCase = true) || 
+    this.endsWith("bmp", ignoreCase = true) ||
     this.endsWith("webp", ignoreCase = true) -> {
     // The result image won't ever be a GIF of a BMP as the cropper doesn't support it.
     Bitmap.CompressFormat.PNG
