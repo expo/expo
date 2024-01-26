@@ -4,7 +4,7 @@ extension UIColor: Convertible {
   private static func resolveNamedColor(name: String) -> UIColor? {
     return UIColor(named: name) ?? UIColor.fromSemanticName(name: name)
   }
-  
+
   public static func convert(from value: Any?, appContext: AppContext) throws -> Self {
     // swiftlint:disable force_cast
     if let value = value as? String {
@@ -21,7 +21,7 @@ extension UIColor: Convertible {
     }
     if let opaqueValue = value as? [String: Any] {
       if let semanticName = opaqueValue["semantic"] as? String,
-         let color = UIColor.resolveNamedColor(name: semanticName) {
+        let color = UIColor.resolveNamedColor(name: semanticName) {
         return color as! Self
       }
       if let semanticArray = opaqueValue["semantic"] as? [String] {
@@ -32,27 +32,24 @@ extension UIColor: Convertible {
         }
       }
       if let dynamic = opaqueValue["dynamic"] as? [String: Any],
-          let appearances = dynamic as? [String: Any],
-          let lightColor = try appearances["light"].map({ try UIColor.convert(from: $0, appContext: appContext) }),
-          let darkColor = try appearances["dark"].map({ try UIColor.convert(from: $0, appContext: appContext) }) {
-        
+        let appearances = dynamic as? [String: Any],
+        let lightColor = try appearances["light"].map({ try UIColor.convert(from: $0, appContext: appContext) }),
+        let darkColor = try appearances["dark"].map({ try UIColor.convert(from: $0, appContext: appContext) }) {
         let highContrastLightColor = try appearances["highContrastLight"].map({ try UIColor.convert(from: $0, appContext: appContext) })
         let highContrastDarkColor = try appearances["highContrastDark"].map({ try UIColor.convert(from: $0, appContext: appContext) })
-        
+
         let color = UIColor { (traitCollection: UITraitCollection) -> UIColor in
           if traitCollection.userInterfaceStyle == .dark {
             if traitCollection.accessibilityContrast == .high, let highContrastDarkColor {
               return highContrastDarkColor
-            } else {
-              return darkColor
             }
-          } else {
-            if traitCollection.accessibilityContrast == .high, let highContrastLightColor {
-              return highContrastLightColor
-            } else {
-              return lightColor
-            }
+            return darkColor
           }
+
+          if traitCollection.accessibilityContrast == .high, let highContrastLightColor {
+            return highContrastLightColor
+          }
+          return lightColor
         }
         return color as! Self
       }
@@ -83,8 +80,10 @@ private extension UIColor {
     } else {
       selector = Selector("\(name)Color")
     }
-    guard UIColor.responds(to: selector) else { return nil }
-    
+    guard UIColor.responds(to: selector) else {
+      return nil
+    }
+
     return UIColor.perform(selector).takeUnretainedValue() as? UIColor
   }
 }
