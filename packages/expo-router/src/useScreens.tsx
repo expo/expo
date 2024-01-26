@@ -223,31 +223,11 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 export function createGetIdForRoute(
   route: Pick<RouteNode, 'dynamic' | 'route' | 'contextKey' | 'children'>
 ) {
-  const exclude = new Set<string>();
   const include = new Map<string, DynamicConvention>();
 
   if (route.dynamic) {
     for (const segment of route.dynamic) {
       include.set(segment.name, segment);
-    }
-  }
-
-  /**
-   * Child routes IDs are a combination of their dynamic segments and the search parameters
-   * As search parameters can be anything, we build an exclude list of its parents dynamic segments.
-   **/
-  if (route.children?.length === 0) {
-    exclude.add('screen');
-    exclude.add('params');
-
-    const contextDynamic = generateDynamic(route.contextKey);
-
-    if (contextDynamic) {
-      for (const segment of contextDynamic) {
-        if (!include.has(segment.name)) {
-          exclude.add(segment.name);
-        }
-      }
     }
   }
 
@@ -276,8 +256,13 @@ export function createGetIdForRoute(
 
     segments = [];
     if (route.children?.length === 0) {
+      /**
+       * Child routes IDs are a combination of their dynamic segments and the search parameters
+       * As search parameters can be anything, we build an exclude list of its parents dynamic segments.
+       */
       for (const key of unprocessedParams) {
-        if (exclude.has(key)) {
+        // These are internal React Navigation values and should not be included
+        if (key === 'screen' || key === 'params') {
           continue;
         }
         segments.push(`${key}=${params[key]}`);
