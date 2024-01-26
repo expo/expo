@@ -34,9 +34,15 @@ export function resolvePlatformOption(
 
   const assertPlatformBundler = (platform: Platform): Platform => {
     if (!platformsAvailable[platform]) {
+      if (!exp.platforms?.includes(platform) && platform === 'web') {
+        // Pass through so the more robust error message is shown.
+        return platform;
+      }
       throw new CommandError(
         'BAD_ARGS',
-        `Platform "${platform}" is not configured to use the Metro bundler in the project Expo config.`
+        `Platform "${platform}" is not configured to use the Metro bundler in the project Expo config, or is missing from the supported platforms in the platforms array: [${exp.platforms?.join(
+          ', '
+        )}].`
       );
     }
 
