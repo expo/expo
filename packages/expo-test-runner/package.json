@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.23.8",
-    "@expo/spawn-async": "^1.5.0",
+    "@expo/spawn-async": "^1.7.2",
     "chalk": "^4.1.2",
     "commander": "^7.2.0",
     "dot": "^2.0.0-beta.1",
