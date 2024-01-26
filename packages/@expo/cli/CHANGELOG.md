@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add better error when `metro.config.js` does not extend `expo/metro-config`.
 - Add support for GitHub URLs in `expo prebuild --template`. ([#26631](https://github.com/expo/expo/pull/26631) by [@byCedric](https://github.com/byCedric))
 
 ### 🐛 Bug fixes
