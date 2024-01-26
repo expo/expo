@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- On `Android`, added events to module definition to clear warnings. ([#26654](https://github.com/expo/expo/pull/26654) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 11.7.2 — 2024-01-26
+
+### 🐛 Bug fixes
+
+- On `Android`, added events to module definition to clear warnings. ([#26654](https://github.com/expo/expo/pull/26654) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 11.7.1 — 2024-01-25
 
