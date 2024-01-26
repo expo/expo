@@ -10,6 +10,7 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from
 const ExpoUpdatesE2ETest = requireNativeModule('ExpoUpdatesE2ETest');
 
 require('./includedAssets/test.png');
+require('./includedAssets/lock-filled.svg');
 // eslint-disable-next-line no-unused-expressions
 Inter_900Black;
 
