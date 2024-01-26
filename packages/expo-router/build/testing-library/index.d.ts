@@ -35,8 +35,4 @@ export declare const testRouter: {
     /** Update the current route query params and assert the new pathname */
     setParams(params?: Record<string, string>): void;
 };
-export declare function navigateAndAssert(path: string): void;
-export declare function pushAndAssert(path: string): void;
-export declare function backAndAssert(path: string): void;
-export declare function assetCannotGoBack(path: string): void;
 //# sourceMappingURL=index.d.ts.map

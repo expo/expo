@@ -147,14 +147,3 @@ export const testRouter = {
     }
   },
 };
-
-export function navigateAndAssert(path: string) {}
-
-export function pushAndAssert(path: string) {
-  act(() => router.push(path));
-  expect(screen).toHavePathnameWithParams(path);
-}
-
-export function backAndAssert(path: string) {}
-
-export function assetCannotGoBack(path: string) {}

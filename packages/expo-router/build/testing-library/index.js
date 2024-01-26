@@ -17,7 +17,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.assetCannotGoBack = exports.backAndAssert = exports.pushAndAssert = exports.navigateAndAssert = exports.testRouter = exports.renderRouter = exports.getMockContext = exports.getMockConfig = void 0;
+exports.testRouter = exports.renderRouter = exports.getMockContext = exports.getMockConfig = void 0;
 /// <reference types="../../types/jest" />
 require("./expect");
 const react_native_1 = require("@testing-library/react-native");
@@ -125,15 +125,4 @@ exports.testRouter = {
         }
     },
 };
-function navigateAndAssert(path) { }
-exports.navigateAndAssert = navigateAndAssert;
-function pushAndAssert(path) {
-    (0, react_native_1.act)(() => imperative_api_1.router.push(path));
-    expect(react_native_1.screen).toHavePathnameWithParams(path);
-}
-exports.pushAndAssert = pushAndAssert;
-function backAndAssert(path) { }
-exports.backAndAssert = backAndAssert;
-function assetCannotGoBack(path) { }
-exports.assetCannotGoBack = assetCannotGoBack;
 //# sourceMappingURL=index.js.map
