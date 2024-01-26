@@ -44,6 +44,25 @@ describe('navigate', () => {
 
     expect(testRouter.canGoBack()).toBe(false);
   });
+
+  it.skip('handles popToTop', async () => {
+    // TODO: add popToTop to the router
+    renderRouter(
+      {
+        page: () => null,
+      },
+      {
+        initialUrl: 'page',
+      }
+    );
+
+    testRouter.navigate('/page?a=true');
+    testRouter.navigate('/page?b=true');
+    testRouter.navigate('/page?c=true');
+    (testRouter as any).popToTop('/page');
+
+    expect(testRouter.canGoBack()).toBe(false);
+  });
 });
 
 describe('replace', () => {

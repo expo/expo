@@ -90,17 +90,17 @@ function renderRouter(context = './app', { initialUrl = '/', ...options } = {}) 
 }
 exports.renderRouter = renderRouter;
 exports.testRouter = {
-    /** Navigate to the provided pathname and assert it successfully navigated. */
+    /** Navigate to the provided pathname and the pathname */
     navigate(path) {
         (0, react_native_1.act)(() => imperative_api_1.router.navigate(path));
         expect(react_native_1.screen).toHavePathnameWithParams(path);
     },
-    /** Push the provided pathname and assert it successfully navigated. */
+    /** Push the provided pathname and assert the pathname */
     push(path) {
         (0, react_native_1.act)(() => imperative_api_1.router.push(path));
         expect(react_native_1.screen).toHavePathnameWithParams(path);
     },
-    /** Replace with provided pathname and assert it successfully replaced. */
+    /** Replace with provided pathname and assert the pathname */
     replace(path) {
         (0, react_native_1.act)(() => imperative_api_1.router.replace(path));
         expect(react_native_1.screen).toHavePathnameWithParams(path);

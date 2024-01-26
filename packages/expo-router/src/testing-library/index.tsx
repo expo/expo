@@ -112,17 +112,17 @@ export function renderRouter(
 }
 
 export const testRouter = {
-  /** Navigate to the provided pathname and assert it successfully navigated. */
+  /** Navigate to the provided pathname and the pathname */
   navigate(path: string) {
     act(() => router.navigate(path));
     expect(screen).toHavePathnameWithParams(path);
   },
-  /** Push the provided pathname and assert it successfully navigated. */
+  /** Push the provided pathname and assert the pathname */
   push(path: string) {
     act(() => router.push(path));
     expect(screen).toHavePathnameWithParams(path);
   },
-  /** Replace with provided pathname and assert it successfully replaced. */
+  /** Replace with provided pathname and assert the pathname */
   replace(path: string) {
     act(() => router.replace(path));
     expect(screen).toHavePathnameWithParams(path);
