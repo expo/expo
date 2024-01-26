@@ -63,22 +63,21 @@ On web, returning `null` from the root will cause [static rendering](/router/ref
 
 ### Delete unused or managed code
 
-Expo Router automatically adds `react-native-gesture-handler` (when installed) and `react-native-safe-area-context` support.
+Expo Router automatically adds `react-native-safe-area-context` support.
 
 ```diff
-- import { GestureHandlerRootView } from 'react-native-gesture-handler';
 - import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function App() {
   return (
--    <GestureHandlerRootView style={{ flex: 1 }}>
--      <SafeAreaProvider>
-        <MyApp />
--      </SafeAreaProvider>
--    </GestureHandlerRootView>
+-    <SafeAreaProvider>
+      <MyApp />
+-    </SafeAreaProvider>
   )
 }
 ```
+
+Expo Router **does not** add `react-native-gesture-handler` (as of v3), so you'll have to add this yourself if you are using Gesture Handler or `<Drawer />` layout. Avoid using this package on web since it adds a lot of JavaScript that is often unused.
 
 ### Copy screens to the app directory
 
@@ -156,9 +155,11 @@ export default function RootLayout() {
     <Stack>
       <Stack.Screen
         name="(home)"
-        options={/* @info Options can be expressed using the Screen component on a navigator. This has the same types as React Navigation. */{
-          title: 'Home Screen',
-        }/* @end */}
+        options={
+          /* @info Options can be expressed using the Screen component on a navigator. This has the same types as React Navigation. */ {
+            title: 'Home Screen',
+          } /* @end */
+        }
       />
     </Stack>
   );
