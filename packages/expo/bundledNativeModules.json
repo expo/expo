@@ -90,7 +90,7 @@
   "react-native-get-random-values": "~1.8.0",
   "react-native-maps": "1.8.0",
   "react-native-pager-view": "6.2.3",
-  "react-native-reanimated": "~3.6.0",
+  "react-native-reanimated": "~3.6.2",
   "react-native-screens": "~3.29.0",
   "react-native-safe-area-context": "4.8.2",
   "react-native-svg": "14.1.0",
