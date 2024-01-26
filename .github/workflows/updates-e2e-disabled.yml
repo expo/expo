@@ -31,7 +31,7 @@ jobs:
       matrix:
         platform: [ios, android]
         variant: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && fromJson('["updates_testing_debug", "updates_testing_release"]') || fromJson('["updates_testing_debug"]') }}
-    runs-on: ubuntu-22.04
+    runs-on: expo-large
     timeout-minutes: 80
     env:
       UPDATES_PORT: 4747

@@ -36,7 +36,7 @@ concurrency:
 
 jobs:
   test:
-    runs-on: macos-13
+    runs-on: expo-large-nested-virt
     timeout-minutes: 150
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64

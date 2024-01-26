@@ -43,7 +43,7 @@ concurrency:
 
 jobs:
   test:
-    runs-on: ubuntu-22.04
+    runs-on: expo-large
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3

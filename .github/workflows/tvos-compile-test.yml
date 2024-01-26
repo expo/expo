@@ -37,7 +37,7 @@ jobs:
   build:
     strategy:
       fail-fast: false
-    runs-on: ubuntu-22.04
+    runs-on: expo-large
     timeout-minutes: 60
     env:
       UPDATES_PORT: 4747
