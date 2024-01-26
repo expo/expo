@@ -1,4 +1,3 @@
-import fs from 'fs';
 /**
  * Copyright © 2022 650 Industries.
  *
@@ -9,6 +8,7 @@ import { getConfig } from '@expo/config';
 import * as runtimeEnv from '@expo/env';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import chalk from 'chalk';
+import fs from 'fs';
 import { AssetData } from 'metro';
 import fetch from 'node-fetch';
 import path from 'path';
@@ -47,7 +47,6 @@ import {
   RuntimeRedirectMiddleware,
 } from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
-import { ensureEnvironmentSupportsTLSAsync } from '../webpack/tls';
 import {
   shouldEnableAsyncImports,
   createBundleUrlPath,
@@ -56,6 +55,7 @@ import {
 } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
+import { ensureEnvironmentSupportsTLSAsync } from '../webpack/tls';
 
 export type ExpoRouterRuntimeManifest = Awaited<
   ReturnType<typeof import('expo-router/build/static/renderStaticContent').getManifest>
@@ -78,8 +78,6 @@ const EXPO_GO_METRO_PORT = 8081;
 
 /** Default port to use for apps that run in standard React Native projects or Expo Dev Clients. */
 const DEV_CLIENT_METRO_PORT = 8081;
-
-const debug = require('debug')('expo:start:server:metro:devServer') as typeof console.log;
 
 export class MetroBundlerDevServer extends BundlerDevServer {
   private metro: import('metro').Server | null = null;

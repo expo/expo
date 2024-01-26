@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import { Server as ConnectServer } from 'connect';
 import http from 'http';
 import type Metro from 'metro';
+import { RunServerOptions } from 'metro';
 import { loadConfig, resolveConfig, ConfigT } from 'metro-config';
 import { Terminal } from 'metro-core';
 import semver from 'semver';
@@ -27,7 +28,6 @@ import { prependMiddleware, replaceMiddlewareWith } from '../middleware/mutation
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { suppressRemoteDebuggingErrorMiddleware } from '../middleware/suppressErrorMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
-import { RunServerOptions } from 'metro';
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
