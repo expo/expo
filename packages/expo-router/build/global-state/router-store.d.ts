@@ -28,7 +28,10 @@ export declare class RouterStore {
     goBack: any;
     canGoBack: any;
     push: any;
+    pop: any;
     replace: any;
+    popToTop: any;
+    canPop: any;
     setParams: any;
     navigate: any;
     initialize(context: RequireContext, navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>, initialLocation?: URL): void;

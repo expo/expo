@@ -28,6 +28,9 @@ export function useRouter(): Router {
   return React.useMemo(
     () => ({
       push: store.push,
+      pop: store.pop,
+      popToTop: store.popToTop,
+      canPop: store.canPop,
       back: store.goBack,
       replace: store.replace,
       setParams: store.setParams,

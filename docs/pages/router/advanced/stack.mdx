@@ -272,34 +272,69 @@ export default function Layout() {
 
 For more information on available options, see [`@react-navigation/stack` documentation](https://reactnavigation.org/docs/stack-navigator).
 
-## `popToTop` action
+## Removing stack screens
 
-By default, the screens in a `Stack` are pushed or popped to the next or the previous screen. To return to the first screen in the existing stack, the [`popToTop`](https://reactnavigation.org/docs/stack-actions/#poptotop) stack action can be used from any screen.
+By default, the screens in a `Stack` are pushed or popped to the next or the previous screen. 
 
 For example, a stack has three screens &mdash; `home`, `details`, and `settings`. The following layout describes the order of the screens in a stack.
 
 <FileTree files={['app/_layout.js', 'app/home.js', 'app/details.js', 'app/settings.js']} />
 
-The `home` screen is the first screen, and the `settings` is the last. To go from `settings` to `home` screen you'll have to go back to `details`. However, using the `popToTop` action, you can go from `settings` to `home` and dismiss any screen in between.
 
-It is accessible through [`StackActions`](https://reactnavigation.org/docs/stack-actions) from the React Navigation library and dispatched using [`navigation`](/router/reference/hooks/#usenavigation) prop.
+### `pop` action
+
+Go back in the stack by the number of screens specified in the `count` parameter. If no `count` is specified, then it will go back to the previous screen in the stack.
 
 {/* prettier-ignore */}
 ```jsx app/settings.js
 import { Button, View, Text } from "react-native";
-/* @info Import useNavigation from Expo Router and StackActions from React Navigation library. */
-import { useNavigation } from "expo-router";
-import { StackActions } from "@react-navigation/native";
+/* @info Import useRouter from Expo Router. */
+import { useRouter } from "expo-router";
 /* @end */
 
 export default function Settings() {
-  /* @info Access the underlying navigation prop from useNavigation hook. */
-  const navigation = useNavigation();
+  /* @info Access the router from useRouter hook. */
+  const router = useRouter();
+  /* @end */
+
+  const handlePop = (count) => {
+    /* @info In handle method, call `router.pop` to go back to . */
+    router.pop(count)
+    /* @end */
+  };
+
+  return (
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      /* @info Trigger the handler method on a touchable/button component */
+      <Button title="Go to first screen" onPress={() => handlePop(3)} />
+      /* @end */
+    </View>
+  );
+}
+```
+
+### `popToTop`
+
+To return to the first screen in the existing stack, the [`popToTop`](https://reactnavigation.org/docs/stack-actions/#poptotop) stack action can be used from any screen.
+
+The `home` screen is the first screen, and the `settings` is the last. To go from `settings` to `home` screen you'll have to go back to `details`. However, using the `popToTop` action, you can go from `settings` to `home` and dismiss any screen in between.
+
+
+{/* prettier-ignore */}
+```jsx app/settings.js
+import { Button, View, Text } from "react-native";
+/* @info Import useRouter from Expo Router. */
+import { useRouter } from "expo-router";
+/* @end */
+
+export default function Settings() {
+  /* @info Access the router from useRouter hook. */
+  const router = useRouter();
   /* @end */
 
   const handlePopToTop = () => {
-    /* @info In handle method, dispatch the Stack popToTop() to go back to the first screen in a stack. */
-    navigation.dispatch(StackActions.popToTop());
+    /* @info In handle method, call `router.popToTop` to go back to the first screen in a stack. */
+    router.popToTop()
     /* @end */
   };
 
@@ -311,6 +346,43 @@ export default function Settings() {
     </View>
   );
 }
+```
+
+### `canPop`
+
+To check if popping is available on the current route. Returns `true` is the router is within screen and there is a screen available to pop to.
+
+{/* prettier-ignore */}
+```jsx app/settings.js
+import { Button, View, Text } from "react-native";
+/* @info Import useRouter from Expo Router. */
+import { useRouter } from "expo-router";
+/* @end */
+
+export default function Settings() {
+  /* @info Access the router from useRouter hook. */
+  const router = useRouter();
+  /* @end */
+
+  const handlePop = (count) => {
+    /* @info Check if we can pop. */
+    if (router.canPop()) {
+      /* @info In handle method, call `router.pop` to go back to. */
+      router.pop(count)
+      /* @end */
+    }
+    /* @end */
+  };
+
+  return (
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      /* @info Trigger the handler method on a touchable/button component */
+      <Button title="Maybe pop" onPress={() => handlePop()} />
+      /* @end */
+    </View>
+  );
+}
+
 ```
 
 ## More

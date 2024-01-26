@@ -57,7 +57,10 @@ class RouterStore {
     goBack = routing_1.goBack.bind(this);
     canGoBack = routing_1.canGoBack.bind(this);
     push = routing_1.push.bind(this);
+    pop = routing_1.pop.bind(this);
     replace = routing_1.replace.bind(this);
+    popToTop = routing_1.popToTop.bind(this);
+    canPop = routing_1.canPop.bind(this);
     setParams = routing_1.setParams.bind(this);
     navigate = routing_1.navigate.bind(this);
     initialize(context, navigationRef, initialLocation) {
