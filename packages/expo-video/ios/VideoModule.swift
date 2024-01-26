@@ -6,6 +6,10 @@ public final class VideoModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoVideo")
 
+    Function("isPictureInPictureSupported") {
+      return AVPictureInPictureController.isPictureInPictureSupported()
+    }
+
     View(VideoView.self) {
       Events(
         "onPictureInPictureStart",

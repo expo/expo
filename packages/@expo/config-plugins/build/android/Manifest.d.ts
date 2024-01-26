@@ -57,6 +57,7 @@ type ManifestApplicationAttributes = {
     'android:allowBackup'?: StringBoolean;
     'android:largeHeap'?: StringBoolean;
     'android:requestLegacyExternalStorage'?: StringBoolean;
+    'android:supportsPictureInPicture'?: StringBoolean;
     'android:usesCleartextTraffic'?: StringBoolean;
     [key: string]: string | undefined;
 };

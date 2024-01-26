@@ -1,4 +1,9 @@
-import { ConfigPlugin, withInfoPlist } from '@expo/config-plugins';
+import {
+  AndroidConfig,
+  ConfigPlugin,
+  withInfoPlist,
+  withAndroidManifest,
+} from '@expo/config-plugins';
 
 const withExpoVideo: ConfigPlugin = (config) => {
   withInfoPlist(config, (config) => {
@@ -9,6 +14,11 @@ const withExpoVideo: ConfigPlugin = (config) => {
     return config;
   });
 
+  withAndroidManifest(config, (config) => {
+    const activity = AndroidConfig.Manifest.getMainActivityOrThrow(config.modResults);
+    activity.$['android:supportsPictureInPicture'] = 'true';
+    return config;
+  });
   return config;
 };
 
