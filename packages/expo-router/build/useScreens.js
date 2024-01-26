@@ -195,7 +195,12 @@ function createGetIdForRoute(route) {
         if (segments.length) {
             id = `${id}?${segments.join('&')}`;
         }
-        return id || undefined;
+        /**
+         * We should always return a truthy value, failing to do so will cause React Navigation to
+         * fall back to `key` based navigation. This is an issue for search parameters where are either
+         * part of the key or the id.
+         */
+        return id || route.contextKey;
     };
 }
 exports.createGetIdForRoute = createGetIdForRoute;

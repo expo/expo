@@ -30,5 +30,5 @@ export declare function getQualifiedRouteComponent(value: RouteNode): React.Comp
 /** @returns a function which provides a screen id that matches the dynamic route name in params. */
 export declare function createGetIdForRoute(route: Pick<RouteNode, 'dynamic' | 'route' | 'contextKey' | 'children'>): ({ params }?: {
     params?: Record<string, any> | undefined;
-}) => string | undefined;
+}) => string;
 //# sourceMappingURL=useScreens.d.ts.map
