@@ -56,6 +56,9 @@ function errorHandler(originalHandler, error, isFatal) {
   originalHandler(error, isFatal);
 }
 
+/**
+ * @hidden
+ */
 export function createErrorHandler(originalHandler) {
   return (error, isFatal) => {
     if (isErrorHandlingEnabled) {
@@ -67,6 +70,9 @@ export function createErrorHandler(originalHandler) {
   };
 }
 
+/**
+ * @hidden
+ */
 export function disableErrorHandling() {
   isErrorHandlingEnabled = false;
 }
