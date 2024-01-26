@@ -12,9 +12,9 @@ function createMockRoute(routeName: string, contextKey: string, children: RouteN
 }
 
 describe(createGetIdForRoute, () => {
-  it(`returns undefined when the route is not dynamic and there are no search params`, () => {
+  it(`returns the context string when the route is not dynamic and there are no search params`, () => {
     const getId = createGetIdForRoute(createMockRoute('foo', './foo.tsx'));
-    expect(getId()).toBeUndefined();
+    expect(getId()).toBe('./foo.tsx');
   });
 
   it(`returns the search params when the route is not dynamic`, () => {
