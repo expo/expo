@@ -71,7 +71,7 @@ export const expoStart: Command = async (argv) => {
         `--localhost                     Same as --host localhost`,
         ``,
         `--offline                       Skip network requests and use anonymous manifest signatures`,
-        `--https                         Start the dev server with https protocol`,
+        chalk`--https                         {dim (experimental)} Start the dev server with https protocol`,
         `--scheme <scheme>               Custom URI protocol to use when launching an app`,
         chalk`-p, --port <number>             Port to start the dev server on (does not apply to web or tunnel). {dim Default: 8081}`,
         ``,

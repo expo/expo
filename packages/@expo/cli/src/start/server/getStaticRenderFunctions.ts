@@ -5,11 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 import fs from 'fs';
-import fetch from 'node-fetch';
 import path from 'path';
 import requireString from 'require-from-string';
 import resolveFrom from 'resolve-from';
 
+import { fetchFromMetroAsync } from './metro/fetchFromMetro';
 import { logMetroError, logMetroErrorAsync } from './metro/metroErrorInterface';
 import { getMetroServerRoot } from './middleware/ManifestMiddleware';
 import { createBundleUrlPath } from './middleware/metroOptions';
@@ -178,26 +178,10 @@ export async function requireFileContentsWithMetro(
 ): Promise<{ src: string; filename: string }> {
   const url = await createMetroEndpointAsync(projectRoot, devServerUrl, absoluteFilePath, props);
 
-  const res = await fetch(url);
-
-  // TODO: Improve error handling
-  if (res.status === 500) {
-    const text = await res.text();
-    if (text.startsWith('{"originModulePath"') || text.startsWith('{"type":"TransformError"')) {
-      const errorObject = JSON.parse(text);
-
-      throw new MetroNodeError(stripAnsi(errorObject.message) ?? errorObject.message, errorObject);
-    }
-    throw new Error(`[${res.status}]: ${res.statusText}\n${text}`);
-  }
-
-  if (!res.ok) {
-    throw new Error(`Error fetching bundle for static rendering: ${res.status} ${res.statusText}`);
-  }
-
+  const res = await fetchFromMetroAsync(url);
   const content = await res.text();
 
-  const map = await fetch(url.replace('.bundle?', '.map?')).then((r) => r.json());
+  const map = await fetchFromMetroAsync(url.replace('.bundle?', '.map?')).then((r) => r.json());
   cachedSourceMaps.set(url, { url: projectRoot, map });
 
   return { src: wrapBundle(content), filename: url };

@@ -160,13 +160,12 @@ export class DevServerManagerActions {
         title: chalk`Open devtools plugin - {bold ${plugin.packageName}}`,
         value: `devtoolsPlugin:${plugin.packageName}`,
         action: async () => {
+          const devServer = this.devServerManager.getDefaultDevServer();
           const url = new URL(
             plugin.webpageEndpoint,
-            this.devServerManager
-              .getDefaultDevServer()
-              .getUrlCreator()
-              .constructUrl({ scheme: 'http' })
+            devServer.getUrlCreator().constructUrl({ scheme: devServer.getDevServerProtocol() })
           );
+          debug(`Opening devtools plugin ${plugin.packageName} at ${url}`);
           await openBrowserAsync(url.toString());
         },
       }));

@@ -10,11 +10,11 @@ import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAsset
 import chalk from 'chalk';
 import fs from 'fs';
 import { AssetData } from 'metro';
-import fetch from 'node-fetch';
 import path from 'path';
 
 import { bundleApiRoute, invalidateApiRouteCache } from './bundleApiRoutes';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
+import { fetchFromMetroAsync } from './fetchFromMetro';
 import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
@@ -244,7 +244,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const bundleUrl = new URL(devBundleUrlPathname, this.getDevServerUrl()!);
 
     // Fetch the generated HTML from our custom Metro serializer
-    const results = await fetch(bundleUrl.toString());
+    const results = await fetchFromMetroAsync(bundleUrl.toString());
 
     const txt = await results.text();
 
@@ -414,13 +414,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
 
     if (options.https) {
-      const hostname = new URL(this.urlCreator.constructUrl()).hostname;
-      debug('Configuring TLS to enable HTTPS support:', hostname);
+      // NOTE: The `devcert` package only supports localhost. IP addresses are not supported.
+      // const hostname = new URL(this.urlCreator.constructUrl()).hostname;
+      // debug('Configuring TLS to enable HTTPS support:', hostname);
 
       const tlsConfig = await ensureEnvironmentSupportsTLSAsync(this.projectRoot, {
-        name: hostname,
+        // name: hostname,
       }).catch((error) => {
         Log.error(chalk.red`Error creating TLS certificates: ${error}`);
+        // Log.error(chalk.gray`- hostname: ${hostname}`);
       });
       if (tlsConfig) {
         debug('Using secure server options', tlsConfig);

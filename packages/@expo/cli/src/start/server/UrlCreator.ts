@@ -143,6 +143,10 @@ function getUrlComponentsFromProxyUrl(
 function getDefaultHostname(options: Pick<CreateURLOptions, 'hostname'>) {
   // TODO: Drop REACT_NATIVE_PACKAGER_HOSTNAME
   if (process.env.REACT_NATIVE_PACKAGER_HOSTNAME) {
+    debug(
+      'Using deprecated REACT_NATIVE_PACKAGER_HOSTNAME environment variable for the dev server hostname:',
+      process.env.REACT_NATIVE_PACKAGER_HOSTNAME
+    );
     return process.env.REACT_NATIVE_PACKAGER_HOSTNAME.trim();
   } else if (options.hostname === 'localhost') {
     // Restrict the use of `localhost`

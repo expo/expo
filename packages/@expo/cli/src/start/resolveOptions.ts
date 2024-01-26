@@ -1,5 +1,6 @@
 import assert from 'assert';
 
+import { Log } from '../log';
 import { hasDirectDevClientDependency } from '../utils/analytics/getDevClientProperties';
 import { AbortCommandError, CommandError } from '../utils/errors';
 import { resolvePortAsync } from '../utils/port';
@@ -26,6 +27,7 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
   if (args['--dev-client'] && args['--go']) {
     throw new CommandError('BAD_ARGS', 'Cannot use both --dev-client and --go together.');
   }
+  const https = !!args['--https'];
   const host = resolveHostType({
     host: args['--host'],
     offline: args['--offline'],
@@ -33,6 +35,15 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
     localhost: args['--localhost'],
     tunnel: args['--tunnel'],
   });
+
+  if (https) {
+    Log.warn(`--https flag is experimental and currently only supports web.`);
+  }
+  if (https && host === 'lan') {
+    Log.warn(
+      `Experimental --https support only works with localhost dev servers. The selected --host ${host} is incompatible and may not work as expected.`
+    );
+  }
 
   // User can force the default target by passing either `--dev-client` or `--go`. They can also
   // swap between them during development by pressing `s`.
@@ -63,7 +74,7 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
 
     clear: !!args['--clear'],
     dev: !args['--no-dev'],
-    https: !!args['--https'],
+    https,
     maxWorkers: args['--max-workers'],
     port: args['--port'],
     minify: !!args['--minify'],

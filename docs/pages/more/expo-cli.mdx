@@ -101,13 +101,31 @@ By default, the project is served over a LAN connection. You can change this beh
 Other available options are:
 
 - `--port`: Port to start the dev server on (does not apply to webpack or [tunnel URLs](#tunneling)). Default: **8081**. For SDK 48 and lower, defaults to `19000`.
-- `--https`: Start the dev server using a secure origin. This is currently only supported on web.
+- `--https`: **Experimental:** Start the dev server using a secure origin. This is currently only supported on web, and does not support additional dev tools like the React inspector.
 
 You can force the URL to be any value with the `EXPO_PACKAGER_PROXY_URL` environment variable. For example:
 
 <Terminal cmd={['$ export EXPO_PACKAGER_PROXY_URL=http://expo.dev', '$ npx expo start']} />
 
 Will open apps to: `exp://expo.dev:80` (the `:80` is a temporary workaround for Android WebSockets).
+
+### https
+
+> **warning** HTTPS support is experimental and only works with a narrow set of features. This feature has no overlap with production hosting, which is always served over HTTPS.
+
+Expo CLI experimentally supports hosting your website from an https server in development with mock certificates. This can be useful for testing certain browser APIs with a non-localhost origin. In general, avoid using this feature and instead opt for `--localhost` with modern versions of Chrome.
+
+You can use your own certificate files by setting the following environment variables. Both are absolute file paths to pem files that will be passed to the `https.createServer` function.
+
+- `SSL_KEY_FILE`: Absolute path to the key file. Example: `/Users/username/keys/agent2-key.pem`
+- `SSL_CRT_FILE`: Absolute path to the certificate file. Example: `/Users/username/keys/agent2-cert.pem`
+
+Caveates and known issues with `--https` support:
+
+- **Native apps do not support connecting to https URLs with mock certificates**. You will need to use a different terminal window and start a non-https process to test native apps.
+- CLI dev tools such `shift+m -> React devtools` do not support https URLs and may cause unexpected errors.
+- `--lan` and `--host lan` are incompatibile with `--https`. The mock certificates can only be created for the `localhost` hostname.
+- In order to connect to the dev server for static rendering, `NODE_TLS_REJECT_UNAUTHORIZED` is disabled. This will result in the following Node.js warning being printed: `(node:23959) Warning: Setting the NODE_TLS_REJECT_UNAUTHORIZED environment variable to '0' makes TLS connections and HTTPS requests insecure by disabling certificate verification.`
 
 #### Tunneling
 
