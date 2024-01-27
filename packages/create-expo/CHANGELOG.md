@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Stop corrupting inner `.tar.gz` files when decompressing tarballs of templates. ([#26741](https://github.com/expo/expo/pull/26741) by [@shirakaba](https://github.com/shirakaba))
+
 ### 💡 Others
 
 ## 2.1.3 — 2023-12-12
