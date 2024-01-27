@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Improve warning for favicon missing during web export. ([#26733](https://github.com/expo/expo/pull/26733) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.17.3 — 2024-01-26
 
 ### 🐛 Bug fixes
@@ -29,7 +31,11 @@
 - Fixed crash when launching React DevTools. ([#26550](https://github.com/expo/expo/pull/26550) by [@kudo](https://github.com/kudo))
 - Only show "Web is waiting" message after project is initialized with web. ([#26694](https://github.com/expo/expo/pull/26694) by [@byCedric](https://github.com/byCedric))
 
-## 0.17.1 — 2024-01-18
+### 💡 Others
+
+- Improve warning for favicon missing during web export. ([#26733](https://github.com/expo/expo/pull/26733) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.17.1 - 2024-01-18
 
 _This version does not introduce any user-facing changes._
 
