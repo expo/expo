@@ -96,11 +96,11 @@ android {
         srcDirs += ['../vendored/react-native-gesture-handler/android/']
         srcDirs += ['../vendored/react-native-safe-area-context/android/']
 
-        def expoPackageVersion = getExpoPackageVersion()
-        if (expoPackageVersion >= versionToNumber(45, 0, 0)) {
-          srcDirs += "src/expo-45"
+        def rnVersion = getRNVersion()
+        if (rnVersion >= versionToNumber(0, 74, 0)) {
+          srcDirs += "src/react-native-74"
         } else {
-          srcDirs += "src/expo-44"
+          srcDirs += "src/react-native-73"
         }
       }
     }
@@ -207,6 +207,6 @@ def getNodeModulesPackageVersion(packageName, overridePropName) {
   )
 }
 
-def getExpoPackageVersion() {
-  return getNodeModulesPackageVersion("expo", "expoPackageVersion")
+def getRNVersion() {
+  return getNodeModulesPackageVersion("react-native", "reactNativeVersion")
 }
