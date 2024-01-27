@@ -101,7 +101,6 @@ android {
         }
       }
     }
-
     debug {
       java {
         srcDirs += ['../vendored/react-native-gesture-handler/android/']
@@ -113,7 +112,6 @@ android {
     releaseWithDevMenu {
       setRoot 'src/debug'
     }
-
   }
   publishing {
     singleVariant("release") {
