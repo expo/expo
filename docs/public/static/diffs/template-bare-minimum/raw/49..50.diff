@@ -814,7 +814,7 @@ index f8e88bbe0c..37d415b57d 100644
  #if DEBUG
    return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@".expo/.virtual-metro-entry"];
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
-index 0a2a4dfa13..5a1db7145b 100644
+index 0a2a4dfa13..552b63e06c 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
 @@ -2,6 +2,8 @@
@@ -839,25 +839,24 @@ index 0a2a4dfa13..5a1db7145b 100644
  	<key>CFBundleVersion</key>
  	<string>1</string>
  	<key>LSRequiresIPhoneOS</key>
-@@ -25,15 +27,9 @@
+@@ -25,11 +27,15 @@
  	<key>NSAppTransportSecurity</key>
  	<dict>
  		<key>NSAllowsArbitraryLoads</key>
 +		<false/>
 +		<key>NSAllowsLocalNetworking</key>
  		<true/>
--		<key>NSExceptionDomains</key>
--		<dict>
+ 		<key>NSExceptionDomains</key>
+ 		<dict>
 -			<key>localhost</key>
--			<dict>
--				<key>NSExceptionAllowsInsecureHTTPLoads</key>
--				<true/>
--			</dict>
--		</dict>
- 	</dict>
- 	<key>UILaunchStoryboardName</key>
- 	<string>SplashScreen</string>
-@@ -41,6 +37,8 @@
++			<key>exp.direct</key>
+ 			<dict>
++				<key>NSIncludesSubdomains</key>
++				<true/>
+ 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+ 				<true/>
+ 			</dict>
+@@ -41,6 +47,8 @@
  	<array>
  		<string>armv7</string>
  	</array>
@@ -866,7 +865,7 @@ index 0a2a4dfa13..5a1db7145b 100644
  	<key>UISupportedInterfaceOrientations</key>
  	<array>
  		<string>UIInterfaceOrientationPortrait</string>
-@@ -49,9 +47,5 @@
+@@ -49,9 +57,5 @@
  	</array>
  	<key>UIViewControllerBasedStatusBarAppearance</key>
  	<false/>

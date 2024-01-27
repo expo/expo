@@ -9,4 +9,6 @@ module.exports = withWatchPlugins({
     createJestPreset(require('jest-expo/node/jest-preset')),
     // Remove sub-watch-plugins from the preset when using multi-project runner.
   ].map(({ watchPlugins, ...config }) => config),
+  // See: https://jestjs.io/docs/configuration#prettierpath-string
+  prettierPath: require.resolve('jest-snapshot-prettier'),
 });

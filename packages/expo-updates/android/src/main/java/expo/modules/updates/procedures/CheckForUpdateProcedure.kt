@@ -25,6 +25,8 @@ class CheckForUpdateProcedure(
   private val launchedUpdate: UpdateEntity?,
   private val callback: (IUpdatesController.CheckForUpdateResult) -> Unit
 ) : StateMachineProcedure() {
+  override val loggerTimerLabel = "timer-check-for-update"
+
   override fun run(procedureContext: ProcedureContext) {
     procedureContext.processStateEvent(UpdatesStateEvent.Check())
 

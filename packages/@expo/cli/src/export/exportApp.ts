@@ -13,6 +13,7 @@ import { Options } from './resolveOptions';
 import { ExportAssetMap, getFilesFromSerialAssets, persistMetroFilesAsync } from './saveAssets';
 import { createAssetMap, createSourceMapDebugHtml } from './writeContents';
 import * as Log from '../log';
+import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';
 import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/router';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import {
@@ -54,6 +55,10 @@ export async function exportAppAsync(
     // Web doesn't require validation.
     skipValidation: platforms.length === 1 && platforms[0] === 'web',
   });
+
+  if (platforms.includes('web')) {
+    await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
+  }
 
   const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
   const baseUrl = getBaseUrlFromExpoConfig(exp);

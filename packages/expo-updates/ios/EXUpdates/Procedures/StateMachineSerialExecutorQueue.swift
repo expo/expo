@@ -1,10 +1,16 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 private final class MethodInvocationHolder {
+  private let updatesLogger: UpdatesLogger
   private let procedure: StateMachineProcedure
   private let onMethodInvocationComplete: (_ invocationHolder: MethodInvocationHolder) -> Void
 
-  init(procedure: StateMachineProcedure, onMethodInvocationComplete: @escaping (_ invocationHolder: MethodInvocationHolder) -> Void) {
+  init(
+    updatesLogger: UpdatesLogger,
+    procedure: StateMachineProcedure,
+    onMethodInvocationComplete: @escaping (_ invocationHolder: MethodInvocationHolder) -> Void
+  ) {
+    self.updatesLogger = updatesLogger
     self.procedure = procedure
     self.onMethodInvocationComplete = onMethodInvocationComplete
   }
@@ -12,6 +18,7 @@ private final class MethodInvocationHolder {
   func execute(stateMachineProcedureContext: StateMachineProcedureContext) {
     var isCompleted = false
 
+    let loggerTimer = updatesLogger.startTimer(label: self.procedure.getLoggerTimerLabel())
     procedure.run(procedureContext: ProcedureContext(
       processStateEventCallback: { event in
         assert(!isCompleted, "Cannot set state after procedure completion")
@@ -27,6 +34,7 @@ private final class MethodInvocationHolder {
       },
       onCompleteCallback: {
         isCompleted = true
+        loggerTimer.stop()
         self.onMethodInvocationComplete(self)
       }
     ))
@@ -38,9 +46,11 @@ private final class MethodInvocationHolder {
  are run sequentially.
  */
 final class StateMachineSerialExecutorQueue {
+  private let updatesLogger: UpdatesLogger
   private let stateMachineProcedureContext: StateMachineProcedureContext
 
-  required init(stateMachineProcedureContext: StateMachineProcedureContext) {
+  required init(updatesLogger: UpdatesLogger, stateMachineProcedureContext: StateMachineProcedureContext) {
+    self.updatesLogger = updatesLogger
     self.stateMachineProcedureContext = stateMachineProcedureContext
   }
 
@@ -52,6 +62,7 @@ final class StateMachineSerialExecutorQueue {
    */
   func queueExecution(stateMachineProcedure: StateMachineProcedure) {
     internalQueue.append(MethodInvocationHolder(
+      updatesLogger: updatesLogger,
       procedure: stateMachineProcedure,
       onMethodInvocationComplete: { invocationHolder in
         assert(self.currentMethodInvocation === invocationHolder)

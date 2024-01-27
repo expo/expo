@@ -142,7 +142,6 @@ const general = [
       [
         makePage('workflow/web.mdx'),
         makePage('distribution/publishing-websites.mdx'),
-        makePage('guides/customizing-metro.mdx'),
         makePage('guides/progressive-web-apps.mdx'),
       ],
       { expanded: false }

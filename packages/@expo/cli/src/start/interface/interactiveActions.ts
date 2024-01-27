@@ -25,7 +25,10 @@ interface MoreToolMenuItem extends ExpoChoice<string> {
 
 /** Wraps the DevServerManager and adds an interface for user actions. */
 export class DevServerManagerActions {
-  constructor(private devServerManager: DevServerManager) {}
+  constructor(
+    private devServerManager: DevServerManager,
+    private options: Pick<StartOptions, 'devClient' | 'platforms'>
+  ) {}
 
   printDevServerInfo(
     options: Pick<StartOptions, 'devClient' | 'isWebSocketsEnabled' | 'platforms'>
@@ -73,11 +76,13 @@ export class DevServerManagerActions {
       }
     }
 
-    const webDevServer = this.devServerManager.getWebDevServer();
-    const webUrl = webDevServer?.getDevServerUrl({ hostType: 'localhost' });
-    if (webUrl) {
-      Log.log();
-      Log.log(printItem(chalk`Web is waiting on {underline ${webUrl}}`));
+    if (this.options.platforms?.includes('web')) {
+      const webDevServer = this.devServerManager.getWebDevServer();
+      const webUrl = webDevServer?.getDevServerUrl({ hostType: 'localhost' });
+      if (webUrl) {
+        Log.log();
+        Log.log(printItem(chalk`Web is waiting on {underline ${webUrl}}`));
+      }
     }
 
     printUsage(options, { verbose: false });
