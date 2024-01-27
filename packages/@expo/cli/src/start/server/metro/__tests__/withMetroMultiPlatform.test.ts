@@ -110,6 +110,32 @@ describe(withExtendedResolver, () => {
     );
   });
 
+  it(`resolves against tsconfig baseUrl without paths`, async () => {
+    mockMinFs();
+
+    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
+      tsconfig: { baseUrl: '/src' },
+      isTsconfigPathsEnabled: true,
+    });
+
+    const platform = 'ios';
+
+    modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
+
+    expect(getResolveFunc()).toBeCalledTimes(1);
+
+    expect(getResolveFunc()).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        extraNodeModules: {},
+        mainFields: ['react-native', 'browser', 'main'],
+        preferNativePlatform: true,
+      }),
+      '/src/react-native',
+      platform
+    );
+  });
+
   it(`does not alias react-native-web in initial resolution with baseUrl on web`, async () => {
     mockMinFs();
 
