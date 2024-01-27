@@ -18,6 +18,8 @@
 
 ### 💡 Others
 
+- Improve warning for favicon missing during web export. ([#26733](https://github.com/expo/expo/pull/26733) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.17.1 - 2024-01-18
 
 _This version does not introduce any user-facing changes._
