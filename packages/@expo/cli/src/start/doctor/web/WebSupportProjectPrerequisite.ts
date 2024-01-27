@@ -98,7 +98,7 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
 export function isWebPlatformExcluded(rootConfig: AppJSONConfig): boolean {
   // Detect if the 'web' string is purposefully missing from the platforms array.
   const isWebExcluded =
-    Array.isArray(rootConfig.expo?.platforms) &&
+    Array.isArray(rootConfig?.expo?.platforms) &&
     !!rootConfig.expo?.platforms.length &&
     !rootConfig.expo?.platforms.includes('web');
   return isWebExcluded;
