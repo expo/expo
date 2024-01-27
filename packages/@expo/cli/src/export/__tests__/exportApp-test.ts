@@ -7,6 +7,10 @@ import { ExportAssetMap } from '../saveAssets';
 
 jest.mock('../../log');
 
+jest.mock('../../start/doctor/web/WebSupportProjectPrerequisite', () => ({
+  WebSupportProjectPrerequisite: jest.fn(() => ({ assertAsync: jest.fn() })),
+}));
+
 jest.mock('../exportStaticAsync', () => ({
   unstable_exportStaticAsync: jest.fn(
     async (_root: string, { files }: { files: ExportAssetMap }) => {
