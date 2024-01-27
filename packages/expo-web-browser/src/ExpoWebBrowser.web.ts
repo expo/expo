@@ -256,7 +256,7 @@ async function generateStateAsync(): Promise<string> {
   if (!isSubtleCryptoAvailable()) {
     throw new CodedError(
       'ERR_WEB_BROWSER_CRYPTO',
-      `The current environment doesn't support crypto. Ensure you are running from a secure origin (https).`
+      `The current environment doesn't support crypto. Ensure you are running from a secure origin (localhost/https).`
     );
   }
   const encoder = new TextEncoder();

@@ -204,7 +204,7 @@ function getRedirectUrlFromUrlOrGenerate(inputUrl) {
 const CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 async function generateStateAsync() {
     if (!isSubtleCryptoAvailable()) {
-        throw new CodedError('ERR_WEB_BROWSER_CRYPTO', `The current environment doesn't support crypto. Ensure you are running from a secure origin (https).`);
+        throw new CodedError('ERR_WEB_BROWSER_CRYPTO', `The current environment doesn't support crypto. Ensure you are running from a secure origin (localhost/https).`);
     }
     const encoder = new TextEncoder();
     const data = generateRandom(10);
