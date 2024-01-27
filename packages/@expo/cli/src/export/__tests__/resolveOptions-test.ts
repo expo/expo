@@ -27,7 +27,7 @@ describe(resolveOptionsAsync, () => {
       exp: { web: { bundler: 'webpack' }, platforms: ['ios', 'android', 'web'] },
     });
     await expect(resolveOptionsAsync('/', { '--platform': ['web'] })).rejects.toThrow(
-      /^Platform "web" is not configured to use the Metro bundler in the project Expo config\./
+      /^Platform "web" is not configured to use the Metro bundler in the project Expo config,/
     );
   });
 

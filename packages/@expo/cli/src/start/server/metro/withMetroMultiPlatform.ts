@@ -35,7 +35,6 @@ import { installExitHooks } from '../../../utils/exit';
 import { isInteractive } from '../../../utils/interactive';
 import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
-import { WebSupportProjectPrerequisite } from '../../doctor/web/WebSupportProjectPrerequisite';
 import { PlatformBundlers } from '../platformBundlers';
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] };
@@ -470,10 +469,6 @@ export async function withMetroMultiPlatformAsync(
   config.transformer._expoRouterWebRendering = webOutput;
   // @ts-expect-error: Invalidate the cache when the location of expo-router changes on-disk.
   config.transformer._expoRouterPath = resolveFrom.silent(projectRoot, 'expo-router');
-
-  if (exp.platforms?.includes('web') && platformBundlers.web === 'metro') {
-    await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
-  }
 
   let tsconfig: null | TsConfigPaths = null;
 
