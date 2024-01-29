@@ -612,7 +612,7 @@ index 8cddb11cb2..0000000000
 -}
 \ No newline at end of file
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
-index 0cad655b33..04b326127b 100644
+index 0cad655b33..d40cad0264 100644
 --- a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
 @@ -1,4 +1,4 @@
@@ -621,7 +621,7 @@ index 0cad655b33..04b326127b 100644
  
    <uses-permission android:name="android.permission.INTERNET"/>
    <!-- OPTIONAL PERMISSIONS, REMOVE WHATEVER YOU DO NOT NEED -->
-@@ -18,9 +18,9 @@
+@@ -18,10 +18,10 @@
      </intent>
    </queries>
  
@@ -629,10 +629,12 @@ index 0cad655b33..04b326127b 100644
 +  <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme">
      <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="YOUR-APP-URL-HERE"/>
 -    <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="YOUR-APP-SDK-VERSION-HERE"/>
+-    <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
 +    <meta-data android:name="expo.modules.updates.EXPO_RUNTIME_VERSION" android:value="YOUR-APP-RUNTIME-VERSION-HERE"/>
-     <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
++    <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
        <intent-filter>
          <action android:name="android.intent.action.MAIN"/>
+         <category android:name="android.intent.category.LAUNCHER"/>
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainActivity.java b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainActivity.java
 deleted file mode 100644
 index 576e23db45..0000000000

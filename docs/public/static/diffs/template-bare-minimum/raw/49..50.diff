@@ -158,6 +158,26 @@ index 595dd5831c..0000000000
 -    }
 -  }
 -}
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
+index 34a7ca8314..f8d77fc832 100644
+--- a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
++++ b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
+@@ -21,7 +21,7 @@
+   <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme">
+     <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="YOUR-APP-URL-HERE"/>
+     <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="YOUR-APP-SDK-VERSION-HERE"/>
+-    <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
++    <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
+       <intent-filter>
+         <action android:name="android.intent.action.MAIN"/>
+         <category android:name="android.intent.category.LAUNCHER"/>
+@@ -29,4 +29,4 @@
+     </activity>
+     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" android:exported="false"/>
+   </application>
+-</manifest>
++</manifest>
+\ No newline at end of file
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainActivity.java b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainActivity.java
 deleted file mode 100644
 index 176fbf6a2a..0000000000
@@ -814,7 +834,7 @@ index f8e88bbe0c..37d415b57d 100644
  #if DEBUG
    return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@".expo/.virtual-metro-entry"];
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
-index 0a2a4dfa13..552b63e06c 100644
+index 0a2a4dfa13..5a1db7145b 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
 @@ -2,6 +2,8 @@
@@ -839,24 +859,25 @@ index 0a2a4dfa13..552b63e06c 100644
  	<key>CFBundleVersion</key>
  	<string>1</string>
  	<key>LSRequiresIPhoneOS</key>
-@@ -25,11 +27,15 @@
+@@ -25,15 +27,9 @@
  	<key>NSAppTransportSecurity</key>
  	<dict>
  		<key>NSAllowsArbitraryLoads</key>
 +		<false/>
 +		<key>NSAllowsLocalNetworking</key>
  		<true/>
- 		<key>NSExceptionDomains</key>
- 		<dict>
+-		<key>NSExceptionDomains</key>
+-		<dict>
 -			<key>localhost</key>
-+			<key>exp.direct</key>
- 			<dict>
-+				<key>NSIncludesSubdomains</key>
-+				<true/>
- 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
- 				<true/>
- 			</dict>
-@@ -41,6 +47,8 @@
+-			<dict>
+-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+-				<true/>
+-			</dict>
+-		</dict>
+ 	</dict>
+ 	<key>UILaunchStoryboardName</key>
+ 	<string>SplashScreen</string>
+@@ -41,6 +37,8 @@
  	<array>
  		<string>armv7</string>
  	</array>
@@ -865,7 +886,7 @@ index 0a2a4dfa13..552b63e06c 100644
  	<key>UISupportedInterfaceOrientations</key>
  	<array>
  		<string>UIInterfaceOrientationPortrait</string>
-@@ -49,9 +57,5 @@
+@@ -49,9 +47,5 @@
  	</array>
  	<key>UIViewControllerBasedStatusBarAppearance</key>
  	<false/>
@@ -911,7 +932,7 @@ index 2402cc34b2..b3978b9515 100644
      # This is necessary for Xcode 14, because it signs resource bundles by default
      # when building for devices.
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 50e94a0837..a828360d9b 100644
+index 50e94a0837..5510397b84 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -919,7 +940,7 @@ index 50e94a0837..a828360d9b 100644
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "49.0.24",
-+  "version": "50.0.31",
++  "version": "50.0.34",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -930,7 +951,7 @@ index 50e94a0837..a828360d9b 100644
 -    "expo": "~49.0.18",
 -    "expo-splash-screen": "~0.20.5",
 -    "expo-status-bar": "~1.6.0",
-+    "expo": "~50.0.3",
++    "expo": "~50.0.4",
 +    "expo-status-bar": "~1.11.1",
      "react": "18.2.0",
 -    "react-native": "0.72.6"
