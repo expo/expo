@@ -78,7 +78,6 @@ function getDirectoryTree(contextModule, layouts, options) {
                 }
             },
             contextKey: filePath,
-            entryPoints: [filePath],
             route: '',
             dynamic: null,
             children: [], // While we are building the directory tree, we don't know the node's children just yet. This is added during hoisting
@@ -187,8 +186,7 @@ function getDirectoryTree(contextModule, layouts, options) {
                         .DefaultNavigator,
                 }),
                 // Generate a fake file name for the directory
-                contextKey: './_layout.tsx',
-                entryPoints: ['expo-router/build/views/Navigator.js'],
+                contextKey: 'expo-router/build/views/Navigator.js',
                 route: '',
                 generated: true,
                 dynamic: null,
@@ -234,12 +232,8 @@ pathToRemove = '') {
         // Now update this layout with the new relative route and dynamic conventions
         layout.route = newRoute;
         layout.dynamic = generateDynamic(layout.route);
-        if (layout.entryPoints) {
-            // Track this _layout's entryPoints so that child routes can inherit them
-            entryPoints = [...entryPoints, ...layout.entryPoints];
-            // Layouts never have entryPoints
-            delete layout.entryPoints;
-        }
+        // Track this _layout's entryPoints so that child routes can inherit them
+        entryPoints = [...entryPoints, layout.contextKey];
     }
     // This should never occur as there will always be a root layout, but it makes the type system happy
     if (!layout)
@@ -254,9 +248,8 @@ pathToRemove = '') {
         if (options.ignoreEntryPoints) {
             delete routeNode.entryPoints;
         }
-        else if (routeNode.type !== 'api' && // API routes don't merge entryPoints
-            routeNode.entryPoints) {
-            routeNode.entryPoints = [...entryPoints, ...routeNode.entryPoints];
+        else if (routeNode.type !== 'api') {
+            routeNode.entryPoints = [...entryPoints, routeNode.contextKey];
         }
         if (options.internal_stripLoadRoute) {
             delete routeNode.loadRoute;
@@ -356,12 +349,11 @@ function appendSitemapRoute(directory) {
                 },
                 route: '_sitemap',
                 type: 'route',
-                contextKey: './_sitemap.tsx',
+                contextKey: 'expo-router/build/views/Sitemap.js',
                 generated: true,
                 internal: true,
                 dynamic: null,
                 children: [],
-                entryPoints: ['expo-router/build/views/Sitemap.js'],
             },
         ]);
     }
@@ -375,12 +367,11 @@ function appendNotFoundRoute(directory) {
                 },
                 type: 'route',
                 route: '+not-found',
-                contextKey: './+not-found.tsx',
+                contextKey: 'expo-router/build/views/Unmatched.js',
                 generated: true,
                 internal: true,
                 dynamic: [{ name: '+not-found', deep: true, notFound: true }],
                 children: [],
-                entryPoints: ['expo-router/build/views/Unmatched.js'],
             },
         ]);
     }

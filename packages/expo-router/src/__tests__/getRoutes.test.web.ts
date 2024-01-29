@@ -21,7 +21,7 @@ describe('getRoutes', () => {
         {
           type: 'route',
           children: [],
-          contextKey: './_sitemap.tsx',
+          contextKey: 'expo-router/build/views/Sitemap.js',
           dynamic: null,
           entryPoints: [
             'expo-router/build/views/Navigator.js',
@@ -34,7 +34,7 @@ describe('getRoutes', () => {
         {
           type: 'route',
           children: [],
-          contextKey: './+not-found.tsx',
+          contextKey: 'expo-router/build/views/Unmatched.js',
           dynamic: [
             {
               deep: true,
@@ -59,7 +59,7 @@ describe('getRoutes', () => {
           route: '(app)/index',
         },
       ],
-      contextKey: './_layout.tsx',
+      contextKey: 'expo-router/build/views/Navigator.js',
       dynamic: null,
       generated: true,
       type: 'layout',
@@ -110,7 +110,7 @@ describe('getRoutes', () => {
           children: [],
         },
       ],
-      contextKey: './_layout.tsx',
+      contextKey: 'expo-router/build/views/Navigator.js',
       dynamic: null,
       generated: true,
       type: 'layout',
@@ -132,7 +132,7 @@ describe('getRoutes', () => {
         {
           type: 'route',
           children: [],
-          contextKey: './_sitemap.tsx',
+          contextKey: 'expo-router/build/views/Sitemap.js',
           dynamic: null,
           entryPoints: ['./_layout.js', 'expo-router/build/views/Sitemap.js'],
           generated: true,
@@ -142,7 +142,7 @@ describe('getRoutes', () => {
         {
           type: 'route',
           children: [],
-          contextKey: './+not-found.tsx',
+          contextKey: 'expo-router/build/views/Unmatched.js',
           dynamic: [
             {
               deep: true,
@@ -213,7 +213,7 @@ describe('getRoutes', () => {
           type: 'route',
         },
       ],
-      contextKey: './_layout.tsx',
+      contextKey: 'expo-router/build/views/Navigator.js',
       dynamic: null,
       generated: true,
       route: '',
@@ -273,7 +273,7 @@ describe('getRoutes', () => {
           children: [],
         },
       ],
-      contextKey: './_layout.tsx',
+      contextKey: 'expo-router/build/views/Navigator.js',
       type: 'layout',
       dynamic: null,
       generated: true,
@@ -419,7 +419,7 @@ describe('+not-found', () => {
         {
           children: [],
           type: 'route',
-          contextKey: './_sitemap.tsx',
+          contextKey: 'expo-router/build/views/Sitemap.js',
           dynamic: null,
           entryPoints: [
             'expo-router/build/views/Navigator.js',
@@ -438,7 +438,7 @@ describe('+not-found', () => {
           route: '(app)/index',
         },
       ],
-      contextKey: './_layout.tsx',
+      contextKey: 'expo-router/build/views/Navigator.js',
       type: 'layout',
       dynamic: null,
       generated: true,
@@ -484,17 +484,16 @@ describe('entry points', () => {
         {
           children: [],
           type: 'route',
-          contextKey: './_sitemap.tsx',
+          contextKey: 'expo-router/build/views/Sitemap.js',
           dynamic: null,
           generated: true,
           internal: true,
           route: '_sitemap',
-          entryPoints: undefined,
         },
         {
           children: [],
           type: 'route',
-          contextKey: './+not-found.tsx',
+          contextKey: 'expo-router/build/views/Unmatched.js',
           dynamic: [
             {
               deep: true,
@@ -505,7 +504,6 @@ describe('entry points', () => {
           generated: true,
           internal: true,
           route: '+not-found',
-          entryPoints: undefined,
         },
         {
           children: [],
@@ -513,10 +511,9 @@ describe('entry points', () => {
           contextKey: './(app)/index.js',
           dynamic: null,
           route: '(app)/index',
-          entryPoints: undefined,
         },
       ],
-      contextKey: './_layout.tsx',
+      contextKey: 'expo-router/build/views/Navigator.js',
       type: 'layout',
       dynamic: null,
       generated: true,
@@ -536,7 +533,7 @@ describe('entry points', () => {
         { internal_stripLoadRoute: true, skipGenerated: true }
       )
     ).toEqual({
-      contextKey: './_layout.tsx',
+      contextKey: 'expo-router/build/views/Navigator.js',
       type: 'layout',
       dynamic: null,
       generated: true,
@@ -660,7 +657,7 @@ describe('dynamic routes', () => {
           route: 'a/b/c/[single]',
         },
       ],
-      contextKey: './_layout.tsx',
+      contextKey: 'expo-router/build/views/Navigator.js',
       type: 'layout',
       dynamic: null,
       generated: true,
@@ -691,7 +688,7 @@ describe('api routes', () => {
         },
       ],
       type: 'layout',
-      contextKey: './_layout.tsx',
+      contextKey: 'expo-router/build/views/Navigator.js',
       dynamic: null,
       generated: true,
       route: '',
@@ -722,12 +719,11 @@ describe('api routes', () => {
           children: [],
           contextKey: './(app)/page+api.js',
           dynamic: null,
-          entryPoints: ['./(app)/page+api.js'],
           route: '(app)/page',
         },
       ],
       type: 'layout',
-      contextKey: './_layout.tsx',
+      contextKey: 'expo-router/build/views/Navigator.js',
       dynamic: null,
       generated: true,
       route: '',

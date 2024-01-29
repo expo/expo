@@ -39,7 +39,7 @@ describe(RouterStore, () => {
           }),
           expect.objectContaining({
             children: [],
-            contextKey: './_sitemap.tsx',
+            contextKey: 'expo-router/build/views/Sitemap.js',
             dynamic: null,
             generated: true,
             internal: true,
@@ -47,7 +47,7 @@ describe(RouterStore, () => {
           }),
           expect.objectContaining({
             children: [],
-            contextKey: './+not-found.tsx',
+            contextKey: 'expo-router/build/views/Unmatched.js',
             dynamic: [
               {
                 deep: true,
@@ -60,7 +60,7 @@ describe(RouterStore, () => {
             route: '+not-found',
           }),
         ],
-        contextKey: './_layout.tsx',
+        contextKey: 'expo-router/build/views/Navigator.js',
         dynamic: null,
         generated: true,
         route: '',
