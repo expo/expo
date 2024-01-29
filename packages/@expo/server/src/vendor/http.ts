@@ -91,7 +91,7 @@ export async function respond(res: http.ServerResponse, expoRes: ExpoResponse): 
 
   for (const [key, values] of Object.entries(expoRes.headers.raw())) {
     for (const value of values) {
-      res.setHeader(key, value);
+      res.appendHeader(key, value);
     }
   }
 
