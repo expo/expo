@@ -14,17 +14,20 @@ import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.ViewProps
 import com.facebook.yoga.YogaConstants
+import expo.modules.kotlin.Promise
 import expo.modules.image.enums.ContentFit
 import expo.modules.image.enums.Priority
 import expo.modules.image.records.CachePolicy
 import expo.modules.image.records.ContentPosition
 import expo.modules.image.records.ImageTransition
 import expo.modules.image.records.SourceMap
-import expo.modules.kotlin.Promise
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.views.ViewDefinitionBuilder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ExpoImageModule : Module() {
   override fun definition() = ModuleDefinition {
@@ -80,6 +83,46 @@ class ExpoImageModule : Module() {
           .submit()
       }
     }
+
+    AsyncFunction("load") {  source: SourceMap,promise: Promise ->
+      CoroutineScope(Dispatchers.Main).launch {
+        ImageLoadTask(appContext, source).load(promise)
+      }
+    }
+
+    Class(Image::class) {
+      Property("width") { image: Image ->
+        image.ref?.width
+      }
+      Property("height") { image: Image ->
+        image.ref?.height
+      }
+//      Property("scale") { image: Image ->
+//        image.ref?.density
+//      }
+      Property("isAnimated") { image: Image ->
+        false
+      }
+//      Property("mediaType") { image: Image ->
+//        "image/jpeg"
+//      }
+    }
+
+//    Class("LoadTask"){
+//      Constructor {
+//        source: SourceMap ->
+//        ImageLoadTask(appContext, source)
+//      }
+//
+//      AsyncFunction("load") {  task: ImageLoadTask,promise: Promise ->
+//        CoroutineScope(Dispatchers.Default).launch {
+//          task.load(promise)
+//        }
+//      }
+//      Function("abort") { task: ImageLoadTask ->
+//        task.abort()
+//      }
+//    }
 
     AsyncFunction("clearMemoryCache") {
       val activity = appContext.currentActivity ?: return@AsyncFunction false

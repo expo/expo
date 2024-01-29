@@ -58,75 +58,48 @@ jni::local_ref<JavaCallback::javaobject> JavaCallback::newInstance(
 }
 
 void JavaCallback::invoke() {
-  auto* callbackArg = new CallbackArg;
-  callbackArg->type = CallbackArgType::DYNAMIC;
-  auto dynObj = std::make_unique<folly::dynamic>(nullptr);
-  callbackArg->type = CallbackArgType::DYNAMIC;
-  callbackArg->arg.dynamicArg = dynObj.release();
-  callback(callbackArg);
+
+  std::unique_ptr<CallbackArg> callbackArg(new CallbackArg { CallbackArgType::DYNAMIC, { nullptr } });
+  callback(std::move(callbackArg));
 }
 
 void JavaCallback::invokeBool(bool result) {
-  auto* callbackArg = new CallbackArg;
-  auto dynObj = std::make_unique<folly::dynamic>(result);
-  callbackArg->type = CallbackArgType::DYNAMIC;
-  callbackArg->arg.dynamicArg = dynObj.release();
-  callback(callbackArg);
+  std::unique_ptr<CallbackArg> callbackArg(new CallbackArg { CallbackArgType::DYNAMIC, { std::make_unique<folly::dynamic>(result) }});
+  callback(std::move(callbackArg));
 }
 
 void JavaCallback::invokeInt(int result) {
-  auto* callbackArg = new CallbackArg;
-  auto dynObj = std::make_unique<folly::dynamic>(result);
-  callbackArg->type = CallbackArgType::DYNAMIC;
-  callbackArg->arg.dynamicArg = dynObj.release();
-  callback(callbackArg);
+  std::unique_ptr<CallbackArg> callbackArg(new CallbackArg { CallbackArgType::DYNAMIC, { std::make_unique<folly::dynamic>(result) }});
+  callback(std::move(callbackArg));
 }
 
 void JavaCallback::invokeDouble(double result) {
-  auto* callbackArg = new CallbackArg;
-  auto dynObj = std::make_unique<folly::dynamic>(result);
-  callbackArg->type = CallbackArgType::DYNAMIC;
-  callbackArg->arg.dynamicArg = dynObj.release();
-  callback(callbackArg);
+  std::unique_ptr<CallbackArg> callbackArg(new CallbackArg { CallbackArgType::DYNAMIC, { std::make_unique<folly::dynamic>(result) }});
+  callback(std::move(callbackArg));
 }
 
 void JavaCallback::invokeFloat(float result) {
-  auto* callbackArg = new CallbackArg;
-  auto dynObj = std::make_unique<folly::dynamic>(result);
-  callbackArg->type = CallbackArgType::DYNAMIC;
-  callbackArg->arg.dynamicArg = dynObj.release();
-  callback(callbackArg);
+  std::unique_ptr<CallbackArg> callbackArg(new CallbackArg { CallbackArgType::DYNAMIC, { std::make_unique<folly::dynamic>(result) }});
+  callback(std::move(callbackArg));
 }
 
 void JavaCallback::invokeString(jni::alias_ref<jstring> result) {
-  auto* callbackArg = new CallbackArg;
-  auto dynObj = std::make_unique<folly::dynamic>(result->toStdString());
-  callbackArg->type = CallbackArgType::DYNAMIC;
-  callbackArg->arg.dynamicArg = dynObj.release();
-  callback(callbackArg);
+  std::unique_ptr<CallbackArg> callbackArg(new CallbackArg { CallbackArgType::DYNAMIC, { std::make_unique<folly::dynamic>(result->toStdString()) }});
+  callback(std::move(callbackArg));
 }
 
 void JavaCallback::invokeArray(jni::alias_ref<react::WritableNativeArray::javaobject> result) {
-  auto* callbackArg = new CallbackArg;
-  auto dynObj = std::make_unique<folly::dynamic>(result->cthis()->consume());
-  callbackArg->type = CallbackArgType::DYNAMIC;
-  callbackArg->arg.dynamicArg = dynObj.release();
-  callback(callbackArg);
+  std::unique_ptr<CallbackArg> callbackArg(new CallbackArg { CallbackArgType::DYNAMIC, { std::make_unique<folly::dynamic>(result->cthis()->consume()) }});
+  callback(std::move(callbackArg));
 }
 
 void JavaCallback::invokeMap(jni::alias_ref<react::WritableNativeMap::javaobject> result) {
-  auto* callbackArg = new CallbackArg;
-  auto dynObj = std::make_unique<folly::dynamic>(result->cthis()->consume());
-  callbackArg->type = CallbackArgType::DYNAMIC;
-  callbackArg->arg.dynamicArg = dynObj.release();
-  callback(callbackArg);
+  std::unique_ptr<CallbackArg> callbackArg(new CallbackArg { CallbackArgType::DYNAMIC, { std::make_unique<folly::dynamic>(result->cthis()->consume()) }});
+  callback(std::move(callbackArg));
 }
 
 void JavaCallback::invokeSharedRef(jni::alias_ref<SharedRef::javaobject> result) {
-  auto* callbackArg = new CallbackArg;
-  callbackArg->type = CallbackArgType::SHARED_REF;
-  auto strongRef = jni::make_global(result);
-  callbackArg->arg.sharedRefArg = strongRef;
-  callback(callbackArg);
+  std::unique_ptr<CallbackArg> callbackArg(new CallbackArg { CallbackArgType::SHARED_REF, {nullptr, jni::make_global(result)}});
+  callback(std::move(callbackArg));
 }
 } // namespace expo

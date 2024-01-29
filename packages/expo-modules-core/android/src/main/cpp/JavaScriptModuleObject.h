@@ -185,7 +185,7 @@ private:
 
   std::map<
     std::string,
-    std::tuple<jni::global_ref<JavaScriptModuleObject::javaobject>, MethodMetadata, jni::global_ref<jclass>> //,
+    std::tuple<jni::global_ref<JavaScriptModuleObject::javaobject>, MethodMetadata, jni::global_ref<jclass>>
   > classes;
 
   jni::global_ref<JavaScriptModuleObject::javaobject> viewPrototype;

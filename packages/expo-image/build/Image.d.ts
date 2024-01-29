@@ -4,6 +4,10 @@ export declare class Image extends React.PureComponent<ImageProps> {
     nativeViewRef: any;
     constructor(props: any);
     /**
+     * @hidden
+     */
+    static Image: any;
+    /**
      * Preloads images at the given URLs that can be later used in the image view.
      * Preloaded images are cached to the memory and disk by default, so make sure
      * to use `disk` (default) or `memory-disk` [cache policy](#cachepolicy).
@@ -56,6 +60,12 @@ export declare class Image extends React.PureComponent<ImageProps> {
      * @platform ios
      */
     stopAnimating(): Promise<void>;
+    /**
+     * Loads an image from the given source to memory and resolves to
+     * an object that references the native image instance.
+     * @platform ios
+     */
+    static load(source: any): Promise<any>;
     render(): JSX.Element;
 }
 //# sourceMappingURL=Image.d.ts.map

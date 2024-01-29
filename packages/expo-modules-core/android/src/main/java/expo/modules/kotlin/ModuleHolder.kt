@@ -53,10 +53,7 @@ class ModuleHolder<T : Module>(val module: T) {
             appContext.jniDeallocator.addReference(clazzModuleObject)
             val constructor = clazz.constructor
 
-            var ownerClass : Class<*>? = null
-            if(constructor.ownerType !== null) {
-              ownerClass = (constructor.ownerType!!.classifier as KClass<*>).java;
-            }
+            val ownerClass = (constructor.ownerType?.classifier as? KClass<*>)?.java
 
             registerClass(
               clazz.name,
