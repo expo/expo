@@ -160,19 +160,16 @@ class JavaScriptObjectTest {
   @Test
   fun should_be_passed_as_a_reference() {
     var receivedObject: JavaScriptObject? = null
-    withJSIInterop(
-      inlineModule {
-        Name("TestModule")
-        Function("f") { jsObject: JavaScriptObject ->
-          receivedObject = jsObject
-          jsObject.setProperty("expo", 123)
-        }
+    withSingleModule({
+      Function("f") { jsObject: JavaScriptObject ->
+        receivedObject = jsObject
+        jsObject.setProperty("expo", 123)
       }
-    ) {
+    }) {
       val result = evaluateScript(
         """
         const x = {};
-        expo.modules.TestModule.f(x);
+        $moduleRef.f(x);
         x
         """.trimIndent()
       ).getObject()
