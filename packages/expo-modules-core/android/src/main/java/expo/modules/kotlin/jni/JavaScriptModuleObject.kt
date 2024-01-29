@@ -7,7 +7,6 @@ import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.objects.ObjectDefinitionData
 import expo.modules.kotlin.tracing.trace
-import kotlin.reflect.KType
 
 /**
  * A class to communicate with CPP part of the [expo.modules.kotlin.modules.Module] class.

@@ -1,9 +1,6 @@
 package expo.modules.kotlin.sharedobjects
 
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.jni.JavaScriptObject
-
-
 
 class ClassRegistry {
   internal var pairs = mutableMapOf<Class<*>, JavaScriptObject>()

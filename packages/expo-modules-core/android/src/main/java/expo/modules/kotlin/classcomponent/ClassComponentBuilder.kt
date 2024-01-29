@@ -33,7 +33,7 @@ class ClassComponentBuilder<SharedObjectType : Any>(
 
     val constructor = constructor ?: SyncFunctionComponent("constructor", arrayOf()) {}
     constructor.canTakeOwner = true
-    constructor.ownerType = ownerType;
+    constructor.ownerType = ownerType
     return ClassDefinitionData(
       name,
       constructor,

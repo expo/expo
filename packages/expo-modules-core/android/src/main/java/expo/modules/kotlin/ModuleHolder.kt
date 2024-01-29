@@ -13,7 +13,6 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.tracing.trace
 import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
-import kotlin.reflect.KClassifier
 
 class ModuleHolder<T : Module>(val module: T) {
   val definition = module.definition()
