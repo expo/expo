@@ -34,9 +34,8 @@ function setAccessesContactNotes(config, entitlementsPlist) {
   }
   return entitlementsPlist;
 }
-var _default = (0, _createLegacyPlugin().createLegacyPlugin)({
+var _default = exports.default = (0, _createLegacyPlugin().createLegacyPlugin)({
   packageName: 'expo-contacts',
   fallback: withAccessesContactNotes
 });
-exports.default = _default;
 //# sourceMappingURL=expo-contacts.js.map

@@ -27,9 +27,8 @@ const withAppleSignInWarning = config => {
     return config;
   });
 };
-var _default = (0, _createLegacyPlugin().createLegacyPlugin)({
+var _default = exports.default = (0, _createLegacyPlugin().createLegacyPlugin)({
   packageName: 'expo-apple-authentication',
   fallback: withAppleSignInWarning
 });
-exports.default = _default;
 //# sourceMappingURL=expo-apple-authentication.js.map

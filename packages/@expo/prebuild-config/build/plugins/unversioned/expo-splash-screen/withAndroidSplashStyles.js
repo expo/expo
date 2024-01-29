@@ -62,7 +62,7 @@ function removeOldSplashStyleGroup(styles) {
     name: 'Theme.App.SplashScreen',
     parent: 'Theme.AppCompat.Light.NoActionBar'
   };
-  styles.resources.style = (_styles$resources$sty = styles.resources.style) === null || _styles$resources$sty === void 0 ? void 0 : (_styles$resources$sty2 = _styles$resources$sty.filter) === null || _styles$resources$sty2 === void 0 ? void 0 : _styles$resources$sty2.call(_styles$resources$sty, ({
+  styles.resources.style = (_styles$resources$sty = styles.resources.style) === null || _styles$resources$sty === void 0 || (_styles$resources$sty2 = _styles$resources$sty.filter) === null || _styles$resources$sty2 === void 0 ? void 0 : _styles$resources$sty2.call(_styles$resources$sty, ({
     $: head
   }) => {
     let matches = head.name === group.name;

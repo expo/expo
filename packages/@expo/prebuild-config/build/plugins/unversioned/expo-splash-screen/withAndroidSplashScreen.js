@@ -83,8 +83,8 @@ const withAndroidSplashScreen = config => {
   // androidStatusBar applies info to the app activity style.
   const backgroundColor = (splashConfig === null || splashConfig === void 0 ? void 0 : splashConfig.backgroundColor) || '#ffffff';
   if ((_config$androidStatus = config.androidStatusBar) !== null && _config$androidStatus !== void 0 && _config$androidStatus.backgroundColor) {
-    var _config$androidStatus2, _config$androidStatus3, _config$androidStatus4;
-    if (backgroundColor.toLowerCase() !== ((_config$androidStatus2 = config.androidStatusBar) === null || _config$androidStatus2 === void 0 ? void 0 : (_config$androidStatus3 = _config$androidStatus2.backgroundColor) === null || _config$androidStatus3 === void 0 ? void 0 : (_config$androidStatus4 = _config$androidStatus3.toLowerCase) === null || _config$androidStatus4 === void 0 ? void 0 : _config$androidStatus4.call(_config$androidStatus3))) {
+    var _config$androidStatus2, _config$androidStatus3;
+    if (backgroundColor.toLowerCase() !== ((_config$androidStatus2 = config.androidStatusBar) === null || _config$androidStatus2 === void 0 || (_config$androidStatus2 = _config$androidStatus2.backgroundColor) === null || _config$androidStatus2 === void 0 || (_config$androidStatus3 = _config$androidStatus2.toLowerCase) === null || _config$androidStatus3 === void 0 ? void 0 : _config$androidStatus3.call(_config$androidStatus2))) {
       _configPlugins().WarningAggregator.addWarningAndroid('androidStatusBar.backgroundColor', 'Color conflicts with the splash.backgroundColor');
     }
   } else {

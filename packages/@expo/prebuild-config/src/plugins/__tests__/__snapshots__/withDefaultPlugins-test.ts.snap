@@ -445,6 +445,12 @@ exports[`built-in plugins compiles mods 1`] = `
       "NSAppTransportSecurity": {
         "NSAllowsArbitraryLoads": false,
         "NSAllowsLocalNetworking": true,
+        "NSExceptionDomains": {
+          "exp.direct": {
+            "NSExceptionAllowsInsecureHTTPLoads": true,
+            "NSIncludesSubdomains": true,
+          },
+        },
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
       "UILaunchStoryboardName": "SplashScreen",
@@ -808,9 +814,8 @@ exports[`built-in plugins introspects mods 1`] = `
                 "activity": [
                   {
                     "$": {
-                      "android:configChanges": "keyboard|keyboardHidden|orientation|screenSize|uiMode",
+                      "android:configChanges": "keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode",
                       "android:exported": "true",
-                      "android:label": "@string/app_name",
                       "android:launchMode": "singleTask",
                       "android:name": ".MainActivity",
                       "android:screenOrientation": "unspecified",
@@ -1251,6 +1256,12 @@ exports[`built-in plugins introspects mods 1`] = `
           "NSAppTransportSecurity": {
             "NSAllowsArbitraryLoads": false,
             "NSAllowsLocalNetworking": true,
+            "NSExceptionDomains": {
+              "exp.direct": {
+                "NSExceptionAllowsInsecureHTTPLoads": true,
+                "NSIncludesSubdomains": true,
+              },
+            },
           },
           "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
           "UILaunchStoryboardName": "SplashScreen",
@@ -1717,6 +1728,12 @@ exports[`built-in plugins introspects mods 1`] = `
       "NSAppTransportSecurity": {
         "NSAllowsArbitraryLoads": false,
         "NSAllowsLocalNetworking": true,
+        "NSExceptionDomains": {
+          "exp.direct": {
+            "NSExceptionAllowsInsecureHTTPLoads": true,
+            "NSIncludesSubdomains": true,
+          },
+        },
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
       "UILaunchStoryboardName": "SplashScreen",
