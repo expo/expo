@@ -50,6 +50,26 @@ it('my-test', async () => {
 
 </APIBox>
 
+<APIBox header="Inline file system with `null` components">
+
+`renderRouter(mock: string[], options: RenderOptions)`
+
+Providing an array of strings to `renderRouter` will create an inline mock filesystem with `null` components (`{ default: () => null }`). This is useful for testing scenarios where you do not need to test the output of a route.
+
+```tsx app.test.tsx
+import { renderRouter, screen } from 'expo-router/testing-library';
+
+it('my-test', async () => {
+  renderRouter(["index", "folder/a", "(group)/b"], {
+      initialUrl: '/folder/a',
+  });
+
+  expect(screen).toHavePathname('/folder/a');
+});
+```
+
+</APIBox>
+
 <APIBox header="Path to fixture">
 
 `renderRouter(fixturePath: string, options: RenderOptions)`
@@ -84,6 +104,7 @@ it('my-test', async () => {
 ```
 
 </APIBox>
+
 
 ## Jest matchers
 

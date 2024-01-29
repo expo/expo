@@ -43,6 +43,9 @@ function getMockContext(context) {
     if (typeof context === 'string') {
         return (0, context_stubs_1.requireContext)(path_1.default.resolve(process.cwd(), context));
     }
+    else if (Array.isArray(context)) {
+        return (0, context_stubs_1.inMemoryContext)(Object.fromEntries(context.map((filename) => [filename, { default: () => null }])));
+    }
     else if (isOverrideContext(context)) {
         return (0, context_stubs_1.requireContextWithOverrides)(context.appDir, context.overrides);
     }

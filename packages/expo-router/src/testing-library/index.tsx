@@ -37,23 +37,29 @@ function isOverrideContext(
 ): context is { appDir: string; overrides: Record<string, FileStub> } {
   return Boolean(typeof context === 'object' && 'appDir' in context);
 }
-export function getMockConfig(
-  context:
-    | string
-    | Record<string, FileStub>
-    | { appDir: string; overrides: Record<string, FileStub> }
-) {
+
+export type MockContextConfig =
+  | string // Pathname to a directory
+  | string[] // Array of filenames to mock as empty components, e.g () => null
+  | Record<string, FileStub> // Map of filenames and their exports
+  | {
+      // Directory to load as context
+      appDir: string;
+      // Map of filenames and their exports. Will override contents of files loaded in `appDir
+      overrides: Record<string, FileStub>;
+    };
+
+export function getMockConfig(context: MockContextConfig) {
   return getNavigationConfig(getExactRoutes(getMockContext(context))!);
 }
 
-export function getMockContext(
-  context:
-    | string
-    | Record<string, FileStub>
-    | { appDir: string; overrides: Record<string, FileStub> }
-) {
+export function getMockContext(context: MockContextConfig) {
   if (typeof context === 'string') {
     return requireContext(path.resolve(process.cwd(), context));
+  } else if (Array.isArray(context)) {
+    return inMemoryContext(
+      Object.fromEntries(context.map((filename) => [filename, { default: () => null }]))
+    );
   } else if (isOverrideContext(context)) {
     return requireContextWithOverrides(context.appDir, context.overrides);
   } else {
@@ -61,20 +67,8 @@ export function getMockContext(
   }
 }
 
-export function renderRouter(context?: string, options?: RenderRouterOptions): Result;
 export function renderRouter(
-  context: Record<string, FileStub>,
-  options?: RenderRouterOptions
-): Result;
-export function renderRouter(
-  context: { appDir: string; overrides: Record<string, FileStub> },
-  options?: RenderRouterOptions
-): Result;
-export function renderRouter(
-  context:
-    | string
-    | { appDir: string; overrides: Record<string, FileStub> }
-    | Record<string, FileStub> = './app',
+  context: MockContextConfig = './app',
   { initialUrl = '/', ...options }: RenderRouterOptions = {}
 ): Result {
   jest.useFakeTimers();
