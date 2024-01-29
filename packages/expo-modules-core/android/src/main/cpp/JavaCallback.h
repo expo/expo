@@ -41,13 +41,12 @@ struct SharedRef : public jni::HybridClass<SharedRef, SharedObjectId> {
 
   private:
     friend HybridBase;
-
 };
 
 class JSIInteropModuleRegistry;
 
 struct CallbackArgUnion {
-  folly::dynamic* dynamicArg;
+  std::unique_ptr<folly::dynamic> dynamicArg;
   jni::global_ref<SharedRef::javaobject> sharedRefArg;
 };
 
@@ -56,8 +55,7 @@ enum CallbackArgType {
   SHARED_REF,
 };
 
-struct CallbackArg
-{
+struct CallbackArg {
   CallbackArgType type;
   CallbackArgUnion arg;
 };
@@ -68,7 +66,7 @@ public:
     kJavaDescriptor = "Lexpo/modules/kotlin/jni/JavaCallback;";
   static auto constexpr TAG = "JavaCallback";
 
-  using Callback = std::function<void(CallbackArg*)>;
+  using Callback = std::function<void(std::unique_ptr<CallbackArg>)>;
 
   static void registerNatives();
 

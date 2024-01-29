@@ -317,11 +317,11 @@ void JavaScriptModuleObject::registerClass(
     jni::make_global(body)
   );
 
-  auto pair = std::make_tuple(jni::make_global(classObject), std::move(constructor), jni::make_global(ownerClass));
+  auto classTuple = std::make_tuple(jni::make_global(classObject), std::move(constructor), jni::make_global(ownerClass));
 
   classes.try_emplace(
     cName,
-    std::move(pair)
+    std::move(classTuple)
   );
 }
 

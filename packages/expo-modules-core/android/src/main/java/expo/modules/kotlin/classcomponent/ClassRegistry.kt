@@ -9,7 +9,6 @@ class ClassRegistry {
   internal var pairs = mutableMapOf<Class<*>, JavaScriptObject>()
 
   internal fun add(native: Class<*>, js: JavaScriptObject) {
-
     js.defineDeallocator {
       delete(native)
     }
@@ -19,7 +18,6 @@ class ClassRegistry {
   private fun delete(native: Class<*>) {
     pairs.remove(native)
   }
-
   internal fun toJavaScriptObject(native: Class<*>): JavaScriptObject? {
     return pairs[native]
   }
