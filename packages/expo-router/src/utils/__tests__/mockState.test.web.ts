@@ -1,6 +1,6 @@
 import { configFromFs } from '../mockState';
 
-describe.only(configFromFs, () => {
+describe(configFromFs, () => {
   it(`matches`, () => {
     expect(
       configFromFs([
