@@ -46,7 +46,7 @@ function ResourceClassSpecLink({
 }) {
   const platformId = platform === 'ios' ? 2 : 1;
   return (
-    <markdownComponents.a href={`eas-json/#resourceclass-${platformId}`}>
+    <markdownComponents.a href={`/eas/json/#resourceclass-${platformId}`}>
       {resourceClass}
     </markdownComponents.a>
   );

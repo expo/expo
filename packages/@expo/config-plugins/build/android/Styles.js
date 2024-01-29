@@ -46,9 +46,9 @@ async function getProjectStylesXMLPathAsync(projectRoot, {
   });
 }
 function ensureDefaultStyleResourceXML(xml) {
-  var _xml, _xml$resources;
+  var _xml;
   xml = (0, _Resources().ensureDefaultResourceXML)(xml);
-  if (!Array.isArray((_xml = xml) === null || _xml === void 0 ? void 0 : (_xml$resources = _xml.resources) === null || _xml$resources === void 0 ? void 0 : _xml$resources.style)) {
+  if (!Array.isArray((_xml = xml) === null || _xml === void 0 || (_xml = _xml.resources) === null || _xml === void 0 ? void 0 : _xml.style)) {
     xml.resources.style = [];
   }
   return xml;

@@ -39,12 +39,12 @@ function getAndroidSplashConfig(config) {
   return null;
 }
 function getAndroidDarkSplashConfig(config) {
-  var _config$android3, _config$android3$spla;
+  var _config$android3;
   // Respect the splash screen object, don't mix and match across different splash screen objects
   // in case the user wants the top level splash to apply to every platform except android.
-  if ((_config$android3 = config.android) !== null && _config$android3 !== void 0 && (_config$android3$spla = _config$android3.splash) !== null && _config$android3$spla !== void 0 && _config$android3$spla.dark) {
-    var _config$android4, _config$android4$spla, _ref6, _splash$xxxhdpi2, _ref7, _splash$xxhdpi2, _ref8, _splash$xhdpi2, _ref9, _splash$hdpi2, _ref10, _splash$mdpi2, _splash$backgroundCol3, _lightTheme$resizeMod;
-    const splash = (_config$android4 = config.android) === null || _config$android4 === void 0 ? void 0 : (_config$android4$spla = _config$android4.splash) === null || _config$android4$spla === void 0 ? void 0 : _config$android4$spla.dark;
+  if ((_config$android3 = config.android) !== null && _config$android3 !== void 0 && (_config$android3 = _config$android3.splash) !== null && _config$android3 !== void 0 && _config$android3.dark) {
+    var _config$android4, _ref6, _splash$xxxhdpi2, _ref7, _splash$xxhdpi2, _ref8, _splash$xhdpi2, _ref9, _splash$hdpi2, _ref10, _splash$mdpi2, _splash$backgroundCol3, _lightTheme$resizeMod;
+    const splash = (_config$android4 = config.android) === null || _config$android4 === void 0 || (_config$android4 = _config$android4.splash) === null || _config$android4 === void 0 ? void 0 : _config$android4.dark;
     const lightTheme = getAndroidSplashConfig(config);
     return {
       xxxhdpi: (_ref6 = (_splash$xxxhdpi2 = splash.xxxhdpi) !== null && _splash$xxxhdpi2 !== void 0 ? _splash$xxxhdpi2 : splash.image) !== null && _ref6 !== void 0 ? _ref6 : null,
