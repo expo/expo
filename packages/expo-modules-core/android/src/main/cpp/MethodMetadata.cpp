@@ -40,7 +40,7 @@ jni::local_ref<JavaCallback::JavaPart> createJavaCallbackFromJSIFunction(
   auto callbackWrapperOwner =
     std::make_shared<react::RAIICallbackWrapperDestroyer>(weakWrapper);
 
-  std::function<void(std::unique_ptr<CallbackArg>)> fn =
+  std::function<void(CallbackArg)> fn =
     [
       weakWrapper,
       callbackWrapperOwner = std::move(callbackWrapperOwner),
@@ -48,7 +48,7 @@ jni::local_ref<JavaCallback::JavaPart> createJavaCallbackFromJSIFunction(
       isRejectCallback,
       moduleRegistry
     ](
-      std::unique_ptr<CallbackArg> responses) mutable {
+      CallbackArg responses) mutable {
       if (wrapperWasCalled) {
         throw std::runtime_error(
           "callback 2 arg cannot be called more than once");
@@ -59,17 +59,17 @@ jni::local_ref<JavaCallback::JavaPart> createJavaCallbackFromJSIFunction(
         return;
       }
 
-      std::function<void()> lambda = [
-      weakWrapper,
-      callbackWrapperOwner = std::move(callbackWrapperOwner),
-      responses = std::move(responses),
-      isRejectCallback, moduleRegistry]() mutable {
+      strongWrapper->jsInvoker().invokeAsync([
+                                                     weakWrapper,
+                                                     callbackWrapperOwner = std::move(callbackWrapperOwner),
+                                                     responses = std::move(responses),
+                                                     isRejectCallback, moduleRegistry]() mutable {
       auto strongWrapper2 = weakWrapper.lock();
       if (!strongWrapper2) {
         return;
       }
-      if (responses->type == CallbackArgType::DYNAMIC) {
-        folly::dynamic follyObject = false; // *responses->arg.dynamicArg;
+      if (std::holds_alternative<folly::dynamic>(responses) || std::holds_alternative<std::monostate>(responses)) {
+        folly::dynamic follyObject = std::holds_alternative<std::monostate>(responses) ? nullptr : std::get<folly::dynamic>(responses);
         jsi::Value arg = jsi::valueFromDynamic(strongWrapper2->runtime(), follyObject);
         if (!isRejectCallback) {
           strongWrapper2->callback().call(
@@ -113,9 +113,9 @@ jni::local_ref<JavaCallback::JavaPart> createJavaCallbackFromJSIFunction(
             );
           }
         }
-      } else if (responses->type == CallbackArgType::SHARED_REF) {
+      } else if (std::holds_alternative<jni::global_ref<SharedRef::javaobject>>(responses)) {
         auto &rt = strongWrapper2->runtime();
-        auto native = jni::make_local(responses->arg.sharedRefArg);
+        auto native = jni::make_local(std::get<jni::global_ref<SharedRef::javaobject>>(responses));
 
         auto jsClass = moduleRegistry->getJavascriptClass(native->getClass());
         auto jsObject = jsClass->cthis()->get()->asFunction(rt).callAsConstructor(rt).asObject(
@@ -137,13 +137,10 @@ jni::local_ref<JavaCallback::JavaPart> createJavaCallbackFromJSIFunction(
       }
 
       callbackWrapperOwner.reset();
-    };
+    });
 
-      strongWrapper->jsInvoker().invokeAsync(std::move(lambda));
-
-
-      wrapperWasCalled = true;
-    };
+    wrapperWasCalled = true;
+  };
 
   return JavaCallback::newInstance(moduleRegistry, std::move(fn));
 }

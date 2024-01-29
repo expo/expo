@@ -6,6 +6,7 @@
 
 #include <fbjni/fbjni.h>
 #include <folly/dynamic.h>
+#include <variant>
 
 #include <react/jni/WritableNativeArray.h>
 #include <react/jni/WritableNativeMap.h>
@@ -45,20 +46,7 @@ struct SharedRef : public jni::HybridClass<SharedRef, SharedObjectId> {
 
 class JSIInteropModuleRegistry;
 
-struct CallbackArgUnion {
-  std::unique_ptr<folly::dynamic> dynamicArg;
-  jni::global_ref<SharedRef::javaobject> sharedRefArg;
-};
-
-enum CallbackArgType {
-  DYNAMIC,
-  SHARED_REF,
-};
-
-struct CallbackArg {
-  CallbackArgType type;
-  CallbackArgUnion arg;
-};
+typedef std::variant<std::monostate, folly::dynamic, jni::global_ref<SharedRef::javaobject>> CallbackArg;
 
 class JavaCallback : public jni::HybridClass<JavaCallback, Destructible> {
 public:
@@ -66,7 +54,7 @@ public:
     kJavaDescriptor = "Lexpo/modules/kotlin/jni/JavaCallback;";
   static auto constexpr TAG = "JavaCallback";
 
-  using Callback = std::function<void(std::unique_ptr<CallbackArg>)>;
+  using Callback = std::function<void(CallbackArg)>;
 
   static void registerNatives();
 

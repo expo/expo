@@ -58,48 +58,47 @@ jni::local_ref<JavaCallback::javaobject> JavaCallback::newInstance(
 }
 
 void JavaCallback::invoke() {
-
-  std::unique_ptr<CallbackArg> callbackArg(new CallbackArg { CallbackArgType::DYNAMIC, { nullptr } });
-  callback(std::move(callbackArg));
+  CallbackArg callbackArg((std::monostate()) );
+  callback(callbackArg);
 }
 
 void JavaCallback::invokeBool(bool result) {
-  std::unique_ptr<CallbackArg> callbackArg(new CallbackArg { CallbackArgType::DYNAMIC, { std::make_unique<folly::dynamic>(result) }});
-  callback(std::move(callbackArg));
+  CallbackArg callbackArg(result);
+  callback(callbackArg);
 }
 
 void JavaCallback::invokeInt(int result) {
-  std::unique_ptr<CallbackArg> callbackArg(new CallbackArg { CallbackArgType::DYNAMIC, { std::make_unique<folly::dynamic>(result) }});
-  callback(std::move(callbackArg));
+  CallbackArg callbackArg(result);
+  callback(callbackArg);
 }
 
 void JavaCallback::invokeDouble(double result) {
-  std::unique_ptr<CallbackArg> callbackArg(new CallbackArg { CallbackArgType::DYNAMIC, { std::make_unique<folly::dynamic>(result) }});
-  callback(std::move(callbackArg));
+  CallbackArg callbackArg(result);
+  callback(callbackArg);
 }
 
 void JavaCallback::invokeFloat(float result) {
-  std::unique_ptr<CallbackArg> callbackArg(new CallbackArg { CallbackArgType::DYNAMIC, { std::make_unique<folly::dynamic>(result) }});
-  callback(std::move(callbackArg));
+  CallbackArg callbackArg(result);
+  callback(callbackArg);
 }
 
 void JavaCallback::invokeString(jni::alias_ref<jstring> result) {
-  std::unique_ptr<CallbackArg> callbackArg(new CallbackArg { CallbackArgType::DYNAMIC, { std::make_unique<folly::dynamic>(result->toStdString()) }});
-  callback(std::move(callbackArg));
+  CallbackArg callbackArg(result->toStdString());
+  callback(callbackArg);
 }
 
 void JavaCallback::invokeArray(jni::alias_ref<react::WritableNativeArray::javaobject> result) {
-  std::unique_ptr<CallbackArg> callbackArg(new CallbackArg { CallbackArgType::DYNAMIC, { std::make_unique<folly::dynamic>(result->cthis()->consume()) }});
-  callback(std::move(callbackArg));
+  CallbackArg callbackArg(result->cthis()->consume() );
+  callback(callbackArg);
 }
 
 void JavaCallback::invokeMap(jni::alias_ref<react::WritableNativeMap::javaobject> result) {
-  std::unique_ptr<CallbackArg> callbackArg(new CallbackArg { CallbackArgType::DYNAMIC, { std::make_unique<folly::dynamic>(result->cthis()->consume()) }});
-  callback(std::move(callbackArg));
+  CallbackArg callbackArg(result->cthis()->consume() );
+  callback(callbackArg);
 }
 
 void JavaCallback::invokeSharedRef(jni::alias_ref<SharedRef::javaobject> result) {
-  std::unique_ptr<CallbackArg> callbackArg(new CallbackArg { CallbackArgType::SHARED_REF, {nullptr, jni::make_global(result)}});
-  callback(std::move(callbackArg));
+  CallbackArg callbackArg(jni::make_global(result) );
+  callback(callbackArg);
 }
 } // namespace expo
