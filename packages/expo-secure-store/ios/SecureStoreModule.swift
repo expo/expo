@@ -55,10 +55,10 @@ public final class SecureStoreModule: Module {
       var error: NSError?
       let isBiometricsSupported: Bool = context.canEvaluatePolicy(LAPolicy.deviceOwnerAuthenticationWithBiometrics, error: &error)
 
-      if isBiometricsSupported && error == nil {
-        return true
+      if error != nil {
+        return false
       }
-      return false
+      return isBiometricsSupported
     }
   }
 

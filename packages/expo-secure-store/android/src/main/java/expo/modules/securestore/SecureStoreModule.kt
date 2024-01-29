@@ -67,12 +67,12 @@ open class SecureStoreModule : Module() {
     }
 
     Function("canUseBiometricAuthentication") {
-      try {
+      return@Function try {
         authenticationHelper.assertBiometricsSupport()
+        true
       } catch (e: AuthenticationException) {
-        return@Function false
+        false
       }
-      return@Function true
     }
 
     OnCreate {
