@@ -83,9 +83,7 @@ async function legacyTypedRoutes({
   const { filePathToRoute, staticRoutes, dynamicRoutes, addFilePath, isRouteFile } =
     getTypedRoutesUtils(routerDirectory);
 
-  /**
-   * Typed Routes can be run with out Metro or a Server, e.g. `expo customize tsconfig.json`
-   */
+  // Typed Routes can be run with out Metro or a Server, e.g. `expo customize tsconfig.json`
   if (metro && server) {
     metroWatchTypeScriptFiles({
       projectRoot,
