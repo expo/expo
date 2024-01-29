@@ -4,7 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- `SecurityLevel.BIOMETRIC` has been deprecated in favour of `SecurityLevel.BIOMETRIC_STRONG` and `SecurityLevel.BIOMETRIC_WEAK`. Using `SecurityLevel.BIOMETRIC` might lead to unexpected behaviour.
+
 ### 🎉 New features
+
+- [Android] Add support for `weak` and `strong` biometric authentication.
 
 ### 🐛 Bug fixes
 
