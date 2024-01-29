@@ -17,10 +17,9 @@ function _configTypes() {
   };
   return data;
 }
-let ProjectPrivacy;
-exports.ProjectPrivacy = ProjectPrivacy;
-(function (ProjectPrivacy) {
+let ProjectPrivacy = exports.ProjectPrivacy = /*#__PURE__*/function (ProjectPrivacy) {
   ProjectPrivacy["PUBLIC"] = "public";
   ProjectPrivacy["UNLISTED"] = "unlisted";
-})(ProjectPrivacy || (exports.ProjectPrivacy = ProjectPrivacy = {}));
+  return ProjectPrivacy;
+}({});
 //# sourceMappingURL=Config.types.js.map

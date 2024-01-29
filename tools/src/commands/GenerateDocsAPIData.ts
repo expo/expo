@@ -45,6 +45,8 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-constants': [['Constants.ts', 'Constants.types.ts']],
   'expo-contacts': ['Contacts.ts'],
   'expo-crypto': ['Crypto.ts'],
+  'expo-dev-menu': [['DevMenu.ts', 'ExpoDevMenu.types.ts']],
+  'expo-dev-launcher': ['DevLauncher.ts'],
   'expo-device': ['Device.ts'],
   'expo-device-motion': [['DeviceMotion.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-document-picker': ['index.ts'],
@@ -100,11 +102,6 @@ const executeCommand = async (
   entryPoint: EntryPoint = 'index.ts',
   packageName: string = jsonFileName
 ) => {
-  const app = new Application();
-
-  app.options.addReader(new TSConfigReader());
-  app.options.addReader(new TypeDocReader());
-
   const dataPath = path.join(
     EXPO_DIR,
     'docs',
@@ -131,20 +128,23 @@ const executeCommand = async (
     ? entryPoint.map((entry) => path.join(entriesPath, entry))
     : [path.join(entriesPath, entryPoint)];
 
-  app.bootstrap({
-    entryPoints,
-    tsconfig: tsConfigPath,
-    disableSources: true,
-    hideGenerator: true,
-    excludePrivate: true,
-    excludeProtected: true,
-    skipErrorChecking: true,
-    excludeExternals: true,
-    jsDocCompatibility: false,
-    pretty: !MINIFY_JSON,
-  });
+  const app = await Application.bootstrapWithPlugins(
+    {
+      entryPoints,
+      tsconfig: tsConfigPath,
+      disableSources: true,
+      hideGenerator: true,
+      excludePrivate: true,
+      excludeProtected: true,
+      skipErrorChecking: true,
+      excludeExternals: true,
+      jsDocCompatibility: false,
+      pretty: !MINIFY_JSON,
+    },
+    [new TSConfigReader(), new TypeDocReader()]
+  );
 
-  const project = app.convert();
+  const project = await app.convert();
 
   if (project) {
     await app.generateJson(project, jsonOutputPath);

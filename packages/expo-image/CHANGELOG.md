@@ -6,10 +6,32 @@
 
 ### 🎉 New features
 
+- [Android] Adds new prop `decodeFormat` to specify the format that should be used during the decoding process. ([#26442](https://github.com/expo/expo/pull/26442) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Added `generateBlurhashAsync` function. ([#26430](https://github.com/expo/expo/pull/26430) by [@aleqsio](https://github.com/aleqsio))
+
 ### 🐛 Bug fixes
 
 - Fixed ResizeObserver attaching on every image transition. ([#25819](https://github.com/expo/expo/pull/25819) by [@aleqsio](https://github.com/aleqsio))
-- [Android] Fixed the issue with the application of tint color when an element does not have a style assigned to it.
+- [Android] Fixed the tine color was applied to the mask element. ([#26323](https://github.com/expo/expo/pull/26323) by [@lukmccall](https://github.com/lukmccall))
+- [Web] Fixed `nativeViewRef` invalid prop warning. ([#25922](https://github.com/expo/expo/pull/25922) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
+### 💡 Others
+
+## 1.10.4 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 1.10.3 - 2024-01-12
+
+_This version does not introduce any user-facing changes._
+
+## 1.10.2 - 2024-01-10
+
+### 🐛 Bug fixes
+
+- [Android] Fixed the issue with the application of tint color when an element does not have a style assigned to it. ([#26251](https://github.com/expo/expo/pull/26251) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed the tint color wasn't applied to the root element. ([#26339](https://github.com/expo/expo/pull/26339) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed that the tint color on SVGs can't be changed dynamically. ([#26350](https://github.com/expo/expo/pull/26350) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 

@@ -20,7 +20,7 @@ import { P } from '~/ui/components/Text';
 const { LATEST_VERSION } = versions;
 
 type Props = {
-  packageName: string;
+  packageName?: string | string[];
   apiName?: string;
   forceVersion?: string;
   strictTypes?: boolean;
@@ -109,9 +109,24 @@ const renderAPI = (
   }: Omit<Props, 'forceVersion'>
 ): JSX.Element => {
   try {
-    const { children: data } = testRequire
-      ? testRequire(`~/public/static/data/${version}/${packageName}.json`)
-      : require(`~/public/static/data/${version}/${packageName}.json`);
+    let data;
+
+    if (Array.isArray(packageName)) {
+      data = packageName
+        .map(name => {
+          const { children } = testRequire
+            ? testRequire(`~/public/static/data/${version}/${name}.json`)
+            : require(`~/public/static/data/${version}/${name}.json`);
+          return children;
+        })
+        .flat()
+        .sort((a: GeneratedData, b: GeneratedData) => a.name.localeCompare(b.name));
+    } else {
+      const { children } = testRequire
+        ? testRequire(`~/public/static/data/${version}/${packageName}.json`)
+        : require(`~/public/static/data/${version}/${packageName}.json`);
+      data = children;
+    }
 
     const methods = filterDataByKind(
       data,
@@ -137,9 +152,10 @@ const renderAPI = (
 
     const types = filterDataByKind(
       data,
-      TypeDocKind.TypeAlias,
+      [TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy],
       entry =>
         !isProp(entry) &&
+        !(entry?.variant === 'reference') &&
         !!(
           entry.type.declaration ||
           entry.type.types ||
@@ -151,10 +167,10 @@ const renderAPI = (
 
     const props = filterDataByKind(
       data,
-      [TypeDocKind.TypeAlias, TypeDocKind.Interface],
+      [TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy, TypeDocKind.Interface],
       entry =>
         isProp(entry) &&
-        (entry.kind === TypeDocKind.TypeAlias
+        ([TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy].includes(entry.kind)
           ? !!(entry.type.types || entry.type.declaration?.children)
           : true)
     );
@@ -185,7 +201,7 @@ const renderAPI = (
     );
     const componentsProps = filterDataByKind(
       props,
-      [TypeDocKind.TypeAlias, TypeDocKind.Interface],
+      [TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy, TypeDocKind.Interface],
       entry => componentsPropNames.includes(entry.name)
     );
 
@@ -273,7 +289,8 @@ const renderAPI = (
         <APISectionEnums data={enums} />
       </>
     );
-  } catch {
+  } catch (e) {
+    console.error(e);
     return <P>No API data file found, sorry!</P>;
   }
 };

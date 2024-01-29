@@ -23,6 +23,12 @@ open class NotificationsEmitter : Module(), NotificationListener {
   override fun definition() = ModuleDefinition {
     Name("ExpoNotificationsEmitter")
 
+    Events(
+      "onDidReceiveNotification",
+      "onNotificationsDeleted",
+      "onDidReceiveNotificationResponse"
+    )
+
     OnCreate {
       eventEmitter = appContext.legacyModule<EventEmitter>()
         ?: throw ModuleNotFoundException(EventEmitter::class)

@@ -1,12 +1,10 @@
 package expo.modules.core.logging
 
 import androidx.test.platform.app.InstrumentationRegistry
-import junit.framework.TestCase
 import org.junit.Assert
 import org.junit.Test
 
-class PersistentFileLogTest : TestCase() {
-
+class PersistentFileLogTest {
   @Test
   fun testPersistentLog() {
     val asyncTestUtil = AsyncTestUtil()

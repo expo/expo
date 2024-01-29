@@ -1,6 +1,5 @@
 package expo.modules.kotlin
 
-import android.view.View
 import com.facebook.react.bridge.ReadableArray
 import expo.modules.kotlin.events.BasicEventListener
 import expo.modules.kotlin.events.EventListenerWithPayload
@@ -116,9 +115,5 @@ class ModuleHolder<T : Module>(val module: T) {
         it.invoke(module.appContext.appContextActivityResultCaller)
       }
     }
-  }
-
-  fun viewClass(): KClass<out View>? {
-    return definition.viewManagerDefinition?.viewType?.kotlin
   }
 }

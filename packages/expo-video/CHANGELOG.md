@@ -6,6 +6,9 @@
 
 ### 🎉 New features
 
+- [Android] Add Picture in Picture support. ([#26368](https://github.com/expo/expo/pull/26368) by [@behenate](https://github.com/behenate))
+- [Android] Add fullscreen support. ([#26159](https://github.com/expo/expo/pull/26159) by [@behenate](https://github.com/behenate))
+- [web] Add volume ([#26137](https://github.com/expo/expo/pull/26137) by [@behenate](https://github.com/behenate))
 - Initial release for Android 🎉 ([#26033](https://github.com/expo/expo/pull/26033) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes

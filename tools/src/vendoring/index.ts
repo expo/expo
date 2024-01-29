@@ -2,15 +2,15 @@ import chalk from 'chalk';
 import Table from 'cli-table3';
 import semver from 'semver';
 
-import { link } from '../Formatter';
-import logger from '../Logger';
-import * as Npm from '../Npm';
-import { getBundledVersionsAsync } from '../ProjectVersions';
 import {
   VendoringModulePlatformConfig,
   VendoringProvider,
   VendoringTargetModulesConfig,
 } from './types';
+import { link } from '../Formatter';
+import logger from '../Logger';
+import * as Npm from '../Npm';
+import { getBundledVersionsAsync } from '../ProjectVersions';
 
 const VENDORING_PROVIDERS: Record<string, () => VendoringProvider> = {
   ios: () => require('../vendoring/IosVendoring'),

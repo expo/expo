@@ -6,11 +6,27 @@
 
 ### 🎉 New features
 
-- Added support for macOS and tvOS targets. ([#26287](https://github.com/expo/expo/pull/26287) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 1.10.2 - 2024-01-18
+
+### 🐛 Bug fixes
+
+- Fixed a list of packages to include in the generated modules provider for tvOS and macOS platforms. ([#26497](https://github.com/expo/expo/pull/26497) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.10.1 - 2024-01-18
+
+### 🎉 New features
+
+- Introduced a universal `"apple"` platform as a replacement for `"ios"`, `"macos"` and `"tvos"`. ([#26398](https://github.com/expo/expo/pull/26398) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.10.0 - 2024-01-10
+
+### 🎉 New features
+
+- Added support for macOS and tvOS targets. ([#26287](https://github.com/expo/expo/pull/26287) by [@tsapeta](https://github.com/tsapeta))
 
 ## 1.9.0 — 2023-12-12
 

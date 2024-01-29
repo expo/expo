@@ -46,10 +46,8 @@ module Expo
               next
             end
 
-            podspec = get_podspec_for_pod(pod)
-
             # Skip if the podspec doesn't include the platform for the current target.
-            unless podspec_supports_platform?(podspec, @target_definition.platform)
+            unless pod.supports_platform?(@target_definition.platform)
               UI.message '- ' << package.name.green << " doesn't support #{@target_definition.platform.string_name} platform".yellow
               next
             end
@@ -59,7 +57,7 @@ module Expo
             # `:modular_headers => true` is not used for this particular dependency.
             # The latter require adding transitive dependencies to user's Podfile that we'd rather like to avoid.
             if package.has_swift_modules_to_link?
-              use_modular_headers_for_dependencies(podspec.all_dependencies)
+              use_modular_headers_for_dependencies(pod.spec.all_dependencies)
             end
 
             podspec_dir_path = Pathname.new(pod.podspec_dir).relative_path_from(project_directory).to_path
@@ -70,8 +68,8 @@ module Expo
             }.merge(global_flags, package.flags)
 
             if tests_only || include_tests
-              test_specs_names = podspec.test_specs.map { |test_spec|
-                test_spec.name.delete_prefix(podspec.name + "/")
+              test_specs_names = pod.spec.test_specs.map { |test_spec|
+                test_spec.name.delete_prefix(pod.spec.name + "/")
               }
 
               # Jump to the next package when it doesn't have any test specs (except interfaces, they're required)
@@ -113,9 +111,9 @@ module Expo
       self
     end
 
-    # Spawns `expo-module-autolinking generate-package-list` command.
-    public def generate_package_list(target_name, target_path)
-      Process.wait IO.popen(generate_package_list_command_args(target_path)).pid
+    # Spawns `expo-module-autolinking generate-modules-provider` command.
+    public def generate_modules_provider(target_name, target_path)
+      Process.wait IO.popen(generate_modules_provider_command_args(target_path)).pid
     end
 
     # If there is any package to autolink.
@@ -125,7 +123,13 @@ module Expo
 
     # Filters only these packages that needs to be included in the generated modules provider.
     public def packages_to_generate
-      @packages.select { |package| package.modules.any? }
+      platform = @target_definition.platform
+
+      @packages.select do |package|
+        # Check whether the package has any module to autolink
+        # and if there is any pod that supports target's platform.
+        package.modules.any? && package.pods.any? { |pod| pod.supports_platform?(platform) }
+      end
     end
 
     # Returns the provider name which is also a name of the generated file
@@ -196,7 +200,7 @@ module Expo
         'require(require.resolve(\'expo-modules-autolinking\', { paths: [\'' +  __dir__ + '\'] }))(process.argv.slice(1))',
         command_name,
         '--platform',
-        platform_name.downcase
+        'apple'
       ]
       return eval_command_args.concat(base_command_args())
     end
@@ -205,16 +209,15 @@ module Expo
       node_command_args('resolve').concat(['--json'])
     end
 
-    public def generate_package_list_command_args(target_path)
-      node_command_args('generate-package-list').concat([
-        '--target',
-        target_path
-      ])
-    end
-
-    private def get_podspec_for_pod(pod)
-      podspec_file_path = File.join(pod.podspec_dir, pod.pod_name + ".podspec")
-      return Pod::Specification.from_file(podspec_file_path)
+    public def generate_modules_provider_command_args(target_path)
+      node_command_args('generate-modules-provider').concat(
+        [
+          '--target',
+          target_path,
+          '--packages'
+        ],
+        packages_to_generate.map(&:name)
+      )
     end
 
     private def use_modular_headers_for_dependencies(dependencies)
@@ -243,14 +246,6 @@ module Expo
       # The declared platform must be iOS, macOS or tvOS, others are not supported.
       unless ['iOS', 'macOS', 'tvOS'].include?(platform_name)
         raise "Target #{@target_definition.name} is dedicated to #{platform_name} platform, which is not supported by Expo Modules"
-      end
-    end
-
-    # Checks whether the podspec declares support for the given platform.
-    # It compares not only the platform name, but also the deployment target.
-    private def podspec_supports_platform?(podspec, platform)
-      return platform && podspec.available_platforms().any? do |available_platform|
-        next platform.supports?(available_platform)
       end
     end
 

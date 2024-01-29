@@ -342,7 +342,7 @@ for more details.
       class="[&>*:last-child]:!mb-0"
     >
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-11xr3cd"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-uj1dnj"
       >
         <h3
           class="  css-nikr5x-TextComponent"
@@ -401,7 +401,7 @@ for more details.
           data-text="true"
         >
           <span
-            class="css-1lk0cux"
+            class="text-secondary font-medium text-[90%]"
           >
             Type:
           </span>
@@ -426,7 +426,7 @@ for more details.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-11xr3cd"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-uj1dnj"
       >
         <h3
           class="  css-nikr5x-TextComponent"
@@ -485,7 +485,7 @@ for more details.
           data-text="true"
         >
           <span
-            class="css-1lk0cux"
+            class="text-secondary font-medium text-[90%]"
           >
             Type:
           </span>
@@ -510,7 +510,7 @@ for more details.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-11xr3cd"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-uj1dnj"
       >
         <h3
           class="  css-nikr5x-TextComponent"
@@ -569,12 +569,12 @@ for more details.
           data-text="true"
         >
           <span
-            class="css-1lk0cux"
+            class="text-secondary font-medium text-[90%]"
           >
             Optional • 
           </span>
           <span
-            class="css-1lk0cux"
+            class="text-secondary font-medium text-[90%]"
           >
             Type:
           </span>
@@ -602,7 +602,7 @@ for more details.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-11xr3cd"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-uj1dnj"
       >
         <h3
           class="  css-nikr5x-TextComponent"
@@ -661,7 +661,7 @@ for more details.
           data-text="true"
         >
           <span
-            class="css-1lk0cux"
+            class="text-secondary font-medium text-[90%]"
           >
             Type:
           </span>
@@ -670,8 +670,17 @@ for more details.
             class="css-ite7ne-TextComponent"
             data-text="true"
           >
-            (
-            ) =&gt; 
+            <span
+              class="text-quaternary"
+            >
+              (
+            </span>
+            <span
+              class="text-quaternary"
+            >
+              ) =&gt;
+            </span>
+             
             void
           </code>
         </p>
@@ -696,7 +705,7 @@ in here.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-11xr3cd"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-uj1dnj"
       >
         <h3
           class="  css-nikr5x-TextComponent"
@@ -755,12 +764,12 @@ in here.
           data-text="true"
         >
           <span
-            class="css-1lk0cux"
+            class="text-secondary font-medium text-[90%]"
           >
             Optional • 
           </span>
           <span
-            class="css-1lk0cux"
+            class="text-secondary font-medium text-[90%]"
           >
             Type:
           </span>
@@ -770,7 +779,11 @@ in here.
             data-text="true"
           >
             StyleProp
-            &lt;
+            <span
+              class="text-quaternary"
+            >
+              &lt;
+            </span>
             <span>
               <a
                 class="css-1na8e0o-A"
@@ -780,7 +793,11 @@ in here.
               >
                 Omit
               </a>
-              &lt;
+              <span
+                class="text-quaternary"
+              >
+                &lt;
+              </span>
               <span>
                 <a
                   class="css-1na8e0o-A"
@@ -790,20 +807,36 @@ in here.
                 >
                   ViewStyle
                 </a>
-                , 
+                <span
+                  class="text-quaternary"
+                >
+                  , 
+                </span>
               </span>
               <span>
                 <span>
                   'backgroundColor'
-                   | 
+                  <span
+                    class="text-quaternary"
+                  >
+                     | 
+                  </span>
                 </span>
                 <span>
                   'borderRadius'
                 </span>
               </span>
+              <span
+                class="text-quaternary"
+              >
+                &gt;
+              </span>
+            </span>
+            <span
+              class="text-quaternary"
+            >
               &gt;
             </span>
-            &gt;
           </code>
         </p>
         <p
@@ -947,7 +980,7 @@ properties.
     </a>
   </h2>
   <div
-    class="css-11xr3cd"
+    class="css-uj1dnj"
   >
     <h3
       class="  css-nikr5x-TextComponent"
@@ -1005,7 +1038,7 @@ properties.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -1047,7 +1080,7 @@ properties.
               class="css-zstkv9-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 string
@@ -1169,7 +1202,7 @@ This should come from the user field of an
           </g>
         </svg>
         <code
-          class="css-ite7ne-TextComponent"
+          class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
         >
           <a
@@ -1180,7 +1213,11 @@ This should come from the user field of an
           >
             Promise
           </a>
-          &lt;
+          <span
+            class="text-quaternary"
+          >
+            &lt;
+          </span>
           <span>
             <a
               class="css-1na8e0o-A"
@@ -1189,7 +1226,11 @@ This should come from the user field of an
               AppleAuthenticationCredentialState
             </a>
           </span>
-          &gt;
+          <span
+            class="text-quaternary"
+          >
+            &gt;
+          </span>
         </code>
       </li>
     </ul>
@@ -1215,7 +1256,7 @@ value depending on the state of the credential.
     </p>
   </div>
   <div
-    class="css-11xr3cd"
+    class="css-uj1dnj"
   >
     <h3
       class="  css-nikr5x-TextComponent"
@@ -1309,7 +1350,7 @@ value depending on the state of the credential.
           </g>
         </svg>
         <code
-          class="css-ite7ne-TextComponent"
+          class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
         >
           <a
@@ -1320,11 +1361,19 @@ value depending on the state of the credential.
           >
             Promise
           </a>
-          &lt;
+          <span
+            class="text-quaternary"
+          >
+            &lt;
+          </span>
           <span>
             boolean
           </span>
-          &gt;
+          <span
+            class="text-quaternary"
+          >
+            &gt;
+          </span>
         </code>
       </li>
     </ul>
@@ -1351,7 +1400,7 @@ value depending on the state of the credential.
     </p>
   </div>
   <div
-    class="css-11xr3cd"
+    class="css-uj1dnj"
   >
     <h3
       class="  css-nikr5x-TextComponent"
@@ -1409,7 +1458,7 @@ value depending on the state of the credential.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -1451,7 +1500,7 @@ value depending on the state of the credential.
               class="css-zstkv9-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <a
@@ -1530,7 +1579,7 @@ Calling this method will show the sign in modal before actually refreshing the u
           </g>
         </svg>
         <code
-          class="css-ite7ne-TextComponent"
+          class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
         >
           <a
@@ -1541,7 +1590,11 @@ Calling this method will show the sign in modal before actually refreshing the u
           >
             Promise
           </a>
-          &lt;
+          <span
+            class="text-quaternary"
+          >
+            &lt;
+          </span>
           <span>
             <a
               class="css-1na8e0o-A"
@@ -1550,7 +1603,11 @@ Calling this method will show the sign in modal before actually refreshing the u
               AppleAuthenticationCredential
             </a>
           </span>
-          &gt;
+          <span
+            class="text-quaternary"
+          >
+            &gt;
+          </span>
         </code>
       </li>
     </ul>
@@ -1584,7 +1641,7 @@ refresh operation.
     </p>
   </div>
   <div
-    class="css-11xr3cd"
+    class="css-uj1dnj"
   >
     <h3
       class="  css-nikr5x-TextComponent"
@@ -1642,7 +1699,7 @@ refresh operation.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -1681,7 +1738,7 @@ refresh operation.
               </strong>
               <br />
               <span
-                class="css-1g95u6x"
+                class="text-secondary pt-5 !text-[13px]"
               >
                 (optional)
               </span>
@@ -1690,7 +1747,7 @@ refresh operation.
               class="css-zstkv9-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <a
@@ -1810,7 +1867,7 @@ the user, since this remains the same for apps released by the same developer.
           </g>
         </svg>
         <code
-          class="css-ite7ne-TextComponent"
+          class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
         >
           <a
@@ -1821,7 +1878,11 @@ the user, since this remains the same for apps released by the same developer.
           >
             Promise
           </a>
-          &lt;
+          <span
+            class="text-quaternary"
+          >
+            &lt;
+          </span>
           <span>
             <a
               class="css-1na8e0o-A"
@@ -1830,7 +1891,11 @@ the user, since this remains the same for apps released by the same developer.
               AppleAuthenticationCredential
             </a>
           </span>
-          &gt;
+          <span
+            class="text-quaternary"
+          >
+            &gt;
+          </span>
         </code>
       </li>
     </ul>
@@ -1864,7 +1929,7 @@ sign-in operation.
     </p>
   </div>
   <div
-    class="css-11xr3cd"
+    class="css-uj1dnj"
   >
     <h3
       class="  css-nikr5x-TextComponent"
@@ -1922,7 +1987,7 @@ sign-in operation.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -1964,7 +2029,7 @@ sign-in operation.
               class="css-zstkv9-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <a
@@ -2077,7 +2142,7 @@ from using
           </g>
         </svg>
         <code
-          class="css-ite7ne-TextComponent"
+          class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
         >
           <a
@@ -2088,7 +2153,11 @@ from using
           >
             Promise
           </a>
-          &lt;
+          <span
+            class="text-quaternary"
+          >
+            &lt;
+          </span>
           <span>
             <a
               class="css-1na8e0o-A"
@@ -2097,7 +2166,11 @@ from using
               AppleAuthenticationCredential
             </a>
           </span>
-          &gt;
+          <span
+            class="text-quaternary"
+          >
+            &gt;
+          </span>
         </code>
       </li>
     </ul>
@@ -2178,7 +2251,7 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="css-11xr3cd"
+    class="css-uj1dnj"
   >
     <h3
       class="  css-nikr5x-TextComponent"
@@ -2236,7 +2309,7 @@ sign-out operation.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -2278,10 +2351,14 @@ sign-out operation.
               class="css-zstkv9-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
-                () =&gt;
+                <span
+                  class="text-quaternary"
+                >
+                  () =&gt;
+                </span>
                  
                 void
               </code>
@@ -2290,7 +2367,7 @@ sign-out operation.
               class="css-zstkv9-Cell"
             >
               <span
-                class="text-tertiary"
+                class="text-quaternary"
               >
                 -
               </span>
@@ -2334,7 +2411,7 @@ sign-out operation.
           </g>
         </svg>
         <code
-          class="css-ite7ne-TextComponent"
+          class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
         >
           <a
@@ -2551,7 +2628,7 @@ for more details.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -2593,12 +2670,16 @@ for more details.
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <span>
                   string
-                   | 
+                  <span
+                    class="text-quaternary"
+                  >
+                     | 
+                  </span>
                 </span>
                 <span>
                   null
@@ -2640,12 +2721,16 @@ the app's server counterpart. Unlike
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <span>
                   string
-                   | 
+                  <span
+                    class="text-quaternary"
+                  >
+                     | 
+                  </span>
                 </span>
                 <span>
                   null
@@ -2689,7 +2774,7 @@ an Apple domain.
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <span>
@@ -2699,7 +2784,11 @@ an Apple domain.
                   >
                     AppleAuthenticationFullName
                   </a>
-                   | 
+                  <span
+                    class="text-quaternary"
+                  >
+                     | 
+                  </span>
                 </span>
                 <span>
                   null
@@ -2756,12 +2845,16 @@ your app.
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <span>
                   string
-                   | 
+                  <span
+                    class="text-quaternary"
+                  >
+                     | 
+                  </span>
                 </span>
                 <span>
                   null
@@ -2795,7 +2888,7 @@ your app.
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <a
@@ -2833,12 +2926,16 @@ your app.
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <span>
                   string
-                   | 
+                  <span
+                    class="text-quaternary"
+                  >
+                     | 
+                  </span>
                 </span>
                 <span>
                   null
@@ -2896,7 +2993,7 @@ will be
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 string
@@ -2993,7 +3090,7 @@ may be
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -3035,12 +3132,16 @@ may be
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <span>
                   string
-                   | 
+                  <span
+                    class="text-quaternary"
+                  >
+                     | 
+                  </span>
                 </span>
                 <span>
                   null
@@ -3051,7 +3152,7 @@ may be
               class="css-18p3734-Cell"
             >
               <span
-                class="text-tertiary"
+                class="text-quaternary"
               >
                 -
               </span>
@@ -3073,12 +3174,16 @@ may be
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <span>
                   string
-                   | 
+                  <span
+                    class="text-quaternary"
+                  >
+                     | 
+                  </span>
                 </span>
                 <span>
                   null
@@ -3089,7 +3194,7 @@ may be
               class="css-18p3734-Cell"
             >
               <span
-                class="text-tertiary"
+                class="text-quaternary"
               >
                 -
               </span>
@@ -3111,12 +3216,16 @@ may be
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <span>
                   string
-                   | 
+                  <span
+                    class="text-quaternary"
+                  >
+                     | 
+                  </span>
                 </span>
                 <span>
                   null
@@ -3127,7 +3236,7 @@ may be
               class="css-18p3734-Cell"
             >
               <span
-                class="text-tertiary"
+                class="text-quaternary"
               >
                 -
               </span>
@@ -3149,12 +3258,16 @@ may be
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <span>
                   string
-                   | 
+                  <span
+                    class="text-quaternary"
+                  >
+                     | 
+                  </span>
                 </span>
                 <span>
                   null
@@ -3165,7 +3278,7 @@ may be
               class="css-18p3734-Cell"
             >
               <span
-                class="text-tertiary"
+                class="text-quaternary"
               >
                 -
               </span>
@@ -3187,12 +3300,16 @@ may be
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <span>
                   string
-                   | 
+                  <span
+                    class="text-quaternary"
+                  >
+                     | 
+                  </span>
                 </span>
                 <span>
                   null
@@ -3203,7 +3320,7 @@ may be
               class="css-18p3734-Cell"
             >
               <span
-                class="text-tertiary"
+                class="text-quaternary"
               >
                 -
               </span>
@@ -3225,12 +3342,16 @@ may be
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <span>
                   string
-                   | 
+                  <span
+                    class="text-quaternary"
+                  >
+                     | 
+                  </span>
                 </span>
                 <span>
                   null
@@ -3241,7 +3362,7 @@ may be
               class="css-18p3734-Cell"
             >
               <span
-                class="text-tertiary"
+                class="text-quaternary"
               >
                 -
               </span>
@@ -3382,7 +3503,7 @@ for more details.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -3421,7 +3542,7 @@ for more details.
               </strong>
               <br />
               <span
-                class="css-1g95u6x"
+                class="text-secondary pt-5 !text-[13px]"
               >
                 (optional)
               </span>
@@ -3430,7 +3551,7 @@ for more details.
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <a
@@ -3491,7 +3612,7 @@ requests they will be
               </strong>
               <br />
               <span
-                class="css-1g95u6x"
+                class="text-secondary pt-5 !text-[13px]"
               >
                 (optional)
               </span>
@@ -3500,7 +3621,7 @@ requests they will be
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 string
@@ -3545,7 +3666,7 @@ OAuth 2.0 protocol
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 string
@@ -3555,7 +3676,7 @@ OAuth 2.0 protocol
               class="css-18p3734-Cell"
             >
               <span
-                class="text-tertiary"
+                class="text-quaternary"
               >
                 -
               </span>
@@ -3696,7 +3817,7 @@ for more details.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -3735,7 +3856,7 @@ for more details.
               </strong>
               <br />
               <span
-                class="css-1g95u6x"
+                class="text-secondary pt-5 !text-[13px]"
               >
                 (optional)
               </span>
@@ -3744,7 +3865,7 @@ for more details.
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 string
@@ -3784,7 +3905,7 @@ for more details.
               </strong>
               <br />
               <span
-                class="css-1g95u6x"
+                class="text-secondary pt-5 !text-[13px]"
               >
                 (optional)
               </span>
@@ -3793,7 +3914,7 @@ for more details.
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <a
@@ -3854,7 +3975,7 @@ requests they will be
               </strong>
               <br />
               <span
-                class="css-1g95u6x"
+                class="text-secondary pt-5 !text-[13px]"
               >
                 (optional)
               </span>
@@ -3863,7 +3984,7 @@ requests they will be
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 string
@@ -4027,7 +4148,7 @@ for more details.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -4066,7 +4187,7 @@ for more details.
               </strong>
               <br />
               <span
-                class="css-1g95u6x"
+                class="text-secondary pt-5 !text-[13px]"
               >
                 (optional)
               </span>
@@ -4075,7 +4196,7 @@ for more details.
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 string
@@ -4120,7 +4241,7 @@ OAuth 2.0 protocol
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 string
@@ -4130,7 +4251,7 @@ OAuth 2.0 protocol
               class="css-18p3734-Cell"
             >
               <span
-                class="text-tertiary"
+                class="text-quaternary"
               >
                 -
               </span>
@@ -4199,7 +4320,7 @@ OAuth 2.0 protocol
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -4241,10 +4362,14 @@ OAuth 2.0 protocol
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
-                () =&gt;
+                <span
+                  class="text-quaternary"
+                >
+                  () =&gt;
+                </span>
                  
                 void
               </code>
@@ -4252,11 +4377,12 @@ OAuth 2.0 protocol
             <td
               class="css-18p3734-Cell"
             >
-              <span
-                class="text-tertiary"
+              <p
+                class="mb-4 css-1kfqm4n-TextComponent"
+                data-text="true"
               >
-                -
-              </span>
+                A method to unsubscribe the listener.
+              </p>
             </td>
           </tr>
         </tbody>
@@ -4449,7 +4575,7 @@ OAuth 2.0 protocol
         </a>
       </h4>
       <code
-        class="mb-4 css-fmaglm-TextComponent"
+        class="mb-3 css-fmaglm-TextComponent"
         data-text="true"
       >
         AppleAuthenticationButtonStyle.WHITE ＝ 0
@@ -4517,7 +4643,7 @@ OAuth 2.0 protocol
         </a>
       </h4>
       <code
-        class="mb-4 css-fmaglm-TextComponent"
+        class="mb-3 css-fmaglm-TextComponent"
         data-text="true"
       >
         AppleAuthenticationButtonStyle.WHITE_OUTLINE ＝ 1
@@ -4585,7 +4711,7 @@ OAuth 2.0 protocol
         </a>
       </h4>
       <code
-        class="mb-4 css-fmaglm-TextComponent"
+        class="mb-3 css-fmaglm-TextComponent"
         data-text="true"
       >
         AppleAuthenticationButtonStyle.BLACK ＝ 2
@@ -4737,7 +4863,7 @@ OAuth 2.0 protocol
         </a>
       </h4>
       <code
-        class="mb-4 css-fmaglm-TextComponent"
+        class="mb-3 css-fmaglm-TextComponent"
         data-text="true"
       >
         AppleAuthenticationButtonType.SIGN_IN ＝ 0
@@ -4805,7 +4931,7 @@ OAuth 2.0 protocol
         </a>
       </h4>
       <code
-        class="mb-4 css-fmaglm-TextComponent"
+        class="mb-3 css-fmaglm-TextComponent"
         data-text="true"
       >
         AppleAuthenticationButtonType.CONTINUE ＝ 1
@@ -4825,7 +4951,7 @@ OAuth 2.0 protocol
         data-text="true"
       >
         <span
-          class="!text-inherit css-1n5kx9e-TextComponent"
+          class="!text-inherit !font-medium css-1ibdfwu-TextComponent"
           data-text="true"
         >
           Only for:
@@ -4912,7 +5038,7 @@ OAuth 2.0 protocol
         </a>
       </h4>
       <code
-        class="mb-4 css-fmaglm-TextComponent"
+        class="mb-3 css-fmaglm-TextComponent"
         data-text="true"
       >
         AppleAuthenticationButtonType.SIGN_UP ＝ 2
@@ -5117,7 +5243,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="mb-4 css-fmaglm-TextComponent"
+        class="mb-3 css-fmaglm-TextComponent"
         data-text="true"
       >
         AppleAuthenticationCredentialState.REVOKED ＝ 0
@@ -5179,7 +5305,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="mb-4 css-fmaglm-TextComponent"
+        class="mb-3 css-fmaglm-TextComponent"
         data-text="true"
       >
         AppleAuthenticationCredentialState.AUTHORIZED ＝ 1
@@ -5241,7 +5367,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="mb-4 css-fmaglm-TextComponent"
+        class="mb-3 css-fmaglm-TextComponent"
         data-text="true"
       >
         AppleAuthenticationCredentialState.NOT_FOUND ＝ 2
@@ -5303,7 +5429,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="mb-4 css-fmaglm-TextComponent"
+        class="mb-3 css-fmaglm-TextComponent"
         data-text="true"
       >
         AppleAuthenticationCredentialState.TRANSFERRED ＝ 3
@@ -5431,7 +5557,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="mb-4 css-fmaglm-TextComponent"
+        class="mb-3 css-fmaglm-TextComponent"
         data-text="true"
       >
         AppleAuthenticationOperation.IMPLICIT ＝ 0
@@ -5499,7 +5625,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="mb-4 css-fmaglm-TextComponent"
+        class="mb-3 css-fmaglm-TextComponent"
         data-text="true"
       >
         AppleAuthenticationOperation.LOGIN ＝ 1
@@ -5561,7 +5687,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="mb-4 css-fmaglm-TextComponent"
+        class="mb-3 css-fmaglm-TextComponent"
         data-text="true"
       >
         AppleAuthenticationOperation.REFRESH ＝ 2
@@ -5623,7 +5749,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="mb-4 css-fmaglm-TextComponent"
+        class="mb-3 css-fmaglm-TextComponent"
         data-text="true"
       >
         AppleAuthenticationOperation.LOGOUT ＝ 3
@@ -5866,7 +5992,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="mb-4 css-fmaglm-TextComponent"
+        class="mb-3 css-fmaglm-TextComponent"
         data-text="true"
       >
         AppleAuthenticationScope.FULL_NAME ＝ 0
@@ -5928,7 +6054,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="mb-4 css-fmaglm-TextComponent"
+        class="mb-3 css-fmaglm-TextComponent"
         data-text="true"
       >
         AppleAuthenticationScope.EMAIL ＝ 1
@@ -6115,7 +6241,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="mb-4 css-fmaglm-TextComponent"
+        class="mb-3 css-fmaglm-TextComponent"
         data-text="true"
       >
         AppleAuthenticationUserDetectionStatus.UNSUPPORTED ＝ 0
@@ -6183,7 +6309,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="mb-4 css-fmaglm-TextComponent"
+        class="mb-3 css-fmaglm-TextComponent"
         data-text="true"
       >
         AppleAuthenticationUserDetectionStatus.UNKNOWN ＝ 1
@@ -6251,7 +6377,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="mb-4 css-fmaglm-TextComponent"
+        class="mb-3 css-fmaglm-TextComponent"
         data-text="true"
       >
         AppleAuthenticationUserDetectionStatus.LIKELY_REAL ＝ 2
@@ -6319,6 +6445,68 @@ exports[`APISection expo-barcode-scanner 1`] = `
   <div
     class="css-1fultt1"
   >
+    <div
+      class="css-1avgxs7-APISectionDeprecationNote"
+    >
+      <blockquote
+        class="css-dmb9uy-Callout"
+        data-testid="callout-container"
+      >
+        <div
+          class="css-7jywx8-Callout"
+        >
+          <svg
+            class="icon-sm text-warning"
+            fill="currentColor"
+            role="img"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g
+              id="alert-triangle"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M12.8126 1.66837C12.2953 1.43834 11.7047 1.43834 11.1874 1.66837C10.7878 1.84602 10.5283 2.15894 10.3477 2.41391C10.1701 2.66461 9.98004 2.99303 9.77096 3.35422L1.50381 17.6339C1.2939 17.9964 1.10315 18.3258 0.973806 18.6054C0.842356 18.8895 0.699752 19.2714 0.745201 19.7074C0.804012 20.2715 1.09955 20.7841 1.55827 21.1176C1.91276 21.3753 2.31476 21.4433 2.62652 21.4719C2.93327 21.5 3.31392 21.5 3.73281 21.5H20.2671C20.686 21.5 21.0667 21.5 21.3734 21.4719C21.6852 21.4433 22.0872 21.3753 22.4417 21.1176C22.9004 20.7841 23.1959 20.2715 23.2547 19.7074C23.3002 19.2714 23.1576 18.8895 23.0261 18.6054C22.8968 18.3258 22.7061 17.9964 22.4962 17.6339L14.229 3.35419C14.0199 2.99301 13.8298 2.66459 13.6522 2.41391C13.4716 2.15894 13.2121 1.84602 12.8126 1.66837ZM13 9C13 8.44772 12.5523 8 12 8C11.4477 8 11 8.44772 11 9V13C11 13.5523 11.4477 14 12 14C12.5523 14 13 13.5523 13 13V9ZM12 16C11.4477 16 11 16.4477 11 17C11 17.5523 11.4477 18 12 18H12.01C12.5623 18 13.01 17.5523 13.01 17C13.01 16.4477 12.5623 16 12.01 16H12Z"
+                fill-rule="evenodd"
+                id="Solid"
+              />
+            </g>
+          </svg>
+        </div>
+        <div
+          class="css-1m74yfi-Callout"
+        >
+          <p
+            class="mb-4 css-1kfqm4n-TextComponent"
+            data-text="true"
+          >
+            <strong
+              class="css-bvflvn-TextComponent"
+            >
+              Deprecated.
+            </strong>
+             BarCodeScanner has been deprecated and will be removed in a future SDK version. Plesae use 
+            <code
+              class="css-qyuze8-TextComponent"
+              data-text="true"
+            >
+              expo-camera
+            </code>
+             instead. see 
+            <a
+              class="css-1na8e0o-A"
+              href="https://expo.fyi/barcode-scanner-to-expo-camera"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              barcode-scanner-to-expo-camera
+            </a>
+             for more details on how to migrate.
+          </p>
+        </div>
+      </blockquote>
+    </div>
     <h3
       class="  css-nikr5x-TextComponent"
       data-heading="true"
@@ -6388,7 +6576,11 @@ exports[`APISection expo-barcode-scanner 1`] = `
       >
         React.
         Component
-        &lt;
+        <span
+          class="text-quaternary"
+        >
+          &lt;
+        </span>
         <span>
           <a
             class="css-1na8e0o-A"
@@ -6397,7 +6589,11 @@ exports[`APISection expo-barcode-scanner 1`] = `
             BarCodeScannerProps
           </a>
         </span>
-        &gt;
+        <span
+          class="text-quaternary"
+        >
+          &gt;
+        </span>
       </code>
     </p>
     <h2
@@ -6451,7 +6647,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
       class="[&>*:last-child]:!mb-0"
     >
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-11xr3cd"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-uj1dnj"
       >
         <h3
           class="  css-nikr5x-TextComponent"
@@ -6510,12 +6706,12 @@ exports[`APISection expo-barcode-scanner 1`] = `
           data-text="true"
         >
           <span
-            class="css-1lk0cux"
+            class="text-secondary font-medium text-[90%]"
           >
             Optional • 
           </span>
           <span
-            class="css-1lk0cux"
+            class="text-secondary font-medium text-[90%]"
           >
             Type:
           </span>
@@ -6574,7 +6770,7 @@ minimize battery usage.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-11xr3cd"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-uj1dnj"
       >
         <h3
           class="  css-nikr5x-TextComponent"
@@ -6633,12 +6829,12 @@ minimize battery usage.
           data-text="true"
         >
           <span
-            class="css-1lk0cux"
+            class="text-secondary font-medium text-[90%]"
           >
             Optional • 
           </span>
           <span
-            class="css-1lk0cux"
+            class="text-secondary font-medium text-[90%]"
           >
             Type:
           </span>
@@ -6735,7 +6931,7 @@ data has been retrieved.
         </blockquote>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-11xr3cd"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-uj1dnj"
       >
         <h3
           class="  css-nikr5x-TextComponent"
@@ -6794,12 +6990,12 @@ data has been retrieved.
           data-text="true"
         >
           <span
-            class="css-1lk0cux"
+            class="text-secondary font-medium text-[90%]"
           >
             Optional • 
           </span>
           <span
-            class="css-1lk0cux"
+            class="text-secondary font-medium text-[90%]"
           >
             Type:
           </span>
@@ -6810,11 +7006,19 @@ data has been retrieved.
           >
             <span>
               'front'
-               | 
+              <span
+                class="text-quaternary"
+              >
+                 | 
+              </span>
             </span>
             <span>
               'back'
-               | 
+              <span
+                class="text-quaternary"
+              >
+                 | 
+              </span>
             </span>
             <span>
               number
@@ -6822,7 +7026,7 @@ data has been retrieved.
           </code>
           <span>
             <span
-              class="css-1lk0cux"
+              class="text-secondary font-medium text-[90%]"
             >
                • Default:
             </span>
@@ -6990,7 +7194,7 @@ Same as
     </a>
   </h2>
   <div
-    class="css-11xr3cd"
+    class="css-uj1dnj"
   >
     <h3
       class="  css-nikr5x-TextComponent"
@@ -7048,7 +7252,7 @@ Same as
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -7087,7 +7291,7 @@ Same as
               </strong>
               <br />
               <span
-                class="css-1g95u6x"
+                class="text-secondary pt-5 !text-[13px]"
               >
                 (optional)
               </span>
@@ -7096,7 +7300,7 @@ Same as
               class="css-zstkv9-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <a
@@ -7105,18 +7309,26 @@ Same as
                 >
                   PermissionHookOptions
                 </a>
-                &lt;
+                <span
+                  class="text-quaternary"
+                >
+                  &lt;
+                </span>
                 <span>
                   object
                 </span>
-                &gt;
+                <span
+                  class="text-quaternary"
+                >
+                  &gt;
+                </span>
               </code>
             </td>
             <td
               class="css-zstkv9-Cell"
             >
               <span
-                class="text-tertiary"
+                class="text-quaternary"
               >
                 -
               </span>
@@ -7255,14 +7467,18 @@ This uses both
           </g>
         </svg>
         <code
-          class="css-ite7ne-TextComponent"
+          class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
         >
           [
           <span>
             <span>
               null
-               | 
+              <span
+                class="text-quaternary"
+              >
+                 | 
+              </span>
             </span>
             <span>
               <a
@@ -7276,7 +7492,11 @@ This uses both
           </span>
           <span>
             RequestPermissionMethod
-            &lt;
+            <span
+              class="text-quaternary"
+            >
+              &lt;
+            </span>
             <span>
               <a
                 class="css-1na8e0o-A"
@@ -7285,12 +7505,20 @@ This uses both
                 PermissionResponse
               </a>
             </span>
-            &gt;
+            <span
+              class="text-quaternary"
+            >
+              &gt;
+            </span>
             , 
           </span>
           <span>
             GetPermissionMethod
-            &lt;
+            <span
+              class="text-quaternary"
+            >
+              &lt;
+            </span>
             <span>
               <a
                 class="css-1na8e0o-A"
@@ -7299,7 +7527,11 @@ This uses both
                 PermissionResponse
               </a>
             </span>
-            &gt;
+            <span
+              class="text-quaternary"
+            >
+              &gt;
+            </span>
           </span>
           ]
         </code>
@@ -7355,7 +7587,7 @@ This uses both
     </a>
   </h2>
   <div
-    class="css-11xr3cd"
+    class="css-uj1dnj"
   >
     <h3
       class="  css-nikr5x-TextComponent"
@@ -7449,7 +7681,7 @@ This uses both
           </g>
         </svg>
         <code
-          class="css-ite7ne-TextComponent"
+          class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
         >
           <a
@@ -7460,7 +7692,11 @@ This uses both
           >
             Promise
           </a>
-          &lt;
+          <span
+            class="text-quaternary"
+          >
+            &lt;
+          </span>
           <span>
             <a
               class="css-1na8e0o-A"
@@ -7469,7 +7705,11 @@ This uses both
               PermissionResponse
             </a>
           </span>
-          &gt;
+          <span
+            class="text-quaternary"
+          >
+            &gt;
+          </span>
         </code>
       </li>
     </ul>
@@ -7494,7 +7734,7 @@ This uses both
     </p>
   </div>
   <div
-    class="css-11xr3cd"
+    class="css-uj1dnj"
   >
     <h3
       class="  css-nikr5x-TextComponent"
@@ -7610,7 +7850,7 @@ This uses both
           </g>
         </svg>
         <code
-          class="css-ite7ne-TextComponent"
+          class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
         >
           <a
@@ -7621,7 +7861,11 @@ This uses both
           >
             Promise
           </a>
-          &lt;
+          <span
+            class="text-quaternary"
+          >
+            &lt;
+          </span>
           <span>
             <a
               class="css-1na8e0o-A"
@@ -7630,7 +7874,11 @@ This uses both
               PermissionResponse
             </a>
           </span>
-          &gt;
+          <span
+            class="text-quaternary"
+          >
+            &gt;
+          </span>
         </code>
       </li>
     </ul>
@@ -7655,7 +7903,7 @@ This uses both
     </p>
   </div>
   <div
-    class="css-11xr3cd"
+    class="css-uj1dnj"
   >
     <h3
       class="  css-nikr5x-TextComponent"
@@ -7713,7 +7961,7 @@ This uses both
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -7755,7 +8003,7 @@ This uses both
               class="css-zstkv9-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 string
@@ -7785,7 +8033,7 @@ This uses both
               </strong>
               <br />
               <span
-                class="css-1g95u6x"
+                class="text-secondary pt-5 !text-[13px]"
               >
                 (optional)
               </span>
@@ -7794,7 +8042,7 @@ This uses both
               class="css-zstkv9-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 string[]
@@ -7904,7 +8152,7 @@ the platform.
           </g>
         </svg>
         <code
-          class="css-ite7ne-TextComponent"
+          class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
         >
           <a
@@ -7915,7 +8163,11 @@ the platform.
           >
             Promise
           </a>
-          &lt;
+          <span
+            class="text-quaternary"
+          >
+            &lt;
+          </span>
           <span>
             <a
               class="css-1na8e0o-A"
@@ -7925,7 +8177,11 @@ the platform.
               []
             </a>
           </span>
-          &gt;
+          <span
+            class="text-quaternary"
+          >
+            &gt;
+          </span>
         </code>
       </li>
     </ul>
@@ -7994,7 +8250,7 @@ code.
     </a>
   </h2>
   <div
-    class="css-11xr3cd"
+    class="css-uj1dnj"
   >
     <h3
       class="  css-nikr5x-TextComponent"
@@ -8064,7 +8320,7 @@ code.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -8106,7 +8362,7 @@ code.
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 boolean
@@ -8141,7 +8397,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <a
@@ -8179,7 +8435,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 boolean
@@ -8212,7 +8468,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <a
@@ -8345,7 +8601,7 @@ in order to enable/disable the permission.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -8387,7 +8643,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <a
@@ -8425,7 +8681,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <a
@@ -8529,7 +8785,7 @@ in order to enable/disable the permission.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -8568,7 +8824,7 @@ in order to enable/disable the permission.
               </strong>
               <br />
               <span
-                class="css-1g95u6x"
+                class="text-secondary pt-5 !text-[13px]"
               >
                 (optional)
               </span>
@@ -8577,7 +8833,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 number
@@ -8587,7 +8843,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <span
-                class="text-tertiary"
+                class="text-quaternary"
               >
                 -
               </span>
@@ -8656,7 +8912,7 @@ in order to enable/disable the permission.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -8698,7 +8954,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <a
@@ -8713,7 +8969,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <span
-                class="text-tertiary"
+                class="text-quaternary"
               >
                 -
               </span>
@@ -8789,7 +9045,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -8831,7 +9087,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 number
@@ -8871,7 +9127,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 number
@@ -8960,7 +9216,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
         class="css-1uyflf8-Table"
       >
         <table
-          class="css-txbaae-Table"
+          class="css-e41t9x-Table"
         >
           <thead
             class="bg-subtle border-b border-b-default border-solid"
@@ -9002,7 +9258,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
                 class="css-zstkv9-Cell"
               >
                 <code
-                  class="css-ite7ne-TextComponent"
+                  class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                   data-text="true"
                 >
                   <a
@@ -9017,7 +9273,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
                 class="css-zstkv9-Cell"
               >
                 <span
-                  class="text-tertiary"
+                  class="text-quaternary"
                 >
                   -
                 </span>
@@ -9087,7 +9343,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -9129,7 +9385,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <a
@@ -9191,7 +9447,7 @@ For some types, they will represent the area used by the scanner.
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <a
@@ -9253,7 +9509,7 @@ you don't get this value.
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 string
@@ -9286,7 +9542,7 @@ you don't get this value.
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 string
@@ -9366,7 +9622,7 @@ you don't get this value.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -9408,7 +9664,7 @@ you don't get this value.
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 number
@@ -9441,7 +9697,7 @@ you don't get this value.
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 number
@@ -9518,6 +9774,19 @@ you don't get this value.
       </a>
     </h3>
     <p
+      class="mb-3 css-1yjys1n-TextComponent"
+      data-text="true"
+    >
+      <span
+        class="css-oecriz-TextComponent"
+        data-text="true"
+      >
+        Literal Type:
+         
+      </span>
+      multiple types
+    </p>
+    <p
       class="css-1kfqm4n-TextComponent"
       data-text="true"
     >
@@ -9530,7 +9799,9 @@ you don't get this value.
         >
           PermissionHookBehavior
         </code>
-        , 
+        <span>
+           
+        </span>
       </span>
       <span>
         <code
@@ -9539,7 +9810,6 @@ you don't get this value.
         >
           Options
         </code>
-        .
       </span>
     </p>
   </div>
@@ -9711,7 +9981,7 @@ you don't get this value.
         </a>
       </h4>
       <code
-        class="mb-4 css-fmaglm-TextComponent"
+        class="mb-3 css-fmaglm-TextComponent"
         data-text="true"
       >
         PermissionStatus.DENIED ＝ "denied"
@@ -9779,7 +10049,7 @@ you don't get this value.
         </a>
       </h4>
       <code
-        class="mb-4 css-fmaglm-TextComponent"
+        class="mb-3 css-fmaglm-TextComponent"
         data-text="true"
       >
         PermissionStatus.GRANTED ＝ "granted"
@@ -9847,7 +10117,7 @@ you don't get this value.
         </a>
       </h4>
       <code
-        class="mb-4 css-fmaglm-TextComponent"
+        class="mb-3 css-fmaglm-TextComponent"
         data-text="true"
       >
         PermissionStatus.UNDETERMINED ＝ "undetermined"
@@ -9913,7 +10183,7 @@ exports[`APISection expo-pedometer 1`] = `
     </a>
   </h2>
   <div
-    class="css-11xr3cd"
+    class="css-uj1dnj"
   >
     <h3
       class="  css-nikr5x-TextComponent"
@@ -10007,7 +10277,7 @@ exports[`APISection expo-pedometer 1`] = `
           </g>
         </svg>
         <code
-          class="css-ite7ne-TextComponent"
+          class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
         >
           <a
@@ -10018,7 +10288,11 @@ exports[`APISection expo-pedometer 1`] = `
           >
             Promise
           </a>
-          &lt;
+          <span
+            class="text-quaternary"
+          >
+            &lt;
+          </span>
           <span>
             <a
               class="css-1na8e0o-A"
@@ -10027,21 +10301,25 @@ exports[`APISection expo-pedometer 1`] = `
               PermissionResponse
             </a>
           </span>
-          &gt;
+          <span
+            class="text-quaternary"
+          >
+            &gt;
+          </span>
         </code>
       </li>
     </ul>
     <br />
   </div>
   <div
-    class="css-11xr3cd"
+    class="css-uj1dnj"
   >
     <span
       class="flex items-center mb-2 css-1yjys1n-TextComponent"
       data-text="true"
     >
       <span
-        class="!text-inherit css-1n5kx9e-TextComponent"
+        class="!text-inherit !font-medium css-1ibdfwu-TextComponent"
         data-text="true"
       >
         Only for:
@@ -10131,7 +10409,7 @@ exports[`APISection expo-pedometer 1`] = `
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -10173,7 +10451,7 @@ exports[`APISection expo-pedometer 1`] = `
               class="css-zstkv9-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <a
@@ -10213,7 +10491,7 @@ exports[`APISection expo-pedometer 1`] = `
               class="css-zstkv9-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <a
@@ -10281,7 +10559,7 @@ exports[`APISection expo-pedometer 1`] = `
           </g>
         </svg>
         <code
-          class="css-ite7ne-TextComponent"
+          class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
         >
           <a
@@ -10292,7 +10570,11 @@ exports[`APISection expo-pedometer 1`] = `
           >
             Promise
           </a>
-          &lt;
+          <span
+            class="text-quaternary"
+          >
+            &lt;
+          </span>
           <span>
             <a
               class="css-1na8e0o-A"
@@ -10301,7 +10583,11 @@ exports[`APISection expo-pedometer 1`] = `
               PedometerResult
             </a>
           </span>
-          &gt;
+          <span
+            class="text-quaternary"
+          >
+            &gt;
+          </span>
         </code>
       </li>
     </ul>
@@ -10387,7 +10673,7 @@ a start date that is more than seven days in the past returns only the available
     </blockquote>
   </div>
   <div
-    class="css-11xr3cd"
+    class="css-uj1dnj"
   >
     <h3
       class="  css-nikr5x-TextComponent"
@@ -10481,7 +10767,7 @@ a start date that is more than seven days in the past returns only the available
           </g>
         </svg>
         <code
-          class="css-ite7ne-TextComponent"
+          class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
         >
           <a
@@ -10492,11 +10778,19 @@ a start date that is more than seven days in the past returns only the available
           >
             Promise
           </a>
-          &lt;
+          <span
+            class="text-quaternary"
+          >
+            &lt;
+          </span>
           <span>
             boolean
           </span>
-          &gt;
+          <span
+            class="text-quaternary"
+          >
+            &gt;
+          </span>
         </code>
       </li>
     </ul>
@@ -10517,7 +10811,7 @@ available on this device.
     </p>
   </div>
   <div
-    class="css-11xr3cd"
+    class="css-uj1dnj"
   >
     <h3
       class="  css-nikr5x-TextComponent"
@@ -10611,7 +10905,7 @@ available on this device.
           </g>
         </svg>
         <code
-          class="css-ite7ne-TextComponent"
+          class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
         >
           <a
@@ -10622,7 +10916,11 @@ available on this device.
           >
             Promise
           </a>
-          &lt;
+          <span
+            class="text-quaternary"
+          >
+            &lt;
+          </span>
           <span>
             <a
               class="css-1na8e0o-A"
@@ -10631,14 +10929,18 @@ available on this device.
               PermissionResponse
             </a>
           </span>
-          &gt;
+          <span
+            class="text-quaternary"
+          >
+            &gt;
+          </span>
         </code>
       </li>
     </ul>
     <br />
   </div>
   <div
-    class="css-11xr3cd"
+    class="css-uj1dnj"
   >
     <h3
       class="  css-nikr5x-TextComponent"
@@ -10696,7 +10998,7 @@ available on this device.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -10738,7 +11040,7 @@ available on this device.
               class="css-zstkv9-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <a
@@ -10817,7 +11119,7 @@ provided with a single argument that is
           </g>
         </svg>
         <code
-          class="css-ite7ne-TextComponent"
+          class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
         >
           <a
@@ -10905,7 +11207,7 @@ provided with a single argument that is
     </a>
   </h2>
   <div
-    class="css-11xr3cd"
+    class="css-uj1dnj"
   >
     <h3
       class="  css-nikr5x-TextComponent"
@@ -10975,7 +11277,7 @@ provided with a single argument that is
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -11017,7 +11319,7 @@ provided with a single argument that is
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 boolean
@@ -11052,7 +11354,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <a
@@ -11090,7 +11392,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 boolean
@@ -11123,7 +11425,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <a
@@ -11256,7 +11558,7 @@ in order to enable/disable the permission.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -11298,7 +11600,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
                 number
@@ -11375,18 +11677,18 @@ in order to enable/disable the permission.
         </span>
       </a>
     </h3>
+    <p
+      class="mb-4 css-1kfqm4n-TextComponent"
+      data-text="true"
+    >
+      Callback function providing event result as an argument.
+    </p>
     <div>
-      <p
-        class="mb-4 css-1kfqm4n-TextComponent"
-        data-text="true"
-      >
-        Callback function providing event result as an argument.
-      </p>
       <div
         class="css-1uyflf8-Table"
       >
         <table
-          class="css-txbaae-Table"
+          class="css-e41t9x-Table"
         >
           <thead
             class="bg-subtle border-b border-b-default border-solid"
@@ -11428,7 +11730,7 @@ in order to enable/disable the permission.
                 class="css-zstkv9-Cell"
               >
                 <code
-                  class="css-ite7ne-TextComponent"
+                  class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                   data-text="true"
                 >
                   <a
@@ -11443,7 +11745,7 @@ in order to enable/disable the permission.
                 class="css-zstkv9-Cell"
               >
                 <span
-                  class="text-tertiary"
+                  class="text-quaternary"
                 >
                   -
                 </span>
@@ -11510,6 +11812,19 @@ in order to enable/disable the permission.
       </a>
     </h3>
     <p
+      class="mb-3 css-1yjys1n-TextComponent"
+      data-text="true"
+    >
+      <span
+        class="css-oecriz-TextComponent"
+        data-text="true"
+      >
+        Literal Type:
+         
+      </span>
+      multiple types
+    </p>
+    <p
       class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
@@ -11528,7 +11843,9 @@ in order to enable/disable the permission.
         >
           'never'
         </code>
-        , 
+        <span>
+           
+        </span>
       </span>
       <span>
         <code
@@ -11537,7 +11854,6 @@ in order to enable/disable the permission.
         >
           number
         </code>
-        .
       </span>
     </p>
   </div>
@@ -11600,7 +11916,7 @@ in order to enable/disable the permission.
       class="css-1uyflf8-Table"
     >
       <table
-        class="css-txbaae-Table"
+        class="css-e41t9x-Table"
       >
         <thead
           class="bg-subtle border-b border-b-default border-solid"
@@ -11642,10 +11958,14 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <code
-                class="css-ite7ne-TextComponent"
+                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
                 data-text="true"
               >
-                () =&gt;
+                <span
+                  class="text-quaternary"
+                >
+                  () =&gt;
+                </span>
                  
                 void
               </code>
@@ -11653,11 +11973,12 @@ in order to enable/disable the permission.
             <td
               class="css-18p3734-Cell"
             >
-              <span
-                class="text-tertiary"
+              <p
+                class="mb-4 css-1kfqm4n-TextComponent"
+                data-text="true"
               >
-                -
-              </span>
+                A method to unsubscribe the listener.
+              </p>
             </td>
           </tr>
         </tbody>
@@ -11832,7 +12153,7 @@ in order to enable/disable the permission.
         </a>
       </h4>
       <code
-        class="mb-4 css-fmaglm-TextComponent"
+        class="mb-3 css-fmaglm-TextComponent"
         data-text="true"
       >
         PermissionStatus.DENIED ＝ "denied"
@@ -11900,7 +12221,7 @@ in order to enable/disable the permission.
         </a>
       </h4>
       <code
-        class="mb-4 css-fmaglm-TextComponent"
+        class="mb-3 css-fmaglm-TextComponent"
         data-text="true"
       >
         PermissionStatus.GRANTED ＝ "granted"
@@ -11968,7 +12289,7 @@ in order to enable/disable the permission.
         </a>
       </h4>
       <code
-        class="mb-4 css-fmaglm-TextComponent"
+        class="mb-3 css-fmaglm-TextComponent"
         data-text="true"
       >
         PermissionStatus.UNDETERMINED ＝ "undetermined"

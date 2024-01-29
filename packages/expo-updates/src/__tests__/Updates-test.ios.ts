@@ -1,11 +1,16 @@
 import ExpoUpdates from '../ExpoUpdates';
 import * as Updates from '../Updates';
-import { UpdatesLogEntryCode, UpdatesLogEntryLevel } from '../Updates.types';
+import {
+  Manifest,
+  UpdateCheckResultAvailable,
+  UpdatesLogEntryCode,
+  UpdatesLogEntryLevel,
+} from '../Updates.types';
 
 const fakeManifest = {
   id: '@jester/test-app',
   sdkVersion: '36.0.0',
-};
+} as any as Manifest;
 
 let old__DEV__;
 beforeAll(() => {
@@ -20,48 +25,56 @@ afterAll(() => {
 });
 
 it('returns the proper object in checkForUpdateAsync if an update is available and manifest is returned', async () => {
-  ExpoUpdates.checkForUpdateAsync.mockReturnValueOnce({
+  jest.mocked(ExpoUpdates.checkForUpdateAsync).mockResolvedValueOnce({
     isAvailable: true,
     manifest: fakeManifest,
-  });
+    isRollBackToEmbedded: false,
+    reason: undefined,
+  } as UpdateCheckResultAvailable & { manifestString?: string });
 
   const actual = await Updates.checkForUpdateAsync();
-  const expected = { isAvailable: true, manifest: fakeManifest };
+  const expected = { isAvailable: true, manifest: fakeManifest, isRollBackToEmbedded: false };
   expect(actual).toEqual(expected);
 });
 
 it('returns the proper object in checkForUpdateAsync if an update is available and manifestString is returned', async () => {
-  ExpoUpdates.checkForUpdateAsync.mockReturnValueOnce({
+  jest.mocked(ExpoUpdates.checkForUpdateAsync).mockResolvedValueOnce({
     isAvailable: true,
+    manifest: undefined,
     manifestString: JSON.stringify(fakeManifest),
+    isRollBackToEmbedded: false,
+    reason: undefined,
   });
 
   const actual = await Updates.checkForUpdateAsync();
-  const expected = { isAvailable: true, manifest: fakeManifest };
+  const expected = { isAvailable: true, manifest: fakeManifest, isRollBackToEmbedded: false };
   expect(actual).toEqual(expected);
 });
 
 it('returns the proper object in fetchUpdateAsync if an update is available and manifest is returned', async () => {
-  ExpoUpdates.fetchUpdateAsync.mockReturnValueOnce({ isNew: true, manifest: fakeManifest });
+  jest
+    .mocked(ExpoUpdates.fetchUpdateAsync)
+    .mockResolvedValueOnce({ isNew: true, manifest: fakeManifest, isRollBackToEmbedded: false });
 
   const actual = await Updates.fetchUpdateAsync();
-  const expected = { isNew: true, manifest: fakeManifest };
+  const expected = { isNew: true, manifest: fakeManifest, isRollBackToEmbedded: false };
   expect(actual).toEqual(expected);
 });
 
 it('returns the proper object in fetchUpdateAsync if an update is available and manifestString is returned', async () => {
-  ExpoUpdates.fetchUpdateAsync.mockReturnValueOnce({
+  jest.mocked(ExpoUpdates.fetchUpdateAsync).mockResolvedValueOnce({
     isNew: true,
     manifestString: JSON.stringify(fakeManifest),
+    isRollBackToEmbedded: false,
   });
 
   const actual = await Updates.fetchUpdateAsync();
-  const expected = { isNew: true, manifest: fakeManifest };
+  const expected = { isNew: true, manifest: fakeManifest, isRollBackToEmbedded: false };
   expect(actual).toEqual(expected);
 });
 
 it('returns the proper object when no logs from readLogEntriesAsync', async () => {
-  ExpoUpdates.readLogEntriesAsync.mockReturnValueOnce([]);
+  jest.mocked(ExpoUpdates.readLogEntriesAsync).mockResolvedValueOnce([]);
 
   const actual = await Updates.readLogEntriesAsync();
   const expected = [];
@@ -69,7 +82,7 @@ it('returns the proper object when no logs from readLogEntriesAsync', async () =
 });
 
 it('returns the proper object when logs returned from readLogEntriesAsync', async () => {
-  ExpoUpdates.readLogEntriesAsync.mockReturnValueOnce([
+  jest.mocked(ExpoUpdates.readLogEntriesAsync).mockResolvedValueOnce([
     {
       timestamp: 100,
       message: 'Message 1',

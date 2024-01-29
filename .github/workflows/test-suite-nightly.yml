@@ -23,7 +23,7 @@ jobs:
     runs-on: macos-13
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
       - name: 🔨 Switch to Xcode 14.3
@@ -51,11 +51,8 @@ jobs:
       - name: 🌳 Display pod environment
         run: pod env
         working-directory: apps/bare-expo/ios
-      - name: 🥥 Update boost, RCT-Folly and SocketRocket pods in apps/bare-expo/ios
-        run: pod update boost RCT-Folly SocketRocket --no-repo-update
-        working-directory: apps/bare-expo/ios
-      - name: 🥥 Install pods in apps/bare-expo/ios
-        run: npx pod-install
+      - name: 🥥 Update RCT-Folly and SocketRocket pods in apps/bare-expo/ios
+        run: pod update RCT-Folly SocketRocket --no-repo-update
         working-directory: apps/bare-expo/ios
       - name: 🍏 Build iOS Project
         run: ./scripts/start-ios-e2e-test.ts --build
@@ -85,7 +82,7 @@ jobs:
     runs-on: macos-12
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
       - name: ➕ Add `bin` to GITHUB_PATH
@@ -139,15 +136,15 @@ jobs:
       GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
       - name: ⬢ Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18
       - name: 🔨 Use JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -195,7 +192,7 @@ jobs:
         api-level: [33]
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: 🌠 Download builds
         uses: actions/download-artifact@v3
         with:

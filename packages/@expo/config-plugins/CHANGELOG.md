@@ -12,6 +12,16 @@
 
 - Remove classic updates SDK version and release channel. ([#26061](https://github.com/expo/expo/pull/26061), [#26065](https://github.com/expo/expo/pull/26065) by [@wschurman](https://github.com/wschurman))
 
+## 7.8.4 - 2024-01-18
+
+### 💡 Others
+
+- Added a `finalized` mod that will run after all the other mods. ([#26413](https://github.com/expo/expo/pull/26413) by [@kudo](https://github.com/kudo))
+
+## 7.8.3 - 2024-01-05
+
+_This version does not introduce any user-facing changes._
+
 ## 7.8.2 - 2023-12-19
 
 ### 🐛 Bug fixes

@@ -17,11 +17,10 @@ function _iosPlugins() {
   };
   return data;
 }
-const withScheme = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(setScheme, {
+const withScheme = exports.withScheme = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(setScheme, {
   infoPlistProperty: 'CFBundleURLTypes',
   expoConfigProperty: 'scheme'
 }, 'withScheme');
-exports.withScheme = withScheme;
 function getScheme(config) {
   if (Array.isArray(config.scheme)) {
     const validate = value => {

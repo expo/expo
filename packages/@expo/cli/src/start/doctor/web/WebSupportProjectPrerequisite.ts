@@ -58,7 +58,7 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
       { file: 'react-dom/package.json', pkg: 'react-dom' },
     ];
 
-    const bundler = getPlatformBundlers(exp).web;
+    const bundler = getPlatformBundlers(this.projectRoot, exp).web;
     // Only include webpack-config if bundler is webpack.
     if (bundler === 'webpack') {
       requiredPackages.push(
@@ -69,6 +69,11 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
           dev: true,
         }
       );
+    } else if (bundler === 'metro') {
+      requiredPackages.push({
+        file: '@expo/metro-runtime/package.json',
+        pkg: '@expo/metro-runtime',
+      });
     }
 
     try {
@@ -93,7 +98,7 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
 export function isWebPlatformExcluded(rootConfig: AppJSONConfig): boolean {
   // Detect if the 'web' string is purposefully missing from the platforms array.
   const isWebExcluded =
-    Array.isArray(rootConfig.expo?.platforms) &&
+    Array.isArray(rootConfig?.expo?.platforms) &&
     !!rootConfig.expo?.platforms.length &&
     !rootConfig.expo?.platforms.includes('web');
   return isWebExcluded;

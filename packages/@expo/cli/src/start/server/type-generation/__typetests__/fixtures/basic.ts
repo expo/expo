@@ -18,7 +18,7 @@ type AbsoluteRoute = DynamicRouteTemplate | StaticRoutes;
 type ExternalPathString = `${string}:${string}`;
 
 type ExpoRouterRoutes = DynamicRouteTemplate | StaticRoutes | RelativePathString;
-type AllRoutes = ExpoRouterRoutes | ExternalPathString;
+export type AllRoutes = ExpoRouterRoutes | ExternalPathString;
 
 /****************
  * Route Utils  *
@@ -43,14 +43,14 @@ type UnknownOutputParams = Record<string, string | string[]>;
 type SingleRoutePart<S extends string> = S extends `${string}/${string}`
   ? never
   : S extends `${string}${SearchOrHash}`
-  ? never
-  : S extends ''
-  ? never
-  : S extends `(${string})`
-  ? never
-  : S extends `[${string}]`
-  ? never
-  : S;
+    ? never
+    : S extends ''
+      ? never
+      : S extends `(${string})`
+        ? never
+        : S extends `[${string}]`
+          ? never
+          : S;
 
 /**
  * Return only the CatchAll router part. If the string has search parameters or a hash return never
@@ -58,12 +58,12 @@ type SingleRoutePart<S extends string> = S extends `${string}/${string}`
 type CatchAllRoutePart<S extends string> = S extends `${string}${SearchOrHash}`
   ? never
   : S extends ''
-  ? never
-  : S extends `${string}(${string})${string}`
-  ? never
-  : S extends `${string}[${string}]${string}`
-  ? never
-  : S;
+    ? never
+    : S extends `${string}(${string})${string}`
+      ? never
+      : S extends `${string}[${string}]${string}`
+        ? never
+        : S;
 
 // type OptionalCatchAllRoutePart<S extends string> = S extends `${string}${SearchOrHash}` ? never : S
 
@@ -95,8 +95,8 @@ type RouteSegments<Path> = Path extends `${infer PartA}/${infer PartB}`
     ? [...RouteSegments<PartB>]
     : [PartA, ...RouteSegments<PartB>]
   : Path extends ''
-  ? []
-  : [Path];
+    ? []
+    : [Path];
 
 /**
  * Returns a Record of the routes parameters as strings and CatchAll parameters
@@ -125,8 +125,8 @@ type OutputRouteParams<Path> = {
 export type SearchParams<T extends AllRoutes> = T extends DynamicRouteTemplate
   ? OutputRouteParams<T>
   : T extends StaticRoutes
-  ? never
-  : UnknownOutputParams;
+    ? never
+    : UnknownOutputParams;
 
 /**
  * Route is mostly used as part of Href to ensure that a valid route is provided
@@ -153,8 +153,8 @@ export type Route<T> = T extends string
               ? T
               : never
             : T extends DynamicRoutes<infer _>
-            ? T
-            : never)
+              ? T
+              : never)
   : never;
 
 /*********
@@ -169,8 +169,8 @@ export type HrefObject<
 > = P extends DynamicRouteTemplate
   ? { pathname: P; params: InputRouteParams<P> }
   : P extends Route<P>
-  ? { pathname: Route<P> | DynamicRouteTemplate; params?: never | InputRouteParams<never> }
-  : never;
+    ? { pathname: Route<P> | DynamicRouteTemplate; params?: never | InputRouteParams<never> }
+    : never;
 
 /***********************
  * Expo Router Exports *

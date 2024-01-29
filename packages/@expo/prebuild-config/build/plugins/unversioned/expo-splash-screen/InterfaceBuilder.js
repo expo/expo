@@ -27,6 +27,9 @@ function _xml2js() {
 }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 const debug = require('debug')('expo:prebuild-config:expo-splash-screen:ios:InterfaceBuilder');
+
+/** @example `<color key="textColor" systemColor="linkColor"/>` */
+
 function createConstraint([firstItem, firstAttribute], [secondItem, secondAttribute], constant) {
   return {
     $: {
@@ -95,12 +98,6 @@ function applyImageToSplashScreenXML(xml, {
         y: 0.0,
         width,
         height
-      }
-    }],
-    color: [{
-      $: {
-        key: 'backgroundColor',
-        systemColor: 'systemBackgroundColor'
       }
     }]
   };

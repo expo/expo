@@ -67,6 +67,13 @@ export const TALKS = [
 
 export const PODCASTS = [
   {
+    title: 'EAS, Expo Prebuild & SDK 50',
+    event: 'Rocket Ship #025',
+    description: "Kadi Kraman",
+    videoId: "pPQNDHCOoAE",
+    link: "https://podcast.galaxies.dev/episodes/025-eas-expo-prebuild-sdk-50-with-kadi-kraman"
+  },
+  {
     title: 'Improving Developer Experience with Expo',
     event: 'The React Native Show #28',
     description: "Jon Samp, Cedric van Putten",
@@ -92,7 +99,7 @@ export const PODCASTS = [
     event: 'Rocket Ship #007',
     description: "Cedric van Putten",
     videoId: "yK0UDiLjxNY",
-    link: "https://share.transistor.fm/s/952096ad"
+    link: "https://podcast.galaxies.dev/episodes/007-expo-router-debugging-with-cedric-van-putten"
   }
 ] as Talk[]
 

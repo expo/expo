@@ -44,6 +44,8 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
   override fun definition() = ModuleDefinition {
     Name("ExponentDeviceMotion")
 
+    Events("deviceMotionDidUpdate")
+
     Constants("Gravity" to SensorManager.GRAVITY_EARTH)
 
     OnCreate {

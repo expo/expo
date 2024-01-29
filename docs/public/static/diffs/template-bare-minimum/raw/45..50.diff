@@ -1501,7 +1501,7 @@ index f35d996202..73b37e4d99 100644
            The item below with state_pressed="false" and state_focused="false" causes a NullPointerException.
            NullPointerException:tempt to invoke virtual method 'android.graphics.drawable.Drawable android.graphics.drawable.Drawable$ConstantState.newDrawable(android.content.res.Resources)'
 diff --git a/templates/expo-template-bare-minimum/android/build.gradle b/templates/expo-template-bare-minimum/android/build.gradle
-index fa77528908..02a88dad0a 100644
+index fa77528908..513b766148 100644
 --- a/templates/expo-template-bare-minimum/android/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/build.gradle
 @@ -1,67 +1,40 @@
@@ -1512,14 +1512,15 @@ index fa77528908..02a88dad0a 100644
  buildscript {
      ext {
 -        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '31.0.0'
-+        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '34.0.0'
-         minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '21')
+-        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '21')
 -        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '31')
 -        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '31')
 -        if (findProperty('android.kotlinVersion')) {
 -            kotlinVersion = findProperty('android.kotlinVersion')
 -        }
 -        frescoVersion = findProperty('expo.frescoVersion') ?: '2.5.0'
++        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '34.0.0'
++        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '23')
 +        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '34')
 +        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
 +        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.8.10'
@@ -2262,7 +2263,7 @@ index bf722cb92e..b93b7b2b0f 100644
    ],
    "info" : {
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
-index 9f116db7f2..5a1db7145b 100644
+index 9f116db7f2..552b63e06c 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
 @@ -2,6 +2,8 @@
@@ -2287,25 +2288,24 @@ index 9f116db7f2..5a1db7145b 100644
  	<key>CFBundleVersion</key>
  	<string>1</string>
  	<key>LSRequiresIPhoneOS</key>
-@@ -25,15 +27,9 @@
+@@ -25,11 +27,15 @@
  	<key>NSAppTransportSecurity</key>
  	<dict>
  		<key>NSAllowsArbitraryLoads</key>
 +		<false/>
 +		<key>NSAllowsLocalNetworking</key>
  		<true/>
--		<key>NSExceptionDomains</key>
--		<dict>
+ 		<key>NSExceptionDomains</key>
+ 		<dict>
 -			<key>localhost</key>
--			<dict>
--				<key>NSExceptionAllowsInsecureHTTPLoads</key>
--				<true/>
--			</dict>
--		</dict>
- 	</dict>
- 	<key>UILaunchStoryboardName</key>
- 	<string>SplashScreen</string>
-@@ -41,6 +37,8 @@
++			<key>exp.direct</key>
+ 			<dict>
++				<key>NSIncludesSubdomains</key>
++				<true/>
+ 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+ 				<true/>
+ 			</dict>
+@@ -41,6 +47,8 @@
  	<array>
  		<string>armv7</string>
  	</array>
@@ -2314,7 +2314,7 @@ index 9f116db7f2..5a1db7145b 100644
  	<key>UISupportedInterfaceOrientations</key>
  	<array>
  		<string>UIInterfaceOrientationPortrait</string>
-@@ -49,7 +47,5 @@
+@@ -49,7 +57,5 @@
  	</array>
  	<key>UIViewControllerBasedStatusBarAppearance</key>
  	<false/>
@@ -2461,7 +2461,7 @@ index 9430b0f9b6..07c9fce65d 100644
 +
 +module.exports = config;
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 69e7eb9619..fd1cd53388 100644
+index 69e7eb9619..a828360d9b 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -2469,7 +2469,7 @@ index 69e7eb9619..fd1cd53388 100644
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "45.0.6",
-+  "version": "50.0.22",
++  "version": "50.0.31",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -2484,7 +2484,7 @@ index 69e7eb9619..fd1cd53388 100644
 -    "react-dom": "17.0.2",
 -    "react-native": "0.68.2",
 -    "react-native-web": "0.17.7"
-+    "expo": "~50.0.0-preview.8",
++    "expo": "~50.0.3",
 +    "expo-status-bar": "~1.11.1",
 +    "react": "18.2.0",
 +    "react-native": "0.73.2"

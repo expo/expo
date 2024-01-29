@@ -19,9 +19,9 @@ The `eas update:configure` will add two values to your project's app config.
     "runtimeVersion": "1.0.0",
     "updates": {
       "url": "https://u.expo.dev/..."
-      ...
+      /* @hide ... */ /* @end */
     }
-    ...
+    /* @hide ... */ /* @end */
   }
 }
 ```
@@ -64,9 +64,9 @@ Inside **eas.json**, you'll want to add `channel` properties to each build profi
 }
 ```
 
-Inside **AndroidManifest.xml**, you'll see the following additions:
+Inside **android/app/src/main/AndroidManifest.xml**, you'll see the following additions:
 
-```xml
+```xml android/app/src/main/AndroidManifest.xml
 <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="https://u.expo.dev/your-project-id"/>
 <meta-data android:name="expo.modules.updates.EXPO_RUNTIME_VERSION" android:value="@string/expo_runtime_version"/>
 ```
@@ -77,9 +77,9 @@ Inside **android/app/src/main/res/values/strings.xml**, you'll see the `expo_run
 
 The `EXPO_UPDATE_URL` value should contain your project's ID.
 
-Inside **Expo.plist**, you'll see the following additions:
+Inside **ios/project-name/Supporting/Expo.plist**, you'll see the following additions:
 
-```xml
+```xml ios/project-name/Supporting/Expo.plist
 <key>EXUpdatesRuntimeVersion</key>
 <string>1.0.0</string>
 <key>EXUpdatesURL</key>
@@ -98,13 +98,13 @@ If your project is not using EAS Build or you are creating release builds with e
 
 In **AndroidManifest.xml**, you'll need to add the following, replacing `your-channel-name` with the channel that matches your project:
 
-```xml
+```xml android/app/src/main/AndroidManifest.xml
 <meta-data android:name="expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY" android:value="{&quot;expo-channel-name&quot;:&quot;your-channel-name&quot;}"/>
 ```
 
 In **Expo.plist**, you'll need to add the following, replacing `your-channel-name` with the channel that matches your project:
 
-```xml
+```xml ios/project-name/Supporting/Expo.plist
 <key>EXUpdatesRequestHeaders</key>
 <dict>
   <key>expo-channel-name</key>

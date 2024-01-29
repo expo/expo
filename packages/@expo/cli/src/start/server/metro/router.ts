@@ -7,6 +7,7 @@ import resolveFrom from 'resolve-from';
 import { Log } from '../../../log';
 import { directoryExistsSync } from '../../../utils/dir';
 import { memoize } from '../../../utils/fn';
+import { learnMore } from '../../../utils/link';
 
 const debug = require('debug')('expo:start:server:metro:router') as typeof console.log;
 
@@ -62,6 +63,10 @@ export function getRouterDirectory(projectRoot: string): string {
   return 'app';
 }
 
+export function isApiRouteConvention(name: string): boolean {
+  return /\+api\.[tj]sx?$/.test(name);
+}
+
 export function getApiRoutesForDirectory(cwd: string) {
   return globSync('**/*+api.@(ts|tsx|js|jsx)', {
     cwd,
@@ -78,4 +83,22 @@ export function getRoutePaths(cwd: string) {
 
 function normalizePaths(p: string) {
   return p.replace(/\\/g, '/');
+}
+
+let hasWarnedAboutApiRouteOutput = false;
+
+export function hasWarnedAboutApiRoutes() {
+  return hasWarnedAboutApiRouteOutput;
+}
+
+export function warnInvalidWebOutput() {
+  if (!hasWarnedAboutApiRouteOutput) {
+    Log.warn(
+      chalk.yellow`Using API routes requires the {bold web.output} to be set to {bold "server"} in the project {bold app.json}. ${learnMore(
+        'https://docs.expo.dev/router/reference/api-routes/'
+      )}`
+    );
+  }
+
+  hasWarnedAboutApiRouteOutput = true;
 }

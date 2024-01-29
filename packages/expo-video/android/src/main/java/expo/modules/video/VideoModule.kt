@@ -1,10 +1,8 @@
 package expo.modules.video
 
 import android.app.Activity
-import android.view.View
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackParameters
-import androidx.media3.ui.DefaultTimeBar
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -20,38 +18,61 @@ class VideoModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoVideo")
 
+    Function("isPictureInPictureSupported") {
+      return@Function VideoView.isPictureInPictureSupported(activity)
+    }
+
     View(VideoView::class) {
+      Events(
+        "onPictureInPictureStart",
+        "onPictureInPictureStop"
+      )
+
       Prop("player") { view: VideoView, player: VideoPlayer ->
         view.videoPlayer = player
         player.prepare()
       }
 
       Prop("nativeControls") { view: VideoView, useNativeControls: Boolean ->
-        view.playerView.useController = useNativeControls
+        view.useNativeControls = useNativeControls
       }
 
       Prop("contentFit") { view: VideoView, contentFit: ContentFit ->
-        view.playerView.resizeMode = contentFit.toResizeMode()
+        view.contentFit = contentFit
+      }
+
+      Prop("startsPictureInPictureAutomatically") { view: VideoView, autoEnterPiP: Boolean ->
+        view.autoEnterPiP = autoEnterPiP
+      }
+
+      Prop("allowsFullscreen") { view: VideoView, allowsFullscreen: Boolean? ->
+        view.allowsFullscreen = allowsFullscreen ?: true
       }
 
       Prop("requiresLinearPlayback") { view: VideoView, requiresLinearPlayback: Boolean? ->
         val linearPlayback = requiresLinearPlayback ?: false
-        view.playerView.setShowFastForwardButton(!linearPlayback)
-        view.playerView.setShowRewindButton(!linearPlayback)
-        view.playerView.setShowPreviousButton(!linearPlayback)
-        view.playerView.setShowNextButton(!linearPlayback)
-
-        // TODO: Make the requiresLinearPlayback hide only the scrubber instead of the whole progress bar.
-        //  Maybe use custom layout for the player as the scrubber is not available?
-        val progressBar = view.playerView.findViewById<View>(androidx.media3.ui.R.id.exo_progress)
-        if (progressBar is DefaultTimeBar) {
-          progressBar.visibility = if (linearPlayback) {
-            View.GONE
-          } else {
-            View.VISIBLE
-          }
-        }
+        view.playerView.applyRequiresLinearPlayback(linearPlayback)
         view.videoPlayer?.requiresLinearPlayback = linearPlayback
+      }
+
+      AsyncFunction("enterFullscreen") { view: VideoView ->
+        view.enterFullscreen()
+      }
+
+      AsyncFunction("exitFullscreen") {
+        throw MethodUnsupportedException("exitFullscreen")
+      }
+
+      AsyncFunction("startPictureInPicture") { view: VideoView ->
+        view.enterPictureInPicture()
+      }
+
+      AsyncFunction("stopPictureInPicture") {
+        throw MethodUnsupportedException("stopPictureInPicture")
+      }
+
+      OnViewDestroys {
+        VideoViewManager.removeVideoView(it.id)
       }
     }
 

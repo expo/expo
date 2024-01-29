@@ -83,9 +83,7 @@ export async function ensureDependenciesAsync(
     title = '';
   }
 
-  const installCommand = createInstallCommand({
-    packages: missing,
-  });
+  const installCommand = 'npx expo install ' + missing.map(({ pkg }) => pkg).join(' ');
 
   const disableMessage = warningMessage;
 
@@ -112,17 +110,7 @@ export function createInstallCommand({
     version?: string | undefined;
   }[];
 }) {
-  return (
-    'npx expo install ' +
-    packages
-      .map(({ pkg, version }) => {
-        if (version) {
-          return [pkg, version].join('@');
-        }
-        return pkg;
-      })
-      .join(' ')
-  );
+  return 'npx expo install ' + packages.map(({ pkg }) => pkg).join(' ');
 }
 
 /** Install packages in the project. */

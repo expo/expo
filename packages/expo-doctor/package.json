@@ -35,12 +35,12 @@
   "devDependencies": {
     "@expo/config": "~8.5.0",
     "@expo/json-file": "~8.3.0",
-    "expo-module-scripts": "^3.3.0",
     "@expo/schemer": "1.5.0",
     "@expo/spawn-async": "^1.7.0",
     "@types/debug": "^4.1.8",
     "chalk": "^4.0.0",
     "debug": "^4.3.4",
+    "expo-module-scripts": "^3.3.0",
     "ora": "3.4.0",
     "resolve-from": "^5.0.0",
     "semver": "7.3.2"

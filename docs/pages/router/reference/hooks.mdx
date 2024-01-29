@@ -21,13 +21,18 @@ Given a function, the `useFocusEffect` hook will invoke the function whenever th
 /* @info */
 import { useFocusEffect } from 'expo-router';
 /* @end */
+import { useCallback } from 'react';
 
 export default function Route() {
-  useFocusEffect(() => {
-    /* @info Invoked whenever the route is focused */
-    console.log('Hello')
+  useFocusEffect(
+    /* @info Callback should be wrapped in `React.useCallback` to avoid running the effect too often */
+    useCallback(() => {
     /* @end */
-  })
+      /* @info Invoked whenever the route is focused */
+      console.log('Hello')
+      /* @end */
+    }, [])
+  )
 
   return </>
 }
@@ -53,6 +58,7 @@ export default function Route() {
   /* @info <b>user=baconbrix</b> & <b>extra=info</b> */
   const { user, extra } = useGlobalSearchParams();
   /* @end */
+
   return <Text>User: {user}</Text>;
 }
 ```
@@ -79,6 +85,7 @@ export default function Route() {
   /* @info */
   const { user, extra } = useLocalSearchParams();
   /* @end */
+
   return <Text>User: {user}</Text>;
 }
 ```
@@ -98,6 +105,7 @@ export default function Route() {
   /* @info Access the current navigation object for the current route */
   const navigation = useNavigation();
   /* @end */
+
   return (
     <View>
       <Text
@@ -180,6 +188,7 @@ export default function Route() {
   /* @info <b>segments = ["profile", "[user]"]</b> */
   const segments = useSegments();
   /* @end */
+
   return <Text>Hello</Text>;
 }
 ```
