@@ -79,7 +79,7 @@ describe('_getExpectedClientVersionAsync', () => {
   });
 });
 
-describe('isClientOutdatedAsync', () => {
+describe('isInstalledClientVersionMismatchedAsync', () => {
   it(`returns true if the app is not installed`, async () => {
     // platform doesn't matter here...
     const installer = createInstaller('android');
@@ -87,17 +87,21 @@ describe('isClientOutdatedAsync', () => {
     const deviceManager = {
       getAppVersionAsync: jest.fn(async () => null),
     } as any;
-    await expect(installer.isClientOutdatedAsync(deviceManager)).resolves.toBe(true);
+    await expect(installer.isInstalledClientVersionMismatchedAsync(deviceManager)).resolves.toBe(
+      true
+    );
     expect(installer._getExpectedClientVersionAsync).toBeCalledTimes(0);
   });
-  it(`returns true if the installed Expo Go app is outdated`, async () => {
+  it(`returns true if the installed Expo Go app is mismatched`, async () => {
     // platform doesn't matter here...
     const installer = createInstaller('android');
     installer._getExpectedClientVersionAsync = jest.fn(async () => '2.0.0');
     const deviceManager = {
       getAppVersionAsync: jest.fn(async () => '1.0.0'),
     } as any;
-    await expect(installer.isClientOutdatedAsync(deviceManager)).resolves.toBe(true);
+    await expect(installer.isInstalledClientVersionMismatchedAsync(deviceManager)).resolves.toBe(
+      true
+    );
     expect(installer._getExpectedClientVersionAsync).toBeCalledTimes(1);
   });
   it(`returns false if the installed Expo Go app version is up to date`, async () => {
@@ -107,12 +111,14 @@ describe('isClientOutdatedAsync', () => {
     const deviceManager = {
       getAppVersionAsync: jest.fn(async () => '2.0.0'),
     } as any;
-    await expect(installer.isClientOutdatedAsync(deviceManager)).resolves.toBe(false);
+    await expect(installer.isInstalledClientVersionMismatchedAsync(deviceManager)).resolves.toBe(
+      false
+    );
     expect(installer._getExpectedClientVersionAsync).toBeCalledTimes(1);
   });
 });
 
-describe('uninstallExpoGoIfOutdatedAsync', () => {
+describe('promptForUninstallExpoGoIfInstalledClientVersionMismatchedAndReturnShouldInstallAsync', () => {
   function createDeviceManager() {
     return {
       name: 'Pixel 3',
@@ -126,10 +132,14 @@ describe('uninstallExpoGoIfOutdatedAsync', () => {
   it(`returns true when the user uninstalls the outdated app`, async () => {
     jest.mocked(confirmAsync).mockResolvedValueOnce(true);
     const installer = createInstaller('android');
-    installer.isClientOutdatedAsync = jest.fn(async () => true);
+    installer.isInstalledClientVersionMismatchedAsync = jest.fn(async () => true);
     const deviceManager = createDeviceManager();
 
-    await expect(installer.uninstallExpoGoIfOutdatedAsync(deviceManager)).resolves.toBe(true);
+    await expect(
+      installer.promptForUninstallExpoGoIfInstalledClientVersionMismatchedAndReturnShouldInstallAsync(
+        deviceManager
+      )
+    ).resolves.toBe(true);
     expect(confirmAsync).toBeCalled();
     expect(deviceManager.uninstallAppAsync).toBeCalled();
   });
@@ -137,22 +147,34 @@ describe('uninstallExpoGoIfOutdatedAsync', () => {
   it(`prevents checking the same device twice`, async () => {
     jest.mocked(confirmAsync).mockResolvedValueOnce(true);
     const installer = createInstaller('android');
-    installer.isClientOutdatedAsync = jest.fn(async () => true);
+    installer.isInstalledClientVersionMismatchedAsync = jest.fn(async () => true);
     const deviceManager = createDeviceManager();
-    await expect(installer.uninstallExpoGoIfOutdatedAsync(deviceManager)).resolves.toBe(true);
+    await expect(
+      installer.promptForUninstallExpoGoIfInstalledClientVersionMismatchedAndReturnShouldInstallAsync(
+        deviceManager
+      )
+    ).resolves.toBe(true);
     expect(confirmAsync).toBeCalled();
 
     // Returns false bacuse the device is already checked.
-    await expect(installer.uninstallExpoGoIfOutdatedAsync(deviceManager)).resolves.toBe(false);
+    await expect(
+      installer.promptForUninstallExpoGoIfInstalledClientVersionMismatchedAndReturnShouldInstallAsync(
+        deviceManager
+      )
+    ).resolves.toBe(false);
     expect(confirmAsync).toBeCalledTimes(1);
   });
 
   it(`returns false when the user uninstalls the outdated app`, async () => {
     jest.mocked(confirmAsync).mockResolvedValueOnce(false);
     const installer = createInstaller('android');
-    installer.isClientOutdatedAsync = jest.fn(async () => true);
+    installer.isInstalledClientVersionMismatchedAsync = jest.fn(async () => true);
     const deviceManager = createDeviceManager();
-    await expect(installer.uninstallExpoGoIfOutdatedAsync(deviceManager)).resolves.toBe(false);
+    await expect(
+      installer.promptForUninstallExpoGoIfInstalledClientVersionMismatchedAndReturnShouldInstallAsync(
+        deviceManager
+      )
+    ).resolves.toBe(false);
     expect(confirmAsync).toBeCalled();
     expect(deviceManager.uninstallAppAsync).not.toBeCalled();
   });
@@ -160,9 +182,13 @@ describe('uninstallExpoGoIfOutdatedAsync', () => {
   it(`does not actually uninstall the outdated app on iOS`, async () => {
     jest.mocked(confirmAsync).mockResolvedValueOnce(true);
     const installer = createInstaller('ios');
-    installer.isClientOutdatedAsync = jest.fn(async () => true);
+    installer.isInstalledClientVersionMismatchedAsync = jest.fn(async () => true);
     const deviceManager = createDeviceManager();
-    await expect(installer.uninstallExpoGoIfOutdatedAsync(deviceManager)).resolves.toBe(true);
+    await expect(
+      installer.promptForUninstallExpoGoIfInstalledClientVersionMismatchedAndReturnShouldInstallAsync(
+        deviceManager
+      )
+    ).resolves.toBe(true);
     expect(confirmAsync).toBeCalled();
     // Not called because we simply install the new app which automatically overwrites the old one.
     expect(deviceManager.uninstallAppAsync).not.toBeCalled();
@@ -172,19 +198,27 @@ describe('uninstallExpoGoIfOutdatedAsync', () => {
       throw new Error('Should not be called');
     });
     const installer = createInstaller('ios');
-    installer.isClientOutdatedAsync = jest.fn(async () => false);
+    installer.isInstalledClientVersionMismatchedAsync = jest.fn(async () => false);
     const deviceManager = createDeviceManager();
-    await expect(installer.uninstallExpoGoIfOutdatedAsync(deviceManager)).resolves.toBe(false);
+    await expect(
+      installer.promptForUninstallExpoGoIfInstalledClientVersionMismatchedAndReturnShouldInstallAsync(
+        deviceManager
+      )
+    ).resolves.toBe(false);
     expect(confirmAsync).not.toBeCalled();
     expect(deviceManager.uninstallAppAsync).not.toBeCalled();
   });
 
   it(`returns false when the project is unversioned`, async () => {
     const installer = new ExpoGoInstaller('android', 'host.fake.expo', 'UNVERSIONED');
-    installer.isClientOutdatedAsync = jest.fn(async () => true);
+    installer.isInstalledClientVersionMismatchedAsync = jest.fn(async () => true);
     const deviceManager = createDeviceManager();
 
-    await expect(installer.uninstallExpoGoIfOutdatedAsync(deviceManager)).resolves.toBe(false);
+    await expect(
+      installer.promptForUninstallExpoGoIfInstalledClientVersionMismatchedAndReturnShouldInstallAsync(
+        deviceManager
+      )
+    ).resolves.toBe(false);
     expect(confirmAsync).not.toBeCalled();
     expect(deviceManager.uninstallAppAsync).not.toBeCalled();
   });
@@ -209,7 +243,8 @@ describe('ensureAsync', () => {
 
     const installer = createInstaller('android');
     // Return true to indicate that the app was uninstalled.
-    installer.uninstallExpoGoIfOutdatedAsync = jest.fn(async () => true);
+    installer.promptForUninstallExpoGoIfInstalledClientVersionMismatchedAndReturnShouldInstallAsync =
+      jest.fn(async () => true);
 
     await expect(installer.ensureAsync(deviceManager)).resolves.toBe(true);
 
@@ -225,9 +260,10 @@ describe('ensureAsync', () => {
 
     // App is not installed so we shouldn't check if it's outdated.
     // This is important because skipping this means we skipped the cache and prompt.
-    installer.uninstallExpoGoIfOutdatedAsync = () => {
-      throw new Error('Should not be called');
-    };
+    installer.promptForUninstallExpoGoIfInstalledClientVersionMismatchedAndReturnShouldInstallAsync =
+      () => {
+        throw new Error('Should not be called');
+      };
 
     await expect(installer.ensureAsync(deviceManager)).resolves.toBe(true);
 
@@ -242,7 +278,8 @@ describe('ensureAsync', () => {
     const installer = createInstaller('android');
 
     // Return false to indicate that the app was not uninstalled
-    installer.uninstallExpoGoIfOutdatedAsync = jest.fn(async () => false);
+    installer.promptForUninstallExpoGoIfInstalledClientVersionMismatchedAndReturnShouldInstallAsync =
+      jest.fn(async () => false);
 
     await expect(installer.ensureAsync(deviceManager)).resolves.toBe(false);
 
@@ -261,12 +298,15 @@ describe('ensureAsync', () => {
     const installer = new ExpoGoInstaller('android', 'host.fake.expo', '44.0.0');
 
     // Return false and allow the test to validate this is not called
-    installer.uninstallExpoGoIfOutdatedAsync = jest.fn(async () => false);
+    installer.promptForUninstallExpoGoIfInstalledClientVersionMismatchedAndReturnShouldInstallAsync =
+      jest.fn(async () => false);
 
     await expect(installer.ensureAsync(deviceManager)).resolves.toBe(false);
 
     // Ensure it avoids making any API requests
-    expect(installer.uninstallExpoGoIfOutdatedAsync).not.toBeCalled();
+    expect(
+      installer.promptForUninstallExpoGoIfInstalledClientVersionMismatchedAndReturnShouldInstallAsync
+    ).not.toBeCalled();
     expect(downloadExpoGoAsync).not.toBeCalled();
   });
 
@@ -280,7 +320,8 @@ describe('ensureAsync', () => {
     const installer = new ExpoGoInstaller('android', 'host.fake.expo', '44.0.0');
 
     // Return false and allow the test to validate this is not called
-    installer.uninstallExpoGoIfOutdatedAsync = jest.fn(async () => false);
+    installer.promptForUninstallExpoGoIfInstalledClientVersionMismatchedAndReturnShouldInstallAsync =
+      jest.fn(async () => false);
 
     await expect(installer.ensureAsync(deviceManager)).rejects.toThrowError(
       'Expo Go is not installed'
