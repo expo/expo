@@ -22,6 +22,12 @@ export type BundleProgress = {
   ratio: number;
 };
 
+export type BundleProgressUpdate = {
+  buildID: string;
+  transformedFileCount: number;
+  totalFileCount: number;
+};
+
 export { TerminalReportableEvent };
 
 export type BuildPhase = 'in_progress' | 'done' | 'failed';
@@ -124,11 +130,7 @@ export interface TerminalReporterInterface {
     buildID,
     transformedFileCount,
     totalFileCount,
-  }: {
-    buildID: string;
-    transformedFileCount: number;
-    totalFileCount: number;
-  }): void;
+  }: BundleProgressUpdate): void;
 
   /**
    * This function is exclusively concerned with updating the internal state.

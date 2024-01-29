@@ -7,6 +7,7 @@ import util from 'util';
 
 import {
   BundleDetails,
+  BundleProgressUpdate,
   TerminalReportableEvent,
   TerminalReporterInterface,
 } from './TerminalReporter.types';
@@ -143,6 +144,26 @@ export class TerminalReporter extends XTerminalReporter implements TerminalRepor
         this._bundleDetails.set(event.buildID, event.bundleDetails);
         this._bundleTimers.set(event.buildID, Date.now());
         break;
+    }
+  }
+
+  /**
+   * We use Math.pow(ratio, 2) to as a conservative measure of progress because
+   * we know the `totalCount` is going to progressively increase as well. We
+   * also prevent the ratio from going backwards.
+   */
+  _updateBundleProgress(options: BundleProgressUpdate) {
+    super._updateBundleProgress(options);
+
+    const currentProgress = this._activeBundles.get(options.buildID);
+    if (!currentProgress) {
+      return;
+    }
+
+    // Fix an issue where the transformer is faster than the resolver,
+    // locking the progress bar at 100% after transforming the first and only resolved file (1/1).
+    if (currentProgress.ratio === 1 && options.totalFileCount === 1) {
+      Object.assign(currentProgress, { ...currentProgress, ratio: 0 });
     }
   }
 }
