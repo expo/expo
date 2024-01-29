@@ -26,7 +26,7 @@ jobs:
         ndk-version: [21.4.7075529]
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: ♻️ Restore caches
@@ -83,7 +83,7 @@ jobs:
     runs-on: macos-13
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: ♻️ Restore caches
