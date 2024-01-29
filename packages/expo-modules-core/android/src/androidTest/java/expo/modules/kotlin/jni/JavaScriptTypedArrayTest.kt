@@ -17,7 +17,6 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 internal class JavaScriptTypedArrayTest {
-
   @Test
   fun kind_should_return_correct_type() = withJSIInterop {
     val uint16Result = evaluateScript("new Uint16Array(4)")
