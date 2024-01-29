@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withAndroidQueries = exports.withAndroidCleartextTraffic = exports.updateAndroidProguardRules = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidBuildProperties = void 0;
+exports.withLegacyPackaging = exports.withAndroidQueries = exports.withAndroidCleartextTraffic = exports.updateAndroidProguardRules = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidBuildProperties = void 0;
 const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
@@ -188,3 +188,19 @@ const withAndroidQueries = (config, props) => {
     });
 };
 exports.withAndroidQueries = withAndroidQueries;
+const withLegacyPackaging = (config, props) => {
+    if (!props.android?.useLegacyPackaging) {
+        return config;
+    }
+    return (0, config_plugins_1.withAppBuildGradle)(config, (config) => {
+        const buildGradle = config.modResults.contents;
+        config.modResults.contents = buildGradle.replace(/buildTypes\s?{/, `packagingOptions {
+        jniLibs {
+          useLegacyPackaging true
+        }
+    }
+    buildTypes {`);
+        return config;
+    });
+};
+exports.withLegacyPackaging = withLegacyPackaging;

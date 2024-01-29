@@ -6,6 +6,7 @@ import {
   withAndroidPurgeProguardRulesOnce,
   withAndroidCleartextTraffic,
   withAndroidQueries,
+  withLegacyPackaging,
 } from './android';
 import { withIosBuildProperties, withIosDeploymentTarget } from './ios';
 import { PluginConfigType, validateConfig } from './pluginConfig';
@@ -30,6 +31,7 @@ export const withBuildProperties: ConfigPlugin<PluginConfigType> = (config, prop
   //
   // plugins order matter: the later one would run first
   config = withAndroidPurgeProguardRulesOnce(config);
+  config = withLegacyPackaging(config, pluginConfig);
 
   config = withIosBuildProperties(config, pluginConfig);
   config = withIosDeploymentTarget(config, pluginConfig);
