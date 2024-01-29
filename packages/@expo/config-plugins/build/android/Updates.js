@@ -73,10 +73,7 @@ function _Updates() {
 }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 const CREATE_MANIFEST_ANDROID_PATH = 'expo-updates/scripts/create-manifest-android.gradle';
-let Config; // when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
-// Also ensure the docs are up-to-date: https://docs.expo.dev/bare/installing-updates/
-exports.Config = Config;
-(function (Config) {
+let Config = exports.Config = /*#__PURE__*/function (Config) {
   Config["ENABLED"] = "expo.modules.updates.ENABLED";
   Config["CHECK_ON_LAUNCH"] = "expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH";
   Config["LAUNCH_WAIT_MS"] = "expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS";
@@ -85,7 +82,9 @@ exports.Config = Config;
   Config["UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY"] = "expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY";
   Config["CODE_SIGNING_CERTIFICATE"] = "expo.modules.updates.CODE_SIGNING_CERTIFICATE";
   Config["CODE_SIGNING_METADATA"] = "expo.modules.updates.CODE_SIGNING_METADATA";
-})(Config || (exports.Config = Config = {}));
+  return Config;
+}({}); // when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
+// Also ensure the docs are up-to-date: https://docs.expo.dev/bare/installing-updates/
 const withUpdates = config => {
   return (0, _withPlugins().withPlugins)(config, [withUpdatesManifest, withRuntimeVersionResource]);
 };

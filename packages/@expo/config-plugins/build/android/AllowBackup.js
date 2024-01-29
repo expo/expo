@@ -21,8 +21,7 @@ function _androidPlugins() {
   };
   return data;
 }
-const withAllowBackup = (0, _androidPlugins().createAndroidManifestPlugin)(setAllowBackup, 'withAllowBackup');
-exports.withAllowBackup = withAllowBackup;
+const withAllowBackup = exports.withAllowBackup = (0, _androidPlugins().createAndroidManifestPlugin)(setAllowBackup, 'withAllowBackup');
 function getAllowBackup(config) {
   var _config$android$allow, _config$android;
   // Defaults to true.

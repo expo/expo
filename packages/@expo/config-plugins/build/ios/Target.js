@@ -32,9 +32,7 @@ function _string() {
   };
   return data;
 }
-let TargetType;
-exports.TargetType = TargetType;
-(function (TargetType) {
+let TargetType = exports.TargetType = /*#__PURE__*/function (TargetType) {
   TargetType["APPLICATION"] = "com.apple.product-type.application";
   TargetType["EXTENSION"] = "com.apple.product-type.app-extension";
   TargetType["WATCH"] = "com.apple.product-type.application.watchapp";
@@ -42,7 +40,8 @@ exports.TargetType = TargetType;
   TargetType["STICKER_PACK_EXTENSION"] = "com.apple.product-type.app-extension.messages-sticker-pack";
   TargetType["FRAMEWORK"] = "com.apple.product-type.framework";
   TargetType["OTHER"] = "other";
-})(TargetType || (exports.TargetType = TargetType = {}));
+  return TargetType;
+}({});
 function getXCBuildConfigurationFromPbxproj(project, {
   targetName,
   buildConfiguration = 'Release'

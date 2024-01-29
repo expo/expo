@@ -47,8 +47,8 @@ function XML() {
   };
   return data;
 }
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 async function writeAndroidManifestAsync(manifestPath, androidManifest) {
   const manifestXml = XML().format(androidManifest);
@@ -73,10 +73,10 @@ function isManifest(xml) {
 
 /** Returns the `manifest.application` tag ending in `.MainApplication` */
 function getMainApplication(androidManifest) {
-  var _androidManifest$mani, _androidManifest$mani2, _androidManifest$mani3;
-  return (_androidManifest$mani = androidManifest === null || androidManifest === void 0 ? void 0 : (_androidManifest$mani2 = androidManifest.manifest) === null || _androidManifest$mani2 === void 0 ? void 0 : (_androidManifest$mani3 = _androidManifest$mani2.application) === null || _androidManifest$mani3 === void 0 ? void 0 : _androidManifest$mani3.filter(e => {
+  var _androidManifest$mani, _androidManifest$mani2;
+  return (_androidManifest$mani = androidManifest === null || androidManifest === void 0 || (_androidManifest$mani2 = androidManifest.manifest) === null || _androidManifest$mani2 === void 0 || (_androidManifest$mani2 = _androidManifest$mani2.application) === null || _androidManifest$mani2 === void 0 ? void 0 : _androidManifest$mani2.filter(e => {
     var _e$$;
-    return e === null || e === void 0 ? void 0 : (_e$$ = e.$) === null || _e$$ === void 0 ? void 0 : _e$$['android:name'].endsWith('.MainApplication');
+    return e === null || e === void 0 || (_e$$ = e.$) === null || _e$$ === void 0 ? void 0 : _e$$['android:name'].endsWith('.MainApplication');
   })[0]) !== null && _androidManifest$mani !== void 0 ? _androidManifest$mani : null;
 }
 function getMainApplicationOrThrow(androidManifest) {
@@ -90,9 +90,9 @@ function getMainActivityOrThrow(androidManifest) {
   return mainActivity;
 }
 function getRunnableActivity(androidManifest) {
-  var _androidManifest$mani4, _androidManifest$mani5, _androidManifest$mani6, _androidManifest$mani7, _androidManifest$mani8;
+  var _androidManifest$mani3, _androidManifest$mani4;
   // Get enabled activities
-  const enabledActivities = androidManifest === null || androidManifest === void 0 ? void 0 : (_androidManifest$mani4 = androidManifest.manifest) === null || _androidManifest$mani4 === void 0 ? void 0 : (_androidManifest$mani5 = _androidManifest$mani4.application) === null || _androidManifest$mani5 === void 0 ? void 0 : (_androidManifest$mani6 = _androidManifest$mani5[0]) === null || _androidManifest$mani6 === void 0 ? void 0 : (_androidManifest$mani7 = _androidManifest$mani6.activity) === null || _androidManifest$mani7 === void 0 ? void 0 : (_androidManifest$mani8 = _androidManifest$mani7.filter) === null || _androidManifest$mani8 === void 0 ? void 0 : _androidManifest$mani8.call(_androidManifest$mani7, e => e.$['android:enabled'] !== 'false' && e.$['android:enabled'] !== false);
+  const enabledActivities = androidManifest === null || androidManifest === void 0 || (_androidManifest$mani3 = androidManifest.manifest) === null || _androidManifest$mani3 === void 0 || (_androidManifest$mani3 = _androidManifest$mani3.application) === null || _androidManifest$mani3 === void 0 || (_androidManifest$mani3 = _androidManifest$mani3[0]) === null || _androidManifest$mani3 === void 0 || (_androidManifest$mani3 = _androidManifest$mani3.activity) === null || _androidManifest$mani3 === void 0 || (_androidManifest$mani4 = _androidManifest$mani3.filter) === null || _androidManifest$mani4 === void 0 ? void 0 : _androidManifest$mani4.call(_androidManifest$mani3, e => e.$['android:enabled'] !== 'false' && e.$['android:enabled'] !== false);
   if (!enabledActivities) {
     return null;
   }
@@ -111,8 +111,8 @@ function getRunnableActivity(androidManifest) {
   return null;
 }
 function getMainActivity(androidManifest) {
-  var _androidManifest$mani9, _androidManifest$mani10, _androidManifest$mani11, _androidManifest$mani12, _androidManifest$mani13, _mainActivity$;
-  const mainActivity = androidManifest === null || androidManifest === void 0 ? void 0 : (_androidManifest$mani9 = androidManifest.manifest) === null || _androidManifest$mani9 === void 0 ? void 0 : (_androidManifest$mani10 = _androidManifest$mani9.application) === null || _androidManifest$mani10 === void 0 ? void 0 : (_androidManifest$mani11 = _androidManifest$mani10[0]) === null || _androidManifest$mani11 === void 0 ? void 0 : (_androidManifest$mani12 = _androidManifest$mani11.activity) === null || _androidManifest$mani12 === void 0 ? void 0 : (_androidManifest$mani13 = _androidManifest$mani12.filter) === null || _androidManifest$mani13 === void 0 ? void 0 : _androidManifest$mani13.call(_androidManifest$mani12, e => e.$['android:name'] === '.MainActivity');
+  var _androidManifest$mani5, _androidManifest$mani6, _mainActivity$;
+  const mainActivity = androidManifest === null || androidManifest === void 0 || (_androidManifest$mani5 = androidManifest.manifest) === null || _androidManifest$mani5 === void 0 || (_androidManifest$mani5 = _androidManifest$mani5.application) === null || _androidManifest$mani5 === void 0 || (_androidManifest$mani5 = _androidManifest$mani5[0]) === null || _androidManifest$mani5 === void 0 || (_androidManifest$mani5 = _androidManifest$mani5.activity) === null || _androidManifest$mani5 === void 0 || (_androidManifest$mani6 = _androidManifest$mani5.filter) === null || _androidManifest$mani6 === void 0 ? void 0 : _androidManifest$mani6.call(_androidManifest$mani5, e => e.$['android:name'] === '.MainActivity');
   return (_mainActivity$ = mainActivity === null || mainActivity === void 0 ? void 0 : mainActivity[0]) !== null && _mainActivity$ !== void 0 ? _mainActivity$ : null;
 }
 function addMetaDataItemToMainApplication(mainApplication, itemName, itemValue, itemType = 'value') {
@@ -160,7 +160,7 @@ function getMainApplicationMetaDataValue(androidManifest, name) {
   const mainApplication = getMainApplication(androidManifest);
   if (mainApplication !== null && mainApplication !== void 0 && mainApplication.hasOwnProperty('meta-data')) {
     var _mainApplication$meta, _item$$$androidValue;
-    const item = mainApplication === null || mainApplication === void 0 ? void 0 : (_mainApplication$meta = mainApplication['meta-data']) === null || _mainApplication$meta === void 0 ? void 0 : _mainApplication$meta.find(e => e.$['android:name'] === name);
+    const item = mainApplication === null || mainApplication === void 0 || (_mainApplication$meta = mainApplication['meta-data']) === null || _mainApplication$meta === void 0 ? void 0 : _mainApplication$meta.find(e => e.$['android:name'] === name);
     return (_item$$$androidValue = item === null || item === void 0 ? void 0 : item.$['android:value']) !== null && _item$$$androidValue !== void 0 ? _item$$$androidValue : null;
   }
   return null;
@@ -220,8 +220,8 @@ function ensureManifestHasNamespace(manifest, {
   namespace,
   url
 }) {
-  var _manifest$manifest, _manifest$manifest$$;
-  if (manifest !== null && manifest !== void 0 && (_manifest$manifest = manifest.manifest) !== null && _manifest$manifest !== void 0 && (_manifest$manifest$$ = _manifest$manifest.$) !== null && _manifest$manifest$$ !== void 0 && _manifest$manifest$$[namespace]) {
+  var _manifest$manifest;
+  if (manifest !== null && manifest !== void 0 && (_manifest$manifest = manifest.manifest) !== null && _manifest$manifest !== void 0 && (_manifest$manifest = _manifest$manifest.$) !== null && _manifest$manifest !== void 0 && _manifest$manifest[namespace]) {
     return manifest;
   }
   manifest.manifest.$[namespace] = url;

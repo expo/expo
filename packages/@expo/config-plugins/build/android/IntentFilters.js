@@ -22,8 +22,7 @@ function _androidPlugins() {
   return data;
 }
 const GENERATED_TAG = 'data-generated';
-const withAndroidIntentFilters = (0, _androidPlugins().createAndroidManifestPlugin)(setAndroidIntentFilters, 'withAndroidIntentFilters');
-exports.withAndroidIntentFilters = withAndroidIntentFilters;
+const withAndroidIntentFilters = exports.withAndroidIntentFilters = (0, _androidPlugins().createAndroidManifestPlugin)(setAndroidIntentFilters, 'withAndroidIntentFilters');
 function getIntentFilters(config) {
   var _config$android$inten, _config$android;
   return (_config$android$inten = (_config$android = config.android) === null || _config$android === void 0 ? void 0 : _config$android.intentFilters) !== null && _config$android$inten !== void 0 ? _config$android$inten : [];

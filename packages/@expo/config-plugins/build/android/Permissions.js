@@ -62,10 +62,10 @@ const withBlockedPermissions = (config, permissions) => {
 };
 exports.withBlockedPermissions = withBlockedPermissions;
 const withInternalBlockedPermissions = config => {
-  var _config$android2, _config$android2$bloc;
+  var _config$android2;
   // Only add permissions if the user defined the property and added some values
   // this ensures we don't add the `tools:*` namespace extraneously.
-  if ((_config$android2 = config.android) !== null && _config$android2 !== void 0 && (_config$android2$bloc = _config$android2.blockedPermissions) !== null && _config$android2$bloc !== void 0 && _config$android2$bloc.length) {
+  if ((_config$android2 = config.android) !== null && _config$android2 !== void 0 && (_config$android2 = _config$android2.blockedPermissions) !== null && _config$android2 !== void 0 && _config$android2.length) {
     return withBlockedPermissions(config, config.android.blockedPermissions);
   }
   return config;

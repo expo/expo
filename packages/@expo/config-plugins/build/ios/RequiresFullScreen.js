@@ -27,11 +27,10 @@ function _warnings() {
   };
   return data;
 }
-const withRequiresFullScreen = (0, _iosPlugins().createInfoPlistPlugin)(setRequiresFullScreen, 'withRequiresFullScreen');
+const withRequiresFullScreen = exports.withRequiresFullScreen = (0, _iosPlugins().createInfoPlistPlugin)(setRequiresFullScreen, 'withRequiresFullScreen');
 
 // NOTES: This is defaulted to `true` for now to match the behavior prior to SDK
 // 34, but will change to `false` in SDK +43.
-exports.withRequiresFullScreen = withRequiresFullScreen;
 function getRequiresFullScreen(config) {
   var _config$ios;
   // Yes, the property is called ios.requireFullScreen, without the s - not "requires"

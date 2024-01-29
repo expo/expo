@@ -18,6 +18,10 @@ function _XML() {
   };
   return data;
 }
+/**
+ * Name of the resource folder.
+ */
+
 const fallbackResourceString = `<?xml version="1.0" encoding="utf-8"?><resources></resources>`;
 
 /**
@@ -96,8 +100,8 @@ function buildResourceGroup(parent) {
   };
 }
 function findResourceGroup(xml, group) {
-  var _xml$filter, _xml$filter$call;
-  const app = xml === null || xml === void 0 ? void 0 : (_xml$filter = xml.filter) === null || _xml$filter === void 0 ? void 0 : (_xml$filter$call = _xml$filter.call(xml, ({
+  var _xml$filter;
+  const app = xml === null || xml === void 0 || (_xml$filter = xml.filter) === null || _xml$filter === void 0 || (_xml$filter = _xml$filter.call(xml, ({
     $: head
   }) => {
     let matches = head.name === group.name;
@@ -105,7 +109,7 @@ function findResourceGroup(xml, group) {
       matches = head.parent === group.parent;
     }
     return matches;
-  })) === null || _xml$filter$call === void 0 ? void 0 : _xml$filter$call[0];
+  })) === null || _xml$filter === void 0 ? void 0 : _xml$filter[0];
   return app !== null && app !== void 0 ? app : null;
 }
 
