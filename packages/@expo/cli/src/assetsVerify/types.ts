@@ -1,6 +1,10 @@
 // Types for the options passed into the command
 
-export type Platform = 'android' | 'ios';
+export const validPlatforms = ['android', 'ios'];
+
+export type Platform = (typeof validPlatforms)[number];
+
+export const isValidPlatform = (p: any) => validPlatforms.includes(p);
 
 export interface Options {
   exportPath?: string;

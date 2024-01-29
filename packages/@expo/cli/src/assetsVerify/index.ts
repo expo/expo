@@ -2,14 +2,15 @@
 import arg from 'arg';
 import chalk from 'chalk';
 
-import { getMissingAssets } from './verifyNativeAssets';
+import { getMissingAssets } from './assetsVerify';
+import { validPlatforms } from './types';
 import { Command } from '../../bin/cli';
 import { getProjectRoot, assertWithOptionsArgs, printHelp } from '../utils/args';
 import { CommandError } from '../utils/errors';
 
 const debug = require('debug')('expo:verify-native-assets') as typeof console.log;
 
-export const expoVerifyNativeAssets: Command = async (argv) => {
+export const expoAssetsVerify: Command = async (argv) => {
   const rawArgsMap: arg.Spec = {
     // Types
     '--export-path': String,
@@ -33,12 +34,12 @@ export const expoVerifyNativeAssets: Command = async (argv) => {
   if (args['--help']) {
     printHelp(
       `(Internal) Verify that all static files in an exported bundle are in either the export or an embedded bundle`,
-      chalk`npx expo verifyNativeAssets {dim <dir>}`,
+      chalk`npx expo assets:verify {dim <dir>}`,
       [
         chalk`<dir>                                  Directory of the Expo project. {dim Default: Current working directory}`,
         chalk`--export-path <path>                   Path to the exported bundle {dim Default: ${defaultOptions.exportPath}}`,
         chalk`--build-path <path>                    Path to a build containing an embedded manifest {dim Default: ${defaultOptions.buildPath}}`,
-        chalk`-p, --platform <platform>              Options: android, ios {dim Default: ${defaultOptions.platform}}`,
+        chalk`-p, --platform <platform>              Options: ${JSON.stringify(validPlatforms)}`,
         `-h, --help                             Usage info`,
       ].join('\n')
     );

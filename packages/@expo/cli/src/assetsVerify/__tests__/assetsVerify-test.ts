@@ -1,6 +1,5 @@
 import { vol } from 'memfs';
 
-import { BuildManifest, ExportedMetadata, FullAssetDump } from '../types';
 import {
   getBuildManifest,
   getBuildManifestHashSet,
@@ -8,7 +7,8 @@ import {
   getExportedMetadataHashSet,
   getFullAssetDump,
   getFullAssetDumpHashSet,
-} from '../verifyNativeAssets';
+} from '../assetsVerify';
+import { BuildManifest, ExportedMetadata, FullAssetDump } from '../types';
 
 const metadata: ExportedMetadata = {
   fileMetadata: {

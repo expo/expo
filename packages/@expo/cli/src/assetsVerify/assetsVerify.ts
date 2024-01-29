@@ -77,7 +77,6 @@ export function getBuildManifest(buildPath: string, platform: Platform, projectR
         realBuildPath = path.resolve(projectRoot, 'ios', 'build');
         break;
     }
-    realBuildPath = path.resolve(projectRoot, platform);
   }
   const buildManifestPaths = glob.sync(`${realBuildPath}/**/app.manifest`);
   if (buildManifestPaths.length === 0) {

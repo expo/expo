@@ -1,15 +1,18 @@
 import arg from 'arg';
 import path from 'path';
 
-import { ValidatedOptions } from './types';
+import { isValidPlatform, validPlatforms, type ValidatedOptions } from './types';
+import { CommandError } from '../utils/errors';
 
 export const defaultOptions = {
   exportPath: './dist',
   buildPath: '.',
-  platform: 'ios',
 };
 
 export function resolveOptions(projectRoot: string, args: arg.Result<arg.Spec>): ValidatedOptions {
+  if (!isValidPlatform(args['--platform'])) {
+    throw new CommandError(`Platform must be one of ${JSON.stringify(validPlatforms)}`);
+  }
   return {
     exportPath: path.resolve(projectRoot, args['--export-path'] ?? defaultOptions.exportPath),
     buildPath: path.resolve(projectRoot, args['--build-path'] ?? defaultOptions.buildPath),
