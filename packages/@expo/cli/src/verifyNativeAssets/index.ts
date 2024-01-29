@@ -5,6 +5,7 @@ import chalk from 'chalk';
 import { getMissingAssets } from './verifyNativeAssets';
 import { Command } from '../../bin/cli';
 import { getProjectRoot, assertWithOptionsArgs, printHelp } from '../utils/args';
+import { CommandError } from '../utils/errors';
 
 const debug = require('debug')('expo:verify-native-assets') as typeof console.log;
 
@@ -54,7 +55,7 @@ export const expoVerifyNativeAssets: Command = async (argv) => {
     const missingAssets = getMissingAssets(buildPath, exportPath, platform, projectRoot);
 
     if (missingAssets.length > 0) {
-      console.warn(
+      throw new CommandError(
         `${missingAssets.length} assets not found in either embedded manifest or in exported bundle`
       );
     } else {
