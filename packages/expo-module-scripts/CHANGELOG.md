@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Use `node18` tsconfig in `expo-module-scripts` to match the dependencies. ([#26738](https://github.com/expo/expo/pull/26738)) by ([@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ### 💡 Others
 
 ## 3.4.0 — 2023-12-12
