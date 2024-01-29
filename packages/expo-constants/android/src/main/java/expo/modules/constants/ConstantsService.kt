@@ -55,7 +55,8 @@ open class ConstantsService(private val context: Context) : InternalModule, Cons
   override fun getStatusBarHeight() = statusBarHeightInternal
 
   override fun getIsDevice(): Boolean {
-    // Kept for compatibility with older expo-modules-core. TODO: remove in SDK 51
+    // Kept for backwards compatibility with the interface from older expo-modules-core (SDK 50).
+    // TODO: Can be removed once SDK 51 is out.
     return true
   }
 
