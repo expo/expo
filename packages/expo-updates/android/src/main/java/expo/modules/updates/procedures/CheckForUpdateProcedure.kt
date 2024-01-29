@@ -40,7 +40,6 @@ class CheckForUpdateProcedure(
       )
       databaseHolder.releaseDatabase()
       fileDownloader.downloadRemoteUpdate(
-        updatesConfiguration,
         extraHeaders,
         context,
         object : FileDownloader.RemoteUpdateDownloadCallback {

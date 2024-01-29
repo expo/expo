@@ -47,7 +47,7 @@ class EnabledUpdatesController(
     null
   }
   private val logger = UpdatesLogger(context)
-  private val fileDownloader = FileDownloader(context)
+  private val fileDownloader = FileDownloader(context, updatesConfiguration)
   private val selectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(
     updatesConfiguration.getRuntimeVersion()
   )
