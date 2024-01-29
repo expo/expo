@@ -15,19 +15,14 @@ const matchers_1 = require("./matchers");
  *      - If multiple routes have the same name, the most specific route is used
  */
 function getRoutes(contextModule, options = {}) {
-    console.log('ASdasdfs');
-    const layouts = new Set();
-    const directoryTree = getDirectoryTree(contextModule, layouts, options);
+    const directoryTree = getDirectoryTree(contextModule, options);
     // If there are no routes
     if (!directoryTree) {
         return null;
     }
     const rootNode = flattenDirectoryTreeToRoutes(directoryTree, options);
-    for (const layout of layouts) {
-        postprocessLayout(layout, options);
-    }
     if (!options.ignoreEntryPoints) {
-        crawlAndAppendEntryFiles(rootNode);
+        crawlAndAppendInitialRoutesAndEntryFiles(rootNode, options);
     }
     return rootNode;
 }
@@ -42,7 +37,7 @@ exports.getExactRoutes = getExactRoutes;
 /**
  * Converts the RequireContext keys (file paths) into a directory tree.
  */
-function getDirectoryTree(contextModule, layouts, options) {
+function getDirectoryTree(contextModule, options) {
     const ignoreList = [/^\.\/\+html\.[tj]sx?$/]; // Ignore the top level ./+html file
     if (options.ignore) {
         ignoreList.push(...options.ignore);
@@ -121,7 +116,6 @@ function getDirectoryTree(contextModule, layouts, options) {
                 else {
                     node = getLayoutNode(node, options);
                     directory.layout[meta.specificity] = node;
-                    layouts.add(node);
                 }
             }
             else if (meta.isApi) {
@@ -395,56 +389,61 @@ function getLayoutNode(node, options) {
         initialRouteName,
     };
 }
-function crawlAndAppendEntryFiles(node, entryPoints = []) {
+function crawlAndAppendInitialRoutesAndEntryFiles(node, options, entryPoints = []) {
     if (node.type === 'route') {
         node.entryPoints = [...new Set([...entryPoints, node.contextKey])];
     }
     else if (node.type === 'layout') {
+        if (!node.children) {
+            throw new Error(`Layout "${node.contextKey}" does not contain any child routes`);
+        }
+        // Every node below this layout will have it as an entryPoint
         entryPoints = [...entryPoints, node.contextKey];
-        if (node.initialRouteName) {
-            const initialRoute = node.children.find((child) => child.route === node.initialRouteName);
-            if (!initialRoute) {
-                throw new Error('Initial route not found');
+        /**
+         * Calculate the initialRouteNode
+         *
+         * A file called `(a,b)/(c)/_layout.tsx` will generate two _layout routes: `(a)/(c)/_layout` and `(b)/(c)/_layout`.
+         * Each of these layouts will have a different initialRouteName based upon the first group.
+         */
+        const groupName = (0, matchers_1.matchGroupName)(node.route);
+        const childMatchingGroup = node.children.find((child) => {
+            return child.route.replace(/\/index$/, '') === groupName;
+        });
+        let initialRouteName = childMatchingGroup?.route;
+        // We may strip loadRoute during testing
+        if (!options.internal_stripLoadRoute) {
+            const loaded = node.loadRoute();
+            if (loaded?.unstable_settings) {
+                // Allow unstable_settings={ initialRouteName: '...' } to override the default initial route name.
+                initialRouteName = loaded.unstable_settings.initialRouteName ?? initialRouteName;
+                if (groupName) {
+                    // Allow unstable_settings={ 'custom': { initialRouteName: '...' } } to override the less specific initial route name.
+                    const groupSpecificInitialRouteName = loaded.unstable_settings?.[groupName]?.initialRouteName;
+                    initialRouteName = groupSpecificInitialRouteName ?? initialRouteName;
+                }
             }
+        }
+        if (initialRouteName) {
+            const initialRoute = node.children.find((child) => child.route === initialRouteName);
+            if (!initialRoute) {
+                const validInitialRoutes = node.children
+                    .filter((child) => !child.generated)
+                    .map((child) => `'${child.route}'`)
+                    .join(', ');
+                if (groupName) {
+                    throw new Error(`Layout ${node.contextKey} has invalid initialRouteName '${initialRouteName}' for group '(${groupName})'. Valid options are: ${validInitialRoutes}`);
+                }
+                else {
+                    throw new Error(`Layout ${node.contextKey} has invalid initialRouteName '${initialRouteName}'. Valid options are: ${validInitialRoutes}`);
+                }
+            }
+            // Navigators can add initialsRoutes into the history, so they need to be to be included in the entryPoints
+            node.initialRouteName = initialRouteName;
             entryPoints.push(initialRoute.contextKey);
         }
         for (const child of node.children) {
-            crawlAndAppendEntryFiles(child, entryPoints);
+            crawlAndAppendInitialRoutesAndEntryFiles(child, options, entryPoints);
         }
     }
-}
-/**
- * Once all children have been hoisted to a layout, we can determine the initialRouteName and
- * assert that all routes have a least 1 child
- */
-function postprocessLayout(node, options) {
-    if (!node.children) {
-        throw new Error(`Layout "${node.contextKey}" does not contain any child routes`);
-    }
-    /**
-     * A file called `(a,b)/(c)/_layout.tsx` will generate two _layout routes: `(a)/(c)/_layout` and `(b)/(c)/_layout`.
-     * Each of these layouts will have a different initialRouteName based upon the first group name.
-     *
-     * So
-     */
-    const groupName = (0, matchers_1.matchGroupName)(node.route);
-    const childMatchingGroup = node.children.find((child) => {
-        return child.route.replace(/\/index$/, '') === groupName;
-    });
-    let initialRouteName = childMatchingGroup?.route;
-    // We may strip loadRoute during testing
-    if (!options.internal_stripLoadRoute) {
-        const loaded = node.loadRoute();
-        if (loaded?.unstable_settings) {
-            // Allow unstable_settings={ initialRouteName: '...' } to override the default initial route name.
-            initialRouteName = loaded.unstable_settings.initialRouteName ?? initialRouteName;
-            if (groupName) {
-                // Allow unstable_settings={ 'custom': { initialRouteName: '...' } } to override the less specific initial route name.
-                const groupSpecificInitialRouteName = loaded.unstable_settings?.[groupName]?.initialRouteName;
-                initialRouteName = groupSpecificInitialRouteName ?? initialRouteName;
-            }
-        }
-    }
-    node.initialRouteName = initialRouteName;
 }
 //# sourceMappingURL=getRoutes.js.map

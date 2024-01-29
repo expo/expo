@@ -649,6 +649,48 @@ describe('initialRouteName', () => {
       type: 'layout',
     });
   });
+
+  it(`throws if initialRouteName does not match a route`, () => {
+    expect(() => {
+      getRoutes(
+        inMemoryContext({
+          _layout: {
+            unstable_settings: {
+              initialRouteName: 'c',
+            },
+            default: () => null,
+          },
+          a: () => null,
+          b: () => null,
+        })
+      );
+    }).toThrowErrorMatchingInlineSnapshot(
+      `"Layout ./_layout.js has invalid initialRouteName 'c'. Valid options are: 'a', 'b'"`
+    );
+  });
+
+  it(`throws if initialRouteName with group selection does not match a route`, () => {
+    expect(() => {
+      getRoutes(
+        inMemoryContext({
+          '(a,b)/_layout': {
+            unstable_settings: {
+              a: {
+                initialRouteName: 'c',
+              },
+              b: {
+                initialRouteName: 'd',
+              },
+            },
+            default: () => null,
+          },
+          '(a,b)/c': () => null,
+        })
+      );
+    }).toThrowErrorMatchingInlineSnapshot(
+      `"Layout ./(a,b)/_layout.js has invalid initialRouteName 'd' for group '(b)'. Valid options are: 'c'"`
+    );
+  });
 });
 
 describe('dynamic routes', () => {
