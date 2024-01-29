@@ -16,7 +16,7 @@
 - Fix sitemap missing paths ([#26507](https://github.com/expo/expo/pull/26507) by [@marklawlor](https://github.com/marklawlor))
 - API routes incorrectly reporting duplicate routes ([#26507](https://github.com/expo/expo/pull/26507) by [@marklawlor](https://github.com/marklawlor))
 - Invalid nested +html routes ([#26507](https://github.com/expo/expo/pull/26507) by [@marklawlor](https://github.com/marklawlor))
-- Routes under shared routes using the wrong layout
+- Routes under shared routes using the wrong layout ([#26507](https://github.com/expo/expo/pull/26507) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
