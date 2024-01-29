@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `canUseBiometricAuthentication` function. 
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

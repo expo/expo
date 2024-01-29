@@ -66,6 +66,15 @@ open class SecureStoreModule : Module() {
       }
     }
 
+    Function("canUseBiometricAuthentication") {
+      try {
+        authenticationHelper.assertBiometricsSupport()
+      } catch (e: AuthenticationException) {
+        return@Function false
+      }
+      return@Function true
+    }
+
     OnCreate {
       authenticationHelper = AuthenticationHelper(reactContext, appContext.legacyModuleRegistry)
       hybridAESEncryptor = HybridAESEncryptor(reactContext, mAESEncryptor)
