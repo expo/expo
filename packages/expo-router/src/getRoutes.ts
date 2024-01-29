@@ -16,7 +16,7 @@ export type Options = {
   /* Used to simplify testing for toEqual() comparison */
   internal_stripLoadRoute?: boolean;
   /* Used to simplify by skipping the generated routes */
-  internal_skipGenerated?: boolean;
+  skipGenerated?: boolean;
 };
 
 type DirectoryNode = {
@@ -55,6 +55,16 @@ export function getRoutes(contextModule: RequireContext, options: Options = {}):
   return rootNode;
 }
 
+export function getExactRoutes(
+  contextModule: RequireContext,
+  options: Options = {}
+): RouteNode | null {
+  return getRoutes(contextModule, {
+    ...options,
+    skipGenerated: true,
+  });
+}
+
 /**
  * Converts the RequireContext keys (file paths) into a directory tree.
  */
@@ -78,12 +88,14 @@ function getDirectoryTree(
   };
 
   let hasRoutes = false;
-  let hasLayout = false;
+  let isValid = false;
 
   for (const filePath of contextModule.keys()) {
     if (ignoreList.some((regex) => regex.test(filePath))) {
       continue;
     }
+
+    isValid = true;
 
     const meta = getFileMeta(filePath);
 
@@ -108,7 +120,7 @@ function getDirectoryTree(
       contextKey: filePath,
       entryPoints: [filePath], // Additional entry points are added during hoisting
       route: '', // This is overwritten during hoisting based upon the _layout
-      dynamic: generateDynamic(meta.route),
+      dynamic: null,
       children: [], // While we are building the directory tree, we don't know the node's children just yet. This is added during hoisting
     };
 
@@ -159,7 +171,6 @@ function getDirectoryTree(
           };
           directory.layout[meta.specificity] = node;
           layouts.add(node);
-          hasLayout ||= true;
         }
       } else if (meta.isApi) {
         const fileKey = `${route}+api`;
@@ -207,19 +218,22 @@ function getDirectoryTree(
             );
           }
         } else {
-          nodes[meta.specificity] = node;
           hasRoutes ||= true;
+          nodes[meta.specificity] = node;
         }
       }
     }
   }
 
   // If there are no routes/layouts then we should display the tutorial.
-  if (!hasLayout && !hasRoutes) {
+  if (!isValid) {
     return null;
   }
 
-  // If there are no top-level _layout, add a default _layout
+  /**
+   * If there are no top-level _layout, add a default _layout
+   * While this is a generated route, it will still be generated even if skipGenerated is true.
+   */
   if (!rootDirectory.layout) {
     rootDirectory.layout = [
       {
@@ -240,11 +254,10 @@ function getDirectoryTree(
   }
 
   // Only include the sitemap if there are routes.
-  if (hasRoutes && !options.internal_skipGenerated) {
-    appendSitemapRoute(rootDirectory);
-  }
-
-  if (!options.internal_skipGenerated) {
+  if (!options.skipGenerated) {
+    if (hasRoutes) {
+      appendSitemapRoute(rootDirectory);
+    }
     appendNotFoundRoute(rootDirectory);
   }
   return rootDirectory;
@@ -257,86 +270,79 @@ function flattenDirectoryTreeToRoutes(
   directory: DirectoryNode,
   options: Options,
   /* The nearest _layout file in the directory tree */
-  nearestLayout?: RouteNode,
+  layout?: RouteNode,
   /* Routes need to contain the entryPoints of their parent layouts */
   entryPoints: string[] = [],
   /* Route names are relative to their layout */
   pathToRemove = ''
 ) {
   /**
-   * All routes get "hoisted" to the nearest layout.
+   * This directory has a _layout file so it becomes the new target for hoisting routes.
    */
   if (directory.layout) {
-    // TODO(Platform Routes): We need to pick the most specific layout.
-    const layout = directory.layout[0];
-    const previousNearestLayout = nearestLayout;
-    nearestLayout = layout;
+    const previousLayout = layout;
+    layout = directory.layout[0]; // TODO(Platform Routes): We need to pick the most specific layout.
 
     // Add the new layout as a child of its parent
-    if (previousNearestLayout) {
-      previousNearestLayout.children.push(nearestLayout);
+    if (previousLayout) {
+      previousLayout.children.push(layout);
     }
 
     if (options.internal_stripLoadRoute) {
-      delete (nearestLayout as any).loadRoute;
+      delete (layout as any).loadRoute;
     }
 
-    // `route` is the absolute pathname. We need to make this relative to the parent layout
-    const newRoute = nearestLayout.route.replace(pathToRemove, '');
-    pathToRemove = nearestLayout.route ? `${nearestLayout.route}/` : '';
-    nearestLayout.route = newRoute;
+    // `route` is the absolute pathname. We need to make this relative to the last _layout
+    const newRoute = layout.route.replace(pathToRemove, '');
+    pathToRemove = layout.route ? `${layout.route}/` : '';
 
-    if (nearestLayout.entryPoints) {
+    // Now update this layout with the new relative route and dynamic conventions
+    layout.route = newRoute;
+    layout.dynamic = generateDynamic(layout.route);
+
+    if (layout.entryPoints) {
       // Track this _layout's entryPoints so that child routes can inherit them
-      entryPoints = [...entryPoints, ...nearestLayout.entryPoints];
+      entryPoints = [...entryPoints, ...layout.entryPoints];
 
       // Layouts never have entryPoints
-      delete nearestLayout.entryPoints;
+      delete layout.entryPoints;
     }
   }
 
-  // This should never occur, but it makes the type system happy
-  if (!nearestLayout) throw new Error('Expo Router Internal Error: No nearest layout');
+  // This should never occur as there will always be a root layout, but it makes the type system happy
+  if (!layout) throw new Error('Expo Router Internal Error: No nearest layout');
 
   for (const routes of directory.files.values()) {
     // TODO(Platform Routes): We need to pick the most specific layout and ensure that all routes have a non-platform route.
-    let routeNode = routes[0];
+    const routeNode = routes[0];
 
     // `route` is the absolute pathname. We need to make this relative to the nearest layout
-    const route = routeNode.route.replace(pathToRemove, '');
+    routeNode.route = routeNode.route.replace(pathToRemove, '');
+    routeNode.dynamic = generateDynamic(routeNode.route);
 
     // Merge the entryPoints of the parent layout(s) with the child route
-    let childEntryPoints: string[] | undefined = undefined;
-
-    if (!options.ignoreEntryPoints) {
-      if (routeNode.type === 'api') {
-        childEntryPoints = routeNode.entryPoints;
-      } else if (routeNode.entryPoints) {
-        childEntryPoints = [...entryPoints, ...routeNode.entryPoints];
-      } else {
-        childEntryPoints = [...entryPoints];
-      }
+    if (options.ignoreEntryPoints) {
+      delete routeNode.entryPoints;
+    } else if (
+      routeNode.type !== 'api' && // API routes don't merge entryPoints
+      routeNode.entryPoints
+    ) {
+      routeNode.entryPoints = [...entryPoints, ...routeNode.entryPoints];
     }
-
-    routeNode = {
-      ...routeNode,
-      route,
-      entryPoints: childEntryPoints,
-    };
 
     if (options.internal_stripLoadRoute) {
       delete (routeNode as any).loadRoute;
     }
 
-    nearestLayout.children.push(routeNode);
+    layout.children.push(routeNode);
   }
 
   // Recursively flatten the subdirectories
   for (const child of directory.subdirectories.values()) {
-    flattenDirectoryTreeToRoutes(child, options, nearestLayout, entryPoints, pathToRemove);
+    flattenDirectoryTreeToRoutes(child, options, layout, entryPoints, pathToRemove);
   }
 
-  return nearestLayout;
+  return layout;
 }
 
 function getFileMeta(key: string) {

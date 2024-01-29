@@ -73,7 +73,7 @@ describe('getRoutes', () => {
         inMemoryContext({
           './(a,b)/(c,d)/page': () => null,
         }),
-        { internal_stripLoadRoute: true, internal_skipGenerated: true }
+        { internal_stripLoadRoute: true, skipGenerated: true }
       )
     ).toEqual({
       children: [
@@ -178,7 +178,7 @@ describe('getRoutes', () => {
           './[a].tsx': () => null, // In v2 this would error and require moving to ./[a]/index.tsx
           './[a]/[b].tsx': () => null, //
         }),
-        { internal_stripLoadRoute: true, internal_skipGenerated: true }
+        { internal_stripLoadRoute: true, skipGenerated: true }
       )
     ).toEqual({
       children: [
@@ -240,7 +240,7 @@ describe('getRoutes', () => {
           './(b)/_layout': () => null,
           './(a,b)/page': () => null, // /(b)/page should have a different route name as it
         }),
-        { internal_stripLoadRoute: true, internal_skipGenerated: true }
+        { internal_stripLoadRoute: true, skipGenerated: true }
       )
     ).toEqual({
       children: [
@@ -382,7 +382,7 @@ describe('+html', () => {
         inMemoryContext({
           './folder/+html': () => null,
         }),
-        { internal_stripLoadRoute: true, internal_skipGenerated: true }
+        { internal_stripLoadRoute: true, skipGenerated: true }
       );
     }).toThrowErrorMatchingInlineSnapshot(
       `"Invalid route ./folder/+html.js. Route nodes cannot start with the '+' character. "Please rename to folder/html.js""`
@@ -533,7 +533,7 @@ describe('entry points', () => {
           './a/b/(c,d)/_layout': () => null,
           './a/b/(c,d)/e': () => null,
         }),
-        { internal_stripLoadRoute: true, internal_skipGenerated: true }
+        { internal_stripLoadRoute: true, skipGenerated: true }
       )
     ).toEqual({
       contextKey: './_layout.tsx',
@@ -616,7 +616,7 @@ describe('dynamic routes', () => {
           './a/b/c/[single]': () => null,
           './[...catchAll]': () => null,
         }),
-        { internal_stripLoadRoute: true, internal_skipGenerated: true }
+        { internal_stripLoadRoute: true, skipGenerated: true }
       )
     ).toEqual({
       children: [
@@ -677,7 +677,7 @@ describe('api routes', () => {
           './(app)/page': () => null,
           './(app)/page+api': () => null,
         }),
-        { internal_stripLoadRoute: true, internal_skipGenerated: true }
+        { internal_stripLoadRoute: true, skipGenerated: true }
       )
     ).toEqual({
       children: [
@@ -705,7 +705,7 @@ describe('api routes', () => {
           './(app)/page': () => null,
           './(app)/page+api': () => null,
         }),
-        { internal_stripLoadRoute: true, internal_skipGenerated: true, preserveApiRoutes: true }
+        { internal_stripLoadRoute: true, skipGenerated: true, preserveApiRoutes: true }
       )
     ).toEqual({
       children: [

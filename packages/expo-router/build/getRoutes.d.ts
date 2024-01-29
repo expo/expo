@@ -1,4 +1,4 @@
-import { RouteNode } from './Route';
+import { DynamicConvention, RouteNode } from './Route';
 import { RequireContext } from './types';
 export type Options = {
     ignore?: RegExp[];
@@ -6,7 +6,7 @@ export type Options = {
     ignoreRequireErrors?: boolean;
     ignoreEntryPoints?: boolean;
     internal_stripLoadRoute?: boolean;
-    internal_skipGenerated?: boolean;
+    skipGenerated?: boolean;
 };
 /**
  * Given a Metro context module, return an array of nested routes.
@@ -21,5 +21,7 @@ export type Options = {
  *      - If multiple routes have the same name, the most specific route is used
  */
 export declare function getRoutes(contextModule: RequireContext, options?: Options): RouteNode | null;
+export declare function getExactRoutes(contextModule: RequireContext, options?: Options): RouteNode | null;
 export declare function getIgnoreList(options?: Options): RegExp[];
+export declare function generateDynamic(path: string): DynamicConvention[] | null;
 //# sourceMappingURL=getRoutes.d.ts.map

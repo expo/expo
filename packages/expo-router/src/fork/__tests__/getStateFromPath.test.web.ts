@@ -48,7 +48,7 @@ describe('baseUrl', () => {
     const config = configFromFs(['_layout.tsx', 'bar.tsx', 'index.tsx']);
 
     expect(getStateFromPath<object>(path, config)).toEqual({
-      routes: [{ name: '', state: { routes: [{ name: 'bar', path: '/bar' }] } }],
+      routes: [{ name: 'bar', path: '/bar' }],
     });
 
     expect(getPathFromState(getStateFromPath<object>(path, config), config)).toBe(
@@ -62,7 +62,7 @@ describe('baseUrl', () => {
     const config = configFromFs(['_layout.tsx', 'bar.tsx', 'index.tsx']);
 
     expect(getStateFromPath<object>(path, config)).toEqual({
-      routes: [{ name: '', state: { routes: [{ name: 'bar', path: '/bar' }] } }],
+      routes: [{ name: 'bar', path: '/bar' }],
     });
     expect(getPathFromState(getStateFromPath<object>(path, config), config)).toBe('/expo/bar');
   });
