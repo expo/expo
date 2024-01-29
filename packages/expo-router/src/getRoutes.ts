@@ -3,6 +3,7 @@ import {
   matchArrayGroupName,
   matchDeepDynamicRouteName,
   matchDynamicName,
+  matchGroupName,
   removeSupportedExtensions,
 } from './matchers';
 import { RequireContext } from './types';
@@ -37,20 +38,31 @@ type DirectoryNode = {
  *      - If multiple routes have the same name, the most specific route is used
  */
 export function getRoutes(contextModule: RequireContext, options: Options = {}): RouteNode | null {
-  const directoryTree = getDirectoryTree(contextModule, options);
+  const layouts = new Set<RouteNode>();
+  const directoryTree = getDirectoryTree(contextModule, layouts, options);
 
   // If there are no routes
   if (!directoryTree) {
     return null;
   }
 
-  return flattenDirectoryTreeToRoutes(directoryTree, options);
+  const rootNode = flattenDirectoryTreeToRoutes(directoryTree, options);
+
+  for (const layout of layouts) {
+    postprocessLayout(layout, options);
+  }
+
+  return rootNode;
 }
 
 /**
  * Converts the RequireContext keys (file paths) into a directory tree.
  */
-function getDirectoryTree(contextModule: RequireContext, options: Options) {
+function getDirectoryTree(
+  contextModule: RequireContext,
+  layouts: Set<RouteNode>,
+  options: Options
+) {
   const ignoreList: RegExp[] = [/^\.\/\+html\.[tj]sx?$/]; // Ignore the top level ./+html file
 
   if (options.ignore) {
@@ -80,7 +92,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
       continue;
     }
 
-    const node: RouteNode = {
+    let node: RouteNode = {
       type: meta.isApi ? 'api' : meta.isLayout ? 'layout' : 'route',
       loadRoute() {
         if (options.ignoreRequireErrors) {
@@ -96,7 +108,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
       contextKey: filePath,
       entryPoints: [filePath], // Additional entry points are added during hoisting
       route: '', // This is overwritten during hoisting based upon the _layout
-      dynamic: getDynamicConvention(meta.route),
+      dynamic: generateDynamic(meta.route),
       children: [], // While we are building the directory tree, we don't know the node's children just yet. This is added during hoisting
     };
 
@@ -127,7 +139,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
       }
 
       // Clone the node for this route
-      const routeNode: RouteNode = { ...node, route };
+      node = { ...node, route };
 
       if (meta.isLayout) {
         directory.layout ??= [];
@@ -140,10 +152,13 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
             );
           }
         } else {
-          directory.layout[meta.specificity] = {
-            ...routeNode,
-            route: routeNode.route.replace(/\/?_layout$/, ''),
+          node = {
+            ...node,
+            route: node.route.replace(/\/?_layout$/, ''),
+            children: [], // Each layout should have its own children
           };
+          directory.layout[meta.specificity] = node;
+          layouts.add(node);
           hasLayout ||= true;
         }
       } else if (meta.isApi) {
@@ -167,7 +182,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
             );
           }
         } else {
-          nodes[0] = routeNode;
+          nodes[0] = node;
         }
       } else {
         let nodes = directory.files.get(route);
@@ -192,7 +207,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
             );
           }
         } else {
-          nodes[meta.specificity] = routeNode;
+          nodes[meta.specificity] = node;
           hasRoutes ||= true;
         }
       }
@@ -254,9 +269,8 @@ function flattenDirectoryTreeToRoutes(
   if (directory.layout) {
     // TODO(Platform Routes): We need to pick the most specific layout.
     const layout = directory.layout[0];
-
     const previousNearestLayout = nearestLayout;
-    nearestLayout = { ...layout, children: [] };
+    nearestLayout = layout;
 
     // Add the new layout as a child of its parent
     if (previousNearestLayout) {
@@ -394,7 +408,7 @@ function extrapolateGroups(key: string, keys: Set<string> = new Set()): Set<stri
   return keys;
 }
 
-function getDynamicConvention(path: string): DynamicConvention[] | null {
+export function generateDynamic(path: string): DynamicConvention[] | null {
   const dynamic = path
     .split('/')
     .map((part): DynamicConvention | null => {
@@ -414,11 +428,7 @@ function getDynamicConvention(path: string): DynamicConvention[] | null {
     })
     .filter((part): part is DynamicConvention => !!part);
 
-  if (dynamic?.length === 0) {
-    return null;
-  }
-
-  return dynamic;
+  return dynamic.length === 0 ? null : dynamic;
 }
 
 function appendSitemapRoute(directory: DirectoryNode) {
@@ -460,4 +470,46 @@ function appendNotFoundRoute(directory: DirectoryNode) {
       },
     ]);
   }
+}
+
+/**
+ * Once all children have been hoisted to a layout, we can determine the initialRouteName and
+ * assert that all routes have a least 1 child
+ */
+function postprocessLayout(node: RouteNode, options: Options) {
+  if (!node.children) {
+    throw new Error(`Layout "${node.contextKey}" does not contain any child routes`);
+  }
+
+  /**
+   * A file called `(a,b)/(c)/_layout.tsx` will generate two _layout routes: `(a)/(c)/_layout` and `(b)/(c)/_layout`.
+   * Each of these layouts will have a different initialRouteName based upon the first group name.
+   *
+   * So
+   */
+  const groupName = matchGroupName(node.route);
+  const childMatchingGroup = node.children.find((child) => {
+    return child.route.replace(/\/index$/, '') === groupName;
+  });
+
+  let initialRouteName = childMatchingGroup?.route;
+
+  // We may strip loadRoute during testing
+  if (!options.internal_stripLoadRoute) {
+    const loaded = node.loadRoute();
+    if (loaded?.unstable_settings) {
+      // Allow unstable_settings={ initialRouteName: '...' } to override the default initial route name.
+      initialRouteName = loaded.unstable_settings.initialRouteName ?? initialRouteName;
+
+      if (groupName) {
+        // Allow unstable_settings={ 'custom': { initialRouteName: '...' } } to override the less specific initial route name.
+        const groupSpecificInitialRouteName =
+          loaded.unstable_settings?.[groupName]?.initialRouteName;
+
+        initialRouteName = groupSpecificInitialRouteName ?? initialRouteName;
+      }
+    }
+  }
+
+  node.initialRouteName = initialRouteName;
 }

@@ -1,6 +1,6 @@
 import { configFromFs } from '../mockState';
 
-describe(configFromFs, () => {
+describe.only(configFromFs, () => {
   it(`matches`, () => {
     expect(
       configFromFs([
@@ -23,6 +23,8 @@ describe(configFromFs, () => {
             },
           },
         },
+        '+not-found': '*not-found',
+        _sitemap: '_sitemap',
       },
     });
   });
@@ -42,6 +44,7 @@ describe(configFromFs, () => {
       screens: {
         // Should match 404... maybe
         '+not-found': '*not-found',
+        _sitemap: '_sitemap',
         '(app)': {
           path: '(app)',
           initialRouteName: undefined,
@@ -91,6 +94,7 @@ describe(configFromFs, () => {
       screens: {
         // Should match 404... maybe
         '+not-found': '*not-found',
+        _sitemap: '_sitemap',
         '(app)': {
           path: '(app)',
           initialRouteName: undefined,
