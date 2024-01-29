@@ -604,6 +604,53 @@ describe('entry points', () => {
   });
 });
 
+describe('initialRouteName', () => {
+  it(`should append entry points for all parent _layouts`, () => {
+    expect(
+      getRoutes(
+        inMemoryContext({
+          _layout: {
+            unstable_settings: {
+              initialRouteName: 'a',
+            },
+            default: () => null,
+          },
+          a: () => null,
+          b: () => null,
+        }),
+        { skipGenerated: true }
+      )
+    ).toEqual({
+      children: [
+        {
+          children: [],
+          contextKey: './a.js',
+          dynamic: null,
+          entryPoints: ['./_layout.js', './a.js'],
+          route: 'a',
+          type: 'route',
+          loadRoute: expect.any(Function),
+        },
+        {
+          children: [],
+          contextKey: './b.js',
+          dynamic: null,
+          entryPoints: ['./_layout.js', './a.js', './b.js'],
+          route: 'b',
+          type: 'route',
+          loadRoute: expect.any(Function),
+        },
+      ],
+      loadRoute: expect.any(Function),
+      contextKey: './_layout.js',
+      dynamic: null,
+      initialRouteName: 'a',
+      route: '',
+      type: 'layout',
+    });
+  });
+});
+
 describe('dynamic routes', () => {
   it('parses dynamic routes', () => {
     expect(
@@ -730,159 +777,3 @@ describe('api routes', () => {
     });
   });
 });
-
-//   it(`should convert a complex context module routes`, () => {
-//     expect(
-//       dropFunctions(
-//         getRoutes(
-//           ctx(
-//             './(stack)/_layout.tsx',
-//             './(stack)/home.tsx',
-//             './(stack)/settings.tsx',
-//             './(stack)/user/(default)/_layout.tsx',
-//             './(stack)/user/(default)/posts.tsx',
-//             './(stack)/user/profile.tsx',
-//             './(stack)/user/[profile].tsx',
-//             './(stack)/user/settings/_layout.tsx',
-//             './(stack)/user/settings/info.tsx',
-//             './(stack)/user/settings/[...other].tsx',
-//             './another.tsx',
-//             './some/nested/value.tsx'
-//           )
-//         )!
-//       )
-//     ).toEqual({
-//       children: [
-//         {
-//           children: [
-//             {
-//               children: [],
-//               contextKey: './(stack)/home.tsx',
-//               dynamic: null,
-//               route: 'home',
-//               entryPoints: [
-//                 'expo-router/build/views/Navigator.js',
-//                 './(stack)/_layout.tsx',
-//                 './(stack)/home.tsx',
-//               ],
-//             },
-//             {
-//               children: [],
-//               contextKey: './(stack)/settings.tsx',
-//               dynamic: null,
-//               route: 'settings',
-//               entryPoints: [
-//                 'expo-router/build/views/Navigator.js',
-//                 './(stack)/_layout.tsx',
-//                 './(stack)/settings.tsx',
-//               ],
-//             },
-//             {
-//               children: [
-//                 {
-//                   children: [],
-//                   contextKey: './(stack)/user/(default)/posts.tsx',
-//                   dynamic: null,
-//                   entryPoints: [
-//                     'expo-router/build/views/Navigator.js',
-//                     './(stack)/_layout.tsx',
-//                     './(stack)/user/(default)/_layout.tsx',
-//                     './(stack)/user/(default)/posts.tsx',
-//                   ],
-//                   route: 'posts',
-//                 },
-//               ],
-//               contextKey: './(stack)/user/(default)/_layout.tsx',
-//               dynamic: null,
-//               route: 'user/(default)',
-//             },
-//             {
-//               children: [],
-//               contextKey: './(stack)/user/profile.tsx',
-//               dynamic: null,
-//               entryPoints: [
-//                 'expo-router/build/views/Navigator.js',
-//                 './(stack)/_layout.tsx',
-//                 './(stack)/user/profile.tsx',
-//               ],
-//               route: 'user/profile',
-//             },
-//             {
-//               children: [],
-//               contextKey: './(stack)/user/[profile].tsx',
-//               dynamic: [
-//                 {
-//                   deep: false,
-//                   name: 'profile',
-//                 },
-//               ],
-//               entryPoints: [
-//                 'expo-router/build/views/Navigator.js',
-//                 './(stack)/_layout.tsx',
-//                 './(stack)/user/[profile].tsx',
-//               ],
-//               route: 'user/[profile]',
-//             },
-//             {
-//               children: [
-//                 {
-//                   children: [],
-//                   contextKey: './(stack)/user/settings/info.tsx',
-//                   dynamic: null,
-//                   entryPoints: [
-//                     'expo-router/build/views/Navigator.js',
-//                     './(stack)/_layout.tsx',
-//                     './(stack)/user/settings/_layout.tsx',
-//                     './(stack)/user/settings/info.tsx',
-//                   ],
-//                   route: 'info',
-//                 },
-//                 {
-//                   children: [],
-//                   entryPoints: [
-//                     'expo-router/build/views/Navigator.js',
-//                     './(stack)/_layout.tsx',
-//                     './(stack)/user/settings/_layout.tsx',
-//                     './(stack)/user/settings/[...other].tsx',
-//                   ],
-//                   contextKey: './(stack)/user/settings/[...other].tsx',
-//                   dynamic: [{ deep: true, name: 'other' }],
-//                   route: '[...other]',
-//                 },
-//               ],
-//               contextKey: './(stack)/user/settings/_layout.tsx',
-//               dynamic: null,
-//               route: 'user/settings',
-//             },
-//           ],
-//           contextKey: './(stack)/_layout.tsx',
-//           dynamic: null,
-//           route: '(stack)',
-//         },
-//         {
-//           children: [],
-//           contextKey: './another.tsx',
-//           dynamic: null,
-//           entryPoints: ['expo-router/build/views/Navigator.js', './another.tsx'],
-//           route: 'another',
-//         },
-//         {
-//           children: [],
-//           entryPoints: ['expo-router/build/views/Navigator.js', './some/nested/value.tsx'],
-//           contextKey: './some/nested/value.tsx',
-//           dynamic: null,
-//           route: 'some/nested/value',
-//         },
-//         ROUTE_DIRECTORY,
-//         ROUTE_NOT_FOUND,
-//       ],
-//       contextKey: './_layout.tsx',
-//       dynamic: null,
-//       generated: true,
-//       route: '',
-//     });
-//   });
-//   it(`should convert an empty context module to routes`, () => {
-//     expect(getRoutes(ctx())).toBeNull();
-//   });
-// });

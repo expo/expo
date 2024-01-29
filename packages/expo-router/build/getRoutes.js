@@ -15,6 +15,7 @@ const matchers_1 = require("./matchers");
  *      - If multiple routes have the same name, the most specific route is used
  */
 function getRoutes(contextModule, options = {}) {
+    console.log('ASdasdfs');
     const layouts = new Set();
     const directoryTree = getDirectoryTree(contextModule, layouts, options);
     // If there are no routes
@@ -24,6 +25,9 @@ function getRoutes(contextModule, options = {}) {
     const rootNode = flattenDirectoryTreeToRoutes(directoryTree, options);
     for (const layout of layouts) {
         postprocessLayout(layout, options);
+    }
+    if (!options.ignoreEntryPoints) {
+        crawlAndAppendEntryFiles(rootNode);
     }
     return rootNode;
 }
@@ -115,11 +119,7 @@ function getDirectoryTree(contextModule, layouts, options) {
                     }
                 }
                 else {
-                    node = {
-                        ...node,
-                        route: node.route.replace(/\/?_layout$/, ''),
-                        children: [], // Each layout should have its own children
-                    };
+                    node = getLayoutNode(node, options);
                     directory.layout[meta.specificity] = node;
                     layouts.add(node);
                 }
@@ -209,8 +209,6 @@ function getDirectoryTree(contextModule, layouts, options) {
 function flattenDirectoryTreeToRoutes(directory, options, 
 /* The nearest _layout file in the directory tree */
 layout, 
-/* Routes need to contain the entryPoints of their parent layouts */
-entryPoints = [], 
 /* Route names are relative to their layout */
 pathToRemove = '') {
     /**
@@ -232,8 +230,6 @@ pathToRemove = '') {
         // Now update this layout with the new relative route and dynamic conventions
         layout.route = newRoute;
         layout.dynamic = generateDynamic(layout.route);
-        // Track this _layout's entryPoints so that child routes can inherit them
-        entryPoints = [...entryPoints, layout.contextKey];
     }
     // This should never occur as there will always be a root layout, but it makes the type system happy
     if (!layout)
@@ -244,13 +240,6 @@ pathToRemove = '') {
         // `route` is the absolute pathname. We need to make this relative to the nearest layout
         routeNode.route = routeNode.route.replace(pathToRemove, '');
         routeNode.dynamic = generateDynamic(routeNode.route);
-        // Merge the entryPoints of the parent layout(s) with the child route
-        if (options.ignoreEntryPoints) {
-            delete routeNode.entryPoints;
-        }
-        else if (routeNode.type !== 'api') {
-            routeNode.entryPoints = [...entryPoints, routeNode.contextKey];
-        }
         if (options.internal_stripLoadRoute) {
             delete routeNode.loadRoute;
         }
@@ -258,7 +247,7 @@ pathToRemove = '') {
     }
     // Recursively flatten the subdirectories
     for (const child of directory.subdirectories.values()) {
-        flattenDirectoryTreeToRoutes(child, options, layout, entryPoints, pathToRemove);
+        flattenDirectoryTreeToRoutes(child, options, layout, pathToRemove);
     }
     return layout;
 }
@@ -374,6 +363,54 @@ function appendNotFoundRoute(directory) {
                 children: [],
             },
         ]);
+    }
+}
+function getLayoutNode(node, options) {
+    /**
+     * A file called `(a,b)/(c)/_layout.tsx` will generate two _layout routes: `(a)/(c)/_layout` and `(b)/(c)/_layout`.
+     * Each of these layouts will have a different initialRouteName based upon the first group name.
+     *
+     * So
+     */
+    // We may strip loadRoute during testing
+    const groupName = (0, matchers_1.matchGroupName)(node.route);
+    const childMatchingGroup = node.children.find((child) => {
+        return child.route.replace(/\/index$/, '') === groupName;
+    });
+    let initialRouteName = childMatchingGroup?.route;
+    const loaded = node.loadRoute();
+    if (loaded?.unstable_settings) {
+        // Allow unstable_settings={ initialRouteName: '...' } to override the default initial route name.
+        initialRouteName = loaded.unstable_settings.initialRouteName ?? initialRouteName;
+        if (groupName) {
+            // Allow unstable_settings={ 'custom': { initialRouteName: '...' } } to override the less specific initial route name.
+            const groupSpecificInitialRouteName = loaded.unstable_settings?.[groupName]?.initialRouteName;
+            initialRouteName = groupSpecificInitialRouteName ?? initialRouteName;
+        }
+    }
+    return {
+        ...node,
+        route: node.route.replace(/\/?_layout$/, ''),
+        children: [],
+        initialRouteName,
+    };
+}
+function crawlAndAppendEntryFiles(node, entryPoints = []) {
+    if (node.type === 'route') {
+        node.entryPoints = [...new Set([...entryPoints, node.contextKey])];
+    }
+    else if (node.type === 'layout') {
+        entryPoints = [...entryPoints, node.contextKey];
+        if (node.initialRouteName) {
+            const initialRoute = node.children.find((child) => child.route === node.initialRouteName);
+            if (!initialRoute) {
+                throw new Error('Initial route not found');
+            }
+            entryPoints.push(initialRoute.contextKey);
+        }
+        for (const child of node.children) {
+            crawlAndAppendEntryFiles(child, entryPoints);
+        }
     }
 }
 /**
