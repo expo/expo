@@ -18,7 +18,7 @@ function _createLegacyPlugin() {
   };
   return data;
 }
-var _default = (0, _createLegacyPlugin().createLegacyPlugin)({
+var _default = exports.default = (0, _createLegacyPlugin().createLegacyPlugin)({
   packageName: 'expo-document-picker',
   fallback(config) {
     var _config$ios;
@@ -30,5 +30,4 @@ var _default = (0, _createLegacyPlugin().createLegacyPlugin)({
     return config;
   }
 });
-exports.default = _default;
 //# sourceMappingURL=expo-document-picker.js.map

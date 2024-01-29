@@ -25,9 +25,8 @@ function _createLegacyPlugin() {
   };
   return data;
 }
-var _default = (0, _createLegacyPlugin().createLegacyPlugin)({
+var _default = exports.default = (0, _createLegacyPlugin().createLegacyPlugin)({
   packageName: 'expo-ads-admob',
   fallback: [_withAndroidAdMob().withAndroidAdMob, _withIosAdMob().withIosAdMob]
 });
-exports.default = _default;
 //# sourceMappingURL=expo-ads-admob.js.map

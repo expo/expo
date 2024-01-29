@@ -235,8 +235,8 @@ function getConfig(projectRoot, options = {}) {
       if ((_configWithDefaultVal2 = configWithDefaultValues.exp.android) !== null && _configWithDefaultVal2 !== void 0 && _configWithDefaultVal2.config) {
         delete configWithDefaultValues.exp.android.config;
       }
-      (_configWithDefaultVal3 = configWithDefaultValues.exp.updates) === null || _configWithDefaultVal3 === void 0 ? true : delete _configWithDefaultVal3.codeSigningCertificate;
-      (_configWithDefaultVal4 = configWithDefaultValues.exp.updates) === null || _configWithDefaultVal4 === void 0 ? true : delete _configWithDefaultVal4.codeSigningMetadata;
+      (_configWithDefaultVal3 = configWithDefaultValues.exp.updates) === null || _configWithDefaultVal3 === void 0 || delete _configWithDefaultVal3.codeSigningCertificate;
+      (_configWithDefaultVal4 = configWithDefaultValues.exp.updates) === null || _configWithDefaultVal4 === void 0 || delete _configWithDefaultVal4.codeSigningMetadata;
     }
     return configWithDefaultValues;
   }
@@ -440,12 +440,12 @@ function ensureConfigHasDefaultValues({
 }
 const DEFAULT_BUILD_PATH = `web-build`;
 function getWebOutputPath(config = {}) {
-  var _expo$web, _expo$web$build;
+  var _expo$web;
   if (process.env.WEBPACK_BUILD_OUTPUT_PATH) {
     return process.env.WEBPACK_BUILD_OUTPUT_PATH;
   }
   const expo = config.expo || config || {};
-  return (expo === null || expo === void 0 ? void 0 : (_expo$web = expo.web) === null || _expo$web === void 0 ? void 0 : (_expo$web$build = _expo$web.build) === null || _expo$web$build === void 0 ? void 0 : _expo$web$build.output) || DEFAULT_BUILD_PATH;
+  return (expo === null || expo === void 0 || (_expo$web = expo.web) === null || _expo$web === void 0 || (_expo$web = _expo$web.build) === null || _expo$web === void 0 ? void 0 : _expo$web.output) || DEFAULT_BUILD_PATH;
 }
 function getNameFromConfig(exp = {}) {
   // For RN CLI support
