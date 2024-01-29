@@ -25,7 +25,7 @@ jobs:
     runs-on: macos-13
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: 🔨 Switch to Xcode 14.3
         run: sudo xcode-select --switch /Applications/Xcode_14.3.app
       - name: 🍺 Install required tools
@@ -121,7 +121,7 @@ jobs:
       GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
       - name: 🚀 Setup Bun
@@ -129,7 +129,7 @@ jobs:
         with:
           bun-version: latest
       - name: 🔨 Use JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
