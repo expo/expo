@@ -163,7 +163,7 @@ function resolveConfigExport(result, configFile, request) {
   // to suggest that there *may* be a problem.
   const mayHaveUnusedStaticConfig =
   // @ts-ignore
-  (request === null || request === void 0 ? void 0 : (_request$config = request.config) === null || _request$config === void 0 ? void 0 : _request$config[hasBaseStaticConfig]) && !((_result = result) !== null && _result !== void 0 && _result[hasBaseStaticConfig]);
+  (request === null || request === void 0 || (_request$config = request.config) === null || _request$config === void 0 ? void 0 : _request$config[hasBaseStaticConfig]) && !((_result = result) !== null && _result !== void 0 && _result[hasBaseStaticConfig]);
   if (result) {
     delete result._hasBaseStaticConfig;
   }

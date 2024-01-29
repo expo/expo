@@ -50,7 +50,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const {
   Colors
 } = _configPlugins().AndroidConfig;
-const dpiValues = {
+const dpiValues = exports.dpiValues = {
   mdpi: {
     folderName: 'mipmap-mdpi',
     scale: 1
@@ -72,10 +72,8 @@ const dpiValues = {
     scale: 4
   }
 };
-exports.dpiValues = dpiValues;
 const BASELINE_PIXEL_SIZE = 108;
-const ANDROID_RES_PATH = 'android/app/src/main/res/';
-exports.ANDROID_RES_PATH = ANDROID_RES_PATH;
+const ANDROID_RES_PATH = exports.ANDROID_RES_PATH = 'android/app/src/main/res/';
 const MIPMAP_ANYDPI_V26 = 'mipmap-anydpi-v26';
 const ICON_BACKGROUND = 'iconBackground';
 const IC_LAUNCHER_PNG = 'ic_launcher.png';
@@ -134,12 +132,12 @@ function getIcon(config) {
   return ((_config$android3 = config.android) === null || _config$android3 === void 0 ? void 0 : _config$android3.icon) || config.icon || null;
 }
 function getAdaptiveIcon(config) {
-  var _config$android$adapt, _config$android4, _config$android4$adap, _config$android$adapt2, _config$android5, _config$android5$adap, _config$android$adapt3, _config$android6, _config$android6$adap, _config$android$adapt4, _config$android7, _config$android7$adap;
+  var _config$android$adapt, _config$android4, _config$android$adapt2, _config$android5, _config$android$adapt3, _config$android6, _config$android$adapt4, _config$android7;
   return {
-    foregroundImage: (_config$android$adapt = (_config$android4 = config.android) === null || _config$android4 === void 0 ? void 0 : (_config$android4$adap = _config$android4.adaptiveIcon) === null || _config$android4$adap === void 0 ? void 0 : _config$android4$adap.foregroundImage) !== null && _config$android$adapt !== void 0 ? _config$android$adapt : null,
-    backgroundColor: (_config$android$adapt2 = (_config$android5 = config.android) === null || _config$android5 === void 0 ? void 0 : (_config$android5$adap = _config$android5.adaptiveIcon) === null || _config$android5$adap === void 0 ? void 0 : _config$android5$adap.backgroundColor) !== null && _config$android$adapt2 !== void 0 ? _config$android$adapt2 : null,
-    backgroundImage: (_config$android$adapt3 = (_config$android6 = config.android) === null || _config$android6 === void 0 ? void 0 : (_config$android6$adap = _config$android6.adaptiveIcon) === null || _config$android6$adap === void 0 ? void 0 : _config$android6$adap.backgroundImage) !== null && _config$android$adapt3 !== void 0 ? _config$android$adapt3 : null,
-    monochromeImage: (_config$android$adapt4 = (_config$android7 = config.android) === null || _config$android7 === void 0 ? void 0 : (_config$android7$adap = _config$android7.adaptiveIcon) === null || _config$android7$adap === void 0 ? void 0 : _config$android7$adap.monochromeImage) !== null && _config$android$adapt4 !== void 0 ? _config$android$adapt4 : null
+    foregroundImage: (_config$android$adapt = (_config$android4 = config.android) === null || _config$android4 === void 0 || (_config$android4 = _config$android4.adaptiveIcon) === null || _config$android4 === void 0 ? void 0 : _config$android4.foregroundImage) !== null && _config$android$adapt !== void 0 ? _config$android$adapt : null,
+    backgroundColor: (_config$android$adapt2 = (_config$android5 = config.android) === null || _config$android5 === void 0 || (_config$android5 = _config$android5.adaptiveIcon) === null || _config$android5 === void 0 ? void 0 : _config$android5.backgroundColor) !== null && _config$android$adapt2 !== void 0 ? _config$android$adapt2 : null,
+    backgroundImage: (_config$android$adapt3 = (_config$android6 = config.android) === null || _config$android6 === void 0 || (_config$android6 = _config$android6.adaptiveIcon) === null || _config$android6 === void 0 ? void 0 : _config$android6.backgroundImage) !== null && _config$android$adapt3 !== void 0 ? _config$android$adapt3 : null,
+    monochromeImage: (_config$android$adapt4 = (_config$android7 = config.android) === null || _config$android7 === void 0 || (_config$android7 = _config$android7.adaptiveIcon) === null || _config$android7 === void 0 ? void 0 : _config$android7.monochromeImage) !== null && _config$android$adapt4 !== void 0 ? _config$android$adapt4 : null
   };
 }
 

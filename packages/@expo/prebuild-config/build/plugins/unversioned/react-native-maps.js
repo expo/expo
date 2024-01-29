@@ -43,9 +43,8 @@ const withDefaultLocationPermissions = config => {
   }
   return config;
 };
-var _default = (0, _createLegacyPlugin().createLegacyPlugin)({
+var _default = exports.default = (0, _createLegacyPlugin().createLegacyPlugin)({
   packageName: 'react-native-maps',
   fallback: [_configPlugins().AndroidConfig.GoogleMapsApiKey.withGoogleMapsApiKey, _configPlugins().IOSConfig.Maps.withMaps, withDefaultLocationPermissions]
 });
-exports.default = _default;
 //# sourceMappingURL=react-native-maps.js.map
