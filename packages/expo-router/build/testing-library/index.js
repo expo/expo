@@ -17,7 +17,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.renderRouter = exports.getMockContext = void 0;
+exports.renderRouter = exports.getMockContext = exports.getMockConfig = void 0;
 /// <reference types="../../types/jest" />
 require("./expect");
 const react_native_1 = require("@testing-library/react-native");
@@ -28,15 +28,23 @@ const mocks_1 = require("./mocks");
 const ExpoRoot_1 = require("../ExpoRoot");
 const getPathFromState_1 = __importDefault(require("../fork/getPathFromState"));
 const getLinkingConfig_1 = require("../getLinkingConfig");
+const getRoutes_1 = require("../getRoutes");
 const router_store_1 = require("../global-state/router-store");
 // re-export everything
 __exportStar(require("@testing-library/react-native"), exports);
 function isOverrideContext(context) {
     return Boolean(typeof context === 'object' && 'appDir' in context);
 }
+function getMockConfig(context) {
+    return (0, getLinkingConfig_1.getNavigationConfig)((0, getRoutes_1.getExactRoutes)(getMockContext(context)));
+}
+exports.getMockConfig = getMockConfig;
 function getMockContext(context) {
     if (typeof context === 'string') {
         return (0, context_stubs_1.requireContext)(path_1.default.resolve(process.cwd(), context));
+    }
+    else if (Array.isArray(context)) {
+        return (0, context_stubs_1.inMemoryContext)(Object.fromEntries(context.map((filename) => [filename, { default: () => null }])));
     }
     else if (isOverrideContext(context)) {
         return (0, context_stubs_1.requireContextWithOverrides)(context.appDir, context.overrides);

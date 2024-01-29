@@ -548,7 +548,7 @@ it('can pop back from a nested modal to a nested sibling', async () => {
   expect(screen).toHavePathname('/slot');
 });
 
-it.only('supports multi-level 404s', async () => {
+it('supports multi-level 404s', async () => {
   renderRouter({
     index: () => <Text>found</Text>,
     '+not-found': () => <Text>404</Text>,

@@ -1,4 +1,4 @@
-import { configFromFs } from '../../utils/mockState';
+import { getMockConfig } from '../../testing-library';
 import getPathFromState from '../getPathFromState';
 import getStateFromPath, {
   stripBaseUrl,
@@ -45,13 +45,13 @@ describe('baseUrl', () => {
     process.env.EXPO_BASE_URL = '/expo/prefix';
 
     const path = '/expo/prefix/bar';
-    const config = configFromFs(['_layout.tsx', 'bar.tsx', 'index.tsx']);
+    const config = getMockConfig(['_layout.tsx', 'bar.tsx', 'index.tsx']);
 
     expect(getStateFromPath<object>(path, config)).toEqual({
-      routes: [{ name: '', state: { routes: [{ name: 'bar', path: '/bar' }] } }],
+      routes: [{ name: 'bar', path: '/bar' }],
     });
 
-    expect(getPathFromState(getStateFromPath<object>(path, config), config)).toBe(
+    expect(getPathFromState(getStateFromPath<object>(path, config)!, config)).toBe(
       '/expo/prefix/bar'
     );
   });
@@ -59,12 +59,12 @@ describe('baseUrl', () => {
   it('has baseUrl and state that does not match', () => {
     process.env.EXPO_BASE_URL = '/expo';
     const path = '/bar';
-    const config = configFromFs(['_layout.tsx', 'bar.tsx', 'index.tsx']);
+    const config = getMockConfig(['_layout.tsx', 'bar.tsx', 'index.tsx']);
 
     expect(getStateFromPath<object>(path, config)).toEqual({
-      routes: [{ name: '', state: { routes: [{ name: 'bar', path: '/bar' }] } }],
+      routes: [{ name: 'bar', path: '/bar' }],
     });
-    expect(getPathFromState(getStateFromPath<object>(path, config), config)).toBe('/expo/bar');
+    expect(getPathFromState(getStateFromPath<object>(path, config)!, config)).toBe('/expo/bar');
   });
 });
 
@@ -128,7 +128,7 @@ it(`strips hashes`, () => {
     ],
   });
 
-  expect(getStateFromPath('/hello#123', configFromFs(['[hello].js']))).toEqual({
+  expect(getStateFromPath('/hello#123', getMockConfig(['[hello]']))).toEqual({
     routes: [
       {
         name: '[hello]',
@@ -159,7 +159,7 @@ it(`supports spaces`, () => {
     ],
   });
 
-  expect(getStateFromPath('/hello%20world', configFromFs(['[hello world].js']))).toEqual({
+  expect(getStateFromPath('/hello%20world', getMockConfig(['[hello world]']))).toEqual({
     routes: [
       {
         name: '[hello world]',
@@ -178,18 +178,16 @@ it(`matches unmatched existing groups against 404`, () => {
   expect(
     getStateFromPath(
       '/(app)/(explore)',
-      configFromFs([
-        '+not-found.js',
+      getMockConfig([
+        '+not-found',
+        '(app)/_layout',
+        '(app)/(explore)/_layout',
+        '(app)/(explore)/[user]/index',
+        '(app)/(explore)/explore',
 
-        '(app)/_layout.tsx',
-
-        '(app)/(explore)/_layout.tsx',
-        '(app)/(explore)/[user]/index.tsx',
-        '(app)/(explore)/explore.tsx',
-
-        '(app)/([user])/_layout.tsx',
-        '(app)/([user])/[user]/index.tsx',
-        '(app)/([user])/explore.tsx',
+        '(app)/([user])/_layout',
+        '(app)/([user])/[user]/index',
+        '(app)/([user])/explore',
       ])
     )
   ).toEqual({
@@ -225,7 +223,7 @@ it(`adds dynamic route params from all levels of the path`, () => {
     getStateFromPath(
       '/foo/bar/baz/other',
 
-      configFromFs([
+      getMockConfig([
         '[foo]/_layout.tsx',
         '[foo]/bar/_layout.tsx',
         '[foo]/bar/[baz]/_layout.tsx',

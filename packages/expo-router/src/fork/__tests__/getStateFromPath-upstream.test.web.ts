@@ -2,7 +2,7 @@ import { findFocusedRoute } from '@react-navigation/native';
 import type { InitialState } from '@react-navigation/routers';
 import produce from 'immer';
 
-import { configFromFs } from '../../utils/mockState';
+import { getMockConfig } from '../../testing-library';
 import getPathFromState from '../getPathFromState';
 import getStateFromPath from '../getStateFromPath';
 
@@ -2138,7 +2138,7 @@ it('ignores extra slashes in the pattern', () => {
 
 it('matches wildcard patterns at root', () => {
   const path = '/test/bar/42/whatever';
-  const config = configFromFs(['[...slug].js', 'foo/bar.js', 'index.js']);
+  const config = getMockConfig(['[...slug].js', 'foo/bar.js', 'index.js']);
   const state = {
     routes: [
       {
@@ -2157,7 +2157,7 @@ it('matches wildcard patterns at root', () => {
 it('matches wildcard patterns at nested level', () => {
   const path = '/bar/42/whatever/baz/initt';
 
-  const config = configFromFs([
+  const config = getMockConfig([
     '(foo)/_layout.tsx',
     '(foo)/bar/_layout.tsx',
     '(foo)/bar/[id].tsx',
