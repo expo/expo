@@ -32,7 +32,7 @@ it('runs `npx expo --help`', async () => {
         $ npx expo <command>
 
       Commands
-        start, export
+        start, export, verify-native-assets
         run:ios, run:android, prebuild
         install, customize, config
         login, logout, whoami, register
