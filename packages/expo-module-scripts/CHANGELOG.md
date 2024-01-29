@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Use `node18` tsconfig in `expo-module-scripts` to match the dependencies. ([#26738](https://github.com/expo/expo/pull/26738)) by ([@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ### 💡 Others
 
 - Update Babel dependencies to the latest version from `7.23` releases. ([#26525](https://github.com/expo/expo/pull/26525) by [@simek](https://github.com/simek))
