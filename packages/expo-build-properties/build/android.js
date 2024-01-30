@@ -63,6 +63,10 @@ exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
         propName: 'EX_DEV_CLIENT_NETWORK_INSPECTOR',
         propValueGetter: (config) => (config.android?.networkInspector ?? true).toString(),
     },
+    {
+        propName: 'expo.useLegacyPackaging',
+        propValueGetter: (config) => (config.android?.useLegacyPackaging ?? false).toString(),
+    },
 ], 'withAndroidBuildProperties');
 const withAndroidFlipper = (config, props) => {
     const ANDROID_FLIPPER_KEY = 'FLIPPER_VERSION';
