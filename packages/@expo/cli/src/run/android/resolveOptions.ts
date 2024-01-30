@@ -11,6 +11,7 @@ export type Options = {
   bundler?: boolean;
   install?: boolean;
   buildCache?: boolean;
+  activeArchOnly?: boolean;
 };
 
 export type ResolvedOptions = GradleProps &
@@ -20,6 +21,7 @@ export type ResolvedOptions = GradleProps &
     buildCache: boolean;
     device: AndroidDeviceManager;
     install: boolean;
+    architectures?: string;
   };
 
 export async function resolveOptionsAsync(
@@ -28,7 +30,7 @@ export async function resolveOptionsAsync(
 ): Promise<ResolvedOptions> {
   return {
     ...(await resolveBundlerPropsAsync(projectRoot, options)),
-    ...resolveGradleProps(projectRoot, options),
+    ...(await resolveGradleProps(projectRoot, options)),
     ...(await resolveLaunchPropsAsync(projectRoot)),
     variant: options.variant ?? 'debug',
     // Resolve the device based on the provided device id or prompt

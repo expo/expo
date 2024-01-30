@@ -16,6 +16,7 @@ export const expoRunAndroid: Command = async (argv) => {
     '--no-install': Boolean,
     '--no-bundler': Boolean,
     '--variant': String,
+    '--active-arch-only': Boolean,
 
     '--port': Number,
     // Aliases
@@ -47,6 +48,7 @@ export const expoRunAndroid: Command = async (argv) => {
     --variant <name>       Build variant. {dim Default: debug}
     -d, --device [device]  Device name to run the app on
     -p, --port <port>      Port to start the dev server on. {dim Default: 8081}
+    --active-arch-only     Only build for the architectures of connected devices or emulators
     -h, --help             Output usage information
 `,
       0
@@ -68,6 +70,7 @@ export const expoRunAndroid: Command = async (argv) => {
     bundler: !args['--no-bundler'],
     port: args['--port'],
     variant: args['--variant'],
+    activeArchOnly: args['--active-arch-only'],
 
     // Custom parsed args
     device: parsed.args['--device'],

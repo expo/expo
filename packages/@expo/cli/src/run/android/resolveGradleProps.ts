@@ -1,6 +1,7 @@
 import path from 'path';
 
 import { CommandError } from '../../utils/errors';
+import { getAttachedDevicesAsync, getDeviceABIsAsync } from '../../start/platforms/android/adb';
 
 export type GradleProps = {
   /** Directory for the APK based on the `variant`. */
@@ -11,6 +12,8 @@ export type GradleProps = {
   buildType: string;
   /** Used to assemble the APK, also included in the output APK filename. */
   flavors?: string[];
+  /** Architectures to build for. */
+  architectures?: string;
 };
 
 function assertVariant(variant?: string) {
@@ -20,10 +23,10 @@ function assertVariant(variant?: string) {
   return variant ?? 'debug';
 }
 
-export function resolveGradleProps(
+export async function resolveGradleProps(
   projectRoot: string,
-  options: { variant?: string }
-): GradleProps {
+  options: { variant?: string, activeArchOnly?: boolean }
+): Promise<GradleProps> {
   const variant = assertVariant(options.variant);
   // NOTE(EvanBacon): Why would this be different? Can we get the different name?
   const appName = 'app';
@@ -34,11 +37,24 @@ export function resolveGradleProps(
   // This won't work for non-standard flavor names like "myFlavor" would be treated as "my", "flavor".
   const [buildType, ...flavors] = variant.split(/(?=[A-Z])/).map((v) => v.toLowerCase());
   const apkVariantDirectory = path.join(apkDirectory, ...flavors, buildType);
+  const architectures = await getConnectedDeviceABIS(options.activeArchOnly)
 
   return {
     appName,
     buildType,
     flavors,
     apkVariantDirectory,
+    architectures
   };
+}
+
+async function getConnectedDeviceABIS(activeArch?: boolean): Promise<string> {
+  if (!activeArch) {
+    return ''
+  }
+  const devices = await getAttachedDevicesAsync()
+  const abisPromises = devices.map(async device => await getDeviceABIsAsync(device))
+  const abis = (await Promise.all(abisPromises)).flat()
+    .filter((abi, i, arr) => arr.indexOf(abi) === i)
+  return abis.join(',')
 }
