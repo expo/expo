@@ -129,7 +129,7 @@ We use Algolia as a main search results provider for our docs. Besides the query
 In `ui/components/CommandMenu/utils.ts`, you can see the `facetFilters` set to `[['version:none', 'version:{version}']]`. Translated to English, this means - search on all pages where `version` is `none`, or the currently selected version. Here are the rules we use to set this tag:
 
 - all unversioned pages use the version tag `none`,
-- all versioned pages use the SDK version (for example, `v46.0.0` or `v47.0.0`),
+- all versioned pages use the SDK version (for example, `v50.0.0` or `v49.0.0`),
 - all pages with `hideFromSearch: true` frontmatter entry don't have the version tag.
 
 Currently, the base results for Expo docs are combined with other results from multiple sources, such as:

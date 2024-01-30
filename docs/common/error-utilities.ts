@@ -425,7 +425,7 @@ const RENAMED_PAGES: Record<string, string> = {
   'versions/latest/sdk/filesystem.md': '/versions/latest/sdk/filesystem/',
   '/versions/v49.0.0/sdk/filesystem.md': '/versions/v49.0.0/sdk/filesystem/',
   '/versions/v48.0.0/sdk/filesystem.md': '/versions/v48.0.0/sdk/filesystem/',
-  '/versions/v47.0.0/sdk/filesystem.md': '/versions/v47.0.0/sdk/filesystem/',
+  '/versions/v47.0.0/sdk/filesystem.md': '/versions/latest/sdk/filesystem/',
   '/versions/v46.0.0/sdk/filesystem.md': '/versions/latest/sdk/filesystem/',
   '/versions/v50.0.0/sdk/taskmanager': '/versions/v50.0.0/sdk/task-manager/',
   '/versions/v49.0.0/sdk/taskmanager': '/versions/v49.0.0/sdk/task-manager/',
@@ -437,8 +437,8 @@ const RENAMED_PAGES: Record<string, string> = {
   'versions/v48.0.0/sdk/config/app': '/versions/v48.0.0/sdk/config/app/',
   '/versions/v50.0.0/sdk': '/versions/v50.0.0',
   '/versions/v49.0.0/sdk': '/versions/v49.0.0',
-  '/versions/v47.0.0/sdk': '/versions/v47.0.0',
-  '/versions/v46.0.0/sdk': '/versions/v46.0.0',
+  '/versions/v47.0.0/sdk': '/versions/latest',
+  '/versions/v46.0.0/sdk': '/versions/latest',
 
   // Deprecated Webpack support
   '/guides/customizing-webpack': '/archive/customizing-webpack',
