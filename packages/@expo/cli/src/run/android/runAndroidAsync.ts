@@ -32,7 +32,7 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     port: props.port,
     appName: props.appName,
     buildCache: props.buildCache,
-    architectures: props.architectures
+    architectures: props.architectures,
   });
 
   // Ensure the port hasn't become busy during the build.

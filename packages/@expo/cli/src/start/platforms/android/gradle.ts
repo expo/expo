@@ -31,7 +31,7 @@ function getPortArg(port: number): string {
 }
 
 function getActiveArchArg(architectures: string): string {
-  return `-PreactNativeArchitectures=${architectures}`
+  return `-PreactNativeArchitectures=${architectures}`;
 }
 
 /**
@@ -52,7 +52,7 @@ export async function assembleAsync(
     port,
     appName,
     buildCache,
-    architectures
+    architectures,
   }: {
     variant: string;
     port?: number;
@@ -112,7 +112,7 @@ export async function spawnGradleAsync(
 ): Promise<SpawnResult> {
   const gradlew = resolveGradleWPath(projectRoot);
   if (port != null) args.push(getPortArg(port));
-  if (architectures) args.push(getActiveArchArg(architectures))
+  if (architectures) args.push(getActiveArchArg(architectures));
   debug(`  ${gradlew} ${args.join(' ')}`);
   try {
     return await spawnAsync(gradlew, args, {

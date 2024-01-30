@@ -1,7 +1,7 @@
 import path from 'path';
 
-import { CommandError } from '../../utils/errors';
 import { getAttachedDevicesAsync, getDeviceABIsAsync } from '../../start/platforms/android/adb';
+import { CommandError } from '../../utils/errors';
 
 export type GradleProps = {
   /** Directory for the APK based on the `variant`. */
@@ -25,7 +25,7 @@ function assertVariant(variant?: string) {
 
 export async function resolveGradleProps(
   projectRoot: string,
-  options: { variant?: string, activeArchOnly?: boolean }
+  options: { variant?: string; activeArchOnly?: boolean }
 ): Promise<GradleProps> {
   const variant = assertVariant(options.variant);
   // NOTE(EvanBacon): Why would this be different? Can we get the different name?
@@ -37,24 +37,25 @@ export async function resolveGradleProps(
   // This won't work for non-standard flavor names like "myFlavor" would be treated as "my", "flavor".
   const [buildType, ...flavors] = variant.split(/(?=[A-Z])/).map((v) => v.toLowerCase());
   const apkVariantDirectory = path.join(apkDirectory, ...flavors, buildType);
-  const architectures = await getConnectedDeviceABIS(options.activeArchOnly)
+  const architectures = await getConnectedDeviceABIS(options.activeArchOnly);
 
   return {
     appName,
     buildType,
     flavors,
     apkVariantDirectory,
-    architectures
+    architectures,
   };
 }
 
 async function getConnectedDeviceABIS(activeArch?: boolean): Promise<string> {
   if (!activeArch) {
-    return ''
+    return '';
   }
-  const devices = await getAttachedDevicesAsync()
-  const abisPromises = devices.map(async device => await getDeviceABIsAsync(device))
-  const abis = (await Promise.all(abisPromises)).flat()
-    .filter((abi, i, arr) => arr.indexOf(abi) === i)
-  return abis.join(',')
+  const devices = await getAttachedDevicesAsync();
+  const abisPromises = devices.map(async (device) => await getDeviceABIsAsync(device));
+  const abis = (await Promise.all(abisPromises))
+    .flat()
+    .filter((abi, i, arr) => arr.indexOf(abi) === i);
+  return abis.join(',');
 }
