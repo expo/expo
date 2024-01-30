@@ -75,24 +75,6 @@ Installing the package adds the `expo-build-properties` plugin to your project's
 }
 ```
 
-<Collapsible summary="Using SDK 47 or lower?">
-
-> The above configuration only works with SDK 48 or above. For SDK 47 and lower, use the following steps described:
-
-The [`expo-community-flipper`](https://github.com/jakobo/expo-community-flipper#expo-community-flipper) plugin depends on the `react-native-flipper` library. Run the following command to install both of them:
-
-<Terminal cmd={['$ npx expo install expo-community-flipper react-native-flipper']} />
-
-Then, in the **app.json**, add `expo-community-flipper` to the `plugins` array:
-
-```json app.json
-{
-  "plugins": ["expo-community-flipper"]
-}
-```
-
-</Collapsible>
-
 </Step>
 
 <Step label="4">

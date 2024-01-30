@@ -231,7 +231,7 @@ In the terminal window and run the following command with to generate the JSON d
 - Read the **NOTE** in the below snippet for updating the docs for `unversioned`:
 
 ```shell
-et generate-docs-api-data --packageName expo-constants --sdk 47
+et generate-docs-api-data --packageName expo-constants --sdk 50
 
 #### NOTE ####
 # To update unversioned docs, run the command without mentioning the SDK version
