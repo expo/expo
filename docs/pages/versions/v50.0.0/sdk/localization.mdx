@@ -6,6 +6,7 @@ packageName: 'expo-localization'
 iconUrl: '/static/images/packages/expo-localization.png'
 ---
 
+import { ConfigPluginExample } from '~/components/plugins/ConfigSection';
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
@@ -27,9 +28,6 @@ You can configure `expo-localization` using its built-in [config plugin](/config
 ```json app.json
 {
   "expo": {
-    "extra": {
-      "supportsRTL": false
-    },
     "plugins": ["expo-localization"]
   }
 }
