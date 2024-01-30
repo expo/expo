@@ -189,15 +189,43 @@ function maybeWrapWithReturnStatement(tsType: TSNode) {
 /*
 We iterate over a list of functions and we create TS AST for each of them.
 */
-function getMockedFunctions(functions: Closure[], async = false) {
+function getMockedFunctions(functions: Closure[], async = false, emitDeclarationOnly = false) {
+  if (emitDeclarationOnly) {
+    // Return the interface: `set(): Promise<void>` instead of `export function set() { return null; }`
+    return functions.map((fnStructure) => {
+      const name = ts.factory.createIdentifier(fnStructure.name);
+      const returnType = mapSwiftTypeToTsType(fnStructure.types?.returnType);
+      const func = ts.factory.createMethodSignature(
+        undefined,
+        name,
+        undefined,
+        [],
+        fnStructure?.types?.parameters.map((p) =>
+          ts.factory.createParameterDeclaration(
+            undefined,
+            undefined,
+            p.name,
+            undefined,
+            mapSwiftTypeToTsType(p.typename),
+            undefined
+          )
+        ) ?? [],
+
+        async ? wrapWithAsync(returnType) : returnType
+      );
+      return func;
+    });
+  }
   return functions.map((fnStructure) => {
     const name = ts.factory.createIdentifier(fnStructure.name);
     const returnType = mapSwiftTypeToTsType(fnStructure.types?.returnType);
     const func = ts.factory.createFunctionDeclaration(
-      [
-        ts.factory.createToken(ts.SyntaxKind.ExportKeyword),
-        async ? ts.factory.createToken(ts.SyntaxKind.AsyncKeyword) : undefined,
-      ].filter((f) => !!f) as ts.ModifierToken<any>[],
+      emitDeclarationOnly
+        ? undefined
+        : ([
+            ts.factory.createToken(ts.SyntaxKind.ExportKeyword),
+            async ? ts.factory.createToken(ts.SyntaxKind.AsyncKeyword) : undefined,
+          ].filter((f) => !!f) as ts.ModifierToken<any>[]),
       undefined,
       name,
       undefined,
@@ -212,7 +240,9 @@ function getMockedFunctions(functions: Closure[], async = false) {
         )
       ) ?? [],
       async ? wrapWithAsync(returnType) : returnType,
-      ts.factory.createBlock(maybeWrapWithReturnStatement(returnType), true)
+      emitDeclarationOnly
+        ? undefined
+        : ts.factory.createBlock(maybeWrapWithReturnStatement(returnType), true)
     );
     return func;
   });
@@ -331,15 +361,72 @@ function separateWithNewlines<T>(arr: T) {
   return [arr, newlineIdentifier];
 }
 
-function getMockForModule(module: OutputModuleDefinition, includeTypes: boolean) {
+function getMockForModule(
+  module: OutputModuleDefinition,
+  includeTypes: boolean,
+  emitDeclarationOnly = false
+) {
+  if (emitDeclarationOnly) {
+    // interface NativeModules {
+    //   [module.name]?: Native.[module.name];
+    // }
+    const nativeModulesInterfaceExtension = ts.factory.createInterfaceDeclaration(
+      undefined,
+      ts.factory.createIdentifier('NativeModules'),
+      undefined,
+      undefined,
+      [
+        ts.factory.createPropertySignature(
+          undefined,
+          ts.factory.createIdentifier(module.name),
+          undefined,
+
+          ts.factory.createTypeLiteralNode([
+            ...getMockedFunctions(module.functions, false, emitDeclarationOnly),
+            ...getMockedFunctions(module.asyncFunctions, true, emitDeclarationOnly),
+          ])
+        ),
+      ]
+    );
+
+    // Put it all together:
+    //
+    // declare global {
+    //   interface NativeModules {
+    //     [module.name]?: {
+    //       // Functions
+    //       set(key: string, value: string | number, suite?: string): void;
+    //       // Async functions
+    //       getAsync(key: string, suite?: string): Promise<string | null>;
+    //       // Constants
+    //       readonly isAvailable: boolean;
+    //     }
+    //   }
+    // }
+
+    // Create the global augmentation block
+    const globalDeclaration = ts.factory.createModuleDeclaration(
+      [ts.factory.createModifier(ts.SyntaxKind.DeclareKeyword)], // Modifiers
+      ts.factory.createIdentifier('global'), // Module name
+      ts.factory.createModuleBlock([nativeModulesInterfaceExtension]), // Body
+      ts.NodeFlags.GlobalAugmentation // Flags
+    );
+
+    return ([] as (ts.TypeAliasDeclaration | ts.FunctionDeclaration | ts.JSDoc)[])
+      .concat(getPrefix(), newlineIdentifier, globalDeclaration)
+      .flatMap(separateWithNewlines);
+  }
   return ([] as (ts.TypeAliasDeclaration | ts.FunctionDeclaration | ts.JSDoc)[])
     .concat(
       getPrefix(),
       newlineIdentifier,
       includeTypes ? getMockedTypes(getTypesToMock(module)) : [],
       newlineIdentifier,
-      getMockedFunctions(module.functions).flatMap((mf) => [mf, newlineIdentifier]),
-      getMockedFunctions(module.asyncFunctions, true),
+      getMockedFunctions(module.functions, false, emitDeclarationOnly).flatMap((mf) => [
+        mf,
+        newlineIdentifier,
+      ]),
+      getMockedFunctions(module.asyncFunctions, true, emitDeclarationOnly),
       newlineIdentifier,
       includeTypes && module.view ? getMockedTypes(getTypesToMock(module.view)) : [],
       newlineIdentifier,
@@ -362,7 +449,9 @@ export async function generateMocks(
   modules: OutputModuleDefinition[],
   outputLanguage: 'javascript' | 'typescript' = 'javascript'
 ) {
+  console.log('modules:', require('util').inspect(modules, { depth: 23, colors: true }));
   const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
+  const emitDeclarationOnly = true;
 
   for (const m of modules) {
     const filename = m.name + (outputLanguage === 'javascript' ? '.js' : '.ts');
@@ -376,7 +465,9 @@ export async function generateMocks(
     fs.mkdirSync(path.join(directoryPath, 'mocks'), { recursive: true });
     const filePath = path.join(directoryPath, 'mocks', filename);
     // get ts nodearray from getMockForModule(m) array
-    const mock = ts.factory.createNodeArray(getMockForModule(m, outputLanguage === 'typescript'));
+    const mock = ts.factory.createNodeArray(
+      getMockForModule(m, outputLanguage === 'typescript', emitDeclarationOnly)
+    );
     const printedTs = printer.printList(
       ts.ListFormat.MultiLine + ts.ListFormat.PreserveLines,
       mock,
@@ -394,6 +485,7 @@ export async function generateMocks(
       fs.writeFileSync(filePath, prettifiedJs);
     } else {
       const prettifiedTs = await prettifyCode(printedTs, 'typescript');
+      console.log('prettifiedTs:', prettifiedTs);
       fs.writeFileSync(filePath, prettifiedTs);
     }
   }

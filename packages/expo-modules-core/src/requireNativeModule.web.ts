@@ -5,3 +5,9 @@ export function requireNativeModule(moduleName: string) {
 export function requireOptionalNativeModule() {
   return null;
 }
+
+if (!globalThis.expo) {
+  globalThis.expo = {
+    modules: {},
+  };
+}

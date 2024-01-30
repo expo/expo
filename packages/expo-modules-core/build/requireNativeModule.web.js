@@ -4,4 +4,9 @@ export function requireNativeModule(moduleName) {
 export function requireOptionalNativeModule() {
     return null;
 }
+if (!globalThis.expo) {
+    globalThis.expo = {
+        modules: {},
+    };
+}
 //# sourceMappingURL=requireNativeModule.web.js.map

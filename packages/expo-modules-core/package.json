@@ -5,7 +5,8 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "sideEffects": [
-    "*.fx.js"
+    "*.fx.js",
+    "requireNativeModule.web.js"
   ],
   "scripts": {
     "build": "expo-module build",

@@ -8,6 +8,11 @@ public class StoreReviewModule: Module {
     AsyncFunction("isAvailableAsync") { () -> Bool in
       return !isRunningFromTestFlight()
     }
+      
+    Constants([
+        "isSupported": UIApplication.shared.supportsAlternateIcons
+    ])
+        
 
     AsyncFunction("requestReview") {
       if #available(iOS 15, *) {

@@ -1,3 +1,12 @@
+declare global {
+    interface NativeModules {
+        ExpoStoreReview: {
+            isAvailableAsync(): Promise<boolean>;
+            setAlternateIcon(): Promise<any>;
+            requestReview(): Promise<any>;
+        };
+    }
+}
 /**
  * Determines if the platform has the capabilities to use `StoreReview.requestReview()`.
  * @return
@@ -6,7 +15,7 @@
  * - On Android, it will resolve to `true` if the device is running Android 5.0+.
  * - On Web, it will resolve to `false`.
  */
-export declare function isAvailableAsync(): Promise<boolean>;
+export declare const isAvailableAsync: (() => Promise<boolean>) | undefined;
 /**
  * In ideal circumstances this will open a native modal and allow the user to select a star rating
  * that will then be applied to the App Store, without leaving the app. If the device is running

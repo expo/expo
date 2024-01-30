@@ -1,11 +1,11 @@
 type ExpoObject = {
-    modules: undefined | {
-        [key: string]: any;
-    };
+    modules?: NativeModules;
     uuidv4: () => string;
     uuidv5: (name: string, namespace: string) => string;
 };
 declare global {
+    interface NativeModules {
+    }
     var expo: ExpoObject | undefined;
 }
 /**

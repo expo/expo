@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import { Platform } from 'expo-modules-core';
 import { Linking } from 'react-native';
-import StoreReview from './ExpoStoreReview';
+const nativeModule = expo?.modules?.ExpoStoreReview;
 // @needsAudit
 /**
  * Determines if the platform has the capabilities to use `StoreReview.requestReview()`.
@@ -11,9 +11,7 @@ import StoreReview from './ExpoStoreReview';
  * - On Android, it will resolve to `true` if the device is running Android 5.0+.
  * - On Web, it will resolve to `false`.
  */
-export async function isAvailableAsync() {
-    return StoreReview.isAvailableAsync();
-}
+export const isAvailableAsync = nativeModule?.isAvailableAsync;
 // @needsAudit
 /**
  * In ideal circumstances this will open a native modal and allow the user to select a star rating
@@ -21,8 +19,8 @@ export async function isAvailableAsync() {
  * a version of Android lower than 5.0, this will attempt to get the store URL and link the user to it.
  */
 export async function requestReview() {
-    if (StoreReview?.requestReview) {
-        await StoreReview.requestReview();
+    if (nativeModule?.requestReview) {
+        await nativeModule.requestReview();
         return;
     }
     // If StoreReview is unavailable then get the store URL from `app.config.js` or `app.json` and open the store
@@ -73,6 +71,6 @@ export function storeUrl() {
  * ```
  */
 export async function hasAction() {
-    return !!storeUrl() || (await isAvailableAsync());
+    return (!!storeUrl() || (await isAvailableAsync?.())) ?? false;
 }
 //# sourceMappingURL=StoreReview.js.map

@@ -183,14 +183,27 @@ function maybeWrapWithReturnStatement(tsType) {
 /*
 We iterate over a list of functions and we create TS AST for each of them.
 */
-function getMockedFunctions(functions, async = false) {
+function getMockedFunctions(functions, async = false, emitDeclarationOnly = false) {
+    if (emitDeclarationOnly) {
+        // Return the interface: `set(): Promise<void>` instead of `export function set() { return null; }`
+        return functions.map((fnStructure) => {
+            const name = typescript_1.default.factory.createIdentifier(fnStructure.name);
+            const returnType = mapSwiftTypeToTsType(fnStructure.types?.returnType);
+            const func = typescript_1.default.factory.createMethodSignature(undefined, name, undefined, [], fnStructure?.types?.parameters.map((p) => typescript_1.default.factory.createParameterDeclaration(undefined, undefined, p.name, undefined, mapSwiftTypeToTsType(p.typename), undefined)) ?? [], async ? wrapWithAsync(returnType) : returnType);
+            return func;
+        });
+    }
     return functions.map((fnStructure) => {
         const name = typescript_1.default.factory.createIdentifier(fnStructure.name);
         const returnType = mapSwiftTypeToTsType(fnStructure.types?.returnType);
-        const func = typescript_1.default.factory.createFunctionDeclaration([
-            typescript_1.default.factory.createToken(typescript_1.default.SyntaxKind.ExportKeyword),
-            async ? typescript_1.default.factory.createToken(typescript_1.default.SyntaxKind.AsyncKeyword) : undefined,
-        ].filter((f) => !!f), undefined, name, undefined, fnStructure?.types?.parameters.map((p) => typescript_1.default.factory.createParameterDeclaration(undefined, undefined, p.name, undefined, mapSwiftTypeToTsType(p.typename), undefined)) ?? [], async ? wrapWithAsync(returnType) : returnType, typescript_1.default.factory.createBlock(maybeWrapWithReturnStatement(returnType), true));
+        const func = typescript_1.default.factory.createFunctionDeclaration(emitDeclarationOnly
+            ? undefined
+            : [
+                typescript_1.default.factory.createToken(typescript_1.default.SyntaxKind.ExportKeyword),
+                async ? typescript_1.default.factory.createToken(typescript_1.default.SyntaxKind.AsyncKeyword) : undefined,
+            ].filter((f) => !!f), undefined, name, undefined, fnStructure?.types?.parameters.map((p) => typescript_1.default.factory.createParameterDeclaration(undefined, undefined, p.name, undefined, mapSwiftTypeToTsType(p.typename), undefined)) ?? [], async ? wrapWithAsync(returnType) : returnType, emitDeclarationOnly
+            ? undefined
+            : typescript_1.default.factory.createBlock(maybeWrapWithReturnStatement(returnType), true));
         return func;
     });
 }
@@ -265,9 +278,46 @@ const newlineIdentifier = typescript_1.default.factory.createIdentifier('\n\n');
 function separateWithNewlines(arr) {
     return [arr, newlineIdentifier];
 }
-function getMockForModule(module, includeTypes) {
+function getMockForModule(module, includeTypes, emitDeclarationOnly = false) {
+    if (emitDeclarationOnly) {
+        // interface NativeModules {
+        //   [module.name]?: Native.[module.name];
+        // }
+        const nativeModulesInterfaceExtension = typescript_1.default.factory.createInterfaceDeclaration(undefined, typescript_1.default.factory.createIdentifier('NativeModules'), undefined, undefined, [
+            typescript_1.default.factory.createPropertySignature(undefined, typescript_1.default.factory.createIdentifier(module.name), undefined, typescript_1.default.factory.createTypeLiteralNode([
+                ...getMockedFunctions(module.functions, false, emitDeclarationOnly),
+                ...getMockedFunctions(module.asyncFunctions, true, emitDeclarationOnly),
+            ])),
+        ]);
+        // Put it all together:
+        //
+        // declare global {
+        //   interface NativeModules {
+        //     [module.name]?: {
+        //       // Functions
+        //       set(key: string, value: string | number, suite?: string): void;
+        //       // Async functions
+        //       getAsync(key: string, suite?: string): Promise<string | null>;
+        //       // Constants
+        //       readonly isAvailable: boolean;
+        //     }
+        //   }
+        // }
+        // Create the global augmentation block
+        const globalDeclaration = typescript_1.default.factory.createModuleDeclaration([typescript_1.default.factory.createModifier(typescript_1.default.SyntaxKind.DeclareKeyword)], // Modifiers
+        typescript_1.default.factory.createIdentifier('global'), // Module name
+        typescript_1.default.factory.createModuleBlock([nativeModulesInterfaceExtension]), // Body
+        typescript_1.default.NodeFlags.GlobalAugmentation // Flags
+        );
+        return []
+            .concat(getPrefix(), newlineIdentifier, globalDeclaration)
+            .flatMap(separateWithNewlines);
+    }
     return []
-        .concat(getPrefix(), newlineIdentifier, includeTypes ? getMockedTypes(getTypesToMock(module)) : [], newlineIdentifier, getMockedFunctions(module.functions).flatMap((mf) => [mf, newlineIdentifier]), getMockedFunctions(module.asyncFunctions, true), newlineIdentifier, includeTypes && module.view ? getMockedTypes(getTypesToMock(module.view)) : [], newlineIdentifier, getMockedView(module.view))
+        .concat(getPrefix(), newlineIdentifier, includeTypes ? getMockedTypes(getTypesToMock(module)) : [], newlineIdentifier, getMockedFunctions(module.functions, false, emitDeclarationOnly).flatMap((mf) => [
+        mf,
+        newlineIdentifier,
+    ]), getMockedFunctions(module.asyncFunctions, true, emitDeclarationOnly), newlineIdentifier, includeTypes && module.view ? getMockedTypes(getTypesToMock(module.view)) : [], newlineIdentifier, getMockedView(module.view))
         .flatMap(separateWithNewlines);
 }
 async function prettifyCode(text, parser = 'babel') {
@@ -280,14 +330,16 @@ async function prettifyCode(text, parser = 'babel') {
     });
 }
 async function generateMocks(modules, outputLanguage = 'javascript') {
+    console.log('modules:', require('util').inspect(modules, { depth: 23, colors: true }));
     const printer = typescript_1.default.createPrinter({ newLine: typescript_1.default.NewLineKind.LineFeed });
+    const emitDeclarationOnly = true;
     for (const m of modules) {
         const filename = m.name + (outputLanguage === 'javascript' ? '.js' : '.ts');
         const resultFile = typescript_1.default.createSourceFile(filename, '', typescript_1.default.ScriptTarget.Latest, false, typescript_1.default.ScriptKind.TSX);
         fs_1.default.mkdirSync(path_1.default.join(directoryPath, 'mocks'), { recursive: true });
         const filePath = path_1.default.join(directoryPath, 'mocks', filename);
         // get ts nodearray from getMockForModule(m) array
-        const mock = typescript_1.default.factory.createNodeArray(getMockForModule(m, outputLanguage === 'typescript'));
+        const mock = typescript_1.default.factory.createNodeArray(getMockForModule(m, outputLanguage === 'typescript', emitDeclarationOnly));
         const printedTs = printer.printList(typescript_1.default.ListFormat.MultiLine + typescript_1.default.ListFormat.PreserveLines, mock, resultFile);
         if (outputLanguage === 'javascript') {
             const compiledJs = typescript_1.default.transpileModule(printedTs, {
@@ -301,6 +353,7 @@ async function generateMocks(modules, outputLanguage = 'javascript') {
         }
         else {
             const prettifiedTs = await prettifyCode(printedTs, 'typescript');
+            console.log('prettifiedTs:', prettifiedTs);
             fs_1.default.writeFileSync(filePath, prettifiedTs);
         }
     }
