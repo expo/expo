@@ -22,8 +22,6 @@ struct SharedObjectId : public jni::HybridClass<SharedObjectId> {
 
   SharedObjectId();
 
-  RN_EXPORT int value{};
-
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject> jThis);
 
   private:
