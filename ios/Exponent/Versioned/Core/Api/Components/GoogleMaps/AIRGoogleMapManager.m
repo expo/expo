@@ -46,8 +46,11 @@ RCT_EXPORT_MODULE()
 - (UIView *)view
 {
   [GMSServices setMetalRendererEnabled:YES];
-  
-  AIRGoogleMap *map = [AIRGoogleMap new];
+  NSString* googleMapId  = nil;
+  if (self.initialProps && self.initialProps[@"googleMapId"]){
+    googleMapId  = self.initialProps[@"googleMapId"];
+  }
+  AIRGoogleMap *map = [[AIRGoogleMap alloc] initWithMapId:googleMapId];
   map.bridge = self.bridge;
   map.delegate = self;
   map.isAccessibilityElement = NO;
@@ -67,6 +70,7 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_VIEW_PROPERTY(isAccessibilityElement, BOOL)
 RCT_REMAP_VIEW_PROPERTY(testID, accessibilityIdentifier, NSString)
+RCT_EXPORT_VIEW_PROPERTY(googleMapId, NSString)
 RCT_EXPORT_VIEW_PROPERTY(initialCamera, GMSCameraPosition)
 RCT_REMAP_VIEW_PROPERTY(camera, cameraProp, GMSCameraPosition)
 RCT_EXPORT_VIEW_PROPERTY(initialRegion, MKCoordinateRegion)
@@ -588,6 +592,7 @@ RCT_EXPORT_METHOD(setIndoorActiveLevelIndex:(nonnull NSNumber *)reactTag
                       @"x": @(touchPoint.x),
                       @"y": @(touchPoint.y),
                       },
+                   @"numberOfTouches": @(recognizer.numberOfTouches),
                   });
 
 }

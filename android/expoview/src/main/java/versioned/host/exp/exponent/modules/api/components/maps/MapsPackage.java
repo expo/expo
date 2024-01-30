@@ -34,7 +34,6 @@ public class MapsPackage implements ReactPackage {
     viewManagers.add(new MapGradientPolylineManager(reactContext));
     viewManagers.add(new MapPolygonManager(reactContext));
     viewManagers.add(new MapCircleManager(reactContext));
-    viewManagers.add(new MapLiteManager(reactContext));
     viewManagers.add(new MapUrlTileManager(reactContext));
     viewManagers.add(new MapWMSTileManager(reactContext));
     viewManagers.add(new MapLocalTileManager(reactContext));

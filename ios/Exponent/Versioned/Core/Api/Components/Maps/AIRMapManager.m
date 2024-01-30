@@ -710,6 +710,7 @@ RCT_EXPORT_METHOD(getAddressFromCoordinates:(nonnull NSNumber *)reactTag
                           @"x": @(touchPoint.x),
                           @"y": @(touchPoint.y),
                           },
+                  @"numberOfTouches": @(recognizer.numberOfTouches)
                   });
 
 }
@@ -915,7 +916,7 @@ static int kDragCenterContext;
                          @"latitude": @(location.coordinate.latitude),
                          @"longitude": @(location.coordinate.longitude),
                          @"altitude": @(location.location.altitude),
-                         @"timestamp": @(location.location.timestamp.timeIntervalSinceReferenceDate * 1000),
+                         @"timestamp": @(location.location.timestamp.timeIntervalSince1970 * 1000),
                          @"accuracy": @(location.location.horizontalAccuracy),
                          @"altitudeAccuracy": @(location.location.verticalAccuracy),
                          @"speed": @(location.location.speed),

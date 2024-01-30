@@ -6,7 +6,5 @@
 #import "AIRMapCoordinate.h"
 
 
-@implementation AIRMapCoordinate {
-
-}
+@implementation AIRMapCoordinate
 @end

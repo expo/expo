@@ -13,6 +13,8 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.LayoutShadowNode;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
+import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -67,8 +69,20 @@ public class MapManager extends ViewGroupManager<MapView> {
   }
 
   @Override
-  protected MapView createViewInstance(ThemedReactContext context) {
+  protected MapView createViewInstance(@NonNull ThemedReactContext context) {
     return new MapView(context, this.appContext, this, googleMapOptions);
+  }
+  @Override
+  protected MapView createViewInstance(int reactTag, @NonNull ThemedReactContext reactContext, @Nullable ReactStylesDiffMap initialProps, @Nullable StateWrapper stateWrapper) {
+    if (initialProps != null){
+      if (initialProps.getString("googleMapId") != null) {
+        googleMapOptions.mapId(initialProps.getString("googleMapId"));
+      }
+      if (initialProps.hasKey("liteMode")) {
+        googleMapOptions.liteMode(initialProps.getBoolean("liteMode", false));
+      }
+    }
+    return super.createViewInstance(reactTag, reactContext, initialProps, stateWrapper);
   }
 
   private void emitMapError(ThemedReactContext context, String message, String type) {
@@ -84,6 +98,18 @@ public class MapManager extends ViewGroupManager<MapView> {
   @ReactProp(name = "region")
   public void setRegion(MapView view, ReadableMap region) {
     view.setRegion(region);
+  }
+
+  @ReactProp(name = "liteMode", defaultBoolean = false)
+  public void setLiteMode(MapView view, boolean liteMode) {
+      googleMapOptions.liteMode(liteMode);
+  }
+
+  @ReactProp(name = "googleMapId")
+  public void setGoogleMapId(MapView view, @Nullable String googleMapId) {
+    if (googleMapId != null) {
+      googleMapOptions.mapId(googleMapId);
+    }
   }
 
   @ReactProp(name = "initialRegion")
