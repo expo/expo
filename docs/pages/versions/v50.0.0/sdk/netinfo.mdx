@@ -47,11 +47,11 @@ unsubscribe();
 
 ## Accessing the SSID
 
-To access the `ssid` property (available under `state.details.ssid`), there are few additional configuration steps:
+To access the `ssid` property (available under `state.details.ssid`), there are a few additional configuration steps:
 
 #### Android and iOS
 
-- Request location permissions with [`Location.requestPermissionsAsync()`](location.mdx#locationrequestpermissionsasync)
+- Request location permissions with [`Location.requestForegroundPermissionsAsync()`](location.mdx#locationrequestforegroundpermissionsasync) or [`Location.requestBackgroundPermissionsAsync()`](location.mdx#locationrequestbackgroundpermissionsasync).
 
 #### iOS only
 
@@ -65,7 +65,7 @@ To access the `ssid` property (available under `state.details.ssid`), there are 
   }
 ```
 
-- Check the **Access Wi-Fi Information** box in your app's App Identifier, [which can be found here](https://developer.apple.com/account/resources/identifiers/list)
-- Rebuild your app with [`eas build --platform ios`](/build/setup/#4-run-a-build) or [`npx expo run:ios`](/more/expo-cli/#compiling)
+- Check the **Access Wi-Fi Information** box in your app's App Identifier, [which can be found here](https://developer.apple.com/account/resources/identifiers/list).
+- Rebuild your app with [`eas build --platform ios`](/build/setup/#4-run-a-build) or [`npx expo run:ios`](/more/expo-cli/#compiling).
 
-For more information on API and usage, see [react-native-netinfo documentation](https://github.com/react-native-community/react-native-netinfo#react-native-communitynetinfo).
+For more information on API and usage, see [`react-native-netinfo` documentation](https://github.com/react-native-community/react-native-netinfo#react-native-communitynetinfo).
