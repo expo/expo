@@ -7,7 +7,8 @@ export * from './Localization.types';
  * @deprecated Use Localization.getLocales() instead.
  * Three-character ISO 4217 currency code. Returns `null` on web.
  *
- * @example `'USD'`, `'EUR'`, `'CNY'`, `null`
+ * @example
+ * `'USD'`, `'EUR'`, `'CNY'`, `null`
  */
 export const currency = ExpoLocalization.currency;
 // @needsAudit
@@ -16,7 +17,8 @@ export const currency = ExpoLocalization.currency;
  * @deprecated Use Localization.getLocales() instead.
  * Decimal separator used for formatting numbers.
  *
- * @example `','`, `'.'`
+ * @example
+ * `','`, `'.'`
  */
 export const decimalSeparator = ExpoLocalization.decimalSeparator;
 // @needsAudit
@@ -25,7 +27,8 @@ export const decimalSeparator = ExpoLocalization.decimalSeparator;
  * @deprecated Use Localization.getLocales() instead.
  * Digit grouping separator used when formatting numbers larger than 1000.
  *
- * @example `'.'`, `''`, `','`
+ * @example
+ * `'.'`, `''`, `','`
  */
 export const digitGroupingSeparator = ExpoLocalization.digitGroupingSeparator;
 // @needsAudit
@@ -59,7 +62,8 @@ export const isRTL = ExpoLocalization.isRTL;
  * An [IETF BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag),
  * consisting of a two-character language code and optional script, region and variant codes.
  *
- * @example `'en'`, `'en-US'`, `'zh-Hans'`, `'zh-Hans-CN'`, `'en-emodeng'`
+ * @example
+ * `'en'`, `'en-US'`, `'zh-Hans'`, `'zh-Hans-CN'`, `'en-emodeng'`
  */
 export const locale = ExpoLocalization.locale;
 // @needsAudit
@@ -69,7 +73,8 @@ export const locale = ExpoLocalization.locale;
  * List of all the native languages provided by the user settings.
  * These are returned in the order the user defines in their device settings.
  *
- * @example `['en', 'en-US', 'zh-Hans', 'zh-Hans-CN', 'en-emodeng']`
+ * @example
+ * `['en', 'en-US', 'zh-Hans', 'zh-Hans-CN', 'en-emodeng']`
  */
 export const locales = ExpoLocalization.locales;
 // @needsAudit
@@ -81,7 +86,8 @@ export const locales = ExpoLocalization.locales;
  * better estimation you could use the moment-timezone package but it will add significant bloat to
  * your website's bundle size.
  *
- * @example `'America/Los_Angeles'`
+ * @example
+ * `'America/Los_Angeles'`
  */
 export const timezone = ExpoLocalization.timezone;
 // @needsAudit
@@ -91,7 +97,8 @@ export const timezone = ExpoLocalization.timezone;
  * The region code for your device that comes from the Region setting under Language & Region on iOS.
  * This value is always available on iOS, but might return `null` on Android or web.
  *
- * @example `'US'`, `'NZ'`, `null`
+ * @example
+ * `'US'`, `'NZ'`, `null`
  */
 export const region = ExpoLocalization.region;
 /**
@@ -100,32 +107,36 @@ export const region = ExpoLocalization.region;
  * These are returned in the order the user defines in their device settings.
  * On the web currency and measurements systems are not provided, instead returned as null.
  * If needed, you can infer them from the current region using a lookup table.
- * @example `[{
-    "languageTag": "pl-PL",
-    "languageCode": "pl",
-    "textDirection": "ltr",
-    "digitGroupingSeparator": " ",
-    "decimalSeparator": ",",
-    "measurementSystem": "metric",
-    "currencyCode": "PLN",
-    "currencySymbol": "zł",
-    "regionCode": "PL",
-    "temperatureUnit": "celsius"
-  }]`
+ * @example
+ * ```js
+ * [{
+ *   "languageTag": "pl-PL",
+ *   "languageCode": "pl",
+ *   "textDirection": "ltr",
+ *   "digitGroupingSeparator": " ",
+ *   "decimalSeparator": ",",
+ *   "measurementSystem": "metric",
+ *   "currencyCode": "PLN",
+ *   "currencySymbol": "zł",
+ *   "regionCode": "PL",
+ *   "temperatureUnit": "celsius"
+ * }]
+ * ```
  */
 export const getLocales = ExpoLocalization.getLocales;
 /**
  * List of user's preferred calendars, returned as an array of objects of type `Calendar`.
  * Guaranteed to contain at least 1 element.
  * For now always returns a single element, but it's likely to return a user preference list on some platforms in the future.
- * @example `[
-    {
-      "calendar": "gregory",
-      "timeZone": "Europe/Warsaw",
-      "uses24hourClock": true,
-      "firstWeekday": 1
-    }
-  ]`
+ * @example
+ * ```js
+ * [{
+ *   "calendar": "gregory",
+ *   "timeZone": "Europe/Warsaw",
+ *   "uses24hourClock": true,
+ *   "firstWeekday": 1
+ * }]
+ * ```
  */
 export const getCalendars = ExpoLocalization.getCalendars;
 /**
@@ -135,18 +146,21 @@ export const getCalendars = ExpoLocalization.getCalendars;
  * On the web currency and measurements systems are not provided, instead returned as null.
  * If needed, you can infer them from the current region using a lookup table.
  * If the OS settings change, the hook will rerender with a new list of locales.
- * @example `[{
-    "languageTag": "pl-PL",
-    "languageCode": "pl",
-    "textDirection": "ltr",
-    "digitGroupingSeparator": " ",
-    "decimalSeparator": ",",
-    "measurementSystem": "metric",
-    "currencyCode": "PLN",
-    "currencySymbol": "zł",
-    "regionCode": "PL",
-    "temperatureUnit": "celsius"
-  }]`
+ * @example
+ * ```js
+ * [{
+ *   "languageTag": "pl-PL",
+ *   "languageCode": "pl",
+ *   "textDirection": "ltr",
+ *   "digitGroupingSeparator": " ",
+ *   "decimalSeparator": ",",
+ *   "measurementSystem": "metric",
+ *   "currencyCode": "PLN",
+ *   "currencySymbol": "zł",
+ *   "regionCode": "PL",
+ *   "temperatureUnit": "celsius"
+ * }]
+ * ```
  */
 export function useLocales() {
     const [key, invalidate] = useReducer((k) => k + 1, 0);
@@ -164,14 +178,15 @@ export function useLocales() {
  * Guaranteed to contain at least 1 element.
  * For now always returns a single element, but it's likely to return a user preference list on some platforms in the future.
  * If the OS settings change, the hook will rerender with a new list of calendars.
- * @example `[
-    {
-      "calendar": "gregory",
-      "timeZone": "Europe/Warsaw",
-      "uses24hourClock": true,
-      "firstWeekday": 1
-    }
-  ]`
+ * @example
+ * ```js
+ * [{
+ *   "calendar": "gregory",
+ *   "timeZone": "Europe/Warsaw",
+ *   "uses24hourClock": true,
+ *   "firstWeekday": 1
+ * }]
+ * ```
  */
 export function useCalendars() {
     const [key, invalidate] = useReducer((k) => k + 1, 0);
