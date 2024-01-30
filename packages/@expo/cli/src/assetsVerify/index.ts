@@ -57,10 +57,19 @@ export const expoAssetsVerify: Command = async (argv) => {
 
     if (missingAssets.length > 0) {
       throw new CommandError(
-        `${missingAssets.length} assets not found in either embedded manifest or in exported bundle`
+        `${
+          missingAssets.length
+        } assets not found in either embedded manifest or in exported bundle:${JSON.stringify(
+          missingAssets.map((asset) => ({
+            hash: asset.hash,
+            path: asset.files?.length ? asset.files[0] : '',
+          })),
+          null,
+          2
+        )}`
       );
     } else {
-      console.warn(`All resolved assets found in either embedded manifest or in exported bundle.`);
+      console.info(`All resolved assets found in either embedded manifest or in exported bundle.`);
     }
     process.exit(0);
   })().catch(logCmdError);

@@ -50,7 +50,6 @@ export function getMissingAssets(
   fullAssetSet.forEach((hash) => {
     if (!buildAssetsPlusExportedAssets.has(hash)) {
       const asset = fullAssetMap.get(hash);
-      console.warn(`  Missing asset: hash = ${hash}, file = ${asset?.files[0] ?? ''}`);
       asset && missingAssets.push(asset);
     }
   });
@@ -124,11 +123,7 @@ export function getFullAssetDump(exportPath: string) {
  * @returns The set of asset hashes in the asset dump
  */
 export function getFullAssetDumpHashSet(assetDump: FullAssetDump) {
-  const assetSet = new Set<string>();
-  assetDump.forEach((_asset, hash) => {
-    assetSet.add(hash);
-  });
-  return assetSet;
+  return new Set(assetDump.keys());
 }
 
 /**
@@ -163,9 +158,6 @@ export function getExportedMetadataHashSet(metadata: ExportedMetadata, platform:
     throw new CommandError(`Exported bundle was not exported for platform ${platform}`);
   }
   const assets: ExportedMetadataAsset[] = fileMetadata?.assets ?? [];
-  const assetSet = new Set<string>();
-  assets.forEach((asset) => {
-    assetSet.add(asset.path.substring(7, asset.path.length));
-  });
-  return assetSet;
+  // Asset paths in the export metadata are of the form 'assets/<hash string>'
+  return new Set(assets.map((asset) => asset.path.substring(7, asset.path.length)));
 }
