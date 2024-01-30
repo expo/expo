@@ -96,10 +96,14 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
     return this.device.udid;
   }
 
-  async getAppVersionAsync(appId: string): Promise<string | null> {
+  async getAppVersionAsync(
+    appId: string,
+    { containerPath }: { containerPath?: string } = {}
+  ): Promise<string | null> {
     return await SimControl.getInfoPlistValueAsync(this.device, {
       appId,
       key: 'CFBundleShortVersionString',
+      containerPath,
     });
   }
 
@@ -173,9 +177,11 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
   }
 
   async isAppInstalledAsync(appId: string) {
-    return !!(await SimControl.getContainerPathAsync(this.device, {
-      appId,
-    }));
+    return (
+      (await SimControl.getContainerPathAsync(this.device, {
+        appId,
+      })) ?? false
+    );
   }
 
   async openUrlAsync(url: string) {

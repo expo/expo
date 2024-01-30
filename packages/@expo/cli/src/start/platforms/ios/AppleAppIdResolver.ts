@@ -18,7 +18,7 @@ export class AppleAppIdResolver extends AppIdResolver {
       // Never returns nullish values.
       return !!IOSConfig.Paths.getAllPBXProjectPaths(this.projectRoot).length;
     } catch (error: any) {
-      debug('Expected error checking for native project:', error);
+      debug('Expected error checking for native project:', error.message);
       return false;
     }
   }

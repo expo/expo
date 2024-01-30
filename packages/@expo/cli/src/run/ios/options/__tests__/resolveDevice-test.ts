@@ -1,4 +1,4 @@
-import { assertSystemRequirementsAsync } from '../../../../start/platforms/ios/assertSystemRequirements';
+import { AppleDeviceManager } from '../../../../start/platforms/ios/AppleDeviceManager';
 import { sortDefaultDeviceToBeginningAsync } from '../../../../start/platforms/ios/promptAppleDevice';
 import { promptDeviceAsync } from '../promptDevice';
 import { resolveDeviceAsync } from '../resolveDevice';
@@ -51,6 +51,7 @@ jest.mock('../../../../start/platforms/ios/AppleDeviceManager', () => ({
   ensureSimulatorOpenAsync: jest.fn(async (obj) => obj),
 
   AppleDeviceManager: {
+    assertSystemRequirementsAsync: jest.fn(),
     resolveAsync: jest.fn(async () => ({ device: simulator })),
   },
 }));
@@ -58,7 +59,7 @@ jest.mock('../../../../start/platforms/ios/AppleDeviceManager', () => ({
 describe(resolveDeviceAsync, () => {
   it(`resolves a default device`, async () => {
     expect((await resolveDeviceAsync(undefined, { osType: undefined })).name).toEqual('iPhone 8');
-    expect(assertSystemRequirementsAsync).toBeCalled();
+    expect(AppleDeviceManager.assertSystemRequirementsAsync).toBeCalled();
   });
   it(`prompts the user to select a device`, async () => {
     expect((await resolveDeviceAsync(true, { osType: undefined })).name).toEqual(`Evan's phone`);
@@ -69,7 +70,7 @@ describe(resolveDeviceAsync, () => {
       expect.anything(),
     ]);
 
-    expect(assertSystemRequirementsAsync).toBeCalled();
+    expect(AppleDeviceManager.assertSystemRequirementsAsync).toBeCalled();
     expect(sortDefaultDeviceToBeginningAsync).toBeCalled();
   });
   it(`searches for the provided device by name`, async () => {
@@ -79,7 +80,7 @@ describe(resolveDeviceAsync, () => {
 
     expect(promptDeviceAsync).not.toBeCalled();
 
-    expect(assertSystemRequirementsAsync).toBeCalled();
+    expect(AppleDeviceManager.assertSystemRequirementsAsync).toBeCalled();
     expect(sortDefaultDeviceToBeginningAsync).toBeCalled();
   });
   it(`searches for the provided device by id`, async () => {
@@ -89,7 +90,7 @@ describe(resolveDeviceAsync, () => {
 
     expect(promptDeviceAsync).not.toBeCalled();
 
-    expect(assertSystemRequirementsAsync).toBeCalled();
+    expect(AppleDeviceManager.assertSystemRequirementsAsync).toBeCalled();
     expect(sortDefaultDeviceToBeginningAsync).toBeCalled();
   });
   it(`asserts the requested device could not be found`, async () => {
@@ -99,7 +100,7 @@ describe(resolveDeviceAsync, () => {
 
     expect(promptDeviceAsync).not.toBeCalled();
 
-    expect(assertSystemRequirementsAsync).toBeCalled();
+    expect(AppleDeviceManager.assertSystemRequirementsAsync).toBeCalled();
     expect(sortDefaultDeviceToBeginningAsync).toBeCalled();
   });
 });

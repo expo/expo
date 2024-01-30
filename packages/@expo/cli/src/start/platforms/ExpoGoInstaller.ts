@@ -25,8 +25,11 @@ export class ExpoGoInstaller<IDevice> {
   ) {}
 
   /** Returns true if the installed app matching the previously provided `appId` is outdated. */
-  async isClientOutdatedAsync(device: DeviceManager<IDevice>): Promise<boolean> {
-    const installedVersion = await device.getAppVersionAsync(this.appId);
+  async isClientOutdatedAsync(
+    device: DeviceManager<IDevice>,
+    { containerPath }: { containerPath?: string } = {}
+  ): Promise<boolean> {
+    const installedVersion = await device.getAppVersionAsync(this.appId, { containerPath });
     if (!installedVersion) {
       return true;
     }
@@ -46,7 +49,10 @@ export class ExpoGoInstaller<IDevice> {
   }
 
   /** Returns a boolean indicating if Expo Go should be installed. Returns `true` if the app was uninstalled. */
-  async uninstallExpoGoIfOutdatedAsync(deviceManager: DeviceManager<IDevice>): Promise<boolean> {
+  async uninstallExpoGoIfOutdatedAsync(
+    deviceManager: DeviceManager<IDevice>,
+    { containerPath }: { containerPath?: string } = {}
+  ): Promise<boolean> {
     const cacheId = `${this.platform}-${deviceManager.identifier}`;
 
     if (ExpoGoInstaller.cache[cacheId]) {
@@ -55,7 +61,7 @@ export class ExpoGoInstaller<IDevice> {
     }
     ExpoGoInstaller.cache[cacheId] = true;
 
-    if (await this.isClientOutdatedAsync(deviceManager)) {
+    if (await this.isClientOutdatedAsync(deviceManager, { containerPath })) {
       if (this.sdkVersion === 'UNVERSIONED') {
         // This should only happen in the expo/expo repo, e.g. `apps/test-suite`
         Log.log(
@@ -83,10 +89,10 @@ export class ExpoGoInstaller<IDevice> {
 
   /** Check if a given device has Expo Go installed, if not then download and install it. */
   async ensureAsync(deviceManager: DeviceManager<IDevice>): Promise<boolean> {
-    let shouldInstall = !(await deviceManager.isAppInstalledAsync(this.appId));
-
+    const hasInstall = await deviceManager.isAppInstalledAsync(this.appId);
+    let shouldInstall = !hasInstall;
     if (env.EXPO_OFFLINE) {
-      if (!shouldInstall) {
+      if (hasInstall) {
         Log.warn(`Skipping Expo Go version validation in offline mode`);
         return false;
       }
@@ -96,8 +102,11 @@ export class ExpoGoInstaller<IDevice> {
       );
     }
 
-    if (!shouldInstall) {
-      shouldInstall = await this.uninstallExpoGoIfOutdatedAsync(deviceManager);
+    if (hasInstall) {
+      shouldInstall = await this.uninstallExpoGoIfOutdatedAsync(deviceManager, {
+        // iOS optimization to prevent duplicate calls to `getContainerPathAsync`.
+        containerPath: typeof hasInstall === 'string' ? hasInstall : undefined,
+      });
     }
 
     if (shouldInstall) {
