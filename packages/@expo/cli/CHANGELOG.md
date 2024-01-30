@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Mark compressed `.gz` files as binary to avoid corruption when unpacking with `expo prebuild --template`. ([#26741](https://github.com/expo/expo/pull/26741) by [@shirakaba](https://github.com/shirakaba))
+
 ### 💡 Others
 
 ## 0.17.4 — 2024-02-01
