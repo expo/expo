@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Mark compressed `.gz` files as binary to avoid corruption when unpacking with `create-expo --template` ([#26741](https://github.com/expo/expo/pull/26741) by [@shirakaba](https://github.com/shirakaba))
+
 ### 💡 Others
 
 ## 2.1.3 — 2023-12-12
