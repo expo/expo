@@ -10,6 +10,9 @@
 #import <React/RCTViewManager.h>
 
 @interface AIRGoogleMapManager : RCTViewManager
+
+@property (nonatomic, strong) NSDictionary *initialProps;
+
 @property (nonatomic) BOOL isGesture;
 
 @end

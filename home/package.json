@@ -62,7 +62,7 @@
     "react-native-gesture-handler": "~2.14.0",
     "react-native-infinite-scroll-view": "^0.4.5",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
-    "react-native-maps": "1.8.0",
+    "react-native-maps": "1.10.0",
     "react-native-paper": "^4.0.1",
     "react-native-reanimated": "~3.6.0",
     "react-native-safe-area-context": "4.8.2",

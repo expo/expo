@@ -68,11 +68,21 @@ id regionAsJSON(MKCoordinateRegion region) {
   BOOL _didPrepareMap;
   BOOL _didCallOnMapReady;
   BOOL _zoomTapEnabled;
+  NSString* _googleMapId;
 }
 
-- (instancetype)init
+- (instancetype)initWithMapId:(NSString *)mapId
 {
-  if ((self = [super init])) {
+    if (mapId){
+        GMSMapID *mapID = [GMSMapID mapIDWithIdentifier:mapId];
+        GMSCameraPosition *camera = [GMSCameraPosition cameraWithLatitude:47.0169
+                                                                longitude:-122.336471
+                                                                     zoom:12];
+        self = [super initWithFrame:CGRectZero mapID:mapID camera:camera];
+    } else {
+        self = [super init];
+    }
+    if (self) {
     _reactSubviews = [NSMutableArray new];
     _markers = [NSMutableArray array];
     _polygons = [NSMutableArray array];
@@ -103,6 +113,10 @@ id regionAsJSON(MKCoordinateRegion region) {
     self.indoorDisplay.delegate = self;
   }
   return self;
+}
+
+- (instancetype) init {
+  return [self initWithMapId:nil];
 }
 
 - (void)dealloc {
@@ -290,6 +304,10 @@ id regionAsJSON(MKCoordinateRegion region) {
   if(_didLayoutSubviews) {
     self.camera = [AIRGoogleMap makeGMSCameraPositionFromMap:self  andMKCoordinateRegion:region];
   }
+}
+
+- (void) setGoogleMapId:(NSString *) googleMapId {
+    _googleMapId = googleMapId;
 }
 
 - (void)setCameraProp:(GMSCameraPosition*)camera {
@@ -815,7 +833,7 @@ id regionAsJSON(MKCoordinateRegion region) {
                     @"latitude": @(location.coordinate.latitude),
                     @"longitude": @(location.coordinate.longitude),
                     @"altitude": @(location.altitude),
-                    @"timestamp": @(location.timestamp.timeIntervalSinceReferenceDate * 1000),
+                    @"timestamp": @(location.timestamp.timeIntervalSince1970 * 1000),
                     @"accuracy": @(location.horizontalAccuracy),
                     @"altitudeAccuracy": @(location.verticalAccuracy),
                     @"speed": @(location.speed),
