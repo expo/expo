@@ -3,7 +3,6 @@ import {
   ConfigPlugin,
   History,
   withAndroidManifest,
-  withAppBuildGradle,
   withDangerousMod,
 } from 'expo/config-plugins';
 import fs from 'fs';
@@ -68,6 +67,10 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
     {
       propName: 'EX_DEV_CLIENT_NETWORK_INSPECTOR',
       propValueGetter: (config) => (config.android?.networkInspector ?? true).toString(),
+    },
+    {
+      propName: 'expo.useLegacyPackaging',
+      propValueGetter: (config) => (config.android?.useLegacyPackaging ?? false).toString(),
     },
   ],
   'withAndroidBuildProperties'
@@ -228,26 +231,6 @@ export const withAndroidQueries: ConfigPlugin<PluginConfigType> = (config, props
     }
 
     config.modResults.manifest.queries = [additionalQueries];
-    return config;
-  });
-};
-
-export const withLegacyPackaging: ConfigPlugin<PluginConfigType> = (config, props) => {
-  if (!props.android?.useLegacyPackaging) {
-    return config;
-  }
-  return withAppBuildGradle(config, (config) => {
-    const buildGradle = config.modResults.contents;
-
-    config.modResults.contents = buildGradle.replace(
-      /buildTypes\s?{/,
-      `packagingOptions {
-        jniLibs {
-          useLegacyPackaging true
-        }
-    }
-    buildTypes {`
-    );
     return config;
   });
 };
