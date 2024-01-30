@@ -87,7 +87,7 @@ export function LoggedOutAccountView({ refetch }: Props) {
       const redirectBase = 'expauth://auth';
       const authSessionURL = `${
         Config.website.origin
-      }/${urlPath}?app_redirect_uri=${encodeURIComponent(redirectBase)}`;
+      }/${urlPath}?confirm_account=1&app_redirect_uri=${encodeURIComponent(redirectBase)}`;
       const result = await WebBrowser.openAuthSessionAsync(authSessionURL, redirectBase, {
         /** note(brentvatne): We should disable the showInRecents option when
          * https://github.com/expo/expo/issues/8072 is resolved. This workaround
