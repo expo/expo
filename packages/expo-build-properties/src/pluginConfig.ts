@@ -114,6 +114,14 @@ export interface PluginConfigTypeAndroid {
    */
   usesCleartextTraffic?: boolean;
   /**
+   * Instructs the Android Gradle plugin to compress native libraries in the APK using the legacy packaging system.
+   *
+   * @default false
+   *
+   * @see [Android documentation](https://developer.android.com/build/releases/past-releases/agp-4-2-0-release-notes#compress-native-libs-dsl)
+   */
+  useLegacyPackaging?: boolean;
+  /**
    * Specifies the set of other apps that an app intends to interact with. These other apps are specified by package name,
    * by intent signature, or by provider authority.
    *
@@ -362,6 +370,8 @@ const schema: JSONSchemaType<PluginConfigType> = {
         extraMavenRepos: { type: 'array', items: { type: 'string' }, nullable: true },
 
         usesCleartextTraffic: { type: 'boolean', nullable: true },
+
+        useLegacyPackaging: { type: 'boolean', nullable: true },
 
         manifestQueries: {
           required: ['package'],
