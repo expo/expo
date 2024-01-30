@@ -63,6 +63,10 @@ exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
         propName: 'EX_DEV_CLIENT_NETWORK_INSPECTOR',
         propValueGetter: (config) => (config.android?.networkInspector ?? true).toString(),
     },
+    {
+        propName: 'expo.useLegacyPackaging',
+        propValueGetter: (config) => (config.android?.useLegacyPackaging ?? false).toString(),
+    },
 ], 'withAndroidBuildProperties');
 /**
  * Appends `props.android.extraProguardRules` content into `android/app/proguard-rules.pro`
