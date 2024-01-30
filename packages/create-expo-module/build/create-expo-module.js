@@ -169,11 +169,38 @@ async function getNpmTarballUrl(packageName, version = 'latest') {
     return stdout.trim();
 }
 /**
+ * Gets expo SDK version from the local package.json.
+ */
+async function getLocalSdkVersion() {
+    const packageJsonPath = await (0, find_up_1.default)('package.json', { cwd: CWD });
+    if (!packageJsonPath) {
+        return null;
+    }
+    const packageJson = await fs_extra_1.default.readJSON(packageJsonPath);
+    return packageJson.dependencies?.expo ?? null;
+}
+/**
+ * Selects correct version of the template based on the SDK version for local modules and EXPO_BETA flag.
+ */
+async function getTemplateVersion(targetDir, isLocal) {
+    if (EXPO_BETA) {
+        return 'next';
+    }
+    if (!isLocal) {
+        return 'latest';
+    }
+    const sdkVersion = await getLocalSdkVersion();
+    const npmMajorOnlyRegex = /([0-9]+)\..*/m;
+    return sdkVersion ? sdkVersion.match(npmMajorOnlyRegex)?.[1] : 'latest';
+}
+/**
  * Downloads the template from NPM registry.
  */
 async function downloadPackageAsync(targetDir, isLocal = false) {
     return await (0, utils_1.newStep)('Downloading module template from npm', async (step) => {
-        const tarballUrl = await getNpmTarballUrl(isLocal ? 'expo-module-template-local' : 'expo-module-template', EXPO_BETA ? 'next' : 'latest');
+        const templateVersion = await getTemplateVersion(targetDir, isLocal);
+        const tarballUrl = await getNpmTarballUrl(isLocal ? 'expo-module-template-local' : 'expo-module-template', templateVersion);
+        console.log({ templateVersion });
         await (0, download_tarball_1.default)({
             url: tarballUrl,
             dir: targetDir,
