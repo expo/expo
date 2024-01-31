@@ -42,7 +42,6 @@ export type AdditionalProps = {
   sidebarDepth?: number;
   sidebarType?: HeadingType;
   tags?: string[];
-  style?: React.CSSProperties;
   className?: string;
 };
 

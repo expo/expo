@@ -18,7 +18,6 @@ module.exports = {
     'tailwindcss/no-custom-classname': ['warn', {
       'whitelist': [
         'diff-.+',
-        'anchor-icon',
         'react-player',
         'dark-theme',
         'dialog-.+'

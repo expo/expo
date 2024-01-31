@@ -6,7 +6,7 @@ import * as React from 'react';
 import { TextComponentProps, TextElement } from './types';
 
 import { AdditionalProps, HeadingType } from '~/common/headingManager';
-import Permalink from '~/components/Permalink';
+import { Permalink } from '~/ui/components/Permalink';
 import { durations } from '~/ui/foundations/durations';
 
 export { AnchorContext } from './withAnchor';

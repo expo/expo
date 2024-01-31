@@ -6,10 +6,10 @@ import { useRouter } from 'next/compat/router';
 import type { PropsWithChildren, ReactNode } from 'react';
 import React from 'react';
 
-import PermalinkIcon from '~/components/icons/Permalink';
 import withHeadingManager, {
   HeadingManagerProps,
 } from '~/components/page-higher-order/withHeadingManager';
+import { PermalinkCopyButton } from '~/ui/components/Permalink';
 import { DEMI } from '~/ui/components/Text';
 
 type CollapsibleProps = PropsWithChildren<{
@@ -50,13 +50,6 @@ const Collapsible: React.FC<CollapsibleProps> = withHeadingManager(
       setOpen(!open);
     };
 
-    const onClickIcon = (event: { stopPropagation?: () => void }) => {
-      event.stopPropagation && event.stopPropagation();
-      if (!open) {
-        setOpen(true);
-      }
-    };
-
     // HeadingManager is used to generate a slug that corresponds to the collapsible summary.
     // These are normally generated for MD (#) headings, but Collapsible doesn't have those.
     // This is a ref because identical tags will keep incrementing the number if it is not.
@@ -64,15 +57,19 @@ const Collapsible: React.FC<CollapsibleProps> = withHeadingManager(
 
     return (
       <details id={heading.current.slug} css={detailsStyle} open={open} data-testid={testID}>
-        <summary css={summaryStyle} onClick={onToggle}>
+        <summary css={summaryStyle} onClick={onToggle} className="group">
           <div css={markerWrapperStyle}>
             <TriangleDownIcon className="icon-sm text-icon-default" css={markerStyle} />
           </div>
-          <LinkBase href={'#' + heading.current.slug} ref={heading.current.ref}>
+          <LinkBase
+            href={'#' + heading.current.slug}
+            ref={heading.current.ref}
+            className="relative">
             <DEMI>{summary}</DEMI>
-            <span css={STYLES_PERMALINK_ICON}>
-              <PermalinkIcon onClick={onClickIcon} />
-            </span>
+            <PermalinkCopyButton
+              slug={heading.current.slug}
+              className="invisible group-hover:visible group-focus-visible:visible"
+            />
           </LinkBase>
         </summary>
         <div css={contentStyle} className="last:[&>*]:!mb-1">
@@ -159,23 +156,3 @@ const contentStyle = css({
     marginTop: 0,
   },
 });
-
-const STYLES_PERMALINK_ICON = css`
-  cursor: pointer;
-  vertical-align: middle;
-  display: inline-block;
-  width: 1.2em;
-  height: 1em;
-  padding: 0 0.2em;
-  visibility: hidden;
-
-  a:hover &,
-  a:focus-visible & {
-    visibility: visible;
-  }
-
-  svg {
-    width: 100%;
-    height: auto;
-  }
-`;
