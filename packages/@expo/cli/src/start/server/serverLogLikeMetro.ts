@@ -114,7 +114,7 @@ function formatStackLikeMetro(projectRoot: string, stack: string) {
 
   const stackTrace = stackTraceParser.parse(stack);
   return stackTrace
-    .filter((line) => line.file)
+    .filter((line) => line.file && line.file !== '<anonymous>')
     .map((line) => {
       // Use the same regex we use in Metro config to filter out traces:
       const isCollapsed = INTERNAL_CALLSITES_REGEX.test(line.file!);
