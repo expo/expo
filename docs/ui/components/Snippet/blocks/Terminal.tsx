@@ -69,14 +69,14 @@ function cmdMapper(line: string, index: number) {
     );
   }
 
-  if (line.startsWith('$')) {
+  if (line.startsWith('$') || line.length > 0) {
     return (
       <div key={key}>
         <CODE className="whitespace-pre !bg-[transparent] !border-none select-none !text-secondary">
           -&nbsp;
         </CODE>
         <CODE className="whitespace-pre !bg-[transparent] !border-none text-default">
-          {line.substring(1).trim()}
+          {line.startsWith('$') ? line.substring(2).trim() : line.substring(0).trim()}
         </CODE>
       </div>
     );
