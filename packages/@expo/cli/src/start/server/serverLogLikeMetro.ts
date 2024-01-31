@@ -18,7 +18,7 @@ let collapsedGuardTimer: ReturnType<typeof setTimeout> | undefined;
 function logLikeMetro(
   originalLogFunction: (...args: any[]) => void,
   level: string,
-  mode: string,
+  platform: string,
   ...data: any[]
 ) {
   // @ts-expect-error
@@ -61,9 +61,10 @@ function logLikeMetro(
       data[data.length - 1] = lastItem.trimEnd();
     }
 
-    const modePrefix = chalk.bold.white.inverse` ${mode} `;
+    const modePrefix = chalk.bold.white.inverse` ${platform} `;
     originalLogFunction(
       modePrefix +
+        ' ' +
         color.bold(` ${logFunction.toUpperCase()} `) +
         ''.padEnd(groupStack.length * 2, ' '),
       ...data
