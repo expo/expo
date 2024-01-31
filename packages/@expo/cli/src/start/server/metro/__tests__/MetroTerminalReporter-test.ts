@@ -59,7 +59,7 @@ describe('_getBundleStatusMessage', () => {
           'in_progress'
         )
       )
-    ).toMatchInlineSnapshot(`"Server ./index.js ▓▓▓▓▓▓▓▓░░░░░░░░ 50.0% ( 50/100)"`);
+    ).toMatchSnapshot();
   });
 
   it(`should format standard progress at 0%`, () => {
