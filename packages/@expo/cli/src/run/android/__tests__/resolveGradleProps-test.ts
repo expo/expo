@@ -25,7 +25,7 @@ describe(resolveGradleProps, () => {
     ).rejects.toThrowError(CommandError);
   });
   it(`parses flavors`, async () => {
-    expect(await resolveGradleProps('/', { variant: 'firstSecondThird' })).toEqual({
+    expect(await resolveGradleProps('/', { variant: 'firstSecondThird', allArch: true })).toEqual({
       apkVariantDirectory: '/android/app/build/outputs/apk/second/third/first',
       appName: 'app',
       buildType: 'first',
@@ -35,7 +35,7 @@ describe(resolveGradleProps, () => {
   });
 
   it(`parses with no variant`, async () => {
-    expect(await resolveGradleProps('/', {})).toEqual({
+    expect(await resolveGradleProps('/', {allArch: true})).toEqual({
       apkVariantDirectory: '/android/app/build/outputs/apk/debug',
       appName: 'app',
       buildType: 'debug',
@@ -49,7 +49,7 @@ describe(resolveGradleProps, () => {
     jest.mocked(getDeviceABIsAsync).mockResolvedValueOnce([DeviceABI.arm64, DeviceABI.x86]);
 
     expect(
-      await resolveGradleProps('/', { variant: 'firstSecondThird', activeArchOnly: true })
+      await resolveGradleProps('/', { variant: 'firstSecondThird'})
     ).toEqual({
       apkVariantDirectory: '/android/app/build/outputs/apk/second/third/first',
       appName: 'app',
@@ -72,7 +72,7 @@ describe(resolveGradleProps, () => {
       ]);
 
     expect(
-      await resolveGradleProps('/', { variant: 'firstSecondThird', activeArchOnly: true })
+      await resolveGradleProps('/', { variant: 'firstSecondThird' })
     ).toEqual({
       apkVariantDirectory: '/android/app/build/outputs/apk/second/third/first',
       appName: 'app',

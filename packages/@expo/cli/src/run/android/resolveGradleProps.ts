@@ -25,7 +25,7 @@ function assertVariant(variant?: string) {
 
 export async function resolveGradleProps(
   projectRoot: string,
-  options: { variant?: string; activeArchOnly?: boolean }
+  options: { variant?: string; allArch?: boolean }
 ): Promise<GradleProps> {
   const variant = assertVariant(options.variant);
   // NOTE(EvanBacon): Why would this be different? Can we get the different name?
@@ -37,7 +37,7 @@ export async function resolveGradleProps(
   // This won't work for non-standard flavor names like "myFlavor" would be treated as "my", "flavor".
   const [buildType, ...flavors] = variant.split(/(?=[A-Z])/).map((v) => v.toLowerCase());
   const apkVariantDirectory = path.join(apkDirectory, ...flavors, buildType);
-  const architectures = await getConnectedDeviceABIS(options.activeArchOnly);
+  const architectures = await getConnectedDeviceABIS(options.allArch);
 
   return {
     appName,
@@ -48,8 +48,8 @@ export async function resolveGradleProps(
   };
 }
 
-async function getConnectedDeviceABIS(activeArch?: boolean): Promise<string> {
-  if (!activeArch) {
+async function getConnectedDeviceABIS(allArch?: boolean): Promise<string> {
+  if (allArch) {
     return '';
   }
   const devices = await getAttachedDevicesAsync();

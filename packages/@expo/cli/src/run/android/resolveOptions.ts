@@ -11,7 +11,7 @@ export type Options = {
   bundler?: boolean;
   install?: boolean;
   buildCache?: boolean;
-  activeArchOnly?: boolean;
+  allArch?: boolean;
 };
 
 export type ResolvedOptions = GradleProps &

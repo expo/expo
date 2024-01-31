@@ -52,7 +52,6 @@ it('runs `npx expo run:android --help`', async () => {
         --variant <name>       Build variant. Default: debug
         -d, --device [device]  Device name to run the app on
         -p, --port <port>      Port to start the dev server on. Default: 8081
-        --active-arch-only     Only build for the architectures of connected devices or emulators
         -h, --help             Output usage information
     "
   `);
