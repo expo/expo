@@ -35,8 +35,8 @@
   },
   "devDependencies": {
     "@expo/json-file": "8.3.0",
-    "@expo/package-manager": "^1.1.1",
-    "@expo/spawn-async": "^1.7.0",
+    "@expo/package-manager": "^1.4.0",
+    "@expo/spawn-async": "^1.7.2",
     "@types/debug": "^4.1.7",
     "@types/getenv": "^1.0.0",
     "@types/node": "^16.11.56",

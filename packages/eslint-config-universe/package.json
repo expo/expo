@@ -59,7 +59,7 @@
     }
   },
   "devDependencies": {
-    "@expo/spawn-async": "^1.6.0",
+    "@expo/spawn-async": "^1.7.2",
     "eslint": "^8.56.0",
     "jest": "^29.2.1",
     "prettier": "^3.1.1"
