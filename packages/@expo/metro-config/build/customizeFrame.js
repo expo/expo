@@ -50,7 +50,7 @@ exports.INTERNAL_CALLSITES_REGEX = new RegExp([
     // No context modules as these are virtual
     '.+?ctx=[a-zA-Z0-9]+$',
     // Hide react-native-web warning wrappers. These are most likely related to style deprecations.
-    '/react-native-web/dist/exports/.+\\.js$',
+    '/react-native-web/dist/.+\\.js$',
 ].join('|'));
 function isUrl(value) {
     try {
