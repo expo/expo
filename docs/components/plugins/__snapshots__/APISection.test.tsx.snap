@@ -17,7 +17,7 @@ exports[`APISection expo-apple-authentication 1`] = `
         Component
       </span>
       <button
-        class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+        class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
         type="button"
       >
         <span
@@ -74,7 +74,7 @@ exports[`APISection expo-apple-authentication 1`] = `
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -310,7 +310,7 @@ for more details.
           Props
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -370,7 +370,7 @@ for more details.
               </code>
             </span>
             <button
-              class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+              class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
               type="button"
             >
               <span
@@ -456,7 +456,7 @@ for more details.
               </code>
             </span>
             <button
-              class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+              class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
               type="button"
             >
               <span
@@ -542,7 +542,7 @@ for more details.
               </code>
             </span>
             <button
-              class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+              class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
               type="button"
             >
               <span
@@ -636,7 +636,7 @@ for more details.
               </code>
             </span>
             <button
-              class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+              class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
               type="button"
             >
               <span
@@ -741,7 +741,7 @@ in here.
               </code>
             </span>
             <button
-              class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+              class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
               type="button"
             >
               <span
@@ -892,7 +892,7 @@ properties.
             Inherited Props
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -965,7 +965,7 @@ properties.
         Methods
       </span>
       <button
-        class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+        class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
         type="button"
       >
         <span
@@ -1022,7 +1022,7 @@ properties.
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -1300,7 +1300,7 @@ value depending on the state of the credential.
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -1446,7 +1446,7 @@ value depending on the state of the credential.
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -1689,7 +1689,7 @@ refresh operation.
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -1979,7 +1979,7 @@ sign-in operation.
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -2248,7 +2248,7 @@ sign-out operation.
         Event Subscriptions
       </span>
       <button
-        class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+        class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
         type="button"
       >
         <span
@@ -2305,7 +2305,7 @@ sign-out operation.
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -2474,7 +2474,7 @@ sign-out operation.
         Types
       </span>
       <button
-        class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+        class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
         type="button"
       >
         <span
@@ -2531,7 +2531,7 @@ sign-out operation.
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -3078,7 +3078,7 @@ developers.
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -3435,7 +3435,7 @@ may be
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -3751,7 +3751,7 @@ OAuth 2.0 protocol
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -4084,7 +4084,7 @@ OAuth 2.0 protocol
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -4330,7 +4330,7 @@ OAuth 2.0 protocol
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -4452,7 +4452,7 @@ OAuth 2.0 protocol
         Enums
       </span>
       <button
-        class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+        class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
         type="button"
       >
         <span
@@ -4512,7 +4512,7 @@ OAuth 2.0 protocol
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -4594,7 +4594,7 @@ OAuth 2.0 protocol
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -4664,7 +4664,7 @@ OAuth 2.0 protocol
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -4734,7 +4734,7 @@ OAuth 2.0 protocol
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -4808,7 +4808,7 @@ OAuth 2.0 protocol
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -4890,7 +4890,7 @@ OAuth 2.0 protocol
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -4960,7 +4960,7 @@ OAuth 2.0 protocol
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -5069,7 +5069,7 @@ OAuth 2.0 protocol
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -5143,7 +5143,7 @@ OAuth 2.0 protocol
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -5278,7 +5278,7 @@ for more details.
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -5342,7 +5342,7 @@ for more details.
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -5406,7 +5406,7 @@ for more details.
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -5470,7 +5470,7 @@ for more details.
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -5538,7 +5538,7 @@ for more details.
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -5602,7 +5602,7 @@ for more details.
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -5672,7 +5672,7 @@ for more details.
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -5736,7 +5736,7 @@ for more details.
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -5800,7 +5800,7 @@ for more details.
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -5868,7 +5868,7 @@ for more details.
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -6047,7 +6047,7 @@ for more details.
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -6111,7 +6111,7 @@ for more details.
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -6179,7 +6179,7 @@ for more details.
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -6302,7 +6302,7 @@ for more details.
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -6372,7 +6372,7 @@ for more details.
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -6442,7 +6442,7 @@ for more details.
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -6510,7 +6510,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
         Component
       </span>
       <button
-        class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+        class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
         type="button"
       >
         <span
@@ -6629,7 +6629,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -6715,7 +6715,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
           Props
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -6775,7 +6775,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
               </code>
             </span>
             <button
-              class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+              class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
               type="button"
             >
               <span
@@ -6900,7 +6900,7 @@ minimize battery usage.
               </code>
             </span>
             <button
-              class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+              class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
               type="button"
             >
               <span
@@ -7063,7 +7063,7 @@ data has been retrieved.
               </code>
             </span>
             <button
-              class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+              class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
               type="button"
             >
               <span
@@ -7202,7 +7202,7 @@ Same as
             Inherited Props
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -7275,7 +7275,7 @@ Same as
         Hooks
       </span>
       <button
-        class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+        class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
         type="button"
       >
         <span
@@ -7332,7 +7332,7 @@ Same as
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -7672,7 +7672,7 @@ This uses both
         Methods
       </span>
       <button
-        class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+        class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
         type="button"
       >
         <span
@@ -7729,7 +7729,7 @@ This uses both
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -7878,7 +7878,7 @@ This uses both
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -8049,7 +8049,7 @@ This uses both
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -8343,7 +8343,7 @@ code.
         Interfaces
       </span>
       <button
-        class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+        class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
         type="button"
       >
         <span
@@ -8400,7 +8400,7 @@ code.
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -8640,7 +8640,7 @@ in order to enable/disable the permission.
         Types
       </span>
       <button
-        class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+        class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
         type="button"
       >
         <span
@@ -8697,7 +8697,7 @@ in order to enable/disable the permission.
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -8864,7 +8864,7 @@ in order to enable/disable the permission.
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -9012,7 +9012,7 @@ in order to enable/disable the permission.
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -9140,7 +9140,7 @@ in order to enable/disable the permission.
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -9319,7 +9319,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -9449,7 +9449,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -9730,7 +9730,7 @@ you don't get this value.
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -9887,7 +9887,7 @@ you don't get this value.
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -9976,7 +9976,7 @@ you don't get this value.
         Enums
       </span>
       <button
-        class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+        class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
         type="button"
       >
         <span
@@ -10036,7 +10036,7 @@ you don't get this value.
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -10100,7 +10100,7 @@ you don't get this value.
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -10170,7 +10170,7 @@ you don't get this value.
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -10240,7 +10240,7 @@ you don't get this value.
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -10308,7 +10308,7 @@ exports[`APISection expo-pedometer 1`] = `
         Methods
       </span>
       <button
-        class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+        class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
         type="button"
       >
         <span
@@ -10365,7 +10365,7 @@ exports[`APISection expo-pedometer 1`] = `
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -10535,7 +10535,7 @@ exports[`APISection expo-pedometer 1`] = `
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -10859,7 +10859,7 @@ a start date that is more than seven days in the past returns only the available
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -10999,7 +10999,7 @@ available on this device.
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -11130,7 +11130,7 @@ available on this device.
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -11344,7 +11344,7 @@ provided with a single argument that is
         Interfaces
       </span>
       <button
-        class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+        class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
         type="button"
       >
         <span
@@ -11401,7 +11401,7 @@ provided with a single argument that is
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -11641,7 +11641,7 @@ in order to enable/disable the permission.
         Types
       </span>
       <button
-        class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+        class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
         type="button"
       >
         <span
@@ -11698,7 +11698,7 @@ in order to enable/disable the permission.
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -11823,7 +11823,7 @@ in order to enable/disable the permission.
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -11959,7 +11959,7 @@ in order to enable/disable the permission.
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -12062,7 +12062,7 @@ in order to enable/disable the permission.
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -12184,7 +12184,7 @@ in order to enable/disable the permission.
         Enums
       </span>
       <button
-        class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+        class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
         type="button"
       >
         <span
@@ -12244,7 +12244,7 @@ in order to enable/disable the permission.
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -12308,7 +12308,7 @@ in order to enable/disable the permission.
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -12378,7 +12378,7 @@ in order to enable/disable the permission.
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -12448,7 +12448,7 @@ in order to enable/disable the permission.
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span

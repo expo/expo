@@ -25,7 +25,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -116,7 +116,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             Bare Workflow
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -185,7 +185,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -276,7 +276,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             ExpoKit
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -360,7 +360,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             Bare Workflow
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -428,7 +428,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -528,7 +528,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               ExpoKit
             </span>
             <button
-              class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+              class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
               type="button"
             >
               <span
@@ -596,7 +596,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </code>
             </span>
             <button
-              class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+              class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
               type="button"
             >
               <span
@@ -682,7 +682,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -782,7 +782,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </code>
         </span>
         <button
-          class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
           type="button"
         >
           <span
@@ -873,7 +873,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             Bare Workflow
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -968,7 +968,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -1053,7 +1053,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </code>
           </span>
           <button
-            class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -1131,7 +1131,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </code>
             </span>
             <button
-              class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+              class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
               type="button"
             >
               <span

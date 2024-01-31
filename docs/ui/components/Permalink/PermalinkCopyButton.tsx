@@ -10,9 +10,10 @@ import { FOOTNOTE } from '~/ui/components/Text';
 type Props = {
   slug: string;
   className?: string;
+  confirmationClassName?: string;
 };
 
-export function PermalinkCopyButton({ slug, className }: Props) {
+export function PermalinkCopyButton({ slug, className, confirmationClassName }: Props) {
   const [copyValue, setCopyValue] = useState('');
   const { copiedIsVisible, onCopy } = useCopy(copyValue);
 
@@ -32,7 +33,7 @@ export function PermalinkCopyButton({ slug, className }: Props) {
           await onCopy();
         }}
         className={mergeClasses(
-          'items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5',
+          'inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5',
           className
         )}>
         <PermalinkIcon className="icon-sm" />
@@ -44,7 +45,10 @@ export function PermalinkCopyButton({ slug, className }: Props) {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.85 }}
             transition={{ duration: 0.15 }}
-            className="absolute -right-1 top-[calc(50%-14px)]">
+            className={mergeClasses(
+              'absolute -right-1 top-[calc(50%-14px)]',
+              confirmationClassName
+            )}>
             <FOOTNOTE
               theme="success"
               className="absolute flex h-[28px] items-center rounded-md border border-success bg-success px-2">

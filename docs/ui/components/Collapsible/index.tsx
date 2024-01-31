@@ -69,6 +69,7 @@ const Collapsible: React.FC<CollapsibleProps> = withHeadingManager(
             <PermalinkCopyButton
               slug={heading.current.slug}
               className="invisible group-hover:visible group-focus-visible:visible"
+              confirmationClassName="inline-flex relative -top-5"
             />
           </LinkBase>
         </summary>

@@ -30,6 +30,7 @@ module.exports = {
         "node_modules/@expo/styleguide/dist/global.css"
       ],
       callees: ["mergeClasses"],
+      classRegex: "^(confirmation)?(c|C)lass(Name)?$",
       config: "tailwind.config.cjs",
     }
   }
