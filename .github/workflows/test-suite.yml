@@ -64,7 +64,7 @@ jobs:
   #         author_name: Test Suite (Web)
 
   ios-build:
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
@@ -132,7 +132,7 @@ jobs:
 
   ios-test:
     needs: ios-build
-    runs-on: macos-latest
+    runs-on: macos-14
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
