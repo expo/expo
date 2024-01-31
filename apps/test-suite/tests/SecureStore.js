@@ -92,7 +92,7 @@ export function test(t) {
               if (!canSave) {
                 t.fail('Expected SecureStore.setItemAsync to throw an error');
               }
-            } catch (e) {
+            } catch {
               if (canSave) {
                 t.fail('Expected SecureStore.setItemAsync to succeed');
               }
