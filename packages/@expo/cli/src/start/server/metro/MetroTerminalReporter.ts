@@ -47,12 +47,12 @@ export class MetroTerminalReporter extends TerminalReporter {
       : progress.bundleDetails.entryFile;
 
     if (!inProgress) {
-      const status = phase === 'done' ? `Bundling complete ` : `Bundling failed `;
+      const status = phase === 'done' ? `Bundled ` : `Bundling failed `;
       const color = phase === 'done' ? chalk.green : chalk.red;
 
       const startTime = this._bundleTimers.get(progress.bundleDetails.buildID!);
       const time = startTime != null ? chalk.dim(this._getElapsedTime(startTime) + 'ms') : '';
-      // iOS Bundling complete 150ms
+      // iOS Bundled 150ms
       return color(platform + status) + time + chalk.reset.dim(' (' + localPath + ')');
     }
 
