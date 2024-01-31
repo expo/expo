@@ -12,7 +12,7 @@ JavaScript engines execute your application code and provide various features su
 
 We recommend Hermes because it is purpose built and optimized for React Native apps, and it has the best debugging experience. If you are familiar with the tradeoffs of different JavaScript engines and would like to change away from Hermes, the [`jsEngine`](/versions/latest/config/app/#jsengine) field inside [app config](/workflow/configuration/) allows you to specify the JavaScript engine for your app. The default value is `hermes`.
 
-If you want to use JSC instead, set the `jsEngine` field in the app config:
+If you want to use JSC instead, set the `jsEngine` field in the app config:
 
 ```json app.json
 {
@@ -40,7 +40,7 @@ Make sure to remove the `jsEngine` field from the app config.
 
 <Collapsible summary="Are you using the bare workflow?">
 
-You can run `npx expo prebuild -p android --clean` after the installation to prebuild again.
+You can run `npx expo prebuild -p android --clean` after the installation to prebuild again.
 
 </Collapsible>
 
