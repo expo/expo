@@ -7,8 +7,8 @@ public final class SQLiteModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoSQLite")
 
-    AsyncFunction("exec") { (dbName: String, queries: [[Any]], readOnly: Bool) -> [Any?] in
-      guard let db = openDatabase(dbName: dbName) else {
+    AsyncFunction("exec") { (databaseName: String, queries: [[Any]], readOnly: Bool) -> [Any?] in
+      guard let db = openDatabase(databaseName: databaseName) else {
         throw DatabaseException()
       }
 
@@ -27,31 +27,31 @@ public final class SQLiteModule: Module {
       return results
     }
 
-    AsyncFunction("close") { (dbName: String) in
-      cachedDatabases.removeValue(forKey: dbName)
+    AsyncFunction("close") { (databaseName: String) in
+      cachedDatabases.removeValue(forKey: databaseName)
     }
 
-    Function("closeSync") { (dbName: String) in
-      cachedDatabases.removeValue(forKey: dbName)
+    Function("closeSync") { (databaseName: String) in
+      cachedDatabases.removeValue(forKey: databaseName)
     }
 
-    AsyncFunction("deleteAsync") { (dbName: String) in
-      if cachedDatabases[dbName] != nil {
-        throw DeleteDatabaseException(dbName)
+    AsyncFunction("deleteAsync") { (databaseName: String) in
+      if cachedDatabases[databaseName] != nil {
+        throw DeleteDatabaseException(databaseName)
       }
 
-      guard let path = self.pathForDatabaseName(name: dbName) else {
+      guard let path = self.pathForDatabaseName(name: databaseName) else {
         throw Exceptions.FileSystemModuleNotFound()
       }
 
       if !FileManager.default.fileExists(atPath: path.absoluteString) {
-        throw DatabaseNotFoundException(dbName)
+        throw DatabaseNotFoundException(databaseName)
       }
 
       do {
         try FileManager.default.removeItem(atPath: path.absoluteString)
       } catch {
-        throw DeleteDatabaseFileException(dbName)
+        throw DeleteDatabaseFileException(databaseName)
       }
     }
 
@@ -63,39 +63,38 @@ public final class SQLiteModule: Module {
   }
 
   private func pathForDatabaseName(name: String) -> URL? {
-    guard let fileSystem = appContext?.fileSystem else {
+    guard let path = appContext?.config.documentDirectory?.path else {
       return nil
     }
-
-    let directory = URL(string: fileSystem.documentDirectory)?.appendingPathComponent("SQLite")
-    fileSystem.ensureDirExists(withPath: directory?.absoluteString)
+    let directory = URL(string: path)?.appendingPathComponent("SQLite")
+    FileSystemUtilities.ensureDirExists(at: directory)
 
     return directory?.appendingPathComponent(name)
   }
 
-  private func openDatabase(dbName: String) -> OpaquePointer? {
+  private func openDatabase(databaseName: String) -> OpaquePointer? {
     var db: OpaquePointer?
-    guard let path = pathForDatabaseName(name: dbName) else {
+    guard let path = pathForDatabaseName(name: databaseName) else {
       return nil
     }
 
     let fileExists = FileManager.default.fileExists(atPath: path.absoluteString)
 
     if fileExists {
-      db = cachedDatabases[dbName]
+      db = cachedDatabases[databaseName]
     }
 
     if let db {
       return db
     }
 
-    cachedDatabases.removeValue(forKey: dbName)
+    cachedDatabases.removeValue(forKey: databaseName)
 
     if sqlite3_open(path.absoluteString, &db) != SQLITE_OK {
       return nil
     }
 
-    cachedDatabases[dbName] = db
+    cachedDatabases[databaseName] = db
     return db
   }
 

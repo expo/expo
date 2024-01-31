@@ -2,6 +2,7 @@
 
 #include "ExpoViewProps.h"
 #include <react/renderer/core/propsConversions.h>
+#include <react/renderer/components/view/ViewProps.h>
 
 namespace react = facebook::react;
 
@@ -27,7 +28,7 @@ std::unordered_map<std::string, folly::dynamic> propsMapFromProps(const ExpoView
 ExpoViewProps::ExpoViewProps(const react::PropsParserContext &context,
                              const ExpoViewProps &sourceProps,
                              const react::RawProps &rawProps)
-                             : ViewProps(context, sourceProps, rawProps),
+                             : react::ViewProps(context, sourceProps, rawProps),
                                propsMap(propsMapFromProps(sourceProps, rawProps)) {}
 
 } // namespace expo

@@ -1,6 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
 
-import { asMock } from '../../../../__tests__/asMock';
 import { AbortCommandError } from '../../../../utils/errors';
 import { assembleAsync, formatGradleArguments, installAsync, spawnGradleAsync } from '../gradle';
 
@@ -118,7 +117,7 @@ describe(spawnGradleAsync, () => {
 
   it(`throws a controlled abort error for ctrl+c`, async () => {
     mockPlatform('darwin');
-    asMock(spawnAsync).mockRejectedValueOnce({ status: 130 });
+    jest.mocked(spawnAsync).mockRejectedValueOnce({ status: 130 });
 
     await expect(
       spawnGradleAsync('/', {

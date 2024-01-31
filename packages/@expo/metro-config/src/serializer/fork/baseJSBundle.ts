@@ -11,6 +11,8 @@
 
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
 import type { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
+import CountingSet from 'metro/src/lib/CountingSet';
+import countLines from 'metro/src/lib/countLines';
 import getAppendScripts from 'metro/src/lib/getAppendScripts';
 
 import { processModules } from './processModules';
@@ -21,13 +23,20 @@ export type Bundle = {
   modules: ModuleMap;
   post: string;
   pre: string;
-  _expoSplitBundlePaths: [number, Record<string, string>][];
 };
 
 export type ExpoSerializerOptions = SerializerOptions & {
   serializerOptions?: {
     baseUrl?: string;
+    skipWrapping?: boolean;
+    output?: string;
+    includeBytecode?: boolean;
+    includeSourceMaps?: boolean;
   };
+  // Chunk-based stable identifier for the bundle that is used for identifying the bundle.
+  // https://sentry.engineering/blog/the-case-for-debug-ids
+  // https://bun.sh/docs/bundler#sourcemap
+  debugId?: string;
 };
 
 export function getPlatformOption(
@@ -87,6 +96,8 @@ export function baseJSBundle(
     baseUrl: getBaseUrlOption(graph, options),
     splitChunks: getSplitChunksOption(graph, options),
     platform,
+    skipWrapping: !!options.serializerOptions?.skipWrapping,
+    computedAsyncModulePaths: null,
   });
 }
 
@@ -94,7 +105,14 @@ export function baseJSBundleWithDependencies(
   entryPoint: string,
   preModules: readonly Module[],
   dependencies: Module<MixedOutput>[],
-  options: ExpoSerializerOptions & { platform: string; baseUrl: string; splitChunks: boolean }
+  options: ExpoSerializerOptions & {
+    platform: string;
+    baseUrl: string;
+    splitChunks: boolean;
+    skipWrapping: boolean;
+    computedAsyncModulePaths: Record<string, string> | null;
+    debugId?: string;
+  }
 ): Bundle {
   for (const module of dependencies) {
     options.createModuleId(module.path);
@@ -111,6 +129,8 @@ export function baseJSBundleWithDependencies(
     platform: options.platform,
     baseUrl: options.baseUrl,
     splitChunks: options.splitChunks,
+    skipWrapping: options.skipWrapping,
+    computedAsyncModulePaths: options.computedAsyncModulePaths,
   };
 
   // Do not prepend polyfills or the require runtime when only modules are requested
@@ -127,20 +147,48 @@ export function baseJSBundleWithDependencies(
       options.createModuleId(a.path) - options.createModuleId(b.path)
   );
 
-  const postCode = processModules(
-    getAppendScripts(entryPoint, [...preModules, ...modules], {
-      asyncRequireModulePath: options.asyncRequireModulePath,
-      createModuleId: options.createModuleId,
-      getRunModuleStatement: options.getRunModuleStatement,
-      inlineSourceMap: options.inlineSourceMap,
-      runBeforeMainModule: options.runBeforeMainModule,
-      runModule: options.runModule,
-      shouldAddToIgnoreList: options.shouldAddToIgnoreList,
-      sourceMapUrl: options.sourceMapUrl,
-      sourceUrl: options.sourceUrl,
-    }),
-    processModulesOptions
-  )
+  const sourceMapUrl =
+    options.serializerOptions?.includeSourceMaps === false ? undefined : options.sourceMapUrl;
+
+  const modulesWithAnnotations = getAppendScripts(entryPoint, [...preModules, ...modules], {
+    asyncRequireModulePath: options.asyncRequireModulePath,
+    createModuleId: options.createModuleId,
+    getRunModuleStatement: options.getRunModuleStatement,
+    inlineSourceMap: options.inlineSourceMap,
+    runBeforeMainModule: options.runBeforeMainModule,
+    runModule: options.runModule,
+    shouldAddToIgnoreList: options.shouldAddToIgnoreList,
+    sourceMapUrl,
+    // This directive doesn't make a lot of sense in the context of a large single bundle that represent
+    // multiple files. It's usually used for things like TypeScript where you want the file name to appear with a
+    // different extension. Since it's unclear to me (Bacon) how it is used on native, I'm only disabling in web.
+    sourceUrl: options.platform === 'web' ? undefined : options.sourceUrl,
+  });
+
+  // If the `debugId` annotation is available and we aren't inlining the source map, add it to the bundle.
+  // NOTE: We may want to move this assertion up further.
+  const hasExternalMaps = !options.inlineSourceMap && !!sourceMapUrl;
+  if (hasExternalMaps && options.debugId != null) {
+    const code = `//# debugId=${options.debugId}`;
+    modulesWithAnnotations.push({
+      path: 'debug-id-annotation',
+      dependencies: new Map(),
+      getSource: (): Buffer => Buffer.from(''),
+      inverseDependencies: new CountingSet(),
+      output: [
+        {
+          type: 'js/script/virtual',
+          data: {
+            code,
+            lineCount: countLines(code),
+            map: [],
+          },
+        },
+      ],
+    });
+  }
+
+  const postCode = processModules(modulesWithAnnotations, processModulesOptions)
     .map(([, code]) => code.src)
     .join('\n');
 
@@ -155,9 +203,5 @@ export function baseJSBundleWithDependencies(
       id,
       typeof code === 'number' ? code : code.src,
     ]) as ModuleMap,
-    _expoSplitBundlePaths: mods.map(([id, code]) => [
-      id,
-      typeof code === 'number' ? {} : code.paths,
-    ]) as [number, Record<string, string>][],
   };
 }

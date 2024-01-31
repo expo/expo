@@ -3,7 +3,7 @@ import { NativeStatement } from './NativeStatement';
  * A class that represents an instance of the SQLite database.
  */
 export declare class NativeDatabase {
-    constructor(dbName: string, options?: OpenOptions);
+    constructor(databaseName: string, options?: SQLiteOpenOptions);
     initAsync(): Promise<void>;
     isInTransactionAsync(): Promise<boolean>;
     closeAsync(): Promise<void>;
@@ -18,14 +18,14 @@ export declare class NativeDatabase {
 /**
  * Options for opening a database.
  */
-export interface OpenOptions {
+export interface SQLiteOpenOptions {
     /**
      * Whether to enable the CR-SQLite extension.
      * @default false
      */
     enableCRSQLite?: boolean;
     /**
-     * Whether to call the [`sqlite3_update_hook`](https://www.sqlite.org/c3ref/update_hook.html) function and enable the `onDatabaseChange` events. You can later subscribe to the change events by [`addDatabaseChangeListener`](#sqliteadddatabasechangelistenerlistener).
+     * Whether to call the [`sqlite3_update_hook()`](https://www.sqlite.org/c3ref/update_hook.html) function and enable the `onDatabaseChange` events. You can later subscribe to the change events by [`addDatabaseChangeListener`](#sqliteadddatabasechangelistenerlistener).
      * @default false
      */
     enableChangeListener?: boolean;

@@ -10,12 +10,11 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
   // MARK: - Legacy Modules
 
   private var lifecycleManager: EXAppLifecycleService?
-  private var fileSystem: EXFileSystemInterface?
   private var permissionsManager: EXPermissionsInterface?
 
   // MARK: - Properties
 
-  private lazy var barCodeScanner = createBarCodeScanner()
+  private lazy var barcodeScanner = createBarcodeScanner()
   private var previewLayer = PreviewView()
   private var isValidVideoOptions = true
   private var videoCodecType: AVVideoCodecType?
@@ -38,9 +37,19 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
   }
 
-  var isScanningBarCodes = false {
+  var videoQuality: VideoQuality = .video1080p {
     didSet {
-      barCodeScanner.setIsEnabled(isScanningBarCodes)
+      if self.session.sessionPreset != videoQuality.toPreset() {
+        self.sessionQueue.async {
+          self.updateSessionPreset(preset: self.videoQuality.toPreset())
+        }
+      }
+    }
+  }
+
+  var isScanningBarcodes = false {
+    didSet {
+      barcodeScanner.setIsEnabled(isScanningBarcodes)
     }
   }
 
@@ -92,7 +101,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
   let onCameraReady = EventDispatcher()
   let onMountError = EventDispatcher()
   let onPictureSaved = EventDispatcher()
-  let onBarCodeScanned = EventDispatcher()
+  let onBarcodeScanned = EventDispatcher()
   let onResponsiveOrientationChanged = EventDispatcher()
 
   private var deviceOrientation: UIInterfaceOrientation {
@@ -102,7 +111,6 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
     lifecycleManager = appContext?.legacyModule(implementing: EXAppLifecycleService.self)
-    fileSystem = appContext?.legacyModule(implementing: EXFileSystemInterface.self)
     permissionsManager = appContext?.legacyModule(implementing: EXPermissionsInterface.self)
     #if !targetEnvironment(simulator)
     setupPreview()
@@ -136,7 +144,6 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
   public func onAppForegrounded() {
     if !session.isRunning {
       sessionQueue.async {
-        self.ensureSessionConfiguration()
         self.session.startRunning()
       }
     }
@@ -207,12 +214,13 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
       self.addErrorNotification()
 
-      self.sessionQueue.asyncAfter(deadline: .now() + round(50 / 1_000_000)) {
-        self.barCodeScanner.maybeStartBarCodeScanning()
-        self.ensureSessionConfiguration()
-        self.session.commitConfiguration()
-        self.session.startRunning()
-        self.onCameraReady()
+      self.session.commitConfiguration()
+      self.session.startRunning()
+      self.onCameraReady()
+
+      // Delay starting the scanner
+      self.sessionQueue.asyncAfter(deadline: .now() + 0.5) {
+        self.barcodeScanner.maybeStartBarCodeScanning()
       }
     }
   }
@@ -258,8 +266,8 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
   }
 
-  func setBarCodeScannerSettings(settings: BarcodeSettings) {
-    barCodeScanner.setSettings([BARCODE_TYPES_KEY: settings.toMetadataObjectType()])
+  func setBarcodeScannerSettings(settings: BarcodeSettings) {
+    barcodeScanner.setSettings([BARCODE_TYPES_KEY: settings.toMetadataObjectType()])
   }
 
   func updateResponsiveOrientation() {
@@ -417,11 +425,11 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
     takenImage = ExpoCameraUtils.crop(image: takenImage, to: croppedSize)
 
-    guard let path = fileSystem?.generatePath(
-      inDirectory: fileSystem?.cachesDirectory.appending("/Camera"),
-      withExtension: ".jpg") else {
-      return
-    }
+    let path = FileSystemUtilities.generatePathInCache(
+      appContext,
+      in: "Camera",
+      extension: ".jpg"
+    )
 
     let width = takenImage.size.width
     let height = takenImage.size.height
@@ -470,7 +478,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
         if updatedMetadata[kCGImagePropertyGPSDictionary as String] == nil {
           updatedMetadata[kCGImagePropertyGPSDictionary as String] = gpsDict
         } else {
-          if var metadataGpsDict = updatedMetadata[kCGImagePropertyGPSDictionary as String] as? NSMutableDictionary {
+          if let metadataGpsDict = updatedMetadata[kCGImagePropertyGPSDictionary as String] as? NSMutableDictionary {
             metadataGpsDict.addEntries(from: gpsDict)
           }
         }
@@ -526,20 +534,11 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
           }
         }
 
-        let preset = options.quality?.toPreset() ?? .high
-        self.updateSessionPreset(preset: preset)
-
-        guard let fileSystem = self.fileSystem else {
-          promise.reject(Exceptions.FileSystemModuleNotFound())
-          return
-        }
-
         if !self.isValidVideoOptions {
           return
         }
 
-        let directory = fileSystem.cachesDirectory.appending("/Camera")
-        let path = fileSystem.generatePath(inDirectory: directory, withExtension: ".mov")
+        let path = FileSystemUtilities.generatePathInCache(self.appContext, in: "Camera", extension: ".mov")
         let fileUrl = URL(fileURLWithPath: path)
         self.videoRecordedPromise = promise
 
@@ -561,6 +560,20 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
     if let maxFileSize = options.maxFileSize {
       videoFileOutput.maxRecordedFileSize = Int64(maxFileSize)
+    }
+
+    if let codec = options.codec {
+      let codecType = codec.codecType()
+      if videoFileOutput.availableVideoCodecTypes.contains(codecType) {
+        videoFileOutput.setOutputSettings([AVVideoCodecKey: codecType], for: connection)
+        self.videoCodecType = codecType
+      } else {
+        promise.reject(CameraRecordingException(self.videoCodecType?.rawValue))
+
+        self.cleanupMovieFileCapture()
+        self.videoRecordedPromise = nil
+        self.isValidVideoOptions = false
+      }
     }
   }
 
@@ -668,10 +681,12 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
   }
 
-  func updateSessionPreset(preset: AVCaptureSession.Preset) {
+func updateSessionPreset(preset: AVCaptureSession.Preset) {
     #if !targetEnvironment(simulator)
     if self.session.canSetSessionPreset(preset) {
+      self.session.beginConfiguration()
       self.session.sessionPreset = preset
+      self.session.commitConfiguration()
     }
     #endif
   }
@@ -732,9 +747,9 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
       for output in self.session.outputs {
         self.session.removeOutput(output)
       }
+      self.barcodeScanner.stopBarCodeScanning()
       self.session.commitConfiguration()
 
-      self.barCodeScanner.stopBarCodeScanning()
       self.motionManager.stopAccelerometerUpdates()
       self.session.stopRunning()
     }
@@ -754,11 +769,14 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
   }
 
-  private func createBarCodeScanner() -> BarcodeScanner {
+  private func createBarcodeScanner() -> BarcodeScanner {
     let scanner = BarcodeScanner(session: session, sessionQueue: sessionQueue)
     scanner.onBarcodeScanned = { [weak self] body in
-      if let body = body as? [String: Any] {
-        self?.onBarCodeScanned(body)
+      guard let self else {
+        return
+      }
+      if let body {
+        self.onBarcodeScanned(body)
       }
     }
 

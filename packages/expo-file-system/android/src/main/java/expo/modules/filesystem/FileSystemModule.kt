@@ -471,7 +471,9 @@ open class FileSystemModule : Module() {
 
     AsyncFunction("uploadAsync") { url: String, fileUriString: String, options: FileSystemUploadOptions, promise: Promise ->
       val request = createUploadRequest(
-        url, fileUriString, options
+        url,
+        fileUriString,
+        options
       ) { requestBody -> requestBody }
 
       okHttpClient?.let {
@@ -519,7 +521,7 @@ open class FileSystemModule : Module() {
       val request = createUploadRequest(
         url,
         fileUriString,
-        options,
+        options
       ) { requestBody -> CountingRequestBody(requestBody, progressListener) }
 
       val call = okHttpClient!!.newCall(request)
@@ -669,7 +671,11 @@ open class FileSystemModule : Module() {
       val call = client.newCall(request)
       taskHandlers[uuid] = DownloadTaskHandler(fileUri, call)
       val params = DownloadResumableTaskParams(
-        options, call, fileUri.toFile(), resumeData != null, promise
+        options,
+        call,
+        fileUri.toFile(),
+        resumeData != null,
+        promise
       )
       moduleCoroutineScope.launch {
         downloadResumableTask(params)
@@ -823,23 +829,34 @@ open class FileSystemModule : Module() {
     if (!documentFile.exists()) {
       return
     }
-    if (!outputDir.exists() && !outputDir.mkdirs()) {
+    if (!outputDir.isDirectory) {
+      outputDir.parentFile?.let {
+        if (!it.exists() && !it.mkdirs()) {
+          throw IOException("Couldn't create folder in output dir.")
+        }
+      }
+    } else if (!outputDir.exists() && !outputDir.mkdirs()) {
       throw IOException("Couldn't create folder in output dir.")
     }
+
     if (documentFile.isDirectory) {
       for (file in documentFile.listFiles()) {
-        documentFile.name?.let {
-          transformFilesFromSAF(file, File(outputDir, it), copy)
-        }
+        transformFilesFromSAF(file, outputDir, copy)
       }
       if (!copy) {
         documentFile.delete()
       }
       return
     }
+
     documentFile.name?.let {
-      val newFile = File(outputDir.path, it)
-      context.contentResolver.openInputStream(documentFile.uri).use { `in` -> FileOutputStream(newFile).use { out -> IOUtils.copy(`in`, out) } }
+      val newFile = if (outputDir.isDirectory) {
+        File(outputDir.path, it)
+      } else {
+        File(outputDir.path)
+      }
+      context.contentResolver.openInputStream(documentFile.uri)
+        .use { `in` -> FileOutputStream(newFile).use { out -> IOUtils.copy(`in`, out) } }
       if (!copy) {
         documentFile.delete()
       }
@@ -1054,7 +1071,9 @@ open class FileSystemModule : Module() {
     val file = DocumentFile.fromSingleUri(context, uri)
     return if (file != null && file.isFile) {
       file
-    } else DocumentFile.fromTreeUri(context, uri)
+    } else {
+      DocumentFile.fromTreeUri(context, uri)
+    }
   }
 
   // extension functions of Uri class

@@ -66,7 +66,7 @@ class MediaLibraryModule : Module() {
       return@Constants mapOf(
         "MediaType" to MediaType.getConstants(),
         "SortBy" to SortBy.getConstants(),
-        "CHANGE_LISTENER_NAME" to LIBRARY_DID_CHANGE_EVENT,
+        "CHANGE_LISTENER_NAME" to LIBRARY_DID_CHANGE_EVENT
       )
     }
 
@@ -154,7 +154,7 @@ class MediaLibraryModule : Module() {
       }
     }
 
-    AsyncFunction("getAssetInfoAsync") { assetId: String, _: Map<String, Any?>? /* unused on android atm */, promise: Promise ->
+    AsyncFunction("getAssetInfoAsync") { assetId: String, _: Map<String, Any?>?/* unused on android atm */, promise: Promise ->
       throwUnlessPermissionsGranted(isWrite = false) {
         withModuleScope(promise) {
           GetAssetInfo(context, assetId, promise).execute()
@@ -162,7 +162,7 @@ class MediaLibraryModule : Module() {
       }
     }
 
-    AsyncFunction("getAlbumsAsync") { _: Map<String, Any?>? /* unused on android atm */, promise: Promise ->
+    AsyncFunction("getAlbumsAsync") { _: Map<String, Any?>?/* unused on android atm */, promise: Promise ->
       throwUnlessPermissionsGranted(isWrite = false) {
         withModuleScope(promise) {
           GetAlbums(context, promise).execute()
@@ -445,6 +445,8 @@ class MediaLibraryModule : Module() {
           awaitingAction = null
           throw e
         }
+        // the action will be called when permissions are granted
+        return
       }
     }
     action.runWithPermissions(true)

@@ -59,7 +59,7 @@ function selectSource(sources, size, responsivePolicy) {
         type: 'srcset',
     };
 }
-export default function useSourceSelection(sources, responsivePolicy = 'static', measurementCallback) {
+export default function useSourceSelection(sources, responsivePolicy = 'static', measurementCallback = null) {
     const hasMoreThanOneSource = (sources?.length ?? 0) > 1;
     // null - not calculated yet, DOMRect - size available
     const [size, setSize] = useState(null);
@@ -70,7 +70,6 @@ export default function useSourceSelection(sources, responsivePolicy = 'static',
         };
     }, []);
     const containerRef = React.useCallback((element) => {
-        // we can't short circuit here since we need to read the size for better animated transitions
         if (!hasMoreThanOneSource && !measurementCallback) {
             return;
         }
@@ -88,7 +87,7 @@ export default function useSourceSelection(sources, responsivePolicy = 'static',
             });
             resizeObserver.current.observe(element);
         }
-    }, [hasMoreThanOneSource, responsivePolicy]);
+    }, [hasMoreThanOneSource, responsivePolicy, measurementCallback]);
     const source = selectSource(sources, size, responsivePolicy);
     return React.useMemo(() => ({
         containerRef,

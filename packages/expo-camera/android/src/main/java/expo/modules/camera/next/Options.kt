@@ -1,6 +1,6 @@
 package expo.modules.camera.next
 
-import android.media.CamcorderProfile
+import expo.modules.camera.next.records.VideoQuality
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 
@@ -12,11 +12,11 @@ data class PictureOptions(
   @Field val skipProcessing: Boolean = false,
   @Field val fastMode: Boolean = false,
   @Field val id: Int? = null,
-  @Field val maxDownsampling: Int = 1,
+  @Field val maxDownsampling: Int = 1
 ) : Record
 
 data class RecordingOptions(
   @Field val maxDuration: Int = 0,
   @Field val maxFileSize: Int = 0,
-  @Field val quality: Int = CamcorderProfile.QUALITY_HIGH
+  @Field val quality: VideoQuality?
 ) : Record

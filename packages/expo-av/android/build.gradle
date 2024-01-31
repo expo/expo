@@ -5,7 +5,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '13.9.0'
+version = '13.10.0'
 
 def REACT_NATIVE_BUILD_FROM_SOURCE = findProject(":ReactAndroid") != null
 def REACT_NATIVE_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
@@ -113,7 +113,7 @@ android {
   namespace "expo.modules.av"
   defaultConfig {
     versionCode 24
-    versionName "13.9.0"
+    versionName "13.10.0"
 
     externalNativeBuild {
       cmake {
@@ -165,9 +165,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   }
 
-
-  //noinspection GradleDynamicVersion
-  implementation 'com.facebook.react:react-native:+'
+  implementation 'com.facebook.react:react-android'
 
   compileOnly 'com.facebook.fbjni:fbjni:0.3.0'
 

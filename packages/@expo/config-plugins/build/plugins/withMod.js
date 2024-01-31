@@ -142,10 +142,10 @@ function getDebugPluginStackFromStackTrace(stacktrace) {
     }
   }
   const plugins = treeStackLines.map(first => {
-    var _ref, _first$match$1$trim, _first$match, _first$match$, _first$match2, _first$match2$;
+    var _ref, _first$match$1$trim, _first$match, _first$match2;
     // Match the first part of the stack trace against the plugin naming convention
     // "with" followed by a capital letter.
-    return (_ref = (_first$match$1$trim = first === null || first === void 0 ? void 0 : (_first$match = first.match(/^(\bwith[A-Z].*?\b)/)) === null || _first$match === void 0 ? void 0 : (_first$match$ = _first$match[1]) === null || _first$match$ === void 0 ? void 0 : _first$match$.trim()) !== null && _first$match$1$trim !== void 0 ? _first$match$1$trim : first === null || first === void 0 ? void 0 : (_first$match2 = first.match(/\.(\bwith[A-Z].*?\b)/)) === null || _first$match2 === void 0 ? void 0 : (_first$match2$ = _first$match2[1]) === null || _first$match2$ === void 0 ? void 0 : _first$match2$.trim()) !== null && _ref !== void 0 ? _ref : null;
+    return (_ref = (_first$match$1$trim = first === null || first === void 0 || (_first$match = first.match(/^(\bwith[A-Z].*?\b)/)) === null || _first$match === void 0 || (_first$match = _first$match[1]) === null || _first$match === void 0 ? void 0 : _first$match.trim()) !== null && _first$match$1$trim !== void 0 ? _first$match$1$trim : first === null || first === void 0 || (_first$match2 = first.match(/\.(\bwith[A-Z].*?\b)/)) === null || _first$match2 === void 0 || (_first$match2 = _first$match2[1]) === null || _first$match2 === void 0 ? void 0 : _first$match2.trim()) !== null && _ref !== void 0 ? _ref : null;
   }).filter(Boolean).filter(plugin => {
     // redundant as all debug logs are captured in withBaseMod
     return !['withMod', 'withBaseMod', 'withExtendedMod'].includes(plugin);

@@ -29,6 +29,13 @@ public protocol AppLoaderTaskDelegate: AnyObject {
     update: Update?,
     error: Error?
   )
+
+  /**
+   * This method is called after the loader task finishes doing all work. Note that it may have
+   * "succeeded" before this with a loader, yet this method may still be called after the launch
+   * to signal that all work is done (loading a remote update after the launch wait timeout has occurred).
+   */
+  func appLoaderTaskDidFinishAllLoading(_: AppLoaderTask)
 }
 
 public enum RemoteCheckResultNotAvailableReason {
@@ -61,7 +68,6 @@ public enum RemoteCheckResult {
   case noUpdateAvailable(reason: RemoteCheckResultNotAvailableReason)
   case updateAvailable(manifest: [String: Any])
   case rollBackToEmbedded(commitTime: Date)
-  case error(error: Error)
 }
 
 public protocol AppLoaderTaskSwiftDelegate: AnyObject {
@@ -188,6 +194,11 @@ public final class AppLoaderTask: NSObject {
         } else {
           self.isRunning = false
           self.runReaper()
+          self.delegate.let { it in
+            self.delegateQueue.async {
+              it.appLoaderTaskDidFinishAllLoading(self)
+            }
+          }
         }
       }
     }
@@ -436,11 +447,6 @@ public final class AppLoaderTask: NSObject {
     } success: { updateResponse in
       completion(nil, updateResponse)
     } error: { error in
-      if let swiftDelegate = self.swiftDelegate {
-        self.delegateQueue.async {
-          swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.error(error: error))
-        }
-      }
       completion(error, nil)
     }
   }
@@ -491,11 +497,18 @@ public final class AppLoaderTask: NSObject {
           }
           self.isRunning = false
           self.runReaper()
+
+          self.delegate.let { it in
+            self.delegateQueue.async {
+              it.appLoaderTaskDidFinishAllLoading(self)
+            }
+          }
         }
       } else {
         self.didFinishBackgroundUpdate(withStatus: .updateAvailable, update: updateBeingLaunched, error: nil)
         self.isRunning = false
         self.runReaper()
+        // appLoaderTaskDidFinishAllLoading called as part of didFinishBackgroundUpdate
       }
     } else {
       // there's no update, so signal we're ready to launch
@@ -507,6 +520,7 @@ public final class AppLoaderTask: NSObject {
       }
       self.isRunning = false
       self.runReaper()
+      // appLoaderTaskDidFinishAllLoading called as part of didFinishBackgroundUpdate
     }
   }
 
@@ -514,6 +528,7 @@ public final class AppLoaderTask: NSObject {
     delegate.let { it in
       delegateQueue.async {
         it.appLoaderTask(self, didFinishBackgroundUpdateWithStatus: status, update: update, error: error)
+        it.appLoaderTaskDidFinishAllLoading(self)
       }
     }
   }

@@ -14,24 +14,10 @@ NSString * const EXConstantsExecutionEnvironmentStoreClient = @"storeClient";
 @interface EXConstantsService ()
 
 @property (nonatomic, strong) NSString *sessionId;
-@property (nonatomic, strong) EXConstantsInstallationIdProvider *installationIdProvider;
 
 @end
 
 @implementation EXConstantsService
-
-- (instancetype)init
-{
-  return [self initWithInstallationIdProvider:[[EXConstantsInstallationIdProvider alloc] init]];
-}
-
-- (instancetype)initWithInstallationIdProvider:(EXConstantsInstallationIdProvider *)installationIdProvider
-{
-  if (self = [super init]) {
-    _installationIdProvider = installationIdProvider;
-  }
-  return self;
-}
 
 EX_REGISTER_MODULE();
 
@@ -56,30 +42,18 @@ EX_REGISTER_MODULE();
            @"executionEnvironment": EXConstantsExecutionEnvironmentBare,
            @"statusBarHeight": @([self statusBarHeight]),
            @"deviceName": [[self class] deviceName],
-           @"isDevice": @([self isDevice]),
            @"systemFonts": [self systemFontNames],
            @"debugMode": @(isDebugXCodeScheme),
            @"isHeadless": @(NO),
-           @"nativeAppVersion": [self appVersion],
-           @"nativeBuildVersion": [self buildVersion],
-           @"installationId": [_installationIdProvider getOrCreateInstallationId],
-           @"manifest": EXNullIfNil([[self class] appConfig]),
+           @"manifest": EXNullIfNil([[self class] appConfig]), // Deprecated, but still used internally.
            @"platform": @{
                @"ios": @{
-                   @"buildNumber": [self buildVersion],
-                   @"platform": [[self class] devicePlatform],
-                   @"userInterfaceIdiom": [self userInterfaceIdiom],
-                   @"systemVersion": [self iosVersion],
+                   @"buildNumber": EXNullIfNil([self buildVersion]),
                    },
                },
            };
 }
 
-- (NSString *)appVersion
-{
-  return [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
-}
-                            
 - (NSString *)buildVersion
 {
   return [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
@@ -87,48 +61,20 @@ EX_REGISTER_MODULE();
 
 - (CGFloat)statusBarHeight
 {
-#if TARGET_OS_TV
-  return 0;
-#else
+#if TARGET_OS_IOS
   __block CGSize statusBarSize;
   [EXUtilities performSynchronouslyOnMainThread:^{
     statusBarSize = [UIApplication sharedApplication].statusBarFrame.size;
   }];
   return MIN(statusBarSize.width, statusBarSize.height);
+#elif TARGET_OS_OSX || TARGET_OS_TV
+  return 0;
 #endif
-}
-
-- (NSString *)iosVersion
-{
-  return [UIDevice currentDevice].systemVersion;
-}
-
-- (NSString *)userInterfaceIdiom
-{
-  UIUserInterfaceIdiom idiom = UI_USER_INTERFACE_IDIOM();
-
-  switch (idiom) {
-    case UIUserInterfaceIdiomTV:
-      return @"tv";
-    case UIUserInterfaceIdiomPhone:
-      return @"handset";
-    case UIUserInterfaceIdiomPad:
-      return @"tablet";
-    default:
-      return @"unsupported";
-  }
-}
-
-- (BOOL)isDevice
-{
-#if TARGET_IPHONE_SIMULATOR
-  return NO;
-#endif
-  return YES;
 }
 
 - (NSArray<NSString *> *)systemFontNames
 {
+#if TARGET_OS_IOS || TARGET_OS_TV
   NSArray<NSString *> *familyNames = [UIFont familyNames];
   NSMutableArray<NSString *> *fontNames = [NSMutableArray array];
   for (NSString *familyName in familyNames) {
@@ -144,28 +90,22 @@ EX_REGISTER_MODULE();
     }
   }
 
-  // Remove duplciates and sort alphabetically
+  // Remove duplicates and sort alphabetically
   return [[[NSSet setWithArray:fontNames] allObjects] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+#elif TARGET_OS_OSX
+  return [[NSFontManager sharedFontManager] availableFontFamilies];
+#endif
 }
 
 # pragma mark - device info
 
-+ (NSString *)devicePlatform
-{
-  // https://gist.github.com/Jaybles/1323251
-  // https://www.theiphonewiki.com/wiki/Models
-  size_t size;
-  sysctlbyname("hw.machine", NULL, &size, NULL, 0);
-  char *machine = malloc(size);
-  sysctlbyname("hw.machine", machine, &size, NULL, 0);
-  NSString *platform = [NSString stringWithUTF8String:machine];
-  free(machine);
-  return platform;
-}
-
 + (NSString *)deviceName
 {
+#if TARGET_OS_IOS || TARGET_OS_TV
   return [UIDevice currentDevice].name;
+#elif TARGET_OS_OSX
+  return [NSHost currentHost].localizedName;
+#endif
 }
 
 + (NSDictionary *)appConfig
@@ -188,6 +128,5 @@ EX_REGISTER_MODULE();
   }
   return nil;
 }
-
 
 @end

@@ -30,6 +30,7 @@ void JSIInteropModuleRegistry::registerNatives() {
                    makeNativeMethod("global", JSIInteropModuleRegistry::global),
                    makeNativeMethod("createObject", JSIInteropModuleRegistry::createObject),
                    makeNativeMethod("drainJSEventLoop", JSIInteropModuleRegistry::drainJSEventLoop),
+                   makeNativeMethod("wasDeallocated", JSIInteropModuleRegistry::jniWasDeallocated),
                  });
 }
 
@@ -64,15 +65,6 @@ void JSIInteropModuleRegistry::installJSI(
     ->setProperty(
       *runtime,
       "modules",
-      expoModulesObject
-    );
-
-  // Also define `global.ExpoModules` for backwards compatibility (used before SDK47, can be removed in SDK48).
-  runtime
-    ->global()
-    .setProperty(
-      *runtime,
-      "ExpoModules",
       expoModulesObject
     );
 }
@@ -187,5 +179,9 @@ void JSIInteropModuleRegistry::registerSharedObject(
       "registerSharedObject"
     );
   method(javaPart_, std::move(native), std::move(js));
+}
+
+void JSIInteropModuleRegistry::jniWasDeallocated() {
+  wasDeallocated = true;
 }
 } // namespace expo

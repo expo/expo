@@ -49,6 +49,27 @@ Install the LTS release of Node.js using a [version management tool](https://nod
 
 Install OpenJDK distribution called Azul Zulu using Homebrew. This distribution offers JDKs for both M1 and Intel Macs.
 
+<Tabs>
+
+<Tab label="SDK 50 and above">
+
+We recommend JDK 17. Run the following commands in a terminal window to install it:
+
+<Terminal
+  cmd={['$ brew tap homebrew/cask-versions', '$ brew install --cask zulu17']}
+  cmdCopy="brew tap homebrew/cask-versions && brew install --cask zulu17"
+/>
+
+After you install the JDK, add the `JAVA_HOME` environment variable in **~/.bash_profile** (or **~/.zshrc** if you use Zsh):
+
+```bash
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
+```
+
+</Tab>
+
+<Tab label="SDK 49 and below">
+
 We recommend JDK 11 (you may encounter problems with higher JDK versions). Run the following commands in a terminal window to install it:
 
 <Terminal
@@ -61,6 +82,10 @@ After you install the JDK, add the `JAVA_HOME` environment variable in **~/.bash
 ```bash
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-11.jdk/Contents/Home
 ```
+
+</Tab>
+
+</Tabs>
 
 </Step>
 
@@ -86,17 +111,33 @@ Install the LTS version of Node.js using Chocolatey:
 
 <Terminal cmd={['$ choco install -y nodejs']} />
 
-If you have already installed Node.js on your system, make sure the version is 16 or above. If you want to be able to switch between different versions, you might want to install Node.js using a version manager such as [`nvm-windows`](https://github.com/coreybutler/nvm-windows).
+If you have already installed Node.js on your system, make sure the version is 18 or above. If you want to be able to switch between different versions, you might want to install Node.js using a version manager such as [`nvm-windows`](https://github.com/coreybutler/nvm-windows).
 
 </Step>
 
 <Step label="2">
 
-Install [Java SE Development Kit (JDK)](https://openjdk.org/projects/jdk/11/):
+Install [Java SE Development Kit (JDK)](https://openjdk.org/):
+
+<Tabs>
+
+<Tab label="SDK 50 and above">
+
+For SDK 50 and above, install JDK version 17.
+
+<Terminal cmd={['$ choco install -y microsoft-openjdk17']} />
+
+</Tab>
+
+<Tab label="SDK 49 and below">
+
+For SDK 49 and below, install JDK version 11.
 
 <Terminal cmd={['$ choco install -y microsoft-openjdk11']} />
 
-If you already have JDK installed on your system, we recommend JDK11.
+</Tab>
+
+</Tabs>
 
 </Step>
 
@@ -114,7 +155,7 @@ To set up your development environment on Linux for Android, you will install No
 
 <Step label="1">
 
-Install Node.js 16 or above by following [installation instructions for your Linux distribution](https://nodejs.org/en/download/package-manager).
+Install Node.js 18 or above by following [installation instructions for your Linux distribution](https://nodejs.org/en/download/package-manager).
 
 </Step>
 
@@ -126,11 +167,23 @@ Follow [installation instructions from the Watchman installation guide](https://
 
 <Step label="3">
 
-Install Java SE Development Kit (JDK) version 11. You can download and install [OpenJDK](http://openjdk.java.net/) from [AdoptOpenJDK](https://adoptopenjdk.net/) or your system packager.
+Install [Java SE Development Kit (JDK)](https://openjdk.org/):
 
-<Terminal cmd={['$ choco install -y microsoft-openjdk11']} />
+<Tabs>
 
-If you already have JDK installed on your system, we recommend JDK11.
+<Tab label="SDK 50 and above">
+
+For SDK 50 and above, install JDK version 17. You can download and install [OpenJDK](http://openjdk.java.net/) from [AdoptOpenJDK](https://adoptopenjdk.net/) or your system packager.
+
+</Tab>
+
+<Tab label="SDK 49 and below">
+
+For SDK 49 and below, install JDK version 11. You can download and install [OpenJDK](http://openjdk.java.net/) from [AdoptOpenJDK](https://adoptopenjdk.net/) or your system packager.
+
+</Tab>
+
+</Tabs>
 
 </Step>
 

@@ -48,7 +48,7 @@ function getLargeConfig(): ExportedConfig {
     // owner?: string;
     // privacy?: 'public' | 'unlisted' | 'hidden';
     // sdkVersion?: string;
-    // runtimeVersion?: string;
+    runtimeVersion: '1.0',
     splash: {
       backgroundColor: '#ff00ff',
     },
@@ -371,17 +371,15 @@ describe('built-in plugins', () => {
       'android/app/debug.keystore',
       'android/app/proguard-rules.pro',
       'android/app/src/debug/AndroidManifest.xml',
-      'android/app/src/debug/java/com/bacon/todo/ReactNativeFlipper.java',
       'android/app/src/main/AndroidManifest.xml',
-      'android/app/src/main/java/com/bacon/todo/MainActivity.java',
-      'android/app/src/main/java/com/bacon/todo/MainApplication.java',
+      'android/app/src/main/java/com/bacon/todo/MainActivity.kt',
+      'android/app/src/main/java/com/bacon/todo/MainApplication.kt',
       'android/app/src/main/res/drawable/rn_edit_text_material.xml',
       'android/app/src/main/res/drawable/splashscreen.xml',
       'android/app/src/main/res/values/colors.xml',
       'android/app/src/main/res/values/strings.xml',
       'android/app/src/main/res/values/styles.xml',
       'android/app/src/main/res/values-night/colors.xml',
-      'android/app/src/release/java/com/bacon/todo/ReactNativeFlipper.java',
       'android/app/google-services.json',
       'android/build.gradle',
       'android/gitignore',
@@ -406,8 +404,8 @@ describe('built-in plugins', () => {
     );
     expect(after['ios/HelloWorld/GoogleService-Info.plist']).toBe(googleServiceInfoFixture);
 
-    expect(after['android/app/src/main/java/com/bacon/todo/MainApplication.java']).toMatch(
-      'package com.bacon.todo;'
+    expect(after['android/app/src/main/java/com/bacon/todo/MainApplication.kt']).toMatch(
+      'package com.bacon.todo'
     );
 
     expect(after['android/app/src/main/res/values/strings.xml']).toMatch(
@@ -528,16 +526,14 @@ describe('built-in plugins', () => {
       'android/app/debug.keystore',
       'android/app/proguard-rules.pro',
       'android/app/src/debug/AndroidManifest.xml',
-      'android/app/src/debug/java/com/helloworld/ReactNativeFlipper.java',
       'android/app/src/main/AndroidManifest.xml',
-      'android/app/src/main/java/com/helloworld/MainActivity.java',
-      'android/app/src/main/java/com/helloworld/MainApplication.java',
+      'android/app/src/main/java/com/helloworld/MainActivity.kt',
+      'android/app/src/main/java/com/helloworld/MainApplication.kt',
       'android/app/src/main/res/drawable/rn_edit_text_material.xml',
       'android/app/src/main/res/drawable/splashscreen.xml',
       'android/app/src/main/res/values/colors.xml',
       'android/app/src/main/res/values/strings.xml',
       'android/app/src/main/res/values/styles.xml',
-      'android/app/src/release/java/com/helloworld/ReactNativeFlipper.java',
       'android/build.gradle',
       'android/gitignore',
       'android/gradle/wrapper/gradle-wrapper.jar',
@@ -558,11 +554,11 @@ describe('built-in plugins', () => {
 
     expect(after['ios/HelloWorld/Info.plist']).toBe(rnFixture['ios/HelloWorld/Info.plist']);
 
-    expect(after['android/app/src/main/java/com/helloworld/MainApplication.java']).toBe(
-      rnFixture['android/app/src/main/java/com/helloworld/MainApplication.java']
+    expect(after['android/app/src/main/java/com/helloworld/MainApplication.kt']).toBe(
+      rnFixture['android/app/src/main/java/com/helloworld/MainApplication.kt']
     );
-    expect(after['android/app/src/main/java/com/helloworld/MainActivity.java']).toBe(
-      rnFixture['android/app/src/main/java/com/helloworld/MainActivity.java']
+    expect(after['android/app/src/main/java/com/helloworld/MainActivity.kt']).toBe(
+      rnFixture['android/app/src/main/java/com/helloworld/MainActivity.kt']
     );
     expect(after['android/app/src/main/res/values/styles.xml']).toMatch(
       rnFixture['android/app/src/main/res/values/styles.xml']

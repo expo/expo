@@ -42,11 +42,21 @@ To follow the above example, set up a [React Context provider](https://react.dev
 
 This provider uses a mock implementation. You can replace it with your own [authentication provider](/guides/authentication/).
 
-```js ctx.tsx
+```jsx ctx.tsx
 import React from 'react';
 import { useStorageState } from './useStorageState';
 
-const AuthContext = React.createContext<{ signIn: () => void; signOut: () => void; session?: string | null, isLoading: boolean } | null>(null);
+const AuthContext = React.createContext<{
+  signIn: () => void;
+  signOut: () => void;
+  session?: string | null;
+  isLoading: boolean;
+}>({
+  signIn: () => null,
+  signOut: () => null,
+  session: null,
+  isLoading: false,
+});
 
 // This hook can be used to access the user info.
 export function useSession() {
@@ -90,13 +100,13 @@ import * as SecureStore from 'expo-secure-store';
 import * as React from 'react';
 import { Platform } from 'react-native';
 
-type UseStateHook<T> = [[boolean, T | null], (value?: T | null) => void];
+type UseStateHook<T> = [[boolean, T | null], (value: T | null) => void];
 
 function useAsyncState<T>(
-  initialValue: [boolean, T | null] = [true, undefined],
+  initialValue: [boolean, T | null] = [true, null],
 ): UseStateHook<T> {
   return React.useReducer(
-    (state: [boolean, T | null], action: T | null = null) => [false, action],
+    (state: [boolean, T | null], action: T | null = null): [boolean, T | null] => [false, action],
     initialValue
   ) as UseStateHook<T>;
 }
@@ -145,9 +155,8 @@ export function useStorageState(key: string): UseStateHook<string> {
   // Set
   const setValue = React.useCallback(
     (value: string | null) => {
-      setStorageItemAsync(key, value).then(() => {
-        setState(value);
-      });
+      setState(value);
+      setStorageItemAsync(key, value);
     },
     [key]
   );
@@ -182,7 +191,7 @@ export default function Root() {
 
 <Step label="3">
 
-Create a nested [Layout route](/routing/layouts) that checks whether users are authenticated before rendering the child route components. This layout route redirects users to the sign-in screen if they are not authenticated.
+Create a nested [layout route](/router/layouts) that checks whether users are authenticated before rendering the child route components. This layout route redirects users to the sign-in screen if they are not authenticated.
 
 ```jsx app/(app)/_layout.js
 import { Redirect, Stack } from 'expo-router';
@@ -304,8 +313,8 @@ export const unstable_settings = {
 export default function AppLayout() {
   return (
     <Stack>
-      <Stack name="(root)" />
-      <Stack
+      <Stack.Screen name="(root)" />
+      <Stack.Screen
         name="sign-in"
         options={{
           presentation: 'modal',
@@ -330,7 +339,7 @@ To fix this, add a group and move conditional logic down a level.
 
 <FileTree files={['app/_layout.js', 'app/about.js']} />
 
-```js app/_layout.js
+```jsx app/_layout.js
 export default function RootLayout() {
   React.useEffect(() => {
     // This navigation event will trigger the error above.
@@ -357,13 +366,13 @@ export default function RootLayout() {
   ]}
 />
 
-```js app/_layout.js
+```jsx app/_layout.js
 export default function RootLayout() {
   return <Slot />;
 }
 ```
 
-```js app/(app)/_layout.js
+```jsx app/(app)/_layout.js
 export default function RootLayout() {
   React.useEffect(() => {
     router.push('/about');

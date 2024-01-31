@@ -1,6 +1,6 @@
 import { UnavailabilityError } from 'expo-modules-core';
 
-import NotificationCategoriesModule from './NotificationCategoriesModule.native';
+import NotificationCategoriesModule from './NotificationCategoriesModule';
 import { NotificationCategory } from './Notifications.types';
 
 /**

@@ -2,7 +2,6 @@ package expo.modules.image.records
 
 import android.content.Context
 import android.net.Uri
-import android.util.TypedValue
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.Headers
 import com.bumptech.glide.load.model.LazyHeaders
@@ -38,27 +37,6 @@ data class SourceMap(
   private fun isLocalResourceUri() = parsedUri?.scheme?.startsWith("res") ?: false
 
   private fun isLocalFileUri() = parsedUri?.scheme?.startsWith("file") ?: false
-
-  private fun isSvg(context: Context): Boolean {
-    var uri = parsedUri?.toString()
-    if (uri?.startsWith("res:/") == true) {
-      val id = uri.removePrefix("res:/")
-      try {
-        val typedValue = TypedValue()
-        context.resources.getValue(id, typedValue, true)
-        uri = typedValue.string.toString()
-      } catch (e: Throwable) {
-        return false
-      }
-    }
-
-    val lastDotIndex = uri?.lastIndexOf('.')
-    // if the path has no file extension and no . at all (e.g. file://path/to/file) return false
-    if (lastDotIndex == -1 || lastDotIndex == null) {
-      return false
-    }
-    return uri?.substring(lastDotIndex)?.startsWith(".svg") ?: false
-  }
 
   fun isBlurhash() = parsedUri?.scheme?.startsWith("blurhash") ?: false
 
@@ -124,7 +102,7 @@ data class SourceMap(
 
         // Override the size for local assets (apart from SVGs). This ensures that
         // resizeMode "center" displays the image in the correct size.
-        if (width != 0 && height != 0 && !isSvg(context)) {
+        if (width != 0 && height != 0) {
           override((width * scale).toInt(), (height * scale).toInt())
         }
 

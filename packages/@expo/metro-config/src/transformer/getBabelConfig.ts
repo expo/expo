@@ -67,10 +67,10 @@ const getBabelRC = (function () {
     if (!babelRC.extends) {
       const { experimentalImportSupport, ...presetOptions } = options;
 
-      // Use `babel-preset-expo` instead of `metro-react-native-babel-preset`.
+      // Use `babel-preset-expo` instead of `@react-native/babel-preset`.
       const presetPath =
         resolveFrom.silent(projectRoot, 'babel-preset-expo') ??
-        resolveFrom.silent(projectRoot, 'metro-react-native-babel-preset') ??
+        resolveFrom.silent(projectRoot, '@react-native/babel-preset') ??
         require.resolve('babel-preset-expo');
 
       babelRC.presets = [
@@ -139,7 +139,7 @@ export function getBabelConfig(
         config.plugins = [];
       }
       // Add react refresh runtime.
-      // NOTICE: keep in sync with 'metro-react-native-babel-preset/src/configs/hmr'.
+      // NOTICE: keep in sync with '@react-native/babel-preset/src/configs/hmr'.
       config.plugins.push(resolveFrom.silent(options.projectRoot, 'react-refresh/babel'));
     }
   }

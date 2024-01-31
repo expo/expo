@@ -16,11 +16,14 @@ private const val REGISTRATION_FAIL_CODE = "E_REGISTRATION_FAILED"
 private const val UNREGISTER_FOR_NOTIFICATIONS_FAIL_CODE = "E_UNREGISTER_FOR_NOTIFICATIONS_FAILED"
 
 class PushTokenModule : Module(), PushTokenListener {
-  private lateinit var tokenManager: PushTokenManager
+  private val tokenManager: PushTokenManager? get() = appContext.legacyModuleRegistry
+    .getSingletonModule("PushTokenManager", PushTokenManager::class.java)
   private var eventEmitter: EventEmitter? = null
 
   override fun definition() = ModuleDefinition {
     Name("ExpoPushTokenManager")
+
+    Events("onDevicePushToken")
 
     OnCreate {
       eventEmitter = appContext.legacyModule()
@@ -28,14 +31,11 @@ class PushTokenModule : Module(), PushTokenListener {
 
       // Register the module as a listener in PushTokenManager singleton module.
       // Deregistration happens in onDestroy callback.
-      tokenManager = requireNotNull(
-        appContext.legacyModuleRegistry.getSingletonModule("PushTokenManager", PushTokenManager::class.java)
-      )
-      tokenManager.addListener(this@PushTokenModule)
+      tokenManager?.addListener(this@PushTokenModule)
     }
 
     OnDestroy {
-      tokenManager.removeListener(this@PushTokenModule)
+      tokenManager?.removeListener(this@PushTokenModule)
     }
 
     /**

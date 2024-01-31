@@ -15,8 +15,8 @@ final class MockCdpInterceptorDelegate: ExpoRequestCdpInterceptorDelegate {
 }
 
 final class ExpoRequestCdpInterceptorSpec: ExpoSpec {
-  private let mockDelegate = MockCdpInterceptorDelegate()
-  private lazy var session: URLSession = {
+  private static let mockDelegate = MockCdpInterceptorDelegate()
+  private static var session: URLSession = {
     let configuration = URLSessionConfiguration.default
     let protocolClasses = configuration.protocolClasses
     if var protocolClasses = protocolClasses {
@@ -28,7 +28,7 @@ final class ExpoRequestCdpInterceptorSpec: ExpoSpec {
     return URLSession(configuration: configuration)
   }()
 
-  private func parseJSON(data: String) -> [String: Any] {
+  private static func parseJSON(data: String) -> [String: Any] {
     var result: [String: Any]?
     if let data = data.data(using: .utf8) {
         result = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
@@ -36,7 +36,7 @@ final class ExpoRequestCdpInterceptorSpec: ExpoSpec {
     return result ?? [:]
   }
 
-  override func spec() {
+  override class func spec() {
     beforeSuite {
       ExpoRequestCdpInterceptor.shared.dispatchQueue = DispatchQueue.main
       ExpoRequestCdpInterceptor.shared.setDelegate(self.mockDelegate)

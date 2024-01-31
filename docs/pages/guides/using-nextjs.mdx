@@ -6,8 +6,9 @@ description: A guide for integrating Next.js with Expo for the web.
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 
-> **warning:** Using Next.js is not an official part of Expo's universal app development workflow.
+> **warning** Using Next.js is not an official part of Expo's universal app development workflow.
 
 [Next.js](https://nextjs.org/) is a React framework that provides simple page-based routing as well as server-side rendering. To use Next.js with the Expo SDK, we recommend using [`@expo/next-adapter`](https://github.com/expo/expo-cli/tree/main/packages/next-adapter) library to handle the configuration.
 
@@ -128,7 +129,7 @@ module.exports = nextConfig;
 
 The package `react-native-web` builds on the assumption of reset CSS styles. Here's how you reset styles in Next.js using the **pages** directory.
 
-```js pages/_document.js
+```jsx pages/_document.js
 import { Children } from 'react';
 import Document, { Html, Head, Main, NextScript } from 'next/document';
 import { AppRegistry } from 'react-native';
@@ -188,7 +189,7 @@ export default class MyDocument extends Document {
 }
 ```
 
-```js pages/_app.js
+```jsx pages/_app.js
 import Head from 'next/head';
 
 export default function App({ Component, pageProps }) {
@@ -228,7 +229,8 @@ module.exports = withExpo({
 
 This is Vercel's preferred method for deploying Next.js projects to production.
 
-- Add a **build** script to your **package.json**
+<Step label="1">
+  Add a **build** script to your **package.json**:
   ```json package.json
   {
     "scripts": {
@@ -236,13 +238,18 @@ This is Vercel's preferred method for deploying Next.js projects to production.
     }
   }
   ```
-- Install the Vercel CLI:
+</Step>
 
+<Step label="2">
+  Install the Vercel CLI:
   <Terminal cmd={['$ npm i -g vercel']} />
+</Step>
 
-- Deploy to Vercel:
 
+<Step label="3">
+  Deploy to Vercel:
   <Terminal cmd={['$ vercel']} />
+</Step>
 
 ## Limitations or differences compared to the default Expo for Web
 

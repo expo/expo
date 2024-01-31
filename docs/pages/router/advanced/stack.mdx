@@ -13,7 +13,7 @@ The `Stack` Layout in Expo Router wraps the [Native Stack Navigator](https://rea
 
 To create a `Stack` layout with two screens as shown in the file structure above:
 
-```js app/_layout.js
+```jsx app/_layout.js
 import { Stack } from 'expo-router/stack';
 
 export default function Layout() {
@@ -220,16 +220,14 @@ export default function Layout() {
     <Stack>
       <Stack.Screen
         name="[user]"
-        /* @info Returning a new ID everytime will cause every page to push. */
-        getId={({ params }) => String(Date.now())}
-        /* @end */
+        getId={/* @info Returning a new ID everytime will cause every page to push. */({ params }) => String(Date.now())/* @end */}
       />
     </Stack>
   );
 }
 ```
 
-## JavaScript stack with `@react-navigation/stack`
+## JavaScript stack with @react-navigation/stack
 
 Expo Router uses the `@react-navigation/native-stack` package for the `<Stack />` layout. However, you can also use the JavaScript-powered `@react-navigation/stack` library instead to create a custom layout component that wraps the `@react-navigation/stack` library.
 
@@ -315,18 +313,11 @@ export default function Settings() {
 }
 ```
 
-## Next steps
+## More
 
 <BoxLink
   title="Native Stack Navigator: Options"
   Icon={BookOpen02Icon}
   description="For a list of all options, see React Navigation's documentation."
   href="https://reactnavigation.org/docs/native-stack-navigator#options"
-/>
-
-<BoxLink
-  title="Tabs layout"
-  Icon={BookOpen02Icon}
-  description="Learn how to use Tabs layout in Expo Router."
-  href="/router/advanced/tabs"
 />

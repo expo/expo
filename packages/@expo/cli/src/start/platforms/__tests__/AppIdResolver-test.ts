@@ -1,6 +1,5 @@
 import { getConfig } from '@expo/config';
 
-import { asMock } from '../../../__tests__/asMock';
 import { AppIdResolver } from '../AppIdResolver';
 
 jest.mock('@expo/config', () => ({
@@ -44,7 +43,7 @@ describe('getAppIdAsync', () => {
     resolver.hasNativeProjectAsync = jest.fn(async () => false);
     resolver.getAppIdFromConfigAsync = jest.fn(resolver.getAppIdFromConfigAsync);
 
-    asMock(getConfig).mockReturnValueOnce({
+    jest.mocked(getConfig).mockReturnValueOnce({
       exp: {
         foo: {
           bar: 'dev.bacon.myapp',
@@ -59,7 +58,7 @@ describe('getAppIdAsync', () => {
     const resolver = createAppIdResolver();
     resolver.hasNativeProjectAsync = jest.fn(async () => false);
     resolver.getAppIdFromConfigAsync = jest.fn(resolver.getAppIdFromConfigAsync);
-    asMock(getConfig).mockReturnValueOnce({
+    jest.mocked(getConfig).mockReturnValueOnce({
       exp: {},
     } as any);
     await expect(resolver.getAppIdAsync()).rejects.toThrowError(/foo\.bar.*app\.json/);

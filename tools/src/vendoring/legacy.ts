@@ -51,8 +51,8 @@ interface VendoredModuleConfig {
   warnings?: string[];
 }
 
-const IOS_DIR = Directories.getIosDir();
-const ANDROID_DIR = Directories.getAndroidDir();
+const IOS_DIR = Directories.getExpoGoIosDir();
+const ANDROID_DIR = Directories.getExpoGoAndroidDir();
 
 const SvgModifier: ModuleModifier = async function (
   moduleConfig: VendoredModuleConfig,
@@ -210,6 +210,45 @@ const PickerModifier: ModuleModifier = once(async function (moduleConfig, cloned
 
   await addResourceImportAsync();
 });
+
+const DateTimePickerModifier: ModuleModifier = once(
+  async function (moduleConfig, clonedProjectPath) {
+    const CHANGES = [
+      {
+        path: '/android/src/main/java/com/reactcommunity/rndatetimepicker/RNDatePickerDialogFragment.java',
+        find: /R.style.SpinnerDatePickerDialog/,
+        replaceWith: 'host.exp.expoview.R.style.SpinnerDatePickerDialog',
+      },
+      {
+        path: '/android/src/main/java/com/reactcommunity/rndatetimepicker/RNDateTimePickerPackage.java',
+        find: /boolean isTurboModule = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED/,
+        replaceWith:
+          'boolean isTurboModule = host.exp.expoview.BuildConfig.IS_NEW_ARCHITECTURE_ENABLED',
+      },
+      {
+        path: '/android/src/main/java/com/reactcommunity/rndatetimepicker/RNTimePickerDialogFragment.java',
+        find: /R.style.SpinnerTimePickerDialog/,
+        replaceWith: '\t\t\t\thost.exp.expoview.R.style.SpinnerTimePickerDialog',
+      },
+      {
+        path: '/ios/RNDateTimePickerShadowView.m',
+        find: /YGNodeRef/,
+        replaceWith: 'YGNodeConstRef',
+      },
+    ];
+
+    await Promise.all(
+      CHANGES.map((change) => ({
+        ...change,
+        path: path.resolve(`${clonedProjectPath}${change.path}`),
+      })).map(async (file) => {
+        let content = await fs.readFile(file.path, 'utf8');
+        content = content.replace(file.find, file.replaceWith);
+        await fs.writeFile(file.path, content, 'utf8');
+      })
+    );
+  }
+);
 
 const GestureHandlerModifier: ModuleModifier = async function (
   moduleConfig: VendoredModuleConfig,
@@ -679,6 +718,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         'resourceName'
       )}s used for grabbing style of dialogs are being resolved properly.`,
     ],
+    moduleModifier: DateTimePickerModifier,
   },
   '@react-native-masked-view/masked-view': {
     repoUrl: 'https://github.com/react-native-masked-view/masked-view',

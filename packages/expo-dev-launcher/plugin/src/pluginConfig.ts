@@ -33,7 +33,7 @@ export type PluginConfigOptions = {
    *
    * - `'launcher'` - Opens the launcher screen.
    *
-   * @default 'launcher'
+   * @default 'most-recent'
    */
   launchModeExperimental?: 'most-recent' | 'launcher';
 };

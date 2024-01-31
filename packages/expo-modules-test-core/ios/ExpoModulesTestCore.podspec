@@ -19,8 +19,8 @@ Pod::Spec.new do |s|
   s.source_files   = '**/*.{h,m,mm,swift}'
 
   s.dependency 'ExpoModulesCore'
-  s.dependency 'Quick', '~> 5.0.0'
-  s.dependency 'Nimble', '~> 9.2.0'
+  s.dependency 'Quick', '~> 7.3.0'
+  s.dependency 'Nimble', '~> 13.0.0'
 
   # react_native_pods.rb will add the ENV['USE_HERMES'],
   # we could use this to check current js runtime.

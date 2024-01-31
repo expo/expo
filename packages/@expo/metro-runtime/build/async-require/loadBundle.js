@@ -9,7 +9,6 @@ exports.loadBundleAsync = void 0;
  */
 const buildUrlForBundle_1 = require("./buildUrlForBundle");
 const fetchThenEval_1 = require("./fetchThenEval");
-// import LoadingView from '../LoadingView';
 let pendingRequests = 0;
 /**
  * Load a bundle for a URL using fetch + eval on native and script tag injection on web.
@@ -22,21 +21,21 @@ async function loadBundleAsync(bundlePath) {
         return (0, fetchThenEval_1.fetchThenEvalAsync)(requestUrl);
     }
     else {
+        const Platform = require('react-native').Platform;
         const LoadingView = require('../LoadingView')
             .default;
-        // Send a signal to the `expo` package to show the loading indicator.
-        LoadingView.showMessage('Downloading...', 'load');
+        if (Platform.OS !== 'web') {
+            // Send a signal to the `expo` package to show the loading indicator.
+            LoadingView.showMessage('Downloading...', 'load');
+        }
         pendingRequests++;
         return (0, fetchThenEval_1.fetchThenEvalAsync)(requestUrl)
             .then(() => {
-            if (process.env.NODE_ENV !== 'production') {
-                const HMRClient = require('../HMRClient')
-                    .default;
-                HMRClient.registerBundle(requestUrl);
-            }
+            const HMRClient = require('../HMRClient').default;
+            HMRClient.registerBundle(requestUrl);
         })
             .finally(() => {
-            if (!--pendingRequests) {
+            if (!--pendingRequests && Platform.OS !== 'web') {
                 LoadingView.hide();
             }
         });

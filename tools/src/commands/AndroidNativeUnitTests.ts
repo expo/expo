@@ -23,7 +23,9 @@ const excludedInTests = [
   'expo-dev-client',
 ];
 
-type TestType = 'local' | 'instrumented';
+const testTypes = ['local', 'instrumented', 'spotless'] as const;
+const testTypeSet = new Set(testTypes);
+type TestType = (typeof testTypes)[number];
 
 function consoleErrorOutput(output: string, label: string, colorifyLine: (string) => string): void {
   const lines = output.trim().split(/\r\n?|\n/g);
@@ -40,7 +42,17 @@ async function modifyBareExpoPackageJson() {
   const packageJsonOriginalText = await fs.readFile(BARE_EXPO_PACKAGE_JSON_PATH, {
     encoding: 'utf-8',
   });
-  const packageJson: any = JSON.parse(packageJsonOriginalText);
+  let packageJson: any = {};
+  try {
+    packageJson = JSON.parse(packageJsonOriginalText);
+  } catch (e: any) {
+    console.warn(
+      chalk.red(
+        `${BARE_EXPO_PACKAGE_JSON_PATH} failed to parse as valid JSON.\n   Error: ${e}\n   File contents:\n${packageJsonOriginalText}\n`
+      )
+    );
+    process.exit(1);
+  }
   if (packageJson?.expo?.autolinking?.exclude) {
     const excluded = new Set<string>(packageJson?.expo?.autolinking?.exclude || []);
     if (excluded.has('expo-updates')) {
@@ -48,7 +60,7 @@ async function modifyBareExpoPackageJson() {
       packageJson.expo.autolinking.exclude = [...excluded];
     }
   }
-  const packageJsonModifiedText = JSON.stringify(packageJson, null, 2);
+  const packageJsonModifiedText = `${JSON.stringify(packageJson, null, 2)}\n`;
   await fs.writeFile(BARE_EXPO_PACKAGE_JSON_PATH, packageJsonModifiedText, { encoding: 'utf-8' });
   return packageJsonOriginalText;
 }
@@ -66,11 +78,11 @@ export async function androidNativeUnitTests({
 }) {
   if (!type) {
     throw new Error(
-      'Must specify which type of unit test to run with `--type local` or `--type instrumented`.'
+      `Must specify which type of unit test to run. type must be one of ${testTypes.join(',')}`
     );
   }
-  if (type !== 'local' && type !== 'instrumented') {
-    throw new Error('Invalid type specified. Must use `--type local` or `--type instrumented`.');
+  if (!testTypeSet.has(type)) {
+    throw new Error(`Invalid type specified. type must be one of ${testTypes.join(',')}`);
   }
 
   const allPackages = await Packages.getListOfPackagesAsync();
@@ -122,12 +134,27 @@ export async function androidNativeUnitTests({
       const isExpoModulesCore = (pkg: Packages.Package) => pkg.packageName === 'expo-modules-core';
       const isNotExpoModulesCore = (pkg: Packages.Package) =>
         pkg.packageName !== 'expo-modules-core';
+
       await runGradlew(androidPackages.filter(isExpoModulesCore), testCommand, BARE_EXPO_DIR);
 
       await runGradlew(androidPackages.filter(isNotExpoModulesCore), testCommand, BARE_EXPO_DIR);
 
       // Cleanup installed test app
       await runGradlew(androidPackages, uninstallTestCommand, BARE_EXPO_DIR);
+    } else if (type === 'spotless') {
+      const spotlessApplyCommand = 'spotlessApply';
+      const spotlessCheckCommand = 'spotlessCheck';
+      try {
+        console.log(chalk.green('Running spotlessCheck...'));
+        await runGradlew(androidPackages, spotlessCheckCommand, BARE_EXPO_DIR);
+        console.log(chalk.green('spotlessCheck succeeded'));
+      } catch (e: any) {
+        console.log(
+          chalk.yellow(`spotlessCheck failed: ${e}. Attempting to fix with spotlessApply...`)
+        );
+        await runGradlew(androidPackages, spotlessApplyCommand, BARE_EXPO_DIR);
+        chalk.green('spotlessApply succeeded');
+      }
     } else {
       const testCommand = 'testDebugUnitTest';
       await runGradlew(androidPackages, testCommand, BARE_EXPO_DIR);
@@ -135,7 +162,7 @@ export async function androidNativeUnitTests({
 
     console.log(chalk.green('Finished android unit tests successfully.'));
   } finally {
-    restoreBareExpoPackageJson(packageJsonOriginalText);
+    await restoreBareExpoPackageJson(packageJsonOriginalText);
   }
 }
 
@@ -165,7 +192,7 @@ async function runGradlew(packages: Packages.Package[], testCommand: string, cwd
 export default (program: any) => {
   program
     .command('android-native-unit-tests')
-    .option('-t, --type <string>', 'Type of unit test to run: local or instrumented')
+    .option('-t, --type <string>', 'Type of unit test to run: local, instrumented, or spotless')
     .option(
       '--packages <string>',
       '[optional] Comma-separated list of package names to run unit tests for. Defaults to all packages with unit tests.'

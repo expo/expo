@@ -283,7 +283,7 @@ let UpdatesDatabaseV9Schema = """
 """
 
 class UpdatesDatabaseInitializationSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     var testDatabaseDir: URL!
 
     beforeEach {

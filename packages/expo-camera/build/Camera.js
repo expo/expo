@@ -2,7 +2,7 @@ import { createPermissionHook, Platform, UnavailabilityError } from 'expo-module
 import * as React from 'react';
 import { findNodeHandle } from 'react-native';
 import ExpoCamera from './ExpoCamera';
-import CameraManager from './ExponentCameraManager';
+import CameraManager from './ExpoCameraManager';
 import { ConversionTables, ensureNativeProps } from './utils/props';
 const EventThrottleMs = 500;
 const _PICTURE_SAVED_CALLBACKS = {};
@@ -194,7 +194,7 @@ export default class Camera extends React.Component {
      * for an `Image` element for example. `exif` is included if the `exif` option was truthy, and is an object containing EXIF
      * data for the image--the names of its properties are EXIF tags and their values are the values for those tags.
      *
-     * > On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem.md#filesystemcopyasyncoptions)
+     * > On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem/#filesystemcachedirectory)
      * > to make a permanent copy of the image.
      */
     async takePictureAsync(options) {
@@ -243,29 +243,29 @@ export default class Camera extends React.Component {
     /**
      * Stops recording if any is in progress.
      */
-    stopRecording() {
+    async stopRecording() {
         if (!CameraManager.stopRecording) {
             throw new UnavailabilityError('Camera', 'stopRecording');
         }
-        CameraManager.stopRecording(this._cameraHandle);
+        return await CameraManager.stopRecording(this._cameraHandle);
     }
     /**
      * Pauses the camera preview. It is not recommended to use `takePictureAsync` when preview is paused.
      */
-    pausePreview() {
+    async pausePreview() {
         if (!CameraManager.pausePreview) {
             throw new UnavailabilityError('Camera', 'pausePreview');
         }
-        CameraManager.pausePreview(this._cameraHandle);
+        return await CameraManager.pausePreview(this._cameraHandle);
     }
     /**
      * Resumes the camera preview.
      */
-    resumePreview() {
+    async resumePreview() {
         if (!CameraManager.resumePreview) {
             throw new UnavailabilityError('Camera', 'resumePreview');
         }
-        CameraManager.resumePreview(this._cameraHandle);
+        return await CameraManager.resumePreview(this._cameraHandle);
     }
     _onCameraReady = () => {
         if (this.props.onCameraReady) {

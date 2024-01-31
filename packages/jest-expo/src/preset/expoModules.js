@@ -680,6 +680,9 @@ module.exports = {
           totalMemory: { type: 'number', mock: 17179869184 },
         },
         ExpoDocumentPicker: {},
+        ExpoFontLoader: {
+          customNativeFonts: { type: 'array' },
+        },
         ExpoHaptics: {},
         ExpoImage: {},
         ExpoImageManipulator: {},
@@ -715,6 +718,7 @@ module.exports = {
           WhiteBalance: { type: 'object' },
         },
         ExponentConstants: {
+          AppOwnership: { type: 'object' },
           appOwnership: { type: 'string' },
           debugMode: { type: 'boolean', mock: false },
           deviceName: { type: 'string' },
@@ -738,7 +742,6 @@ module.exports = {
         },
         ExponentDeviceMotion: { Gravity: { type: 'number', mock: 9.8100004196167 } },
         ExponentFileSystem: {
-          bundledAssets: { type: 'object', mock: null },
           bundleDirectory: { type: 'object', mock: null },
           cacheDirectory: { type: 'string' },
           documentDirectory: { type: 'string' },

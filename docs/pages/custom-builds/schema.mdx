@@ -1308,9 +1308,9 @@ For example, to trigger a build that creates internal distribution build for And
 
 ```json eas.json
 {
-  ...,
+  /* @hide ... */ /* @end */
   "build": {
-    ...,
+    /* @hide ... */ /* @end */
     "developmentBuild": {
       "distribution": "internal",
       "android": {
@@ -1320,10 +1320,10 @@ For example, to trigger a build that creates internal distribution build for And
         "simulator": true,
         "config": "development-build-ios.yml"
       }
-    },
-    ...
-  },
-  ...
+    }
+    /* @hide ... */ /* @end */
+  }
+  /* @hide ... */ /* @end */
 }
 ```
 
@@ -1366,13 +1366,13 @@ build:
     - eas/find_and_upload_build_artifacts
 ```
 
-To create Play Store build for Android and App Store build for iOS you can use the following configuration:
+To create a Google Play Store build for Android and an Apple App Store build for iOS you can use the following configuration:
 
 ```json eas.json
 {
-  ...,
+  /* @hide ... */ /* @end */
   "build": {
-    ...,
+    /* @hide ... */ /* @end */
     "productionBuild": {
       "android": {
         "config": "production-build-android.yml"
@@ -1380,10 +1380,10 @@ To create Play Store build for Android and App Store build for iOS you can use t
       "ios": {
         "config": "production-build-ios.yml"
       }
-    },
-    ...
-  },
-  ...
+    }
+    /* @hide ... */ /* @end */
+  }
+  /* @hide ... */ /* @end */
 }
 ```
 

@@ -18,7 +18,7 @@ function _createLegacyPlugin() {
   };
   return data;
 }
-var _default = (0, _createLegacyPlugin().createLegacyPlugin)({
+var _default = exports.default = (0, _createLegacyPlugin().createLegacyPlugin)({
   packageName: 'expo-document-picker',
   fallback(config) {
     var _config$ios;
@@ -27,9 +27,7 @@ var _default = (0, _createLegacyPlugin().createLegacyPlugin)({
       // TODO: add a link to a docs page with more information on how to do this
       );
     }
-
     return config;
   }
 });
-exports.default = _default;
 //# sourceMappingURL=expo-document-picker.js.map

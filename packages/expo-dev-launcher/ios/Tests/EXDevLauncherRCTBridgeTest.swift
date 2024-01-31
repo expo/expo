@@ -12,7 +12,7 @@ class EXDevLauncherRCTBridgeTest: QuickSpec {
   @objc(ExpoBridgeModuleAbc)
   class ExpoBridgeModuleAbc: NSObject {}
 
-  override func spec() {
+  override class func spec() {
     it("should be connected with EXDevLauncherRCTCxxBridge") {
       let bridge = EXDevLauncherRCTBridge(delegate: nil, launchOptions: nil)!
 

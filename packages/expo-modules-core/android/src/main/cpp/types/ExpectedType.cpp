@@ -70,6 +70,9 @@ std::string ExpectedType::getJClassString(bool allowsPrimitives) {
   if (type == CppType::READABLE_MAP) {
     return "com/facebook/react/bridge/ReadableNativeMap";
   }
+  if (type == CppType::UINT8_TYPED_ARRAY) {
+    return "[B";
+  }
   if (type == CppType::TYPED_ARRAY) {
     return "expo/modules/kotlin/jni/JavaScriptTypedArray";
   }

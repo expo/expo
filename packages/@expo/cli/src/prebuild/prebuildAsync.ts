@@ -87,7 +87,7 @@ export async function prebuildAsync(
   const { exp, pkg } = await ensureConfigAsync(projectRoot, { platforms: options.platforms });
 
   // Create native projects from template.
-  const { hasNewProjectFiles, needsPodInstall, changedDependencies } =
+  const { hasNewProjectFiles, needsPodInstall, templateChecksum, changedDependencies } =
     await updateFromTemplateAsync(projectRoot, {
       exp,
       pkg,
@@ -126,12 +126,23 @@ export async function prebuildAsync(
     }
   }
 
-  // Apply Expo config to native projects
-  const configSyncingStep = logNewSection('Running prebuild');
+  // Apply Expo config to native projects. Prevent log-spew from ora when running in debug mode.
+  const configSyncingStep: { succeed(text?: string): unknown; fail(text?: string): unknown } =
+    env.EXPO_DEBUG
+      ? {
+          succeed(text) {
+            Log.log(text!);
+          },
+          fail(text) {
+            Log.error(text!);
+          },
+        }
+      : logNewSection('Running prebuild');
   try {
     await profile(configureProjectAsync)(projectRoot, {
       platforms: options.platforms,
       exp,
+      templateChecksum,
     });
     configSyncingStep.succeed('Finished prebuild');
   } catch (error) {

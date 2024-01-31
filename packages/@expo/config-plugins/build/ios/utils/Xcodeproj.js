@@ -21,6 +21,7 @@ exports.isBuildConfig = isBuildConfig;
 exports.isNotComment = isNotComment;
 exports.isNotTestHost = isNotTestHost;
 exports.resolvePathOrProject = resolvePathOrProject;
+exports.resolveXcodeBuildSetting = resolveXcodeBuildSetting;
 exports.sanitizedName = sanitizedName;
 exports.unquote = unquote;
 function _assert() {
@@ -79,9 +80,16 @@ function Paths() {
   };
   return data;
 }
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+/**
+ * Copyright © 2023-present 650 Industries, Inc. (aka Expo)
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 function getProjectName(projectRoot) {
   const sourceRoot = Paths().getSourceRoot(projectRoot);
   return _path().default.basename(sourceRoot);
@@ -350,8 +358,8 @@ function getProductName(project) {
     productName = project.productName;
   } catch {}
   if (productName === '$(TARGET_NAME)') {
-    var _project$getFirstTarg, _project$getFirstTarg2;
-    const targetName = (_project$getFirstTarg = project.getFirstTarget()) === null || _project$getFirstTarg === void 0 ? void 0 : (_project$getFirstTarg2 = _project$getFirstTarg.firstTarget) === null || _project$getFirstTarg2 === void 0 ? void 0 : _project$getFirstTarg2.productName;
+    var _project$getFirstTarg;
+    const targetName = (_project$getFirstTarg = project.getFirstTarget()) === null || _project$getFirstTarg === void 0 || (_project$getFirstTarg = _project$getFirstTarg.firstTarget) === null || _project$getFirstTarg === void 0 ? void 0 : _project$getFirstTarg.productName;
     productName = targetName !== null && targetName !== void 0 ? targetName : productName;
   }
   return productName;
@@ -397,5 +405,86 @@ function unquote(value) {
     value = String(value);
   }
   return (_value$match$ = (_value$match = value.match(/^"(.*)"$/)) === null || _value$match === void 0 ? void 0 : _value$match[1]) !== null && _value$match$ !== void 0 ? _value$match$ : value;
+}
+function resolveXcodeBuildSetting(value, lookup) {
+  const parsedValue = value === null || value === void 0 ? void 0 : value.replace(/\$\(([^()]*|\([^)]*\))\)/g, match => {
+    var _resolved5;
+    // Remove the `$(` and `)`, then split modifier(s) from the variable name.
+    const [variable, ...transformations] = match.slice(2, -1).split(':');
+    // Resolve the variable recursively.
+    let lookedUp = lookup(variable);
+    if (lookedUp) {
+      lookedUp = resolveXcodeBuildSetting(lookedUp, lookup);
+    }
+    let resolved = lookedUp;
+
+    // Ref: http://codeworkshop.net/posts/xcode-build-setting-transformations
+    transformations.forEach(modifier => {
+      var _resolved, _resolved2, _resolved3, _resolved4, _modifier$match;
+      switch (modifier) {
+        case 'lower':
+          // A lowercase representation.
+          resolved = (_resolved = resolved) === null || _resolved === void 0 ? void 0 : _resolved.toLowerCase();
+          break;
+        case 'upper':
+          // An uppercase representation.
+          resolved = (_resolved2 = resolved) === null || _resolved2 === void 0 ? void 0 : _resolved2.toUpperCase();
+          break;
+        case 'suffix':
+          if (resolved) {
+            // The extension of a path including the '.' divider.
+            resolved = _path().default.extname(resolved);
+          }
+          break;
+        case 'file':
+          if (resolved) {
+            // The file portion of a path.
+            resolved = _path().default.basename(resolved);
+          }
+          break;
+        case 'dir':
+          if (resolved) {
+            // The directory portion of a path.
+            resolved = _path().default.dirname(resolved);
+          }
+          break;
+        case 'base':
+          if (resolved) {
+            // The base name of a path - the last path component with any extension removed.
+            const b = _path().default.basename(resolved);
+            const extensionIndex = b.lastIndexOf('.');
+            resolved = extensionIndex === -1 ? b : b.slice(0, extensionIndex);
+          }
+          break;
+        case 'rfc1034identifier':
+          // A representation suitable for use in a DNS name.
+
+          // TODO: Check the spec if there is one, this is just what we had before.
+          resolved = (_resolved3 = resolved) === null || _resolved3 === void 0 ? void 0 : _resolved3.replace(/[^a-zA-Z0-9]/g, '-');
+          // resolved = resolved.replace(/[\/\*\s]/g, '-');
+          break;
+        case 'c99extidentifier':
+          // Like identifier, but with support for extended characters allowed by C99. Added in Xcode 6.
+          // TODO: Check the spec if there is one.
+          resolved = (_resolved4 = resolved) === null || _resolved4 === void 0 ? void 0 : _resolved4.replace(/[-\s]/g, '_');
+          break;
+        case 'standardizepath':
+          if (resolved) {
+            // The equivalent of calling stringByStandardizingPath on the string.
+            // https://developer.apple.com/documentation/foundation/nsstring/1407194-standardizingpath
+            resolved = _path().default.resolve(resolved);
+          }
+          break;
+        default:
+          resolved || (resolved = (_modifier$match = modifier.match(/default=(.*)/)) === null || _modifier$match === void 0 ? void 0 : _modifier$match[1]);
+          break;
+      }
+    });
+    return resolveXcodeBuildSetting((_resolved5 = resolved) !== null && _resolved5 !== void 0 ? _resolved5 : '', lookup);
+  });
+  if (parsedValue !== value) {
+    return resolveXcodeBuildSetting(parsedValue, lookup);
+  }
+  return value;
 }
 //# sourceMappingURL=Xcodeproj.js.map

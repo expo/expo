@@ -1,5 +1,5 @@
 import fs from 'fs/promises';
-import { debounce } from 'lodash';
+import debounce from 'lodash.debounce';
 import { Server } from 'metro';
 import path from 'path';
 
@@ -18,6 +18,12 @@ export const SLUG = /\[.+?\]/g;
 export const ARRAY_GROUP_REGEX = /\(\s*\w[\w\s]*?,.*?\)/g;
 // /(group1,group2,group3)/test - captures ["group1", "group2", "group3"]
 export const CAPTURE_GROUP_REGEX = /[\\(,]\s*(\w[\w\s]*?)\s*(?=[,\\)])/g;
+/**
+ * Match:
+ *  - _layout files, +html, +not-found, string+api, etc
+ *  - Routes can still use `+`, but it cannot be in the last segment.
+ */
+export const TYPED_ROUTES_EXCLUSION_REGEX = /(_layout|[^/]*?\+[^/]*?)\.[tj]sx?$/;
 
 export interface SetupTypedRoutesOptions {
   server?: ServerLike;
@@ -162,8 +168,7 @@ export function getTypedRoutesUtils(appRoot: string, filePathSeperator = path.se
   };
 
   const isRouteFile = (filePath: string) => {
-    // Layout and filenames starting with `+` are not routes
-    if (filePath.match(/_layout\.[tj]sx?$/) || filePath.match(/\/\+/)) {
+    if (filePath.match(TYPED_ROUTES_EXCLUSION_REGEX)) {
       return false;
     }
 
@@ -300,7 +305,7 @@ const routerDotTSTemplate = unsafeTemplate`/* eslint-disable @typescript-eslint/
 /* eslint-disable @typescript-eslint/ban-types */
 declare module "expo-router" {
   import type { LinkProps as OriginalLinkProps } from 'expo-router/build/link/Link';
-  import type { Router as OriginalRouter } from 'expo-router/src/types';
+  import type { Router as OriginalRouter } from 'expo-router/build/types';
   export * from 'expo-router/build';
 
   // prettier-ignore
@@ -312,9 +317,10 @@ declare module "expo-router" {
 
   type RelativePathString = \`./\${string}\` | \`../\${string}\` | '..';
   type AbsoluteRoute = DynamicRouteTemplate | StaticRoutes;
-  type ExternalPathString = \`http\${string}\`;
+  type ExternalPathString = \`\${string}:\${string}\`;
+
   type ExpoRouterRoutes = DynamicRouteTemplate | StaticRoutes | RelativePathString;
-  type AllRoutes = ExpoRouterRoutes | ExternalPathString;
+  export type AllRoutes = ExpoRouterRoutes | ExternalPathString;
 
   /****************
    * Route Utils  *
@@ -339,14 +345,14 @@ declare module "expo-router" {
   type SingleRoutePart<S extends string> = S extends \`\${string}/\${string}\`
     ? never
     : S extends \`\${string}\${SearchOrHash}\`
-    ? never
-    : S extends ''
-    ? never
-    : S extends \`(\${string})\`
-    ? never
-    : S extends \`[\${string}]\`
-    ? never
-    : S;
+      ? never
+      : S extends ''
+        ? never
+        : S extends \`(\${string})\`
+          ? never
+          : S extends \`[\${string}]\`
+            ? never
+            : S;
 
   /**
    * Return only the CatchAll router part. If the string has search parameters or a hash return never
@@ -354,12 +360,12 @@ declare module "expo-router" {
   type CatchAllRoutePart<S extends string> = S extends \`\${string}\${SearchOrHash}\`
     ? never
     : S extends ''
-    ? never
-    : S extends \`\${string}(\${string})\${string}\`
-    ? never
-    : S extends \`\${string}[\${string}]\${string}\`
-    ? never
-    : S;
+      ? never
+      : S extends \`\${string}(\${string})\${string}\`
+        ? never
+        : S extends \`\${string}[\${string}]\${string}\`
+          ? never
+          : S;
 
   // type OptionalCatchAllRoutePart<S extends string> = S extends \`\${string}\${SearchOrHash}\` ? never : S
 
@@ -391,8 +397,8 @@ declare module "expo-router" {
       ? [...RouteSegments<PartB>]
       : [PartA, ...RouteSegments<PartB>]
     : Path extends ''
-    ? []
-    : [Path];
+      ? []
+      : [Path];
 
   /**
    * Returns a Record of the routes parameters as strings and CatchAll parameters
@@ -421,8 +427,8 @@ declare module "expo-router" {
   export type SearchParams<T extends AllRoutes> = T extends DynamicRouteTemplate
     ? OutputRouteParams<T>
     : T extends StaticRoutes
-    ? never
-    : UnknownOutputParams;
+      ? never
+      : UnknownOutputParams;
 
   /**
    * Route is mostly used as part of Href to ensure that a valid route is provided
@@ -449,8 +455,8 @@ declare module "expo-router" {
                 ? T
                 : never
               : T extends DynamicRoutes<infer _>
-              ? T
-              : never)
+                ? T
+                : never)
     : never;
 
   /*********
@@ -465,8 +471,8 @@ declare module "expo-router" {
   > = P extends DynamicRouteTemplate
     ? { pathname: P; params: InputRouteParams<P> }
     : P extends Route<P>
-    ? { pathname: Route<P> | DynamicRouteTemplate; params?: never | InputRouteParams<never> }
-    : never;
+      ? { pathname: Route<P> | DynamicRouteTemplate; params?: never | InputRouteParams<never> }
+      : never;
 
   /***********************
    * Expo Router Exports *
@@ -508,7 +514,7 @@ declare module "expo-router" {
    * @param props.className On web, this sets the HTML \`class\` directly. On native, this can be used with CSS interop tools like Nativewind.
    */
   export const Link: LinkComponent;
-  
+
   /** Redirects to the href as soon as the component is mounted. */
   export const Redirect: <T>(
     props: React.PropsWithChildren<{ href: Href<T> }>

@@ -187,12 +187,6 @@
 
 
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>
-    <!-- WHEN_PREPARING_SHELL_REMOVE_FROM_HERE -->
-    <!-- ADD DEV SETTINGS HERE -->
-    <!-- BEGIN_SDK_49 -->
-    <activity android:name="abi49_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
-    <!-- END_SDK_49 -->
-    <!-- WHEN_PREPARING_SHELL_REMOVE_TO_HERE -->
 
     <activity
         android:name="net.openid.appauth.RedirectUriReceiverActivity"
@@ -202,7 +196,7 @@
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
-        <data android:scheme="host.exp.exponent" android:path="oauthredirect"/>
+        <data android:scheme="host.exp.exponent" android:path="/oauthredirect"/>
       </intent-filter>
     </activity>
 

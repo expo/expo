@@ -20,7 +20,8 @@ const val DEV_LAUNCHER_IS_NOT_AVAILABLE = "DevLauncher isn't available in releas
 
 class DevLauncherController private constructor() : DevLauncherControllerInterface {
   enum class Mode {
-    LAUNCHER, APP
+    LAUNCHER,
+    APP
   }
 
   override val latestLoadedApp: Uri? = null
@@ -43,6 +44,10 @@ class DevLauncherController private constructor() : DevLauncherControllerInterfa
   override var updatesInterface: UpdatesInterface?
     get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
     set(_) {}
+
+  override fun onRequestRelaunch() {
+    throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
+  }
 
   override val coroutineScope: CoroutineScope
     get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)

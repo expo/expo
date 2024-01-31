@@ -240,3 +240,35 @@ export function getRouterE2ERoot(): string {
   const root = path.join(__dirname, '../../../../../apps/router-e2e');
   return root;
 }
+
+export function getHtmlHelpers(outputDir: string) {
+  async function getScriptTagsAsync(name: string) {
+    const tags = (await getPageHtml(outputDir, name)).querySelectorAll('script').map((script) => {
+      expect(fs.existsSync(path.join(outputDir, script.attributes.src))).toBe(true);
+
+      return script.attributes.src;
+    });
+
+    ensureEntryChunk(tags[0]);
+
+    return tags;
+  }
+
+  function ensureEntryChunk(relativePath: string) {
+    expect(fs.readFileSync(path.join(outputDir, relativePath), 'utf8')).toMatch(
+      /__BUNDLE_START_TIME__/
+    );
+  }
+
+  return {
+    getScriptTagsAsync,
+  };
+}
+
+export function expectChunkPathMatching(name: string) {
+  return expect.stringMatching(
+    new RegExp(
+      `_expo\\/static\\/js\\/web\\/${name.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}-.*\\.js`
+    )
+  );
+}

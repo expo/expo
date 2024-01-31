@@ -6,11 +6,9 @@ description: Learn about Expo Go, the free, open-source sandbox app for learning
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
 import { Step } from '~/ui/components/Step';
 
-[Expo Go](https://expo.dev/client) is a free, [open-source](https://github.com/expo/expo/tree/main/home) sandbox for learning and experimenting with React Native on Android and iOS devices. You can install it directly from app stores, and get up and running within minutes &mdash; no need to install a native toolchain and compile an app.
+[Expo Go](https://expo.dev/client) is a free, [open-source](https://github.com/expo/expo/tree/main/apps/expo-go) sandbox for learning and experimenting with React Native on Android and iOS devices. You can install it directly from app stores, and get up and running within minutes &mdash; no need to install a native toolchain and compile an app.
 
 Expo Go is not recommended for building production-quality apps &mdash; use [development builds](/develop/development-builds/introduction) instead. It's also not recommended for [deploying/distributing apps](/deploy/build-project/). That said, everything you learn while working in Expo Go will be transferable to development builds, and you're likely to come back to Expo Go along your journey when you want to try new ideas in a quick new project sandbox. It's a great place to start!
 
@@ -71,11 +69,13 @@ See [Upgrading Expo SDK guide](/workflow/upgrading-expo-sdk-walkthrough) for ins
 
 <Collapsible summary="How can I install an older version of Expo Go to run my project?">
 
-If you can't upgrade your project to a newer SDK version, you can still run it using an older version of Expo Go. However, this method will not work for physical iOS devices because it is impossible to install apps directly (sideload). If you need to run your project on a physical iOS device, consider creating a [development build](/develop/development-builds/introduction).
+If you cannot upgrade your project to a newer SDK version, you can still run it using an older version of Expo Go. However, this method will not work for physical iOS devices because it is impossible to install apps directly (sideload). If you need to run your project on a physical iOS device, consider creating a [development build](/develop/development-builds/introduction).
 
-If you are trying to use this method on a physical Android device, connect it to your computer and enable the **USB Debugging** option. To learn more, see [Android emulators](/workflow/android-studio-emulator) and [iOS simulators](/workflow/ios-simulator)
+If you are trying to use this method on a physical Android device, connect it to your computer and enable the **USB Debugging** option.
 
-<Step label="1">If installed, remove Expo Go from your device/simulator.</Step>
+To run it on an emulator or a simulator, see [Android emulators](/workflow/android-studio-emulator) and [iOS simulators](/workflow/ios-simulator).
+
+<Step label="1">If installed, remove Expo Go from your device or simulator.</Step>
 <Step label="2">
   Start the development server:
   <Terminal cmd={['npx expo start']} />
@@ -85,7 +85,7 @@ If you are trying to use this method on a physical Android device, connect it to
   install the compatible Expo Go on your device/simulator and open your project in the client.
 </Step>
 
-A compatible version of Expo Go will be automatically installed on your device/simulator, and your project will open.
+A compatible version of Expo Go will be automatically installed on your device or simulator, and your project will open.
 
 </Collapsible>
 
@@ -93,13 +93,4 @@ A compatible version of Expo Go will be automatically installed on your device/s
 
 Open the Expo Go app after it has finished installing. If you have [created an account with Expo CLI](/more/expo-cli/#authentication), you can sign in by clicking the **Log In** button in the top header on the **Home** tab. Signing in will make it easier for you to open projects in the Expo Go app while developing them &mdash; they will appear automatically under the **Projects** section on the **Home** tab of the app.
 
-> Sometimes, it can be useful to run your app directly on your computer instead of on a separate physical device. If you would like to set this up, you can learn more about [installing an Android Emulator](/workflow/android-studio-emulator) and [installing the iOS Simulator (macOS only)](/workflow/ios-simulator).
-
-## Next step
-
-<BoxLink
-  title="Create a new project"
-  description="Now that the Expo Go app is installed, let's create a new app and write some code."
-  href="/get-started/create-a-project"
-  Icon={BookOpen02Icon}
-/>
+> Sometimes, it can be useful to run your app directly on your computer instead of on a separate physical device. If you would like to set this up, you can learn more about installing an [Android Emulator](/workflow/android-studio-emulator) and an [iOS Simulator (macOS only)](/workflow/ios-simulator).

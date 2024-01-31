@@ -6,9 +6,7 @@ import { ConfigAPI, types } from '@babel/core';
  * EXPO_PUBLIC_USE_STATIC
  * EXPO_ROUTER_ABS_APP_ROOT
  * EXPO_ROUTER_APP_ROOT
- * EXPO_ROUTER_IMPORT_MODE_IOS
- * EXPO_ROUTER_IMPORT_MODE_ANDROID
- * EXPO_ROUTER_IMPORT_MODE_WEB
+ * EXPO_ROUTER_IMPORT_MODE
  */
 export declare function expoRouterBabelPlugin(api: ConfigAPI & {
     types: typeof types;

@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 5.8.3 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 5.8.2 - 2024-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 5.8.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 5.8.0 — 2023-12-12
+
+### 🐛 Bug fixes
+
+- On iOS, fixed a regression that prevented expo go from determining the release type. ([#25834](https://github.com/expo/expo/pull/25834) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 5.7.0 — 2023-11-14
 
 ### 🛠 Breaking changes

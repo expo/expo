@@ -1,7 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
 import { execSync } from 'child_process';
 
-import { asMock } from '../../../../__tests__/asMock';
 import { confirmAsync } from '../../../../utils/prompts';
 import { XcrunPrerequisite } from '../XcrunPrerequisite';
 
@@ -10,10 +9,11 @@ jest.mock('../../../../utils/prompts');
 
 it(`detects that xcrun is installed and is valid`, async () => {
   // Mock xcrun installed for CI
-  asMock(execSync).mockReset().mockReturnValueOnce(`xcrun version 64.`);
+  jest.mocked(execSync).mockReset().mockReturnValueOnce(`xcrun version 64.`);
 
   // Ensure the confirmation is never called.
-  asMock(confirmAsync)
+  jest
+    .mocked(confirmAsync)
     .mockReset()
     .mockImplementation(() => {
       throw new Error("shouldn't happen");
@@ -23,16 +23,18 @@ it(`detects that xcrun is installed and is valid`, async () => {
 });
 
 it(`asserts that xcrun is not installed and installs it successfully`, async () => {
-  asMock(spawnAsync).mockReset();
+  jest.mocked(spawnAsync).mockReset();
   // Mock xcrun installed for CI
-  asMock(execSync)
+  jest
+    .mocked(execSync)
     .mockReset()
     .mockImplementationOnce(() => {
       throw new Error('foobar');
     })
     .mockReturnValueOnce(`xcrun version 64.`);
 
-  asMock(confirmAsync)
+  jest
+    .mocked(confirmAsync)
     .mockReset()
     // Invoke the confirmation
     .mockResolvedValueOnce(true)
@@ -46,16 +48,18 @@ it(`asserts that xcrun is not installed and installs it successfully`, async () 
 });
 
 it(`asserts that xcrun is not installed and the user cancels`, async () => {
-  asMock(spawnAsync).mockReset();
+  jest.mocked(spawnAsync).mockReset();
   // Mock xcrun installed for CI
-  asMock(execSync)
+  jest
+    .mocked(execSync)
     .mockReset()
     .mockImplementationOnce(() => {
       throw new Error('foobar');
     })
     .mockReturnValueOnce(`xcrun version 64.`);
 
-  asMock(confirmAsync)
+  jest
+    .mocked(confirmAsync)
     .mockReset()
     // Invoke the confirmation
     .mockResolvedValueOnce(false)

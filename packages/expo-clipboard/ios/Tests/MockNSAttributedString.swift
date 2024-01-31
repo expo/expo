@@ -14,7 +14,10 @@ class MockNSAttributedString: NSAttributedString {
   }
 
   override var rtfData: Data? {
-    return try? self.data(from: NSRange(location: 0, length: self.length))
+    return try? self.data(
+      from: NSRange(location: 0, length: self.length),
+      documentAttributes: [.documentType: NSAttributedString.DocumentType.rtf]
+    )
   }
 
   override var htmlString: String? {

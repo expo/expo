@@ -1,6 +1,5 @@
 package expo.modules.updates
 
-import android.content.Context
 import android.os.Bundle
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactInstanceManager
@@ -8,7 +7,7 @@ import expo.modules.kotlin.exception.CodedException
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.loader.LoaderTask
-import expo.modules.updates.manifest.UpdateManifest
+import expo.modules.updates.manifest.Update
 import expo.modules.updates.statemachine.UpdatesStateContext
 import java.io.File
 import java.util.Date
@@ -48,7 +47,7 @@ interface IUpdatesController {
    * the application's lifecycle.
    * @param context the base context of the application, ideally a [ReactApplication]
    */
-  fun start(context: Context)
+  fun start()
 
   interface ModuleCallback<T> {
     fun onSuccess(result: T)
@@ -60,7 +59,6 @@ interface IUpdatesController {
     val embeddedUpdate: UpdateEntity?,
     val isEmergencyLaunch: Boolean,
     val isEnabled: Boolean,
-    val releaseChannel: String,
     val isUsingEmbeddedAssets: Boolean,
     val runtimeVersion: String?,
     val checkOnLaunch: UpdatesConfiguration.CheckAutomaticallyConfiguration,
@@ -75,14 +73,17 @@ interface IUpdatesController {
     val localAssetFiles: Map<AssetEntity, String>?,
 
     /**
-     * Whether there is no runtime version (or sdkVersion) provided in configuration. If it is missing,
-     * updates will be disabled and a warning will be logged.
+     * Whether the JS API methods should allow calling the native module methods and thus the methods
+     * on the controller in development. For non-expo development we want to throw
+     * at the JS layer since there isn't a controller set up. But for development within Expo Go
+     * or a Dev Client, which have their own controller/JS API implementations, we want the JS API
+     * calls to go through.
      */
-    val isMissingRuntimeVersion: Boolean,
+    val shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: Boolean
   )
-  fun getConstantsForModule(context: Context): UpdatesModuleConstants
+  fun getConstantsForModule(): UpdatesModuleConstants
 
-  fun relaunchReactApplicationForModule(context: Context, callback: ModuleCallback<Unit>)
+  fun relaunchReactApplicationForModule(callback: ModuleCallback<Unit>)
 
   fun getNativeStateMachineContext(callback: ModuleCallback<UpdatesStateContext>)
 
@@ -95,11 +96,11 @@ interface IUpdatesController {
     }
 
     class NoUpdateAvailable(val reason: LoaderTask.RemoteCheckResultNotAvailableReason) : CheckForUpdateResult(Status.NO_UPDATE_AVAILABLE)
-    class UpdateAvailable(val updateManifest: UpdateManifest) : CheckForUpdateResult(Status.UPDATE_AVAILABLE)
+    class UpdateAvailable(val update: Update) : CheckForUpdateResult(Status.UPDATE_AVAILABLE)
     class RollBackToEmbedded(val commitTime: Date) : CheckForUpdateResult(Status.ROLL_BACK_TO_EMBEDDED)
     class ErrorResult(val error: Exception, val message: String) : CheckForUpdateResult(Status.ERROR)
   }
-  fun checkForUpdate(context: Context, callback: ModuleCallback<CheckForUpdateResult>)
+  fun checkForUpdate(callback: ModuleCallback<CheckForUpdateResult>)
 
   sealed class FetchUpdateResult(private val status: Status) {
     private enum class Status {
@@ -114,7 +115,7 @@ interface IUpdatesController {
     class RollBackToEmbedded : FetchUpdateResult(Status.ROLL_BACK_TO_EMBEDDED)
     class ErrorResult(val error: Exception) : FetchUpdateResult(Status.ERROR)
   }
-  fun fetchUpdate(context: Context, callback: ModuleCallback<FetchUpdateResult>)
+  fun fetchUpdate(callback: ModuleCallback<FetchUpdateResult>)
 
   fun getExtraParams(callback: ModuleCallback<Bundle>)
 

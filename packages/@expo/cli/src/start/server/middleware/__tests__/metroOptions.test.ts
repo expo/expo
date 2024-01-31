@@ -8,6 +8,7 @@ describe(getMetroDirectBundleOptions, () => {
         mode: 'development',
         platform: 'ios',
         baseUrl: '/foo/',
+        isExporting: false,
       })
     ).toEqual({
       customResolverOptions: {},
@@ -28,6 +29,7 @@ describe(getMetroDirectBundleOptions, () => {
         mode: 'development',
         platform: 'ios',
         serializerIncludeMaps: true,
+        isExporting: false,
       })
     ).toEqual({
       sourceUrl:
@@ -35,7 +37,7 @@ describe(getMetroDirectBundleOptions, () => {
       customResolverOptions: {},
       customTransformOptions: { preserveEnvVars: false },
       serializerOptions: {
-        includeMaps: true,
+        includeSourceMaps: true,
       },
       sourceMapUrl:
         'http://localhost:8081/index.js.map?platform=ios&dev=true&hot=false&serializer.map=true',
@@ -55,6 +57,7 @@ describe(createBundleUrlPath, () => {
         mainModuleName: 'index',
         mode: 'development',
         platform: 'ios',
+        isExporting: false,
       })
     ).toEqual('/index.bundle?platform=ios&dev=true&hot=false');
   });
@@ -65,9 +68,21 @@ describe(createBundleUrlPath, () => {
         mode: 'development',
         platform: 'ios',
         baseUrl: 'https://localhost:8081/dist/',
+        isExporting: false,
       })
     ).toEqual(
       '/index.bundle?platform=ios&dev=true&hot=false&transform.baseUrl=https%3A%2F%2Flocalhost%3A8081%2Fdist%2F'
     );
+  });
+  it(`disables lazy when exporting`, () => {
+    expect(
+      createBundleUrlPath({
+        mainModuleName: 'index',
+        mode: 'development',
+        platform: 'ios',
+        lazy: true,
+        isExporting: true,
+      })
+    ).toEqual('/index.bundle?platform=ios&dev=true&hot=false');
   });
 });

@@ -38,12 +38,15 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-build-properties': [['withBuildProperties.ts', 'pluginConfig.ts']],
   'expo-calendar': ['Calendar.ts'],
   'expo-camera': ['index.ts'],
+  'expo-camera-next': ['next/index.ts', 'expo-camera'],
   'expo-cellular': ['Cellular.ts'],
   'expo-checkbox': ['Checkbox.ts'],
   'expo-clipboard': [['Clipboard.ts', 'Clipboard.types.ts']],
   'expo-constants': [['Constants.ts', 'Constants.types.ts']],
   'expo-contacts': ['Contacts.ts'],
   'expo-crypto': ['Crypto.ts'],
+  'expo-dev-menu': [['DevMenu.ts', 'ExpoDevMenu.types.ts']],
+  'expo-dev-launcher': ['DevLauncher.ts'],
   'expo-device': ['Device.ts'],
   'expo-device-motion': [['DeviceMotion.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-document-picker': ['index.ts'],
@@ -99,11 +102,6 @@ const executeCommand = async (
   entryPoint: EntryPoint = 'index.ts',
   packageName: string = jsonFileName
 ) => {
-  const app = new Application();
-
-  app.options.addReader(new TSConfigReader());
-  app.options.addReader(new TypeDocReader());
-
   const dataPath = path.join(
     EXPO_DIR,
     'docs',
@@ -130,19 +128,23 @@ const executeCommand = async (
     ? entryPoint.map((entry) => path.join(entriesPath, entry))
     : [path.join(entriesPath, entryPoint)];
 
-  app.bootstrap({
-    entryPoints,
-    tsconfig: tsConfigPath,
-    disableSources: true,
-    hideGenerator: true,
-    excludePrivate: true,
-    excludeProtected: true,
-    skipErrorChecking: true,
-    excludeExternals: true,
-    pretty: !MINIFY_JSON,
-  });
+  const app = await Application.bootstrapWithPlugins(
+    {
+      entryPoints,
+      tsconfig: tsConfigPath,
+      disableSources: true,
+      hideGenerator: true,
+      excludePrivate: true,
+      excludeProtected: true,
+      skipErrorChecking: true,
+      excludeExternals: true,
+      jsDocCompatibility: false,
+      pretty: !MINIFY_JSON,
+    },
+    [new TSConfigReader(), new TypeDocReader()]
+  );
 
-  const project = app.convert();
+  const project = await app.convert();
 
   if (project) {
     await app.generateJson(project, jsonOutputPath);
@@ -158,16 +160,18 @@ const executeCommand = async (
         .sort((a, b) => a.name.localeCompare(b.name));
     }
 
+    const { readme, symbolIdMap, ...trimmedOutput } = output;
+
     if (MINIFY_JSON) {
       const minifiedJson = recursiveOmitBy(
-        output,
+        trimmedOutput,
         ({ key, node }) =>
           ['id', 'groups', 'target', 'kindString', 'originalName'].includes(key) ||
           (key === 'flags' && !Object.keys(node).length)
       );
       await fs.writeFile(jsonOutputPath, JSON.stringify(minifiedJson, null, 0));
     } else {
-      await fs.writeFile(jsonOutputPath, JSON.stringify(output));
+      await fs.writeFile(jsonOutputPath, JSON.stringify(trimmedOutput));
     }
   } else {
     throw new Error(`💥 Failed to extract API data from source code for '${packageName}' package.`);

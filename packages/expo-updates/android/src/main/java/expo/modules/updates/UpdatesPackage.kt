@@ -17,10 +17,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-// these unused imports must stay because of versioning
-/* ktlint-disable no-unused-imports */
-/* ktlint-enable no-unused-imports */
-
 /**
  * Defines the internal and exported modules for expo-updates, as well as the auto-setup behavior in
  * applicable environments.

@@ -16,11 +16,6 @@ import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.statemachine.UpdatesStateContext
 import java.util.Date
 
-// these unused imports must stay because of versioning
-/* ktlint-disable no-unused-imports */
-
-/* ktlint-enable no-unused-imports */
-
 /**
  * Exported module which provides to the JS runtime information about the currently running update
  * and updates state, along with methods to check for and download new updates, reload with the
@@ -38,28 +33,26 @@ class UpdatesModule : Module() {
 
     Constants {
       UpdatesLogger(context).info("UpdatesModule: getConstants called", UpdatesErrorCode.None)
-
-      val constants = mutableMapOf<String, Any>()
-      try {
-        val constantsForModule = UpdatesController.instance.getConstantsForModule(context)
+      mutableMapOf<String, Any>().apply {
+        val constantsForModule = UpdatesController.instance.getConstantsForModule()
         val launchedUpdate = constantsForModule.launchedUpdate
         val embeddedUpdate = constantsForModule.embeddedUpdate
         val isEmbeddedLaunch = launchedUpdate?.id?.equals(embeddedUpdate?.id) ?: false
 
-        constants["isEmergencyLaunch"] = constantsForModule.isEmergencyLaunch
-        constants["isEmbeddedLaunch"] = isEmbeddedLaunch
-        constants["isEnabled"] = constantsForModule.isEnabled
-        constants["releaseChannel"] = constantsForModule.releaseChannel
-        constants["isUsingEmbeddedAssets"] = constantsForModule.isUsingEmbeddedAssets
-        constants["runtimeVersion"] = constantsForModule.runtimeVersion ?: ""
-        constants["checkAutomatically"] = constantsForModule.checkOnLaunch.toJSString()
-        constants["channel"] = constantsForModule.requestHeaders["expo-channel-name"] ?: ""
-        constants["nativeDebug"] = BuildConfig.EX_UPDATES_NATIVE_DEBUG
+        // keep these keys in sync with ExpoGoUpdatesModule
+        this["isEmergencyLaunch"] = constantsForModule.isEmergencyLaunch
+        this["isEmbeddedLaunch"] = isEmbeddedLaunch
+        this["isEnabled"] = constantsForModule.isEnabled
+        this["isUsingEmbeddedAssets"] = constantsForModule.isUsingEmbeddedAssets
+        this["runtimeVersion"] = constantsForModule.runtimeVersion ?: ""
+        this["checkAutomatically"] = constantsForModule.checkOnLaunch.toJSString()
+        this["channel"] = constantsForModule.requestHeaders["expo-channel-name"] ?: ""
+        this["shouldDeferToNativeForAPIMethodAvailabilityInDevelopment"] = constantsForModule.shouldDeferToNativeForAPIMethodAvailabilityInDevelopment || BuildConfig.EX_UPDATES_NATIVE_DEBUG
 
         if (launchedUpdate != null) {
-          constants["updateId"] = launchedUpdate.id.toString()
-          constants["commitTime"] = launchedUpdate.commitTime.time
-          constants["manifestString"] = launchedUpdate.manifest.toString()
+          this["updateId"] = launchedUpdate.id.toString()
+          this["commitTime"] = launchedUpdate.commitTime.time
+          this["manifestString"] = launchedUpdate.manifest.toString()
         }
         val localAssetFiles = constantsForModule.localAssetFiles
         if (localAssetFiles != null) {
@@ -69,26 +62,13 @@ class UpdatesModule : Module() {
               localAssets[asset.key!!] = localAssetFiles[asset]!!
             }
           }
-          constants["localAssets"] = localAssets
+          this["localAssets"] = localAssets
         }
-      } catch (e: Exception) {
-        // do nothing; this is expected in a development client
-        constants["isEnabled"] = false
-
-        // In a development client, we normally don't have access to the updates configuration, but
-        // we should attempt to see if the runtime/sdk versions are defined in AndroidManifest.xml
-        // and warn the developer if not. This does not take into account any extra configuration
-        // provided at runtime in MainApplication.java, because we don't have access to that in a
-        // debug build.
-        val isMissingRuntimeVersion = UpdatesConfiguration.isMissingRuntimeVersion(context, null)
-        constants["isMissingRuntimeVersion"] = isMissingRuntimeVersion
       }
-      constants
     }
 
     AsyncFunction("reload") { promise: Promise ->
       UpdatesController.instance.relaunchReactApplicationForModule(
-        context,
         object : IUpdatesController.ModuleCallback<Unit> {
           override fun onSuccess(result: Unit) {
             promise.resolve(null)
@@ -116,7 +96,6 @@ class UpdatesModule : Module() {
 
     AsyncFunction("checkForUpdateAsync") { promise: Promise ->
       UpdatesController.instance.checkForUpdate(
-        context,
         object : IUpdatesController.ModuleCallback<IUpdatesController.CheckForUpdateResult> {
           override fun onSuccess(result: IUpdatesController.CheckForUpdateResult) {
             when (result) {
@@ -148,7 +127,7 @@ class UpdatesModule : Module() {
                     putBoolean("isAvailable", true)
                     putString(
                       "manifestString",
-                      result.updateManifest.manifest.toString()
+                      result.update.manifest.toString()
                     )
                   }
                 )
@@ -165,7 +144,6 @@ class UpdatesModule : Module() {
 
     AsyncFunction("fetchUpdateAsync") { promise: Promise ->
       UpdatesController.instance.fetchUpdate(
-        context,
         object : IUpdatesController.ModuleCallback<IUpdatesController.FetchUpdateResult> {
           override fun onSuccess(result: IUpdatesController.FetchUpdateResult) {
             when (result) {
@@ -223,7 +201,8 @@ class UpdatesModule : Module() {
     AsyncFunction("setExtraParamAsync") { key: String, value: String?, promise: Promise ->
       logger.debug("Called setExtraParamAsync with key = $key, value = $value")
       UpdatesController.instance.setExtraParam(
-        key, value,
+        key,
+        value,
         object : IUpdatesController.ModuleCallback<Unit> {
           override fun onSuccess(result: Unit) {
             promise.resolve(null)

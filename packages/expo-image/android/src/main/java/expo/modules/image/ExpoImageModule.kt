@@ -18,6 +18,7 @@ import expo.modules.image.enums.ContentFit
 import expo.modules.image.enums.Priority
 import expo.modules.image.records.CachePolicy
 import expo.modules.image.records.ContentPosition
+import expo.modules.image.records.DecodeFormat
 import expo.modules.image.records.ImageTransition
 import expo.modules.image.records.SourceMap
 import expo.modules.kotlin.Promise
@@ -52,7 +53,7 @@ class ExpoImageModule : Module() {
             override fun onLoadFailed(
               e: GlideException?,
               model: Any?,
-              target: Target<Drawable>?,
+              target: Target<Drawable>,
               isFirstResource: Boolean
             ): Boolean {
               if (!failed) {
@@ -63,10 +64,10 @@ class ExpoImageModule : Module() {
             }
 
             override fun onResourceReady(
-              resource: Drawable?,
-              model: Any?,
-              target: Target<Drawable>?,
-              dataSource: DataSource?,
+              resource: Drawable,
+              model: Any,
+              target: Target<Drawable>,
+              dataSource: DataSource,
               isFirstResource: Boolean
             ): Boolean {
               imagesLoaded++
@@ -237,6 +238,10 @@ class ExpoImageModule : Module() {
 
       Prop("autoplay") { view: ExpoImageViewWrapper, autoplay: Boolean? ->
         view.autoplay = autoplay ?: true
+      }
+
+      Prop("decodeFormat") { view: ExpoImageViewWrapper, format: DecodeFormat? ->
+        view.decodeFormat = format ?: DecodeFormat.ARGB_8888
       }
 
       AsyncFunction("startAnimating") { view: ExpoImageViewWrapper ->

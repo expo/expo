@@ -6,6 +6,7 @@ import {
   CAPTURE_GROUP_REGEX,
   ARRAY_GROUP_REGEX,
   getTypedRoutesUtils,
+  TYPED_ROUTES_EXCLUSION_REGEX,
 } from '../routes';
 
 describe(`${CAPTURE_DYNAMIC_PARAMS}`, () => {
@@ -82,6 +83,48 @@ describe(`${CAPTURE_GROUP_REGEX}`, () => {
     expect([...matches[0]]).toStrictEqual(['(   group1  ', 'group1']);
     expect([...matches[1]]).toStrictEqual([', my group', 'my group']);
     expect([...matches[2]]).toStrictEqual([', my other   group  ', 'my other   group']);
+  });
+});
+
+describe(`${TYPED_ROUTES_EXCLUSION_REGEX}`, () => {
+  it('will not match standard routes', () => {
+    expect('/route.ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeNull();
+    expect('/route.js'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeNull();
+    expect('/route.jsx'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeNull();
+    expect('/route.tsx'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeNull();
+
+    expect('/folder/html.tsx'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeNull();
+    expect('/folder/api.tsx'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeNull();
+    expect('/folder/layout.tsx'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeNull();
+  });
+
+  it('will match _layout files', () => {
+    expect('_layout.ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
+    expect('/_layout.ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
+    expect('/route/_layout.ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
+  });
+
+  it('will match +html files', () => {
+    expect('+html.ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
+    expect('/+html.ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
+    expect('/route/+html.ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
+  });
+
+  it('will match API routes', () => {
+    expect('route+api.ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
+    expect('/route+api.ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
+    expect('/folder/route+api.ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
+  });
+
+  it('will match any +filename', () => {
+    expect('route+anything.ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
+    expect('/route+anything.ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
+    expect('/folder/route+anything.ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
+  });
+
+  it('will match +not+found', () => {
+    expect('+not+found.ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
+    expect('/folder/+not+found.ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
   });
 });
 

@@ -85,7 +85,7 @@ You can now run `npm run ts:check` or `yarn tsc` to type-check the project.
 
 A project's **tsconfig.json** should extend the `expo/tsconfig.base` by default. This sets the following default [compiler options](https://www.typescriptlang.org/docs/handbook/compiler-options.html) (which can be overwritten in your project's **tsconfig.json**):
 
-You can automatically generate a **tsconfig.json** file by running the command: 
+You can automatically generate a **tsconfig.json** file by running the command:
 
 <Terminal cmd={['$ npx expo customize tsconfig.json']} />
 
@@ -133,7 +133,7 @@ Consider the following when using path aliases:
 - Restart Expo CLI after changing **tsconfig.json** to update path aliases. You don't need to clear the Metro cache when the aliases change.
 - If not using TypeScript, **jsconfig.json** can serve as an alternative to **tsconfig.json**.
 - Path aliases add additional resolution time when defined.
-- Path aliases are only supported by Metro (including Metro web) and not by `@expo/webpack-config`.
+- Path aliases are only supported by Metro (including Metro web) and not by the deprecated `@expo/webpack-config` package.
 - Bare projects require additional setup for this feature. See the [versioned Metro setup guide](/versions/latest/config/metro#bare-workflow-setup) for more information.
 
 <Tabs>
@@ -188,29 +188,29 @@ In SDK 49 projects, you'll need to enable absolute imports in the project's [app
 }
 ```
 
-Absolute imports from the project root directory are enabled automatically when the project contains a **tsconfig.json** or **jsconfig.json** file. For example:
-
-```tsx
-import Button from 'src/components/Button';
-// Imports `<project root>/src/components/Button`
-```
-
-You can modify the base directory in the tsconfig.json (or jsconfig.json) using the [baseUrl](https://www.typescriptlang.org/docs/handbook/module-resolution.html#base-url) option:
+Absolute imports from the project root directory are enabled when [`compilerOptions.baseUrl`](https://www.typescriptlang.org/docs/handbook/module-resolution.html#base-url) is defined in the project's **tsconfig.json** or **jsconfig.json** file. For example:
 
 ```json tsconfig.json
 {
   "compilerOptions": {
-    "baseUrl": "src"
+    "baseUrl": "./"
   }
 }
 ```
 
+Will enable the following import:
+
+```tsx
+import Button from 'src/components/Button';
+// Imports `<compilerOptions.baseUrl>/src/components/Button`
+```
+
 Consider the following when using absolute imports:
 
-- [`compilerOptions.baseUrl`](https://www.typescriptlang.org/docs/handbook/module-resolution.html#base-url) is automatically set to `.` when the `tsconfig.json` or **jsconfig.json** file exists.
-- Absolute imports in Node modules cannot be overwritten by absolute imports, as they take precedence.
-- Restarting Expo CLI is necessary to update [`compilerOptions.baseUrl`](https://www.typescriptlang.org/docs/handbook/module-resolution.html#base-url) after modifying **the tsconfig.json**.
-- If not using TypeScript, **jsconfig.json** can serve as an alternative to **tsconfig.json**.
+- `compilerOptions.paths` are resolved relative to the `compilerOptions.baseUrl` if it is defined, otherwise they're resolved against the project root directory.
+- `compilerOptions.baseUrl` is resolved before node modules. This means if you have a file named `./path.js` in the project, it may be imported instead of a node module named `path`.
+- Restarting Expo CLI is necessary to update [`compilerOptions.baseUrl`](https://www.typescriptlang.org/docs/handbook/module-resolution.html#base-url) after modifying the **tsconfig.json**.
+- If you're not using TypeScript, **jsconfig.json** can serve as an alternative to **tsconfig.json**.
 - Absolute imports are only supported by Metro (including Metro web) and not by `@expo/webpack-config`.
 - Bare projects require additional setup for this feature. See the [versioned Metro setup guide](/versions/latest/config/metro#bare-workflow-setup) for more information.
 
@@ -275,12 +275,8 @@ module.exports = config;
 
 **app.config.ts** is supported by default. However, it doesn't support external TypeScript modules, or **tsconfig.json** customization. You can use the following approach to get a more comprehensive TypeScript setup:
 
-```js app.config.js
-require('ts-node/register');
-module.exports = require('./app.config.ts');
-```
-
 ```ts app.config.ts
+import 'ts-node/register'; // Add this to import TypeScript files
 import { ExpoConfig } from 'expo/config';
 
 // In SDK 46 and lower, use the following import instead:

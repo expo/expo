@@ -2,6 +2,8 @@
 export declare function matchDynamicName(name: string): string | undefined;
 /** Match `[...page]` -> `page` */
 export declare function matchDeepDynamicRouteName(name: string): string | undefined;
+/** Test `/` -> `page` */
+export declare function testNotFound(name: string): boolean;
 /** Match `(page)` -> `page` */
 export declare function matchGroupName(name: string): string | undefined;
 export declare function getNameFromFilePath(name: string): string;

@@ -1963,7 +1963,7 @@ it('uses nearest parent wildcard match for unmatched paths', () => {
               Baz: 'baz',
             },
           },
-          '+not-found': '*+not-found',
+          '+not-found': '*not-found',
         },
       },
     },

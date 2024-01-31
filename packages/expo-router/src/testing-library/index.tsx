@@ -13,9 +13,10 @@ import {
 } from './context-stubs';
 import { setInitialUrl } from './mocks';
 import { ExpoRoot } from '../ExpoRoot';
-import { stateCache } from '../getLinkingConfig';
+import getPathFromState from '../fork/getPathFromState';
+import { getNavigationConfig, stateCache } from '../getLinkingConfig';
+import { getExactRoutes } from '../getRoutes';
 import { store } from '../global-state/router-store';
-import { RequireContext } from '../types';
 
 // re-export everything
 export * from '@testing-library/react-native';
@@ -26,6 +27,7 @@ type RenderRouterOptions = Parameters<typeof render>[1] & {
 
 type Result = ReturnType<typeof render> & {
   getPathname(): string;
+  getPathnameWithParams(): string;
   getSegments(): string[];
   getSearchParams(): Record<string, string | string[]>;
 };
@@ -36,43 +38,48 @@ function isOverrideContext(
   return Boolean(typeof context === 'object' && 'appDir' in context);
 }
 
-export function renderRouter(context?: string, options?: RenderRouterOptions): Result;
+export type MockContextConfig =
+  | string // Pathname to a directory
+  | string[] // Array of filenames to mock as empty components, e.g () => null
+  | Record<string, FileStub> // Map of filenames and their exports
+  | {
+      // Directory to load as context
+      appDir: string;
+      // Map of filenames and their exports. Will override contents of files loaded in `appDir
+      overrides: Record<string, FileStub>;
+    };
+
+export function getMockConfig(context: MockContextConfig) {
+  return getNavigationConfig(getExactRoutes(getMockContext(context))!);
+}
+
+export function getMockContext(context: MockContextConfig) {
+  if (typeof context === 'string') {
+    return requireContext(path.resolve(process.cwd(), context));
+  } else if (Array.isArray(context)) {
+    return inMemoryContext(
+      Object.fromEntries(context.map((filename) => [filename, { default: () => null }]))
+    );
+  } else if (isOverrideContext(context)) {
+    return requireContextWithOverrides(context.appDir, context.overrides);
+  } else {
+    return inMemoryContext(context);
+  }
+}
+
 export function renderRouter(
-  context: Record<string, FileStub>,
-  options?: RenderRouterOptions
-): Result;
-export function renderRouter(
-  context: { appDir: string; overrides: Record<string, FileStub> },
-  options?: RenderRouterOptions
-): Result;
-export function renderRouter(
-  context:
-    | string
-    | { appDir: string; overrides: Record<string, FileStub> }
-    | Record<string, FileStub> = './app',
+  context: MockContextConfig = './app',
   { initialUrl = '/', ...options }: RenderRouterOptions = {}
 ): Result {
   jest.useFakeTimers();
 
-  let ctx: RequireContext;
+  const mockContext = getMockContext(context);
 
   // Reset the initial URL
-
   setInitialUrl(initialUrl);
 
   // Force the render to be synchronous
-  process.env.EXPO_ROUTER_IMPORT_MODE_WEB = 'sync';
-  process.env.EXPO_ROUTER_IMPORT_MODE_IOS = 'sync';
-  process.env.EXPO_ROUTER_IMPORT_MODE_ANDROID = 'sync';
-
-  if (typeof context === 'string') {
-    ctx = requireContext(path.resolve(process.cwd(), context));
-  } else if (isOverrideContext(context)) {
-    ctx = requireContextWithOverrides(context.appDir, context.overrides);
-  } else {
-    ctx = inMemoryContext(context);
-  }
-
+  process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
   stateCache.clear();
 
   let location: URL | undefined;
@@ -83,7 +90,7 @@ export function renderRouter(
     location = initialUrl;
   }
 
-  const result = render(<ExpoRoot context={ctx} location={location} />, {
+  const result = render(<ExpoRoot context={mockContext} location={location} />, {
     ...options,
   });
 
@@ -96,6 +103,9 @@ export function renderRouter(
     },
     getSearchParams(this: RenderResult): Record<string, string | string[]> {
       return store.routeInfoSnapshot().params;
+    },
+    getPathnameWithParams(this: RenderResult): string {
+      return getPathFromState(store.rootState!, store.linking!.config);
     },
   });
 }

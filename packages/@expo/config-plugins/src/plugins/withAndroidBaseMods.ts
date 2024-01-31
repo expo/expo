@@ -47,7 +47,7 @@ function getAndroidManifestTemplate(config: ExportedConfig) {
       android:usesCleartextTraffic="true"
     >
       <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="YOUR-APP-URL-HERE"/>
-      <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="YOUR-APP-SDK-VERSION-HERE"/>
+      <meta-data android:name="expo.modules.updates.EXPO_RUNTIME_VERSION" android:value="YOUR-APP-RUNTIME-VERSION-HERE"/>
       <activity
         android:name=".MainActivity"
         android:label="@string/app_name"
@@ -111,7 +111,15 @@ const defaultProviders = {
     },
     async write() {},
   }),
-
+  finalized: provider<unknown>({
+    getFilePath() {
+      return '';
+    },
+    async read() {
+      return { filePath: '', modResults: {} };
+    },
+    async write() {},
+  }),
   // Append a rule to supply gradle.properties data to mods on `mods.android.gradleProperties`
   manifest: provider<Manifest.AndroidManifest>({
     isIntrospective: true,

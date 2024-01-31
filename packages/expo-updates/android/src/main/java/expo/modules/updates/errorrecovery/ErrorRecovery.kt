@@ -7,6 +7,7 @@ import android.util.Log
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.bridge.DefaultJSExceptionHandler
 import com.facebook.react.bridge.ReactMarker
+import com.facebook.react.bridge.ReactMarker.MarkerListener
 import com.facebook.react.bridge.ReactMarkerConstants
 import com.facebook.react.devsupport.DisabledDevSupportManager
 import expo.modules.updates.logging.UpdatesErrorCode
@@ -61,6 +62,9 @@ class ErrorRecovery(
 
   internal fun handleContentAppeared() {
     handler.sendMessage(handler.obtainMessage(ErrorRecoveryHandler.MessageType.CONTENT_APPEARED))
+
+    unregisterContentAppearedListener()
+
     // wait 10s before unsetting error handlers; even though we won't try to relaunch if our
     // handlers are triggered after now, we still want to give the app a reasonable window of time
     // to start the WAIT_FOR_REMOTE_UPDATE task and check for a new update is there is one
@@ -70,12 +74,18 @@ class ErrorRecovery(
     handler.postDelayed({ unregisterErrorHandler() }, 10000)
   }
 
-  private fun registerContentAppearedListener() {
-    ReactMarker.addListener { name, _, _ ->
-      if (name == ReactMarkerConstants.CONTENT_APPEARED) {
-        handleContentAppeared()
-      }
+  private val contentAppearedListener = MarkerListener { name, _, _ ->
+    if (name == ReactMarkerConstants.CONTENT_APPEARED) {
+      handleContentAppeared()
     }
+  }
+
+  private fun registerContentAppearedListener() {
+    ReactMarker.addListener(contentAppearedListener)
+  }
+
+  private fun unregisterContentAppearedListener() {
+    ReactMarker.removeListener(contentAppearedListener)
   }
 
   private fun registerErrorHandler(reactInstanceManager: ReactInstanceManager) {

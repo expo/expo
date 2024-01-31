@@ -13,22 +13,15 @@ type TerminalProps = {
   cmd: string[];
   cmdCopy?: string;
   hideOverflow?: boolean;
-  includeMargin?: boolean;
   title?: string;
 };
 
-export const Terminal = ({
-  cmd,
-  cmdCopy,
-  hideOverflow,
-  includeMargin = true,
-  title = 'Terminal',
-}: TerminalProps) => (
-  <Snippet css={wrapperStyle} includeMargin={includeMargin}>
+export const Terminal = ({ cmd, cmdCopy, hideOverflow, title = 'Terminal' }: TerminalProps) => (
+  <Snippet css={wrapperStyle}>
     <SnippetHeader alwaysDark title={title} Icon={TerminalSquareIcon}>
       {renderCopyButton({ cmd, cmdCopy })}
     </SnippetHeader>
-    <SnippetContent alwaysDark hideOverflow={hideOverflow} className="grid grid-cols-auto-min-1">
+    <SnippetContent alwaysDark hideOverflow={hideOverflow} className="flex flex-col">
       {cmd.map(cmdMapper)}
     </SnippetContent>
   </Snippet>

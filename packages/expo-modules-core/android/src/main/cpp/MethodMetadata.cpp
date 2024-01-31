@@ -71,6 +71,10 @@ jni::local_ref<JavaCallback::JavaPart> createJavaCallbackFromJSIFunction(
           }
 
           jsi::Value arg = jsi::valueFromDynamic(strongWrapper2->runtime(), responses);
+          auto enhancedArg = decorateValueForDynamicExtension(strongWrapper2->runtime(), arg);
+          if (enhancedArg) {
+            arg = std::move(*enhancedArg);
+          }
           if (!isRejectCallback) {
             strongWrapper2->callback().call(
               strongWrapper2->runtime(),
@@ -308,6 +312,15 @@ jsi::Function MethodMetadata::toAsyncFunction(
       const jsi::Value *args,
       size_t count
     ) -> jsi::Value {
+      /**
+       * Halt execution during cleaning phase as modules and js context will be deallocated soon.
+       * The output of this method doesn't matter.
+       * We added that check to prevent the app from crashing when users reload their apps.
+       */
+      if (moduleRegistry->wasDeallocated) {
+        return jsi::Value::undefined();
+      }
+
       JNIEnv *env = jni::Environment::current();
 
       /**

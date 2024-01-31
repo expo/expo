@@ -5,7 +5,7 @@ import { useRouter } from 'next/compat/router';
 import { useEffect, useState, createRef } from 'react';
 
 import * as RoutesUtils from '~/common/routes';
-import * as Utilities from '~/common/utilities';
+import { isRouteActive } from '~/common/routes';
 import * as WindowUtils from '~/common/window';
 import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScrollLayout';
 import DocumentationSidebarRight, {
@@ -13,6 +13,7 @@ import DocumentationSidebarRight, {
 } from '~/components/DocumentationSidebarRight';
 import Head from '~/components/Head';
 import { usePageApiVersion } from '~/providers/page-api-version';
+import { NavigationRouteWithSection } from '~/types/common';
 import { Footer } from '~/ui/components/Footer';
 import { Header } from '~/ui/components/Header';
 import { PageTitle } from '~/ui/components/PageTitle';
@@ -41,24 +42,37 @@ type Props = React.PropsWithChildren<{
   hideFromSearch?: boolean;
 }>;
 
-const getCanonicalUrl = (path: string) => {
-  if (RoutesUtils.isReferencePath(path)) {
-    return `https://docs.expo.dev${Utilities.replaceVersionInUrl(path, 'latest')}`;
-  } else {
-    return `https://docs.expo.dev${path}`;
+function appendSectionToRoute(route?: NavigationRouteWithSection) {
+  if (route?.children) {
+    return route.children.map((entry: NavigationRouteWithSection) =>
+      route.type !== 'page'
+        ? Object.assign(entry, {
+            section: route.section ? `${route.section} - ${route.name}` : route.name,
+          })
+        : route
+    );
   }
-};
+  return route;
+}
 
-export default function DocumentationPage(props: Props) {
+export default function DocumentationPage({
+  title,
+  description,
+  packageName,
+  sourceCodeUrl,
+  iconUrl,
+  children,
+  hideFromSearch,
+  tocVisible,
+}: Props) {
+  const [isMobileMenuVisible, setMobileMenuVisible] = useState(false);
   const { version } = usePageApiVersion();
   const router = useRouter();
-  const pathname = router?.pathname ?? '/';
 
   const layoutRef = createRef<DocumentationNestedScrollLayout>();
   const sidebarRightRef = createRef<SidebarRightComponentType>();
 
-  const [isMobileMenuVisible, setMobileMenuVisible] = useState(false);
-
+  const pathname = router?.pathname ?? '/';
   const routes = RoutesUtils.getRoutes(pathname, version);
   const sidebarActiveGroup = RoutesUtils.getPageSection(pathname);
   const sidebarScrollPosition = process.browser ? window.__sidebarScroll : 0;
@@ -106,6 +120,19 @@ export default function DocumentationPage(props: Props) {
     />
   );
 
+  const flattenStructure = routes
+    .map(route => appendSectionToRoute(route))
+    .flat()
+    .map(route => (route?.type === 'page' ? route : appendSectionToRoute(route)))
+    .flat();
+
+  const pageIndex = flattenStructure.findIndex(page =>
+    isRouteActive(page, router?.asPath, router?.pathname)
+  );
+
+  const previousPage = flattenStructure[pageIndex - 1];
+  const nextPage = flattenStructure[pageIndex + 1];
+
   return (
     <DocumentationNestedScrollLayout
       ref={layoutRef}
@@ -113,15 +140,17 @@ export default function DocumentationPage(props: Props) {
       sidebar={sidebarElement}
       sidebarRight={sidebarRightElement}
       sidebarActiveGroup={sidebarActiveGroup}
-      tocVisible={props.tocVisible}
+      tocVisible={tocVisible}
       isMobileMenuVisible={isMobileMenuVisible}
       onContentScroll={handleContentScroll}
       sidebarScrollPosition={sidebarScrollPosition}>
       <Head
-        title={props.title}
-        description={props.description}
-        canonicalUrl={version !== 'unversioned' ? getCanonicalUrl(pathname) : undefined}>
-        {props.hideFromSearch !== true && (
+        title={title}
+        description={description}
+        canonicalUrl={
+          version !== 'unversioned' ? RoutesUtils.getCanonicalUrl(pathname) : undefined
+        }>
+        {hideFromSearch !== true && (
           <meta
             name="docsearch:version"
             content={RoutesUtils.isReferencePath(pathname) ? version : 'none'}
@@ -132,28 +161,28 @@ export default function DocumentationPage(props: Props) {
           RoutesUtils.isArchivePath(pathname)) && <meta name="robots" content="noindex" />}
       </Head>
       <div css={STYLES_DOCUMENT}>
-        {props.title && (
+        {title && (
           <PageTitle
-            title={props.title}
-            sourceCodeUrl={props.sourceCodeUrl}
-            packageName={props.packageName}
-            iconUrl={props.iconUrl}
+            title={title}
+            sourceCodeUrl={sourceCodeUrl}
+            packageName={packageName}
+            iconUrl={iconUrl}
           />
         )}
-        {props.description && (
+        {description && (
           <P theme="secondary" data-description="true">
-            {props.description}
+            {description}
           </P>
         )}
-        {props.title && <Separator />}
-        {props.children}
-        {props.title && (
-          <Footer
-            title={props.title}
-            sourceCodeUrl={props.sourceCodeUrl}
-            packageName={props.packageName}
-          />
-        )}
+        {title && <Separator />}
+        {children}
+        <Footer
+          title={title}
+          sourceCodeUrl={sourceCodeUrl}
+          packageName={packageName}
+          previousPage={previousPage}
+          nextPage={nextPage}
+        />
       </div>
     </DocumentationNestedScrollLayout>
   );

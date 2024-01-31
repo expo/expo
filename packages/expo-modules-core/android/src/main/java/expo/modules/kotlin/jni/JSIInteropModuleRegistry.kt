@@ -1,6 +1,7 @@
 package expo.modules.kotlin.jni
 
 import com.facebook.jni.HybridData
+import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import com.facebook.soloader.SoLoader
 import expo.modules.core.interfaces.DoNotStrip
@@ -29,6 +30,7 @@ class JSIInteropModuleRegistry(appContext: AppContext) : Destructible {
   /**
    * Initializes the `ExpoModulesHostObject` and adds it to the global object.
    */
+  @OptIn(FrameworkAPI::class)
   external fun installJSI(
     jsRuntimePointer: Long,
     jniDeallocator: JNIDeallocator,
@@ -39,7 +41,7 @@ class JSIInteropModuleRegistry(appContext: AppContext) : Destructible {
    * Initializes the test runtime. Shouldn't be used in the production.
    */
   external fun installJSIForTests(
-    jniDeallocator: JNIDeallocator,
+    jniDeallocator: JNIDeallocator
   )
 
   fun installJSIForTests() = installJSIForTests(
@@ -67,6 +69,11 @@ class JSIInteropModuleRegistry(appContext: AppContext) : Destructible {
    * Drains the JavaScript VM internal Microtask (a.k.a. event loop) queue.
    */
   external fun drainJSEventLoop()
+
+  /**
+   * Informs C++ that runtime was deallocated.
+   */
+  external fun wasDeallocated()
 
   /**
    * Returns a `JavaScriptModuleObject` that is a bridge between [expo.modules.kotlin.modules.Module]

@@ -256,7 +256,8 @@
     return;
   }
 
-  BOOL shouldTryToLaunchLastOpenedBundle = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
+  NSNumber *devClientTryToLaunchLastBundleValue = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
+  BOOL shouldTryToLaunchLastOpenedBundle = (devClientTryToLaunchLastBundleValue != nil) ? [devClientTryToLaunchLastBundleValue boolValue] : YES;
   if (_lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle) {
     [self loadApp:_lastOpenedAppUrl withProjectUrl:nil onSuccess:nil onError:^(NSError *error) {
        __weak typeof(self) weakSelf = self;
@@ -264,7 +265,7 @@
          typeof(self) self = weakSelf;
          if (!self) {
            return;
-         } 
+         }
 
          [self navigateToLauncher];
        });
@@ -311,8 +312,6 @@
   [self _removeInitModuleObserver];
   UIView *rootView = [_bridgeDelegate createRootViewWithModuleName:@"main" launchOptions:_launchOptions application:UIApplication.sharedApplication];
   _launcherBridge = _bridgeDelegate.bridge;
-
-  [self _ensureUserInterfaceStyleIsInSyncWithTraitEnv:rootView];
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(onAppContentDidAppear)
@@ -672,7 +671,6 @@
 
   NSString *appIcon = [self getAppIcon];
   NSString *runtimeVersion = [self getUpdatesConfigForKey:@"EXUpdatesRuntimeVersion"];
-  NSString *sdkVersion = [self getUpdatesConfigForKey:@"EXUpdatesSDKVersion"];
   NSString *appVersion = [self getFormattedAppVersion];
   NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleDisplayName"] ?: [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleExecutable"];
 
@@ -680,7 +678,6 @@
   [buildInfo setObject:appIcon forKey:@"appIcon"];
   [buildInfo setObject:appVersion forKey:@"appVersion"];
   [buildInfo setObject:runtimeVersion forKey:@"runtimeVersion"];
-  [buildInfo setObject:sdkVersion forKey:@"sdkVersion"];
 
   return buildInfo;
 }
@@ -752,7 +749,6 @@
   NSMutableDictionary *updatesConfig = [NSMutableDictionary new];
 
   NSString *runtimeVersion = [self getUpdatesConfigForKey:@"EXUpdatesRuntimeVersion"];
-  NSString *sdkVersion = [self getUpdatesConfigForKey:@"EXUpdatesSDKVersion"];
 
   // url structure for EASUpdates: `http://u.expo.dev/{appId}`
   // this url field is added to app.json.updates when running `eas update:configure`
@@ -768,8 +764,6 @@
   BOOL usesEASUpdates = isModernManifestProtocol && expoUpdatesInstalled && hasAppId;
 
   [updatesConfig setObject:runtimeVersion forKey:@"runtimeVersion"];
-  [updatesConfig setObject:sdkVersion forKey:@"sdkVersion"];
-
 
   if (usesEASUpdates) {
     [updatesConfig setObject:appId forKey:@"appId"];
@@ -798,6 +792,14 @@
   }
   [existingSettings removeObjectForKey:kRCTDevSettingIsDebuggingRemotely];
   [userDefaults setObject:existingSettings forKey:kRCTDevSettingsUserDefaultsKey];
+}
+
+- (void)updatesExternalInterfaceDidRequestRelaunch:(id<EXUpdatesExternalInterface> _Nonnull)updatesExternalInterface {
+  NSURL * _Nullable appUrl = self.appManifestURLWithFallback;
+  if (!appUrl) {
+    return;
+  }
+  [self loadApp:appUrl onSuccess:nil onError:nil];
 }
 
 @end

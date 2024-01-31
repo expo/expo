@@ -2,16 +2,16 @@ export default {
     get name() {
         return 'ExpoSQLiteNext';
     },
-    NativeDatabase(dbName, options) {
+    NativeDatabase(databaseName, options) {
         throw new Error('Unimplemented');
     },
     NativeStatement() {
         throw new Error('Unimplemented');
     },
-    async deleteDatabaseAsync(dbName) {
+    async deleteDatabaseAsync(databaseName) {
         throw new Error('Unimplemented');
     },
-    deleteDatabaseSync(dbName) {
+    deleteDatabaseSync(databaseName) {
         throw new Error('Unimplemented');
     },
     //#region EventEmitter implementations

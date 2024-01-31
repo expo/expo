@@ -1,5 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#import <CoreText/CoreText.h>
 #import <EXFont/EXFontLoader.h>
 #import <EXFont/EXFontLoaderProcessor.h>
 #import <ExpoModulesCore/EXFontManagerInterface.h>
@@ -54,6 +55,13 @@ EX_EXPORT_MODULE(ExpoFontLoader);
   }
 }
 
+- (NSDictionary *)constantsToExport
+{
+  return @{
+    @"customNativeFonts": [self queryCustomNativeFonts],
+  };
+}
+
 EX_EXPORT_METHOD_AS(loadAsync,
                     loadAsyncWithFontFamilyName:(NSString *)fontFamilyName
                     withLocalUri:(NSString *)path
@@ -89,6 +97,52 @@ EX_EXPORT_METHOD_AS(loadAsync,
 
   [_manager setFont:[[EXFont alloc] initWithCGFont:font] forName:fontFamilyName];
   resolve(nil);
+}
+
+#pragma mark - Internals
+
+/**
+ * Queries custom native font names from the Info.plist `UIAppFonts`.
+ */
+- (NSArray<NSString *> *)queryCustomNativeFonts {
+  #if TARGET_OS_IOS || TARGET_OS_TV
+  // [0] Read from main bundle's Info.plist
+  NSArray *fontFilePaths = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIAppFonts"];
+  NSMutableSet<NSString *> *fontFamilies = [[NSMutableSet alloc] init];
+
+  // [1] Get font family names for each font file
+  for (NSString *fontFilePath in fontFilePaths) {
+    NSURL *fontURL = [[NSBundle mainBundle] URLForResource:fontFilePath withExtension:nil];
+    if (fontURL) {
+      CFArrayRef fontDescriptors = CTFontManagerCreateFontDescriptorsFromURL((__bridge CFURLRef)fontURL);
+      if (fontDescriptors) {
+        CFIndex count = CFArrayGetCount(fontDescriptors);
+        for (CFIndex i = 0; i < count; ++i) {
+          CTFontDescriptorRef descriptor = (CTFontDescriptorRef)CFArrayGetValueAtIndex(fontDescriptors, i);
+          CFStringRef familyNameRef = (CFStringRef)CTFontDescriptorCopyAttribute(descriptor, kCTFontFamilyNameAttribute);
+          if (familyNameRef) {
+            [fontFamilies addObject:(__bridge_transfer NSString *)familyNameRef];
+          }
+        }
+        CFRelease(fontDescriptors);
+      }
+    }
+  }
+
+  // [2] Retrieve font names by family names
+  NSMutableSet<NSString *> *fontNames = [[NSMutableSet alloc] init];
+  for (NSString *familyName in fontFamilies) {
+    for (NSString *fontName in [UIFont fontNamesForFamilyName:familyName]) {
+      [fontNames addObject:fontName];
+    }
+  }
+
+  // [3] Return as array
+  return [fontNames allObjects];
+  #elif TARGET_OS_OSX
+  // TODO: Add support for `ATSApplicationFontsPath` key in Info.plist
+  return @[];
+  #endif
 }
 
 @end

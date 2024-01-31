@@ -8,7 +8,7 @@ import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.loader.FileDownloader.AssetDownloadCallback
 import expo.modules.updates.loader.FileDownloader.RemoteUpdateDownloadCallback
-import expo.modules.updates.manifest.EmbeddedManifest
+import expo.modules.updates.manifest.EmbeddedManifestUtils
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import java.io.File
@@ -44,9 +44,9 @@ class RemoteLoader internal constructor(
     configuration: UpdatesConfiguration,
     callback: RemoteUpdateDownloadCallback
   ) {
-    val embeddedUpdate = loaderFiles.readEmbeddedManifest(context, configuration)?.updateEntity
+    val embeddedUpdate = loaderFiles.readEmbeddedUpdate(context, configuration)?.updateEntity
     val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(database, configuration, launchedUpdate, embeddedUpdate)
-    mFileDownloader.downloadRemoteUpdate(configuration, extraHeaders, context, callback)
+    mFileDownloader.downloadRemoteUpdate(extraHeaders, context, callback)
   }
 
   override fun loadAsset(
@@ -56,7 +56,7 @@ class RemoteLoader internal constructor(
     configuration: UpdatesConfiguration,
     callback: AssetDownloadCallback
   ) {
-    mFileDownloader.downloadAsset(assetEntity, updatesDirectory, configuration, context, callback)
+    mFileDownloader.downloadAsset(assetEntity, updatesDirectory, context, callback)
   }
 
   companion object {
@@ -105,7 +105,7 @@ class RemoteLoader internal constructor(
         return
       }
 
-      val embeddedUpdate = EmbeddedManifest.get(context, configuration)!!.updateEntity
+      val embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, configuration)!!.updateEntity
       val manifestFilters = ManifestMetadata.getManifestFilters(database, configuration)
       if (!selectionPolicy.shouldLoadRollBackToEmbeddedDirective(updateDirective, embeddedUpdate, launchedUpdate, manifestFilters)) {
         onComplete(false)

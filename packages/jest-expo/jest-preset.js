@@ -7,6 +7,13 @@ const jestPreset = cloneDeep(require('react-native/jest-preset'));
 
 const { withTypescriptMapping } = require('./src/preset/withTypescriptMapping');
 
+// Emulate the alias behavior of Expo's Metro resolver.
+jestPreset.moduleNameMapper = {
+  ...(jestPreset.moduleNameMapper || {}),
+  '^react-native-vector-icons$': '@expo/vector-icons',
+  '^react-native-vector-icons/(.*)': '@expo/vector-icons/$1',
+};
+
 // transform
 if (!jestPreset.transform) {
   jestPreset.transform = {

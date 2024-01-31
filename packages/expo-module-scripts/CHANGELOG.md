@@ -8,7 +8,18 @@
 
 ### 🐛 Bug fixes
 
+- Use `node18` tsconfig in `expo-module-scripts` to match the dependencies. ([#26738](https://github.com/expo/expo/pull/26738)) by ([@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ### 💡 Others
+
+- Update Babel dependencies to the latest version from `7.23` releases. ([#26525](https://github.com/expo/expo/pull/26525) by [@simek](https://github.com/simek))
+
+## 3.4.0 — 2023-12-12
+
+### 🎉 New features
+
+- Add Node-specific Babel and Jest configurations. ([#25458](https://github.com/expo/expo/pull/25458) by [@byCedric](https://github.com/byCedric))
+- Add Node override in ESLint config for root configuration files. ([#25767](https://github.com/expo/expo/pull/25767) by [@byCedric](https://github.com/byCedric))
 
 ## 3.3.0 — 2023-11-14
 

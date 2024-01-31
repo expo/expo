@@ -10,11 +10,11 @@ import { requireFileContentsWithMetro } from '../getStaticRenderFunctions';
 
 const debug = require('debug')('expo:api-routes') as typeof console.log;
 
-const pendingRouteOperations = new Map<string, Promise<string | null>>();
+const pendingRouteOperations = new Map<string, Promise<{ src: string; filename: string } | null>>();
 
 export type ApiRouteOptions = {
   mode?: string;
-  appDir: string;
+  routerRoot: string;
   port?: number;
   shouldThrow?: boolean;
   baseUrl: string;
@@ -25,7 +25,7 @@ export async function bundleApiRoute(
   projectRoot: string,
   filepath: string,
   options: ApiRouteOptions
-): Promise<string | null | undefined> {
+): Promise<{ src: string; filename: string } | null | undefined> {
   if (pendingRouteOperations.has(filepath)) {
     return pendingRouteOperations.get(filepath);
   }
@@ -34,7 +34,7 @@ export async function bundleApiRoute(
 
   async function bundleAsync() {
     try {
-      debug('Bundle API route:', options.appDir, filepath);
+      debug('Bundle API route:', options.routerRoot, filepath);
 
       const middleware = await requireFileContentsWithMetro(projectRoot, devServerUrl, filepath, {
         minify: options.mode === 'production',
@@ -42,6 +42,7 @@ export async function bundleApiRoute(
         // Ensure Node.js
         environment: 'node',
         baseUrl: options.baseUrl,
+        routerRoot: options.routerRoot,
       });
 
       return middleware;
@@ -64,11 +65,6 @@ export async function bundleApiRoute(
   return route;
 }
 
-export async function rebundleApiRoute(
-  projectRoot: string,
-  filepath: string,
-  options: ApiRouteOptions
-) {
-  pendingRouteOperations.delete(filepath);
-  return bundleApiRoute(projectRoot, filepath, options);
+export async function invalidateApiRouteCache() {
+  pendingRouteOperations.clear();
 }

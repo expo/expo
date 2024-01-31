@@ -59,6 +59,7 @@ class RouterStore {
     push = routing_1.push.bind(this);
     replace = routing_1.replace.bind(this);
     setParams = routing_1.setParams.bind(this);
+    navigate = routing_1.navigate.bind(this);
     initialize(context, navigationRef, initialLocation) {
         // Clean up any previous state
         this.initialState = undefined;
@@ -69,7 +70,7 @@ class RouterStore {
         this.navigationRefSubscription?.();
         this.rootStateSubscribers.clear();
         this.storeSubscribers.clear();
-        this.routeNode = (0, getRoutes_1.getRoutes)(context);
+        this.routeNode = (0, getRoutes_1.getRoutes)(context, { ignoreEntryPoints: true });
         this.rootComponent = this.routeNode ? (0, useScreens_1.getQualifiedRouteComponent)(this.routeNode) : react_1.Fragment;
         // Only error in production, in development we will show the onboarding screen
         if (!this.routeNode && process.env.NODE_ENV === 'production') {
@@ -99,7 +100,7 @@ class RouterStore {
             };
         }
         /**
-         * Counter intuitively - this fires AFTER both React Navigations state change and the subsequent paint.
+         * Counter intuitively - this fires AFTER both React Navigation's state changes and the subsequent paint.
          * This poses a couple of issues for Expo Router,
          *   - Ensuring hooks (e.g. useSearchParams()) have data in the initial render
          *   - Reacting to state changes after a navigation event

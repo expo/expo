@@ -1,6 +1,0 @@
-extends: metric
-message: 'Try to keep the Flesch-Kincaid grade level (%s) below 7.'
-level: suggestion
-formula: |
-  (0.39 * (words / sentences)) + (11.8 * (syllables / words)) - 15.59
-condition: '> 7'

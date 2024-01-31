@@ -109,6 +109,8 @@ public:
   std::shared_ptr<JavaScriptRuntime> runtimeHolder;
   std::unique_ptr<JSReferencesCache> jsRegistry;
   jni::global_ref<JNIDeallocator::javaobject> jniDeallocator;
+
+  bool wasDeallocated = false;
 private:
   friend HybridBase;
   jni::global_ref<JSIInteropModuleRegistry::javaobject> javaPart_;
@@ -123,5 +125,7 @@ private:
   inline jni::local_ref<JavaScriptModuleObject::javaobject> callGetCoreModuleObject() const;
 
   inline bool callHasModule(const std::string &moduleName) const;
+
+  void jniWasDeallocated();
 };
 } // namespace expo

@@ -69,7 +69,7 @@ describe(renamePackageOnDiskForType, () => {
 
     // Ensure the path that will be deleted exists before we
     // delete it, this helps prevent the test from accidentally breaking.
-    const originalPath = '/android/app/src/main/java/com/helloworld/MainActivity.java';
+    const originalPath = '/android/app/src/main/java/com/helloworld/MainActivity.kt';
 
     expect(vol.toJSON()[originalPath]).toBeDefined();
     await renamePackageOnDiskForType({
@@ -80,8 +80,8 @@ describe(renamePackageOnDiskForType, () => {
 
     const results = vol.toJSON();
     // Ensure the file exists in the new location with the new package name
-    expect(results['/android/app/src/main/java/com/bacon/foobar/MainActivity.java']).toMatch(
-      /^package com.bacon.foobar;/
+    expect(results['/android/app/src/main/java/com/bacon/foobar/MainActivity.kt']).toMatch(
+      /^package com.bacon.foobar/
     );
     expect(results[originalPath]).toBeUndefined();
     // Ensure the BUCK file is rewritten
@@ -97,8 +97,8 @@ describe(renamePackageOnDiskForType, () => {
     });
 
     const results = vol.toJSON();
-    expect(results['/android/app/src/debug/java/com/bacon/foobar/ReactNativeFlipper.java']).toMatch(
-      /package com.bacon.foobar;/
+    expect(results['/android/app/src/main/java/com/bacon/foobar/MainActivity.kt']).toMatch(
+      /package com.bacon.foobar/
     );
   });
   it('does not modify imports overlapping with package name', async () => {
@@ -114,9 +114,9 @@ describe(renamePackageOnDiskForType, () => {
       packageName: 'com.f',
     });
     const initial = vol.toJSON();
-    expect(initial['/android/app/src/main/java/com/f/MainActivity.java']).toMatch(/package com.f;/);
-    expect(initial['/android/app/src/main/java/com/f/MainActivity.java']).toMatch(
-      /import com.facebook.react.ReactActivity;/
+    expect(initial['/android/app/src/main/java/com/f/MainActivity.kt']).toMatch(/package com.f/);
+    expect(initial['/android/app/src/main/java/com/f/MainActivity.kt']).toMatch(
+      /import com.facebook.react.ReactActivity/
     );
 
     // Execute it again, changing it to the desired package name
@@ -126,11 +126,11 @@ describe(renamePackageOnDiskForType, () => {
       packageName: 'dev.expo.test',
     });
     const results = vol.toJSON();
-    expect(results['/android/app/src/main/java/dev/expo/test/MainActivity.java']).toMatch(
-      /package dev.expo.test;/
+    expect(results['/android/app/src/main/java/dev/expo/test/MainActivity.kt']).toMatch(
+      /package dev.expo.test/
     );
-    expect(results['/android/app/src/main/java/dev/expo/test/MainActivity.java']).toMatch(
-      /import com.facebook.react.ReactActivity;/
+    expect(results['/android/app/src/main/java/dev/expo/test/MainActivity.kt']).toMatch(
+      /import com.facebook.react.ReactActivity/
     );
   });
 });

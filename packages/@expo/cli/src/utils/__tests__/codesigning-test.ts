@@ -1,7 +1,6 @@
 import { vol } from 'memfs';
 
 import { mockExpoRootChain, mockSelfSigned } from './fixtures/certificates';
-import { asMock } from '../../__tests__/asMock';
 import { getProjectDevelopmentCertificateAsync } from '../../api/getProjectDevelopmentCertificate';
 import { getUserAsync } from '../../api/user/user';
 import { getCodeSigningInfoAsync, signManifestString } from '../codesigning';
@@ -46,7 +45,7 @@ jest.mock('../../api/getExpoGoIntermediateCertificate', () => ({
 beforeEach(() => {
   vol.reset();
 
-  asMock(getUserAsync).mockImplementation(async () => ({
+  jest.mocked(getUserAsync).mockImplementation(async () => ({
     __typename: 'User',
     id: 'userwat',
     username: 'wat',
@@ -109,11 +108,11 @@ describe(getCodeSigningInfoAsync, () => {
           undefined
         );
 
-        asMock(getProjectDevelopmentCertificateAsync).mockImplementationOnce(
-          async (): Promise<string> => {
+        jest
+          .mocked(getProjectDevelopmentCertificateAsync)
+          .mockImplementationOnce(async (): Promise<string> => {
             throw Error('wat');
-          }
-        );
+          });
 
         const result2 = await getCodeSigningInfoAsync(
           { extra: { eas: { projectId: 'testprojectid' } } } as any,
@@ -124,11 +123,11 @@ describe(getCodeSigningInfoAsync, () => {
       });
 
       it('throws when it tried to falls back to cached when there is a network error but no cached value exists', async () => {
-        asMock(getProjectDevelopmentCertificateAsync).mockImplementationOnce(
-          async (): Promise<string> => {
+        jest
+          .mocked(getProjectDevelopmentCertificateAsync)
+          .mockImplementationOnce(async (): Promise<string> => {
             throw Error('wat');
-          }
-        );
+          });
 
         await expect(
           getCodeSigningInfoAsync(

@@ -12,17 +12,6 @@ function expoInlineEnvVars(api) {
         visitor: {
             MemberExpression(path, state) {
                 const filename = state.filename;
-                // If the filename is not defined, skip to prevent a node module from intercepting
-                // environment variables.
-                if (!filename) {
-                    debug('No filename found in state, skipping to be safe:', state.file.opts);
-                    return;
-                }
-                // Do nothing in node modules
-                // Skip node_modules, the feature is a bit too sensitive to allow in arbitrary code.
-                if (/node_modules/.test(filename)) {
-                    return;
-                }
                 if (path.get('object').matchesPattern('process.env')) {
                     // @ts-expect-error: missing types
                     const key = path.toComputedKey();

@@ -46,7 +46,8 @@ class NavigationBarModule : Module() {
 
     AsyncFunction("setButtonStyleAsync") { buttonStyle: String, promise: Promise ->
       NavigationBar.setButtonStyle(
-        activity, buttonStyle,
+        activity,
+        buttonStyle,
         {
           promise.resolve(null)
         },

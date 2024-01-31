@@ -60,9 +60,8 @@ export type ActionCrop = {
 };
 export type ActionExtent = {
     /**
-     * **Set the image size and offset**
-     *
-     * If the image is enlarged, unfilled areas are set to the `backgroundColor`. To position the image, use `originX` and `originY`.
+     * Set the image size and offset. If the image is enlarged, unfilled areas are set to the `backgroundColor`.
+     * To position the image, use `originX` and `originY`.
      *
      * @platform web
      */

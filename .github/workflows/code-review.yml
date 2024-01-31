@@ -6,7 +6,7 @@ on:
       pullNumber:
         description: 'Number of the pull request to review'
         required: true
-  pull_request:
+  pull_request_target:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.inputs.pullNumber || github.event.number }}
@@ -18,7 +18,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: ♻️ Restore caches
@@ -36,7 +36,7 @@ jobs:
       #     swift build -c release
       #     cp .build/release/swiftlint /usr/local/bin/
       # - name: 📦 Make an artifact
-      #   uses: actions/upload-artifact@v2
+      #   uses: actions/upload-artifact@v3
       #   with:
       #     name: swiftlint
       #     path: SwiftLint/.build

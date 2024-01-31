@@ -10,8 +10,11 @@ rescue
 end
 reactNativeTargetVersion = reactNativeVersion.split('.')[1].to_i
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
+folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -Wno-comma -Wno-shorten-64-to-32'
 compiler_flags = folly_compiler_flags + ' ' + "-DREACT_NATIVE_TARGET_VERSION=#{reactNativeTargetVersion}"
+if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
+  compiler_flags += ' -DUSE_HERMES'
+end
 
 Pod::Spec.new do |s|
   s.name           = 'expo-dev-menu'
@@ -55,7 +58,7 @@ Pod::Spec.new do |s|
   end
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
-    'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
+    'CLANG_CXX_LANGUAGE_STANDARD' => 'c++20',
     'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
   }
   unless defined?(install_modules_dependencies)

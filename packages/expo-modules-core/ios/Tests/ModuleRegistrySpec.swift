@@ -3,7 +3,7 @@ import ExpoModulesTestCore
 @testable import ExpoModulesCore
 
 class ModuleRegistrySpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
     let appContext = AppContext()
 
     it("registers unnamed module") {

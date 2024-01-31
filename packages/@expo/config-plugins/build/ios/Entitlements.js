@@ -57,8 +57,7 @@ function _iosPlugins() {
   return data;
 }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-const withAssociatedDomains = (0, _iosPlugins().createEntitlementsPlugin)(setAssociatedDomains, 'withAssociatedDomains');
-exports.withAssociatedDomains = withAssociatedDomains;
+const withAssociatedDomains = exports.withAssociatedDomains = (0, _iosPlugins().createEntitlementsPlugin)(setAssociatedDomains, 'withAssociatedDomains');
 function setAssociatedDomains(config, {
   'com.apple.developer.associated-domains': _,
   ...entitlementsPlist
@@ -89,7 +88,7 @@ function getEntitlementsPath(projectRoot, {
 }
 function getEntitlementsPathFromBuildConfiguration(projectRoot, xcBuildConfiguration) {
   var _xcBuildConfiguration;
-  const entitlementsPathRaw = xcBuildConfiguration === null || xcBuildConfiguration === void 0 ? void 0 : (_xcBuildConfiguration = xcBuildConfiguration.buildSettings) === null || _xcBuildConfiguration === void 0 ? void 0 : _xcBuildConfiguration.CODE_SIGN_ENTITLEMENTS;
+  const entitlementsPathRaw = xcBuildConfiguration === null || xcBuildConfiguration === void 0 || (_xcBuildConfiguration = xcBuildConfiguration.buildSettings) === null || _xcBuildConfiguration === void 0 ? void 0 : _xcBuildConfiguration.CODE_SIGN_ENTITLEMENTS;
   if (entitlementsPathRaw) {
     return _path().default.normalize(_path().default.join(projectRoot, 'ios', (0, _string().trimQuotes)(entitlementsPathRaw)));
   } else {

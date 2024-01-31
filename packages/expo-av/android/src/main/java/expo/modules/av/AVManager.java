@@ -20,6 +20,7 @@ import com.facebook.jni.HybridData;
 
 import expo.modules.core.ModuleRegistry;
 import expo.modules.core.Promise;
+import expo.modules.core.arguments.MapArguments;
 import expo.modules.core.arguments.ReadableArguments;
 import expo.modules.core.interfaces.DoNotStrip;
 import expo.modules.core.interfaces.InternalModule;
@@ -48,6 +49,7 @@ import expo.modules.interfaces.permissions.Permissions;
 import expo.modules.interfaces.permissions.PermissionsResponseListener;
 
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
 
 import static android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED;
@@ -669,7 +671,8 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
     removeAudioRecorder();
 
-    final ReadableArguments androidOptions = options.getArguments(RECORDING_OPTIONS_KEY);
+    final ReadableNativeMap androidMap = (ReadableNativeMap) options.get(RECORDING_OPTIONS_KEY);
+    final ReadableArguments androidOptions = new MapArguments(androidMap.toHashMap());
 
     final String filename = "recording-" + UUID.randomUUID().toString()
       + androidOptions.getString(RECORDING_OPTION_EXTENSION_KEY);

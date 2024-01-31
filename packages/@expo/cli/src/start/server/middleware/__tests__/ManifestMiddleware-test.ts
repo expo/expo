@@ -1,7 +1,6 @@
 import { getConfig } from '@expo/config';
 import { vol } from 'memfs';
 
-import { asMock } from '../../../../__tests__/asMock';
 import * as Log from '../../../../log';
 import * as ProjectDevices from '../../../project/devices';
 import { getPlatformBundlers } from '../../platformBundlers';
@@ -64,11 +63,24 @@ describe('checkBrowserRequestAsync', () => {
     jest.fn(({ scheme, hostname }) => `${scheme}://${hostname ?? 'localhost'}:8080`);
 
   it('handles browser requests when the web bundler is "metro" and no platform is specified', async () => {
-    asMock(getPlatformBundlers).mockReturnValueOnce({
+    jest.mocked(getPlatformBundlers).mockReturnValueOnce({
       web: 'metro',
       ios: 'metro',
       android: 'metro',
     });
+
+    jest.mocked(getConfig).mockReturnValueOnce(
+      // @ts-expect-error
+      {
+        pkg: {},
+        exp: {
+          sdkVersion: '45.0.0',
+          name: 'my-app',
+          slug: 'my-app',
+          platforms: ['ios', 'android', 'web'],
+        },
+      }
+    );
 
     const middleware = new MockManifestMiddleware('/', {
       constructUrl: createConstructUrl(),
@@ -88,12 +100,17 @@ describe('checkBrowserRequestAsync', () => {
     ).toBe(true);
 
     expect(createTemplateHtmlFromExpoConfigAsync).toHaveBeenCalledWith('/', {
-      exp: { name: 'my-app', sdkVersion: '45.0.0', slug: 'my-app' },
+      exp: {
+        name: 'my-app',
+        sdkVersion: '45.0.0',
+        slug: 'my-app',
+        platforms: ['ios', 'android', 'web'],
+      },
       scripts: [
         // NOTE(EvanBacon): Browsers won't pass the `expo-platform` header so we need to
         // provide the `platform=web` query parameter in order for the multi-platform dev server
         // to return the correct bundle.
-        '/index.bundle?platform=web&dev=true&hot=false&transform.engine=hermes',
+        '/index.bundle?platform=web&dev=true&hot=false&transform.engine=hermes&transform.routerRoot=app',
       ],
     });
     expect(res.setHeader).toBeCalledWith('Content-Type', 'text/html');
@@ -101,7 +118,7 @@ describe('checkBrowserRequestAsync', () => {
   });
 
   it('skips handling browser requests when the web bundler is "webpack"', async () => {
-    asMock(getPlatformBundlers).mockReturnValueOnce({
+    jest.mocked(getPlatformBundlers).mockReturnValueOnce({
       web: 'webpack',
       ios: 'metro',
       android: 'metro',
@@ -188,7 +205,7 @@ describe('_getBundleUrl', () => {
         platform: 'ios',
       })
     ).toEqual(
-      'http://localhost:8080/node_modules/expo/AppEntry.bundle?platform=ios&dev=false&hot=false&minify=true'
+      'http://localhost:8080/node_modules/expo/AppEntry.bundle?platform=ios&dev=false&hot=false&lazy=true&minify=true'
     );
 
     expect(constructUrl).toHaveBeenCalledWith({ hostname: undefined, scheme: 'http' });
@@ -202,7 +219,7 @@ describe('_resolveProjectSettingsAsync', () => {
       mode: 'development',
     });
 
-    asMock(getConfig).mockClear();
+    jest.mocked(getConfig).mockClear();
 
     middleware._getBundleUrl = jest.fn(() => 'http://fake.mock/index.bundle');
 
@@ -233,7 +250,7 @@ describe('_resolveProjectSettingsAsync', () => {
       mode: 'production',
     });
 
-    asMock(getConfig).mockClear();
+    jest.mocked(getConfig).mockClear();
 
     middleware._getBundleUrl = jest.fn(() => 'http://fake.mock/index.bundle');
 

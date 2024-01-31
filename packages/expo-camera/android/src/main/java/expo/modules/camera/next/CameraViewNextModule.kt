@@ -2,10 +2,11 @@ package expo.modules.camera.next
 
 import android.Manifest
 import android.util.Log
-import expo.modules.camera.next.records.BarCodeSettings
+import expo.modules.camera.next.records.BarcodeSettings
 import expo.modules.camera.next.records.CameraMode
 import expo.modules.camera.next.records.CameraType
 import expo.modules.camera.next.records.FlashMode
+import expo.modules.camera.next.records.VideoQuality
 import expo.modules.camera.next.tasks.ResolveTakenPicture
 import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.core.utilities.EmulatorUtilities
@@ -24,7 +25,7 @@ import java.io.File
 val cameraEvents = arrayOf(
   "onCameraReady",
   "onMountError",
-  "onBarCodeScanned",
+  "onBarcodeScanned",
   "onFacesDetected",
   "onFaceDetectionError",
   "onPictureSaved"
@@ -80,8 +81,8 @@ class CameraViewNextModule : Module() {
     View(ExpoCameraView::class) {
       Events(cameraEvents)
 
-      Prop("type") { view, type: CameraType ->
-        view.lenFacing = type
+      Prop("facing") { view, facing: CameraType ->
+        view.lenFacing = facing
       }
 
       Prop("flashMode") { view, flashMode: FlashMode ->
@@ -104,15 +105,23 @@ class CameraViewNextModule : Module() {
         view.mute = muted ?: false
       }
 
-      Prop("barCodeScannerSettings") { view, settings: BarCodeSettings? ->
+      Prop("videoQuality") { view, quality: VideoQuality? ->
+        if (quality != null) {
+          view.videoQuality = quality
+        } else {
+          view.videoQuality = VideoQuality.VIDEO1080P
+        }
+      }
+
+      Prop("barcodeScannerSettings") { view, settings: BarcodeSettings? ->
         if (settings == null) {
           return@Prop
         }
         view.setBarCodeScannerSettings(settings)
       }
 
-      Prop("barCodeScannerEnabled") { view, barCodeScannerEnabled: Boolean? ->
-        view.setShouldScanBarCodes(barCodeScannerEnabled ?: false)
+      Prop("barcodeScannerEnabled") { view, barCodeScannerEnabled: Boolean? ->
+        view.setShouldScanBarcodes(barCodeScannerEnabled ?: false)
       }
 
       AsyncFunction("takePicture") { view: ExpoCameraView, options: PictureOptions, promise: Promise ->

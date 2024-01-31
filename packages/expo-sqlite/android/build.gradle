@@ -1,10 +1,12 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 apply plugin: 'de.undercouch.download'
 
 group = 'host.exp.exponent'
-version = '12.2.0'
+version = '13.1.0'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 if (expoModulesCorePlugin.exists()) {
@@ -15,6 +17,14 @@ if (expoModulesCorePlugin.exists()) {
     useExpoPublishing()
     useCoreDependencies()
   }
+}
+
+String toPlatformIndependentPath(File path) {
+  def result = path.toString()
+  if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+    result = result.replace(File.separatorChar, '/' as char)
+  }
+  return result
 }
 
 def SQLITE_VERSION = '3420000'
@@ -106,13 +116,13 @@ android {
   namespace "expo.modules.sqlite"
   defaultConfig {
     versionCode 18
-    versionName "12.2.0"
+    versionName "13.1.0"
 
     externalNativeBuild {
       cmake {
         abiFilters (*reactNativeArchitectures())
         arguments "-DANDROID_STL=c++_shared",
-          "-DSQLITE3_SRC_DIR=${SQLITE3_SRC_DIR}"
+          "-DSQLITE3_SRC_DIR=${toPlatformIndependentPath(SQLITE3_SRC_DIR)}"
       }
     }
   }

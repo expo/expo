@@ -1,5 +1,5 @@
 import { PermissionResponse, PermissionStatus, UnavailabilityError, uuid } from 'expo-modules-core';
-import { Platform, Share } from 'react-native';
+import { Platform, Share, type ShareOptions } from 'react-native';
 
 import ExpoContacts from './ExpoContacts';
 
@@ -88,7 +88,7 @@ export type PhoneNumber = {
   digits?: string;
   /**
    * Country code.
-   * @example `+1`
+   * @example `us`
    */
   countryCode?: string;
   /**
@@ -223,7 +223,7 @@ export type UrlAddress = {
  */
 export type Image = {
   /**
-   * A **local image URI**.
+   * A local image URI.
    * > **Note**: If you have a remote URI, download it first using  [`FileSystem.downloadAsync`](/versions/latest/sdk/filesystem/#filesystemdownloadasyncuri-fileuri-options).
    */
   uri?: string;
@@ -387,7 +387,7 @@ export type ContactResponse = {
    */
   hasNextPage: boolean;
   /**
-   * This will be `true if there are previous contacts that weren't retrieved due to `pageOffset` limit.
+   * This will be `true` if there are previous contacts that weren't retrieved due to `pageOffset` limit.
    */
   hasPreviousPage: boolean;
 };
@@ -558,10 +558,11 @@ export async function isAvailableAsync(): Promise<boolean> {
   return !!ExpoContacts.getContactsAsync;
 }
 
+// @docsMissing
 export async function shareContactAsync(
   contactId: string,
   message: string,
-  shareOptions: object = {}
+  shareOptions: ShareOptions = {}
 ): Promise<any> {
   if (Platform.OS === 'ios') {
     const url = await writeContactToFileAsync({
@@ -811,7 +812,7 @@ export async function addExistingGroupToContainerAsync(
 }
 
 /**
- * Create a group with a name, and add it to a container. If the container is undefined, the default container will be targeted.
+ * Create a group with a name, and add it to a container. If the container is `undefined`, the default container will be targeted.
  * @param name Name of the new group.
  * @param containerId The container you to add membership to.
  * @return A promise that fulfills with ID of the new group.

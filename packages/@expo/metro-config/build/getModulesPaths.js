@@ -1,58 +1,41 @@
 "use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.getModulesPaths = getModulesPaths;
-exports.getServerRoot = getServerRoot;
-exports.getWorkspaceRoot = getWorkspaceRoot;
-function _findYarnWorkspaceRoot() {
-  const data = _interopRequireDefault(require("find-yarn-workspace-root"));
-  _findYarnWorkspaceRoot = function () {
-    return data;
-  };
-  return data;
-}
-function _path() {
-  const data = _interopRequireDefault(require("path"));
-  _path = function () {
-    return data;
-  };
-  return data;
-}
-function _env() {
-  const data = require("./env");
-  _env = function () {
-    return data;
-  };
-  return data;
-}
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getServerRoot = exports.getModulesPaths = exports.getWorkspaceRoot = void 0;
+const find_yarn_workspace_root_1 = __importDefault(require("find-yarn-workspace-root"));
+const path_1 = __importDefault(require("path"));
+const env_1 = require("./env");
 /** Wraps `findWorkspaceRoot` and guards against having an empty `package.json` file in an upper directory. */
 function getWorkspaceRoot(projectRoot) {
-  try {
-    return (0, _findYarnWorkspaceRoot().default)(projectRoot);
-  } catch (error) {
-    if (error.message.includes('Unexpected end of JSON input')) {
-      return null;
+    try {
+        return (0, find_yarn_workspace_root_1.default)(projectRoot);
     }
-    throw error;
-  }
+    catch (error) {
+        if (error.message.includes('Unexpected end of JSON input')) {
+            return null;
+        }
+        throw error;
+    }
 }
+exports.getWorkspaceRoot = getWorkspaceRoot;
 function getModulesPaths(projectRoot) {
-  const paths = [];
-
-  // Only add the project root if it's not the current working directory
-  // this minimizes the chance of Metro resolver breaking on new Node.js versions.
-  const workspaceRoot = getWorkspaceRoot(_path().default.resolve(projectRoot)); // Absolute path or null
-  if (workspaceRoot) {
-    paths.push(_path().default.resolve(projectRoot));
-    paths.push(_path().default.resolve(workspaceRoot, 'node_modules'));
-  }
-  return paths;
+    const paths = [];
+    // Only add the project root if it's not the current working directory
+    // this minimizes the chance of Metro resolver breaking on new Node.js versions.
+    const workspaceRoot = getWorkspaceRoot(path_1.default.resolve(projectRoot)); // Absolute path or null
+    if (workspaceRoot) {
+        paths.push(path_1.default.resolve(projectRoot, 'node_modules'));
+        paths.push(path_1.default.resolve(workspaceRoot, 'node_modules'));
+    }
+    return paths;
 }
+exports.getModulesPaths = getModulesPaths;
 function getServerRoot(projectRoot) {
-  var _getWorkspaceRoot;
-  return _env().env.EXPO_USE_METRO_WORKSPACE_ROOT ? (_getWorkspaceRoot = getWorkspaceRoot(projectRoot)) !== null && _getWorkspaceRoot !== void 0 ? _getWorkspaceRoot : projectRoot : projectRoot;
+    return env_1.env.EXPO_USE_METRO_WORKSPACE_ROOT
+        ? getWorkspaceRoot(projectRoot) ?? projectRoot
+        : projectRoot;
 }
+exports.getServerRoot = getServerRoot;
 //# sourceMappingURL=getModulesPaths.js.map

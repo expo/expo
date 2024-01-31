@@ -10,10 +10,10 @@ let _preventAutoHideAsyncInvoked = false;
  *
  * @private
  */
-export const _internal_preventAutoHideAsync = () => {
+export async function _internal_preventAutoHideAsync() {
     // Memoize, this should only be called once.
     if (_preventAutoHideAsyncInvoked) {
-        return;
+        return false;
     }
     _preventAutoHideAsyncInvoked = true;
     // Append error handling to ensure any uncaught exceptions result in the splash screen being hidden.
@@ -25,8 +25,8 @@ export const _internal_preventAutoHideAsync = () => {
             originalHandler(error, isFatal);
         });
     }
-    SplashModule.preventAutoHideAsync();
-};
+    return SplashModule.preventAutoHideAsync();
+}
 /**
  * Used for Expo libraries to attempt hiding the splash screen after they've completed their work.
  * If the user has explicitly opted into preventing the splash screen from hiding, we should not
@@ -58,6 +58,6 @@ export const preventAutoHideAsync = () => {
     // Indicate that the user is controlling the auto hide behavior.
     _userControlledAutoHideEnabled = true;
     // Prevent as usual...
-    _internal_preventAutoHideAsync();
+    return _internal_preventAutoHideAsync();
 };
 //# sourceMappingURL=index.native.js.map

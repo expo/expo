@@ -15,6 +15,8 @@ const { BarCodeType, Type } = ExpoBarCodeScannerModule;
 
 const EVENT_THROTTLE_MS = 500;
 
+let warnedAboutDeprecation = false;
+
 // @needsAudit
 /**
  * Those coordinates are represented in the coordinate space of the barcode source (e.g. when you
@@ -127,6 +129,10 @@ export type BarCodeScannerProps = ViewProps & {
   onBarCodeScanned?: BarCodeScannedCallback;
 };
 
+/**
+ * @deprecated
+ * BarCodeScanner has been deprecated and will be removed in a future SDK version. Plesae use `expo-camera` instead. see [barcode-scanner-to-expo-camera](https://expo.fyi/barcode-scanner-to-expo-camera) for more details on how to migrate.
+ */
 export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
   lastEvents: { [key: string]: any } = {};
   lastEventsTimes: { [key: string]: any } = {};
@@ -144,6 +150,15 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
     type: Type.back,
     barCodeTypes: Object.values(BarCodeType),
   };
+
+  componentDidMount(): void {
+    if (!warnedAboutDeprecation) {
+      console.warn(
+        'BarCodeScanner has been deprecated and will be removed in a future SDK version. Please use `expo-camera` instead. See https://expo.fyi/barcode-scanner-to-expo-camera for more details on how to migrate'
+      );
+      warnedAboutDeprecation = true;
+    }
+  }
 
   // @needsAudit
   /**

@@ -4,7 +4,7 @@ import * as Updates from 'expo-updates';
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-require('./test.png');
+require('./includedAssets/test.png');
 // eslint-disable-next-line no-unused-expressions
 Inter_900Black;
 
@@ -31,9 +31,15 @@ function TestButton(props: { testID: string; onPress: () => void }) {
 }
 
 export default function App() {
+  const [isReloading, setIsReloading] = React.useState(false);
+  const [startTime, setStartTime] = React.useState<number | null>(null);
   const [jsAPIDidThrowError, setJSAPIDidThrowError] = React.useState(false);
 
   const { currentlyRunning, availableUpdate } = Updates.useUpdates();
+
+  React.useEffect(() => {
+    setStartTime(Date.now());
+  }, []);
 
   const handleCallJSAPI = async () => {
     try {
@@ -41,6 +47,19 @@ export default function App() {
     } catch (e) {
       setJSAPIDidThrowError(true);
     }
+  };
+
+  const handleReload = async () => {
+    setIsReloading(true);
+    // this is done after a timeout so that the button press finishes for detox
+    setTimeout(async () => {
+      try {
+        await Updates.reloadAsync();
+        setIsReloading(false);
+      } catch (e) {
+        console.warn(e);
+      }
+    }, 2000);
   };
 
   return (
@@ -51,11 +70,14 @@ export default function App() {
       <TestValue testID="checkAutomatically" value={`${Updates.checkAutomatically}`} />
       <TestValue testID="isEmbeddedLaunch" value={`${currentlyRunning.isEmbeddedLaunch}`} />
       <TestValue testID="availableUpdateID" value={`${availableUpdate?.updateId}`} />
+      <TestValue testID="isReloading" value={`${isReloading}`} />
+      <TestValue testID="startTime" value={`${startTime}`} />
 
       <TestValue testID="lastJSAPIErrorMessage" value={`${jsAPIDidThrowError}`} />
       <View style={{ flexDirection: 'row' }}>
         <View>
           <TestButton testID="callJSAPI" onPress={handleCallJSAPI} />
+          <TestButton testID="reload" onPress={handleReload} />
         </View>
       </View>
 

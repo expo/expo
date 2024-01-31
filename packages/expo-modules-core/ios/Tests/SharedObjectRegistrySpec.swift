@@ -5,7 +5,7 @@ import ExpoModulesTestCore
 @testable import ExpoModulesCore
 
 final class SharedObjectRegistrySpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
     let appContext = AppContext.create()
     let runtime = try! appContext.runtime
 
@@ -68,7 +68,7 @@ final class SharedObjectRegistrySpec: ExpoSpec {
         let nativeObject = TestSharedObject()
         let id = SharedObjectRegistry.add(native: nativeObject, javaScript: runtime.createObject())
         SharedObjectRegistry.delete(id)
-        expect(nativeObject.sharedObjectId) == 0
+        expect(nativeObject.sharedObjectId).toEventually(equal(0))
       }
     }
 

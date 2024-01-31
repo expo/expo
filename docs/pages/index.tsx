@@ -8,7 +8,6 @@ import {
   DiscordIcon,
   GithubIcon,
   Image03DuotoneIcon,
-  Mail01Icon,
   NotificationMessageDuotoneIcon,
   RedditIcon,
   XLogoIcon,
@@ -17,7 +16,7 @@ import type { PropsWithChildren } from 'react';
 import { Row, ScreenClassProvider } from 'react-grid-system';
 
 import DocumentationPage from '~/components/DocumentationPage';
-import TALKS from '~/public/static/talks';
+import { TALKS } from '~/public/static/talks';
 import { AppJSBanner } from '~/ui/components/AppJSBanner';
 import {
   CellContainer,
@@ -72,7 +71,7 @@ const Home = () => {
                 <RawH2>
                   <QuickStartIcon /> Quick Start
                 </RawH2>
-                <Terminal includeMargin={false} cmd={['$ npx create-expo-app my-app']} />
+                <Terminal cmd={['$ npx create-expo-app my-app']} />
               </div>
             </GridCell>
             <GridCell
@@ -213,22 +212,22 @@ const Home = () => {
             <APIGridCell
               title="Image"
               link="/versions/latest/sdk/image/"
-              icon={<Image03DuotoneIcon className="h-16 w-16" />}
+              icon={<Image03DuotoneIcon className="size-16" />}
             />
             <APIGridCell
               title="Camera"
               link="/versions/latest/sdk/camera"
-              icon={<CameraPlusDuotoneIcon className="h-16 w-16" />}
+              icon={<CameraPlusDuotoneIcon className="size-16" />}
             />
             <APIGridCell
               title="Notifications"
               link="/versions/latest/sdk/notifications"
-              icon={<NotificationMessageDuotoneIcon className="h-16 w-16" />}
+              icon={<NotificationMessageDuotoneIcon className="size-16" />}
             />
             <APIGridCell
               title="View all APIs"
               link="/versions/latest/"
-              icon={<DocsLogo className="h-16 w-16" />}
+              icon={<DocsLogo className="size-16" />}
             />
           </Row>
         </CellContainer>
@@ -290,14 +289,6 @@ export function JoinTheCommunity() {
             icon={<XLogoIcon className="icon-lg text-palette-white" />}
             iconBackground="#000000"
           />
-          <CommunityGridCell
-            title="Newsletter"
-            description="Get the latest updates from monthly Expo newsletter."
-            link="https://expo.dev/mailing-list/signup"
-            icon={<Mail01Icon className="icon-lg text-palette-white" />}
-          />
-        </Row>
-        <Row>
           <CommunityGridCell
             title="Reddit"
             description="Get the latest on r/expo."

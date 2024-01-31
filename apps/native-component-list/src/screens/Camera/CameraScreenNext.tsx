@@ -1,15 +1,15 @@
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
-import * as BarCodeScanner from 'expo-barcode-scanner';
 import {
-  BarCodePoint,
-  BarCodeScanningResult,
-  Camera,
+  BarcodePoint,
+  BarcodeScanningResult,
+  CameraView,
   CameraCapturedPicture,
   CameraMode,
   CameraType,
   FlashMode,
   PermissionStatus,
+  Camera,
 } from 'expo-camera/next';
 import * as FileSystem from 'expo-file-system';
 import React from 'react';
@@ -40,11 +40,11 @@ const photos: CameraCapturedPicture[] = [];
 interface State {
   flash: FlashMode;
   zoom: number;
-  type: CameraType;
+  facing: CameraType;
   barcodeScanning: boolean;
   mute: boolean;
   torchEnabled: boolean;
-  cornerPoints?: BarCodePoint[];
+  cornerPoints?: BarcodePoint[];
   barcodeData: string;
   newPhotos: boolean;
   permissionsGranted: boolean;
@@ -59,7 +59,7 @@ export default class CameraScreen extends React.Component<object, State> {
   readonly state: State = {
     flash: 'off',
     zoom: 0,
-    type: 'back',
+    facing: 'back',
     barcodeScanning: false,
     torchEnabled: false,
     cornerPoints: undefined,
@@ -73,7 +73,7 @@ export default class CameraScreen extends React.Component<object, State> {
     recording: false,
   };
 
-  camera?: Camera;
+  camera?: CameraView;
 
   componentDidMount() {
     if (Platform.OS !== 'web') {
@@ -99,7 +99,7 @@ export default class CameraScreen extends React.Component<object, State> {
 
   toggleFacing = () =>
     this.setState((state) => ({
-      type: state.type === 'back' ? 'front' : 'back',
+      facing: state.facing === 'back' ? 'front' : 'back',
     }));
 
   toggleFlash = () => this.setState((state) => ({ flash: flashModeOrder[state.flash] }));
@@ -161,7 +161,7 @@ export default class CameraScreen extends React.Component<object, State> {
     this.setState({ newPhotos: true });
   };
 
-  onBarCodeScanned = (code: BarCodeScanningResult) => {
+  onBarcodeScanned = (code: BarcodeScanningResult) => {
     console.log('Found: ', code);
     this.setState(() => ({
       barcodeData: code.data,
@@ -233,7 +233,7 @@ export default class CameraScreen extends React.Component<object, State> {
             <MaterialCommunityIcons name="stop-circle" size={64} color="red" />
           ) : (
             <Ionicons
-              name="ios-radio-button-on"
+              name="radio-button-on"
               size={64}
               color={this.state.mode === 'picture' ? 'white' : 'red'}
             />
@@ -265,7 +265,7 @@ export default class CameraScreen extends React.Component<object, State> {
   );
 
   renderBarCode = () => {
-    const origin: BarCodePoint | undefined = this.state.cornerPoints
+    const origin: BarcodePoint | undefined = this.state.cornerPoints
       ? this.state.cornerPoints[0]
       : undefined;
     return (
@@ -287,29 +287,27 @@ export default class CameraScreen extends React.Component<object, State> {
 
   renderCamera = () => (
     <View style={{ flex: 1 }}>
-      <Camera
+      <CameraView
         ref={(ref) => (this.camera = ref!)}
         style={styles.camera}
         onCameraReady={() => {
           console.log('ready');
         }}
         enableTorch={this.state.torchEnabled}
-        type={this.state.type}
-        flashMode={this.state.flash}
+        facing={this.state.facing}
+        flash={this.state.flash}
         mode={this.state.mode}
         mute={this.state.mute}
         zoom={this.state.zoom}
+        videoQuality="2160p"
         onMountError={this.handleMountError}
-        barCodeScannerSettings={{
-          barCodeTypes: [
-            BarCodeScanner.Constants.BarCodeType.qr,
-            BarCodeScanner.Constants.BarCodeType.pdf417,
-          ],
+        barcodeScannerSettings={{
+          barCodeTypes: ['qr', 'pdf417'],
         }}
-        onBarCodeScanned={this.state.barcodeScanning ? this.onBarCodeScanned : undefined}>
+        onBarcodeScanned={this.state.barcodeScanning ? this.onBarcodeScanned : undefined}>
         {this.renderTopBar()}
         {this.renderBottomBar()}
-      </Camera>
+      </CameraView>
       {this.state.barcodeScanning && this.renderBarCode()}
       {this.state.showMoreOptions && this.renderMoreOptions()}
     </View>

@@ -1,7 +1,7 @@
 import path from 'path';
 
-import { EXPOTOOLS_DIR } from '../Constants';
 import { ReleaseType } from './types';
+import { EXPOTOOLS_DIR } from '../Constants';
 
 /**
  * File name of the backup file.
