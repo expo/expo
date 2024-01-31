@@ -794,6 +794,18 @@ exports[`built-in plugins introspects mods 1`] = `
           {
             "type": "empty",
           },
+          {
+            "type": "comment",
+            "value": "Use legacy packaging to compress native libraries in the resulting APK.",
+          },
+          {
+            "key": "expo.useLegacyPackaging",
+            "type": "property",
+            "value": "false",
+          },
+          {
+            "type": "empty",
+          },
         ],
         "manifest": {
           "manifest": {
