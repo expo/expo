@@ -151,15 +151,6 @@ export class Image extends React.PureComponent<ImageProps> {
     await this.nativeViewRef.current.stopAnimating();
   }
 
-  /**
-   * Loads an image from the given source to memory and resolves to
-   * an object that references the native image instance.
-   * @platform ios
-   */
-  static loadAsync(source: ImageSource): Promise<ImageRef> {
-    return ExpoImageModule.loadAsync(source);
-  }
-
   render() {
     const {
       style,

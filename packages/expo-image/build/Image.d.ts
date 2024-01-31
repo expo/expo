@@ -1,5 +1,5 @@
 import React from 'react';
-import { ImagePrefetchOptions, ImageProps, ImageRef, ImageSource } from './Image.types';
+import { ImagePrefetchOptions, ImageProps, ImageRef } from './Image.types';
 export declare class Image extends React.PureComponent<ImageProps> {
     nativeViewRef: any;
     containerViewRef: any;
@@ -86,12 +86,6 @@ export declare class Image extends React.PureComponent<ImageProps> {
      * @platform ios
      */
     stopAnimating(): Promise<void>;
-    /**
-     * Loads an image from the given source to memory and resolves to
-     * an object that references the native image instance.
-     * @platform ios
-     */
-    static loadAsync(source: ImageSource): Promise<ImageRef>;
     render(): React.JSX.Element;
 }
 //# sourceMappingURL=Image.d.ts.map
