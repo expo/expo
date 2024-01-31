@@ -5,9 +5,11 @@ package expo.modules.kotlin.classcomponent
 import expo.modules.kotlin.functions.SyncFunctionComponent
 import expo.modules.kotlin.objects.ObjectDefinitionBuilder
 import expo.modules.kotlin.objects.PropertyComponentBuilderWithThis
+import expo.modules.kotlin.sharedobjects.SharedRef
 import expo.modules.kotlin.types.toAnyType
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
+import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.typeOf
 
 class ClassComponentBuilder<SharedObjectType : Any>(
@@ -24,14 +26,14 @@ class ClassComponentBuilder<SharedObjectType : Any>(
       it.canTakeOwner = true
     }
 
-    val hasSharedObject = ownerClass !== Unit::class
-    if (hasSharedObject && constructor == null) {
+    val hasSharedObject = ownerClass !== Unit::class // TODO: Add an empty constructor that throws when called from JS
+    if (hasSharedObject && constructor == null && !ownerClass.isSubclassOf(SharedRef::class)) {
       throw IllegalArgumentException("constructor cannot be null")
     }
 
     val constructor = constructor ?: SyncFunctionComponent("constructor", arrayOf()) {}
     constructor.canTakeOwner = true
-
+    constructor.ownerType = ownerType
     return ClassDefinitionData(
       name,
       constructor,
