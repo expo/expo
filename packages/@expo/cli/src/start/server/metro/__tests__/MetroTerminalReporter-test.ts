@@ -15,6 +15,7 @@ describe('_getBundleStatusMessage', () => {
     log: jest.fn(),
     persistStatus: jest.fn(),
     status: jest.fn(),
+    flush: jest.fn(),
   });
   reporter._getElapsedTime = jest.fn(() => 100);
   reporter._bundleTimers.set(buildID, 0);
