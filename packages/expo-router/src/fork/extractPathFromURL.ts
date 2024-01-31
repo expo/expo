@@ -1,5 +1,6 @@
-import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Linking from 'expo-linking';
+
+const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
 
 // This is only run on native.
 function extractExactPathFromURL(url: string): string {
@@ -14,7 +15,7 @@ function extractExactPathFromURL(url: string): string {
 
   // Handle special URLs used in Expo Go: `/--/pathname` -> `pathname`
   if (
-    Constants.executionEnvironment === ExecutionEnvironment.StoreClient &&
+    isExpoGo &&
     // while not exhaustive, `exp` and `exps` are the only two schemes which
     // are passed through to other apps in Expo Go.
     url.match(/^exp(s)?:\/\//)
