@@ -16,6 +16,7 @@ exports.getMainApplicationOrThrow = getMainApplicationOrThrow;
 exports.getRunnableActivity = getRunnableActivity;
 exports.prefixAndroidKeys = prefixAndroidKeys;
 exports.readAndroidManifestAsync = readAndroidManifestAsync;
+exports.readAndroidManifestFromStringAsync = readAndroidManifestFromStringAsync;
 exports.removeMetaDataItemFromMainApplication = removeMetaDataItemFromMainApplication;
 exports.removeUsesLibraryItemFromMainApplication = removeUsesLibraryItemFromMainApplication;
 exports.writeAndroidManifestAsync = writeAndroidManifestAsync;
@@ -63,6 +64,13 @@ async function readAndroidManifestAsync(manifestPath) {
   });
   if (!isManifest(xml)) {
     throw new Error('Invalid manifest found at: ' + manifestPath);
+  }
+  return xml;
+}
+async function readAndroidManifestFromStringAsync(manifestFileContents) {
+  const xml = await XML().readXMLFromStringAsync(manifestFileContents);
+  if (!isManifest(xml)) {
+    throw new Error('Invalid manifest');
   }
   return xml;
 }

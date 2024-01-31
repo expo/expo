@@ -1,5 +1,7 @@
 import { Android, ExpoConfig, IOS } from '@expo/config-types';
 import * as Fingerprint from '@expo/fingerprint';
+import { JSONObject } from '@expo/json-file';
+import plist from '@expo/plist';
 import { getRuntimeVersionForSDKVersion } from '@expo/sdk-runtime-versions';
 import fs from 'fs';
 import { boolish } from 'getenv';
@@ -7,7 +9,14 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
-import { AndroidConfig, IOSConfig } from '..';
+import { AndroidConfig, IOSConfig, XML } from '..';
+import { Manifest } from '../android';
+import {
+  getMainApplicationOrThrow,
+  removeMetaDataItemFromMainApplication,
+} from '../android/Manifest';
+import { Config } from '../ios/Updates';
+import { androidManifestPathFromPlatformProjectRoot } from '../plugins/withAndroidBaseMods';
 
 export type ExpoConfigUpdates = Pick<
   ExpoConfig,
@@ -93,11 +102,60 @@ export async function getRuntimeVersionAsync(
       throw new Error("An SDK version must be defined when using the 'sdkVersion' runtime policy.");
     }
     return getRuntimeVersionForSDKVersion(config.sdkVersion);
-  } else if (runtimeVersion.policy === 'fingerprintExperimental') {
+  } else if (runtimeVersion.policy === 'fingerprintNativeExperimental') {
+    // need to pre-hash transform both ios and android files that have the fingerprint in them
+    // in order to generate a stable fingerprint (otherwise we'd be fingerprinting the last-generated fingerprint)
     console.warn(
-      "Use of the experimental 'fingerprintExperimental' runtime policy may result in unexpected system behavior."
+      "Use of the experimental 'fingerprintNativeExperimental' runtime policy may result in unexpected system behavior."
     );
-    return await Fingerprint.createProjectHashAsync(projectRoot);
+    return await Fingerprint.createProjectHashAsync(projectRoot, {
+      preHashTransformer: {
+        shouldTransformFileAtPath: (filePath: string): boolean => {
+          // we need to nullify the runtime version (fingerprint) in AndroidManifest.xml
+          if (filePath.includes(androidManifestPathFromPlatformProjectRoot)) {
+            return true;
+          }
+
+          // we need to nullify the runtime version (fingerprint) in Expo.plist
+          if (filePath.includes(path.join('Supporting', 'Expo.plist'))) {
+            return true;
+          }
+
+          return false;
+        },
+        transformFileContentsToBeHashed: async (
+          filePath: string,
+          contents: Buffer
+        ): Promise<Buffer> => {
+          const fileContentsString = contents.toString();
+          if (filePath.includes(androidManifestPathFromPlatformProjectRoot)) {
+            const androidManifest =
+              await Manifest.readAndroidManifestFromStringAsync(fileContentsString);
+            const mainApplication = getMainApplicationOrThrow(androidManifest);
+            removeMetaDataItemFromMainApplication(mainApplication, Config.RUNTIME_VERSION);
+            return Buffer.from(XML.format(androidManifest));
+          }
+
+          if (filePath.includes(path.join('Supporting', 'Expo.plist'))) {
+            const expoPlist: JSONObject = plist.parse(fileContentsString);
+            delete expoPlist[Config.RUNTIME_VERSION];
+            return Buffer.from(plist.build(expoPlist));
+          }
+
+          throw new Error(
+            'Unhandled transform request. This should not happen due to shouldTransformFileAtPath.'
+          );
+        },
+      },
+    });
+  } else if (runtimeVersion.policy === 'fingerprintNonNativeExperimental') {
+    console.warn(
+      "Use of the experimental 'fingerprintNonNativeExperimental' runtime policy may result in unexpected system behavior."
+    );
+    // ignore everything in native directories to ensure fingerprint is the same no matter whether project has been prebuilt
+    return await Fingerprint.createProjectHashAsync(projectRoot, {
+      ignorePaths: ['/android/**/*', '/ios/**/*'],
+    });
   }
 
   throw new Error(

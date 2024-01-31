@@ -105,12 +105,27 @@ export async function createFileHashResultsAsync(
   });
   */
 
-  return limiter(() => {
-    return new Promise<HashResult | null>((resolve, reject) => {
-      if (isIgnoredPath(filePath, options.ignorePaths)) {
-        return resolve(null);
-      }
+  return limiter(async (): Promise<HashResult | null> => {
+    if (isIgnoredPath(filePath, options.ignorePaths)) {
+      return null;
+    }
 
+    // if the file needs to be transformed, it must be fully read into memory ahead of transformation
+    // and hashing
+    if (
+      options.preHashTransformer &&
+      options.preHashTransformer.shouldTransformFileAtPath(filePath)
+    ) {
+      const hasher = createHash(options.hashAlgorithm);
+      const fileContents = await fs.readFile(path.join(projectRoot, filePath));
+      hasher.update(
+        await options.preHashTransformer.transformFileContentsToBeHashed(filePath, fileContents)
+      );
+      const hex = hasher.digest('hex');
+      return { id: filePath, hex };
+    }
+
+    return await new Promise<HashResult | null>(async (resolve, reject) => {
       let resolved = false;
       const hasher = createHash(options.hashAlgorithm);
       const stream = createReadStream(path.join(projectRoot, filePath));

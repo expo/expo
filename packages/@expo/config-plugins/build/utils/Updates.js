@@ -25,6 +25,13 @@ function Fingerprint() {
   };
   return data;
 }
+function _plist() {
+  const data = _interopRequireDefault(require("@expo/plist"));
+  _plist = function () {
+    return data;
+  };
+  return data;
+}
 function _sdkRuntimeVersions() {
   const data = require("@expo/sdk-runtime-versions");
   _sdkRuntimeVersions = function () {
@@ -70,6 +77,34 @@ function _semver() {
 function _() {
   const data = require("..");
   _ = function () {
+    return data;
+  };
+  return data;
+}
+function _android() {
+  const data = require("../android");
+  _android = function () {
+    return data;
+  };
+  return data;
+}
+function _Manifest() {
+  const data = require("../android/Manifest");
+  _Manifest = function () {
+    return data;
+  };
+  return data;
+}
+function _Updates() {
+  const data = require("../ios/Updates");
+  _Updates = function () {
+    return data;
+  };
+  return data;
+}
+function _withAndroidBaseMods() {
+  const data = require("../plugins/withAndroidBaseMods");
+  _withAndroidBaseMods = function () {
     return data;
   };
   return data;
@@ -139,9 +174,47 @@ async function getRuntimeVersionAsync(projectRoot, config, platform) {
       throw new Error("An SDK version must be defined when using the 'sdkVersion' runtime policy.");
     }
     return (0, _sdkRuntimeVersions().getRuntimeVersionForSDKVersion)(config.sdkVersion);
-  } else if (runtimeVersion.policy === 'fingerprintExperimental') {
-    console.warn("Use of the experimental 'fingerprintExperimental' runtime policy may result in unexpected system behavior.");
-    return await Fingerprint().createProjectHashAsync(projectRoot);
+  } else if (runtimeVersion.policy === 'fingerprintNativeExperimental') {
+    // need to pre-hash transform both ios and android files that have the fingerprint in them
+    // in order to generate a stable fingerprint (otherwise we'd be fingerprinting the last-generated fingerprint)
+    console.warn("Use of the experimental 'fingerprintNativeExperimental' runtime policy may result in unexpected system behavior.");
+    return await Fingerprint().createProjectHashAsync(projectRoot, {
+      preHashTransformer: {
+        shouldTransformFileAtPath: filePath => {
+          // we need to nullify the runtime version (fingerprint) in AndroidManifest.xml
+          if (filePath.includes(_withAndroidBaseMods().androidManifestPathFromPlatformProjectRoot)) {
+            return true;
+          }
+
+          // we need to nullify the runtime version (fingerprint) in Expo.plist
+          if (filePath.includes(_path().default.join('Supporting', 'Expo.plist'))) {
+            return true;
+          }
+          return false;
+        },
+        transformFileContentsToBeHashed: async (filePath, contents) => {
+          const fileContentsString = contents.toString();
+          if (filePath.includes(_withAndroidBaseMods().androidManifestPathFromPlatformProjectRoot)) {
+            const androidManifest = await _android().Manifest.readAndroidManifestFromStringAsync(fileContentsString);
+            const mainApplication = (0, _Manifest().getMainApplicationOrThrow)(androidManifest);
+            (0, _Manifest().removeMetaDataItemFromMainApplication)(mainApplication, _Updates().Config.RUNTIME_VERSION);
+            return Buffer.from(_().XML.format(androidManifest));
+          }
+          if (filePath.includes(_path().default.join('Supporting', 'Expo.plist'))) {
+            const expoPlist = _plist().default.parse(fileContentsString);
+            delete expoPlist[_Updates().Config.RUNTIME_VERSION];
+            return Buffer.from(_plist().default.build(expoPlist));
+          }
+          throw new Error('Unhandled transform request. This should not happen due to shouldTransformFileAtPath.');
+        }
+      }
+    });
+  } else if (runtimeVersion.policy === 'fingerprintNonNativeExperimental') {
+    console.warn("Use of the experimental 'fingerprintNonNativeExperimental' runtime policy may result in unexpected system behavior.");
+    // ignore everything in native directories to ensure fingerprint is the same no matter whether project has been prebuilt
+    return await Fingerprint().createProjectHashAsync(projectRoot, {
+      ignorePaths: ['/android/**/*', '/ios/**/*']
+    });
   }
   throw new Error(`"${typeof runtimeVersion === 'object' ? JSON.stringify(runtimeVersion) : runtimeVersion}" is not a valid runtime version. getRuntimeVersionAsync only supports a string, "sdkVersion", "appVersion", "nativeVersion" or "fingerprintExperimental" policy.`);
 }

@@ -186,6 +186,16 @@ export async function readAndroidManifestAsync(manifestPath: string): Promise<An
   return xml;
 }
 
+export async function readAndroidManifestFromStringAsync(
+  manifestFileContents: string
+): Promise<AndroidManifest> {
+  const xml = await XML.readXMLFromStringAsync(manifestFileContents);
+  if (!isManifest(xml)) {
+    throw new Error('Invalid manifest');
+  }
+  return xml;
+}
+
 function isManifest(xml: XML.XMLObject): xml is AndroidManifest {
   // TODO: Maybe more validation
   return !!xml.manifest;

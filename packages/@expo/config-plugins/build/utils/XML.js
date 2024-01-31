@@ -8,6 +8,7 @@ exports.escapeAndroidString = escapeAndroidString;
 exports.format = format;
 exports.parseXMLAsync = parseXMLAsync;
 exports.readXMLAsync = readXMLAsync;
+exports.readXMLFromStringAsync = readXMLFromStringAsync;
 exports.unescapeAndroidString = unescapeAndroidString;
 exports.writeXMLAsync = writeXMLAsync;
 function _fs() {
@@ -58,6 +59,10 @@ async function readXMLAsync(options) {
   }
   const parser = new (_xml2js().Parser)();
   const manifest = await parser.parseStringPromise(contents || options.fallback || '');
+  return _processAndroidXML(manifest);
+}
+async function readXMLFromStringAsync(contents) {
+  const manifest = await parseXMLAsync(contents);
   return _processAndroidXML(manifest);
 }
 function _processAndroidXML(manifest) {

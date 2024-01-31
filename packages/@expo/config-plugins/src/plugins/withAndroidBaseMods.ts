@@ -101,6 +101,8 @@ export function sortAndroidManifest(obj: AndroidManifest) {
   return obj;
 }
 
+export const androidManifestPathFromPlatformProjectRoot = 'app/src/main/AndroidManifest.xml';
+
 const defaultProviders = {
   dangerous: provider<unknown>({
     getFilePath() {
@@ -124,7 +126,7 @@ const defaultProviders = {
   manifest: provider<Manifest.AndroidManifest>({
     isIntrospective: true,
     getFilePath({ modRequest: { platformProjectRoot } }) {
-      return path.join(platformProjectRoot, 'app/src/main/AndroidManifest.xml');
+      return path.join(platformProjectRoot, androidManifestPathFromPlatformProjectRoot);
     },
     async read(filePath, config) {
       try {

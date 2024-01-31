@@ -3,6 +3,7 @@ import { ExportedConfig } from '../Plugin.types';
 import { Manifest, Paths, Properties, Resources } from '../android';
 import { AndroidManifest } from '../android/Manifest';
 export declare function sortAndroidManifest(obj: AndroidManifest): Manifest.AndroidManifest;
+export declare const androidManifestPathFromPlatformProjectRoot = "app/src/main/AndroidManifest.xml";
 declare const defaultProviders: {
     dangerous: import("./createBaseMod").BaseModProviderMethods<unknown, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     finalized: import("./createBaseMod").BaseModProviderMethods<unknown, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;

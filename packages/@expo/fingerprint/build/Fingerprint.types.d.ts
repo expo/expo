@@ -50,12 +50,27 @@ export interface Options {
      * Additional sources for hashing.
      */
     extraSources?: HashSource[];
+    /**
+     * Provides a way for callsites to transform a file's contents just before hashing. This should only
+     * be used for files that are small as it requires reading the entire file's contents into memory.
+     *
+     * This is useful in very particular cases in which the result of the fingerprint operation is stored
+     * in a file that itself is part of the fingerprint. By using this, one can "reset" the file into
+     * a state that produces a consistent hash between fingerprint runs.
+     */
+    preHashTransformer?: {
+        shouldTransformFileAtPath: (filePath: string) => boolean;
+        transformFileContentsToBeHashed: (filePath: string, contents: Buffer) => Promise<Buffer>;
+    };
 }
-export interface NormalizedOptions extends Options {
+export interface NormalizedOptions {
     platforms: NonNullable<Options['platforms']>;
     concurrentIoLimit: NonNullable<Options['concurrentIoLimit']>;
     hashAlgorithm: NonNullable<Options['hashAlgorithm']>;
+    dirExcludes: Options['dirExcludes'];
     ignorePaths: NonNullable<Options['ignorePaths']>;
+    extraSources: Options['extraSources'];
+    preHashTransformer: Options['preHashTransformer'];
 }
 export interface HashSourceFile {
     type: 'file';

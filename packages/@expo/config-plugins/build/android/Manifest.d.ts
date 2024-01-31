@@ -130,6 +130,7 @@ export type ManifestQuery = {
 };
 export declare function writeAndroidManifestAsync(manifestPath: string, androidManifest: AndroidManifest): Promise<void>;
 export declare function readAndroidManifestAsync(manifestPath: string): Promise<AndroidManifest>;
+export declare function readAndroidManifestFromStringAsync(manifestFileContents: string): Promise<AndroidManifest>;
 /** Returns the `manifest.application` tag ending in `.MainApplication` */
 export declare function getMainApplication(androidManifest: AndroidManifest): ManifestApplication | null;
 export declare function getMainApplicationOrThrow(androidManifest: AndroidManifest): ManifestApplication;

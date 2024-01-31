@@ -55,6 +55,9 @@ export async function normalizeOptionsAsync(
     concurrentIoLimit: options?.concurrentIoLimit ?? os.cpus().length,
     hashAlgorithm: options?.hashAlgorithm ?? 'sha1',
     ignorePaths: await collectIgnorePathsAsync(projectRoot, options),
+    dirExcludes: options?.dirExcludes,
+    extraSources: options?.extraSources,
+    preHashTransformer: options?.preHashTransformer,
   };
 }
 

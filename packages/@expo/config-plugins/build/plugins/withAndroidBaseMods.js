@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.androidManifestPathFromPlatformProjectRoot = void 0;
 exports.getAndroidModFileProviders = getAndroidModFileProviders;
 exports.sortAndroidManifest = sortAndroidManifest;
 exports.withAndroidBaseMods = withAndroidBaseMods;
@@ -136,6 +137,7 @@ function sortAndroidManifest(obj) {
   }
   return obj;
 }
+const androidManifestPathFromPlatformProjectRoot = exports.androidManifestPathFromPlatformProjectRoot = 'app/src/main/AndroidManifest.xml';
 const defaultProviders = {
   dangerous: (0, _createBaseMod().provider)({
     getFilePath() {
@@ -169,7 +171,7 @@ const defaultProviders = {
         platformProjectRoot
       }
     }) {
-      return _path().default.join(platformProjectRoot, 'app/src/main/AndroidManifest.xml');
+      return _path().default.join(platformProjectRoot, androidManifestPathFromPlatformProjectRoot);
     },
     async read(filePath, config) {
       try {
