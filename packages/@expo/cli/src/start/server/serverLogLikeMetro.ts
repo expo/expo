@@ -109,7 +109,7 @@ function augmentLogsInternal(projectRoot: string) {
   );
 }
 
-function formatStackLikeMetro(projectRoot: string, stack: string) {
+export function formatStackLikeMetro(projectRoot: string, stack: string) {
   // Remove `Error: ` from the beginning of the stack trace.
   // Dim traces that match `INTERNAL_CALLSITES_REGEX`
 
