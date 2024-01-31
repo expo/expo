@@ -76,7 +76,7 @@ function cmdMapper(line: string, index: number) {
           -&nbsp;
         </CODE>
         <CODE className="whitespace-pre !bg-[transparent] !border-none text-default">
-          {line.startsWith('$') ? line.substring(2).trim() : line.substring(0).trim()}
+          {line.startsWith('$') ? line.substring(1).trim() : line.substring(0).trim()}
         </CODE>
       </div>
     );
