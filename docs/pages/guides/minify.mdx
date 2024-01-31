@@ -58,7 +58,6 @@ Different minifiers have tradeoffs between speed and compression. You can custom
 ### Terser
 
 > [`terser`](https://github.com/terser/terser) is the default minifier in SDK 48 and above: ([Metro@0.73.0 changelog](https://github.com/facebook/metro/releases/tag/v0.73.0)).
-> For projects SDK 47 and below, you can use [`terser`](https://github.com/terser/terser) instead of `uglify-es` to mangle and compress your project.
 
 <Step label="1">
 
@@ -123,8 +122,6 @@ module.exports = config;
 [`esbuild`](https://esbuild.github.io/) is used to minify exponentially faster than `uglify-es` and `terser`. For more information, see [`metro-minify-esbuild`](https://github.com/EvanBacon/metro-minify-esbuild#usage) usage.
 
 ### Uglify
-
-> [`uglify-es`](https://github.com/mishoo/UglifyJS) is the default minifier in SDK 47 and below. It uses [these options](https://github.com/facebook/metro/blob/b629f44239bbb3414491755185cf19b5834b4b7a/packages/metro-config/src/defaults/index.js#L94-L111).
 
 For projects SDK 48 and above, you can use [`uglify-es`](https://github.com/mishoo/UglifyJS) by following the steps below:
 

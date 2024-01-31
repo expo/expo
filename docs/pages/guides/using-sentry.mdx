@@ -476,8 +476,6 @@ Skipping or misconfiguring either of these can lead to invalid source maps, and 
 
 ### Uploading source maps for updates
 
-> This requires SDK 47, with `sentry-expo@6.0.0` or above and `expo-updates@0.15.5` or above.
-
 If you're using EAS Update, or if you're self-hosting your updates (this means you run `npx expo export` manually), you need to take the following steps to upload the source maps for your update to Sentry:
 
 - Run `eas update`. This will generate a **dist** folder in your project root, which contains your JavaScript bundles and source maps. This command will also output the 'Android update ID' and 'iOS update ID' that we'll need in the next step.
