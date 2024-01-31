@@ -15,7 +15,7 @@ extension UIColor: Convertible {
     if let value = value as? Int {
       return try Conversions.toColor(argb: UInt64(value)) as! Self
     }
-    
+
     // Handle `PlatformColor` and `DynamicColorIOS`
     if let opaqueValue = value as? [String: Any] {
       if let semanticName = opaqueValue["semantic"] as? String,
