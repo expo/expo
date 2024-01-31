@@ -56,17 +56,14 @@ export function BuildResourceList({ platform }: { platform: keyof typeof Resourc
   const spec = platform === 'ios' ? IosResourceClassToSpec : AndroidResourceClassToSpec;
   return (
     <markdownComponents.ul>
-      {ResourceClasses[platform].map(resourceClass => {
-        console.log(`${platform}-${resourceClass}`);
-        return (
-          <markdownComponents.li key={`${platform}-${resourceClass}`}>
-            <markdownComponents.code>
-              <ResourceClassSpecLink platform={platform} resourceClass={resourceClass} />
-            </markdownComponents.code>
-            : {spec[resourceClass]}
-          </markdownComponents.li>
-        );
-      })}
+      {ResourceClasses[platform].map(resourceClass => (
+        <markdownComponents.li key={`${platform}-${resourceClass}`}>
+          <markdownComponents.code>
+            <ResourceClassSpecLink platform={platform} resourceClass={resourceClass} />
+          </markdownComponents.code>
+          : {spec[resourceClass]}
+        </markdownComponents.li>
+      ))}
     </markdownComponents.ul>
   );
 }
