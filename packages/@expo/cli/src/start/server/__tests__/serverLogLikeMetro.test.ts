@@ -1,5 +1,5 @@
 import { stripAnsi } from '../../../utils/ansi';
-import { formatStackLikeMetro } from '../serverLogLikeMetro';
+import { formatStackLikeMetro, logLikeMetro } from '../serverLogLikeMetro';
 
 const WARN_IN_ROUTER_COMPONENT_FIXTURE = `Error: 
 at console.warn (/Users/evanbacon/Documents/GitHub/expo/packages/@expo/cli/src/start/server/serverLogLikeMetro.ts:88:21)
@@ -93,5 +93,13 @@ describe(formatStackLikeMetro, () => {
     it(`formats stack trace: ${name}`, () => {
       expect(stripAnsi(formatStackLikeMetro(PROJECT_ROOT, stack))).toMatchSnapshot();
     });
+  });
+});
+
+describe(logLikeMetro, () => {
+  it(`logs a basic server log`, () => {
+    const log = jest.fn();
+    logLikeMetro(log, 'log', 'λ', 'hello');
+    expect(log).toBeCalledWith(expect.stringContaining('λ'), 'hello');
   });
 });

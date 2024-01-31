@@ -15,7 +15,7 @@ import { memoize } from '../../utils/fn';
 const groupStack: any = [];
 let collapsedGuardTimer: ReturnType<typeof setTimeout> | undefined;
 
-function logLikeMetro(
+export function logLikeMetro(
   originalLogFunction: (...args: any[]) => void,
   level: string,
   platform: string,
@@ -61,7 +61,7 @@ function logLikeMetro(
       data[data.length - 1] = lastItem.trimEnd();
     }
 
-    const modePrefix = chalk.bold.white.inverse` ${platform} `;
+    const modePrefix = chalk.bold`${platform}`;
     originalLogFunction(
       modePrefix +
         ' ' +
