@@ -1,6 +1,7 @@
 package expo.modules.video
 
 import expo.modules.kotlin.exception.CodedException
+import expo.modules.video.enums.DRMType
 
 internal class FullScreenVideoViewNotFoundException :
   CodedException("VideoView id wasn't passed to the activity")

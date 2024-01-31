@@ -77,11 +77,11 @@ public final class VideoModule: Module {
         let player = AVPlayer()
         let videoPlayer = VideoPlayer(player)
 
-        if let uri = source.uri, let url = URL(string: uri) {
+        if let url = source.uri {
           let asset = AVURLAsset(url: url)
 
           if let drm = source.drm {
-            try drm.type.isSupportedOrThrow()
+            try drm.type.assertIsSupported()
             videoPlayer.contentKeyManager.addContentKeyRequest(videoSource: source, asset: asset)
           }
           let playerItem = AVPlayerItem(asset: asset)
@@ -119,15 +119,14 @@ public final class VideoModule: Module {
         var videoSource: VideoSource?
 
         if source.is(String.self), let url: String = source.get() {
-          videoSource = VideoSource(uri: Field(wrappedValue: url))
+          videoSource = VideoSource(uri: Field(wrappedValue: URL(string: url)))
         } else if source.is(VideoSource.self) {
           videoSource = source.get()
         }
 
         guard
           let videoSource = videoSource,
-          let uri = videoSource.uri,
-          let url = URL(string: uri)
+          let url = videoSource.uri
         else {
           player.pointer.replaceCurrentItem(with: nil)
           return
@@ -137,7 +136,7 @@ public final class VideoModule: Module {
         let playerItem = AVPlayerItem(asset: asset)
 
         if let drm = videoSource.drm {
-          try drm.type.isSupportedOrThrow()
+          try drm.type.assertIsSupported()
           player.contentKeyManager.addContentKeyRequest(videoSource: videoSource, asset: asset)
         }
 

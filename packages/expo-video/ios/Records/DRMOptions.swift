@@ -3,14 +3,7 @@
 import Foundation
 import ExpoModulesCore
 
-internal struct VideoSource: Record {
-  @Field
-  var uri: String?
-  @Field
-  var drm: DRMArguments?
-}
-
-internal struct DRMArguments: Record {
+internal struct DRMOptions: Record {
   @Field
   var type: DRMType = .fairplay
 
@@ -27,5 +20,5 @@ internal struct DRMArguments: Record {
   var contentId: String?
 
   @Field
-  var certificateUrl: String?
+  var certificateUrl: URL?
 }

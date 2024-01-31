@@ -63,21 +63,21 @@ internal class ContentKeyDelegate: NSObject, AVContentKeySessionDelegate {
     let applicationCertificate = try self.requestApplicationCertificate(keyRequest: keyRequest)
 
     let completionHandler = { [weak self] (spcData: Data?, error: Error?) in
-      guard let strongSelf = self else {
+      guard let self else {
         return
       }
 
-      if let error = error {
+      if let error {
         keyRequest.processContentKeyResponseError(error)
         return
       }
 
-      guard let spcData = spcData else {
+      guard let spcData else {
         return
       }
 
       do {
-        let ckcData = try strongSelf.requestContentKeyFromKeySecurityModule(spcData: spcData, assetID: assetIdString, keyRequest: keyRequest)
+        let ckcData = try self.requestContentKeyFromKeySecurityModule(spcData: spcData, assetID: assetIdString, keyRequest: keyRequest)
         let keyResponse = AVContentKeyResponse(fairPlayStreamingKeyResponseData: ckcData)
         keyRequest.processContentKeyResponse(keyResponse)
       } catch {
@@ -89,15 +89,13 @@ internal class ContentKeyDelegate: NSObject, AVContentKeySessionDelegate {
       forApp: applicationCertificate,
       contentIdentifier: assetIdData,
       options: [AVContentKeyRequestProtocolVersionsKey: [1]],
-      completionHandler: completionHandler)
+      completionHandler: completionHandler
+    )
   }
 
   private func requestApplicationCertificate(keyRequest: AVContentKeyRequest) throws -> Data {
-    guard let uri = videoSource?.drm?.certificateUrl else {
+    guard let url = videoSource?.drm?.certificateUrl else {
       throw DRMLoadException("The certificate uri is null")
-    }
-    guard let url = URL(string: uri) else {
-      throw DRMLoadException("The certificate uri: \(uri) is invalid")
     }
 
     let urlRequest = URLRequest(url: url)
@@ -105,7 +103,7 @@ internal class ContentKeyDelegate: NSObject, AVContentKeySessionDelegate {
 
     guard error == nil else {
       let errorDescription = error?.localizedDescription ?? "unknown error"
-      throw DRMLoadException("Failed to load the application certificate from \(uri): \(errorDescription)")
+      throw DRMLoadException("Failed to load the application certificate from \(url.absoluteString): \(errorDescription)")
     }
 
     if let httpResponse = response as? HTTPURLResponse {
@@ -114,7 +112,7 @@ internal class ContentKeyDelegate: NSObject, AVContentKeySessionDelegate {
       }
     }
     guard let data else {
-      throw DRMLoadException("Application certificate data received from \(uri) is empty")
+      throw DRMLoadException("Application certificate data received from \(url.absoluteString) is empty")
     }
 
     guard let applicationCertificate = SecCertificateCreateWithData(nil, data as CFData) else {

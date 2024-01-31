@@ -12,7 +12,7 @@ internal enum DRMType: String, Enumerable {
     return self == .fairplay
   }
 
-  internal func isSupportedOrThrow() throws {
+  internal func assertIsSupported() throws {
     if !isSupported() {
       throw DRMUnsupportedException(self)
     }

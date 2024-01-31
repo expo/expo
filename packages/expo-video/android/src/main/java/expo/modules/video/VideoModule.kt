@@ -9,6 +9,7 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.types.Either
+import expo.modules.video.records.VideoSource
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 

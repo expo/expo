@@ -3,15 +3,15 @@
 import AVFoundation
 
 internal class ContentKeyManager {
+  static let contentKeyDelegateQueue = DispatchQueue(label: "dev.expo.video.ExpoVideo.ContentKeyDelegateQueue")
   let contentKeySession: AVContentKeySession
   let contentKeyDelegate: ContentKeyDelegate
-  let contentKeyDelegateQueue = DispatchQueue(label: "\(Bundle.main.bundleIdentifier).ExpoVideo.ContentKeyDelegateQueue")
 
   init() {
     contentKeySession = AVContentKeySession(keySystem: .fairPlayStreaming)
     contentKeyDelegate = ContentKeyDelegate()
 
-    contentKeySession.setDelegate(contentKeyDelegate, queue: contentKeyDelegateQueue)
+    contentKeySession.setDelegate(contentKeyDelegate, queue: ContentKeyManager.contentKeyDelegateQueue)
   }
 
   func addContentKeyRequest(videoSource: VideoSource, asset: AVContentKeyRecipient) {
