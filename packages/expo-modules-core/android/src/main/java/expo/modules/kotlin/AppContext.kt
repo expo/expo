@@ -43,6 +43,7 @@ import expo.modules.kotlin.jni.JNIDeallocator
 import expo.modules.kotlin.jni.JSIInteropModuleRegistry
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.providers.CurrentActivityProvider
+import expo.modules.kotlin.sharedobjects.ClassRegistry
 import expo.modules.kotlin.sharedobjects.SharedObjectRegistry
 import expo.modules.kotlin.tracing.trace
 import kotlinx.coroutines.CoroutineName
@@ -77,6 +78,8 @@ class AppContext(
   }
 
   internal val sharedObjectRegistry = SharedObjectRegistry()
+
+  internal val classRegistry = ClassRegistry()
 
   private val modulesQueueDispatcher = HandlerThread("expo.modules.AsyncFunctionQueue")
     .apply { start() }

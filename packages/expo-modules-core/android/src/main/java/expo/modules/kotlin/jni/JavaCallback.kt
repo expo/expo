@@ -6,6 +6,7 @@ import com.facebook.react.bridge.WritableNativeMap
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.logger
+import expo.modules.kotlin.sharedobjects.SharedRef
 
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
@@ -24,6 +25,7 @@ class JavaCallback @DoNotStrip internal constructor(@DoNotStrip private val mHyb
         is String -> invoke(result)
         is WritableNativeArray -> invoke(result)
         is WritableNativeMap -> invoke(result)
+        is SharedRef<*> -> invoke(result)
         else -> throw UnexpectedException("Unknown type: ${result.javaClass}")
       }
     } catch (e: Throwable) {
@@ -45,6 +47,7 @@ class JavaCallback @DoNotStrip internal constructor(@DoNotStrip private val mHyb
   private external fun invoke(result: String)
   private external fun invoke(result: WritableNativeArray)
   private external fun invoke(result: WritableNativeMap)
+  private external fun invoke(result: SharedRef<*>)
 
   @Throws(Throwable::class)
   protected fun finalize() {

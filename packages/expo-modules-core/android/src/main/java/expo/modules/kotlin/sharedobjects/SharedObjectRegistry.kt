@@ -6,6 +6,7 @@ import expo.modules.kotlin.jni.JavaScriptWeakObject
 
 @JvmInline
 value class SharedObjectId(val value: Int) {
+
   fun toNativeObject(appContext: AppContext): SharedObject? {
     return appContext.sharedObjectRegistry.toNativeObject(this)
   }
