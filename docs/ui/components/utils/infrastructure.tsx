@@ -57,7 +57,7 @@ export function BuildResourceList({ platform }: { platform: keyof typeof Resourc
   return (
     <markdownComponents.ul>
       {ResourceClasses[platform].map(resourceClass => (
-        <markdownComponents.li>
+        <markdownComponents.li key={`${platform}-${resourceClass}`}>
           <markdownComponents.code>
             <ResourceClassSpecLink platform={platform} resourceClass={resourceClass} />
           </markdownComponents.code>
