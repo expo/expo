@@ -30,7 +30,7 @@ export async function resolveOptionsAsync(
 ): Promise<ResolvedOptions> {
   // Resolve the device before the gradle props because we need the device to be running to get the ABI.
   const device = await resolveDeviceAsync(options.device);
-  
+
   return {
     ...(await resolveBundlerPropsAsync(projectRoot, options)),
     ...(await resolveGradleProps(projectRoot, options)),
