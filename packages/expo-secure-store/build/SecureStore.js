@@ -129,6 +129,13 @@ export function getItem(key, options = {}) {
     ensureValidKey(key);
     return ExpoSecureStore.getValueWithKeySync(key, options);
 }
+/**
+ * Checks if the value can be saved with `requireAuthentication` option enabled.
+ * @return `true` if the device supports biometric authentication and the enrolled method is sufficiently secure. Otherwise, returns `false`.
+ */
+export function canUseBiometricAuthentication() {
+    return ExpoSecureStore.canUseBiometricAuthentication();
+}
 function ensureValidKey(key) {
     if (!isValidKey(key)) {
         throw new Error(`Invalid key provided to SecureStore. Keys must not be empty and contain only alphanumeric characters, ".", "-", and "_".`);

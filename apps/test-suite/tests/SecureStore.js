@@ -70,6 +70,39 @@ export function test(t) {
         t.expect(fetchedValue).toBe(null);
       });
     });
+    // This test only checks if the function works correctly with the current biometric enrollment of the device.
+    // It's not possible to test the function fully without changing the security settings of the device.
+    t.describe(
+      'canUseBiometricAuthentication correctly indicates if a value can be saved with authentication',
+      () => {
+        const canSave = SecureStore.canUseBiometricAuthentication();
+        t.it('canUseBiometricAuthentication returns a boolean', async () => {
+          t.expect(typeof canSave).toBe('boolean');
+        });
+        const testDescription = `canUseBiometricAuthentication is ${canSave} -> saving the value should ${
+          canSave ? 'succeed' : 'fail'
+        }`;
+        t.it(testDescription, async () => {
+          try {
+            try {
+              await SecureStore.setItemAsync(key, value, {
+                keychainService: 'service',
+                requireAuthentication: true,
+              });
+              if (!canSave) {
+                t.fail('Expected SecureStore.setItemAsync to throw an error');
+              }
+            } catch {
+              if (canSave) {
+                t.fail('Expected SecureStore.setItemAsync to succeed');
+              }
+            }
+          } catch (e) {
+            t.fail(e);
+          }
+        });
+      }
+    );
     t.describe('store with empty key -> err:', () => {
       t.it('Sets a value with an empty key, expect error', async () => {
         try {

@@ -49,6 +49,17 @@ public final class SecureStoreModule: Module {
       SecItemDelete(authSearchDictionary as CFDictionary)
       SecItemDelete(noAuthSearchDictionary as CFDictionary)
     }
+
+    Function("canUseBiometricAuthentication") {() -> Bool in
+      let context = LAContext()
+      var error: NSError?
+      let isBiometricsSupported: Bool = context.canEvaluatePolicy(LAPolicy.deviceOwnerAuthenticationWithBiometrics, error: &error)
+
+      if error != nil {
+        return false
+      }
+      return isBiometricsSupported
+    }
   }
 
   private func get(with key: String, options: SecureStoreOptions) throws -> String? {

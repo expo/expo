@@ -127,4 +127,9 @@ export declare function setItem(key: string, value: string, options?: SecureStor
  * @return Previously stored value. It will return `null` if there is no entry for the given key or if the key has been invalidated.
  */
 export declare function getItem(key: string, options?: SecureStoreOptions): string | null;
+/**
+ * Checks if the value can be saved with `requireAuthentication` option enabled.
+ * @return `true` if the device supports biometric authentication and the enrolled method is sufficiently secure. Otherwise, returns `false`.
+ */
+export declare function canUseBiometricAuthentication(): boolean;
 //# sourceMappingURL=SecureStore.d.ts.map
