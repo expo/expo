@@ -81,10 +81,16 @@ export function getServerManifest(route: RouteNode): ExpoRouterServerManifestV1 
 function getMatchableManifestForPaths(
   paths: [string, RouteNode][]
 ): ExpoRouterServerManifestV1Route[] {
-  return paths.map((normalizedRoutePath) => ({
-    ...getNamedRouteRegex(normalizedRoutePath[0], normalizedRoutePath[1].contextKey),
-    generated: normalizedRoutePath[1].generated,
-  }));
+  return paths.map((normalizedRoutePath) => {
+    const matcher: ExpoRouterServerManifestV1Route = getNamedRouteRegex(
+      normalizedRoutePath[0],
+      normalizedRoutePath[1].contextKey
+    );
+    if (normalizedRoutePath[1].generated) {
+      matcher.generated = true;
+    }
+    return matcher;
+  });
 }
 
 export function getNamedRouteRegex(
@@ -151,7 +157,7 @@ function getNamedParametrizedRoute(route: string) {
           segment = '[...not-found]';
         }
         if (/^\[.*\]$/.test(segment)) {
-          const { name, optional, repeat } = parseParameter(segment.slice(1, -1));
+          const { name, optional, repeat } = parseParameter(segment);
           // replace any non-word characters since they can break
           // the named regex
           let cleanedKey = name.replace(/\W/g, '');
@@ -205,7 +211,7 @@ function escapeStringRegexp(str: string) {
   return str;
 }
 
-function parseParameter(param: string) {
+export function parseParameter(param: string) {
   let repeat = false;
   let optional = false;
   let name = param;
