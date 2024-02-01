@@ -1,6 +1,22 @@
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { getDeepDependenciesWarningAsync } from '../utils/explainDependencies';
 import { getRemoteVersionsForSdkAsync } from '../utils/getRemoteVersionsForSdkAsync';
+import { joinWithCommasAnd } from '../utils/strings';
+
+async function getDeepDependenciesWarningWithPackageNameAsync(
+  packageName: string,
+  version: string,
+  projectRoot: string
+): Promise<{ packageName: string; message: string } | null> {
+  const maybeWarning = await getDeepDependenciesWarningAsync(
+    { name: packageName, version },
+    projectRoot
+  );
+  if (maybeWarning) {
+    return { packageName, message: maybeWarning };
+  }
+  return null;
+}
 
 export class SupportPackageVersionCheck implements DoctorCheck {
   description =
@@ -9,7 +25,7 @@ export class SupportPackageVersionCheck implements DoctorCheck {
   sdkVersionRange = '>=45.0.0';
 
   async runAsync({ exp, pkg, projectRoot }: DoctorCheckParams): Promise<DoctorCheckResult> {
-    const issues: string[] = [];
+    let issues: string[] = [];
 
     const versionsForSdk = await getRemoteVersionsForSdkAsync(exp.sdkVersion);
 
@@ -22,32 +38,36 @@ export class SupportPackageVersionCheck implements DoctorCheck {
       '@expo/prebuild-config',
       '@expo/metro-config',
       'metro-config',
-    ].filter((pkg) => versionsForSdk[pkg]);
+    ].filter((packageName) => versionsForSdk[packageName]);
 
     // check that a specific semver is installed for each package
-    const possibleWarnings = await Promise.all(
-      supportPackagesToValidate.map((pkg) =>
-        getDeepDependenciesWarningAsync({ name: pkg, version: versionsForSdk[pkg] }, projectRoot)
+    const warnings = (
+      await Promise.all(
+        supportPackagesToValidate.map((packageName) =>
+          getDeepDependenciesWarningWithPackageNameAsync(
+            packageName,
+            versionsForSdk[packageName],
+            projectRoot
+          )
+        )
       )
-    );
+    ).flatMap((r) => (r ? [r] : []));
 
-    possibleWarnings.forEach((possibleWarning) => {
-      if (possibleWarning) {
-        issues.push(possibleWarning);
-      }
-    });
+    issues = warnings.map((r) => r.message);
 
-    const atLeastOneSupportPackagePinnedByResolution =
-      possibleWarnings &&
-      supportPackagesToValidate.find((packageName) => !!pkg.resolutions?.[packageName]);
+    const supportPackagesPinnedByResolution = warnings
+      .filter((warning) => !!pkg.resolutions?.[warning.packageName])
+      .map((warning) => warning.packageName);
 
     return {
       isSuccessful: issues.length === 0,
       issues,
       advice: issues.length
         ? 'Upgrade dependencies that are using the invalid package versions' +
-          (atLeastOneSupportPackagePinnedByResolution &&
-            ' or remove any resolutions from package.json that are pinning these packages to an invalid version') +
+          (supportPackagesPinnedByResolution.length &&
+            ` and remove resolutions from package.json that are pinning ${joinWithCommasAnd(
+              supportPackagesPinnedByResolution
+            )} to an invalid version`) +
           '.'
         : undefined,
     };

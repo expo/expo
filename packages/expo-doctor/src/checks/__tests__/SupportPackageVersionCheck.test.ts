@@ -35,7 +35,7 @@ describe('runAsync', () => {
     jest
       .mocked(getRemoteVersionsForSdkAsync)
       .mockResolvedValueOnce(mockGetRemoteVersionsForSdkAsyncResult);
-    jest.mocked(getDeepDependenciesWarningAsync).mockResolvedValueOnce(null);
+    jest.mocked(getDeepDependenciesWarningAsync).mockResolvedValue(null);
     const check = new SupportPackageVersionCheck();
     const result = await check.runAsync({
       projectRoot: '/path/to/project',
@@ -61,12 +61,17 @@ describe('runAsync', () => {
     jest
       .mocked(getRemoteVersionsForSdkAsync)
       .mockResolvedValueOnce(mockGetRemoteVersionsForSdkAsyncResult);
-    jest.mocked(getDeepDependenciesWarningAsync).mockResolvedValueOnce('warning');
+    jest.mocked(getDeepDependenciesWarningAsync).mockImplementation(async (pkg, projectRoot) => {
+      if (pkg.name === 'metro-config') {
+        return 'warning';
+      }
+      return null;
+    });
     const check = new SupportPackageVersionCheck();
     const result = await check.runAsync({
       projectRoot: '/path/to/project',
       ...additionalProjectProps,
     });
-    expect(result.advice).toContain('remove any resolutions from package.json');
+    expect(result.advice).toContain('remove resolutions from package.json');
   });
 });
