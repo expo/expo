@@ -41,13 +41,7 @@ describe(resolveGradlePropsAsync, () => {
   });
 
   it(`parses with no variant`, async () => {
-    expect(
-      await resolveGradlePropsAsync(
-        '/',
-        { allArch: true },
-        testDevice
-      )
-    ).toEqual({
+    expect(await resolveGradlePropsAsync('/', { allArch: true }, testDevice)).toEqual({
       apkVariantDirectory: '/android/app/build/outputs/apk/debug',
       appName: 'app',
       buildType: 'debug',

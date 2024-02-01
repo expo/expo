@@ -2,7 +2,6 @@ import path from 'path';
 
 import {
   Device,
-  getAttachedDevicesAsync,
   getDeviceABIsAsync,
 } from '../../start/platforms/android/adb';
 import { CommandError } from '../../utils/errors';
@@ -62,7 +61,7 @@ async function getConnectedDeviceABIS(
   if (allArch || buildType !== 'debug') {
     return '';
   }
-  
+
   const abis = await getDeviceABIsAsync(device);
-  return abis.filter((abi, i, arr) => arr.indexOf(abi) === i).join(',')
+  return abis.filter((abi, i, arr) => arr.indexOf(abi) === i).join(',');
 }
