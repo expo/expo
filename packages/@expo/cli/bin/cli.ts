@@ -27,7 +27,6 @@ const commands: { [command: string]: () => Promise<Command> } = {
   export: () => import('../src/export/index.js').then((i) => i.expoExport),
   'export:web': () => import('../src/export/web/index.js').then((i) => i.expoExportWeb),
   'export:embed': () => import('../src/export/embed/index.js').then((i) => i.expoExportEmbed),
-  'assets:verify': () => import('../src/assetsVerify/index.js').then((i) => i.expoAssetsVerify),
 
   // Auxiliary commands
   install: () => import('../src/install/index.js').then((i) => i.expoInstall),
@@ -95,7 +94,6 @@ if (!isSubcommand && args['--help']) {
     // The export:web command is deprecated. Hide it from the help prompt.
     'export:web': exportWeb_unused,
     // Other ignored commands, these are intentially not listed in the `--help` output
-    'assets:verify': assetsVerify_unused,
     run: _run,
     // All other commands
     ...others
