@@ -87,6 +87,8 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>Allow Expo projects to access your calendar</string>
 	<key>NSCalendarsUsageDescription</key>
 	<string>Allow Expo projects to access your calendar</string>
 	<key>NSCameraUsageDescription</key>
@@ -109,6 +111,8 @@
 	<string>Give Expo projects permission to save photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Give Expo projects permission to access your photos</string>
+	<key>NSRemindersFullAccessUsageDescription</key>
+	<string>Allow Expo projects to access your reminders</string>
 	<key>NSRemindersUsageDescription</key>
 	<string>Allow Expo projects to access your reminders</string>
 	<key>NSUserTrackingUsageDescription</key>
