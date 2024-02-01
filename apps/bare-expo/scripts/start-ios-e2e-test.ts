@@ -5,8 +5,8 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'fs/promises';
 import path from 'path';
 
-const TARGET_DEVICE = 'iPhone 14';
-const TARGET_DEVICE_IOS_VERSION = 16;
+const TARGET_DEVICE = 'iPhone 15';
+const TARGET_DEVICE_IOS_VERSION = 17;
 const MAESTRO_GENERATED_FLOW = 'e2e/maestro-generated.yaml';
 const OUTPUT_APP_PATH = 'ios/build/Bare Expo.app';
 const MAESTRO_DRIVER_STARTUP_TIMEOUT = '120000'; // Wait 2 minutes for Maestro driver to start
