@@ -837,7 +837,7 @@ PODS:
     - React-Core
   - EXNotifications (0.27.6):
     - ExpoModulesCore
-  - Expo (50.0.4):
+  - Expo (50.0.5):
     - ExpoModulesCore
   - ExpoAppleAuthentication (6.3.0):
     - ExpoModulesCore
@@ -1109,8 +1109,14 @@ PODS:
     - GTMSessionFetcher/Core (< 4.0, >= 1.5)
   - GTMSessionFetcher/Core (3.1.1)
   - hermes-engine (0.73.2):
-    - hermes-engine/Pre-built (= 0.73.2)
-  - hermes-engine/Pre-built (0.73.2)
+    - hermes-engine/Hermes (= 0.73.2)
+    - hermes-engine/inspector (= 0.73.2)
+    - hermes-engine/inspector_chrome (= 0.73.2)
+    - hermes-engine/Public (= 0.73.2)
+  - hermes-engine/Hermes (0.73.2)
+  - hermes-engine/inspector (0.73.2)
+  - hermes-engine/inspector_chrome (0.73.2)
+  - hermes-engine/Public (0.73.2)
   - JKBigInteger (0.0.6)
   - libaom (3.0.0):
     - libvmaf (>= 2.2.0)
@@ -3269,7 +3275,7 @@ SPEC CHECKSUMS:
   EXManifests: 5e8c29f36c716af768a4ea47ec05e1b89ab93091
   EXMediaLibrary: 179f3ffc668ca2eb7b14e8ed7b404321624f9093
   EXNotifications: e11f0e9a5b657c064a481a5d522f3bc5a07bf7cd
-  Expo: 1e3bcf9dd99de57a636127057f6b488f0609681a
+  Expo: 49cded7844f2ec4ffb1cc3b86504853f26952935
   ExpoAppleAuthentication: 4fc9972356977f009911f2f3a5f56319c2a5b11b
   ExpoBackgroundFetch: 80d41ec15c6cce0bafb5d2326b8e85f42152eba7
   ExpoBattery: 60bf880aea8f769fe39f709a920442542c1bfd62
@@ -3318,7 +3324,7 @@ SPEC CHECKSUMS:
   EXUpdates: 1d6f5b8865a008b5dd5a762355be87684279af79
   EXUpdatesInterface: 3e444e2093e25b7ca0999a7d8c16e8392dee70c3
   FBAEMKit: 4763aa27b8f69eb9d2c274189e91388de1dbd88a
-  FBAudienceNetwork: 03e273f66b70756be7d060927111af97b7641b06
+  FBAudienceNetwork: 4d6223a9a88a22e9dca8c9e6c1829a8745b86228
   FBLazyVector: f53548403f1ae063f4c901c7860deadf7ad8b0ab
   FBReactNativeSpec: a2cda44c0e4239f8e4c5802dfb3d70dc16e9d402
   FBSDKCoreKit: 40ae989ca1da1bbeba56acd4671dde64ad415506
@@ -3339,7 +3345,7 @@ SPEC CHECKSUMS:
   GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
   GTMAppAuth: 99fb010047ba3973b7026e45393f51f27ab965ae
   GTMSessionFetcher: e8647203b65cee28c5f73d0f473d096653945e72
-  hermes-engine: b361c9ef5ef3cda53f66e195599b47e1f84ffa35
+  hermes-engine: 242f15bb4051f3a2382db37163207304de902e95
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libaom: 144606b1da4b5915a1054383c3a4459ccdb3c661
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7

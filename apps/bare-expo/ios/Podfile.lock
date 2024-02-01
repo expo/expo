@@ -43,17 +43,17 @@ PODS:
     - React-Core
   - EXNotifications (0.27.6):
     - ExpoModulesCore
-  - Expo (50.0.4):
+  - Expo (50.0.5):
     - ExpoModulesCore
-  - expo-dev-client (3.3.7):
+  - expo-dev-client (3.3.8):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (3.6.5):
+  - expo-dev-launcher (3.6.6):
     - EXManifests
-    - expo-dev-launcher/Main (= 3.6.5)
+    - expo-dev-launcher/Main (= 3.6.6)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -62,7 +62,7 @@ PODS:
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
     - React-RCTAppDelegate
-  - expo-dev-launcher/Main (3.6.5):
+  - expo-dev-launcher/Main (3.6.6):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu
@@ -73,7 +73,7 @@ PODS:
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
     - React-RCTAppDelegate
-  - expo-dev-launcher/Tests (3.6.5):
+  - expo-dev-launcher/Tests (3.6.6):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -88,7 +88,7 @@ PODS:
     - React-Core
     - React-CoreModules
     - React-RCTAppDelegate
-  - expo-dev-launcher/Unsafe (3.6.5):
+  - expo-dev-launcher/Unsafe (3.6.6):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -1938,7 +1938,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost: 26fad476bfa736552bbfa698a06cc530475c1505
-  DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
+  DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EASClient: a42ee8bf36c93b3128352faf2ae49405ab4f80bd
   EXApplication: 137189a3f149b4e8e546884629392c3efc94cbd3
   EXAV: 09a4d87fa6b113fbb0ada3aade6799f78271cb44
@@ -1953,9 +1953,9 @@ SPEC CHECKSUMS:
   EXManifests: 5e8c29f36c716af768a4ea47ec05e1b89ab93091
   EXMediaLibrary: 5a74f7d9cce776ca07cb3090b948cedd7d4841a1
   EXNotifications: e11f0e9a5b657c064a481a5d522f3bc5a07bf7cd
-  Expo: 1e3bcf9dd99de57a636127057f6b488f0609681a
-  expo-dev-client: 80a81d82fd401673ab11702ce9e54115a8852f3b
-  expo-dev-launcher: bb8588b36d18a52f4bfbbfc5aa1f9518a96d5d82
+  Expo: 49cded7844f2ec4ffb1cc3b86504853f26952935
+  expo-dev-client: 025dce84f48b04c60c3891547732f001f6aad777
+  expo-dev-launcher: 3cddfcd8e54748d0046af07dc8e4f58dbb045e93
   expo-dev-menu: 8088833c320b616a312ffe438fbea5df276c010e
   expo-dev-menu-interface: 7ba029c9d1a82ac22b9b584c00514860b060553e
   ExpoAppleAuthentication: 4fc9972356977f009911f2f3a5f56319c2a5b11b
@@ -2008,7 +2008,7 @@ SPEC CHECKSUMS:
   FBLazyVector: fbc4957d9aa695250b55d879c1d86f79d7e69ab4
   FBReactNativeSpec: 1e66a578650a10e698b177a414a17e25fc25f1d0
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
+  glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   GoogleMaps: a146f275ee429d14822178c7a841c03366ec92a1
   GooglePlaces: 0609463845250bbadafa1739938181e54dece439
   hermes-engine: b361c9ef5ef3cda53f66e195599b47e1f84ffa35
