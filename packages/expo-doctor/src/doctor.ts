@@ -119,7 +119,7 @@ export async function runChecksAsync(
 export function getChecksInScopeForProject(exp: ExpoConfig) {
   // add additional checks here
   const checks = [
-    /*new GlobalPrereqsVersionCheck(),
+    new GlobalPrereqsVersionCheck(),
     new IllegalPackageCheck(),
     new GlobalPackageInstalledCheck(),
     new SupportPackageVersionCheck(),
@@ -127,7 +127,7 @@ export function getChecksInScopeForProject(exp: ExpoConfig) {
     new ExpoConfigCommonIssueCheck(),
     new DirectPackageInstallCheck(),
     new PackageJsonCheck(),
-    new ProjectSetupCheck(),*/
+    new ProjectSetupCheck(),
     new MetroConfigCheck(),
   ];
   if (env.EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK) {

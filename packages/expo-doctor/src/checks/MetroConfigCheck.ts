@@ -1,8 +1,6 @@
-import type MetroConfig from 'metro-config';
-import resolveFrom from 'resolve-from';
-
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { learnMore } from '../utils/TerminalLink';
+import { configExistsAsync, loadConfigAsync } from '../utils/metroConfigLoader';
 
 export class MetroConfigCheck implements DoctorCheck {
   description = 'Check for issues with metro config';
@@ -15,9 +13,7 @@ export class MetroConfigCheck implements DoctorCheck {
     // configuration check and companion functions adapted from:
     // https://github.com/expo/eas-cli/blob/main/packages/eas-cli/src/project/metroConfig.ts
     if (await configExistsAsync(projectRoot)) {
-      console.warn('config exists');
       const metroConfig = await loadConfigAsync(projectRoot);
-      console.warn(metroConfig);
       const hasHashAssetFilesPlugin = metroConfig.transformer?.assetPlugins?.find(
         (plugin: string) => plugin.match(/expo-asset[/|\\]tools[/|\\]hashAssetFiles/)
       );
@@ -38,37 +34,3 @@ export class MetroConfigCheck implements DoctorCheck {
     };
   }
 }
-
-function importMetroConfigFromProject(projectDir: string): typeof MetroConfig {
-  const resolvedPath = resolveFrom.silent(projectDir, 'metro-config');
-  if (!resolvedPath) {
-    throw new MetroConfigPackageMissingError(
-      'Missing package "metro-config" in the project. ' +
-        'This usually means `react-native` is not installed. ' +
-        'Verify that dependencies in package.json include "react-native" ' +
-        'and run `yarn` or `npm install`.'
-    );
-  }
-  return require(resolvedPath);
-}
-
-export async function configExistsAsync(projectRoot: string): Promise<boolean> {
-  try {
-    const MetroConfig = importMetroConfigFromProject(projectRoot);
-    const result = await MetroConfig.resolveConfig(undefined, projectRoot);
-    return !result.isEmpty;
-  } catch (err) {
-    if (err instanceof MetroConfigPackageMissingError) {
-      return false;
-    } else {
-      throw err;
-    }
-  }
-}
-
-export async function loadConfigAsync(projectDir: string): Promise<MetroConfig.ConfigT> {
-  const MetroConfig = importMetroConfigFromProject(projectDir);
-  return await MetroConfig.loadConfig({ cwd: projectDir }, {});
-}
-
-class MetroConfigPackageMissingError extends Error {}
