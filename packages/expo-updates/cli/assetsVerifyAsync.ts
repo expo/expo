@@ -9,8 +9,8 @@ import {
   FullAssetDump,
   FullAssetDumpEntry,
   Platform,
-} from './types';
-import * as Log from '../utils/log';
+} from './assetsVerifyTypes';
+import * as Log from './utils/log';
 
 /**
  * Finds any assets that will be missing from an app given a build and an exported update bundle.
@@ -21,21 +21,21 @@ import * as Log from '../utils/log';
  * @param projectRoot The project root path
  * @returns An array containing any assets that are found in the Metro asset dump, but not included in either app.manifest or the exported bundle
  */
-export async function getMissingAssets(
+export async function getMissingAssetsAsync(
   buildPath: string,
   exportPath: string,
   platform: Platform,
   projectRoot: string
 ) {
   const buildManifestHashSet = getBuildManifestHashSet(
-    await getBuildManifest(buildPath, platform, projectRoot)
+    await getBuildManifestAsync(buildPath, platform, projectRoot)
   );
 
-  const fullAssetMap = await getFullAssetDump(exportPath);
+  const fullAssetMap = await getFullAssetDumpAsync(exportPath);
   const fullAssetSet = getFullAssetDumpHashSet(fullAssetMap);
 
   const exportedAssetSet = getExportedMetadataHashSet(
-    await getExportedMetadata(exportPath),
+    await getExportedMetadataAsync(exportPath),
     platform
   );
 
@@ -66,7 +66,11 @@ export async function getMissingAssets(
  * @param projectRoot The project root path
  * @returns the JSON structure of the manifest
  */
-export async function getBuildManifest(buildPath: string, platform: Platform, projectRoot: string) {
+export async function getBuildManifestAsync(
+  buildPath: string,
+  platform: Platform,
+  projectRoot: string
+) {
   let realBuildPath = buildPath;
   if (buildPath === projectRoot) {
     switch (platform) {
@@ -105,7 +109,7 @@ export function getBuildManifestHashSet(buildManifest: BuildManifest) {
  * @param exportPath The path to the exported bundle containing an asset dump.
  * @returns The asset dump as an object.
  */
-export async function getFullAssetDump(exportPath: string) {
+export async function getFullAssetDumpAsync(exportPath: string) {
   const assetMapPath = path.resolve(exportPath, 'assetmap.json');
   try {
     const assetMapString = await fs.readFile(assetMapPath, { encoding: 'utf-8' });
@@ -138,7 +142,7 @@ export function getFullAssetDumpHashSet(assetDump: FullAssetDump) {
  * @param exportPath Path to the exported bundle.
  * @returns The metadata of the bundle.
  */
-export async function getExportedMetadata(exportPath: string) {
+export async function getExportedMetadataAsync(exportPath: string) {
   const metadataPath = path.resolve(exportPath, 'metadata.json');
   try {
     const metadataString = await fs.readFile(metadataPath, { encoding: 'utf-8' });

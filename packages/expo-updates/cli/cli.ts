@@ -12,7 +12,7 @@ const commands: { [command: string]: () => Promise<Command> } = {
     import('./generateCodeSigning.js').then((i) => i.generateCodeSigning),
   'codesigning:configure': () =>
     import('./configureCodeSigning.js').then((i) => i.configureCodeSigning),
-  'assets:verify': () => import('./assetsVerify/index.js').then((i) => i.expoAssetsVerify),
+  'assets:verify': () => import('./assetsVerify.js').then((i) => i.expoAssetsVerify),
 };
 
 const args = arg(

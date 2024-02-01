@@ -1,14 +1,14 @@
 import { vol } from 'memfs';
 
 import {
-  getBuildManifest,
+  getBuildManifestAsync,
   getBuildManifestHashSet,
-  getExportedMetadata,
+  getExportedMetadataAsync,
   getExportedMetadataHashSet,
-  getFullAssetDump,
+  getFullAssetDumpAsync,
   getFullAssetDumpHashSet,
-} from '../assetsVerify';
-import { BuildManifest, ExportedMetadata, FullAssetDump } from '../types';
+} from '../assetsVerifyAsync';
+import { BuildManifest, ExportedMetadata, FullAssetDump } from '../assetsVerifyTypes';
 
 jest.mock('fs');
 
@@ -89,7 +89,7 @@ const buildManifest: BuildManifest = {
     },
   ],
 };
-describe(getFullAssetDump, () => {
+describe(getFullAssetDumpAsync, () => {
   beforeEach(() => {
     vol.reset();
   });
@@ -97,7 +97,7 @@ describe(getFullAssetDump, () => {
     vol.fromJSON({}, projectRoot);
     let errorMessage = '';
     try {
-      await getFullAssetDump(`${projectRoot}/dist`);
+      await getFullAssetDumpAsync(`${projectRoot}/dist`);
     } catch (e) {
       errorMessage = `${e}`;
     }
@@ -113,7 +113,7 @@ describe(getFullAssetDump, () => {
       },
       projectRoot
     );
-    const result = await getFullAssetDump(`${projectRoot}/dist`);
+    const result = await getFullAssetDumpAsync(`${projectRoot}/dist`);
     expect(result.get('c0869ee4a51820ceef252798829c4c76')?.name).toEqual('dougheadshot');
   });
 });
@@ -123,7 +123,7 @@ describe(getFullAssetDumpHashSet, () => {
     expect(result.size).toEqual(4);
   });
 });
-describe(getBuildManifest, () => {
+describe(getBuildManifestAsync, () => {
   beforeEach(() => {
     vol.reset();
   });
@@ -134,7 +134,7 @@ describe(getBuildManifest, () => {
       },
       projectRoot
     );
-    const result = await getBuildManifest(projectRoot, 'android', projectRoot);
+    const result = await getBuildManifestAsync(projectRoot, 'android', projectRoot);
     expect(result.assets.length).toEqual(3);
   });
   it('Throws if build manifest does not exist', async () => {
@@ -146,7 +146,7 @@ describe(getBuildManifest, () => {
     );
     let errorMessage = '';
     try {
-      await getBuildManifest(projectRoot, 'ios', projectRoot);
+      await getBuildManifestAsync(projectRoot, 'ios', projectRoot);
     } catch (e) {
       errorMessage = `${e}`;
     }
@@ -160,7 +160,7 @@ describe(getBuildManifestHashSet, () => {
     expect(result.has('1052d6ca3993ae24a932304560a4c8b4'));
   });
 });
-describe(getExportedMetadata, () => {
+describe(getExportedMetadataAsync, () => {
   beforeEach(() => {
     vol.reset();
   });
@@ -173,7 +173,7 @@ describe(getExportedMetadata, () => {
       },
       projectRoot
     );
-    const result = await getExportedMetadata(`${projectRoot}/dist`);
+    const result = await getExportedMetadataAsync(`${projectRoot}/dist`);
     expect(result.fileMetadata.android?.assets.length).toEqual(1);
     expect(result.fileMetadata.android?.assets.length).toEqual(1);
   });
@@ -181,7 +181,7 @@ describe(getExportedMetadata, () => {
     vol.fromJSON({}, projectRoot);
     let errorMessage = '';
     try {
-      await getExportedMetadata(`${projectRoot}/dist`);
+      await getExportedMetadataAsync(`${projectRoot}/dist`);
     } catch (e) {
       errorMessage = `${e}`;
     }

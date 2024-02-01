@@ -1,12 +1,13 @@
 #!/usr/bin/env node
+import arg from 'arg';
 import chalk from 'chalk';
+import path from 'path';
 
-import { getMissingAssets } from './assetsVerify';
-import { resolveOptions, defaultOptions } from './resolveOptions';
-import { validPlatforms } from './types';
-import { Command } from '../cli';
-import { assertArgs, getProjectRoot } from '../utils/args';
-import * as Log from '../utils/log';
+import { getMissingAssetsAsync } from './assetsVerifyAsync';
+import { isValidPlatform, validPlatforms, type ValidatedOptions } from './assetsVerifyTypes';
+import { Command } from './cli';
+import { assertArgs, getProjectRoot } from './utils/args';
+import * as Log from './utils/log';
 
 export const expoAssetsVerify: Command = async (argv) => {
   const args = assertArgs(
@@ -51,7 +52,7 @@ Verify that all static files in an exported bundle are in either the export or a
 
     const { buildPath, exportPath, platform } = validatedArgs;
 
-    const missingAssets = await getMissingAssets(buildPath, exportPath, platform, projectRoot);
+    const missingAssets = await getMissingAssetsAsync(buildPath, exportPath, platform, projectRoot);
 
     if (missingAssets.length > 0) {
       throw new Error(
@@ -67,7 +68,7 @@ Verify that all static files in an exported bundle are in either the export or a
         )}`
       );
     } else {
-      Log.warn(`All resolved assets found in either embedded manifest or in exported bundle.`);
+      Log.log(`All resolved assets found in either embedded manifest or in exported bundle.`);
     }
     process.exit(0);
   })().catch((e) => {
@@ -75,3 +76,19 @@ Verify that all static files in an exported bundle are in either the export or a
     process.exit(1);
   });
 };
+
+const defaultOptions = {
+  exportPath: './dist',
+  buildPath: '.',
+};
+
+function resolveOptions(projectRoot: string, args: arg.Result<arg.Spec>): ValidatedOptions {
+  if (!isValidPlatform(args['--platform'])) {
+    throw new Error(`Platform must be one of ${JSON.stringify(validPlatforms)}`);
+  }
+  return {
+    exportPath: path.resolve(projectRoot, args['--export-path'] ?? defaultOptions.exportPath),
+    buildPath: path.resolve(projectRoot, args['--build-path'] ?? defaultOptions.buildPath),
+    platform: args['--platform'] ?? 'ios',
+  };
+}
