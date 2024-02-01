@@ -25,7 +25,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.adjustPathname = exports.extractExpoPathFromURL = void 0;
 const Linking = __importStar(require("expo-linking"));
-const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
 // This is only run on native.
 function extractExactPathFromURL(url) {
     if (
@@ -35,6 +34,7 @@ function extractExactPathFromURL(url) {
         const { origin, href } = new URL(url);
         return href.replace(origin, '');
     }
+    const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
     // Handle special URLs used in Expo Go: `/--/pathname` -> `pathname`
     if (isExpoGo &&
         // while not exhaustive, `exp` and `exps` are the only two schemes which

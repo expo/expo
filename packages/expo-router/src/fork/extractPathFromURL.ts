@@ -1,7 +1,5 @@
 import * as Linking from 'expo-linking';
 
-const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
-
 // This is only run on native.
 function extractExactPathFromURL(url: string): string {
   if (
@@ -12,6 +10,8 @@ function extractExactPathFromURL(url: string): string {
     const { origin, href } = new URL(url);
     return href.replace(origin, '');
   }
+
+  const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
 
   // Handle special URLs used in Expo Go: `/--/pathname` -> `pathname`
   if (
