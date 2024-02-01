@@ -4,9 +4,9 @@
 
 ### 🛠 Breaking changes
 
-- Make all missing functions `undefined` on web instead of throwing `UnavailabilityError`.
-
 ### 🎉 New features
+
+- Add new `expo-haptics/next` API with direct native bindings.
 
 ### 🐛 Bug fixes
 
