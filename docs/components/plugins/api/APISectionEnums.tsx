@@ -34,7 +34,9 @@ const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Elemen
       <APISectionDeprecationNote comment={comment} />
       <APISectionPlatformTags comment={comment} />
       <H3Code tags={getTagNamesList(comment)}>
-        <MONOSPACE weight="medium">{name}</MONOSPACE>
+        <MONOSPACE weight="medium" className="wrap-anywhere">
+          {name}
+        </MONOSPACE>
       </H3Code>
       <CommentTextBlock comment={comment} includePlatforms={false} />
       <BoxSectionHeader text={`${name} Values`} className="!mb-0 !border-b-0" />

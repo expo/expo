@@ -110,7 +110,7 @@ const renderType = ({
         <APISectionDeprecationNote comment={comment} />
         <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
-          <MONOSPACE weight="medium">
+          <MONOSPACE weight="medium" className="wrap-anywhere">
             {name}
             {type.declaration.signatures ? '()' : ''}
           </MONOSPACE>
@@ -138,7 +138,9 @@ const renderType = ({
           <APISectionDeprecationNote comment={comment} />
           <APISectionPlatformTags comment={comment} />
           <H3Code tags={getTagNamesList(comment)}>
-            <MONOSPACE weight="medium">{name}</MONOSPACE>
+            <MONOSPACE weight="medium" className="wrap-anywhere">
+              {name}
+            </MONOSPACE>
           </H3Code>
           <CommentTextBlock comment={comment} includePlatforms={false} />
           {type.type === 'intersection' ? (
@@ -169,7 +171,9 @@ const renderType = ({
           <APISectionDeprecationNote comment={comment} />
           <APISectionPlatformTags comment={comment} />
           <H3Code tags={getTagNamesList(comment)}>
-            <MONOSPACE weight="medium">{name}</MONOSPACE>
+            <MONOSPACE weight="medium" className="wrap-anywhere">
+              {name}
+            </MONOSPACE>
           </H3Code>
           <CALLOUT className="mb-3">
             <CALLOUT tag="span" theme="secondary" weight="semiBold">
@@ -199,7 +203,9 @@ const renderType = ({
         <APISectionDeprecationNote comment={comment} />
         <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
-          <MONOSPACE weight="medium">{name}</MONOSPACE>
+          <MONOSPACE weight="medium" className="wrap-anywhere">
+            {name}
+          </MONOSPACE>
         </H3Code>
         <P className="mb-3">
           <DEMI theme="secondary">Type: </DEMI>
@@ -214,7 +220,9 @@ const renderType = ({
         <APISectionDeprecationNote comment={comment} />
         <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
-          <MONOSPACE weight="medium">{name}</MONOSPACE>
+          <MONOSPACE weight="medium" className="wrap-anywhere">
+            {name}
+          </MONOSPACE>
         </H3Code>
         <CommentTextBlock comment={comment} includePlatforms={false} />
         <P>
@@ -229,7 +237,7 @@ const renderType = ({
         <APISectionDeprecationNote comment={comment} />
         <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
-          <MONOSPACE weight="medium">
+          <MONOSPACE weight="medium" className="wrap-anywhere">
             {name}&lt;{type.checkType.name}&gt;
           </MONOSPACE>
         </H3Code>
@@ -268,7 +276,9 @@ const renderType = ({
         <APISectionDeprecationNote comment={comment} />
         <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
-          <MONOSPACE weight="medium">{name}</MONOSPACE>
+          <MONOSPACE weight="medium" className="wrap-anywhere">
+            {name}
+          </MONOSPACE>
         </H3Code>
         <CommentTextBlock comment={comment} includePlatforms={false} />
         <P>

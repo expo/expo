@@ -1,9 +1,11 @@
 const expoTheme = require('@expo/styleguide/tailwind');
 const { merge } = require('lodash');
+const plugin = require('tailwindcss/plugin');
 
-function getExpoTheme(extend = {}) {
+function getExpoTheme(extend = {}, plugins = []) {
   const customizedTheme = Object.assign({}, expoTheme);
   customizedTheme.theme.extend = Object.assign({}, merge(expoTheme.theme.extend, extend));
+  customizedTheme.plugins = [...expoTheme.plugins, ...plugins];
   return customizedTheme;
 }
 
@@ -17,7 +19,6 @@ module.exports = {
     './node_modules/@expo/styleguide/dist/**/*.{js,ts,jsx,tsx}',
     './node_modules/@expo/styleguide-search-ui/dist/**/*.{js,ts,jsx,tsx}',
   ],
-  plugins: [],
   ...getExpoTheme({
     backgroundImage: theme => ({
       'default-fade': `linear-gradient(to bottom, ${theme(
@@ -68,5 +69,14 @@ module.exports = {
       fadeOut: 'fadeOut 0.15s ease-in',
       slideUpAndFadeIn: 'slideUpAndFadeIn 0.25s ease-out',
     },
-  }),
+  },
+  [
+    plugin(function ({ addUtilities }) {
+      addUtilities({
+        '.wrap-anywhere': {
+          'overflow-wrap': 'anywhere',
+        },
+      });
+    }),
+  ]),
 };

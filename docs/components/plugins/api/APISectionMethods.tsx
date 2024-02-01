@@ -63,7 +63,10 @@ export const renderMethod = (
           <APISectionDeprecationNote comment={comment} />
           <APISectionPlatformTags comment={comment} />
           <HeaderComponent tags={getTagNamesList(comment)}>
-            <MONOSPACE weight="medium" css={!exposeInSidebar && STYLES_NOT_EXPOSED_HEADER}>
+            <MONOSPACE
+              weight="medium"
+              css={!exposeInSidebar && STYLES_NOT_EXPOSED_HEADER}
+              className="wrap-anywhere">
               {getMethodName(method as MethodDefinitionData, apiName, name, parameters)}
             </MONOSPACE>
           </HeaderComponent>

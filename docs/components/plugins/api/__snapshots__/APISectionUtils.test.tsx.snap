@@ -14,7 +14,7 @@ exports[`APISectionUtils.CommentTextBlock component basic comment 1`] = `
 exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
 <div>
   <span
-    class="flex items-center mb-2 css-1yjys1n-TextComponent"
+    class="inline-flex items-center mb-2 css-1yjys1n-TextComponent"
     data-text="true"
   >
     <span

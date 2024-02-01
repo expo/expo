@@ -58,7 +58,9 @@ const renderComponent = (
     <div key={`component-definition-${resolvedName}`} css={STYLES_APIBOX}>
       <APISectionDeprecationNote comment={extractedComment} />
       <H3Code tags={getTagNamesList(comment)}>
-        <MONOSPACE weight="medium">{resolvedName}</MONOSPACE>
+        <MONOSPACE weight="medium" className="wrap-anywhere">
+          {resolvedName}
+        </MONOSPACE>
       </H3Code>
       {resolvedType && resolvedTypeParameters && (
         <P className={ELEMENT_SPACING}>
