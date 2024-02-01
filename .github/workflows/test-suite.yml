@@ -64,14 +64,14 @@ jobs:
   #         author_name: Test Suite (Web)
 
   ios-build:
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
         with:
           submodules: true
-      - name: 🔨 Switch to Xcode 14.3
-        run: sudo xcode-select --switch /Applications/Xcode_14.3.app
+      - name: 🔨 Switch to Xcode 15.2
+        run: sudo xcode-select --switch /Applications/Xcode_15.2.app
       - name: 🍺 Install required tools
         run: |
           brew install watchman || true
@@ -132,7 +132,7 @@ jobs:
 
   ios-test:
     needs: ios-build
-    runs-on: macos-latest
+    runs-on: macos-14
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
