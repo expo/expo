@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Reduce usage of `expo-constants`. ([#26834](https://github.com/expo/expo/pull/26834) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 3.4.6 — 2024-01-26
 
 _This version does not introduce any user-facing changes._

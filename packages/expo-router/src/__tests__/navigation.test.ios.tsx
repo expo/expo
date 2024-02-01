@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import Constants from 'expo-constants';
 import React, { Text } from 'react-native';
 
 import {
@@ -649,25 +648,12 @@ it('can deep link, pop back, and move around with initialRouteName in root layou
   expect(screen).toHavePathname('/a/b');
 });
 
-jest.mock('expo-constants', () => ({
-  __esModule: true,
-  ExecutionEnvironment: jest.requireActual('expo-constants').ExecutionEnvironment,
-  default: {
-    expoConfig: {},
-  },
-}));
-
 afterEach(() => {
-  Constants.expoConfig!.experiments = undefined;
+  delete process.env.EXPO_BASE_URL;
 });
 
 it('respects baseUrl', async () => {
-  // @ts-expect-error
-  Constants.expoConfig = {
-    experiments: {
-      baseUrl: '/one/two',
-    },
-  };
+  process.env.EXPO_BASE_URL = '/one/two';
 
   renderRouter({
     index: function Index() {

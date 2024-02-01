@@ -238,7 +238,7 @@ function getEnvironmentForBuildDetails(bundleDetails?: BundleDetails | null): st
   // Expo CLI will pass `customTransformOptions.environment = 'node'` when bundling for the server.
   const env = bundleDetails?.customTransformOptions?.environment ?? null;
   if (env === 'node') {
-    return `${chalk.bold(' λ ')} `;
+    return chalk.bold('λ') + ' ';
   }
 
   return '';
