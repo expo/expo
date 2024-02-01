@@ -771,6 +771,19 @@ it('can push & replace with nested Slots', async () => {
   expect(screen).toHavePathname('/');
 });
 
+it('can push with top-level catch-all route', () => {
+  renderRouter({
+    '[...all]': () => <Text testID="index" />,
+  });
+
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('index')).toBeOnTheScreen();
+
+  // // If we push once and go back, we are back to index
+  act(() => router.push('/test'));
+  expect(screen.getByTestId('index')).toBeOnTheScreen();
+});
+
 it('can push the same route multiple times', () => {
   renderRouter({
     index: () => <Text testID="index" />,
