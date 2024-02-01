@@ -1,5 +1,5 @@
 ---
-title: Supporting more platforms
+title: Additional platform support
 description: Learn how to add support for macOS and tvOS platforms.
 ---
 
@@ -11,11 +11,11 @@ This guide will walk you through adding support for these platforms.
 
 <Step label="1">
 
-### Use the `"apple"` platform in `expo-module.config.json`
+## Use the `"apple"` platform in `expo-module.config.json`
 
-In order to provide more seamless support for other Apple platforms, Expo SDK 50 introduced a universal `"apple"` platform to instruct the autolinking that the module may support any of the Apple platform
+To provide seamless support for other Apple platforms, Expo SDK 50 introduced a universal `"apple"` platform to instruct the autolinking that the module may support any of the Apple platform
 and the question whether to link the module in the specific CocoaPods target is moved off to the podspec.
-If you have used `"ios"` before, you can safely replace it.
+If you have used `"ios"` before, you can safely replace it:
 
 ```diff expo-module.config.json
 {
@@ -33,9 +33,9 @@ If you have used `"ios"` before, you can safely replace it.
 </Step>
 <Step label="2">
 
-### Update the podspec to declare support for other platforms
+## Update the podspec to declare support for other platforms
 
-The module's podspec needs to be updated with the supported platforms, otherwise CocoaPods would fail to install the pod on targets for the other platforms.
+The module's podspec needs to be updated with a list of the supported platforms. Otherwise, CocoaPods would fail to install the pod on targets for the other platforms.
 As mentioned in the first step, this part of the spec is the source of truth for autolinking when the module is configured with a universal `"apple"` platform.
 
 ```diff Module's podspec
@@ -47,13 +47,13 @@ As mentioned in the first step, this part of the spec is the source of truth for
 + }
 ```
 
-Note that any changes in the podspec require running `pod install` to have an effect.
+Any changes in the podspec require running `pod install` to have an effect.
 
 </Step>
 
 <Step label="3">
 
-### Set up `react-native-macos` or `react-native-tvos` in the app
+## Set up `react-native-macos` or `react-native-tvos` in the app
 
 If you are writing a local module and your app is already set up, you can skip this step.
 Otherwise, you will need to set up your app or the example app if you are writing a standalone (non-local) module.
@@ -64,15 +64,15 @@ Otherwise, you will need to set up your app or the example app if you are writin
 </Step>
 <Step label="4">
 
-### Review the code for using APIs not supported on these platforms
+## Review the code for using APIs not supported on these platforms
 
-Platform APIs may differ between Apple platforms. The most noticeable difference comes from relying on different UI frameworks – `UIKit` on iOS/tvOS and `AppKit` on macOS.
+Platform APIs may differ between Apple platforms. The most noticeable difference comes from relying on different UI frameworks &mdash;`UIKit` on iOS/tvOS and `AppKit` on macOS.
 
-Both `react-native-macos` and `expo-modules-core` provide some aliases and polyfills so that you can reference to `UIKit` classes on macOS target (for example `UIView` is an alias to `NSView`, `UIApplication` is an alias to `NSApplication`),
+Both `react-native-macos` and `expo-modules-core` provide aliases and polyfills to reference`UIKit` classes on macOS target (for example, `UIView` is an alias to `NSView`, `UIApplication` is an alias to `NSApplication`),
 but it's usually not enough for iOS-first libraries to support other platforms out of the box. You may need to write conditionally compiled code that uses different implementations depending on the platform.
 
-In order to do this, you can use Swift compiler directives with the `os` condition, which includes a given piece of code when our app is being built for a specific platform.
-That, combined with the `#if` and `#else` directives, essentially lets you set up platform-specific branches within the cross-platform code.
+To do this, use Swift compiler directives with the `os` condition, which includes a given piece of code when our app is being built for a specific platform.
+In combination with the `#if` and `#else` directives, lets you set up platform-specific branches within the cross-platform code.
 
 ```swift
 #if os(iOS)
@@ -86,4 +86,4 @@ That, combined with the `#if` and `#else` directives, essentially lets you set u
 
 </Step>
 
-Congratulations! Your module is now ready to be used on Out-of-Tree platform.
+Your module is now ready to be used on Out-of-Tree platform.
