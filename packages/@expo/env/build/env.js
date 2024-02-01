@@ -106,8 +106,7 @@ function createControlledEnvironment() {
           loadedEnvFiles.push(absoluteDotenvFile);
           debug(`Loaded environment variables from: ${absoluteDotenvFile}`);
           for (const key of Object.keys(result)) {
-            var _userDefinedEnvironme;
-            if (typeof ((_userDefinedEnvironme = userDefinedEnvironment) === null || _userDefinedEnvironme === void 0 ? void 0 : _userDefinedEnvironme[key]) !== 'undefined') {
+            if (typeof userDefinedEnvironment?.[key] !== 'undefined') {
               debug(`"${key}" is already defined and IS NOT overwritten by: ${absoluteDotenvFile}`);
             } else {
               if (typeof parsedEnv[key] !== 'undefined') {
