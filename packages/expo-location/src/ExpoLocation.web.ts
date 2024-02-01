@@ -49,30 +49,33 @@ function isLocationValid(location: LocationObject, options: LocationLastKnownOpt
 }
 
 /**
- * Gets the permission details. The implementation is not very good as it actually requests
- * for the current location, but there is no better way on web so far :(
+ * Gets the permission details. The implementation is not very good as it's not
+ * possible to query for permission on all browsers, apparently only the
+ * latest versions will support this.
  */
 async function getPermissionsAsync(): Promise<PermissionResponse> {
   return new Promise<PermissionResponse>((resolve) => {
-    const resolveWithStatus = (status) =>
+    const resolveWithStatus = (status, canAskAgain = true) =>
       resolve({
         status,
         granted: status === PermissionStatus.GRANTED,
-        canAskAgain: true,
+        canAskAgain,
         expires: 0,
       });
 
-    navigator.geolocation.getCurrentPosition(
-      () => resolveWithStatus(PermissionStatus.GRANTED),
-      ({ code }) => {
-        if (code === 1 /* PERMISSION_DENIED */) {
-          resolveWithStatus(PermissionStatus.DENIED);
-        } else {
-          resolveWithStatus(PermissionStatus.UNDETERMINED);
-        }
-      },
-      { enableHighAccuracy: false, maximumAge: Infinity }
-    );
+    navigator.permissions.query({name: 'geolocation'}).then((permission) => {
+      if(permission.state === 'granted') {
+        resolveWithStatus(PermissionStatus.GRANTED)
+      } else if(permission.state === 'denied') {
+        resolveWithStatus(PermissionStatus.DENIED, false)
+      } else if(permission.state === 'prompt') {
+        // on Chrome, the permission state is 'prompt' when the permission has
+        // not been requested yet
+        resolveWithStatus(PermissionStatus.UNDETERMINED)
+      } else {
+        resolveWithStatus(PermissionStatus.UNDETERMINED)
+      }
+    })
   });
 }
 
