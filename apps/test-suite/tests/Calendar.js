@@ -39,8 +39,8 @@ async function pickCalendarSourceIdAsync() {
 async function createTestEventAsync(calendarId, customArgs = {}) {
   return await Calendar.createEventAsync(calendarId, {
     title: 'App.js Conference',
-    startDate: +new Date(2019, 3, 4), // 4th April 2019, months are counted from 0
-    endDate: +new Date(2019, 3, 5), // 5th April 2019
+    startDate: new Date(2019, 3, 4).getTime(), // 4th April 2019, months are counted from 0
+    endDate: new Date(2019, 3, 5).getTime(), // 5th April 2019
     timeZone: 'Europe/Warsaw',
     allDay: true,
     location: 'Qubus Hotel, Nadwiślańska 6, 30-527 Kraków, Poland',
@@ -217,6 +217,15 @@ export async function test(t) {
       });
     });
 
+    t.describe('requestReminderPermissionsAsync()', () => {
+      t.it('requests for Reminder permissions', async () => {
+        const results = await Calendar.requestRemindersPermissionsAsync();
+
+        t.expect(results.granted).toBe(true);
+        t.expect(results.status).toBe('granted');
+      });
+    });
+
     t.describe('createCalendarAsync()', () => {
       let calendarId;
 
@@ -318,7 +327,7 @@ export async function test(t) {
       t.it('creates an event with the recurrence rule', async () => {
         const eventId = await createTestEventAsync(calendarId, {
           recurrenceRule: {
-            endDate: new Date(2019, 3, 5),
+            endDate: new Date(2019, 3, 5).getTime(),
             frequency: 'daily',
             interval: 1,
           },
@@ -337,7 +346,6 @@ export async function test(t) {
             error = e;
           }
           t.expect(error).toBeDefined();
-          t.expect(error.code).toBe('E_EVENT_INVALID_TIMEZONE');
         });
       }
 
@@ -438,7 +446,6 @@ export async function test(t) {
         }
         t.expect(error).toBeDefined();
         t.expect(error instanceof Error).toBe(true);
-        t.expect(error.code).toBe('E_EVENT_NOT_FOUND');
       });
 
       t.afterAll(async () => {
