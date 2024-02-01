@@ -1,5 +1,5 @@
 import { getExactRoutes } from '../getRoutes';
-import { getServerManifest } from '../getServerManifest';
+import { getServerManifest, parseParameter } from '../getServerManifest';
 import { RequireContext } from '../types';
 
 function createMockContextModule(map: Record<string, Record<string, any>> = {}) {
@@ -67,6 +67,16 @@ xit(`converts single basic`, () => {
   expect(getServerManifest(getRoutesFor(['./home.js']))).toEqual([
     { namedRegex: '^/home(?:/)?$', routeKeys: {} },
   ]);
+});
+
+describe(parseParameter, () => {
+  it(`matches optionals using non-standard from router v1`, () => {
+    expect(parseParameter('[...all]')).toEqual({
+      name: 'all',
+      optional: true,
+      repeat: true,
+    });
+  });
 });
 
 it(`sorts deep paths before shallow paths`, () => {
@@ -188,7 +198,7 @@ it(`converts dynamic routes`, () => {
     htmlRoutes: [
       {
         file: './c/[d]/e/[...f].js',
-        namedRegex: '^/c/(?<d>[^/]+?)/e/(?<f>.+?)(?:/)?$',
+        namedRegex: '^/c/(?<d>[^/]+?)/e(?:/(?<f>.+?))?(?:/)?$',
         page: './c/[d]/e/[...f]',
         routeKeys: { d: 'd', f: 'f' },
       },
@@ -200,11 +210,98 @@ it(`converts dynamic routes`, () => {
       },
       {
         file: './[...b].tsx',
-        namedRegex: '^/(?<b>.+?)(?:/)?$',
+        namedRegex: '^(?:/(?<b>.+?))?(?:/)?$',
         page: './[...b]',
         routeKeys: { b: 'b' },
       },
     ],
     notFoundRoutes: [],
   });
+});
+
+it(`converts dynamic routes on same level with specificity`, () => {
+  const routesManifest = getServerManifest(
+    getRoutesFor(['./index.tsx', './a.tsx', './[a].tsx', './[...a].tsx', './(a)/[a].tsx'])
+  );
+  expect(routesManifest).toEqual({
+    apiRoutes: [],
+    htmlRoutes: [
+      {
+        file: './index.tsx',
+        namedRegex: '^/(?:/)?$',
+        page: './index',
+        routeKeys: {},
+      },
+      {
+        file: './a.tsx',
+        namedRegex: '^/a(?:/)?$',
+        page: './a',
+        routeKeys: {},
+      },
+      {
+        file: './(a)/[a].tsx',
+        namedRegex: '^(?:/\\(a\\))?/(?<a>[^/]+?)(?:/)?$',
+        page: './(a)/[a]',
+        routeKeys: { a: 'a' },
+      },
+      {
+        file: './[a].tsx',
+        namedRegex: '^/(?<a>[^/]+?)(?:/)?$',
+        page: './[a]',
+        routeKeys: { a: 'a' },
+      },
+      {
+        file: './[...a].tsx',
+        namedRegex: '^(?:/(?<a>.+?))?(?:/)?$',
+        page: './[...a]',
+        routeKeys: { a: 'a' },
+      },
+    ],
+    notFoundRoutes: [],
+  });
+
+  for (const [matcher, page] of [
+    ['/', './index'],
+    ['/a', './a'],
+    ['/b', './(a)/[a]'],
+  ]) {
+    expect(routesManifest.htmlRoutes.find((r) => new RegExp(r.namedRegex).test(matcher)).page).toBe(
+      page
+    );
+  }
+});
+
+it(`matches top-level catch-all before +not-found route`, () => {
+  const routesManifest = getServerManifest(getRoutesFor(['./[...a].tsx', './+not-found.tsx']));
+  expect(routesManifest).toEqual({
+    apiRoutes: [],
+    htmlRoutes: [
+      {
+        file: './[...a].tsx',
+        namedRegex: '^(?:/(?<a>.+?))?(?:/)?$',
+        page: './[...a]',
+        routeKeys: { a: 'a' },
+      },
+    ],
+    notFoundRoutes: [
+      {
+        file: './+not-found.tsx',
+        namedRegex: '^(?:/(?<notfound>.+?))?(?:/)?$',
+        page: './+not-found',
+        routeKeys: { notfound: 'not-found' },
+      },
+    ],
+  });
+
+  for (const [matcher, page] of [
+    ['', './[...a]'],
+    ['/', './[...a]'],
+    ['//', './[...a]'],
+    ['/a', './[...a]'],
+    ['/b/c/', './[...a]'],
+  ]) {
+    expect(routesManifest.htmlRoutes.find((r) => new RegExp(r.namedRegex).test(matcher)).page).toBe(
+      page
+    );
+  }
 });

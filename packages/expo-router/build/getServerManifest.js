@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getNamedRouteRegex = exports.getServerManifest = void 0;
+exports.parseParameter = exports.getNamedRouteRegex = exports.getServerManifest = void 0;
 const matchers_1 = require("./matchers");
 const sortRoutes_1 = require("./sortRoutes");
 function isApiRoute(route) {
@@ -33,10 +33,13 @@ function getServerManifest(route) {
 }
 exports.getServerManifest = getServerManifest;
 function getMatchableManifestForPaths(paths) {
-    return paths.map((normalizedRoutePath) => ({
-        ...getNamedRouteRegex(normalizedRoutePath[0], normalizedRoutePath[1].contextKey),
-        generated: normalizedRoutePath[1].generated,
-    }));
+    return paths.map((normalizedRoutePath) => {
+        const matcher = getNamedRouteRegex(normalizedRoutePath[0], normalizedRoutePath[1].contextKey);
+        if (normalizedRoutePath[1].generated) {
+            matcher.generated = true;
+        }
+        return matcher;
+    });
 }
 function getNamedRouteRegex(normalizedRoute, page) {
     const result = getNamedParametrizedRoute(normalizedRoute);
@@ -94,7 +97,7 @@ function getNamedParametrizedRoute(route) {
                 segment = '[...not-found]';
             }
             if (/^\[.*\]$/.test(segment)) {
-                const { name, optional, repeat } = parseParameter(segment.slice(1, -1));
+                const { name, optional, repeat } = parseParameter(segment);
                 // replace any non-word characters since they can break
                 // the named regex
                 let cleanedKey = name.replace(/\W/g, '');
@@ -157,4 +160,5 @@ function parseParameter(param) {
     }
     return { name, repeat, optional };
 }
+exports.parseParameter = parseParameter;
 //# sourceMappingURL=getServerManifest.js.map
