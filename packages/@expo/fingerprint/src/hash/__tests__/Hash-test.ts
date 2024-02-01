@@ -139,6 +139,41 @@ describe(createFileHashResultsAsync, () => {
     const result = await createFileHashResultsAsync(filePath, limiter, '/app', options);
     expect(result).toBe(null);
   });
+
+  it('should transform file if it uses options.preHashTransformer', async () => {
+    const file1Path = 'assets/icon.png';
+    const file2Path = 'assets/icon2.png';
+    const file1ContentsBeforeTransform = '{wat}';
+    const file2ContentsBeforeTransform = '{huh}';
+    const file1ContentsAfterTransform = '12345';
+    const limiter = pLimit(1);
+    const options = await normalizeOptionsAsync('/app', {
+      preHashTransformer: {
+        shouldTransformFileAtPath: (transformFilePath) => transformFilePath.includes(file1Path),
+        async transformFileContentsToBeHashed() {
+          return Buffer.from(file1ContentsAfterTransform);
+        },
+      },
+    });
+    vol.mkdirSync('/app');
+    vol.mkdirSync('/app/assets');
+    vol.writeFileSync(path.join('/app', file1Path), file1ContentsBeforeTransform);
+    vol.writeFileSync(path.join('/app', file2Path), file2ContentsBeforeTransform);
+
+    const resultFile1 = await createFileHashResultsAsync(file1Path, limiter, '/app', options);
+    const expectHexFile1 = createHash(options.hashAlgorithm)
+      .update(file1ContentsAfterTransform)
+      .digest('hex');
+    expect(resultFile1?.id).toEqual(file1Path);
+    expect(resultFile1?.hex).toEqual(expectHexFile1);
+
+    const resultFile2 = await createFileHashResultsAsync(file2Path, limiter, '/app', options);
+    const expectHexFile2 = createHash(options.hashAlgorithm)
+      .update(file2ContentsBeforeTransform)
+      .digest('hex');
+    expect(resultFile2?.id).toEqual(file2Path);
+    expect(resultFile2?.hex).toEqual(expectHexFile2);
+  });
 });
 
 describe(createDirHashResultsAsync, () => {

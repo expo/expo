@@ -9,7 +9,10 @@ import {
 import { buildResourceItem, ResourceXML } from './Resources';
 import { removeStringItem, setStringItem } from './Strings';
 import { ConfigPlugin, ExportedConfigWithProps } from '../Plugin.types';
-import { createStringsXmlPlugin, withAndroidManifestNativeFingerprint } from '../plugins/android-plugins';
+import {
+  createStringsXmlPlugin,
+  withAndroidManifestNativeFingerprint,
+} from '../plugins/android-plugins';
 import { withPlugins } from '../plugins/withPlugins';
 import {
   ExpoConfigUpdates,
