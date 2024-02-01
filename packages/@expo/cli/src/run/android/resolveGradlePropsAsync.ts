@@ -30,7 +30,7 @@ function assertVariant(variant?: string) {
 export async function resolveGradlePropsAsync(
   projectRoot: string,
   options: { variant?: string; allArch?: boolean },
-  device?: Device
+  device: Device
 ): Promise<GradleProps> {
   const variant = assertVariant(options.variant);
   // NOTE(EvanBacon): Why would this be different? Can we get the different name?
@@ -42,7 +42,7 @@ export async function resolveGradlePropsAsync(
   // This won't work for non-standard flavor names like "myFlavor" would be treated as "my", "flavor".
   const [buildType, ...flavors] = variant.split(/(?=[A-Z])/).map((v) => v.toLowerCase());
   const apkVariantDirectory = path.join(apkDirectory, ...flavors, buildType);
-  const architectures = await getConnectedDeviceABIS(buildType, options.allArch, device);
+  const architectures = await getConnectedDeviceABIS(buildType, device, options.allArch);
 
   return {
     appName,
@@ -55,22 +55,14 @@ export async function resolveGradlePropsAsync(
 
 async function getConnectedDeviceABIS(
   buildType: string,
-  allArch?: boolean,
-  device?: Device
+  device: Device,
+  allArch?: boolean
 ): Promise<string> {
+  // Follow the same behavior as iOS, only enable this for debug builds
   if (allArch || buildType !== 'debug') {
     return '';
   }
-
-  if (device) {
-    const abis = await getDeviceABIsAsync(device);
-    return abis.join(',');
-  }
-
-  const devices = await getAttachedDevicesAsync();
-  const abisPromises = devices.map(async (device) => await getDeviceABIsAsync(device));
-  const abis = (await Promise.all(abisPromises))
-    .flat()
-    .filter((abi, i, arr) => arr.indexOf(abi) === i);
-  return abis.join(',');
+  
+  const abis = await getDeviceABIsAsync(device);
+  return abis.filter((abi, i, arr) => arr.indexOf(abi) === i).join(',')
 }

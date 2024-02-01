@@ -18,15 +18,19 @@ const testDevice: Device = { name: 'Test', type: 'emulator', isAuthorized: true,
 describe(resolveGradlePropsAsync, () => {
   it(`asserts variant`, async () => {
     await expect(
-      resolveGradlePropsAsync('/', {
-        // @ts-expect-error
-        variant: 123,
-      })
+      resolveGradlePropsAsync(
+        '/',
+        {
+          // @ts-expect-error
+          variant: 123,
+        },
+        testDevice
+      )
     ).rejects.toThrowError(CommandError);
   });
   it(`parses flavors`, async () => {
     expect(
-      await resolveGradlePropsAsync('/', { variant: 'firstSecondThird', allArch: true })
+      await resolveGradlePropsAsync('/', { variant: 'firstSecondThird', allArch: true }, testDevice)
     ).toEqual({
       apkVariantDirectory: '/android/app/build/outputs/apk/second/third/first',
       appName: 'app',
@@ -37,7 +41,13 @@ describe(resolveGradlePropsAsync, () => {
   });
 
   it(`parses with no variant`, async () => {
-    expect(await resolveGradlePropsAsync('/', { allArch: true })).toEqual({
+    expect(
+      await resolveGradlePropsAsync(
+        '/',
+        { allArch: true },
+        testDevice
+      )
+    ).toEqual({
       apkVariantDirectory: '/android/app/build/outputs/apk/debug',
       appName: 'app',
       buildType: 'debug',
@@ -50,7 +60,7 @@ describe(resolveGradlePropsAsync, () => {
     jest.mocked(getAttachedDevicesAsync).mockResolvedValueOnce([testDevice]);
     jest.mocked(getDeviceABIsAsync).mockResolvedValueOnce([DeviceABI.arm64, DeviceABI.x86]);
 
-    expect(await resolveGradlePropsAsync('/', {})).toEqual({
+    expect(await resolveGradlePropsAsync('/', {}, testDevice)).toEqual({
       apkVariantDirectory: '/android/app/build/outputs/apk/debug',
       appName: 'app',
       buildType: 'debug',
@@ -71,7 +81,7 @@ describe(resolveGradlePropsAsync, () => {
         DeviceABI.armeabiV7a,
       ]);
 
-    expect(await resolveGradlePropsAsync('/', {})).toEqual({
+    expect(await resolveGradlePropsAsync('/', {}, testDevice)).toEqual({
       apkVariantDirectory: '/android/app/build/outputs/apk/debug',
       appName: 'app',
       buildType: 'debug',
