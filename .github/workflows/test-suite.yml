@@ -109,7 +109,7 @@ jobs:
       - name: 🏗️ Build iOS project
         run: ./scripts/start-ios-e2e-test.ts --build
         working-directory: apps/bare-expo
-        timeout-minutes: 60
+        timeout-minutes: 45
         env:
           EXPO_DEBUG: 1
           NODE_ENV: production
