@@ -6,29 +6,9 @@ Object.defineProperty(exports, "__esModule", {
 exports.Config = void 0;
 exports.applyRuntimeVersionFromConfigAsync = applyRuntimeVersionFromConfigAsync;
 exports.applyRuntimeVersionFromConfigForProjectRootAsync = applyRuntimeVersionFromConfigForProjectRootAsync;
-exports.areVersionsSyncedAsync = areVersionsSyncedAsync;
-exports.ensureBuildGradleContainsConfigurationScript = ensureBuildGradleContainsConfigurationScript;
-exports.formatApplyLineForBuildGradle = formatApplyLineForBuildGradle;
-exports.isBuildGradleConfigured = isBuildGradleConfigured;
-exports.isMainApplicationMetaDataSet = isMainApplicationMetaDataSet;
-exports.isMainApplicationMetaDataSyncedAsync = isMainApplicationMetaDataSyncedAsync;
 exports.setUpdatesConfigAsync = setUpdatesConfigAsync;
 exports.setVersionsConfigAsync = setVersionsConfigAsync;
 exports.withUpdates = void 0;
-function _path() {
-  const data = _interopRequireDefault(require("path"));
-  _path = function () {
-    return data;
-  };
-  return data;
-}
-function _resolveFrom() {
-  const data = _interopRequireDefault(require("resolve-from"));
-  _resolveFrom = function () {
-    return data;
-  };
-  return data;
-}
 function _Manifest() {
   const data = require("./Manifest");
   _Manifest = function () {
@@ -71,8 +51,6 @@ function _Updates() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-const CREATE_MANIFEST_ANDROID_PATH = 'expo-updates/scripts/create-manifest-android.gradle';
 let Config = exports.Config = /*#__PURE__*/function (Config) {
   Config["ENABLED"] = "expo.modules.updates.ENABLED";
   Config["CHECK_ON_LAUNCH"] = "expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH";
@@ -157,53 +135,5 @@ async function setVersionsConfigAsync(projectRoot, config, androidManifest) {
     (0, _Manifest().removeMetaDataItemFromMainApplication)(mainApplication, 'expo.modules.updates.EXPO_SDK_VERSION');
   }
   return androidManifest;
-}
-function ensureBuildGradleContainsConfigurationScript(projectRoot, buildGradleContents) {
-  if (!isBuildGradleConfigured(projectRoot, buildGradleContents)) {
-    let cleanedUpBuildGradleContents;
-    const isBuildGradleMisconfigured = buildGradleContents.split('\n').some(line => line.includes(CREATE_MANIFEST_ANDROID_PATH));
-    if (isBuildGradleMisconfigured) {
-      cleanedUpBuildGradleContents = buildGradleContents.replace(new RegExp(`(\n// Integration with Expo updates)?\n.*${CREATE_MANIFEST_ANDROID_PATH}.*\n`), '');
-    } else {
-      cleanedUpBuildGradleContents = buildGradleContents;
-    }
-    const gradleScriptApply = formatApplyLineForBuildGradle(projectRoot);
-    return `${cleanedUpBuildGradleContents}\n// Integration with Expo updates\n${gradleScriptApply}\n`;
-  } else {
-    return buildGradleContents;
-  }
-}
-function formatApplyLineForBuildGradle(projectRoot) {
-  const updatesGradleScriptPath = _resolveFrom().default.silent(projectRoot, CREATE_MANIFEST_ANDROID_PATH);
-  if (!updatesGradleScriptPath) {
-    throw new Error("Could not find the build script for Android. This could happen in case of outdated 'node_modules'. Run 'npm install' to make sure that it's up-to-date.");
-  }
-  const relativePath = _path().default.relative(_path().default.join(projectRoot, 'android', 'app'), updatesGradleScriptPath);
-  const posixPath = process.platform === 'win32' ? relativePath.replace(/\\/g, '/') : relativePath;
-  return `apply from: "${posixPath}"`;
-}
-function isBuildGradleConfigured(projectRoot, buildGradleContents) {
-  const androidBuildScript = formatApplyLineForBuildGradle(projectRoot);
-  return buildGradleContents.replace(/\r\n/g, '\n').split('\n')
-  // Check for both single and double quotes
-  .some(line => line === androidBuildScript || line === androidBuildScript.replace(/"/g, "'"));
-}
-function isMainApplicationMetaDataSet(androidManifest) {
-  const updateUrl = (0, _Manifest().getMainApplicationMetaDataValue)(androidManifest, Config.UPDATE_URL);
-  const runtimeVersion = (0, _Manifest().getMainApplicationMetaDataValue)(androidManifest, Config.RUNTIME_VERSION);
-  return Boolean(updateUrl && runtimeVersion);
-}
-async function isMainApplicationMetaDataSyncedAsync(projectRoot, config, androidManifest) {
-  return (0, _Updates().getUpdateUrl)(config) === (0, _Manifest().getMainApplicationMetaDataValue)(androidManifest, Config.UPDATE_URL) && String((0, _Updates().getUpdatesEnabled)(config)) === (0, _Manifest().getMainApplicationMetaDataValue)(androidManifest, Config.ENABLED) && String((0, _Updates().getUpdatesTimeout)(config)) === (0, _Manifest().getMainApplicationMetaDataValue)(androidManifest, Config.LAUNCH_WAIT_MS) && (0, _Updates().getUpdatesCheckOnLaunch)(config) === (0, _Manifest().getMainApplicationMetaDataValue)(androidManifest, Config.CHECK_ON_LAUNCH) && (0, _Updates().getUpdatesCodeSigningCertificate)(projectRoot, config) === (0, _Manifest().getMainApplicationMetaDataValue)(androidManifest, Config.CODE_SIGNING_CERTIFICATE) && (0, _Updates().getUpdatesCodeSigningMetadataStringified)(config) === (0, _Manifest().getMainApplicationMetaDataValue)(androidManifest, Config.CODE_SIGNING_METADATA) && (await areVersionsSyncedAsync(projectRoot, config, androidManifest));
-}
-async function areVersionsSyncedAsync(projectRoot, config, androidManifest) {
-  const expectedRuntimeVersion = await (0, _Updates().getRuntimeVersionNullableAsync)(projectRoot, config, 'android');
-  const currentRuntimeVersion = (0, _Manifest().getMainApplicationMetaDataValue)(androidManifest, Config.RUNTIME_VERSION);
-  const currentSdkVersion = (0, _Manifest().getMainApplicationMetaDataValue)(androidManifest, 'expo.modules.updates.EXPO_SDK_VERSION');
-  if (expectedRuntimeVersion !== null) {
-    return currentRuntimeVersion === expectedRuntimeVersion && currentSdkVersion === null;
-  } else {
-    return true;
-  }
 }
 //# sourceMappingURL=Updates.js.map

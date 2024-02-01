@@ -1,5 +1,4 @@
 import { ExpoConfig } from '@expo/config-types';
-import fs from 'fs';
 import { vol } from 'memfs';
 import path from 'path';
 
@@ -134,58 +133,6 @@ describe('Android Updates config', () => {
     expect(runtimeVersion[0].$['android:value']).toMatch('@string/expo_runtime_version');
   });
 
-  describe(Updates.ensureBuildGradleContainsConfigurationScript, () => {
-    it('adds create-manifest-android.gradle line to build.gradle', async () => {
-      vol.fromJSON(
-        {
-          'android/app/build.gradle': fsReal.readFileSync(
-            path.join(__dirname, 'fixtures/build-without-create-manifest-android.gradle'),
-            'utf-8'
-          ),
-          'node_modules/expo-updates/scripts/create-manifest-android.gradle': 'whatever',
-        },
-        '/app'
-      );
-
-      const contents = rnFixture['android/app/build.gradle'];
-      const newContents = Updates.ensureBuildGradleContainsConfigurationScript('/app', contents);
-      expect(newContents).toMatchSnapshot();
-    });
-
-    it('fixes the path to create-manifest-android.gradle in case of a monorepo', async () => {
-      // Pseudo node module resolution since actually mocking it could prove challenging.
-      // In a yarn workspace, resolve-from would be able to locate a module in any node_module folder if properly linked.
-      const resolveFrom = require('resolve-from');
-      resolveFrom.silent = (p, a) => {
-        return silent(path.join(p, '..'), a);
-      };
-
-      vol.fromJSON(
-        {
-          'workspace/android/app/build.gradle': fsReal.readFileSync(
-            path.join(
-              __dirname,
-              'fixtures/build-with-incorrect-create-manifest-android-path.gradle'
-            ),
-            'utf-8'
-          ),
-          'node_modules/expo-updates/scripts/create-manifest-android.gradle': 'whatever',
-        },
-        '/app'
-      );
-
-      const contents = await fs.promises.readFile(
-        '/app/workspace/android/app/build.gradle',
-        'utf-8'
-      );
-      const newContents = Updates.ensureBuildGradleContainsConfigurationScript(
-        '/app/workspace',
-        contents
-      );
-      expect(newContents).toMatchSnapshot();
-    });
-  });
-
   describe('Runtime version tests', () => {
     const sampleStringsXML = `
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -239,7 +186,7 @@ describe('Android Updates config', () => {
         modRequest: {
           projectRoot: '/',
         },
-      };
+      } as any;
       await Updates.applyRuntimeVersionFromConfigAsync(config, stringsJSON);
       expect(format(stringsJSON)).toEqual(
         '<resources>\n  <string name="expo_runtime_version">1.10</string>\n</resources>'
@@ -250,7 +197,7 @@ describe('Android Updates config', () => {
         modRequest: {
           projectRoot: '/',
         },
-      };
+      } as any;
       await Updates.applyRuntimeVersionFromConfigAsync(config2, stringsJSON);
       expect(format(stringsJSON)).toEqual('<resources/>');
     });

@@ -18,9 +18,3 @@ export declare function applyRuntimeVersionFromConfigAsync(config: ExportedConfi
 export declare function applyRuntimeVersionFromConfigForProjectRootAsync(projectRoot: string, config: ExpoConfigUpdates, stringsJSON: ResourceXML): Promise<ResourceXML>;
 export declare function setUpdatesConfigAsync(projectRoot: string, config: ExpoConfigUpdates, androidManifest: AndroidManifest, expoUpdatesPackageVersion?: string | null): Promise<AndroidManifest>;
 export declare function setVersionsConfigAsync(projectRoot: string, config: Pick<ExpoConfigUpdates, 'sdkVersion' | 'runtimeVersion'>, androidManifest: AndroidManifest): Promise<AndroidManifest>;
-export declare function ensureBuildGradleContainsConfigurationScript(projectRoot: string, buildGradleContents: string): string;
-export declare function formatApplyLineForBuildGradle(projectRoot: string): string;
-export declare function isBuildGradleConfigured(projectRoot: string, buildGradleContents: string): boolean;
-export declare function isMainApplicationMetaDataSet(androidManifest: AndroidManifest): boolean;
-export declare function isMainApplicationMetaDataSyncedAsync(projectRoot: string, config: ExpoConfigUpdates, androidManifest: AndroidManifest): Promise<boolean>;
-export declare function areVersionsSyncedAsync(projectRoot: string, config: Pick<ExpoConfigUpdates, 'runtimeVersion' | 'sdkVersion'>, androidManifest: AndroidManifest): Promise<boolean>;
