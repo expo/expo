@@ -1,6 +1,6 @@
 ---
-title: Configure with app.json/app.config.js
-description: Learn about what is app config and how you can dynamically use it by customizing it.
+title: Configure with app config
+description: Learn about what app.json/app.config.js/app.config.ts files are and how you can customize and use them dynamically.
 ---
 
 import PossibleRedirectNotification from '~/components/plugins/PossibleRedirectNotification';
@@ -8,11 +8,11 @@ import { Terminal } from '~/ui/components/Snippet';
 
 <PossibleRedirectNotification newUrl="/versions/latest/config/app/" />
 
-The app config (**app.json**, **app.config.js**, **app.config.ts**) is used for configuring how a project loads in [Expo Go](/get-started/expo-go/), [Expo Prebuild](/workflow/prebuild) generation, and the OTA update manifest. You can think of this as an `index.html` but for React Native apps.
+The app config (**app.json**, **app.config.js**, **app.config.ts**) is used for configuring [Expo Prebuild](/workflow/prebuild) generation, how a project loads in [Expo Go](/get-started/expo-go/), and the OTA update manifest. You can think of this as an **index.html** but for React Native apps.
 
 It must be located at the root of your project, next to the **package.json**. Here is a bare-minimum example:
 
-```json
+```json app.json
 {
   "expo": {
     "name": "My app",
@@ -25,7 +25,7 @@ Most configuration from the app config is accessible at runtime from the JavaScr
 
 ## Properties
 
-The app config configures many things such as app name, icon, splash screen, deep linking scheme, API keys to use for some services and so on. For a complete list of available properties, see [app.json/app.config.js reference](/versions/latest/config/app/).
+The app config configures many things such as app name, icon, splash screen, deep linking scheme, API keys to use for some services and so on. For a complete list of available properties, see [app.json/app.config.js/app.config.ts reference](/versions/latest/config/app/).
 
 > **info** Do you use Visual Studio Code? If so, we recommend that you install the [Expo Tools](https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools) extension to get auto-completion of properties in **app.json** files.
 
@@ -37,7 +37,7 @@ Library authors can extend the app config by using [Expo Config plugins](/config
 
 ## Dynamic configuration
 
-For more customization, you can use the JavaScript or [TypeScript](#using-typescript-for-configuration-appconfigts-instead-of) (**app.config.js**, or **app.config.ts**). These configs have the following properties:
+For more customization, you can use the JavaScript (**app.config.js**) or [TypeScript](#using-typescript-for-configuration-appconfigts-instead-of) (**app.config.ts**). These configs have the following properties:
 
 - Comments, variables, and single quotes.
 - Importing/requiring other JavaScript files. Using import/export syntax in external files is not supported. All imported files must be transpiled to support your current version of Node.js.
