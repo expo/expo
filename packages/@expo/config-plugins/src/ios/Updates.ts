@@ -1,7 +1,3 @@
-import * as path from 'path';
-import resolveFrom from 'resolve-from';
-import xcode from 'xcode';
-
 import { ExpoPlist } from './IosConfig.types';
 import { ConfigPlugin } from '../Plugin.types';
 import { withExpoPlist } from '../plugins/ios-plugins';
@@ -17,8 +13,6 @@ import {
   getUpdatesTimeout,
   getUpdateUrl,
 } from '../utils/Updates';
-
-const CREATE_MANIFEST_IOS_PATH = 'expo-updates/scripts/create-manifest-ios.sh';
 
 export enum Config {
   ENABLED = 'EXUpdatesEnabled',
@@ -115,111 +109,4 @@ export async function setVersionsConfigAsync(
   }
 
   return newExpoPlist;
-}
-
-function formatConfigurationScriptPath(projectRoot: string): string {
-  const buildScriptPath = resolveFrom.silent(projectRoot, CREATE_MANIFEST_IOS_PATH);
-
-  if (!buildScriptPath) {
-    throw new Error(
-      "Could not find the build script for iOS. This could happen in case of outdated 'node_modules'. Run 'npm install' to make sure that it's up-to-date."
-    );
-  }
-
-  const relativePath = path.relative(path.join(projectRoot, 'ios'), buildScriptPath);
-  return process.platform === 'win32' ? relativePath.replace(/\\/g, '/') : relativePath;
-}
-
-interface ShellScriptBuildPhase {
-  isa: 'PBXShellScriptBuildPhase';
-  name: string;
-  shellScript: string;
-  [key: string]: any;
-}
-
-export function getBundleReactNativePhase(project: xcode.XcodeProject): ShellScriptBuildPhase {
-  const shellScriptBuildPhase = project.hash.project.objects.PBXShellScriptBuildPhase as Record<
-    string,
-    ShellScriptBuildPhase
-  >;
-  const bundleReactNative = Object.values(shellScriptBuildPhase).find(
-    (buildPhase) => buildPhase.name === '"Bundle React Native code and images"'
-  );
-
-  if (!bundleReactNative) {
-    throw new Error(`Couldn't find a build phase "Bundle React Native code and images"`);
-  }
-
-  return bundleReactNative;
-}
-
-export function ensureBundleReactNativePhaseContainsConfigurationScript(
-  projectRoot: string,
-  project: xcode.XcodeProject
-): xcode.XcodeProject {
-  const bundleReactNative = getBundleReactNativePhase(project);
-  const buildPhaseShellScriptPath = formatConfigurationScriptPath(projectRoot);
-
-  if (!isShellScriptBuildPhaseConfigured(projectRoot, project)) {
-    // check if there's already another path to create-manifest-ios.sh
-    // this might be the case for monorepos
-    if (bundleReactNative.shellScript.includes(CREATE_MANIFEST_IOS_PATH)) {
-      bundleReactNative.shellScript = bundleReactNative.shellScript.replace(
-        new RegExp(`(\\\\n)(\\.\\.)+/node_modules/${CREATE_MANIFEST_IOS_PATH}`),
-        ''
-      );
-    }
-    bundleReactNative.shellScript = `${bundleReactNative.shellScript.replace(
-      /"$/,
-      ''
-    )}${buildPhaseShellScriptPath}\\n"`;
-  }
-  return project;
-}
-
-export function isShellScriptBuildPhaseConfigured(
-  projectRoot: string,
-  project: xcode.XcodeProject
-): boolean {
-  const bundleReactNative = getBundleReactNativePhase(project);
-  const buildPhaseShellScriptPath = formatConfigurationScriptPath(projectRoot);
-  return bundleReactNative.shellScript.includes(buildPhaseShellScriptPath);
-}
-
-export function isPlistConfigurationSet(expoPlist: ExpoPlist): boolean {
-  return Boolean(expoPlist.EXUpdatesURL && expoPlist.EXUpdatesRuntimeVersion);
-}
-
-export async function isPlistConfigurationSyncedAsync(
-  projectRoot: string,
-  config: ExpoConfigUpdates,
-  expoPlist: ExpoPlist
-): Promise<boolean> {
-  return (
-    getUpdateUrl(config) === expoPlist.EXUpdatesURL &&
-    getUpdatesEnabled(config) === expoPlist.EXUpdatesEnabled &&
-    getUpdatesTimeout(config) === expoPlist.EXUpdatesLaunchWaitMs &&
-    getUpdatesCheckOnLaunch(config) === expoPlist.EXUpdatesCheckOnLaunch &&
-    getUpdatesCodeSigningCertificate(projectRoot, config) ===
-      expoPlist.EXUpdatesCodeSigningCertificate &&
-    getUpdatesCodeSigningMetadata(config) === expoPlist.EXUpdatesCodeSigningMetadata &&
-    (await isPlistVersionConfigurationSyncedAsync(projectRoot, config, expoPlist))
-  );
-}
-
-export async function isPlistVersionConfigurationSyncedAsync(
-  projectRoot: string,
-  config: Pick<ExpoConfigUpdates, 'sdkVersion' | 'runtimeVersion'>,
-  expoPlist: ExpoPlist
-): Promise<boolean> {
-  const expectedRuntimeVersion = await getRuntimeVersionNullableAsync(projectRoot, config, 'ios');
-
-  const currentRuntimeVersion = expoPlist.EXUpdatesRuntimeVersion ?? null;
-  const currentSdkVersion = expoPlist.EXUpdatesSDKVersion ?? null;
-
-  if (expectedRuntimeVersion !== null) {
-    return currentRuntimeVersion === expectedRuntimeVersion && currentSdkVersion === null;
-  } else {
-    return true;
-  }
 }
