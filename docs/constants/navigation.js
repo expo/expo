@@ -223,6 +223,7 @@ const general = [
         makePage('modules/use-standalone-expo-module-in-your-project.mdx'),
         makePage('modules/third-party-library.mdx'),
         makePage('modules/existing-library.mdx'),
+        makePage('modules/additional-platform-support.mdx'),
       ]),
       makeSection('Reference', [
         makePage('modules/module-api.mdx'),
