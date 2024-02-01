@@ -7,6 +7,7 @@ import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import { SnackInline } from '~/ui/components/Snippet';
 import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
+import { CALLOUT } from '~/ui/components/Text';
 
 URLs are the most powerful way to launch native applications. Native operating systems like macOS, iOS, Android, Windows, and so on, have built-in link handling which chooses an app to handle a URL based on the _URL scheme_. The most common _URL schemes_ are `https` and `http` which are delegated to web browsers like Chrome, or Safari. Native apps, like the ones built with React Native, can implement any _URL scheme_, and the JavaScript React layer can handle the URL used to launch the corresponding native app.
 
@@ -107,18 +108,19 @@ If you don't specify this list, `Linking.canOpenURL` may return `false` regardle
 
 To save you the trouble of inserting a bunch of conditionals based on the environment that you're in and hardcoding URLs, we provide some helper methods in our extension of the `Linking` module. When you want to provide a service with a URL that it needs to redirect back into your app, you can call `Linking.createURL()` and it will resolve to the following:
 
-- _Production and development builds_: `myapp://` (see [#linking-to-your-app](#linking-to-your-app))
-- _Development in Expo Go_: `exp://127.0.0.1:8081`. For SDK 48 and lower, the port number is `19000`.
+- **Production and development builds**: `myapp://` (see [#linking-to-your-app](#linking-to-your-app))
+- **Development in Expo Go**: `exp://127.0.0.1:8081`.
+  <CALLOUT theme="secondary">For SDK 48 and lower, the port number is `19000`.</CALLOUT>
 
 When loading published updates in Expo Go, the URL that is created by `Linking.createURL()` depends on how the project was launched and shouldn't be relied upon to be consistent or stable. For applications that require a stable URL (authorization provider redirects, for example), you should use a development build with a custom scheme instead (see [#linking-to-your-app](#linking-to-your-app)).
 
-- _Project loaded via QR code or via menus in Expo Go_: `exp://u.expo.dev/[project-id]/group/[update-group-id]` or `exp://u.expo.dev/[project-id]/update/[update-id]`. The project ID is stable but the update group ID and update ID are not.
+- **Project loaded via QR code or via menus in Expo Go**: `exp://u.expo.dev/[project-id]/group/[update-group-id]` or `exp://u.expo.dev/[project-id]/update/[update-id]`. The project ID is stable but the update group ID and update ID are not.
 
 You can also change the returned URL by passing optional parameters into `Linking.createURL()`. These will be used by your app to receive data, which we will talk about in the next section.
 
-To pass some data to an app, you can append it as a path or query string on your URL. `Linking.createURL(path, { queryParams })` will construct a working URL automatically for you. Example:
+To pass some data to an app, you can append it as a path or query string on your URL. `Linking.createURL()` will construct a working URL automatically for you. Example:
 
-```ts
+```js Linking.createURL() example
 const redirectUrl = Linking.createURL('path/into/app', {
   queryParams: { hello: 'world' },
 });
@@ -126,12 +128,13 @@ const redirectUrl = Linking.createURL('path/into/app', {
 
 This will resolve into the following, depending on the environment:
 
-- _Production and development builds_: `myapp://path/into/app?hello=world`
-- _Development in Expo Go_: `exp://127.0.0.1:8081/--/path/into/app?hello=world`. For SDK 48 and lower, the port number is `19000`.
+- **Production and development builds**: `myapp://path/into/app?hello=world`
+- **Development in Expo Go**: `exp://127.0.0.1:8081/--/path/into/app?hello=world`.
+  <CALLOUT theme="secondary">For SDK 48 and lower, the port number is `19000`.</CALLOUT>
 
 Again, when loading published updates in Expo Go this behavior is variable, but may look something like the following:
 
-- _Published app in Expo Go_: `exp://u.expo.dev/[project-id]/group/[update-group-id]/--/path/into/app?hello=world`
+- **Published app in Expo Go**: `exp://u.expo.dev/[project-id]/group/[update-group-id]/--/path/into/app?hello=world`
 
 > Notice in Expo Go that `/--/` is added to the URL when a path is specified. This indicates to Expo Go that the substring after it corresponds to the deep link path, and is not part of the path to the app itself.
 
@@ -251,7 +254,7 @@ export default function App() {
 
 Behind the scenes, this hook uses the following imperative API methods:
 
-1. The link that started the app is initially returned with: [`Linking.getInitialURL`](/versions/latest/sdk/linking/#linkinggetinitialurl)
+1. The link that started the app is initially returned with: [`Linking.getInitialURL()`](/versions/latest/sdk/linking/#linkinggetinitialurl)
 2. Any new links that were triggered while the app was already open are observed with: [`Linking.addEventListener('url', callback)`](/versions/latest/sdk/linking/#linkingaddeventlistenertype-handler)
 
 For more information, see [`expo-linking`](/versions/latest/sdk/linking) API reference.
