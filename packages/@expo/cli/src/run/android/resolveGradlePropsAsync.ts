@@ -1,9 +1,6 @@
 import path from 'path';
 
-import {
-  Device,
-  getDeviceABIsAsync,
-} from '../../start/platforms/android/adb';
+import { Device, getDeviceABIsAsync } from '../../start/platforms/android/adb';
 import { CommandError } from '../../utils/errors';
 
 export type GradleProps = {
