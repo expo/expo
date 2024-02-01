@@ -91,8 +91,7 @@ function setName(config, {
   };
 }
 function setProductName(config, project) {
-  var _getName;
-  const name = (0, _Xcodeproj().sanitizedName)((_getName = getName(config)) !== null && _getName !== void 0 ? _getName : '');
+  const name = (0, _Xcodeproj().sanitizedName)(getName(config) ?? '');
   if (!name) {
     return project;
   }

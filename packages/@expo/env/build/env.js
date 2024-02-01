@@ -152,8 +152,7 @@ function createControlledEnvironment() {
       return parsedEnv;
     }
     for (const key of Object.keys(parsedEnv)) {
-      var _allExpandedEnv$parse;
-      if ((_allExpandedEnv$parse = allExpandedEnv.parsed) !== null && _allExpandedEnv$parse !== void 0 && _allExpandedEnv$parse[key]) {
+      if (allExpandedEnv.parsed?.[key]) {
         expandedEnv[key] = allExpandedEnv.parsed[key];
       }
     }

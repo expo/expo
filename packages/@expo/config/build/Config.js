@@ -127,12 +127,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @param config Input config object to reduce
  */
 function reduceExpoObject(config) {
-  var _config$expo;
   if (!config) return config === undefined ? null : config;
   const {
     mods,
     ...expo
-  } = (_config$expo = config.expo) !== null && _config$expo !== void 0 ? _config$expo : config;
+  } = config.expo ?? config;
   return {
     expo,
     mods
@@ -209,9 +208,8 @@ function getConfig(projectRoot, options = {}) {
       hasUnusedStaticConfig: !!paths.staticConfigPath && !!paths.dynamicConfigPath && mayHaveUnusedStaticConfig
     };
     if (options.isModdedConfig) {
-      var _config$mods;
       // @ts-ignore: Add the mods back to the object.
-      configWithDefaultValues.exp.mods = (_config$mods = config.mods) !== null && _config$mods !== void 0 ? _config$mods : null;
+      configWithDefaultValues.exp.mods = config.mods ?? null;
     }
 
     // Apply static json plugins, should be done after _internal
@@ -221,7 +219,6 @@ function getConfig(projectRoot, options = {}) {
       delete configWithDefaultValues.exp.mods;
     }
     if (options.isPublicConfig) {
-      var _configWithDefaultVal, _configWithDefaultVal2, _configWithDefaultVal3, _configWithDefaultVal4;
       // TODD(EvanBacon): Drop plugins array after it's been resolved.
 
       // Remove internal values with references to user's file paths from the public config.
@@ -229,14 +226,14 @@ function getConfig(projectRoot, options = {}) {
       if (configWithDefaultValues.exp.hooks) {
         delete configWithDefaultValues.exp.hooks;
       }
-      if ((_configWithDefaultVal = configWithDefaultValues.exp.ios) !== null && _configWithDefaultVal !== void 0 && _configWithDefaultVal.config) {
+      if (configWithDefaultValues.exp.ios?.config) {
         delete configWithDefaultValues.exp.ios.config;
       }
-      if ((_configWithDefaultVal2 = configWithDefaultValues.exp.android) !== null && _configWithDefaultVal2 !== void 0 && _configWithDefaultVal2.config) {
+      if (configWithDefaultValues.exp.android?.config) {
         delete configWithDefaultValues.exp.android.config;
       }
-      (_configWithDefaultVal3 = configWithDefaultValues.exp.updates) === null || _configWithDefaultVal3 === void 0 || delete _configWithDefaultVal3.codeSigningCertificate;
-      (_configWithDefaultVal4 = configWithDefaultValues.exp.updates) === null || _configWithDefaultVal4 === void 0 || delete _configWithDefaultVal4.codeSigningMetadata;
+      delete configWithDefaultValues.exp.updates?.codeSigningCertificate;
+      delete configWithDefaultValues.exp.updates?.codeSigningMetadata;
     }
     return configWithDefaultValues;
   }
@@ -386,13 +383,12 @@ function ensureConfigHasDefaultValues({
   packageJsonPath,
   skipSDKVersionRequirement = false
 }) {
-  var _exp$name, _exp$slug, _exp$version;
   if (!exp) {
     exp = {};
   }
   exp = (0, _withInternal().withInternal)(exp, {
     projectRoot,
-    ...(paths !== null && paths !== void 0 ? paths : {}),
+    ...(paths ?? {}),
     packageJsonPath
   });
   // Defaults for package.json fields
@@ -405,9 +401,9 @@ function ensureConfigHasDefaultValues({
   };
 
   // Defaults for app.json/app.config.js fields
-  const name = (_exp$name = exp.name) !== null && _exp$name !== void 0 ? _exp$name : pkgName;
-  const slug = (_exp$slug = exp.slug) !== null && _exp$slug !== void 0 ? _exp$slug : (0, _slugify().default)(name.toLowerCase());
-  const version = (_exp$version = exp.version) !== null && _exp$version !== void 0 ? _exp$version : pkgVersion;
+  const name = exp.name ?? pkgName;
+  const slug = exp.slug ?? (0, _slugify().default)(name.toLowerCase());
+  const version = exp.version ?? pkgVersion;
   let description = exp.description;
   if (!description && typeof pkg.description === 'string') {
     description = pkg.description;
@@ -440,12 +436,11 @@ function ensureConfigHasDefaultValues({
 }
 const DEFAULT_BUILD_PATH = `web-build`;
 function getWebOutputPath(config = {}) {
-  var _expo$web;
   if (process.env.WEBPACK_BUILD_OUTPUT_PATH) {
     return process.env.WEBPACK_BUILD_OUTPUT_PATH;
   }
   const expo = config.expo || config || {};
-  return (expo === null || expo === void 0 || (_expo$web = expo.web) === null || _expo$web === void 0 || (_expo$web = _expo$web.build) === null || _expo$web === void 0 ? void 0 : _expo$web.output) || DEFAULT_BUILD_PATH;
+  return expo?.web?.build?.output || DEFAULT_BUILD_PATH;
 }
 function getNameFromConfig(exp = {}) {
   // For RN CLI support
@@ -463,8 +458,7 @@ function getNameFromConfig(exp = {}) {
   };
 }
 function getDefaultTarget(projectRoot, exp) {
-  var _exp;
-  (_exp = exp) !== null && _exp !== void 0 ? _exp : exp = getConfig(projectRoot, {
+  exp ??= getConfig(projectRoot, {
     skipSDKVersionRequirement: true
   }).exp;
 

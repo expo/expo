@@ -77,8 +77,7 @@ const withMaps = config => {
 };
 exports.withMaps = withMaps;
 function getGoogleMapsApiKey(config) {
-  var _config$ios$config$go, _config$ios;
-  return (_config$ios$config$go = (_config$ios = config.ios) === null || _config$ios === void 0 || (_config$ios = _config$ios.config) === null || _config$ios === void 0 ? void 0 : _config$ios.googleMapsApiKey) !== null && _config$ios$config$go !== void 0 ? _config$ios$config$go : null;
+  return config.ios?.config?.googleMapsApiKey ?? null;
 }
 function setGoogleMapsApiKey(config, {
   GMSApiKey,
