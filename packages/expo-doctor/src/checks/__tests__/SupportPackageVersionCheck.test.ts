@@ -12,20 +12,29 @@ const additionalProjectProps = {
     name: 'name',
     slug: 'slug',
   },
-  pkg: {},
+  pkg: {
+    resolutions: {
+      'metro-config': '0.9.0',
+    },
+  },
   hasUnusedStaticConfig: false,
   staticConfigPath: null,
   dynamicConfigPath: null,
 };
 
+const mockGetRemoteVersionsForSdkAsyncResult = {
+  'expo-modules-autolinking': '1.0.0',
+  '@expo/config-plugins': '1.0.0',
+  '@expo/prebuild-config': '1.0.0',
+  '@expo/metro-config': '1.0.0',
+  'metro-config': '1.0.0',
+};
+
 describe('runAsync', () => {
   it('returns result with isSuccessful = true if check passes', async () => {
-    jest.mocked(getRemoteVersionsForSdkAsync).mockResolvedValueOnce({
-      'expo-modules-autolinking': '1.0.0',
-      '@expo/config-plugins': '1.0.0',
-      '@expo/prebuild-config': '1.0.0',
-      '@expo/metro-config': '1.0.0',
-    });
+    jest
+      .mocked(getRemoteVersionsForSdkAsync)
+      .mockResolvedValueOnce(mockGetRemoteVersionsForSdkAsyncResult);
     jest.mocked(getDeepDependenciesWarningAsync).mockResolvedValueOnce(null);
     const check = new SupportPackageVersionCheck();
     const result = await check.runAsync({
@@ -36,12 +45,9 @@ describe('runAsync', () => {
   });
 
   it('returns result with isSuccessful = false if check fails', async () => {
-    jest.mocked(getRemoteVersionsForSdkAsync).mockResolvedValueOnce({
-      'expo-modules-autolinking': '1.0.0',
-      '@expo/config-plugins': '1.0.0',
-      '@expo/prebuild-config': '1.0.0',
-      '@expo/metro-config': '1.0.0',
-    });
+    jest
+      .mocked(getRemoteVersionsForSdkAsync)
+      .mockResolvedValueOnce(mockGetRemoteVersionsForSdkAsyncResult);
     jest.mocked(getDeepDependenciesWarningAsync).mockResolvedValueOnce('warning');
     const check = new SupportPackageVersionCheck();
     const result = await check.runAsync({
@@ -49,5 +55,18 @@ describe('runAsync', () => {
       ...additionalProjectProps,
     });
     expect(result.isSuccessful).toBeFalsy();
+  });
+
+  it('customizes advice if there is a warning and one of the modules is in package.json resolutions', async () => {
+    jest
+      .mocked(getRemoteVersionsForSdkAsync)
+      .mockResolvedValueOnce(mockGetRemoteVersionsForSdkAsyncResult);
+    jest.mocked(getDeepDependenciesWarningAsync).mockResolvedValueOnce('warning');
+    const check = new SupportPackageVersionCheck();
+    const result = await check.runAsync({
+      projectRoot: '/path/to/project',
+      ...additionalProjectProps,
+    });
+    expect(result.advice).toContain('remove any resolutions from package.json');
   });
 });

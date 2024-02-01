@@ -8,17 +8,20 @@ export class SupportPackageVersionCheck implements DoctorCheck {
 
   sdkVersionRange = '>=45.0.0';
 
-  async runAsync({ exp, projectRoot }: DoctorCheckParams): Promise<DoctorCheckResult> {
+  async runAsync({ exp, pkg, projectRoot }: DoctorCheckParams): Promise<DoctorCheckResult> {
     const issues: string[] = [];
 
     const versionsForSdk = await getRemoteVersionsForSdkAsync(exp.sdkVersion);
 
     // only check for packages that have a required semver for the current SDK version
+    // ADDING TO THIS LIST? Be sure to update "Release Workflow.md".
+    // The release workflow also has instructions for updating the package versions, so you can test your change with the EXPO_STAGING=1 env var.
     const supportPackagesToValidate = [
       'expo-modules-autolinking',
       '@expo/config-plugins',
       '@expo/prebuild-config',
       '@expo/metro-config',
+      'metro-config',
     ].filter((pkg) => versionsForSdk[pkg]);
 
     // check that a specific semver is installed for each package
@@ -34,11 +37,18 @@ export class SupportPackageVersionCheck implements DoctorCheck {
       }
     });
 
+    const atLeastOneSupportPackagePinnedByResolution =
+      possibleWarnings &&
+      supportPackagesToValidate.find((packageName) => !!pkg.resolutions?.[packageName]);
+
     return {
       isSuccessful: issues.length === 0,
       issues,
       advice: issues.length
-        ? 'Upgrade dependencies that are using the invalid package versions.'
+        ? 'Upgrade dependencies that are using the invalid package versions' +
+          (atLeastOneSupportPackagePinnedByResolution &&
+            ' or remove any resolutions from package.json that are pinning these packages to an invalid version') +
+          '.'
         : undefined,
     };
   }
