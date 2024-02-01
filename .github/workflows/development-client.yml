@@ -80,7 +80,7 @@ jobs:
         run: ./gradlew assembleDebug
 
   ios:
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
