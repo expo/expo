@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Make all missing functions `undefined` on web instead of throwing `UnavailabilityError`.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
