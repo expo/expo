@@ -5,7 +5,7 @@ import {
   Device,
 } from '../../../start/platforms/android/adb';
 import { CommandError } from '../../../utils/errors';
-import { resolveGradleProps } from '../resolveGradleProps';
+import { resolveGradlePropsAsync } from '../resolveGradlePropsAsync';
 
 jest.mock('../../../start/platforms/android/adb', () => ({
   DeviceABI: jest.requireActual('../../../start/platforms/android/adb').DeviceABI,
@@ -15,17 +15,19 @@ jest.mock('../../../start/platforms/android/adb', () => ({
 
 const testDevice: Device = { name: 'Test', type: 'emulator', isAuthorized: true, isBooted: true };
 
-describe(resolveGradleProps, () => {
+describe(resolveGradlePropsAsync, () => {
   it(`asserts variant`, async () => {
     await expect(
-      resolveGradleProps('/', {
+      resolveGradlePropsAsync('/', {
         // @ts-expect-error
         variant: 123,
       })
     ).rejects.toThrowError(CommandError);
   });
   it(`parses flavors`, async () => {
-    expect(await resolveGradleProps('/', { variant: 'firstSecondThird', allArch: true })).toEqual({
+    expect(
+      await resolveGradlePropsAsync('/', { variant: 'firstSecondThird', allArch: true })
+    ).toEqual({
       apkVariantDirectory: '/android/app/build/outputs/apk/second/third/first',
       appName: 'app',
       buildType: 'first',
@@ -35,7 +37,7 @@ describe(resolveGradleProps, () => {
   });
 
   it(`parses with no variant`, async () => {
-    expect(await resolveGradleProps('/', { allArch: true })).toEqual({
+    expect(await resolveGradlePropsAsync('/', { allArch: true })).toEqual({
       apkVariantDirectory: '/android/app/build/outputs/apk/debug',
       appName: 'app',
       buildType: 'debug',
@@ -48,11 +50,11 @@ describe(resolveGradleProps, () => {
     jest.mocked(getAttachedDevicesAsync).mockResolvedValueOnce([testDevice]);
     jest.mocked(getDeviceABIsAsync).mockResolvedValueOnce([DeviceABI.arm64, DeviceABI.x86]);
 
-    expect(await resolveGradleProps('/', { variant: 'firstSecondThird' })).toEqual({
-      apkVariantDirectory: '/android/app/build/outputs/apk/second/third/first',
+    expect(await resolveGradlePropsAsync('/', {})).toEqual({
+      apkVariantDirectory: '/android/app/build/outputs/apk/debug',
       appName: 'app',
-      buildType: 'first',
-      flavors: ['second', 'third'],
+      buildType: 'debug',
+      flavors: [],
       architectures: 'arm64,x86',
     });
   });
@@ -69,11 +71,11 @@ describe(resolveGradleProps, () => {
         DeviceABI.armeabiV7a,
       ]);
 
-    expect(await resolveGradleProps('/', { variant: 'firstSecondThird' })).toEqual({
-      apkVariantDirectory: '/android/app/build/outputs/apk/second/third/first',
+    expect(await resolveGradlePropsAsync('/', {})).toEqual({
+      apkVariantDirectory: '/android/app/build/outputs/apk/debug',
       appName: 'app',
-      buildType: 'first',
-      flavors: ['second', 'third'],
+      buildType: 'debug',
+      flavors: [],
       architectures: 'arm64,x86,armeabi-v7a',
     });
   });

@@ -1,5 +1,5 @@
 import { resolveDeviceAsync } from './resolveDevice';
-import { GradleProps, resolveGradleProps } from './resolveGradleProps';
+import { GradleProps, resolveGradlePropsAsync } from './resolveGradlePropsAsync';
 import { LaunchProps, resolveLaunchPropsAsync } from './resolveLaunchProps';
 import { AndroidDeviceManager } from '../../start/platforms/android/AndroidDeviceManager';
 import { BundlerProps, resolveBundlerPropsAsync } from '../resolveBundlerProps';
@@ -33,7 +33,7 @@ export async function resolveOptionsAsync(
 
   return {
     ...(await resolveBundlerPropsAsync(projectRoot, options)),
-    ...(await resolveGradleProps(projectRoot, options)),
+    ...(await resolveGradlePropsAsync(projectRoot, options, device.device)),
     ...(await resolveLaunchPropsAsync(projectRoot)),
     variant: options.variant ?? 'debug',
     // Resolve the device based on the provided device id or prompt
