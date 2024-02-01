@@ -10,7 +10,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       data-text="true"
     >
       <a
-        class="scroll-m-5 relative text-[inherit] decoration-0"
+        class="scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
         href="#name"
         id="name"
       >
@@ -24,39 +24,43 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             name
           </code>
         </span>
-        <button
-          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
-          type="button"
+        <span
+          class="relative inline-flex items-center"
         >
-          <span
-            class="flex self-center text-inherit leading-none"
+          <button
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle justify-center px-0.5 bottom-0 relative invisible group-hover:visible group-focus-visible:visible"
+            type="button"
           >
-            <svg
-              aria-label="permalink"
-              class="icon-sm"
-              fill="none"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
+            <span
+              class="flex self-center text-inherit leading-none"
             >
-              <path
-                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-              <path
-                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-            </svg>
-          </span>
-        </button>
+              <svg
+                aria-label="permalink"
+                class="icon-sm"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+                <path
+                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </span>
+          </button>
+        </span>
       </a>
     </p>
     <p
@@ -115,8 +119,84 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           >
             Bare Workflow
           </span>
+          <span
+            class="relative inline-flex items-center"
+          >
+            <button
+              class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle justify-center px-0.5 bottom-0 relative invisible group-hover:visible group-focus-visible:visible top-0.5"
+              type="button"
+            >
+              <span
+                class="flex self-center text-inherit leading-none"
+              >
+                <svg
+                  aria-label="permalink"
+                  class="icon-sm"
+                  fill="none"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                  <path
+                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                </svg>
+              </span>
+            </button>
+          </span>
+        </a>
+      </summary>
+      <div
+        class="last:[&>*]:!mb-1 css-qbaxbl"
+      >
+        <p
+          class="mb-4 css-1kfqm4n-TextComponent"
+          data-text="true"
+        >
+          Edit the 'Display Name' field in Xcode
+        </p>
+      </div>
+    </details>
+  </div>
+  <div
+    class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
+  >
+    <p
+      class="group css-1kfqm4n-TextComponent"
+      data-text="true"
+    >
+      <a
+        class="scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
+        href="#androidnavigationbar"
+        id="androidnavigationbar"
+      >
+        <span
+          class="inline"
+        >
+          <code
+            class="css-10gpz29-PropertyName"
+            data-text="true"
+          >
+            androidNavigationBar
+          </code>
+        </span>
+        <span
+          class="relative inline-flex items-center"
+        >
           <button
-            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle justify-center px-0.5 bottom-0 relative invisible group-hover:visible group-focus-visible:visible"
             type="button"
           >
             <span
@@ -148,75 +228,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </svg>
             </span>
           </button>
-        </a>
-      </summary>
-      <div
-        class="last:[&>*]:!mb-1 css-qbaxbl"
-      >
-        <p
-          class="mb-4 css-1kfqm4n-TextComponent"
-          data-text="true"
-        >
-          Edit the 'Display Name' field in Xcode
-        </p>
-      </div>
-    </details>
-  </div>
-  <div
-    class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
-  >
-    <p
-      class="group css-1kfqm4n-TextComponent"
-      data-text="true"
-    >
-      <a
-        class="scroll-m-5 relative text-[inherit] decoration-0"
-        href="#androidnavigationbar"
-        id="androidnavigationbar"
-      >
-        <span
-          class="inline"
-        >
-          <code
-            class="css-10gpz29-PropertyName"
-            data-text="true"
-          >
-            androidNavigationBar
-          </code>
         </span>
-        <button
-          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
-          type="button"
-        >
-          <span
-            class="flex self-center text-inherit leading-none"
-          >
-            <svg
-              aria-label="permalink"
-              class="icon-sm"
-              fill="none"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-              <path
-                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-            </svg>
-          </span>
-        </button>
       </a>
     </p>
     <p
@@ -275,39 +287,43 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           >
             ExpoKit
           </span>
-          <button
-            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
-            type="button"
+          <span
+            class="relative inline-flex items-center"
           >
-            <span
-              class="flex self-center text-inherit leading-none"
+            <button
+              class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle justify-center px-0.5 bottom-0 relative invisible group-hover:visible group-focus-visible:visible top-0.5"
+              type="button"
             >
-              <svg
-                aria-label="permalink"
-                class="icon-sm"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
+              <span
+                class="flex self-center text-inherit leading-none"
               >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </button>
+                <svg
+                  aria-label="permalink"
+                  class="icon-sm"
+                  fill="none"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                  <path
+                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                </svg>
+              </span>
+            </button>
+          </span>
         </a>
       </summary>
       <div
@@ -359,39 +375,43 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           >
             Bare Workflow
           </span>
-          <button
-            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
-            type="button"
+          <span
+            class="relative inline-flex items-center"
           >
-            <span
-              class="flex self-center text-inherit leading-none"
+            <button
+              class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle justify-center px-0.5 bottom-0 relative invisible group-hover:visible group-focus-visible:visible top-0.5"
+              type="button"
             >
-              <svg
-                aria-label="permalink"
-                class="icon-sm"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
+              <span
+                class="flex self-center text-inherit leading-none"
               >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </button>
+                <svg
+                  aria-label="permalink"
+                  class="icon-sm"
+                  fill="none"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                  <path
+                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                </svg>
+              </span>
+            </button>
+          </span>
         </a>
       </summary>
       <div
@@ -413,7 +433,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         data-text="true"
       >
         <a
-          class="scroll-m-5 relative text-[inherit] decoration-0"
+          class="scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
           href="#visible"
           id="visible"
         >
@@ -427,39 +447,43 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               visible
             </code>
           </span>
-          <button
-            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
-            type="button"
+          <span
+            class="relative inline-flex items-center"
           >
-            <span
-              class="flex self-center text-inherit leading-none"
+            <button
+              class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle justify-center px-0.5 bottom-0 relative invisible group-hover:visible group-focus-visible:visible"
+              type="button"
             >
-              <svg
-                aria-label="permalink"
-                class="icon-sm"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
+              <span
+                class="flex self-center text-inherit leading-none"
               >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </button>
+                <svg
+                  aria-label="permalink"
+                  class="icon-sm"
+                  fill="none"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                  <path
+                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                </svg>
+              </span>
+            </button>
+          </span>
         </a>
       </p>
       <p
@@ -527,39 +551,43 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             >
               ExpoKit
             </span>
-            <button
-              class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
-              type="button"
+            <span
+              class="relative inline-flex items-center"
             >
-              <span
-                class="flex self-center text-inherit leading-none"
+              <button
+                class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle justify-center px-0.5 bottom-0 relative invisible group-hover:visible group-focus-visible:visible top-0.5"
+                type="button"
               >
-                <svg
-                  aria-label="permalink"
-                  class="icon-sm"
-                  fill="none"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
+                <span
+                  class="flex self-center text-inherit leading-none"
                 >
-                  <path
-                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                  <path
-                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                </svg>
-              </span>
-            </button>
+                  <svg
+                    aria-label="permalink"
+                    class="icon-sm"
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </span>
+              </button>
+            </span>
           </a>
         </summary>
         <div
@@ -581,7 +609,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           data-text="true"
         >
           <a
-            class="scroll-m-5 relative text-[inherit] decoration-0"
+            class="scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
             href="#always"
             id="always"
           >
@@ -595,39 +623,43 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 always
               </code>
             </span>
-            <button
-              class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
-              type="button"
+            <span
+              class="relative inline-flex items-center"
             >
-              <span
-                class="flex self-center text-inherit leading-none"
+              <button
+                class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle justify-center px-0.5 bottom-0 relative invisible group-hover:visible group-focus-visible:visible"
+                type="button"
               >
-                <svg
-                  aria-label="permalink"
-                  class="icon-sm"
-                  fill="none"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
+                <span
+                  class="flex self-center text-inherit leading-none"
                 >
-                  <path
-                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                  <path
-                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                </svg>
-              </span>
-            </button>
+                  <svg
+                    aria-label="permalink"
+                    class="icon-sm"
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </span>
+              </button>
+            </span>
           </a>
         </p>
         <p
@@ -667,7 +699,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         data-text="true"
       >
         <a
-          class="scroll-m-5 relative text-[inherit] decoration-0"
+          class="scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
           href="#backgroundcolor"
           id="backgroundcolor"
         >
@@ -681,39 +713,43 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               backgroundColor
             </code>
           </span>
-          <button
-            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
-            type="button"
+          <span
+            class="relative inline-flex items-center"
           >
-            <span
-              class="flex self-center text-inherit leading-none"
+            <button
+              class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle justify-center px-0.5 bottom-0 relative invisible group-hover:visible group-focus-visible:visible"
+              type="button"
             >
-              <svg
-                aria-label="permalink"
-                class="icon-sm"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
+              <span
+                class="flex self-center text-inherit leading-none"
               >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </button>
+                <svg
+                  aria-label="permalink"
+                  class="icon-sm"
+                  fill="none"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                  <path
+                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                </svg>
+              </span>
+            </button>
+          </span>
         </a>
       </p>
       <p
@@ -767,7 +803,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       data-text="true"
     >
       <a
-        class="scroll-m-5 relative text-[inherit] decoration-0"
+        class="scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
         href="#intentfilters"
         id="intentfilters"
       >
@@ -781,39 +817,43 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             intentFilters
           </code>
         </span>
-        <button
-          class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
-          type="button"
+        <span
+          class="relative inline-flex items-center"
         >
-          <span
-            class="flex self-center text-inherit leading-none"
+          <button
+            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle justify-center px-0.5 bottom-0 relative invisible group-hover:visible group-focus-visible:visible"
+            type="button"
           >
-            <svg
-              aria-label="permalink"
-              class="icon-sm"
-              fill="none"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
+            <span
+              class="flex self-center text-inherit leading-none"
             >
-              <path
-                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-              <path
-                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-            </svg>
-          </span>
-        </button>
+              <svg
+                aria-label="permalink"
+                class="icon-sm"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+                <path
+                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </span>
+          </button>
+        </span>
       </a>
     </p>
     <p
@@ -872,39 +912,43 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           >
             Bare Workflow
           </span>
-          <button
-            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
-            type="button"
+          <span
+            class="relative inline-flex items-center"
           >
-            <span
-              class="flex self-center text-inherit leading-none"
+            <button
+              class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle justify-center px-0.5 bottom-0 relative invisible group-hover:visible group-focus-visible:visible top-0.5"
+              type="button"
             >
-              <svg
-                aria-label="permalink"
-                class="icon-sm"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
+              <span
+                class="flex self-center text-inherit leading-none"
               >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </button>
+                <svg
+                  aria-label="permalink"
+                  class="icon-sm"
+                  fill="none"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                  <path
+                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                </svg>
+              </span>
+            </button>
+          </span>
         </a>
       </summary>
       <div
@@ -953,7 +997,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         data-text="true"
       >
         <a
-          class="scroll-m-5 relative text-[inherit] decoration-0"
+          class="scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
           href="#autoverify"
           id="autoverify"
         >
@@ -967,39 +1011,43 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               autoVerify
             </code>
           </span>
-          <button
-            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
-            type="button"
+          <span
+            class="relative inline-flex items-center"
           >
-            <span
-              class="flex self-center text-inherit leading-none"
+            <button
+              class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle justify-center px-0.5 bottom-0 relative invisible group-hover:visible group-focus-visible:visible"
+              type="button"
             >
-              <svg
-                aria-label="permalink"
-                class="icon-sm"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
+              <span
+                class="flex self-center text-inherit leading-none"
               >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </button>
+                <svg
+                  aria-label="permalink"
+                  class="icon-sm"
+                  fill="none"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                  <path
+                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                </svg>
+              </span>
+            </button>
+          </span>
         </a>
       </p>
       <p
@@ -1038,7 +1086,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         data-text="true"
       >
         <a
-          class="scroll-m-5 relative text-[inherit] decoration-0"
+          class="scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
           href="#data"
           id="data"
         >
@@ -1052,86 +1100,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               data
             </code>
           </span>
-          <button
-            class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
-            type="button"
+          <span
+            class="relative inline-flex items-center"
           >
-            <span
-              class="flex self-center text-inherit leading-none"
-            >
-              <svg
-                aria-label="permalink"
-                class="icon-sm"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </button>
-        </a>
-      </p>
-      <p
-        class="css-1lwc34i-AppConfigProperty"
-        data-text="true"
-      >
-        Type: 
-        <code
-          class="css-ite7ne-TextComponent"
-          data-text="true"
-        >
-          array || object
-        </code>
-         • Path:
-         
-        <code
-          class="css-te23k8-AppConfigProperty"
-        >
-          intentFilters
-          .
-          data
-        </code>
-      </p>
-      <div
-        class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
-      >
-        <p
-          class="group css-1kfqm4n-TextComponent"
-          data-text="true"
-        >
-          <a
-            class="scroll-m-5 relative text-[inherit] decoration-0"
-            href="#host"
-            id="host"
-          >
-            <span
-              class="inline"
-            >
-              <code
-                class="css-10gpz29-PropertyName"
-                data-text="true"
-              >
-                host
-              </code>
-            </span>
             <button
-              class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5 invisible group-hover:visible group-focus-visible:visible"
+              class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle justify-center px-0.5 bottom-0 relative invisible group-hover:visible group-focus-visible:visible"
               type="button"
             >
               <span
@@ -1163,6 +1136,89 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 </svg>
               </span>
             </button>
+          </span>
+        </a>
+      </p>
+      <p
+        class="css-1lwc34i-AppConfigProperty"
+        data-text="true"
+      >
+        Type: 
+        <code
+          class="css-ite7ne-TextComponent"
+          data-text="true"
+        >
+          array || object
+        </code>
+         • Path:
+         
+        <code
+          class="css-te23k8-AppConfigProperty"
+        >
+          intentFilters
+          .
+          data
+        </code>
+      </p>
+      <div
+        class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
+      >
+        <p
+          class="group css-1kfqm4n-TextComponent"
+          data-text="true"
+        >
+          <a
+            class="scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
+            href="#host"
+            id="host"
+          >
+            <span
+              class="inline"
+            >
+              <code
+                class="css-10gpz29-PropertyName"
+                data-text="true"
+              >
+                host
+              </code>
+            </span>
+            <span
+              class="relative inline-flex items-center"
+            >
+              <button
+                class="cursor-pointer border border-solid rounded-md font-medium gap-2 whitespace-nowrap transition text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 inline-flex items-center size-6 ml-1 align-middle justify-center px-0.5 bottom-0 relative invisible group-hover:visible group-focus-visible:visible"
+                type="button"
+              >
+                <span
+                  class="flex self-center text-inherit leading-none"
+                >
+                  <svg
+                    aria-label="permalink"
+                    class="icon-sm"
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </span>
+              </button>
+            </span>
           </a>
         </p>
         <p

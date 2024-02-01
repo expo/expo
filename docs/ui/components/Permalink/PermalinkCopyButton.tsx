@@ -11,9 +11,10 @@ type Props = {
   slug: string;
   className?: string;
   confirmationClassName?: string;
+  iconSize?: 'sm' | 'xs';
 };
 
-export function PermalinkCopyButton({ slug, className, confirmationClassName }: Props) {
+export function PermalinkCopyButton({ slug, className, confirmationClassName, iconSize }: Props) {
   const [copyValue, setCopyValue] = useState('');
   const { copiedIsVisible, onCopy } = useCopy(copyValue);
 
@@ -24,7 +25,7 @@ export function PermalinkCopyButton({ slug, className, confirmationClassName }: 
   });
 
   return (
-    <>
+    <span className="relative inline-flex items-center">
       <Button
         theme="quaternary"
         onClick={async event => {
@@ -33,10 +34,10 @@ export function PermalinkCopyButton({ slug, className, confirmationClassName }: 
           await onCopy();
         }}
         className={mergeClasses(
-          'inline-flex items-center size-6 ml-1 align-middle -mt-0.5 justify-center px-0.5',
+          'inline-flex items-center size-6 ml-1 align-middle justify-center px-0.5 bottom-0 relative',
           className
         )}>
-        <PermalinkIcon className="icon-sm" />
+        <PermalinkIcon className={iconSize === 'xs' ? 'icon-xs' : 'icon-sm'} />
       </Button>
       <AnimatePresence>
         {copiedIsVisible && (
@@ -57,6 +58,6 @@ export function PermalinkCopyButton({ slug, className, confirmationClassName }: 
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </span>
   );
 }

@@ -34,17 +34,19 @@ const Permalink: ComponentType<Props> = withHeadingManager((props: Props & Headi
   );
 
   return (
-    <PermalinkBase
-      component={component}
-      className={mergeClasses(props.additionalProps?.className, 'group')}>
+    <PermalinkBase component={component} className="group">
       <LinkBase
-        className="scroll-m-5 relative text-[inherit] decoration-0"
+        className={mergeClasses(
+          'scroll-m-5 relative text-[inherit] decoration-0',
+          props.additionalProps?.className
+        )}
         href={'#' + heading.slug}
         ref={heading.ref}
         id={heading.slug}>
         <span className="inline">{children}</span>
         <PermalinkCopyButton
           slug={heading.slug}
+          iconSize={props.additionalProps?.iconSize}
           className="invisible group-hover:visible group-focus-visible:visible"
         />
       </LinkBase>
