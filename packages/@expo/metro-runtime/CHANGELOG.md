@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Send platform to Metro. ([#26812](https://github.com/expo/expo/pull/26812) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
