@@ -23,7 +23,7 @@ const renderConstant = (
     <APISectionDeprecationNote comment={comment} />
     <APISectionPlatformTags comment={comment} />
     <H3Code tags={getTagNamesList(comment)}>
-      <MONOSPACE weight="medium">
+      <MONOSPACE weight="medium" className="wrap-anywhere">
         {apiName ? `${apiName}.` : ''}
         {name}
       </MONOSPACE>

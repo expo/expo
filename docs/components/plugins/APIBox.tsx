@@ -24,7 +24,9 @@ export const APIBox = ({ header, platforms, children, className }: APIBoxProps) 
       {platforms && <PlatformTags prefix="Only for:" platforms={platforms} />}
       {header && (
         <H3Code tags={platforms}>
-          <MONOSPACE weight="medium">{header}</MONOSPACE>
+          <MONOSPACE weight="medium" className="wrap-anywhere">
+            {header}
+          </MONOSPACE>
         </H3Code>
       )}
       {children}

@@ -21,6 +21,7 @@ describe(resolveInstallApkNameAsync, () => {
         appName: 'app',
         buildType: 'debug',
         apkVariantDirectory: '/android/app/build/outputs/apk/debug',
+        architectures: '',
       }
     );
   it(`resolves an APK using cpu-less name`, async () => {
