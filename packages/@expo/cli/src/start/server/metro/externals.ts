@@ -81,6 +81,14 @@ export function isNodeExternal(moduleName: string): string | null {
   return null;
 }
 
+export function isAvailableInCloudflareNodeCompat(moduleName: string): string | null {
+  const moduleId = moduleName.replace(/^node:/, '');
+  if (CLOUDFLARE_NODE_COMPAT_LIBS.includes(moduleId)) {
+    return moduleId;
+  }
+  return null;
+}
+
 function tapNodeShimContents(moduleId: string): string {
   return `module.exports = $$require_external('node:${moduleId}');`;
 }
@@ -99,3 +107,39 @@ async function tapNodeShims(projectRoot: string) {
     }
   }
 }
+
+// List of libraries that are available in Cloudflare Workers with Node.js compatibility enabled.
+export const CLOUDFLARE_NODE_COMPAT_LIBS = [
+  'events',
+  'buffer',
+  'crypto',
+  'path',
+  'stream',
+  'stream/consumers',
+  'stream/promises',
+  'string_decoder',
+  'util',
+  'diagnostics_channel',
+  'process',
+  'assert',
+];
+
+// Additional libraries that could easily be polyfilled.
+// const CLOUDFLARE_NODE_COMPAT_POLYFILLS = [
+//   'querystring',
+//   'url',
+//   'buffer',
+//   'events',
+//   'crypto',
+//   'path',
+//   'process',
+//   'stream',
+//   'stream/consumers',
+//   'stream/promises',
+//   'string_decoder',
+//   'util',
+//   'http',
+//   'https',
+//   'assert',
+//   'diagnostics_channel',
+// ];

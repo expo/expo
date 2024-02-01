@@ -14,9 +14,11 @@ import resolveFrom from 'resolve-from';
 
 import { createFastResolver } from './createExpoMetroResolver';
 import {
+  CLOUDFLARE_NODE_COMPAT_LIBS,
   EXTERNAL_REQUIRE_NATIVE_POLYFILL,
   EXTERNAL_REQUIRE_POLYFILL,
   METRO_SHIMS_FOLDER,
+  NODE_STDLIB_MODULES,
   getNodeExternalModuleId,
   isNodeExternal,
   setupNodeExternals,
@@ -36,6 +38,8 @@ import { isInteractive } from '../../../utils/interactive';
 import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
 import { PlatformBundlers } from '../platformBundlers';
+import chalk from 'chalk';
+import { MetroTerminalReporter } from './MetroTerminalReporter';
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 
@@ -101,11 +105,13 @@ export function withExtendedResolver(
     isTsconfigPathsEnabled,
     isFastResolverEnabled,
     isExporting,
+    reporter,
   }: {
     tsconfig: TsConfigPaths | null;
     isTsconfigPathsEnabled?: boolean;
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
+    reporter: MetroTerminalReporter;
   }
 ) {
   if (isFastResolverEnabled) {
@@ -244,6 +250,7 @@ export function withExtendedResolver(
     // Node.js externals support
     (context: ResolutionContext, moduleName: string, platform: string | null) => {
       // This is a web-only feature, we may extend the shimming to native platforms in the future.
+      // TODO: Drop this check for server actions.
       if (platform !== 'web') {
         return null;
       }
@@ -258,17 +265,35 @@ export function withExtendedResolver(
         // prevent crashing when Node.js built-ins are imported.
         context.customResolverOptions?.environment !== 'node'
       ) {
+        // TODO: We should technically be running this in the server environment too.
+
         // Perform optional resolve first. If the module doesn't exist (no module in the node_modules)
         // then we can mock the file to use an empty module.
         const result = getOptionalResolver(context, platform)(moduleName);
-        return (
-          result ?? {
-            // In this case, mock the file to use an empty module.
-            type: 'empty',
-          }
+
+        // Is a request for a Node.js library that can be resolved internally, e.g. a node_module by the same name or alias.
+        if (result) {
+          return result;
+        }
+
+        return {
+          // In this case, mock the file to use an empty module.
+          type: 'empty',
+        };
+      }
+
+      // Add warning about unsupported Node.js modules for edge cloud runtimes.
+      if (!CLOUDFLARE_NODE_COMPAT_LIBS.includes(moduleId)) {
+        reporter.terminal.log(
+          '%s',
+          chalk.yellow`{bold λ} Node.js built-in "${moduleName}" from "${path.relative(
+            config.server.unstable_serverRoot ?? config.projectRoot,
+            context.originModulePath
+          )}" is not supported in Cloudflare Workers. Consider installing a JS polyfill.`
         );
       }
 
+      // Use an external to access the Node.js module from the runtime.
       const redirectedModuleName = getNodeExternalModuleId(context.originModulePath, moduleId);
       debug(`Redirecting Node.js external "${moduleId}" to "${redirectedModuleName}"`);
       return getStrictResolver(context, platform)(redirectedModuleName);
@@ -432,6 +457,7 @@ export async function withMetroMultiPlatformAsync(
     webOutput,
     isFastResolverEnabled,
     isExporting,
+    reporter,
   }: {
     config: ConfigT;
     exp: ExpoConfig;
@@ -440,6 +466,7 @@ export async function withMetroMultiPlatformAsync(
     webOutput?: 'single' | 'static' | 'server';
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
+    reporter: MetroTerminalReporter;
   }
 ) {
   if (!config.projectRoot) {
@@ -499,6 +526,7 @@ export async function withMetroMultiPlatformAsync(
     isExporting,
     isTsconfigPathsEnabled,
     isFastResolverEnabled,
+    reporter,
   });
 }
 

@@ -113,6 +113,7 @@ export async function loadMetroConfigAsync(
     webOutput: exp.web?.output ?? 'single',
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
     isExporting,
+    reporter: terminalReporter,
   });
 
   if (process.env.NODE_ENV !== 'test') {
@@ -136,6 +137,7 @@ export async function instantiateMetroAsync(
   server: http.Server;
   middleware: any;
   messageSocket: MessageSocket;
+  reporter: Metro.TerminalReporter;
 }> {
   const projectRoot = metroBundler.projectRoot;
 
@@ -144,11 +146,11 @@ export async function instantiateMetroAsync(
     skipSDKVersionRequirement: true,
   });
 
-  const { config: metroConfig, setEventReporter } = await loadMetroConfigAsync(
-    projectRoot,
-    options,
-    { exp, isExporting }
-  );
+  const {
+    config: metroConfig,
+    reporter,
+    setEventReporter,
+  } = await loadMetroConfigAsync(projectRoot, options, { exp, isExporting });
 
   const { createDevServerMiddleware, securityHeadersMiddleware } =
     require('@react-native-community/cli-server-api') as typeof import('@react-native-community/cli-server-api');
@@ -210,6 +212,7 @@ export async function instantiateMetroAsync(
   setEventReporter(eventsSocketEndpoint.reportEvent);
 
   return {
+    reporter,
     metro,
     server,
     middleware,
