@@ -47,7 +47,13 @@ module Expo
 
     # Whether this module should only be added to the debug configuration.
     attr_reader :debugOnly
-    
+
+    # Names of Swift classes that hooks into `ExpoAppDelegate` to receive AppDelegate life-cycle events.
+    attr_reader :appDelegateSubscribers
+
+    # Names of Swift classes that implement `ExpoReactDelegateHandler` to hook React instance creation.
+    attr_reader :reactDelegateHandlers
+
     def initialize(json)
       @name = json['packageName']
       @version = json['packageVersion']
@@ -55,10 +61,13 @@ module Expo
       @flags = json.fetch('flags', {})
       @modules = json.fetch('modules', [])
       @debugOnly = json['debugOnly']
+      @appDelegateSubscribers = json.fetch('appDelegateSubscribers', [])
+      @reactDelegateHandlers = json.fetch('reactDelegateHandlers', [])
     end
 
-    def has_swift_modules_to_link?
-      return !@modules.empty?
+    # Returns a boolean value whether the package has any module, app delegate subscriber or react delegate handler to link.
+    def has_something_to_link?
+      return !@modules.empty? || !@appDelegateSubscribers.empty? || !@reactDelegateHandlers.empty?
     end
 
   end # class Package
