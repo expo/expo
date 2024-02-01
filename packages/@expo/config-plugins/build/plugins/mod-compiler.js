@@ -151,10 +151,21 @@ const precedences = {
     dangerous: -2,
     // run the XcodeProject mod second because many plugins attempt to read from it.
     xcodeproj: -1,
-    // put the finalized mod at the last
-    finalized: 1
+    // put the finalized mod last out of all mods that mutate native files
+    finalized: 1,
+    // finally, put mod that calculate fingerprint/hash of native files last so that hash is consistent
+    expoPlistNativeFingerprint: 2
+  },
+  android: {
+    // dangerous runs first
+    dangerous: -2,
+    // put the finalized mod last out of all mods that mutate native files
+    finalized: 1,
+    // finally, put mod that calculate fingerprint/hash of native files last so that hash is consistent
+    manifestNativeFingerprint: 2
   }
 };
+
 /**
  * A generic plugin compiler.
  *

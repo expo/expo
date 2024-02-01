@@ -103,6 +103,27 @@ export function sortAndroidManifest(obj: AndroidManifest) {
 
 export const androidManifestPathFromPlatformProjectRoot = 'app/src/main/AndroidManifest.xml';
 
+const manifestProvider = provider<Manifest.AndroidManifest>({
+  isIntrospective: true,
+  getFilePath({ modRequest: { platformProjectRoot } }) {
+    return path.join(platformProjectRoot, androidManifestPathFromPlatformProjectRoot);
+  },
+  async read(filePath, config) {
+    try {
+      return await Manifest.readAndroidManifestAsync(filePath);
+    } catch (error: any) {
+      if (!config.modRequest.introspect) {
+        throw error;
+      }
+    }
+    return await getAndroidManifestTemplate(config);
+  },
+  async write(filePath, { modResults, modRequest: { introspect } }) {
+    if (introspect) return;
+    await Manifest.writeAndroidManifestAsync(filePath, sortAndroidManifest(modResults));
+  },
+});
+
 const defaultProviders = {
   dangerous: provider<unknown>({
     getFilePath() {
@@ -123,26 +144,8 @@ const defaultProviders = {
     async write() {},
   }),
   // Append a rule to supply gradle.properties data to mods on `mods.android.gradleProperties`
-  manifest: provider<Manifest.AndroidManifest>({
-    isIntrospective: true,
-    getFilePath({ modRequest: { platformProjectRoot } }) {
-      return path.join(platformProjectRoot, androidManifestPathFromPlatformProjectRoot);
-    },
-    async read(filePath, config) {
-      try {
-        return await Manifest.readAndroidManifestAsync(filePath);
-      } catch (error: any) {
-        if (!config.modRequest.introspect) {
-          throw error;
-        }
-      }
-      return await getAndroidManifestTemplate(config);
-    },
-    async write(filePath, { modResults, modRequest: { introspect } }) {
-      if (introspect) return;
-      await Manifest.writeAndroidManifestAsync(filePath, sortAndroidManifest(modResults));
-    },
-  }),
+  manifest: manifestProvider,
+  manifestNativeFingerprint: manifestProvider,
 
   // Append a rule to supply gradle.properties data to mods on `mods.android.gradleProperties`
   gradleProperties: provider<Properties.PropertiesItem[]>({

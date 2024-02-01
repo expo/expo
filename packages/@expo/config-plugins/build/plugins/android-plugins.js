@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.createAndroidManifestPlugin = createAndroidManifestPlugin;
 exports.createStringsXmlPlugin = createStringsXmlPlugin;
-exports.withStringsXml = exports.withSettingsGradle = exports.withProjectBuildGradle = exports.withMainApplication = exports.withMainActivity = exports.withGradleProperties = exports.withAppBuildGradle = exports.withAndroidStyles = exports.withAndroidManifest = exports.withAndroidColorsNight = exports.withAndroidColors = void 0;
+exports.withStringsXml = exports.withSettingsGradle = exports.withProjectBuildGradle = exports.withMainApplication = exports.withMainActivity = exports.withGradleProperties = exports.withAppBuildGradle = exports.withAndroidStyles = exports.withAndroidManifestNativeFingerprint = exports.withAndroidManifest = exports.withAndroidColorsNight = exports.withAndroidColors = void 0;
 function _withMod() {
   const data = require("./withMod");
   _withMod = function () {
@@ -58,12 +58,27 @@ const withAndroidManifest = (config, action) => {
 };
 
 /**
- * Provides the strings.xml for modification.
+ * Provides the AndroidManifest.xml for modification and runs last for use with fingerprint.
  *
  * @param config
  * @param action
  */
 exports.withAndroidManifest = withAndroidManifest;
+const withAndroidManifestNativeFingerprint = (config, action) => {
+  return (0, _withMod().withMod)(config, {
+    platform: 'android',
+    mod: 'manifestNativeFingerprint',
+    action
+  });
+};
+
+/**
+ * Provides the strings.xml for modification.
+ *
+ * @param config
+ * @param action
+ */
+exports.withAndroidManifestNativeFingerprint = withAndroidManifestNativeFingerprint;
 const withStringsXml = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'android',

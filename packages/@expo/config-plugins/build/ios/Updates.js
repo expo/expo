@@ -34,7 +34,7 @@ let Config = exports.Config = /*#__PURE__*/function (Config) {
 }({}); // when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
 // Also ensure the docs are up-to-date: https://docs.expo.dev/bare/installing-updates/
 const withUpdates = config => {
-  return (0, _iosPlugins().withExpoPlist)(config, async config => {
+  return (0, _iosPlugins().withExpoPlistNativeFingerprint)(config, async config => {
     const projectRoot = config.modRequest.projectRoot;
     const expoUpdatesPackageVersion = (0, _Updates().getExpoUpdatesPackageVersion)(projectRoot);
     config.modResults = await setUpdatesConfigAsync(projectRoot, config, config.modResults, expoUpdatesPackageVersion);

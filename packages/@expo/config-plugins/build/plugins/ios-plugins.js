@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.createEntitlementsPlugin = createEntitlementsPlugin;
 exports.createInfoPlistPlugin = createInfoPlistPlugin;
 exports.createInfoPlistPluginWithPropertyGuard = createInfoPlistPluginWithPropertyGuard;
-exports.withXcodeProject = exports.withPodfileProperties = exports.withInfoPlist = exports.withExpoPlist = exports.withEntitlementsPlist = exports.withAppDelegate = void 0;
+exports.withXcodeProject = exports.withPodfileProperties = exports.withInfoPlist = exports.withExpoPlistNativeFingerprint = exports.withExpoPlist = exports.withEntitlementsPlist = exports.withAppDelegate = void 0;
 function _withMod() {
   const data = require("./withMod");
   _withMod = function () {
@@ -159,12 +159,27 @@ const withExpoPlist = (config, action) => {
 };
 
 /**
- * Provides the main .xcodeproj for modification.
+ * Provides the Expo.plist for modification and runs last for use with fingerprint.
  *
  * @param config
  * @param action
  */
 exports.withExpoPlist = withExpoPlist;
+const withExpoPlistNativeFingerprint = (config, action) => {
+  return (0, _withMod().withMod)(config, {
+    platform: 'ios',
+    mod: 'expoPlistNativeFingerprint',
+    action
+  });
+};
+
+/**
+ * Provides the main .xcodeproj for modification.
+ *
+ * @param config
+ * @param action
+ */
+exports.withExpoPlistNativeFingerprint = withExpoPlistNativeFingerprint;
 const withXcodeProject = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'ios',

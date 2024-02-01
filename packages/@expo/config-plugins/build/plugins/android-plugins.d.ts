@@ -17,6 +17,13 @@ export declare function createStringsXmlPlugin(action: MutateDataAction<Resource
  */
 export declare const withAndroidManifest: ConfigPlugin<Mod<Manifest.AndroidManifest>>;
 /**
+ * Provides the AndroidManifest.xml for modification and runs last for use with fingerprint.
+ *
+ * @param config
+ * @param action
+ */
+export declare const withAndroidManifestNativeFingerprint: ConfigPlugin<Mod<Manifest.AndroidManifest>>;
+/**
  * Provides the strings.xml for modification.
  *
  * @param config

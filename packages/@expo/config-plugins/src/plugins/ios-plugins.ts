@@ -165,6 +165,20 @@ export const withExpoPlist: ConfigPlugin<Mod<ExpoPlist>> = (config, action) => {
 };
 
 /**
+ * Provides the Expo.plist for modification and runs last for use with fingerprint.
+ *
+ * @param config
+ * @param action
+ */
+export const withExpoPlistNativeFingerprint: ConfigPlugin<Mod<ExpoPlist>> = (config, action) => {
+  return withMod(config, {
+    platform: 'ios',
+    mod: 'expoPlistNativeFingerprint',
+    action,
+  });
+};
+
+/**
  * Provides the main .xcodeproj for modification.
  *
  * @param config

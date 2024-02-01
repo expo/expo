@@ -8,6 +8,7 @@ declare const defaultProviders: {
     dangerous: import("./createBaseMod").BaseModProviderMethods<unknown, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     finalized: import("./createBaseMod").BaseModProviderMethods<unknown, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     manifest: import("./createBaseMod").BaseModProviderMethods<Manifest.AndroidManifest, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
+    manifestNativeFingerprint: import("./createBaseMod").BaseModProviderMethods<Manifest.AndroidManifest, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     gradleProperties: import("./createBaseMod").BaseModProviderMethods<Properties.PropertiesItem[], Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     strings: import("./createBaseMod").BaseModProviderMethods<Resources.ResourceXML, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     colors: import("./createBaseMod").BaseModProviderMethods<Resources.ResourceXML, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
@@ -27,6 +28,7 @@ export declare function getAndroidModFileProviders(): {
     dangerous: import("./createBaseMod").BaseModProviderMethods<unknown, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     finalized: import("./createBaseMod").BaseModProviderMethods<unknown, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     manifest: import("./createBaseMod").BaseModProviderMethods<Manifest.AndroidManifest, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
+    manifestNativeFingerprint: import("./createBaseMod").BaseModProviderMethods<Manifest.AndroidManifest, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     gradleProperties: import("./createBaseMod").BaseModProviderMethods<Properties.PropertiesItem[], Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     strings: import("./createBaseMod").BaseModProviderMethods<Resources.ResourceXML, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     colors: import("./createBaseMod").BaseModProviderMethods<Resources.ResourceXML, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;

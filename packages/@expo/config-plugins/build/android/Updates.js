@@ -68,7 +68,7 @@ const withUpdates = config => {
 };
 exports.withUpdates = withUpdates;
 const withUpdatesManifest = config => {
-  return (0, _androidPlugins().withAndroidManifest)(config, async config => {
+  return (0, _androidPlugins().withAndroidManifestNativeFingerprint)(config, async config => {
     const projectRoot = config.modRequest.projectRoot;
     const expoUpdatesPackageVersion = (0, _Updates().getExpoUpdatesPackageVersion)(projectRoot);
     config.modResults = await setUpdatesConfigAsync(projectRoot, config, config.modResults, expoUpdatesPackageVersion);

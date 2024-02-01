@@ -63,6 +63,23 @@ export const withAndroidManifest: ConfigPlugin<Mod<Manifest.AndroidManifest>> = 
 };
 
 /**
+ * Provides the AndroidManifest.xml for modification and runs last for use with fingerprint.
+ *
+ * @param config
+ * @param action
+ */
+export const withAndroidManifestNativeFingerprint: ConfigPlugin<Mod<Manifest.AndroidManifest>> = (
+  config,
+  action
+) => {
+  return withMod(config, {
+    platform: 'android',
+    mod: 'manifestNativeFingerprint',
+    action,
+  });
+};
+
+/**
  * Provides the strings.xml for modification.
  *
  * @param config

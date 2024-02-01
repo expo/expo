@@ -138,6 +138,35 @@ function sortAndroidManifest(obj) {
   return obj;
 }
 const androidManifestPathFromPlatformProjectRoot = exports.androidManifestPathFromPlatformProjectRoot = 'app/src/main/AndroidManifest.xml';
+const manifestProvider = (0, _createBaseMod().provider)({
+  isIntrospective: true,
+  getFilePath({
+    modRequest: {
+      platformProjectRoot
+    }
+  }) {
+    return _path().default.join(platformProjectRoot, androidManifestPathFromPlatformProjectRoot);
+  },
+  async read(filePath, config) {
+    try {
+      return await _android().Manifest.readAndroidManifestAsync(filePath);
+    } catch (error) {
+      if (!config.modRequest.introspect) {
+        throw error;
+      }
+    }
+    return await getAndroidManifestTemplate(config);
+  },
+  async write(filePath, {
+    modResults,
+    modRequest: {
+      introspect
+    }
+  }) {
+    if (introspect) return;
+    await _android().Manifest.writeAndroidManifestAsync(filePath, sortAndroidManifest(modResults));
+  }
+});
 const defaultProviders = {
   dangerous: (0, _createBaseMod().provider)({
     getFilePath() {
@@ -164,35 +193,8 @@ const defaultProviders = {
     async write() {}
   }),
   // Append a rule to supply gradle.properties data to mods on `mods.android.gradleProperties`
-  manifest: (0, _createBaseMod().provider)({
-    isIntrospective: true,
-    getFilePath({
-      modRequest: {
-        platformProjectRoot
-      }
-    }) {
-      return _path().default.join(platformProjectRoot, androidManifestPathFromPlatformProjectRoot);
-    },
-    async read(filePath, config) {
-      try {
-        return await _android().Manifest.readAndroidManifestAsync(filePath);
-      } catch (error) {
-        if (!config.modRequest.introspect) {
-          throw error;
-        }
-      }
-      return await getAndroidManifestTemplate(config);
-    },
-    async write(filePath, {
-      modResults,
-      modRequest: {
-        introspect
-      }
-    }) {
-      if (introspect) return;
-      await _android().Manifest.writeAndroidManifestAsync(filePath, sortAndroidManifest(modResults));
-    }
-  }),
+  manifest: manifestProvider,
+  manifestNativeFingerprint: manifestProvider,
   // Append a rule to supply gradle.properties data to mods on `mods.android.gradleProperties`
   gradleProperties: (0, _createBaseMod().provider)({
     isIntrospective: true,

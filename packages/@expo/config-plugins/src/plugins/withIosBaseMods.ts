@@ -52,6 +52,30 @@ function getInfoPlistTemplate() {
   };
 }
 
+const expoPlistProvider = provider<JSONObject>({
+  isIntrospective: true,
+  getFilePath({ modRequest: { platformProjectRoot, projectName } }) {
+    const supportingDirectory = path.join(platformProjectRoot, projectName!, 'Supporting');
+    return path.resolve(supportingDirectory, 'Expo.plist');
+  },
+  async read(filePath, { modRequest: { introspect } }) {
+    try {
+      return plist.parse(await readFile(filePath, 'utf8'));
+    } catch (error) {
+      if (introspect) {
+        return {};
+      }
+      throw error;
+    }
+  },
+  async write(filePath, { modResults, modRequest: { introspect } }) {
+    if (introspect) {
+      return;
+    }
+    await writeFile(filePath, plist.build(sortObject(modResults)));
+  },
+});
+
 const defaultProviders = {
   dangerous: provider<unknown>({
     getFilePath() {
@@ -85,29 +109,9 @@ const defaultProviders = {
     },
   }),
   // Append a rule to supply Expo.plist data to mods on `mods.ios.expoPlist`
-  expoPlist: provider<JSONObject>({
-    isIntrospective: true,
-    getFilePath({ modRequest: { platformProjectRoot, projectName } }) {
-      const supportingDirectory = path.join(platformProjectRoot, projectName!, 'Supporting');
-      return path.resolve(supportingDirectory, 'Expo.plist');
-    },
-    async read(filePath, { modRequest: { introspect } }) {
-      try {
-        return plist.parse(await readFile(filePath, 'utf8'));
-      } catch (error) {
-        if (introspect) {
-          return {};
-        }
-        throw error;
-      }
-    },
-    async write(filePath, { modResults, modRequest: { introspect } }) {
-      if (introspect) {
-        return;
-      }
-      await writeFile(filePath, plist.build(sortObject(modResults)));
-    },
-  }),
+  expoPlist: expoPlistProvider,
+  expoPlistNativeFingerprint: expoPlistProvider,
+
   // Append a rule to supply .xcodeproj data to mods on `mods.ios.xcodeproj`
   xcodeproj: provider<XcodeProject>({
     getFilePath({ modRequest: { projectRoot } }) {

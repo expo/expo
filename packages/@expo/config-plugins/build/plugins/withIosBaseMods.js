@@ -140,6 +140,43 @@ function getInfoPlistTemplate() {
     CADisableMinimumFrameDurationOnPhone: true
   };
 }
+const expoPlistProvider = (0, _createBaseMod().provider)({
+  isIntrospective: true,
+  getFilePath({
+    modRequest: {
+      platformProjectRoot,
+      projectName
+    }
+  }) {
+    const supportingDirectory = _path().default.join(platformProjectRoot, projectName, 'Supporting');
+    return _path().default.resolve(supportingDirectory, 'Expo.plist');
+  },
+  async read(filePath, {
+    modRequest: {
+      introspect
+    }
+  }) {
+    try {
+      return _plist().default.parse(await readFile(filePath, 'utf8'));
+    } catch (error) {
+      if (introspect) {
+        return {};
+      }
+      throw error;
+    }
+  },
+  async write(filePath, {
+    modResults,
+    modRequest: {
+      introspect
+    }
+  }) {
+    if (introspect) {
+      return;
+    }
+    await writeFile(filePath, _plist().default.build((0, _sortObject().sortObject)(modResults)));
+  }
+});
 const defaultProviders = {
   dangerous: (0, _createBaseMod().provider)({
     getFilePath() {
@@ -181,43 +218,8 @@ const defaultProviders = {
     }
   }),
   // Append a rule to supply Expo.plist data to mods on `mods.ios.expoPlist`
-  expoPlist: (0, _createBaseMod().provider)({
-    isIntrospective: true,
-    getFilePath({
-      modRequest: {
-        platformProjectRoot,
-        projectName
-      }
-    }) {
-      const supportingDirectory = _path().default.join(platformProjectRoot, projectName, 'Supporting');
-      return _path().default.resolve(supportingDirectory, 'Expo.plist');
-    },
-    async read(filePath, {
-      modRequest: {
-        introspect
-      }
-    }) {
-      try {
-        return _plist().default.parse(await readFile(filePath, 'utf8'));
-      } catch (error) {
-        if (introspect) {
-          return {};
-        }
-        throw error;
-      }
-    },
-    async write(filePath, {
-      modResults,
-      modRequest: {
-        introspect
-      }
-    }) {
-      if (introspect) {
-        return;
-      }
-      await writeFile(filePath, _plist().default.build((0, _sortObject().sortObject)(modResults)));
-    }
-  }),
+  expoPlist: expoPlistProvider,
+  expoPlistNativeFingerprint: expoPlistProvider,
   // Append a rule to supply .xcodeproj data to mods on `mods.ios.xcodeproj`
   xcodeproj: (0, _createBaseMod().provider)({
     getFilePath({

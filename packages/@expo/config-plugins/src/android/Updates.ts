@@ -9,7 +9,7 @@ import {
 import { buildResourceItem, ResourceXML } from './Resources';
 import { removeStringItem, setStringItem } from './Strings';
 import { ConfigPlugin, ExportedConfigWithProps } from '../Plugin.types';
-import { createStringsXmlPlugin, withAndroidManifest } from '../plugins/android-plugins';
+import { createStringsXmlPlugin, withAndroidManifestNativeFingerprint } from '../plugins/android-plugins';
 import { withPlugins } from '../plugins/withPlugins';
 import {
   ExpoConfigUpdates,
@@ -43,7 +43,7 @@ export const withUpdates: ConfigPlugin = (config) => {
 };
 
 const withUpdatesManifest: ConfigPlugin = (config) => {
-  return withAndroidManifest(config, async (config) => {
+  return withAndroidManifestNativeFingerprint(config, async (config) => {
     const projectRoot = config.modRequest.projectRoot;
     const expoUpdatesPackageVersion = getExpoUpdatesPackageVersion(projectRoot);
     config.modResults = await setUpdatesConfigAsync(

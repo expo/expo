@@ -9,6 +9,7 @@ declare const defaultProviders: {
     finalized: import("./createBaseMod").BaseModProviderMethods<unknown, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     appDelegate: import("./createBaseMod").BaseModProviderMethods<Paths.AppDelegateProjectFile, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     expoPlist: import("./createBaseMod").BaseModProviderMethods<JSONObject, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
+    expoPlistNativeFingerprint: import("./createBaseMod").BaseModProviderMethods<JSONObject, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     xcodeproj: import("./createBaseMod").BaseModProviderMethods<xcode.XcodeProject, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     infoPlist: import("./createBaseMod").BaseModProviderMethods<InfoPlist, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     entitlements: import("./createBaseMod").BaseModProviderMethods<JSONObject, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
@@ -23,6 +24,7 @@ export declare function getIosModFileProviders(): {
     finalized: import("./createBaseMod").BaseModProviderMethods<unknown, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     appDelegate: import("./createBaseMod").BaseModProviderMethods<Paths.AppDelegateProjectFile, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     expoPlist: import("./createBaseMod").BaseModProviderMethods<JSONObject, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
+    expoPlistNativeFingerprint: import("./createBaseMod").BaseModProviderMethods<JSONObject, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     xcodeproj: import("./createBaseMod").BaseModProviderMethods<xcode.XcodeProject, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     infoPlist: import("./createBaseMod").BaseModProviderMethods<InfoPlist, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     entitlements: import("./createBaseMod").BaseModProviderMethods<JSONObject, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;

@@ -1,6 +1,6 @@
 import { ExpoPlist } from './IosConfig.types';
 import { ConfigPlugin } from '../Plugin.types';
-import { withExpoPlist } from '../plugins/ios-plugins';
+import { withExpoPlistNativeFingerprint } from '../plugins/ios-plugins';
 import {
   ExpoConfigUpdates,
   getExpoUpdatesPackageVersion,
@@ -29,7 +29,7 @@ export enum Config {
 // Also ensure the docs are up-to-date: https://docs.expo.dev/bare/installing-updates/
 
 export const withUpdates: ConfigPlugin = (config) => {
-  return withExpoPlist(config, async (config) => {
+  return withExpoPlistNativeFingerprint(config, async (config) => {
     const projectRoot = config.modRequest.projectRoot;
     const expoUpdatesPackageVersion = getExpoUpdatesPackageVersion(projectRoot);
     config.modResults = await setUpdatesConfigAsync(

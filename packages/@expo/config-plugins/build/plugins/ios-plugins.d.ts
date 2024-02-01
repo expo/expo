@@ -54,6 +54,13 @@ export declare const withEntitlementsPlist: ConfigPlugin<Mod<JSONObject>>;
  */
 export declare const withExpoPlist: ConfigPlugin<Mod<ExpoPlist>>;
 /**
+ * Provides the Expo.plist for modification and runs last for use with fingerprint.
+ *
+ * @param config
+ * @param action
+ */
+export declare const withExpoPlistNativeFingerprint: ConfigPlugin<Mod<ExpoPlist>>;
+/**
  * Provides the main .xcodeproj for modification.
  *
  * @param config
