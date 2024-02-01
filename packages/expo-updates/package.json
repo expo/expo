@@ -58,6 +58,8 @@
     "expo-module-scripts": "^3.0.0",
     "express": "^4.17.2",
     "form-data": "^4.0.0",
+    "fs-extra": "~8.1.0",
+    "glob": "^7.1.7",
     "memfs": "^3.2.0",
     "xstate": "^4.37.2"
   },
