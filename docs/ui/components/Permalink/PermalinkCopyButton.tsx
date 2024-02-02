@@ -1,8 +1,7 @@
 import { Button, mergeClasses } from '@expo/styleguide';
+import { ClipboardIcon } from '@expo/styleguide-icons';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-
-import { PermalinkIcon } from './PermalinkIcon';
 
 import { useCopy } from '~/common/useCopy';
 import { FOOTNOTE } from '~/ui/components/Text';
@@ -37,7 +36,7 @@ export function PermalinkCopyButton({ slug, className, confirmationClassName, ic
           'inline-flex items-center size-6 ml-1 align-middle justify-center px-0.5 bottom-0 relative',
           className
         )}>
-        <PermalinkIcon className={iconSize === 'xs' ? 'icon-xs' : 'icon-sm'} />
+        <ClipboardIcon className={iconSize === 'xs' ? 'icon-xs' : 'icon-sm'} />
       </Button>
       <AnimatePresence>
         {copiedIsVisible && (
