@@ -25,11 +25,10 @@ const withAndroidSplashStrings = config => {
   return (0, _configPlugins().withStringsXml)(config, config => {
     const splashConfig = (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config);
     if (splashConfig) {
-      var _config$androidStatus;
       const {
         resizeMode
       } = splashConfig;
-      const statusBarTranslucent = !!((_config$androidStatus = config.androidStatusBar) !== null && _config$androidStatus !== void 0 && _config$androidStatus.translucent);
+      const statusBarTranslucent = !!config.androidStatusBar?.translucent;
       config.modResults = setSplashStrings(config.modResults, resizeMode, statusBarTranslucent);
     }
     return config;

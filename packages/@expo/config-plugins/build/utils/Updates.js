@@ -86,12 +86,10 @@ function getExpoUpdatesPackageVersion(projectRoot) {
   return packageJson.version;
 }
 function getUpdateUrl(config) {
-  var _config$updates$url, _config$updates;
-  return (_config$updates$url = (_config$updates = config.updates) === null || _config$updates === void 0 ? void 0 : _config$updates.url) !== null && _config$updates$url !== void 0 ? _config$updates$url : null;
+  return config.updates?.url ?? null;
 }
 function getAppVersion(config) {
-  var _config$version;
-  return (_config$version = config.version) !== null && _config$version !== void 0 ? _config$version : '1.0.0';
+  return config.version ?? '1.0.0';
 }
 function getNativeVersion(config, platform) {
   const version = _().IOSConfig.Version.getVersion(config);
@@ -123,8 +121,7 @@ async function getRuntimeVersionNullableAsync(...[projectRoot, config, platform]
   }
 }
 async function getRuntimeVersionAsync(projectRoot, config, platform) {
-  var _config$platform$runt, _config$platform;
-  const runtimeVersion = (_config$platform$runt = (_config$platform = config[platform]) === null || _config$platform === void 0 ? void 0 : _config$platform.runtimeVersion) !== null && _config$platform$runt !== void 0 ? _config$platform$runt : config.runtimeVersion;
+  const runtimeVersion = config[platform]?.runtimeVersion ?? config.runtimeVersion;
   if (!runtimeVersion) {
     return null;
   }
@@ -149,37 +146,33 @@ function getSDKVersion(config) {
   return typeof config.sdkVersion === 'string' ? config.sdkVersion : null;
 }
 function getUpdatesEnabled(config) {
-  var _config$updates2;
   // allow override of enabled property
-  if (((_config$updates2 = config.updates) === null || _config$updates2 === void 0 ? void 0 : _config$updates2.enabled) !== undefined) {
+  if (config.updates?.enabled !== undefined) {
     return config.updates.enabled;
   }
   return getUpdateUrl(config) !== null;
 }
 function getUpdatesTimeout(config) {
-  var _config$updates$fallb, _config$updates3;
-  return (_config$updates$fallb = (_config$updates3 = config.updates) === null || _config$updates3 === void 0 ? void 0 : _config$updates3.fallbackToCacheTimeout) !== null && _config$updates$fallb !== void 0 ? _config$updates$fallb : 0;
+  return config.updates?.fallbackToCacheTimeout ?? 0;
 }
 function getUpdatesCheckOnLaunch(config, expoUpdatesPackageVersion) {
-  var _config$updates4, _config$updates5, _config$updates6, _config$updates7;
-  if (((_config$updates4 = config.updates) === null || _config$updates4 === void 0 ? void 0 : _config$updates4.checkAutomatically) === 'ON_ERROR_RECOVERY') {
+  if (config.updates?.checkAutomatically === 'ON_ERROR_RECOVERY') {
     // native 'ERROR_RECOVERY_ONLY' option was only introduced in 0.11.x
     if (expoUpdatesPackageVersion && _semver().default.gte(expoUpdatesPackageVersion, '0.11.0')) {
       return 'ERROR_RECOVERY_ONLY';
     }
     return 'NEVER';
-  } else if (((_config$updates5 = config.updates) === null || _config$updates5 === void 0 ? void 0 : _config$updates5.checkAutomatically) === 'ON_LOAD') {
+  } else if (config.updates?.checkAutomatically === 'ON_LOAD') {
     return 'ALWAYS';
-  } else if (((_config$updates6 = config.updates) === null || _config$updates6 === void 0 ? void 0 : _config$updates6.checkAutomatically) === 'WIFI_ONLY') {
+  } else if (config.updates?.checkAutomatically === 'WIFI_ONLY') {
     return 'WIFI_ONLY';
-  } else if (((_config$updates7 = config.updates) === null || _config$updates7 === void 0 ? void 0 : _config$updates7.checkAutomatically) === 'NEVER') {
+  } else if (config.updates?.checkAutomatically === 'NEVER') {
     return 'NEVER';
   }
   return 'ALWAYS';
 }
 function getUpdatesCodeSigningCertificate(projectRoot, config) {
-  var _config$updates8;
-  const codeSigningCertificatePath = (_config$updates8 = config.updates) === null || _config$updates8 === void 0 ? void 0 : _config$updates8.codeSigningCertificate;
+  const codeSigningCertificatePath = config.updates?.codeSigningCertificate;
   if (!codeSigningCertificatePath) {
     return undefined;
   }
@@ -190,8 +183,7 @@ function getUpdatesCodeSigningCertificate(projectRoot, config) {
   return _fs().default.readFileSync(finalPath, 'utf8');
 }
 function getUpdatesCodeSigningMetadata(config) {
-  var _config$updates9;
-  return (_config$updates9 = config.updates) === null || _config$updates9 === void 0 ? void 0 : _config$updates9.codeSigningMetadata;
+  return config.updates?.codeSigningMetadata;
 }
 function getUpdatesCodeSigningMetadataStringified(config) {
   const metadata = getUpdatesCodeSigningMetadata(config);
@@ -201,8 +193,7 @@ function getUpdatesCodeSigningMetadataStringified(config) {
   return JSON.stringify(metadata);
 }
 function getUpdatesRequestHeaders(config) {
-  var _config$updates10;
-  return (_config$updates10 = config.updates) === null || _config$updates10 === void 0 ? void 0 : _config$updates10.requestHeaders;
+  return config.updates?.requestHeaders;
 }
 function getUpdatesRequestHeadersStringified(config) {
   const metadata = getUpdatesRequestHeaders(config);

@@ -83,12 +83,10 @@ const withNotificationManifest = config => {
 };
 exports.withNotificationManifest = withNotificationManifest;
 function getNotificationIcon(config) {
-  var _config$notification;
-  return ((_config$notification = config.notification) === null || _config$notification === void 0 ? void 0 : _config$notification.icon) || null;
+  return config.notification?.icon || null;
 }
 function getNotificationColor(config) {
-  var _config$notification2;
-  return ((_config$notification2 = config.notification) === null || _config$notification2 === void 0 ? void 0 : _config$notification2.color) || null;
+  return config.notification?.color || null;
 }
 
 /**
