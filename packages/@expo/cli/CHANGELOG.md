@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Filter URL files out of stacks in Node logs. ([#26868](https://github.com/expo/expo/pull/26868) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.17.4 — 2024-02-01
 
 ### 🎉 New features

@@ -115,7 +115,13 @@ export function formatStackLikeMetro(projectRoot: string, stack: string) {
 
   const stackTrace = stackTraceParser.parse(stack);
   return stackTrace
-    .filter((line) => line.file && line.file !== '<anonymous>')
+    .filter(
+      (line) =>
+        line.file &&
+        line.file !== '<anonymous>' &&
+        // Ignore unsymbolicated stack frames. It's not clear how this is possible but it sometimes happens when the graph changes.
+        !/^https?:\/\//.test(line.file)
+    )
     .map((line) => {
       // Use the same regex we use in Metro config to filter out traces:
       const isCollapsed = INTERNAL_CALLSITES_REGEX.test(line.file!);
