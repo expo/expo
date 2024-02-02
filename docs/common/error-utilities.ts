@@ -235,9 +235,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/routing/appearance/': '/router/appearance/',
   '/routing/error-handling/': '/router/error-handling/',
 
-  // Move overview to index
-  '/versions/v37.0.0/sdk/overview/': '/versions/v37.0.0/',
-
   // Errors and debugging is better suited for getting started than tutorial
   '/tutorial/errors/': '/debugging/errors-and-warnings/',
 
