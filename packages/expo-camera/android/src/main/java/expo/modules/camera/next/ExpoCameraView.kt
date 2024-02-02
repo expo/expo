@@ -279,7 +279,7 @@ class ExpoCameraView(
   }
 
   private fun createImageAnalyzer(): ImageAnalysis =
-  ImageAnalysis.Builder()
+    ImageAnalysis.Builder()
       .setResolutionSelector(
         ResolutionSelector.Builder()
           .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
