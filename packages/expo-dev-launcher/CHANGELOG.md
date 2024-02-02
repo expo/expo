@@ -17,7 +17,7 @@
 - Remove classic updates. ([#26036](https://github.com/expo/expo/pull/26036), [#26230](https://github.com/expo/expo/pull/26230) by [@wschurman](https://github.com/wschurman))
 - Remove classic updates SDK version. ([#26061](https://github.com/expo/expo/pull/26061) by [@wschurman](https://github.com/wschurman))
 - Update auth session URL to prompt user to select account. ([#26780](https://github.com/expo/expo/pull/26780) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- Fixed lint warning
+- Fixed lint warning ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
 
 ### 📚 3rd party library updates
 
