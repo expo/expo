@@ -156,7 +156,7 @@ public final class FileSystemModule: Module {
         throw FileNotExistsException(localUrl.path)
       }
       let session = options.sessionType == .background ? backgroundSession : foregroundSession
-      let task = createUploadTask(session: session, targetUrl: targetUrl, sourceUrl: localUrl, options: options)
+      let task = try createUploadTask(session: session, targetUrl: targetUrl, sourceUrl: localUrl, options: options)
       let taskDelegate = EXSessionUploadTaskDelegate(resolve: promise.resolver, reject: promise.legacyRejecter)
 
       sessionTaskDispatcher.register(taskDelegate, for: task)
@@ -165,7 +165,7 @@ public final class FileSystemModule: Module {
 
     AsyncFunction("uploadTaskStartAsync") { (targetUrl: URL, localUrl: URL, uuid: String, options: UploadOptions, promise: Promise) in
       let session = options.sessionType == .background ? backgroundSession : foregroundSession
-      let task = createUploadTask(session: session, targetUrl: targetUrl, sourceUrl: localUrl, options: options)
+      let task = try createUploadTask(session: session, targetUrl: targetUrl, sourceUrl: localUrl, options: options)
       let onSend: EXUploadDelegateOnSendCallback = { [weak self] _, _, totalBytesSent, totalBytesExpectedToSend in
         self?.sendEvent(EVENT_UPLOAD_PROGRESS, [
           "uuid": uuid,
