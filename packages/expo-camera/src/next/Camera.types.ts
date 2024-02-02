@@ -336,7 +336,7 @@ export type CameraProps = ViewProps & {
    * ```tsx
    * <Camera
    *   barCodeScannerSettings={{
-   *     barCodeTypes: ["qr"],
+   *     barcodeTypes: ["qr"],
    *   }}
    * />
    * ```
@@ -404,7 +404,7 @@ export type CameraNativeProps = {
 
 // @docsMissing
 export type BarcodeSettings = {
-  barCodeTypes: BarCodeType[];
+  barcodeTypes: BarcodeType[];
   interval?: number;
 };
 
@@ -415,7 +415,7 @@ export type ScanningOptions = {
   /**
    * The type of codes to scan for.
    */
-  barCodeTypes: BarCodeType[];
+  barCodeTypes: BarcodeType[];
   /**
    * Indicates whether people can use a two-finger pinch-to-zoom gesture.
    * @default true
@@ -436,7 +436,7 @@ export type ScanningOptions = {
 /**
  * The available bar code types that can be scanned.
  */
-export type BarCodeType =
+export type BarcodeType =
   | 'aztec'
   | 'ean13'
   | 'ean8'
