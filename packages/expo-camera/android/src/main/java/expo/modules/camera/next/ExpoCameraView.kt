@@ -280,8 +280,12 @@ class ExpoCameraView(
   }
 
   private fun createImageAnalyzer(): ImageAnalysis =
-    ImageAnalysis.Builder()
-      .setTargetResolution(Size(1920, 1080))
+  ImageAnalysis.Builder()
+      .setResolutionSelector(
+        ResolutionSelector.Builder()
+          .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
+          .build()
+      )
       .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
       .build()
       .also { analyzer ->
