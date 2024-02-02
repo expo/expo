@@ -56,7 +56,7 @@ module Expo
             # `pod install` may fail if there is no `use_modular_headers!` declaration or
             # `:modular_headers => true` is not used for this particular dependency.
             # The latter require adding transitive dependencies to user's Podfile that we'd rather like to avoid.
-            if package.has_swift_modules_to_link?
+            if package.has_something_to_link?
               use_modular_headers_for_dependencies(pod.spec.all_dependencies)
             end
 
@@ -128,7 +128,7 @@ module Expo
       @packages.select do |package|
         # Check whether the package has any module to autolink
         # and if there is any pod that supports target's platform.
-        package.modules.any? && package.pods.any? { |pod| pod.supports_platform?(platform) }
+        package.has_something_to_link? && package.pods.any? { |pod| pod.supports_platform?(platform) }
       end
     end
 
