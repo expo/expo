@@ -10,7 +10,7 @@
 
 - Fix naming of web files. ([#26505](https://github.com/expo/expo/pull/26505) by [@alanjhughes](https://github.com/alanjhughes))
 - On `iOS`, barcode types were not converted correctly causing the scanner to not start immediately. ([#26704](https://github.com/expo/expo/pull/26704) by [@alanjhughes](https://github.com/alanjhughes))
-- On `Android`, scanning a driver's license did not pass back all data. (by [@byudaniel](https://github.com/byudaniel))
+- On `Android`, scanning a driver's license did not pass back all data. ([#26887](https://github.com/expo/expo/pull/26887) by [@byudaniel](https://github.com/byudaniel))
 
 ### 💡 Others
 
