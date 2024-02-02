@@ -9,12 +9,8 @@
     "ios": "export NODE_ENV=\"development\" && ./scripts/start-simulator.sh",
     "test:ios": "export NODE_ENV=\"test\" && ./scripts/start-simulator.sh",
     "test:android": "export NODE_ENV=\"test\" && ./scripts/start-emulator.sh",
-    "test:web": "EXPO_WEB_E2E_ENV=development jest -c e2e/jest.config.web.js",
-    "test:web:prod": "EXPO_WEB_E2E_ENV=production jest -c e2e/jest.config.web.js",
     "edit:android": "open -a /Applications/Android\\ Studio.app ./android",
     "edit:ios": "open -a Xcode ./ios/BareExpo.xcworkspace",
-    "web": "expo start --web --https",
-    "build:web": "expo export:web",
     "start": "expo start --reset-cache",
     "clear-metro": "watchman watch-del-all && rm -rf /tmp/metro-bundler-cache-* && rm -rf /tmp/haste-map-react-native-packager-*",
     "clear-ios-build": "rm -rf ios/build/; kill $(lsof -t -i:8081)",
@@ -92,8 +88,6 @@
     "expo-module-scripts": "^3.0.0",
     "getenv": "^1.0.0",
     "jest": "^29.3.1",
-    "jest-puppeteer": "^9.0.0",
-    "puppeteer": "^21.2.1",
     "serve": "^11.3.0"
   }
 }
