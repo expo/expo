@@ -8,6 +8,7 @@ import android.graphics.SurfaceTexture
 import android.hardware.camera2.CameraCharacteristics
 import android.os.Bundle
 import android.util.Log
+import android.view.Size
 import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
@@ -280,6 +281,7 @@ class ExpoCameraView(
 
   private fun createImageAnalyzer(): ImageAnalysis =
     ImageAnalysis.Builder()
+      .setTargetResolution(Size(1920, 1080))
       .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
       .build()
       .also { analyzer ->
