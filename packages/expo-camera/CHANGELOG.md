@@ -10,6 +10,7 @@
 
 - Fix naming of web files. ([#26505](https://github.com/expo/expo/pull/26505) by [@alanjhughes](https://github.com/alanjhughes))
 - On `iOS`, barcode types were not converted correctly causing the scanner to not start immediately. ([#26704](https://github.com/expo/expo/pull/26704) by [@alanjhughes](https://github.com/alanjhughes))
+- On `iOS`, fix `maxDuration` timescale on videos.
 
 ### 💡 Others
 
