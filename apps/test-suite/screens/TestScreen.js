@@ -2,7 +2,7 @@
 import Immutable from 'immutable';
 import jasmineModule from 'jasmine-core/lib/jasmine-core/jasmine';
 import React from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import ExponentTest from '../ExponentTest';
 import { getTestModules } from '../TestModules';
@@ -170,12 +170,7 @@ export default class TestScreen extends React.Component {
           app.setState({ done: true, numFailed: failedSpecs.length, results: jsonResult });
         }
 
-        if (Platform.OS === 'web') {
-          // This log needs to be an object for puppeteer tests
-          console.log(result);
-        } else {
-          console.log(jsonResult);
-        }
+        console.log(jsonResult);
 
         if (ExponentTest) {
           ExponentTest.completed(

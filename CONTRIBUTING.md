@@ -14,11 +14,9 @@
 
 Thanks for the help! We currently review PRs for `packages/`, `docs/`, `templates/`, `guides/`, `apps/`, and markdown files.
 
-Expo for Web code is easy to test and contribute to compared to the native code, and we welcome all contributions to it. You may find that some of the web features you are looking for actually live in the [expo-cli repo](https://github.com/expo/expo-cli).
-
 We recommend that folks interested in contributing to the SDK use the `apps/bare-expo` project in their SDK development workflow instead of the Expo client. The Expo client itself (in the `ios/` and `android/` directories) are difficult to setup and require API tokens.
 
-The `bare-expo` project includes most of the Expo SDK and runs the JavaScript code from `apps/test-suite` to allow you to easily write and run E2E tests for iOS, Android, and web for any given SDK package. Unit tests can be written within the SDK package itself. When pushed to the remote, CI will run this project with Detox for Android/iOS and Puppeteer for web and report the results on your pull request.
+The `bare-expo` project includes most of the Expo SDK and runs the JavaScript code from `apps/test-suite` to allow you to easily write and run E2E tests for iOS, and Android for any given SDK package. Unit tests can be written within the SDK package itself. When pushed to the remote, CI will run this project with Detox for Android/iOS and report the results on your pull request.
 
 Manual smoke tests are included in `apps/native-component-list`, this is a good fit for demos or tests that require physical interactions. This is particularly useful if you are testing interactions with UI components, or there is something that is very difficult to test in an automated way but would be easy to verify through manual interaction.
 
@@ -67,9 +65,8 @@ If you will be working with the iOS project, ensure **ruby 2.7** is installed on
 ### Verify native installation is successful
 
 1. Navigate to the bare sandbox project `cd apps/bare-expo`
-2. Run the project on any platform (maybe start with web; it's the fastest! 😁)
+2. Run the project on any native platform:
 
-   - Web: `yarn web`
    - iOS: `yarn ios`
    - Android: `yarn android`
    - If you are working on Linux, make sure to set the `TERMINAL` environment variable to your preferred terminal application. (e.g. `export TERMINAL="konsole"`)
@@ -82,16 +79,14 @@ If you will be working with the iOS project, ensure **ruby 2.7** is installed on
 
 All Expo SDK packages can be found in the `packages/` directory. These packages are automatically linked to the projects in the `apps/` directory, so you can edit them in-place and see the changes in the running app.
 
- <!-- (meaning any iOS, Android, web, or API changes can be tested from `apps/bare-expo/`). -->
-
 1. Navigate to a package you want to edit. Ex: `cd packages/expo-constants`
 2. Start the TypeScript build in watch mode: `yarn build`
 3. Edit code in that package's `src/` directory
 4. Play with your changes on a simulator or device through `bare-expo`:
    - Add or modify a file named after the API you're working on. Ex: `apps/test-suite/tests/Constants.js`
-   - To see native changes, you will need to run the `test-suite` with the `apps/bare-expo` project using `yarn <android | ios | web>`.
+   - To see native changes, you will need to run the `test-suite` with the `apps/bare-expo` project using `yarn <android | ios>`.
    - If you are only making JavaScript changes, you can run `test-suite` from the `apps/test-suite` project using `expo start`.
-   - To run the full test suite with Puppeteer or Detox, you can run the tests `yarn test:<android | ios | web>`.
+   - To run the full test suite with Detox, you can run the tests `yarn test:<android | ios>`.
 5. You can edit a package's native code directly from its respective folder in the `packages/` directory or by opening `bare-expo` in a native editor:
    - Navigate to the `bare-expo` app directory: `cd apps/bare-expo`
    - Android Studio: `yarn edit:android`
@@ -123,7 +118,7 @@ The best way to get your changes merged is to build good tests for them! We have
 
 1. Create a test for your feature in the appropriate package's `src/__tests__` directory (if the file doesn't exist already, create it with the `*-test.ts` or `*-test.tsx` extension).
 2. Any new bridged native functions have to be added to the [jest-expo](https://github.com/expo/expo/blob/main/packages/jest-expo/src/preset/expoModules.js) package to ensure they are mocked. To help you do this more easily, we've written a tool and a guide on how to do this. Check out [Generating Jest Mocks](https://github.com/expo/expo/blob/main/guides/Generating%20Jest%20Mocks.md)!
-3. Run the test with `yarn test` and ensure it handles all platforms (iOS, Android, and web). If the feature doesn't support a platform, then you can exclude it by putting your test in a file with a platform extension like: `-test.ios.ts`, `-test.native.ts`, `-test.web.ts`...
+3. Run the test with `yarn test` and ensure it handles all platforms (iOS, Android, and web). If the feature doesn't support a platform, then you can exclude it by putting your test in a file with a platform extension like: `.test.ios.ts`, `.test.native.ts`, `.test.web.ts`...
 4. You can also test platforms one at a time by pressing <kbd>X</kbd> and selecting the platform you want to test!
 
 ### 🏁 E2E Testing
@@ -131,9 +126,8 @@ The best way to get your changes merged is to build good tests for them! We have
 1. Write your tests in `apps/test-suite/tests`
    - These tests are written with a non-feature-complete version of Jasmine that runs on the Android and iOS clients, so no special features like snapshot testing will be available.
    - If you created a new test file, be sure to add it in `apps/test-suite/TestUtils.js`. This is where you can do platform exclusion. Use `global.DETOX` to test for iOS tests, and `ExponentTest.isInCI` to test for Android Device Farm.
-2. Run your tests locally from the `bare-expo` directory with `yarn test:android`, `yarn test:ios`, or `yarn test:web`.
+2. Run your tests locally from the `bare-expo` directory with `yarn test:android`, or `yarn test:ios`.
    - It's important you test locally because native CI tests can be fragile, take a while to finish, and be frustrating when they fail.
-   - When testing for web, you can set `headless: false` in the `apps/bare-expo/jest-puppeteer.config.js` to watch the tests live. You can also execute `await jestPuppeteer.debug();` in `apps/bare-expo/e2e/TestSuite-test.web.js` to pause the tests and debug them!
 3. Remember to try and get your feature running on as many platforms as possible.
 
 Thanks again for helping to make sure that Expo is stable for everyone!

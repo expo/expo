@@ -15,14 +15,6 @@
     "privacy": "unlisted",
     "version": "1.0.0",
     "platforms": ["ios", "android", "web"],
-    "web": {
-      "build": {
-        "babel": {
-          "root": "./",
-          "include": ["test-suite", "native-component-list", "bare-expo"]
-        }
-      }
-    },
     "android": {
       "scheme": [
         "com.googleusercontent.apps.29635966244-knmlpr1upnv6rs4bumqea7hpit4o7kg2"

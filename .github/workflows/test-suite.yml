@@ -25,44 +25,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Disabled due to Webpack being broken in `bare-expo`.
-  # TODO(cedric): re-enable the web tests once `bare-expo` supports Metro web.
-  # web:
-  #   runs-on: ubuntu-22.04
-  #   steps:
-  #     - name: 👀 Checkout
-  #       uses: actions/checkout@v4
-  #       with:
-  #         submodules: true
-  #     - name: ⬢ Setup Node
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: 16
-  #     - name: ♻️ Restore caches
-  #       uses: ./.github/actions/expo-caches
-  #       id: expo-caches
-  #       with:
-  #         yarn-workspace: 'true'
-  #     - name: 🧶 Install node modules in root dir
-  #       if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-  #       run: yarn install --frozen-lockfile
-  #     - name: 🧪 Run Web tests
-  #       run: yarn test:web
-  #       working-directory: apps/bare-expo
-  #       env:
-  #         EXPO_NO_TYPESCRIPT_SETUP: 1
-  #     - name: 🔔 Notify on Slack
-  #       uses: 8398a7/action-slack@v3
-  #       if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #         SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_web }}
-  #       with:
-  #         channel: '#expo-web'
-  #         status: ${{ job.status }}
-  #         fields: job,message,ref,eventName,author,took
-  #         author_name: Test Suite (Web)
-
   ios-build:
     runs-on: macos-14
     steps:
