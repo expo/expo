@@ -43,7 +43,7 @@ class BarcodeAnalyzer(private val lensFacing: CameraType, formats: List<BarcodeT
             return@addOnSuccessListener
           }
           val barcode = barcodes.first()
-          val value = if (barcode.valueType == Barcode.TYPE_CONTACT_INFO) {
+          val value = if (barcode.valueType == Barcode.TYPE_CONTACT_INFO || barcode.valueType == Barcode.TYPE_DRIVER_LICENSE) {
             barcode.rawValue ?: barcode.rawBytes?.let { String(it) }
           } else {
             barcode.displayValue
