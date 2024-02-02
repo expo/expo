@@ -37,18 +37,24 @@ export class SupportPackageVersionCheck implements DoctorCheck {
       '@expo/config-plugins',
       '@expo/prebuild-config',
       '@expo/metro-config',
-      'metro-config',
-    ].filter((packageName) => versionsForSdk[packageName]);
+      'metro',
+    ]
+      .filter((packageName) => versionsForSdk[packageName])
+      .map((packageName) => ({ packageName, version: versionsForSdk[packageName] }));
+
+    // if metro is present in versions API, add check additional key metro packages, which should use some version
+    if (supportPackagesToValidate.find((p) => p.packageName === 'metro')) {
+      supportPackagesToValidate.push(
+        { packageName: 'metro-resolver', version: versionsForSdk['metro'] },
+        { packageName: 'metro-config', version: versionsForSdk['metro'] }
+      );
+    }
 
     // check that a specific semver is installed for each package
     const warnings = (
       await Promise.all(
-        supportPackagesToValidate.map((packageName) =>
-          getDeepDependenciesWarningWithPackageNameAsync(
-            packageName,
-            versionsForSdk[packageName],
-            projectRoot
-          )
+        supportPackagesToValidate.map((p) =>
+          getDeepDependenciesWarningWithPackageNameAsync(p.packageName, p.version, projectRoot)
         )
       )
     ).flatMap((r) => (r ? [r] : []));

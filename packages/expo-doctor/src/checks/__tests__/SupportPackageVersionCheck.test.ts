@@ -14,7 +14,7 @@ const additionalProjectProps = {
   },
   pkg: {
     resolutions: {
-      'metro-config': '0.9.0',
+      metro: '0.9.0',
     },
   },
   hasUnusedStaticConfig: false,
@@ -27,7 +27,7 @@ const mockGetRemoteVersionsForSdkAsyncResult = {
   '@expo/config-plugins': '1.0.0',
   '@expo/prebuild-config': '1.0.0',
   '@expo/metro-config': '1.0.0',
-  'metro-config': '1.0.0',
+  metro: '1.0.0',
 };
 
 describe('runAsync', () => {
@@ -62,7 +62,7 @@ describe('runAsync', () => {
       .mocked(getRemoteVersionsForSdkAsync)
       .mockResolvedValueOnce(mockGetRemoteVersionsForSdkAsyncResult);
     jest.mocked(getDeepDependenciesWarningAsync).mockImplementation(async (pkg, projectRoot) => {
-      if (pkg.name === 'metro-config') {
+      if (pkg.name === 'metro') {
         return 'warning';
       }
       return null;
@@ -73,5 +73,23 @@ describe('runAsync', () => {
       ...additionalProjectProps,
     });
     expect(result.advice).toContain('remove resolutions from package.json');
+  });
+
+  it('warns about selected related metro packages that are not explicitly referenced in remote versions', async () => {
+    jest
+      .mocked(getRemoteVersionsForSdkAsync)
+      .mockResolvedValueOnce(mockGetRemoteVersionsForSdkAsyncResult);
+    jest.mocked(getDeepDependenciesWarningAsync).mockImplementation(async (pkg, projectRoot) => {
+      if (pkg.name === 'metro-config') {
+        return 'warning';
+      }
+      return null;
+    });
+    const check = new SupportPackageVersionCheck();
+    const result = await check.runAsync({
+      projectRoot: '/path/to/project',
+      ...additionalProjectProps,
+    });
+    expect(result.isSuccessful).toBeFalsy();
   });
 });
