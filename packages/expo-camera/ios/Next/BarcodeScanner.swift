@@ -1,7 +1,7 @@
 import ZXingObjC
 import AVFoundation
 
-let BARCODE_TYPES_KEY = "barCodeTypes"
+let BARCODE_TYPES_KEY = "barcodeTypes"
 
 class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptureVideoDataOutputSampleBufferDelegate {
   var onBarcodeScanned: (([String: Any]?) -> Void)?
@@ -198,7 +198,7 @@ class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
   }
 
   func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-    guard let barCodeTypes = settings[BARCODE_TYPES_KEY],
+    guard let barcodeTypes = settings[BARCODE_TYPES_KEY],
       let metadataOutput,
       zxingEnabled else {
       return

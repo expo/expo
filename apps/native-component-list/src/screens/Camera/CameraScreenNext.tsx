@@ -302,7 +302,7 @@ export default class CameraScreen extends React.Component<object, State> {
         videoQuality="2160p"
         onMountError={this.handleMountError}
         barcodeScannerSettings={{
-          barCodeTypes: ['qr', 'pdf417'],
+          barcodeTypes: ['qr', 'pdf417'],
         }}
         onBarcodeScanned={this.state.barcodeScanning ? this.onBarcodeScanned : undefined}>
         {this.renderTopBar()}

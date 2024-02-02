@@ -292,7 +292,7 @@ export type CameraProps = ViewProps & {
      * ```tsx
      * <Camera
      *   barCodeScannerSettings={{
-     *     barCodeTypes: ["qr"],
+     *     barcodeTypes: ["qr"],
      *   }}
      * />
      * ```
@@ -360,7 +360,7 @@ export type CameraNativeProps = {
     responsiveOrientationWhenOrientationLocked?: boolean;
 };
 export type BarcodeSettings = {
-    barCodeTypes: BarCodeType[];
+    barcodeTypes: BarcodeType[];
     interval?: number;
 };
 /**
@@ -370,7 +370,7 @@ export type ScanningOptions = {
     /**
      * The type of codes to scan for.
      */
-    barCodeTypes: BarCodeType[];
+    barCodeTypes: BarcodeType[];
     /**
      * Indicates whether people can use a two-finger pinch-to-zoom gesture.
      * @default true
@@ -390,6 +390,6 @@ export type ScanningOptions = {
 /**
  * The available bar code types that can be scanned.
  */
-export type BarCodeType = 'aztec' | 'ean13' | 'ean8' | 'qr' | 'pdf417' | 'upc_e' | 'datamatrix' | 'code39' | 'code93' | 'itf14' | 'codabar' | 'code128' | 'upc_a';
+export type BarcodeType = 'aztec' | 'ean13' | 'ean8' | 'qr' | 'pdf417' | 'upc_e' | 'datamatrix' | 'code39' | 'code93' | 'itf14' | 'codabar' | 'code128' | 'upc_a';
 export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };
 //# sourceMappingURL=Camera.types.d.ts.map
