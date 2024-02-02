@@ -25,9 +25,8 @@ function _Serialize() {
  * @param projectRoot
  */
 const withConfigPlugins = (config, skipPlugins) => {
-  var _config$plugins;
   // @ts-ignore: plugins not on config type yet -- TODO
-  if (!Array.isArray(config.plugins) || !((_config$plugins = config.plugins) !== null && _config$plugins !== void 0 && _config$plugins.length)) {
+  if (!Array.isArray(config.plugins) || !config.plugins?.length) {
     return config;
   }
   if (!skipPlugins) {

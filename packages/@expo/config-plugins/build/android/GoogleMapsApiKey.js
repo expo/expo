@@ -24,8 +24,7 @@ const META_API_KEY = 'com.google.android.geo.API_KEY';
 const LIB_HTTP = 'org.apache.http.legacy';
 const withGoogleMapsApiKey = exports.withGoogleMapsApiKey = (0, _androidPlugins().createAndroidManifestPlugin)(setGoogleMapsApiKey, 'withGoogleMapsApiKey');
 function getGoogleMapsApiKey(config) {
-  var _config$android$confi, _config$android;
-  return (_config$android$confi = (_config$android = config.android) === null || _config$android === void 0 || (_config$android = _config$android.config) === null || _config$android === void 0 || (_config$android = _config$android.googleMaps) === null || _config$android === void 0 ? void 0 : _config$android.apiKey) !== null && _config$android$confi !== void 0 ? _config$android$confi : null;
+  return config.android?.config?.googleMaps?.apiKey ?? null;
 }
 function setGoogleMapsApiKey(config, androidManifest) {
   const apiKey = getGoogleMapsApiKey(config);

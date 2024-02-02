@@ -33,8 +33,7 @@ function setVersion(config, infoPlist) {
   };
 }
 function getBuildNumber(config) {
-  var _config$ios;
-  return (_config$ios = config.ios) !== null && _config$ios !== void 0 && _config$ios.buildNumber ? config.ios.buildNumber : '1';
+  return config.ios?.buildNumber ? config.ios.buildNumber : '1';
 }
 function setBuildNumber(config, infoPlist) {
   return {

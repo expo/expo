@@ -18,8 +18,7 @@ const withAndroidManifestIcons = config => (0, _configPlugins().withAndroidManif
 });
 exports.withAndroidManifestIcons = withAndroidManifestIcons;
 function setRoundIconManifest(config, manifest) {
-  var _config$android;
-  const isAdaptive = !!((_config$android = config.android) !== null && _config$android !== void 0 && _config$android.adaptiveIcon);
+  const isAdaptive = !!config.android?.adaptiveIcon;
   const application = _configPlugins().AndroidConfig.Manifest.getMainApplicationOrThrow(manifest);
   if (isAdaptive) {
     application.$['android:roundIcon'] = '@mipmap/ic_launcher_round';

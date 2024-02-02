@@ -231,7 +231,7 @@ function addFileToGroupAndLink({
     file.target = targetUuid;
   } else {
     const applicationNativeTarget = project.getTarget('com.apple.product-type.application');
-    file.target = applicationNativeTarget === null || applicationNativeTarget === void 0 ? void 0 : applicationNativeTarget.uuid;
+    file.target = applicationNativeTarget?.uuid;
   }
   file.uuid = project.generateUuid();
   file.fileRef = project.generateUuid();
@@ -287,8 +287,7 @@ const findGroup = (group, name) => {
 function findGroupInsideGroup(project, group, name) {
   const foundGroup = findGroup(group, name);
   if (foundGroup) {
-    var _project$getPBXGroupB;
-    return (_project$getPBXGroupB = project.getPBXGroupByKey(foundGroup.value)) !== null && _project$getPBXGroupB !== void 0 ? _project$getPBXGroupB : null;
+    return project.getPBXGroupByKey(foundGroup.value) ?? null;
   }
   return null;
 }
@@ -312,7 +311,6 @@ function pbxGroupByPathOrAssert(project, path) {
   return group;
 }
 function ensureGroupRecursively(project, filepath) {
-  var _topMostGroup;
   const components = splitPath(filepath);
   const hasChild = (group, name) => group.children.find(({
     comment
@@ -330,7 +328,7 @@ function ensureGroupRecursively(project, filepath) {
     }
     topMostGroup = project.pbxGroupByName(pathComponent);
   }
-  return (_topMostGroup = topMostGroup) !== null && _topMostGroup !== void 0 ? _topMostGroup : null;
+  return topMostGroup ?? null;
 }
 
 /**
@@ -358,9 +356,8 @@ function getProductName(project) {
     productName = project.productName;
   } catch {}
   if (productName === '$(TARGET_NAME)') {
-    var _project$getFirstTarg;
-    const targetName = (_project$getFirstTarg = project.getFirstTarget()) === null || _project$getFirstTarg === void 0 || (_project$getFirstTarg = _project$getFirstTarg.firstTarget) === null || _project$getFirstTarg === void 0 ? void 0 : _project$getFirstTarg.productName;
-    productName = targetName !== null && targetName !== void 0 ? targetName : productName;
+    const targetName = project.getFirstTarget()?.firstTarget?.productName;
+    productName = targetName ?? productName;
   }
   return productName;
 }
@@ -399,16 +396,14 @@ function isNotComment([key]) {
 
 // Remove surrounding double quotes if they exist.
 function unquote(value) {
-  var _value$match$, _value$match;
   // projects with numeric names will fail due to a bug in the xcode package.
   if (typeof value === 'number') {
     value = String(value);
   }
-  return (_value$match$ = (_value$match = value.match(/^"(.*)"$/)) === null || _value$match === void 0 ? void 0 : _value$match[1]) !== null && _value$match$ !== void 0 ? _value$match$ : value;
+  return value.match(/^"(.*)"$/)?.[1] ?? value;
 }
 function resolveXcodeBuildSetting(value, lookup) {
-  const parsedValue = value === null || value === void 0 ? void 0 : value.replace(/\$\(([^()]*|\([^)]*\))\)/g, match => {
-    var _resolved5;
+  const parsedValue = value?.replace(/\$\(([^()]*|\([^)]*\))\)/g, match => {
     // Remove the `$(` and `)`, then split modifier(s) from the variable name.
     const [variable, ...transformations] = match.slice(2, -1).split(':');
     // Resolve the variable recursively.
@@ -420,15 +415,14 @@ function resolveXcodeBuildSetting(value, lookup) {
 
     // Ref: http://codeworkshop.net/posts/xcode-build-setting-transformations
     transformations.forEach(modifier => {
-      var _resolved, _resolved2, _resolved3, _resolved4, _modifier$match;
       switch (modifier) {
         case 'lower':
           // A lowercase representation.
-          resolved = (_resolved = resolved) === null || _resolved === void 0 ? void 0 : _resolved.toLowerCase();
+          resolved = resolved?.toLowerCase();
           break;
         case 'upper':
           // An uppercase representation.
-          resolved = (_resolved2 = resolved) === null || _resolved2 === void 0 ? void 0 : _resolved2.toUpperCase();
+          resolved = resolved?.toUpperCase();
           break;
         case 'suffix':
           if (resolved) {
@@ -460,13 +454,13 @@ function resolveXcodeBuildSetting(value, lookup) {
           // A representation suitable for use in a DNS name.
 
           // TODO: Check the spec if there is one, this is just what we had before.
-          resolved = (_resolved3 = resolved) === null || _resolved3 === void 0 ? void 0 : _resolved3.replace(/[^a-zA-Z0-9]/g, '-');
+          resolved = resolved?.replace(/[^a-zA-Z0-9]/g, '-');
           // resolved = resolved.replace(/[\/\*\s]/g, '-');
           break;
         case 'c99extidentifier':
           // Like identifier, but with support for extended characters allowed by C99. Added in Xcode 6.
           // TODO: Check the spec if there is one.
-          resolved = (_resolved4 = resolved) === null || _resolved4 === void 0 ? void 0 : _resolved4.replace(/[-\s]/g, '_');
+          resolved = resolved?.replace(/[-\s]/g, '_');
           break;
         case 'standardizepath':
           if (resolved) {
@@ -476,11 +470,11 @@ function resolveXcodeBuildSetting(value, lookup) {
           }
           break;
         default:
-          resolved || (resolved = (_modifier$match = modifier.match(/default=(.*)/)) === null || _modifier$match === void 0 ? void 0 : _modifier$match[1]);
+          resolved ||= modifier.match(/default=(.*)/)?.[1];
           break;
       }
     });
-    return resolveXcodeBuildSetting((_resolved5 = resolved) !== null && _resolved5 !== void 0 ? _resolved5 : '', lookup);
+    return resolveXcodeBuildSetting(resolved ?? '', lookup);
   });
   if (parsedValue !== value) {
     return resolveXcodeBuildSetting(parsedValue, lookup);

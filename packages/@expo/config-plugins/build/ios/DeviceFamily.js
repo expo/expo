@@ -33,18 +33,15 @@ const withDeviceFamily = config => {
 };
 exports.withDeviceFamily = withDeviceFamily;
 function getSupportsTablet(config) {
-  var _config$ios;
-  return !!((_config$ios = config.ios) !== null && _config$ios !== void 0 && _config$ios.supportsTablet);
+  return !!config.ios?.supportsTablet;
 }
 function getIsTabletOnly(config) {
-  var _config$ios2;
-  return !!(config !== null && config !== void 0 && (_config$ios2 = config.ios) !== null && _config$ios2 !== void 0 && _config$ios2.isTabletOnly);
+  return !!config?.ios?.isTabletOnly;
 }
 function getDeviceFamilies(config) {
-  var _config$ios3;
   const supportsTablet = getSupportsTablet(config);
   const isTabletOnly = getIsTabletOnly(config);
-  if (isTabletOnly && ((_config$ios3 = config.ios) === null || _config$ios3 === void 0 ? void 0 : _config$ios3.supportsTablet) === false) {
+  if (isTabletOnly && config.ios?.supportsTablet === false) {
     (0, _warnings().addWarningIOS)('ios.supportsTablet', `Found contradictory values: \`{ ios: { isTabletOnly: true, supportsTablet: false } }\`. Using \`{ isTabletOnly: true }\`.`);
   }
 
@@ -82,8 +79,8 @@ function setDeviceFamily(config, {
   } of Object.values(configurations || {})) {
     // Guessing that this is the best way to emulate Xcode.
     // Using `project.addToBuildSettings` modifies too many targets.
-    if (typeof (buildSettings === null || buildSettings === void 0 ? void 0 : buildSettings.PRODUCT_NAME) !== 'undefined') {
-      if (typeof (buildSettings === null || buildSettings === void 0 ? void 0 : buildSettings.TVOS_DEPLOYMENT_TARGET) !== 'undefined') {
+    if (typeof buildSettings?.PRODUCT_NAME !== 'undefined') {
+      if (typeof buildSettings?.TVOS_DEPLOYMENT_TARGET !== 'undefined') {
         buildSettings.TARGETED_DEVICE_FAMILY = '3';
       } else {
         buildSettings.TARGETED_DEVICE_FAMILY = deviceFamilies;

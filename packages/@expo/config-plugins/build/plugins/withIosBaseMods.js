@@ -322,9 +322,8 @@ const defaultProviders = {
     isIntrospective: true,
     async getFilePath(config) {
       try {
-        var _Entitlements$getEnti;
         (0, _Entitlements().ensureApplicationTargetEntitlementsFileConfigured)(config.modRequest.projectRoot);
-        return (_Entitlements$getEnti = _ios().Entitlements.getEntitlementsPath(config.modRequest.projectRoot)) !== null && _Entitlements$getEnti !== void 0 ? _Entitlements$getEnti : '';
+        return _ios().Entitlements.getEntitlementsPath(config.modRequest.projectRoot) ?? '';
       } catch (error) {
         if (config.modRequest.introspect) {
           // fallback to an empty string in introspection mode.
@@ -413,7 +412,7 @@ function withIosBaseMods(config, {
   return (0, _createBaseMod().withGeneratedBaseMods)(config, {
     ...props,
     platform: 'ios',
-    providers: providers !== null && providers !== void 0 ? providers : getIosModFileProviders()
+    providers: providers ?? getIosModFileProviders()
   });
 }
 function getIosModFileProviders() {

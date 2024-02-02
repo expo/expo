@@ -142,9 +142,8 @@ function ensureUniquePush(array, item) {
   return array;
 }
 function removeExisting(array, item) {
-  var _item$$;
-  const id = typeof item === 'string' ? item : (_item$$ = item.$) === null || _item$$ === void 0 ? void 0 : _item$$.id;
-  const existingItem = array === null || array === void 0 ? void 0 : array.findIndex(existingItem => existingItem.$.id === id);
+  const id = typeof item === 'string' ? item : item.$?.id;
+  const existingItem = array?.findIndex(existingItem => existingItem.$.id === id);
   if (existingItem > -1) {
     debug(`Removing existing IB item with id ${id}, from: %O`, array);
     array.splice(existingItem, 1);

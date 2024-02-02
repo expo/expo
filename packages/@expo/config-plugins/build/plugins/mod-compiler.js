@@ -97,13 +97,11 @@ function withIntrospectionBaseMods(config, props = {}) {
     for (const platform of Object.keys(config.mods)) {
       // const platformPreserve = preserve[platform];
       for (const key of Object.keys(config.mods[platform] || {})) {
-        var _config$mods$platform;
         // @ts-ignore
-        if (!((_config$mods$platform = config.mods[platform]) !== null && _config$mods$platform !== void 0 && (_config$mods$platform = _config$mods$platform[key]) !== null && _config$mods$platform !== void 0 && _config$mods$platform.isIntrospective)) {
-          var _config$mods$platform2;
+        if (!config.mods[platform]?.[key]?.isIntrospective) {
           debug(`removing non-idempotent mod: ${platform}.${key}`);
           // @ts-ignore
-          (_config$mods$platform2 = config.mods[platform]) === null || _config$mods$platform2 === void 0 || delete _config$mods$platform2[key];
+          delete config.mods[platform]?.[key];
         }
       }
     }
@@ -168,18 +166,16 @@ async function evalModsAsync(config, {
   ignoreExistingNativeFiles = false
 }) {
   const modRawConfig = getRawClone(config);
-  for (const [platformName, platform] of Object.entries((_config$mods = config.mods) !== null && _config$mods !== void 0 ? _config$mods : {})) {
-    var _config$mods;
+  for (const [platformName, platform] of Object.entries(config.mods ?? {})) {
     if (platforms && !platforms.includes(platformName)) {
       debug(`skip platform: ${platformName}`);
       continue;
     }
     let entries = Object.entries(platform);
     if (entries.length) {
-      var _precedences$platform;
       // Move dangerous item to the first position and finalized item to the last position if it exists.
       // This ensures that all dangerous code runs first and finalized applies last.
-      entries = sortMods(entries, (_precedences$platform = precedences[platformName]) !== null && _precedences$platform !== void 0 ? _precedences$platform : {
+      entries = sortMods(entries, precedences[platformName] ?? {
         dangerous: -1,
         finalized: 1
       });

@@ -13,8 +13,7 @@ function _configPlugins() {
 }
 const withAndroidUserInterfaceStyle = config => {
   return (0, _configPlugins().withStringsXml)(config, config => {
-    var _config$android$userI, _config$android;
-    const userInterfaceStyle = (_config$android$userI = (_config$android = config.android) === null || _config$android === void 0 ? void 0 : _config$android.userInterfaceStyle) !== null && _config$android$userI !== void 0 ? _config$android$userI : config.userInterfaceStyle;
+    const userInterfaceStyle = config.android?.userInterfaceStyle ?? config.userInterfaceStyle;
     if (userInterfaceStyle) {
       _configPlugins().WarningAggregator.addWarningAndroid('userInterfaceStyle',
       // TODO: Maybe warn that they need a certain version of React Native as well?

@@ -110,7 +110,7 @@ function resolveEntryPoint(projectRoot, {
 function resolveFromSilentWithExtensions(fromDirectory, moduleId, extensions) {
   for (const extension of extensions) {
     const modulePath = _resolveFrom().default.silent(fromDirectory, `${moduleId}.${extension}`);
-    if (modulePath !== null && modulePath !== void 0 && modulePath.endsWith(extension)) {
+    if (modulePath?.endsWith(extension)) {
       return modulePath;
     }
   }

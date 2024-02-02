@@ -96,8 +96,7 @@ function setStatusBarStyles(config, styles) {
   return styles;
 }
 function getStatusBarColor(config) {
-  var _config$androidStatus;
-  const backgroundColor = (_config$androidStatus = config.androidStatusBar) === null || _config$androidStatus === void 0 ? void 0 : _config$androidStatus.backgroundColor;
+  const backgroundColor = config.androidStatusBar?.backgroundColor;
   if (backgroundColor) {
     // Drop support for translucent
     (0, _assert().default)(backgroundColor !== 'translucent', `androidStatusBar.backgroundColor must be a valid hex string, instead got: "${backgroundColor}"`);
@@ -113,11 +112,9 @@ function getStatusBarColor(config) {
  * @returns
  */
 function getStatusBarTranslucent(config) {
-  var _config$androidStatus2, _config$androidStatus3;
-  return (_config$androidStatus2 = (_config$androidStatus3 = config.androidStatusBar) === null || _config$androidStatus3 === void 0 ? void 0 : _config$androidStatus3.translucent) !== null && _config$androidStatus2 !== void 0 ? _config$androidStatus2 : false;
+  return config.androidStatusBar?.translucent ?? false;
 }
 function getStatusBarStyle(config) {
-  var _config$androidStatus4;
-  return ((_config$androidStatus4 = config.androidStatusBar) === null || _config$androidStatus4 === void 0 ? void 0 : _config$androidStatus4.barStyle) || 'light-content';
+  return config.androidStatusBar?.barStyle || 'light-content';
 }
 //# sourceMappingURL=StatusBar.js.map

@@ -78,7 +78,6 @@ function setRootViewBackgroundColor(config, infoPlist) {
   return infoPlist;
 }
 function getRootViewBackgroundColor(config) {
-  var _config$ios;
-  return ((_config$ios = config.ios) === null || _config$ios === void 0 ? void 0 : _config$ios.backgroundColor) || config.backgroundColor || null;
+  return config.ios?.backgroundColor || config.backgroundColor || null;
 }
 //# sourceMappingURL=withIosRootViewBackgroundColor.js.map

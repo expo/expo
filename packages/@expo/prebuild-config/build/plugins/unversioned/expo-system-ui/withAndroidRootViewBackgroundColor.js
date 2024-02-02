@@ -50,7 +50,6 @@ const withRootViewBackgroundColorStyles = config => {
 };
 exports.withRootViewBackgroundColorStyles = withRootViewBackgroundColorStyles;
 function getRootViewBackgroundColor(config) {
-  var _config$android;
-  return ((_config$android = config.android) === null || _config$android === void 0 ? void 0 : _config$android.backgroundColor) || config.backgroundColor || null;
+  return config.android?.backgroundColor || config.backgroundColor || null;
 }
 //# sourceMappingURL=withAndroidRootViewBackgroundColor.js.map

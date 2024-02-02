@@ -83,8 +83,7 @@ function applyNameFromConfig(config, stringsJSON) {
  * @param settingsGradle
  */
 function applyNameSettingsGradle(config, settingsGradle) {
-  var _getName;
-  const name = sanitizeNameForGradle((_getName = getName(config)) !== null && _getName !== void 0 ? _getName : '');
+  const name = sanitizeNameForGradle(getName(config) ?? '');
 
   // Select rootProject.name = '***' and replace the contents between the quotes.
   return settingsGradle.replace(/rootProject.name\s?=\s?(["'])(?:(?=(\\?))\2.)*?\1/g, `rootProject.name = '${name.replace(/'/g, "\\'")}'`);

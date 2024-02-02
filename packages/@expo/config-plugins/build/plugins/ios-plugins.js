@@ -47,10 +47,9 @@ function createInfoPlistPlugin(action, name) {
 }
 function createInfoPlistPluginWithPropertyGuard(action, settings, name) {
   const withUnknown = config => withInfoPlist(config, async config => {
-    var _config$modRawConfig$;
     const existingProperty = settings.expoPropertyGetter ? settings.expoPropertyGetter(config) : (0, _obj().get)(config, settings.expoConfigProperty);
     // If the user explicitly sets a value in the infoPlist, we should respect that.
-    if (((_config$modRawConfig$ = config.modRawConfig.ios) === null || _config$modRawConfig$ === void 0 || (_config$modRawConfig$ = _config$modRawConfig$.infoPlist) === null || _config$modRawConfig$ === void 0 ? void 0 : _config$modRawConfig$[settings.infoPlistProperty]) === undefined) {
+    if (config.modRawConfig.ios?.infoPlist?.[settings.infoPlistProperty] === undefined) {
       config.modResults = await action(config, config.modResults);
     } else if (existingProperty !== undefined) {
       // Only warn if there is a conflict.

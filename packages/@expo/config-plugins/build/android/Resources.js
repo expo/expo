@@ -90,18 +90,16 @@ function buildResourceItem({
   return item;
 }
 function buildResourceGroup(parent) {
-  var _parent$items;
   return {
     $: {
       name: parent.name,
       parent: parent.parent
     },
-    item: (_parent$items = parent.items) !== null && _parent$items !== void 0 ? _parent$items : []
+    item: parent.items ?? []
   };
 }
 function findResourceGroup(xml, group) {
-  var _xml$filter;
-  const app = xml === null || xml === void 0 || (_xml$filter = xml.filter) === null || _xml$filter === void 0 || (_xml$filter = _xml$filter.call(xml, ({
+  const app = xml?.filter?.(({
     $: head
   }) => {
     let matches = head.name === group.name;
@@ -109,8 +107,8 @@ function findResourceGroup(xml, group) {
       matches = head.parent === group.parent;
     }
     return matches;
-  })) === null || _xml$filter === void 0 ? void 0 : _xml$filter[0];
-  return app !== null && app !== void 0 ? app : null;
+  })?.[0];
+  return app ?? null;
 }
 
 /**
