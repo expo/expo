@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed generating a list of app delegate subscribers.
+- Fixed generating a list of app delegate subscribers. ([#26851](https://github.com/expo/expo/pull/26851) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
