@@ -331,7 +331,7 @@ class ExpoCameraView(
   }
 
   fun setBarCodeScannerSettings(settings: BarcodeSettings?) {
-    barcodeFormats = settings?.barcodeTypes ?: emptyList()
+    barcodeFormats = settings?.barCodeTypes ?: emptyList()
   }
 
   private fun getDeviceOrientation() =
