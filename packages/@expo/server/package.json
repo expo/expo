@@ -30,7 +30,7 @@
     "install.js"
   ],
   "dependencies": {
-    "@remix-run/node": "^1.19.3",
+    "@remix-run/node": "^2.5.1",
     "abort-controller": "^3.0.0",
     "debug": "^4.3.4",
     "source-map-support": "~0.5.21"
