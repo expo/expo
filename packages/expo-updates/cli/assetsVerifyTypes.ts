@@ -6,15 +6,10 @@ export type Platform = (typeof validPlatforms)[number];
 
 export const isValidPlatform = (p: any) => validPlatforms.includes(p);
 
-export interface Options {
-  exportPath?: string;
-  buildPath?: string;
-  platform: Platform;
-}
-
 export interface ValidatedOptions {
-  exportPath: string;
-  buildPath: string;
+  exportedManifestPath: string;
+  buildManifestPath: string;
+  assetMapPath: string;
   platform: Platform;
 }
 
@@ -49,15 +44,14 @@ export type ExportedMetadataAsset = {
   ext: string;
 };
 
+export type FileMetadata = {
+  bundle: string;
+  assets: ExportedMetadataAsset[];
+};
+
 export type ExportedMetadata = {
   fileMetadata: {
-    ios?: {
-      bundle: string;
-      assets: ExportedMetadataAsset[];
-    };
-    android?: {
-      bundle: string;
-      assets: ExportedMetadataAsset[];
-    };
+    ios?: FileMetadata;
+    android?: FileMetadata;
   };
 };

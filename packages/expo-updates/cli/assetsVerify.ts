@@ -4,7 +4,12 @@ import chalk from 'chalk';
 import path from 'path';
 
 import { getMissingAssetsAsync } from './assetsVerifyAsync';
-import { isValidPlatform, validPlatforms, type ValidatedOptions } from './assetsVerifyTypes';
+import {
+  isValidPlatform,
+  validPlatforms,
+  type ValidatedOptions,
+  type Platform,
+} from './assetsVerifyTypes';
 import { Command } from './cli';
 import { assertArgs, getProjectRoot } from './utils/args';
 import * as Log from './utils/log';
@@ -13,13 +18,17 @@ export const expoAssetsVerify: Command = async (argv) => {
   const args = assertArgs(
     {
       // Types
-      '--export-path': String,
-      '--build-path': String,
+      '--asset-map-path': String,
+      '--exported-manifest-path': String,
+      '--build-manifest-path': String,
       '--platform': String,
       '--help': Boolean,
       // Aliases
-      '-h': '--help',
+      '-a': '--asset-map-path',
+      '-e': '--exported-manifest-path',
+      '-b': '--build-manifest-path',
       '-p': '--platform',
+      '-h': '--help',
     },
     argv ?? []
   );
@@ -35,9 +44,10 @@ Verify that all static files in an exported bundle are in either the export or a
 
   Options
   <dir>                                  Directory of the Expo project. Default: Current working directory
-  --export-path <path>                   Path to the exported bundle Default: ./dist
-  --build-path <path>                    Path to a build containing an embedded manifest Default: .
-  -p, --platform <platform>              Options: ["android","ios"]
+  -a, --asset-map-path <path>            Path to the \`assetmap.json\` in an export produced by the command \`npx expo export --dump-assetmap\`
+  -e, --exported-manifest-path <path>    Path to the \`metadata.json\` in an export produced by the command \`npx expo export --dump-assetmap\`
+  -b, --build-manifest-path <path>       Path to the \`app.manifest\` file created by expo-updates in an Expo application build (either ios or android)
+  -p, --platform <platform>              Options: ${JSON.stringify(validPlatforms)}
   -h, --help                             Usage info
   `,
       0
@@ -50,9 +60,14 @@ Verify that all static files in an exported bundle are in either the export or a
     const validatedArgs = resolveOptions(projectRoot, args);
     Log.log(`Validated params: ${JSON.stringify(validatedArgs, null, 2)}`);
 
-    const { buildPath, exportPath, platform } = validatedArgs;
+    const { buildManifestPath, exportedManifestPath, assetMapPath, platform } = validatedArgs;
 
-    const missingAssets = await getMissingAssetsAsync(buildPath, exportPath, platform, projectRoot);
+    const missingAssets = await getMissingAssetsAsync(
+      buildManifestPath,
+      exportedManifestPath,
+      assetMapPath,
+      platform
+    );
 
     if (missingAssets.length > 0) {
       throw new Error(
@@ -77,18 +92,35 @@ Verify that all static files in an exported bundle are in either the export or a
   });
 };
 
-const defaultOptions = {
-  exportPath: './dist',
-  buildPath: '.',
-};
-
 function resolveOptions(projectRoot: string, args: arg.Result<arg.Spec>): ValidatedOptions {
-  if (!isValidPlatform(args['--platform'])) {
+  const exportedManifestPath = validatedPathFromArgument(
+    projectRoot,
+    args,
+    '--exported-manifest-path'
+  );
+  const buildManifestPath = validatedPathFromArgument(projectRoot, args, '--build-manifest-path');
+  const assetMapPath = validatedPathFromArgument(projectRoot, args, '--asset-map-path');
+
+  const platform = args['--platform'] as unknown as Platform;
+  if (!isValidPlatform(platform)) {
     throw new Error(`Platform must be one of ${JSON.stringify(validPlatforms)}`);
   }
+
   return {
-    exportPath: path.resolve(projectRoot, args['--export-path'] ?? defaultOptions.exportPath),
-    buildPath: path.resolve(projectRoot, args['--build-path'] ?? defaultOptions.buildPath),
-    platform: args['--platform'] ?? 'ios',
+    exportedManifestPath,
+    buildManifestPath,
+    assetMapPath,
+    platform,
   };
+}
+
+function validatedPathFromArgument(projectRoot: string, args: arg.Result<arg.Spec>, key: string) {
+  const maybeRelativePath = args[key] as unknown as string;
+  if (!maybeRelativePath) {
+    throw new Error(`No value for ${key}`);
+  }
+  if (maybeRelativePath.indexOf('/') === 0) {
+    return maybeRelativePath; // absolute path
+  }
+  return path.resolve(projectRoot, maybeRelativePath);
 }

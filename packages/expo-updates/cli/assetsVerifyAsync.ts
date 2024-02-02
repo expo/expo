@@ -1,6 +1,4 @@
 import { promises as fs } from 'fs';
-import glob from 'glob';
-import path from 'path';
 
 import {
   BuildManifest,
@@ -15,27 +13,27 @@ import * as Log from './utils/log';
 /**
  * Finds any assets that will be missing from an app given a build and an exported update bundle.
  *
- * @param buildPath Path to an EAS or local build containing an expo-updates embedded manifest (app.manifest)
- * @param exportPath Path to a directory produced by the command `npx expo export --dump-assetmap`
- * @param platform Either `android` or `ios`
+ * @param buildManifestPath Path to the `app.manifest` file created by expo-updates in an Expo application build (either ios or android)
+ * @param exportMetadataPath Path to the `metadata.json` in an export produced by the command `npx expo export --dump-assetmap`
+ * @param assetMapPath Path to the `assetmap.json` in an export produced by the command `npx expo export --dump-assetmap`
  * @param projectRoot The project root path
  * @returns An array containing any assets that are found in the Metro asset dump, but not included in either app.manifest or the exported bundle
  */
 export async function getMissingAssetsAsync(
-  buildPath: string,
-  exportPath: string,
-  platform: Platform,
-  projectRoot: string
+  buildManifestPath: string,
+  exportMetadataPath: string,
+  assetMapPath: string,
+  platform: Platform
 ) {
   const buildManifestHashSet = getBuildManifestHashSet(
-    await getBuildManifestAsync(buildPath, platform, projectRoot)
+    await getBuildManifestAsync(buildManifestPath)
   );
 
-  const fullAssetMap = await getFullAssetDumpAsync(exportPath);
+  const fullAssetMap = await getFullAssetDumpAsync(assetMapPath);
   const fullAssetSet = getFullAssetDumpHashSet(fullAssetMap);
 
   const exportedAssetSet = getExportedMetadataHashSet(
-    await getExportedMetadataAsync(exportPath),
+    await getExportedMetadataAsync(exportMetadataPath),
     platform
   );
 
@@ -61,34 +59,13 @@ export async function getMissingAssetsAsync(
 /**
  * Reads and returns the embedded manifest (app.manifest) for a build.
  *
- * @param buildPath Path to the build folder
+ * @param buildManifestPath Path to the build folder
  * @param platform Either 'android' or 'ios'
  * @param projectRoot The project root path
  * @returns the JSON structure of the manifest
  */
-export async function getBuildManifestAsync(
-  buildPath: string,
-  platform: Platform,
-  projectRoot: string
-) {
-  let realBuildPath = buildPath;
-  if (buildPath === projectRoot) {
-    switch (platform) {
-      case 'android':
-        realBuildPath = path.resolve(projectRoot, 'android', 'app', 'build');
-        break;
-      default:
-        realBuildPath = path.resolve(projectRoot, 'ios', 'build');
-        break;
-    }
-  }
-  const buildManifestPaths = glob.sync(`${realBuildPath}/**/app.manifest`);
-  if (buildManifestPaths.length === 0) {
-    throw new Error(`No app.manifest found in build path`);
-  }
-  const buildManifestPath = buildManifestPaths[0];
-  Log.log(`Build manifest found at ${buildManifestPath}`);
-  const buildManifestString = await fs.readFile(buildManifestPaths[0], { encoding: 'utf-8' });
+export async function getBuildManifestAsync(buildManifestPath: string) {
+  const buildManifestString = await fs.readFile(buildManifestPath, { encoding: 'utf-8' });
   const buildManifest: BuildManifest = JSON.parse(buildManifestString);
   return buildManifest;
 }
@@ -106,24 +83,13 @@ export function getBuildManifestHashSet(buildManifest: BuildManifest) {
 /**
  * Reads and extracts the asset dump for an exported bundle.
  *
- * @param exportPath The path to the exported bundle containing an asset dump.
+ * @param assetMapPath The path to the exported assetmap.json.
  * @returns The asset dump as an object.
  */
-export async function getFullAssetDumpAsync(exportPath: string) {
-  const assetMapPath = path.resolve(exportPath, 'assetmap.json');
-  try {
-    const assetMapString = await fs.readFile(assetMapPath, { encoding: 'utf-8' });
-    const assetMap: FullAssetDump = new Map(Object.entries(JSON.parse(assetMapString)));
-    return assetMap;
-  } catch (e) {
-    const errorMessage = `${e}`;
-    if (errorMessage.includes('ENOENT')) {
-      throw new Error(
-        `The export bundle chosen does not contain assetmap.json. Please generate the bundle with "npx expo export --dump-assetmap"`
-      );
-    }
-    throw e;
-  }
+export async function getFullAssetDumpAsync(assetMapPath: string) {
+  const assetMapString = await fs.readFile(assetMapPath, { encoding: 'utf-8' });
+  const assetMap: FullAssetDump = new Map(Object.entries(JSON.parse(assetMapString)));
+  return assetMap;
 }
 
 /**
@@ -137,26 +103,15 @@ export function getFullAssetDumpHashSet(assetDump: FullAssetDump) {
 }
 
 /**
- * Reads and extracts the metadata from an exported bundle.
+ * Reads and extracts the metadata.json from an exported bundle.
  *
- * @param exportPath Path to the exported bundle.
+ * @param exportedMetadataPath Path to the exported metadata.json.
  * @returns The metadata of the bundle.
  */
-export async function getExportedMetadataAsync(exportPath: string) {
-  const metadataPath = path.resolve(exportPath, 'metadata.json');
-  try {
-    const metadataString = await fs.readFile(metadataPath, { encoding: 'utf-8' });
-    const metadata: ExportedMetadata = JSON.parse(metadataString);
-    return metadata;
-  } catch (e) {
-    const errorMessage = `${e}`;
-    if (errorMessage.includes('ENOENT')) {
-      throw new Error(
-        `The export bundle chosen does not contain metadata.json. Please generate the bundle with "npx expo export --dump-assetmap"`
-      );
-    }
-    throw e;
-  }
+export async function getExportedMetadataAsync(exportedMetadataPath: string) {
+  const metadataString = await fs.readFile(exportedMetadataPath, { encoding: 'utf-8' });
+  const metadata: ExportedMetadata = JSON.parse(metadataString);
+  return metadata;
 }
 
 /**
