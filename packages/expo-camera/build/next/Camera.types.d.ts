@@ -292,7 +292,7 @@ export type CameraProps = ViewProps & {
      * ```tsx
      * <Camera
      *   barCodeScannerSettings={{
-     *     barCodeTypes: ["qr"],
+     *     barcodeTypes: ["qr"],
      *   }}
      * />
      * ```
@@ -360,7 +360,7 @@ export type CameraNativeProps = {
     responsiveOrientationWhenOrientationLocked?: boolean;
 };
 export type BarcodeSettings = {
-    barCodeTypes: BarCodeType[];
+    barcodeTypes: BarCodeType[];
     interval?: number;
 };
 /**
