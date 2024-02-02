@@ -30,7 +30,7 @@ func createUrlRequest(url: URL, headers: [String: String]?) -> URLRequest {
   return request
 }
 
-func createUploadTask(session: URLSession, targetUrl: URL, sourceUrl: URL, options: UploadOptions) -> URLSessionUploadTask {
+func createUploadTask(session: URLSession, targetUrl: URL, sourceUrl: URL, options: UploadOptions) throws -> URLSessionUploadTask {
   var request = createUrlRequest(url: targetUrl, headers: options.headers)
   request.httpMethod = options.httpMethod.rawValue
 
@@ -39,47 +39,60 @@ func createUploadTask(session: URLSession, targetUrl: URL, sourceUrl: URL, optio
     return session.uploadTask(with: request, fromFile: sourceUrl)
   case .multipart:
     let boundaryString = UUID().uuidString
-    let data = try? createMultipartBody(boundary: boundaryString, sourceUrl: sourceUrl, options: options)
+    guard let data = createMultipartBody(boundary: boundaryString, sourceUrl: sourceUrl, options: options) else {
+      throw FailedToCreateBodyException()
+    }
 
     request.setValue("multipart/form-data; boundary=\(boundaryString)", forHTTPHeaderField: "Content-Type")
-    request.httpBody = data
 
-    return session.uploadTask(withStreamedRequest: request)
+    let localURL = try createLocalUrl(from: sourceUrl)
+    try? data.write(to: localURL)
+
+    return session.uploadTask(with: request, fromFile: localURL)
   }
 }
 
-func createMultipartBody(boundary: String, sourceUrl: URL, options: UploadOptions) throws -> Data {
-  let fileName = options.fieldName ?? sourceUrl.lastPathComponent
-  let fileContents = try String(contentsOf: sourceUrl)
-  let mimeType = options.mimeType ?? findMimeType(forAttachment: sourceUrl)
-
-  let body = """
-\(headersForMultipartParams(options.parameters, boundary: boundary))
---\(boundary)
-Content-Disposition: form-data; name="\(fileName)"; filename="\(sourceUrl.lastPathComponent)"
-Content-Type: \(mimeType)
-
-\(fileContents)
---\(boundary)--
-"""
-
-  guard let bodyData = body.data(using: .utf8) else {
-    throw HeaderEncodingFailedException(sourceUrl.absoluteString)
+func createLocalUrl(from sourceUrl: URL) throws -> URL {
+  guard let cachesDir = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first else {
+    throw FailedToAccessDirectoryException()
   }
-  return bodyData
+  let tempDir = cachesDir.appendingPathComponent("uploads")
+  FileSystemUtilities.ensureDirExists(at: tempDir)
+  return tempDir.appendingPathComponent(sourceUrl.lastPathComponent)
 }
 
-func headersForMultipartParams(_ params: [String: String]?, boundary: String) -> String {
-  guard let params else {
-    return ""
+func createMultipartBody(boundary: String, sourceUrl: URL, options: UploadOptions) -> Data? {
+  let fieldName = options.fieldName ?? sourceUrl.lastPathComponent
+  var mimeType = options.mimeType ?? findMimeType(forAttachment: sourceUrl)
+  guard let data = try? Data(contentsOf: sourceUrl) else {
+    return nil
   }
-  return params.map { (key: String, value: String) in
-"""
---\(boundary)
-Content-Disposition: form-data; name="\(key)"
 
-\(value)
-"""
+  var body = Data()
+  headersForMultipartParams(options.parameters, boundary: boundary, body: &body)
+
+  body.append("--\(boundary)\r\n".data)
+  body.append("Content-Disposition: form-data; name=\"\(fieldName)\"; filename=\"\(sourceUrl.lastPathComponent)\"\r\n".data)
+  body.append("Content-Type: \(mimeType)\r\n\r\n".data)
+  body.append(data)
+  body.append("\r\n".data)
+  body.append("--\(boundary)--\r\n".data)
+
+  return body
+}
+
+func headersForMultipartParams(_ params: [String: String]?, boundary: String, body: inout Data) {
+  if let params {
+    for (key, value) in params {
+      body.append("--\(boundary)\r\n".data)
+      body.append("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n".data)
+      body.append("\(value)\r\n".data)
+    }
   }
-  .joined()
+}
+
+// All swift strings are unicode correct.
+// This avoids the optional created by string.data(using: .utf8)
+private extension String {
+  var data: Data { Data(self.utf8) }
 }
