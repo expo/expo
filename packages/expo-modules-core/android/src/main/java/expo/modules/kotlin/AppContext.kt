@@ -63,7 +63,7 @@ class AppContext(
   val registry = ModuleRegistry(WeakReference(this))
   private val reactLifecycleDelegate = ReactLifecycleDelegate(this)
 
-  private var hostWereDestroyed = false
+  private var hostWasDestroyed = false
 
   // We postpone creating the `JSIInteropModuleRegistry` to not load so files in unit tests.
   internal lateinit var jsiInterop: JSIInteropModuleRegistry
@@ -333,8 +333,8 @@ class AppContext(
     }
 
     // We need to re-register activity contracts when reusing AppContext with new Activity after host destruction.
-    if (hostWereDestroyed) {
-      hostWereDestroyed = false
+    if (hostWasDestroyed) {
+      hostWasDestroyed = false
       registry.registerActivityContracts()
     }
 
@@ -357,7 +357,7 @@ class AppContext(
     registry.post(EventName.ACTIVITY_DESTROYS)
     // The host (Activity) was destroyed, but it doesn't mean that modules will be destroyed too.
     // So we save that information, and we will re-register activity contracts when the host will be resumed with new Activity.
-    hostWereDestroyed = true
+    hostWasDestroyed = true
   }
 
   internal fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
