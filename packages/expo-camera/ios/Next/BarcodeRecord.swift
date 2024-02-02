@@ -3,10 +3,10 @@ import Vision
 
 struct BarcodeSettings: Record {
   @Field var interval: Double?
-  @Field var barCodeTypes: [BarcodeType]
+  @Field var barcodeTypes: [BarcodeType]
 
   func toMetadataObjectType() -> [AVMetadataObject.ObjectType] {
-    barCodeTypes.map {
+    barcodeTypes.map {
       $0.toMetadataObjectType()
     }
   }
@@ -113,14 +113,14 @@ enum VNBarcodeType: String, Enumerable {
 }
 
 struct VisionScannerOptions: Record {
-  @Field var barCodeTypes: [VNBarcodeType] = []
+  @Field var barcodeTypes: [VNBarcodeType] = []
   @Field var isPinchToZoomEnabled: Bool = false
   @Field var isGuidanceEnabled: Bool = true
   @Field var isHighlightingEnabled: Bool = false
 
   @available(iOS 16.0, *)
   func toSymbology() -> [VNBarcodeSymbology] {
-    barCodeTypes.map {
+    barcodeTypes.map {
       $0.toSymbology()
     }
   }

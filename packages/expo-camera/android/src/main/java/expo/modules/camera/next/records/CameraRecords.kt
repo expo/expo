@@ -58,7 +58,7 @@ enum class CameraMode(val value: String) : Enumerable {
 }
 
 data class BarcodeSettings(
-  @Field val barCodeTypes: List<BarcodeType>,
+  @Field val barcodeTypes: List<BarcodeType>,
   @Field val interval: Double?
 ) : Record
 
