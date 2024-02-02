@@ -8,7 +8,6 @@ import android.graphics.SurfaceTexture
 import android.hardware.camera2.CameraCharacteristics
 import android.os.Bundle
 import android.util.Log
-import android.view.Size
 import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
