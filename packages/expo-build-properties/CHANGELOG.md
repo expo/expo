@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Expand `android.extraMavenRepos` to allow authentication-required Maven repositories. ([#26895](https://github.com/expo/expo/pull/26895) by [@bpeltonc](https://github.com/bpeltonc))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Expand Android auto-linking to support new expo-build-properties ([#26895](https://github.com/expo/expo/pull/26895) by [@bpeltonc](https://github.com/bpeltonc)) 
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
