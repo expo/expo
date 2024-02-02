@@ -555,7 +555,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
 
     if let maxDuration = options.maxDuration {
-      videoFileOutput.maxRecordedDuration = CMTime(seconds: maxDuration, preferredTimescale: 30)
+      videoFileOutput.maxRecordedDuration = CMTime(seconds: maxDuration, preferredTimescale: 1000)
     }
 
     if let maxFileSize = options.maxFileSize {
