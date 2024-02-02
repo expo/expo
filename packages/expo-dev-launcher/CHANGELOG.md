@@ -23,7 +23,7 @@
 
 - Update react-native to 0.73.2. ([#26311](https://github.com/expo/expo/pull/26311) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Replace deprecated `@babel/plugin-proposal-export-namespace-from` with updated, non-proposal package. ([#26525](https://github.com/expo/expo/pull/26525) by [@simek](https://github.com/simek))
-- update semver from 7.5.3 to 7.5.4. ([#26876](https://github.com/expo/expo/pull/26876))
+- update semver from 7.5.3 to 7.5.4. ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
 
 ## 3.6.3 - 2024-01-18
 
