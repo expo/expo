@@ -36,15 +36,35 @@ it('my-test', async () => {
   renderRouter(
     {
       index: MockComponent,
-      'folder/a': MockComponent,
+      'directory/a': MockComponent,
       '(group)/b': MockComponent,
     },
     {
-      initialUrl: '/folder/a',
+      initialUrl: '/directory/a',
     }
   );
 
-  expect(screen).toHavePathname('/folder/a');
+  expect(screen).toHavePathname('/directory/a');
+});
+```
+
+</APIBox>
+
+<APIBox header="Inline file system with `null` components">
+
+`renderRouter(mock: string[], options: RenderOptions)`
+
+Providing an array of strings to `renderRouter` will create an inline mock filesystem with `null` components (`{ default: () => null }`). This is useful for testing scenarios where you do not need to test the output of a route.
+
+```tsx app.test.tsx
+import { renderRouter, screen } from 'expo-router/testing-library';
+
+it('my-test', async () => {
+  renderRouter(["index", "directory/a", "(group)/b"], {
+      initialUrl: '/directory/a',
+  });
+
+  expect(screen).toHavePathname('/directory/a');
 });
 ```
 
@@ -69,7 +89,7 @@ it('my-test', async () => {
 
 `renderRouter({ appDir: string, overrides: Record<string, ReactComponent>}, options: RenderOptions)`
 
-For more intricate testing scenarios, `renderRouter` can leverage both directory path and inline-mocking methods simultaneously. The `appDir` parameter takes a string representing a pathname to a folder. The overrides parameter is an inline mock that can be used to override specific paths within the `appDir`. This combination allows for fine-tuned control over the mock environment.
+For more intricate testing scenarios, `renderRouter` can leverage both directory path and inline-mocking methods simultaneously. The `appDir` parameter takes a string representing a pathname to a directory. The overrides parameter is an inline mock that can be used to override specific paths within the `appDir`. This combination allows for fine-tuned control over the mock environment.
 
 ```tsx app.test.js
 it('my-test', async () => {
@@ -77,13 +97,14 @@ it('my-test', async () => {
   renderRouter({
     appDir: './my-test-fixture',
     overrides: {
-      'folder/(auth)/_layout': MockAuthLayout,
+      'directory/(auth)/_layout': MockAuthLayout,
     },
   });
 });
 ```
 
 </APIBox>
+
 
 ## Jest matchers
 
@@ -118,7 +139,7 @@ expect(screen).toHaveSegments(['[id]']);
 ```
 
 </APIBox>
-<APIBox header="useLocalSearchParams">
+<APIBox header="useLocalSearchParams()">
 
 Assert the current local search parameters against an object. The matcher uses the value of the [`useLocalSearchParams`](/router/reference/hooks/#uselocalsearchparams) hook on the current `screen`.
 
@@ -127,7 +148,7 @@ expect(screen).useLocalSearchParams({ first: 'abc' });
 ```
 
 </APIBox>
-<APIBox header="useGlobalSearchParams">
+<APIBox header="useGlobalSearchParams()">
 
 Assert the current screen's pathname that matches a value. Compares using the value of [`useGlobalSearchParams`](/router/reference/hooks/#useglobalsearchparams) hook.
 

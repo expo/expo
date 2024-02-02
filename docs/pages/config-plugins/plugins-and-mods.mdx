@@ -130,16 +130,6 @@ withPlugins(config, [
 ]);
 ```
 
-<Collapsible summary="Using SDK 46 or lower?">
-
-For SDK 46 and lower, import the `@expo/config-plugins` package directly. This is installed automatically by the `expo` package, but not re-exported as it is in SDK 47 and higher.
-
-```js app.config.js
-const { withPlugins } = require('@expo/config-plugins');
-```
-
-</Collapsible>
-
 To support JSON configs, we also added the `plugins` array which just uses `withPlugins` under the hood.
 Here is the same config as above, but even simpler:
 
@@ -301,16 +291,6 @@ const config = {
 /// Use the plugin
 export default withCustomProductName(config, 'new_name');
 ```
-
-<Collapsible summary="Using SDK 46 or lower?">
-
-For SDK 46 and lower, import the `@expo/config-plugins` package directly. This is installed automatically by the `expo` package, but not re-exported as it is in SDK 47 and higher.
-
-```js
-const { ConfigPlugin, withXcodeProject } = require('@expo/config-plugins');
-```
-
-</Collapsible>
 
 ### Experimental functionality
 

@@ -85,10 +85,6 @@ redirects[versions/latest/sdk/introduction/index.html]=versions/latest/sdk/overv
 # project-lifecycle is now covered by managed-vs-bare
 redirects[versions/latest/introduction/project-lifecycle]=archive/managed-vs-bare
 
-# exp-cli is now expo-cli
-# redirects[versions/latest/guides/exp-cli.html]=versions/latest/workflow/expo-cli/
-# redirects[versions/latest/guides/exp-cli]=versions/latest/workflow/expo-cli/
-
 # Migrated FAQ pages
 redirects[faq/image-background]=ui-programming/image-background
 redirects[faq/react-native-styling-buttons]=ui-programming/react-native-styling-buttons
@@ -328,12 +324,12 @@ redirects[workflow/build/building-on-ci]=build/building-on-ci
 redirects[versions/v50.0.0/sdk/taskmanager]=versions/v50.0.0/sdk/task-manager
 redirects[versions/v49.0.0/sdk/taskmanager]=versions/v49.0.0/sdk/task-manager
 redirects[versions/v48.0.0/sdk/taskmanager]=versions/v48.0.0/sdk/task-manager
-redirects[versions/v47.0.0/sdk/taskmanager]=versions/v47.0.0/sdk/task-manager
-redirects[versions/v46.0.0/sdk/taskmanager]=versions/v46.0.0/sdk/task-manager
+redirects[versions/v47.0.0/sdk/taskmanager]=versions/latest/sdk/task-manager
+redirects[versions/v46.0.0/sdk/taskmanager]=versions/latest/sdk/task-manager
 redirects[task-manager]=versions/latest/sdk/task-manager
 redirects[versions/v49.0.0/sdk/filesystem.md]=versions/v49.0.0/sdk/filesystem
 redirects[versions/v48.0.0/sdk/filesystem.md]=versions/v48.0.0/sdk/filesystem
-redirects[versions/v47.0.0/sdk/filesystem.md]=versions/v47.0.0/sdk/filesystem
+redirects[versions/v47.0.0/sdk/filesystem.md]=versions/latest/sdk/filesystem
 redirects[versions/v46.0.0/sdk/filesystem.md]=versions/latest/sdk/filesystem
 redirects[versions/latest/sdk/filesystem.md]=versions/latest/sdk/filesystem
 redirects[versions/v48.0.0/sdk]=versions/latest
@@ -342,8 +338,8 @@ redirects[guides/how-expo-works]=faq
 redirects[config/app]=workflow/configuration
 redirects[versions/v50.0.0/sdk]=versions/v50.0.0
 redirects[versions/v49.0.0/sdk]=versions/v49.0.0
-redirects[versions/v47.0.0/sdk]=versions/v47.0.0
-redirects[versions/v46.0.0/sdk]=versions/v46.0.0
+redirects[versions/v47.0.0/sdk]=versions/latest
+redirects[versions/v46.0.0/sdk]=versions/latest
 redirects[guides/authentication.md]=guides/authentication
 redirects[versions/latest/workflow/linking/]=guides/linking
 redirects[versions/latest/sdk/overview]=versions/latest

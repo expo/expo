@@ -67,3 +67,15 @@ final class CannotDetermineDiskCapacity: Exception {
     "Unable to determine free disk storage capacity"
   }
 }
+
+final class FailedToCreateBodyException: Exception {
+  override var reason: String {
+    "Unable to create multipart body"
+  }
+}
+
+final class FailedToAccessDirectoryException: Exception {
+  override var reason: String {
+    "Failed to access `Caches` directory"
+  }
+}

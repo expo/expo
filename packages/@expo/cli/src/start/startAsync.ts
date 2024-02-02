@@ -1,6 +1,8 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 import chalk from 'chalk';
 
+import { SimulatorAppPrerequisite } from './doctor/apple/SimulatorAppPrerequisite';
+import { getXcodeVersionAsync } from './doctor/apple/XcodePrerequisite';
 import { validateDependenciesVersionsAsync } from './doctor/dependencies/validateDependenciesVersions';
 import { WebSupportProjectPrerequisite } from './doctor/web/WebSupportProjectPrerequisite';
 import { startInterfaceAsync } from './interface/startInterface';
@@ -71,6 +73,15 @@ export async function startAsync(
   setNodeEnv(options.dev ? 'development' : 'production');
   require('@expo/env').load(projectRoot);
   const { exp, pkg } = profile(getConfig)(projectRoot);
+
+  if (exp.platforms?.includes('ios') && process.platform !== 'win32') {
+    // If Xcode could potentially be used, then we should eagerly perform the
+    // assertions since they can take a while on cold boots.
+    getXcodeVersionAsync({ silent: true });
+    SimulatorAppPrerequisite.instance.assertAsync().catch(() => {
+      // noop -- this will be thrown again when the user attempts to open the project.
+    });
+  }
 
   const platformBundlers = getPlatformBundlers(projectRoot, exp);
 

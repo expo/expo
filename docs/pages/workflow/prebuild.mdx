@@ -89,13 +89,15 @@ There are cases where developers may want to swap between workflows often. For e
 
 ## Templates
 
-You can customize how the native folders are generated while remaining in the managed workflow by building [config plugins][config-plugins]. Many config plugins already exist for lots of modifications. You can [see a list of some popular plugins][config-plugins-repo] for more information.
+You can customize how the native folders are generated while remaining in the managed workflow by building [config plugins](/config-plugins/introduction). Many config plugins already exist for lots of modifications. You can [see a list of some popular plugins][config-plugins-repo] for more information.
 
 Prebuild generates template files before modifying them with config plugins. The template files are based on the Expo SDK version and come from the npm package [`expo-template-bare-minimum`][template]. You can change the template used by passing `--template /path/to/template.tgz` to the `npx expo prebuild` command. This is not generally recommended because the base modifiers in `@expo/prebuild-config` make some undocumented assumptions about the template files, so it may be tricky to maintain your custom template.
 
+> **Note:** In network environments where all packages are downloaded from a private registry and npm public registry access is blocked, a locally-available template must be passed to the prebuild command. [Learn more about using a local version of the default template](https://expo.fyi/prebuild-without-npm-access).
+
 ## Side effects
 
-As of SDK 46, `npx expo prebuild` performs several side effects outside of generating the **android** and **ios** directories. Work is in progress to eliminate these side effects — ideally, running `npx expo prebuild` would generate the Android and iOS projects and leave the rest of the project untouched.
+`npx expo prebuild` performs several side effects outside of generating the **android** and **ios** directories. Work is in progress to eliminate these side effects — ideally, running `npx expo prebuild` would generate the Android and iOS projects and leave the rest of the project untouched.
 
 In addition to generating the native folders, prebuild also makes the following modifications:
 
@@ -151,7 +153,7 @@ Here are some reasons Expo Prebuilding might **not** be the right fit for a part
 
 ### React Native versioning
 
-`npx expo prebuild` generates native code based on the version of `expo` a project has installed, so a project with SDK 46 (`expo@46.0.0`) would generate a `react-native@0.69.5` app.
+`npx expo prebuild` generates native code based on the version of `expo` a project has installed, so a project with SDK 50 (`expo@50.0.0`) would generate a `react-native@0.73` app.
 
 Expo releases a new version approximately every quarter, and `react-native` does not follow a calendar-based release schedule. This means there are times when you cannot use `npx expo prebuild` with the latest release of React Native. This could potentially be circumvented by using a custom [prebuild template](#templates) if you are willing to experiment. You can also mitigate this by cherry-picking any changes you need from the latest version of React Native into a fork and using that in your project.
 

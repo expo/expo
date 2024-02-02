@@ -21,25 +21,23 @@ function _androidPlugins() {
   };
   return data;
 }
-const withAllowBackup = (0, _androidPlugins().createAndroidManifestPlugin)(setAllowBackup, 'withAllowBackup');
-exports.withAllowBackup = withAllowBackup;
+const withAllowBackup = exports.withAllowBackup = (0, _androidPlugins().createAndroidManifestPlugin)(setAllowBackup, 'withAllowBackup');
 function getAllowBackup(config) {
-  var _config$android$allow, _config$android;
   // Defaults to true.
   // https://docs.expo.dev/versions/latest/config/app/#allowbackup
-  return (_config$android$allow = (_config$android = config.android) === null || _config$android === void 0 ? void 0 : _config$android.allowBackup) !== null && _config$android$allow !== void 0 ? _config$android$allow : true;
+  return config.android?.allowBackup ?? true;
 }
 function setAllowBackup(config, androidManifest) {
   const allowBackup = getAllowBackup(config);
   const mainApplication = (0, _Manifest().getMainApplication)(androidManifest);
-  if (mainApplication !== null && mainApplication !== void 0 && mainApplication.$) {
+  if (mainApplication?.$) {
     mainApplication.$['android:allowBackup'] = String(allowBackup);
   }
   return androidManifest;
 }
 function getAllowBackupFromManifest(androidManifest) {
   const mainApplication = (0, _Manifest().getMainApplication)(androidManifest);
-  if (mainApplication !== null && mainApplication !== void 0 && mainApplication.$) {
+  if (mainApplication?.$) {
     return String(mainApplication.$['android:allowBackup']) === 'true';
   }
   return null;

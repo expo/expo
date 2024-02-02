@@ -280,7 +280,7 @@ Once configured, information about the associated update will show up in an erro
 
 <Tab label="SDK 49 and below">
 
-> `sentry-expo` has been merged into `@sentry/react-native` and is now depreacted. We recommend upgrading to SDK 50 to use `@sentry/react-native` for the best experience. If you're already using `sentry-expo`, [learn how to migrate](https://expo.fyi/sentry-expo-migration).
+> `sentry-expo` has been merged into `@sentry/react-native` and is now deprecated. We recommend upgrading to SDK 50 to use `@sentry/react-native` for the best experience. If you're already using `sentry-expo`, [learn how to migrate](https://expo.fyi/sentry-expo-migration).
 
 <Step label="1">
 
@@ -475,8 +475,6 @@ With `expo-updates`, release builds of both Android and iOS apps will create and
 Skipping or misconfiguring either of these can lead to invalid source maps, and you won't see human-readable stacktraces in your errors.
 
 ### Uploading source maps for updates
-
-> This requires SDK 47, with `sentry-expo@6.0.0` or above and `expo-updates@0.15.5` or above.
 
 If you're using EAS Update, or if you're self-hosting your updates (this means you run `npx expo export` manually), you need to take the following steps to upload the source maps for your update to Sentry:
 

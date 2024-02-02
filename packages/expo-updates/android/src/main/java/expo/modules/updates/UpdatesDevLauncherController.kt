@@ -52,7 +52,6 @@ class UpdatesDevLauncherController(
   private var updatesConfiguration: UpdatesConfiguration? = initialUpdatesConfiguration
 
   private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context))
-  private val fileDownloader = FileDownloader(context)
 
   private var mSelectionPolicy: SelectionPolicy? = null
   private var defaultSelectionPolicy: SelectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(
@@ -132,6 +131,7 @@ class UpdatesDevLauncherController(
 
     setDevelopmentSelectionPolicy()
 
+    val fileDownloader = FileDownloader(context, updatesConfiguration!!)
     val loader = RemoteLoader(
       context,
       updatesConfiguration!!,
@@ -155,7 +155,7 @@ class UpdatesDevLauncherController(
           callback.onSuccess(null)
           return
         }
-        launchUpdate(loaderResult.updateEntity, updatesConfiguration!!, context, callback)
+        launchUpdate(loaderResult.updateEntity, updatesConfiguration!!, fileDownloader, context, callback)
       }
 
       override fun onAssetLoaded(
@@ -200,6 +200,7 @@ class UpdatesDevLauncherController(
   private fun launchUpdate(
     update: UpdateEntity,
     configuration: UpdatesConfiguration,
+    fileDownloader: FileDownloader,
     context: Context,
     callback: UpdatesInterface.UpdateCallback
   ) {

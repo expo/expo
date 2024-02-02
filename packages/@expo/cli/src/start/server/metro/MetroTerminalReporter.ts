@@ -47,12 +47,12 @@ export class MetroTerminalReporter extends TerminalReporter {
       : progress.bundleDetails.entryFile;
 
     if (!inProgress) {
-      const status = phase === 'done' ? `Bundling complete ` : `Bundling failed `;
+      const status = phase === 'done' ? `Bundled ` : `Bundling failed `;
       const color = phase === 'done' ? chalk.green : chalk.red;
 
       const startTime = this._bundleTimers.get(progress.bundleDetails.buildID!);
       const time = startTime != null ? chalk.dim(this._getElapsedTime(startTime) + 'ms') : '';
-      // iOS Bundling complete 150ms
+      // iOS Bundled 150ms
       return color(platform + status) + time + chalk.reset.dim(' (' + localPath + ')');
     }
 
@@ -238,7 +238,7 @@ function getEnvironmentForBuildDetails(bundleDetails?: BundleDetails | null): st
   // Expo CLI will pass `customTransformOptions.environment = 'node'` when bundling for the server.
   const env = bundleDetails?.customTransformOptions?.environment ?? null;
   if (env === 'node') {
-    return `${chalk.bold('Server')} `;
+    return chalk.bold('λ') + ' ';
   }
 
   return '';

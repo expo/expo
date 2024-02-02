@@ -11,14 +11,14 @@ type Result = ReturnType<typeof render> & {
     getSegments(): string[];
     getSearchParams(): Record<string, string | string[]>;
 };
-export declare function getMockContext(context: string | Record<string, FileStub> | {
+export type MockContextConfig = string | string[] | Record<string, FileStub> | {
     appDir: string;
     overrides: Record<string, FileStub>;
-}): import("../types").RequireContext;
-export declare function renderRouter(context?: string, options?: RenderRouterOptions): Result;
-export declare function renderRouter(context: Record<string, FileStub>, options?: RenderRouterOptions): Result;
-export declare function renderRouter(context: {
-    appDir: string;
-    overrides: Record<string, FileStub>;
-}, options?: RenderRouterOptions): Result;
+};
+export declare function getMockConfig(context: MockContextConfig): {
+    initialRouteName?: string | undefined;
+    screens: Record<string, import("../getReactNavigationConfig").Screen>;
+};
+export declare function getMockContext(context: MockContextConfig): import("../types").RequireContext;
+export declare function renderRouter(context?: MockContextConfig, { initialUrl, ...options }?: RenderRouterOptions): Result;
 //# sourceMappingURL=index.d.ts.map
