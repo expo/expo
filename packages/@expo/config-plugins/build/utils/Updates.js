@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.FINGERPRINT_RUNTIME_VERSION_SENTINEL = void 0;
 exports.getAppVersion = getAppVersion;
 exports.getExpoUpdatesPackageVersion = getExpoUpdatesPackageVersion;
 exports.getNativeVersion = getNativeVersion;
@@ -18,13 +19,6 @@ exports.getUpdatesEnabled = getUpdatesEnabled;
 exports.getUpdatesRequestHeaders = getUpdatesRequestHeaders;
 exports.getUpdatesRequestHeadersStringified = getUpdatesRequestHeadersStringified;
 exports.getUpdatesTimeout = getUpdatesTimeout;
-function Fingerprint() {
-  const data = _interopRequireWildcard(require("@expo/fingerprint"));
-  Fingerprint = function () {
-    return data;
-  };
-  return data;
-}
 function _sdkRuntimeVersions() {
   const data = require("@expo/sdk-runtime-versions");
   _sdkRuntimeVersions = function () {
@@ -75,8 +69,7 @@ function _() {
   return data;
 }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
-function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+const FINGERPRINT_RUNTIME_VERSION_SENTINEL = exports.FINGERPRINT_RUNTIME_VERSION_SENTINEL = 'file:fingerprint';
 function getExpoUpdatesPackageVersion(projectRoot) {
   const expoUpdatesPackageJsonPath = _resolveFrom().default.silent(projectRoot, 'expo-updates/package.json');
   if (!expoUpdatesPackageJsonPath || !_fs().default.existsSync(expoUpdatesPackageJsonPath)) {
@@ -126,6 +119,9 @@ async function getRuntimeVersionAsync(projectRoot, config, platform) {
     return null;
   }
   if (typeof runtimeVersion === 'string') {
+    if (runtimeVersion === FINGERPRINT_RUNTIME_VERSION_SENTINEL) {
+      throw new Error(`${FINGERPRINT_RUNTIME_VERSION_SENTINEL} is a reserved value for runtime version. To use a fingerprint runtime version, use the "fingerprintExperimental" runtime version policy.`);
+    }
     return runtimeVersion;
   } else if (runtimeVersion.policy === 'appVersion') {
     return getAppVersion(config);
@@ -137,10 +133,10 @@ async function getRuntimeVersionAsync(projectRoot, config, platform) {
     }
     return (0, _sdkRuntimeVersions().getRuntimeVersionForSDKVersion)(config.sdkVersion);
   } else if (runtimeVersion.policy === 'fingerprintExperimental') {
-    console.warn("Use of the experimental 'fingerprintExperimental' runtime policy may result in unexpected system behavior.");
-    return await Fingerprint().createProjectHashAsync(projectRoot);
+    console.warn(`Use of the experimental '${runtimeVersion.policy}' runtime policy may result in unexpected system behavior.`);
+    return FINGERPRINT_RUNTIME_VERSION_SENTINEL;
   }
-  throw new Error(`"${typeof runtimeVersion === 'object' ? JSON.stringify(runtimeVersion) : runtimeVersion}" is not a valid runtime version. getRuntimeVersionAsync only supports a string, "sdkVersion", "appVersion", "nativeVersion" or "fingerprintExperimental" policy.`);
+  throw new Error(`"${typeof runtimeVersion === 'object' ? JSON.stringify(runtimeVersion) : runtimeVersion}" is not a valid runtime version. getRuntimeVersionAsync only supports a string or one of the following policies: sdkVersion, appVersion, nativeVersion, fingerprintExperimental.`);
 }
 function getSDKVersion(config) {
   return typeof config.sdkVersion === 'string' ? config.sdkVersion : null;
