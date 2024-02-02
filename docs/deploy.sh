@@ -85,10 +85,6 @@ redirects[versions/latest/sdk/introduction/index.html]=versions/latest/sdk/overv
 # project-lifecycle is now covered by managed-vs-bare
 redirects[versions/latest/introduction/project-lifecycle]=archive/managed-vs-bare
 
-# exp-cli is now expo-cli
-# redirects[versions/latest/guides/exp-cli.html]=versions/latest/workflow/expo-cli/
-# redirects[versions/latest/guides/exp-cli]=versions/latest/workflow/expo-cli/
-
 # Migrated FAQ pages
 redirects[faq/image-background]=ui-programming/image-background
 redirects[faq/react-native-styling-buttons]=ui-programming/react-native-styling-buttons
