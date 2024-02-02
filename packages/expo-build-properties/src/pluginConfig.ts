@@ -90,21 +90,45 @@ export interface PluginConfigTypeAndroid {
   /**
    * Add extra maven repositories to all gradle projects.
    *
-   * This acts like to add the following code to **android/build.gradle**:
+   *
+   * Takes an array of objects or strings.
+   * Strings are passed as the `url` property of the object with no credentials or authentication scheme.
+   *
+   * This adds the following code to **android/build.gradle**:
+   * ```groovy
+   * allprojects {
+   *  repositories {
+   *   maven {
+   *    url "https://foo.com/maven-releases"
+   *  }
+   * }
+   * ```
+   *
+   * By using an `AndroidMavenRepository` object, you can specify credentials and an authentication scheme.
+   *
    * ```groovy
    * allprojects {
    *   repositories {
    *     maven {
-   *       url [THE_EXTRA_MAVEN_REPOSITORY]
+   *       url "https://foo.com/maven-releases"
+   *       credentials {
+   *        username = "bar"
+   *        password = "baz"
+   *       }
+   *       authentication {
+   *        basic(BasicAuthentication)
+   *       }
    *     }
    *   }
    * }
    * ```
    *
+   * @see [Gradle documentation](https://docs.gradle.org/current/userguide/declaring_repositories.html#sec:case-for-maven)
+   *
    * @hide For the implementation details,
-   * this property is actually handled by `expo-modules-autolinking` but not the config-plugins inside expo-build-properties.
+   * this property is actually handled by `expo-modules-autolinking` not the config-plugins inside `expo-build-properties`
    */
-  extraMavenRepos?: string[];
+  extraMavenRepos?: (AndroidMavenRepository | string)[];
   /**
    * Indicates whether the app intends to use cleartext network traffic.
    *
@@ -121,6 +145,51 @@ export interface PluginConfigTypeAndroid {
    */
   manifestQueries?: PluginConfigTypeAndroidQueries;
 }
+
+export interface AndroidMavenRepository {
+  /**
+   * The URL of the Maven repository.
+   */
+  url: string;
+  /**
+   * The credentials to use when accessing the Maven repository.
+   * May be of type PasswordCredentials, HttpHeaderCredentials, or AWSCredentials.
+   *
+   * @see the authentication schemes section of [Gradle documentation](https://docs.gradle.org/current/userguide/declaring_repositories.html#sec:authentication_schemes) for more information.
+   */
+  credentials?: AndroidMavenRepositoryCredentials;
+  /**
+   * The authentication scheme to use when accessing the Maven repository.
+   */
+  authentication?: AndroidMavenRepositoryAuthenticationScheme;
+}
+
+export enum AndroidMavenRepositoryAuthenticationScheme {
+  BasicAuthentication = 'basic',
+  DigestAuthentication = 'digest',
+  HttpHeaderAuthentication = 'header',
+}
+
+interface AndroidMavenRepositoryPasswordCredentials {
+  username: string;
+  password: string;
+}
+
+interface AndroidMavenRepositoryHttpHeaderCredentials {
+  name: string;
+  value: string;
+}
+
+interface AndroidMavenRepositoryAWSCredentials {
+  accessKey: string;
+  secretKey: string;
+  sessionToken?: string;
+}
+
+type AndroidMavenRepositoryCredentials =
+  | AndroidMavenRepositoryPasswordCredentials
+  | AndroidMavenRepositoryHttpHeaderCredentials
+  | AndroidMavenRepositoryAWSCredentials;
 
 /**
  * Interface representing available configuration for iOS native build properties.
@@ -359,7 +428,67 @@ const schema: JSONSchemaType<PluginConfigType> = {
 
         networkInspector: { type: 'boolean', nullable: true },
 
-        extraMavenRepos: { type: 'array', items: { type: 'string' }, nullable: true },
+        extraMavenRepos: {
+          type: 'array',
+          items: {
+            type: ['string', 'object'],
+            anyOf: [
+              { type: 'string', nullable: false },
+              {
+                type: 'object',
+                required: ['url'],
+                properties: {
+                  url: { type: 'string', nullable: false },
+                  credentials: {
+                    type: 'object',
+                    oneOf: [
+                      {
+                        type: 'object',
+                        properties: {
+                          username: { type: 'string' },
+                          password: { type: 'string' },
+                        },
+                        required: ['username', 'password'],
+                        additionalProperties: false,
+                      },
+                      {
+                        type: 'object',
+                        properties: {
+                          name: { type: 'string' },
+                          value: { type: 'string' },
+                        },
+                        required: ['name', 'value'],
+                        additionalProperties: false,
+                      },
+                      {
+                        type: 'object',
+                        properties: {
+                          accessKey: { type: 'string' },
+                          secretKey: { type: 'string' },
+                          sessionToken: { type: 'string', nullable: true },
+                        },
+                        required: ['accessKey', 'secretKey'],
+                        additionalProperties: false,
+                      },
+                    ],
+                    nullable: true,
+                  },
+                  authentication: {
+                    type: 'string',
+                    enum: [
+                      AndroidMavenRepositoryAuthenticationScheme.BasicAuthentication,
+                      AndroidMavenRepositoryAuthenticationScheme.DigestAuthentication,
+                      AndroidMavenRepositoryAuthenticationScheme.HttpHeaderAuthentication,
+                    ],
+                    nullable: true,
+                  },
+                },
+                additionalProperties: false,
+              },
+            ],
+          },
+          nullable: true,
+        },
 
         usesCleartextTraffic: { type: 'boolean', nullable: true },
 

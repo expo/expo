@@ -227,3 +227,68 @@ export interface RawExpoModuleConfig {
     webpageRoot: string;
   };
 }
+
+export enum AndroidMavenRepositoryAuthenticationScheme {
+  BasicAuthentication = 'basic',
+  DigestAuthentication = 'digest',
+  HttpHeaderAuthentication = 'header',
+}
+
+interface AndroidMavenRepositoryPasswordCredentials {
+  username: string;
+  password: string;
+}
+
+interface AndroidMavenRepositoryHttpHeaderCredentials {
+  name: string;
+  value: string;
+}
+
+interface AndroidMavenRepositoryAWSCredentials {
+  accessKey: string;
+  secretKey: string;
+  sessionToken?: string;
+}
+
+type AndroidMavenRepositoryCredentials =
+  | AndroidMavenRepositoryPasswordCredentials
+  | AndroidMavenRepositoryHttpHeaderCredentials
+  | AndroidMavenRepositoryAWSCredentials;
+
+export interface AndroidMavenRepository {
+  /**
+   * The URL of the Maven repository.
+   */
+  url: string;
+  /**
+   * The credentials to use when accessing the Maven repository.
+   * May be of type PasswordCredentials, HttpHeaderCredentials, or AWSCredentials.
+   *
+   * @see the authentication schemes section of [Gradle documentation](https://docs.gradle.org/current/userguide/declaring_repositories.html#sec:authentication_schemes) for more information.
+   */
+  credentials?: AndroidMavenRepositoryCredentials;
+  /**
+   * The authentication scheme to use when accessing the Maven repository.
+   */
+  authentication?: AndroidMavenRepositoryAuthenticationScheme;
+}
+
+interface IosPod {
+  name: string;
+  version?: string;
+  configurations?: string[];
+  modular_headers?: boolean;
+  source?: string;
+  path?: string;
+  podspec?: string;
+  testspecs?: string[];
+  git?: string;
+  branch?: string;
+  tag?: string;
+  commit?: string;
+}
+
+export interface ExtraDependencies {
+  androidMavenRepos: AndroidMavenRepository[];
+  iosPods?: IosPod[];
+}

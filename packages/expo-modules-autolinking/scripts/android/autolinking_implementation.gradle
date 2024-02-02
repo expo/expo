@@ -59,9 +59,13 @@ class ExpoModule {
 // Object representing a maven repository.
 class MavenRepo {
   String url
+  Object credentials
+  String authentication
 
   MavenRepo(Object data) {
-    this.url = data
+    this.url = data.url
+    this.credentials = data.credentials
+    this.authentication = this.authentication 
   }
 }
 
@@ -240,7 +244,31 @@ if (rootProject instanceof ProjectDescriptor) {
       rootProject.allprojects { eachProject ->
         eachProject.repositories {
           for (mavenRepo in extraMavenRepos) {
-            maven { url = mavenRepo.url }
+            maven {
+              url "${mavenRepo.url}"
+              credentials {
+                if (mavenRepo.credentials.username && mavenRepo.credentials.password) {
+                  username mavenRepo.credentials.username
+                  password mavenRepo.credentials.password
+                } else if (mavenRepo.credentials.name && mavenRepo.credentials.value) {
+                  name mavenRepo.credentials.name
+                  value mavenRepo.credentials.value
+                } else if (mavenRepo.credentials.accessKey && mavenRepo.credentials.secretKey) {
+                  accessKey mavenRepo.credentials.accessKey
+                  secretKey mavenRepo.credentials.secretKey
+                  sessionToken mavenRepo.credentials.sessionToken
+                }
+              }
+              authentication {
+                if (mavenRepo.authentication == "basic") {
+                  basic(BasicAuthentication)
+                } else if (mavenRepo.authentication == "digest") {
+                  digest(DigestAuthentication)
+                } else if (mavenRepo.authentication == "header") {
+                  header(HttpHeaderAuthentication)
+                }
+              }
+            }
           }
         }
       }

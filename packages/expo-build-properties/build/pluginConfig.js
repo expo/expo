@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateConfig = void 0;
+exports.validateConfig = exports.AndroidMavenRepositoryAuthenticationScheme = void 0;
 const ajv_1 = __importDefault(require("ajv"));
 const semver_1 = __importDefault(require("semver"));
 /**
@@ -21,6 +21,12 @@ const EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS = {
         deploymentTarget: '13.4',
     },
 };
+var AndroidMavenRepositoryAuthenticationScheme;
+(function (AndroidMavenRepositoryAuthenticationScheme) {
+    AndroidMavenRepositoryAuthenticationScheme["BasicAuthentication"] = "basic";
+    AndroidMavenRepositoryAuthenticationScheme["DigestAuthentication"] = "digest";
+    AndroidMavenRepositoryAuthenticationScheme["HttpHeaderAuthentication"] = "header";
+})(AndroidMavenRepositoryAuthenticationScheme || (exports.AndroidMavenRepositoryAuthenticationScheme = AndroidMavenRepositoryAuthenticationScheme = {}));
 const schema = {
     type: 'object',
     properties: {
@@ -47,7 +53,67 @@ const schema = {
                     nullable: true,
                 },
                 networkInspector: { type: 'boolean', nullable: true },
-                extraMavenRepos: { type: 'array', items: { type: 'string' }, nullable: true },
+                extraMavenRepos: {
+                    type: 'array',
+                    items: {
+                        type: ['string', 'object'],
+                        anyOf: [
+                            { type: 'string', nullable: false },
+                            {
+                                type: 'object',
+                                required: ['url'],
+                                properties: {
+                                    url: { type: 'string', nullable: false },
+                                    credentials: {
+                                        type: 'object',
+                                        oneOf: [
+                                            {
+                                                type: 'object',
+                                                properties: {
+                                                    username: { type: 'string' },
+                                                    password: { type: 'string' },
+                                                },
+                                                required: ['username', 'password'],
+                                                additionalProperties: false,
+                                            },
+                                            {
+                                                type: 'object',
+                                                properties: {
+                                                    name: { type: 'string' },
+                                                    value: { type: 'string' },
+                                                },
+                                                required: ['name', 'value'],
+                                                additionalProperties: false,
+                                            },
+                                            {
+                                                type: 'object',
+                                                properties: {
+                                                    accessKey: { type: 'string' },
+                                                    secretKey: { type: 'string' },
+                                                    sessionToken: { type: 'string', nullable: true },
+                                                },
+                                                required: ['accessKey', 'secretKey'],
+                                                additionalProperties: false,
+                                            },
+                                        ],
+                                        nullable: true,
+                                    },
+                                    authentication: {
+                                        type: 'string',
+                                        enum: [
+                                            AndroidMavenRepositoryAuthenticationScheme.BasicAuthentication,
+                                            AndroidMavenRepositoryAuthenticationScheme.DigestAuthentication,
+                                            AndroidMavenRepositoryAuthenticationScheme.HttpHeaderAuthentication,
+                                        ],
+                                        nullable: true,
+                                    },
+                                },
+                                additionalProperties: false,
+                            },
+                        ],
+                    },
+                    nullable: true,
+                },
                 usesCleartextTraffic: { type: 'boolean', nullable: true },
                 manifestQueries: {
                     required: ['package'],
