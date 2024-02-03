@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add assets:verify command to CLI. ([#26756](https://github.com/expo/expo/pull/26756) by [@douglowder](https://github.com/douglowder))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
