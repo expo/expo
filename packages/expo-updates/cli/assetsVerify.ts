@@ -14,6 +14,8 @@ import { Command } from './cli';
 import { assertArgs, getProjectRoot } from './utils/args';
 import * as Log from './utils/log';
 
+const debug = require('debug')('expo-updates:assets:verify') as typeof console.log;
+
 export const expoAssetsVerify: Command = async (argv) => {
   const args = assertArgs(
     {
@@ -58,7 +60,7 @@ Verify that all static files in an exported bundle are in either the export or a
     const projectRoot = getProjectRoot(args);
 
     const validatedArgs = resolveOptions(projectRoot, args);
-    Log.log(`Validated params: ${JSON.stringify(validatedArgs, null, 2)}`);
+    debug(`Validated params: ${JSON.stringify(validatedArgs, null, 2)}`);
 
     const { buildManifestPath, exportedManifestPath, assetMapPath, platform } = validatedArgs;
 

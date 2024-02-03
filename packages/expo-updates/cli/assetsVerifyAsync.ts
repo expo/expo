@@ -8,7 +8,8 @@ import {
   FullAssetDumpEntry,
   Platform,
 } from './assetsVerifyTypes';
-import * as Log from './utils/log';
+
+const debug = require('debug')('expo-updates:assets:verify') as typeof console.log;
 
 /**
  * Finds any assets that will be missing from an app given a build and an exported update bundle.
@@ -37,9 +38,9 @@ export async function getMissingAssetsAsync(
     platform
   );
 
-  Log.log(`Assets in build: ${JSON.stringify([...buildManifestHashSet], null, 2)}`);
-  Log.log(`Assets in exported bundle: ${JSON.stringify([...exportedAssetSet], null, 2)}`);
-  Log.log(`All assets resolved by Metro: ${JSON.stringify([...fullAssetSet], null, 2)}`);
+  debug(`Assets in build: ${JSON.stringify([...buildManifestHashSet], null, 2)}`);
+  debug(`Assets in exported bundle: ${JSON.stringify([...exportedAssetSet], null, 2)}`);
+  debug(`All assets resolved by Metro: ${JSON.stringify([...fullAssetSet], null, 2)}`);
 
   const buildAssetsPlusExportedAssets = new Set(buildManifestHashSet);
   exportedAssetSet.forEach((hash) => buildAssetsPlusExportedAssets.add(hash));

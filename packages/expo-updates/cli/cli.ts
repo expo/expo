@@ -1,8 +1,17 @@
 #!/usr/bin/env node
 import arg from 'arg';
 import chalk from 'chalk';
+import Debug from 'debug';
+import { boolish } from 'getenv';
 
 import * as Log from './utils/log';
+
+// Setup before requiring `debug`.
+if (boolish('EXPO_DEBUG', false)) {
+  Debug.enable('expo-updates:*');
+} else if (Debug.enabled('expo-updates:')) {
+  process.env.EXPO_DEBUG = '1';
+}
 
 export type Command = (argv?: string[]) => void;
 
