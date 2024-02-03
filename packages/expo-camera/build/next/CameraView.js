@@ -104,7 +104,7 @@ export default class CameraView extends React.Component {
      */
     static async launchScanner(options) {
         if (!options) {
-            options = { barCodeTypes: [] };
+            options = { barcodeTypes: [] };
         }
         if (Platform.OS === 'ios' && CameraView.isModernBarcodeScannerAvailable) {
             await CameraManager.launchScanner(options);
