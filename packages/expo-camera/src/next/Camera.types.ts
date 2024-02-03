@@ -415,7 +415,7 @@ export type ScanningOptions = {
   /**
    * The type of codes to scan for.
    */
-  barCodeTypes: BarcodeType[];
+  barcodeTypes: BarcodeType[];
   /**
    * Indicates whether people can use a two-finger pinch-to-zoom gesture.
    * @default true
