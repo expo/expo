@@ -15,7 +15,7 @@ import {
 import withHeadingManager, {
   HeadingManagerProps,
 } from '~/components/page-higher-order/withHeadingManager';
-import { PermalinkCopyButton } from '~/ui/components/Permalink';
+import { PermalinkIcon } from '~/ui/components/Permalink';
 import { DEMI } from '~/ui/components/Text';
 
 type CollapsibleProps = PropsWithChildren<{
@@ -72,13 +72,9 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
             href={'#' + heading.current.slug}
             onClick={onToggle}
             ref={heading.current.ref}
-            className="relative">
+            className="inline-flex gap-1.5 items-center scroll-m-5 relative">
             <DEMI>{summary}</DEMI>
-            <PermalinkCopyButton
-              slug={heading.current.slug}
-              className="invisible group-hover:visible group-focus-visible:visible top-0.5"
-              confirmationClassName="inline-flex relative -top-3"
-            />
+            <PermalinkIcon className="icon-sm inline-flex invisible group-hover:visible group-focus-visible:visible" />
           </LinkBase>
         </summary>
         <div css={contentStyle} className="last:[&>*]:!mb-1">
