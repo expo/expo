@@ -1,8 +1,17 @@
 #!/usr/bin/env node
 import arg from 'arg';
 import chalk from 'chalk';
+import Debug from 'debug';
+import { boolish } from 'getenv';
 
 import * as Log from './utils/log';
+
+// Setup before requiring `debug`.
+if (boolish('EXPO_DEBUG', false)) {
+  Debug.enable('expo-updates:*');
+} else if (Debug.enabled('expo-updates:')) {
+  process.env.EXPO_DEBUG = '1';
+}
 
 export type Command = (argv?: string[]) => void;
 
@@ -12,6 +21,7 @@ const commands: { [command: string]: () => Promise<Command> } = {
     import('./generateCodeSigning.js').then((i) => i.generateCodeSigning),
   'codesigning:configure': () =>
     import('./configureCodeSigning.js').then((i) => i.configureCodeSigning),
+  'assets:verify': () => import('./assetsVerify.js').then((i) => i.expoAssetsVerify),
 };
 
 const args = arg(
