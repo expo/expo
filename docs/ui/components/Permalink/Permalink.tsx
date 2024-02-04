@@ -2,12 +2,12 @@ import { LinkBase, mergeClasses } from '@expo/styleguide';
 import type { ComponentType, PropsWithChildren } from 'react';
 
 import { PermalinkBase } from './PermalinkBase';
-import { PermalinkCopyButton } from './PermalinkCopyButton';
 
 import { AdditionalProps } from '~/common/headingManager';
 import withHeadingManager, {
   HeadingManagerProps,
 } from '~/components/page-higher-order/withHeadingManager';
+import { PermalinkIcon } from '~/ui/components/Permalink/PermalinkIcon';
 
 type Props = PropsWithChildren<{
   // Sidebar heading level override
@@ -37,17 +37,18 @@ const Permalink: ComponentType<Props> = withHeadingManager((props: Props & Headi
     <PermalinkBase component={component} className="group">
       <LinkBase
         className={mergeClasses(
-          'scroll-m-5 relative text-[inherit] decoration-0',
+          'inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0',
           props.additionalProps?.className
         )}
         href={'#' + heading.slug}
         ref={heading.ref}
         id={heading.slug}>
         <span className="inline">{children}</span>
-        <PermalinkCopyButton
-          slug={heading.slug}
-          iconSize={props.additionalProps?.iconSize}
-          className="invisible group-hover:visible group-focus-visible:visible"
+        <PermalinkIcon
+          className={mergeClasses(
+            'icon-md inline-flex invisible group-hover:visible group-focus-visible:visible',
+            props.nestingLevel >= 4 && 'icon-sm'
+          )}
         />
       </LinkBase>
     </PermalinkBase>
