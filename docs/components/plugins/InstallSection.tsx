@@ -22,8 +22,6 @@ const InstallSection = ({
   cmd = [getInstallCmd(packageName)],
   href = getPackageLink(packageName),
 }: InstallSectionProps) => {
-  const { sourceCodeUrl } = usePageMetadata();
-
   return (
     <>
       <Terminal cmd={cmd} />
@@ -31,7 +29,7 @@ const InstallSection = ({
         <P>
           If you're installing this in a <A href="/bare/overview/">bare React Native app</A>, you
           should also follow{' '}
-          <A href={sourceCodeUrl ?? href}>
+          <A href="/bare/installing-expo-modules/">
             <DEMI>these additional installation instructions</DEMI>
           </A>
           .
