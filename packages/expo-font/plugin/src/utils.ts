@@ -1,6 +1,10 @@
 import fs from 'fs/promises';
 import path from 'path';
 
+export function toAndroidResourceString(string: string) {
+  return string.replace(/(-| )/, '_').toLowerCase();
+}
+
 export async function resolveFontPaths(fonts: string[], projectRoot: string) {
   const promises = fonts.map(async (p) => {
     const resolvedPath = path.resolve(projectRoot, p);
@@ -13,4 +17,15 @@ export async function resolveFontPaths(fonts: string[], projectRoot: string) {
     return [resolvedPath];
   });
   return (await Promise.all(promises)).flat();
+}
+
+type GroupedObject<T> = { [key: string]: T[] };
+
+export function groupBy<T>(array: T[], key: keyof T): GroupedObject<T> {
+  return array.reduce((result: GroupedObject<T>, item: T) => {
+    const keyValue = item[key] as string;
+    result[keyValue] = result[keyValue] || [];
+    result[keyValue].push(item);
+    return result;
+  }, {});
 }
