@@ -85,6 +85,7 @@ And in your **app.config.js**, you are provided with that configuration in the a
 
 ```js app.config.js
 module.exports = ({ config }) => {
+  // In order for EAS build to work properly, remeber to remove all console.logs.
   console.log(config.name); // prints 'My App'
   return {
     ...config,
