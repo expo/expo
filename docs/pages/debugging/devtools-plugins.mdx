@@ -168,7 +168,7 @@ const queryClient = new QueryClient({});
 export default function App() {
   useReactQueryDevTools(queryClient);
 
-  return <QueryClientProvider>{/* ... */}</QueryClientProvider>;
+  return <QueryClientProvider client={queryClient}>{/* ... */}</QueryClientProvider>;
 }
 ```
 
