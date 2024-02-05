@@ -130,7 +130,10 @@ export const renderProp = (
       <APISectionDeprecationNote comment={extractedComment} />
       <APISectionPlatformTags comment={comment} />
       <HeaderComponent tags={getTagNamesList(comment)}>
-        <MONOSPACE weight="medium" css={!exposeInSidebar && STYLES_NOT_EXPOSED_HEADER}>
+        <MONOSPACE
+          weight="medium"
+          css={!exposeInSidebar && STYLES_NOT_EXPOSED_HEADER}
+          className="wrap-anywhere">
           {name}
         </MONOSPACE>
       </HeaderComponent>

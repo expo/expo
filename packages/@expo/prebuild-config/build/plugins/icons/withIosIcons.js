@@ -57,9 +57,8 @@ const withIosIcons = config => {
 };
 exports.withIosIcons = withIosIcons;
 function getIcons(config) {
-  var _config$ios;
   // No support for empty strings.
-  return ((_config$ios = config.ios) === null || _config$ios === void 0 ? void 0 : _config$ios.icon) || config.icon || null;
+  return config.ios?.icon || config.icon || null;
 }
 async function setIconsAsync(config, projectRoot) {
   const icon = getIcons(config);

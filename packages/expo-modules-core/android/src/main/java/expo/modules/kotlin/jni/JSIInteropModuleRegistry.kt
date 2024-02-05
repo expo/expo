@@ -114,6 +114,24 @@ class JSIInteropModuleRegistry(appContext: AppContext) : Destructible {
 
   @Suppress("unused")
   @DoNotStrip
+  fun registerClass(native: Class<*>, js: JavaScriptObject) {
+    appContextHolder
+      .get()
+      ?.classRegistry
+      ?.add(native, js)
+  }
+
+  @Suppress("unused")
+  @DoNotStrip
+  fun getJavascriptClass(native: java.lang.Class<*>): JavaScriptObject? {
+    return appContextHolder
+      .get()
+      ?.classRegistry
+      ?.toJavaScriptObject(native)
+  }
+
+  @Suppress("unused")
+  @DoNotStrip
   fun getCoreModuleObject(): JavaScriptModuleObject? {
     return appContextHolder.get()?.coreModule?.jsObject
   }

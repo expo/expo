@@ -25,8 +25,7 @@ const withAccessesContactNotes = config => {
   });
 };
 function setAccessesContactNotes(config, entitlementsPlist) {
-  var _config$ios;
-  if ((_config$ios = config.ios) !== null && _config$ios !== void 0 && _config$ios.accessesContactNotes) {
+  if (config.ios?.accessesContactNotes) {
     return {
       ...entitlementsPlist,
       'com.apple.developer.contacts.notes': true

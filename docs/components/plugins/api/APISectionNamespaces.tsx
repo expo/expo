@@ -43,7 +43,9 @@ const renderNamespace = (namespace: ClassDefinitionData, exposeInSidebar: boolea
     <div key={`class-definition-${name}`} css={STYLES_APIBOX}>
       <APISectionDeprecationNote comment={comment} />
       <H3Code tags={getTagNamesList(comment)}>
-        <MONOSPACE weight="medium">{name}</MONOSPACE>
+        <MONOSPACE weight="medium" className="wrap-anywhere">
+          {name}
+        </MONOSPACE>
       </H3Code>
       <CommentTextBlock comment={comment} />
       {returnComment && (

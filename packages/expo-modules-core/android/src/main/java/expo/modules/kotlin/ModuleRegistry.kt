@@ -33,10 +33,6 @@ class ModuleRegistry(
       )
     }
 
-    holder.apply {
-      registerContracts()
-    }
-
     registry[holder.name] = holder
   }
 
@@ -110,6 +106,12 @@ class ModuleRegistry(
   fun cleanUp() {
     registry.clear()
     logger.info("✅ ModuleRegistry was destroyed")
+  }
+
+  internal fun registerActivityContracts() {
+    forEach { holder ->
+      holder.registerContracts()
+    }
   }
 
   /**

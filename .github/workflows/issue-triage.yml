@@ -228,3 +228,25 @@ jobs:
               repo: context.repo.repo,
               state: 'closed'
             })
+  comments-on-closed:
+    runs-on: ubuntu-22.04
+    if: "${{ github.event.label.name == 'Comments on closed issue' }}"
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `Hi there! It looks you are commenting on an issue that has been marked as resolved.
+
+              If you are still experiencing this problem or a related one, please [open a new issue](https://github.com/expo/expo/issues/new/choose) and fill out the issue template.
+            `})
+            github.rest.issues.lock({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              lock_reason: 'resolved'
+            })
