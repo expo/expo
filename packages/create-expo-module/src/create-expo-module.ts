@@ -249,7 +249,6 @@ async function downloadPackageAsync(targetDir: string, isLocal = false): Promise
       isLocal ? 'expo-module-template-local' : 'expo-module-template',
       templateVersion
     );
-    console.log({ templateVersion });
 
     await downloadTarball({
       url: tarballUrl,

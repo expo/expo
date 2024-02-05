@@ -200,7 +200,6 @@ async function downloadPackageAsync(targetDir, isLocal = false) {
     return await (0, utils_1.newStep)('Downloading module template from npm', async (step) => {
         const templateVersion = await getTemplateVersion(targetDir, isLocal);
         const tarballUrl = await getNpmTarballUrl(isLocal ? 'expo-module-template-local' : 'expo-module-template', templateVersion);
-        console.log({ templateVersion });
         await (0, download_tarball_1.default)({
             url: tarballUrl,
             dir: targetDir,
