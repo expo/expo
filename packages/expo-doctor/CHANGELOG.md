@@ -5,7 +5,7 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
-- Added a check for expo-permissions in SDK50 as it will break the Android build if present
+- Added a check for expo-permissions in SDK50 as it will break the Android build if present ([#26929](https://github.com/expo/expo/pull/26929) by [@TomOConnor95](https://github.com/TomOConnor95))
 
 ### 🐛 Bug fixes
 
