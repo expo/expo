@@ -3,13 +3,19 @@ import { LinkBase, shadows, theme } from '@expo/styleguide';
 import { borderRadius, spacing } from '@expo/styleguide-base';
 import { TriangleDownIcon } from '@expo/styleguide-icons';
 import { useRouter } from 'next/compat/router';
-import type { PropsWithChildren, ReactNode } from 'react';
-import React from 'react';
+import {
+  type ComponentType,
+  type PropsWithChildren,
+  type ReactNode,
+  useRef,
+  useState,
+  useEffect,
+} from 'react';
 
 import withHeadingManager, {
   HeadingManagerProps,
 } from '~/components/page-higher-order/withHeadingManager';
-import { PermalinkCopyButton } from '~/ui/components/Permalink';
+import { PermalinkIcon } from '~/ui/components/Permalink';
 import { DEMI } from '~/ui/components/Text';
 
 type CollapsibleProps = PropsWithChildren<{
@@ -24,53 +30,51 @@ type CollapsibleProps = PropsWithChildren<{
   testID?: string;
 }>;
 
-const Collapsible: React.FC<CollapsibleProps> = withHeadingManager(
-  (props: CollapsibleProps & HeadingManagerProps) => {
-    const { summary, testID, children } = props;
-
+const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
+  ({
+    summary,
+    testID,
+    children,
+    headingManager,
+    open = false,
+  }: CollapsibleProps & HeadingManagerProps) => {
+    // track open state so we can collapse header if it is set to open by the URL hash
+    const [isOpen, setOpen] = useState<boolean>(open);
     const router = useRouter();
-    const { asPath } = router || {};
+
+    // HeadingManager is used to generate a slug that corresponds to the collapsible summary.
+    // These are normally generated for MD (#) headings, but Collapsible doesn't have those.
+    // This is a ref because identical tags will keep incrementing the number if it is not.
+    const heading = useRef(headingManager.addHeading(summary, 1, undefined));
 
     // expand collapsible if the current hash matches the heading
-    React.useEffect(() => {
-      if (asPath) {
-        const splitUrl = asPath.split('#');
+    useEffect(() => {
+      if (router?.asPath) {
+        const splitUrl = router.asPath.split('#');
         const hash = splitUrl.length ? splitUrl[1] : undefined;
         if (hash && hash === heading.current.slug) {
           setOpen(true);
         }
       }
-    }, [asPath]);
+    }, []);
 
-    // track open state so we can collapse header if it is set to open by the URL hash
-    const [open, setOpen] = React.useState<boolean>(props.open ?? false);
-
-    const onToggle = (event: { preventDefault: () => void }) => {
-      event.preventDefault();
-      setOpen(!open);
-    };
-
-    // HeadingManager is used to generate a slug that corresponds to the collapsible summary.
-    // These are normally generated for MD (#) headings, but Collapsible doesn't have those.
-    // This is a ref because identical tags will keep incrementing the number if it is not.
-    const heading = React.useRef(props.headingManager.addHeading(summary, 1, undefined));
+    function onToggle() {
+      setOpen(!isOpen);
+    }
 
     return (
-      <details id={heading.current.slug} css={detailsStyle} open={open} data-testid={testID}>
-        <summary css={summaryStyle} onClick={onToggle} className="group">
-          <div css={markerWrapperStyle}>
+      <details id={heading.current.slug} css={detailsStyle} open={isOpen} data-testid={testID}>
+        <summary css={summaryStyle} className="group">
+          <div css={markerWrapperStyle} onClick={onToggle}>
             <TriangleDownIcon className="icon-sm text-icon-default" css={markerStyle} />
           </div>
           <LinkBase
             href={'#' + heading.current.slug}
+            onClick={onToggle}
             ref={heading.current.ref}
-            className="relative">
+            className="inline-flex gap-1.5 items-center scroll-m-5 relative">
             <DEMI>{summary}</DEMI>
-            <PermalinkCopyButton
-              slug={heading.current.slug}
-              className="invisible group-hover:visible group-focus-visible:visible top-0.5"
-              confirmationClassName="inline-flex relative -top-3"
-            />
+            <PermalinkIcon className="icon-sm inline-flex invisible group-hover:visible group-focus-visible:visible" />
           </LinkBase>
         </summary>
         <div css={contentStyle} className="last:[&>*]:!mb-1">
@@ -101,8 +105,8 @@ const detailsStyle = css({
 });
 
 const summaryStyle = css({
-  display: 'flex',
-  flexDirection: 'row',
+  display: 'grid',
+  gridTemplateColumns: 'min-content auto 1fr',
   alignItems: 'center',
   userSelect: 'none',
   listStyle: 'none',

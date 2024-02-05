@@ -53,7 +53,7 @@ export default App() {
 
 ### Compatibility with Expo Go and Development builds
 
-Dev tools plugins should only include JavaScript code. They are generally compatible with Expo Go and [Development builds](/development-builds/introduction/) and should not require creating a new development build to add the plugin. If a package's underlying module that the plugin inspects includes native code and is not part of Expo Go, create a new development build to use both the component and the plugin from that package.
+Dev tools plugins should only include JavaScript code. They are generally compatible with Expo Go and [Development builds](/develop/development-builds/introduction/) and should not require creating a new development build to add the plugin. If a package's underlying module that the plugin inspects includes native code and is not part of Expo Go, create a new development build to use both the component and the plugin from that package.
 
 For example, a dev tools plugin that inspects [React Native Firebase](/guides/using-firebase/#using-react-native-firebase) will not work with Expo Go. React Native Firebase includes native code that is not part of Expo Go. To use the dev tools plugin and React Native Firebase, create a development build.
 
@@ -168,7 +168,7 @@ const queryClient = new QueryClient({});
 export default function App() {
   useReactQueryDevTools(queryClient);
 
-  return <QueryClientProvider>{/* ... */}</QueryClientProvider>;
+  return <QueryClientProvider client={queryClient}>{/* ... */}</QueryClientProvider>;
 }
 ```
 

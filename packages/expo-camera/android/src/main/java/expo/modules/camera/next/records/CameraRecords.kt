@@ -5,6 +5,7 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.video.Quality
 import com.google.mlkit.vision.barcode.common.Barcode
+import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 
@@ -57,8 +58,8 @@ enum class CameraMode(val value: String) : Enumerable {
 }
 
 data class BarcodeSettings(
-  val barcodeTypes: List<BarcodeType>,
-  val interval: Double?
+  @Field val barcodeTypes: List<BarcodeType>,
+  @Field val interval: Double?
 ) : Record
 
 enum class BarcodeType(val value: String) : Enumerable {

@@ -215,9 +215,16 @@ export type BarcodeScanningResult = {
      */
     type: string;
     /**
-     * The information encoded in the bar code.
+     * The parsed information encoded in the bar code.
      */
     data: string;
+    /**
+     * The raw information encoded in the bar code.
+     * May be different from `data` depending on the barcode type.
+     * @platform android
+     * @hidden
+     */
+    raw?: string;
     /**
      * Corner points of the bounding box.
      * `cornerPoints` is not always available and may be empty. On iOS, for `code39` and `pdf417`
@@ -292,7 +299,7 @@ export type CameraProps = ViewProps & {
      * ```tsx
      * <Camera
      *   barCodeScannerSettings={{
-     *     barCodeTypes: ["qr"],
+     *     barcodeTypes: ["qr"],
      *   }}
      * />
      * ```
@@ -360,7 +367,7 @@ export type CameraNativeProps = {
     responsiveOrientationWhenOrientationLocked?: boolean;
 };
 export type BarcodeSettings = {
-    barCodeTypes: BarCodeType[];
+    barcodeTypes: BarcodeType[];
     interval?: number;
 };
 /**
@@ -370,7 +377,7 @@ export type ScanningOptions = {
     /**
      * The type of codes to scan for.
      */
-    barCodeTypes: BarCodeType[];
+    barCodeTypes: BarcodeType[];
     /**
      * Indicates whether people can use a two-finger pinch-to-zoom gesture.
      * @default true
@@ -390,6 +397,6 @@ export type ScanningOptions = {
 /**
  * The available bar code types that can be scanned.
  */
-export type BarCodeType = 'aztec' | 'ean13' | 'ean8' | 'qr' | 'pdf417' | 'upc_e' | 'datamatrix' | 'code39' | 'code93' | 'itf14' | 'codabar' | 'code128' | 'upc_a';
+export type BarcodeType = 'aztec' | 'ean13' | 'ean8' | 'qr' | 'pdf417' | 'upc_e' | 'datamatrix' | 'code39' | 'code93' | 'itf14' | 'codabar' | 'code128' | 'upc_a';
 export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };
 //# sourceMappingURL=Camera.types.d.ts.map
