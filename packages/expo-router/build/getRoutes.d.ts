@@ -1,43 +1,27 @@
-import type { DynamicConvention, RouteNode } from './Route';
-import type { RequireContext } from './types';
-export type FileNode = Pick<IntermediateRouteNode, 'contextKey' | 'loadRoute' | 'filePath'> & {
-    /** Like `(tab)/index` */
-    normalizedName: string;
-};
-type IntermediateRouteNode = Omit<RouteNode, 'children'> & {
-    filePath: string;
-    children: IntermediateRouteNode[];
-};
-type TreeNode = {
-    name: string;
-    children: TreeNode[];
-    parents: string[];
-    /** null when there is no file in a folder. */
-    node: FileNode | null;
-};
-type Options = {
+import { DynamicConvention, RouteNode } from './Route';
+import { RequireContext } from './types';
+export type Options = {
     ignore?: RegExp[];
     preserveApiRoutes?: boolean;
     ignoreRequireErrors?: boolean;
     ignoreEntryPoints?: boolean;
+    internal_stripLoadRoute?: boolean;
+    skipGenerated?: boolean;
 };
-/** Convert a flat map of file nodes into a nested tree of files. */
-export declare function getRecursiveTree(files: FileNode[]): TreeNode;
-export declare function generateDynamicFromSegment(name: string): DynamicConvention | null;
-export declare function generateDynamic(name: string): IntermediateRouteNode['dynamic'];
 /**
- * Asserts if the require.context has files that share the same name but have different extensions. Exposed for testing.
- * @private
+ * Given a Metro context module, return an array of nested routes.
+ *
+ * This is a two step process:
+ *  1. Convert the RequireContext keys (file paths) into a directory tree.
+ *      - This should extrapolate array syntax into multiple routes
+ *      - Routes are given a specificity score
+ *  2. Flatten the directory tree into routes
+ *      - Routes in directories without _layout files are hoisted to the nearest _layout
+ *      - The name of the route is relative to the nearest _layout
+ *      - If multiple routes have the same name, the most specific route is used
  */
-export declare function assertDuplicateRoutes(filenames: string[]): void;
-/** Given a Metro context module, return an array of nested routes. */
 export declare function getRoutes(contextModule: RequireContext, options?: Options): RouteNode | null;
-/** Get routes without unmatched or sitemap. */
 export declare function getExactRoutes(contextModule: RequireContext, options?: Options): RouteNode | null;
-/**
- * Exposed for testing.
- * @returns a top-level deep dynamic route if it exists, otherwise null.
- */
-export declare function getUserDefinedTopLevelNotFoundRoute(routes: RouteNode | null): RouteNode | null;
-export {};
+export declare function getIgnoreList(options?: Options): RegExp[];
+export declare function generateDynamic(path: string): DynamicConvention[] | null;
 //# sourceMappingURL=getRoutes.d.ts.map

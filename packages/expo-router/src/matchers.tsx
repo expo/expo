@@ -20,6 +20,11 @@ export function matchGroupName(name: string): string | undefined {
   return name.match(/^(?:[^\\(\\)])*?\(([^\\/]+)\).*?$/)?.[1];
 }
 
+/** Match `(a,b,c)/(d,c)` -> `[['a','b','c'], ['d','e']]` */
+export function matchArrayGroupName(name: string) {
+  return name.match(/\(\s*\w[\w\s]*?,.*?\)/g)?.map((match) => match.slice(1, -1));
+}
+
 export function getNameFromFilePath(name: string): string {
   return removeSupportedExtensions(removeFileSystemDots(name));
 }

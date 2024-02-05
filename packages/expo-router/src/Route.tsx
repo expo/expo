@@ -17,6 +17,8 @@ export type LoadedRoute = {
 };
 
 export type RouteNode = {
+  /** The type of RouteNode */
+  type: 'route' | 'api' | 'layout';
   /** Load a route into memory. Returns the exports from a route. */
   loadRoute: () => Partial<LoadedRoute>;
   /** Loaded initial route name. */

@@ -6,6 +6,8 @@ export declare function matchDeepDynamicRouteName(name: string): string | undefi
 export declare function testNotFound(name: string): boolean;
 /** Match `(page)` -> `page` */
 export declare function matchGroupName(name: string): string | undefined;
+/** Match `(a,b,c)/(d,c)` -> `[['a','b','c'], ['d','e']]` */
+export declare function matchArrayGroupName(name: string): string[] | undefined;
 export declare function getNameFromFilePath(name: string): string;
 export declare function getContextKey(name: string): string;
 /** Remove `.js`, `.ts`, `.jsx`, `.tsx` */
