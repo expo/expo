@@ -35,6 +35,7 @@
     "dedent": "^0.7.0",
     "es6-error": "^4.1.1",
     "expo": "~50.0.0-alpha.0",
+    "expo-application": "~5.8.0",
     "expo-asset": "~9.0.0",
     "expo-barcode-scanner": "~12.9.0",
     "expo-blur": "~12.9.0",
