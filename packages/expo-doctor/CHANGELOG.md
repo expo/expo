@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
+- Added a check for expo-permissions in SDK50 as it will break the Android build if present
 
 ### 🐛 Bug fixes
 
