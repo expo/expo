@@ -2,7 +2,7 @@ import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.type
 import { learnMore } from '../utils/TerminalLink';
 import { getDeepDependenciesWarningAsync } from '../utils/explainDependencies';
 
-export class IllegalPackageCheck implements DoctorCheck {
+export class PermissionsPackageCheck implements DoctorCheck {
   description = 'Check that expo-permissions is not installed in SDK50';
 
   sdkVersionRange = '>=50.0.0';
@@ -10,9 +10,7 @@ export class IllegalPackageCheck implements DoctorCheck {
   async runAsync({ exp, projectRoot }: DoctorCheckParams): Promise<DoctorCheckResult> {
     const issues: string[] = [];
 
-    const illegalPackages = [
-      'expo-permissions',
-    ];
+    const illegalPackages = ['expo-permissions'];
 
     // warn if these packages are installed at all
     const possibleWarnings = await Promise.all(
@@ -29,9 +27,7 @@ export class IllegalPackageCheck implements DoctorCheck {
       isSuccessful: !issues.length,
       issues,
       advice: issues.length
-        ? `Remove expo-permissions module ${learnMore(
-            'https://github.com/expo/expo/issues/13970'
-          )}`
+        ? `Remove expo-permissions module ${learnMore('https://github.com/expo/expo/issues/13970')}`
         : undefined,
     };
   }
