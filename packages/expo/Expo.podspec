@@ -32,9 +32,9 @@ Pod::Spec.new do |s|
   elsif !$expo_warned_about_missing_autolinking
     puts <<~EOS
 
-    Looks like your project uses Expo, but React Native Community CLI is unable to install Expo packages.
+    Your project includes the Expo package, but React Native Community CLI is unable to install the related Pods.
     Make sure to require autolinking scripts from Expo and call `use_expo_modules!` in your target.
-    See https://docs.expo.dev/bare/installing-expo-modules for more information.
+    Learn more: https://docs.expo.dev/bare/installing-expo-modules
     EOS
     .yellow
 
