@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357) by [@kudo](https://github.com/kudo))
+- Fixed React Native Community CLI not being able to autolink the `expo` package when Expo autolinking is not used. ([#26932](https://github.com/expo/expo/pull/26932) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
