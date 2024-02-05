@@ -10,6 +10,11 @@
 
 ### 💡 Others
 
+### 💡 Others
+
+- Convert WEBP to PNG instead JPEG when selecting an item in the Media Library with editing enabled. ([#26419](https://github.com/expo/expo/pull/26419) by [@NikitaDudin](https://github.com/NikitaDudin))
+- Receiving a correct file extension for WEBP files instead `.jpeg` in the ImagePicker result. ([#26419](https://github.com/expo/expo/pull/26419) by [@NikitaDudin](https://github.com/NikitaDudin))
+
 ## 14.7.1 - 2023-12-19
 
 _This version does not introduce any user-facing changes._
