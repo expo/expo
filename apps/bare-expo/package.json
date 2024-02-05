@@ -59,7 +59,7 @@
     "expo-camera": "~14.0.0",
     "expo-dev-client": "~3.3.0",
     "expo-face-detector": "~12.6.0",
-    "expo-image": "~1.10.0",
+    "expo-image": "~1.11.0",
     "expo-insights": "~0.6.0",
     "expo-network-addons": "~0.5.0",
     "expo-notifications": "~0.27.0",
