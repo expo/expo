@@ -407,6 +407,7 @@ class ExpoCameraView(
         BarcodeScannedEvent(
           target = id,
           data = barcode.value,
+          raw = barcode.raw,
           type = barcode.type,
           cornerPoints = cornerPoints,
           boundingBox = boundingBox
