@@ -309,9 +309,16 @@ export type BarCodeScanningResult = {
      */
     type: string;
     /**
-     * The information encoded in the bar code.
+     * The parsed information encoded in the bar code.
      */
     data: string;
+    /**
+     * The raw information encoded in the bar code.
+     * May be different from `data` depending on the barcode type.
+     * @platform android
+     * @hidden
+     */
+    raw?: string;
     /**
      * Corner points of the bounding box.
      * `cornerPoints` is not always available and may be empty. On iOS, for `code39` and `pdf417`

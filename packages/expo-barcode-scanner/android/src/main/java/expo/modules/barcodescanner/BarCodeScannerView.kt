@@ -69,6 +69,7 @@ class BarCodeScannerView(
       BarCodeScannedEvent(
         target = id,
         data = barCode.value,
+        raw = barCode.raw,
         type = barCode.type,
         cornerPoints = cornerPoints,
         bounds = boundingBox

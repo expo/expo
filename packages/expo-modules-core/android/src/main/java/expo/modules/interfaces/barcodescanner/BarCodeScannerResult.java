@@ -37,12 +37,14 @@ public class BarCodeScannerResult {
   private int mReferenceImageHeight;
   private int mType;
   private String mValue;
+  private String mRaw;
   private List<Integer> mCornerPoints;
 
 
-  public BarCodeScannerResult(int type, String value, List<Integer> cornerPoints, int height, int width) {
+  public BarCodeScannerResult(int type, String value, String raw, List<Integer> cornerPoints, int height, int width) {
     mType = type;
     mValue = value;
+    mRaw = raw;
     mCornerPoints = cornerPoints;
     mReferenceImageHeight = height;
     mReferenceImageWidth = width;
@@ -52,9 +54,9 @@ public class BarCodeScannerResult {
     return mType;
   }
 
-  public String getValue() {
-    return mValue;
-  }
+  public String getValue() { return mValue; }
+
+  public String getRaw() { return mRaw; }
 
   public List<Integer> getCornerPoints() {
     return mCornerPoints;

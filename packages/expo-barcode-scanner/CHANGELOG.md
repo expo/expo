@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- `BarCodeScannerResult` now returns an additional `raw` field corresponding to the barcode value as it was encoded in the barcode without parsing. Will always be undefined on iOS. ([#25391](https://github.com/expo/expo/pull/25391) by [@ajacquierbret](https://github.com/ajacquierbret))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
