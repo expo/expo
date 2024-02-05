@@ -19,18 +19,17 @@ import type { UseUpdatesStateType } from './UseUpdatesUtils';
  * ```tsx UpdatesDemo.tsx
  * import { StatusBar } from 'expo-status-bar';
  * import * as Updates from 'expo-updates';
- * import React from 'react';
- * import { Pressable, Text, View } from 'react-native';
+ * import { useEffect } from 'react';
+ * import { Button, Text, View } from 'react-native';
  *
  * export default function UpdatesDemo() {
  *   const {
  *     currentlyRunning,
- *     availableUpdate,
  *     isUpdateAvailable,
  *     isUpdatePending
  *   } = Updates.useUpdates();
  *
- *   React.useEffect(() => {
+ *   useEffect(() => {
  *     if (isUpdatePending) {
  *       // Update has successfully downloaded
  *       runUpdate();
@@ -49,9 +48,9 @@ import type { UseUpdatesStateType } from './UseUpdatesUtils';
  *     <View style={styles.container}>
  *       <Text style={styles.headerText}>Updates Demo</Text>
  *       <Text>{runTypeMessage}</Text>
- *       <Button pressHandler={() => Updates.checkForUpdateAsync()} text="Check manually for updates" />
+ *       <Button onPress={() => Updates.checkForUpdateAsync()} title="Check manually for updates" />
  *       {showDownloadButton ? (
- *         <Button pressHandler={() => Updates.fetchUpdateAsync()} text="Download and run update" />
+ *         <Button onPress={() => Updates.fetchUpdateAsync()} title="Download and run update" />
  *       ) : null}
  *       <StatusBar style="auto" />
  *     </View>
