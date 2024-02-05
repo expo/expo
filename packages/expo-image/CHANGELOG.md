@@ -8,6 +8,7 @@
 
 - [Android] Adds new prop `decodeFormat` to specify the format that should be used during the decoding process. ([#26442](https://github.com/expo/expo/pull/26442) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Added `generateBlurhashAsync` function. ([#26430](https://github.com/expo/expo/pull/26430) by [@aleqsio](https://github.com/aleqsio))
+- [Android] Adds automatic downsampling when the asset exceeds the hardware bitmap size limit. ([#26792](https://github.com/expo/expo/pull/26792) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
