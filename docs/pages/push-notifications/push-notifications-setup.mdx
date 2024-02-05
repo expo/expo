@@ -245,19 +245,19 @@ For Expo to send push notifications from our servers and use your credentials, y
 
 2. Click on the **Cloud Messaging** tab in the Settings pane.
 
-3. Copy the token listed next to the **Server key**.
+3. Copy the token from **Cloud Messaging API (Legacy)** > **Server key**.
 
    > Server Key is only available in **Cloud Messaging API (Legacy)**, which is disabled by default. <br/> Enable it by clicking the three-dot menu > **Manage API in Google Cloud Console** and following the steps in the console. Once the legacy messaging API is enabled, you should see Server Key in that section.
 
    <ImageSpotlight
      alt="Getting the server key from Firebase console's Cloud messaging tab."
-     src="/static/images/notifications/server-key-from-fcm.jpg"
+     src="/static/images/notifications/server-key-from-fcm.png"
      style={{ maxWidth: 760 }}
    />
 
 4. In your [Expo account's](https://expo.dev/) dashboard, select your project, and click on **Credentials** in the navigation menu. Then, click on your **Application Identifier** that follows the pattern: `com.company.app`.
 
-5. Under **Service Credentials** > **FCM Server Key**, click **Add a FCM Server Key** > **Google Cloud Messaging Token** and add the **Server key** from **step 3**.
+5. Under **Service Credentials** > **FCM (Legacy) Server Key**, click **Add a FCM (Legacy) Server Key** > **Google Cloud Messaging Token** and add the **Server key** from **step 3**.
 
 ### iOS
 
