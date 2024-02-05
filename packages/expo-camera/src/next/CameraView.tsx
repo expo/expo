@@ -164,7 +164,7 @@ export default class CameraView extends React.Component<CameraProps> {
   /**
    * Invokes the `listener` function when a bar code has been successfully scanned. The callback is provided with
    * an object of the `ScanningResult` shape, where the `type` refers to the bar code type that was scanned and the `data` is the information encoded in the bar code
-   * (in this case of QR codes, this is often a URL). See [`BarCodeType`](#barcodetype) for supported values.
+   * (in this case of QR codes, this is often a URL). See [`BarcodeType`](#barcodetype) for supported values.
    * @param listener Invoked with the [ScanningResult](#scanningresult) when a bar code has been successfully scanned.
    *
    * @platform ios
