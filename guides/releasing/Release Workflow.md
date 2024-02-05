@@ -273,6 +273,7 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
   - `@expo/webpack-config`
   - `@expo/prebuild-config`
   - `expo-modules-autolinking`
+  - `metro`
 - One way to get the right version numbers is to run `yarn why <package-name>` to see which version is used by apps in the expo/expo repo. Generally the version numbers should use the caret (`^`) semver symbol, please refer to the semver symbol used for the package on the most recent release on the versions endpoint.
 
 ## 4.3. Re-publish project templates
