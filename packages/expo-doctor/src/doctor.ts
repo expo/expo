@@ -8,6 +8,7 @@ import { ExpoConfigSchemaCheck } from './checks/ExpoConfigSchemaCheck';
 import { GlobalPackageInstalledCheck } from './checks/GlobalPackageInstalledCheck';
 import { GlobalPrereqsVersionCheck } from './checks/GlobalPrereqsVersionCheck';
 import { IllegalPackageCheck } from './checks/IllegalPackageCheck';
+import { PermissionsPackageCheck } from './checks/PermissionsPackageCheck';
 import { InstalledDependencyVersionCheck } from './checks/InstalledDependencyVersionCheck';
 import { PackageJsonCheck } from './checks/PackageJsonCheck';
 import { ProjectSetupCheck } from './checks/ProjectSetupCheck';
@@ -120,6 +121,7 @@ export function getChecksInScopeForProject(exp: ExpoConfig) {
   const checks = [
     new GlobalPrereqsVersionCheck(),
     new IllegalPackageCheck(),
+    new PermissionsPackageCheck(),
     new GlobalPackageInstalledCheck(),
     new SupportPackageVersionCheck(),
     new ExpoConfigSchemaCheck(),
