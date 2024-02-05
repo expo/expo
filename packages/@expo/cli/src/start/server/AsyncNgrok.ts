@@ -59,7 +59,7 @@ export class AsyncNgrok {
 
   /** Exposed for testing. */
   async _getProjectHostnameAsync(): Promise<string> {
-    return [...(await this._getIdentifyingUrlSegmentsAsync()), NGROK_CONFIG.domain].join('.');
+    return `${(await this._getIdentifyingUrlSegmentsAsync()).join('-')}.${NGROK_CONFIG.domain}`;
   }
 
   /** Exposed for testing. */
@@ -164,7 +164,6 @@ export class AsyncNgrok {
       const url = await instance.connect({
         ...urlProps,
         authtoken: NGROK_CONFIG.authToken,
-        proto: 'http',
         configPath,
         onStatusChange(status) {
           if (status === 'closed') {

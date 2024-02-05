@@ -82,6 +82,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
       platform,
       expectSignature: expectSignature ? String(expectSignature) : null,
       hostname: stripPort(req.headers['host']),
+      protocol: req.headers['x-forwarded-proto'] as 'http' | 'https' | undefined,
     };
   }
 

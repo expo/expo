@@ -60,7 +60,10 @@ export class UrlCreator {
       return null;
     }
 
-    const manifestUrl = this.constructUrl({ ...options, scheme: 'http' });
+    const manifestUrl = this.constructUrl({
+      ...options,
+      scheme: this.defaults?.hostType === 'tunnel' ? 'https' : 'http',
+    });
     const devClientUrl = `${protocol}://expo-development-client/?url=${encodeURIComponent(
       manifestUrl
     )}`;
