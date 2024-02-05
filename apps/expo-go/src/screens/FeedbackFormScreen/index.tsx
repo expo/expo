@@ -1,5 +1,6 @@
 import { CheckIcon, spacing } from '@expo/styleguide-native';
 import { useNavigation } from '@react-navigation/native';
+import * as Application from 'expo-application';
 import {
   Text,
   View,
@@ -9,6 +10,7 @@ import {
   Spacer,
   useExpoTheme,
 } from 'expo-dev-client-components';
+import * as Device from 'expo-device';
 import * as React from 'react';
 import { useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
@@ -35,8 +37,14 @@ export function FeedbackFormScreen() {
     setError(undefined);
     setSubmitting(true);
     try {
-      const body: { feedback: string; email?: string } = {
+      const body = {
         feedback,
+        email: undefined as string | undefined,
+        metadata: {
+          os: `${Device.osName} ${Device.osVersion}`,
+          model: Device.modelName,
+          expoGoVersion: Application.nativeApplicationVersion,
+        },
       };
       if (email.trim().length > 0) {
         if (!EMAIL_REGEX.test(email)) {
