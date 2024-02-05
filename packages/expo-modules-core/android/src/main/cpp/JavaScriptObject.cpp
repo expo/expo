@@ -184,8 +184,7 @@ void JavaScriptObject::defineNativeDeallocator(
       );
       globalRef->invoke(args);
       globalRef.reset();
-    },
-    "__expo_shared_object_deallocator__"
+    }
   );
 }
 } // namespace expo
