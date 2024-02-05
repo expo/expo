@@ -20,6 +20,7 @@ function babelPresetExpo(api, options = {}) {
     const isDev = api.caller(common_1.getIsDev);
     const isFastRefreshEnabled = api.caller(common_1.getIsFastRefreshEnabled);
     const baseUrl = api.caller(common_1.getBaseUrl);
+    const supportsStaticESM = api.caller((caller) => caller?.supportsStaticESM);
     // Unlike `isDev`, this will be `true` when the bundler is explicitly set to `production`,
     // i.e. `false` when testing, development, or used with a bundler that doesn't specify the correct inputs.
     const isProduction = api.caller(common_1.getIsProd);
@@ -34,10 +35,10 @@ function babelPresetExpo(api, options = {}) {
         if (platform === 'web') {
             // Only disable import/export transform when Webpack is used because
             // Metro does not support tree-shaking.
-            platformOptions.disableImportExportTransform = isWebpack;
+            platformOptions.disableImportExportTransform = supportsStaticESM ?? isWebpack;
         }
         else {
-            platformOptions.disableImportExportTransform = false;
+            platformOptions.disableImportExportTransform = supportsStaticESM ?? false;
         }
     }
     if (platformOptions.unstable_transformProfile == null) {
@@ -52,7 +53,7 @@ function babelPresetExpo(api, options = {}) {
         // getters and setters in spread objects. We need to add this plugin ourself without that option.
         // @see https://github.com/expo/expo/pull/11960#issuecomment-887796455
         extraPlugins.push([
-            require.resolve('@babel/plugin-proposal-object-rest-spread'),
+            require.resolve('@babel/plugin-transform-object-rest-spread'),
             { loose: false },
         ]);
     }

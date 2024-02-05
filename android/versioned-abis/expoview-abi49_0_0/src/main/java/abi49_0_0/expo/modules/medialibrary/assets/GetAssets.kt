@@ -52,7 +52,8 @@ internal class GetAssets(
     } catch (e: SecurityException) {
       promise.reject(
         ERROR_UNABLE_TO_LOAD_PERMISSION,
-        "Could not get asset: need READ_EXTERNAL_STORAGE permission.", e
+        "Could not get asset: need READ_EXTERNAL_STORAGE permission.",
+        e
       )
     } catch (e: IOException) {
       promise.reject(ERROR_UNABLE_TO_LOAD, "Could not read file", e)

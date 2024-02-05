@@ -3,7 +3,7 @@
 exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
 <div>
   <div
-    class="css-c2t1qw-AppConfigProperty"
+    class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
   >
     <p
       class="  css-1kfqm4n-TextComponent"
@@ -143,7 +143,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </a>
       </summary>
       <div
-        class="css-16wdqb0"
+        class="last:[&>*]:!mb-1 css-qbaxbl"
       >
         <p
           class="mb-4 css-1kfqm4n-TextComponent"
@@ -156,7 +156,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     <div />
   </div>
   <div
-    class="css-c2t1qw-AppConfigProperty"
+    class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
   >
     <p
       class="  css-1kfqm4n-TextComponent"
@@ -296,7 +296,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </a>
       </summary>
       <div
-        class="css-16wdqb0"
+        class="last:[&>*]:!mb-1 css-qbaxbl"
       >
         <p
           class="mb-4 css-1kfqm4n-TextComponent"
@@ -374,7 +374,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </a>
       </summary>
       <div
-        class="css-16wdqb0"
+        class="last:[&>*]:!mb-1 css-qbaxbl"
       >
         <p
           class="mb-4 css-1kfqm4n-TextComponent"
@@ -386,7 +386,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </details>
     <div>
       <div
-        class="css-c2t1qw-AppConfigProperty"
+        class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
       >
         <p
           class="  css-1kfqm4n-TextComponent"
@@ -535,7 +535,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </a>
           </summary>
           <div
-            class="css-16wdqb0"
+            class="last:[&>*]:!mb-1 css-qbaxbl"
           >
             <p
               class="mb-4 css-1kfqm4n-TextComponent"
@@ -547,7 +547,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </details>
         <div>
           <div
-            class="css-c2t1qw-AppConfigProperty"
+            class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
           >
             <p
               class="  css-1kfqm4n-TextComponent"
@@ -633,7 +633,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </div>
       <div
-        class="css-c2t1qw-AppConfigProperty"
+        class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
       >
         <p
           class="  css-1kfqm4n-TextComponent"
@@ -733,7 +733,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </div>
   </div>
   <div
-    class="css-c2t1qw-AppConfigProperty"
+    class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
   >
     <p
       class="  css-1kfqm4n-TextComponent"
@@ -873,7 +873,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </a>
       </summary>
       <div
-        class="css-16wdqb0"
+        class="last:[&>*]:!mb-1 css-qbaxbl"
       >
         <p
           class="mb-4 css-1kfqm4n-TextComponent"
@@ -927,7 +927,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </blockquote>
     <div>
       <div
-        class="css-c2t1qw-AppConfigProperty"
+        class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
       >
         <p
           class="  css-1kfqm4n-TextComponent"
@@ -1011,7 +1011,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <div />
       </div>
       <div
-        class="css-c2t1qw-AppConfigProperty"
+        class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
       >
         <p
           class="  css-1kfqm4n-TextComponent"
@@ -1088,7 +1088,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </p>
         <div>
           <div
-            class="css-c2t1qw-AppConfigProperty"
+            class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
           >
             <p
               class="  css-1kfqm4n-TextComponent"

@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 11.10.2 — 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 11.10.1 — 2024-01-10
+
+### 🎉 New features
+
+- Added support for macOS platform. ([#26242](https://github.com/expo/expo/pull/26242) by [@tsapeta](https://github.com/tsapeta))
+
+## 11.10.0 — 2023-12-12
+
+### 🎉 New features
+
+- Added custom native fonts support to `Font.isLoaded()`. ([#25770](https://github.com/expo/expo/pull/25770) by [@kudo](https://github.com/kudo))
+
 ## 11.9.0 — 2023-11-14
 
 ### 🛠 Breaking changes

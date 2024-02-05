@@ -20,12 +20,13 @@ export declare enum ExecutionEnvironment {
     StoreClient = "storeClient"
 }
 /**
- * Current supported values are `handset`, `tablet`, and `tv`. CarPlay will show up
+ * Current supported values are `handset`, `tablet`, `desktop` and `tv`. CarPlay will show up
  * as `unsupported`.
  */
 export declare enum UserInterfaceIdiom {
     Handset = "handset",
     Tablet = "tablet",
+    Desktop = "desktop",
     TV = "tv",
     Unsupported = "unsupported"
 }
@@ -50,7 +51,7 @@ export interface IOSManifest {
      */
     model: string | null;
     /**
-     * The user interface idiom of this device, i.e. whether the app is running on an iPhone, iPad, or Apple TV.
+     * The user interface idiom of this device, i.e. whether the app is running on an iPhone, iPad, Mac or Apple TV.
      * @deprecated Use `expo-device`'s [`Device.getDeviceTypeAsync()`](./device/#devicegetdevicetypeasync).
      */
     userInterfaceIdiom: UserInterfaceIdiom;

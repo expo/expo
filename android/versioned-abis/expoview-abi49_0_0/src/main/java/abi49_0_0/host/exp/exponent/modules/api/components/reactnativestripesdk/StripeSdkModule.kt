@@ -120,7 +120,7 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
     hashMapOf(
       "API_VERSIONS" to hashMapOf(
         "CORE" to ApiVersion.API_VERSION_CODE,
-        "ISSUING" to PushProvisioningProxy.getApiVersion(),
+        "ISSUING" to PushProvisioningProxy.getApiVersion()
       )
     )
 
@@ -180,7 +180,8 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
     val timeoutKey = "timeout"
     if (options.hasKey(timeoutKey)) {
       paymentSheetFragment?.presentWithTimeout(
-        options.getInt(timeoutKey).toLong(), promise
+        options.getInt(timeoutKey).toLong(),
+        promise
       )
     } else {
       paymentSheetFragment?.present(promise)
@@ -355,7 +356,7 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
       cvc = cardParamsMap["cvc"] as String,
       address = mapToAddress(address, cardAddress),
       name = getValOr(params, "name", null),
-      currency = getValOr(params, "currency", null),
+      currency = getValOr(params, "currency", null)
     )
 
     CoroutineScope(Dispatchers.IO).launch {
@@ -424,13 +425,14 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
   @ReactMethod
   fun confirmPayment(paymentIntentClientSecret: String, params: ReadableMap?, options: ReadableMap, promise: Promise) {
     val paymentMethodData = getMapOrNull(params, "paymentMethodData")
-    val paymentMethodType = if (params != null)
+    val paymentMethodType = if (params != null) {
       mapToPaymentMethodType(params.getString("paymentMethodType")) ?: run {
         promise.resolve(createError(ConfirmPaymentErrorType.Failed.toString(), "You must provide paymentMethodType"))
         return
       }
-    else
+    } else {
       null // Expect that payment method was attached on the server
+    }
 
     val testOfflineBank = getBooleanOrFalse(params, "testOfflineBank")
 
@@ -628,7 +630,9 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
             GooglePayLauncher.Result.Completed -> {
               if (isPaymentIntent) {
                 stripe.retrievePaymentIntent(
-                  clientSecret, stripeAccountId, expand = listOf("payment_method"),
+                  clientSecret,
+                  stripeAccountId,
+                  expand = listOf("payment_method"),
                   object : ApiResultCallback<PaymentIntent> {
                     override fun onError(e: Exception) {
                       promise.resolve(createResult("paymentIntent", WritableNativeMap()))
@@ -640,7 +644,9 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
                 )
               } else {
                 stripe.retrieveSetupIntent(
-                  clientSecret, stripeAccountId, expand = listOf("payment_method"),
+                  clientSecret,
+                  stripeAccountId,
+                  expand = listOf("payment_method"),
                   object : ApiResultCallback<SetupIntent> {
                     override fun onError(e: Exception) {
                       promise.resolve(createResult("setupIntent", WritableNativeMap()))
@@ -877,6 +883,7 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
    */
   @ReactMethod
   fun addListener(eventName: String) {}
+
   @ReactMethod
   fun removeListeners(count: Int) {}
 

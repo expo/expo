@@ -51,7 +51,6 @@
   <string name="devmenu_hide_performance_monitor">Hide Performance Monitor</string>
   <string name="devmenu_show_performance_monitor">Show Performance Monitor</string>
   <string name="devmenu_performance_monitor_unavailable">Performance Monitor Unavailable</string>
-  <string name="ExpoLocalization_supportsRTL" translatable="false">unset</string>
 
   <string-array name="currency_array">
       <item>Currency (optional)</item>

@@ -152,10 +152,14 @@ class PaymentSheetFragment(
       merchantDisplayName = merchantDisplayName,
       allowsDelayedPaymentMethods = allowsDelayedPaymentMethods ?: false,
       defaultBillingDetails = defaultBillingDetails,
-      customer = if (customerId.isNotEmpty() && customerEphemeralKeySecret.isNotEmpty()) PaymentSheet.CustomerConfiguration(
-        id = customerId,
-        ephemeralKeySecret = customerEphemeralKeySecret
-      ) else null,
+      customer = if (customerId.isNotEmpty() && customerEphemeralKeySecret.isNotEmpty()) {
+        PaymentSheet.CustomerConfiguration(
+          id = customerId,
+          ephemeralKeySecret = customerEphemeralKeySecret
+        )
+      } else {
+        null
+      },
       googlePay = googlePayConfig,
       appearance = appearance,
       shippingDetails = shippingDetails,

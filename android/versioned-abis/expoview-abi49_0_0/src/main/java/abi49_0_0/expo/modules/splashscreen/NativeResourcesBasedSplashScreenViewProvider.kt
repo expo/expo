@@ -1,14 +1,14 @@
+@file:Suppress("UnusedImport") // this needs to stay for versioning to work
+
 package abi49_0_0.expo.modules.splashscreen
 
 import android.content.Context
 import androidx.core.content.ContextCompat
 
 // this needs to stay for versioning to work
-/* ktlint-disable no-unused-imports */
 import expo.modules.splashscreen.SplashScreenImageResizeMode
 import expo.modules.splashscreen.SplashScreenViewProvider
 import expo.modules.splashscreen.R
-/* ktlint-enable no-unused-imports */
 
 /**
  * Default implementation that uses native resources.

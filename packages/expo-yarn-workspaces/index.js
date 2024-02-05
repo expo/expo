@@ -31,9 +31,9 @@ exports.createMetroConfiguration = function createMetroConfiguration(projectPath
 
       // Ignore test files and JS files in the native Android and Xcode projects
       blockList: [
-        /\/__tests__\/.*/,
-        /.*\/android\/React(Android|Common)\/.*/,
-        /.*\/versioned-react-native\/.*/,
+        /\/__tests__\//,
+        /\/android\/React(Android|Common)\//,
+        /\/versioned-react-native\//,
       ],
     },
 

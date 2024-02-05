@@ -313,8 +313,6 @@
   UIView *rootView = [_bridgeDelegate createRootViewWithModuleName:@"main" launchOptions:_launchOptions application:UIApplication.sharedApplication];
   _launcherBridge = _bridgeDelegate.bridge;
 
-  [self _ensureUserInterfaceStyleIsInSyncWithTraitEnv:rootView];
-
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(onAppContentDidAppear)
                                                name:RCTContentDidAppearNotification
@@ -799,6 +797,14 @@
   }
   [existingSettings removeObjectForKey:kRCTDevSettingIsDebuggingRemotely];
   [userDefaults setObject:existingSettings forKey:kRCTDevSettingsUserDefaultsKey];
+}
+
+- (void)updatesExternalInterfaceDidRequestRelaunch:(id<EXUpdatesExternalInterface> _Nonnull)updatesExternalInterface {
+  NSURL * _Nullable appUrl = self.appManifestURLWithFallback;
+  if (!appUrl) {
+    return;
+  }
+  [self loadApp:appUrl onSuccess:nil onError:nil];
 }
 
 @end

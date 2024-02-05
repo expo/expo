@@ -15,6 +15,17 @@ A React component that blurs everything underneath the view. On iOS, it renders 
 
 <PlatformsSection ios simulator web />
 
+#### Known issues
+
+The blur effect does not update when `BlurView` is rendered before dynamic content is rendered using, for example, `FlatList`. To fix this, make sure that `BlurView` is rendered after the dynamic content component. For example:
+
+```jsx
+<View>
+  <FlatList />
+  <BlurView />
+</View>
+```
+
 ## Installation
 
 <APIInstallSection />
@@ -32,7 +43,7 @@ export default function App() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.background}>
-        {[...Array(20).keys()].map((i) => (
+        {[...Array(20).keys()].map(i => (
           <View
             key={`box-${i}`}
             style={[styles.box, i % 2 === 1 ? styles.boxOdd : styles.boxEven]}

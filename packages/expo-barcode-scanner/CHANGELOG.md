@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 12.9.2 — 2023-12-21
+
+### 💡 Others
+
+- Add FYI link. ([#26049](https://github.com/expo/expo/pull/26049) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 12.9.1 — 2023-12-19
+
+### 🛠 Breaking changes
+
+- `expo-barcode-scanner` is now deprecated. Please use `expo-camera` instead. ([#26025](https://github.com/expo/expo/pull/26025) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 12.9.0 — 2023-11-14
 
 ### 🛠 Breaking changes

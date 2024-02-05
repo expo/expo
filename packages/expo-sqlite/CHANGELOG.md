@@ -8,6 +8,51 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 13.2.2 — 2024-01-25
+
+### 💡 Others
+
+- Remove `onDatabaseChange` event from legacy API as it is not supported natively. ([#26655](https://github.com/expo/expo/pull/26655) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 13.2.1 - 2024-01-10
+
+### 🐛 Bug fixes
+
+- Fixed building error on Windows. ([#26296](https://github.com/expo/expo/pull/26296) by [@kudo](https://github.com/kudo))
+- Fixed a write query being executed twice when using `SQLiteDatabase.getAllAsync()` in expo-sqlite/next API. ([#26344](https://github.com/expo/expo/pull/26344) by [@kudo](https://github.com/kudo))
+
+## 13.2.0 — 2023-12-21
+
+### 🎉 New features
+
+- Added `SQLiteStatement.executeForRawResultAsync()` in `expo-sqlite/next` API which returns array based raw values than key-value based row value. ([#26073](https://github.com/expo/expo/pull/26073) by [@kudo](https://github.com/kudo))
+
+## 13.1.2 — 2023-12-21
+
+### 🐛 Bug fixes
+
+- Fixed `NativeStatementBinding` leakage on Android. ([#25996](https://github.com/expo/expo/pull/25996) by [@kudo](https://github.com/kudo))
+
+## 13.1.1 — 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.0 — 2023-12-13
+
+### 🛠 Breaking changes
+
+- Refactor `expo-sqlite/next` API to be more React idiomatic. ([#25657](https://github.com/expo/expo/pull/25657) by [@kudo](https://github.com/kudo))
+
+## 13.0.0 — 2023-12-12
+
+### 🎉 New features
+
+- Added binary data support to the `expo-sqlite/next` API through the `Uint8Array`. ([#25787](https://github.com/expo/expo/pull/25787) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
 - Fixed `expo-sqlite/next` crashes when access to finalized statements. ([#25623](https://github.com/expo/expo/pull/25623) by [@kudo](https://github.com/kudo))
 - Fixed `expo-sqlite/next` UTF-8 text issue and `:memory:` database issue. ([#25637](https://github.com/expo/expo/pull/25637) by [@kudo](https://github.com/kudo))
 

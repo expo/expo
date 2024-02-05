@@ -16,10 +16,7 @@ import { Options } from './resolveOptions';
 import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompilerLogger';
 import { Log } from '../../log';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
-import {
-  getBaseUrlFromExpoConfig,
-  getMetroDirectBundleOptions,
-} from '../../start/server/middleware/metroOptions';
+import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/middleware/metroOptions';
 import { stripAnsi } from '../../utils/ansi';
 import { removeAsync } from '../../utils/dir';
 import { setNodeEnv } from '../../utils/nodeEnv';
@@ -63,7 +60,7 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
     }
   }
 
-  const { bundle, assets } = await exportEmbedBundleAsync(projectRoot, options);
+  const { bundle, assets } = await exportEmbedBundleAndAssetsAsync(projectRoot, options);
 
   fs.mkdirSync(path.dirname(options.bundleOutput), { recursive: true, mode: 0o755 });
 
@@ -82,7 +79,21 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
   ]);
 }
 
-export async function exportEmbedBundleAsync(projectRoot: string, options: Options) {
+export async function createMetroServerAndBundleRequestAsync(
+  projectRoot: string,
+  options: Pick<
+    Options,
+    | 'maxWorkers'
+    | 'config'
+    | 'platform'
+    | 'sourcemapOutput'
+    | 'sourcemapUseAbsolutePath'
+    | 'entryFile'
+    | 'minify'
+    | 'dev'
+    | 'unstableTransformProfile'
+  >
+): Promise<{ server: Server; bundleRequest: BundleOptions }> {
   const exp = getConfig(projectRoot, { skipSDKVersionRequirement: true }).exp;
 
   // TODO: This is slow ~40ms
@@ -108,13 +119,12 @@ export async function exportEmbedBundleAsync(projectRoot: string, options: Optio
 
   const bundleRequest = {
     ...Server.DEFAULT_BUNDLE_OPTIONS,
-    ...getMetroDirectBundleOptions({
+    ...getMetroDirectBundleOptionsForExpoConfig(projectRoot, exp, {
       mainModuleName: options.entryFile,
       platform: options.platform,
       minify: options.minify,
       mode: options.dev ? 'development' : 'production',
       engine: isHermes ? 'hermes' : undefined,
-      baseUrl: getBaseUrlFromExpoConfig(exp),
       isExporting: true,
     }),
     sourceMapUrl,
@@ -126,25 +136,44 @@ export async function exportEmbedBundleAsync(projectRoot: string, options: Optio
     watch: false,
   });
 
+  return { server, bundleRequest };
+}
+
+export async function exportEmbedBundleAndAssetsAsync(
+  projectRoot: string,
+  options: Options
+): Promise<{
+  bundle: Awaited<ReturnType<Server['build']>>;
+  assets: Awaited<ReturnType<typeof getAssets>>;
+}> {
+  const { server, bundleRequest } = await createMetroServerAndBundleRequestAsync(
+    projectRoot,
+    options
+  );
+
   try {
-    const bundle = await profile(
+    const bundle = await exportEmbedBundleAsync(server, bundleRequest, projectRoot, options);
+    const assets = await exportEmbedAssetsAsync(server, bundleRequest, projectRoot, options);
+    return { bundle, assets };
+  } finally {
+    server.end();
+  }
+}
+
+export async function exportEmbedBundleAsync(
+  server: Server,
+  bundleRequest: BundleOptions,
+  projectRoot: string,
+  options: Pick<Options, 'platform'>
+) {
+  try {
+    return await profile(
       server.build.bind(server),
       'metro-bundle'
     )({
       ...bundleRequest,
       bundleType: 'bundle',
     });
-
-    // Save the assets of the bundle
-    const outputAssets = await getAssets(server, {
-      ...bundleRequest,
-      bundleType: 'todo',
-    });
-
-    return {
-      bundle,
-      assets: outputAssets,
-    };
   } catch (error: any) {
     if (isError(error)) {
       // Log using Xcode error format so the errors are picked up by xcodebuild.
@@ -158,8 +187,33 @@ export async function exportEmbedBundleAsync(projectRoot: string, options: Optio
       }
     }
     throw error;
-  } finally {
-    server.end();
+  }
+}
+
+export async function exportEmbedAssetsAsync(
+  server: Server,
+  bundleRequest: BundleOptions,
+  projectRoot: string,
+  options: Pick<Options, 'platform'>
+) {
+  try {
+    return await getAssets(server, {
+      ...bundleRequest,
+      bundleType: 'todo',
+    });
+  } catch (error: any) {
+    if (isError(error)) {
+      // Log using Xcode error format so the errors are picked up by xcodebuild.
+      // https://developer.apple.com/documentation/xcode/running-custom-scripts-during-a-build#Log-errors-and-warnings-from-your-script
+      if (options.platform === 'ios') {
+        // If the error is about to be presented in Xcode, strip the ansi characters from the message.
+        if ('message' in error && isExecutingFromXcodebuild()) {
+          error.message = stripAnsi(error.message) as string;
+        }
+        logMetroErrorInXcode(projectRoot, error);
+      }
+    }
+    throw error;
   }
 }
 

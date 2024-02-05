@@ -12,7 +12,7 @@ import { copyFileWithTransformsAsync } from '../../Transforms';
 import { searchFilesAsync } from '../../Utils';
 import { copyExpoviewAsync } from './copyExpoview';
 import { expoModulesTransforms } from './expoModulesTransforms';
-import { buildManifestMergerJarAsync } from './jarFiles';
+import { buildKotlinMetadataStripperJarAsync, buildManifestMergerJarAsync } from './jarFiles';
 import { packagesToKeep } from './packagesConfig';
 import { versionCxxExpoModulesAsync } from './versionCxx';
 import { updateVersionedReactNativeAsync } from './versionReactNative';
@@ -247,14 +247,21 @@ export async function removeVersionAsync(version: string) {
 
 async function copyExpoModulesAsync(version: string, manifestMerger: string) {
   const packages = await getListOfPackagesAsync();
+  const abiVersion = `abi${version.replace(/\./g, '_')}`;
+  const targetDirectory = path.join(ANDROID_DIR, `versioned-abis/expoview-${abiVersion}`);
+
+  // Add package name to AndroidManifest.xml for manifest merger
+  await transformFileAsync(
+    path.join(targetDirectory, 'src/main/AndroidManifest.xml'),
+    /^<manifest\s*$/m,
+    `<manifest package="${abiVersion}.host.exp.expoview"`
+  );
   for (const pkg of packages) {
     if (
       pkg.isSupportedOnPlatform('android') &&
       pkg.isIncludedInExpoClientOnPlatform('android') &&
       pkg.isVersionableOnPlatform('android')
     ) {
-      const abiVersion = `abi${version.replace(/\./g, '_')}`;
-      const targetDirectory = path.join(ANDROID_DIR, `versioned-abis/expoview-${abiVersion}`);
       const sourceDirectory = path.join(pkg.path, pkg.androidSubdirectory);
       const transforms = expoModulesTransforms(pkg, abiVersion);
 
@@ -306,6 +313,12 @@ async function copyExpoModulesAsync(version: string, manifestMerger: string) {
       console.log(`   ✅  Created versioned ${pkg.packageName}`);
     }
   }
+  // Remove package name from AndroidManifest.xml since manifest merger is finished
+  await transformFileAsync(
+    path.join(targetDirectory, 'src/main/AndroidManifest.xml'),
+    /^(\s*)(package=".+\.host\.exp\.expoview")(\s*>$)/m,
+    '$1$3'
+  );
 }
 
 async function addVersionedActivitesToManifests(version: string) {
@@ -400,16 +413,16 @@ async function cleanUpAsync(version: string) {
     'null, null,'
   );
 
-  // replace abixx_x_x...R with abixx_x_x.host.exp.expoview.R
+  // replace abixx_x_x...R with unversioned R
   await spawnAsync(
     `find ${versionedAbiSrcPath} -iname '*.java' -type f -print0 | ` +
-      `xargs -0 ${SED_PREFIX} 's/import ${abiName}\.[^;]*\.R;/import ${abiName}.host.exp.expoview.R;/g'`,
+      `xargs -0 ${SED_PREFIX} 's/import ${abiName}\.\\([^;]*\.R;\\)/import \\1;/g'`,
     [],
     { shell: true }
   );
   await spawnAsync(
     `find ${versionedAbiSrcPath} -iname '*.kt' -type f -print0 | ` +
-      `xargs -0 ${SED_PREFIX} 's/import ${abiName}\\..*\\.R$/import ${abiName}.host.exp.expoview.R/g'`,
+      `xargs -0 ${SED_PREFIX} 's/import ${abiName}\.\\([^;]*\.R;\\)/import \\1/g'`,
     [],
     { shell: true }
   );
@@ -457,7 +470,8 @@ export async function addVersionAsync(version: string) {
   console.log(' ✅  1/9: Finished\n\n');
 
   console.log(' 🛠  2/9: Building versioned ReactAndroid AAR...');
-  await spawnAsync('./android-build-aar.sh', [version], {
+  const kotlinMetadataStripperJar = await buildKotlinMetadataStripperJarAsync();
+  await spawnAsync('./android-build-aar.sh', [version, kotlinMetadataStripperJar], {
     shell: true,
     cwd: SCRIPT_DIR,
     stdio: 'inherit',

@@ -1,4 +1,4 @@
-import { NavigationRouteContext, ParamListBase, RouteProp } from '@react-navigation/native';
+import { NavigationRouteContext } from '@react-navigation/native';
 import React from 'react';
 
 import { store, useStoreRootState, useStoreRouteInfo } from './global-state/router-store';
@@ -14,8 +14,14 @@ export function useRouteInfo() {
   return useStoreRouteInfo();
 }
 
+/** @deprecated use `useNavigationContainerRef()` instead, which returns a React ref. */
 export function useRootNavigation() {
   return store.navigationRef.current;
+}
+
+/** @return the root `<NavigationContainer />` ref for the app. The `ref.current` may be `null` if the `<NavigationContainer />` hasn't mounted yet. */
+export function useNavigationContainerRef() {
+  return store.navigationRef;
 }
 
 export function useRouter(): Router {
@@ -26,6 +32,7 @@ export function useRouter(): Router {
       replace: store.replace,
       setParams: store.setParams,
       canGoBack: store.canGoBack,
+      navigate: store.navigate,
       // TODO(EvanBacon): add `reload`
     }),
     []
@@ -92,10 +99,27 @@ export function useGlobalSearchParams<
 export function useLocalSearchParams<
   TParams extends SearchParams = SearchParams,
 >(): Partial<TParams> {
-  return (useOptionalLocalRoute()?.params ?? ({} as any)) as Partial<TParams>;
-}
-
-function useOptionalLocalRoute<T extends RouteProp<ParamListBase>>(): T | undefined {
-  const route = React.useContext(NavigationRouteContext);
-  return route as T | undefined;
+  const params = React.useContext(NavigationRouteContext)?.params ?? {};
+  return Object.fromEntries(
+    Object.entries(params).map(([key, value]) => {
+      if (Array.isArray(value)) {
+        return [
+          key,
+          value.map((v) => {
+            try {
+              return decodeURIComponent(v);
+            } catch {
+              return v;
+            }
+          }),
+        ];
+      } else {
+        try {
+          return [key, decodeURIComponent(value as string)];
+        } catch {
+          return [key, value];
+        }
+      }
+    })
+  ) as Partial<TParams>;
 }

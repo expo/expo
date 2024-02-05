@@ -8,9 +8,18 @@
 
 ### 🐛 Bug fixes
 
-- On iOS, fix iOS 14 limited library picker presentation, using `presentPermissionsPickerAsync`, on nested views and `reject` Promise if state is not `limited`. ([#25521](https://github.com/expo/expo/pull/25521) by [@exodusanto](https://github.com/exodusanto))
-
 ### 💡 Others
+
+## 15.9.1 — 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 15.9.0 — 2023-12-12
+
+### 🐛 Bug fixes
+
+- On iOS, fix iOS 14 limited library picker presentation, using `presentPermissionsPickerAsync`, on nested views and `reject` Promise if state is not `limited`. ([#25521](https://github.com/expo/expo/pull/25521) by [@exodusanto](https://github.com/exodusanto))
+- Fix promises being resolved twice on Android. ([#25763](https://github.com/expo/expo/pull/25763) by [@lukmccall](https://github.com/lukmccall))
 
 ## 15.8.0 — 2023-11-14
 

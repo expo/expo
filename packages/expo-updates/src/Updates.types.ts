@@ -265,6 +265,7 @@ export enum UpdatesLogEntryCode {
   UPDATE_FAILED_TO_LOAD = 'UpdateFailedToLoad',
   ASSETS_FAILED_TO_LOAD = 'AssetsFailedToLoad',
   JS_RUNTIME_ERROR = 'JSRuntimeError',
+  INITIALIZATION_ERROR = 'InitializationError',
   UNKNOWN = 'Unknown',
 }
 

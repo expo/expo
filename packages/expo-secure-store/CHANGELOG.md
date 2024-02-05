@@ -10,6 +10,17 @@
 
 ### 💡 Others
 
+## 12.8.1 — 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 12.8.0 — 2023-12-12
+
+### 🎉 New features
+
+- [iOS] Added possibility to store values that require authentication and ones that don't under the same `keychainService`. ([#23841](https://github.com/expo/expo/pull/23841) by [@behenate](https://github.com/behenate))
+- [iOS] Added synchronous functions for storing and retrieving values from the store. ([#23841](https://github.com/expo/expo/pull/23841) by [@behenate](https://github.com/behenate))
+
 ## 12.7.0 — 2023-11-14
 
 ### 🛠 Breaking changes

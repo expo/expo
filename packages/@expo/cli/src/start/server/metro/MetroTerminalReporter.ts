@@ -3,7 +3,13 @@ import { Terminal } from 'metro-core';
 import path from 'path';
 
 import { logWarning, TerminalReporter } from './TerminalReporter';
-import { BuildPhase, BundleDetails, BundleProgress, SnippetError } from './TerminalReporter.types';
+import {
+  BuildPhase,
+  BundleDetails,
+  BundleProgress,
+  SnippetError,
+  TerminalReportableEvent,
+} from './TerminalReporter.types';
 import { NODE_STDLIB_MODULES } from './externals';
 import { learnMore } from '../../../utils/link';
 
@@ -36,19 +42,19 @@ export class MetroTerminalReporter extends TerminalReporter {
     const platform = env || getPlatformTagForBuildDetails(progress.bundleDetails);
     const inProgress = phase === 'in_progress';
 
+    const localPath = progress.bundleDetails.entryFile.startsWith(path.sep)
+      ? path.relative(this.projectRoot, progress.bundleDetails.entryFile)
+      : progress.bundleDetails.entryFile;
+
     if (!inProgress) {
-      const status = phase === 'done' ? `Bundling complete ` : `Bundling failed `;
+      const status = phase === 'done' ? `Bundled ` : `Bundling failed `;
       const color = phase === 'done' ? chalk.green : chalk.red;
 
       const startTime = this._bundleTimers.get(progress.bundleDetails.buildID!);
       const time = startTime != null ? chalk.dim(this._getElapsedTime(startTime) + 'ms') : '';
-      // iOS Bundling complete 150ms
-      return color(platform + status) + time;
+      // iOS Bundled 150ms
+      return color(platform + status) + time + chalk.reset.dim(' (' + localPath + ')');
     }
-
-    const localPath = progress.bundleDetails.entryFile.startsWith(path.sep)
-      ? path.relative(this.projectRoot, progress.bundleDetails.entryFile)
-      : progress.bundleDetails.entryFile;
 
     const filledBar = Math.floor(progress.ratio * MAX_PROGRESS_BAR_CHAR_WIDTH);
 
@@ -83,6 +89,10 @@ export class MetroTerminalReporter extends TerminalReporter {
     data: unknown[];
   }): boolean {
     return isAppRegistryStartupMessage(event.data);
+  }
+
+  shouldFilterBundleEvent(event: TerminalReportableEvent): boolean {
+    return 'bundleDetails' in event && event.bundleDetails?.bundleType === 'map';
   }
 
   /** Print the cache clear message. */
@@ -228,7 +238,7 @@ function getEnvironmentForBuildDetails(bundleDetails?: BundleDetails | null): st
   // Expo CLI will pass `customTransformOptions.environment = 'node'` when bundling for the server.
   const env = bundleDetails?.customTransformOptions?.environment ?? null;
   if (env === 'node') {
-    return `${chalk.bold('Server')} `;
+    return chalk.bold('λ') + ' ';
   }
 
   return '';

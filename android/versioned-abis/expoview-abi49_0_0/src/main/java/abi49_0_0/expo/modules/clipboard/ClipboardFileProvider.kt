@@ -312,9 +312,9 @@ class ClipboardFileProvider : ContentProvider() {
       for (root in roots.entries) {
         val rootPath = root.value.path
         if (path.startsWith(rootPath) && (
-          mostSpecific == null ||
-            rootPath.length > mostSpecific.value.path.length
-          )
+            mostSpecific == null ||
+              rootPath.length > mostSpecific.value.path.length
+            )
         ) {
           mostSpecific = root
         }

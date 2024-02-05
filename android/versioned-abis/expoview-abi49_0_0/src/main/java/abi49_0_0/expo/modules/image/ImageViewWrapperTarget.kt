@@ -29,7 +29,7 @@ import kotlin.math.max
  * of implementing the transition between bitmaps.
  */
 class ImageViewWrapperTarget(
-  private val imageViewHolder: WeakReference<ExpoImageViewWrapper>,
+  private val imageViewHolder: WeakReference<ExpoImageViewWrapper>
 ) : Target<Drawable> {
   /**
    * Whether the target has a main, non-placeholder source
@@ -73,7 +73,7 @@ class ImageViewWrapperTarget(
     val isPlaceholder = if (request is ThumbnailRequestCoordinator) {
       (request as? ThumbnailRequestCoordinator)
         ?.getPrivateFullRequest()
-        ?.isComplete != true
+        ?.isComplete == false
     } else {
       false
     }

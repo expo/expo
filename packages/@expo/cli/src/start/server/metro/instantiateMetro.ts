@@ -1,17 +1,17 @@
 import { ExpoConfig, getConfig } from '@expo/config';
-import * as ExpoMetroConfig from '@expo/metro-config';
-import type { LoadOptions } from '@expo/metro-config';
+import { getDefaultConfig, LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import { Server as ConnectServer } from 'connect';
 import http from 'http';
 import type Metro from 'metro';
+import { loadConfig, resolveConfig, ConfigT } from 'metro-config';
 import { Terminal } from 'metro-core';
 import semver from 'semver';
 import { URL } from 'url';
 
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
-import { getRouterDirectoryModuleIdWithManifest } from './router';
+import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 import { MetroDevServerOptions } from '../../../export/fork-bundleAsync';
@@ -20,11 +20,10 @@ import { getMetroProperties } from '../../../utils/analytics/getMetroProperties'
 import { createDebuggerTelemetryMiddleware } from '../../../utils/analytics/metroDebuggerMiddleware';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { env } from '../../../utils/env';
+import { createCorsMiddleware } from '../middleware/CorsMiddleware';
 import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
-import createJsInspectorMiddleware from '../middleware/inspector/createJsInspectorMiddleware';
+import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware, replaceMiddlewareWith } from '../middleware/mutations';
-import { remoteDevtoolsCorsMiddleware } from '../middleware/remoteDevtoolsCorsMiddleware';
-import { remoteDevtoolsSecurityHeadersMiddleware } from '../middleware/remoteDevtoolsSecurityHeadersMiddleware';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { suppressRemoteDebuggingErrorMiddleware } from '../middleware/suppressErrorMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
@@ -64,16 +63,22 @@ export async function loadMetroConfigAsync(
   const terminal = new Terminal(process.stdout);
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
 
-  const reporter = {
-    update(event: any) {
-      terminalReporter.update(event);
-      if (reportEvent) {
-        reportEvent(event);
-      }
+  const hasConfig = await resolveConfig(options.config, projectRoot);
+  let config: ConfigT = {
+    ...(await loadConfig(
+      { cwd: projectRoot, projectRoot, ...options },
+      // If the project does not have a metro.config.js, then we use the default config.
+      hasConfig.isEmpty ? getDefaultConfig(projectRoot) : undefined
+    )),
+    reporter: {
+      update(event: any) {
+        terminalReporter.update(event);
+        if (reportEvent) {
+          reportEvent(event);
+        }
+      },
     },
   };
-
-  let config = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
 
   if (
     // Requires SDK 50 for expo-assets hashAssetPlugin change.
@@ -98,11 +103,11 @@ export async function loadMetroConfigAsync(
     }
   }
 
-  const platformBundlers = getPlatformBundlers(exp);
+  const platformBundlers = getPlatformBundlers(projectRoot, exp);
 
   config = await withMetroMultiPlatformAsync(projectRoot, {
-    routerDirectory: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
     config,
+    exp,
     platformBundlers,
     isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
     webOutput: exp.web?.output ?? 'single',
@@ -154,19 +159,14 @@ export async function instantiateMetroAsync(
       watchFolders: metroConfig.watchFolders,
     });
 
-  // securityHeadersMiddleware does not support cross-origin requests for remote devtools to get the sourcemap.
-  // We replace with the enhanced version.
+  // The `securityHeadersMiddleware` does not support cross-origin requests, we replace with the enhanced version.
   replaceMiddlewareWith(
     middleware as ConnectServer,
     securityHeadersMiddleware,
-    remoteDevtoolsSecurityHeadersMiddleware
+    createCorsMiddleware(exp)
   );
 
-  middleware.use(remoteDevtoolsCorsMiddleware);
-
   prependMiddleware(middleware, suppressRemoteDebuggingErrorMiddleware);
-
-  middleware.use('/inspector', createJsInspectorMiddleware());
 
   // TODO: We can probably drop this now.
   const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware;
@@ -180,9 +180,17 @@ export async function instantiateMetroAsync(
 
   middleware.use(createDebuggerTelemetryMiddleware(projectRoot, exp));
 
+  // Initialize all React Native debug features
+  const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware(metroBundler);
+  prependMiddleware(middleware, debugMiddleware);
+  middleware.use('/_expo/debugger', createJsInspectorMiddleware());
+
   const { server, metro } = await runServer(metroBundler, metroConfig, {
     // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
-    websocketEndpoints,
+    websocketEndpoints: {
+      ...websocketEndpoints,
+      ...debugWebsocketEndpoints,
+    },
     watch: !isExporting && isWatchEnabled(),
   });
 

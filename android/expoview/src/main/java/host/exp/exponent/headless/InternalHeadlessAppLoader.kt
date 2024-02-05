@@ -108,9 +108,9 @@ class InternalHeadlessAppLoader(private val context: Context) :
     // Notifications logic uses this to determine which experience to route a notification to
     ExponentDB.saveExperience(ExponentDBObject(this.manifestUrl!!, manifest, bundleUrl!!))
 
-    // Sometime we want to release a new version without adding a new .aar. Use TEMPORARY_ABI_VERSION
+    // Sometime we want to release a new version without adding a new .aar. Use TEMPORARY_SDK_VERSION
     // to point to the unversioned code in ReactAndroid.
-    if (Constants.TEMPORARY_ABI_VERSION != null && Constants.TEMPORARY_ABI_VERSION == sdkVersion) {
+    if (Constants.TEMPORARY_SDK_VERSION == sdkVersion) {
       sdkVersion = RNObject.UNVERSIONED
     }
 
@@ -235,7 +235,7 @@ class InternalHeadlessAppLoader(private val context: Context) :
       expoPackages = extraExpoPackages,
       exponentPackageDelegate = delegate.exponentPackageDelegate,
       manifest = manifest!!,
-      singletonModules = ExponentPackage.getOrCreateSingletonModules(context, manifest, extraExpoPackages),
+      singletonModules = ExponentPackage.getOrCreateSingletonModules(context, manifest, extraExpoPackages)
     )
 
     val versionedUtils = RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion!!)
@@ -288,11 +288,11 @@ class InternalHeadlessAppLoader(private val context: Context) :
       val uri = Uri.parse(manifestUrl)
       val host = uri.host
       return if (host != null && (
-        host == "exp.host" || host == "expo.io" || host == "exp.direct" || host == "expo.test" ||
-          host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(
-            ".expo.test"
+          host == "exp.host" || host == "expo.io" || host == "exp.direct" || host == "expo.test" ||
+            host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(
+              ".expo.test"
+            )
           )
-        )
       ) {
         val pathSegments = uri.pathSegments
         val builder = uri.buildUpon()

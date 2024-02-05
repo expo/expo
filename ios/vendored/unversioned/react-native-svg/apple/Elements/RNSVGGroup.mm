@@ -43,7 +43,7 @@ using namespace facebook::react;
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  const auto &newProps = *std::static_pointer_cast<const RNSVGGroupProps>(props);
+  const auto &newProps = static_cast<const RNSVGGroupProps &>(*props);
 
   setCommonGroupProps(newProps, self);
   _props = std::static_pointer_cast<RNSVGGroupProps const>(props);

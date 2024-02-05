@@ -10,6 +10,46 @@
 
 ### 💡 Others
 
+## 0.27.6 — 2024-01-26
+
+### 🐛 Bug fixes
+
+- Throw `UnavailabilityError` when trying to use `setNotificationCategoryAsync` on web. ([#26511](https://github.com/expo/expo/pull/26511) by [@marklawlor](https://github.com/marklawlor))
+- Remove `.native` hardcoded platform imports ([#26511](https://github.com/expo/expo/pull/26511) by [@marklawlor](https://github.com/marklawlor))
+- On `Android`, added events to module definition to clear warnings. ([#26654](https://github.com/expo/expo/pull/26654) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.27.5 — 2024-01-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.27.4 — 2024-01-20
+
+### 🐛 Bug fixes
+
+- Throw `UnavailabilityError` when trying to use `setNotificationCategoryAsync` on web. ([#26511](https://github.com/expo/expo/pull/26511) by [@marklawlor](https://github.com/marklawlor))
+- Remove `.native` hardcoded platform imports ([#26511](https://github.com/expo/expo/pull/26511) by [@marklawlor](https://github.com/marklawlor))
+- On `Android`, added events to module definition to clear warnings. ([#26654](https://github.com/expo/expo/pull/26654) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.27.3 — 2024-01-10
+
+### 🐛 Bug fixes
+
+- [Android] Fix `expo-notifications` requiring the `expo-task-manager` module to start. ([#26227](https://github.com/expo/expo/pull/26227) by [@behenate](https://github.com/behenate))
+
+## 0.27.2 — 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 0.27.1 — 2023-12-13
+
+_This version does not introduce any user-facing changes._
+
+## 0.27.0 — 2023-12-12
+
+### 🐛 Bug fixes
+
+- On `Android`, make `tokenManager` nullable to prevent crash if we can't find it. ([#25860](https://github.com/expo/expo/pull/25860) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 0.26.0 — 2023-11-14
 
 ### 🛠 Breaking changes

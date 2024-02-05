@@ -15,6 +15,7 @@ import java.util.Set;
 
 import expo.modules.splashscreen.SplashScreenImageResizeMode;
 import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.generated.ExponentBuildConstants;
 
 public class Constants {
 
@@ -31,7 +32,7 @@ public class Constants {
   public static String ABI_VERSIONS;
   public static String SDK_VERSIONS;
   public static List<String> SDK_VERSIONS_LIST;
-  public static final String TEMPORARY_ABI_VERSION = null;
+  public static final String TEMPORARY_SDK_VERSION = ExponentBuildConstants.TEMPORARY_SDK_VERSION;
   public static final String EMBEDDED_KERNEL_PATH = "assets://kernel.android.bundle";
   public static boolean DISABLE_NUX = false;
   public static int ANDROID_VERSION_CODE;
@@ -58,8 +59,8 @@ public class Constants {
     // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
     // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
-    if (TEMPORARY_ABI_VERSION != null) {
-      abiVersions.add(TEMPORARY_ABI_VERSION);
+    if (TEMPORARY_SDK_VERSION != null) {
+      abiVersions.add(TEMPORARY_SDK_VERSION);
     }
 
     setSdkVersions(abiVersions);

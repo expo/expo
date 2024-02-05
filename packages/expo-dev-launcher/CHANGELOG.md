@@ -6,13 +6,77 @@
 
 ### 🎉 New features
 
-- Launch directly into the previously opened project by default. ([#25500](https://github.com/expo/expo/pull/25500) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
+## 3.6.6 — 2024-02-01
+
+### 💡 Others
+
+- Update auth session URL to prompt user to select account. ([#26780](https://github.com/expo/expo/pull/26780) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Update ModalStack animations. ([#26802](https://github.com/expo/expo/pull/26802) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 3.6.5 — 2024-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 3.6.4 — 2024-01-23
+
+### 🐛 Bug fixes
+
+- [Android] Fixed unable to load dev client bundle on device. ([#26630](https://github.com/expo/expo/pull/26630) by [@lukmccall](https://github.com/lukmccall))
+
+## 3.6.3 — 2024-01-18
+
+### 🐛 Bug fixes
+
+- Fixed HMR not working on Android. ([#26441](https://github.com/expo/expo/pull/26441) by [@lukmccall](https://github.com/lukmccall))
+
+## 3.6.2 — 2024-01-10
+
+### 🐛 Bug fixes
+
+- Fix launcher bridge not filtering native modules. ([#26332](https://github.com/expo/expo/pull/26332) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
+- Replace deprecated `com.facebook.react:react-native:+` Android dependency with `com.facebook.react:react-android`. ([#26237](https://github.com/expo/expo/pull/26237) by [@kudo](https://github.com/kudo))
+
+### 📚 3rd party library updates
+
+- Update react-native to 0.73.2. ([#26308](https://github.com/expo/expo/pull/26308) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 3.6.1 — 2023-12-19
+
+### 🎉 New features
+
+- Added support for React Native 0.73.1. ([#25998](https://github.com/expo/expo/pull/25998) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- [expo-updates] Add relaunch to disabled and dev client controllers. ([#25973](https://github.com/expo/expo/pull/25973) by [@wschurman](https://github.com/wschurman))
+
+## 3.6.0 — 2023-12-15
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed Error View colors on dark mode. ([#25974](https://github.com/expo/expo/pull/25974) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 3.5.1 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
+## 3.5.0 — 2023-12-12
+
+### 🎉 New features
+
+- Launch directly into the previously opened project by default. ([#25500](https://github.com/expo/expo/pull/25500) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
+- Remove outdated assets before rebuilding. ([#25821](https://github.com/expo/expo/pull/25821) by [@EvanBacon](https://github.com/EvanBacon))
 - Bump C++ compiler setting to C++20. ([#25548](https://github.com/expo/expo/pull/25548) by [@kudo](https://github.com/kudo))
 
 ## 3.4.0 — 2023-11-14

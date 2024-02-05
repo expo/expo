@@ -71,18 +71,16 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
       request,
       object : Callback {
         override fun onFailure(call: Call, e: IOException) {
+          logger.error("Failed to download asset from ${request.url}", UpdatesErrorCode.AssetsFailedToLoad, e)
           callback.onFailure(e)
         }
 
         @Throws(IOException::class)
         override fun onResponse(call: Call, response: Response) {
           if (!response.isSuccessful) {
-            callback.onFailure(
-              Exception(
-                "Network request failed: " + response.body!!
-                  .string()
-              )
-            )
+            val error = Exception("Network request failed: " + response.body!!.string())
+            logger.error("Failed to download file from ${request.url}", UpdatesErrorCode.AssetsFailedToLoad, error)
+            callback.onFailure(error)
             return
           }
           try {
@@ -91,7 +89,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
               callback.onSuccess(destination, hash)
             }
           } catch (e: Exception) {
-            logger.error("Failed to download file to destination $destination: ${e.localizedMessage}", UpdatesErrorCode.AssetsFailedToLoad, e)
+            logger.error("Failed to write file from ${request.url} to destination $destination", UpdatesErrorCode.AssetsFailedToLoad, e)
             callback.onFailure(e)
           }
         }
@@ -105,7 +103,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
       protocolVersionRaw = responseHeaders["expo-protocol-version"],
       manifestFiltersRaw = responseHeaders["expo-manifest-filters"],
       serverDefinedHeadersRaw = responseHeaders["expo-server-defined-headers"],
-      manifestSignature = responseHeaders["expo-manifest-signature"],
+      manifestSignature = responseHeaders["expo-manifest-signature"]
     )
     val responseBody = response.body
 
@@ -378,7 +376,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
           val signatureValidationResult = codeSigningConfiguration.validateSignature(
             directiveResponsePartInfo.responsePartHeaderData.signature,
             body.toByteArray(),
-            certificateChainFromManifestResponse,
+            certificateChainFromManifestResponse
           )
           if (signatureValidationResult.validationResult == ValidationResult.INVALID) {
             throw IOException("Directive download was successful, but signature was incorrect")
@@ -658,7 +656,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
           val signatureValidationResult = codeSigningConfiguration.validateSignature(
             responsePartHeaderData.signature,
             bodyString.toByteArray(),
-            certificateChainFromManifestResponse,
+            certificateChainFromManifestResponse
           )
           if (signatureValidationResult.validationResult == ValidationResult.INVALID) {
             throw IOException("Manifest download was successful, but signature was incorrect")
@@ -746,7 +744,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
     internal fun createRequestForAsset(
       assetEntity: AssetEntity,
       configuration: UpdatesConfiguration,
-      context: Context,
+      context: Context
     ): Request {
       return Request.Builder()
         .url(assetEntity.url!!.toString())

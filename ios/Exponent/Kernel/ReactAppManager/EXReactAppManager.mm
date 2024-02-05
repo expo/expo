@@ -246,13 +246,6 @@
   return [EXVersions versionedString:string withPrefix:_versionSymbolPrefix];
 }
 
-- (NSString *)escapedResourceName:(NSString *)string
-{
-  NSString *charactersToEscape = @"!*'();:@&=+$,/?%#[]";
-  NSCharacterSet *allowedCharacters = [[NSCharacterSet characterSetWithCharactersInString:charactersToEscape] invertedSet];
-  return [string stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
-}
-
 - (BOOL)isReadyToLoad
 {
   if (_appRecord) {
@@ -703,18 +696,18 @@
 
 - (NSString *)scopedDocumentDirectory
 {
-  NSString *escapedScopeKey = [self escapedResourceName:_appRecord.scopeKey];
+  NSString *scopeKey = _appRecord.scopeKey;
   NSString *mainDocumentDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
   NSString *exponentDocumentDirectory = [mainDocumentDirectory stringByAppendingPathComponent:@"ExponentExperienceData"];
-  return [[exponentDocumentDirectory stringByAppendingPathComponent:escapedScopeKey] stringByStandardizingPath];
+  return [[exponentDocumentDirectory stringByAppendingPathComponent:scopeKey] stringByStandardizingPath];
 }
 
 - (NSString *)scopedCachesDirectory
 {
-  NSString *escapedScopeKey = [self escapedResourceName:_appRecord.scopeKey];
+  NSString *scopeKey = _appRecord.scopeKey;
   NSString *mainCachesDirectory = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
   NSString *exponentCachesDirectory = [mainCachesDirectory stringByAppendingPathComponent:@"ExponentExperienceData"];
-  return [[exponentCachesDirectory stringByAppendingPathComponent:escapedScopeKey] stringByStandardizingPath];
+  return [[exponentCachesDirectory stringByAppendingPathComponent:scopeKey] stringByStandardizingPath];
 }
 
 - (void *)jsExecutorFactoryForBridge:(id)bridge

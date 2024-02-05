@@ -10,9 +10,8 @@
   "dependencies": {
     "@expo/mux": "^1.0.7",
     "expo": "~50.0.0-alpha.0",
-    "expo-clipboard": "~4.8.0",
+    "expo-clipboard": "~5.0.0",
     "react": "18.2.0",
-    "react-native": "0.73.0-rc.6",
-    "uuid": "^3.4.0"
+    "react-native": "0.73.2"
   }
 }

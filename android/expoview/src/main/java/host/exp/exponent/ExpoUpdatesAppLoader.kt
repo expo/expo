@@ -71,7 +71,8 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
   lateinit var kernel: Kernel
 
   enum class AppLoaderStatus {
-    CHECKING_FOR_UPDATE, DOWNLOADING_NEW_UPDATE
+    CHECKING_FOR_UPDATE,
+    DOWNLOADING_NEW_UPDATE
   }
 
   var isEmergencyLaunch = false
@@ -139,7 +140,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE] = context.assets.open("expo-root.pem").readBytes().decodeToString()
     configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_METADATA] = mapOf(
       CODE_SIGNING_METADATA_KEY_ID_KEY to "expo-root",
-      CODE_SIGNING_METADATA_ALGORITHM_KEY to CodeSigningAlgorithm.RSA_SHA256.algorithmName,
+      CODE_SIGNING_METADATA_ALGORITHM_KEY to CodeSigningAlgorithm.RSA_SHA256.algorithmName
     )
     configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN] = true
     configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS] = true
@@ -335,8 +336,8 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     return !(
       host == "exp.host" || host == "expo.io" || host == "exp.direct" || host == "expo.test" ||
         host!!.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(
-        ".expo.test"
-      )
+          ".expo.test"
+        )
       )
   }
 

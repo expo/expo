@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Config = void 0;
 exports.applyRuntimeVersionFromConfigAsync = applyRuntimeVersionFromConfigAsync;
+exports.applyRuntimeVersionFromConfigForProjectRootAsync = applyRuntimeVersionFromConfigForProjectRootAsync;
 exports.areVersionsSyncedAsync = areVersionsSyncedAsync;
 exports.ensureBuildGradleContainsConfigurationScript = ensureBuildGradleContainsConfigurationScript;
 exports.formatApplyLineForBuildGradle = formatApplyLineForBuildGradle;
@@ -102,6 +103,9 @@ const withUpdatesManifest = config => {
 const withRuntimeVersionResource = (0, _androidPlugins().createStringsXmlPlugin)(applyRuntimeVersionFromConfigAsync, 'withRuntimeVersionResource');
 async function applyRuntimeVersionFromConfigAsync(config, stringsJSON) {
   const projectRoot = config.modRequest.projectRoot;
+  return await applyRuntimeVersionFromConfigForProjectRootAsync(projectRoot, config, stringsJSON);
+}
+async function applyRuntimeVersionFromConfigForProjectRootAsync(projectRoot, config, stringsJSON) {
   const runtimeVersion = await (0, _Updates().getRuntimeVersionNullableAsync)(projectRoot, config, 'android');
   if (runtimeVersion) {
     return (0, _Strings().setStringItem)([(0, _Resources().buildResourceItem)({

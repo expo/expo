@@ -1,6 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <UIKit/UIKit.h>
+#import <ExpoModulesCore/Platform.h>
 
 @protocol EXFontProcessorInterface
 

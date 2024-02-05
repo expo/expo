@@ -48,7 +48,7 @@ class CameraViewModule : Module() {
         "720p" to VIDEO_720P,
         "480p" to VIDEO_480P,
         "4:3" to VIDEO_4x3
-      ),
+      )
     )
 
     AsyncFunction("pausePreview") { viewTag: Int ->

@@ -23,7 +23,7 @@ import kotlinx.coroutines.runBlocking
 import java.io.Serializable
 
 internal class CropImageContract(
-  private val appContextProvider: AppContextProvider,
+  private val appContextProvider: AppContextProvider
 ) : AppContextActivityResultContract<CropImageContractOptions, ImagePickerContractResult> {
   override fun createIntent(context: Context, input: CropImageContractOptions) = Intent(context, CropImageActivity::class.java).apply {
     val mediaType = abi49_0_0.expo.modules.imagepicker.getType(context.contentResolver, input.sourceUri)
@@ -72,5 +72,5 @@ internal class CropImageContract(
 
 internal data class CropImageContractOptions(
   val sourceUri: Uri,
-  val options: ImagePickerOptions,
+  val options: ImagePickerOptions
 ) : Serializable

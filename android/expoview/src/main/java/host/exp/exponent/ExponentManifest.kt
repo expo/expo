@@ -100,7 +100,9 @@ class ExponentManifest @Inject constructor(
   private fun getIconFromCache(iconUrl: String?): Bitmap? {
     return if (iconUrl == null || TextUtils.isEmpty(iconUrl)) {
       BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher)
-    } else memoryCache[iconUrl]
+    } else {
+      memoryCache[iconUrl]
+    }
   }
 
   private fun loadIconTask(iconUrl: String?): Bitmap? {

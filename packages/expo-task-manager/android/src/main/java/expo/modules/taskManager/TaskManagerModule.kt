@@ -23,12 +23,14 @@ class TaskManagerModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoTaskManager")
 
+    Events(TaskManagerInterface.EVENT_NAME)
+
     Constants(
       "EVENT_NAME" to TaskManagerInterface.EVENT_NAME
     )
 
     AsyncFunction("isAvailableAsync") {
-      taskService != null
+      return@AsyncFunction true
     }
 
     AsyncFunction("notifyTaskFinishedAsync") { taskName: String, response: Map<String, Any?> ->

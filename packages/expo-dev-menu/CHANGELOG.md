@@ -6,9 +6,51 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 4.5.5 — 2024-01-24
+
+### 💡 Others
+
+- Updated `androidx.browser:browser` to `1.6.0` [#26619](https://github.com/expo/expo/pull/26619) by [@zoontek](https://github.com/zoontek)
+
+## 4.5.4 — 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 4.5.3 — 2024-01-10
+
+### 💡 Others
+
+- Replace deprecated `com.facebook.react:react-native:+` Android dependency with `com.facebook.react:react-android`. ([#26237](https://github.com/expo/expo/pull/26237) by [@kudo](https://github.com/kudo))
+
+### 📚 3rd party library updates
+
+- Update react-native to 0.73.2. ([#26308](https://github.com/expo/expo/pull/26308) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 4.5.2 — 2023-12-19
+
+### 🎉 New features
+
+- Added support for React Native 0.73.1. ([#25998](https://github.com/expo/expo/pull/25998) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 4.5.1 — 2023-12-12
+
+### 🐛 Bug fixes
+
+- Fix opening JS debugger from dev menu ([#25881](https://github.com/expo/expo/pull/25881) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 4.5.0 — 2023-12-12
+
+### 🎉 New features
+
 - Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
+
+- [iOS] Fix `Unable to find module for ExpoModulesCore.ViewModuleWrapper`. ([#25813](https://github.com/expo/expo/pull/25813) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 

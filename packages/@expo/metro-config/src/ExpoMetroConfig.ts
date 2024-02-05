@@ -4,7 +4,7 @@ import { getBareExtensions } from '@expo/config/paths';
 import * as runtimeEnv from '@expo/env';
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
-import { Reporter } from 'metro';
+import { MixedOutput, Module, ReadOnlyGraph, Reporter } from 'metro';
 import { stableHash } from 'metro-cache';
 import { ConfigT as MetroConfig, InputConfigT } from 'metro-config';
 import os from 'os';
@@ -41,6 +41,18 @@ export interface DefaultConfigOptions {
    * is subject to change, and native support for CSS Modules may be added in the future during a non-major SDK release.
    */
   isCSSEnabled?: boolean;
+
+  /**
+   * **Experimental:** Modify premodules before a code asset is serialized
+   *
+   * This is an experimental feature and may change in the future. The underlying implementation
+   * is subject to change.
+   */
+  unstable_beforeAssetSerializationPlugins?: ((serializationInput: {
+    graph: ReadOnlyGraph<MixedOutput>;
+    premodules: Module[];
+    debugId?: string;
+  }) => Module[])[];
 }
 
 function getAssetPlugins(projectRoot: string): string[] {
@@ -91,7 +103,7 @@ function patchMetroGraphToSupportUncachedModules() {
 
 export function getDefaultConfig(
   projectRoot: string,
-  { mode, isCSSEnabled = true }: DefaultConfigOptions = {}
+  { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins }: DefaultConfigOptions = {}
 ): InputConfigT {
   const { getDefaultConfig: getDefaultMetroConfig, mergeConfig } = importMetroConfig(projectRoot);
 
@@ -156,6 +168,7 @@ export function getDefaultConfig(
     console.log(`- Reanimated: ${reanimatedVersion}`);
     console.log();
   }
+
   const {
     // Remove the default reporter which metro always resolves to be the react-native-community/cli reporter.
     // This prints a giant React logo which is less accessible to users on smaller terminals.
@@ -244,32 +257,23 @@ export function getDefaultConfig(
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,
       babelTransformerPath: require.resolve('./babel-transformer'),
+      // See: https://github.com/facebook/react-native/blob/v0.73.0/packages/metro-config/index.js#L72-L74
+      asyncRequireModulePath: resolveFrom(
+        reactNativePath,
+        metroDefaultValues.transformer.asyncRequireModulePath
+      ),
       assetRegistryPath: '@react-native/assets-registry/registry',
       assetPlugins: getAssetPlugins(projectRoot),
       getTransformOptions: async () => ({
         transform: {
           experimentalImportSupport: false,
-          inlineRequires: true,
+          inlineRequires: false,
         },
       }),
     },
   });
 
-  return withExpoSerializers(metroConfig);
-}
-
-export async function loadAsync(
-  projectRoot: string,
-  { reporter, ...metroOptions }: LoadOptions = {}
-): Promise<MetroConfig> {
-  let defaultConfig = getDefaultConfig(projectRoot);
-  if (reporter) {
-    defaultConfig = { ...defaultConfig, reporter };
-  }
-
-  const { loadConfig } = importMetroConfig(projectRoot);
-
-  return await loadConfig({ cwd: projectRoot, projectRoot, ...metroOptions }, defaultConfig);
+  return withExpoSerializers(metroConfig, { unstable_beforeAssetSerializationPlugins });
 }
 
 // re-export for use in config files.

@@ -41,7 +41,8 @@ class FaceDetectorModule(
   fun detectFaces(options: HashMap<String, Any>, promise: Promise) {
     // TODO: Check file scope
     FileFaceDetectionTask(
-      detectorForOptions(options, context), options,
+      detectorForOptions(options, context),
+      options,
       object : FileFaceDetectionCompletionListener {
         override fun resolve(result: Bundle) = promise.resolve(result)
         override fun reject(tag: String, message: String) = promise.reject(tag, message, null)

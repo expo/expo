@@ -41,7 +41,7 @@ using namespace facebook::react;
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  const auto &newProps = *std::static_pointer_cast<const RNSVGForeignObjectProps>(props);
+  const auto &newProps = static_cast<const RNSVGForeignObjectProps &>(*props);
 
   self.x = RCTNSStringFromStringNilIfEmpty(newProps.x)
       ? [RNSVGLength lengthWithString:RCTNSStringFromString(newProps.x)]

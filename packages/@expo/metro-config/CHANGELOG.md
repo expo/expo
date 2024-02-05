@@ -4,18 +4,87 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Add more node modules to collapsed stack regex. ([#26812](https://github.com/expo/expo/pull/26812) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove lazy loading in build process for easier development. ([#26559](https://github.com/expo/expo/pull/26559) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.17.3 - 2024-01-18
+
+### 🐛 Bug fixes
+
+- Pin `sucrase@3.34.0` to avoid yarn v1 incompatibilities with `@isaacs/cliui` module aliases ([#26459](https://github.com/expo/expo/pull/26459) by [@byCedric](https://github.com/byCedric))
+
+## 0.17.2 — 2024-01-15
+
+### 💡 Others
+
+- Bump `postcss` to 8.4.32. ([#26385](https://github.com/expo/expo/pull/26385) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.17.1 — 2023-12-19
+
+### 🎉 New features
+
+- Add plugin callbacks that run before each code asset is serialized. ([#25859](https://github.com/expo/expo/pull/25859) by [@quinlanj](https://github.com/quinlanj))
+
+### 🐛 Bug fixes
+
+- Fix matching async chunks with special characters in the file names. ([#26008](https://github.com/expo/expo/pull/26008) by [@EvanBacon](https://github.com/EvanBacon))
+- Add missing `glob` dependency. ([#26020](https://github.com/expo/expo/pull/26020) by [@byCedric](https://github.com/byCedric))
+- Add missing `@expo/spawn-async` dependency. ([#26021](https://github.com/expo/expo/pull/26021) by [@byCedric](https://github.com/byCedric))
+- Add missing `fs-extra` dependency. ([#26022](https://github.com/expo/expo/pull/26022) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+- Improve bundle splitting by reducing duplicate dependencies. ([#26010](https://github.com/expo/expo/pull/26010) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.17.0 — 2023-12-15
+
+### 🎉 New features
+
+- Add `debugId` annotations automatically. ([#25935](https://github.com/expo/expo/pull/25935) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+- Unpin minor upgrades for `@babel/generator` to `^7.20.5`. ([#25872](https://github.com/expo/expo/pull/25872) by [@kitten](https://github.com/kitten))
+
+## 0.16.1 — 2023-12-13
+
+### 🛠 Breaking changes
+
+- Remove `loadAsync` method and prevent loading default config twice. ([#25861](https://github.com/expo/expo/pull/25861) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+- Fix bundle splitting and async routes. ([#25901](https://github.com/expo/expo/pull/25901) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.16.0 — 2023-12-12
+
+### 🛠 Breaking changes
+
 - Moved `react-refresh` babel plugin from Metro to `babel-preset-expo`. ([#25461](https://github.com/expo/expo/pull/25461) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
+- Fork entire `metro-transform-worker` and remove redundant steps. ([#25833](https://github.com/expo/expo/pull/25833) by [@EvanBacon](https://github.com/EvanBacon))
+- Eagerly load async chunks with async web routes. ([#25627](https://github.com/expo/expo/pull/25627) by [@EvanBacon](https://github.com/EvanBacon))
+- Add custom Expo Router root directory support with full cache invalidation on server reset. ([#25658](https://github.com/expo/expo/pull/25658) by [@EvanBacon](https://github.com/EvanBacon))
 - Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
+- Fix common chunk loading order. ([#25831](https://github.com/expo/expo/pull/25831) by [@EvanBacon](https://github.com/EvanBacon))
+- Infer missing transform options for redirected requests from react native clients without `expo-dev-client`. ([#25686](https://github.com/expo/expo/pull/25686) by [@EvanBacon](https://github.com/EvanBacon))
 - Add missing dependency. ([#25446](https://github.com/expo/expo/pull/25446) by [@douglowder](https://github.com/douglowder))
+- Resolve all module references from the default `metro-config`. ([#25804](https://github.com/expo/expo/pull/25804) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
+- Revert enabling inline requires by default. ([#25680](https://github.com/expo/expo/pull/25680) by [@EvanBacon](https://github.com/EvanBacon))
 - Replace `@expo/babel-preset-cli` with `expo-module-scripts`. ([#25421](https://github.com/expo/expo/pull/25421) by [@byCedric](https://github.com/byCedric))
 
 ## 0.15.0 — 2023-11-14

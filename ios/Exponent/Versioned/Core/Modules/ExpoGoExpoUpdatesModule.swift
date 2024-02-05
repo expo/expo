@@ -51,7 +51,9 @@ final class ExpoGoExpoUpdatesModule: Module {
           "releaseChannel": releaseChannel,
           "runtimeVersion": runtimeVersion,
           "checkAutomatically": checkAutomatically,
-          "channel": channel
+          "channel": channel,
+          "shouldDeferToNativeForAPIMethodAvailabilityInDevelopment": true,
+          "nativeDebug": false
         ]
       }
 
@@ -70,6 +72,7 @@ final class ExpoGoExpoUpdatesModule: Module {
         "checkAutomatically": checkAutomatically,
         "channel": channel,
         "commitTime": commitTime,
+        "shouldDeferToNativeForAPIMethodAvailabilityInDevelopment": true,
         "nativeDebug": false
       ]
     }
@@ -89,15 +92,24 @@ final class ExpoGoExpoUpdatesModule: Module {
     }
 
     AsyncFunction("checkForUpdateAsync") { (promise: Promise) in
-      promise.reject("ERR_NOT_SUPPORTED", "checkForUpdateAsync() is not accessible in Expo Go. Please use a Development Client build to test.")
+      promise.reject(
+        "ERR_NOT_SUPPORTED",
+        "checkForUpdateAsync() is not accessible in Expo Go. A non-development build should be used to test this functionality."
+      )
     }
 
     AsyncFunction("getExtraParamsAsync") { (promise: Promise) in
-      promise.reject("ERR_NOT_SUPPORTED", "getExtraParamsAsync() is not accessible in Expo Go. Please use a Development Client build to test.")
+      promise.reject(
+        "ERR_NOT_SUPPORTED",
+        "getExtraParamsAsync() is not accessible in Expo Go. A non-development build should be used to test this functionality."
+      )
     }
 
     AsyncFunction("setExtraParamAsync") { (_: String, _: String?, promise: Promise) in
-      promise.reject("ERR_NOT_SUPPORTED", "getExtraParamsAsync() is not accessible in Expo Go. Please use a Development Client build to test.")
+      promise.reject(
+        "ERR_NOT_SUPPORTED",
+        "getExtraParamsAsync() is not accessible in Expo Go. A non-development build should be used to test this functionality."
+      )
     }
 
     AsyncFunction("readLogEntriesAsync") { (maxAge: Int) -> [[String: Any]] in
@@ -120,7 +132,10 @@ final class ExpoGoExpoUpdatesModule: Module {
     }
 
     AsyncFunction("fetchUpdateAsync") { (promise: Promise) in
-      promise.reject("ERR_NOT_SUPPORTED", "fetchUpdateAsync() is not accessible in Expo Go. Please use a Development Client build to test.")
+      promise.reject(
+        "ERR_NOT_SUPPORTED",
+        "fetchUpdateAsync() is not accessible in Expo Go. A non-development build should be used to test this functionality."
+      )
     }
 
     AsyncFunction("getNativeStateMachineContextAsync") { (promise: Promise) in

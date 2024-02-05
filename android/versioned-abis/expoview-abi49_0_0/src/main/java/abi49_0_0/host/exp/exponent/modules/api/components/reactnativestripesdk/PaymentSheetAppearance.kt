@@ -32,7 +32,9 @@ private fun colorFromHexOrDefault(hexString: String?, default: Int): Int {
   return hexString?.trim()?.replace("#", "")?.let {
     if (it.length == 6 || it.length == 8) {
       return Color.parseColor("#$it")
-    } else throw PaymentSheetAppearanceException("Failed to set Payment Sheet appearance. Expected hex string of length 6 or 8, but received: $it")
+    } else {
+      throw PaymentSheetAppearanceException("Failed to set Payment Sheet appearance. Expected hex string of length 6 or 8, but received: $it")
+    }
   } ?: run {
     return default
   }
@@ -54,7 +56,7 @@ private fun buildColors(colorParams: Bundle?, default: PaymentSheet.Colors): Pay
     subtitle = colorFromHexOrDefault(colorParams.getString(PaymentSheetAppearanceKeys.SECONDARY_TEXT), default.subtitle),
     placeholderText = colorFromHexOrDefault(colorParams.getString(PaymentSheetAppearanceKeys.PLACEHOLDER_TEXT), default.placeholderText),
     appBarIcon = colorFromHexOrDefault(colorParams.getString(PaymentSheetAppearanceKeys.ICON), default.appBarIcon),
-    error = colorFromHexOrDefault(colorParams.getString(PaymentSheetAppearanceKeys.ERROR), default.error),
+    error = colorFromHexOrDefault(colorParams.getString(PaymentSheetAppearanceKeys.ERROR), default.error)
   )
 }
 
@@ -81,7 +83,7 @@ private fun buildPrimaryButton(params: Bundle?, context: Context): PaymentSheet.
     colorsDark = buildPrimaryButtonColors(darkColorParams, PaymentSheet.PrimaryButtonColors.defaultDark),
     shape = PaymentSheet.PrimaryButtonShape(
       cornerRadiusDp = getFloatOrNull(shapeParams, PaymentSheetAppearanceKeys.BORDER_RADIUS),
-      borderStrokeWidthDp = getFloatOrNull(shapeParams, PaymentSheetAppearanceKeys.BORDER_WIDTH),
+      borderStrokeWidthDp = getFloatOrNull(shapeParams, PaymentSheetAppearanceKeys.BORDER_WIDTH)
     ),
     typography = PaymentSheet.PrimaryButtonTypography(
       fontResId = getFontResId(fontParams, PaymentSheetAppearanceKeys.FAMILY, null, context)
@@ -95,12 +97,14 @@ private fun buildPrimaryButtonColors(colorParams: Bundle, default: PaymentSheet.
     background = colorParams.getString(PaymentSheetAppearanceKeys.BACKGROUND)?.trim()?.replace("#", "")?.let {
       if (it.length == 6 || it.length == 8) {
         Color.parseColor("#$it")
-      } else throw PaymentSheetAppearanceException("Failed to set Payment Sheet appearance. Expected hex string of length 6 or 8, but received: $it")
+      } else {
+        throw PaymentSheetAppearanceException("Failed to set Payment Sheet appearance. Expected hex string of length 6 or 8, but received: $it")
+      }
     } ?: run {
       null
     },
     onBackground = colorFromHexOrDefault(colorParams.getString(PaymentSheetAppearanceKeys.TEXT), default.onBackground),
-    border = colorFromHexOrDefault(colorParams.getString(PaymentSheetAppearanceKeys.BORDER), default.border),
+    border = colorFromHexOrDefault(colorParams.getString(PaymentSheetAppearanceKeys.BORDER), default.border)
   )
 }
 

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 12.8.1 — 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
 ## 12.8.0 — 2023-11-14
 
 - Improve Android vibration amplitudes and durations. ([#25101](https://github.com/expo/expo/pull/25101) by [@alexandrius](https://github.com/alexandrius))

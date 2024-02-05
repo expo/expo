@@ -1,5 +1,6 @@
 import { UnavailabilityError } from 'expo-modules-core';
 import ExpoFaceDetector from './ExpoFaceDetector';
+let warnedAboutDeprecation = false;
 // @docsMissing
 export var FaceDetectorMode;
 (function (FaceDetectorMode) {
@@ -18,12 +19,17 @@ export var FaceDetectorClassifications;
     FaceDetectorClassifications[FaceDetectorClassifications["none"] = 1] = "none";
     FaceDetectorClassifications[FaceDetectorClassifications["all"] = 2] = "all";
 })(FaceDetectorClassifications || (FaceDetectorClassifications = {}));
+if (!warnedAboutDeprecation) {
+    console.warn('ExpoFaceDetector has been deprecated and will be removed in a future SDK version. We recommend using react-native-vision-camera for this functionality. See https://github.com/mrousavy/react-native-vision-camera');
+    warnedAboutDeprecation = true;
+}
 // @needsAudit
 /**
  * Detect faces on a picture.
  * @param uri `file://` URI to the image.
  * @param options A map of detection options.
  * @return Returns a Promise which fulfils with [`DetectionResult`](#detectionresult) object.
+ * @deprecated If you require this functionality, we recommend using [react-native-vision-camera](https://github.com/mrousavy/react-native-vision-camera)
  */
 export async function detectFacesAsync(uri, options = {}) {
     if (!ExpoFaceDetector || !ExpoFaceDetector.detectFaces) {

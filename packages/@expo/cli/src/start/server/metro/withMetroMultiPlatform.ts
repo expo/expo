@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { ExpoConfig, Platform } from '@expo/config';
 import fs from 'fs';
 import { ConfigT } from 'metro-config';
 import { Resolution, ResolutionContext, CustomResolutionContext } from 'metro-resolver';
@@ -22,7 +23,6 @@ import {
   setupShimFiles,
 } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
-import { getAppRouterRelativeEntryPath } from './router';
 import {
   withMetroErrorReportingResolver,
   withMetroMutatedResolverContext,
@@ -35,7 +35,6 @@ import { installExitHooks } from '../../../utils/exit';
 import { isInteractive } from '../../../utils/interactive';
 import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
-import { WebSupportProjectPrerequisite } from '../../doctor/web/WebSupportProjectPrerequisite';
 import { PlatformBundlers } from '../platformBundlers';
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] };
@@ -123,7 +122,7 @@ export function withExtendedResolver(
   const defaultResolver = metroResolver.resolve;
   const resolver = isFastResolverEnabled
     ? createFastResolver({
-        preserveSymlinks: config.resolver?.unstable_enableSymlinks ?? false,
+        preserveSymlinks: config.resolver?.unstable_enableSymlinks ?? true,
         blockList: Array.isArray(config.resolver?.blockList)
           ? config.resolver?.blockList
           : [config.resolver?.blockList],
@@ -152,13 +151,14 @@ export function withExtendedResolver(
     web: ['browser', 'module', 'main'],
   };
 
-  let tsConfigResolve = tsconfig?.paths
-    ? resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
-        paths: tsconfig.paths ?? {},
-        baseUrl: tsconfig.baseUrl ?? config.projectRoot,
-        hasBaseUrl: !!tsconfig.baseUrl,
-      })
-    : null;
+  let tsConfigResolve =
+    isTsconfigPathsEnabled && (tsconfig?.paths || tsconfig?.baseUrl != null)
+      ? resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
+          paths: tsconfig.paths ?? {},
+          baseUrl: tsconfig.baseUrl ?? config.projectRoot,
+          hasBaseUrl: !!tsconfig.baseUrl,
+        })
+      : null;
 
   // TODO: Move this to be a transform key for invalidation.
   if (!isExporting && isInteractive()) {
@@ -426,18 +426,18 @@ export async function withMetroMultiPlatformAsync(
   projectRoot: string,
   {
     config,
+    exp,
     platformBundlers,
     isTsconfigPathsEnabled,
     webOutput,
-    routerDirectory,
     isFastResolverEnabled,
     isExporting,
   }: {
     config: ConfigT;
+    exp: ExpoConfig;
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
     webOutput?: 'single' | 'static' | 'server';
-    routerDirectory: string;
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
   }
@@ -446,8 +446,6 @@ export async function withMetroMultiPlatformAsync(
     // @ts-expect-error: read-only types
     config.projectRoot = projectRoot;
   }
-  // Auto pick app entry for router.
-  process.env.EXPO_ROUTER_APP_ROOT = getAppRouterRelativeEntryPath(projectRoot, routerDirectory);
 
   // Required for @expo/metro-runtime to format paths in the web LogBox.
   process.env.EXPO_PUBLIC_PROJECT_ROOT = process.env.EXPO_PUBLIC_PROJECT_ROOT ?? projectRoot;
@@ -467,16 +465,10 @@ export async function withMetroMultiPlatformAsync(
     config.watchFolders.push(path.join(require.resolve('metro-runtime/package.json'), '../..'));
   }
 
-  // Ensure the cache is invalidated if these values change.
-  // @ts-expect-error
-  config.transformer._expoRouterRootDirectory = process.env.EXPO_ROUTER_APP_ROOT;
   // @ts-expect-error
   config.transformer._expoRouterWebRendering = webOutput;
-  // TODO: import mode
-
-  if (platformBundlers.web === 'metro') {
-    await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
-  }
+  // @ts-expect-error: Invalidate the cache when the location of expo-router changes on-disk.
+  config.transformer._expoRouterPath = resolveFrom.silent(projectRoot, 'expo-router');
 
   let tsconfig: null | TsConfigPaths = null;
 
@@ -488,7 +480,9 @@ export async function withMetroMultiPlatformAsync(
   await setupNodeExternals(projectRoot);
 
   let expoConfigPlatforms = Object.entries(platformBundlers)
-    .filter(([, bundler]) => bundler === 'metro')
+    .filter(
+      ([platform, bundler]) => bundler === 'metro' && exp.platforms?.includes(platform as Platform)
+    )
     .map(([platform]) => platform);
 
   if (Array.isArray(config.resolver.platforms)) {

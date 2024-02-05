@@ -6,11 +6,21 @@
 
 ### 🎉 New features
 
-- Add Vercel adapter. ([#25539](https://github.com/expo/expo/pull/25539) by [@kitten](https://github.com/kitten))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.3.1 — 2024-02-01
+
+### 🐛 Bug fixes
+
+- Fix http server not properly handling headers with multiple values like Set-Cookie. ([#26652](https://github.com/expo/expo/pull/26652) by [@hdwatts](https://github.com/hdwatts))
+
+## 0.3.0 — 2023-12-12
+
+### 🎉 New features
+
+- Add Vercel adapter. ([#25539](https://github.com/expo/expo/pull/25539) by [@kitten](https://github.com/kitten))
 
 ## 0.2.0 — 2023-10-17
 

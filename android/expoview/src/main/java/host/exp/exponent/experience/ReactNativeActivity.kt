@@ -170,6 +170,7 @@ abstract class ReactNativeActivity :
     containerView.removeAllViews()
   }
   // region Loading
+
   /**
    * Successfully finished loading
    */
@@ -242,7 +243,7 @@ abstract class ReactNativeActivity :
       return reactRootViewRNClass as Class<out ViewGroup>
     }
     var sdkVersion = manifest.getExpoGoSDKVersion()
-    if (Constants.TEMPORARY_ABI_VERSION != null && Constants.TEMPORARY_ABI_VERSION == this.sdkVersion) {
+    if (Constants.TEMPORARY_SDK_VERSION == sdkVersion) {
       sdkVersion = RNObject.UNVERSIONED
     }
     return RNObject("com.facebook.react.ReactRootView").loadVersion(sdkVersion!!).rnClass() as Class<out ViewGroup>
@@ -461,7 +462,11 @@ abstract class ReactNativeActivity :
     val devSettings =
       mReactInstanceManager.callRecursive("getDevSupportManager")!!.callRecursive("getDevSettings")
     if (devSettings != null) {
-      devSettings.call("setExponentActivityId", activityId)
+      if (sdkVersion.startsWith("49.")) {
+        devSettings.setField("exponentActivityId", activityId)
+      } else {
+        devSettings.call("setExponentActivityId", activityId)
+      }
       if (devSettings.call("isRemoteJSDebugEnabled") as Boolean) {
         if (manifest?.jsEngine == "hermes") {
           // Disable remote debugging when running on Hermes
@@ -572,7 +577,9 @@ abstract class ReactNativeActivity :
     // in scoped application we don't have `don't ask again` button
     return if (checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {
       true
-    } else super.shouldShowRequestPermissionRationale(permission)
+    } else {
+      super.shouldShowRequestPermissionRationale(permission)
+    }
   }
 
   override fun requestPermissions(
@@ -629,11 +636,11 @@ abstract class ReactNativeActivity :
       val uri = Uri.parse(manifestUrl)
       val host = uri.host
       return if (host != null && (
-        host == "exp.host" || host == "expo.io" || host == "exp.direct" || host == "expo.test" ||
-          host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(
-            ".expo.test"
+          host == "exp.host" || host == "expo.io" || host == "exp.direct" || host == "expo.test" ||
+            host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(
+              ".expo.test"
+            )
           )
-        )
       ) {
         val pathSegments = uri.pathSegments
         val builder = uri.buildUpon()
@@ -654,6 +661,7 @@ abstract class ReactNativeActivity :
   companion object {
     private val TAG = ReactNativeActivity::class.java.simpleName
     private const val VIEW_TEST_INTERVAL_MS: Long = 20
+
     @JvmStatic protected var errorQueue: Queue<ExponentError> = LinkedList()
   }
 }

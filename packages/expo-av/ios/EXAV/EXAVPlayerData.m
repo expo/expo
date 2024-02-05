@@ -1,6 +1,7 @@
 // Copyright 2017-present 650 Industries. All rights reserved.
 
 #import <EXAV/EXAVPlayerData.h>
+#import <MobileCoreServices/MobileCoreServices.h>
 
 // This struct is passed between the MTAudioProcessingTap callbacks.
 typedef struct AVAudioTapProcessorContext {
@@ -126,8 +127,21 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
 - (void)_loadNewPlayer
 {
   NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
-  AVURLAsset *avAsset = [AVURLAsset URLAssetWithURL:_url options:@{AVURLAssetHTTPCookiesKey : cookies, @"AVURLAssetHTTPHeaderFieldsKey": _headers}];
-  
+  NSURL *assetUrl = _url;
+
+  // Ideally we would load the _url directly into the [AVURLAsset URLAssetWithURL:...], but iOS 17 introduced changes/bug, which breaks creating
+  // an AVURLAsset from data uris. As a workaround we save the data into a file and play the audio from that file.
+  if ([self _isBase64Audio:_url] && [[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:(NSOperatingSystemVersion){17, 0, 0}]) {
+    NSURL *temporaryFileUrl = [self _saveBase64UrlToTempFile:_url];
+    if (temporaryFileUrl == nil) {
+      NSString *errorMessage = @"Failed to convert base64 string to an audio file";
+      [self _finishLoadWithError:errorMessage];
+      return;
+    }
+    assetUrl = temporaryFileUrl;
+  }
+
+  AVURLAsset *avAsset = [AVURLAsset URLAssetWithURL:assetUrl options:@{AVURLAssetHTTPCookiesKey : cookies, @"AVURLAssetHTTPHeaderFieldsKey": _headers}];
   // unless we preload, the asset will not necessarily load the duration by the time we try to play it.
   // http://stackoverflow.com/questions/20581567/avplayer-and-avfoundationerrordomain-code-11819
   EX_WEAKIFY(self);
@@ -147,12 +161,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
       [self _addObserver:self.player.currentItem forKeyPath:EXAVPlayerDataObserverMetadataKeyPath];
     } else {
       NSString *errorMessage = @"Load encountered an error: [AVPlayer playerWithPlayerItem:] returned nil.";
-      if (self.loadFinishBlock) {
-        self.loadFinishBlock(NO, nil, errorMessage);
-        self.loadFinishBlock = nil;
-      } else if (self.errorCallback) {
-        self.errorCallback(errorMessage);
-      }
+      [self _finishLoadWithError:errorMessage];
     }
   }];
 }
@@ -1103,6 +1112,53 @@ void EXTapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudio
     }
   }
   return validatedHeaders;
+}
+
+// http://blog.ablepear.com/2010/08/how-to-get-file-extension-for-mime-type.html
+- (NSString *)_fileExtensionForMimeType:(NSString *)mimeType {
+  CFStringRef cfMimeType = (__bridge CFStringRef)mimeType;
+  CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, cfMimeType, NULL);
+  return (__bridge NSString *)(UTTypeCopyPreferredTagWithClass(uti, kUTTagClassFilenameExtension));
+}
+
+- (NSURL *)_saveBase64UrlToTempFile:(NSURL *)url {
+  // base64 string format: `data:<mimeType>;base64,<data>` <- data contains only A-Z, a-z, 0-9, +, /, = characters
+  NSString *base64String = [url absoluteString];
+  NSInteger mimeTypeStartIndex = [[base64String componentsSeparatedByString:@":"] objectAtIndex:0].length + 1;
+  NSInteger mimeTypeEndIndex = [[base64String componentsSeparatedByString:@";"] objectAtIndex:0].length;
+  NSInteger dataStartIndex = [[base64String componentsSeparatedByString:@","] objectAtIndex:0].length + 1;
+  NSString *mimeType = [base64String substringWithRange:NSMakeRange(mimeTypeStartIndex, mimeTypeEndIndex - mimeTypeStartIndex)];
+  NSString *fileType = [self _fileExtensionForMimeType:mimeType];
+  NSString *base64DataString = [base64String substringFromIndex:dataStartIndex];
+  
+  NSData *fileData = [[NSData alloc] initWithBase64EncodedString:base64DataString options:0];
+  if (!fileData) {
+    return nil;
+  }
+
+  NSString *tempDirectory = NSTemporaryDirectory();
+  NSString *tempFileName = [NSString stringWithFormat:@"%@.%@", [[NSUUID UUID] UUIDString], fileType];
+  NSString *tempFilePath = [tempDirectory stringByAppendingPathComponent:tempFileName];
+  NSError *error = nil;
+
+  [fileData writeToFile:tempFilePath options:NSDataWritingAtomic error:&error];
+  if (error) {
+    return nil;
+  }
+  return [NSURL fileURLWithPath:tempFilePath];
+}
+
+- (Boolean)_isBase64Audio:(NSURL *)url {
+  return [[url absoluteString] hasPrefix:@"data:audio/"];
+}
+
+- (void)_finishLoadWithError:(NSString *)errorMessage {
+  if (self.loadFinishBlock) {
+    self.loadFinishBlock(NO, nil, errorMessage);
+    self.loadFinishBlock = nil;
+  } else if (self.errorCallback) {
+    self.errorCallback(errorMessage);
+  }
 }
 
 @end

@@ -16,6 +16,7 @@ void FrontendConverterProvider::createConverters() {
   RegisterConverter(CppType::FLOAT, FloatFrontendConverter);
   RegisterConverter(CppType::DOUBLE, DoubleFrontendConverter);
   RegisterConverter(CppType::BOOLEAN, BooleanFrontendConverter);
+  RegisterConverter(CppType::UINT8_TYPED_ARRAY, ByteArrayFrontendConverter);
   RegisterConverter(CppType::TYPED_ARRAY, TypedArrayFrontendConverter);
   RegisterConverter(CppType::JS_OBJECT, JavaScriptObjectFrontendConverter);
   RegisterConverter(CppType::JS_VALUE, JavaScriptValueFrontendConverter);

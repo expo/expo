@@ -44,7 +44,7 @@ def getRNVersion() {
 ensureDependeciesWereEvaluated(project)
 
 group = 'host.exp.exponent'
-version = '50.0.0-alpha.7'
+version = '50.0.5'
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -124,7 +124,7 @@ android {
   namespace "expo.core"
   defaultConfig {
     versionCode 1
-    versionName "50.0.0-alpha.7"
+    versionName "50.0.5"
     consumerProguardFiles("proguard-rules.pro")
   }
   testOptions {
@@ -152,13 +152,12 @@ android {
 }
 
 dependencies { dependencyHandler ->
-  //noinspection GradleDynamicVersion
-  implementation 'com.facebook.react:react-native:+'
+  implementation 'com.facebook.react:react-android'
 
   testImplementation 'junit:junit:4.13.2'
-  testImplementation 'androidx.test:core:1.4.0'
+  testImplementation 'androidx.test:core:1.5.0'
   testImplementation "com.google.truth:truth:1.1.2"
-  testImplementation 'io.mockk:mockk:1.12.0'
+  testImplementation 'io.mockk:mockk:1.13.5'
 
   // Link expo modules as dependencies of the adapter. It uses `api` configuration so they all will be visible for the app as well.
   // A collection of the dependencies depends on the options passed to `useExpoModules` in your project's `settings.gradle`.

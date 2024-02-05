@@ -1,6 +1,6 @@
 {
   "name": "expo-asset",
-  "version": "8.14.0",
+  "version": "9.0.2",
   "description": "An Expo universal module to download assets and pass them into other APIs",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -41,8 +41,8 @@
     "blueimp-md5": "^2.10.0",
     "invariant": "^2.2.4",
     "md5-file": "^3.2.3",
-    "expo-constants": "~15.3.0",
-    "expo-file-system": "~15.9.0"
+    "expo-constants": "~15.4.0",
+    "expo-file-system": "~16.0.0"
   },
   "devDependencies": {
     "@testing-library/react-hooks": "^7.0.1",

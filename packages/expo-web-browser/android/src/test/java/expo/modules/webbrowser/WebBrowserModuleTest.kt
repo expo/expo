@@ -5,9 +5,9 @@ import android.os.Bundle
 import androidx.browser.customtabs.CustomTabsIntent
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.errorCodeOf
-import expo.modules.test.core.ModuleMock
-import expo.modules.test.core.ModuleMockHolder
-import expo.modules.test.core.assertCodedException
+import expo.modules.test.core.legacy.ModuleMock
+import expo.modules.test.core.legacy.ModuleMockHolder
+import expo.modules.test.core.legacy.assertCodedException
 import io.mockk.every
 import io.mockk.slot
 import io.mockk.verify

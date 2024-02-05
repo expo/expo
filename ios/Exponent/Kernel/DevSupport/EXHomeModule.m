@@ -11,6 +11,8 @@
 
 #import <React/RCTEventDispatcher.h>
 
+NSString *const kEXLastFatalErrorDateDefaultsKey = @"EXKernelLastFatalErrorDateDefaultsKey";
+
 @interface EXHomeModule ()
 
 @property (nonatomic, assign) BOOL hasListeners;
@@ -320,6 +322,18 @@ RCT_REMAP_METHOD(onEventFailure,
     [_eventSuccessBlocks removeObjectForKey:eventId];
     [_eventFailureBlocks removeObjectForKey:eventId];
   }
+}
+
+RCT_EXPORT_METHOD(getLastCrashDate:(RCTPromiseResolveBlock)resolve
+                   rejecter:(RCTPromiseRejectBlock)reject)
+{
+  NSDate *retrievedTimestamp = [[NSUserDefaults standardUserDefaults] objectForKey:kEXLastFatalErrorDateDefaultsKey];
+  if(!retrievedTimestamp) {
+    resolve(nil);
+    return;
+  }
+
+  resolve(@([retrievedTimestamp timeIntervalSince1970] * 1000));
 }
 
 @end

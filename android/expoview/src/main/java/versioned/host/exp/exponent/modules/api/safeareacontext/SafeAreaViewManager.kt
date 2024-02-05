@@ -10,7 +10,6 @@ import com.facebook.react.uimanager.annotations.ReactProp
 import versioned.host.exp.exponent.modules.api.safeareacontext.RNCSafeAreaViewManagerInterface
 import com.facebook.react.views.view.ReactViewGroup
 import com.facebook.react.views.view.ReactViewManager
-import java.util.*
 
 @ReactModule(name = SafeAreaViewManager.REACT_CLASS)
 class SafeAreaViewManager : ReactViewManager(), RNCSafeAreaViewManagerInterface<SafeAreaView> {
@@ -64,7 +63,7 @@ class SafeAreaViewManager : ReactViewManager(), RNCSafeAreaViewManagerInterface<
       props: ReactStylesDiffMap?,
       stateWrapper: StateWrapper?
   ): Any? {
-    (view as SafeAreaView).fabricViewStateManager.setStateWrapper(stateWrapper)
+    (view as SafeAreaView).setStateWrapper(stateWrapper)
     return null
   }
 

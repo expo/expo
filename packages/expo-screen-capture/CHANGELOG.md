@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 5.8.1 — 2024-01-23
+
+### 🐛 Bug fixes
+
+- Fix screenshot listener not being called on Android 34. ([#26549](https://github.com/expo/expo/pull/26549) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 5.8.0 — 2023-12-15
+
+### 🎉 New features
+
+- Added `getPermissionsAsync` and `requestPermissionsAsync` methods. ([#25849](https://github.com/expo/expo/pull/25849) by [@behenate](https://github.com/behenate))
+
 ## 5.7.0 — 2023-11-14
 
 ### 🛠 Breaking changes

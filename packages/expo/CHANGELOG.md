@@ -6,12 +6,109 @@
 
 ### 🎉 New features
 
-- Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
+## 50.0.5 — 2024-02-01
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.4 — 2024-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.3 — 2024-01-23
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.2 — 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.1 — 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0 — 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.11 — 2024-01-15
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.10 — 2024-01-12
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.9 — 2024-01-10
+
+### 🎉 New features
+
+- Added support for macOS platform. ([#26283](https://github.com/expo/expo/pull/26283) by [@tsapeta](https://github.com/tsapeta))
+
+### 💡 Others
+
+- Replace deprecated `com.facebook.react:react-native:+` Android dependency with `com.facebook.react:react-android`. ([#26237](https://github.com/expo/expo/pull/26237) by [@kudo](https://github.com/kudo))
+
+### 📚 3rd party library updates
+
+- Update react-native to 0.73.2. ([#26308](https://github.com/expo/expo/pull/26308) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 50.0.0-preview.8 — 2024-01-05
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.7 — 2023-12-21
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.6 — 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.5 — 2023-12-19
+
+### 🎉 New features
+
+- Added support for React Native 0.73.1. ([#25998](https://github.com/expo/expo/pull/25998) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 50.0.0-preview.4 — 2023-12-15
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.3 — 2023-12-14
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.2 — 2023-12-13
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.1 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.0 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-beta.0 — 2023-12-12
+
+### 🎉 New features
+
+- Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `concurrentRoot` is missing from intialProps when running on New Architecture mode. ([#25415](https://github.com/expo/expo/pull/25415) by [@kudo](https://github.com/kudo))
+- Use explicit `@expo/metro-config` dependendecy to avoid unexpected versions in monorepos. ([#25804](https://github.com/expo/expo/pull/25804) by [@byCedric](https://github.com/byCedric))
+- Fixed `Unable to resolve "fbemitter"` issue when using DevTools Plugins. ([#25856](https://github.com/expo/expo/pull/25856) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Update internal types. ([#25627](https://github.com/expo/expo/pull/25627) by [@EvanBacon](https://github.com/EvanBacon))
 - Removed the dependency on the `expo-application` package. ([#25583](https://github.com/expo/expo/pull/25583) by [@tsapeta](https://github.com/tsapeta))
 
 ## 49.0.21 — 2023-11-24

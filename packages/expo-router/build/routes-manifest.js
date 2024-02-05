@@ -17,6 +17,7 @@ function createRoutesManifest(paths) {
     const routeTree = (0, getRoutes_1.getRoutes)(createMockContextModule(paths), {
         preserveApiRoutes: true,
         ignoreRequireErrors: true,
+        ignoreEntryPoints: true,
     });
     if (!routeTree) {
         return null;

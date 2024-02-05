@@ -7,7 +7,8 @@ import { UpdatesLogEntry } from 'expo-updates';
 import React from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-require('./test.png');
+require('./includedAssets/test.png');
+require('./includedAssets/lock-filled.svg');
 // eslint-disable-next-line no-unused-expressions
 Inter_900Black;
 
@@ -128,12 +129,15 @@ export default function App() {
 
   const handleReload = async () => {
     setIsReloading(true);
-    try {
-      await Updates.reloadAsync();
-      setIsReloading(false);
-    } catch (e) {
-      console.warn(e);
-    }
+    // this is done after a timeout so that the button press finishes for detox
+    setTimeout(async () => {
+      try {
+        await Updates.reloadAsync();
+        setIsReloading(false);
+      } catch (e) {
+        console.warn(e);
+      }
+    }, 2000);
   };
 
   const handleCheckForUpdate = runBlockAsync(async () => {

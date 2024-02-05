@@ -60,7 +60,9 @@ data class Request(
         val buffer = Buffer()
         it.writeTo(buffer)
         return@let buffer.readUtf8(buffer.size.coerceAtMost(ExpoNetworkInspectOkHttpNetworkInterceptor.MAX_BODY_SIZE))
-      } else return@let null
+      } else {
+        return@let null
+      }
     }
   )
 
@@ -90,7 +92,7 @@ data class Response(
     statusText = response.message,
     headers = response.headers.toSingleMap(),
     mimeType = response.header("Content-Type", "") ?: "",
-    encodedDataLength = response.body?.contentLength() ?: 0,
+    encodedDataLength = response.body?.contentLength() ?: 0
   )
 
   override fun toJSONObject(): JSONObject {
@@ -120,7 +122,7 @@ data class RequestWillBeSentParams(
   val redirectHasExtraInfo: Boolean,
   val redirectResponse: Response?,
   val referrerPolicy: String = "no-referrer",
-  val type: ResourceType,
+  val type: ResourceType
 ) : JsonSerializable {
   constructor(now: BigDecimal, requestId: RequestId, request: okhttp3.Request, redirectResponse: okhttp3.Response?) : this(
     requestId = requestId,
@@ -129,7 +131,7 @@ data class RequestWillBeSentParams(
     wallTime = now,
     redirectHasExtraInfo = redirectResponse != null,
     redirectResponse = redirectResponse?.let { Response(it) },
-    type = ResourceType.OTHER,
+    type = ResourceType.OTHER
   )
 
   override fun toJSONObject(): JSONObject {
@@ -155,12 +157,12 @@ data class RequestWillBeSentExtraInfoParams(
   val requestId: RequestId,
   val associatedCookies: Map<String, String> = emptyMap(),
   val headers: Headers,
-  val connectTiming: ConnectTiming,
+  val connectTiming: ConnectTiming
 ) : JsonSerializable {
   constructor(now: BigDecimal, requestId: RequestId, request: okhttp3.Request) : this(
     requestId = requestId,
     headers = request.headers.toSingleMap(),
-    connectTiming = ConnectTiming(now),
+    connectTiming = ConnectTiming(now)
   )
 
   override fun toJSONObject(): JSONObject {
@@ -179,13 +181,13 @@ data class ResponseReceivedParams(
   val timestamp: MonotonicTime,
   val type: ResourceType,
   val response: Response,
-  val hasExtraInfo: Boolean = false,
+  val hasExtraInfo: Boolean = false
 ) : JsonSerializable {
   constructor(now: BigDecimal, requestId: RequestId, request: okhttp3.Request, okhttpResponse: okhttp3.Response) : this(
     requestId = requestId,
     timestamp = now,
     type = ResourceType.fromMimeType(okhttpResponse.header("Content-Type", "") ?: ""),
-    response = Response(okhttpResponse),
+    response = Response(okhttpResponse)
   )
 
   override fun toJSONObject(): JSONObject {
@@ -203,12 +205,12 @@ data class ResponseReceivedParams(
 data class LoadingFinishedParams(
   val requestId: RequestId,
   val timestamp: MonotonicTime,
-  val encodedDataLength: Long,
+  val encodedDataLength: Long
 ) : JsonSerializable {
   constructor(now: BigDecimal, requestId: RequestId, request: okhttp3.Request, response: okhttp3.Response) : this(
     requestId = requestId,
     timestamp = now,
-    encodedDataLength = response.body?.contentLength() ?: 0,
+    encodedDataLength = response.body?.contentLength() ?: 0
   )
 
   override fun toJSONObject(): JSONObject {
@@ -223,12 +225,12 @@ data class LoadingFinishedParams(
 data class ExpoReceivedResponseBodyParams(
   val requestId: RequestId,
   var body: String,
-  var base64Encoded: Boolean,
+  var base64Encoded: Boolean
 ) : JsonSerializable {
   constructor(now: BigDecimal, requestId: RequestId, request: okhttp3.Request, response: okhttp3.Response) : this(
     requestId = requestId,
     body = "",
-    base64Encoded = false,
+    base64Encoded = false
   ) {
     val rawBody = response.peekBody(ExpoNetworkInspectOkHttpNetworkInterceptor.MAX_BODY_SIZE)
     val contentType = rawBody.contentType()

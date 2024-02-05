@@ -25,7 +25,7 @@ import java.io.Serializable
  * @see [androidx.activity.result.contract.ActivityResultContracts.GetMultipleContents]
  */
 internal class ImageLibraryContract(
-  private val appContextProvider: AppContextProvider,
+  private val appContextProvider: AppContextProvider
 ) : AppContextActivityResultContract<ImageLibraryContractOptions, ImagePickerContractResult> {
   private val contentResolver: ContentResolver
     get() = requireNotNull(appContextProvider.appContext.reactContext) {

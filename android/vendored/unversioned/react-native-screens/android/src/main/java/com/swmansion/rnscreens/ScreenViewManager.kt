@@ -4,6 +4,8 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.MapBuilder
 import com.facebook.react.module.annotations.ReactModule
+import com.facebook.react.uimanager.ReactStylesDiffMap
+import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.ViewManagerDelegate
@@ -33,6 +35,18 @@ class ScreenViewManager : ViewGroupManager<Screen>(), RNSScreenManagerInterface<
 
     override fun setActivityState(view: Screen, activityState: Float) {
         setActivityState(view, activityState.toInt())
+    }
+
+    override fun updateState(
+        view: Screen,
+        props: ReactStylesDiffMap?,
+        stateWrapper: StateWrapper?
+    ): Any? {
+        if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+            // fabricViewStateManager should never be null in Fabric. The null check is only for Paper's empty impl.
+            view.fabricViewStateManager?.setStateWrapper(stateWrapper)
+        }
+        return super.updateState(view, props, stateWrapper)
     }
 
     @ReactProp(name = "activityState")
@@ -73,6 +87,7 @@ class ScreenViewManager : ViewGroupManager<Screen>(), RNSScreenManagerInterface<
             "slide_from_left" -> Screen.StackAnimation.SLIDE_FROM_LEFT
             "slide_from_bottom" -> Screen.StackAnimation.SLIDE_FROM_BOTTOM
             "fade_from_bottom" -> Screen.StackAnimation.FADE_FROM_BOTTOM
+            "ios" -> Screen.StackAnimation.IOS
             else -> throw JSApplicationIllegalArgumentException("Unknown animation type $animation")
         }
     }

@@ -102,5 +102,7 @@ open class KEventEmitterWrapper(
 fun normalizeEventName(eventName: String): String {
   return if (eventName.startsWith("on")) {
     "top" + eventName.substring(2)
-  } else eventName
+  } else {
+    eventName
+  }
 }

@@ -174,7 +174,8 @@ export function Code({ className, children }: React.PropsWithChildren<Props>) {
       css={[STYLES_CODE_CONTAINER, STYLES_CODE_CONTAINER_BLOCK]}
       className={mergeClasses(
         preferredTheme === Themes.DARK && 'dark-theme',
-        wordWrap && '!whitespace-pre-wrap !break-words'
+        wordWrap && '!whitespace-pre-wrap !break-words',
+        'last:mb-0'
       )}
       {...attributes}>
       <code css={STYLES_CODE_BLOCK} dangerouslySetInnerHTML={{ __html: html }} />

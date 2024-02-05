@@ -37,6 +37,7 @@ class UpdatesStateMachineInstrumentationTest {
   }
 
   private val androidContext = InstrumentationRegistry.getInstrumentation().context
+
   // Test classes
   class TestStateChangeEventSender : UpdatesStateChangeEventSender {
     var lastEventType: UpdatesStateEventType? = null

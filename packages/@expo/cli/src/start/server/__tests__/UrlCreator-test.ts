@@ -1,4 +1,3 @@
-import { asMock } from '../../../__tests__/asMock';
 import * as Log from '../../../log';
 import { UrlCreator } from '../UrlCreator';
 
@@ -118,7 +117,7 @@ describe('constructUrl', () => {
     ).toMatchInlineSnapshot(`"newer://100.100.1.100:8081"`);
   });
   it(`warns when tunnel isn't available`, () => {
-    asMock(Log.warn).mockClear();
+    jest.mocked(Log.warn).mockClear();
     expect(
       new UrlCreator({}, { port: 8081, getTunnelUrl: () => null }).constructUrl({
         hostType: 'tunnel',

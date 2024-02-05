@@ -328,6 +328,17 @@ dependencies {
   // expo-blur
   implementation 'com.github.Dimezis:BlurView:version-2.0.3'
 
+  // expo-camera
+  def camerax_version = "1.4.0-alpha02"
+  implementation "androidx.camera:camera-core:${camerax_version}"
+  implementation "androidx.camera:camera-camera2:${camerax_version}"
+  implementation "androidx.camera:camera-lifecycle:${camerax_version}"
+  implementation "androidx.camera:camera-video:${camerax_version}"
+  implementation "androidx.camera:camera-view:${camerax_version}"
+  implementation "androidx.camera:camera-extensions:${camerax_version}"
+  implementation "com.google.mlkit:barcode-scanning:17.2.0"
+  implementation 'androidx.camera:camera-mlkit-vision:1.4.0-alpha02'
+
   // expo-modules-core android-annotation
   api project(':expo-modules-core$android-annotation')
 
@@ -337,7 +348,6 @@ dependencies {
 
   // expo-image
   def GLIDE_VERSION = "4.13.2"
-  implementation "com.github.zjupure:webpdecoder:2.1.${GLIDE_VERSION}"
   api "com.github.bumptech.glide:glide:${GLIDE_VERSION}"
   kapt "com.github.bumptech.glide:compiler:${GLIDE_VERSION}"
   implementation "com.github.bumptech.glide:avif-integration:${GLIDE_VERSION}"

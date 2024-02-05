@@ -49,7 +49,7 @@ using namespace facebook::react;
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  const auto &newProps = *std::static_pointer_cast<const RNSVGTextProps>(props);
+  const auto &newProps = static_cast<const RNSVGTextProps &>(*props);
 
   setCommonTextProps(newProps, self);
   _props = std::static_pointer_cast<RNSVGTextProps const>(props);

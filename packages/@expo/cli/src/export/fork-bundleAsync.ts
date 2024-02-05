@@ -1,9 +1,9 @@
 import { ExpoConfig, getConfigFilePaths, Platform, ProjectConfig } from '@expo/config';
 import { LoadOptions } from '@expo/metro-config';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets';
 import assert from 'assert';
 import Metro, { MixedOutput, Module, ReadOnlyGraph } from 'metro';
-import getMetroAssets from 'metro/src/DeltaBundler/Serializers/getAssets';
 import type { TransformInputOptions } from 'metro/src/DeltaBundler/types';
 import IncrementalBundler from 'metro/src/IncrementalBundler';
 import Server from 'metro/src/Server';
@@ -20,9 +20,9 @@ import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
 import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
 import {
   ExpoMetroBundleOptions,
-  getBaseUrlFromExpoConfig,
-  getMetroDirectBundleOptions,
+  getMetroDirectBundleOptionsForExpoConfig,
 } from '../start/server/middleware/metroOptions';
+import { CommandError } from '../utils/errors';
 
 export type MetroDevServerOptions = LoadOptions;
 
@@ -107,6 +107,17 @@ export async function createBundlesAsync(
   );
 }
 
+function assertMetroConfig(
+  config: ConfigT
+): asserts config is ConfigT & { serializer: NonNullable<ConfigT['serializer']> } {
+  if (!config.serializer?.customSerializer) {
+    throw new CommandError(
+      'METRO_CONFIG_MALFORMED',
+      `The Metro bundler configuration is missing required features from 'expo/metro-config' and cannot be used with Expo CLI. Ensure the metro.config.js file is extending 'expo/metro-config'. Learn more: https://docs.expo.dev/guides/customizing-metro`
+    );
+  }
+}
+
 async function bundleProductionMetroClientAsync(
   projectRoot: string,
   expoConfig: ExpoConfig,
@@ -124,6 +135,8 @@ async function bundleProductionMetroClientAsync(
     isExporting: true,
   });
 
+  assertMetroConfig(config);
+
   const metroServer = await Metro.runMetro(config, {
     watch: false,
   });
@@ -137,7 +150,7 @@ async function bundleProductionMetroClientAsync(
     const bundleOptions: MetroBundleOptions = {
       ...Server.DEFAULT_BUNDLE_OPTIONS,
       sourceMapUrl: bundle.sourceMapUrl,
-      ...getMetroDirectBundleOptions({
+      ...getMetroDirectBundleOptionsForExpoConfig(projectRoot, expoConfig, {
         mainModuleName: bundle.entryPoint,
         platform: bundle.platform,
         mode: bundle.dev ? 'development' : 'production',
@@ -147,7 +160,6 @@ async function bundleProductionMetroClientAsync(
         // serializerOutput: bundle.platform === 'web' ? 'static' : undefined,
         serializerOutput: 'static',
         serializerIncludeBytecode: isHermes,
-        baseUrl: getBaseUrlFromExpoConfig(expoConfig),
         isExporting: true,
       }),
       bundleType: 'bundle',
@@ -202,10 +214,7 @@ async function bundleProductionMetroClientAsync(
 
 // Forked out of Metro because the `this._getServerRootDir()` doesn't match the development
 // behavior.
-export async function getAssets(
-  metro: Metro.Server,
-  options: MetroBundleOptions
-): Promise<readonly BundleAssetWithFileHashes[]> {
+export async function getAssets(metro: Metro.Server, options: MetroBundleOptions) {
   const { entryFile, onProgress, resolverOptions, transformOptions } = splitBundleOptions(options);
 
   // @ts-expect-error: _bundler isn't exposed on the type.
@@ -315,6 +324,8 @@ async function forkMetroBuildAsync(
     // Custom options we pass to the serializer to emulate the URL query parameters.
     serializerOptions: options.serializerOptions,
   };
+
+  assertMetroConfig(metro._config);
 
   const bundle = await metro._config.serializer.customSerializer!(
     entryPoint,

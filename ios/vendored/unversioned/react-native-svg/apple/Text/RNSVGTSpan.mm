@@ -58,7 +58,7 @@ using namespace facebook::react;
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  const auto &newProps = *std::static_pointer_cast<const RNSVGTSpanProps>(props);
+  const auto &newProps = static_cast<const RNSVGTSpanProps &>(*props);
 
   self.content = RCTNSStringFromStringNilIfEmpty(newProps.content);
 

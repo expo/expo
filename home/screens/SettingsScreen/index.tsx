@@ -1,6 +1,5 @@
 import { Spacer, View } from 'expo-dev-client-components';
 import * as Tracking from 'expo-tracking-transparency';
-import { useHome_CurrentUserActorQuery } from 'graphql/types';
 import * as React from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -10,6 +9,7 @@ import { DeleteAccountSection } from './DeleteAccountSection';
 import { DevMenuGestureSection } from './DevMenuGestureSection';
 import { ThemeSection } from './ThemeSection';
 import { TrackingSection } from './TrackingSection';
+import { useHome_CurrentUserActorQuery } from '../../graphql/types';
 
 export function SettingsScreen() {
   const { data } = useHome_CurrentUserActorQuery();

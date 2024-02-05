@@ -19,10 +19,10 @@ export default function PlatformIcon(props: Props) {
     icon = Platform.select({
       android: <Ionicons name="logo-android" size={17} lightColor="#000" style={style} />,
       ios: <Ionicons name="logo-apple" size={17} lightColor="#000" style={style} />,
-      default: <Ionicons name="md-tablet-portrait" size={15} lightColor="#000" style={style} />,
+      default: <Ionicons name="tablet-portrait" size={15} lightColor="#000" style={style} />,
     });
   } else if (platform === 'web') {
-    icon = <Ionicons name="ios-globe" size={15} lightColor="#000" style={style} />;
+    icon = <Ionicons name="globe" size={15} lightColor="#000" style={style} />;
   }
 
   return <View style={styles.container}>{icon}</View>;

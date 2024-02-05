@@ -28,7 +28,8 @@ describe('managed project test', () => {
 
   beforeAll(async () => {
     rimraf.sync(projectRoot);
-    await spawnAsync('bunx', ['create-expo-app', '-t', 'blank', projectName], {
+    // Pin the SDK version to prevent the latest version breaking snapshots
+    await spawnAsync('bunx', ['create-expo-app', '-t', 'blank@sdk-49', projectName], {
       stdio: 'inherit',
       cwd: tmpDir,
       env: {

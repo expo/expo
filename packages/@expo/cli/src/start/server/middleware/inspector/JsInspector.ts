@@ -1,20 +1,46 @@
+import chalk from 'chalk';
 import fetch from 'node-fetch';
 
 import { launchInspectorBrowserAsync, type LaunchBrowserInstance } from './LaunchBrowser';
+import { Log } from '../../../../log';
+import { env } from '../../../../utils/env';
+
 export interface MetroInspectorProxyApp {
-  description: string;
-  devtoolsFrontendUrl: string;
-  faviconUrl: string;
   id: string;
+  description: string;
   title: string;
+  faviconUrl: string;
+  devtoolsFrontendUrl: string;
   type: 'node';
-  vm: 'Hermes' | "don't use";
   webSocketDebuggerUrl: string;
+  vm: 'Hermes' | "don't use";
+  /** Added since React Native 0.73.x */
+  deviceName?: string;
 }
 
 let openingBrowserInstance: LaunchBrowserInstance | null = null;
 
-export async function openJsInspector(app: MetroInspectorProxyApp) {
+export function openJsInspector(metroBaseUrl: string, app: MetroInspectorProxyApp) {
+  if (env.EXPO_USE_UNSTABLE_DEBUGGER) {
+    return openExperimentalJsInspector(metroBaseUrl, app);
+  } else {
+    return openClassicJsInspector(app);
+  }
+}
+
+async function openExperimentalJsInspector(metroBaseUrl: string, app: MetroInspectorProxyApp) {
+  const device = encodeURIComponent(app.id);
+  const appId = encodeURIComponent(app.description);
+  await fetch(`${metroBaseUrl}/open-debugger?device=${device}&appId=${appId}`, { method: 'POST' });
+}
+
+/**
+ * Chrome DevTools UI implemented for SDK <49.
+ * TODO(cedric): Remove this when we fully swap over to the new React Native JS Inspector.
+ */
+async function openClassicJsInspector(app: MetroInspectorProxyApp) {
+  Log.log(chalk`{bold Debug:} Opening JavaScript inspector in the browser...`);
+
   // To update devtoolsFrontendRev, find the full commit hash in the url:
   // https://chromium.googlesource.com/chromium/src.git/+log/refs/tags/{CHROME_VERSION}/chrome/VERSION
   //

@@ -108,14 +108,12 @@ export const mdComponentsNoValidation: MDComponents = {
 };
 
 const nonLinkableTypes = [
-  'AsyncIterableIterator',
   'ColorValue',
   'Component',
   'ComponentClass',
   'PureComponent',
   'E',
   'EventSubscription',
-  'IterableIterator',
   'Listener',
   'NativeSyntheticEvent',
   'ParsedQs',
@@ -154,6 +152,8 @@ const replaceableTypes: Partial<Record<string, string>> = {
 };
 
 const hardcodedTypeLinks: Record<string, string> = {
+  AsyncIterableIterator:
+    'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator',
   AVPlaybackSource: '/versions/latest/sdk/av/#avplaybacksource',
   AVPlaybackStatus: '/versions/latest/sdk/av/#avplaybackstatus',
   AVPlaybackStatusToSet: '/versions/latest/sdk/av/#avplaybackstatustoset',
@@ -166,6 +166,8 @@ const hardcodedTypeLinks: Record<string, string> = {
     'https://github.com/expo/expo/blob/main/packages/%40expo/config-types/src/ExpoConfig.ts',
   File: 'https://developer.mozilla.org/en-US/docs/Web/API/File',
   FileList: 'https://developer.mozilla.org/en-US/docs/Web/API/FileList',
+  IterableIterator:
+    'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator',
   Manifest: '/versions/latest/sdk/constants/#manifest',
   MediaTrackSettings: 'https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings',
   MessageEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent',
@@ -580,16 +582,11 @@ const getParamTags = (shortText?: string) => {
   return Array.from(shortText.matchAll(PARAM_TAGS_REGEX), match => match[0]);
 };
 
-export const getCommentContent = (content: CommentContentData[], ignoreCodeBlock = false) => {
-  const commentText = content
+export const getCommentContent = (content: CommentContentData[]) => {
+  return content
     .map(entry => entry.text)
     .join('')
     .trim();
-
-  if (ignoreCodeBlock) {
-    return commentText.replace(/```.+\n/, '').replace(/\n```/, '');
-  }
-  return commentText;
 };
 
 export const CommentTextBlock = ({

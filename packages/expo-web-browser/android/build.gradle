@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '12.8.0'
+version = '12.8.2'
 
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -95,7 +95,7 @@ android {
   namespace "expo.modules.webbrowser"
   defaultConfig {
     versionCode 18
-    versionName '12.8.0'
+    versionName '12.8.2'
   }
 }
 
@@ -106,7 +106,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   }
 
-  api "androidx.browser:browser:1.2.0"
+  api "androidx.browser:browser:1.6.0"
 
   implementation "androidx.core:core-ktx:1.7.0"
 

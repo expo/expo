@@ -6,9 +6,37 @@
 
 ### 🎉 New features
 
-- Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 6.7.4 — 2024-01-23
 
 ### 🐛 Bug fixes
+
+- Fixed splash screen backgroundColor not applied, by reverting [#25971](https://github.com/expo/expo/pull/25971). ([#26536](https://github.com/expo/expo/pull/26536) by [@kudo](https://github.com/kudo))
+
+## 6.7.3 — 2024-01-05
+
+### 🐛 Bug fixes
+
+- Fixed white splash screen flickering in dark mode. ([#25933](https://github.com/expo/expo/pull/25933) by [@kudo](https://github.com/kudo))
+
+## 6.7.2 — 2023-12-19
+
+### 🐛 Bug fixes
+
+- Move `expo-module-scripts` to `devDependencies` instead of `peerDependencies`. ([#25994](https://github.com/expo/expo/pull/25994) by [@byCedric](https://github.com/byCedric))
+
+## 6.7.1 — 2023-12-15
+
+_This version does not introduce any user-facing changes._
+
+## 6.7.0 — 2023-12-12
+
+### 🎉 New features
+
+- Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 

@@ -52,6 +52,12 @@ internal class InvalidArgumentsException: Exception {
   }
 }
 
+internal class InvalidBindParameterException: Exception {
+  override var reason: String {
+    "Invalid bind parameter"
+  }
+}
+
 internal class AccessClosedResourceException: Exception {
   override var reason: String {
     "Access to closed resource"

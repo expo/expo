@@ -151,6 +151,20 @@ Modify **android/app/src/main/AndroidManifest.xml** to add the `expo-updates` co
          android:label="@string/app_name"
 ```
 
+If using the updates server URL shown above (a custom non-HTTPS update server running on the same machine), you will need to modify **android/app/src/main/AndroidManifest.xml** as shown below:
+
+```diff android/app/src/main/AndroidManifest.xml
+ <application
+  android:name=".MainApplication"
+  android:label="@string/app_name"
+  android:icon="@mipmap/ic_launcher"
+  android:roundIcon="@mipmap/ic_launcher_round"
+  android:allowBackup="false"
+  android:theme="@style/AppTheme"
++ android:usesCleartextTraffic="true"
+ >
+```
+
 Add the Expo runtime version string key to **android/app/src/main/res/values/strings.xml**:
 
 <DiffBlock source="/static/diffs/expo-update-strings-xml.diff" />

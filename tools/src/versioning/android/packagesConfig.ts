@@ -25,6 +25,9 @@ export const packagesToKeep: string[] = [
   'expo.modules.notifications.FirebaseListenerService',
   'expo.modules.notifications.tokens.interfaces',
   'expo.modules.notifications.tokens.PushTokenManager',
+  'expo.modules.updates.DisabledUpdatesController',
+  'expo.modules.updates.EnabledUpdatesController',
+  'expo.modules.updates.IUpdatesController',
   'expo.modules.updates.UpdatesConfiguration',
   'expo.modules.updates.UpdatesController',
   'expo.modules.updates.UpdatesUtils',
@@ -38,6 +41,7 @@ export const packagesToKeep: string[] = [
   'expo.modules.splashscreen.singletons',
   'expo.modules.splashscreen.SplashScreenViewProvider',
   'expo.modules.splashscreen.SplashScreenImageResizeMode',
+  'com.caverock.androidsvg',
   'com.facebook.proguard.annotations.DoNotStrip',
 ];
 

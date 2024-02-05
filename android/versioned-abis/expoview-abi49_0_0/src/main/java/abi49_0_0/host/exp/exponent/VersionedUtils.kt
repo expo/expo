@@ -212,7 +212,8 @@ object VersionedUtils {
         ExponentPackage(
           instanceManagerBuilderProperties.experienceProperties,
           instanceManagerBuilderProperties.manifest,
-          null, null,
+          null,
+          null,
           instanceManagerBuilderProperties.singletonModules
         )
       )
@@ -240,14 +241,16 @@ object VersionedUtils {
       } else {
         null
       }
-    } else try {
-      val devSettingsModule = reactApplicationContext.catalystInstance.getNativeModule("DevSettings")
-      val devSupportManagerField = devSettingsModule!!.javaClass.getDeclaredField("mDevSupportManager")
-      devSupportManagerField.isAccessible = true
-      RNObject.wrap(devSupportManagerField[devSettingsModule]!!)
-    } catch (e: Throwable) {
-      e.printStackTrace()
-      null
+    } else {
+      try {
+        val devSettingsModule = reactApplicationContext.catalystInstance.getNativeModule("DevSettings")
+        val devSupportManagerField = devSettingsModule!!.javaClass.getDeclaredField("mDevSupportManager")
+        devSupportManagerField.isAccessible = true
+        RNObject.wrap(devSupportManagerField[devSettingsModule]!!)
+      } catch (e: Throwable) {
+        e.printStackTrace()
+        null
+      }
     }
   }
 
@@ -258,9 +261,13 @@ object VersionedUtils {
     val deviceName = AndroidInfoHelpers.getFriendlyDeviceName()
 
     val jsEngineFromManifest = instanceManagerBuilderProperties.manifest.jsEngine
-    return if (jsEngineFromManifest == "hermes") HermesExecutorFactory() else JSCExecutorFactory(
-      appName,
-      deviceName
-    )
+    return if (jsEngineFromManifest == "hermes") {
+      HermesExecutorFactory()
+    } else {
+      JSCExecutorFactory(
+        appName,
+        deviceName
+      )
+    }
   }
 }

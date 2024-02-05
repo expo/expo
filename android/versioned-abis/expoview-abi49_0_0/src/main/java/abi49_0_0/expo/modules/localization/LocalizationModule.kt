@@ -19,7 +19,7 @@ import abi49_0_0.expo.modules.kotlin.modules.ModuleDefinition
 import java.text.DecimalFormatSymbols
 import java.util.*
 
-import host.exp.expoview.R
+import expo.modules.localization.R
 
 // must be kept in sync with https://github.com/facebook/react-native/blob/main/ReactAndroid/src/main/java/com/facebook/react/modules/i18nmanager/I18nUtil.java
 private const val SHARED_PREFS_NAME = "com.facebook.react.modules.i18nmanager.I18nUtil"
@@ -138,9 +138,13 @@ class LocalizationModule : Module() {
         else -> "metric"
       }
     } else {
-      if (getRegionCode(locale).equals("uk")) "uk"
-      else if (USES_IMPERIAL.contains(getRegionCode(locale))) "us"
-      else "metric"
+      if (getRegionCode(locale).equals("uk")) {
+        "uk"
+      } else if (USES_IMPERIAL.contains(getRegionCode(locale))) {
+        "us"
+      } else {
+        "metric"
+      }
     }
   }
 
@@ -166,7 +170,7 @@ class LocalizationModule : Module() {
             "currencyCode" to decimalFormat.currency.currencyCode,
 
             // currency symbol can be localized to display locale (1st on the list) or to the locale for the currency (as done here).
-            "currencySymbol" to Currency.getInstance(locale).getSymbol(locale),
+            "currencySymbol" to Currency.getInstance(locale).getSymbol(locale)
           )
         )
       } catch (e: Exception) {

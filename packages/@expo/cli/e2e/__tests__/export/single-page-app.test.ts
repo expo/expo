@@ -23,8 +23,7 @@ describe('exports with single-page', () => {
           EXPO_USE_STATIC: 'single',
           E2E_ROUTER_SRC: 'static-rendering',
           E2E_ROUTER_ASYNC: 'development',
-          // TODO: Reenable this after investigating unstable_getRealPath
-          EXPO_USE_FAST_RESOLVER: 'false',
+          EXPO_USE_FAST_RESOLVER: 'true',
         },
       });
     },

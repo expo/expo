@@ -65,8 +65,8 @@ android {
     applicationId 'host.exp.exponent'
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 192
-    versionName '2.29.0'
+    versionCode 225
+    versionName '2.30.9'
     // END VERSIONS
 
     multiDexEnabled true

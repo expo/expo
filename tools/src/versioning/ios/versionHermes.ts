@@ -181,11 +181,23 @@ function buildHermesAsync(hermesRoot: string, options?: VersionHermesOptions) {
   });
 }
 
-async function removeUnusedHeaders(hermesRoot: string, versionName: string) {
+async function updateDistHeaders(hermesRoot: string, versionName: string) {
   const destRoot = path.join(hermesRoot, 'destroot');
+  const versionedJsiDir = path.join(hermesRoot, VERSIONED_JSI_DIR);
 
   // remove jsi headers
   await fs.remove(path.join(destRoot, 'include', 'jsi'));
+
+  // copy versioned jsi headers
+  const versionedJsiHeaderDestdir = path.join(destRoot, 'include', `${versionName}jsi`);
+  const jsiHeaders = Array.from(
+    await searchFilesAsync(versionedJsiDir, [`**/${versionName}*/*.h`], { absolute: true })
+  );
+  await Promise.all(
+    jsiHeaders.map((file) =>
+      fs.copy(file, path.join(versionedJsiHeaderDestdir, path.basename(file)))
+    )
+  );
 
   // remove unused and unversioned headers
   const files = Array.from(
@@ -224,7 +236,7 @@ export async function createVersionedHermesTarball(
 
     const tarball = path.join(EXPO_DIR, `${versionName}hermes.tar.gz`);
     logger.log(`Archiving hermes tarball: ${tarball}`);
-    await removeUnusedHeaders(hermesRoot, versionName);
+    await updateDistHeaders(hermesRoot, versionName);
     // NOTE(kudo): we should include the _LICENSE_ file in the tarball, otherwise CocoaPods will get empty result from tarball extraction.
     await spawnAsync('tar', ['cvfz', tarball, 'destroot', 'LICENSE'], {
       cwd: hermesRoot,

@@ -13,7 +13,9 @@ import { useHome_CurrentUserActorQuery } from '../../graphql/types';
 export function AccountModal() {
   const theme = useExpoTheme();
 
-  const { data, loading, error, refetch } = useHome_CurrentUserActorQuery();
+  const { data, loading, error, refetch } = useHome_CurrentUserActorQuery({
+    fetchPolicy: 'cache-and-network',
+  });
 
   if (loading) {
     return (
@@ -40,7 +42,7 @@ export function AccountModal() {
             style={{ borderWidth: 1, borderColor: theme.border.warning }}>
             <Row align="center">
               <Ionicons
-                name={Platform.select({ ios: 'ios-warning', default: 'md-warning' })}
+                name="warning"
                 size={18}
                 lightColor={theme.text.warning}
                 darkColor={theme.text.warning}

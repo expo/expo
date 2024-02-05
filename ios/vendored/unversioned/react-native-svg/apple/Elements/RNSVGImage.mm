@@ -32,8 +32,6 @@
 #import <React/RCTImageResponseObserverProxy.h>
 #import <React/RCTImageSource.h>
 #import <react/renderer/components/rnsvg/ComponentDescriptors.h>
-#import <react/renderer/components/view/conversions.h>
-#import <react/renderer/imagemanager/RCTImagePrimitivesConversions.h>
 #import <rnsvg/RNSVGImageComponentDescriptor.h>
 #import "RNSVGFabricConversions.h"
 
@@ -72,7 +70,7 @@ using namespace facebook::react;
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  const auto &newProps = *std::static_pointer_cast<const RNSVGImageProps>(props);
+  const auto &newProps = static_cast<const RNSVGImageProps &>(*props);
 
   self.x = [RNSVGLength lengthWithString:RCTNSStringFromString(newProps.x)];
   self.y = [RNSVGLength lengthWithString:RCTNSStringFromString(newProps.y)];

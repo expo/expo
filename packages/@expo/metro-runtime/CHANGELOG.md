@@ -6,11 +6,37 @@
 
 ### 🎉 New features
 
-- Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Send platform to Metro. ([#26812](https://github.com/expo/expo/pull/26812) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 3.1.2 — 2024-01-23
+
+### 🎉 New features
+
+- Add error handling for Metro build errors in split chunks. ([#26609](https://github.com/expo/expo/pull/26609) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 3.1.1 — 2024-01-18
+
+### 🐛 Bug fixes
+
+- Fixed lazy component errors on Android. ([#26464](https://github.com/expo/expo/pull/26464) by [@kudo](https://github.com/kudo))
+
+## 3.1.0 — 2023-12-12
+
+### 🎉 New features
+
+- Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- Use `build` directory for native usage. ([#25655](https://github.com/expo/expo/pull/25655) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Skip showing "Downloading..." overlay on web. ([#25832](https://github.com/expo/expo/pull/25832) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.0.4 — 2023-11-14
 

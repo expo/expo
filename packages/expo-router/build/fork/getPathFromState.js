@@ -152,8 +152,7 @@ function walkConfigItems(route, focusedRoute, configs, { preserveDynamicRoutes, 
         pattern = inputPattern;
         if (route.params) {
             const params = processParamsWithUserSettings(configItem, route.params);
-            // TODO: Does this need to be a null check?
-            if (pattern) {
+            if (pattern !== undefined && pattern !== null) {
                 Object.assign(collectedParams, params);
             }
             if (deepEqual(focusedRoute, route)) {
@@ -291,7 +290,17 @@ function getPathFromResolvedState(state, configs, { preserveGroups, preserveDyna
 function decodeParams(params) {
     const parsed = {};
     for (const [key, value] of Object.entries(params)) {
-        parsed[key] = decodeURIComponent(value);
+        try {
+            if (Array.isArray(value)) {
+                parsed[key] = value.map((v) => decodeURIComponent(v));
+            }
+            else {
+                parsed[key] = decodeURIComponent(value);
+            }
+        }
+        catch {
+            parsed[key] = value;
+        }
     }
     return parsed;
 }
@@ -372,7 +381,9 @@ function getParamsWithConventionsCollapsed({ pattern, routeName, params, }) {
     // Deep Dynamic Routes
     if (segments.some((segment) => segment.startsWith('*'))) {
         // NOTE(EvanBacon): Drop the param name matching the wildcard route name -- this is specific to Expo Router.
-        const name = (0, matchers_1.matchDeepDynamicRouteName)(routeName) ?? routeName;
+        const name = (0, matchers_1.testNotFound)(routeName)
+            ? 'not-found'
+            : (0, matchers_1.matchDeepDynamicRouteName)(routeName) ?? routeName;
         delete processedParams[name];
     }
     return processedParams;

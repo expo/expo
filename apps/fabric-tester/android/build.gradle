@@ -9,7 +9,6 @@ buildscript {
         if (findProperty('android.kotlinVersion')) {
             kotlinVersion = findProperty('android.kotlinVersion')
         }
-        frescoVersion = findProperty('expo.frescoVersion') ?: '2.5.0'
         // for expo-dev-client
         expoUpdatesVersion = null
 

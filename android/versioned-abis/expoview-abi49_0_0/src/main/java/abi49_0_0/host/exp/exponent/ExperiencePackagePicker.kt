@@ -94,7 +94,7 @@ object ExperiencePackagePicker : ModulesProvider {
     SplashScreenPackage(),
     SystemUIPackage(),
     TaskManagerPackage(),
-    UpdatesPackage(),
+    UpdatesPackage()
   )
 
   /**
@@ -148,6 +148,6 @@ object ExperiencePackagePicker : ModulesProvider {
     VideoThumbnailsModule::class.java,
     VideoViewModule::class.java,
     WebBrowserModule::class.java,
-    BrightnessModule::class.java,
+    BrightnessModule::class.java
   )
 }

@@ -1,9 +1,8 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 // swiftlint:disable line_length
-// swiftlint:disable type_body_length
-// swiftlint:disable closure_body_length
 // swiftlint:disable force_unwrapping
+// swiftlint:disable identifier_name
 
 import Foundation
 import ExpoModulesCore
@@ -27,7 +26,20 @@ public struct UpdatesModuleConstants {
    */
   let assetFilesMap: [String: Any]?
 
+  /**
+   Whether there is no runtime version (or sdkVersion) provided in configuration. If it is missing,
+   updates will be disabled and a warning will be logged.
+   */
   let isMissingRuntimeVersion: Bool
+
+  /**
+   Whether the JS API methods should allow calling the native module methods and thus the methods
+   on the controller in development. For non-expo development we want to throw
+   at the JS layer since there isn't a controller set up. But for development within Expo Go
+   or a Dev Client, which have their own controller/JS API implementations, we want the JS API
+   calls to go through.
+   */
+  let shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: Bool
 }
 
 public enum CheckForUpdateResult {
@@ -139,35 +151,86 @@ public class AppController: NSObject {
     assert(_sharedInstance != nil, "AppController.sharedInstace was called before the module was initialized")
     return _sharedInstance!
   }
+  private static var _overrideConfig: UpdatesConfig?
 
-  public static func initializeWithoutStarting(configuration: [String: Any]?) {
+  public static func initializeWithoutStarting() {
     if _sharedInstance != nil {
       return
     }
 
-    if UpdatesConfig.canCreateValidConfiguration(mergingOtherDictionary: configuration) {
-      var config: UpdatesConfig?
-      do {
-        config = try UpdatesConfig.configWithExpoPlist(mergingOtherDictionary: configuration)
-      } catch {
-        NSException(
-          name: .internalInconsistencyException,
-          reason: "Cannot load configuration from Expo.plist. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."
-        )
-        .raise()
-      }
+    let logger = UpdatesLogger()
 
+    // swiftlint:disable closure_body_length
+    let config = _overrideConfig != nil ? _overrideConfig : {
+      let updatesConfigurationValidationResult = UpdatesConfig.getUpdatesConfigurationValidationResult(mergingOtherDictionary: nil)
+      switch updatesConfigurationValidationResult {
+      case .Valid:
+        guard let config = try? UpdatesConfig.configWithExpoPlist(mergingOtherDictionary: nil) else {
+          NSException(
+            name: .internalInconsistencyException,
+            reason: "Cannot load configuration from Expo.plist. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."
+          )
+          .raise()
+          return nil
+        }
+        return config
+      case .InvalidPlistError:
+        logger.warn(
+          message: "The expo-updates system is disabled due to an invalid configuration. Ensure a valid Expo.plist is present in the application bundle.",
+          code: .initializationError
+        )
+      case .InvalidNotEnabled:
+        logger.warn(
+          message: "The expo-updates system is explicitly disabled. To enable it, set the enabled setting to true.",
+          code: .initializationError
+        )
+      case .InvalidMissingURL:
+        logger.warn(
+          message: "The expo-updates system is disabled due to an invalid configuration. Ensure a valid URL is supplied.",
+          code: .initializationError
+        )
+      case .InvalidMissingRuntimeVersion:
+        logger.warn(
+          message: "The expo-updates system is disabled due to an invalid configuration. Ensure a runtime version is supplied.",
+          code: .initializationError
+        )
+      }
+      return nil
+    }()
+    // swiftlint:enable closure_body_length
+
+    if let config = config {
       let updatesDatabase = UpdatesDatabase()
       do {
         let directory = try initializeUpdatesDirectory()
         try initializeUpdatesDatabase(updatesDatabase: updatesDatabase, inUpdatesDirectory: directory)
-        _sharedInstance = EnabledAppController(config: config!, database: updatesDatabase, updatesDirectory: directory)
+        _sharedInstance = EnabledAppController(config: config, database: updatesDatabase, updatesDirectory: directory)
       } catch {
-        _sharedInstance = DisabledAppController(error: error, isMissingRuntimeVersion: UpdatesConfig.isMissingRuntimeVersion(mergingOtherDictionary: configuration))
+        logger.error(
+          message: "The expo-updates system is disabled due to an error during initialization: \(error.localizedDescription)",
+          code: .initializationError
+        )
+        _sharedInstance = DisabledAppController(error: error, isMissingRuntimeVersion: UpdatesConfig.isMissingRuntimeVersion(mergingOtherDictionary: nil))
         return
       }
     } else {
-      _sharedInstance = DisabledAppController(error: nil, isMissingRuntimeVersion: UpdatesConfig.isMissingRuntimeVersion(mergingOtherDictionary: configuration))
+      _sharedInstance = DisabledAppController(error: nil, isMissingRuntimeVersion: UpdatesConfig.isMissingRuntimeVersion(mergingOtherDictionary: nil))
+    }
+  }
+
+  public static func overrideConfiguration(configuration: [String: Any]?) {
+    if _sharedInstance != nil {
+      fatalError("The method should be called before AppController.initializeWithoutStarting()")
+    }
+    let updatesConfigurationValidationResult = UpdatesConfig.getUpdatesConfigurationValidationResult(mergingOtherDictionary: configuration)
+    if updatesConfigurationValidationResult == UpdatesConfigurationValidationResult.Valid {
+      do {
+        _overrideConfig = try UpdatesConfig.configWithExpoPlist(mergingOtherDictionary: configuration)
+      } catch {
+        UpdatesLogger().warn(message: "Failed to overrideConfiguration: invalid configuration: Cannot load configuration from Expo.plist")
+      }
+    } else {
+      UpdatesLogger().warn(message: "Failed to overrideConfiguration: \(updatesConfigurationValidationResult)")
     }
   }
 
@@ -175,7 +238,7 @@ public class AppController: NSObject {
     assert(_sharedInstance == nil, "UpdatesController must not be initialized prior to calling initializeAsDevLauncherWithoutStarting")
 
     var config: UpdatesConfig?
-    if UpdatesConfig.canCreateValidConfiguration(mergingOtherDictionary: nil) {
+    if UpdatesConfig.getUpdatesConfigurationValidationResult(mergingOtherDictionary: nil) == UpdatesConfigurationValidationResult.Valid {
       config = try? UpdatesConfig.configWithExpoPlist(mergingOtherDictionary: nil)
     }
 
@@ -224,7 +287,6 @@ public class AppController: NSObject {
   }
 }
 
+// swiftlint:enable identifier_name
 // swiftlint:enable force_unwrapping
-// swiftlint:enable closure_body_length
 // swiftlint:enable line_length
-// swiftlint:enable type_body_length

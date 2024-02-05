@@ -7,7 +7,7 @@ import abi49_0_0.expo.modules.kotlin.types.AnyType
 
 enum class Queues {
   MAIN,
-  DEFAULT,
+  DEFAULT
 }
 
 abstract class BaseAsyncFunctionComponent(

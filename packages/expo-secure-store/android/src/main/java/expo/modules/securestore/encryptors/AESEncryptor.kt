@@ -78,7 +78,7 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
     keyStoreEntry: KeyStore.SecretKeyEntry,
     requireAuthentication: Boolean,
     authenticationPrompt: String,
-    authenticationHelper: AuthenticationHelper,
+    authenticationHelper: AuthenticationHelper
   ): JSONObject {
     val secretKey = keyStoreEntry.secretKey
     val cipher = Cipher.getInstance(AES_CIPHER)

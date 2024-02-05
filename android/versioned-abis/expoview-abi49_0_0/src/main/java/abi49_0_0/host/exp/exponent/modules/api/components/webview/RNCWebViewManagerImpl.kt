@@ -140,7 +140,7 @@ class RNCWebViewManagerImpl {
   }
 
   private fun setupWebChromeClient(
-    webView: RNCWebView,
+    webView: RNCWebView
   ) {
     val activity = webView.themedReactContext.currentActivity
     if (mAllowsFullscreenVideo && activity != null) {

@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/build/Ionicons';
 import Constants from 'expo-constants';
 import { Row, View, Text, useExpoTheme } from 'expo-dev-client-components';
 import React from 'react';
-import { Image, Linking, Platform, StyleSheet, TouchableOpacity } from 'react-native';
+import { Image, Linking, StyleSheet, TouchableOpacity } from 'react-native';
 
 type Props = {
   task: { manifestUrl: string; manifestString: string };
@@ -35,13 +35,15 @@ function getInfoFromManifest(
       isVerified: (manifest as any).isVerified,
     };
   } else {
-    // no properties for bare manifests
+    // classic manifests no longer have types, but we still want to show info for
+    // them
+    const maybeClassicManifest = manifest as any;
     return {
-      iconUrl: undefined,
-      taskName: undefined,
-      sdkVersion: undefined,
-      runtimeVersion: undefined,
-      isVerified: undefined,
+      iconUrl: maybeClassicManifest.iconUrl,
+      taskName: maybeClassicManifest.name,
+      sdkVersion: maybeClassicManifest.sdkVersion,
+      runtimeVersion: stringOrUndefined(maybeClassicManifest.runtimeVersion),
+      isVerified: maybeClassicManifest.isVerified,
     };
   }
 }
@@ -94,7 +96,7 @@ export function DevMenuTaskInfo({ task }: Props) {
                   marginTop: 3,
                 }}>
                 <Ionicons
-                  name={Platform.select({ ios: 'ios-warning', default: 'md-warning' })}
+                  name="warning"
                   size={14}
                   color={theme.text.warning}
                   lightColor={theme.text.warning}

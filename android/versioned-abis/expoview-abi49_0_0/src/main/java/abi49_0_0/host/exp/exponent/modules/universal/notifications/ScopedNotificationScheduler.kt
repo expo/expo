@@ -24,7 +24,9 @@ class ScopedNotificationScheduler(context: Context, private val experienceKey: E
   override fun getSchedulingContext(): Context {
     return if (context is ScopedContext) {
       (context as ScopedContext).baseContext
-    } else context
+    } else {
+      context
+    }
   }
 
   override fun createNotificationRequest(

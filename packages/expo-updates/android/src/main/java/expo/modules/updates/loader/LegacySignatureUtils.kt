@@ -95,7 +95,9 @@ private fun verifyPublicRSASignature(
   val signature = Signature.getInstance("SHA256withRSA")
   val decodedPublicKey = Base64.decode(publicKeyNoComments, Base64.DEFAULT)
   val publicKeySpec = X509EncodedKeySpec(decodedPublicKey)
-  @SuppressLint("InlinedApi") val keyFactory = KeyFactory.getInstance(KeyProperties.KEY_ALGORITHM_RSA)
+
+  @SuppressLint("InlinedApi")
+  val keyFactory = KeyFactory.getInstance(KeyProperties.KEY_ALGORITHM_RSA)
   val key = keyFactory.generatePublic(publicKeySpec)
   signature.initVerify(key)
   signature.update(plainText.toByteArray())

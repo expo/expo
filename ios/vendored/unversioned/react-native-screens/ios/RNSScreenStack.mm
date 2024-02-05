@@ -323,6 +323,38 @@ namespace react = facebook::react;
   }
 }
 
++ (UIViewController *)findTopMostPresentedViewControllerFromViewController:(UIViewController *)controller
+{
+  auto presentedVc = controller;
+  while (presentedVc.presentedViewController != nil) {
+    presentedVc = presentedVc.presentedViewController;
+  }
+  return presentedVc;
+}
+
+- (UIViewController *)findReactRootViewController
+{
+  UIView *parent = self;
+  while (parent) {
+    parent = parent.reactSuperview;
+    if (parent.isReactRootView) {
+      return parent.reactViewController;
+    }
+  }
+  return nil;
+}
+
+- (UIViewController *)lastFromPresentedViewControllerChainStartingFrom:(UIViewController *)vc
+{
+  UIViewController *lastNonNullVc = vc;
+  UIViewController *lastVc = vc.presentedViewController;
+  while (lastVc != nil) {
+    lastNonNullVc = lastVc;
+    lastVc = lastVc.presentedViewController;
+  }
+  return lastNonNullVc;
+}
+
 - (void)setModalViewControllers:(NSArray<UIViewController *> *)controllers
 {
   // prevent re-entry
@@ -349,9 +381,15 @@ namespace react = facebook::react;
   NSMutableArray<UIViewController *> *newControllers = [NSMutableArray arrayWithArray:controllers];
   [newControllers removeObjectsInArray:_presentedModals];
 
-  // find bottom-most controller that should stay on the stack for the duration of transition
+  // We need to find bottom-most view controller that should stay on the stack
+  // for the duration of transition. There are couple of scenarios:
+  // (1) No modals are presented or all modals were presented by this RNSNavigationController,
+  // (2) There are modals presented by other RNSNavigationControllers (nested/outer)
+
+  // Last controller that is common for both _presentedModals & controllers
+  __block UIViewController *changeRootController = _controller;
+  // Last common controller index + 1
   NSUInteger changeRootIndex = 0;
-  UIViewController *changeRootController = _controller;
   for (NSUInteger i = 0; i < MIN(_presentedModals.count, controllers.count); i++) {
     if (_presentedModals[i] == controllers[i]) {
       changeRootController = controllers[i];
@@ -403,6 +441,7 @@ namespace react = facebook::react;
       return;
     } else {
       UIViewController *previous = changeRootController;
+
       for (NSUInteger i = changeRootIndex; i < controllers.count; i++) {
         UIViewController *next = controllers[i];
         BOOL lastModal = (i == controllers.count - 1);
@@ -440,16 +479,38 @@ namespace react = facebook::react;
     }
   };
 
-  if (changeRootController.presentedViewController != nil &&
-      [_presentedModals containsObject:changeRootController.presentedViewController]) {
+  UIViewController *firstModalToBeDismissed = changeRootController.presentedViewController;
+  if (firstModalToBeDismissed != nil) {
     BOOL shouldAnimate = changeRootIndex == controllers.count &&
-        [changeRootController.presentedViewController isKindOfClass:[RNSScreen class]] &&
-        ((RNSScreen *)changeRootController.presentedViewController).screenView.stackAnimation !=
-            RNSScreenStackAnimationNone;
-    [changeRootController dismissViewControllerAnimated:shouldAnimate completion:finish];
-  } else {
-    finish();
+        [firstModalToBeDismissed isKindOfClass:[RNSScreen class]] &&
+        ((RNSScreen *)firstModalToBeDismissed).screenView.stackAnimation != RNSScreenStackAnimationNone;
+
+    if ([_presentedModals containsObject:firstModalToBeDismissed]) {
+      // We dismiss every VC that was presented by changeRootController VC or its descendant.
+      // After the series of dismissals is completed we run completion block in which
+      // we present modals on top of changeRootController (which may be the this stack VC)
+      [changeRootController dismissViewControllerAnimated:shouldAnimate completion:finish];
+      return;
+    }
+
+    UIViewController *lastModalVc = [self lastFromPresentedViewControllerChainStartingFrom:firstModalToBeDismissed];
+
+    if (lastModalVc != firstModalToBeDismissed) {
+      [lastModalVc dismissViewControllerAnimated:shouldAnimate completion:finish];
+      return;
+    }
   }
+
+  // changeRootController does not have presentedViewController but it does not mean that no modals are in presentation,
+  // so we need to find top-level controller manually
+  UIViewController *reactRootVc = [self findReactRootViewController];
+  UIViewController *topMostVc = [RNSScreenStackView findTopMostPresentedViewControllerFromViewController:reactRootVc];
+
+  if (topMostVc != reactRootVc) {
+    changeRootController = topMostVc;
+  }
+
+  finish();
 }
 
 - (void)setPushViewControllers:(NSArray<UIViewController *> *)controllers

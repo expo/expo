@@ -5,6 +5,7 @@ import path from 'path';
 
 import { getUserDefinedFile } from './publicFolder';
 import { ExportAssetMap } from './saveAssets';
+import { Log } from '../log';
 
 const debug = require('debug')('expo:favicon') as typeof console.log;
 
@@ -34,7 +35,10 @@ export async function getVirtualFaviconAssetsAsync(
       const assetPath = path.join(outputDir, asset.path);
       if (files) {
         debug('Storing asset for persisting: ' + assetPath);
-        files?.set(asset.path, { contents: asset.source });
+        files?.set(asset.path, {
+          contents: asset.source,
+          targetDomain: 'client',
+        });
       } else {
         debug('Writing asset to disk: ' + assetPath);
         await fs.promises.writeFile(assetPath, asset.source);
@@ -55,7 +59,10 @@ export async function getVirtualFaviconAssetsAsync(
   return injectFaviconTag;
 }
 
-export async function getFaviconFromExpoConfigAsync(projectRoot: string) {
+export async function getFaviconFromExpoConfigAsync(
+  projectRoot: string,
+  { force = false }: { force?: boolean } = {}
+) {
   const { exp } = getConfig(projectRoot);
 
   const src = exp.web?.favicon ?? null;
@@ -67,19 +74,28 @@ export async function getFaviconFromExpoConfigAsync(projectRoot: string) {
   const cacheType = 'favicon';
 
   const size = dims[dims.length - 1];
-  const { source } = await generateImageAsync(
-    { projectRoot, cacheType },
-    {
-      resizeMode: 'contain',
-      src,
-      backgroundColor: 'transparent',
-      width: size,
-      height: size,
-      name: `favicon-${size}.png`,
+  try {
+    const { source } = await generateImageAsync(
+      { projectRoot, cacheType },
+      {
+        resizeMode: 'contain',
+        src,
+        backgroundColor: 'transparent',
+        width: size,
+        height: size,
+        name: `favicon-${size}.png`,
+      }
+    );
+
+    const faviconBuffer = await generateFaviconAsync(source, dims);
+
+    return { source: faviconBuffer, path: 'favicon.ico' };
+  } catch (error: any) {
+    // Check for ENOENT
+    if (!force && error.code === 'ENOENT') {
+      Log.warn(`Favicon source file in Expo config (web.favicon) does not exist: ${src}`);
+      return null;
     }
-  );
-
-  const faviconBuffer = await generateFaviconAsync(source, dims);
-
-  return { source: faviconBuffer, path: 'favicon.ico' };
+    throw error;
+  }
 }

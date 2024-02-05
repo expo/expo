@@ -1,6 +1,6 @@
 {
   "name": "expo-contacts",
-  "version": "12.7.0",
+  "version": "12.8.2",
   "description": "Provides access to the phone's system contacts.",
   "main": "build/Contacts.js",
   "types": "build/Contacts.d.ts",
@@ -33,11 +33,7 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "dependencies": {
-    "uuid": "^3.4.0"
-  },
   "devDependencies": {
-    "@types/uuid": "^3.4.7",
     "expo-module-scripts": "^3.0.0"
   },
   "peerDependencies": {

@@ -10,6 +10,7 @@
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTUtils.h>
+#import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
 NSString *kEXExpoDeepLinkSeparator = @"--/";
 NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
@@ -17,10 +18,13 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
 @interface EXKernelLinkingManager ()
 
 @property (nonatomic, weak) EXReactAppManager *appManagerToRefresh;
-
+@property int priority;
 @end
 
+
 @implementation EXKernelLinkingManager
+
+EX_REGISTER_SINGLETON_MODULE(KernelLinkingManager);
 
 - (void)openUrl:(NSString *)urlString isUniversalLink:(BOOL)isUniversalLink
 {
@@ -251,6 +255,14 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
 }
 
 #pragma mark - UIApplication hooks
+
+- (BOOL)application:(UIApplication *)application
+            openURL:(NSURL *)URL
+            options:options
+{
+  [[EXKernel sharedInstance].serviceRegistry.linkingManager openUrl:URL.absoluteString isUniversalLink:NO];
+  return YES;
+}
 
 + (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)URL

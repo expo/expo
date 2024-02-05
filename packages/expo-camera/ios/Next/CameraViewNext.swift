@@ -214,11 +214,13 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
       self.addErrorNotification()
 
-      self.sessionQueue.asyncAfter(deadline: .now() + round(50 / 1_000_000)) {
+      self.session.commitConfiguration()
+      self.session.startRunning()
+      self.onCameraReady()
+
+      // Delay starting the scanner
+      self.sessionQueue.asyncAfter(deadline: .now() + 0.5) {
         self.barcodeScanner.maybeStartBarCodeScanning()
-        self.session.commitConfiguration()
-        self.session.startRunning()
-        self.onCameraReady()
       }
     }
   }
@@ -476,7 +478,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
         if updatedMetadata[kCGImagePropertyGPSDictionary as String] == nil {
           updatedMetadata[kCGImagePropertyGPSDictionary as String] = gpsDict
         } else {
-          if var metadataGpsDict = updatedMetadata[kCGImagePropertyGPSDictionary as String] as? NSMutableDictionary {
+          if let metadataGpsDict = updatedMetadata[kCGImagePropertyGPSDictionary as String] as? NSMutableDictionary {
             metadataGpsDict.addEntries(from: gpsDict)
           }
         }
@@ -553,7 +555,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
 
     if let maxDuration = options.maxDuration {
-      videoFileOutput.maxRecordedDuration = CMTime(seconds: maxDuration, preferredTimescale: 30)
+      videoFileOutput.maxRecordedDuration = CMTime(seconds: maxDuration, preferredTimescale: 1000)
     }
 
     if let maxFileSize = options.maxFileSize {

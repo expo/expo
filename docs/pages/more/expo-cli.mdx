@@ -33,7 +33,7 @@ Usage
   $ npx expo <command>
 
 Commands
-  start, export, export:web
+  start, export
   run:ios, run:android, prebuild
   install, customize, config
   login, logout, whoami, register
@@ -266,13 +266,13 @@ The following options are provided:
 
 <Tab label="SDK 50 and above">
 
-You can configure the prefix for static assets by setting the `experiments.basePath` field in your [app config](/workflow/configuration/):
+You can configure the prefix for static assets by setting the `experiments.baseUrl` field in your [app config](/workflow/configuration/):
 
 ```json app.json
 {
   "expo": {
     "experiments": {
-      "basePath": "/my-root"
+      "baseUrl": "/my-root"
     }
   }
 }
@@ -280,7 +280,7 @@ You can configure the prefix for static assets by setting the `experiments.baseP
 
 This will export the website with all resources prefixed with `/my-root`. For example, an image at `assets/image.png` will be expected to be hosted at **/my-root/assets/image.png**. The actual file will be located in the same file system location as the entire directory is expected to be hosted at `/my-root` on the server.
 
-Expo Router has built-in support for `basePath`. When using the `Link` and `router` APIs, the `basePath` will be automatically prepended to the URL.
+Expo Router has built-in support for `baseUrl`. When using the `Link` and `router` APIs, the `baseUrl` will be automatically prepended to the URL.
 
 ```js app/blog/index.tsx
 import { Link } from 'expo-router';
@@ -296,11 +296,11 @@ This will **export** to the following:
 <a href="/my-root/post/123">Go to blog post</a>
 ```
 
-If you use `<a>`, React Navigation, or the `Linking` API directly, you'll need to manually prepend the `basePath`.
+If you use `<a>`, React Navigation, or the `Linking` API directly, you'll need to manually prepend the `baseUrl`.
 
-The `basePath` functionality is production-only and must be set before exporting the website. If you change the value, you must re-export the website.
+The `baseUrl` functionality is production-only and must be set before exporting the website. If you change the value, you must re-export the website.
 
-Images and other assets will work automatically if you `require` or `import` them. If you directly reference a resource URL then you will need to append the **basePath** manually.
+Images and other assets will work automatically if you `require` or `import` them. If you directly reference a resource URL then you will need to append the **baseUrl** manually.
 
 ```js app/index.tsx
 import { Image } from 'expo-image';
@@ -330,7 +330,7 @@ export default function Blog() {
 
 ### Exporting with webpack
 
-> webpack is only supported for the Web platform.
+> **warning** Expo Webpack has been deprecated in favor of universal Metro (`npx expo export`).
 
 You can export the JavaScript and assets for your web app using webpack by running the following:
 
@@ -493,13 +493,15 @@ From here, you can choose to generate basic project files like:
 | `EXPO_IMAGE_UTILS_NO_SHARP`         | **boolean** | Disable the usage of global Sharp CLI installation in favor of the slower Jimp package for image manipulation. This is used in places like `npx expo prebuild` for generating app icons.                                                                                                                                                                                             |
 | `EXPO_TUNNEL_SUBDOMAIN`             | **boolean** | <StatusTag status="experimental" /><br/>Disable using `exp.direct` as the hostname for `--tunnel` connections. This enables **https://** forwarding which can be used to test universal links on iOS. This may cause unexpected issues with `expo-linking` and Expo Go. Select the exact subdomain to use by passing a `string` value that is not one of: `true`, `false`, `1`, `0`. |
 | `EXPO_METRO_NO_MAIN_FIELD_OVERRIDE` | **boolean** | Force Expo CLI to use the [`resolver.resolverMainFields`](https://facebook.github.io/metro/docs/configuration/#resolvermainfields) from the project's **metro.config.js** for all platforms. By default, Expo CLI will use `['browser', 'module', 'main']`, which is the default for webpack, for the web and the user-defined main fields for other platforms.                      |
-| `EXPO_NO_INSPECTOR_PROXY`           | **boolean** | <StatusTag note="SDK 49+" /><br/>Disable the customized inspector proxy with improved support for the Chrome DevTools protocol.<br/>This includes support for the network inspector.                                                                                                                                                                                                 |
+| `EXPO_NO_INSPECTOR_PROXY`           | **boolean** | <StatusTag note="deprecated" /><br/>Disable the customized inspector proxy with improved support for the Chrome DevTools protocol.<br/>This includes support for the network inspector.                                                                                                                                                                                              |
 | `EXPO_NO_CLIENT_ENV_VARS`           | **boolean** | <StatusTag note="SDK 49+" /><br/>Prevent inlining `EXPO_PUBLIC_` environment variables in client bundles.                                                                                                                                                                                                                                                                            |
 | `EXPO_NO_DOTENV`                    | **boolean** | <StatusTag note="SDK 49+" /><br/>Prevent all `.env` file loading across Expo CLI.                                                                                                                                                                                                                                                                                                    |
 | `EXPO_NO_METRO_LAZY`                | **boolean** | Prevent adding the `lazy=true` query parameter to Metro URLs (`metro@0.76.3` and greater). This disables `import()` support.                                                                                                                                                                                                                                                         |
 | `EXPO_USE_TYPED_ROUTES`             | **boolean** | Use `expo.experiments.typedRoutes` to enable statically typed routes in Expo Router.                                                                                                                                                                                                                                                                                                 |
 | `EXPO_METRO_UNSTABLE_ERRORS`        | **boolean** | <StatusTag status="experimental" /><br/>Enable unstable error message improvements in Metro bundler. The features behind this flag are subject to removal and may be upstreamed.                                                                                                                                                                                                     |
 | `EXPO_USE_METRO_WORKSPACE_ROOT`     | **boolean** | Enable auto server root detection for Metro. This will change the server root to the workspace root. Useful for monorepos.                                                                                                                                                                                                                                                           |
+| `EXPO_USE_UNSTABLE_DEBUGGER`        | **boolean** | <StatusTag status="experimental" /><br/>Enable the experimental debugger from React Native.                                                                                                                                                                                                                                                                                          |
+| `EXPO_ADB_USER`                     | **string**  | <StatusTag status="SDK 50+" /><br/>Set the `user` number that should be passed to `--user` with ADB commands. Used for installing APKs on Android devices with multiple profiles. Defaults to `0`.                                                                                                                                                                                   |
 
 ## Telemetry
 

@@ -37,3 +37,5 @@
 - (void)requestToCloseDevMenu;
 
 @end
+
+extern NSString *const kEXLastFatalErrorDateDefaultsKey;

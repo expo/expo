@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 7.9.0 — 2023-12-12
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed an issue where `timeFrame` exceeding video duration failed to generate a thumbnail. Implemented clamping. ([#25681](https://github.com/expo/expo/pull/25681) by [@hirbod](https://github.com/hirbod))
+
+### 💡 Others
+
 - [iOS] Replace legacy `FileSystem` interfaces usage with core `FileSystemUtilities`. ([#25495](https://github.com/expo/expo/pull/25495) by [@alanhughes](https://github.com/alanjhughes))
 
 ## 7.8.0 — 2023-11-14

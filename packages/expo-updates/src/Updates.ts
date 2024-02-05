@@ -1,4 +1,4 @@
-import { CodedError, NativeModulesProxy, UnavailabilityError } from 'expo-modules-core';
+import { CodedError, UnavailabilityError } from 'expo-modules-core';
 
 import ExpoUpdates from './ExpoUpdates';
 import {
@@ -10,6 +10,17 @@ import {
   UpdatesLogEntry,
   UpdatesNativeStateMachineContext,
 } from './Updates.types';
+
+/**
+ * Whether expo-updates is enabled. This may be false in a variety of cases including:
+ * - enabled set to false in configuration
+ * - missing or invalid URL in configuration
+ * - missing runtime version or SDK version in configuration
+ * - error accessing storage on device during initialization
+ *
+ * When false, the embedded update is loaded.
+ */
+export const isEnabled: boolean = !!ExpoUpdates.isEnabled;
 
 /**
  * The UUID that uniquely identifies the currently running update. The
@@ -104,13 +115,23 @@ export const createdAt: Date | null = ExpoUpdates.commitTime
   ? new Date(ExpoUpdates.commitTime)
   : null;
 
-const isUsingDeveloperTool = !!(manifest as any).developer?.tool;
-const isUsingExpoDevelopmentClient = NativeModulesProxy.ExponentConstants?.appOwnership === 'expo';
-const manualUpdatesInstructions = isUsingExpoDevelopmentClient
-  ? 'To test manual updates, publish your project using `expo publish` and open the published ' +
-    'version in this development client.'
-  : 'To test manual updates, make a release build with `npm run ios --configuration Release` or ' +
-    '`npm run android --variant Release`.';
+/**
+ * During non-expo development we block accessing the updates API methods on the JS side, but when developing in
+ * Expo Go or a development client build, the controllers should have control over which API methods should
+ * be allowed.
+ */
+const shouldDeferToNativeForAPIMethodAvailabilityInDevelopment =
+  !!ExpoUpdates.shouldDeferToNativeForAPIMethodAvailabilityInDevelopment;
+
+/**
+ * Developer tool is set when a project is served by `expo start`.
+ */
+const isUsingDeveloperTool =
+  'extra' in manifest ? !!manifest.extra?.expoGo?.developer?.tool : false;
+
+const manualUpdatesInstructions =
+  'To test usage of the expo-updates JS API in your app, make a release build with `npx expo run:ios --configuration Release` or ' +
+  '`npx expo run:android --variant Release`.';
 
 /**
  * Instructs the app to reload using the most recently downloaded version. This is useful for
@@ -124,8 +145,8 @@ const manualUpdatesInstructions = isUsingExpoDevelopmentClient
  * executed after the `Updates.reloadAsync` method call resolves, since that depends on the OS and
  * the state of the native module and main threads.
  *
- * This method cannot be used in development mode, and the returned promise will be rejected if you
- * try to do so.
+ * This method cannot be used in Expo Go or development mode, and the returned promise will be rejected if you
+ * try to do so. It also rejects when expo-updates is not enabled.
  *
  * @return A promise that fulfills right before the reload instruction is sent to the JS runtime, or
  * rejects if it cannot find a reference to the JS runtime. If the promise is rejected in production
@@ -140,7 +161,10 @@ export async function reloadAsync(): Promise<void> {
   if (!ExpoUpdates.reload) {
     throw new UnavailabilityError('Updates', 'reloadAsync');
   }
-  if (!ExpoUpdates?.nativeDebug && __DEV__ && !isUsingExpoDevelopmentClient) {
+  if (
+    (__DEV__ || isUsingDeveloperTool) &&
+    !shouldDeferToNativeForAPIMethodAvailabilityInDevelopment
+  ) {
     throw new CodedError(
       'ERR_UPDATES_DISABLED',
       `You cannot use the Updates module in development mode in a production app. ${manualUpdatesInstructions}`
@@ -161,14 +185,17 @@ export async function reloadAsync(): Promise<void> {
  *
  * @return A promise that fulfills with an [`UpdateCheckResult`](#updatecheckresult) object.
  *
- * The promise rejects if the app is in development mode, or if there is an unexpected error or
- * timeout communicating with the server.
+ * The promise rejects in Expo Go or if the app is in development mode, or if there is an unexpected error or
+ * timeout communicating with the server. It also rejects when expo-updates is not enabled.
  */
 export async function checkForUpdateAsync(): Promise<UpdateCheckResult> {
   if (!ExpoUpdates.checkForUpdateAsync) {
     throw new UnavailabilityError('Updates', 'checkForUpdateAsync');
   }
-  if (!ExpoUpdates?.nativeDebug && (__DEV__ || isUsingDeveloperTool)) {
+  if (
+    (__DEV__ || isUsingDeveloperTool) &&
+    !shouldDeferToNativeForAPIMethodAvailabilityInDevelopment
+  ) {
     throw new CodedError(
       'ERR_UPDATES_DISABLED',
       `You cannot check for updates in development mode. ${manualUpdatesInstructions}`
@@ -186,6 +213,8 @@ export async function checkForUpdateAsync(): Promise<UpdateCheckResult> {
 
 /**
  * Retrieves the current extra params.
+ *
+ * This method cannot be used in Expo Go or development mode. It also rejects when expo-updates is not enabled.
  */
 export async function getExtraParamsAsync(): Promise<{ [key: string]: string }> {
   if (!ExpoUpdates.getExtraParamsAsync) {
@@ -199,6 +228,8 @@ export async function getExtraParamsAsync(): Promise<{ [key: string]: string }> 
  * Sets an extra param if value is non-null, otherwise unsets the param.
  * Extra params are sent as an [Expo Structured Field Value Dictionary](https://docs.expo.dev/technical-specs/expo-sfv-0/)
  * in the `Expo-Extra-Params` header of update requests. A compliant update server may use these params when selecting an update to serve.
+ *
+ * This method cannot be used in Expo Go or development mode. It also rejects when expo-updates is not enabled.
  */
 export async function setExtraParamAsync(
   key: string,
@@ -256,14 +287,17 @@ export async function clearLogEntriesAsync(): Promise<void> {
  *
  * @return A promise that fulfills with an [`UpdateFetchResult`](#updatefetchresult) object.
  *
- * The promise rejects if the app is in development mode, or if there is an unexpected error or
- * timeout communicating with the server.
+ * The promise rejects in Expo Go or if the app is in development mode, or if there is an unexpected error or
+ * timeout communicating with the server. It also rejects when expo-updates is not enabled.
  */
 export async function fetchUpdateAsync(): Promise<UpdateFetchResult> {
   if (!ExpoUpdates.fetchUpdateAsync) {
     throw new UnavailabilityError('Updates', 'fetchUpdateAsync');
   }
-  if (!ExpoUpdates?.nativeDebug && (__DEV__ || isUsingDeveloperTool)) {
+  if (
+    (__DEV__ || isUsingDeveloperTool) &&
+    !shouldDeferToNativeForAPIMethodAvailabilityInDevelopment
+  ) {
     throw new CodedError(
       'ERR_UPDATES_DISABLED',
       `You cannot fetch updates in development mode. ${manualUpdatesInstructions}`

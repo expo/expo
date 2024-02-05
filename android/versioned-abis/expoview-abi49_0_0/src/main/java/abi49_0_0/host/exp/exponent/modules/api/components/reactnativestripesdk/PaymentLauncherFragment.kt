@@ -34,7 +34,7 @@ class PaymentLauncherFragment(
   private val setupIntentClientSecret: String? = null,
   private val confirmSetupParams: ConfirmSetupIntentParams? = null,
   // Used when handling the next action on a payment intent
-  private val handleNextActionClientSecret: String? = null,
+  private val handleNextActionClientSecret: String? = null
 ) : Fragment() {
   private lateinit var paymentLauncher: PaymentLauncher
 
@@ -106,7 +106,7 @@ class PaymentLauncherFragment(
         publishableKey,
         stripeAccountId,
         promise,
-        handleNextActionClientSecret = handleNextActionClientSecret,
+        handleNextActionClientSecret = handleNextActionClientSecret
       )
       addFragment(paymentLauncherFragment, context, promise)
       return paymentLauncherFragment
@@ -177,7 +177,9 @@ class PaymentLauncherFragment(
 
   private fun retrieveSetupIntent(clientSecret: String, stripeAccountId: String?) {
     stripe.retrieveSetupIntent(
-      clientSecret, stripeAccountId, expand = listOf("payment_method"),
+      clientSecret,
+      stripeAccountId,
+      expand = listOf("payment_method"),
       object : ApiResultCallback<SetupIntent> {
         override fun onError(e: Exception) {
           promise.resolve(createError(ConfirmSetupIntentErrorType.Failed.toString(), e))
@@ -221,7 +223,9 @@ class PaymentLauncherFragment(
 
   private fun retrievePaymentIntent(clientSecret: String, stripeAccountId: String?) {
     stripe.retrievePaymentIntent(
-      clientSecret, stripeAccountId, expand = listOf("payment_method"),
+      clientSecret,
+      stripeAccountId,
+      expand = listOf("payment_method"),
       object : ApiResultCallback<PaymentIntent> {
         override fun onError(e: Exception) {
           promise.resolve(createError(ConfirmPaymentErrorType.Failed.toString(), e))
@@ -281,7 +285,7 @@ class PaymentLauncherFragment(
       StripeIntent.NextActionType.UpiAwaitNotification,
       StripeIntent.NextActionType.CashAppRedirect,
       StripeIntent.NextActionType.SwishRedirect,
-      null, -> false
+      null -> false
     }
   }
 }

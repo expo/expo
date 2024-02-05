@@ -759,6 +759,9 @@ module.exports = {
         },
         ExpoDocumentPicker: {},
         ExpoGo: { expoVersion: { type: 'string' }, projectConfig: { type: 'object' } },
+        ExpoFontLoader: {
+          customNativeFonts: { type: 'array' },
+        },
         ExpoHaptics: {},
         ExpoHead: { activities: { type: 'object' } },
         ExpoImage: {},

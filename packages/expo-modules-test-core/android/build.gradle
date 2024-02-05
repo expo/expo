@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'org.unimodules'
-version = '0.16.0'
+version = '0.17.2'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 if (expoModulesCorePlugin.exists()) {
@@ -94,7 +94,7 @@ android {
   namespace "org.unimodules.test.core"
   defaultConfig {
     versionCode 3
-    versionName '0.16.0'
+    versionName '0.17.2'
   }
 }
 
@@ -113,8 +113,7 @@ dependencies {
   api 'io.mockk:mockk:1.13.5'
   api "org.robolectric:robolectric:4.10"
 
-  //noinspection GradleDynamicVersion
-  implementation 'com.facebook.react:react-native:+'
+  implementation 'com.facebook.react:react-android'
 
   implementation "org.jetbrains.kotlin:kotlin-reflect:${getKotlinVersion()}"
 }

@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 0.11.1 — 2024-02-01
+
+### 🎉 New features
+
+- Added `useLegacyPackaging` property to instruct AGP to compress native libraries in the APK. ([#26779](https://github.com/expo/expo/pull/26779) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 0.11.0 — 2023-11-14
 
 ### 🛠 Breaking changes

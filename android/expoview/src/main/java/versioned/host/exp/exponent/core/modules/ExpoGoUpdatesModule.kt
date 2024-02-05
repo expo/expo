@@ -7,7 +7,6 @@ import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.updates.BuildConfig
 import expo.modules.updates.logging.UpdatesLogEntry
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.statemachine.UpdatesStateContext
@@ -43,7 +42,8 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
         constants["runtimeVersion"] = configuration.runtimeVersionRaw ?: ""
         constants["checkAutomatically"] = configuration.checkOnLaunch.toJSString()
         constants["channel"] = configuration.requestHeaders["expo-channel-name"] ?: ""
-        constants["nativeDebug"] = BuildConfig.EX_UPDATES_NATIVE_DEBUG
+        constants["nativeDebug"] = false
+        constants["shouldDeferToNativeForAPIMethodAvailabilityInDevelopment"] = true
 
         val launchedUpdate = appLoaderLocal.launcher.launchedUpdate
         if (launchedUpdate != null) {
@@ -79,7 +79,7 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
     AsyncFunction("checkForUpdateAsync") { promise: Promise ->
       promise.reject(
         "ERR_NOT_SUPPORTED",
-        "checkForUpdateAsync() is not accessible in Expo Go. Please use a Development Client build to test.",
+        "checkForUpdateAsync() is not supported in Expo Go. A non-development build should be used to test this functionality.",
         null
       )
     }
@@ -87,7 +87,7 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
     AsyncFunction("fetchUpdateAsync") { promise: Promise ->
       promise.reject(
         "ERR_NOT_SUPPORTED",
-        "fetchUpdateAsync() is not accessible in Expo Go. Please use a Development Client build to test.",
+        "fetchUpdateAsync() is not supported in Expo Go. A non-development build should be used to test this functionality.",
         null
       )
     }
@@ -95,7 +95,7 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
     AsyncFunction("getExtraParamsAsync") { promise: Promise ->
       promise.reject(
         "ERR_NOT_SUPPORTED",
-        "getExtraParamsAsync() is not accessible in Expo Go. Please use a Development Client build to test.",
+        "getExtraParamsAsync() is not supported in Expo Go. A non-development build should be used to test this functionality.",
         null
       )
     }
@@ -103,7 +103,7 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
     AsyncFunction("setExtraParamAsync") { promise: Promise ->
       promise.reject(
         "ERR_NOT_SUPPORTED",
-        "setExtraParamAsync() is not accessible in Expo Go. Please use a Development Client build to test.",
+        "setExtraParamAsync() is not supported in Expo Go. A non-development build should be used to test this functionality.",
         null
       )
     }

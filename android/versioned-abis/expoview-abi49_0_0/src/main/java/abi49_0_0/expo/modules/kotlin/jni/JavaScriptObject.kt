@@ -27,7 +27,7 @@ open class JavaScriptObject @DoNotStrip internal constructor(@DoNotStrip private
     /**
      * If set, the value associated with the property may be changed with an assignment operator.
      */
-    Writable(1 shl 2),
+    Writable(1 shl 2)
   }
 
   fun isValid() = mHybridData.isValid

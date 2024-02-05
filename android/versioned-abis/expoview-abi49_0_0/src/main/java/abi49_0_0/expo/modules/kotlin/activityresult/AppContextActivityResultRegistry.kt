@@ -97,7 +97,7 @@ class AppContextActivityResultRegistry(
   fun <I : Serializable, O> onLaunch(
     requestCode: Int,
     contract: AppContextActivityResultContract<I, O>,
-    @SuppressLint("UnknownNullness") input: I,
+    @SuppressLint("UnknownNullness") input: I
   ) {
     // Start activity path
     val intent = contract.createIntent(activity, input)
@@ -120,14 +120,20 @@ class AppContextActivityResultRegistry(
         try {
           // startIntentSenderForResult path
           ActivityCompat.startIntentSenderForResult(
-            activity, request.intentSender,
-            requestCode, request.fillInIntent, request.flagsMask,
-            request.flagsValues, 0, optionsBundle
+            activity,
+            request.intentSender,
+            requestCode,
+            request.fillInIntent,
+            request.flagsMask,
+            request.flagsValues,
+            0,
+            optionsBundle
           )
         } catch (e: IntentSender.SendIntentException) {
           Handler(Looper.getMainLooper()).post {
             dispatchResult(
-              requestCode, Activity.RESULT_CANCELED,
+              requestCode,
+              Activity.RESULT_CANCELED,
               Intent().setAction(StartIntentSenderForResult.ACTION_INTENT_SENDER_REQUEST)
                 .putExtra(StartIntentSenderForResult.EXTRA_SEND_INTENT_EXCEPTION, e)
             )
@@ -339,7 +345,7 @@ class AppContextActivityResultRegistry(
      * Main callback that might not be available, because the app might be re-created
      */
     val mainCallback: ActivityResultCallback<O>?,
-    val contract: AppContextActivityResultContract<I, O>,
+    val contract: AppContextActivityResultContract<I, O>
   )
 
   class LifecycleContainer internal constructor(val lifecycle: Lifecycle) {

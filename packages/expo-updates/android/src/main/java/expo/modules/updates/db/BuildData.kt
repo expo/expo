@@ -33,7 +33,7 @@ object BuildData {
 
   fun ensureBuildDataIsConsistent(
     updatesConfiguration: UpdatesConfiguration,
-    database: UpdatesDatabase,
+    database: UpdatesDatabase
   ) {
     val scopeKey = updatesConfiguration.scopeKey
     val buildJSON = getBuildDataFromDatabase(database, scopeKey)
@@ -78,7 +78,7 @@ object BuildData {
 
   fun setBuildDataInDatabase(
     database: UpdatesDatabase,
-    updatesConfiguration: UpdatesConfiguration,
+    updatesConfiguration: UpdatesConfiguration
   ) {
     val buildDataJSON = getBuildDataFromConfig(updatesConfiguration)
     database.jsonDataDao()?.setJSONStringForKey(

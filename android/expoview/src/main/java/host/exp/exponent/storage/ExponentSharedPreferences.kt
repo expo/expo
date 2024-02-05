@@ -43,6 +43,14 @@ class ExponentSharedPreferences constructor(val context: Context) {
     sharedPreferences.edit().putInt(key.preferenceKey, value).apply()
   }
 
+  fun getLong(key: ExponentSharedPreferencesKey): Long {
+    return sharedPreferences.getLong(key.preferenceKey, 0)
+  }
+
+  fun setLong(key: ExponentSharedPreferencesKey, value: Long) {
+    sharedPreferences.edit().putLong(key.preferenceKey, value).apply()
+  }
+
   fun getString(key: ExponentSharedPreferencesKey): String? {
     return getString(key, null)
   }
@@ -152,9 +160,10 @@ class ExponentSharedPreferences constructor(val context: Context) {
     REFERRER_KEY("referrer"),
     NUX_HAS_FINISHED_FIRST_RUN_KEY("nux_has_finished_first_run"),
     IS_ONBOARDING_FINISHED_KEY("is_onboarding_finished"),
+    LAST_FATAL_ERROR_DATE_KEY("last_fatal_error_date_key"),
     SHOULD_NOT_USE_KERNEL_CACHE("should_not_use_kernel_cache"),
     KERNEL_REVISION_ID("kernel_revision_id"),
     EXPO_AUTH_SESSION("expo_auth_session"),
-    OKHTTP_CACHE_VERSION_KEY("okhttp_cache_version"),
+    OKHTTP_CACHE_VERSION_KEY("okhttp_cache_version")
   }
 }

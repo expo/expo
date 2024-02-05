@@ -10,6 +10,34 @@
 
 ### 💡 Others
 
+## 15.4.5 — 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 15.4.4 — 2024-01-15
+
+### 🐛 Bug fixes
+
+- Fixed build error on AGP 8.2. ([#26362](https://github.com/expo/expo/pull/26362) by [@kudo](https://github.com/kudo))
+
+## 15.4.3 — 2024-01-10
+
+### 🎉 New features
+
+- Added support for macOS platform. ([#26233](https://github.com/expo/expo/pull/26233) by [@tsapeta](https://github.com/tsapeta))
+
+## 15.4.2 — 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 15.4.1 — 2023-12-13
+
+_This version does not introduce any user-facing changes._
+
+## 15.4.0 — 2023-12-12
+
+### 💡 Others
+
 - Drop `crypto` usage on web. ([#25411](https://github.com/expo/expo/pull/25411) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 15.3.0 — 2023-11-14

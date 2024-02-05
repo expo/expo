@@ -139,7 +139,8 @@ class DevMenuManager {
    */
   fun requestToClose(activity: ExperienceActivity) {
     ExponentKernelModule.queueEvent(
-      "ExponentKernel.requestToCloseDevMenu", Arguments.createMap(),
+      "ExponentKernel.requestToCloseDevMenu",
+      Arguments.createMap(),
       object : ExponentKernelModuleProvider.KernelEventCallback {
         override fun onEventSuccess(result: ReadableMap) {
           hideInActivity(activity)
@@ -295,12 +296,10 @@ class DevMenuManager {
       throw Exception("Kernel's React instance manager is not initialized yet.")
     }
 
-    if (reactRootView == null) {
-      reactRootView = ReactUnthemedRootView(kernel.activityContext)
-      reactRootView?.startReactApplication(kernel.reactInstanceManager, DEV_MENU_JS_MODULE_NAME, initialProps)
-    } else {
-      reactRootView?.appProperties = initialProps
-    }
+    reactRootView?.unmountReactApplication()
+
+    reactRootView = ReactUnthemedRootView(kernel.activityContext)
+    reactRootView?.startReactApplication(kernel.reactInstanceManager, DEV_MENU_JS_MODULE_NAME, initialProps)
 
     val rootView = reactRootView!!
 

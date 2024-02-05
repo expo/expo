@@ -1,8 +1,20 @@
 {
   "name": "install-expo-modules",
-  "version": "0.6.4",
+  "version": "0.8.1",
+  "license": "MIT",
   "description": "Tools to install expo-modules for existing react-native projects",
-  "main": "build",
+  "keywords": [
+    "expo",
+    "expo-modules",
+    "npx",
+    "react-native",
+    "react"
+  ],
+  "bin": "build/index.js",
+  "main": "build/index.js",
+  "files": [
+    "build"
+  ],
   "scripts": {
     "build": "ncc build ./src/index.ts -o build/",
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
@@ -14,33 +26,24 @@
     "typecheck": "expo-module typecheck",
     "watch": "yarn run build --watch"
   },
-  "bin": "./build/index.js",
-  "files": [
-    "build"
-  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/install-expo-modules#readme",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/install-expo-modules"
   },
-  "keywords": [
-    "expo",
-    "expo-modules",
-    "npx",
-    "react-native",
-    "react"
-  ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "homepage": "https://github.com/expo/expo/tree/main/packages/install-expo-modules#readme",
-  "dependencies": {
+  "devDependencies": {
     "@expo/config": "^8.4.0",
     "@expo/config-plugins": "^7.7.0",
     "@expo/package-manager": "^1.0.3",
+    "@types/prompts": "^2.0.6",
+    "@types/semver": "^6.0.0",
     "chalk": "^4.1.2",
     "commander": "2.20.0",
+    "expo-module-scripts": "^3.3.0",
     "find-up": "^5.0.0",
     "glob": "7.1.6",
     "prompts": "^2.3.2",
@@ -48,11 +51,6 @@
     "semver": "7.3.2",
     "terminal-link": "^2.1.1",
     "xcparse": "^0.0.3"
-  },
-  "devDependencies": {
-    "@types/prompts": "^2.0.6",
-    "@types/semver": "^6.0.0",
-    "expo-module-scripts": "^3.3.0"
   },
   "publishConfig": {
     "access": "public"

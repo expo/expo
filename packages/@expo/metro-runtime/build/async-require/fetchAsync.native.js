@@ -16,13 +16,14 @@ const react_native_1 = require("react-native");
 const RCTNetworking_1 = __importDefault(require("react-native/Libraries/Network/RCTNetworking"));
 function fetchAsync(url) {
     let id = null;
+    let statusCode = null;
     let responseText = null;
     let headers = {};
     let dataListener = null;
     let completeListener = null;
     let responseListener = null;
     return new Promise((resolve, reject) => {
-        const addListener = RCTNetworking_1.default.addListener;
+        const addListener = RCTNetworking_1.default.addListener.bind(RCTNetworking_1.default);
         dataListener = addListener('didReceiveNetworkData', ([requestId, response]) => {
             if (requestId === id) {
                 responseText = response;
@@ -30,6 +31,7 @@ function fetchAsync(url) {
         });
         responseListener = addListener('didReceiveNetworkResponse', ([requestId, status, responseHeaders]) => {
             if (requestId === id) {
+                statusCode = status;
                 headers = responseHeaders;
             }
         });
@@ -39,7 +41,7 @@ function fetchAsync(url) {
                     reject(error);
                 }
                 else {
-                    resolve({ body: responseText, headers });
+                    resolve({ body: responseText, status: statusCode, headers });
                 }
             }
         });

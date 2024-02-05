@@ -18,7 +18,7 @@ Before you can use an app/universal links, you have to setup the two-way associa
 1. **Native app verification:** This requires some form of code signing that references the target website domain (URL).
 2. **Website verification:** This requires a file to be hosted on the target website in the **/.well-known** directory.
 
-After the two-way association is setup, you have to setup the runtime routing of the link in your app. This is done in JavaScript and must be configured for every route, then coordinated between web and native. Expo offers a fully automated solution for this called [Expo Router](/routing/introduction/).
+After the two-way association is setup, you have to setup the runtime routing of the link in your app. This is done in JavaScript and must be configured for every route, then coordinated between web and native. Expo offers a fully automated solution for this called [Expo Router](/router/introduction/).
 
 > Universal links cannot be tested in the Expo Go app. You need to create a [development build](/develop/development-builds/introduction).
 
@@ -67,7 +67,7 @@ On the web-side, you have to host a config file from **/.well-known/apple-app-si
 
 > You can run the **experimental** CLI command `npx setup-safari` to automatically register a bundle identifier to your Apple account, assign entitlements to the ID, and create an iTunes app entry in the store. The local setup will be printed and you can skip most the following. This is the easiest way to get started with universal links on iOS.
 
-If you're using [Expo Router](/routing/introduction/) to build your website (or another modern React framework like Remix, Next.js, and so on), create the file at **public/.well-known/apple-app-site-association**. Legacy Expo webpack projects can create the file at **web/.well-known/apple-app-site-association**.
+If you're using [Expo Router](/router/introduction/) to build your website (or another modern React framework like Remix, Next.js, and so on), create the file at **public/.well-known/apple-app-site-association**. Legacy Expo webpack projects can create the file at **web/.well-known/apple-app-site-association**.
 
 ```json public/.well-known/apple-app-site-association
 {
@@ -417,7 +417,7 @@ This is the easiest way to set up deep links in your app because it requires a m
 
 The main problem is that if the user does not have your app installed and follows a link to your app with its custom scheme, their operating system will indicate that the page couldn't be opened but not give much more information. This is not a great experience. There is no way to work around this in the browser.
 
-Additionally, many messaging apps do not autolink URLs with custom schemes -- for example, `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]` might just show up as plain text in your browser rather than as a link ([exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]](#)).
+Additionally, many messaging apps do not autolink URLs with custom schemes. For example, `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]` might just show up as plain text in your browser rather than as a link ([exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]](#)).
 
 An example of this is Gmail which strips the `href` property from the links of most apps, a trick to use is to link to a regular HTTPS URL instead of your app's custom scheme, this will open the user's web browser. Browsers do not usually strip the `href` property so you can host a file online that redirects the user to your app's custom schemes.
 

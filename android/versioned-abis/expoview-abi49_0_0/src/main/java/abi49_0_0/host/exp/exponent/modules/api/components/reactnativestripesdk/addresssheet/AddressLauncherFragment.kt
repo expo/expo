@@ -92,7 +92,7 @@ class AddressLauncherFragment : Fragment() {
       additionalFields = additionalFields,
       title = title,
       googlePlacesApiKey = googlePlacesApiKey,
-      autocompleteCountries = autocompleteCountries,
+      autocompleteCountries = autocompleteCountries
     )
     this.callback = callback
     (context.currentActivity as? FragmentActivity)?.let {

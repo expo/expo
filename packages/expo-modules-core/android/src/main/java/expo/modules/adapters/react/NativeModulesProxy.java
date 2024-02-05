@@ -97,7 +97,10 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
     }
 
     mModuleRegistry.ensureIsInitialized();
-    getKotlinInteropModuleRegistry().installJSIInterop();
+
+    KotlinInteropModuleRegistry kotlinModuleRegistry = getKotlinInteropModuleRegistry();
+    kotlinModuleRegistry.emitOnCreate();
+    kotlinModuleRegistry.installJSIInterop();
 
     Collection<ExportedModule> exportedModules = mModuleRegistry.getAllExportedModules();
 

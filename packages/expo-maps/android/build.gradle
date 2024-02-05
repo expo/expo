@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '0.4.0'
+version = '0.4.1'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 if (expoModulesCorePlugin.exists()) {
@@ -54,7 +54,7 @@ android {
   // Remove this if and it's contents, when support for SDK49 is dropped
   if (!safeExtGet("expoProvidesDefaultConfig", false)) {
     compileSdkVersion safeExtGet("compileSdkVersion", 34)
-    
+
     defaultConfig {
       minSdkVersion safeExtGet("minSdkVersion", 23)
       targetSdkVersion safeExtGet("targetSdkVersion", 34)
@@ -80,7 +80,7 @@ android {
   namespace "expo.modules.maps"
   defaultConfig {
     versionCode 1
-    versionName '0.4.0'
+    versionName '0.4.1'
   }
   publishing {
     singleVariant("release") {
@@ -102,6 +102,5 @@ dependencies {
   implementation "com.google.android.libraries.places:places:2.6.0"
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3"
-  //noinspection GradleDynamicVersion
-  implementation 'com.facebook.react:react-native:+'
+  implementation 'com.facebook.react:react-android'
 }

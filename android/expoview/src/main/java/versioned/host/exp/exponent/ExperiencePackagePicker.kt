@@ -12,6 +12,7 @@ import expo.modules.blur.BlurModule
 import expo.modules.brightness.BrightnessModule
 import expo.modules.calendar.CalendarModule
 import expo.modules.camera.CameraViewModule
+import expo.modules.camera.next.CameraViewNextModule
 import expo.modules.cellular.CellularModule
 import expo.modules.clipboard.ClipboardModule
 import expo.modules.constants.ConstantsModule
@@ -80,6 +81,7 @@ import expo.modules.systemui.SystemUIModule
 import expo.modules.systemui.SystemUIPackage
 import expo.modules.taskManager.TaskManagerModule
 import expo.modules.taskManager.TaskManagerPackage
+import expo.modules.trackingtransparency.TrackingTransparencyModule
 import expo.modules.updates.UpdatesPackage
 import expo.modules.videothumbnails.VideoThumbnailsModule
 import expo.modules.webbrowser.WebBrowserModule
@@ -99,7 +101,7 @@ object ExperiencePackagePicker : ModulesProvider {
     SplashScreenPackage(),
     SystemUIPackage(),
     TaskManagerPackage(),
-    UpdatesPackage(),
+    UpdatesPackage()
   )
 
   /**
@@ -144,6 +146,7 @@ object ExperiencePackagePicker : ModulesProvider {
     BlurModule::class.java,
     CalendarModule::class.java,
     CameraViewModule::class.java,
+    CameraViewNextModule::class.java,
     CellularModule::class.java,
     ClipboardModule::class.java,
     CryptoModule::class.java,
@@ -185,9 +188,10 @@ object ExperiencePackagePicker : ModulesProvider {
     SQLiteModuleNext::class.java,
     SystemUIModule::class.java,
     TaskManagerModule::class.java,
+    TrackingTransparencyModule::class.java,
     VideoThumbnailsModule::class.java,
     VideoViewModule::class.java,
     WebBrowserModule::class.java,
-    BrightnessModule::class.java,
+    BrightnessModule::class.java
   )
 }

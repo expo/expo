@@ -1,6 +1,6 @@
 {
   "name": "expo-eas-client",
-  "version": "0.11.0",
+  "version": "0.11.2",
   "description": "Stable client identifier for EAS services",
   "main": "build/index.js",
   "types": "build/index.d.ts",

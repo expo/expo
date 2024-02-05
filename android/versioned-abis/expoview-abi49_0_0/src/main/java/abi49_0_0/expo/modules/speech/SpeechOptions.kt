@@ -11,7 +11,6 @@ data class SpeechOptions(
 ) {
   companion object {
     fun optionsFromMap(options: Map<String, Any?>?, promise: Promise): SpeechOptions? {
-
       if (options == null) {
         return SpeechOptions(null, null, null, null)
       }
