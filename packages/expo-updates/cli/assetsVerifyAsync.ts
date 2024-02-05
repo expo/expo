@@ -30,8 +30,8 @@ export async function getMissingAssetsAsync(
     await getBuildManifestAsync(buildManifestPath)
   );
 
-  const fullAssetMap = await getFullAssetDumpAsync(assetMapPath);
-  const fullAssetSet = getFullAssetDumpHashSet(fullAssetMap);
+  const fullAssetDump = await getFullAssetDumpAsync(assetMapPath);
+  const { fullAssetHashSet, fullAssetHashMap } = getFullAssetDumpHashSet(fullAssetDump);
 
   const exportedAssetSet = getExportedMetadataHashSet(
     await getExportedMetadataAsync(exportMetadataPath),
@@ -40,16 +40,16 @@ export async function getMissingAssetsAsync(
 
   debug(`Assets in build: ${JSON.stringify([...buildManifestHashSet], null, 2)}`);
   debug(`Assets in exported bundle: ${JSON.stringify([...exportedAssetSet], null, 2)}`);
-  debug(`All assets resolved by Metro: ${JSON.stringify([...fullAssetSet], null, 2)}`);
+  debug(`All assets resolved by Metro: ${JSON.stringify([...fullAssetHashSet], null, 2)}`);
 
   const buildAssetsPlusExportedAssets = new Set(buildManifestHashSet);
   exportedAssetSet.forEach((hash) => buildAssetsPlusExportedAssets.add(hash));
 
   const missingAssets: FullAssetDumpEntry[] = [];
 
-  fullAssetSet.forEach((hash) => {
+  fullAssetHashSet.forEach((hash) => {
     if (!buildAssetsPlusExportedAssets.has(hash)) {
-      const asset = fullAssetMap.get(hash);
+      const asset = fullAssetHashMap.get(hash);
       asset && missingAssets.push(asset);
     }
   });
@@ -97,10 +97,21 @@ export async function getFullAssetDumpAsync(assetMapPath: string) {
  * Extracts the set of asset hashes from an asset dump.
  *
  * @param assetDump
- * @returns The set of asset hashes in the asset dump
+ * @returns The set of asset hashes in the asset dump, and a map of hash to asset
  */
 export function getFullAssetDumpHashSet(assetDump: FullAssetDump) {
-  return new Set(assetDump.keys());
+  const fullAssetHashSet = new Set<string>();
+  const fullAssetHashMap = new Map<string, FullAssetDumpEntry>();
+  assetDump.forEach((asset) =>
+    asset.fileHashes.forEach((hash) => {
+      fullAssetHashSet.add(hash);
+      fullAssetHashMap.set(hash, asset);
+    })
+  );
+  return {
+    fullAssetHashSet,
+    fullAssetHashMap,
+  };
 }
 
 /**
