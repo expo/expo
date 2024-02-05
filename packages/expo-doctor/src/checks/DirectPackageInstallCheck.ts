@@ -55,7 +55,7 @@ export const directPackageInstallCheckItems: DirectPackageInstallCheckItem[] = [
   {
     packageName: 'expo-permissions',
     getMessage: () =>
-      `The package  "expo-permissions" should not be installed directly in your project, as it is deprecated and will break your Android build`,
+      `The package  "expo-permissions" was deprecated in SDK 41 and should be removed from your project because it may no longer compile on the latest SDK. It was replaced by permissions methods directly on modules, eg: MediaLibrary.requestPermissionsAsync().`,
     sdkVersionRange: '>=50.0.0',
   },
 ];
