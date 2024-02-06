@@ -332,12 +332,12 @@ class ExpoCameraView(
     }
   }
 
-  fun setShouldScanBarcodes(shouldScanBarCodes: Boolean) {
-    this.shouldScanBarcodes = shouldScanBarCodes
+  fun setShouldScanBarcodes(shouldScanBarcodes: Boolean) {
+    this.shouldScanBarcodes = shouldScanBarcodes
     createCamera()
   }
 
-  fun setBarCodeScannerSettings(settings: BarcodeSettings?) {
+  fun setBarcodeScannerSettings(settings: BarcodeSettings?) {
     barcodeFormats = settings?.barcodeTypes ?: emptyList()
   }
 
