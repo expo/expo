@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix assets:verify command for images with multiple scales. ([#26940](https://github.com/expo/expo/pull/26940) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 0.24.9 — 2024-01-26
