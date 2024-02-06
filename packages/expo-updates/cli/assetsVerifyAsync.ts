@@ -6,6 +6,7 @@ import {
   ExportedMetadataAsset,
   FullAssetDump,
   FullAssetDumpEntry,
+  MissingAsset,
   Platform,
 } from './assetsVerifyTypes';
 
@@ -45,12 +46,19 @@ export async function getMissingAssetsAsync(
   const buildAssetsPlusExportedAssets = new Set(buildManifestHashSet);
   exportedAssetSet.forEach((hash) => buildAssetsPlusExportedAssets.add(hash));
 
-  const missingAssets: FullAssetDumpEntry[] = [];
+  const missingAssets: MissingAsset[] = [];
 
   fullAssetHashSet.forEach((hash) => {
     if (!buildAssetsPlusExportedAssets.has(hash)) {
       const asset = fullAssetHashMap.get(hash);
-      asset && missingAssets.push(asset);
+      asset?.fileHashes.forEach((fileHash, index) => {
+        if (asset?.fileHashes[index] === hash) {
+          missingAssets.push({
+            hash,
+            path: asset?.files[index],
+          });
+        }
+      });
     }
   });
 

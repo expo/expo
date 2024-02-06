@@ -245,6 +245,10 @@ describe(getMissingAssetsAsync, () => {
       'android'
     );
     expect(result.length).toBe(3);
+    expect(result[1].hash).toEqual('5c37045d0f36217bdee17959fc10986a');
+    expect(result[1].path).toEqual(
+      '/Users/dlowder/iosProjects/UpdatesAPIDemo/assets/icons/bell@2x.png'
+    );
   });
   it('Detects no missing assets', async () => {
     // Add the missing assets to the build manifest
