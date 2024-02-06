@@ -37,7 +37,7 @@ export interface ExpoConfig {
    */
   sdkVersion?: string;
   /**
-   * **Note: Don't use this property unless you are sure what you're doing**
+   * **Note: Don't use this property unless you are sure you know what you're doing**
    *
    * The runtime version associated with this manifest.
    * Set this to `{"policy": "nativeVersion"}` to generate it automatically.
