@@ -213,6 +213,8 @@ try {
     }
     return {
       ...ExpoModulesCore,
+      // Mock EventEmitter since it's commonly constructed in modules and causing warnings.
+      EventEmitter: jest.fn(),
       requireNativeModule: (name) => {
         // Support auto-mocking of expo-modules that:
         // 1. have a mock in the `mocks` directory
