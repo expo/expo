@@ -366,6 +366,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/worfkflow/publishing/': '/archive/classic-updates/publishing/',
   '/classic/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
   '/classic/turtle-cli/': '/archive/classic-updates/turtle-cli/',
+  '/build-reference/migrating': 'archive/classic-updates/migrating',
   '/archive/classic-updates/getting-started/': '/eas-update/getting-started/',
 
   // Redirects for removed API docs based on Sentry

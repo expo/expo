@@ -257,6 +257,7 @@ redirects[eas-update/bare-react-native]=eas-update/updating-your-app
 redirects[worfkflow/publishing]=archive/classic-updates/publishing
 redirects[classic/building-standalone-apps]=archive/classic-updates/building-standalone-apps
 redirects[classic/turtle-cli]=archive/classic-updates/turtle-cli
+redirects[build-reference/migrating]=archive/classic-updates/migrating
 redirects[archive/classic-updates/getting-started]=eas-update/getting-started
 redirects[archived]=archive
 
