@@ -211,8 +211,6 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
         photoOutput.isLivePhotoCaptureEnabled = false
         self.photoOutput = photoOutput
       }
-      
-  
 
       // Delay starting the scanner
       self.sessionQueue.asyncAfter(deadline: .now() + 0.5) {
