@@ -59,88 +59,105 @@ jni::local_ref<JavaCallback::JavaPart> createJavaCallbackFromJSIFunction(
         return;
       }
 
-      strongWrapper->jsInvoker().invokeAsync([
-                                                     weakWrapper,
-                                                     callbackWrapperOwner = std::move(callbackWrapperOwner),
-                                                     responses = std::move(responses),
-                                                     isRejectCallback, moduleRegistry]() mutable {
-      auto strongWrapper2 = weakWrapper.lock();
-      if (!strongWrapper2) {
-        return;
-      }
-      if (std::holds_alternative<folly::dynamic>(responses) || std::holds_alternative<std::monostate>(responses)) {
-        folly::dynamic follyObject = std::holds_alternative<std::monostate>(responses) ? nullptr : std::get<folly::dynamic>(responses);
-        jsi::Value arg = jsi::valueFromDynamic(strongWrapper2->runtime(), follyObject);
-        if (!isRejectCallback) {
-          strongWrapper2->callback().call(
-            strongWrapper2->runtime(),
-            (const jsi::Value *) &arg,
-            (size_t) 1
-          );
-        } else {
-          auto &rt = strongWrapper2->runtime();
-          auto jsErrorObject = arg.getObject(rt);
-          auto errorCode = jsErrorObject.getProperty(rt, "code").asString(rt);
-          auto message = jsErrorObject.getProperty(rt, "message").asString(rt);
+      strongWrapper->jsInvoker()
+        .invokeAsync(
+          [
+            weakWrapper,
+            callbackWrapperOwner = std::move(callbackWrapperOwner),
+            responses = std::move(responses),
+            isRejectCallback,
+            moduleRegistry
+          ]() mutable {
+            auto strongWrapper2 = weakWrapper.lock();
+            if (!strongWrapper2) {
+              return;
+            }
 
-          auto enhancedArg = decorateValueForDynamicExtension(strongWrapper2->runtime(), arg);
-          if (enhancedArg) {
-            arg = std::move(*enhancedArg);
-          }
-          if (!isRejectCallback) {
-            strongWrapper2->callback().call(
-              strongWrapper2->runtime(),
-              (const jsi::Value *) &arg,
-              (size_t) 1
-            );
-          } else {
             auto &rt = strongWrapper2->runtime();
-            auto jsErrorObject = arg.getObject(rt);
-            auto errorCode = jsErrorObject.getProperty(rt, "code").asString(rt);
-            auto message = jsErrorObject.getProperty(rt, "message").asString(rt);
+            auto &callback = strongWrapper2->callback();
 
-            auto codedError = makeCodedError(
-              rt,
-              std::move(errorCode),
-              std::move(message)
+            if (isRejectCallback) {
+              // Callback was rejected, we know that responses is an object with `code` and `message` properties.
+              jsi::Value arg = jsi::valueFromDynamic(
+                strongWrapper2->runtime(),
+                std::get<folly::dynamic>(responses)
+              );
+
+              auto jsErrorObject = arg.getObject(rt);
+              auto errorCode = jsErrorObject.getProperty(rt, "code").asString(rt);
+              auto message = jsErrorObject.getProperty(rt, "message").asString(rt);
+
+              auto codedError = makeCodedError(
+                rt,
+                std::move(errorCode),
+                std::move(message)
+              );
+
+              callback.call(
+                rt,
+                (const jsi::Value *) &codedError,
+                (size_t) 1
+              );
+
+              callbackWrapperOwner.reset();
+              return;
+            }
+
+            if (std::holds_alternative<folly::dynamic>(responses)) {
+              folly::dynamic follyObject = std::get<folly::dynamic>(responses);
+              jsi::Value arg = jsi::valueFromDynamic(strongWrapper2->runtime(), follyObject);
+              auto enhancedArg = decorateValueForDynamicExtension(strongWrapper2->runtime(), arg);
+              if (enhancedArg) {
+                arg = std::move(*enhancedArg);
+              }
+
+              callback.call(
+                rt,
+                (const jsi::Value *) &arg,
+                (size_t) 1
+              );
+
+              callbackWrapperOwner.reset();
+              return;
+            }
+
+            // Responses is a SharedRef
+            auto native = jni::make_local(
+              std::get<jni::global_ref<SharedRef::javaobject>>(responses)
             );
 
+            auto jsClass = moduleRegistry->getJavascriptClass(native->getClass());
+            auto jsObject = jsClass
+              ->cthis()
+              ->get()
+              ->asFunction(rt)
+              .callAsConstructor(rt)
+              .asObject(rt);
 
-            strongWrapper2->callback().call(
-              strongWrapper2->runtime(),
-              (const jsi::Value *) &codedError,
+            auto objSharedPtr = std::make_shared<jsi::Object>(std::move(jsObject));
+            auto jsObjectInstance = JavaScriptObject::newInstance(
+              moduleRegistry,
+              moduleRegistry->runtimeHolder,
+              objSharedPtr
+            );
+            jni::local_ref<JavaScriptObject::javaobject> jsRef = jni::make_local(
+              jsObjectInstance
+            );
+            moduleRegistry->registerSharedObject(native, jsRef);
+
+            auto ret = jsi::Value(rt, *objSharedPtr);
+            callback.call(
+              rt,
+              (const jsi::Value *) &ret,
               (size_t) 1
             );
+
+            callbackWrapperOwner.reset();
           }
-        }
-      } else if (std::holds_alternative<jni::global_ref<SharedRef::javaobject>>(responses)) {
-        auto &rt = strongWrapper2->runtime();
-        auto native = jni::make_local(std::get<jni::global_ref<SharedRef::javaobject>>(responses));
-
-        auto jsClass = moduleRegistry->getJavascriptClass(native->getClass());
-        auto jsObject = jsClass->cthis()->get()->asFunction(rt).callAsConstructor(rt).asObject(
-          rt);
-
-        auto objSharedPtr = std::make_shared<jsi::Object>(std::move(jsObject));
-        auto jsObjectInstance = JavaScriptObject::newInstance(moduleRegistry,
-                                                              moduleRegistry->runtimeHolder,
-                                                              objSharedPtr);
-        jni::local_ref<JavaScriptObject::javaobject> jsRef = jni::make_local(jsObjectInstance);
-        moduleRegistry->registerSharedObject(native, jsRef);
-
-        auto ret = jsi::Value(rt, *objSharedPtr);
-        strongWrapper2->callback().call(
-          strongWrapper2->runtime(),
-          (const jsi::Value *) &ret,
-          (size_t) 1
         );
-      }
 
-      callbackWrapperOwner.reset();
-    });
-
-    wrapperWasCalled = true;
-  };
+      wrapperWasCalled = true;
+    };
 
   return JavaCallback::newInstance(moduleRegistry, std::move(fn));
 }

@@ -33,7 +33,7 @@ We recommend making the following modifications to your codebase before beginnin
 
 Refactor screens to [use serializable top-level query parameters](https://reactnavigation.org/docs/params/#what-should-be-in-params). We recommend this in React Navigation as well.
 
-In Expo Router, search parameters can only serializable top-level values such as `number`, `boolean`, and `string`. React Navigation doesn't have the same restrictions, so users can sometimes pass invalid parameters like Functions, Objects, Maps, and so on.
+In Expo Router, search parameters can only serialize top-level values such as `number`, `boolean`, and `string`. React Navigation doesn't have the same restrictions, so users can sometimes pass invalid parameters like Functions, Objects, Maps, and so on.
 
 If your code has something similar to the below:
 

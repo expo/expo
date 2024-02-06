@@ -9,6 +9,7 @@ import { GlobalPackageInstalledCheck } from './checks/GlobalPackageInstalledChec
 import { GlobalPrereqsVersionCheck } from './checks/GlobalPrereqsVersionCheck';
 import { IllegalPackageCheck } from './checks/IllegalPackageCheck';
 import { InstalledDependencyVersionCheck } from './checks/InstalledDependencyVersionCheck';
+import { MetroConfigCheck } from './checks/MetroConfigCheck';
 import { PackageJsonCheck } from './checks/PackageJsonCheck';
 import { ProjectSetupCheck } from './checks/ProjectSetupCheck';
 import { SupportPackageVersionCheck } from './checks/SupportPackageVersionCheck';
@@ -127,6 +128,7 @@ export function getChecksInScopeForProject(exp: ExpoConfig) {
     new DirectPackageInstallCheck(),
     new PackageJsonCheck(),
     new ProjectSetupCheck(),
+    new MetroConfigCheck(),
   ];
   if (env.EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK) {
     Log.log(

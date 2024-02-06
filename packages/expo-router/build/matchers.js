@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stripInvisibleSegmentsFromPath = exports.stripGroupSegmentsFromPath = exports.removeFileSystemDots = exports.removeSupportedExtensions = exports.getContextKey = exports.getNameFromFilePath = exports.matchGroupName = exports.testNotFound = exports.matchDeepDynamicRouteName = exports.matchDynamicName = void 0;
+exports.stripInvisibleSegmentsFromPath = exports.stripGroupSegmentsFromPath = exports.removeFileSystemDots = exports.removeSupportedExtensions = exports.getContextKey = exports.getNameFromFilePath = exports.matchArrayGroupName = exports.matchGroupName = exports.testNotFound = exports.matchDeepDynamicRouteName = exports.matchDynamicName = void 0;
 /** Match `[page]` -> `page` */
 function matchDynamicName(name) {
     // Don't match `...` or `[` or `]` inside the brackets
@@ -23,6 +23,11 @@ function matchGroupName(name) {
     return name.match(/^(?:[^\\(\\)])*?\(([^\\/]+)\).*?$/)?.[1];
 }
 exports.matchGroupName = matchGroupName;
+/** Match `(a,b,c)/(d,c)` -> `[['a','b','c'], ['d','e']]` */
+function matchArrayGroupName(name) {
+    return name.match(/\(\s*\w[\w\s]*?,.*?\)/g)?.map((match) => match.slice(1, -1));
+}
+exports.matchArrayGroupName = matchArrayGroupName;
 function getNameFromFilePath(name) {
     return removeSupportedExtensions(removeFileSystemDots(name));
 }
