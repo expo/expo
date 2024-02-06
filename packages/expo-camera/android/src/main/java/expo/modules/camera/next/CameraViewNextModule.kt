@@ -117,11 +117,11 @@ class CameraViewNextModule : Module() {
         if (settings == null) {
           return@Prop
         }
-        view.setBarCodeScannerSettings(settings)
+        view.setBarcodeScannerSettings(settings)
       }
 
-      Prop("barcodeScannerEnabled") { view, barCodeScannerEnabled: Boolean? ->
-        view.setShouldScanBarcodes(barCodeScannerEnabled ?: false)
+      Prop("barcodeScannerEnabled") { view, enabled: Boolean? ->
+        view.setShouldScanBarcodes(enabled ?: false)
       }
 
       AsyncFunction("takePicture") { view: ExpoCameraView, options: PictureOptions, promise: Promise ->
