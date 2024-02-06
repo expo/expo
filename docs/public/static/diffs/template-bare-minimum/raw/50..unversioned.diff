@@ -1,5 +1,5 @@
 diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
-index a265c80fa9..a058ef6c4b 100644
+index 27c6e63957..57a6967e8c 100644
 --- a/templates/expo-template-bare-minimum/android/app/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/app/build.gradle
 @@ -90,8 +90,6 @@ android {
@@ -11,7 +11,7 @@ index a265c80fa9..a058ef6c4b 100644
      }
      signingConfigs {
          debug {
-@@ -158,8 +156,6 @@ dependencies {
+@@ -163,8 +161,6 @@ dependencies {
          }
      }
  
@@ -73,27 +73,6 @@ index 8258c40ed4..95ef45de96 100644
      ApplicationLifecycleDispatcher.onApplicationCreate(this)
    }
  
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
-index 5a1db7145b..552b63e06c 100644
---- a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
-+++ b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
-@@ -30,6 +30,16 @@
- 		<false/>
- 		<key>NSAllowsLocalNetworking</key>
- 		<true/>
-+		<key>NSExceptionDomains</key>
-+		<dict>
-+			<key>exp.direct</key>
-+			<dict>
-+				<key>NSIncludesSubdomains</key>
-+				<true/>
-+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-+				<true/>
-+			</dict>
-+		</dict>
- 	</dict>
- 	<key>UILaunchStoryboardName</key>
- 	<string>SplashScreen</string>
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Supporting/Expo.plist b/templates/expo-template-bare-minimum/ios/HelloWorld/Supporting/Expo.plist
 index 03410dc8b3..f4f9f60993 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/Supporting/Expo.plist
@@ -154,14 +133,14 @@ index b3978b9515..eaf07ca4c2 100644
  
    post_install do |installer|
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 5510397b84..150bb72764 100644
+index 4cc4f0aaf5..150bb72764 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
  {
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
--  "version": "50.0.34",
+-  "version": "50.0.36",
 +  "version": "50.0.17",
    "main": "index.js",
    "scripts": {
@@ -170,7 +149,7 @@ index 5510397b84..150bb72764 100644
      "web": "expo start --web"
    },
    "dependencies": {
--    "expo": "~50.0.4",
+-    "expo": "~50.0.6",
 -    "expo-status-bar": "~1.11.1",
 +    "expo": "~50.0.0-preview.4",
 +    "expo-status-bar": "~1.11.0",

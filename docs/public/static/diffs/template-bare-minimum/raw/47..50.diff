@@ -85,7 +85,7 @@ index 0e77904834..0000000000
 -    ],
 -)
 diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
-index 648135611c..a265c80fa9 100644
+index 648135611c..27c6e63957 100644
 --- a/templates/expo-template-bare-minimum/android/app/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/app/build.gradle
 @@ -1,221 +1,97 @@
@@ -371,7 +371,7 @@ index 648135611c..a265c80fa9 100644
      }
      signingConfigs {
          debug {
-@@ -233,25 +109,11 @@ android {
+@@ -233,23 +109,14 @@ android {
              // Caution! In production, you need to generate your own keystore file.
              // see https://reactnative.dev/docs/signed-apk-android.
              signingConfig signingConfigs.debug
@@ -393,12 +393,13 @@ index 648135611c..a265c80fa9 100644
 -                        versionCodes.get(abi) * 1048576 + defaultConfig.versionCode
 -            }
 -
--        }
--    }
++    packagingOptions {
++        jniLibs {
++            useLegacyPackaging (findProperty('expo.useLegacyPackaging')?.toBoolean() ?: false)
+         }
+     }
  }
- 
- // Apply static values from `gradle.properties` to the `android.packagingOptions`
-@@ -275,88 +137,35 @@ android {
+@@ -275,88 +142,35 @@ android {
  }
  
  dependencies {
@@ -1599,7 +1600,7 @@ index 64436baaf5..877b87e9a5 100644
  # Bundle artifacts
  *.jsbundle
 diff --git a/templates/expo-template-bare-minimum/android/gradle.properties b/templates/expo-template-bare-minimum/android/gradle.properties
-index fab3fb6bcf..a4efc8b9d8 100644
+index fab3fb6bcf..41b173c48a 100644
 --- a/templates/expo-template-bare-minimum/android/gradle.properties
 +++ b/templates/expo-template-bare-minimum/android/gradle.properties
 @@ -25,9 +25,6 @@ android.useAndroidX=true
@@ -1625,13 +1626,16 @@ index fab3fb6bcf..a4efc8b9d8 100644
  
  # Enable GIF support in React Native images (~200 B increase)
  expo.gif.enabled=true
-@@ -51,3 +48,6 @@ expo.webp.enabled=true
+@@ -51,3 +48,9 @@ expo.webp.enabled=true
  # Enable animated webp support (~3.4 MB increase)
  # Disabled by default because iOS doesn't support animated webp
  expo.webp.animated=false
 +
 +# Enable network inspector
 +EX_DEV_CLIENT_NETWORK_INSPECTOR=true
++
++# Use legacy packaging to compress native libraries in the resulting APK.
++expo.useLegacyPackaging=false
 diff --git a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar
 index 249e5832f0..7f93135c49 100644
 Binary files a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar and b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar differ
@@ -2376,7 +2380,7 @@ index 9430b0f9b6..07c9fce65d 100644
 +
 +module.exports = config;
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index a41fdc0d8d..5510397b84 100644
+index a41fdc0d8d..4cc4f0aaf5 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -2384,7 +2388,7 @@ index a41fdc0d8d..5510397b84 100644
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "47.0.26",
-+  "version": "50.0.34",
++  "version": "50.0.36",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -2397,7 +2401,7 @@ index a41fdc0d8d..5510397b84 100644
 -    "expo-status-bar": "~1.4.2",
 -    "react": "18.1.0",
 -    "react-native": "0.70.8"
-+    "expo": "~50.0.4",
++    "expo": "~50.0.6",
 +    "expo-status-bar": "~1.11.1",
 +    "react": "18.2.0",
 +    "react-native": "0.73.2"
