@@ -11,7 +11,7 @@ namespace expo {
 JavaCallback::JavaCallback(Callback callback)
   : callback(std::move(callback)) {}
 
-JSIInteropModuleRegistry* JavaCallback::jsiRegistry_ = nullptr;
+JSIInteropModuleRegistry *JavaCallback::jsiRegistry_ = nullptr;
 
 void JavaCallback::registerNatives() {
   registerHybrid({
@@ -58,47 +58,39 @@ jni::local_ref<JavaCallback::javaobject> JavaCallback::newInstance(
 }
 
 void JavaCallback::invoke() {
-  CallbackArg callbackArg((std::monostate()) );
-  callback(callbackArg);
+  // passing null
+  callback(folly::dynamic());
 }
 
 void JavaCallback::invokeBool(bool result) {
-  CallbackArg callbackArg(result);
-  callback(callbackArg);
+  callback({result});
 }
 
 void JavaCallback::invokeInt(int result) {
-  CallbackArg callbackArg(result);
-  callback(callbackArg);
+  callback({result});
 }
 
 void JavaCallback::invokeDouble(double result) {
-  CallbackArg callbackArg(result);
-  callback(callbackArg);
+  callback({result});
 }
 
 void JavaCallback::invokeFloat(float result) {
-  CallbackArg callbackArg(result);
-  callback(callbackArg);
+  callback({result});
 }
 
 void JavaCallback::invokeString(jni::alias_ref<jstring> result) {
-  CallbackArg callbackArg(result->toStdString());
-  callback(callbackArg);
+  callback({result->toStdString()});
 }
 
 void JavaCallback::invokeArray(jni::alias_ref<react::WritableNativeArray::javaobject> result) {
-  CallbackArg callbackArg(result->cthis()->consume() );
-  callback(callbackArg);
+  callback({result->cthis()->consume()});
 }
 
 void JavaCallback::invokeMap(jni::alias_ref<react::WritableNativeMap::javaobject> result) {
-  CallbackArg callbackArg(result->cthis()->consume() );
-  callback(callbackArg);
+  callback({result->cthis()->consume()});
 }
 
 void JavaCallback::invokeSharedRef(jni::alias_ref<SharedRef::javaobject> result) {
-  CallbackArg callbackArg(jni::make_global(result) );
-  callback(callbackArg);
+  callback({jni::make_global(result)});
 }
 } // namespace expo

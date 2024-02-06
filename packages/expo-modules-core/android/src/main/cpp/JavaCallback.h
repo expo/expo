@@ -44,7 +44,7 @@ struct SharedRef : public jni::HybridClass<SharedRef, SharedObjectId> {
 
 class JSIInteropModuleRegistry;
 
-typedef std::variant<std::monostate, folly::dynamic, jni::global_ref<SharedRef::javaobject>> CallbackArg;
+typedef std::variant<folly::dynamic, jni::global_ref<SharedRef::javaobject>> CallbackArg;
 
 class JavaCallback : public jni::HybridClass<JavaCallback, Destructible> {
 public:
