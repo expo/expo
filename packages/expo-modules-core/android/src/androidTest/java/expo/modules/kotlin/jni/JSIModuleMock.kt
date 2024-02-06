@@ -16,6 +16,7 @@ import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.modules.ModuleDefinitionBuilder
+import expo.modules.kotlin.sharedobjects.ClassRegistry
 import expo.modules.kotlin.sharedobjects.SharedObjectRegistry
 import io.mockk.every
 import io.mockk.mockk
@@ -35,6 +36,7 @@ internal fun defaultAppContextMock(
     ModuleHolder(module)
   }
   every { appContextMock.coreModule } answers { coreModule }
+  every { appContextMock.classRegistry } answers { ClassRegistry() }
   every { appContextMock.jniDeallocator } answers { jniDeallocator }
   every { appContextMock.findView<View>(capture(slot())) } answers { mockk() }
   return appContextMock
