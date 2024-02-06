@@ -6,13 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.24.10 — 2024-02-06
+
+### 🎉 New features
+
 - Add assets:verify command to CLI. ([#26756](https://github.com/expo/expo/pull/26756) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
 - Fix assets:verify command for images with multiple scales. ([#26940](https://github.com/expo/expo/pull/26940) by [@douglowder](https://github.com/douglowder))
-
-### 💡 Others
 
 ## 0.24.9 — 2024-01-26
 
