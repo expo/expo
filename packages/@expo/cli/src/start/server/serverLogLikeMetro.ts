@@ -27,8 +27,8 @@ export function logLikeMetro(
     level === 'error'
       ? chalk.inverse.red
       : level === 'warn'
-        ? chalk.inverse.yellow
-        : chalk.inverse.white;
+      ? chalk.inverse.yellow
+      : chalk.inverse.white;
 
   if (level === 'group') {
     groupStack.push(level);
