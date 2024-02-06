@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Send platform to Metro. ([#26812](https://github.com/expo/expo/pull/26812) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 3.1.3 — 2024-02-06
+
+### 🎉 New features
+
+- Send platform to Metro. ([#26812](https://github.com/expo/expo/pull/26812) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.1.2 — 2024-01-23
 

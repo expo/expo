@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed ResizeObserver attaching on every image transition. ([#25819](https://github.com/expo/expo/pull/25819) by [@aleqsio](https://github.com/aleqsio))
-
 ### 💡 Others
+
+## 1.10.6 — 2024-02-06
+
+### 🐛 Bug fixes
+
+- Fixed ResizeObserver attaching on every image transition. ([#25819](https://github.com/expo/expo/pull/25819) by [@aleqsio](https://github.com/aleqsio))
 
 ## 1.10.5 — 2024-01-23
 

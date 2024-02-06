@@ -5,7 +5,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '13.10.4'
+version = '13.10.5'
 
 def REACT_NATIVE_BUILD_FROM_SOURCE = findProject(":ReactAndroid") != null
 def REACT_NATIVE_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
@@ -113,7 +113,7 @@ android {
   namespace "expo.modules.av"
   defaultConfig {
     versionCode 24
-    versionName "13.10.4"
+    versionName "13.10.5"
 
     externalNativeBuild {
       cmake {

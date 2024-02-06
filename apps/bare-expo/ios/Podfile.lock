@@ -8,7 +8,7 @@ PODS:
     - ExpoModulesTestCore
   - EXApplication (5.8.3):
     - ExpoModulesCore
-  - EXAV (13.10.4):
+  - EXAV (13.10.5):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
   - EXBarCodeScanner (12.9.2):
@@ -29,7 +29,7 @@ PODS:
     - React-Core
   - EXJSONUtils (0.12.3)
   - EXJSONUtils/Tests (0.12.3)
-  - EXLocation (16.5.2):
+  - EXLocation (16.5.3):
     - ExpoModulesCore
   - EXManifests (0.13.2):
     - ExpoModulesCore
@@ -43,7 +43,7 @@ PODS:
     - React-Core
   - EXNotifications (0.27.6):
     - ExpoModulesCore
-  - Expo (50.0.5):
+  - Expo (50.0.6):
     - ExpoModulesCore
   - expo-dev-client (3.3.8):
     - EXManifests
@@ -154,7 +154,7 @@ PODS:
     - ExpoModulesCore
   - ExpoBrightness (11.8.0):
     - ExpoModulesCore
-  - ExpoCamera (14.0.3):
+  - ExpoCamera (14.0.4):
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
@@ -171,9 +171,9 @@ PODS:
     - ExpoModulesCore
   - ExpoDocumentPicker (11.10.1):
     - ExpoModulesCore
-  - ExpoFileSystem (16.0.5):
+  - ExpoFileSystem (16.0.6):
     - ExpoModulesCore
-  - ExpoFileSystem/Tests (16.0.5):
+  - ExpoFileSystem/Tests (16.0.6):
     - ExpoModulesCore
     - ExpoModulesTestCore
   - ExpoGL (13.6.0):
@@ -181,7 +181,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (12.8.1):
     - ExpoModulesCore
-  - ExpoImage (1.10.5):
+  - ExpoImage (1.10.6):
     - ExpoModulesCore
     - SDWebImage (~> 5.17.0)
     - SDWebImageAVIFCoder (~> 0.10.1)
@@ -1941,7 +1941,7 @@ SPEC CHECKSUMS:
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EASClient: a42ee8bf36c93b3128352faf2ae49405ab4f80bd
   EXApplication: 137189a3f149b4e8e546884629392c3efc94cbd3
-  EXAV: 09a4d87fa6b113fbb0ada3aade6799f78271cb44
+  EXAV: 07e50f934907fa8274dd06fbcd20ee4b9478c619
   EXBarCodeScanner: 9cf7039d99448ed1ea506401eba5ad4abd4e4871
   EXCalendar: 93cc0af8a143e9fce72b2451e058779bb270f9f1
   EXConstants: 988aa430ca0f76b43cd46b66e7fae3287f9cc2fc
@@ -1949,11 +1949,11 @@ SPEC CHECKSUMS:
   EXFont: 21b9c760abd593ce8f0d5386b558ced76018506f
   EXImageLoader: 55080616b2fe9da19ef8c7f706afd9814e279b6b
   EXJSONUtils: 5c42959e87be238b045ef37cc5268b16a6c0ad4a
-  EXLocation: 6ec9c861af497b548f9617a5d4301884c4d43339
+  EXLocation: c70a4987e703d96b8526541271abb328212ecaa6
   EXManifests: 5e8c29f36c716af768a4ea47ec05e1b89ab93091
   EXMediaLibrary: 5a74f7d9cce776ca07cb3090b948cedd7d4841a1
   EXNotifications: e11f0e9a5b657c064a481a5d522f3bc5a07bf7cd
-  Expo: 49cded7844f2ec4ffb1cc3b86504853f26952935
+  Expo: fb745b3074989670b6641f9f20463e8ee56a69ca
   expo-dev-client: 025dce84f48b04c60c3891547732f001f6aad777
   expo-dev-launcher: 3cddfcd8e54748d0046af07dc8e4f58dbb045e93
   expo-dev-menu: 8088833c320b616a312ffe438fbea5df276c010e
@@ -1963,16 +1963,16 @@ SPEC CHECKSUMS:
   ExpoBattery: 60bf880aea8f769fe39f709a920442542c1bfd62
   ExpoBlur: 2eb7f7ac50c0818ee7d596996e4c0112b3d225f6
   ExpoBrightness: 6d160de5877289d11674aea61aacdb37422774cf
-  ExpoCamera: c50a4c67431540e86406e953dc189b850263e522
+  ExpoCamera: 64e9bb61e639dfaec9d12872c5b6bad0c4167b67
   ExpoCellular: e4e0788a9949726f0d068c4ae45414b4b7d4566d
   ExpoClipboard: b597982124f067ff9f5b89093eb3d97898d5d877
   ExpoCrypto: e2ca148f5c93a0514959df86b34256bb3c50d358
   ExpoDevice: d204395e17fffdcefa7470bdef33b07719ac41b1
   ExpoDocumentPicker: 70254802886e29a45d4ad25486e64b6fc9c8f0cc
-  ExpoFileSystem: 04795dd4d47e76eaf12e38c92091f77d794f9e7f
+  ExpoFileSystem: a9273932e69a9a1e1a8d01b6ba895bb8294bbea2
   ExpoGL: 085542f97b13f2428ac2edb077c9a90f4566944d
   ExpoHaptics: 28a771b630353cd6e8dcf1b1e3e693e38ad7c3c3
-  ExpoImage: 2b71f20472f293c1fbbf2400795b03d5bf8dd598
+  ExpoImage: 8cf2d51de3d03b7e984e9b0ba8f19c0c22057001
   ExpoImageManipulator: c1d7cb865eacd620a35659f3da34c70531f10b59
   ExpoImagePicker: 66970181d1c838f444e5e1f81b804ab2d5ff49bd
   ExpoInsights: 1fdab69b0f2390aa0a4f87a2ba78e4a5920816c6

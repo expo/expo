@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed React Native Community CLI not being able to autolink the `expo` package when Expo autolinking is not used. ([#26932](https://github.com/expo/expo/pull/26932) by [@tsapeta](https://github.com/tsapeta))
-
 ### 💡 Others
+
+## 50.0.6 — 2024-02-06
+
+### 🐛 Bug fixes
+
+- Fixed React Native Community CLI not being able to autolink the `expo` package when Expo autolinking is not used. ([#26932](https://github.com/expo/expo/pull/26932) by [@tsapeta](https://github.com/tsapeta))
 
 ## 50.0.5 — 2024-02-01
 

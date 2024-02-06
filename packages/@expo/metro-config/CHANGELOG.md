@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.17.4 — 2024-02-06
+
+### 💡 Others
+
 - Add more node modules to collapsed stack regex. ([#26812](https://github.com/expo/expo/pull/26812) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove lazy loading in build process for easier development. ([#26559](https://github.com/expo/expo/pull/26559) by [@EvanBacon](https://github.com/EvanBacon))
 

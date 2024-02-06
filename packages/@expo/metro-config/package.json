@@ -1,6 +1,6 @@
 {
   "name": "@expo/metro-config",
-  "version": "0.17.3",
+  "version": "0.17.4",
   "description": "A Metro config for running React Native projects with the Metro bundler",
   "main": "build/ExpoMetroConfig.js",
   "scripts": {
@@ -13,7 +13,6 @@
     "typecheck": "expo-module typecheck",
     "watch": "expo-module tsc --watch --preserveWatchOutput"
   },
-
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
