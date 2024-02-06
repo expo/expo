@@ -76,10 +76,7 @@ Verify that all static files in an exported bundle are in either the export or a
         `${
           missingAssets.length
         } assets not found in either embedded manifest or in exported bundle:${JSON.stringify(
-          missingAssets.map((asset) => ({
-            hash: asset.hash,
-            path: asset.files?.length ? asset.files[0] : '',
-          })),
+          missingAssets,
           null,
           2
         )}`

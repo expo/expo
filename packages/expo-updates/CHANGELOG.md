@@ -17,6 +17,7 @@
 - Fix development status for modern updates. ([#26042](https://github.com/expo/expo/pull/26042) by [@wschurman](https://github.com/wschurman))
 - [Android] correct drawable types in updates embedded manifest. ([#26676](https://github.com/expo/expo/pull/26676) by [@douglowder](https://github.com/douglowder))
 - [Android] Fix case where launch wait ms timeout is greater than okhttp default timeout. ([#26731](https://github.com/expo/expo/pull/26731) by [@wschurman](https://github.com/wschurman))
+- Fix assets:verify command for images with multiple scales. ([#26940](https://github.com/expo/expo/pull/26940) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
 

@@ -55,3 +55,10 @@ export type ExportedMetadata = {
     android?: FileMetadata;
   };
 };
+
+// Type for the missing asset array returned by getMissingAssetsAsync
+
+export type MissingAsset = {
+  hash: string;
+  path: string;
+};
