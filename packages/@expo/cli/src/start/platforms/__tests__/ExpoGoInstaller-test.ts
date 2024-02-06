@@ -27,10 +27,12 @@ function asVersions(versions: Partial<Versions>): Versions {
   return versions as Versions;
 }
 
-describe('_getExpectedClientVersionAsync', () => {
+describe('getExpectedExpoGoClientVersionAsync', () => {
   it(`returns null when version cannot be found`, async () => {
     mockVersionsOnce({});
-    await expect(createInstaller('android')._getExpectedClientVersionAsync()).resolves.toBe(null);
+    await expect(createInstaller('android').getExpectedExpoGoClientVersionAsync()).resolves.toBe(
+      null
+    );
   });
   describe('android', () => {
     it(`uses platform and most specific version`, async () => {
@@ -42,7 +44,7 @@ describe('_getExpectedClientVersionAsync', () => {
           } as SDKVersion,
         },
       });
-      await expect(createInstaller('android')._getExpectedClientVersionAsync()).resolves.toBe(
+      await expect(createInstaller('android').getExpectedExpoGoClientVersionAsync()).resolves.toBe(
         '1.0.0'
       );
     });
@@ -51,7 +53,7 @@ describe('_getExpectedClientVersionAsync', () => {
         androidVersion: '2.0.0',
         sdkVersions: {},
       });
-      await expect(createInstaller('android')._getExpectedClientVersionAsync()).resolves.toBe(
+      await expect(createInstaller('android').getExpectedExpoGoClientVersionAsync()).resolves.toBe(
         '2.0.0'
       );
     });
@@ -67,54 +69,38 @@ describe('_getExpectedClientVersionAsync', () => {
         },
       });
 
-      await expect(createInstaller('ios')._getExpectedClientVersionAsync()).resolves.toBe('1.0.0');
+      await expect(createInstaller('ios').getExpectedExpoGoClientVersionAsync()).resolves.toBe(
+        '1.0.0'
+      );
     });
     it(`uses platform and general version`, async () => {
       mockVersionsOnce({
         iosVersion: '2.0.0',
         sdkVersions: {},
       });
-      await expect(createInstaller('ios')._getExpectedClientVersionAsync()).resolves.toBe('2.0.0');
+      await expect(createInstaller('ios').getExpectedExpoGoClientVersionAsync()).resolves.toBe(
+        '2.0.0'
+      );
     });
   });
 });
 
-describe('isInstalledClientVersionMismatchedAsync', () => {
+describe('isInstalledClientVersionMismatched', () => {
   it(`returns true if the app is not installed`, async () => {
     // platform doesn't matter here...
     const installer = createInstaller('android');
-    installer._getExpectedClientVersionAsync = jest.fn();
-    const deviceManager = {
-      getAppVersionAsync: jest.fn(async () => null),
-    } as any;
-    await expect(installer.isInstalledClientVersionMismatchedAsync(deviceManager)).resolves.toBe(
-      true
-    );
-    expect(installer._getExpectedClientVersionAsync).toBeCalledTimes(0);
+    expect(installer.isInstalledClientVersionMismatched(null, '1')).toBe(true);
   });
   it(`returns true if the installed Expo Go app is mismatched`, async () => {
     // platform doesn't matter here...
     const installer = createInstaller('android');
-    installer._getExpectedClientVersionAsync = jest.fn(async () => '2.0.0');
-    const deviceManager = {
-      getAppVersionAsync: jest.fn(async () => '1.0.0'),
-    } as any;
-    await expect(installer.isInstalledClientVersionMismatchedAsync(deviceManager)).resolves.toBe(
-      true
-    );
-    expect(installer._getExpectedClientVersionAsync).toBeCalledTimes(1);
+    expect(installer.isInstalledClientVersionMismatched('1.0.0', '2.0.0')).toBe(true);
   });
   it(`returns false if the installed Expo Go app version is up to date`, async () => {
     // platform doesn't matter here...
     const installer = createInstaller('android');
-    installer._getExpectedClientVersionAsync = jest.fn(async () => '2.0.0');
-    const deviceManager = {
-      getAppVersionAsync: jest.fn(async () => '2.0.0'),
-    } as any;
-    await expect(installer.isInstalledClientVersionMismatchedAsync(deviceManager)).resolves.toBe(
-      false
-    );
-    expect(installer._getExpectedClientVersionAsync).toBeCalledTimes(1);
+    installer.getExpectedExpoGoClientVersionAsync = jest.fn(async () => '2.0.0');
+    expect(installer.isInstalledClientVersionMismatched('2.0.0', '2.0.0')).toBe(false);
   });
 });
 
@@ -124,15 +110,25 @@ describe('promptForUninstallExpoGoIfInstalledClientVersionMismatchedAndReturnSho
       name: 'Pixel 3',
       identifier: '123',
       uninstallAppAsync: jest.fn(async () => null),
+      getAppVersionAsync: jest.fn(async () => null),
     } as any;
   }
   beforeEach(() => {
     jest.mocked(confirmAsync).mockReset();
+
+    mockVersionsOnce({
+      androidVersion: '2.0.0',
+      sdkVersions: {
+        '44.0.0': {
+          androidClientVersion: '1.0.0',
+        } as SDKVersion,
+      },
+    });
   });
   it(`returns true when the user uninstalls the outdated app`, async () => {
     jest.mocked(confirmAsync).mockResolvedValueOnce(true);
     const installer = createInstaller('android');
-    installer.isInstalledClientVersionMismatchedAsync = jest.fn(async () => true);
+    installer.isInstalledClientVersionMismatched = jest.fn(() => true);
     const deviceManager = createDeviceManager();
 
     await expect(
@@ -147,7 +143,7 @@ describe('promptForUninstallExpoGoIfInstalledClientVersionMismatchedAndReturnSho
   it(`prevents checking the same device twice`, async () => {
     jest.mocked(confirmAsync).mockResolvedValueOnce(true);
     const installer = createInstaller('android');
-    installer.isInstalledClientVersionMismatchedAsync = jest.fn(async () => true);
+    installer.isInstalledClientVersionMismatched = jest.fn(() => true);
     const deviceManager = createDeviceManager();
     await expect(
       installer.promptForUninstallExpoGoIfInstalledClientVersionMismatchedAndReturnShouldInstallAsync(
@@ -168,7 +164,7 @@ describe('promptForUninstallExpoGoIfInstalledClientVersionMismatchedAndReturnSho
   it(`returns false when the user uninstalls the outdated app`, async () => {
     jest.mocked(confirmAsync).mockResolvedValueOnce(false);
     const installer = createInstaller('android');
-    installer.isInstalledClientVersionMismatchedAsync = jest.fn(async () => true);
+    installer.isInstalledClientVersionMismatched = jest.fn(() => true);
     const deviceManager = createDeviceManager();
     await expect(
       installer.promptForUninstallExpoGoIfInstalledClientVersionMismatchedAndReturnShouldInstallAsync(
@@ -182,7 +178,7 @@ describe('promptForUninstallExpoGoIfInstalledClientVersionMismatchedAndReturnSho
   it(`does not actually uninstall the outdated app on iOS`, async () => {
     jest.mocked(confirmAsync).mockResolvedValueOnce(true);
     const installer = createInstaller('ios');
-    installer.isInstalledClientVersionMismatchedAsync = jest.fn(async () => true);
+    installer.isInstalledClientVersionMismatched = jest.fn(() => true);
     const deviceManager = createDeviceManager();
     await expect(
       installer.promptForUninstallExpoGoIfInstalledClientVersionMismatchedAndReturnShouldInstallAsync(
@@ -198,7 +194,7 @@ describe('promptForUninstallExpoGoIfInstalledClientVersionMismatchedAndReturnSho
       throw new Error('Should not be called');
     });
     const installer = createInstaller('ios');
-    installer.isInstalledClientVersionMismatchedAsync = jest.fn(async () => false);
+    installer.isInstalledClientVersionMismatched = jest.fn(() => false);
     const deviceManager = createDeviceManager();
     await expect(
       installer.promptForUninstallExpoGoIfInstalledClientVersionMismatchedAndReturnShouldInstallAsync(
@@ -211,7 +207,7 @@ describe('promptForUninstallExpoGoIfInstalledClientVersionMismatchedAndReturnSho
 
   it(`returns false when the project is unversioned`, async () => {
     const installer = new ExpoGoInstaller('android', 'host.fake.expo', 'UNVERSIONED');
-    installer.isInstalledClientVersionMismatchedAsync = jest.fn(async () => true);
+    installer.isInstalledClientVersionMismatched = jest.fn(() => true);
     const deviceManager = createDeviceManager();
 
     await expect(
@@ -232,7 +228,7 @@ describe('ensureAsync', () => {
     return {
       name: 'Pixel 3',
       identifier: '123',
-      isAppInstalledAsync: jest.fn(async () => isAppInstalled),
+      isAppInstalledAndIfSoReturnContainerPathForIOSAsync: jest.fn(async () => isAppInstalled),
       installAppAsync: jest.fn(async () => {}),
     } as any;
   }

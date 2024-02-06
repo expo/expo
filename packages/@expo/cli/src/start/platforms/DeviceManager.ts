@@ -25,11 +25,13 @@ export abstract class DeviceManager<IDevice> {
 
   abstract uninstallAppAsync(applicationId: string): Promise<void>;
 
-  abstract isAppInstalledAsync(applicationId: string): Promise<boolean | string>;
+  abstract isAppInstalledAndIfSoReturnContainerPathForIOSAsync(
+    applicationId: string
+  ): Promise<boolean | string>;
 
   abstract openUrlAsync(url: string): Promise<void>;
 
   abstract activateWindowAsync(): Promise<void>;
 
-  abstract ensureExpoGoAsync(sdkVersion?: string): Promise<boolean>;
+  abstract ensureExpoGoAsync(sdkVersion: string): Promise<boolean>;
 }
