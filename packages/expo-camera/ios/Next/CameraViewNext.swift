@@ -211,16 +211,15 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
         photoOutput.isLivePhotoCaptureEnabled = false
         self.photoOutput = photoOutput
       }
-
-      self.addErrorNotification()
-
-      self.session.commitConfiguration()
-      self.session.startRunning()
-      self.onCameraReady()
+      
+  
 
       // Delay starting the scanner
       self.sessionQueue.asyncAfter(deadline: .now() + 0.5) {
-        self.barcodeScanner.maybeStartBarCodeScanning()
+        self.barcodeScanner.maybeStartBarcodeScanning()
+        self.session.commitConfiguration()
+        self.session.startRunning()
+        self.onCameraReady()
       }
     }
   }
@@ -747,7 +746,7 @@ func updateSessionPreset(preset: AVCaptureSession.Preset) {
       for output in self.session.outputs {
         self.session.removeOutput(output)
       }
-      self.barcodeScanner.stopBarCodeScanning()
+      self.barcodeScanner.stopBarcodeScanning()
       self.session.commitConfiguration()
 
       self.motionManager.stopAccelerometerUpdates()

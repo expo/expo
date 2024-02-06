@@ -215,11 +215,11 @@ export type BarcodeScanningResult = {
      */
     type: string;
     /**
-     * The parsed information encoded in the bar code.
+     * The parsed information encoded in the barcode.
      */
     data: string;
     /**
-     * The raw information encoded in the bar code.
+     * The raw information encoded in the barcode.
      * May be different from `data` depending on the barcode type.
      * @platform android
      * @hidden
@@ -306,9 +306,9 @@ export type CameraProps = ViewProps & {
      */
     barcodeScannerSettings?: BarcodeSettings;
     /**
-     * Callback that is invoked when a bar code has been successfully scanned. The callback is provided with
+     * Callback that is invoked when a barcode has been successfully scanned. The callback is provided with
      * an object of the [`BarcodeScanningResult`](#barcodescanningresult) shape, where the `type`
-     * refers to the bar code type that was scanned and the `data` is the information encoded in the bar code
+     * refers to the barcode type that was scanned and the `data` is the information encoded in the barcode
      * (in this case of QR codes, this is often a URL). See [`BarcodeType`](#barcodetype) for supported values.
      * for supported values.
      * @param scanningResult

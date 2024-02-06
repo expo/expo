@@ -332,8 +332,8 @@ class ExpoCameraView(
     }
   }
 
-  fun setShouldScanBarcodes(shouldScanBarCodes: Boolean) {
-    this.shouldScanBarcodes = shouldScanBarCodes
+  fun setShouldScanBarcodes(shouldScanBarcodes: Boolean) {
+    this.shouldScanBarcodes = shouldScanBarcodes
     createCamera()
   }
 
