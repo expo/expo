@@ -83,13 +83,13 @@ class BarcodeScannerUtils {
     ]
   }
 
-  static func zxResultToDictionary(_ barCodeScannerResult: ZXResult) -> [String: Any] {
+  static func zxResultToDictionary(_ barcodeScannerResult: ZXResult) -> [String: Any] {
     var result = [String: Any]()
-    result["type"] = BarcodeScannerUtils.zxingFormatToString(barCodeScannerResult.barcodeFormat)
+    result["type"] = BarcodeScannerUtils.zxingFormatToString(barcodeScannerResult.barcodeFormat)
 
     var data = ""
-    for i in 0..<barCodeScannerResult.text.count {
-      let character = barCodeScannerResult.text[barCodeScannerResult.text.index(barCodeScannerResult.text.startIndex, offsetBy: i)]
+    for i in 0..<barcodeScannerResult.text.count {
+      let character = barcodeScannerResult.text[barcodeScannerResult.text.index(barcodeScannerResult.text.startIndex, offsetBy: i)]
       if character != "\0" {
         data.append(character)
       }

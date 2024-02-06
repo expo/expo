@@ -18,6 +18,8 @@
 
 ### 💡 Others
 
+- Make the casing of `Barcode` consistent. ([#26900](https://github.com/expo/expo/pull/26900) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 14.0.1 - 2023-12-19
 
 _This version does not introduce any user-facing changes._

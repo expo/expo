@@ -264,7 +264,7 @@ export default class CameraScreen extends React.Component<object, State> {
     </View>
   );
 
-  renderBarCode = () => {
+  renderBarcode = () => {
     const origin: BarcodePoint | undefined = this.state.cornerPoints
       ? this.state.cornerPoints[0]
       : undefined;
@@ -308,7 +308,7 @@ export default class CameraScreen extends React.Component<object, State> {
         {this.renderTopBar()}
         {this.renderBottomBar()}
       </CameraView>
-      {this.state.barcodeScanning && this.renderBarCode()}
+      {this.state.barcodeScanning && this.renderBarcode()}
       {this.state.showMoreOptions && this.renderMoreOptions()}
     </View>
   );

@@ -7,7 +7,6 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
-import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import expo.modules.camera.next.CameraViewHelper
 import expo.modules.camera.next.records.BarcodeType
@@ -44,11 +43,6 @@ class BarcodeAnalyzer(private val lensFacing: CameraType, formats: List<BarcodeT
           }
           val barcode = barcodes.first()
           val raw = barcode.rawValue ?: barcode.rawBytes?.let { String(it) }
-          val value = if (barcode.valueType == Barcode.TYPE_CONTACT_INFO) {
-            raw
-          } else {
-            barcode.displayValue
-          }
 
           val cornerPoints = mutableListOf<Int>()
           barcode.cornerPoints?.let { points ->
@@ -57,7 +51,7 @@ class BarcodeAnalyzer(private val lensFacing: CameraType, formats: List<BarcodeT
             }
           }
 
-          onComplete(BarCodeScannerResult(barcode.format, value, raw, cornerPoints, image.width, image.height))
+          onComplete(BarCodeScannerResult(barcode.format, barcode.displayValue, raw, cornerPoints, image.width, image.height))
         }
         .addOnFailureListener {
           Log.d("SCANNER", it.cause?.message ?: "Barcode scanning failed")
