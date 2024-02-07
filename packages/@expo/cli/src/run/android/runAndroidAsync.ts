@@ -59,6 +59,8 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
 
   if (props.shouldStartBundler) {
     logProjectLogsLocation();
+  } else {
+    await manager.stopAsync();
   }
 }
 
