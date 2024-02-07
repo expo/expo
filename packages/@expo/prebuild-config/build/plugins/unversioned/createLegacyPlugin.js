@@ -13,10 +13,9 @@ function _configPlugins() {
 }
 const toCamelCase = s => s.replace(/-./g, x => x.toUpperCase()[1]);
 function isModuleExcluded(config, packageName) {
-  var _config$_internal;
   // Skip using the versioned plugin when autolinking is enabled
   // and doesn't link the native module.
-  return ((_config$_internal = config._internal) === null || _config$_internal === void 0 ? void 0 : _config$_internal.autolinkedModules) && !config._internal.autolinkedModules.includes(packageName);
+  return config._internal?.autolinkedModules && !config._internal.autolinkedModules.includes(packageName);
 }
 function createLegacyPlugin({
   packageName,

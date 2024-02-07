@@ -1211,7 +1211,7 @@ PODS:
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
-  - react-native-safe-area-context (4.7.4):
+  - react-native-safe-area-context (4.8.2):
     - React-Core
   - react-native-segmented-control (2.4.1):
     - React-Core
@@ -1964,7 +1964,7 @@ SPEC CHECKSUMS:
   ExpoCamera: a3f3681963815533c24f698a22c239e68724fb99
   ExpoCellular: 463763547a7489d8fc68d3cc539b666f308a0fe9
   ExpoClipboard: ecbf3edb5dcb460fdefca945923c38f8ad6c7859
-  ExpoCrypto: e2ca148f5c93a0514959df86b34256bb3c50d358
+  ExpoCrypto: f1c0cbaa168759159e781abf16cf8055a9a1a624
   ExpoDevice: 30d5e44aff42048ab016fa0c37a51fdb6b1f8608
   ExpoDocumentPicker: 015978166ecdb556dbeff1db7413a051f8c03bc7
   ExpoFileSystem: d36501dcf237026e7ddb26324abcbfe44461aecc
@@ -2041,7 +2041,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 9ee041e1d7be96da6d76a251f92e72b711c651d6
   react-native-netinfo: 3aa5637c18834966e0c932de8ae1ae56fea20a97
   react-native-pager-view: d81ab2060b9caf57ca8c3a0d57467ff407cdb825
-  react-native-safe-area-context: 2cd91d532de12acdb0a9cbc8d43ac72a8e4c897c
+  react-native-safe-area-context: 0ee144a6170530ccc37a0fd9388e28d06f516a89
   react-native-segmented-control: 0e4b5d93911e2234f110057df2b41738b326ab3e
   react-native-slider: 33b8d190b59d4f67a541061bb91775d53d617d9d
   react-native-view-shot: 6b7ed61d77d88580fed10954d45fad0eb2d47688

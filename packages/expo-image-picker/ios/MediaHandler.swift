@@ -381,6 +381,14 @@ private struct ImageUtils {
       let data = image.pngData()
       return (data, ".png")
 
+    case .some(let s) where s.contains("ext=WEBP"):
+      if options.allowsEditing {
+        // switch to png if editing
+        let data = image.pngData()
+        return (data, ".png")
+      }
+      return (nil, ".webp")
+
     case .some(let s) where s.contains("ext=BMP"):
       if options.allowsEditing {
         // switch to png if editing
@@ -429,6 +437,13 @@ private struct ImageUtils {
     case UTType.png.identifier:
       let data = image.pngData()
       return (data, ".png")
+    case UTType.webP.identifier:
+      if options.allowsEditing {
+        // switch to png if editing
+        let data = image.pngData()
+        return (data, ".png")
+      }
+      return (rawData, ".webp")
     case UTType.gif.identifier:
       let gifData = try processGifData(inputData: rawData,
                                        compressionQuality: options.quality,

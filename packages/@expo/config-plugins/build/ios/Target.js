@@ -51,7 +51,7 @@ function getXCBuildConfigurationFromPbxproj(project, {
     configurationListId: nativeTarget.buildConfigurationList,
     buildConfiguration
   });
-  return xcBuildConfiguration !== null && xcBuildConfiguration !== void 0 ? xcBuildConfiguration : null;
+  return xcBuildConfiguration ?? null;
 }
 async function findApplicationTargetWithDependenciesAsync(projectRoot, scheme) {
   const applicationTargetName = await (0, _BuildScheme().getApplicationTargetNameForSchemeAsync)(projectRoot, scheme);

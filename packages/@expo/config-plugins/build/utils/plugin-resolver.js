@@ -87,11 +87,10 @@ function pathIsFilePath(name) {
   return !!name.match(/^(\.|~\/|\/)/g);
 }
 function moduleNameIsDirectFileReference(name) {
-  var _name$split;
   if (pathIsFilePath(name)) {
     return true;
   }
-  const slashCount = (_name$split = name.split(path().sep)) === null || _name$split === void 0 ? void 0 : _name$split.length;
+  const slashCount = name.split(path().sep)?.length;
   // Orgs (like @expo/config ) should have more than one slash to be a direct file.
   if (name.startsWith('@')) {
     return slashCount > 2;
@@ -120,7 +119,7 @@ function findUpPlugin(root) {
   // use whatever the initial resolved file was ex: `node_modules/my-package/index.js` or `./something.js`
   const pluginFile = resolveExpoPluginFile(moduleRoot);
   return {
-    filePath: pluginFile !== null && pluginFile !== void 0 ? pluginFile : root,
+    filePath: pluginFile ?? root,
     isPluginFile: !!pluginFile
   };
 }

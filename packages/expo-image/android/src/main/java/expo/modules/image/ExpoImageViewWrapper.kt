@@ -519,10 +519,16 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       }
       newTarget.hasSource = sourceToLoad != null
 
-      val downsampleStrategy = if (allowDownscaling) {
+      val downsampleStrategy = if (!allowDownscaling) {
+        DownsampleStrategy.NONE
+      } else if (
+        contentFit != ContentFit.Fill &&
+        contentFit != ContentFit.None
+      ) {
         ContentFitDownsampleStrategy(newTarget, contentFit)
       } else {
-        DownsampleStrategy.NONE
+        // it won't downscale the image if the image is smaller than hardware bitmap size limit
+        SafeDownsampleStrategy(decodeFormat)
       }
 
       val request = requestManager

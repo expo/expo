@@ -66,15 +66,12 @@ function setNavigationBarStyles(config, styles) {
   return styles;
 }
 function getNavigationBarImmersiveMode(config) {
-  var _config$androidNaviga;
-  return ((_config$androidNaviga = config.androidNavigationBar) === null || _config$androidNaviga === void 0 ? void 0 : _config$androidNaviga.visible) || null;
+  return config.androidNavigationBar?.visible || null;
 }
 function getNavigationBarColor(config) {
-  var _config$androidNaviga2;
-  return ((_config$androidNaviga2 = config.androidNavigationBar) === null || _config$androidNaviga2 === void 0 ? void 0 : _config$androidNaviga2.backgroundColor) || null;
+  return config.androidNavigationBar?.backgroundColor || null;
 }
 function getNavigationBarStyle(config) {
-  var _config$androidNaviga3;
-  return ((_config$androidNaviga3 = config.androidNavigationBar) === null || _config$androidNaviga3 === void 0 ? void 0 : _config$androidNaviga3.barStyle) || 'light-content';
+  return config.androidNavigationBar?.barStyle || 'light-content';
 }
 //# sourceMappingURL=withAndroidNavigationBar.js.map

@@ -43,6 +43,14 @@ exports.INTERNAL_CALLSITES_REGEX = new RegExp([
     '/metro-runtime/.+\\.js$',
     // Block all whatwg polyfills
     'node_modules/whatwg-.+\\.js$',
+    // Hide expo-router warnings which are often wrapping all routes and imports.
+    'node_modules/expo-router/build/',
+    // No Expo CLI logs
+    '/@expo/cli/.+',
+    // No context modules as these are virtual
+    '.+?ctx=[a-zA-Z0-9]+$',
+    // Hide react-native-web warning wrappers. These are most likely related to style deprecations.
+    '/react-native-web/dist/.+\\.js$',
 ].join('|'));
 function isUrl(value) {
     try {

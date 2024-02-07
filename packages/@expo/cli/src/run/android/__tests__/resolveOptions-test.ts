@@ -25,6 +25,7 @@ describe(resolveOptionsAsync, () => {
       appName: 'app',
       buildCache: false,
       buildType: 'debug',
+      architectures: '',
       device: {
         device: {
           name: 'mock',
@@ -58,6 +59,7 @@ describe(resolveOptionsAsync, () => {
       appName: 'app',
       buildCache: true,
       buildType: 'first',
+      architectures: '',
       device: {
         device: {
           name: 'mock',

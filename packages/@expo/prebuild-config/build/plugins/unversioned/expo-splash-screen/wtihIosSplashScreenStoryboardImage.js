@@ -27,8 +27,8 @@ const withIosSplashScreenImage = (config, splash) => {
 };
 exports.withIosSplashScreenImage = withIosSplashScreenImage;
 function applySplashScreenStoryboard(obj, splash) {
-  const resizeMode = splash === null || splash === void 0 ? void 0 : splash.resizeMode;
-  const splashScreenImagePresent = Boolean(splash === null || splash === void 0 ? void 0 : splash.image);
+  const resizeMode = splash?.resizeMode;
+  const splashScreenImagePresent = Boolean(splash?.image);
   const imageName = 'SplashScreen';
   // Only get the resize mode when the image is present.
   if (splashScreenImagePresent) {

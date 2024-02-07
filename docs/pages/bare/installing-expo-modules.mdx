@@ -6,6 +6,7 @@ description: Learn how to prepare your existing React Native project to install 
 import InstallSection from '~/components/plugins/InstallSection';
 import { DiffBlock } from '~/ui/components/Snippet';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { Collapsible } from '~/ui/components/Collapsible';
 
 To use Expo modules in your app, you will need to install and configure the `expo` package.
 
@@ -36,7 +37,7 @@ To install and use Expo modules, the easiest way to get up and running is with t
 
 ## Manual installation
 
-The following instructions apply to installing the latest version of Expo modules in React Native 0.71.
+The following instructions apply to installing the latest version of Expo modules in React Native 0.73.
 
 <InstallSection packageName="expo" cmd={['npm install expo']} hideBareInstructions />
 
@@ -52,7 +53,7 @@ Once installation is complete, apply the changes from the following diffs to con
 
 Optionally, you can also add additional delegate methods to your **AppDelegate.mm**. Some libraries may require them, so unless you have a good reason to leave them out, it is recommended to add them. [See delegate methods in AppDelegate.mm](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm#L28-L55).
 
-Save all of your changes. In Xcode, update the iOS Deployment Target under `Target → Build Settings → Deployment` to `iOS 13.0`. The last step is to install the project's CocoaPods again to pull in Expo modules that are detected by `use_expo_modules!` directive that we added to the `Podfile`:
+Save all of your changes. In Xcode, update the iOS Deployment Target under `Target → Build Settings → Deployment` to `iOS 13.4`. The last step is to install the project's CocoaPods again to pull in Expo modules that are detected by `use_expo_modules!` directive that we added to the `Podfile`:
 
 <InstallSection
   packageName="expo"
@@ -66,6 +67,68 @@ Save all of your changes. In Xcode, update the iOS Deployment Target under `Targ
   hideBareInstructions
 />
 
+### Optional: use Expo CLI for bundling
+
+We recommend using Expo CLI to bundle your app JavaScript code and assets. This adds support for using the `"main"` field in **package.json** supports [Expo Router](/router/introduction/). [Learn more about Expo CLI](/bare/using-expo-cli/).
+
+<Collapsible summary="Extend expo/metro-config in your metro.config.js">
+  <DiffBlock source="/static/diffs/metro-config.diff" />
+</Collapsible>
+
+<Collapsible summary="Configure Android project to bundle with Expo CLI">
+  <DiffBlock source="/static/diffs/expo-cli-android.diff" />
+</Collapsible>
+
+<Collapsible summary="Configure iOS project to bundle with Expo CLI">
+
+Replace the shell script in the "Bundle React Native code and images" phase under the "Build Phases" tab for your target in Xcode with the following:
+
+```sh
+if [[ -f "$PODS_ROOT/../.xcode.env" ]]; then
+  source "$PODS_ROOT/../.xcode.env"
+fi
+if [[ -f "$PODS_ROOT/../.xcode.env.local" ]]; then
+  source "$PODS_ROOT/../.xcode.env.local"
+fi
+
+# The project root by default is one level up from the ios directory
+export PROJECT_ROOT="$PROJECT_DIR"/..
+
+if [[ "$CONFIGURATION" = *Debug* ]]; then
+  export SKIP_BUNDLING=1
+fi
+if [[ -z "$ENTRY_FILE" ]]; then
+  # Set the entry JS file using the bundler's entry resolution.
+  export ENTRY_FILE="$("$NODE_BINARY" -e "require('expo/scripts/resolveAppEntry')" "$PROJECT_ROOT" ios relative | tail -n 1)"
+fi
+
+if [[ -z "$CLI_PATH" ]]; then
+  # Use Expo CLI
+  export CLI_PATH="$("$NODE_BINARY" --print "require.resolve('@expo/cli')")"
+fi
+if [[ -z "$BUNDLE_COMMAND" ]]; then
+  # Default Expo CLI command for bundling
+  export BUNDLE_COMMAND="export:embed"
+fi
+
+`"$NODE_BINARY" --print "require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'"`
+```
+
+And add support the `"main"` field in **package.json** by making the following change to **AppDelegate.mm**:
+
+```diff
+ - (NSURL *)getBundleURL
+ {
+ #if DEBUG
+-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
++  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@".expo/.virtual-metro-entry"];
+ #else
+   return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+ #endif
+ ```
+
+</Collapsible>
+
 ## Usage
 
 ### Verifying installation
@@ -73,7 +136,7 @@ Save all of your changes. In Xcode, update the iOS Deployment Target under `Targ
 You can verify that the installation was successful by logging a value from [`expo-constants`](/versions/latest/sdk/constants).
 
 - Run `npx expo install expo-constants`
-- Then, run `npx expo run:[android|ios]` and modify your app JavaScript code to add the following:
+- Then, run `npx expo run` and modify your app JavaScript code to add the following:
 
 ```js
 import Constants from 'expo-constants';
