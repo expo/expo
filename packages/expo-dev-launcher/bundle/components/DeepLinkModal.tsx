@@ -11,12 +11,12 @@ import {
 import * as React from 'react';
 import { ActivityIndicator, ScrollView } from 'react-native';
 
+import { BaseModal } from './BaseModal';
+import { LoadAppErrorModal } from './LoadAppErrorModal';
 import { loadApp } from '../native-modules/DevLauncherInternal';
 import { useDevSessions } from '../providers/DevSessionsProvider';
 import { useModalStack } from '../providers/ModalStackProvider';
 import { useRecentlyOpenedApps } from '../providers/RecentlyOpenedAppsProvider';
-import { BaseModal } from './BaseModal';
-import { LoadAppErrorModal } from './LoadAppErrorModal';
 
 type DeepLinkModalProps = {
   pendingDeepLink: string;

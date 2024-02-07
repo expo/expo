@@ -34,7 +34,7 @@
     "expo-dev-menu": "4.5.1",
     "expo-manifests": "~0.13.0",
     "resolve-from": "^5.0.0",
-    "semver": "^7.5.3"
+    "semver": "^7.5.4"
   },
   "devDependencies": {
     "@babel/plugin-transform-export-namespace-from": "^7.23.4",

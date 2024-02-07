@@ -43,6 +43,6 @@
     "expo-module-scripts": "^3.3.0",
     "ora": "3.4.0",
     "resolve-from": "^5.0.0",
-    "semver": "7.3.2"
+    "semver": "7.5.4"
   }
 }

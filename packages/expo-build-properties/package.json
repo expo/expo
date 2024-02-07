@@ -32,7 +32,7 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/build-properties",
   "dependencies": {
     "ajv": "^8.11.0",
-    "semver": "^7.5.3"
+    "semver": "^7.5.4"
   },
   "devDependencies": {
     "expo-module-scripts": "^3.0.0"

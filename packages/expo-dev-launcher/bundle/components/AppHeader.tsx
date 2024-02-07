@@ -13,10 +13,10 @@ import {
 import * as React from 'react';
 import { useWindowDimensions } from 'react-native';
 
+import { Avatar } from './Avatar';
 import { SafeAreaTop } from '../components/SafeAreaTop';
 import { useBuildInfo } from '../providers/BuildInfoProvider';
 import { useUser } from '../providers/UserContextProvider';
-import { Avatar } from './Avatar';
 
 export function AppHeader({ navigation }) {
   const buildInfo = useBuildInfo();

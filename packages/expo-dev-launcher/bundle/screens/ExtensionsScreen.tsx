@@ -15,6 +15,7 @@ import * as React from 'react';
 import { Linking, RefreshControl } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
+import { ExtensionsStackParamList } from './ExtensionsStack';
 import { ActivityIndicator } from '../components/ActivityIndicator';
 import { AppHeader } from '../components/AppHeader';
 import { EASBranchRow, EASEmptyBranchRow } from '../components/EASUpdatesRows';
@@ -26,7 +27,6 @@ import { useOnUpdatePress } from '../hooks/useOnUpdatePress';
 import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
 import { useUser, useUserActions } from '../providers/UserContextProvider';
 import { Branch, useBranchesForApp } from '../queries/useBranchesForApp';
-import { ExtensionsStackParamList } from './ExtensionsStack';
 
 type ExtensionsScreenProps = {
   navigation: StackNavigationProp<ExtensionsStackParamList>;

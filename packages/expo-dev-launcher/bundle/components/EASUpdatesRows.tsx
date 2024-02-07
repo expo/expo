@@ -14,13 +14,13 @@ import {
 import * as React from 'react';
 import { Animated } from 'react-native';
 
+import { ActivityIndicator } from './ActivityIndicator';
+import { BasicButton } from './BasicButton';
+import { ListButton } from './ListButton';
 import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
 import { Branch } from '../queries/useBranchesForApp';
 import { Update } from '../queries/useUpdatesForBranch';
 import { ExtensionsStackParamList } from '../screens/ExtensionsStack';
-import { ActivityIndicator } from './ActivityIndicator';
-import { BasicButton } from './BasicButton';
-import { ListButton } from './ListButton';
 
 type EASBranchRowProps = {
   branch: Branch;

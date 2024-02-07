@@ -6,8 +6,8 @@ import {
   FlatList as RNFlatList,
 } from 'react-native';
 
-import { useThrottle } from '../hooks/useDebounce';
 import { ActivityIndicator } from './ActivityIndicator';
+import { useThrottle } from '../hooks/useDebounce';
 
 type FlatListProps<T> = RNFlatListProps<T> & {
   isLoading?: boolean;
