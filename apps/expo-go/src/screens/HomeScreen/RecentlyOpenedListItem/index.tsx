@@ -1,7 +1,7 @@
 import { ChevronDownIcon, spacing } from '@expo/styleguide-native';
 import { Text, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
-import { View as RNView, StyleSheet, ViewStyle, Share } from 'react-native';
+import { View as RNView, StyleSheet, ViewStyle, Share, Image } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import * as UrlUtils from '../../../utils/UrlUtils';
@@ -12,9 +12,10 @@ type Props = {
   title?: string;
   url: string;
   onPress?: () => void;
+  iconUrl?: string;
 };
 
-export function RecentlyOpenedListItem({ title, url, disabled, style, onPress }: Props) {
+export function RecentlyOpenedListItem({ title, url, disabled, style, onPress, iconUrl }: Props) {
   const theme = useExpoTheme();
 
   const handleLongPress = () => {
@@ -34,7 +35,8 @@ export function RecentlyOpenedListItem({ title, url, disabled, style, onPress }:
       style={[styles.container, style, disabled && styles.disabled]}
       disabled={disabled}>
       <RNView style={[styles.contentContainer]}>
-        <View>
+        <View style={styles.row}>
+          {iconUrl ? <Image source={{ uri: iconUrl }} style={styles.icon} /> : null}
           <Text type="InterSemiBold" ellipsizeMode="tail" numberOfLines={1}>
             {title}
           </Text>
@@ -81,5 +83,17 @@ const styles = StyleSheet.create({
   chevronRightContainer: {
     alignSelf: 'center',
     marginStart: spacing[2],
+  },
+  icon: {
+    width: 40,
+    height: 40,
+    marginRight: 8,
+    borderRadius: 8,
+    alignSelf: 'center',
+    backgroundColor: 'transparent',
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
