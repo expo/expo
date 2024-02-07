@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Warn if using Cocoapods versions 1.15.1 or 1.15.2. ([#26966](https://github.com/expo/expo/pull/26966) by [@keith-kurak](https://github.com/keith-kurak))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
