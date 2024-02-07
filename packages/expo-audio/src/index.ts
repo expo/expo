@@ -36,7 +36,7 @@ export function useAudioPlayer(
 }
 
 export function useAudioRecorder(url: string | null = null): AudioRecorder {
-  return useMemo(() => new RecordingModule.AudioRecorder(url), [url]);
+  return useMemo(() => new AudioModule.AudioRecorder(url), [url]);
 }
 
 export function addStatusUpdateListener(listener: (event: AudioStatus) => void): Subscription {
