@@ -34,8 +34,8 @@ export type AudioCategory =
   | 'soloAmbient';
 
 export interface AudioModule extends NativeModule {
-  setIsAudioActive(enabled: boolean): void;
-  setCategory(category: AudioCategory): void;
+  setIsAudioActiveAsync(active: boolean): Promise<void>;
+  setCategoryAsync(category: AudioCategory): Promise<void>;
 
   readonly AudioPlayer: AudioPlayer;
 }

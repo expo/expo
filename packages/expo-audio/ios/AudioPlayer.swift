@@ -1,7 +1,8 @@
 import ExpoModulesCore
 import Foundation
 
-public class AudioPlayer: SharedRef<AVPlayer> {
+public class AudioPlayer: SharedRef<AVPlayer>, Identifiable {
+  public var id = UUID().uuidString
   var isLooping = false
   var shouldCorrectPitch = false
   var pitchCorrectionQuality: AVAudioTimePitchAlgorithm = .varispeed

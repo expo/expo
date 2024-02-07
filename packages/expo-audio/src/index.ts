@@ -1,7 +1,7 @@
 import { EventEmitter, Subscription } from 'expo-modules-core';
 import { useMemo, useEffect } from 'react';
 
-import { AudioSource } from './Audio.types';
+import { AudioSource, AudioPlayerState } from './Audio.types';
 import AudioModule from './AudioModule';
 import {
   AudioCategory,
@@ -49,12 +49,12 @@ export function addRecordingStatusListener(
   return recordingEmitter.addListener<RecordingStatus>('onRecordingStatusUpdate', listener);
 }
 
-export function setIsAudioActive(enabled: boolean) {
-  AudioModule.setIsAudioActive(enabled);
+export async function setIsAudioActiveAsync(active: boolean): Promise<void> {
+  return await AudioModule.setIsAudioActiveAsync(active);
 }
 
-export function setAudioCategory(category: AudioCategory) {
-  AudioModule.setCategory(category);
+export async function setAudioCategoryAsync(category: AudioCategory): Promise<void> {
+  return await AudioModule.setCategoryAsync(category);
 }
 
-export { AudioStatus as ChangeEventPayload, AudioSource };
+export { AudioStatus as ChangeEventPayload, AudioSource, AudioPlayerState };

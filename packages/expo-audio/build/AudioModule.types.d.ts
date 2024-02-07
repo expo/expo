@@ -23,8 +23,8 @@ export type RecordingStatus = {
 };
 export type AudioCategory = 'ambient' | 'multiRoute' | 'playAndRecord' | 'playback' | 'record' | 'soloAmbient';
 export interface AudioModule extends NativeModule {
-    setIsAudioActive(enabled: boolean): void;
-    setCategory(category: AudioCategory): void;
+    setIsAudioActiveAsync(active: boolean): Promise<void>;
+    setCategoryAsync(category: AudioCategory): Promise<void>;
     readonly AudioPlayer: AudioPlayer;
 }
 export interface RecordingModule extends NativeModule {

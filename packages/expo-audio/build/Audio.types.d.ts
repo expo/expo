@@ -10,5 +10,18 @@ export type AudioSource = {
      */
     headers?: Record<string, string>;
 };
+export type AudioPlayerState = {
+    androidImplementation: string;
+    isLoaded: boolean;
+    isLooping: boolean;
+    isMuted: boolean;
+    positionMillis: number;
+    durationMillis: number;
+    rate: number;
+    volume: number;
+    isPlaying: boolean;
+    audioPan: number;
+    shouldCorrectPitch: boolean;
+};
 export type PitchCorrectionQuality = 'low' | 'medium' | 'high';
 //# sourceMappingURL=Audio.types.d.ts.map
