@@ -60,6 +60,8 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   // Log the location of the JS logs for the device.
   if (props.shouldStartBundler) {
     logProjectLogsLocation();
+  } else {
+    await manager.stopAsync();
   }
 }
 
