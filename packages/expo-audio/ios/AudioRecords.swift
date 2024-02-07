@@ -42,3 +42,17 @@ enum PitchCorrectionQuality: String, Enumerable {
     }
   }
 }
+
+
+struct AudioMode: Record {
+  @Field var playsInSilentMode: Bool = false
+  @Field var interruptionMode: InterruptionMode = .duckOthers
+  @Field var allowsRecording: Bool = true
+  @Field var shouldPlayInBackground: Bool = true
+}
+
+enum InterruptionMode: String, Enumerable {
+  case mixWithOthers
+  case doNotMix
+  case duckOthers
+}

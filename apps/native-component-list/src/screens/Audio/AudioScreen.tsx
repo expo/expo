@@ -1,4 +1,4 @@
-import { setIsAudioActive } from 'expo-audio';
+import { setIsAudioActiveAsync } from 'expo-audio';
 import React from 'react';
 import { PixelRatio, ScrollView, StyleSheet } from 'react-native';
 
@@ -17,8 +17,8 @@ export default function AudioScreen(props: any) {
   return (
     <ScrollView contentContainerStyle={styles.contentContainer}>
       <HeadingText>Audio state</HeadingText>
-      <ListButton title="Activate Audio" onPress={() => setIsAudioActive(true)} />
-      <ListButton title="Deactivate Audio" onPress={() => setIsAudioActive(false)} />
+      <ListButton title="Activate Audio" onPress={() => setIsAudioActiveAsync(true)} />
+      <ListButton title="Deactivate Audio" onPress={() => setIsAudioActiveAsync(false)} />
       <HeadingText>Audio mode</HeadingText>
       <AudioModeSelector />
       <HeadingText>HTTP player</HeadingText>

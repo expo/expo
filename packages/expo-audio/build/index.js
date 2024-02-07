@@ -27,10 +27,10 @@ export function addStatusUpdateListener(listener) {
 export function addRecordingStatusListener(listener) {
     return recordingEmitter.addListener('onRecordingStatusUpdate', listener);
 }
-export function setIsAudioActive(enabled) {
-    AudioModule.setIsAudioActive(enabled);
+export async function setIsAudioActiveAsync(active) {
+    return await AudioModule.setIsAudioActiveAsync(active);
 }
-export function setAudioCategory(category) {
-    AudioModule.setCategory(category);
+export async function setAudioCategoryAsync(category) {
+    return await AudioModule.setCategoryAsync(category);
 }
 //# sourceMappingURL=index.js.map

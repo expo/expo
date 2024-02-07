@@ -5,6 +5,8 @@ private let statusUpdate = "onPlaybackStatusUpdate"
 
 public class AudioModule: Module {
   private var timeTokens = [Int: Any?]()
+  private var players = [String: AudioPlayer]()
+  private var sessionIsActive = true
   
   // Observers
   private var cancellables = Set<AnyCancellable>()
@@ -15,7 +17,7 @@ public class AudioModule: Module {
     
     Events(statusUpdate)
     
-    Function("setCategory") { (category: AudioCategory) in
+    AsyncFunction("setCategoryAsync") { (category: AudioCategory) in
       do {
         try AVAudioSession.sharedInstance().setCategory(category.toAVCategory())
       } catch {
@@ -23,9 +25,15 @@ public class AudioModule: Module {
       }
     }
     
-    Function("setIsAudioActive") { (active: Bool)  in
+    AsyncFunction("setIsAudioActiveAsync") { (isActive: Bool)  in
+      for player in players.values {
+        if !isActive {
+          player.pointer.pause()
+        }
+      }
       do {
-        try AVAudioSession.sharedInstance().setActive(active, options: [.notifyOthersOnDeactivation])
+        try AVAudioSession.sharedInstance().setActive(isActive, options: [.notifyOthersOnDeactivation])
+        sessionIsActive = isActive
       } catch {
         throw AudioStateException(error.localizedDescription)
       }
@@ -35,6 +43,7 @@ public class AudioModule: Module {
       for observer in endObservers.values {
         NotificationCenter.default.removeObserver(observer)
       }
+      players.removeAll()
       timeTokens.removeAll()
       cancellables.removeAll()
     }
@@ -42,7 +51,7 @@ public class AudioModule: Module {
     Class(AudioPlayer.self) {
       Constructor { (source: AudioSource?) -> AudioPlayer in
         let player = AudioPlayer(createAVPlayer(source: source))
-        
+        players[player.id] = player
         // Gets the duration of the item on load
         player.pointer.publisher(for: \.currentItem?.status).sink { [weak self] status in
           guard let self, let status else {
@@ -111,6 +120,9 @@ public class AudioModule: Module {
       }
       
       Function("play") { player in
+        guard sessionIsActive else {
+          return
+        }
         addPlaybackEndNotification(player: player)
         registerTimeObserver(player: player, for: player.sharedObjectId)
         player.pointer.play()
@@ -135,6 +147,7 @@ public class AudioModule: Module {
           player.pointer.removeTimeObserver(token)
         }
         player.pointer.pause()
+        players.removeValue(forKey: player.id)
         SharedObjectRegistry.delete(id)
       }
       
@@ -204,6 +217,10 @@ public class AudioModule: Module {
       new
     }
     sendEvent(statusUpdate, body)
+  }
+  
+  private func validateAudioMode(mode: AudioMode) throws {
+    
   }
 }
 
