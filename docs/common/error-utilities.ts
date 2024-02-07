@@ -187,6 +187,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/workflow/upgrading-expo/': '/workflow/upgrading-expo-sdk-walkthrough/',
   '/workflow/create-react-native-app/': '/more/glossary-of-terms/#create-react-native-app',
   '/expokit/': '/archive/glossary/#expokit/',
+  '/build-reference/migrating/': '/archive/classic-builds/migrating/',
 
   // Development builds redirects
   '/development/build/': '/develop/development-builds/create-a-build/',
@@ -366,7 +367,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/worfkflow/publishing/': '/archive/classic-updates/publishing/',
   '/classic/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
   '/classic/turtle-cli/': '/archive/classic-updates/turtle-cli/',
-  '/build-reference/migrating': 'archive/classic-updates/migrating',
   '/archive/classic-updates/getting-started/': '/eas-update/getting-started/',
 
   // Redirects for removed API docs based on Sentry

@@ -474,7 +474,7 @@ const archive = [
   makeSection('Classic Builds', [
     makePage('archive/classic-updates/building-standalone-apps.mdx'),
     makePage('archive/classic-updates/turtle-cli.mdx'),
-    makePage('archive/classic-updates/migrating.mdx'),
+    makePage('archive/classic-builds/migrating.mdx'),
   ]),
   makeSection('Classic Updates', [
     makePage('archive/classic-updates/introduction.mdx'),
