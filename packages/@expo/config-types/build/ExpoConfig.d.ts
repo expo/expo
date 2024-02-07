@@ -730,6 +730,15 @@ export interface AndroidIntentFiltersData {
      */
     pathPrefix?: string;
     /**
+     * Suffix for paths that should be matched by the filter, e.g. `/123` will match `/records/123`
+     */
+    pathSuffix?: string;
+    /**
+     * Advanced pattern for paths that should be matched by the filter and supports the following
+     * regex-like patterns, e.g. /records/[0-9] will match `/records/123` but not `/records/new`
+     */
+    pathAdvancedPattern?: string;
+    /**
      * MIME type for URLs that should be matched by the filter
      */
     mimeType?: string;
