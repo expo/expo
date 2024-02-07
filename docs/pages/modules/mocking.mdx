@@ -1,0 +1,57 @@
+---
+title: 'Mocking native calls in Expo modules'
+sidebar_title: Mocking
+description: Learn about mocking native calls in Expo modules.
+---
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Grid01Icon } from '@expo/styleguide-icons';
+import { Terminal } from '~/ui/components/Snippet';
+
+The recommended way to write unit tests for an Expo project is to use [Jest](https://jestjs.io/) and the `jest-expo` preset.
+
+<BoxLink
+  title="Unit testing"
+  description="Learn how to set up and configure the jest-expo package to write unit tests and snapshot tests for a project."
+  href="/develop/unit-testing/"
+  Icon={Grid01Icon}
+/>
+
+To unit test an application that uses native code, you will need to mock native calls.
+Mocking means to replace the actual implementation of a function with a fake implementation (that usually does nothing).
+This is useful, because unit tests run only on your computer, and without the native code running on the mobile device any code calling native functions will not work.
+
+The Expo SDK includes a set of default mocks for each of our community packages. You can also mock any JS code yourself using built-in Jest APIs such as [mock functions](https://jestjs.io/docs/mock-functions).
+
+However, if you want to provide default mocks in your Expo Module, we provide a way to bundle these mocks with your module. This way, when a user runs unit tests, they will automatically use a mocked implementation.
+
+# Providing mocks for your module
+
+Create a file with the same name as the native module you want to mock, and place it in a `mocks` directory of your module. Export your mock implementation from this file.
+The `jest-expo` preset will automatically return the exported functions as a result of a `requireNativeModule` call when running during a unit test.
+
+As an example, the `expo-clipboard` module has a native module called `ExpoClipboard`. To mock this module, you would create a file called `ExpoClipboard.ts` in a `mocks` directory in your module.
+
+```tsx
+export async function hasStringAsync(): Promise<boolean> {
+  return false;
+}
+```
+
+Now, in a unit test, calling `ExpoClipboard.hasStringAsync()` will return `false`.
+
+# Automatic generation of mocks
+
+Maintaining mocks for native modules can be a lot of work, especially if the native module has many methods. To make this easier, we provide a script that will automatically generate mocks for all native functions in your module.
+It works for generating mocks in TypeScript and JavaScript, based on the Swift implementation in your module.
+
+To use this script you need to have [SourceKitten](https://github.com/jpsim/SourceKitten) framework installed and run the `generate-ts-mocks` command in your module.
+
+<Terminal
+  cmdCopy="brew install sourcekitten && npx expo-modules-test-core generate-ts-mocks"
+  cmd={['$ brew install sourcekitten', '$ npx expo-modules-test-core generate-ts-mocks']}
+/>
+
+This will generate a file called `ExpoModuleName.ts` in the `mocks` directory of your module. This file will contain a mock implementation for each native method and view in your module.
+
+> **Tip:** You can also run `generate-js-mocks` to generate mocks in JavaScript.
