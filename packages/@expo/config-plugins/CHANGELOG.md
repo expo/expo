@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added new `AndroidIntentFiltersData` introduced in API 31, `pathSuffix` and `pathAdvancedPattern`.
+- Added new `AndroidIntentFiltersData` introduced in API 31, `pathSuffix` and `pathAdvancedPattern`. ([#26989](https://github.com/expo/expo/pull/26989) by [@NoZiL](https://github.com/NoZiL))
 
 ### 🐛 Bug fixes
 
