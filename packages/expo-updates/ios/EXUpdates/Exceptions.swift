@@ -54,7 +54,7 @@ internal final class UpdatesUnsupportedDirectiveException: Exception {
 internal final class NotAvailableInDevClientException: Exception {
   private let actionBeingPerformed: String
 
-  public init(_ actionBeingPerformed: String, file: String = #fileID, line: UInt = #line, function: String = #function) {
+  internal init(_ actionBeingPerformed: String, file: String = #fileID, line: UInt = #line, function: String = #function) {
     self.actionBeingPerformed = actionBeingPerformed
     super.init(file: file, line: line, function: function)
   }
