@@ -91,21 +91,21 @@ public class DisabledAppController: InternalAppControllerInterface {
     success successBlockArg: @escaping (CheckForUpdateResult) -> Void,
     error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void
   ) {
-    errorBlockArg(UpdatesDisabledException())
+    errorBlockArg(UpdatesDisabledException("check for update"))
   }
 
   public func fetchUpdate(
     success successBlockArg: @escaping (FetchUpdateResult) -> Void,
     error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void
   ) {
-    errorBlockArg(UpdatesDisabledException())
+    errorBlockArg(UpdatesDisabledException("fetch update"))
   }
 
   public func getExtraParams(
     success successBlockArg: @escaping ([String: String]?) -> Void,
     error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void
   ) {
-    errorBlockArg(UpdatesDisabledException())
+    errorBlockArg(UpdatesDisabledException("get extra params"))
   }
 
   public func setExtraParam(
@@ -114,7 +114,7 @@ public class DisabledAppController: InternalAppControllerInterface {
     success successBlockArg: @escaping () -> Void,
     error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void
   ) {
-    errorBlockArg(UpdatesDisabledException())
+    errorBlockArg(UpdatesDisabledException("set extra params"))
   }
 
   public func getNativeStateMachineContext(

@@ -318,19 +318,19 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
   }
 
   public func checkForUpdate(success successBlockArg: @escaping (CheckForUpdateResult) -> Void, error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void) {
-    errorBlockArg(NotAvailableInDevClientException())
+    errorBlockArg(NotAvailableInDevClientException("check for update"))
   }
 
   public func fetchUpdate(success successBlockArg: @escaping (FetchUpdateResult) -> Void, error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void) {
-    errorBlockArg(NotAvailableInDevClientException())
+    errorBlockArg(NotAvailableInDevClientException("fetch update"))
   }
 
   public func getExtraParams(success successBlockArg: @escaping ([String: String]?) -> Void, error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void) {
-    errorBlockArg(NotAvailableInDevClientException())
+    errorBlockArg(NotAvailableInDevClientException("get extra params"))
   }
 
   public func setExtraParam(key: String, value: String?, success successBlockArg: @escaping () -> Void, error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void) {
-    errorBlockArg(NotAvailableInDevClientException())
+    errorBlockArg(NotAvailableInDevClientException("set extra params"))
   }
 
   public func getNativeStateMachineContext(success successBlockArg: @escaping (UpdatesStateContext) -> Void, error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void) {

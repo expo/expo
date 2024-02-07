@@ -5,12 +5,19 @@
 import ExpoModulesCore
 
 public final class UpdatesDisabledException: Exception {
+  private let actionBeingPerformed: String
+
+  public init(_ actionBeingPerformed: String, file: String = #fileID, line: UInt = #line, function: String = #function) {
+    self.actionBeingPerformed = actionBeingPerformed
+    super.init(file: file, line: line, function: function)
+  }
+
   public override var code: String {
     "ERR_UPDATES_DISABLED"
   }
 
   public override var reason: String {
-    "Cannot call module method when expo-updates is disabled"
+    "Cannot \(actionBeingPerformed) when expo-updates is not enabled."
   }
 }
 
@@ -45,11 +52,18 @@ internal final class UpdatesUnsupportedDirectiveException: Exception {
 }
 
 internal final class NotAvailableInDevClientException: Exception {
+  private let actionBeingPerformed: String
+
+  public init(_ actionBeingPerformed: String, file: String = #fileID, line: UInt = #line, function: String = #function) {
+    self.actionBeingPerformed = actionBeingPerformed
+    super.init(file: file, line: line, function: function)
+  }
+
   override var code: String {
     "ERR_NOT_AVAILABLE_IN_DEV_CLIENT"
   }
 
   override var reason: String {
-    "This method is not supported in development client builds. A non-development build should be used to test this functionality."
+    "Cannot \(actionBeingPerformed) in a development client. A non-development build should be used to test this functionality."
   }
 }
