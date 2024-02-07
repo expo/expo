@@ -5,10 +5,10 @@
 import ExpoModulesCore
 
 public final class UpdatesDisabledException: Exception {
-  private let actionBeingPerformed: String
+  private let jsMethodName: String
 
-  public init(_ actionBeingPerformed: String, file: String = #fileID, line: UInt = #line, function: String = #function) {
-    self.actionBeingPerformed = actionBeingPerformed
+  public init(_ jsMethodName: String, file: String = #fileID, line: UInt = #line, function: String = #function) {
+    self.jsMethodName = jsMethodName
     super.init(file: file, line: line, function: function)
   }
 
@@ -17,7 +17,7 @@ public final class UpdatesDisabledException: Exception {
   }
 
   public override var reason: String {
-    "Cannot \(actionBeingPerformed) when expo-updates is not enabled."
+    "\(jsMethodName) cannot be called when expo-updates is not enabled."
   }
 }
 
@@ -52,10 +52,10 @@ internal final class UpdatesUnsupportedDirectiveException: Exception {
 }
 
 internal final class NotAvailableInDevClientException: Exception {
-  private let actionBeingPerformed: String
+  private let jsMethodName: String
 
-  internal init(_ actionBeingPerformed: String, file: String = #fileID, line: UInt = #line, function: String = #function) {
-    self.actionBeingPerformed = actionBeingPerformed
+  internal init(_ jsMethodName: String, file: String = #fileID, line: UInt = #line, function: String = #function) {
+    self.jsMethodName = jsMethodName
     super.init(file: file, line: line, function: function)
   }
 
@@ -64,6 +64,6 @@ internal final class NotAvailableInDevClientException: Exception {
   }
 
   override var reason: String {
-    "Cannot \(actionBeingPerformed) in a development client. A non-development build should be used to test this functionality."
+    "\(jsMethodName) cannot be called from a development build. A non-development build should be used to test this functionality."
   }
 }
