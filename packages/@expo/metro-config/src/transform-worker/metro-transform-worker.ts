@@ -41,6 +41,7 @@ import getMinifier from 'metro-transform-worker/src/utils/getMinifier';
 import assert from 'node:assert';
 
 import * as assetTransformer from './asset-transformer';
+import { shouldMinify } from './resolveOptions';
 
 export { JsTransformOptions };
 
@@ -310,17 +311,12 @@ async function transformJS(
       ));
     }
   }
-
-  const isBytecodeEnabled =
-    options.customTransformOptions?.bytecode === true ||
-    options.customTransformOptions?.bytecode === 'true';
-
-  const minify = options.minify && !isBytecodeEnabled;
-
   const reserved: string[] = [];
   if (config.unstable_dependencyMapReservedName != null) {
     reserved.push(config.unstable_dependencyMapReservedName);
   }
+
+  const minify = shouldMinify(options);
 
   if (
     minify &&
@@ -445,11 +441,7 @@ async function transformJSON(
       : JsFileWrapping.wrapJson(file.code, config.globalPrefix);
   let map: MetroSourceMapSegmentTuple[] = [];
 
-  const isBytecodeEnabled =
-    options.customTransformOptions?.bytecode === true ||
-    options.customTransformOptions?.bytecode === 'true';
-
-  const minify = options.minify && !isBytecodeEnabled;
+  const minify = shouldMinify(options);
 
   if (minify) {
     ({ map, code } = await minifyCode(config, projectRoot, file.filename, code, file.code, map));

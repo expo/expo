@@ -154,6 +154,7 @@ async function bundleProductionMetroClientAsync(
       ...Server.DEFAULT_BUNDLE_OPTIONS,
       sourceMapUrl: bundle.sourceMapUrl,
       ...getMetroDirectBundleOptionsForExpoConfig(projectRoot, expoConfig, {
+        minify: bundle.minify,
         mainModuleName: bundle.entryPoint,
         platform: bundle.platform,
         mode: bundle.dev ? 'development' : 'production',
