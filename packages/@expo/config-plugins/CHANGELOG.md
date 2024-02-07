@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added new `AndroidIntentFiltersData` introduced in API 31, `pathSuffix` and `pathAdvancedPattern`.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
