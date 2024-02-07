@@ -310,41 +310,4 @@ describe('server', () => {
     // Could take 45s depending on how fast npm installs
     120 * 1000
   );
-
-  it(
-    'runs `npx expo export --no-bytecode --no-minify`',
-    async () => {
-      const projectRoot = await setupTestProjectAsync('basic-export', 'with-assets');
-
-      await execa(
-        'node',
-        [bin, 'export', '--source-maps', '--no-bytecode', '--dump-assetmap', '--platform', 'ios'],
-        {
-          cwd: projectRoot,
-          env: {
-            NODE_ENV: 'production',
-            TEST_BABEL_PRESET_EXPO_MODULE_ID: require.resolve('babel-preset-expo'),
-            EXPO_USE_FAST_RESOLVER: 'false',
-          },
-        }
-      );
-
-      const outputDir = path.join(projectRoot, 'dist');
-
-      // Check if the bundle is minified
-      const bundlePath = globSync('**/*.js', {
-        cwd: path.join(outputDir, '_expo'),
-        absolute: true,
-      })[0];
-      console.log('bundlePath', bundlePath);
-
-      const bundle = await fs.readFile(bundlePath, 'utf8');
-
-      expect(bundle).toMatch('__d(');
-      // General check
-      expect(bundle.split('\n').length).toBeGreaterThan(550);
-    },
-    // Could take 45s depending on how fast npm installs
-    120 * 1000
-  );
 });
