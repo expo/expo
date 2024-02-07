@@ -28,7 +28,8 @@ function getInfoFromManifest(
   if ('metadata' in manifest) {
     // modern manifest
     return {
-      iconUrl: undefined, // no icon for modern manifests
+      // @ts-expect-error iconUrl exists only for local development
+      iconUrl: manifest?.extra?.expoClient?.iconUrl,
       taskName: manifest.extra?.expoClient?.name,
       sdkVersion: manifest.extra?.expoClient?.sdkVersion,
       runtimeVersion: stringOrUndefined(manifest.runtimeVersion),
