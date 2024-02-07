@@ -7,10 +7,6 @@ import {
 import * as React from 'react';
 import { useColorScheme } from 'react-native';
 
-import { UserData } from '../functions/getUserProfileAsync';
-import { BuildInfo, CrashReport } from '../native-modules/DevLauncherInternal';
-import { DevMenuPreferencesType } from '../native-modules/DevMenuPreferences';
-import { DevSession } from '../types';
 import { BuildInfoProvider } from './BuildInfoProvider';
 import { CrashReportProvider } from './CrashReportProvider';
 import { DevMenuPreferencesProvider } from './DevMenuPreferencesProvider';
@@ -22,6 +18,10 @@ import { RecentApp, RecentlyOpenedAppsProvider } from './RecentlyOpenedAppsProvi
 import { ToastStackProvider } from './ToastStackProvider';
 import { UpdatesConfigProvider } from './UpdatesConfigProvider';
 import { UserContextProvider } from './UserContextProvider';
+import { UserData } from '../functions/getUserProfileAsync';
+import { BuildInfo, CrashReport } from '../native-modules/DevLauncherInternal';
+import { DevMenuPreferencesType } from '../native-modules/DevMenuPreferences';
+import { DevSession } from '../types';
 
 export type AppProvidersProps = {
   children?: React.ReactNode;
