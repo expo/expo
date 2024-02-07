@@ -2,7 +2,7 @@ import ExpoModulesCore
 
 protocol RecordingResultHandler {
   func didFinish(_ recorder: AVAudioRecorder, successfully flag: Bool)
-  func encodeErrorDidOccuer(_ recorder: AVAudioRecorder, error: Error?)
+  func encodeErrorDidOccur(_ recorder: AVAudioRecorder, error: Error?)
 }
 
 class RecordingDelegate: NSObject, AVAudioRecorderDelegate {
@@ -17,6 +17,6 @@ class RecordingDelegate: NSObject, AVAudioRecorderDelegate {
   }
   
   func audioRecorderEncodeErrorDidOccur(_ recorder: AVAudioRecorder, error: Error?) {
-    resultHandler.encodeErrorDidOccuer(recorder, error: error)
+    resultHandler.encodeErrorDidOccur(recorder, error: error)
   }
 }

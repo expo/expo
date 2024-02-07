@@ -36,14 +36,10 @@ export type AudioCategory =
 export interface AudioModule extends NativeModule {
   setIsAudioActiveAsync(active: boolean): Promise<void>;
   setCategoryAsync(category: AudioCategory): Promise<void>;
-
-  readonly AudioPlayer: AudioPlayer;
-}
-
-export interface RecordingModule extends NativeModule {
   requestRecordingPermissionsAsync(): Promise<RecordingPermissionResponse>;
   getRecordingPermissionsAsync(): Promise<RecordingPermissionResponse>;
 
+  readonly AudioPlayer: AudioPlayer;
   readonly AudioRecorder: AudioRecorder;
 }
 

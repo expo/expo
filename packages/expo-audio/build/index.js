@@ -19,7 +19,7 @@ export function useAudioPlayer(source = null, statusListener) {
     return player;
 }
 export function useAudioRecorder(url = null) {
-    return useMemo(() => new RecordingModule.AudioRecorder(url), [url]);
+    return useMemo(() => new AudioModule.AudioRecorder(url), [url]);
 }
 export function addStatusUpdateListener(listener) {
     return audioEmitter.addListener('onPlaybackStatusUpdate', listener);
