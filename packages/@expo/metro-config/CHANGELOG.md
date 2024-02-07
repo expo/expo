@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `--no-bytecode` flag to `expo export` to disable generating Hermes bytecode for use with debugging tools.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
