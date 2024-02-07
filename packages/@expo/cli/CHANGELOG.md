@@ -14,7 +14,7 @@
 
 ### 🐛 Bug fixes
 
-- Prevent run commands from hanging when the process completes.
+- Prevent run commands from hanging when the process completes. ([#26960](https://github.com/expo/expo/pull/26960) by [@EvanBacon](https://github.com/EvanBacon))
 - Mark compressed `.gz` files as binary to avoid corruption when unpacking with `expo prebuild --template`. ([#26741](https://github.com/expo/expo/pull/26741) by [@shirakaba](https://github.com/shirakaba))
 - Add better validation for Metro web when exporting production bundles. ([#26732](https://github.com/expo/expo/pull/26732) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix `tsconfig.json` resolution of `baseUrl` when `paths` is not defined. ([#26734](https://github.com/expo/expo/pull/26734) by [@EvanBacon](https://github.com/EvanBacon))
