@@ -2,7 +2,7 @@ import spawnAsync from '@expo/spawn-async';
 import { execSync } from 'child_process';
 
 import { mockSpawnPromise } from '../../__tests__/spawn-utils';
-import { GlobalPrereqsVersionCheck } from '../GlobalPrereqsVersionCheck';
+import { PackageManagerVersionCheck } from '../PackageManagerVersionCheck';
 
 jest.mock('child_process');
 
@@ -27,7 +27,7 @@ describe('runAsync', () => {
         })
       )
     );
-    const check = new GlobalPrereqsVersionCheck();
+    const check = new PackageManagerVersionCheck();
     const result = await check.runAsync({
       projectRoot: '/path/to/project',
       ...additionalProjectProps,
@@ -45,7 +45,7 @@ describe('runAsync', () => {
     );
 
     jest.mocked(execSync).mockReturnValueOnce('8.19.3');
-    const check = new GlobalPrereqsVersionCheck();
+    const check = new PackageManagerVersionCheck();
     const result = await check.runAsync({
       projectRoot: '/path/to/project',
       ...additionalProjectProps,
@@ -63,7 +63,7 @@ describe('runAsync', () => {
     );
 
     jest.mocked(execSync).mockReturnValueOnce('5.0.0');
-    const check = new GlobalPrereqsVersionCheck();
+    const check = new PackageManagerVersionCheck();
     const result = await check.runAsync({
       projectRoot: '/path/to/project',
       ...additionalProjectProps,

@@ -21,6 +21,9 @@ const additionalProjectProps = {
 };
 
 describe('runAsync', () => {
+  afterEach(() => {
+    vol.reset();
+  });
   // unintentionally bare check
   it('returns result with isSuccessful = true if no ios/ android folders and no config plugins', async () => {
     const check = new ProjectSetupCheck();
