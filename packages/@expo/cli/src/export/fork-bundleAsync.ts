@@ -31,6 +31,7 @@ export type BundleOptions = {
   platform: 'android' | 'ios' | 'web';
   dev?: boolean;
   minify?: boolean;
+  bytecode: boolean;
   sourceMapUrl?: string;
   sourcemaps?: boolean;
 };
@@ -70,6 +71,7 @@ export async function createBundlesAsync(
     platforms: Platform[];
     dev?: boolean;
     minify?: boolean;
+    bytecode: boolean;
     sourcemaps?: boolean;
     entryPoint?: string;
   }
@@ -93,6 +95,7 @@ export async function createBundlesAsync(
         bundleOptions.entryPoint ?? getEntryWithServerRoot(projectRoot, { platform, pkg }),
       sourcemaps: bundleOptions.sourcemaps,
       minify: bundleOptions.minify,
+      bytecode: bundleOptions.bytecode,
       dev: bundleOptions.dev,
     }))
   );
@@ -156,10 +159,10 @@ async function bundleProductionMetroClientAsync(
         mode: bundle.dev ? 'development' : 'production',
         engine: isHermes ? 'hermes' : undefined,
         serializerIncludeMaps: bundle.sourcemaps,
+        bytecode: bundle.bytecode && isHermes,
         // Bundle splitting on web-only for now.
         // serializerOutput: bundle.platform === 'web' ? 'static' : undefined,
         serializerOutput: 'static',
-        serializerIncludeBytecode: isHermes,
         isExporting: true,
       }),
       bundleType: 'bundle',

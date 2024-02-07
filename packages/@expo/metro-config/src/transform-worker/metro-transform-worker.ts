@@ -311,10 +311,11 @@ async function transformJS(
     }
   }
 
-  const minify =
-    options.minify &&
-    options.unstable_transformProfile !== 'hermes-canary' &&
-    options.unstable_transformProfile !== 'hermes-stable';
+  const isBytecodeEnabled =
+    options.customTransformOptions?.bytecode === true ||
+    options.customTransformOptions?.bytecode === 'true';
+
+  const minify = options.minify && !isBytecodeEnabled;
 
   const reserved: string[] = [];
   if (config.unstable_dependencyMapReservedName != null) {
@@ -444,11 +445,11 @@ async function transformJSON(
       : JsFileWrapping.wrapJson(file.code, config.globalPrefix);
   let map: MetroSourceMapSegmentTuple[] = [];
 
-  // TODO: When we can reuse transformJS for JSON, we should not derive `minify` separately.
-  const minify =
-    options.minify &&
-    options.unstable_transformProfile !== 'hermes-canary' &&
-    options.unstable_transformProfile !== 'hermes-stable';
+  const isBytecodeEnabled =
+    options.customTransformOptions?.bytecode === true ||
+    options.customTransformOptions?.bytecode === 'true';
+
+  const minify = options.minify && !isBytecodeEnabled;
 
   if (minify) {
     ({ map, code } = await minifyCode(config, projectRoot, file.filename, code, file.code, map));

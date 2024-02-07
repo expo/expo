@@ -125,6 +125,7 @@ export async function createMetroServerAndBundleRequestAsync(
       minify: options.minify,
       mode: options.dev ? 'development' : 'production',
       engine: isHermes ? 'hermes' : undefined,
+      bytecode: isHermes,
       isExporting: true,
     }),
     sourceMapUrl,

@@ -237,9 +237,9 @@ async function transformJS(file, { config, options, projectRoot }) {
             ({ ast: wrappedAst } = JsFileWrapping_1.default.wrapModule(ast, importDefault, importAll, dependencyMapName, config.globalPrefix));
         }
     }
-    const minify = options.minify &&
-        options.unstable_transformProfile !== 'hermes-canary' &&
-        options.unstable_transformProfile !== 'hermes-stable';
+    const isBytecodeEnabled = options.customTransformOptions?.bytecode === true ||
+        options.customTransformOptions?.bytecode === 'true';
+    const minify = options.minify && !isBytecodeEnabled;
     const reserved = [];
     if (config.unstable_dependencyMapReservedName != null) {
         reserved.push(config.unstable_dependencyMapReservedName);
@@ -320,10 +320,9 @@ async function transformJSON(file, { options, config, projectRoot }) {
         ? JsFileWrapping_1.default.jsonToCommonJS(file.code)
         : JsFileWrapping_1.default.wrapJson(file.code, config.globalPrefix);
     let map = [];
-    // TODO: When we can reuse transformJS for JSON, we should not derive `minify` separately.
-    const minify = options.minify &&
-        options.unstable_transformProfile !== 'hermes-canary' &&
-        options.unstable_transformProfile !== 'hermes-stable';
+    const isBytecodeEnabled = options.customTransformOptions?.bytecode === true ||
+        options.customTransformOptions?.bytecode === 'true';
+    const minify = options.minify && !isBytecodeEnabled;
     if (minify) {
         ({ map, code } = await minifyCode(config, projectRoot, file.filename, code, file.code, map));
     }
