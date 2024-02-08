@@ -29,9 +29,9 @@ To install them, stop the development server by pressing <kbd>Ctrl</kbd> + <kbd>
 
 <Terminal cmd={['$ npx expo install react-native-gesture-handler react-native-reanimated']} />
 
-Next, also install `@babel/plugin-proposal-export-namespace-from`, which is required to configure the Reanimated library:
+Next, also install `@babel/plugin-transform-export-namespace-from`, which is required to configure the Reanimated library:
 
-<Terminal cmd={['$ npm install -D @babel/plugin-proposal-export-namespace-from ']} />
+<Terminal cmd={['$ npm install -D @babel/plugin-transform-export-namespace-from ']} />
 
 Then, add Reanimated's Babel plugin to **babel.config.js**:
 
@@ -43,7 +43,7 @@ module.exports = function (api) {
     presets: ['babel-preset-expo'],
     /* @info Add the plugins array and inside it, add the plugins.*/
     plugins: [
-      "@babel/plugin-proposal-export-namespace-from",
+      "@babel/plugin-transform-export-namespace-from",
       "react-native-reanimated/plugin",
     ],
     /* @end */
