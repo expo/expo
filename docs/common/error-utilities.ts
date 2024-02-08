@@ -187,6 +187,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/workflow/upgrading-expo/': '/workflow/upgrading-expo-sdk-walkthrough/',
   '/workflow/create-react-native-app/': '/more/glossary-of-terms/#create-react-native-app',
   '/expokit/': '/archive/glossary/#expokit/',
+  '/build-reference/migrating/': '/archive/classic-builds/migrating/',
 
   // Development builds redirects
   '/development/build/': '/develop/development-builds/create-a-build/',
