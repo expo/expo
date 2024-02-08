@@ -12,6 +12,7 @@ import com.facebook.react.ReactRootView
 import com.facebook.soloader.SoLoader
 import com.squareup.leakcanary.LeakCanary
 import de.greenrobot.event.EventBus
+import expo.modules.application.ApplicationModule
 import expo.modules.barcodescanner.BarCodeScannerModule
 import expo.modules.barcodescanner.BarCodeScannerPackage
 import expo.modules.blur.BlurModule
@@ -176,7 +177,8 @@ open class HomeActivity : BaseExperienceActivity() {
         SplashScreenModule::class.java,
         TrackingTransparencyModule::class.java,
         StoreReviewModule::class.java,
-        WebBrowserModule::class.java
+        WebBrowserModule::class.java,
+        ApplicationModule::class.java
       )
     }
   }
