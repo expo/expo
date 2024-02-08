@@ -62,9 +62,9 @@ After copying or creating the first app, run `yarn` to check for common warnings
 
 #### Modify the Metro config
 
-Expo's Metro config has monorepo support for bun, npm, and yarn. This means that you don't have to manually configure Metro when using monorepos, as long as you use the config from [`expo/metro-config`](https://docs.expo.dev/guides/customizing-metro/). If that's the case, you can skip this step.
+Expo's Metro config has monorepo support for bun, npm, and yarn. You don't have to manually configure Metro when using monorepos if you use the config from [`expo/metro-config`](/guides/customizing-metro/). If that's the case, you can skip this step.
 
-If you do need configure your monorepo with Metro manually, there are two main changes:
+To configure a monorepo with Metro manually, there are two main changes:
 
 1. Make sure Metro is watching all relevant code within the monorepo, not just **apps/cool-app**.
 2. Tell Metro where it can resolve packages. They might be installed in **apps/cool-app/node_modules** or **node_modules**.
@@ -154,7 +154,7 @@ We have to tell Metro to look in these two folders. The order is important here 
 
 #### Change default entrypoint
 
-In monorepos, we can't hardcode paths to packages anymore since we can't be sure if they are installed in the root **node_modules** or the workspace **node_modules** folder. If you are using a managed project, we have to change our default entrypoint that looks like `node_modules/expo/AppEntry.js`.
+In monorepos, we can't hardcode paths to packages anymore since we can't be sure if they are installed in the root **node_modules** or the workspace **node_modules** folder. If you are using a managed project, we have to change our default entry point that looks like `node_modules/expo/AppEntry.js`.
 
 Open our app's **package.json**, change the `main` property to `index.js`, and create this new **index.js** file in the app directory with the content below.
 
