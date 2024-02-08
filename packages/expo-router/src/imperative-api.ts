@@ -4,9 +4,9 @@ import { Router } from './types';
 export const router: Router = {
   navigate: (href) => store.navigate(href),
   push: (href) => store.push(href),
-  pop: (count) => store.pop(count),
-  popToTop: () => store.popToTop(),
-  canPop: () => store.canPop(),
+  dismiss: (count) => store.dismiss(count),
+  dismissAll: () => store.dismissAll(),
+  canDismiss: () => store.canDismiss(),
   replace: (href) => store.replace(href),
   back: () => store.goBack(),
   canGoBack: () => store.canGoBack(),

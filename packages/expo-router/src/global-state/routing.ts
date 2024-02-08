@@ -23,7 +23,7 @@ export function push(this: RouterStore, url: Href) {
   return this.linkTo(resolveHref(url), 'PUSH');
 }
 
-export function pop(this: RouterStore, count?: number) {
+export function dismiss(this: RouterStore, count?: number) {
   this.navigationRef?.dispatch(StackActions.pop(count));
 }
 
@@ -31,7 +31,7 @@ export function replace(this: RouterStore, url: Href) {
   return this.linkTo(resolveHref(url), 'REPLACE');
 }
 
-export function popToTop(this: RouterStore) {
+export function dismissAll(this: RouterStore) {
   this.navigationRef?.dispatch(StackActions.popToTop());
 }
 
@@ -52,7 +52,7 @@ export function canGoBack(this: RouterStore): boolean {
   return this.navigationRef?.current?.canGoBack() ?? false;
 }
 
-export function canPop(this: RouterStore): boolean {
+export function canDismiss(this: RouterStore): boolean {
   let state = this.rootState;
 
   // Keep traversing down the state tree until we find a stack navigator that we can pop

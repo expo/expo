@@ -8,12 +8,12 @@ import { useSyncExternalStore, useMemo, ComponentType, Fragment } from 'react';
 
 import {
   canGoBack,
-  canPop,
+  canDismiss,
   goBack,
   linkTo,
   navigate,
-  pop,
-  popToTop,
+  dismiss,
+  dismissAll,
   push,
   replace,
   setParams,
@@ -55,10 +55,10 @@ export class RouterStore {
   goBack = goBack.bind(this);
   canGoBack = canGoBack.bind(this);
   push = push.bind(this);
-  pop = pop.bind(this);
+  dismiss = dismiss.bind(this);
   replace = replace.bind(this);
-  popToTop = popToTop.bind(this);
-  canPop = canPop.bind(this);
+  dismissAll = dismissAll.bind(this);
+  canDismiss = canDismiss.bind(this);
   setParams = setParams.bind(this);
   navigate = navigate.bind(this);
 

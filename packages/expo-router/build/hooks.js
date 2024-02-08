@@ -28,9 +28,9 @@ exports.useNavigationContainerRef = useNavigationContainerRef;
 function useRouter() {
     return react_1.default.useMemo(() => ({
         push: router_store_1.store.push,
-        pop: router_store_1.store.pop,
-        popToTop: router_store_1.store.popToTop,
-        canPop: router_store_1.store.canPop,
+        dismiss: router_store_1.store.dismiss,
+        dismissAll: router_store_1.store.dismissAll,
+        canDismiss: router_store_1.store.canDismiss,
         back: router_store_1.store.goBack,
         replace: router_store_1.store.replace,
         setParams: router_store_1.store.setParams,

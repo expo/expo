@@ -9,7 +9,7 @@ import { act, screen, renderRouter } from '../testing-library';
  *
  * This file is for testing Stack specific functionality
  */
-describe('canPop', () => {
+describe('canDismiss', () => {
   it('should work within the default Stack', () => {
     renderRouter(
       {
@@ -21,10 +21,10 @@ describe('canPop', () => {
       }
     );
 
-    expect(router.canPop()).toBe(false);
+    expect(router.canDismiss()).toBe(false);
 
     act(() => router.push('/b'));
-    expect(router.canPop()).toBe(true);
+    expect(router.canDismiss()).toBe(true);
   });
 
   it('should always return false while not within a stack', () => {
@@ -39,9 +39,9 @@ describe('canPop', () => {
       }
     );
 
-    expect(router.canPop()).toBe(false);
+    expect(router.canDismiss()).toBe(false);
     act(() => router.push('/b'));
-    expect(router.canPop()).toBe(false);
+    expect(router.canDismiss()).toBe(false);
   });
 
   it('should work with nested stacks', () => {
@@ -58,16 +58,16 @@ describe('canPop', () => {
       }
     );
 
-    expect(router.canPop()).toBe(false);
+    expect(router.canDismiss()).toBe(false);
     act(() => router.push('/b'));
-    expect(router.canPop()).toBe(true);
+    expect(router.canDismiss()).toBe(true);
 
     act(() => router.push('/c'));
-    expect(router.canPop()).toBe(false);
+    expect(router.canDismiss()).toBe(false);
   });
 });
 
-test('pop', () => {
+test('dismiss', () => {
   renderRouter(
     {
       a: () => null,
@@ -86,14 +86,14 @@ test('pop', () => {
 
   expect(screen).toHavePathname('/d');
 
-  act(() => router.pop());
+  act(() => router.dismiss());
   expect(screen).toHavePathname('/c');
 
-  act(() => router.pop(2));
+  act(() => router.dismiss(2));
   expect(screen).toHavePathname('/a');
 });
 
-test('popToTop', () => {
+test('dismissAll', () => {
   renderRouter(
     {
       a: () => null,
@@ -112,7 +112,7 @@ test('popToTop', () => {
 
   expect(screen).toHavePathname('/d');
 
-  act(() => router.popToTop());
+  act(() => router.dismissAll());
   expect(screen).toHavePathname('/a');
-  expect(router.canPop()).toBe(false);
+  expect(router.canDismiss()).toBe(false);
 });

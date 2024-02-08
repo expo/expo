@@ -274,16 +274,13 @@ For more information on available options, see [`@react-navigation/stack` docume
 
 ## Removing stack screens
 
-By default, the screens in a `Stack` are pushed or popped to the next or the previous screen. 
+### `dismiss` action
 
-For example, a stack has three screens &mdash; `home`, `details`, and `settings`. The following layout describes the order of the screens in a stack.
+Dismissed the last screen in the closest stack. If the current screen is the only screen in the stack, then it will dismiss the entire stack.
 
-<FileTree files={['app/_layout.js', 'app/home.js', 'app/details.js', 'app/settings.js']} />
+You can optionally pass a positive number to dismiss up to that specified number of screens.
 
-
-### `pop` action
-
-Go back in the stack by the number of screens specified in the `count` parameter. If no `count` is specified, then it will go back to the previous screen in the stack.
+Dismiss is different to `back`, as it targets the closest stack and not the current navigator. If you have nested navigators, calling `dismiss` may take you back multiple screens.
 
 {/* prettier-ignore */}
 ```jsx app/settings.js
@@ -297,27 +294,27 @@ export default function Settings() {
   const router = useRouter();
   /* @end */
 
-  const handlePop = (count) => {
-    /* @info In handle method, call `router.pop` to go back to . */
-    router.pop(count)
+  const handleDismiss = (count) => {
+    /* @info In handle method, call `router.dismiss` to go back to . */
+    router.dismiss(count)
     /* @end */
   };
 
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
       /* @info Trigger the handler method on a touchable/button component */
-      <Button title="Go to first screen" onPress={() => handlePop(3)} />
+      <Button title="Go to first screen" onPress={() => dismiss(3)} />
       /* @end */
     </View>
   );
 }
 ```
 
-### `popToTop`
+### `dismissAll` action
 
-To return to the first screen in the existing stack, the [`popToTop`](https://reactnavigation.org/docs/stack-actions/#poptotop) stack action can be used from any screen.
+To return to the first screen in the closest stack stack. This is similar to [`popToTop`](https://reactnavigation.org/docs/stack-actions/#poptotop) stack action.
 
-The `home` screen is the first screen, and the `settings` is the last. To go from `settings` to `home` screen you'll have to go back to `details`. However, using the `popToTop` action, you can go from `settings` to `home` and dismiss any screen in between.
+The `home` screen is the first screen, and the `settings` is the last. To go from `settings` to `home` screen you'll have to go back to `details`. However, using the `dismissAll` action, you can go from `settings` to `home` and dismiss any screen in between.
 
 
 {/* prettier-ignore */}
@@ -332,25 +329,25 @@ export default function Settings() {
   const router = useRouter();
   /* @end */
 
-  const handlePopToTop = () => {
-    /* @info In handle method, call `router.popToTop` to go back to the first screen in a stack. */
-    router.popToTop()
+  const handleDismissAll = () => {
+    /* @info In handle method, call `router.dismissAll` to go back to the first screen in a stack. */
+    router.dismissAll()
     /* @end */
   };
 
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
       /* @info Trigger the handler method on a touchable/button component */
-      <Button title="Go to first screen" onPress={handlePopToTop} />
+      <Button title="Go to first screen" onPress={handleDismissAll} />
       /* @end */
     </View>
   );
 }
 ```
 
-### `canPop`
+### `canDismiss`
 
-To check if popping is available on the current route. Returns `true` if the router is within a screen and there is another screen available to pop to.
+To check if it possible to dismiss the current screen. Returns `true` if the router is within a stack with more than one screen in it's history.
 
 {/* prettier-ignore */}
 ```jsx app/settings.js
@@ -364,11 +361,11 @@ export default function Settings() {
   const router = useRouter();
   /* @end */
 
-  const handlePop = (count) => {
-    /* @info Check if we can pop. */
-    if (router.canPop()) {
-      /* @info In handle method, call `router.pop` to go back to. */
-      router.pop(count)
+  const handleDismiss = (count) => {
+    /* @info Check if we can dismiss. */
+    if (router.canDismiss()) {
+      /* @info In handle method, call `router.dismiss` to go back to. */
+      router.dismiss(count)
       /* @end */
     }
     /* @end */
@@ -377,7 +374,7 @@ export default function Settings() {
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
       /* @info Trigger the handler method on a touchable/button component */
-      <Button title="Maybe pop" onPress={() => handlePop()} />
+      <Button title="Maybe dismiss" onPress={() => handleDismiss()} />
       /* @end */
     </View>
   );
