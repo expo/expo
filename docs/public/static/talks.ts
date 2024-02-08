@@ -67,6 +67,19 @@ export const TALKS = [
 
 export const PODCASTS = [
   {
+    title: 'Expo Router & Universal React Native Apps',
+    event: 'Rocket Ship #028',
+    description: "Evan Bacon",
+    videoId: "qsRI8T5V99g",
+    link: "https://podcast.galaxies.dev/episodes/028-expo-router-universal-react-native-apps-with-evan-bacon"
+  },
+  {
+    title: 'Expo, build react-native app quicker',
+    event: 'devtools.fm #84',
+    description: "Evan Bacon",
+    videoId: "Hnh5ew0jfKQ",
+  },
+  {
     title: 'EAS, Expo Prebuild & SDK 50',
     event: 'Rocket Ship #025',
     description: "Kadi Kraman",
