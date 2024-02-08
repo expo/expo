@@ -35,7 +35,7 @@ export const Header = ({
             openInNewTab
             theme="quaternary"
             className="px-2 text-secondary"
-            href="https://blog.expo.dev">
+            href="https://expo.dev/blog">
             Blog
           </Button>
           <Button
