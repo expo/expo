@@ -28,15 +28,40 @@ To use this feature, include the new property `extra.updates.assetPatternsToBeBu
 
 In this case, all **.png** files in all subdirectories of **app/images** will be included in updates.
 
-Assets that do not match any of the file patterns will still resolve in the Metro bundler, but will not be uploaded to the updates server. If making use of this feature, a developer needs to be certain that assets not included in updates are built into the native build of the app.
-
 If this new property is not in your app config, all assets resolved by the bundler will be included in updates (as per SDK 49 and earlier behavior).
+
+### Ensuring that an update contains all assets needed by your application
+
+When using this feature, assets that do not match any of the file patterns will still resolve in the Metro bundler, but will not be uploaded to the updates server. A developer needs to be certain that assets not included in updates are built into the native build of the app.
+
+If you are building your app locally, or have access to the correct build that you are publishing updates for (with the same **runtimeVersion**), then the **expo-updates** CLI contains a command, **assets:verify**, that will allow you to check whether all required assets will be included when you publish an update:
+
+```bash assets:verify help
+$ npx expo-updates assets:verify --help
+
+Description
+Verify that all static files in an exported bundle are in either the export or an embedded bundle
+
+Usage
+  $ npx expo-updates assets:verify <dir>
+
+  Options
+  <dir>                                  Directory of the Expo project. Default: Current working directory
+  -a, --asset-map-path <path>            Path to the `assetmap.json` in an export produced by the command `npx expo export --dump-assetmap`
+  -e, --exported-manifest-path <path>    Path to the `metadata.json` in an export produced by the command `npx expo export --dump-assetmap`
+  -b, --build-manifest-path <path>       Path to the `app.manifest` file created by expo-updates in an Expo application build (either ios or android)
+  -p, --platform <platform>              Options: ["android","ios"]
+  -h, --help                             Usage info
+
+```
+
+> **info** The CLI command is available for ([`expo-updates`](/versions/latest/sdk/updates/) >= 0.24.10).
 
 ## Example
 
 <BoxLink
   title="Working example"
-  description="See a working example on using asset selection and other EAS update features."
+  description="See a working example on using asset selection, the assets:verify CLI command, and other EAS update features."
   Icon={GithubIcon}
   href="https://github.com/expo/UpdatesAPIDemo"
 />
