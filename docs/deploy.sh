@@ -178,7 +178,6 @@ redirects[workflow/expo-cli]=more/expo-cli
 redirects[versions/latest/workflow/expo-cli]=more/expo-cli
 redirects[bare/hello-world]=bare/overview
 redirects[guides/using-graphql]=guides/overview
-redirects[guides/using-bugsnag]=guides/overview
 redirects[build/automating-submissions]=build/automate-submissions
 redirects[workflow/run-on-device]=build/internal-distribution
 redirects[archive/workflow/customizing]=workflow/customizing

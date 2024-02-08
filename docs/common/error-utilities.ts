@@ -340,7 +340,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/errors/': '/debugging/runtime-issues/',
   '/guides/using-graphql/': '/guides/overview/',
   '/guides/using-styled-components/': '/guides/overview/',
-  '/guides/using-bugsnag/': '/guides/overview/',
   '/build/automating-submissions/': '/build/automate-submissions/',
   '/workflow/run-on-device/': '/build/internal-distribution/',
   '/guides/': '/guides/overview/',
