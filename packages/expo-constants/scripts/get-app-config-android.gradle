@@ -3,7 +3,10 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 
-def expoConstantsDir = ["node", "-e", "console.log(require('path').dirname(require.resolve('expo-constants/package.json')));"].execute(null, projectDir).text.trim()
+def expoConstantsDir = project.providers.exec {
+  workingDir(projectDir)
+  commandLine("node", "-e", "console.log(require('path').dirname(require.resolve('expo-constants/package.json')));")
+}.standardOutput.asText.get().trim()
 
 def config = project.hasProperty("react") ? project.react : [];
 def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]

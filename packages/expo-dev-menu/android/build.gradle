@@ -198,7 +198,10 @@ def versionToNumber(major, minor, patch) {
 }
 
 def getNodeModulesPackageVersion(packageName, overridePropName) {
-  def nodeModulesVersion = ["node", "-e", "console.log(require('$packageName/package.json').version);"].execute(null, projectDir).text.trim()
+  def nodeModulesVersion = providers.exec {
+    workingDir(projectDir)
+    commandLine("node", "-e", "console.log(require('$packageName/package.json').version);")
+  }.standardOutput.asText.get().trim()
   def version = safeExtGet(overridePropName, nodeModulesVersion)
 
   def coreVersion = version.split("-")[0]
