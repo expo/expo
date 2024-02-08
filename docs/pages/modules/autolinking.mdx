@@ -143,6 +143,20 @@ The following config in **package.json** will exclude `expo-random` from autolin
 }
 ```
 
+Note that the above `excludes` option is specifically for excluding expo modules. For excluding the autolinking for any other packages, use the `react-native.config.js` at the root directory of your project:
+
+```js react-native.config.js
+module.exports = {
+  dependencies: {
+    'some-library': {
+      platforms: {
+        android: null,
+      },
+    },
+  },
+};
+```
+
 </APIBox>
 <APIBox platforms={['ios']}>
 
