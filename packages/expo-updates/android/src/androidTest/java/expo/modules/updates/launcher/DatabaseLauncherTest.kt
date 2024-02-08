@@ -63,7 +63,7 @@ class DatabaseLauncherTest {
         )
       ),
       File("test"),
-      FileDownloader(context),
+      mockk(),
       SelectionPolicy(
         mockk(),
         mockk(),
