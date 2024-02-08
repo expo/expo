@@ -39,7 +39,7 @@ class FileDownloaderTest {
       "runtimeVersion" to "1.0"
     )
     val config = UpdatesConfiguration(null, configMap)
-    val actual = FileDownloader.createRequestForRemoteUpdate(config, null, context)
+    val actual = FileDownloader.createRequestForRemoteUpdate(null, config, context)
     Assert.assertNull(actual.header("Cache-Control"))
   }
 
@@ -60,7 +60,7 @@ class FileDownloaderTest {
     }
 
     // manifest extraHeaders should have their values coerced to strings
-    val actual = FileDownloader.createRequestForRemoteUpdate(config, extraHeaders, context)
+    val actual = FileDownloader.createRequestForRemoteUpdate(extraHeaders, config, context)
     Assert.assertEquals("test", actual.header("expo-string"))
     Assert.assertEquals("47.5", actual.header("expo-number"))
     Assert.assertEquals("true", actual.header("expo-boolean"))
@@ -84,7 +84,7 @@ class FileDownloaderTest {
     val extraHeaders = JSONObject()
     extraHeaders.put("expo-platform", "ios")
 
-    val actual = FileDownloader.createRequestForRemoteUpdate(config, extraHeaders, context)
+    val actual = FileDownloader.createRequestForRemoteUpdate(extraHeaders, config, context)
     Assert.assertEquals("android", actual.header("expo-platform"))
     Assert.assertEquals("custom", actual.header("expo-updates-environment"))
   }
@@ -210,10 +210,9 @@ class FileDownloaderTest {
     var error: Exception? = null
     var didSucceed = false
 
-    FileDownloader(context, client).downloadAsset(
+    FileDownloader(context, config, client).downloadAsset(
       assetEntity,
       File(context.cacheDir, "test"),
-      config,
       context,
       object : FileDownloader.AssetDownloadCallback {
         override fun onFailure(e: Exception, assetEntity: AssetEntity) {
@@ -261,10 +260,9 @@ class FileDownloaderTest {
     var error: Exception? = null
     var didSucceed = false
 
-    FileDownloader(context, client).downloadAsset(
+    FileDownloader(context, config, client).downloadAsset(
       assetEntity,
       File(context.cacheDir, "test"),
-      config,
       context,
       object : FileDownloader.AssetDownloadCallback {
         override fun onFailure(e: Exception, assetEntity: AssetEntity) {

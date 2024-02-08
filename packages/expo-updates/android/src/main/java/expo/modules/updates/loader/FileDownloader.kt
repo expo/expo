@@ -39,12 +39,19 @@ class FileDownloader(context: Context, private val configuration: UpdatesConfigu
   // If the configured launch wait milliseconds is greater than the okhttp default (10_000)
   // we should use that as the timeout. For example, let's say launchWaitMs is 20 seconds,
   // the HTTP timeout should be at least 20 seconds.
-  private val client: OkHttpClient = OkHttpClient.Builder()
+  private var client: OkHttpClient = OkHttpClient.Builder()
     .cache(getCache(context))
     .connectTimeout(max(configuration.launchWaitMs.toLong(), 10_000L), TimeUnit.MILLISECONDS)
     .readTimeout(max(configuration.launchWaitMs.toLong(), 10_000L), TimeUnit.MILLISECONDS)
     .addInterceptor(BrotliInterceptor)
     .build()
+
+  /**
+   * Constructor for tests
+   */
+  constructor(context: Context, configuration: UpdatesConfiguration, client: OkHttpClient) : this(context, configuration) {
+    this.client = client
+  }
 
   private val logger = UpdatesLogger(context)
 
