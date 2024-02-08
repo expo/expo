@@ -1,11 +1,11 @@
-import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
-
 import {
+  LocationAccuracy,
   LocationLastKnownOptions,
   LocationObject,
   LocationOptions,
-  LocationAccuracy,
 } from './Location.types';
+import { PermissionResponse, PermissionStatus, UnavailabilityError } from 'expo-modules-core';
+
 import { LocationEventEmitter } from './LocationEventEmitter';
 
 class GeocoderError extends Error {
@@ -54,29 +54,38 @@ function isLocationValid(location: LocationObject, options: LocationLastKnownOpt
  * latest versions will support this.
  */
 async function getPermissionsAsync(): Promise<PermissionResponse> {
-  return new Promise<PermissionResponse>((resolve) => {
-    const resolveWithStatus = (status, canAskAgain = true) =>
-      resolve({
-        status,
-        granted: status === PermissionStatus.GRANTED,
-        canAskAgain,
-        expires: 0,
-      });
+  if (!navigator?.permissions?.query) {
+    throw new UnavailabilityError('expo-location', 'navigator.permissions API is not available');
+  }
 
-    navigator.permissions.query({name: 'geolocation'}).then((permission) => {
-      if(permission.state === 'granted') {
-        resolveWithStatus(PermissionStatus.GRANTED)
-      } else if(permission.state === 'denied') {
-        resolveWithStatus(PermissionStatus.DENIED, false)
-      } else if(permission.state === 'prompt') {
-        // on Chrome, the permission state is 'prompt' when the permission has
-        // not been requested yet
-        resolveWithStatus(PermissionStatus.UNDETERMINED)
-      } else {
-        resolveWithStatus(PermissionStatus.UNDETERMINED)
-      }
-    })
-  });
+  const permission = await navigator.permissions.query({ name: 'geolocation' });
+
+  if (permission.state === 'granted') {
+    return {
+      status: PermissionStatus.GRANTED,
+      granted: true,
+      canAskAgain: true,
+      expires: 0,
+    };
+  }
+
+  if (permission.state === 'denied') {
+    return {
+      status: PermissionStatus.DENIED,
+      granted: false,
+      canAskAgain: true,
+      expires: 0,
+    };
+  }
+
+  // The permission state is 'prompt' when the permission has not been requested
+  // yet, tested on Chrome.
+  return {
+    status: PermissionStatus.UNDETERMINED,
+    granted: false,
+    canAskAgain: true,
+    expires: 0,
+  };
 }
 
 let lastKnownPosition: LocationObject | null = null;
