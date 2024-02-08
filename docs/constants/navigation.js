@@ -270,7 +270,6 @@ const general = [
     makeGroup(
       'Reference',
       [
-        makePage('build-reference/migrating.mdx'),
         makePage('build-reference/npm-hooks.mdx'),
         makePage('build-reference/private-npm-packages.mdx'),
         makePage('build-reference/git-submodules.mdx'),
@@ -476,6 +475,7 @@ const archive = [
   makeSection('Classic Builds', [
     makePage('archive/classic-updates/building-standalone-apps.mdx'),
     makePage('archive/classic-updates/turtle-cli.mdx'),
+    makePage('archive/classic-builds/migrating.mdx'),
   ]),
   makeSection('Classic Updates', [
     makePage('archive/classic-updates/introduction.mdx'),
