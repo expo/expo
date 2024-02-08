@@ -120,9 +120,11 @@ export function Slot(props: Omit<NavigatorProps, 'children'>) {
   if (context?.contextKey !== contextKey) {
     // Qualify the content and re-export.
     return (
-      <Navigator {...props}>
-        <QualifiedSlot />
-      </Navigator>
+      <SafeAreaView style={{ flex: 1 }}>
+        <Navigator {...props}>
+          <QualifiedSlot />
+        </Navigator>
+      </SafeAreaView>
     );
   }
 
