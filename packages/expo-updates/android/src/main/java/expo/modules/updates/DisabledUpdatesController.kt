@@ -121,17 +121,17 @@ class DisabledUpdatesController(
   override fun checkForUpdate(
     callback: IUpdatesController.ModuleCallback<IUpdatesController.CheckForUpdateResult>
   ) {
-    callback.onFailure(UpdatesDisabledException("Updates.checkForUpdateAsync() cannot be called when expo-updates is not enabled."))
+    callback.onFailure(UpdatesDisabledException("Updates.checkForUpdateAsync() is not supported when expo-updates is not enabled."))
   }
 
   override fun fetchUpdate(
     callback: IUpdatesController.ModuleCallback<IUpdatesController.FetchUpdateResult>
   ) {
-    callback.onFailure(UpdatesDisabledException("Updates.fetchUpdateAsync() cannot be called when expo-updates is not enabled."))
+    callback.onFailure(UpdatesDisabledException("Updates.fetchUpdateAsync() is not supported when expo-updates is not enabled."))
   }
 
   override fun getExtraParams(callback: IUpdatesController.ModuleCallback<Bundle>) {
-    callback.onFailure(UpdatesDisabledException("Updates.getExtraParamsAsync() cannot be called when expo-updates is not enabled."))
+    callback.onFailure(UpdatesDisabledException("Updates.getExtraParamsAsync() is not supported when expo-updates is not enabled."))
   }
 
   override fun setExtraParam(
@@ -139,7 +139,7 @@ class DisabledUpdatesController(
     value: String?,
     callback: IUpdatesController.ModuleCallback<Unit>
   ) {
-    callback.onFailure(UpdatesDisabledException("Updates.setExtraParamAsync() cannot be called when expo-updates is not enabled."))
+    callback.onFailure(UpdatesDisabledException("Updates.setExtraParamAsync() is not supported when expo-updates is not enabled."))
   }
 
   @Synchronized

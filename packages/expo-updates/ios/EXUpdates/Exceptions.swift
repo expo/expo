@@ -17,7 +17,7 @@ public final class UpdatesDisabledException: Exception {
   }
 
   public override var reason: String {
-    "\(jsMethodName) cannot be called when expo-updates is not enabled."
+    "\(jsMethodName) is not supported when expo-updates is not enabled."
   }
 }
 
@@ -64,6 +64,6 @@ internal final class NotAvailableInDevClientException: Exception {
   }
 
   override var reason: String {
-    "\(jsMethodName) cannot be called from a development build. A non-development build should be used to test this functionality."
+    "\(jsMethodName) is not supported in development builds."
   }
 }
