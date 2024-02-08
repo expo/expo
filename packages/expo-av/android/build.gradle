@@ -10,7 +10,10 @@ version = '13.10.0'
 def REACT_NATIVE_BUILD_FROM_SOURCE = findProject(":ReactAndroid") != null
 def REACT_NATIVE_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
   ? findProject(":ReactAndroid").getProjectDir().parent
-  : new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).parent
+  : file(providers.exec {
+      workingDir(rootDir)
+      commandLine("node", "--print", "require.resolve('react-native/package.json')")
+    }.standardOutput.asText.get().trim()).parent
 
 def reactNativeArchitectures() {
     def value = project.getProperties().get("reactNativeArchitectures")
