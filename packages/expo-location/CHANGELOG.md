@@ -4,6 +4,14 @@
 
 ### 🛠 Breaking changes
 
+-[Web] `getPermissionsAsync` no longer prompts the user for permission
+([#26836](https://github.com/expo/expo/pull/26837) by [@hems](https://github.com/hems))
+instead we use the new browser API `navigator.permissions.query` to check the permission status.
+
+Web application relying on `getPermissionsAsync` asking for permissions will need 
+to handle the case where the permission status is `UNDETERMINED` and prompt the 
+user for permission using `getCurrentPositionAsync`.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
@@ -34,7 +42,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
-- [Anroid] Added `formattedAddress` to the `LocationGeocodedAddress`. ([#26342](https://github.com/expo/expo/pull/26342) by [@whysetiawan](https://github.com/whysetiawan) & [@lukmccall](https://github.com/lukmccall)) ([#26342](https://github.com/expo/expo/pull/26342) by [@whysetiawan](https://github.com/whysetiawan), [@lukmccall](https://github.com/lukmccall))
+- [Android] Added `formattedAddress` to the `LocationGeocodedAddress`. ([#26342](https://github.com/expo/expo/pull/26342) by [@whysetiawan](https://github.com/whysetiawan) & [@lukmccall](https://github.com/lukmccall)) ([#26342](https://github.com/expo/expo/pull/26342) by [@whysetiawan](https://github.com/whysetiawan), [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
