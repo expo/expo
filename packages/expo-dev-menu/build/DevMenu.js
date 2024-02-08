@@ -37,10 +37,6 @@ let handlers = new Map();
  * @param items
  */
 export async function registerDevMenuItems(items) {
-    if (!__DEV__) {
-        // resolve undefined
-        return;
-    }
     handlers = new Map();
     const callbackNames = [];
     items.forEach((item) => {

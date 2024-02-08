@@ -48,11 +48,6 @@ let handlers = new Map<string, () => void>();
  * @param items
  */
 export async function registerDevMenuItems(items: ExpoDevMenuItem[]): Promise<void> {
-  if (!__DEV__) {
-    // resolve undefined
-    return;
-  }
-
   handlers = new Map();
   const callbackNames: { name: string; shouldCollapse?: boolean }[] = [];
 
