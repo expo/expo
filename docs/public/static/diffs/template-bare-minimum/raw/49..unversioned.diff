@@ -1,5 +1,5 @@
 diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
-index 7105aaaa3f..a058ef6c4b 100644
+index 7105aaaa3f..57a6967e8c 100644
 --- a/templates/expo-template-bare-minimum/android/app/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/app/build.gradle
 @@ -1,4 +1,5 @@
@@ -41,7 +41,19 @@ index 7105aaaa3f..a058ef6c4b 100644
      }
      signingConfigs {
          debug {
-@@ -141,34 +141,21 @@ dependencies {
+@@ -112,6 +112,11 @@ android {
+             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+         }
+     }
++    packagingOptions {
++        jniLibs {
++            useLegacyPackaging (findProperty('expo.useLegacyPackaging')?.toBoolean() ?: false)
++        }
++    }
+ }
+ 
+ // Apply static values from `gradle.properties` to the `android.packagingOptions`
+@@ -141,34 +146,21 @@ dependencies {
      def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
      def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
      def isWebpAnimatedEnabled = (findProperty('expo.webp.animated') ?: "") == "true";
@@ -79,7 +91,7 @@ index 7105aaaa3f..a058ef6c4b 100644
      if (hermesEnabled.toBoolean()) {
          implementation("com.facebook.react:hermes-android")
      } else {
-@@ -176,5 +163,5 @@ dependencies {
+@@ -176,5 +168,5 @@ dependencies {
      }
  }
  
@@ -168,18 +180,20 @@ index 595dd5831c..0000000000
 -  }
 -}
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
-index 34a7ca8314..04b326127b 100644
+index 34a7ca8314..d40cad0264 100644
 --- a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
-@@ -20,7 +20,7 @@
+@@ -20,8 +20,8 @@
  
    <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme">
      <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="YOUR-APP-URL-HERE"/>
 -    <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="YOUR-APP-SDK-VERSION-HERE"/>
+-    <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
 +    <meta-data android:name="expo.modules.updates.EXPO_RUNTIME_VERSION" android:value="YOUR-APP-RUNTIME-VERSION-HERE"/>
-     <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
++    <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
        <intent-filter>
          <action android:name="android.intent.action.MAIN"/>
+         <category android:name="android.intent.category.LAUNCHER"/>
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainActivity.java b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainActivity.java
 deleted file mode 100644
 index 176fbf6a2a..0000000000
@@ -544,7 +558,7 @@ index bf861dbf33..513b766148 100644
  
          google()
 diff --git a/templates/expo-template-bare-minimum/android/gradle.properties b/templates/expo-template-bare-minimum/android/gradle.properties
-index 240ca06cbf..a4efc8b9d8 100644
+index 240ca06cbf..41b173c48a 100644
 --- a/templates/expo-template-bare-minimum/android/gradle.properties
 +++ b/templates/expo-template-bare-minimum/android/gradle.properties
 @@ -25,9 +25,6 @@ android.useAndroidX=true
@@ -557,6 +571,13 @@ index 240ca06cbf..a4efc8b9d8 100644
  # Use this property to specify which architecture you want to build.
  # You can also override it from the CLI using
  # ./gradlew <task> -PreactNativeArchitectures=x86_64
+@@ -54,3 +51,6 @@ expo.webp.animated=false
+ 
+ # Enable network inspector
+ EX_DEV_CLIENT_NETWORK_INSPECTOR=true
++
++# Use legacy packaging to compress native libraries in the resulting APK.
++expo.useLegacyPackaging=false
 diff --git a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar
 index 249e5832f0..7f93135c49 100644
 Binary files a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar and b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar differ
@@ -828,7 +849,7 @@ index f8e88bbe0c..37d415b57d 100644
  #if DEBUG
    return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@".expo/.virtual-metro-entry"];
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
-index 0a2a4dfa13..552b63e06c 100644
+index 0a2a4dfa13..5a1db7145b 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
 @@ -2,6 +2,8 @@
@@ -853,24 +874,25 @@ index 0a2a4dfa13..552b63e06c 100644
  	<key>CFBundleVersion</key>
  	<string>1</string>
  	<key>LSRequiresIPhoneOS</key>
-@@ -25,11 +27,15 @@
+@@ -25,15 +27,9 @@
  	<key>NSAppTransportSecurity</key>
  	<dict>
  		<key>NSAllowsArbitraryLoads</key>
 +		<false/>
 +		<key>NSAllowsLocalNetworking</key>
  		<true/>
- 		<key>NSExceptionDomains</key>
- 		<dict>
+-		<key>NSExceptionDomains</key>
+-		<dict>
 -			<key>localhost</key>
-+			<key>exp.direct</key>
- 			<dict>
-+				<key>NSIncludesSubdomains</key>
-+				<true/>
- 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
- 				<true/>
- 			</dict>
-@@ -41,6 +47,8 @@
+-			<dict>
+-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+-				<true/>
+-			</dict>
+-		</dict>
+ 	</dict>
+ 	<key>UILaunchStoryboardName</key>
+ 	<string>SplashScreen</string>
+@@ -41,6 +37,8 @@
  	<array>
  		<string>armv7</string>
  	</array>
@@ -879,7 +901,7 @@ index 0a2a4dfa13..552b63e06c 100644
  	<key>UISupportedInterfaceOrientations</key>
  	<array>
  		<string>UIInterfaceOrientationPortrait</string>
-@@ -49,9 +57,5 @@
+@@ -49,9 +47,5 @@
  	</array>
  	<key>UIViewControllerBasedStatusBarAppearance</key>
  	<false/>

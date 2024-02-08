@@ -1,5 +1,5 @@
 diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
-index a265c80fa9..a058ef6c4b 100644
+index 27c6e63957..57a6967e8c 100644
 --- a/templates/expo-template-bare-minimum/android/app/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/app/build.gradle
 @@ -90,8 +90,6 @@ android {
@@ -11,7 +11,7 @@ index a265c80fa9..a058ef6c4b 100644
      }
      signingConfigs {
          debug {
-@@ -158,8 +156,6 @@ dependencies {
+@@ -163,8 +161,6 @@ dependencies {
          }
      }
  
@@ -21,7 +21,7 @@ index a265c80fa9..a058ef6c4b 100644
          implementation("com.facebook.react:hermes-android")
      } else {
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
-index 34a7ca8314..04b326127b 100644
+index f8d77fc832..d40cad0264 100644
 --- a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
 @@ -20,7 +20,7 @@
@@ -30,9 +30,16 @@ index 34a7ca8314..04b326127b 100644
      <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="YOUR-APP-URL-HERE"/>
 -    <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="YOUR-APP-SDK-VERSION-HERE"/>
 +    <meta-data android:name="expo.modules.updates.EXPO_RUNTIME_VERSION" android:value="YOUR-APP-RUNTIME-VERSION-HERE"/>
-     <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
+     <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
        <intent-filter>
          <action android:name="android.intent.action.MAIN"/>
+@@ -29,4 +29,4 @@
+     </activity>
+     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" android:exported="false"/>
+   </application>
+-</manifest>
+\ No newline at end of file
++</manifest>
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
 index 8258c40ed4..95ef45de96 100644
 --- a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
@@ -126,26 +133,29 @@ index b3978b9515..eaf07ca4c2 100644
  
    post_install do |installer|
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index a828360d9b..150bb72764 100644
+index 95ebad358f..150bb72764 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
  {
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
--  "version": "50.0.31",
+-  "version": "50.0.36",
 +  "version": "50.0.17",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
-@@ -10,8 +10,8 @@
+@@ -10,10 +10,10 @@
      "web": "expo start --web"
    },
    "dependencies": {
--    "expo": "~50.0.3",
+-    "expo": "~50.0.6",
 -    "expo-status-bar": "~1.11.1",
 +    "expo": "~50.0.0-preview.4",
 +    "expo-status-bar": "~1.11.0",
      "react": "18.2.0",
-     "react-native": "0.73.2"
+-    "react-native": "0.73.4"
++    "react-native": "0.73.2"
    },
+   "devDependencies": {
+     "@babel/core": "^7.20.0"
