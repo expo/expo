@@ -210,7 +210,7 @@ class FileDownloaderTest {
     var error: Exception? = null
     var didSucceed = false
 
-    FileDownloader(context, config).downloadAsset(
+    FileDownloader(context, config, client).downloadAsset(
       assetEntity,
       File(context.cacheDir, "test"),
       context,
@@ -260,7 +260,7 @@ class FileDownloaderTest {
     var error: Exception? = null
     var didSucceed = false
 
-    FileDownloader(context, config).downloadAsset(
+    FileDownloader(context, config, client).downloadAsset(
       assetEntity,
       File(context.cacheDir, "test"),
       context,
