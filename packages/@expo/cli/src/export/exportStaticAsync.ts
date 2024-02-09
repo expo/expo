@@ -42,6 +42,7 @@ type Options = {
   asyncRoutes: boolean;
   routerRoot: string;
   maxWorkers?: number;
+  isExporting: boolean;
 };
 
 type HtmlRequestLocation = {
@@ -269,6 +270,7 @@ async function exportFromServerAsync(
       manifest: serverManifest,
       baseUrl,
       mode,
+      isExporting,
     });
 
     // Add the api routes to the files to export.
@@ -432,8 +434,9 @@ async function exportApiRoutesAsync({
   routerRoot,
   baseUrl,
   mode,
+  isExporting,
   ...props
-}: Pick<Options, 'mode' | 'baseUrl' | 'routerRoot' | 'outputDir'> & {
+}: Pick<Options, 'mode' | 'baseUrl' | 'routerRoot' | 'outputDir' | 'isExporting'> & {
   server: MetroBundlerDevServer;
   manifest: ExpoRouterServerManifestV1;
 }): Promise<ExportAssetMap> {
@@ -443,6 +446,7 @@ async function exportApiRoutesAsync({
     outputDir: '_expo/functions',
     prerenderManifest: props.manifest,
     baseUrl,
+    isExporting,
   });
 
   Log.log(chalk.bold`Exporting ${files.size} API Routes.`);
