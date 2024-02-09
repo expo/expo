@@ -4,7 +4,7 @@ test('redirects old building-standalone-apps paths versioned path', () => {
   const redirectPath = '/versions/latest/distribution/building-standalone-apps/';
   const newPath = getRedirectPath(redirectPath);
 
-  expect(newPath).toEqual('/archive/classic-updates/building-standalone-apps/');
+  expect(newPath).toEqual('/archive/classic-builds/building-standalone-apps/');
 
   // The path with guides instead of distribution is very old
   expect(getRedirectPath('/versions/latest/guides/building-standalone-apps/')).toEqual(newPath);
