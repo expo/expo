@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for splitting on `require.resolveWeak` syntax.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
