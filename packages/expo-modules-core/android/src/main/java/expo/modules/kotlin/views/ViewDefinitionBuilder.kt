@@ -131,6 +131,15 @@ class ViewDefinitionBuilder<T : View>(
     )
   }
 
+  private inline fun <reified ViewType : View, reified PropType, reified CustomValueType> PropGroup(
+    vararg props: Pair<String, CustomValueType>,
+    noinline body: (view: ViewType, value: CustomValueType, prop: PropType) -> Unit
+  ) {
+    for ((name, value) in props) {
+      Prop<ViewType, PropType>(name) { view, prop -> body(view, value, prop) }
+    }
+  }
+
   /**
    * Defines prop names that should be treated as callbacks.
    */
