@@ -1,0 +1,1 @@
+{"version":3,"file":"NavigationContainer.js","sourceRoot":"","sources":["../../src/fork/NavigationContainer.tsx"],"names":[],"mappings":";;AAAA,0DAA0D;AAC1D,qDAA+D;AAE/D,kBAAe,4BAAmB,CAAC","sourcesContent":["// We only need to fork on native to support any prefixes.\nimport { NavigationContainer } from '@react-navigation/native';\n\nexport default NavigationContainer;\n"]}

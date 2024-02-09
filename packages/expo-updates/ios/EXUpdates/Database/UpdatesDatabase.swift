@@ -10,7 +10,7 @@
 // swiftlint:disable file_length
 
 import Foundation
-import SQLite3
+import sqlite3
 import EXManifests
 
 internal enum UpdatesDatabaseError: Error {
@@ -99,7 +99,7 @@ public final class UpdatesDatabase: NSObject {
       sql: sql,
       withArgs: [
         update.updateId,
-        update.scopeKey,
+        update.scopeKey.require("Update must have scopeKey to be stored in database"),
         update.commitTime,
         update.runtimeVersion,
         update.manifest.rawManifestJSON(),
@@ -401,15 +401,6 @@ public final class UpdatesDatabase: NSObject {
     }
   }
 
-  public func allUpdateIds(withStatus status: UpdateStatus) throws -> [UUID] {
-    let sql = "SELECT id FROM updates WHERE status = ?1;"
-    let rows = try execute(sql: sql, withArgs: [status.rawValue])
-    return rows.map { row in
-      // swiftlint:disable:next force_cast
-      row["id"] as! UUID
-    }
-  }
-
   public func launchableUpdates(withConfig config: UpdatesConfig) throws -> [Update] {
     // if an update has successfully launched at least once, we treat it as launchable
     // even if it has also failed to launch at least once
@@ -591,19 +582,15 @@ public final class UpdatesDatabase: NSObject {
   }
 
   private func update(withRow row: [String: Any?], config: UpdatesConfig) -> Update {
-    let rowManifest = row["manifest"]
-    var manifest: [String: Any]?
-    if let rowManifest = rowManifest as? String {
-      manifest = (try? JSONSerialization.jsonObject(with: rowManifest.data(using: .utf8)!) as? [String: Any]).require("Update manifest should be a valid JSON object")
-    }
-
+    let rowManifest: String = row.requiredValue(forKey: "manifest")
+    let manifest = (try? JSONSerialization.jsonObject(with: rowManifest.data(using: .utf8)!) as? [String: Any]).require("Update manifest should be a valid JSON object")
     let keep: NSNumber = row.requiredValue(forKey: "keep")
     let status: NSNumber = row.requiredValue(forKey: "status")
     let successfulLaunchCount: NSNumber = row.requiredValue(forKey: "successful_launch_count")
     let failedLaunchCount: NSNumber = row.requiredValue(forKey: "failed_launch_count")
 
     let update = Update(
-      manifest: ManifestFactory.manifest(forManifestJSON: manifest ?? [:]),
+      manifest: ManifestFactory.manifest(forManifestJSON: manifest),
       config: config,
       database: self,
       updateId: row.requiredValue(forKey: "id"),

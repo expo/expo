@@ -1,3 +1,5 @@
+import type { HTMLAttributes } from 'react';
+
 import { PlatformTag } from './PlatformTag';
 import { StatusTag } from './StatusTag';
 
@@ -7,7 +9,7 @@ export type TagProps = {
   name: string;
   firstElement?: boolean;
   type?: 'regular' | 'toc';
-};
+} & HTMLAttributes<HTMLDivElement>;
 
 export const Tag = ({ name, ...rest }: TagProps) => {
   if (getPlatformName(name).length) {

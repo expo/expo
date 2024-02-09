@@ -36,7 +36,6 @@ private const val moduleName = "ExponentImagePicker"
 class ImagePickerModule : Module() {
 
   override fun definition() = ModuleDefinition {
-
     Name(moduleName)
 
     // region JS API
@@ -63,7 +62,7 @@ class ImagePickerModule : Module() {
 
       val mediaFile = createOutputFile(cacheDirectory, options.mediaTypes.toFileExtension())
       val uri = mediaFile.toContentUri(context)
-      val contractOptions = options.toCameraContractOptions(uri)
+      val contractOptions = options.toCameraContractOptions(uri.toString())
 
       launchContract({ cameraLauncher.launch(contractOptions) }, options)
     }
@@ -85,15 +84,15 @@ class ImagePickerModule : Module() {
 
     RegisterActivityContracts {
       cameraLauncher = registerForActivityResult(
-        CameraContract(this@ImagePickerModule),
+        CameraContract(this@ImagePickerModule)
       ) { input, result -> handleResultUponActivityDestruction(result, input.options) }
 
       imageLibraryLauncher = registerForActivityResult(
-        ImageLibraryContract(this@ImagePickerModule),
+        ImageLibraryContract(this@ImagePickerModule)
       ) { input, result -> handleResultUponActivityDestruction(result, input.options) }
 
       cropImageLauncher = registerForActivityResult(
-        CropImageContract(this@ImagePickerModule),
+        CropImageContract(this@ImagePickerModule)
       ) { input, result -> handleResultUponActivityDestruction(result, input.options) }
     }
   }
@@ -127,7 +126,7 @@ class ImagePickerModule : Module() {
    */
   private suspend fun launchContract(
     pickerLauncher: suspend () -> ImagePickerContractResult,
-    options: ImagePickerOptions,
+    options: ImagePickerOptions
   ): Any {
     return try {
       var result = launchPicker(pickerLauncher)
@@ -138,7 +137,7 @@ class ImagePickerModule : Module() {
         result.data[0].first == MediaType.IMAGE
       ) {
         result = launchPicker {
-          cropImageLauncher.launch(CropImageContractOptions(result.data[0].second, options))
+          cropImageLauncher.launch(CropImageContractOptions(result.data[0].second.toString(), options))
         }
       }
       mediaHandler.readExtras(result.data, options)
@@ -161,11 +160,12 @@ class ImagePickerModule : Module() {
    * Launches picker (image library or camera)
    */
   private suspend fun launchPicker(
-    pickerLauncher: suspend () -> ImagePickerContractResult,
-  ): ImagePickerContractResult.Success = withContext(Dispatchers.Main) {
+    pickerLauncher: suspend () -> ImagePickerContractResult
+  ): ImagePickerContractResult.Success = withContext(Dispatchers.IO) {
     when (val pickingResult = pickerLauncher()) {
       is ImagePickerContractResult.Success -> pickingResult
       is ImagePickerContractResult.Cancelled -> throw OperationCanceledException()
+      is ImagePickerContractResult.Error -> throw FailedToPickMediaException()
     }
   }
 

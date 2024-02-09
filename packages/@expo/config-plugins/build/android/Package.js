@@ -8,9 +8,8 @@ exports.getPackage = getPackage;
 exports.renameJniOnDiskForType = renameJniOnDiskForType;
 exports.renamePackageOnDisk = renamePackageOnDisk;
 exports.renamePackageOnDiskForType = renamePackageOnDiskForType;
-exports.setPackageInAndroidManifest = setPackageInAndroidManifest;
 exports.setPackageInBuildGradle = setPackageInBuildGradle;
-exports.withPackageRefactor = exports.withPackageManifest = exports.withPackageGradle = void 0;
+exports.withPackageRefactor = exports.withPackageGradle = void 0;
 function _debug() {
   const data = _interopRequireDefault(require("debug"));
   _debug = function () {
@@ -35,6 +34,13 @@ function _glob() {
 function _path() {
   const data = _interopRequireDefault(require("path"));
   _path = function () {
+    return data;
+  };
+  return data;
+}
+function _Paths() {
+  const data = require("./Paths");
+  _Paths = function () {
     return data;
   };
   return data;
@@ -67,17 +73,8 @@ function _warnings() {
   };
   return data;
 }
-function _Paths() {
-  const data = require("./Paths");
-  _Paths = function () {
-    return data;
-  };
-  return data;
-}
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 const debug = (0, _debug().default)('expo:config-plugins:android:package');
-const withPackageManifest = (0, _androidPlugins().createAndroidManifestPlugin)(setPackageInAndroidManifest, 'withPackageManifest');
-exports.withPackageManifest = withPackageManifest;
 const withPackageGradle = config => {
   return (0, _androidPlugins().withAppBuildGradle)(config, config => {
     if (config.modResults.language === 'groovy') {
@@ -97,8 +94,7 @@ const withPackageRefactor = config => {
 };
 exports.withPackageRefactor = withPackageRefactor;
 function getPackage(config) {
-  var _config$android$packa, _config$android;
-  return (_config$android$packa = (_config$android = config.android) === null || _config$android === void 0 ? void 0 : _config$android.package) !== null && _config$android$packa !== void 0 ? _config$android$packa : null;
+  return config.android?.package ?? null;
 }
 function getPackageRoot(projectRoot, type) {
   return _path().default.join(projectRoot, 'android', 'app', 'src', type, 'java');
@@ -248,7 +244,7 @@ async function renamePackageOnDiskForType({
     try {
       if (_fs().default.lstatSync(filepath).isFile()) {
         let contents = _fs().default.readFileSync(filepath).toString();
-        contents = contents.replace(new RegExp(currentPackageName, 'g'), packageName);
+        contents = replacePackageName(contents, currentPackageName, packageName);
         if (['.h', '.cpp'].includes(_path().default.extname(filepath))) {
           contents = contents.replace(new RegExp(transformJavaClassDescriptor(currentPackageName).replace(/\//g, '\\'), 'g'), transformJavaClassDescriptor(packageName));
         }
@@ -273,17 +269,7 @@ function setPackageInBuildGradle(config, buildGradle) {
   const pattern = new RegExp(`(applicationId|namespace) ['"].*['"]`, 'g');
   return buildGradle.replace(pattern, `$1 '${packageName}'`);
 }
-function setPackageInAndroidManifest(config, androidManifest) {
-  const packageName = getPackage(config);
-  if (packageName) {
-    androidManifest.manifest.$.package = packageName;
-  } else {
-    delete androidManifest.manifest.$.package;
-  }
-  return androidManifest;
-}
 async function getApplicationIdAsync(projectRoot) {
-  var _matchResult$;
   const buildGradlePath = (0, _Paths().getAppBuildGradleFilePath)(projectRoot);
   if (!_fs().default.existsSync(buildGradlePath)) {
     return null;
@@ -291,7 +277,22 @@ async function getApplicationIdAsync(projectRoot) {
   const buildGradle = await _fs().default.promises.readFile(buildGradlePath, 'utf8');
   const matchResult = buildGradle.match(/applicationId ['"](.*)['"]/);
   // TODO add fallback for legacy cases to read from AndroidManifest.xml
-  return (_matchResult$ = matchResult === null || matchResult === void 0 ? void 0 : matchResult[1]) !== null && _matchResult$ !== void 0 ? _matchResult$ : null;
+  return matchResult?.[1] ?? null;
+}
+
+/**
+ * Replace the package name with the new package name, in the given source.
+ * This has to be limited to avoid accidentally replacing imports when the old package name overlaps.
+ */
+function replacePackageName(content, oldName, newName) {
+  const oldNameEscaped = oldName.replace(/\./g, '\\.');
+  return content
+  // Replace any quoted instances "com.old" -> "com.new"
+  .replace(new RegExp(`"${oldNameEscaped}"`, 'g'), `"${newName}"`)
+  // Replace special non-quoted instances, only when prefixed by package or namespace
+  .replace(new RegExp(`(package|namespace)(\\s+)${oldNameEscaped}`, 'g'), `$1$2${newName}`)
+  // Replace special import instances, without overlapping with other imports (trailing `.` to close it off)
+  .replace(new RegExp(`(import\\s+)${oldNameEscaped}\\.`, 'g'), `$1${newName}.`);
 }
 
 /**

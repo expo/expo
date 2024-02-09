@@ -21,7 +21,7 @@ it(`lints`, async () => {
       ignore: false,
       useEslintrc: false,
     },
-    ['__tests__/fixtures/*typescript-analysis*']
+    ['__tests__/fixtures/*typescript-analysis*'],
   );
   for (const result of results) {
     const relativeFilePath = path.relative(__dirname, result.filePath);

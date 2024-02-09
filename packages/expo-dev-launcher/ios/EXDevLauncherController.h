@@ -3,8 +3,18 @@
 
 #import <UIKit/UIKit.h>
 
+// When `use_frameworks!` is used, the generated Swift header is inside modules.
+// Otherwise, it's available only locally with double-quoted imports.
+#if __has_include(<EXUpdatesInterface/EXUpdatesInterface-Swift.h>)
 #import <EXUpdatesInterface/EXUpdatesInterface-Swift.h>
+#else
+#import "EXUpdatesInterface-Swift.h"
+#endif
+#if __has_include(<EXManifests/EXManifests-Swift.h>)
 #import <EXManifests/EXManifests-Swift.h>
+#else
+#import "EXManifests-Swift.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -21,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface EXDevLauncherController : NSObject <RCTBridgeDelegate>
+@interface EXDevLauncherController : NSObject <RCTBridgeDelegate, EXUpdatesExternalInterfaceDelegate>
 
 @property (nonatomic, weak) RCTBridge * _Nullable appBridge;
 @property (nonatomic, strong) RCTBridge *launcherBridge;
@@ -52,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)clearRecentlyOpenedApps;
 
-- (NSDictionary<UIApplicationLaunchOptionsKey, NSObject*> *)getLaunchOptions;
+- (NSDictionary *)getLaunchOptions;
 
 - (EXManifestsManifest * _Nullable)appManifest;
 

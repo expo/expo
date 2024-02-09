@@ -153,6 +153,33 @@ bool ReadableNativeMapArrayFrontendConverter::canConvert(
   return value.isObject();
 }
 
+jobject ByteArrayFrontendConverter::convert(
+  jsi::Runtime &rt,
+  JNIEnv *env,
+  JSIInteropModuleRegistry *moduleRegistry,
+  const jsi::Value &value
+) const {
+  auto typedArray = TypedArray(rt, value.getObject(rt));
+  size_t length = typedArray.byteLength(rt);
+  auto byteArray = jni::JArrayByte::newArray(length);
+  byteArray->setRegion(0, length, static_cast<const signed char *>(typedArray.getRawPointer(rt)));
+  return byteArray.release();
+}
+
+bool ByteArrayFrontendConverter::canConvert(
+  jsi::Runtime &rt,
+  const jsi::Value &value
+) const {
+  if (value.isObject()) {
+    auto object = value.getObject(rt);
+    if (isTypedArray(rt, object)) {
+      auto typedArray = TypedArray(rt, object);
+      return typedArray.getKind(rt) == TypedArrayKind::Uint8Array;
+    }
+  }
+  return false;
+}
+
 jobject TypedArrayFrontendConverter::convert(
   jsi::Runtime &rt,
   JNIEnv *env,
@@ -398,8 +425,16 @@ jobject ListFrontendConverter::convert(
 
   auto arrayList = java::ArrayList<jobject>::create(size);
   for (size_t i = 0; i < size; i++) {
+    auto jsValue = jsArray.getValueAtIndex(rt, i);
+
+    // TODO(@lukmccall): pass information to CPP if the underlying type is nullable or not.
+    if (jsValue.isNull() || jsValue.isUndefined()) {
+      arrayList->add(nullptr);
+      continue;
+    }
+
     auto convertedElement = parameterConverter->convert(
-      rt, env, moduleRegistry, jsArray.getValueAtIndex(rt, i)
+      rt, env, moduleRegistry, jsValue
     );
     arrayList->add(convertedElement);
     env->DeleteLocalRef(convertedElement);
@@ -433,11 +468,20 @@ jobject MapFrontendConverter::convert(
 
   for (size_t i = 0; i < size; i++) {
     auto key = propertyNames.getValueAtIndex(rt, i).getString(rt);
-    auto convertedValue = valueConverter->convert(
-      rt, env, moduleRegistry, jsObject.getProperty(rt, key)
-    );
+    auto jsValue = jsObject.getProperty(rt, key);
 
     auto convertedKey = env->NewStringUTF(key.utf8(rt).c_str());
+
+    // TODO(@lukmccall): pass information to CPP if the underlying type is nullable or not.
+    if (jsValue.isNull() || jsValue.isUndefined()) {
+      map->put(convertedKey, nullptr);
+      continue;
+    }
+
+    auto convertedValue = valueConverter->convert(
+      rt, env, moduleRegistry, jsValue
+    );
+
     map->put(convertedKey, convertedValue);
 
     env->DeleteLocalRef(convertedKey);
@@ -490,5 +534,78 @@ jobject SharedObjectIdConverter::convert(jsi::Runtime &rt, JNIEnv *env,
 
 bool SharedObjectIdConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
   return value.isObject() && value.getObject(rt).hasProperty(rt, "__expo_shared_object_id__");
+}
+
+jobject AnyFrontendConvert::convert(
+  jsi::Runtime &rt,
+  JNIEnv *env,
+  JSIInteropModuleRegistry *moduleRegistry,
+  const jsi::Value &value
+) const {
+  if (value.isUndefined() || value.isNull()) {
+    return nullptr;
+  }
+
+  if (booleanConverter.canConvert(rt, value)) {
+    return booleanConverter.convert(rt, env, moduleRegistry, value);
+  }
+
+  if (doubleConverter.canConvert(rt, value)) {
+    return doubleConverter.convert(rt, env, moduleRegistry, value);
+  }
+
+  if (stringConverter.canConvert(rt, value)) {
+    return stringConverter.convert(rt, env, moduleRegistry, value);
+  }
+
+  if (!value.isObject()) {
+    return nullptr;
+  }
+
+  const jsi::Object &obj = value.asObject(rt);
+
+  if (obj.isArray(rt)) {
+    const jsi::Array &jsArray = obj.asArray(rt);
+    size_t size = jsArray.size(rt);
+
+    auto arrayList = java::ArrayList<jobject>::create(size);
+    for (size_t i = 0; i < size; i++) {
+      auto jsValue = jsArray.getValueAtIndex(rt, i);
+
+      auto convertedElement = this->convert(
+        rt, env, moduleRegistry, jsValue
+      );
+      arrayList->add(convertedElement);
+      env->DeleteLocalRef(convertedElement);
+    }
+
+    return arrayList.release();
+  }
+
+  // it's object, so we're going to convert it to LinkedHashMap
+  auto propertyNames = obj.getPropertyNames(rt);
+  size_t size = propertyNames.size(rt);
+  auto map = java::LinkedHashMap<jobject, jobject>::create(size);
+
+  for (size_t i = 0; i < size; i++) {
+    auto key = propertyNames.getValueAtIndex(rt, i).getString(rt);
+    auto jsValue = obj.getProperty(rt, key);
+
+    auto convertedKey = env->NewStringUTF(key.utf8(rt).c_str());
+    auto convertedValue = this->convert(
+      rt, env, moduleRegistry, jsValue
+    );
+
+    map->put(convertedKey, convertedValue);
+
+    env->DeleteLocalRef(convertedKey);
+    env->DeleteLocalRef(convertedValue);
+  }
+
+  return map.release();
+}
+
+bool AnyFrontendConvert::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
+  return true;
 }
 } // namespace expo

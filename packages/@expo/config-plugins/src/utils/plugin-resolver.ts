@@ -3,9 +3,9 @@ import findUp from 'find-up';
 import * as path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { ConfigPlugin, StaticPlugin } from '../Plugin.types';
 import { PluginError } from './errors';
 import { fileExists } from './modules';
+import { ConfigPlugin, StaticPlugin } from '../Plugin.types';
 
 // Default plugin entry file name.
 export const pluginFileName = 'app.plugin.js';

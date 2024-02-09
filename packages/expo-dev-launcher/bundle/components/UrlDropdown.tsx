@@ -10,10 +10,17 @@ import {
   useCurrentTheme,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { TextInput as NativeTextInput, Platform, StyleSheet } from 'react-native';
+import {
+  ImageStyle,
+  TextInput as NativeTextInput,
+  Platform,
+  StyleProp,
+  StyleSheet,
+} from 'react-native';
 
-import { validateUrl } from '../functions/validateUrl';
 import { ActivityIndicator } from './ActivityIndicator';
+import { debounce } from '../functions/debounce';
+import { validateUrl } from '../functions/validateUrl';
 
 type UrlDropdownProps = {
   isLoading?: boolean;
@@ -39,35 +46,26 @@ export function UrlDropdown({ onSubmit, isLoading, inputValue, setInputValue }: 
 
   const ref = React.useRef<NativeTextInput>();
   const [open, setOpen] = React.useState(false);
-  const [isValidUrl, setIsValidUrl] = React.useState(true);
+  const [isValidUrl, setIsValidUrl] = React.useState(validateUrl(inputValue));
 
   const [isPressing, setIsPressing] = React.useState(false);
 
   const rotate = open ? '90deg' : '0deg';
   // slight visual adjustment for centering icon
   const translateX = -3;
-  const arrowStyle = { transform: [{ translateX }, { rotate }] };
+  const arrowStyle: StyleProp<ImageStyle> = { transform: [{ translateX }, { rotate }] };
 
   const onConnectPress = () => {
     onSubmit(inputValue);
-    ref.current.blur();
+    ref.current?.blur();
   };
 
   const onTogglePress = () => {
     setOpen(!open);
   };
 
-  const lastExecuted = React.useRef(Date.now());
-  const throttleValidationInterval = 500;
-
   const onChangeText = (input: string) => {
-    if (!isValidUrl && input !== '') {
-      if (Date.now() >= lastExecuted.current + throttleValidationInterval) {
-        setIsValidUrl(validateUrl(input));
-        lastExecuted.current = Date.now();
-      }
-    }
-
+    setIsValidUrl(validateUrl(input));
     setInputValue(input);
   };
 
@@ -110,11 +108,10 @@ export function UrlDropdown({ onSubmit, isLoading, inputValue, setInputValue }: 
               autoCapitalize="none"
               autoComplete="off"
               autoCorrect={false}
-              placeholder="http://10.0.0.25:19000"
+              placeholder="http://10.0.0.25:8081"
               placeholderTextColor={theme.text.secondary}
               ref={ref as any}
-              value={inputValue}
-              onChangeText={onChangeText}
+              onChangeText={debounce(onChangeText)}
               onBlur={onBlur}
               testID="DevLauncherURLInput"
             />

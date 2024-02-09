@@ -57,6 +57,7 @@ type ManifestApplicationAttributes = {
     'android:allowBackup'?: StringBoolean;
     'android:largeHeap'?: StringBoolean;
     'android:requestLegacyExternalStorage'?: StringBoolean;
+    'android:supportsPictureInPicture'?: StringBoolean;
     'android:usesCleartextTraffic'?: StringBoolean;
     [key: string]: string | undefined;
 };
@@ -109,7 +110,22 @@ export type AndroidManifest = {
         'uses-permission'?: ManifestUsesPermission[];
         'uses-permission-sdk-23'?: ManifestUsesPermission[];
         'uses-feature'?: ManifestUsesFeature[];
+        queries: ManifestQuery[];
         application?: ManifestApplication[];
+    };
+};
+type ManifestQueryIntent = Omit<ManifestIntentFilter, '$'>;
+export type ManifestQuery = {
+    package: {
+        $: {
+            'android:name': string;
+        };
+    }[];
+    intent?: ManifestQueryIntent[];
+    provider?: {
+        $: {
+            'android:authorities': string;
+        };
     };
 };
 export declare function writeAndroidManifestAsync(manifestPath: string, androidManifest: AndroidManifest): Promise<void>;

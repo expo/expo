@@ -283,11 +283,7 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
     try {
       ApplicationInfo ai = getContext().getPackageManager().getApplicationInfo(getContext().getPackageName(), PackageManager.GET_META_DATA);
       if (ai.metaData.containsKey(META_DATA_DEFAULT_COLOR_KEY)) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-          return getContext().getResources().getColor(ai.metaData.getInt(META_DATA_DEFAULT_COLOR_KEY), null);
-        } else {
-          return getContext().getResources().getColor(ai.metaData.getInt(META_DATA_DEFAULT_COLOR_KEY));
-        }
+        return getContext().getResources().getColor(ai.metaData.getInt(META_DATA_DEFAULT_COLOR_KEY), null);
       }
     } catch (PackageManager.NameNotFoundException | Resources.NotFoundException | ClassCastException e) {
       Log.e("expo-notifications", "Could not have fetched default notification color.");

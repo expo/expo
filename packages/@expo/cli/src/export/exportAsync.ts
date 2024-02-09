@@ -1,10 +1,10 @@
 import path from 'path';
 
+import { exportAppAsync } from './exportApp';
+import { Options } from './resolveOptions';
 import * as Log from '../log';
 import { FileNotifier } from '../utils/FileNotifier';
 import { ensureDirectoryAsync, removeAsync } from '../utils/dir';
-import { exportAppAsync } from './exportApp';
-import { Options } from './resolveOptions';
 
 export async function exportAsync(projectRoot: string, options: Options) {
   // Ensure the output directory is created
@@ -21,5 +21,5 @@ export async function exportAsync(projectRoot: string, options: Options) {
   FileNotifier.stopAll();
 
   // Final notes
-  Log.log(`Export was successful. Your exported files can be found in ${options.outputDir}`);
+  Log.log(`App exported to: ${options.outputDir}`);
 }

@@ -5,7 +5,7 @@ description: Learn about what are plugins and mods when creating a config plugin
 
 import { YesIcon, NoIcon, WarningIcon } from '~/ui/components/DocIcons';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { BoxLink } from '~/ui/components/BoxLink';
+import { FileTree } from '~/ui/components/FileTree';
 
 Plugins are **synchronous** functions that accept an [`ExpoConfig`](/versions/latest/config/app/) and return a modified [`ExpoConfig`](/versions/latest/config/app/).
 
@@ -26,29 +26,39 @@ Say you wanted to create a plugin that added custom values to **Info.plist** in 
 
 ```js my-plugin.js
 const withMySDK = (config, { apiKey }) => {
-  // Ensure the objects exist
+  /* @info Ensure the objects exist */
   if (!config.ios) {
+    /* @end */
     config.ios = {};
   }
   if (!config.ios.infoPlist) {
     config.ios.infoPlist = {};
   }
 
-  // Append the apiKey
+  /* @info Append the API Key */
   config.ios.infoPlist['MY_CUSTOM_NATIVE_IOS_API_KEY'] = apiKey;
+  /* @end */
 
   return config;
 };
 
-// 💡 Usage:
+module.exports.withMySDK = withMySDK;
+```
 
-/// Create a config
+To use the plugin, import it and wrap the config:
+
+```js app.config.js
+const { withMySDK } = require('./my-plugin');
+
+/* @info Create a config */
 const config = {
+  /* @end */
   name: 'my app',
 };
 
-/// Use the plugin
-export default withMySDK(config, { apiKey: 'X-XXX-XXX' });
+/* @info Apply the plugin */
+module.exports = withMySDK(config, { apiKey: 'X-XXX-XXX' });
+/* @end */
 ```
 
 ## Import a plugin
@@ -64,10 +74,12 @@ You may want to create a plugin in a different file, here's how:
 
 Consider the following example that changes the config name:
 
-```
-╭── app.config.js ➡️ App config
-╰── my-plugin.js ➡️ Our custom plugin file
-```
+<FileTree
+  files={[
+    ['app.config.js', 'Expo config'],
+    ['my-plugin.js', 'Custom Config Plugin file'],
+  ]}
+/>
 
 ```js my-plugin.js
 module.exports = function withPrefixedName(config, prefix) {
@@ -89,7 +101,7 @@ It evaluates to the following JSON config:
 
 ```json Evaluated config JSON
 {
-  "name": "custom-my-app",
+  "name": /* @info */ "custom-my-app" /* @end */,
   "plugins": [["./my-plugin", "custom"]]
 }
 ```
@@ -118,16 +130,6 @@ withPlugins(config, [
 ]);
 ```
 
-<Collapsible summary="Using SDK 46 or lower?">
-
-For SDK 46 and lower, import the `@expo/config-plugins` package directly. This is installed automatically by the `expo` package, but not re-exported as it is in SDK 47 and higher.
-
-```js app.config.js
-const { withPlugins } = require('@expo/config-plugins');
-```
-
-</Collapsible>
-
 To support JSON configs, we also added the `plugins` array which just uses `withPlugins` under the hood.
 Here is the same config as above, but even simpler:
 
@@ -151,7 +153,7 @@ after the initial reading, which means you can use it to perform actions _during
 If possible, you should attempt to use basic plugins instead of mods, as they're simpler to work with.
 
 - `mods` are omitted from the manifest and **cannot** be accessed via `Updates.manifest`. Mods exist for the sole purpose of modifying native project files during code generation!
-- `mods` can be used to read and write files safely during the `npx expo prebuild` command. This is how Expo CLI modifies the **Info.plist**, entitlements, xcproj, etc...
+- `mods` can be used to read and write files safely during the `npx expo prebuild` command. This is how Expo CLI modifies the **Info.plist**, entitlements, xcproj, and so on.
 - `mods` are platform-specific and should always be added to a platform-specific object:
 
 ```js app.config.js
@@ -171,7 +173,7 @@ module.exports = {
 ## How mods work
 
 - The config is read using [`getPrebuildConfig`](https://github.com/expo/expo-cli/blob/43a6162edd646b550c1b7eae6039daf1aaec4fb0/packages/prebuild-config/src/getPrebuildConfig.ts#L12) from `@expo/prebuild-config`.
-- All of the core functionality supported by Expo is added via plugins in `withIosExpoPlugins`. This is stuff like name, version, icons, locales, etc.
+- All of the core functionality supported by Expo is added via plugins in `withIosExpoPlugins`. This includes name, version, icons, locales, and so on.
 - The config is passed to the compiler `compileModsAsync`
 - The compiler adds base mods that are responsible for reading data (like **Info.plist**), executing a named mod (like `mods.ios.infoPlist`), then writing the results to the file system.
 - The compiler iterates over all the mods and asynchronously evaluates them, providing some base props like the `projectRoot`.
@@ -261,18 +263,22 @@ A mod plugin gets passed a `config` object with additional properties `modResult
 
 Say you wanted to write a mod to update the Xcode Project's "product name":
 
-```js my-config-plugin.js
+```ts my-config-plugin.ts
 import { ConfigPlugin, withXcodeProject } from 'expo/config-plugins';
 
 const withCustomProductName: ConfigPlugin = (config, customName) => {
-  return withXcodeProject(config, async config => {
-    // config = { modResults, modRequest, ...expoConfig }
+  return withXcodeProject(
+    config,
+    async (
+      /* @info <b>{ modResults, modRequest }</b> */ config
+      /* @end */
+    ) => {
+      const xcodeProject = config.modResults;
+      xcodeProject.productName = customName;
 
-    const xcodeProject = config.modResults;
-    xcodeProject.productName = customName;
-
-    return config;
-  });
+      return config;
+    }
+  );
 };
 
 // 💡 Usage:
@@ -286,16 +292,6 @@ const config = {
 export default withCustomProductName(config, 'new_name');
 ```
 
-<Collapsible summary="Using SDK 46 or lower?">
-
-For SDK 46 and lower, import the `@expo/config-plugins` package directly. This is installed automatically by the `expo` package, but not re-exported as it is in SDK 47 and higher.
-
-```js
-const { ConfigPlugin, withXcodeProject } = require('@expo/config-plugins');
-```
-
-</Collapsible>
-
 ### Experimental functionality
 
 Some parts of the mod system aren't fully fleshed out, these parts use `withDangerousMod` to read/write data without a base mod.
@@ -307,8 +303,9 @@ export const withIcons = config => {
   return withDangerousMod(config, [
     'ios',
     async config => {
-      // No modifications are made to the config
+      /* @info No modifications are made to the config */
       await setIconsAsync(config, config.modRequest.projectRoot);
+      /* @end */
       return config;
     },
   ]);
@@ -329,13 +326,22 @@ The strings passed to the `plugins` array can be resolved in a few different way
 
 You can quickly create a plugin in your project and use it in your config.
 
-- <YesIcon /> `'./my-config-plugin'`
+<FileTree
+  files={[
+    ['app.config.js', <code>import "./my-config-plugin"</code>],
+    [
+      'my-config-plugin.js',
+      <>
+        <YesIcon /> Imported from config
+      </>,
+    ],
+  ]}
+/>
 
-- <NoIcon /> `'./my-config-plugin.js'`
+In this example, the config plugin file contains a bare minimum function:
 
-```
-╭── app.config.js ➡️ app config
-╰── my-config-plugin.js ➡️ ✅ `module.exports = (config) => config`
+```js my-config-plugin.js
+module.exports = config => config;
 ```
 
 ### app.plugin.js
@@ -343,67 +349,101 @@ You can quickly create a plugin in your project and use it in your config.
 Sometimes you want your package to export React components and also support a plugin. To do this, multiple entry points need to be used because the transpilation (Babel preset) may be different.
 If an **app.plugin.js** file is present in the root of a Node module's folder, it'll be used instead of the package's `main` file.
 
-- <YesIcon /> `'expo-splash-screen'`
+<FileTree
+  files={[
+    ['app.config.js', <code>import "expo-splash-screen"</code>],
+    ['node_modules/expo-splash-screen', 'Node module'],
+    ['node_modules/expo-splash-screen/package.json', <code>"main": "./build/index.js"</code>],
+    [
+      'node_modules/expo-splash-screen/app.plugin.js',
+      <>
+        <YesIcon /> Entry file for custom plugins
+      </>,
+    ],
+    [
+      'node_modules/expo-splash-screen/build/index.js',
+      <>
+        <NoIcon /> Skipped in favor of <code>app.plugin.js</code>
+      </>,
+    ],
+  ]}
+/>
 
-- <NoIcon /> `'expo-splash-screen/app.plugin.js'`
-
-```
-╭── app.config.js ➡️ App config
-╰── node_modules/expo-splash-screen/ ➡️ Module installed from NPM (works with Yarn workspaces as well).
-    ├── package.json ➡️ The `main` file will be used if **app.plugin.js** doesn't exist.
-    ├── app.plugin.js ➡️ ✅ `module.exports = (config) => config` -- must export a function.
-    ╰── build/index.js ➡️ ❌ Ignored because **app.plugin.js** exists. This could be used with `expo-splash-screen/build/index.js`
+```js node_modules/expo-splash-screen/app.plugin.js
+module.exports = config => config;
 ```
 
 ### Node module default file
 
 A config plugin in a node module (without an **app.plugin.js**) will use the `main` file defined in the **package.json**.
 
-- <YesIcon /> `'expo-splash-screen'`
+<FileTree
+  files={[
+    ['app.config.js', <code>import "expo-splash-screen"</code>],
 
-- <NoIcon /> `'expo-splash-screen/build/index'`
+    ['node_modules/expo-splash-screen', 'Node module'],
+    ['node_modules/expo-splash-screen/package.json', <code>"main": "./build/index.js"</code>],
+    [
+      'node_modules/expo-splash-screen/build/index.js',
+      <>
+        <YesIcon /> Node resolve to this file
+      </>,
+    ],
 
-```
-╭── app.config.js ➡️ App config
-╰── node_modules/expo-splash-screen/ ➡️ Module installed from NPM (works with Yarn workspaces as well).
-    ├── package.json ➡️ The `main` file points to **build/index.js**
-    ╰── build/index.js ➡️  ✅ Node resolves to this module.
-```
+]}
+/>
 
 ### Project folder
 
-- <YesIcon /> `'./my-config-plugin'`
+This is different to how Config Plugins in Node modules work because **app.plugin.js** won't be resolved by default in a directory. You'll have to manually specify `./my-config-plugin/app.plugin.js` to use it, otherwise **index.js** in the directory will be used.
 
-- <NoIcon /> `'./my-config-plugin.js'`
-
-This is different to how Node modules work because **app.plugin.js** won't be resolved by default in a directory. You'll have to manually specify `./my-config-plugin/app.plugin.js` to use it, otherwise **index.js** in the directory will be used.
-
-```
-╭── app.config.js ➡️ App config
-╰── my-config-plugin/ ➡️ Folder containing plugin code
-    ╰── index.js ➡️ ✅ By default, Node resolves a folder's index.js file as the main file.
-```
+<FileTree
+  files={[
+    ['app.config.js', <code>import "./my-config-plugin"</code>],
+    [
+      'my-config-plugin/index.js',
+      <>
+        <YesIcon /> Config Plugin
+      </>,
+    ],
+    [
+      'my-config-plugin/app.plugin.js',
+      <>
+        <NoIcon /> Skipped outside of a node module
+      </>,
+    ],
+  ]}
+/>
 
 ### Module internals
 
-If a file inside a Node module is specified, then the module's root **app.plugin.js** resolution will be skipped. This is referred to as "reaching inside a package" and is considered **bad form**.
+> **error** Avoid importing module internals.
+
+If a file inside a Node module is directly imported, then the module's root **app.plugin.js** resolution will be skipped. This is referred to as "reaching inside a package" and is considered **bad form**.
 We support this to make testing, and plugin authoring easier, but we don't expect library authors to expose their plugins like this as a public API.
 
-- <NoIcon /> `'expo-splash-screen/build/index.js'`
-
-- <NoIcon /> `'expo-splash-screen/build'`
-
-```
-╭── app.config.js ➡️ App config
-╰── node_modules/expo-splash-screen/ ➡️ Module installed from npm (works with Yarn workspaces as well).
-    ├── package.json ➡️ The `main` file will be used if **app.plugin.js** doesn't exist.
-    ├── app.plugin.js ➡️ ❌ Ignored because the reference reaches into the package internals.
-    ╰── build/index.js ➡️ ✅ `module.exports = (config) => config`
-```
+<FileTree
+  files={[
+    ['app.config.js', <code>import "expo-splash-screen/build/index.js"</code>],
+    ['node_modules/expo-splash-screen/package.json', <code>"main": "./build/index.js"</code>],
+    [
+      'node_modules/expo-splash-screen/app.plugin.js',
+      <>
+        <NoIcon /> Ignored due to direct import
+      </>,
+    ],
+    [
+      'node_modules/expo-splash-screen/build/index.js',
+      <>
+        <YesIcon /> <code>expo-splash-screen/build/index.js</code>
+      </>,
+    ],
+  ]}
+/>
 
 ### Raw functions
 
-You can also just pass in a config plugin.
+Expo config objects also support passing functions as-is to the `plugins` array. This is useful for testing, or if you want to use a plugin without creating a file.
 
 ```js app.config.js
 const withCustom = (config, props) => config;
@@ -416,8 +456,9 @@ const config = {
         /* props */
       },
     ],
-    // Without props
+    /* @info Without props */
     withCustom,
+    /* @end */
   ],
 };
 ```
@@ -434,20 +475,12 @@ Here is what the serialized config would look like:
 
 ## Why app.plugin.js for plugins
 
-Config resolution searches for a **app.plugin.js** first when a Node module name is provided.
-This is because Node environments are often different to iOS, Android, or web JS environments and therefore require different transpilation presets (ex: `module.exports` instead of `import/export`).
+Config resolution searches for a file named **app.plugin.js** first when a Node module ID is provided as a plugin.
+This is because Node environments are often different to iOS, Android, or web JS environments and therefore require different transpilation presets (for example, `module.exports` instead of `import/export`).
 
 Because of this reasoning, the root of a Node module is searched instead of right next to the **index.js**.
 Imagine you had a TypeScript Node module where the transpiled main file was located at **build/index.js**,
 if app config plugin resolution searched for **build/app.plugin.js** you'd lose the ability to transpile the file differently.
-
-## Next step
-
-<BoxLink
-  title="Development and debugging"
-  description="Learn about development best practices and debugging techniques for app config plugins."
-  href="/config-plugins/development-and-debugging"
-/>
 
 [xml2js]: https://www.npmjs.com/package/xml2js
 [expo-plist]: https://www.npmjs.com/package/@expo/plist

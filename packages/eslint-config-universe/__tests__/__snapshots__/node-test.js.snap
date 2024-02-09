@@ -92,6 +92,12 @@ function* gen() {}
       "replacedBy": [],
       "ruleId": "no-buffer-constructor",
     },
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
+    },
   ],
   "warningCount": 1,
 }
@@ -169,6 +175,12 @@ function _fn(...args: any): void {}
       "replacedBy": [],
       "ruleId": "no-buffer-constructor",
     },
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
+    },
   ],
   "warningCount": 2,
 }
@@ -227,6 +239,12 @@ function unused2() {
       "replacedBy": [],
       "ruleId": "no-buffer-constructor",
     },
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
+    },
   ],
   "warningCount": 3,
 }
@@ -283,24 +301,13 @@ exports[`lints with the Node config: fixtures/all-03.ts 1`] = `
       "ruleId": "@typescript-eslint/no-unused-vars",
       "severity": 1,
     },
-    {
-      "column": 28,
-      "endColumn": 37,
-      "endLine": 6,
-      "line": 6,
-      "message": "Use 'as string' instead of '<string>'.",
-      "messageId": "as",
-      "nodeType": "TSTypeAssertion",
-      "ruleId": "@typescript-eslint/consistent-type-assertions",
-      "severity": 1,
-    },
   ],
-  "source": "const tsUnused1 = 0;
+  "output": "const tsUnused1 = 0;
 
 function tsUnused2() {
   const x: any = 'hi';
   const asCast = x as string;
-  const angleBracketCast = <string>x;
+  const angleBracketCast = x as string;
 }
 ",
   "suppressedMessages": [],
@@ -309,8 +316,14 @@ function tsUnused2() {
       "replacedBy": [],
       "ruleId": "no-buffer-constructor",
     },
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
+    },
   ],
-  "warningCount": 5,
+  "warningCount": 4,
 }
 `;
 
@@ -331,6 +344,12 @@ exports[`lints with the Node config: fixtures/all-04.ts 1`] = `
       "replacedBy": [],
       "ruleId": "no-buffer-constructor",
     },
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
+    },
   ],
   "warningCount": 0,
 }
@@ -350,6 +369,12 @@ exports[`lints with the Node config: fixtures/all-05.ts 1`] = `
     {
       "replacedBy": [],
       "ruleId": "no-buffer-constructor",
+    },
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
     },
   ],
   "warningCount": 0,
@@ -375,6 +400,12 @@ export const objectShorthandTest: object | null = null;
     {
       "replacedBy": [],
       "ruleId": "no-buffer-constructor",
+    },
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
     },
   ],
   "warningCount": 0,
@@ -403,6 +434,12 @@ export default a + b + c + d + e;
     {
       "replacedBy": [],
       "ruleId": "no-buffer-constructor",
+    },
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
     },
   ],
   "warningCount": 0,
@@ -446,6 +483,12 @@ exports[`lints with the Node config: fixtures/node-00.js 1`] = `
     {
       "replacedBy": [],
       "ruleId": "no-buffer-constructor",
+    },
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
     },
   ],
   "warningCount": 2,

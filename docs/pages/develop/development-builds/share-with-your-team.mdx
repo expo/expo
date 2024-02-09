@@ -6,6 +6,8 @@ sidebar_title: Share with your team
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { BoxLink } from '~/ui/components/BoxLink';
+import { CODE } from '~/ui/components/Text';
+import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 Android and iOS both offer ways to install a build of your application directly on devices. This gives you full control of putting specific builds on devices, allowing you to iterate quickly and have multiple builds of your application available for review at the same time. You can also share it with your team or run it on multiple test devices.
 
@@ -38,13 +40,21 @@ You can use `eas build:resign` to codesign an existing **.ipa** for iOS to a new
 ## Next steps
 
 <BoxLink
-  title="Parallel installation"
-  description="Learn about having a development build and a production build installed on the same device."
-  href="/develop/development-builds/parallel-installation"
+  title="Install multiple app variants on the same device"
+  description={
+    <>
+      Learn how to install multiple variants (development, preview, production) of an app on the
+      same device side by side by converting <CODE>app.json</CODE> to <CODE>app.config.js</CODE> and
+      additional configuration that is required to start the development server for each variant.
+    </>
+  }
+  href="/build-reference/variants/"
+  Icon={BookOpen02Icon}
 />
 
 <BoxLink
   title="Sharing pre-release versions of your app"
   description="Learn more about sharing pre-release versions of your app."
   href="/guides/sharing-preview-releases"
+  Icon={BookOpen02Icon}
 />

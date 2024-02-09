@@ -153,20 +153,20 @@ export function dismissBrowser() {
 }
 // @needsAudit
 /**
+ * # On Android:
+ * This will be done using a "custom Chrome tabs" browser, [AppState](https://reactnative.dev/docs/appstate),
+ * and [Linking](./linking/) APIs.
+ *
  * # On iOS:
  * Opens the url with Safari in a modal using `ASWebAuthenticationSession`. The user will be asked
  * whether to allow the app to authenticate using the given url.
  * To handle redirection back to the mobile application, the redirect URI set in the authentication server
- * has to use the protocol provided as the scheme in **app.json** [`expo.scheme`](./../config/app/#scheme)
- * e.g. `demo://` not `https://` protocol.
+ * has to use the protocol provided as the scheme in **app.json** [`expo.scheme`](./../config/app/#scheme).
+ * For example, `demo://` not `https://` protocol.
  * Using `Linking.addEventListener` is not needed and can have side effects.
  *
- * # On Android:
- * This will be done using a "custom Chrome tabs" browser, [AppState](../react-native/appstate/),
- * and [Linking](./linking/) APIs.
- *
  * # On web:
- * > This API can only be used in a secure environment (`https`). You can use expo `start:web --https`
+ * > This API can only be used in a secure environment (localhost/https).
  * to test this. Otherwise, an error with code [`ERR_WEB_BROWSER_CRYPTO`](#errwebbrowsercrypto) will be thrown.
  * This will use the browser's [`window.open()`](https://developer.mozilla.org/en-US/docs/Web/API/Window/open) API.
  * - _Desktop_: This will create a new web popup window in the browser that can be closed later using `WebBrowser.maybeCompleteAuthSession()`.

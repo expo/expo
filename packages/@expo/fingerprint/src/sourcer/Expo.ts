@@ -1,13 +1,14 @@
 import spawnAsync from '@expo/spawn-async';
-import assert from 'assert';
 import chalk from 'chalk';
 import type { ExpoConfig, ProjectConfig } from 'expo/config';
-import findUp from 'find-up';
+import fs from 'fs/promises';
+import os from 'os';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import { getExpoConfigLoaderPath } from './ExpoConfigLoader';
+import { getFileBasedHashSourceAsync, stringifyJsonSorted } from './Utils';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
-import { getFileBasedHashSourceAsync } from './Utils';
 
 const debug = require('debug')('expo:fingerprint:sourcer:Expo');
 
@@ -15,31 +16,35 @@ export async function getExpoConfigSourcesAsync(
   projectRoot: string,
   options: NormalizedOptions
 ): Promise<HashSource[]> {
-  let config: ProjectConfig;
-  try {
-    const { getConfig } = require(resolveFrom(path.resolve(projectRoot), 'expo/config'));
-    config = await getConfig(projectRoot, { skipSDKVersionRequirement: true });
-  } catch (e: unknown) {
-    debug('Cannot get Expo config: ' + e);
+  if (!resolveFrom.silent(path.resolve(projectRoot), 'expo/config')) {
     return [];
   }
 
   const results: HashSource[] = [];
-
-  // app config files
-  const configFiles = ['app.config.ts', 'app.config.js', 'app.config.json', 'app.json'];
-  const configFileSources = (
-    await Promise.all(
-      configFiles.map(async (file) => {
-        const result = await getFileBasedHashSourceAsync(projectRoot, file, 'expoConfig');
-        if (result != null) {
-          debug(`Adding config file - ${chalk.dim(file)}`);
-        }
-        return result;
-      })
-    )
-  ).filter(Boolean) as HashSource[];
-  results.push(...configFileSources);
+  let config: ProjectConfig;
+  let loadedModules: string[] = [];
+  const ignoredFile = await createTempIgnoredFileAsync(options);
+  try {
+    const { stdout } = await spawnAsync(
+      'node',
+      [getExpoConfigLoaderPath(), path.resolve(projectRoot), ignoredFile],
+      { cwd: __dirname }
+    );
+    const stdoutJson = JSON.parse(stdout);
+    config = stdoutJson.config;
+    loadedModules = stdoutJson.loadedModules;
+    results.push({
+      type: 'contents',
+      id: 'expoConfig',
+      contents: normalizeExpoConfig(config.exp),
+      reasons: ['expoConfig'],
+    });
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      console.warn(`Cannot get Expo config from an Expo project - ${e.message}: `, e.stack);
+    }
+    return [];
+  }
 
   // external files in config
   const isAndroid = options.platforms.includes('android');
@@ -86,44 +91,32 @@ export async function getExpoConfigSourcesAsync(
   results.push(...externalFileSources);
 
   // config plugins
-  const configPluginSources = getConfigPluginSourcesAsync(projectRoot, config.exp.plugins);
-  results.push(...configPluginSources);
+  const configPluginModules: HashSource[] = loadedModules.map((modulePath) => ({
+    type: 'file',
+    filePath: modulePath,
+    reasons: ['expoConfigPlugins'],
+  }));
+  results.push(...configPluginModules);
 
   return results;
 }
 
-function findUpPluginRoot(entryFile: string): string {
-  const entryRoot = path.dirname(entryFile);
-  const packageJson = findUp.sync('package.json', { cwd: path.dirname(entryFile) });
-  assert(packageJson, `No package.json found for module "${entryRoot}"`);
-  return path.dirname(packageJson);
+function normalizeExpoConfig(config: ExpoConfig): string {
+  // Deep clone by JSON.parse/stringify that assumes the config is serializable.
+  const normalizedConfig: ExpoConfig = JSON.parse(JSON.stringify(config));
+  delete normalizedConfig.runtimeVersion;
+  delete normalizedConfig._internal;
+  return stringifyJsonSorted(normalizedConfig);
 }
 
-function getConfigPluginSourcesAsync(
-  projectRoot: string,
-  plugins: ExpoConfig['plugins']
-): HashSource[] {
-  if (plugins == null) {
-    return [];
-  }
-
-  const reasons = ['expoConfigPlugins'];
-  const nullableResults: (HashSource | null)[] = plugins.map((plugin) => {
-    const pluginPackageName = Array.isArray(plugin) ? plugin[0] : plugin;
-    if (typeof pluginPackageName === 'string') {
-      const pluginPackageEntryFile = resolveFrom.silent(projectRoot, pluginPackageName);
-      const pluginPackageRoot = pluginPackageEntryFile
-        ? findUpPluginRoot(pluginPackageEntryFile)
-        : null;
-      if (pluginPackageRoot) {
-        debug(`Adding config-plugin root - ${chalk.dim(pluginPackageRoot)}`);
-        return { type: 'dir', filePath: path.relative(projectRoot, pluginPackageRoot), reasons };
-      }
-    }
-    return null;
-  });
-  const results = nullableResults.filter(Boolean) as HashSource[];
-  return results;
+/**
+ * Create a temporary file with ignored paths from options that will be read by the ExpoConfigLoader.
+ */
+async function createTempIgnoredFileAsync(options: NormalizedOptions): Promise<string> {
+  await fs.mkdtemp(path.join(os.tmpdir(), 'expo-fingerprint-'));
+  const ignoredFile = path.join(os.tmpdir(), '.fingerprintignore');
+  await fs.writeFile(ignoredFile, options.ignorePaths.join('\n'));
+  return ignoredFile;
 }
 
 export async function getEasBuildSourcesAsync(projectRoot: string, options: NormalizedOptions) {
@@ -158,7 +151,7 @@ export async function getExpoAutolinkingAndroidSourcesAsync(
       ['expo-modules-autolinking', 'resolve', '-p', 'android', '--json'],
       { cwd: projectRoot }
     );
-    const config = JSON.parse(stdout);
+    const config = sortExpoAutolinkingAndroidConfig(JSON.parse(stdout));
     for (const module of config.modules) {
       for (const project of module.projects) {
         const filePath = path.relative(projectRoot, project.sourceDir);
@@ -214,4 +207,17 @@ export async function getExpoAutolinkingIosSourcesAsync(
   } catch {
     return [];
   }
+}
+
+/**
+ * Sort the expo-modules-autolinking android config to make it stable from hashing.
+ */
+export function sortExpoAutolinkingAndroidConfig(config: Record<string, any>): Record<string, any> {
+  for (const module of config.modules) {
+    // Sort the projects by project.name
+    module.projects.sort((a: Record<string, any>, b: Record<string, any>) =>
+      a.name < b.name ? -1 : a.name > b.name ? 1 : 0
+    );
+  }
+  return config;
 }

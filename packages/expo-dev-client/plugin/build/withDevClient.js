@@ -11,9 +11,9 @@ const app_plugin_2 = __importDefault(require("expo-dev-menu/app.plugin"));
 const withGeneratedAndroidScheme_1 = require("./withGeneratedAndroidScheme");
 const withGeneratedIosScheme_1 = require("./withGeneratedIosScheme");
 const pkg = require('expo-dev-client/package.json');
-function withDevClient(config) {
+function withDevClient(config, props) {
     config = (0, app_plugin_2.default)(config);
-    config = (0, app_plugin_1.default)(config);
+    config = (0, app_plugin_1.default)(config, props);
     config = (0, withGeneratedAndroidScheme_1.withGeneratedAndroidScheme)(config);
     config = (0, withGeneratedIosScheme_1.withGeneratedIosScheme)(config);
     return config;

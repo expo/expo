@@ -1,7 +1,7 @@
 import { PermissionResponse, PermissionStatus, PermissionHookOptions, Subscription } from 'expo-modules-core';
-import { AVPlaybackStatus, AVPlaybackStatusToSet } from '../AV';
 import { RecordingInput, RecordingObject, RecordingOptions, RecordingStatus } from './Recording.types';
 import { SoundObject } from './Sound';
+import { AVPlaybackStatus, AVPlaybackStatusToSet } from '../AV';
 /**
  * Checks user's permissions for audio recording.
  * @return A promise that resolves to an object of type `PermissionResponse`.
@@ -23,6 +23,8 @@ export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
  */
 export declare const usePermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 /**
+ * > **warning** **Warning**: Experimental for web.
+ *
  * This class represents an audio recording. After creating an instance of this class, `prepareToRecordAsync`
  * must be called in order to record audio. Once recording is finished, call `stopAndUnloadAsync`. Note that
  * only one recorder is allowed to exist in the state between `prepareToRecordAsync` and `stopAndUnloadAsync`

@@ -2,6 +2,7 @@ package expo.modules.updates.selectionpolicy
 
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import expo.modules.updates.db.entity.UpdateEntity
+import org.json.JSONObject
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -11,11 +12,11 @@ import java.util.*
 class ReaperSelectionPolicyFilterAwareTest {
   private val runtimeVersion = "1.0"
   private val scopeKey = "dummyScope"
-  private val update1 = UpdateEntity(UUID.randomUUID(), Date(1608667857774L), runtimeVersion, scopeKey)
-  private val update2 = UpdateEntity(UUID.randomUUID(), Date(1608667857775L), runtimeVersion, scopeKey)
-  private val update3 = UpdateEntity(UUID.randomUUID(), Date(1608667857776L), runtimeVersion, scopeKey)
-  private val update4 = UpdateEntity(UUID.randomUUID(), Date(1608667857777L), runtimeVersion, scopeKey)
-  private val update5 = UpdateEntity(UUID.randomUUID(), Date(1608667857778L), runtimeVersion, scopeKey)
+  private val update1 = UpdateEntity(UUID.randomUUID(), Date(1608667857774L), runtimeVersion, scopeKey, JSONObject("{}"))
+  private val update2 = UpdateEntity(UUID.randomUUID(), Date(1608667857775L), runtimeVersion, scopeKey, JSONObject("{}"))
+  private val update3 = UpdateEntity(UUID.randomUUID(), Date(1608667857776L), runtimeVersion, scopeKey, JSONObject("{}"))
+  private val update4 = UpdateEntity(UUID.randomUUID(), Date(1608667857777L), runtimeVersion, scopeKey, JSONObject("{}"))
+  private val update5 = UpdateEntity(UUID.randomUUID(), Date(1608667857778L), runtimeVersion, scopeKey, JSONObject("{}"))
   private val selectionPolicy: ReaperSelectionPolicy = ReaperSelectionPolicyFilterAware()
 
   @Test
@@ -65,7 +66,7 @@ class ReaperSelectionPolicyFilterAwareTest {
   @Test
   fun testSelectUpdatesToDelete_differentScopeKey() {
     val update4DifferentScope =
-      UpdateEntity(update4.id, update4.commitTime, update4.runtimeVersion, "differentScopeKey")
+      UpdateEntity(update4.id, update4.commitTime, update4.runtimeVersion, "differentScopeKey", JSONObject("{}"))
     val updatesToDelete = selectionPolicy.selectUpdatesToDelete(
       listOf(update1, update2, update3, update4DifferentScope),
       update4DifferentScope,

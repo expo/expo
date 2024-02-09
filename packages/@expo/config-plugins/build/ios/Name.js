@@ -8,13 +8,6 @@ exports.setDisplayName = setDisplayName;
 exports.setName = setName;
 exports.setProductName = setProductName;
 exports.withProductName = exports.withName = exports.withDisplayName = void 0;
-function _iosPlugins() {
-  const data = require("../plugins/ios-plugins");
-  _iosPlugins = function () {
-    return data;
-  };
-  return data;
-}
 function _Target() {
   const data = require("./Target");
   _Target = function () {
@@ -29,18 +22,23 @@ function _Xcodeproj() {
   };
   return data;
 }
-const withDisplayName = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(setDisplayName, {
+function _iosPlugins() {
+  const data = require("../plugins/ios-plugins");
+  _iosPlugins = function () {
+    return data;
+  };
+  return data;
+}
+const withDisplayName = exports.withDisplayName = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(setDisplayName, {
   infoPlistProperty: 'CFBundleDisplayName',
   expoConfigProperty: 'name'
 }, 'withDisplayName');
-exports.withDisplayName = withDisplayName;
-const withName = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(setName, {
+const withName = exports.withName = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(setName, {
   infoPlistProperty: 'CFBundleName',
   expoConfigProperty: 'name'
 }, 'withName');
 
 /** Set the PRODUCT_NAME variable in the xcproj file based on the app.json name property. */
-exports.withName = withName;
 const withProductName = config => {
   return (0, _iosPlugins().withXcodeProject)(config, config => {
     config.modResults = setProductName(config, config.modResults);
@@ -93,8 +91,7 @@ function setName(config, {
   };
 }
 function setProductName(config, project) {
-  var _getName;
-  const name = (0, _Xcodeproj().sanitizedName)((_getName = getName(config)) !== null && _getName !== void 0 ? _getName : '');
+  const name = (0, _Xcodeproj().sanitizedName)(getName(config) ?? '');
   if (!name) {
     return project;
   }

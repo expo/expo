@@ -1,5 +1,5 @@
-import { CommandError } from '../utils/errors';
 import { createCachedFetch } from './rest/client';
+import { CommandError } from '../utils/errors';
 
 interface NativeModule {
   npmPackage: string;

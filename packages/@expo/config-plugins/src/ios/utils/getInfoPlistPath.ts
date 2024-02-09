@@ -1,7 +1,7 @@
 import { XcodeProject } from 'xcode';
 
-import { getXCBuildConfigurationFromPbxproj } from '../Target';
 import { resolvePathOrProject } from './Xcodeproj';
+import { getXCBuildConfigurationFromPbxproj } from '../Target';
 
 /**
  * Find the Info.plist path linked to a specific build configuration.

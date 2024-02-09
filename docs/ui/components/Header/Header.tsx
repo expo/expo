@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import { theme, Button } from '@expo/styleguide';
 import { breakpoints, spacing } from '@expo/styleguide-base';
-import { GithubIcon, Menu01Icon } from '@expo/styleguide-icons';
+import { GithubIcon, Menu01Icon, Star01Icon } from '@expo/styleguide-icons';
 import type { ReactNode } from 'react';
 
 import { Logo } from './Logo';
@@ -35,13 +35,31 @@ export const Header = ({
             openInNewTab
             theme="quaternary"
             className="px-2 text-secondary"
-            href="https://blog.expo.dev">
+            href="https://expo.dev/blog">
             Blog
           </Button>
           <Button
             openInNewTab
             theme="quaternary"
+            css={hideOnMobileStyle}
+            className="px-2 text-secondary"
+            href="https://expo.dev/changelog">
+            Changelog
+          </Button>
+          <Button
+            openInNewTab
+            theme="quaternary"
+            css={hideOnMobileStyle}
+            className="px-2 text-secondary"
+            leftSlot={<Star01Icon className="icon-sm" />}
+            href="https://github.com/expo/expo">
+            Star Us on GitHub
+          </Button>
+          <Button
+            openInNewTab
+            theme="quaternary"
             href="https://github.com/expo/expo"
+            css={showOnMobileStyle}
             aria-label="GitHub"
             className="px-2">
             <GithubIcon className="icon-lg" />
@@ -75,7 +93,7 @@ export const Header = ({
         <div css={mobileSidebarStyle}>
           <SidebarHead sidebarActiveGroup={sidebarActiveGroup} />
           {sidebar}
-          <SidebarFooter />
+          <SidebarFooter isMobileMenuVisible={isMobileMenuVisible} />
         </div>
       )}
     </>

@@ -4,8 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { Graph, Module, SerializerOptions } from 'metro';
+import { ReadOnlyGraph, MixedOutput, Module, SerializerOptions } from 'metro';
 import { SerializerParameters } from './withExpoSerializers';
-export declare function replaceEnvironmentVariables(code: string, env: Record<string, string | undefined>): string;
 export declare function getTransformEnvironment(url: string): string | null;
-export declare function environmentVariableSerializerPlugin(entryPoint: string, preModules: readonly Module[], graph: Graph, options: SerializerOptions): SerializerParameters;
+/** Strips the process.env polyfill in server environments to allow for accessing environment variables off the global. */
+export declare function serverPreludeSerializerPlugin(entryPoint: string, preModules: readonly Module<MixedOutput>[], graph: ReadOnlyGraph, options: SerializerOptions): SerializerParameters;
+export declare function environmentVariableSerializerPlugin(entryPoint: string, preModules: readonly Module<MixedOutput>[], graph: ReadOnlyGraph, options: SerializerOptions): SerializerParameters;

@@ -33,7 +33,9 @@ abstract class JSONDataDao {
     val rows = _loadJSONDataForKey(key, scopeKey)
     return if (rows.isEmpty()) {
       null
-    } else rows[0].value
+    } else {
+      rows[0].value
+    }
   }
 
   @Transaction

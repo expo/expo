@@ -8,9 +8,52 @@
 
 ### 🐛 Bug fixes
 
-- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+### 💡 Others
+
+## 6.8.3 - 2024-01-18
 
 ### 💡 Others
+
+- Remove expo-linking dependency and use React Native Linking instead. ([#26428](https://github.com/expo/expo/pull/26428) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 6.8.2 — 2023-12-15
+
+_This version does not introduce any user-facing changes._
+
+## 6.8.1 — 2023-12-13
+
+### 🎉 New features
+
+- `StoreReview.isAvailableAsync()` on iOS now resolves to `false` for apps distributed through TestFlight. ([#25900](https://github.com/expo/expo/pull/25900) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 6.8.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 6.7.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+## 6.6.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+## 6.5.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 6.4.0 — 2023-06-21
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ## 6.3.0 — 2023-05-08
 

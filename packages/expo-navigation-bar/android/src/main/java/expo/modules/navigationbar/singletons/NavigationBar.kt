@@ -1,4 +1,4 @@
-package expo.modules.navigationbar
+package expo.modules.navigationbar.singletons
 
 import android.app.Activity
 import android.os.Build
@@ -7,14 +7,9 @@ import android.view.View
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import expo.modules.core.interfaces.SingletonModule
 
-object NavigationBar : SingletonModule {
+object NavigationBar {
   private const val TAG = "NavigationBar"
-
-  override fun getName(): String {
-    return "NavigationBar"
-  }
 
   fun setBackgroundColor(
     activity: Activity,
@@ -112,9 +107,7 @@ object NavigationBar : SingletonModule {
     WindowCompat.setDecorFitsSystemWindows(activity.window, fits)
 
     // This is a bit of a hack to ensure that we can read the property later with `unstable_getPositionAsync`
-    if (Build.VERSION.SDK_INT >= 16) {
-      activity.window.decorView.fitsSystemWindows = fits
-    }
+    activity.window.decorView.fitsSystemWindows = fits
 
     successCallback()
   }

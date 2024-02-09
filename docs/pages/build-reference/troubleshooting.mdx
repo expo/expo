@@ -1,10 +1,11 @@
 ---
-title: Troubleshooting build errors and crashes
+title: Troubleshoot build errors and crashes
 description: A reference for troubleshooting build errors and crashes when using EAS Build.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
+import { A } from '~/ui/components/Text';
 
 > This document is under active development; the topic it covers is expansive and finding the right way to explain how to troubleshoot issues will take some trial and error. Your suggestions for improvements are welcome as pull requests.
 
@@ -21,7 +22,11 @@ Before you go further, you need to be sure that you have located the error messa
 
 ### Runtime errors
 
-Refer to the [debugging guide](/debugging/runtime-issues/#production-errors) to learn how to locate logs when your release builds are crashing at runtime.
+Common questions that fall under this category are: "my app runs well locally by crashes immediately when I run a build" or "my app works in Expo Go but hangs on the splash screen in my build". When your app builds successfully but crashes or hangs when you run it, this is considered a runtime error.
+
+Refer to the ["Production errors" section of the debugging guide](/debugging/runtime-issues/#production-errors) to learn how to locate logs when your release builds are crashing at runtime.
+
+If can't find any useful information through this approch, try [narrowing down the source of the crash step by step](https://expo.fyi/manual-debugging).
 
 ### Build errors
 
@@ -55,9 +60,9 @@ It's important to note that with iOS builds the build details page only displays
 
 {/* TODO: native and js build phases should be separate in eas build logs, this is too much work for people to figure out */}
 
-If you are working on a managed app and the build error is a native error rather than a JavaScript error, this is likely due to a [config plugin](/config-plugins/introduction/) or a dependency in your project. Keep an eye out in the logs for any new packages that you've added since your previous successful build. Run `npx expo-doctor` to determine that the versions of Expo SDK dependencies in your project are compatible with your Expo SDK version.
+If you are working on a managed app and the build error is a native error rather than a JavaScript error, this is likely due to a [config plugin](/config-plugins/introduction/) or a dependency in your project. Keep an eye out in the logs for any new packages that you have added since your previous successful build. Run `npx expo-doctor` to determine that the versions of Expo SDK dependencies in your project are compatible with your Expo SDK version.
 
-Armed with your error logs, you can often start to fix your build, or you can search the [forums](https://forums.expo.dev) and GitHub issues for related packages to dig deeper. Some common sources of problems are listed below.
+Armed with your error logs, you can often start to fix your build or search the [forums](https://chat.expo.dev/) and GitHub issues for related packages to dig deeper. Some common sources of problems are listed below.
 
 <Collapsible summary="Are you using a monorepo?">
 
@@ -77,7 +82,7 @@ This can often be a sign that your app bundle is extremely large, which will mak
 
 To determine how large your bundle is and to see a breakdown of where the size comes from, use [react-native-bundle-visualizer](https://github.com/IjzerenHein/react-native-bundle-visualizer).
 
-To increase memory limits on your EAS Build builders, you can use [`large` resource class](/build-reference/eas-json/#resourceclass-1) in your **eas.json**. See [Android-specific resource class](/build-reference/infrastructure/#android-build-server-configurations) and [iOS-specific resource class](/build-reference/infrastructure/#ios-build-server-configurations) for more information.
+To increase memory limits on your EAS Build builders, you can use [`large` resource class](/eas/json/#resourceclass) in your **eas.json**. See [Android-specific resource class](/build-reference/infrastructure/#android-build-server-configurations) and [iOS-specific resource class](/build-reference/infrastructure/#ios-build-server-configurations) for more information.
 
 </Collapsible>
 
@@ -85,7 +90,7 @@ To increase memory limits on your EAS Build builders, you can use [`large` resou
 
 When a build fails with `Task :app:bundleReleaseJsAndAssets FAILED` (Android) or `Metro encountered an error` (iOS), it means Metro bundler was unable to bundle the app's JavaScript code while trying to embed it in your app's binary. This error message is usually followed by a syntax error or other details about why bundling failed. Unfortunately, a standard React Native project is configured to perform this step late in the Gradle/Xcode build step, meaning it can take a while to see this error.
 
-You can build the production bundle locally by running `npx expo export` to bypass all of the other build steps so you can see this error much more quickly. Run this command repeatedly, resolving any syntax errors or other issues uncovered until the bundle builds successfully. Then try your EAS build again.
+You can build the production bundle locally by running `npx expo export` to bypass all of the other build steps so you can see this error much more quickly. Run this command repeatedly, resolving any syntax errors or other issues uncovered until the bundle builds successfully. Then try your EAS Build again.
 
 ## Verify that your project builds and runs locally
 
@@ -107,7 +112,15 @@ You can verify that your project builds on your local machine with the `npx expo
   ]}
 />
 
-> In managed projects, these commands will run `npx expo prebuild` to generate native projects &mdash; you likely want to [clean up the changes](https://expo.fyi/prebuild-cleanup) once you are done troubleshooting.
+> If use [CNG](/workflow/continuous-native-generation.mdx), these commands will run `npx expo prebuild` to generate native projects to compile them.You likely want to [clean up the changes](https://expo.fyi/prebuild-cleanup) once you are done troubleshooting, unless you want to start managing these projects directly instead of generating them on demand.
+>
+> <br />
+> You can alternatively run a local build with `eas build --local` &mdash; this command will run a series
+> of steps that is as close as it can be to what runs remotely on the hosted EAS Build service. It will
+> copy your project to a temporary directory and make any necessary changes there. [Learn how to set
+> this up and use it for debugging](/build-reference/local-builds.mdx#using-local-builds-for-debugging).
+
+If your native toolchains are installed correctly and you are unable to build and run your project in release mode on your local machine, it will not build on EAS Build. Fix the issues locally, then try again on EAS Build. The other advice in this doc may be useful to help you resolve the issue locally, but often this requires some knowledge of native tooling or judicious application of Google, Stack Overflow, and GitHub Issues.
 
 <Collapsible summary="Don't have Xcode and Android Studio set up on your machine?">
 
@@ -117,20 +130,22 @@ If you are willing and able to set up the appropriate native tools, then refer t
 
 </Collapsible>
 
-If your native toolchains are installed correctly and you are unable to build and run your project in release mode on your local machine, it will not build on EAS Build. Fix the issues locally, then try again on EAS Build. The other advice in this doc may be useful to help you resolve the issue locally, but often this requires some knowledge of native tooling or judicious application of Google, Stack Overflow, and GitHub Issues.
+<Collapsible summary="My app builds locally, but not on EAS Build">
 
-### What if my project builds locally but not on EAS Build?
+By default, EAS Build follows a relatively straightforward process for building your app for ([Android](/build-reference/android-builds) or [iOS](/build-reference/ios-builds)). If `npx expo run:android --variant release` and `npx expo run:ios --configuration Release` work locally, but your builds fail, then it's time to narrow down what configuration exists on your machine that hasn't been set up for your project on EAS Build yet.
 
-If you find yourself in this situation, it's time to narrow down what configuration exists on your machine that hasn't been set up for your project on EAS Build yet.
+- Do a fresh `git clone` of your project to a new directory and get it running, ideally on a different machine. Pay attention to each of the steps that are needed and verify that they are also configured for EAS Build.
+- Check that your [environment variables](/guides/environment-variables) are properly configured.
+- Verify that versions of Node.js, npm, Yarn, Xcode, Java, and other tools are the same in both environments.
+- Ensure that the [archive you are uploading to EAS Build](https://expo.fyi/eas-build-archive) includes the same relevant source files.
 
-There are two ways to approach this, which are quite similar:
+</Collapsible>
 
-- Do a fresh `git clone` of your project to a new directory and get it running. Pay attention to each of the steps that are needed and verify that they are also configured for EAS Build.
-- Run a local build with `eas build --local`. This command will locally run a process that is as close as it can be to the remote, hosted EAS Build service. [Learn how to set this up and use it for debugging](/build-reference/local-builds.mdx#using-local-builds-for-debugging).
-
-### Why does my production app not match my development app?
+<Collapsible summary="Why does my production app not match my development app?">
 
 You can test how the JS part of your app will run in production by starting it with [`npx expo start --no-dev`](/workflow/development-mode/#production-mode). This tells the bundler to minify JavaScript before serving it, most notably stripping code protected by the `__DEV__` boolean. This will remove most of the logging, HMR, Fast Refresh functionality, and make debugging a bit harder, but you can iterate on the production bundle faster this way.
+
+</Collapsible>
 
 ## Still having trouble?
 
@@ -140,7 +155,7 @@ If you have followed the advice here, you're now in a good position to describe 
 
 ### How to ask a good question
 
-Join us on [Discord](https://chat.expo.dev) or the [forums](https://forums.expo.dev) to ask for help from the community and the Expo team. The Expo team does our best to respond to high quality and well articulated questions and issues, but responses are not guaranteed unless you are signed up for a [support plan](https://expo.dev/eas/enterprise-support). To ensure that an Expo team member sees your question, you can file a ticket at [expo.dev/contact](https://expo.dev/contact).
+Join us on <A href="https://chat.expo.dev/" shouldLeakReferrer>Discord and Forums</A> to ask for help from the community and the Expo team. The Expo team does our best to respond to high quality and well-articulated questions and issues, but responses are not guaranteed unless you are signed up for a [support plan](https://expo.dev/support-terms#target-response-time-guidelines-for-subscriptions). To ensure that an Expo team member sees your question, you can file a ticket at [expo.dev/contact](https://expo.dev/contact).
 
 When you ask for troubleshooting help, be sure to share the following information:
 

@@ -28,6 +28,13 @@ function _path() {
   };
   return data;
 }
+function _Xcodeproj() {
+  const data = require("./utils/Xcodeproj");
+  _Xcodeproj = function () {
+    return data;
+  };
+  return data;
+}
 function _iosPlugins() {
   const data = require("../plugins/ios-plugins");
   _iosPlugins = function () {
@@ -38,13 +45,6 @@ function _iosPlugins() {
 function _warnings() {
   const data = require("../utils/warnings");
   _warnings = function () {
-    return data;
-  };
-  return data;
-}
-function _Xcodeproj() {
-  const data = require("./utils/Xcodeproj");
-  _Xcodeproj = function () {
     return data;
   };
   return data;
@@ -61,8 +61,7 @@ const withLocales = config => {
 };
 exports.withLocales = withLocales;
 function getLocales(config) {
-  var _config$locales;
-  return (_config$locales = config.locales) !== null && _config$locales !== void 0 ? _config$locales : null;
+  return config.locales ?? null;
 }
 async function setLocalesAsync(config, {
   projectRoot,
@@ -97,9 +96,9 @@ async function setLocalesAsync(config, {
     const group = (0, _Xcodeproj().ensureGroupRecursively)(project, groupName);
 
     // Ensure the file doesn't already exist
-    if (!(group !== null && group !== void 0 && group.children.some(({
+    if (!group?.children.some(({
       comment
-    }) => comment === stringName))) {
+    }) => comment === stringName)) {
       // Only write the file if it doesn't already exist.
       project = (0, _Xcodeproj().addResourceFileToGroup)({
         filepath: (0, _path().relative)(supportingDirectory, strings),

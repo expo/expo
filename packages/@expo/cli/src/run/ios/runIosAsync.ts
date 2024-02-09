@@ -1,17 +1,18 @@
 import chalk from 'chalk';
 
+import * as XcodeBuild from './XcodeBuild';
+import { Options } from './XcodeBuild.types';
+import { launchAppAsync } from './launchApp';
+import { resolveOptionsAsync } from './options/resolveOptions';
 import * as Log from '../../log';
 import { maybePromptToSyncPodsAsync } from '../../utils/cocoapods';
 import { setNodeEnv } from '../../utils/nodeEnv';
+import { ensurePortAvailabilityAsync } from '../../utils/port';
 import { profile } from '../../utils/profile';
 import { getSchemesForIosAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { logProjectLogsLocation } from '../hints';
 import { startBundlerAsync } from '../startBundler';
-import * as XcodeBuild from './XcodeBuild';
-import { Options } from './XcodeBuild.types';
-import { launchAppAsync } from './launchApp';
-import { resolveOptionsAsync } from './options/resolveOptions';
 
 export async function runIosAsync(projectRoot: string, options: Options) {
   setNodeEnv(options.configuration === 'Release' ? 'production' : 'development');
@@ -35,6 +36,11 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   // on a device.
   const binaryPath = await profile(XcodeBuild.getAppBinaryPath)(buildOutput);
 
+  // Ensure the port hasn't become busy during the build.
+  if (props.shouldStartBundler && !(await ensurePortAvailabilityAsync(projectRoot, props))) {
+    props.shouldStartBundler = false;
+  }
+
   // Start the dev server which creates all of the required info for
   // launching the app on a simulator.
   const manager = await startBundlerAsync(projectRoot, {
@@ -54,6 +60,8 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   // Log the location of the JS logs for the device.
   if (props.shouldStartBundler) {
     logProjectLogsLocation();
+  } else {
+    await manager.stopAsync();
   }
 }
 

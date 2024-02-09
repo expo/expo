@@ -1,9 +1,15 @@
 package expo.modules.image
 
+import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.core.view.doOnDetach
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.model.GlideUrl
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.ViewProps
@@ -12,8 +18,10 @@ import expo.modules.image.enums.ContentFit
 import expo.modules.image.enums.Priority
 import expo.modules.image.records.CachePolicy
 import expo.modules.image.records.ContentPosition
+import expo.modules.image.records.DecodeFormat
 import expo.modules.image.records.ImageTransition
 import expo.modules.image.records.SourceMap
+import expo.modules.kotlin.Promise
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -23,12 +31,53 @@ class ExpoImageModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoImage")
 
-    Function("prefetch") { urls: List<String> ->
-      val context = appContext.reactContext ?: return@Function
+    AsyncFunction("prefetch") { urls: List<String>, cachePolicy: CachePolicy, promise: Promise ->
+      val context = appContext.reactContext ?: return@AsyncFunction false
+
+      var imagesLoaded = 0
+      var failed = false
+
       urls.forEach {
         Glide
           .with(context)
-          .download(GlideUrl(it))
+          .load(GlideUrl(it)) //  Use `load` instead of `download` to store the asset in the memory cache
+          // We added `quality` and `downsample` to create the same cache key as in final image load.
+          .encodeQuality(100)
+          .downsample(NoopDownsampleStrategy)
+          .apply {
+            if (cachePolicy == CachePolicy.MEMORY) {
+              diskCacheStrategy(DiskCacheStrategy.NONE)
+            }
+          }
+          .listener(object : RequestListener<Drawable> {
+            override fun onLoadFailed(
+              e: GlideException?,
+              model: Any?,
+              target: Target<Drawable>,
+              isFirstResource: Boolean
+            ): Boolean {
+              if (!failed) {
+                failed = true
+                promise.resolve(false)
+              }
+              return true
+            }
+
+            override fun onResourceReady(
+              resource: Drawable,
+              model: Any,
+              target: Target<Drawable>,
+              dataSource: DataSource,
+              isFirstResource: Boolean
+            ): Boolean {
+              imagesLoaded++
+
+              if (imagesLoaded == urls.size) {
+                promise.resolve(true)
+              }
+              return true
+            }
+          })
           .submit()
       }
     }
@@ -46,6 +95,26 @@ class ExpoImageModule : Module() {
       }
 
       return@AsyncFunction true
+    }
+
+    AsyncFunction("getCachePathAsync") { cacheKey: String ->
+      val context = appContext.reactContext ?: return@AsyncFunction null
+
+      val glideUrl = GlideUrl(cacheKey)
+      val target = Glide.with(context).asFile().load(glideUrl).onlyRetrieveFromCache(true).submit()
+
+      try {
+        val file = target.get()
+        val path = file.absolutePath
+
+        if (path != null) {
+          return@AsyncFunction path
+        }
+      } catch (e: Exception) {
+        return@AsyncFunction null
+      }
+
+      return@AsyncFunction null
     }
 
     View(ExpoImageViewWrapper::class) {
@@ -165,6 +234,22 @@ class ExpoImageModule : Module() {
 
       Prop("allowDownscaling") { view: ExpoImageViewWrapper, allowDownscaling: Boolean? ->
         view.allowDownscaling = allowDownscaling ?: true
+      }
+
+      Prop("autoplay") { view: ExpoImageViewWrapper, autoplay: Boolean? ->
+        view.autoplay = autoplay ?: true
+      }
+
+      Prop("decodeFormat") { view: ExpoImageViewWrapper, format: DecodeFormat? ->
+        view.decodeFormat = format ?: DecodeFormat.ARGB_8888
+      }
+
+      AsyncFunction("startAnimating") { view: ExpoImageViewWrapper ->
+        view.setIsAnimating(true)
+      }
+
+      AsyncFunction("stopAnimating") { view: ExpoImageViewWrapper ->
+        view.setIsAnimating(false)
       }
 
       OnViewDidUpdateProps { view: ExpoImageViewWrapper ->

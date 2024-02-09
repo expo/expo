@@ -1,13 +1,8 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 import chalk from 'chalk';
 
-import * as Log from '../log';
-import getDevClientProperties from '../utils/analytics/getDevClientProperties';
-import { logEventAsync } from '../utils/analytics/rudderstackClient';
-import { installExitHooks } from '../utils/exit';
-import { isInteractive } from '../utils/interactive';
-import { setNodeEnv } from '../utils/nodeEnv';
-import { profile } from '../utils/profile';
+import { SimulatorAppPrerequisite } from './doctor/apple/SimulatorAppPrerequisite';
+import { getXcodeVersionAsync } from './doctor/apple/XcodePrerequisite';
 import { validateDependenciesVersionsAsync } from './doctor/dependencies/validateDependenciesVersions';
 import { WebSupportProjectPrerequisite } from './doctor/web/WebSupportProjectPrerequisite';
 import { startInterfaceAsync } from './interface/startInterface';
@@ -16,17 +11,23 @@ import { BundlerStartOptions } from './server/BundlerDevServer';
 import { DevServerManager, MultiBundlerStartOptions } from './server/DevServerManager';
 import { openPlatformsAsync } from './server/openPlatforms';
 import { getPlatformBundlers, PlatformBundlers } from './server/platformBundlers';
+import * as Log from '../log';
+import getDevClientProperties from '../utils/analytics/getDevClientProperties';
+import { logEventAsync } from '../utils/analytics/rudderstackClient';
+import { installExitHooks } from '../utils/exit';
+import { isInteractive } from '../utils/interactive';
+import { setNodeEnv } from '../utils/nodeEnv';
+import { profile } from '../utils/profile';
 
 async function getMultiBundlerStartOptions(
   projectRoot: string,
-  { forceManifestType, ...options }: Options,
+  options: Options,
   settings: { webOnly?: boolean },
   platformBundlers: PlatformBundlers
 ): Promise<[BundlerStartOptions, MultiBundlerStartOptions]> {
   const commonOptions: BundlerStartOptions = {
     mode: options.dev ? 'development' : 'production',
     devClient: options.devClient,
-    forceManifestType,
     privateKeyPath: options.privateKeyPath ?? undefined,
     https: options.https,
     maxWorkers: options.maxWorkers,
@@ -73,29 +74,16 @@ export async function startAsync(
   require('@expo/env').load(projectRoot);
   const { exp, pkg } = profile(getConfig)(projectRoot);
 
-  const platformBundlers = getPlatformBundlers(exp);
-
-  if (!options.forceManifestType) {
-    if (exp.updates?.useClassicUpdates) {
-      options.forceManifestType = 'classic';
-    } else {
-      const classicUpdatesUrlRegex = /^(staging\.)?exp\.host/;
-      let parsedUpdatesUrl: { hostname: string | null } = { hostname: null };
-      if (exp.updates?.url) {
-        try {
-          parsedUpdatesUrl = new URL(exp.updates.url);
-        } catch {
-          Log.error(
-            `Failed to parse \`updates.url\` in this project's app config. ${exp.updates.url} is not a valid URL.`
-          );
-        }
-      }
-      const isClassicUpdatesUrl = parsedUpdatesUrl.hostname
-        ? classicUpdatesUrlRegex.test(parsedUpdatesUrl.hostname)
-        : false;
-      options.forceManifestType = isClassicUpdatesUrl ? 'classic' : 'expo-updates';
-    }
+  if (exp.platforms?.includes('ios') && process.platform !== 'win32') {
+    // If Xcode could potentially be used, then we should eagerly perform the
+    // assertions since they can take a while on cold boots.
+    getXcodeVersionAsync({ silent: true });
+    SimulatorAppPrerequisite.instance.assertAsync().catch(() => {
+      // noop -- this will be thrown again when the user attempts to open the project.
+    });
   }
+
+  const platformBundlers = getPlatformBundlers(projectRoot, exp);
 
   const [defaultOptions, startOptions] = await getMultiBundlerStartOptions(
     projectRoot,

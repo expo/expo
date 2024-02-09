@@ -1,12 +1,12 @@
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
-import HeadingText from '../../components/HeadingText';
-import { Colors } from '../../constants';
 import ReanimatedLayoutAnimation from './ReanimatedLayoutAnimation';
 import ReanimatedLightbox from './ReanimatedLightbox';
 import ReanimatedSwipeable from './ReanimatedSwipeable';
 import ReanimatedWobble from './ReanimatedWobble';
+import HeadingText from '../../components/HeadingText';
+import { Colors } from '../../constants';
 
 export default class ReanimatedScreen extends React.PureComponent {
   render() {

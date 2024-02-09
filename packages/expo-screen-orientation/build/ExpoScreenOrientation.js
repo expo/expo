@@ -1,6 +1,3 @@
-import { NativeModulesProxy, requireNativeModule } from 'expo-modules-core';
-import { Platform } from 'react-native';
-export default Platform.OS === 'android'
-    ? requireNativeModule('ExpoScreenOrientation')
-    : NativeModulesProxy.ExpoScreenOrientation || {};
+import { requireNativeModule } from 'expo-modules-core';
+export default requireNativeModule('ExpoScreenOrientation');
 //# sourceMappingURL=ExpoScreenOrientation.js.map

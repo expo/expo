@@ -1,3 +1,5 @@
+import { ResourceClasses } from '~/ui/components/utils/infrastructure';
+
 export default [
   {
     name: 'withoutCredentials',
@@ -15,12 +17,13 @@ export default [
   },
   {
     name: 'resourceClass',
-    enum: ['default', 'medium', 'large'],
+    enum: ['default', ...ResourceClasses.android],
     description: [
-      'The Android-specific resource class that will be used to run this build. [Learn more](../../build-reference/infrastructure#android-build-server-configurations)',
-      '- `default` maps to `medium`',
+      `The Android-specific resource class that will be used to run this build. Defaults to \`${ResourceClasses.android[0]}\`.`,
       '',
-      'This can change over time. To ensure you stay on the same configuration even when we change our defaults, use the specific resource class name.',
+      'To learn more about what build resources are available to each resource class, check out [Android build server configurations](../../build-reference/infrastructure#android-build-server-configurations).',
+      '',
+      'The `large` resource class is not available on the free plan.',
     ],
   },
   {

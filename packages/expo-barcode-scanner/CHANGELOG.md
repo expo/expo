@@ -6,11 +6,85 @@
 
 ### 🎉 New features
 
+- `BarCodeScannerResult` now returns an additional `raw` field corresponding to the barcode value as it was encoded in the barcode without parsing. Will always be undefined on iOS. ([#25391](https://github.com/expo/expo/pull/25391) by [@ajacquierbret](https://github.com/ajacquierbret))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 12.9.2 - 2023-12-21
+
+### 💡 Others
+
+- Add FYI link. ([#26049](https://github.com/expo/expo/pull/26049) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 12.9.1 - 2023-12-19
+
+### 🛠 Breaking changes
+
+- `expo-barcode-scanner` is now deprecated. Please use `expo-camera` instead. ([#26025](https://github.com/expo/expo/pull/26025) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 12.9.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 12.8.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- On `Android`, use `rawValue` in the case of scanning a contact card to return complete information. ([#24791](https://github.com/expo/expo/pull/24791) by [@alanhughes](https://github.com/alanjhughes))
+- On `iOS`, correctly handle when unsupported barcode types are passed to the `barCodeTypes` prop. ([#24784](https://github.com/expo/expo/pull/24784) by [@alanhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- Ship untranspiled JSX to support custom handling of `jsx` and `createElement`. ([#24889](https://github.com/expo/expo/pull/24889) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 12.7.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+## 12.6.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 12.6.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
+## 12.5.3 - 2023-06-30
+
+### 💡 Others
+
+- Update snapshots. ([#23238](https://github.com/expo/expo/pull/23238) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 12.5.2 — 2023-06-28
+
+_This version does not introduce any user-facing changes._
+
+## 12.5.1 — 2023-06-27
+
+### 🐛 Bug fixes
+
+- On Android, fixed an issue where certain text characters would not be recognised. ([#23094](https://github.com/expo/expo/pull/23094) by [@alanhughes](https://github.com/alanjhughes))
+
+## 12.5.0 — 2023-06-13
+
 ### 🐛 Bug fixes
 
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+- [Android] Replace dependency on deprecated `com.google.android.gms:play-services-vision` with `com.google.mlkit:barcode-scanning`. ([#22107](https://github.com/expo/expo/pull/22107) by [@toshiyuki-suzuki-yukashikado](https://github.com/toshiyuki-suzuki-yukashikado))
 
 ## 12.4.0 — 2023-05-08
 

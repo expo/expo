@@ -40,14 +40,15 @@ jni::local_ref<JavaCallback::JavaPart> createJavaCallbackFromJSIFunction(
   auto callbackWrapperOwner =
     std::make_shared<react::RAIICallbackWrapperDestroyer>(weakWrapper);
 
-  std::function<void(folly::dynamic)> fn =
+  std::function<void(CallbackArg)> fn =
     [
       weakWrapper,
       callbackWrapperOwner = std::move(callbackWrapperOwner),
       wrapperWasCalled = false,
-      isRejectCallback
+      isRejectCallback,
+      moduleRegistry
     ](
-      folly::dynamic responses) mutable {
+      CallbackArg responses) mutable {
       if (wrapperWasCalled) {
         throw std::runtime_error(
           "callback 2 arg cannot be called more than once");
@@ -58,46 +59,102 @@ jni::local_ref<JavaCallback::JavaPart> createJavaCallbackFromJSIFunction(
         return;
       }
 
-      strongWrapper->jsInvoker().invokeAsync(
-        [
-          weakWrapper,
-          callbackWrapperOwner = std::move(callbackWrapperOwner),
-          responses = std::move(responses),
-          isRejectCallback
-        ]() mutable {
-          auto strongWrapper2 = weakWrapper.lock();
-          if (!strongWrapper2) {
-            return;
-          }
+      strongWrapper->jsInvoker()
+        .invokeAsync(
+          [
+            weakWrapper,
+            callbackWrapperOwner = std::move(callbackWrapperOwner),
+            responses = std::move(responses),
+            isRejectCallback,
+            moduleRegistry
+          ]() mutable {
+            auto strongWrapper2 = weakWrapper.lock();
+            if (!strongWrapper2) {
+              return;
+            }
 
-          jsi::Value arg = jsi::valueFromDynamic(strongWrapper2->runtime(), responses);
-          if (!isRejectCallback) {
-            strongWrapper2->callback().call(
-              strongWrapper2->runtime(),
-              (const jsi::Value *) &arg,
-              (size_t) 1
-            );
-          } else {
             auto &rt = strongWrapper2->runtime();
-            auto jsErrorObject = arg.getObject(rt);
-            auto errorCode = jsErrorObject.getProperty(rt, "code").asString(rt);
-            auto message = jsErrorObject.getProperty(rt, "message").asString(rt);
+            auto &callback = strongWrapper2->callback();
 
-            auto codedError = makeCodedError(
-              rt,
-              std::move(errorCode),
-              std::move(message)
+            if (isRejectCallback) {
+              // Callback was rejected, we know that responses is an object with `code` and `message` properties.
+              jsi::Value arg = jsi::valueFromDynamic(
+                strongWrapper2->runtime(),
+                std::get<folly::dynamic>(responses)
+              );
+
+              auto jsErrorObject = arg.getObject(rt);
+              auto errorCode = jsErrorObject.getProperty(rt, "code").asString(rt);
+              auto message = jsErrorObject.getProperty(rt, "message").asString(rt);
+
+              auto codedError = makeCodedError(
+                rt,
+                std::move(errorCode),
+                std::move(message)
+              );
+
+              callback.call(
+                rt,
+                (const jsi::Value *) &codedError,
+                (size_t) 1
+              );
+
+              callbackWrapperOwner.reset();
+              return;
+            }
+
+            if (std::holds_alternative<folly::dynamic>(responses)) {
+              folly::dynamic follyObject = std::get<folly::dynamic>(responses);
+              jsi::Value arg = jsi::valueFromDynamic(strongWrapper2->runtime(), follyObject);
+              auto enhancedArg = decorateValueForDynamicExtension(strongWrapper2->runtime(), arg);
+              if (enhancedArg) {
+                arg = std::move(*enhancedArg);
+              }
+
+              callback.call(
+                rt,
+                (const jsi::Value *) &arg,
+                (size_t) 1
+              );
+
+              callbackWrapperOwner.reset();
+              return;
+            }
+
+            // Responses is a SharedRef
+            auto native = jni::make_local(
+              std::get<jni::global_ref<SharedRef::javaobject>>(responses)
             );
 
-            strongWrapper2->callback().call(
-              strongWrapper2->runtime(),
-              (const jsi::Value *) &codedError,
+            auto jsClass = moduleRegistry->getJavascriptClass(native->getClass());
+            auto jsObject = jsClass
+              ->cthis()
+              ->get()
+              ->asFunction(rt)
+              .callAsConstructor(rt)
+              .asObject(rt);
+
+            auto objSharedPtr = std::make_shared<jsi::Object>(std::move(jsObject));
+            auto jsObjectInstance = JavaScriptObject::newInstance(
+              moduleRegistry,
+              moduleRegistry->runtimeHolder,
+              objSharedPtr
+            );
+            jni::local_ref<JavaScriptObject::javaobject> jsRef = jni::make_local(
+              jsObjectInstance
+            );
+            moduleRegistry->registerSharedObject(native, jsRef);
+
+            auto ret = jsi::Value(rt, *objSharedPtr);
+            callback.call(
+              rt,
+              (const jsi::Value *) &ret,
               (size_t) 1
             );
-          }
 
-          callbackWrapperOwner.reset();
-        });
+            callbackWrapperOwner.reset();
+          }
+        );
 
       wrapperWasCalled = true;
     };
@@ -134,7 +191,6 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
     nullptr
   );
 
-  std::vector<jobject> result(count);
 
   const auto getCurrentArg = [&thisValue, args, takesOwner = takesOwner](
     size_t index
@@ -152,22 +208,21 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
   for (size_t argIndex = 0; argIndex < count; argIndex++) {
     const jsi::Value &arg = getCurrentArg(argIndex);
     auto &type = argTypes[argIndex];
-    if (arg.isNull() || arg.isUndefined()) {
+
+    if (type->converter->canConvert(rt, arg)) {
+      auto converterValue = type->converter->convert(rt, env, moduleRegistry, arg);
+      env->SetObjectArrayElement(argumentArray, argIndex, converterValue);
+      env->DeleteLocalRef(converterValue);
+    } else if (arg.isNull() || arg.isUndefined()) {
       // If value is null or undefined, we just passes a null
       // Kotlin code will check if expected type is nullable.
-      result[argIndex] = nullptr;
+      continue;
     } else {
-      if (type->converter->canConvert(rt, arg)) {
-        auto converterValue = type->converter->convert(rt, env, moduleRegistry, arg);
-        env->SetObjectArrayElement(argumentArray, argIndex, converterValue);
-        env->DeleteLocalRef(converterValue);
-      } else {
-        auto stringRepresentation = arg.toString(rt).utf8(rt);
-        throwNewJavaException(
-          UnexpectedException::create(
-            "Cannot convert '" + stringRepresentation + "' to a Kotlin type.").get()
-        );
-      }
+      auto stringRepresentation = arg.toString(rt).utf8(rt);
+      throwNewJavaException(
+        UnexpectedException::create(
+          "Cannot convert '" + stringRepresentation + "' to a Kotlin type.").get()
+      );
     }
   }
 
@@ -310,6 +365,15 @@ jsi::Function MethodMetadata::toAsyncFunction(
       const jsi::Value *args,
       size_t count
     ) -> jsi::Value {
+      /**
+       * Halt execution during cleaning phase as modules and js context will be deallocated soon.
+       * The output of this method doesn't matter.
+       * We added that check to prevent the app from crashing when users reload their apps.
+       */
+      if (moduleRegistry->wasDeallocated) {
+        return jsi::Value::undefined();
+      }
+
       JNIEnv *env = jni::Environment::current();
 
       /**

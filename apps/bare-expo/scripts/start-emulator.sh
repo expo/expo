@@ -13,14 +13,14 @@ echo " ☛  Bootstrapping Expo in ${CURRENT_ENV} mode"
 
 if ! $ANDROID_SDK_ROOT/tools/android list avd | grep -q bare-expo; then
     echo " ⚠️  No emulator for bare Expo found, creating one..."
-    $DIR/create-emulator.sh 22
+    $DIR/create-emulator.sh 34
 fi
 
 if $ANDROID_SDK_ROOT/platform-tools/adb devices -l | grep -q emulator; then
     echo " ✅ Emulator is already running"
 else
     echo " ⚠️  Starting emulator..."
-    echo "no" | $ANDROID_SDK_ROOT/emulator/emulator "-avd" "bare-expo" "-skin" "480x800" "-no-audio" "-no-boot-anim" "-port" "5554" "-no-snapshot" "-partition-size" "1024" &
+    echo "no" | $ANDROID_SDK_ROOT/emulator/emulator "-avd" "bare-expo" "-no-audio" "-no-boot-anim" "-port" "5554" "-no-snapshot" "-partition-size" "1024" &
 
     $DIR/wait-for-emulator.sh
     sleep 30
@@ -52,5 +52,5 @@ if [ "${CURRENT_ENV}" = "test" ]; then
 else
     echo " ☛  Running the Android project..."
     # Build and run the Android project using `react-native run-android`
-    node "node_modules/react-native/cli.js" run-android --no-packager --port ${port}
+    yarn react-native run-android --no-packager --port ${port}
 fi

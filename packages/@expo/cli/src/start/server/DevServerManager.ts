@@ -2,14 +2,18 @@ import { ExpoConfig, getConfig } from '@expo/config';
 import assert from 'assert';
 import chalk from 'chalk';
 
+import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
+import DevToolsPluginManager from './DevToolsPluginManager';
+import { getPlatformBundlers } from './platformBundlers';
+import { Log } from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { logEventAsync } from '../../utils/analytics/rudderstackClient';
 import { env } from '../../utils/env';
 import { ProjectPrerequisite } from '../doctor/Prerequisite';
 import { TypeScriptProjectPrerequisite } from '../doctor/typescript/TypeScriptProjectPrerequisite';
+import { printItem } from '../interface/commandsTable';
 import * as AndroidDebugBridge from '../platforms/android/adb';
-import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
-import { getPlatformBundlers } from './platformBundlers';
+import { resolveSchemeAsync } from '../resolveOptions';
 
 const debug = require('debug')('expo:start:server:devServerManager') as typeof console.log;
 
@@ -32,6 +36,7 @@ const BUNDLERS = {
 /** Manages interacting with multiple dev servers. */
 export class DevServerManager {
   private projectPrerequisites: ProjectPrerequisite<any, void>[] = [];
+  public readonly devtoolsPluginManager: DevToolsPluginManager;
 
   private notifier: FileNotifier | null = null;
 
@@ -41,6 +46,7 @@ export class DevServerManager {
     public options: BundlerStartOptions
   ) {
     this.notifier = this.watchBabelConfig();
+    this.devtoolsPluginManager = new DevToolsPluginManager(projectRoot);
   }
 
   private watchBabelConfig() {
@@ -117,7 +123,7 @@ export class DevServerManager {
       skipPlugins: true,
       skipSDKVersionRequirement: true,
     });
-    const bundler = getPlatformBundlers(exp).web;
+    const bundler = getPlatformBundlers(this.projectRoot, exp).web;
     debug(`Starting ${bundler} dev server for web`);
     return this.startAsync([
       {
@@ -125,6 +131,29 @@ export class DevServerManager {
         options: this.options,
       },
     ]);
+  }
+
+  /** Switch between Expo Go and Expo Dev Clients. */
+  async toggleRuntimeMode(isUsingDevClient: boolean = !this.options.devClient): Promise<boolean> {
+    const nextMode = isUsingDevClient ? '--dev-client' : '--go';
+    Log.log(printItem(chalk`Switching to {bold ${nextMode}}`));
+
+    const nextScheme = await resolveSchemeAsync(this.projectRoot, {
+      devClient: isUsingDevClient,
+      // NOTE: The custom `--scheme` argument is lost from this point on.
+    });
+
+    this.options.location.scheme = nextScheme;
+    this.options.devClient = isUsingDevClient;
+    for (const devServer of devServers) {
+      devServer.isDevClient = isUsingDevClient;
+      const urlCreator = devServer.getUrlCreator();
+      urlCreator.defaults ??= {};
+      urlCreator.defaults.scheme = nextScheme;
+    }
+
+    debug(`New runtime options (runtime: ${nextMode}):`, this.options);
+    return true;
   }
 
   /** Start all dev servers. */
@@ -135,16 +164,15 @@ export class DevServerManager {
       sdkVersion: exp.sdkVersion ?? null,
     });
 
-    const platformBundlers = getPlatformBundlers(exp);
+    const platformBundlers = getPlatformBundlers(this.projectRoot, exp);
 
     // Start all dev servers...
     for (const { type, options } of startOptions) {
       const BundlerDevServerClass = await BUNDLERS[type]();
-      const server = new BundlerDevServerClass(
-        this.projectRoot,
-        platformBundlers,
-        !!options?.devClient
-      );
+      const server = new BundlerDevServerClass(this.projectRoot, platformBundlers, {
+        devToolsPluginManager: this.devtoolsPluginManager,
+        isDevClient: !!options?.devClient,
+      });
       await server.startAsync(options ?? this.options);
       devServers.push(server);
     }
@@ -168,10 +196,11 @@ export class DevServerManager {
       return;
     }
 
+    // The dev server shouldn't wait for the typescript services
     if (!typescriptPrerequisite) {
       server.waitForTypeScriptAsync().then(async (success) => {
         if (success) {
-          await server.startTypeScriptServices();
+          server.startTypeScriptServices();
         }
       });
     } else {

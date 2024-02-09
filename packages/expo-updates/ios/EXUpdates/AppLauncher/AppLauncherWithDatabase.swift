@@ -1,14 +1,11 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-// swiftlint:disable type_body_length
 // swiftlint:disable closure_body_length
 // swiftlint:disable force_unwrapping
-// swiftlint:disable type_name
 
 import Foundation
 
 public typealias AppLauncherUpdateCompletionBlock = (_ error: Error?, _ update: Update?) -> Void
-public typealias AppLauncherQueryCompletionBlock = (_ error: Error?, _ updateIds: [UUID]?) -> Void
 
 /**
  * Implementation of AppLauncher that uses the SQLite database and expo-updates file store
@@ -35,13 +32,14 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
 
   public var launchedUpdate: Update?
   public var launchAssetUrl: URL?
-  public var assetFilesMap: [String: Any]?
+  public var assetFilesMap: [String: String]?
 
   private let launcherQueue: DispatchQueue
   private var completedAssets: Int
   private let config: UpdatesConfig
   private let database: UpdatesDatabase
   private let directory: URL
+  private let logger: UpdatesLogger
   public private(set) var completionQueue: DispatchQueue
   public private(set) var completion: AppLauncherCompletionBlock?
 
@@ -54,6 +52,7 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
     self.database = database
     self.directory = directory
     self.completionQueue = completionQueue
+    self.logger = UpdatesLogger()
   }
 
   public func isUsingEmbeddedAssets() -> Bool {
@@ -79,7 +78,7 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
       var manifestFilters: [String: Any]?
       var manifestFiltersError: Error?
       do {
-        manifestFilters = try database.manifestFilters(withScopeKey: config.scopeKey!)
+        manifestFilters = try database.manifestFilters(withScopeKey: config.scopeKey)
       } catch {
         manifestFiltersError = error
       }
@@ -159,20 +158,6 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
     }
   }
 
-  public static func storedUpdateIds(
-    inDatabase database: UpdatesDatabase,
-    completion: @escaping AppLauncherQueryCompletionBlock
-  ) {
-    database.databaseQueue.async {
-      do {
-        let readyUpdateIds = try database.allUpdateIds(withStatus: .StatusReady)
-        completion(nil, readyUpdateIds)
-      } catch {
-        completion(error, nil)
-      }
-    }
-  }
-
   private func finishLaunch() {
     markUpdateAccessed()
     ensureAllAssetsExist()
@@ -186,7 +171,7 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
       do {
         try self.database.markUpdateAccessed(self.launchedUpdate!)
       } catch {
-        NSLog("Failed to mark update as recently accessed: %@", error.localizedDescription)
+        self.logger.warn(message: "Failed to mark update as recently accessed: \(error.localizedDescription)")
       }
     }
   }
@@ -208,7 +193,9 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
         self.completion = nil
       }
       return
-    } else if launchedUpdate.status == UpdateStatus.StatusDevelopment {
+    }
+
+    if launchedUpdate.status == UpdateStatus.StatusDevelopment {
       completionQueue.async {
         self.completion!(nil, true)
         self.completion = nil
@@ -216,7 +203,8 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
       return
     }
 
-    assetFilesMap = [:]
+    // Initialize asset map with the embedded assets that may not be part of this update
+    self.assetFilesMap = UpdatesUtils.embeddedAssetsMap(withConfig: config, database: database, logger: logger)
 
     let assets = launchedUpdate.assets()!
     let totalAssetCount = assets.count
@@ -260,7 +248,7 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
         }
 
         if let error = error {
-          NSLog("Error copying embedded asset %@: %@", [asset.key, error.localizedDescription])
+          self.logger.warn(message: "AppLauncherWithDatabase: Error copying embedded asset \(asset.key ?? ""): \(error.localizedDescription)")
         }
 
         self.downloadAsset(asset, withLocalUrl: assetLocalUrl) { downloadAssetError, downloadAssetAsset, _ in
@@ -270,7 +258,7 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
               // so we want to propagate this error
               self.launchAssetError = downloadAssetError
             }
-            NSLog("Failed to load missing asset %@: %@", [downloadAssetAsset.key, downloadAssetError.localizedDescription])
+            self.logger.warn(message: "AppLauncherWithDatabase: Failed to load missing asset \(downloadAssetAsset.key ?? ""): \(downloadAssetError.localizedDescription)")
             completion(false)
           } else {
             // attempt to update the database record to match the newly downloaded asset
@@ -279,7 +267,7 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
               do {
                 try self.database.updateAsset(downloadAssetAsset)
               } catch {
-                NSLog("Could not write data for downloaded asset to database: %@", [error.localizedDescription])
+                self.logger.warn(message: "AppLauncherWithDatabase: Could not write data for downloaded asset to database: \(error.localizedDescription)")
               }
             }
             completion(true)
@@ -347,10 +335,9 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
         }
       }
       return
-    } else {
-      self.launcherQueue.async {
-        completion(false, nil)
-      }
+    }
+    self.launcherQueue.async {
+      completion(false, nil)
     }
   }
 
@@ -369,7 +356,7 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
     }
 
     FileDownloader.assetFilesQueue.async {
-      self.downloader.downloadFile(
+      self.downloader.downloadAsset(
         fromURL: assetUrl,
         verifyingHash: asset.expectedHash,
         toPath: assetLocalUrl.path,
@@ -395,3 +382,5 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
     FileDownloader(config: config)
   }()
 }
+// swiftlint:enable closure_body_length
+// swiftlint:enable force_unwrapping

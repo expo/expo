@@ -1,38 +1,22 @@
 ---
-title: Installing app variants on the same device
+title: Install app variants on the same device
 maxHeadingDepth: 4
-description: Learn how to install multiple instances of an app on the same device.
+description: Learn how to install multiple variants of an app on the same device.
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
-When creating [development, preview, and production builds](/build/eas-json/#common-use-cases), it's common to want to install one of each build on your device at the same time.
-This allows you to do development work, preview the next version of your app, and run the production version all on the same device, without needing to uninstall and reinstall the app.
+When creating [development, preview, and production builds](/build/eas-json/#common-use-cases), installing these build variants simultaneously on the same device is common. This allows working in development, previewing the next version of the app, and running the production version on a device without needing to uninstall and reinstall the app.
 
-To be able to have multiple instances of an app installed on your device, each instance must have a unique Application ID (Android) or Bundle Identifier (iOS).
+This guide provides the steps required to configure multiple (development and production) variants to install and use them on the same device.
 
-**If you have a managed project**, this can be accomplished by using **app.config.js** and environment variables in **eas.json**.
+## Prerequisites
 
-**If you have a bare project**, you can accomplish this using flavors (Android) and targets (iOS). To configure which flavor is used, use the `gradleCommand` field on your build profile. To configure which target is used, use the `scheme` field for iOS.
+To have multiple variants of an app installed on your device, each variant must have a unique [Application ID (Android)](/versions/latest/config/app/#package) or [Bundle Identifier (iOS)](/versions/latest/config/app/#bundleidentifier).
 
-## Configuring development and production variants
+## Configure development and production variants
 
-### In managed project
-
-Let's say we wanted a development build and production build of our managed Expo project. Your **eas.json** might look like this:
-
-```json eas.json
-{
-  "build": {
-    "development": {
-      "developmentClient": true
-    },
-    "production": {}
-  }
-}
-```
-
-And your **app.json** might look like this:
+You have created a project using Expo tooling, and now you want to create a development and a production build. Your project's **app.json** may have the following configuration:
 
 ```json app.json
 {
@@ -49,7 +33,22 @@ And your **app.json** might look like this:
 }
 ```
 
-Let's convert this to **app.config.js** so we can make it more dynamic:
+If your project has EAS Build configured, the **eas.json** also has a similar configuration as shown below:
+
+```json eas.json
+{
+  "build": {
+    "development": {
+      "developmentClient": true
+    },
+    "production": {}
+  }
+}
+```
+
+### Convert app.json to app.config.js
+
+To have multiple variants of the app installed on the same device, rename the **app.json** to **app.config.js** and export the configuration as shown below:
 
 ```js app.config.js
 export default {
@@ -64,15 +63,16 @@ export default {
 };
 ```
 
-Now let's switch out the iOS `bundleIdentifier` and Android `package` (which becomes the Application ID) based on the presence of an environment variable in **app.config.js**:
+In **app.config.js**, add an environment variable called `IS_DEV` to switch the `android.package` and `ios.bundleIdentifier` for each variant based on the variable:
 
+{/* prettier-ignore */}
 ```js app.config.js
 const IS_DEV = process.env.APP_VARIANT === 'development';
 
 export default {
-  // You can also switch out the app icon and other properties to further
-  // differentiate the app on your device.
+  /* @info You can also switch out the app icon and other properties to further differentiate the app on your device. */
   name: IS_DEV ? 'MyApp (Dev)' : 'MyApp',
+  /* @end */
   slug: 'my-app',
   ios: {
     bundleIdentifier: IS_DEV ? 'com.myapp.dev' : 'com.myapp',
@@ -83,9 +83,13 @@ export default {
 };
 ```
 
-> **Note**: if you are using any libraries that require you to register your application identifier with an external service to use the SDK, such as Google Maps, you will need to have a separate configuration for that API for the iOS Bundle Identifier and Android Package. You can also swap this configuration using the same approach as above.
+In the above example, the environment variable `IS_DEV` is used to differentiate between the development and production environment. Based on its value, the different Application IDs or Bundle Identifiers are set for each variant.
 
-To automatically set the `APP_VARIANT` environment variable when running builds with the "development" profile, we can use `env` in **eas.json**:
+> **Note**: If you are using any libraries that require you to register your application identifier with an external service to use the SDK, such as Google Maps, you'll need to have a separate configuration for that API for the `android.package` and `ios.bundleIdentifier`. You can also swap this configuration using the same approach as above.
+
+### Configuration for EAS Build
+
+In **eas.json**, set the `APP_VARIANT` environment variable to run builds with the **development** profile by using the `env` property:
 
 ```json eas.json
 {
@@ -101,11 +105,27 @@ To automatically set the `APP_VARIANT` environment variable when running builds 
 }
 ```
 
-Now when you run `eas build --profile development`, the environment variable `APP_VARIANT` will be set to `"development"` when evaluating **app.config.js** both locally and on the EAS Build builder. When you start your development server, you will need to run `APP_VARIANT=development expo start` (or the platform equivalent if you use Windows); a shortcut for this could be to add a script to your **package.json** such as `"dev": "APP_VARIANT=development expo start"`.
+Now, when you run `eas build --profile development`, the environment variable `APP_VARIANT` is set to `development` when evaluating **app.config.js** both locally and on the EAS Build builder.
 
-When you run `eas build --profile production` the `APP_VARIANT` variable environment will not be set, and the build will run as the production variant.
+### Using the development server
 
-> **Note**: if you use EAS Update to publish JavaScript updates of your app, you should be cautious to set the correct environment variables for the app variant that you are publishing for when you run the `eas update` command. Refer to the EAS Build ["Environment variables and secrets" guide](/build/updates.mdx) for more information.
+When you start your development server, you'll need to run `APP_VARIANT=development npx expo start` (or the platform equivalent if you use Windows).
+
+A shortcut for this is to add the following script to your **package.json**:
+
+```json package.json
+{
+  "scripts": {
+    "dev": "APP_VARIANT=development npx expo start"
+  }
+}
+```
+
+### Using production variant
+
+When you run `eas build --profile production` the `APP_VARIANT` variable environment is not set, and the build runs as the production variant.
+
+> **Note**: If you use EAS Update to publish JavaScript updates of your app, you should be cautious to set the correct environment variables for the app variant that you are publishing for when you run the `eas update` command. See the EAS Build [Environment variables and secrets](/build/updates) for more information.
 
 ### In bare project
 
@@ -133,7 +153,7 @@ android {
 
 > **Note**: Currently, EAS CLI supports only the `applicationId` field. If you use `applicationIdSuffix` inside `productFlavors` or `buildTypes` sections then this value will not be detected correctly.
 
-Assign Android flavors to EAS build profiles by specifying a `gradleCommand` in the **eas.json**:
+Assign Android flavors to EAS Build profiles by specifying a `gradleCommand` in the **eas.json**:
 
 ```json eas.json
 {
@@ -176,19 +196,19 @@ android {
 
 The rest of the configuration at this point is not specific to EAS, it's the same as it would be for any Android project with flavors. There are a few common configurations that you might want to apply to your project:
 
-- To change the name of the app built with the development profile, create a **android/app/src/development/res/value/strings.xml** file.
-  ```xml
+- To change the name of the app built with the development profile, create a **android/app/src/development/res/value/strings.xml** file:
+  ```xml android/app/src/development/res/value/strings.xml
   <resources>
       <string name="app_name">MyApp - Dev</string>
   </resources>
   ```
 - To change the icon of the app built with the development profile, create `android/app/src/development/res/mipmap-*` directories with appropriate assets (you can copy them from **android/app/src/main/res** and replace the icon files).
-- To specify **google-services.json** for a specific flavor put it in a **android/app/src/&lbrace;flavor&rbrace;/google-services.json** file.
-- To configure sentry, add `project.ext.sentryCli = [ flavorAware: true ]` to **android/app/build.gradle** and name your properties file `android/sentry-{flavor}-{buildType}.properties` (for example: **android/sentry-production-release.properties**)
+- To specify **google-services.json** for a specific flavor, put it in the **android/app/src/&lbrace;flavor&rbrace;/google-services.json** file.
+- To configure sentry, add `project.ext.sentryCli = [ flavorAware: true ]` to **android/app/build.gradle** and name your properties file `android/sentry-{flavor}-{buildType}.properties` (for example, **android/sentry-production-release.properties**)
 
 #### iOS
 
-Assign a distinct scheme to every build profile in **eas.json**:
+Assign a different `scheme` to every build profile in **eas.json**:
 
 ```json eas.json
 {
@@ -218,7 +238,7 @@ target 'myapp' do
 end
 ```
 
-Replace it with an abstract target, where common configuration can be copied from the old target:
+Replace it with an abstract target, where the common configuration can be copied from the old target:
 
 ```ruby Podfile
 abstract_target 'common' do
@@ -255,7 +275,7 @@ Configure a scheme for the new target:
   style={{ maxWidth: 720 }}
 />
 
-By default, the newly created target has separate **Info.plist** file (in our case it's **ios/myapp copy-Info.plist**). To simplify your project we recommend using the same file for all targets:
+By default, the newly created target has separate **Info.plist** file (in the above example, it's **ios/myapp copy-Info.plist**). To simplify your project we recommend using the same file for all targets:
 
 - Delete **./ios/myapp copy-Info.plist**.
 - Click on the new target.

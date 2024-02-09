@@ -1,8 +1,8 @@
-import upstreamTransformer, { JsTransformOptions } from 'metro-transform-worker';
-
+import * as upstreamTransformer from '../metro-transform-worker';
+import type { JsTransformOptions } from '../metro-transform-worker';
 import { transform } from '../transform-worker';
 
-jest.mock('metro-transform-worker', () => ({
+jest.mock('../metro-transform-worker', () => ({
   transform: jest.fn(),
 }));
 
@@ -18,9 +18,8 @@ const doTransformForOutput = async (
   jest.mocked(upstreamTransformer.transform).mockResolvedValueOnce({
     dependencies: [],
     output: [
-      {
-        data: {},
-      },
+      // @ts-expect-error
+      {},
     ],
   });
   const output = await doTransform(filename, src, options);
@@ -93,7 +92,7 @@ describe('CSS Modules', () => {
           minify: true,
           platform: 'ios',
         })
-      ).toMatchInlineSnapshot(`"module.exports={};"`);
+      ).toMatchInlineSnapshot(`"module.exports={ unstable_styles: {} };"`);
     });
     it(`transforms for dev, not minified`, async () => {
       expect(
@@ -102,7 +101,7 @@ describe('CSS Modules', () => {
           minify: false,
           platform: 'ios',
         })
-      ).toMatchInlineSnapshot(`"module.exports={};"`);
+      ).toMatchInlineSnapshot(`"module.exports={ unstable_styles: {} };"`);
     });
 
     it(`transforms for prod, minified`, async () => {
@@ -112,7 +111,7 @@ describe('CSS Modules', () => {
           minify: true,
           platform: 'ios',
         })
-      ).toMatchInlineSnapshot(`"module.exports={};"`);
+      ).toMatchInlineSnapshot(`"module.exports={ unstable_styles: {} };"`);
     });
 
     it(`transforms for prod, not minified`, async () => {
@@ -122,7 +121,7 @@ describe('CSS Modules', () => {
           minify: false,
           platform: 'ios',
         })
-      ).toMatchInlineSnapshot(`"module.exports={};"`);
+      ).toMatchInlineSnapshot(`"module.exports={ unstable_styles: {} };"`);
     });
   });
   describe('web', () => {
@@ -215,5 +214,94 @@ describe('CSS Modules', () => {
         ],
       });
     });
+  });
+});
+
+// TODO: Test +api files to ensure all extensions work
+describe('Expo Router server files (+html, +api)', () => {
+  const matchable = /> The server-only file was removed from the client JS bundle by Expo CLI/;
+  it(`strips +html file from client bundles`, async () => {
+    for (const file of [
+      'app/+html.js',
+      'app/+html.ts',
+      'app/+html.tsx',
+      'app/+html.web.jsx',
+      'app/+html.web.ts',
+    ]) {
+      jest.mocked(upstreamTransformer.transform).mockReset();
+
+      expect(
+        (
+          await doTransformForOutput(file, 'REMOVE ME!', {
+            dev: true,
+            minify: false,
+            customTransformOptions: {
+              __proto__: null,
+              environment: 'client',
+            },
+            platform: 'web',
+          })
+        ).input
+      ).toMatch(matchable);
+    }
+
+    // Ensure the server code doesn't leak into the client on any platform.
+    for (const platform of ['ios', 'android', 'web']) {
+      jest.mocked(upstreamTransformer.transform).mockReset();
+      expect(
+        (
+          await doTransformForOutput('app/+html.js', 'REMOVE ME!', {
+            dev: true,
+            minify: false,
+            customTransformOptions: {
+              __proto__: null,
+              environment: 'client',
+            },
+            platform,
+          })
+        ).input
+      ).toMatch(matchable);
+    }
+  });
+  it(`strips without warning when minify is enabled`, async () => {
+    expect(
+      (
+        await doTransformForOutput('app/+html.js', 'KEEP', {
+          dev: false,
+          minify: true,
+          customTransformOptions: {
+            __proto__: null,
+            environment: 'client',
+          },
+          platform: 'web',
+        })
+      ).input
+    ).toMatch('');
+  });
+  it(`modifies server files even if no server indication is provided`, async () => {
+    expect(
+      (
+        await doTransformForOutput('app/+html.js', 'KEEP', {
+          dev: true,
+          minify: false,
+          platform: 'web',
+        })
+      ).input
+    ).toMatch(matchable);
+  });
+  it(`preserves when bundling for Node.js environments`, async () => {
+    expect(
+      (
+        await doTransformForOutput('app/+html.js', 'KEEP', {
+          dev: true,
+          minify: false,
+          customTransformOptions: {
+            __proto__: null,
+            environment: 'node',
+          },
+          platform: 'ios',
+        })
+      ).input
+    ).toMatch('KEEP');
   });
 });

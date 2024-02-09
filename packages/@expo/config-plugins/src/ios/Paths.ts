@@ -2,9 +2,9 @@ import { existsSync, readFileSync } from 'fs';
 import { sync as globSync } from 'glob';
 import * as path from 'path';
 
+import * as Entitlements from './Entitlements';
 import { UnexpectedError } from '../utils/errors';
 import { addWarningIOS } from '../utils/warnings';
-import * as Entitlements from './Entitlements';
 
 const ignoredPaths = ['**/@(Carthage|Pods|vendor|node_modules)/**'];
 

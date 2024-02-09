@@ -7,6 +7,13 @@ import resolveFrom from 'resolve-from';
 import type webpack from 'webpack';
 import type WebpackDevServer from 'webpack-dev-server';
 
+import { compileAsync } from './compile';
+import {
+  importExpoWebpackConfigFromProject,
+  importWebpackDevServerFromProject,
+  importWebpackFromProject,
+} from './resolveFromProject';
+import { ensureEnvironmentSupportsTLSAsync } from './tls';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
@@ -16,13 +23,6 @@ import { choosePortAsync } from '../../../utils/port';
 import { createProgressBar } from '../../../utils/progress';
 import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
-import { compileAsync } from './compile';
-import {
-  importExpoWebpackConfigFromProject,
-  importWebpackDevServerFromProject,
-  importWebpackFromProject,
-} from './resolveFromProject';
-import { ensureEnvironmentSupportsTLSAsync } from './tls';
 
 const debug = require('debug')('expo:start:server:webpack:devServer') as typeof console.log;
 
@@ -33,7 +33,7 @@ export type WebpackConfiguration = webpack.Configuration & {
 };
 
 function assertIsWebpackDevServer(value: any): asserts value is WebpackDevServer {
-  if (!value?.sockWrite) {
+  if (!value?.sockWrite && !value?.sendMessage) {
     throw new CommandError(
       'WEBPACK',
       value
@@ -48,10 +48,9 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     return 'webpack';
   }
 
-  // A custom message websocket broadcaster used to send messages to a React Native runtime.
-  private customMessageSocketBroadcaster:
-    | undefined
-    | ((message: string, data?: Record<string, any>) => void);
+  public async startTypeScriptServices(): Promise<void> {
+    //  noop -- this feature is Metro-only.
+  }
 
   public broadcastMessage(
     method: string | 'reload' | 'devMenu' | 'sendDevCommand',
@@ -63,80 +62,21 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
 
     assertIsWebpackDevServer(this.instance?.server);
 
-    // Allow any message on native
-    if (this.customMessageSocketBroadcaster) {
-      this.customMessageSocketBroadcaster(method, params);
-      return;
-    }
-
     // TODO(EvanBacon): Custom Webpack overlay.
     // Default webpack-dev-server sockets use "content-changed" instead of "reload" (what we use on native).
     // For now, just manually convert the value so our CLI interface can be unified.
     const hackyConvertedMessage = method === 'reload' ? 'content-changed' : method;
 
-    this.instance.server.sockWrite(this.instance.server.sockets, hackyConvertedMessage, params);
-  }
-
-  private async attachNativeDevServerMiddlewareToDevServer({
-    server,
-    middleware,
-    attachToServer,
-    logger,
-  }: { server: http.Server } & Awaited<ReturnType<typeof this.createNativeDevServerMiddleware>>) {
-    const { attachInspectorProxy, LogReporter } = await import('@expo/dev-server');
-
-    // Hook up the React Native WebSockets to the Webpack dev server.
-    const { messageSocket, debuggerProxy, eventsSocket } = attachToServer(server);
-
-    this.customMessageSocketBroadcaster = messageSocket.broadcast;
-
-    const logReporter = new LogReporter(logger);
-    logReporter.reportEvent = eventsSocket.reportEvent;
-
-    const { inspectorProxy } = attachInspectorProxy(this.projectRoot, {
-      middleware,
-      server,
-    });
-
-    return {
-      messageSocket,
-      eventsSocket,
-      debuggerProxy,
-      logReporter,
-      inspectorProxy,
-    };
+    if ('sendMessage' in this.instance.server) {
+      // @ts-expect-error: https://github.com/expo/expo/issues/21994#issuecomment-1517122501
+      this.instance.server.sendMessage(this.instance.server.sockets, hackyConvertedMessage, params);
+    } else {
+      this.instance.server.sockWrite(this.instance.server.sockets, hackyConvertedMessage, params);
+    }
   }
 
   isTargetingNative(): boolean {
-    // Temporary hack while we implement multi-bundler dev server proxy.
-    return ['ios', 'android'].includes(process.env.EXPO_WEBPACK_PLATFORM || '');
-  }
-
-  private async createNativeDevServerMiddleware({
-    port,
-    options,
-  }: {
-    port: number;
-    options: BundlerStartOptions;
-  }) {
-    if (!this.isTargetingNative()) {
-      return null;
-    }
-
-    const { createDevServerMiddleware } = await import('../middleware/createDevServerMiddleware');
-
-    const nativeMiddleware = createDevServerMiddleware(this.projectRoot, {
-      port,
-      watchFolders: [this.projectRoot],
-    });
-    // Add manifest middleware to the other middleware.
-    // TODO: Move this in to expo/dev-server.
-
-    const middleware = await this.getManifestMiddlewareAsync(options);
-
-    nativeMiddleware.middleware.use(middleware.getHandler());
-
-    return nativeMiddleware;
+    return false;
   }
 
   private async getAvailablePortAsync(options: { defaultPort?: number }): Promise<number> {
@@ -246,30 +186,6 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     // Create a webpack compiler that is configured with custom messages.
     const compiler = webpack(config);
 
-    let nativeMiddleware: Awaited<ReturnType<typeof this.createNativeDevServerMiddleware>> | null =
-      null;
-    if (config.devServer?.before) {
-      // Create the middleware required for interacting with a native runtime (Expo Go, or a development build).
-      nativeMiddleware = await this.createNativeDevServerMiddleware({
-        port,
-        options,
-      });
-      // Inject the native manifest middleware.
-      const originalBefore = config.devServer.before.bind(config.devServer.before);
-      config.devServer.before = (
-        app: Application,
-        server: WebpackDevServer,
-        compiler: webpack.Compiler
-      ) => {
-        originalBefore(app, server, compiler);
-
-        if (nativeMiddleware?.middleware) {
-          app.use(nativeMiddleware.middleware);
-        }
-      };
-    }
-    const { attachNativeDevServerMiddlewareToDevServer } = this;
-
     const server = new WebpackDevServer(
       // @ts-expect-error: type mismatch -- Webpack types aren't great.
       compiler,
@@ -277,12 +193,6 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     );
     // Launch WebpackDevServer.
     server.listen(port, env.WEB_HOST, function (this: http.Server, error) {
-      if (nativeMiddleware) {
-        attachNativeDevServerMiddlewareToDevServer({
-          server: this,
-          ...nativeMiddleware,
-        });
-      }
       if (error) {
         Log.error(error.message);
       }
@@ -311,7 +221,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
         protocol,
         host: _host,
       },
-      middleware: nativeMiddleware?.middleware,
+      middleware: null,
       // Match the native protocol.
       messageSocket: {
         broadcast: this.broadcastMessage,

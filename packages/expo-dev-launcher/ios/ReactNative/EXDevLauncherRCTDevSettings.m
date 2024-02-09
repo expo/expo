@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXDevLauncherRCTDevSettings.h"
+#import <EXDevLauncher/EXDevLauncherRCTDevSettings.h>
 
 @implementation EXDevLauncherRCTDevSettings
 

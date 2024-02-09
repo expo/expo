@@ -8,9 +8,77 @@
 
 ### 🐛 Bug fixes
 
-- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+### 💡 Others
+
+## 11.10.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 11.10.0 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
+## 11.9.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- Added default mimetype (`application/octet-stream`) to avoid quiet failure when mimetype is null on iOS ([#24764](https://github.com/expo/expo/pull/24764) by [@OzymandiasTheGreat](https://github.com/OzymandiasTheGreat))
+
+## 11.8.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- [web] Fix promise never resolving when user cancels the picker. ([#24838](https://github.com/expo/expo/pull/24838) by [@behenate](https://github.com/behenate))
+
+## 11.7.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+## 11.6.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 11.6.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
+## 11.5.4 - 2023-07-19
+
+### 🐛 Bug fixes
+
+- Fix `type` on `DocumentPickerOptions` on iOS. ([#23497](https://github.com/expo/expo/pull/23497) by [@aleqsio](https://github.com/aleqsio))
+
+## 11.5.3 - 2023-07-10
 
 ### 💡 Others
+
+- Remove deprecated fields and warning on `getDocumentAsync`. ([#23135](https://github.com/expo/expo/pull/23135) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 11.5.2 — 2023-06-28
+
+_This version does not introduce any user-facing changes._
+
+## 11.5.1 — 2023-06-27
+
+_This version does not introduce any user-facing changes._
+
+## 11.5.0 — 2023-06-21
+
+### 🐛 Bug fixes
+
+- Fix `copyToCacheDirectory` on iOS. ([#23102](https://github.com/expo/expo/pull/23102) by [@aleqsio](https://github.com/aleqsio))
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ## 11.4.0 — 2023-05-08
 

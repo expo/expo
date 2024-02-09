@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoSplashScreen.js","sourceRoot":"","sources":["../src/ExpoSplashScreen.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,mBAAmB,CAAC;AAEvD,eAAe,kBAAkB,CAAC,gBAAgB,IAAI,EAAE,CAAC","sourcesContent":["import { NativeModulesProxy } from 'expo-modules-core';\n\nexport default NativeModulesProxy.ExpoSplashScreen || {};\n"]}

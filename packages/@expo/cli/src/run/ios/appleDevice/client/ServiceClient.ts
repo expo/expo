@@ -11,11 +11,17 @@ import { CommandError } from '../../../../utils/errors';
 import { ProtocolClient } from '../protocol/AbstractProtocol';
 
 export abstract class ServiceClient<T extends ProtocolClient> {
-  constructor(public socket: Socket, protected protocolClient: T) {}
+  constructor(
+    public socket: Socket,
+    protected protocolClient: T
+  ) {}
 }
 
 export class ResponseError extends CommandError {
-  constructor(msg: string, public response: any) {
+  constructor(
+    msg: string,
+    public response: any
+  ) {
     super(msg);
   }
 }

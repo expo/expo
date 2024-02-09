@@ -456,6 +456,62 @@ class UpdatesDatabaseMigrationTest {
     Assert.assertEquals(3, cursorAssets2.count.toLong())
   }
 
+  @Test
+  @Throws(IOException::class)
+  fun testMigrate11To12() {
+    var db = helper.createDatabase(TEST_DB, 11)
+
+    // db has schema version 11. insert some data using SQL queries.
+    // cannot use DAO classes because they expect the latest schema.
+    db.execSQL(
+      """INSERT INTO "assets" ("id","url","key","headers","type","metadata","download_time","relative_path","hash","hash_type","marked_for_deletion") VALUES (2,'https://url.to/b56cf690e0afa93bd4dc7756d01edd3e','b56cf690e0afa93bd4dc7756d01edd3e.png',NULL,'image/png',NULL,1614137309295,'b56cf690e0afa93bd4dc7756d01edd3e.png',NULL,0,0),
+ (3,'https://url.to/bundle-1614137308871','bundle-1614137308871',NULL,'application/javascript',NULL,1614137309513,'bundle-1614137308871',NULL,0,0),
+ (4,NULL,NULL,NULL,'js',NULL,1614137406588,'bundle-1614137401950',NULL,0,0)"""
+    )
+    db.execSQL(
+      """INSERT INTO "updates" ("id","scope_key","commit_time","runtime_version","launch_asset_id","manifest","status","keep","last_accessed") VALUES (X'8C263F9DE3FF48888496E3244C788661','http://192.168.4.44:3000',1614137308871,'40.0.0',3,'{\"metadata\":{\"updateGroup\":\"34993d39-57e6-46cf-8fa2-eba836f40828\",\"branchName\":\"rollout\"}}',1,1,1619647642456),
+ (X'594100ea066e4804b5c7c907c773f980','http://192.168.4.44:3000',1614137401950,'40.0.0',4,NULL,1,1,1619647642457)"""
+    )
+    db.execSQL(
+      """INSERT INTO "updates_assets" ("update_id","asset_id") VALUES (X'8C263F9DE3FF48888496E3244C788661',2),
+ (X'8C263F9DE3FF48888496E3244C788661',3),
+ (X'594100ea066e4804b5c7c907c773f980',4)"""
+    )
+
+    val cursorUpdatesBefore = db.query("SELECT * FROM `updates`")
+    Assert.assertEquals(2, cursorUpdatesBefore.count.toLong())
+
+    // Prepare for the next version.
+    db.close()
+
+    // Re-open the database with version 12 and provide
+    // MIGRATION_11_12 as the migration process.
+    db = helper.runMigrationsAndValidate(TEST_DB, 12, true, UpdatesDatabase.MIGRATION_11_12)
+    db.execSQL("PRAGMA foreign_keys=ON")
+
+    // schema changes automatically verified, we just need to verify data integrity
+    val cursorUpdates1 = db.query("SELECT * FROM `updates`")
+    Assert.assertEquals(1, cursorUpdates1.count.toLong())
+
+    // make sure foreign key constraints still work
+
+    // try to insert an update with a non-existent launch asset id (47)
+    Assert.assertTrue(
+      execSQLExpectingException(
+        db,
+        "INSERT INTO \"updates\" (\"id\",\"scope_key\",\"commit_time\",\"runtime_version\",\"launch_asset_id\",\"manifest\",\"status\",\"keep\", \"last_accessed\",\"successful_launch_count\",\"failed_launch_count\") VALUES" +
+          " (X'E1AC9D5F55E041BBA5A9193DD1C1123A','https://exp.host/@esamelson/sdk41updates',1620168547318,'41.0.0',47,NULL,1,1,1619647642456,0,0)"
+      )
+    )
+    // try to insert an entry in updates_assets that references a nonexistent update
+    Assert.assertTrue(
+      execSQLExpectingException(
+        db,
+        "INSERT INTO `updates_assets` (`update_id`, `asset_id`) VALUES (X'3CF0A835CB3A4A5D9C14DFA3D55DE44D', 3)"
+      )
+    )
+  }
+
   private fun execSQLExpectingException(db: SupportSQLiteDatabase, sql: String): Boolean {
     val fails: Boolean = try {
       db.execSQL(sql)

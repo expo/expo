@@ -2,10 +2,10 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
 
-import TabIcon from '../components/TabIcon';
-import ExpoApis from '../screens/ExpoApisScreen';
 import getStackConfig from './StackConfig';
 import { optionalRequire } from './routeBuilder';
+import TabIcon from '../components/TabIcon';
+import ExpoApis from '../screens/ExpoApisScreen';
 
 const Stack = createStackNavigator();
 
@@ -203,13 +203,6 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/InAppPurchases/InAppPurchases'));
-    },
-    name: 'InAppPurchases',
-    options: { title: 'In-App Purchases' },
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/IntentLauncherScreen'));
     },
     name: 'IntentLauncher',
@@ -306,12 +299,6 @@ export const Screens = [
       return optionalRequire(() => require('../screens/PedometerScreen'));
     },
     name: 'Pedometer',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/PermissionsScreen'));
-    },
-    name: 'Permissions',
   },
   {
     getComponent() {

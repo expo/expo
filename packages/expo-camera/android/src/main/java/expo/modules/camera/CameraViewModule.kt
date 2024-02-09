@@ -17,7 +17,7 @@ import java.io.File
 
 class CameraViewModule : Module() {
   override fun definition() = ModuleDefinition {
-    Name("ExponentCamera")
+    Name("ExpoCamera")
 
     Constants(
       "Type" to mapOf(
@@ -48,7 +48,7 @@ class CameraViewModule : Module() {
         "720p" to VIDEO_720P,
         "480p" to VIDEO_480P,
         "4:3" to VIDEO_4x3
-      ),
+      )
     )
 
     AsyncFunction("pausePreview") { viewTag: Int ->
@@ -83,7 +83,7 @@ class CameraViewModule : Module() {
     }.runOnQueue(Queues.MAIN)
 
     AsyncFunction("record") { options: RecordingOptions, viewTag: Int, promise: Promise ->
-      if (!permissionsManager.hasGrantedPermissions(Manifest.permission.RECORD_AUDIO)) {
+      if (!options.mute && !permissionsManager.hasGrantedPermissions(Manifest.permission.RECORD_AUDIO)) {
         throw Exceptions.MissingPermissions(Manifest.permission.RECORD_AUDIO)
       }
 
@@ -114,7 +114,7 @@ class CameraViewModule : Module() {
       return@AsyncFunction view.cameraView.supportedAspectRatios.map { it.toString() }
     }.runOnQueue(Queues.MAIN)
 
-    AsyncFunction("getAvailablePictureSizes") { ratio: String?, viewTag: Int ->
+    AsyncFunction("getAvailablePictureSizes") { ratio: String, viewTag: Int ->
       val view = findView(viewTag)
 
       if (!view.cameraView.isCameraOpened) {
@@ -238,12 +238,12 @@ class CameraViewModule : Module() {
         view.cameraView.setUsingCamera2Api(useCamera2Api)
       }
 
-      Prop("barCodeScannerEnabled") { view: ExpoCameraView, barCodeScannerEnabled: Boolean ->
-        view.setShouldScanBarCodes(barCodeScannerEnabled)
+      Prop("barCodeScannerEnabled") { view: ExpoCameraView, barCodeScannerEnabled: Boolean? ->
+        view.setShouldScanBarCodes(barCodeScannerEnabled ?: false)
       }
 
-      Prop("faceDetectorEnabled") { view: ExpoCameraView, faceDetectorEnabled: Boolean ->
-        view.setShouldDetectFaces(faceDetectorEnabled)
+      Prop("faceDetectorEnabled") { view: ExpoCameraView, faceDetectorEnabled: Boolean? ->
+        view.setShouldDetectFaces(faceDetectorEnabled ?: false)
       }
 
       Prop("faceDetectorSettings") { view: ExpoCameraView, settings: Map<String, Any>? ->

@@ -49,7 +49,7 @@ export default function DocumentPickerScreen() {
       />
       <FlatList
         data={pickerResult?.assets}
-        keyExtractor={(item) => item.uri}
+        keyExtractor={(item, index) => `${index}-${item.uri}`}
         renderItem={({ item: document }) => {
           return (
             <View>

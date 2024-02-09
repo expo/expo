@@ -7,6 +7,13 @@ exports.getBitcode = getBitcode;
 exports.setBitcode = setBitcode;
 exports.setBitcodeWithConfig = setBitcodeWithConfig;
 exports.withCustomBitcode = exports.withBitcode = void 0;
+function _Xcodeproj() {
+  const data = require("./utils/Xcodeproj");
+  _Xcodeproj = function () {
+    return data;
+  };
+  return data;
+}
 function _iosPlugins() {
   const data = require("../plugins/ios-plugins");
   _iosPlugins = function () {
@@ -17,13 +24,6 @@ function _iosPlugins() {
 function _warnings() {
   const data = require("../utils/warnings");
   _warnings = function () {
-    return data;
-  };
-  return data;
-}
-function _Xcodeproj() {
-  const data = require("./utils/Xcodeproj");
-  _Xcodeproj = function () {
     return data;
   };
   return data;
@@ -62,8 +62,7 @@ const withCustomBitcode = (config, bitcode) => {
  */
 exports.withCustomBitcode = withCustomBitcode;
 function getBitcode(config) {
-  var _config$ios;
-  return (_config$ios = config.ios) === null || _config$ios === void 0 ? void 0 : _config$ios.bitcode;
+  return config.ios?.bitcode;
 }
 
 /**

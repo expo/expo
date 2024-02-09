@@ -6,6 +6,12 @@ internal class InvalidKeyException: Exception {
   }
 }
 
+internal class MissingPlistKeyException: Exception {
+  override var reason: String {
+    "You must set `NSFaceIDUsageDescription` in your Info.plist file to use the `requireAuthentication` option"
+  }
+}
+
 internal class KeyChainException: GenericException<OSStatus> {
   override var reason: String {
     switch param {

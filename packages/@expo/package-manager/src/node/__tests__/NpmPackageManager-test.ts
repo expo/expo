@@ -2,7 +2,7 @@ import spawnAsync from '@expo/spawn-async';
 import { vol } from 'memfs';
 import path from 'path';
 
-import { mockSpawnPromise, mockedSpawnAsync, STUB_SPAWN_CHILD } from '../../__tests__/spawn-utils';
+import { mockSpawnPromise, STUB_SPAWN_CHILD } from '../../__tests__/spawn-utils';
 import { NpmPackageManager } from '../NpmPackageManager';
 
 jest.mock('@expo/spawn-async');
@@ -112,9 +112,9 @@ describe('NpmPackageManager', () => {
 
   describe('versionAsync', () => {
     it('returns version from npm', async () => {
-      mockedSpawnAsync.mockImplementation(() =>
-        mockSpawnPromise(Promise.resolve({ stdout: '7.0.0\n' }))
-      );
+      jest
+        .mocked(spawnAsync)
+        .mockImplementation(() => mockSpawnPromise(Promise.resolve({ stdout: '7.0.0\n' })));
 
       const npm = new NpmPackageManager({ cwd: projectRoot });
 
@@ -125,9 +125,11 @@ describe('NpmPackageManager', () => {
 
   describe('getConfigAsync', () => {
     it('returns a configuration key from npm', async () => {
-      mockedSpawnAsync.mockImplementation(() =>
-        mockSpawnPromise(Promise.resolve({ stdout: 'https://custom.registry.org/\n' }))
-      );
+      jest
+        .mocked(spawnAsync)
+        .mockImplementation(() =>
+          mockSpawnPromise(Promise.resolve({ stdout: 'https://custom.registry.org/\n' }))
+        );
 
       const npm = new NpmPackageManager({ cwd: projectRoot });
 

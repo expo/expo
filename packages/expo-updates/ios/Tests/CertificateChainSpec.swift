@@ -5,7 +5,7 @@ import ExpoModulesTestCore
 @testable import EXUpdates
 
 class CertificateChainSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     it("works for valid single certificate") {
       let cert = getTestCertificate(TestCertificate.test)
       let codeSigningCertificate = try CertificateChain(certificateStrings: [cert]).codeSigningCertificate()

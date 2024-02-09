@@ -1,7 +1,6 @@
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Linking from 'expo-linking';
 import { Platform } from 'expo-modules-core';
-import qs from 'qs';
 export class SessionUrlProvider {
     static BASE_URL = `https://auth.expo.io`;
     static SESSION_PATH = 'expo-auth-session';
@@ -23,7 +22,7 @@ export class SessionUrlProvider {
             // Return nothing in SSR envs
             return '';
         }
-        const queryString = qs.stringify({
+        const queryString = new URLSearchParams({
             authUrl,
             returnUrl,
         });
@@ -39,9 +38,7 @@ export class SessionUrlProvider {
                 return '';
             }
         }
-        const legacyExpoProjectFullName = options.projectNameForProxy ||
-            Constants.expoConfig?.originalFullName ||
-            Constants.__unsafeNoWarnManifest?.id;
+        const legacyExpoProjectFullName = options.projectNameForProxy || Constants.expoConfig?.originalFullName;
         if (!legacyExpoProjectFullName) {
             let nextSteps = '';
             if (__DEV__) {
@@ -56,7 +53,7 @@ export class SessionUrlProvider {
             }
             if (Constants.manifest2) {
                 nextSteps =
-                    ' Prefer AuthRequest (with the useProxy option set to false) in combination with an Expo Development Client build of your application.' +
+                    ' Prefer AuthRequest in combination with an Expo Development Client build of your application.' +
                         ' To continue using the AuthSession proxy, specify the project full name (@owner/slug) using the projectNameForProxy option.';
             }
             throw new Error('Cannot use the AuthSession proxy because the project full name is not defined.' + nextSteps);
@@ -87,7 +84,9 @@ export class SessionUrlProvider {
         }
         const uriParts = hostUri?.split('?');
         try {
-            return qs.parse(uriParts?.[1]);
+            return Object.fromEntries(
+            // @ts-ignore: [Symbol.iterator] is indeed, available on every platform.
+            new URLSearchParams(uriParts?.[1]));
         }
         catch { }
         return undefined;

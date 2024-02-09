@@ -143,6 +143,20 @@ The following config in **package.json** will exclude `expo-random` from autolin
 }
 ```
 
+Note that the `exclude` option is for excluding the autolinking of Expo packages. To exclude the autolinking for any other packages, create **react-native.config.js** at the root directory of your project and apply the configuration as shown in the example below:
+
+```js react-native.config.js
+module.exports = {
+  dependencies: {
+    'library-name': {
+      platforms: {
+        android: null,
+      },
+    },
+  },
+};
+```
+
 </APIBox>
 <APIBox platforms={['ios']}>
 
@@ -193,6 +207,6 @@ It's also necessary to include supported platforms in the `platforms` array — 
 ### How is it different from React Native autolinking?
 
 - Expo Autolinking comes in with built-in support for monorepos, Yarn workspaces and transitive dependencies.
-- It's also significantly faster, even though the module resolution algorithm is more complex in order to be more reliable and match the Node's module resolution.
+- It's also significantly faster, even though the module resolution algorithm is more complex to be more reliable and match the Node's module resolution.
 - Expo module resolution is also capable of detecting the duplicates which is a common issue in monorepos.
 - Last but not least, it integrates well with all the features offered by Expo Modules APIs.

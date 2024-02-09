@@ -8,9 +8,60 @@
 
 ### 🐛 Bug fixes
 
-- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+### 💡 Others
+
+## 12.8.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 12.8.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
+
+- Remove `unimodule.json` in favour of `expo-module.config.json`. ([#25100](https://github.com/expo/expo/pull/25100) by [@reichhartd](https://github.com/reichhartd))
+
+## 12.7.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+## 12.6.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+## 12.5.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 12.5.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
+## 12.4.2 — 2023-06-28
+
+### 🐛 Bug fixes
+
+- Fixed missing constants on iOS, restricted possibility of starting multiple print jobs at once, which would lead to crashes. ([#23128](https://github.com/expo/expo/pull/23128) by [@behenate](https://github.com/behenate))
+
+## 12.4.1 — 2023-06-27
+
+### 🐛 Bug fixes
+
+- Fixed a regression after refactoring to Swift (restore functionality to print from web url or data string). ([#22997](https://github.com/expo/expo/pull/22997) by [@mroswald](https://github.com/mroswald), [@behenate](https://github.com/behenate))
+
+## 12.4.0 — 2023-06-21
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ## 12.3.0 — 2023-05-08
 

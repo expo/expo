@@ -12,10 +12,12 @@ type Props = {
 };
 
 export const PageTitle = ({ title, packageName, iconUrl, sourceCodeUrl }: Props) => (
-  <H1 crawlable={false}>
-    {iconUrl && <img src={iconUrl} css={titleIconStyle} alt={`Expo ${title} icon`} />}
-    {packageName && packageName.startsWith('expo-') && 'Expo '}
-    <span data-heading="true">{title}</span>
+  <div className="flex my-2 items-center justify-between max-xl-gutters:flex-col max-xl-gutters:items-start">
+    <H1 className="!my-0">
+      {iconUrl && <img src={iconUrl} css={titleIconStyle} alt={`Expo ${title} icon`} />}
+      {packageName && packageName.startsWith('expo-') && 'Expo '}
+      {title}
+    </H1>
     {packageName && (
       <span css={linksContainerStyle}>
         {sourceCodeUrl && (
@@ -26,7 +28,9 @@ export const PageTitle = ({ title, packageName, iconUrl, sourceCodeUrl }: Props)
             css={linkStyle}
             title={`View source code of ${packageName} on GitHub`}>
             <GithubIcon className="text-icon-secondary" />
-            <CALLOUT theme="secondary">GitHub</CALLOUT>
+            <CALLOUT crawlable={false} theme="secondary">
+              GitHub
+            </CALLOUT>
           </A>
         )}
         <A
@@ -36,40 +40,31 @@ export const PageTitle = ({ title, packageName, iconUrl, sourceCodeUrl }: Props)
           css={linkStyle}
           title="View package in npm Registry">
           <BuildIcon className="text-icon-secondary" />
-          <CALLOUT theme="secondary">npm</CALLOUT>
+          <CALLOUT crawlable={false} theme="secondary">
+            npm
+          </CALLOUT>
         </A>
       </span>
     )}
-  </H1>
+  </div>
 );
 
 const titleIconStyle = css({
   float: 'left',
   marginRight: spacing[3.5],
   position: 'relative',
-  top: -5,
-  width: 48,
-  height: 48,
-
-  [`@media screen and (max-width: ${breakpoints.medium}px)`]: {
-    width: 42,
-    height: 42,
-    top: -4,
-  },
+  top: -2,
+  width: 42,
+  height: 42,
 });
 
 const linksContainerStyle = css({
   display: 'flex',
-  float: 'right',
   gap: spacing[6],
-  marginTop: -spacing[0.5],
 
   [`@media screen and (max-width: ${breakpoints.large}px)`]: {
-    float: 'none',
-    clear: 'left',
-    paddingTop: spacing[3],
-    paddingBottom: spacing[1],
-    marginTop: 0,
+    marginTop: spacing[3],
+    marginBottom: spacing[1],
   },
 });
 

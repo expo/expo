@@ -1,11 +1,19 @@
 import { css } from '@emotion/react';
 import { shadows, theme, typography } from '@expo/styleguide';
 import { borderRadius, breakpoints, palette, spacing } from '@expo/styleguide-base';
-import { ArrowRightIcon, ArrowUpRightIcon } from '@expo/styleguide-icons';
+import { ArrowRightIcon, ArrowUpRightIcon, AtSignIcon, Users02Icon } from '@expo/styleguide-icons';
 import { PropsWithChildren } from 'react';
-import { Col, ColProps } from 'react-grid-system';
+import { Container, Col, ColProps } from 'react-grid-system';
 
-import { A, P } from '~/ui/components/Text';
+import { Talk } from '~/public/static/talks';
+import { A, CALLOUT, LABEL, P } from '~/ui/components/Text';
+
+export const CellContainer = ({ children }: PropsWithChildren<object>) => (
+  // https://github.com/sealninja/react-grid-system/issues/175
+  <Container fluid style={{ paddingLeft: -15, paddingRight: -15, marginBottom: spacing[6] }}>
+    {children}
+  </Container>
+);
 
 const CustomCol = ({ children, sm, md, lg, xl, xxl }: PropsWithChildren<ColProps>) => (
   <>
@@ -51,9 +59,59 @@ export const APIGridCell = ({
   <CustomCol css={cellWrapperStyle} md={md} sm={sm} lg={lg} xl={xl}>
     <A href={link} css={[cellStyle, cellAPIStyle, cellHoverStyle]} className={className} isStyled>
       <div css={cellIconWrapperStyle}>{icon}</div>
-      <div css={cellTitleWrapperStyle}>
+      <LABEL css={cellTitleWrapperStyle}>
         {title}
         <ArrowRightIcon className="text-icon-secondary" />
+      </LABEL>
+    </A>
+  </CustomCol>
+);
+
+type TalkGridCellProps = ColProps & Talk;
+
+export const TalkGridCell = ({
+  title,
+  event,
+  description,
+  videoId,
+  thumbnail,
+  link,
+  className,
+  sm = 6,
+  md = 6,
+  lg = 6,
+  xl = 3,
+}: TalkGridCellProps) => (
+  <CustomCol css={cellWrapperStyle} md={md} sm={sm} lg={lg} xl={xl}>
+    <A
+      openInNewTab
+      href={link ?? `https://www.youtube.com/watch?v=${videoId}`}
+      css={[cellStyle, cellAPIStyle, cellHoverStyle]}
+      className={className}
+      isStyled>
+      <div
+        style={{
+          backgroundImage: `url(${
+            thumbnail
+              ? `/static/thumbnails/${thumbnail}`
+              : `https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`
+          })`,
+        }}
+        className="border-b border-b-default bg-cover bg-center h-[138px]"
+      />
+      <div css={cellTitleWrapperStyle} className="!py-3 gap-1">
+        <LABEL className="block leading-normal">{title}</LABEL>
+        <ArrowUpRightIcon className="text-icon-secondary shrink-0 icon-sm" />
+      </div>
+      <div className="px-4 pb-2 bg-default flex flex-col gap-0.5">
+        <CALLOUT theme="secondary" className="flex gap-2 items-center">
+          <Users02Icon className="icon-xs text-icon-tertiary shrink-0" />
+          {description}
+        </CALLOUT>
+        <CALLOUT theme="secondary" className="flex gap-2 items-center">
+          <AtSignIcon className="icon-xs text-icon-tertiary shrink-0" />
+          {event}
+        </CALLOUT>
       </div>
     </A>
   </CustomCol>
@@ -62,6 +120,7 @@ export const APIGridCell = ({
 type CommunityGridCellProps = APIGridCellProps & {
   description?: string;
   iconBackground?: string;
+  shouldLeakReferrer?: boolean;
 };
 
 export const CommunityGridCell = ({
@@ -72,12 +131,14 @@ export const CommunityGridCell = ({
   description,
   className,
   md = 6,
+  shouldLeakReferrer,
 }: CommunityGridCellProps) => (
   <CustomCol css={cellWrapperStyle} md={md}>
     <A
       href={link}
       css={[cellStyle, cellCommunityStyle, cellCommunityHoverStyle]}
       className={className}
+      shouldLeakReferrer={shouldLeakReferrer}
       isStyled>
       <div css={[cellCommunityIconWrapperStyle, css({ backgroundColor: iconBackground })]}>
         {icon}
@@ -161,20 +222,18 @@ const cellAPIStyle = css({
 
 const cellIconWrapperStyle = css({
   display: 'flex',
-  minHeight: 136,
+  minHeight: 142,
   justifyContent: 'space-around',
   alignItems: 'center',
 });
 
 const cellTitleWrapperStyle = css({
-  ...typography.fontSizes[15],
   display: 'flex',
   justifyContent: 'space-between',
   backgroundColor: theme.background.default,
-  padding: spacing[4],
   textDecoration: 'none',
-  fontWeight: 500,
-  lineHeight: '30px',
+  minHeight: 30,
+  padding: spacing[4],
   color: theme.text.default,
   alignItems: 'center',
 });

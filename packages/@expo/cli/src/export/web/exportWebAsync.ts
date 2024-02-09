@@ -1,13 +1,13 @@
 import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 
+import { Options } from './resolveOptions';
 import { Log } from '../../log';
 import { WebSupportProjectPrerequisite } from '../../start/doctor/web/WebSupportProjectPrerequisite';
 import { getPlatformBundlers } from '../../start/server/platformBundlers';
 import { WebpackBundlerDevServer } from '../../start/server/webpack/WebpackBundlerDevServer';
 import { CommandError } from '../../utils/errors';
 import { setNodeEnv } from '../../utils/nodeEnv';
-import { Options } from './resolveOptions';
 
 export async function exportWebAsync(projectRoot: string, options: Options) {
   // Ensure webpack is available
@@ -17,9 +17,9 @@ export async function exportWebAsync(projectRoot: string, options: Options) {
   require('@expo/env').load(projectRoot);
 
   const { exp } = getConfig(projectRoot);
-  const platformBundlers = getPlatformBundlers(exp);
+  const platformBundlers = getPlatformBundlers(projectRoot, exp);
   // Create a bundler interface
-  const bundler = new WebpackBundlerDevServer(projectRoot, platformBundlers, false);
+  const bundler = new WebpackBundlerDevServer(projectRoot, platformBundlers);
 
   // If the user set `web.bundler: 'metro'` then they should use `expo export` instead.
   if (!bundler.isTargetingWeb()) {

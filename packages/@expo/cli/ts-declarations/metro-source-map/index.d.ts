@@ -1,5 +1,9 @@
 declare module 'metro-source-map' {
-  //#region metro-source-map/src/source-map.js.flow
+  import type {
+    BasicSourceMap,
+    FBSourceFunctionMap,
+    MetroSourceMapSegmentTuple,
+  } from 'metro-source-map/src/source-map';
 
   type GeneratedCodeMapping = [number, number];
   type SourceMapping = [number, number, number, number];
@@ -14,27 +18,10 @@ declare module 'metro-source-map' {
 
   type FBSourcesArray = Readonly<Array<FBSourceMetadata | null>>;
   type FBSourceMetadata = [FBSourceFunctionMap | null];
-  export type FBSourceFunctionMap = {
-    names: Readonly<Array<string>>;
-    mappings: string;
-  };
+
+  export { FBSourceFunctionMap };
 
   type FBSegmentMap = { [id: string]: MixedSourceMap };
-
-  interface BasicSourceMap {
-    file?: string;
-    mappings: string;
-    names: Array<string>;
-    sourceRoot?: string;
-    sources: Array<string>;
-    sourcesContent?: Array<string | null>;
-    version: number;
-    x_facebook_offsets?: Array<number>;
-    x_metro_module_paths?: Array<string>;
-    x_facebook_sources?: FBSourcesArray;
-    x_facebook_segments?: FBSegmentMap;
-    x_hermes_function_offsets?: HermesFunctionOffsets;
-  }
 
   interface IndexMapSection {
     map: IndexMap | BasicSourceMap;
@@ -82,5 +69,33 @@ declare module 'metro-source-map' {
    */
   export function generateFunctionMap(ast: Ast, context?: Context): FBSourceFunctionMap;
 
-  //#endregion
+  export * from 'metro-source-map/src/source-map';
+  import { MixedSourceMap } from 'metro-source-map/src/source-map';
+
+  // `composeSourceMaps` is not exported from metro.
+  // This ts-declarations is used and shared for `@expo/dev-server`.
+  export function composeSourceMaps(maps: Readonly<MixedSourceMap[]>): MixedSourceMap;
+
+  import type { GeneratorResult } from '@babel/generator';
+
+  type BabelSourceMapSegment = NonNullable<GeneratorResult['map']>;
+
+  export function toSegmentTuple(mapping: BasicSourceMap): MetroSourceMapSegmentTuple;
+
+  export function toBabelSegments(mapping: BasicSourceMap): BasicSourceMap[];
+
+  export function functionMapBabelPlugin(): unknown;
+
+  export function fromRawMappings(
+    modules: {
+      map: MetroSourceMapSegmentTuple[] | null;
+      functionMap: FBSourceFunctionMap | null;
+      path: string;
+      source: string;
+      code: string;
+      isIgnored: boolean;
+      lineCount?: number;
+    }[],
+    offsetLines?: number
+  ): any;
 }

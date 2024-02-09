@@ -2,8 +2,6 @@ apply plugin: "com.android.application"
 apply plugin: "com.facebook.react"
 apply plugin: "kotlin-android"
 
-import com.android.build.OutputFile
-
 def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
 
 /**
@@ -11,20 +9,36 @@ def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
  * By default you don't need to apply any configuration, just uncomment the lines you need.
  */
 react {
-    entryFile = file(["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute"].execute(null, rootDir).text.trim())
-    reactNativeDir = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
-    hermesCommand = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/sdks/hermesc/%OS-BIN%/hermesc"
+    entryFile = file(providers.exec {
+      workingDir(rootDir)
+      commandLine("node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute")
+    }.standardOutput.asText.get().trim())
+    def reactNativeRelativeDir = file(providers.exec {
+      workingDir(rootDir)
+      commandLine("node", "--print", "require.resolve('react-native/package.json')")
+    }.standardOutput.asText.get().trim()).getParentFile()
+    reactNativeDir = reactNativeRelativeDir.getAbsoluteFile()
+    hermesCommand = reactNativeRelativeDir.getAbsolutePath() + "/sdks/hermesc/%OS-BIN%/hermesc"
+    codegenDir = file(providers.exec {
+      workingDir(rootDir)
+      commandLine("node", "--print", "require.resolve('@react-native/codegen/package.json')")
+    }.standardOutput.asText.get().trim()).getParentFile().getAbsoluteFile()
+
 
     // Use Expo CLI to bundle the JS code
-    cliFile = new File(["node", "--print", "require.resolve('@expo/cli')"].execute(null, rootDir).text.trim())
+    cliFile = file(providers.exec {
+      workingDir(rootDir)
+      commandLine("node", "--print", "require.resolve('@expo/cli')")
+    }.standardOutput.asText.get().trim())
+
     bundleCommand = "export:embed"
     /* Folders */
     //   The root of your project, i.e. where "package.json" lives. Default is '..'
     // root = file("../")
     //   The folder where the react-native NPM package is. Default is ../node_modules/react-native
     // reactNativeDir = file("../node_modules/react-native")
-    //   The folder where the react-native Codegen package is. Default is ../node_modules/react-native-codegen
-    // codegenDir = file("../node_modules/react-native-codegen")
+    //   The folder where the react-native Codegen package is. Default is ../node_modules/@react-native/codegen
+    // codegenDir = file("../node_modules/@react-native/codegen")
     //   The cli.js file which is the React Native CLI entrypoint. Default is ../node_modules/react-native/cli.js
     // cliFile = file("../node_modules/react-native/cli.js")
 
@@ -62,25 +76,12 @@ react {
     // hermesFlags = ["-O", "-output-source-map"]
 }
 
-// Override `hermesEnabled` by `expo.jsEngine`
-ext {
-  hermesEnabled = (findProperty('expo.jsEngine') ?: "hermes") == "hermes"
-}
-
 // Override `debuggableVariants` for expo-updates debugging
 if (System.getenv('EX_UPDATES_NATIVE_DEBUG') == "1") {
   react {
     debuggableVariants = debuggableVariants.get().findAll { it != "debug" }
   }
 }
-
-/**
- * Set this to true to create four separate APKs instead of one,
- * one for each native architecture. This is useful if you don't
- * use App Bundles (https://developer.android.com/guide/app-bundle/)
- * and want to have separate APKs to upload to the Play Store.
- */
-def enableSeparateBuildPerCPUArchitecture = false
 
 /**
  * Set this to true to Run Proguard on Release builds to minify the Java bytecode.
@@ -100,28 +101,22 @@ def enableProguardInReleaseBuilds = false
  */
 def jscFlavor = 'org.webkit:android-jsc:+'
 
-/**
- * Private function to get the list of Native Architectures you want to build.
- * This reads the value from reactNativeArchitectures in your gradle.properties
- * file and works together with the --active-arch-only flag of react-native run-android.
- */
-def reactNativeArchitectures() {
-    def value = project.getProperties().get("reactNativeArchitectures")
-    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
-}
-
 android {
     ndkVersion rootProject.ext.ndkVersion
 
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    compileSdk rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
-    }
+    def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
+    if (agpVersion.tokenize('.')[0].toInteger() < 8) {
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_11
+            targetCompatibility JavaVersion.VERSION_11
+        }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.majorVersion
+        kotlinOptions {
+            jvmTarget = JavaVersion.VERSION_11.majorVersion
+        }
     }
 
     namespace "dev.expo.payments"
@@ -131,6 +126,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0.0"
+
         manifestPlaceholders = [
             // [Custom]: Required for expo-app-auth
             appAuthRedirectScheme: "dev.expo.payments"
@@ -138,15 +134,6 @@ android {
         testBuildType System.getProperty('testBuildType', 'debug')
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         missingDimensionStrategy 'detox', 'full'
-    }
-
-    splits {
-        abi {
-            reset()
-            enable enableSeparateBuildPerCPUArchitecture
-            universalApk false  // If true, also generate a universal APK
-            include (*reactNativeArchitectures())
-        }
     }
     signingConfigs {
         debug {
@@ -172,22 +159,6 @@ android {
             matchingFallbacks = ['release', 'debug']
         }
     }
-
-    // applicationVariants are e.g. debug, release
-    applicationVariants.all { variant ->
-        variant.outputs.each { output ->
-            // For each separate APK per architecture, set a unique version code as described here:
-            // https://developer.android.com/studio/build/configure-apk-splits.html
-            // Example: versionCode 1 will generate 1001 for armeabi-v7a, 1002 for x86, etc.
-            def versionCodes = ["armeabi-v7a": 1, "x86": 2, "arm64-v8a": 3, "x86_64": 4]
-            def abi = output.getFilter(OutputFile.ABI)
-            if (abi != null) {  // null for the universal-debug, universal-release variants
-                output.versionCodeOverride =
-                        defaultConfig.versionCode * 1000 + versionCodes.get(abi)
-            }
-
-        }
-    }
 }
 
 dependencies {
@@ -201,17 +172,10 @@ dependencies {
         implementation jscFlavor
     }
 
-    // Flipper
-    debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
-    debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
-        exclude group:'com.squareup.okhttp3', module:'okhttp'
-    }
-    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}")
-
     // LeakCanary 2 dependency
 //    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
 
-    androidTestImplementation(project(":detox"))
+    androidTestImplementation('com.wix:detox:+')
     androidTestImplementation('androidx.test.espresso:espresso-core:3.5.1')
     androidTestImplementation('androidx.test:runner:1.5.2')
     androidTestImplementation('androidx.test:rules:1.5.0')
@@ -221,7 +185,7 @@ dependencies {
 class ExecuteSetupAndroidProject implements Plugin<Project> {
     @Override
     void apply(Project target) {
-        target.exec {
+        target.providers.exec {
             def configuration = target.gradle.startParameter.taskNames.any {
                 it.toLowerCase().contains("release")
             } ? "release" : "debug"
@@ -234,7 +198,11 @@ class ExecuteSetupAndroidProject implements Plugin<Project> {
 
 apply plugin: ExecuteSetupAndroidProject
 
-apply from: new File(["node", "--print", "require.resolve('@react-native-community/cli-platform-android/package.json')"].execute(null, rootDir).text.trim(), "../native_modules.gradle")
+apply from: new File(providers.exec {
+  workingDir(rootDir)
+  commandLine("node", "--print", "require.resolve('@react-native-community/cli-platform-android/package.json')")
+}.standardOutput.asText.get().trim(), "../native_modules.gradle")
+
 applyNativeModulesAppBuildGradle(project)
 
 apply plugin: 'com.google.gms.google-services'

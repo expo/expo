@@ -3,15 +3,20 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '15.2.0'
+version = '16.5.0'
+
+def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+if (expoModulesCorePlugin.exists()) {
+  apply from: expoModulesCorePlugin
+  applyKotlinExpoModulesCorePlugin()
+  // Remove this check, but keep the contents after SDK49 support is dropped
+  if (safeExtGet("expoProvidesDefaultConfig", false)) {
+    useExpoPublishing()
+    useCoreDependencies()
+  }
+}
 
 buildscript {
-  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-  if (expoModulesCorePlugin.exists()) {
-    apply from: expoModulesCorePlugin
-    applyKotlinExpoModulesCorePlugin()
-  }
-
   // Simple helper that allows the root project to override versions declared by this library.
   ext.safeExtGet = { prop, fallback ->
     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
@@ -35,58 +40,73 @@ buildscript {
   }
 }
 
-afterEvaluate {
-  publishing {
-    publications {
-      release(MavenPublication) {
-        from components.release
+// Remove this if and it's contents, when support for SDK49 is dropped
+if (!safeExtGet("expoProvidesDefaultConfig", false)) {
+  afterEvaluate {
+    publishing {
+      publications {
+        release(MavenPublication) {
+          from components.release
+        }
       }
-    }
-    repositories {
-      maven {
-        url = mavenLocal().url
+      repositories {
+        maven {
+          url = mavenLocal().url
+        }
       }
     }
   }
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 33)
+  // Remove this if and it's contents, when support for SDK49 is dropped
+  if (!safeExtGet("expoProvidesDefaultConfig", false)) {
+    compileSdkVersion safeExtGet("compileSdkVersion", 34)
 
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_11
-    targetCompatibility JavaVersion.VERSION_11
+    defaultConfig {
+      minSdkVersion safeExtGet("minSdkVersion", 23)
+      targetSdkVersion safeExtGet("targetSdkVersion", 34)
+    }
+
+    publishing {
+      singleVariant("release") {
+        withSourcesJar()
+      }
+    }
+
+    lintOptions {
+      abortOnError false
+    }
   }
 
-  kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_11.majorVersion
+  def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
+  if (agpVersion.tokenize('.')[0].toInteger() < 8) {
+    compileOptions {
+      sourceCompatibility JavaVersion.VERSION_11
+      targetCompatibility JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+      jvmTarget = JavaVersion.VERSION_11.majorVersion
+    }
   }
 
   namespace "expo.modules.location"
   defaultConfig {
-    minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 29
-    versionName "15.2.0"
-  }
-  lintOptions {
-    abortOnError false
-  }
-  publishing {
-    singleVariant("release") {
-      withSourcesJar()
-    }
+    versionName "16.5.0"
   }
 }
 
 dependencies {
-  implementation project(':expo-modules-core')
+  // Remove this if and it's contents, when support for SDK49 is dropped
+  if (!safeExtGet("expoProvidesDefaultConfig", false)) {
+    implementation project(':expo-modules-core')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
+  }
 
   api 'com.google.android.gms:play-services-location:21.0.1'
-
   api('io.nlopez.smartlocation:library:3.3.3') {
     transitive = false
   }
-
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
 }

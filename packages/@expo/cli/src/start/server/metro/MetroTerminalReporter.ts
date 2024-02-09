@@ -2,10 +2,16 @@ import chalk from 'chalk';
 import { Terminal } from 'metro-core';
 import path from 'path';
 
-import { learnMore } from '../../../utils/link';
 import { logWarning, TerminalReporter } from './TerminalReporter';
-import { BuildPhase, BundleDetails, BundleProgress, SnippetError } from './TerminalReporter.types';
+import {
+  BuildPhase,
+  BundleDetails,
+  BundleProgress,
+  SnippetError,
+  TerminalReportableEvent,
+} from './TerminalReporter.types';
 import { NODE_STDLIB_MODULES } from './externals';
+import { learnMore } from '../../../utils/link';
 
 const MAX_PROGRESS_BAR_CHAR_WIDTH = 16;
 const DARK_BLOCK_CHAR = '\u2593';
@@ -15,7 +21,10 @@ const LIGHT_BLOCK_CHAR = '\u2591';
  * Also removes the giant Metro logo from the output.
  */
 export class MetroTerminalReporter extends TerminalReporter {
-  constructor(public projectRoot: string, terminal: Terminal) {
+  constructor(
+    public projectRoot: string,
+    terminal: Terminal
+  ) {
     super(terminal);
   }
 
@@ -29,20 +38,24 @@ export class MetroTerminalReporter extends TerminalReporter {
    * @returns `iOS path/to/bundle.js ▓▓▓▓▓░░░░░░░░░░░ 36.6% (4790/7922)`
    */
   _getBundleStatusMessage(progress: BundleProgress, phase: BuildPhase): string {
-    const platform = getPlatformTagForBuildDetails(progress.bundleDetails);
+    const env = getEnvironmentForBuildDetails(progress.bundleDetails);
+    const platform = env || getPlatformTagForBuildDetails(progress.bundleDetails);
     const inProgress = phase === 'in_progress';
 
+    const localPath = progress.bundleDetails.entryFile.startsWith(path.sep)
+      ? path.relative(this.projectRoot, progress.bundleDetails.entryFile)
+      : progress.bundleDetails.entryFile;
+
     if (!inProgress) {
-      const status = phase === 'done' ? `Bundling complete ` : `Bundling failed `;
+      const status = phase === 'done' ? `Bundled ` : `Bundling failed `;
       const color = phase === 'done' ? chalk.green : chalk.red;
 
       const startTime = this._bundleTimers.get(progress.bundleDetails.buildID!);
       const time = startTime != null ? chalk.dim(this._getElapsedTime(startTime) + 'ms') : '';
-      // iOS Bundling complete 150ms
-      return color(platform + status) + time;
+      // iOS Bundled 150ms
+      return color(platform + status) + time + chalk.reset.dim(' (' + localPath + ')');
     }
 
-    const localPath = path.relative('.', progress.bundleDetails.entryFile);
     const filledBar = Math.floor(progress.ratio * MAX_PROGRESS_BAR_CHAR_WIDTH);
 
     const _progress = inProgress
@@ -78,6 +91,10 @@ export class MetroTerminalReporter extends TerminalReporter {
     return isAppRegistryStartupMessage(event.data);
   }
 
+  shouldFilterBundleEvent(event: TerminalReportableEvent): boolean {
+    return 'bundleDetails' in event && event.bundleDetails?.bundleType === 'map';
+  }
+
   /** Print the cache clear message. */
   transformCacheReset(): void {
     logWarning(
@@ -104,8 +121,16 @@ export class MetroTerminalReporter extends TerminalReporter {
 
   _logBundlingError(error: SnippetError): void {
     const moduleResolutionError = formatUsingNodeStandardLibraryError(this.projectRoot, error);
+    const cause = error.cause as undefined | { _expoImportStack?: string };
     if (moduleResolutionError) {
-      return this.terminal.log(maybeAppendCodeFrame(moduleResolutionError, error.message));
+      let message = maybeAppendCodeFrame(moduleResolutionError, error.message);
+      if (cause?._expoImportStack) {
+        message += `\n\n${cause?._expoImportStack}`;
+      }
+      return this.terminal.log(message);
+    }
+    if (cause?._expoImportStack) {
+      error.message += `\n\n${cause._expoImportStack}`;
     }
     return super._logBundlingError(error);
   }
@@ -147,7 +172,7 @@ export function formatUsingNodeStandardLibraryError(
       ].join('\n');
     } else {
       return [
-        `You attempted attempted to import the Node standard library module "${chalk.bold(
+        `You attempted to import the Node standard library module "${chalk.bold(
           targetModuleName
         )}" from "${chalk.bold(relativePath)}".`,
         `It failed because the native React runtime does not include the Node standard library.`,
@@ -204,6 +229,16 @@ function getPlatformTagForBuildDetails(bundleDetails?: BundleDetails | null): st
   if (platform) {
     const formatted = { ios: 'iOS', android: 'Android', web: 'Web' }[platform] || platform;
     return `${chalk.bold(formatted)} `;
+  }
+
+  return '';
+}
+/** @returns platform specific tag for a `BundleDetails` object */
+function getEnvironmentForBuildDetails(bundleDetails?: BundleDetails | null): string {
+  // Expo CLI will pass `customTransformOptions.environment = 'node'` when bundling for the server.
+  const env = bundleDetails?.customTransformOptions?.environment ?? null;
+  if (env === 'node') {
+    return chalk.bold('λ') + ' ';
   }
 
   return '';

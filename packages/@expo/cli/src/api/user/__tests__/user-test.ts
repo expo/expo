@@ -8,7 +8,19 @@ import {
 } from '../../../utils/codesigning';
 import { getExpoApiBaseUrl } from '../../endpoint';
 import UserSettings from '../UserSettings';
-import { Actor, getActorDisplayName, getUserAsync, loginAsync, logoutAsync } from '../user';
+import { getSessionUsingBrowserAuthFlowAsync } from '../expoSsoLauncher';
+import {
+  Actor,
+  getActorDisplayName,
+  getUserAsync,
+  loginAsync,
+  logoutAsync,
+  ssoLoginAsync,
+} from '../user';
+
+jest.mock('../expoSsoLauncher', () => ({
+  getSessionUsingBrowserAuthFlowAsync: jest.fn(),
+}));
 
 jest.mock('../../../log');
 jest.unmock('../UserSettings');
@@ -17,7 +29,7 @@ jest.mock('../../graphql/client', () => ({
     query: () => {
       return {
         toPromise: () =>
-          Promise.resolve({ data: { viewer: { id: 'USER_ID', username: 'USERNAME' } } }),
+          Promise.resolve({ data: { meUserActor: { id: 'USER_ID', username: 'USERNAME' } } }),
       };
     },
   },
@@ -40,6 +52,14 @@ const userStub: Actor = {
   isExpoAdmin: false,
 };
 
+const ssoUserStub: Actor = {
+  __typename: 'SSOUser',
+  id: 'userId',
+  username: 'username',
+  accounts: [],
+  isExpoAdmin: false,
+};
+
 const robotStub: Actor = {
   __typename: 'Robot',
   id: 'userId',
@@ -54,7 +74,21 @@ function mockLoginRequest() {
     .reply(200, { data: { sessionSecret: 'SESSION_SECRET' } });
 }
 
+function resetEnv() {
+  beforeEach(() => {
+    delete process.env.EXPO_OFFLINE;
+    delete process.env.EXPO_TOKEN;
+  });
+  afterAll(() => {
+    delete process.env.EXPO_OFFLINE;
+    delete process.env.EXPO_TOKEN;
+  });
+}
+
+resetEnv();
+
 describe(getUserAsync, () => {
+  resetEnv();
   it('skips fetching user without access token or session secret', async () => {
     expect(await getUserAsync()).toBeUndefined();
   });
@@ -73,7 +107,7 @@ describe(getUserAsync, () => {
 
   it('skips fetching user when running in offline mode', async () => {
     jest.resetModules();
-    jest.mock('../../settings', () => ({ APISettings: { isOffline: true } }));
+    process.env.EXPO_OFFLINE = '1';
     const { getUserAsync } = require('../user');
 
     process.env.EXPO_TOKEN = 'accesstoken';
@@ -82,6 +116,7 @@ describe(getUserAsync, () => {
 });
 
 describe(loginAsync, () => {
+  resetEnv();
   it('saves user data to ~/.expo/state.json', async () => {
     mockLoginRequest();
     await loginAsync({ username: 'USERNAME', password: 'PASSWORD' });
@@ -100,7 +135,28 @@ describe(loginAsync, () => {
   });
 });
 
+describe(ssoLoginAsync, () => {
+  it('saves user data to ~/.expo/state.json', async () => {
+    jest.mocked(getSessionUsingBrowserAuthFlowAsync).mockResolvedValue('SESSION_SECRET');
+
+    await ssoLoginAsync();
+
+    expect(await fs.promises.readFile(getUserStatePath(), 'utf8')).toMatchInlineSnapshot(`
+      "{
+        "auth": {
+          "sessionSecret": "SESSION_SECRET",
+          "userId": "USER_ID",
+          "username": "USERNAME",
+          "currentConnection": "Browser-Flow-Authentication"
+        }
+      }
+      "
+    `);
+  });
+});
+
 describe(logoutAsync, () => {
+  resetEnv();
   it('removes the session secret', async () => {
     mockLoginRequest();
     await loginAsync({ username: 'USERNAME', password: 'PASSWORD' });
@@ -123,12 +179,17 @@ describe(logoutAsync, () => {
 });
 
 describe(getActorDisplayName, () => {
+  resetEnv();
   it('returns anonymous for unauthenticated users', () => {
     expect(getActorDisplayName()).toBe('anonymous');
   });
 
   it('returns username for user actors', () => {
     expect(getActorDisplayName(userStub)).toBe(userStub.username);
+  });
+
+  it('returns username for SSO user actors', () => {
+    expect(getActorDisplayName(userStub)).toBe(ssoUserStub.username);
   });
 
   it('returns firstName with robot prefix for robot actors', () => {

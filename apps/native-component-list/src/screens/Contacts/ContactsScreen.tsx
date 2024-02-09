@@ -5,12 +5,12 @@ import { Platform } from 'expo-modules-core';
 import React from 'react';
 import { RefreshControl, StyleSheet, Text, View } from 'react-native';
 
+import * as ContactUtils from './ContactUtils';
+import ContactsList from './ContactsList';
 import HeaderContainerRight from '../../components/HeaderContainerRight';
 import HeaderIconButton from '../../components/HeaderIconButton';
 import usePermissions from '../../utilities/usePermissions';
 import { useResolvedValue } from '../../utilities/useResolvedValue';
-import * as ContactUtils from './ContactUtils';
-import ContactsList from './ContactsList';
 
 type StackParams = {
   ContactDetail: { id: string };
@@ -108,7 +108,7 @@ function ContactsView({ navigation }: Props) {
     }
 
     for (const contact of nextContacts) {
-      rawContacts[contact.id] = contact;
+      rawContacts[contact.id!] = contact;
     }
     setContacts(Object.values(rawContacts));
     setHasNextPage(payload.hasNextPage);

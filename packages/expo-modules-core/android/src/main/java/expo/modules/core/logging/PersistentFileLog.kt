@@ -55,6 +55,8 @@ class PersistentFileLog(
         completionHandler.invoke(null)
       } catch (e: Error) {
         completionHandler.invoke(e)
+      } catch (e: IOException) {
+        completionHandler.invoke(Error(e))
       }
     }
   }

@@ -10,9 +10,9 @@ import {
   Image as RNImage,
 } from 'react-native';
 
-import { Colors } from '../../constants';
 import ImageTestView from './ImageTestView';
 import { resolveProps } from './resolveProps';
+import { Colors } from '../../constants';
 
 type ImageTest = {
   name: string;

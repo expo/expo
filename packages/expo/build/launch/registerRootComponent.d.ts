@@ -1,4 +1,4 @@
-import 'expo/build/Expo.fx';
+import '../Expo.fx';
 import * as React from 'react';
 type InitialProps = {
     exp: {

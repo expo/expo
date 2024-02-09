@@ -8,7 +8,7 @@
       "@expo/vector-icons": ["react-native-vector-icons"]
     },
     "types": ["jest"],
-    "typeRoots": ["./ts-declarations", "node_modules/@types"],
+    "typeRoots": ["./ts-declarations", "./node_modules/@types", "../../node_modules/@types"],
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "strictFunctionTypes": true,

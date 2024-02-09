@@ -1,5 +1,6 @@
 ---
 title: Error recovery
+description: Learn how to take advantage of using built-in error recovery when using expo-updates library.
 ---
 
 import { Tab, Tabs } from '~/ui/components/Tabs';
@@ -16,17 +17,17 @@ First of all, don't panic. Mistakes happen; most likely, everything will be fine
 
 The important thing is to **publish a new update with a fix as soon as possible (though not before you are 100% confident in your fix).** The error recovery mechanism in `expo-updates` will ensure that in most cases, even users who have already downloaded the broken update should be able to get the fix.
 
-The first thing to try is rolling back to an older update that you know was working. **However, this may not always be safe;** your broken update may, for example, have modified persistent state (such as data stored in AsyncStorage or on the device's file system) in a non-backwards-compatible way. It's important to test in a staging environment that emulates an end user's device state as closely as possible—i.e. load the broken update and then roll back.
+The first thing to try is rolling back to an older update that you know was working. **However, this may not always be safe;** your broken update may, for example, have modified persistent state (such as data stored in AsyncStorage or on the device's file system) in a non-backwards-compatible way. It's important to test in a staging environment that emulates an end user's device state as closely as possible to load the broken update and then roll back.
 
-If you can identify an older update that is safe to roll back to, you can do so using [EAS Update's `republish` option](/eas-update/eas-update-and-eas-cli/#republish-a-previous-update-within-a-branch).
+If you can identify an older update that is safe to roll back to, you can do so using [EAS Update's `republish` option](/eas-update/eas-cli/#republish-a-previous-update-within-a-branch).
 
-If you cannot identify an older update that is safe to roll back to, you'll need to fix forward. While it's best to roll out a fix as quickly as possible, you should take the time to ensure your fix is solid, and know that even users who download your broken update in the meantime should be able to download your fix.
+If you cannot identify an older update that is safe to roll back to, you'll need to fix it forward. While it's best to roll out a fix as quickly as possible, you should take the time to ensure your fix is solid, and know that even users who download your broken update in the meantime should be able to download your fix.
 
 If you'd like more details about how this works, read on.
 
 ## Explaining the error recovery flow
 
-The error recovery flow is intended to be as lightweight as possible. It is not a full safety net that protects your end users from the results of errors; in many cases users will still see a crash.
+The error recovery flow is intended to be as lightweight as possible. It is not a full safety net that protects your end users from the results of errors; in many cases, users will still see a crash.
 
 Rather, the purpose is to prevent updates from "bricking" your app (causing a crash on launch before the app can check for updates, making the app unusable until uninstalled and reinstalled) by ensuring that in as many cases as possible, the app has the opportunity to download a new update and fix itself.
 
@@ -34,7 +35,7 @@ Rather, the purpose is to prevent updates from "bricking" your app (causing a cr
 
 If your app throws a fatal error when executing JS which is early enough in the app's lifecycle that it may prevent the app from being able to download further updates, `expo-updates` will catch this error.
 
-> If more than 10 seconds have elapsed between your app's first render and the time a fatal error is thrown, `expo-updates` will not catch this error at all and none of the error recovery code will be triggered. Therefore, we highly recommend that your app check for updates very shortly after launching, whether [automatically](/bare/updating-your-app/#automatic-updates) or [manually](/bare/updating-your-app/#manual-updates) to ensure you can push out fixes in the event of a future error.
+> If more than 10 seconds have elapsed between your app's first render and the time a fatal error is thrown, `expo-updates` will not catch this error at all and none of the error recovery code will be triggered. Therefore, we highly recommend that your app check for updates very shortly after launching, whether automatically or manually to ensure you can push out fixes in the event of a future error.
 
 If `expo-updates` catches a JS error, what will happen next depends on whether React Native has fired the native "content appeared" event (`RCTContentDidAppearNotification` on iOS, or `ReactMarkerConstants.CONTENT_APPEARED` on Android)—approximately when your app's first view has been rendered on the screen—for this particular update, either on this launch or a previous one.
 
@@ -61,7 +62,7 @@ If an error is caught before the "content appeared" event has fired, AND this is
 
 ## Error stacktraces
 
-If your app encounters a fatal JS error, and the error recovery system cannot recover, it will re-throw the original exception in order to cause a crash. The stacktrace will look similar to this:
+If your app encounters a fatal JS error, and the error recovery system cannot recover, it will re-throw the original exception to cause a crash. The stacktrace will look similar to this:
 
 <Tabs tabs={["iOS", "Android"]}>
 
@@ -110,7 +111,7 @@ AndroidRuntime: 	at com.facebook.react.bridge.queue.MessageQueueThreadImpl$4.run
 AndroidRuntime: 	at java.lang.Thread.run(Thread.java:923)
 ```
 
-On Android, the stacktrace of the original exception is preserved. Depending on your crash reporting service, you may or may not need to reproduce the crash locally in order to see more information about the underlying error.
+On Android, the stacktrace of the original exception is preserved. Depending on your crash reporting service, you may or may not need to reproduce the crash locally to see more information about the underlying error.
 
 </Tab>
 

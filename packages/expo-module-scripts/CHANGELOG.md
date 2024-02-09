@@ -8,7 +8,52 @@
 
 ### 🐛 Bug fixes
 
+- Use `node18` tsconfig in `expo-module-scripts` to match the dependencies. ([#26738](https://github.com/expo/expo/pull/26738)) by ([@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ### 💡 Others
+
+- Target Node 18 in the Babel CLI preset. ([#26847](https://github.com/expo/expo/pull/26847) by [@simek](https://github.com/simek))
+- Update Babel dependencies to the latest version from `7.23` releases. ([#26525](https://github.com/expo/expo/pull/26525) by [@simek](https://github.com/simek))
+
+## 3.4.0 — 2023-12-12
+
+### 🎉 New features
+
+- Add Node-specific Babel and Jest configurations. ([#25458](https://github.com/expo/expo/pull/25458) by [@byCedric](https://github.com/byCedric))
+- Add Node override in ESLint config for root configuration files. ([#25767](https://github.com/expo/expo/pull/25767) by [@byCedric](https://github.com/byCedric))
+
+## 3.3.0 — 2023-11-14
+
+### 🐛 Bug fixes
+
+- Remove watchPlugins from sub-projects when using multi-project runner. ([#25302](https://github.com/expo/expo/pull/25302) by [@EvanBacon](https://github.com/EvanBacon))
+- Default to using jest-preset-plugin when running `yarn test plugin` with no `plugin/jest.config.js` file. ([#25302](https://github.com/expo/expo/pull/25302) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 3.2.0 — 2023-10-17
+
+### 🎉 New features
+
+- Preserve JSX in production exports to support jsx/createElement interception. ([#24889](https://github.com/expo/expo/pull/24889) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Transpile for Node 18 (LTS). ([#24471](https://github.com/expo/expo/pull/24471) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 3.1.1 — 2023-09-18
+
+_This version does not introduce any user-facing changes._
+
+## 3.1.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.12 — 2023-07-26
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.10 — 2023-06-22
+
+_This version does not introduce any user-facing changes._
 
 ## 3.0.9 — 2023-06-02
 
@@ -62,7 +107,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-- Fixed *with-node.sh* doesn't keep quotes when passing arguments to Node.js and caused build errors when there are spaces in target name. ([#18741](https://github.com/expo/expo/pull/18741) by [@kudo](https://github.com/kudo))
+- Fixed _with-node.sh_ doesn't keep quotes when passing arguments to Node.js and caused build errors when there are spaces in target name. ([#18741](https://github.com/expo/expo/pull/18741) by [@kudo](https://github.com/kudo))
 
 ## 2.1.0 — 2022-08-04
 

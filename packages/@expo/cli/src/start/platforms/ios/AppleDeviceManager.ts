@@ -4,13 +4,6 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
-import { delayAsync, waitForActionAsync } from '../../../utils/delay';
-import { CommandError } from '../../../utils/errors';
-import { parsePlistAsync } from '../../../utils/plist';
-import { validateUrl } from '../../../utils/url';
-import { DeviceManager } from '../DeviceManager';
-import { ExpoGoInstaller } from '../ExpoGoInstaller';
-import { BaseResolveDeviceProps } from '../PlatformManager';
 import { assertSystemRequirementsAsync } from './assertSystemRequirements';
 import { ensureSimulatorAppRunningAsync } from './ensureSimulatorAppRunning';
 import {
@@ -20,6 +13,13 @@ import {
 } from './getBestSimulator';
 import { promptAppleDeviceAsync } from './promptAppleDevice';
 import * as SimControl from './simctl';
+import { delayAsync, waitForActionAsync } from '../../../utils/delay';
+import { CommandError } from '../../../utils/errors';
+import { parsePlistAsync } from '../../../utils/plist';
+import { validateUrl } from '../../../utils/url';
+import { DeviceManager } from '../DeviceManager';
+import { ExpoGoInstaller } from '../ExpoGoInstaller';
+import { BaseResolveDeviceProps } from '../PlatformManager';
 
 const debug = require('debug')('expo:start:platforms:ios:AppleDeviceManager') as typeof console.log;
 
@@ -96,10 +96,14 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
     return this.device.udid;
   }
 
-  async getAppVersionAsync(appId: string): Promise<string | null> {
+  async getAppVersionAsync(
+    appId: string,
+    { containerPath }: { containerPath?: string } = {}
+  ): Promise<string | null> {
     return await SimControl.getInfoPlistValueAsync(this.device, {
       appId,
       key: 'CFBundleShortVersionString',
+      containerPath,
     });
   }
 
@@ -173,9 +177,11 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
   }
 
   async isAppInstalledAsync(appId: string) {
-    return !!(await SimControl.getContainerPathAsync(this.device, {
-      appId,
-    }));
+    return (
+      (await SimControl.getContainerPathAsync(this.device, {
+        appId,
+      })) ?? false
+    );
   }
 
   async openUrlAsync(url: string) {

@@ -20,7 +20,7 @@ abstract class UpdateDao {
   // if an update has successfully launched at least once, we treat it as launchable
   // even if it has also failed to launch at least once
   @Query("SELECT * FROM updates WHERE scope_key = :scopeKey AND (successful_launch_count > 0 OR failed_launch_count < 1) AND status IN (:statuses);")
-  abstract fun _loadLaunchableUpdatesForProjectWithStatuses(scopeKey: String?, statuses: List<UpdateStatus>): List<UpdateEntity>
+  abstract fun _loadLaunchableUpdatesForProjectWithStatuses(scopeKey: String, statuses: List<UpdateStatus>): List<UpdateEntity>
 
   @Query("SELECT * FROM updates WHERE id = :id;")
   abstract fun _loadUpdatesWithId(id: UUID): List<UpdateEntity>
@@ -34,9 +34,6 @@ abstract class UpdateDao {
   @Query("UPDATE updates SET status = :status WHERE id = :id;")
   abstract fun _markUpdateWithStatus(status: UpdateStatus, id: UUID)
 
-  @Update
-  abstract fun _updateUpdate(update: UpdateEntity)
-
   @Query(
     "UPDATE updates SET status = :status WHERE id IN (" +
       "SELECT DISTINCT update_id FROM updates_assets WHERE asset_id IN (:missingAssetIds));"
@@ -49,7 +46,7 @@ abstract class UpdateDao {
   @Query("SELECT * FROM updates;")
   abstract fun loadAllUpdates(): List<UpdateEntity>
 
-  fun loadLaunchableUpdatesForScope(scopeKey: String?): List<UpdateEntity> {
+  fun loadLaunchableUpdatesForScope(scopeKey: String): List<UpdateEntity> {
     return _loadLaunchableUpdatesForProjectWithStatuses(
       scopeKey,
       listOf(UpdateStatus.READY, UpdateStatus.EMBEDDED, UpdateStatus.DEVELOPMENT)
@@ -78,13 +75,19 @@ abstract class UpdateDao {
 
   fun setUpdateScopeKey(update: UpdateEntity, newScopeKey: String) {
     update.scopeKey = newScopeKey
-    _updateUpdate(update)
+    _setUpdateScopeKeyInternal(update.id, newScopeKey)
   }
+
+  @Query("UPDATE updates SET scope_key = :newScopeKey WHERE id = :id;")
+  abstract fun _setUpdateScopeKeyInternal(id: UUID, newScopeKey: String)
 
   fun setUpdateCommitTime(update: UpdateEntity, commitTime: Date) {
     update.commitTime = commitTime
-    _updateUpdate(update)
+    _setUpdateCommitTime(update.id, commitTime)
   }
+
+  @Query("UPDATE updates SET commit_time = :commitTime WHERE id = :id;")
+  abstract fun _setUpdateCommitTime(id: UUID, commitTime: Date)
 
   @Transaction
   open fun markUpdateFinished(update: UpdateEntity, hasSkippedEmbeddedAssets: Boolean) {
@@ -103,19 +106,29 @@ abstract class UpdateDao {
   }
 
   fun markUpdateAccessed(update: UpdateEntity) {
-    update.lastAccessed = Date()
-    _updateUpdate(update)
+    val newLastAccessed = Date()
+    update.lastAccessed = newLastAccessed
+    _markUpdateAccessed(update.id, newLastAccessed)
   }
+
+  @Query("UPDATE updates SET last_accessed = :lastAccessed WHERE id = :id;")
+  abstract fun _markUpdateAccessed(id: UUID, lastAccessed: Date)
 
   fun incrementSuccessfulLaunchCount(update: UpdateEntity) {
     update.successfulLaunchCount++
-    _updateUpdate(update)
+    _incrementSuccessfulLaunchCount(update.id)
   }
+
+  @Query("UPDATE updates SET successful_launch_count = successful_launch_count + 1 WHERE id = :id;")
+  abstract fun _incrementSuccessfulLaunchCount(id: UUID)
 
   fun incrementFailedLaunchCount(update: UpdateEntity) {
     update.failedLaunchCount++
-    _updateUpdate(update)
+    _incrementFailedLaunchCount(update.id)
   }
+
+  @Query("UPDATE updates SET failed_launch_count = failed_launch_count + 1 WHERE id = :id;")
+  abstract fun _incrementFailedLaunchCount(id: UUID)
 
   fun markUpdatesWithMissingAssets(missingAssets: List<AssetEntity>) {
     val missingAssetIds = mutableListOf<Long>()

@@ -6,12 +6,12 @@ import fs from 'fs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import { intersecting } from './array';
 import * as Log from '../log';
 import {
   hasRequiredAndroidFilesAsync,
   hasRequiredIOSFilesAsync,
 } from '../prebuild/clearNativeFolder';
-import { intersecting } from './array';
 
 const debug = require('debug')('expo:utils:scheme') as typeof console.log;
 

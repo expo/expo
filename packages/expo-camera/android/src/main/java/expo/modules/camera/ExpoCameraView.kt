@@ -45,7 +45,7 @@ import expo.modules.kotlin.viewevent.EventDispatcher
 
 class ExpoCameraView(
   context: Context,
-  appContext: AppContext,
+  appContext: AppContext
 ) : ExpoView(context, appContext),
   LifecycleEventListener,
   BarCodeScannerAsyncTaskDelegate,
@@ -63,7 +63,7 @@ class ExpoCameraView(
 
   private val onCameraReady by EventDispatcher<Unit>()
   private val onMountError by EventDispatcher<CameraMountErrorEvent>()
-  private val onBarCodeScanned by EventDispatcher<BarCodeScannedEvent>(
+  private val onBarCodeScanned by EventDispatcher<BarcodeScannedEvent>(
     /**
      * We want every distinct barcode to be reported to the JS listener.
      * If we return some static value as a coalescing key there may be two barcode events
@@ -165,7 +165,7 @@ class ExpoCameraView(
       val path = FileSystemUtils.generateOutputPath(cacheDirectory, "Camera", ".mp4")
       val profile = getCamcorderProfile(cameraView.cameraId, options.quality)
       options.videoBitrate?.let { profile.videoBitRate = it }
-      if (cameraView.record(path, options.maxDuration * 1000, options.maxFileSize, !options.muteValue, profile)) {
+      if (cameraView.record(path, options.maxDuration * 1000, options.maxFileSize, !options.mute, profile)) {
         videoRecordedPromise = promise
       } else {
         promise.reject("E_RECORDING_FAILED", "Starting video recording failed. Another recording might be in progress.", null)
@@ -273,9 +273,10 @@ class ExpoCameraView(
       transformBarCodeScannerResultToViewCoordinates(barCode)
       val (cornerPoints, boundingBox) = getCornerPointsAndBoundingBox(barCode.cornerPoints, barCode.boundingBox)
       onBarCodeScanned(
-        BarCodeScannedEvent(
+        BarcodeScannedEvent(
           target = id,
           data = barCode.value,
+          raw = barCode.raw,
           type = barCode.type,
           cornerPoints = cornerPoints,
           boundingBox = boundingBox

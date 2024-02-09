@@ -10,7 +10,7 @@ Before a native app can be compiled, the native source code must be generated. E
 1. The [app config][expo-config] file (**app.json**, **app.config.js**).
 2. Arguments passed to the `npx expo prebuild` command.
 3. Version of `expo` that's installed in the project and its corresponding [prebuild template](#templates).
-4. [Autolinking][autolinking], for linking [native modules][native-modules] found in the `package.json`.
+4. [Autolinking][autolinking], for linking [native modules][native-modules] found in the **package.json**.
 
 ## Usage
 
@@ -24,7 +24,16 @@ We highly recommend using prebuild for the reasons listed in the [pitch](#pitch)
 
 ### Usage with EAS Build
 
-You can configure EAS Build to run `npx expo prebuild` before building by [using the managed preset](/build-reference/ios-builds/).
+If your project does not contain **android** and **ios** directories, EAS Build will run Prebuild to generate these native directories before compilation. This is the default behavior for any project created using `npx create-expo-app`.
+
+For a project that has **android** and **ios** directories, EAS Build will not run Prebuild by default to avoid overwriting any changes you've made to the native directories.
+
+If you troubleshoot your app by [compiling it locally](/guides/local-app-development/#local-app-compilation) (running `npx expo prebuild`, or `npx expo run:android` or `npx expo run:ios`), you can still use Prebuild with EAS Build to generate fresh native directories during the build process. In this scenario, add the **android** and **ios** directories to **.gitignore** or **.easignore** files:
+
+```diff .gitignore
++ android
++ ios
+```
 
 ### Usage with Expo CLI run commands
 
@@ -44,7 +53,7 @@ If native build directories are not present `npx expo prebuild` will be run one 
 
 ## Platform support
 
-Prebuild currently supports iOS and Android. Web support is not required because there is no native project to generate for the web — the app it runs in is always your web browser. You can build for individual platforms by using the `--platform` flag:
+Prebuild currently supports Android and iOS. Web support is not required because there is no native project to generate for the web — the app it runs in is always your web browser. You can build for individual platforms by using the `--platform` flag:
 
 <Terminal cmd={['$ npx expo prebuild --platform ios']} />
 
@@ -80,13 +89,15 @@ There are cases where developers may want to swap between workflows often. For e
 
 ## Templates
 
-You can customize how the native folders are generated while remaining in the managed workflow by building [config plugins][config-plugins]. Many config plugins already exist for lots of modifications. You can [see a list of some popular plugins][config-plugins-repo] for more information.
+You can customize how the native folders are generated while remaining in the managed workflow by building [config plugins](/config-plugins/introduction). Many config plugins already exist for lots of modifications. You can [see a list of some popular plugins][config-plugins-repo] for more information.
 
 Prebuild generates template files before modifying them with config plugins. The template files are based on the Expo SDK version and come from the npm package [`expo-template-bare-minimum`][template]. You can change the template used by passing `--template /path/to/template.tgz` to the `npx expo prebuild` command. This is not generally recommended because the base modifiers in `@expo/prebuild-config` make some undocumented assumptions about the template files, so it may be tricky to maintain your custom template.
 
+> **Note:** In network environments where all packages are downloaded from a private registry and npm public registry access is blocked, a locally-available template must be passed to the prebuild command. [Learn more about using a local version of the default template](https://expo.fyi/prebuild-without-npm-access).
+
 ## Side effects
 
-As of SDK 46, `npx expo prebuild` performs several side effects outside of generating the **android** and **ios** directories. Work is in progress to eliminate these side effects — ideally, running `npx expo prebuild` would generate the iOS and Android projects and leave the rest of the project untouched.
+`npx expo prebuild` performs several side effects outside of generating the **android** and **ios** directories. Work is in progress to eliminate these side effects — ideally, running `npx expo prebuild` would generate the Android and iOS projects and leave the rest of the project untouched.
 
 In addition to generating the native folders, prebuild also makes the following modifications:
 
@@ -108,7 +119,7 @@ Everything offered by Expo including [EAS][eas], Expo CLI, and the libraries in 
 
 A single native project on its own is complicated to maintain, scale, and grow. In a cross-platform app, you have multiple native projects that you must maintain and keep up to date with the latest operating system releases to avoid falling too far behind in any third-party dependencies. We created the _optional_ Expo Prebuild system to streamline this process. Below are a few issues we've identified with native development in the context of React Native and some corresponding reasons we believe Expo Prebuild solves these issues.
 
-> Prebuild can be used in any React Native project. For more information, see [adopting prebuild](/guides/adopting-prebuild).
+> Prebuild can be used in any React Native project. For more information, see [Adopt prebuild](/guides/adopting-prebuild).
 
 ### Sensible upgrades
 
@@ -142,13 +153,13 @@ Here are some reasons Expo Prebuilding might **not** be the right fit for a part
 
 ### React Native versioning
 
-`npx expo prebuild` generates native code based on the version of `expo` a project has installed, so a project with SDK 46 (`expo@46.0.0`) would generate a `react-native@0.69.5` app.
+`npx expo prebuild` generates native code based on the version of `expo` a project has installed, so a project with SDK 50 (`expo@50.0.0`) would generate a `react-native@0.73` app.
 
 Expo releases a new version approximately every quarter, and `react-native` does not follow a calendar-based release schedule. This means there are times when you cannot use `npx expo prebuild` with the latest release of React Native. This could potentially be circumvented by using a custom [prebuild template](#templates) if you are willing to experiment. You can also mitigate this by cherry-picking any changes you need from the latest version of React Native into a fork and using that in your project.
 
 ### Platform compatibility
 
-Prebuild can only be used for native platforms that are supported by the Expo SDK. This means iOS and Android for the time being. Except for web, which doesn't require `npx expo prebuild` since it uses the browser instead of a custom native runtime.
+Prebuild can only be used for native platforms that are supported by the Expo SDK. This means Android and iOS for the time being. Except for web, which doesn't require `npx expo prebuild` since it uses the browser instead of a custom native runtime.
 
 In the future, we would like to support additional platforms, such as `react-native-macos` and `react-native-windows`, but this is not currently a priority.
 

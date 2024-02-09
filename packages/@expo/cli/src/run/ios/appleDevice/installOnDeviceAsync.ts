@@ -3,12 +3,12 @@ import { Ora } from 'ora';
 import os from 'os';
 import path from 'path';
 
+import * as AppleDevice from './AppleDevice';
 import { ensureDirectory } from '../../../utils/dir';
 import { CommandError } from '../../../utils/errors';
 import { isInteractive } from '../../../utils/interactive';
 import { ora } from '../../../utils/ora';
 import { confirmAsync } from '../../../utils/prompts';
-import * as AppleDevice from './AppleDevice';
 
 /** Get the app_delta folder for faster subsequent rebuilds on devices. */
 export function getAppDeltaDirectory(bundleId: string): string {

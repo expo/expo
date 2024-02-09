@@ -1,41 +1,24 @@
-import invariant from 'invariant';
-import qs from 'qs';
-
-export function buildQueryString(input: Record<string, string>): string {
-  return qs.stringify(input);
-}
-
-export function getQueryParams(url: string): {
+export function getQueryParams(input: string): {
   errorCode: string | null;
   params: { [key: string]: string };
 } {
-  const parts = url.split('#');
-  const hash = parts[1];
-  const partsWithoutHash = parts[0].split('?');
-  const queryString = partsWithoutHash[partsWithoutHash.length - 1];
-
-  // Get query string (?hello=world)
-  const parsedSearch = qs.parse(queryString, { parseArrays: false });
+  const url = new URL(input, 'https://phony.example');
 
   // Pull errorCode off of params
-  const errorCode = (parsedSearch.errorCode ?? null) as string | null;
-  invariant(
-    typeof errorCode === 'string' || errorCode === null,
-    `The "errorCode" parameter must be a string if specified`
-  );
-  delete parsedSearch.errorCode;
-
-  // Get hash (#abc=example)
-  let parsedHash = {};
-  if (parts[1]) {
-    parsedHash = qs.parse(hash);
-  }
+  const errorCode = url.searchParams.get('errorCode');
+  url.searchParams.delete('errorCode');
 
   // Merge search and hash
-  const params = {
-    ...parsedSearch,
-    ...parsedHash,
-  };
+  const params = Object.fromEntries(
+    // @ts-ignore: [Symbol.iterator] is indeed, available on every platform.
+    url.searchParams
+  );
+  // Get hash (#abc=example)
+  if (url.hash) {
+    new URLSearchParams(url.hash.replace(/^#/, '')).forEach((value, key) => {
+      params[key] = value;
+    });
+  }
 
   return {
     errorCode,

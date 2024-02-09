@@ -11,11 +11,14 @@ export declare const documentDirectory: string | null;
  * Example uses are for downloaded or generated files that the app just needs for one-time usage.
  */
 export declare const cacheDirectory: string | null;
-export declare const bundledAssets: string | null, bundleDirectory: string | null;
+/**
+ * URI to the directory where assets bundled with the application are stored.
+ */
+export declare const bundleDirectory: string | null;
 /**
  * Get metadata information about a file, directory or external content/asset.
  * @param fileUri URI to the file or directory. See [supported URI schemes](#supported-uri-schemes).
- * @param options A map of options represented by [`GetInfoAsyncOptions`](#getinfoasyncoptions) type.
+ * @param options A map of options represented by [`InfoOptions`](#infooptions) type.
  * @return A Promise that resolves to a `FileInfo` object. If no item exists at this URI,
  * the returned Promise resolves to `FileInfo` object in form of `{ exists: false, isDirectory: false }`.
  */
@@ -86,13 +89,13 @@ export declare function readDirectoryAsync(fileUri: string): Promise<string[]>;
 /**
  * Gets the available internal disk storage size, in bytes. This returns the free space on the data partition that hosts all of the internal storage for all apps on the device.
  * @return Returns a Promise that resolves to the number of bytes available on the internal disk, or JavaScript's [`MAX_SAFE_INTEGER`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER)
- * if the capacity is greater than 2<sup>53</sup> - 1 bytes.
+ * if the capacity is greater than 2^53^ - 1 bytes.
  */
 export declare function getFreeDiskStorageAsync(): Promise<number>;
 /**
  * Gets total internal disk storage size, in bytes. This is the total capacity of the data partition that hosts all the internal storage for all apps on the device.
  * @return Returns a Promise that resolves to a number that specifies the total internal disk storage capacity in bytes, or JavaScript's [`MAX_SAFE_INTEGER`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER)
- * if the capacity is greater than 2<sup>53</sup> - 1 bytes.
+ * if the capacity is greater than 2^53^ - 1 bytes.
  */
 export declare function getTotalDiskCapacityAsync(): Promise<number>;
 /**

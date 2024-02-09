@@ -10,16 +10,18 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '13.0'
+  s.platform       = :ios, '13.4'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
-
   s.dependency 'ExpoModulesCore'
+  # The builtin sqlite does not support extensions so we update it
+  s.dependency 'sqlite3', '~> 3.42.0'
 
-  if !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
-    s.source_files = "**/*.h"
-    s.vendored_frameworks = "#{s.name}.xcframework"
-  else
-    s.source_files = "**/*.{h,m,swift}"
-  end
+  # Swift/Objective-C compatibility
+  s.pod_target_xcconfig = {
+    'DEFINES_MODULE' => 'YES',
+  }
+
+  s.source_files = "**/*.{h,m,swift}"
+  s.vendored_frameworks = 'crsqlite.xcframework'
 end

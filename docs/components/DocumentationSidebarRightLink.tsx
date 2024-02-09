@@ -17,12 +17,14 @@ const STYLES_LINK = css`
   text-overflow: ellipsis;
   align-items: center;
   justify-content: space-between;
+
+  :focus-visible {
+    position: relative;
+    z-index: 10;
+  }
 `;
 
 const STYLES_LINK_LABEL = css`
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   color: ${theme.text.secondary};
 
   :hover {
@@ -31,6 +33,9 @@ const STYLES_LINK_LABEL = css`
 `;
 
 const STYLES_LINK_MONOSPACE = css`
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   ${typography.fontSizes[13]}
 `;
 
@@ -121,7 +126,10 @@ const DocumentationSidebarRightLink = React.forwardRef<HTMLAnchorElement, Sideba
   ({ heading, isActive, shortenCode, onClick }, ref) => {
     const { slug, level, title, type, tags } = heading;
 
+    // preset for monospace, tail ellipsize, and removing extra bits like details of function signatures
     const isCode = type === HeadingType.InlineCode;
+    // preset for monospace, tail ellipsize, don't touch the title otherwise
+    const isCodeOrFilePath = isCode || type === HeadingType.CodeFilePath;
     const paddingLeft = NESTING_OFFSET * (level - BASE_HEADING_LEVEL);
     const displayTitle = shortenCode && isCode ? trimCodedTitle(title) : title;
 
@@ -138,26 +146,26 @@ const DocumentationSidebarRightLink = React.forwardRef<HTMLAnchorElement, Sideba
       setTooltipVisible(false);
     };
 
-    const TitleElement = isCode ? MONOSPACE : CALLOUT;
+    const TitleElement = isCodeOrFilePath ? MONOSPACE : CALLOUT;
 
     return (
       <>
-        {tooltipVisible && (
+        {tooltipVisible && isCode && (
           <Tooltip topOffset={tooltipOffset} isCode={isCode}>
             {displayTitle}
           </Tooltip>
         )}
         <Link
           ref={ref}
-          onMouseOver={onMouseOver}
-          onMouseOut={onMouseOut}
+          onMouseOver={isCode ? onMouseOver : undefined}
+          onMouseOut={isCode ? onMouseOut : undefined}
           href={'#' + slug}
           onClick={onClick}
           css={[STYLES_LINK, paddingLeft && { paddingLeft }]}>
           <TitleElement
             css={[
               STYLES_LINK_LABEL,
-              isCode && STYLES_LINK_MONOSPACE,
+              isCodeOrFilePath && STYLES_LINK_MONOSPACE,
               isActive && STYLES_LINK_ACTIVE,
             ]}>
             {displayTitle}

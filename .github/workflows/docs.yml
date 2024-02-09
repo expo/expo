@@ -23,14 +23,14 @@ concurrency:
 
 jobs:
   docs:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: ⬢ Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 16.x
+          node-version: 18.x
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
@@ -43,19 +43,18 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: 🧪 Run Docs tests
         run: yarn test
-      - name: 🚨 Lint Docs app
+      - name: 🚨 Lint Docs website code
         run: yarn lint --max-warnings 0
-      - name: 🚸 Lint Docs content
-        run: yarn lint-case
+      - name: 💬 Lint Docs website content
+        run: yarn lint-prose
       - run: yarn danger ci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 🏗️ Build Docs website for deploy
         run: yarn export
         timeout-minutes: 20
-      # TODO(cedric): If we have time, we should make sure all links are valid and connected to a proper header
-      # - name: lint links
-      #   run: yarn lint-links --quiet
+      - name: 🔗 Lint pages links
+        run: yarn lint-links --quiet
       - name: ✅ Test links (legacy)
         run: |
           yarn export-server &
@@ -71,6 +70,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: 'us-east-2'
+          AWS_BUCKET: 'docs.expo.dev'
       - name: 🔔 Notify on Slack
         uses: 8398a7/action-slack@v3
         if: failure() && github.event.ref == 'refs/heads/main'

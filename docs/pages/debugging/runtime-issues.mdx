@@ -4,10 +4,10 @@ description: Learn about different techniques available to debug your Expo proje
 sidebar_title: Runtime issues
 ---
 
-import { BoxLink } from '~/ui/components/BoxLink';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import Video from '~/components/plugins/Video';
 
 Whether you're developing your app locally, sending it out to select beta testers, or launching your app live to the app stores, you'll always find yourself debugging issues. It's useful to split errors into two categories:
 
@@ -52,7 +52,7 @@ This will add an **android** directory at the root of your project.
 
 Open the project in Android Studio by running the command:
 
-<Terminal cmd={['$ open -a /Applications/Android Studio.app ./android']} />
+<Terminal cmd={['$ open -a "/Applications/Android Studio.app" ./android']} />
 
 </Step>
 
@@ -106,14 +106,16 @@ Errors or bugs in your production app can be much harder to solve, mainly becaus
 
 **The best first step in addressing a production error is to reproduce it locally.** Once you reproduce an error locally, you can follow the [development debugging process](#development-errors) to isolate and address the root cause.
 
-> **Tip**: Sometimes, running your app in **production mode** locally will show errors that normally wouldn't be thrown. You can run the app locally in production by running `npx expo start --no-dev --minify`.
+> **info** **Tip**: Sometimes, running your app in **production mode** locally will show errors that normally wouldn't be thrown. You can run the app locally in production by running `npx expo start --no-dev --minify`.
 > `--no-dev` tells the server not to be run in development mode, and `--minify` is used to minify your code the same way it is for production JavaScript bundles.
 
 ### Production app is crashing
 
 It can be a frustrating scenario when a production app crashes. There is very little information to look into when it happens. It's important to reproduce the issue, and even if you can't do that, to find any related crash reports.
 
-Start by reproducing the crash using your production app and then **find an associated crash report**.
+Start by reproducing the crash using your production app and then **find an associated crash report**. For Android, you can use `adb logcat` and for iOS you can use the Console app in Xcode.
+
+<Video url="https://www.youtube.com/watch?v=LvCci4Bwmpc" />
 
 #### Crash reports using adb logcat
 
@@ -137,7 +139,7 @@ Open Xcode app, and then open **Devices and Simulators** window by pressing <kbd
 
 <Step label="2">
 
-If you've connected a physical device, select it under **Devices**. Otherwise, if you are using a simulator, select it under **Simulators**.
+If you have connected a physical device, select it under **Devices**. Otherwise, if you are using a simulator, select it under **Simulators**.
 
 <ImageSpotlight
   alt="Devices and Simulators window in Xcode."
@@ -167,12 +169,4 @@ This might indicate that there is a performance issue. You likely need to run yo
 
 ## Stuck?
 
-The Expo community and the React and React Native communities are great resources for help when you get stuck. There's a good chance someone else has run into the same error as you, so make sure to read the documentation, search the [forums](https://forums.expo.dev/), [GitHub issues](https://github.com/expo/expo/issues/), and [Stack Overflow](https://stackoverflow.com/).
-
-## Next step
-
-<BoxLink
-  title="Debugging tools"
-  description="Learn about different tools available to debug runtime issues in your Expo project."
-  href="/debugging/tools"
-/>
+The Expo community and the React and React Native communities are great resources for help when you get stuck. There's a good chance someone else has run into the same error as you, so make sure to read the documentation, search the [forums](https://chat.expo.dev/), [GitHub issues](https://github.com/expo/expo/issues/), and [Stack Overflow](https://stackoverflow.com/).

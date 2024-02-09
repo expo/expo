@@ -3,10 +3,10 @@ import arg from 'arg';
 import chalk from 'chalk';
 import path from 'path';
 
+import { XcodeConfiguration } from './XcodeBuild.types';
 import { Command } from '../../../bin/cli';
 import { assertWithOptionsArgs, printHelp } from '../../utils/args';
 import { logCmdError } from '../../utils/errors';
-import { XcodeConfiguration } from './XcodeBuild.types';
 
 export const expoRunIos: Command = async (argv) => {
   const rawArgsMap: arg.Spec = {
@@ -55,14 +55,14 @@ export const expoRunIos: Command = async (argv) => {
     );
   }
 
-  const { resolveStringOrBooleanArgsAsync } = await import('../../utils/resolveArgs');
+  const { resolveStringOrBooleanArgsAsync } = await import('../../utils/resolveArgs.js');
   const parsed = await resolveStringOrBooleanArgsAsync(argv ?? [], rawArgsMap, {
     '--scheme': Boolean,
     '--device': Boolean,
     '-d': '--device',
   }).catch(logCmdError);
 
-  const { runIosAsync } = await import('./runIosAsync');
+  const { runIosAsync } = await import('./runIosAsync.js');
   return runIosAsync(path.resolve(parsed.projectRoot), {
     // Parsed options
     buildCache: !args['--no-build-cache'],

@@ -1,17 +1,17 @@
 import assert from 'assert';
 import chalk from 'chalk';
 
+import { activateWindowAsync } from './activateWindow';
+import * as AndroidDebugBridge from './adb';
+import { startDeviceAsync } from './emulator';
+import { getDevicesAsync } from './getDevices';
+import { promptForDeviceAsync } from './promptAndroidDevice';
 import * as Log from '../../../log';
 import { AbortCommandError, CommandError } from '../../../utils/errors';
 import { validateUrl } from '../../../utils/url';
 import { DeviceManager } from '../DeviceManager';
 import { ExpoGoInstaller } from '../ExpoGoInstaller';
 import { BaseResolveDeviceProps } from '../PlatformManager';
-import { activateWindowAsync } from './activateWindow';
-import * as AndroidDebugBridge from './adb';
-import { startDeviceAsync } from './emulator';
-import { getDevicesAsync } from './getDevices';
-import { promptForDeviceAsync } from './promptAndroidDevice';
 
 const EXPO_GO_APPLICATION_IDENTIFIER = 'host.exp.exponent';
 

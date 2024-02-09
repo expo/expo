@@ -15,6 +15,11 @@ class Env {
     return boolish('EXPO_DEBUG', false);
   }
 
+  /** Disable all network requests */
+  get EXPO_OFFLINE() {
+    return boolish('EXPO_OFFLINE', false);
+  }
+
   /** Enable the beta version of Expo (TODO: Should this just be in the beta version of expo releases?) */
   get EXPO_BETA() {
     return boolish('EXPO_BETA', false);
@@ -76,7 +81,7 @@ class Env {
   }
   /** Skip validating the manifest during `export`. */
   get EXPO_SKIP_MANIFEST_VALIDATION_TOKEN(): boolean {
-    return !!string('EXPO_SKIP_MANIFEST_VALIDATION_TOKEN');
+    return !!string('EXPO_SKIP_MANIFEST_VALIDATION_TOKEN', '');
   }
 
   /** Public folder path relative to the project root. Default to `public` */
@@ -137,19 +142,42 @@ class Env {
     return process.env.HTTP_PROXY || process.env.http_proxy || '';
   }
 
-  /** **Experimental:** Use the network inspector by overriding the metro inspector proxy with a custom version */
-  get EXPO_USE_CUSTOM_INSPECTOR_PROXY(): boolean {
-    return boolish('EXPO_USE_CUSTOM_INSPECTOR_PROXY', false);
-  }
-
-  /** **Experimental:** Enable automatic TypeScript types for Expo Router projects (SDK +49). */
-  get EXPO_USE_TYPED_ROUTES() {
-    return boolish('EXPO_USE_TYPED_ROUTES', false);
+  /**
+   * Use the network inspector by overriding the metro inspector proxy with a custom version.
+   * @deprecated This has been replaced by `@react-native/dev-middleware` and is now unused.
+   */
+  get EXPO_NO_INSPECTOR_PROXY(): boolean {
+    return boolish('EXPO_NO_INSPECTOR_PROXY', false);
   }
 
   /** Disable lazy bundling in Metro bundler. */
   get EXPO_NO_METRO_LAZY() {
     return boolish('EXPO_NO_METRO_LAZY', false);
+  }
+
+  /** Enable the unstable inverse dependency stack trace for Metro bundling errors. */
+  get EXPO_METRO_UNSTABLE_ERRORS() {
+    return boolish('EXPO_METRO_UNSTABLE_ERRORS', false);
+  }
+
+  /** Enable the unstable fast resolver for Metro. */
+  get EXPO_USE_FAST_RESOLVER() {
+    return boolish('EXPO_USE_FAST_RESOLVER', false);
+  }
+
+  /** Disable Environment Variable injection in client bundles. */
+  get EXPO_NO_CLIENT_ENV_VARS(): boolean {
+    return boolish('EXPO_NO_CLIENT_ENV_VARS', false);
+  }
+
+  /** Enable the React Native JS Inspector, instead of the "classic" Chrome DevTools (SDK <=49) */
+  get EXPO_USE_UNSTABLE_DEBUGGER(): boolean {
+    return boolish('EXPO_USE_UNSTABLE_DEBUGGER', false);
+  }
+
+  /** Set the default `user` that should be passed to `--user` with ADB commands. Used for installing APKs on Android devices with multiple profiles. Defaults to `0`. */
+  get EXPO_ADB_USER(): string {
+    return string('EXPO_ADB_USER', '0');
   }
 }
 

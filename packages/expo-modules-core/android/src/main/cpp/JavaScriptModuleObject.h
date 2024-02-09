@@ -104,6 +104,7 @@ public:
     jni::alias_ref<jstring> name,
     jni::alias_ref<JavaScriptModuleObject::javaobject> classObject,
     jboolean takesOwner,
+    jni::alias_ref<jclass> ownerClass,
     jint args,
     jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
     jni::alias_ref<JNIFunctionBody::javaobject> body
@@ -122,8 +123,11 @@ public:
    */
   void registerProperty(
     jni::alias_ref<jstring> name,
-    jni::alias_ref<ExpectedType> expectedArgType,
+    jboolean getterTakesOwner,
+    jni::alias_ref<jni::JArrayClass<ExpectedType>> getterExpectedArgsTypes,
     jni::alias_ref<JNIFunctionBody::javaobject> getter,
+    jboolean setterTakesOwner,
+    jni::alias_ref<jni::JArrayClass<ExpectedType>> setterExpectedArgsTypes,
     jni::alias_ref<JNIFunctionBody::javaobject> setter
   );
 
@@ -181,7 +185,7 @@ private:
 
   std::map<
     std::string,
-    std::pair<jni::global_ref<JavaScriptModuleObject::javaobject>, MethodMetadata>
+    std::tuple<jni::global_ref<JavaScriptModuleObject::javaobject>, MethodMetadata, jni::global_ref<jclass>>
   > classes;
 
   jni::global_ref<JavaScriptModuleObject::javaobject> viewPrototype;

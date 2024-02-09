@@ -143,7 +143,7 @@ Do not add extra space between preceding and succeeding words and "/" just to em
 
 Try splitting phrases into separate sentences. Our goal is to make documentation easier to read and understand.
 
-In rare cases when it is necessary to split phrases, use em dashes (—) or use connections (such as then, however, and so on) rather than commas to split phrases that read as separate sentences.
+In rare cases when it is necessary to split phrases, [use em dashes](#use-mdash) (—) or use connections (such as then, however, and so on) rather than commas to split phrases that read as separate sentences.
 
 - Correct: JavaScript has come a long way since it was originally written in 10 days.
 - Incorrect: JavaScript has come a long way, it was originally written in 10 days.
@@ -282,7 +282,7 @@ Terms referred in this section are meant to be used consistently throughout the 
   - A Swift module is a namespaced unit of code that can be distributed. It includes a module map and conforms to some other technical details.
 - Library
   - An overarching name for code that application developers call into as a part of their apps. Examples of libraries are Expo modules, npm packages, and iOS APIs.
-  - **"Expo libraries" is a synonym for Expo modules** but for consistency reasons, let’s stick to **Expo modules.**
+  - **"Expo libraries" is a synonym for Expo modules** and for consistency reasons, let’s use **Expo Libraries**.
 - Package
   - **npm packages** are units of code that include a file named package.json and are typically installed with npm or Yarn. They almost always include JavaScript code.
   - Expo modules are distributed as npm packages.
@@ -314,7 +314,7 @@ Writing API documentation accurately and precisely helps developers use our APIs
     - Used for adding a description to the method arguments, syntax:
       - `@param [param_name] [description]`
   - `@default`
-    - Currently doesn’t support formatting, all of the content will be placed directly in the `InlineCode` block, so there is no need to wrap the value with ``` manually.
+    - Currently, does not support Markdown formatting, all the content will be placed directly in the `InlineCode` block, so there is no need to wrap the value with ``` manually.
   - `@platform`
     - Available platforms: `android` , `ios` , `web` and `expo` (Expo Go).
     - You can also specify the minimum platform version, range, or add any other comment to the label, for example, `@platform ios 11+`.
@@ -334,6 +334,11 @@ Writing API documentation accurately and precisely helps developers use our APIs
       and their order (see `expo-notifications` source and doc page for an example usage).
 - When linking other SDK packages in a comment, use `./` instead of `../` at the beginning of the URL
   - For more information, check out [detect broken internal links in generated doc comments](https://github.com/expo/expo/pull/16771) PR on GitHub.
+- To add a subscript or superscript in the comment content use the following custom syntax:
+  ```md
+  21^st^ Century <!-- sup -->
+  H~2~O <!-- sub -->
+  ```
 
 ## Accuracy
 

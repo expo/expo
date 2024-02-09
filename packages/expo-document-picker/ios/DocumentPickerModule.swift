@@ -110,7 +110,6 @@ public class DocumentPickerModule: Module, PickingResultHandler {
   }
 
   private func readDocumentDetails(documentUrl: URL, copy: Bool) throws -> DocumentInfo {
-    let pathExtension = documentUrl.pathExtension
     var newUrl = documentUrl
 
     guard let fileSystem = self.appContext?.fileSystem else {
@@ -122,13 +121,16 @@ public class DocumentPickerModule: Module, PickingResultHandler {
     }
 
     if copy {
-      let directory = fileSystem.cachesDirectory.appending("DocumentPicker")
-      let path = fileSystem.generatePath(inDirectory: directory, withExtension: pathExtension)
+      let cacheDirURL = URL(fileURLWithPath: fileSystem.cachesDirectory)
+      let directory = cacheDirURL.appendingPathComponent("DocumentPicker", isDirectory: true).path
+      let fileExtension = "." + documentUrl.pathExtension
+      let path = fileSystem.generatePath(inDirectory: directory, withExtension: fileExtension)
       newUrl = URL(fileURLWithPath: path)
+
       try FileManager.default.copyItem(at: documentUrl, to: newUrl)
     }
 
-    let mimeType = self.getMimeType(from: pathExtension)
+    let mimeType = self.getMimeType(from: documentUrl.pathExtension) ?? "application/octet-stream"
 
     return DocumentInfo(
       uri: newUrl.absoluteString,
@@ -154,15 +156,61 @@ public class DocumentPickerModule: Module, PickingResultHandler {
     }
   }
 
+  @available(iOS 14.0, *)
+  private func toUTType(mimeType: String) -> UTType? {
+    switch mimeType {
+    case "*/*":
+      return UTType.item
+    case "image/*":
+      return UTType.image
+    case "video/*":
+      return UTType.video
+    case "audio/*":
+      return UTType.audio
+    case "text/*":
+      return UTType.text
+    default:
+      return UTType(mimeType: mimeType)
+    }
+  }
+
+  private func toUTI(mimeType: String) -> String {
+    var uti: CFString
+
+    switch mimeType {
+    case "*/*":
+      uti = kUTTypeItem
+    case "image/*":
+      uti = kUTTypeImage
+    case "video/*":
+      uti = kUTTypeVideo
+    case "audio/*":
+      uti = kUTTypeAudio
+    case "text/*":
+      uti = kUTTypeText
+    default:
+      if let ref = UTTypeCreatePreferredIdentifierForTag(
+        kUTTagClassMIMEType,
+        mimeType as CFString,
+        nil
+      )?.takeRetainedValue() {
+        uti = ref
+      } else {
+        uti = kUTTypeItem
+      }
+    }
+    return uti as String
+  }
+
   private func createDocumentPicker(with options: DocumentPickerOptions) -> UIDocumentPickerViewController {
     if #available(iOS 14.0, *) {
-      let utTypes = options.type.compactMap { $0.toUTType() }
+      let utTypes = options.type.compactMap { toUTType(mimeType: $0) }
       return UIDocumentPickerViewController(
         forOpeningContentTypes: utTypes,
         asCopy: true
       )
     } else {
-      let utiTypes = options.type.map { $0.toUTI() }
+      let utiTypes = options.type.map { toUTI(mimeType: $0) }
       return UIDocumentPickerViewController(
         documentTypes: utiTypes,
         in: .import

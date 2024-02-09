@@ -5,7 +5,10 @@ export type SerialAsset = {
   filename: string;
   // '\ndiv {\n    background: cyan;\n}\n\n'
   source: string;
-  type: 'css' | 'js';
+  type: 'css' | 'js' | 'map';
 
-  metadata: Record<string, string>;
+  metadata: {
+    isAsync?: boolean;
+    modulePaths?: string[];
+  } & Record<string, boolean | string | string[]>;
 };

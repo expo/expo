@@ -4,7 +4,7 @@ import Nimble
 @testable import EXDevMenuInterface
 
 class DevMenuItemsContainerTest: QuickSpec {
-  override func spec() {
+  override class func spec() {
     it("should respect importance") {
       let container = DevMenuItemsContainer()
 

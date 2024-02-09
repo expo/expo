@@ -1,3 +1,3 @@
-import { NativeModulesProxy } from 'expo-modules-core';
-export default NativeModulesProxy.ExpoTaskManager;
+import { requireNativeModule } from 'expo-modules-core';
+export default requireNativeModule('ExpoTaskManager');
 //# sourceMappingURL=ExpoTaskManager.js.map

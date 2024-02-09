@@ -6,12 +6,66 @@
 
 ### 🎉 New features
 
+- Added support for Apple tvOS. ([#26965](https://github.com/expo/expo/pull/26965) by [@douglowder](https://github.com/douglowder))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 12.9.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 12.9.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 12.8.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+- Made `BlurView` on Android an experimental feature, which can be enabled with `experimentalBlurMethod` prop. ([#24709](https://github.com/expo/expo/pull/24709) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- Ship untranspiled JSX to support custom handling of `jsx` and `createElement`. ([#24889](https://github.com/expo/expo/pull/24889) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 12.7.0 — 2023-09-15
+
+### 🎉 New features
+
+- Support more blur effects. On iOS, using `UIBlurEffect.Style`. On Android, find the closest available color reference. ([#24392](https://github.com/expo/expo/pull/24392) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 12.6.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+## 12.5.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 12.4.1 — 2023-06-23
+
+_This version does not introduce any user-facing changes._
+
+## 12.4.0 — 2023-06-21
+
+### 🛠 Breaking changes
+
+- Enable blurring by default when static rendering. ([#23000](https://github.com/expo/expo/pull/23000) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 12.3.2 — 2023-06-13
+
 ### 🐛 Bug fixes
 
 - [iOS] Fixed Detox tests hanging when `BlurView` is present ([#22439](https://github.com/expo/expo/pull/22439) by [@behenate](https://github.com/behenate))
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 12.3.1 — 2023-05-08
 

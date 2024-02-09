@@ -19,16 +19,16 @@ function _path() {
   };
   return data;
 }
-function _iosPlugins() {
-  const data = require("../plugins/ios-plugins");
-  _iosPlugins = function () {
+function _Xcodeproj() {
+  const data = require("./utils/Xcodeproj");
+  _Xcodeproj = function () {
     return data;
   };
   return data;
 }
-function _Xcodeproj() {
-  const data = require("./utils/Xcodeproj");
-  _Xcodeproj = function () {
+function _iosPlugins() {
+  const data = require("../plugins/ios-plugins");
+  _iosPlugins = function () {
     return data;
   };
   return data;

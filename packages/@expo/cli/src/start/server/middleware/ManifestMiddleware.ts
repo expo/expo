@@ -1,20 +1,36 @@
-import { ExpoConfig, ExpoGoConfig, getConfig, ProjectConfig } from '@expo/config';
+import {
+  ExpoConfig,
+  ExpoGoConfig,
+  getConfig,
+  PackageJSONConfig,
+  ProjectConfig,
+} from '@expo/config';
+import { resolveEntryPoint } from '@expo/config/paths';
 import findWorkspaceRoot from 'find-yarn-workspace-root';
 import path from 'path';
 import { resolve } from 'url';
 
+import { ExpoMiddleware } from './ExpoMiddleware';
+import {
+  shouldEnableAsyncImports,
+  createBundleUrlPath,
+  getBaseUrlFromExpoConfig,
+  getAsyncRoutesFromExpoConfig,
+  createBundleUrlPathFromExpoConfig,
+} from './metroOptions';
+import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
+import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
+import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
+import { isEnableHermesManaged } from '../../../export/exportHermes';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
+import { CommandError } from '../../../utils/errors';
 import { stripExtension } from '../../../utils/url';
 import * as ProjectDevices from '../../project/devices';
 import { UrlCreator } from '../UrlCreator';
-import { getPlatformBundlers } from '../platformBundlers';
+import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
+import { getPlatformBundlers, PlatformBundlers } from '../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
-import { ExpoMiddleware } from './ExpoMiddleware';
-import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
-import { resolveAbsoluteEntryPoint } from './resolveEntryPoint';
-import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
-import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
 
 const debug = require('debug')('expo:start:server:middleware:manifest') as typeof console.log;
 
@@ -30,15 +46,18 @@ export function getWorkspaceRoot(projectRoot: string): string | null {
   }
 }
 
+const supportedPlatforms = ['ios', 'android', 'web', 'none'];
+
 export function getEntryWithServerRoot(
   projectRoot: string,
-  projectConfig: ProjectConfig,
-  platform: string
+  props: { platform: string; pkg?: PackageJSONConfig }
 ) {
-  return path.relative(
-    getMetroServerRoot(projectRoot),
-    resolveAbsoluteEntryPoint(projectRoot, platform, projectConfig)
-  );
+  if (!supportedPlatforms.includes(props.platform)) {
+    throw new CommandError(
+      `Failed to resolve the project's entry file: The platform "${props.platform}" is not supported.`
+    );
+  }
+  return path.relative(getMetroServerRoot(projectRoot), resolveEntryPoint(projectRoot, props));
 }
 
 export function getMetroServerRoot(projectRoot: string) {
@@ -52,51 +71,13 @@ export function getMetroServerRoot(projectRoot: string) {
 /** Get the main entry module ID (file) relative to the project root. */
 export function resolveMainModuleName(
   projectRoot: string,
-  projectConfig: ProjectConfig,
-  platform: string
+  props: { platform: string; pkg?: PackageJSONConfig }
 ): string {
-  const entryPoint = getEntryWithServerRoot(projectRoot, projectConfig, platform);
+  const entryPoint = getEntryWithServerRoot(projectRoot, props);
 
   debug(`Resolved entry point: ${entryPoint} (project root: ${projectRoot})`);
 
   return stripExtension(entryPoint, 'js');
-}
-
-export function createBundleUrlPath({
-  platform,
-  mainModuleName,
-  mode,
-  minify = mode === 'production',
-  environment,
-  serializerOutput,
-}: {
-  platform: string;
-  mainModuleName: string;
-  mode: string;
-  minify?: boolean;
-  environment?: string;
-  serializerOutput?: 'static';
-}): string {
-  const queryParams = new URLSearchParams({
-    platform: encodeURIComponent(platform),
-    dev: String(mode !== 'production'),
-    // TODO: Is this still needed?
-    hot: String(false),
-    lazy: String(!env.EXPO_NO_METRO_LAZY),
-  });
-
-  if (minify) {
-    queryParams.append('minify', String(minify));
-  }
-  if (environment) {
-    queryParams.append('resolver.environment', environment);
-    queryParams.append('transform.environment', environment);
-  }
-  if (serializerOutput) {
-    queryParams.append('serializer.output', serializerOutput);
-  }
-
-  return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
 }
 
 /** Info about the computer hosting the dev server. */
@@ -115,6 +96,8 @@ export interface ManifestRequestInfo {
   platform: RuntimePlatform;
   /** Requested host name. */
   hostname?: string | null;
+  /** The protocol used to request the manifest */
+  protocol?: 'http' | 'https';
 }
 
 /** Project related info. */
@@ -139,11 +122,15 @@ export type ManifestMiddlewareOptions = {
 
 /** Base middleware creator for serving the Expo manifest (like the index.html but for native runtimes). */
 export abstract class ManifestMiddleware<
-  TManifestRequestInfo extends ManifestRequestInfo
+  TManifestRequestInfo extends ManifestRequestInfo,
 > extends ExpoMiddleware {
   private initialProjectConfig: ProjectConfig;
+  private platformBundlers: PlatformBundlers;
 
-  constructor(protected projectRoot: string, protected options: ManifestMiddlewareOptions) {
+  constructor(
+    protected projectRoot: string,
+    protected options: ManifestMiddlewareOptions
+  ) {
     super(
       projectRoot,
       /**
@@ -152,18 +139,28 @@ export abstract class ManifestMiddleware<
       ['/', '/manifest', '/index.exp']
     );
     this.initialProjectConfig = getConfig(projectRoot);
+    this.platformBundlers = getPlatformBundlers(projectRoot, this.initialProjectConfig.exp);
   }
 
   /** Exposed for testing. */
   public async _resolveProjectSettingsAsync({
     platform,
     hostname,
-  }: Pick<TManifestRequestInfo, 'hostname' | 'platform'>): Promise<ResponseProjectSettings> {
+    protocol,
+  }: Pick<
+    TManifestRequestInfo,
+    'hostname' | 'platform' | 'protocol'
+  >): Promise<ResponseProjectSettings> {
     // Read the config
     const projectConfig = getConfig(this.projectRoot);
 
     // Read from headers
-    const mainModuleName = this.resolveMainModuleName(projectConfig, platform);
+    const mainModuleName = this.resolveMainModuleName({
+      pkg: projectConfig.pkg,
+      platform,
+    });
+
+    const isHermesEnabled = isEnableHermesManaged(projectConfig.exp, platform);
 
     // Create the manifest and set fields within it
     const expoGoConfig = this.getExpoGoConfig({
@@ -177,6 +174,15 @@ export abstract class ManifestMiddleware<
       platform,
       mainModuleName,
       hostname,
+      engine: isHermesEnabled ? 'hermes' : undefined,
+      baseUrl: getBaseUrlFromExpoConfig(projectConfig.exp),
+      asyncRoutes: getAsyncRoutesFromExpoConfig(
+        projectConfig.exp,
+        this.options.mode ?? 'development',
+        platform
+      ),
+      routerRoot: getRouterDirectoryModuleIdWithManifest(this.projectRoot, projectConfig.exp),
+      protocol,
     });
 
     // Resolve all assets and set them on the manifest as URLs
@@ -191,8 +197,8 @@ export abstract class ManifestMiddleware<
   }
 
   /** Get the main entry module ID (file) relative to the project root. */
-  private resolveMainModuleName(projectConfig: ProjectConfig, platform: string): string {
-    let entryPoint = getEntryWithServerRoot(this.projectRoot, projectConfig, platform);
+  private resolveMainModuleName(props: { pkg: PackageJSONConfig; platform: string }): string {
+    let entryPoint = getEntryWithServerRoot(this.projectRoot, props);
 
     debug(`Resolved entry point: ${entryPoint} (project root: ${this.projectRoot})`);
 
@@ -227,47 +233,44 @@ export abstract class ManifestMiddleware<
     platform,
     mainModuleName,
     hostname,
+    engine,
+    baseUrl,
+    isExporting,
+    asyncRoutes,
+    routerRoot,
+    protocol,
   }: {
     platform: string;
     hostname?: string | null;
     mainModuleName: string;
+    engine?: 'hermes';
+    baseUrl?: string;
+    asyncRoutes: boolean;
+    isExporting?: boolean;
+    routerRoot: string;
+    protocol?: 'http' | 'https';
   }): string {
     const path = createBundleUrlPath({
       mode: this.options.mode ?? 'development',
       minify: this.options.minify,
       platform,
       mainModuleName,
+      lazy: shouldEnableAsyncImports(this.projectRoot),
+      engine,
+      bytecode: engine === 'hermes',
+      baseUrl,
+      isExporting: !!isExporting,
+      asyncRoutes,
+      routerRoot,
     });
 
     return (
       this.options.constructUrl({
-        scheme: 'http',
+        scheme: protocol ?? 'http',
         // hostType: this.options.location.hostType,
         hostname,
       }) + path
     );
-  }
-
-  public _getBundleUrlPath({
-    platform,
-    mainModuleName,
-  }: {
-    platform: string;
-    mainModuleName: string;
-  }): string {
-    const queryParams = new URLSearchParams({
-      platform: encodeURIComponent(platform),
-      dev: String(this.options.mode !== 'production'),
-      // TODO: Is this still needed?
-      hot: String(false),
-      lazy: String(!env.EXPO_NO_METRO_LAZY),
-    });
-
-    if (this.options.minify) {
-      queryParams.append('minify', String(this.options.minify));
-    }
-
-    return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
   }
 
   /** Log telemetry. */
@@ -288,11 +291,8 @@ export abstract class ManifestMiddleware<
     hostname?: string | null;
   }): ExpoGoConfig {
     return {
-      // localhost:19000
+      // localhost:8081
       debuggerHost: this.options.constructUrl({ scheme: '', hostname }),
-      // http://localhost:19000/logs -- used to send logs to the CLI for displaying in the terminal.
-      // This is deprecated in favor of the WebSocket connection setup in Metro.
-      logUrl: this.options.constructUrl({ scheme: 'http', hostname }) + '/logs',
       // Required for Expo Go to function.
       developer: {
         tool: DEVELOPER_TOOL,
@@ -306,8 +306,8 @@ export abstract class ManifestMiddleware<
       mainModuleName,
       // Add this string to make Flipper register React Native / Metro as "running".
       // Can be tested by running:
-      // `METRO_SERVER_PORT=19000 open -a flipper.app`
-      // Where 19000 is the port where the Expo project is being hosted.
+      // `METRO_SERVER_PORT=8081 open -a flipper.app`
+      // Where 8081 is the port where the Expo project is being hosted.
       __flipperHack: 'React Native packager is running',
     };
   }
@@ -332,10 +332,21 @@ export abstract class ManifestMiddleware<
   public getWebBundleUrl() {
     const platform = 'web';
     // Read from headers
-    const mainModuleName = this.resolveMainModuleName(this.initialProjectConfig, platform);
-    return this._getBundleUrlPath({
+    const mainModuleName = this.resolveMainModuleName({
+      pkg: this.initialProjectConfig.pkg,
+      platform,
+    });
+
+    return createBundleUrlPathFromExpoConfig(this.projectRoot, this.initialProjectConfig.exp, {
       platform,
       mainModuleName,
+      minify: this.options.minify,
+      lazy: shouldEnableAsyncImports(this.projectRoot),
+      mode: this.options.mode ?? 'development',
+      // Hermes doesn't support more modern JS features than most, if not all, modern browser.
+      engine: 'hermes',
+      isExporting: false,
+      bytecode: false,
     });
   }
 
@@ -361,16 +372,17 @@ export abstract class ManifestMiddleware<
 
   /** Exposed for testing. */
   async checkBrowserRequestAsync(req: ServerRequest, res: ServerResponse, next: ServerNext) {
-    // Read the config
-    const bundlers = getPlatformBundlers(this.initialProjectConfig.exp);
-    if (bundlers.web === 'metro') {
+    if (
+      this.platformBundlers.web === 'metro' &&
+      this.initialProjectConfig.exp.platforms?.includes('web')
+    ) {
       // NOTE(EvanBacon): This effectively disables the safety check we do on custom runtimes to ensure
       // the `expo-platform` header is included. When `web.bundler=web`, if the user has non-standard Expo
       // code loading then they'll get a web bundle without a clear assertion of platform support.
       const platform = parsePlatformHeader(req);
       // On web, serve the public folder
       if (!platform || platform === 'web') {
-        if (this.initialProjectConfig.exp.web?.output === 'static') {
+        if (['static', 'server'].includes(this.initialProjectConfig.exp.web?.output ?? '')) {
           // Skip the spa-styled index.html when static generation is enabled.
           next();
           return true;

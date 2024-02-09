@@ -46,6 +46,42 @@ function getFontFaceRulesMatchingResource(
   });
 }
 
+const serverContext: Set<{ name: string; css: string; resourceId: string }> = new Set();
+
+function getHeadElements(): {
+  $$type: string;
+  rel?: string;
+  href?: string;
+  as?: string;
+  crossorigin?: string;
+  children?: string;
+  id?: string;
+  type?: string;
+}[] {
+  const entries = [...serverContext.entries()];
+  if (!entries.length) {
+    return [];
+  }
+  const css = entries.map(([{ css }]) => css).join('\n');
+  const links = entries.map(([{ resourceId }]) => resourceId);
+  // TODO: Maybe return nothing if no fonts were loaded.
+  return [
+    {
+      $$type: 'style',
+      children: css,
+      id: ID,
+      type: 'text/css',
+    },
+    ...links.map((resourceId) => ({
+      $$type: 'link',
+      rel: 'preload',
+      href: resourceId,
+      as: 'font',
+      crossorigin: '',
+    })),
+  ];
+}
+
 export default {
   get name(): string {
     return 'ExpoFontLoader';
@@ -69,9 +105,46 @@ export default {
     }
   },
 
-  async loadAsync(fontFamilyName: string, resource: FontResource): Promise<void> {
-    if (!Platform.isDOMAvailable) {
-      return;
+  getServerResources(): string[] {
+    const elements = getHeadElements();
+
+    return elements
+      .map((element) => {
+        switch (element.$$type) {
+          case 'style':
+            return `<style id="${element.id}" type="${element.type}">${element.children}</style>`;
+          case 'link':
+            return `<link rel="${element.rel}" href="${element.href}" as="${element.as}" crossorigin="${element.crossorigin}" />`;
+          default:
+            return '';
+        }
+      })
+      .filter(Boolean);
+  },
+
+  resetServerContext() {
+    serverContext.clear();
+  },
+
+  isLoaded(fontFamilyName: string, resource: UnloadFontOptions = {}): boolean {
+    if (typeof window === 'undefined') {
+      return !![...serverContext.values()].find((asset) => {
+        return asset.name === fontFamilyName;
+      });
+    }
+    return getFontFaceRulesMatchingResource(fontFamilyName, resource)?.length > 0;
+  },
+
+  // NOTE(EvanBacon): No async keyword! This cannot return a promise in Node environments.
+  loadAsync(fontFamilyName: string, resource: FontResource): Promise<void> {
+    if (typeof window === 'undefined') {
+      serverContext.add({
+        name: fontFamilyName,
+        css: _createWebFontTemplate(fontFamilyName, resource),
+        // @ts-expect-error: typeof string
+        resourceId: resource.uri!,
+      });
+      return Promise.resolve();
     }
 
     const canInjectStyle = document.head && typeof document.head.appendChild === 'function';
@@ -82,14 +155,19 @@ export default {
       );
     }
 
-    const style = _createWebStyle(fontFamilyName, resource);
+    const style = getStyleElement();
     document.head!.appendChild(style);
 
-    if (!isFontLoadingListenerSupported()) {
-      return;
+    const res = getFontFaceRulesMatchingResource(fontFamilyName, resource);
+    if (!res.length) {
+      _createWebStyle(fontFamilyName, resource);
     }
 
-    return new FontObserver(fontFamilyName, { display: resource.display }).load();
+    if (!isFontLoadingListenerSupported()) {
+      return Promise.resolve();
+    }
+
+    return new FontObserver(fontFamilyName, { display: resource.display }).load(null, 6000);
   },
 };
 
@@ -106,12 +184,14 @@ function getStyleElement(): HTMLStyleElement {
   return styleElement;
 }
 
+export function _createWebFontTemplate(fontFamily: string, resource: FontResource): string {
+  return `@font-face{font-family:${fontFamily};src:url(${resource.uri});font-display:${
+    resource.display || FontDisplay.AUTO
+  }}`;
+}
+
 function _createWebStyle(fontFamily: string, resource: FontResource): HTMLStyleElement {
-  const fontStyle = `@font-face {
-    font-family: ${fontFamily};
-    src: url(${resource.uri});
-    font-display: ${resource.display || FontDisplay.AUTO};
-  }`;
+  const fontStyle = _createWebFontTemplate(fontFamily, resource);
 
   const styleElement = getStyleElement();
   // @ts-ignore: TypeScript does not define HTMLStyleElement::styleSheet. This is just for IE and

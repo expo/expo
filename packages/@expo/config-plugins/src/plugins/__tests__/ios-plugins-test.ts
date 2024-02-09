@@ -1,11 +1,11 @@
 import { ExpoConfig } from '@expo/config-types';
 import { vol } from 'memfs';
 
+import rnFixture from './fixtures/react-native-project';
 import { addWarningIOS } from '../../utils/warnings';
 import { createInfoPlistPluginWithPropertyGuard } from '../ios-plugins';
 import { evalModsAsync } from '../mod-compiler';
 import { getIosModFileProviders, withIosBaseMods } from '../withIosBaseMods';
-import rnFixture from './fixtures/react-native-project';
 
 jest.mock('../../utils/warnings', () => ({
   addWarningIOS: jest.fn(),

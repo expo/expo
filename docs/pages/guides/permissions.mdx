@@ -49,7 +49,7 @@ Modify **AndroidManifest.xml** to exclude specific permissions: add the `tools:n
 
 ## iOS
 
-If your iOS app asks for [system permissions](/versions/latest/sdk/permissions) from the user, e.g. to use the device's camera, or access photos, Apple requires an explanation for how your app makes use of that data. Most packages will automatically provide a boilerplate reason for a given permission with [config plugins](/config-plugins/introduction/). These default messages will most likely need to be tailored to your specific use case in order for your app to be accepted by the App Store.
+Your iOS app can ask for system permissions from the user. For example, to use the device's camera, or access photos, Apple requires an explanation for how your app makes use of that data. Most packages will automatically provide a boilerplate reason for a given permission with [config plugins](/config-plugins/introduction/). These default messages will most likely need to be tailored to your specific use case in order for your app to be accepted by the App Store.
 
 To set permission messages, use the [`expo.ios.infoPlist`](/versions/latest/config/app/#infoplist) key in your app config (**app.json**, **app.config.js**), for example:
 
@@ -84,7 +84,7 @@ Many of these properties are also directly configurable using the [config plugin
 ```
 
 - Changes to the **Info.plist** cannot be updated over-the-air, they will only be deployed when you submit a new native binary, eg: with [`eas build`](/build/introduction).
-- Apple's official [permission message recommendations](https://developer.apple.com/design/human-interface-guidelines/ios/app-architecture/requesting-permission/).
+- Apple's official [permission message recommendations](https://developer.apple.com/design/human-interface-guidelines/privacy#Requesting-permission).
 - [All available **Info.plist** properties](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html).
 
 <ConfigReactNative>
@@ -95,7 +95,7 @@ Add and modify the permission message values in **Info.plist** file directly. We
 
 ## Web
 
-On the web, permissions like the `Camera` and `Location` can only be requested from a [secure context](https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts#When_is_a_context_considered_secure), e.g. using `https://` or `http://localhost`. This limitation is similar to Android's manifest permissions and iOS's infoPlist usage messages and enforced to increase privacy.
+On the web, permissions like the `Camera` and `Location` can only be requested from a [secure context](https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts#When_is_a_context_considered_secure). For example, using `https://` or `http://localhost`. This limitation is similar to Android's manifest permissions and iOS's infoPlist usage messages and enforced to increase privacy.
 
 ## Resetting permissions
 

@@ -1,0 +1,1517 @@
+---
+title: Custom build configuration schema
+sidebar_title: Config schema
+description: A reference of configuration options for custom builds with EAS Build.
+maxHeadingDepth: 5
+---
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { GithubIcon } from '@expo/styleguide-icons';
+
+> **Warning** This functionality is in preview, under active development, and likely to change.
+
+Creating custom workflows for EAS Build helps customize the build process for your project.
+
+## YAML syntax for workflows
+
+Workflow files are stored inside the **.eas/build** directory path. They use YAML syntax and must have a `.yml` or `.yaml` file extension. If you are new to YAML or want to learn more about the syntax, see [Learn YAML in Y minutes](https://learnxinyminutes.com/docs/yaml/).
+
+## `build`
+
+Defined to describe a custom workflow. All config options to create a workflow are specified under it.
+
+### `name`
+
+The name of your workflow that is used to identify the workflow in the build logs. EAS Build uses this property to display the name of your workflow in the dashboard.
+
+For example, the workflow's name is `Run tests`:
+
+```yaml
+build:
+  # @info #
+  name: Run tests
+  # @end #
+  steps:
+    - eas/checkout
+    - run:
+        name: Install dependencies
+        command: npm install
+```
+
+### `steps`
+
+Steps are used to describe a list of actions either in the form of commands or function calls. These actions are executed when a workflow runs on EAS Build. You can define single or multiple steps in a workflow. However, it is **required** to define at least one step per workflow.
+
+Each step is configured with the following properties:
+
+#### `steps[].run`
+
+The `run` key is used to trigger a set of instructions. For example, a `run` key is used to install dependencies using the `npm install` command:
+
+```yaml
+build:
+  name: Install npm dependencies
+  steps:
+    - eas/checkout
+    # @info #
+    - run:
+        name: Install dependencies
+        command: npm install
+    # @end #
+```
+
+You can also use `steps[].run` to execute single or multiline shell commands:
+
+```yaml
+build:
+  name: Run inline shell commands
+  steps:
+    # @info #
+    - run: echo "Hello world"
+    - run: |
+        echo "Multiline"
+        echo "bash commands"
+    # @end #
+```
+
+#### Use a single step
+
+For example, a workflow with the following `steps` will print "Hello world":
+
+```yaml
+build:
+  name: Greeting
+  steps:
+    # @info #
+    - run: echo "Hello world"
+    # @end #
+```
+
+> **Note:** `-` before `run` counts as indentation.
+
+#### Use multiple steps
+
+When multiple `steps` are defined, they are executed sequentially. For example, a workflow with the following `steps` will first check out the project, install npm dependencies, and then run a command to run tests:
+
+```yaml
+build:
+  name: Run tests
+  steps:
+    # @info #
+    - eas/checkout
+    - run:
+        name: Install dependencies
+        command: npm install
+    - run:
+        name: Run tests
+        command: |
+          echo "Running tests..."
+          npm test
+    # @end #
+```
+
+#### `steps[].run.name`
+
+The name that is used in build logs to display the name of the step.
+
+#### `steps[].run.command`
+
+The `command` defines a custom shell command to run when a step is executed. It is **required** to define a command for each step. It can be a multiline shell command:
+
+```yaml
+build:
+  name: Run tests
+  steps:
+    - eas/checkout
+    - run:
+        name: Run tests
+        # @info #
+        command: |
+          echo "Running tests..."
+          npm test
+        # @end #
+```
+
+#### `steps[].run.working_directory`
+
+The `working_directory` is used to define an existing directory from the project's root directory. After an existing path is defined in a step, using it changes the current directory for that step. For example, a step is created to list all the assets inside the **assets** directory, which is a directory in your Expo project. The `working_directory` is set to `assets`:
+
+```yaml
+build:
+  name: Demo
+  steps:
+    - eas/checkout
+    - run:
+        name: List assets
+        # @info #
+        working_directory: assets
+        # @end #
+        command: ls -la
+```
+
+#### `steps[].run.shell`
+
+Used to define the default executable shell for a step. For example, the step's shell is set to `/bin/sh`:
+
+```yaml
+build:
+  name: Demo
+  steps:
+    - run:
+        # @info #
+        shell: /bin/sh
+        # @end #
+        command: |
+          echo "Steps can use another shell"
+          ps -p $$
+```
+
+#### `steps[].run.inputs`
+
+Input values are provided to a step. For example, you can use `input` to provide a value:
+
+```yaml
+build:
+  name: Demo
+  steps:
+    - run:
+        name: Say Hi
+        # @info #
+        inputs:
+          name: Expo
+        # @end #
+        command: echo "Hi, ${ inputs.name }!"
+```
+
+#### `steps[].run.outputs`
+
+An output value is expected during a step. For example, a step has an output value of `Hello world`:
+
+```yaml
+build:
+  name: Demo
+  steps:
+    - run:
+        name: Produce output
+        # @info #
+        outputs: [value]
+        # @end #
+        command: |
+          echo "Producing output for another step"
+          set-output value "Output from another step..."
+```
+
+#### `steps[].run.outputs.required`
+
+An output value can use a boolean to indicate if the output value is required or not. For example, a function does not have a required output value:
+
+```yaml
+build:
+  name: Demo
+  steps:
+    - run:
+        name: Produce another output
+        id: id456
+        # @info #
+        outputs:
+          - required_param
+          - name: optional_param
+            required: false
+        # @end #
+        command: |
+          echo "Producing more output"
+          set-output required_param "abc 123 456"
+```
+
+#### `steps[].run.id`
+
+Defining an `id` for a step allows:
+
+- Calling the same function that produces one or more outputs multiple times
+- Using the output from one step to another
+
+#### Call the same function one or more times
+
+For example, the following function generates a random number:
+
+```yaml
+functions:
+  random:
+    name: Generate random number
+    outputs: [value]
+    command: set-output value `random_number`
+```
+
+In a workflow, let's use the `random` function to generate two random numbers and print them:
+
+```yaml
+build:
+  name: Functions Demo
+  steps:
+    - random:
+        id: random_1
+    - random:
+        id: random_2
+    - run:
+        name: Print random numbers
+        inputs:
+          random_1: ${ steps.random_1.value }
+          random_2: ${ steps.random_2.value }
+        command: |
+          echo "${ inputs.random_1 }"
+          echo "${ inputs.random_2 }"
+```
+
+#### Use output from one step to another
+
+For example, the following workflow demonstrates how to use output from one step to another:
+
+```yaml
+build:
+  name: Outputs demo
+  steps:
+    - run:
+        name: Produce output
+        id: id123 # <---- !!!
+        outputs: [foo]
+        command: |
+          echo "Producing output for another step"
+          set-output foo bar
+    - run:
+        name: Use output from another step
+        inputs:
+          foo: ${ steps.id123.foo }
+        command: |
+          echo "foo = \"${ inputs.foo }\""
+```
+
+## `functions`
+
+Defined to describe a reusable function that can be used in a workflow. All config options to create a function are specified with the following properties:
+
+### `functions.[function_name]`
+
+The `[function_name]` is the name of a function that you define to identify it in the `build.steps`. For example, you can define a function with the name `greetings`:
+
+{/* prettier-ignore */}
+```yaml
+functions:
+  # @info #
+  greetings:
+  # @end #
+    name: Say Hi!
+```
+
+### `functions.[function_name].name`
+
+The name that is used in build logs to display the name of the function. For example, a function with the display name `Say Hi!`:
+
+```yaml
+functions:
+  greetings:
+    # @info #
+    name: Say Hi!
+    # @end #
+```
+
+### `functions.[function_name].inputs`
+
+Input values are provided to a function.
+
+#### `inputs[].name`
+
+The name of the input value. It is used as an identifier to access the input value such as in bash command interpolation.
+
+{/* prettier-ignore */}
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    inputs:
+      # @info #
+      - name: name
+      # @end #
+        default_value: Hello world
+    command: echo "${ inputs.name }!"
+```
+
+#### `inputs[].required`
+
+Boolean to indicate if the input value is required or not. For example, a function does not have a required value:
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    inputs:
+      - name: name
+        # @info #
+        required: false
+        # @end #
+```
+
+#### `inputs[].type`
+
+The type of the input value. It can be either `string`, `num` or `json`.
+
+Input values set in the function call as well as `default_value` and `allowed_values` for the function are validated against the type.
+
+The default input `type` is `string`.
+
+For example, a function has an input value of type `string`:
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    inputs:
+      - name: name
+        # @info #
+        type: string
+        # @end #
+      - name: age
+        # @info #
+        type: num
+        # @end #
+      - name: other_data
+        # @info #
+        type: json
+        # @end #
+```
+
+#### `inputs[].default_value`
+
+You can use `default_value` to provide one default input. For example, a function has a default value of `Hello world`:
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    inputs:
+      - name: name
+        # @info #
+        default_value: Hello world
+        # @end #
+```
+
+#### `inputs[].allowed_values`
+
+You can use `allowed_values` to provide multiple values in an array. For example, a function has multiple allowed values:
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    inputs:
+      - name: name
+        default_value: Hello world
+        # @info #
+        allowed_values: [Hi, Hello, Hey]
+        # @end #
+        type: string
+```
+
+#### Multiple input values
+
+Multiple input values can be provided to a function.
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    # @info #
+    inputs:
+      - name: name
+        default_value: Expo
+      - name: greeting
+        default_value: Hi
+        allowed_values: [Hi, Hello]
+    # @end #
+    command: echo "${ inputs.greeting }, ${ inputs.name }!"
+```
+
+### `functions.[function_name].outputs`
+
+An output value is expected from a function. For example, a function has an output value of `Hello world`:
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    # @info #
+    outputs: [value]
+    # @end #
+    command: set-output value "Hello world"
+```
+
+#### `outputs[].name`
+
+The name of the output value. It is used as an identifier to access the output value in another step:
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    outputs:
+      # @info #
+      - name: name
+      # @end #
+```
+
+#### `outputs[].required`
+
+Boolean to indicate if the output value is required or not. For example, a function does not have a required output value:
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    outputs:
+      - name: value
+        # @info #
+        required: false
+        # @end #
+```
+
+### `functions.[function_name].command`
+
+Used to define the command to run when a function is executed, if you wish the function to be a simple shell script. Each function is **required** to define either a `command` or a `path` to JS/TS module implementing the function. For example, the command `echo "Hello world"` is used to print a message:
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    # @info #
+    command: echo "Hi!"
+    # @end #
+```
+
+### `functions.[function_name].path`
+
+Used to define the path to a JavaScript/TypeScript module implementing the function. Each function is **required** to define either a `command` or a `path` property. For example, the path `./greetings` is used to execute a `greetings` function declared in the `greetings` module:
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    # @info #
+    path: ./greetings
+    # @end #
+```
+
+Learn more about building and using custom TypeScript/JavaScript functions [here](/custom-builds/functions/).
+
+### `functions.[function_name].shell`
+
+Used to define the default executable shell for a step where a function is executed. For example, the step's shell is set to `/bin/sh`:
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    # @info #
+    shell: /bin/sh
+    # @end #
+    command: echo "Hi!"
+```
+
+### `functions.[function_name].supported_platforms`
+
+Used to define the supported platforms for a function. Defaults to all platforms. Allowed platforms: `darwin`, `linux`.
+
+For example, the function's supported platform is `darwin` (macOS):
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    # @info #
+    supported_platforms: [darwin]
+    # @end #
+    command: echo "Hi!"
+```
+
+## `import`
+
+A config file path list used to import functions from other config files. Imported files cannot have the `build` section.
+
+For example, the following workflow imports two files and calls two imported functions - `say_hi` and `say_bye`.
+
+```yaml workflow.yml
+import:
+  - common-functions.yml
+  - another-file.yml
+
+build:
+  steps:
+    - say_hi
+    - say_bye
+```
+
+```yaml common-functions.yml
+functions:
+  say_hi:
+    name: Say Hi!
+    command: echo "Hi!"
+```
+
+```yaml another-file.yml
+functions:
+  say_bye:
+    name: Say bye :(
+    command: echo "Bye!"
+```
+
+## Functions
+
+### Built-in EAS functions
+
+EAS provides a set of built-in reusable functions that you can use in a workflow without defining the function definition.
+
+> **info** **Tip:** Any function that is built-in and provided by EAS must start with the `eas/` prefix.
+
+#### `eas/checkout`
+
+Checks out you project source files.
+
+For example, a workflow with the following `steps` will check out the project and list the files in the **assets** directory:
+
+```yaml upload.yml
+build:
+  name: List files
+  steps:
+    - eas/checkout
+    - run:
+        name: List assets
+        run: ls assets
+```
+
+<BoxLink
+  title="eas/checkout source code"
+  description="View the source code for the eas/checkout function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/checkout.ts"
+/>
+
+#### `eas/use_npm_token`
+
+Configures node package managers (npm, pnpm, or Yarn) for use with private packages, published either to npm or private registry.
+Set `NPM_TOKEN` in your project's secrets, and this function will configure the build environment by creating **.npmrc** with the token.
+
+```yaml example.yml
+build:
+  name: Install private npm modules
+  steps:
+    - eas/checkout
+    # @info #
+    - eas/use_npm_token
+    # @end #
+    - run:
+        name: Install dependencies
+        run: npm install # <---- Can now install private packages
+```
+
+<BoxLink
+  title="eas/use_npm_token source code"
+  description="View the source code for the eas/use_npm_token function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/useNpmToken.ts"
+/>
+
+#### `eas/install_node_modules`
+
+Installs node modules using the package manager (npm, pnpm, or Yarn) detected based on your project. Works with monorepos.
+
+```yaml example.yml
+build:
+  name: Install node modules
+  steps:
+    - eas/checkout
+    # @info #
+    - eas/install_node_modules
+    # @end #
+```
+
+<BoxLink
+  title="eas/install_node_modules source code"
+  description="View the source code for the eas/install_node_modules function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/installNodeModules.ts"
+/>
+
+#### `eas/resolve_apple_team_id_from_credentials`
+
+> **Warning** This function is only available for iOS builds
+
+Resolves the Apple team ID value based on build credentials provided in the `inputs.credentials`. The resolved Apple team ID is stored in the `outputs.apple_team_id` output value.
+
+```yaml example.yml
+build:
+  name: Run prebuild script
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    # @info #
+    - eas/resolve_apple_team_id_from_credentials:
+        id: resolve_apple_team_id_from_credentials
+    # @end #
+    - eas/prebuild:
+        inputs:
+          apple_team_id: ${ steps.resolve_apple_team_id_from_credentials.apple_team_id }
+```
+
+| Property             | Description                                                                                                                                                                                              |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`               | The name of the step in the reusable function that shows in the build logs. Defaults to `Resolve Apple team ID from credentials`.                                                                        |
+| `inputs.credentials` | **json** Optional input defining the app credentials for your iOS build. Defaults to `${ eas.job.secrets.buildCredentials }`. Needs to comply to `${ eas.job.secrets.buildCredentials }` schema for iOS. |
+
+<BoxLink
+  title="eas/resolve_apple_team_id_from_credentials source code"
+  description="View the source code for the eas/resolve_apple_team_id_from_credentials function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/resolveAppleTeamIdFromCredentials.ts"
+/>
+
+#### `eas/prebuild`
+
+Runs the `expo prebuild` command using the package manager (npm, pnpm, or Yarn) detected based on your project with the command best suited for your build type and build environment.
+
+```yaml example.yml
+build:
+  name: Run prebuild script
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - eas/resolve_apple_team_id_from_credentials:
+        id: resolve_apple_team_id_from_credentials
+    # @info #
+    - eas/prebuild:
+        inputs:
+          clean: false
+          apple_team_id: ${ steps.resolve_apple_team_id_from_credentials.apple_team_id }
+    # @end #
+```
+
+```yaml example.yml
+build:
+  name: Run prebuild script
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    # @info #
+    - eas/prebuild
+    # @end #
+```
+
+| Property               | Description                                                                                                                                          |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`                 | The name of the step in the reusable function that shows in the build logs. Defaults to `Prebuild`.                                                  |
+| `inputs.clean`         | **boolean** Optional input defining whether the function should use `--clean` flag when running the command. Defaults to false                       |
+| `inputs.apple_team_id` | **boolean** Optional input defining Apple team ID which should be used when doing prebuild. It should be specified for iOS builds using credentials. |
+
+<BoxLink
+  title="eas/prebuild source code"
+  description="View the source code for the eas/resolve_apple_team_id_from_credentials function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/prebuild.ts"
+/>
+
+#### `eas/configure_eas_update`
+
+> **Warning** To use this function you need to have EAS Update configured for your project
+
+Configures runtime version and release channel for your build.
+
+```yaml example.yml
+build:
+  name: Configure EAS Update
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - eas/prebuild
+    # @info #
+    - eas/configure_eas_update
+    # @end #
+```
+
+```yaml example.yml
+build:
+  name: Configure EAS Update
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - eas/prebuild
+    # @info #
+    - eas/configure_eas_update:
+        inputs:
+          runtime_version: 1.0.0
+          channel: mychannel
+    # @end #
+```
+
+| Property                 | Description                                                                                                                                                                         |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`                   | The name of the step in the reusable function that shows in the build logs. Defaults to `Configure EAS Update`.                                                                     |
+| `inputs.runtime_version` | **string** Optional input defining runtime version which should be configured for the build. Defaults to `${ eas.job.version.runtimeVersion }` or natively defined runtime version. |
+| `inputs.channel`         | **string** Optional input defining channel which should be configured for the build. Defaults to `${ eas.job.updates.channel }`.                                                    |
+
+<BoxLink
+  title="eas/configure_eas_update source code"
+  description="View the source code for the eas/configure_eas_update function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/configureEASUpdateIfInstalled.ts"
+/>
+
+#### `eas/inject_android_credentials`
+
+> **Warning** This function is only available for Android builds
+
+Configures Android keystore with credentials on the builder and injects app signing config using these credentials into gradle config.
+
+```yaml example.yml
+build:
+  name: Android credentials
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - eas/prebuild
+    # @info #
+    - eas/inject_android_credentials
+    # @end #
+```
+
+| Property             | Description                                                                                                                                                                                                      |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`               | The name of the step in the reusable function that shows in the build logs. Defaults to `Inject Android credentials`.                                                                                            |
+| `inputs.credentials` | **json** Optional input defining the app credentials for your Android build. Defaults to `${ eas.job.secrets.buildCredentials }`. Needs to comply to `${ eas.job.secrets.buildCredentials }` schema for Android. |
+
+<BoxLink
+  title="eas/inject_android_credentials source code"
+  description="View the source code for the eas/inject_android_credentials function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/injectAndroidCredentials.ts"
+/>
+
+#### `eas/configure_ios_credentials`
+
+> **Warning** This function is only available for iOS builds
+
+Configures iOS credentials on the builder. Modifies the configuration of the Xcode project by assigning provisioning profiles to the targets.
+
+```yaml example.yml
+build:
+  name: iOS credentials
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - eas/resolve_apple_team_id_from_credentials:
+        id: resolve_apple_team_id_from_credentials
+    - eas/prebuild:
+        inputs:
+          clean: false
+          apple_team_id: ${ steps.resolve_apple_team_id_from_credentials.apple_team_id }
+    # @info #
+    - eas/configure_ios_credentials
+    # @end #
+```
+
+| Property                     | Description                                                                                                                                                                                                                |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`                       | The name of the step in the reusable function that shows in the build logs. Defaults to `Configure iOS credentials`.                                                                                                       |
+| `inputs.build_configuration` | **string** Optional input defining the Xcode project's Build Configuration. Defaults to `${ eas.job.buildConfiguration }` or if not specified is resolved to `Debug` for development client or `Release` for other builds. |
+| `inputs.credentials`         | **json** Optional input defining the app credentials for your iOS build. Defaults to `${ eas.job.secrets.buildCredentials }`. Needs to comply to `${ eas.job.secrets.buildCredentials }` schema for iOS.                   |
+
+<BoxLink
+  title="eas/configure_ios_credentials source code"
+  description="View the source code for the eas/configure_ios_credentials function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/configureIosCredentials.ts"
+/>
+
+#### `eas/configure_android_version`
+
+> **Warning** This function is only available for Android builds
+
+Configures the version of your Android app. It's used to set a version when using [remote app version management](/build-reference/app-versions/).
+
+It's not mandatory to use this function, if it's not used the version from native code generated during the prebuild phase will be used.
+
+```yaml example.yml
+build:
+  name: Configure Android version
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - eas/prebuild
+    - eas/configure_eas_update
+    - eas/inject_android_credentials
+    # @info #
+    - eas/configure_android_version
+    # @end #
+```
+
+```yaml example.yml
+build:
+  name: Configure Android version
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - eas/prebuild
+    - eas/configure_eas_update
+    - eas/inject_android_credentials
+    # @info #
+    - eas/configure_android_version:
+        inputs:
+          version_code: '123'
+          version_name: '1.0.0'
+    # @end #
+```
+
+| Property              | Description                                                                                                             |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `name`                | The name of the step in the reusable function that shows in the build logs. Defaults to `Configure Android version`.    |
+| `inputs.version_code` | **string** Optional input defining `versionCode` of your Android build. Defaults to `${ eas.job.version.versionCode }`  |
+| `inputs.version_name` | **string** Optional input defining `versionName` of your Android build. Defaults to `${ eas.job.version.versionName }`. |
+
+<BoxLink
+  title="eas/configure_android_version source code"
+  description="View the source code for the eas/configure_android_version function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/configureAndroidVersion.ts"
+/>
+
+#### `eas/configure_ios_version`
+
+> **Warning** This function is only available for iOS builds
+
+Configures the version of your iOS app. It's used to set a version when using [remote app version management](/build-reference/app-versions/).
+
+It's not mandatory to use this function, if it's not used the version from native code generated during the prebuild phase will be used.
+
+```yaml example.yml
+build:
+  name: Configure iOS version
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - eas/resolve_apple_team_id_from_credentials:
+        id: resolve_apple_team_id_from_credentials
+    - eas/prebuild:
+        inputs:
+          clean: false
+          apple_team_id: ${ steps.resolve_apple_team_id_from_credentials.apple_team_id }
+    - eas/configure_eas_update
+    - eas/configure_ios_credentials
+    # @info #
+    - eas/configure_ios_version
+    # @end #
+```
+
+```yaml example.yml
+build:
+  name: Configure iOS version
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - eas/resolve_apple_team_id_from_credentials:
+        id: resolve_apple_team_id_from_credentials
+    - eas/prebuild:
+        inputs:
+          clean: false
+          apple_team_id: ${ steps.resolve_apple_team_id_from_credentials.apple_team_id }
+    - eas/configure_eas_update
+    - eas/configure_ios_credentials
+    # @info #
+    - eas/configure_ios_version:
+        inputs:
+          build_number: '123'
+          app_version: '1.0.0'
+    # @end #
+```
+
+| Property                     | Description                                                                                                                                                                                                                |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`                       | The name of the step in the reusable function that shows in the build logs. Defaults to `Configure iOS version`.                                                                                                           |
+| `inputs.build_number`        | **string** Optional input defining the build number (`CFBundleVersion`) of your iOS build. Defaults to `${ eas.job.version.buildNumber }`                                                                                  |
+| `inputs.app_version`         | **string** Optional input defining the app version (`CFBundleShortVersionString`) of your iOS build. Defaults to `${ eas.job.version.appVersion }`.                                                                        |
+| `inputs.build_configuration` | **string** Optional input defining the Xcode project's Build Configuration. Defaults to `${ eas.job.buildConfiguration }` or if not specified is resolved to `Debug` for development client or `Release` for other builds. |
+| `inputs.credentials`         | **json** Optional input defining the app credentials for your iOS build. Defaults to `${ eas.job.secrets.buildCredentials }`. Needs to comply to `${ eas.job.secrets.buildCredentials }` schema for iOS.                   |
+
+<BoxLink
+  title="eas/configure_ios_version source code"
+  description="View the source code for the eas/configure_ios_version function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/configureIosVersion.ts"
+/>
+
+#### `eas/run_gradle`
+
+> **Warning** This function is only available for Android builds
+
+Runs a Gradle command to build an Android app.
+
+```yaml example.yml
+build:
+  name: Build Android app
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - eas/prebuild
+    - eas/configure_eas_update
+    - eas/inject_android_credentials
+    # @info #
+    - eas/run_gradle
+    # @end #
+```
+
+```yaml example.yml
+build:
+  name: Build Android app
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - eas/prebuild
+    - eas/configure_eas_update
+    - eas/inject_android_credentials
+    # @info #
+    - eas/run_gradle:
+        inputs:
+          command: :app:bundleRelease
+    # @end #
+```
+
+| Property         | Description                                                                                                                                                                                        |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`           | The name of the step in the reusable function that shows in the build logs. Defaults to `Run gradle`.                                                                                              |
+| `inputs.command` | **string** Optional input defining the Gradle command to run to build the Android app. If not specified it is resolved based on the build configuration and contents of the `${ eas.job }` object. |
+
+<BoxLink
+  title="eas/run_gradle source code"
+  description="View the source code for the eas/run_gradle function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/runGradle.ts"
+/>
+
+#### `eas/generate_gymfile_from_template`
+
+> **Warning** This function is only available for iOS builds
+
+Generates a [`Gymfile`](https://docs.fastlane.tools/actions/gym/#gymfile) used to build the iOS app using Fastlane from a template.
+
+Default template used when credentials are passed:
+
+```ruby Gymfile
+suppress_xcode_output(true)
+clean(<%- CLEAN %>)
+
+scheme("<%- SCHEME %>")
+<% if (BUILD_CONFIGURATION) { %>
+configuration("<%- BUILD_CONFIGURATION %>")
+<% } %>
+
+export_options({
+method: "<%- EXPORT_METHOD %>",
+provisioningProfiles: {<% _.forEach(PROFILES, function(profile) { %>
+    "<%- profile.BUNDLE_ID %>" => "<%- profile.UUID %>",<% }); %>
+}<% if (ICLOUD_CONTAINER_ENVIRONMENT) { %>,
+iCloudContainerEnvironment: "<%- ICLOUD_CONTAINER_ENVIRONMENT %>"
+<% } %>
+})
+
+export_xcargs "OTHER_CODE_SIGN_FLAGS=\\"--keychain <%- KEYCHAIN_PATH %>\\""
+
+disable_xcpretty(true)
+buildlog_path("<%- LOGS_DIRECTORY %>")
+
+output_directory("<%- OUTPUT_DIRECTORY %>")
+```
+
+Default template used when credentials are not passed (simulator build):
+
+```ruby Gymfile
+suppress_xcode_output(true)
+clean(<%- CLEAN %>)
+
+scheme("<%- SCHEME %>")
+<% if (BUILD_CONFIGURATION) { %>
+configuration("<%- BUILD_CONFIGURATION %>")
+<% } %>
+
+derived_data_path("<%- DERIVED_DATA_PATH %>")
+skip_package_ipa(true)
+skip_archive(true)
+destination("<%- SCHEME_SIMULATOR_DESTINATION %>")
+
+disable_xcpretty(true)
+buildlog_path("<%- LOGS_DIRECTORY %>")
+```
+
+`CLEAN`, `SCHEME`, `BUILD_CONFIGURATION`, `EXPORT_METHOD`, `PROFILES`, `ICLOUD_CONTAINER_ENVIRONMENT`, `KEYCHAIN_PATH`, `LOGS_DIRECTORY`, `OUTPUT_DIRECTORY`, `DERIVED_DATA_PATH`and `SCHEME_SIMULATOR_DESTINATION` values are provided to the template based on the inputs and default internal configuration of EAS Build.
+
+```yaml example.yml
+build:
+  name: Generate Gymfile template
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - eas/resolve_apple_team_id_from_credentials:
+        id: resolve_apple_team_id_from_credentials
+    - eas/prebuild:
+        inputs:
+          clean: false
+          apple_team_id: ${ steps.resolve_apple_team_id_from_credentials.apple_team_id }
+    - eas/configure_eas_update
+    - eas/configure_ios_credentials
+    # @info #
+    - eas/generate_gymfile_template:
+        inputs:
+          credentials: ${ eas.job.secrets.buildCredentials }
+    # @end #
+```
+
+```yaml example.yml
+build:
+  name: Generate Gymfile template
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - eas/prebuild
+    # @info #
+    - eas/generate_gymfile_template
+    # @end #
+```
+
+However, you can also use other custom properties in the template, by specifying your custom template in `inputs.template` and providing the values for the custom properties in the `inputs.extra` object.
+
+```yaml example.yml
+build:
+  name: Generate Gymfile template
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - eas/resolve_apple_team_id_from_credentials:
+        id: resolve_apple_team_id_from_credentials
+    - eas/prebuild:
+        inputs:
+          clean: false
+          apple_team_id: ${ steps.resolve_apple_team_id_from_credentials.apple_team_id }
+    - eas/configure_eas_update
+    - eas/configure_ios_credentials
+    # @info #
+    - eas/generate_gymfile_template:
+        inputs:
+          credentials: ${ eas.job.secrets.buildCredentials }
+          extra:
+            MY_VALUE: my value
+          template: |
+            suppress_xcode_output(true)
+            clean(<%- CLEAN %>)
+
+            scheme("<%- SCHEME %>")
+            <% if (BUILD_CONFIGURATION) { %>
+            configuration("<%- BUILD_CONFIGURATION %>")
+            <% } %>
+
+            export_options({
+            method: "<%- EXPORT_METHOD %>",
+            provisioningProfiles: {<% _.forEach(PROFILES, function(profile) { %>
+                "<%- profile.BUNDLE_ID %>" => "<%- profile.UUID %>",<% }); %>
+            }<% if (ICLOUD_CONTAINER_ENVIRONMENT) { %>,
+            iCloudContainerEnvironment: "<%- ICLOUD_CONTAINER_ENVIRONMENT %>"
+            <% } %>
+            })
+
+            export_xcargs "OTHER_CODE_SIGN_FLAGS=\"--keychain <%- KEYCHAIN_PATH %>\""
+
+            disable_xcpretty(true)
+            buildlog_path("<%- LOGS_DIRECTORY %>")
+
+            output_directory("<%- OUTPUT_DIRECTORY %>")
+
+            sth_else("<%- MY_VALUE %>")
+        # @end #
+```
+
+| Property                     | Description                                                                                                                                                                                                                                                                         |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`                       | The name of the step in the reusable function that shows in the build logs. Defaults to `Generate Gymfile from template`.                                                                                                                                                           |
+| `inputs.template`            | **string** Optional input defining the Gymfile template which should be used. If not specified one out of two default templates will be used depending on whether the `inputs.credentials` value is specified.                                                                      |
+| `inputs.credentials`         | **json** Optional input defining the app credentials for your iOS build. If specified `KEYCHAIN_PATH`, `EXPORT_METHOD`, and `PROFILES` values will be provided to the template.                                                                                                     |
+| `inputs.build_configuration` | **string** Optional input defining the Xcode project's Build Configuration. Defaults to `${ eas.job.buildConfiguration }` or if not specified is resolved to `Debug` for development client or `Release` for other builds. Corresponds to the `BUILD_CONFIGURATION` template value. |
+| `inputs.scheme`              | **string** Optional input defining the Xcode project's scheme which should be used for the build. Defaults to `${ eas.job.scheme }` or if not specified is resolved to the first scheme found in the Xcode project. Corresponds to the `SCHEME` template value.                     |
+| `inputs.clean`               | **boolean** Optional input defining whether the Xcode project should be cleaned before the build. Defaults to `true`. Corresponds to `CLEAN` template variable.                                                                                                                     |
+| `inputs.extra`               | **json** Optional input defining extra values which should be provided to the template.                                                                                                                                                                                             |
+
+<BoxLink
+  title="eas/generate_gymfile_from_template source code"
+  description="View the source code for the eas/generate_gymfile_template function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/generateGymfileFromTemplate.ts"
+/>
+
+#### `eas/run_fastlane`
+
+> **Warning** This function is only available for iOS builds
+
+Runs [`fastlane gym`](https://docs.fastlane.tools/actions/gym/#gym) command against the [`Gymfile`](https://docs.fastlane.tools/actions/gym/#gymfile) located in the `ios` project directory to build the iOS app.
+
+```yaml example.yml
+build:
+  name: Build iOS app
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - eas/resolve_apple_team_id_from_credentials:
+        id: resolve_apple_team_id_from_credentials
+    - eas/prebuild:
+        inputs:
+          clean: false
+          apple_team_id: ${ steps.resolve_apple_team_id_from_credentials.apple_team_id }
+    - eas/configure_eas_update
+    - eas/configure_ios_credentials
+    - eas/generate_gymfile_template:
+        inputs:
+          credentials: ${ eas.job.secrets.buildCredentials }
+    # @info #
+    - eas/run_fastlane
+    # @end #
+```
+
+```yaml example.yml
+build:
+  name: Build iOS app
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - eas/prebuild
+    - eas/configure_eas_update
+    - eas/generate_gymfile_template
+    # @info #
+    - eas/run_fastlane
+    # @end #
+```
+
+<BoxLink
+  title="eas/run_fastlane source code"
+  description="View the source code for the eas/run_fastlane function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/runFastlane.ts"
+/>
+
+#### `eas/find_and_upload_build_artifacts`
+
+> **Warning** You can currently upload each artifact type only once per workflow.
+
+Automatically finds and uploads application archive, other build artifacts, and Xcode logs looking at default locations and respecting `${ eas.job.buildArtifactPaths }` setting. Uploads found artifacts to the EAS servers.
+
+```yaml example.yml
+build:
+  name: Build iOS app
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - eas/resolve_apple_team_id_from_credentials:
+        id: resolve_apple_team_id_from_credentials
+    - eas/prebuild:
+        inputs:
+          clean: false
+          apple_team_id: ${ steps.resolve_apple_team_id_from_credentials.apple_team_id }
+    - eas/configure_eas_update
+    - eas/configure_ios_credentials
+    - eas/generate_gymfile_template:
+        inputs:
+          credentials: ${ eas.job.secrets.buildCredentials }
+    - eas/run_fastlane
+    # @info #
+    - eas/find_and_upload_build_artifacts
+    # @end #
+```
+
+```yaml example.yml
+build:
+  name: Build iOS app
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - eas/prebuild
+    - eas/configure_eas_update
+    - eas/generate_gymfile_template
+    - eas/run_fastlane
+    # @info #
+    - eas/find_and_upload_build_artifacts
+    # @end #
+```
+
+```yaml example.yml
+build:
+  name: Build Android app
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - eas/prebuild
+    - eas/configure_eas_update
+    - eas/inject_android_credentials
+    - eas/run_gradle
+    - eas/find_and_upload_build_artifacts
+```
+
+<BoxLink
+  title="eas/find_and_upload_build_artifacts source code"
+  description="View the source code for the eas/find_and_upload_build_artifacts function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/findAndUploadBuildArtifacts.ts"
+/>
+
+#### `eas/upload_artifact`
+
+Uploads a build artifact.
+
+> **Warning** You can currently upload each artifact type only once per workflow.
+
+For example, a workflow with the following `steps` will upload an artifact to the EAS servers:
+
+```yaml upload.yml
+build:
+  name: Upload artifacts
+  steps:
+    - eas/checkout
+    # - ...
+    - eas/upload_artifact:
+        name: Upload application archive
+        inputs:
+          path: fixtures/app-debug.apk
+    - eas/upload_artifact:
+        name: Upload build artifact
+        inputs:
+          type: build-artifact
+          path: assets/icon.png
+```
+
+| Property      | Description                                                                                                                                                     |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`        | The name of the step in the reusable function that shows in the build logs.                                                                                     |
+| `inputs.path` | **string** Required. The path to the artifact that is uploaded to the EAS servers.                                                                              |
+| `inputs.type` | **string** The type of artifact that is uploaded to the EAS servers. Allowed values: `application-archive`, `build-artifact`. Defaults to `application-archive` |
+
+<BoxLink
+  title="eas/upload_artifact source code"
+  description="View the source code for the eas/upload_artifact function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/uploadArtifact.ts"
+/>
+
+### Using built-in EAS functions to build an app
+
+Using the built-in EAS functions you can recreate the default EAS Build workflow for different build types.
+
+For example, to trigger a build that creates internal distribution build for Android and a simulator build for iOS you can use the following configuration:
+
+```json eas.json
+{
+  /* @hide ... */ /* @end */
+  "build": {
+    /* @hide ... */ /* @end */
+    "developmentBuild": {
+      "distribution": "internal",
+      "android": {
+        "config": "development-build-android.yml"
+      },
+      "ios": {
+        "simulator": true,
+        "config": "development-build-ios.yml"
+      }
+    }
+    /* @hide ... */ /* @end */
+  }
+  /* @hide ... */ /* @end */
+}
+```
+
+```yaml .eas/build/development-build-android.yml
+build:
+  name: Simple internal distribution Android build
+  steps:
+    - eas/checkout
+
+    - eas/install_node_modules
+
+    - eas/prebuild
+
+    - eas/inject_android_credentials
+
+    - eas/run_gradle
+
+    - eas/find_and_upload_build_artifacts
+```
+
+```yaml .eas/build/development-build-ios.yml
+build:
+  name: Simple simulator iOS build
+  steps:
+    - eas/checkout
+
+    - eas/install_node_modules
+
+    - eas/prebuild
+
+    - run:
+        name: Install pods
+        working_directory: ./ios
+        command: pod install
+
+    - eas/generate_gymfile_from_template
+
+    - eas/run_fastlane
+
+    - eas/find_and_upload_build_artifacts
+```
+
+To create a Google Play Store build for Android and an Apple App Store build for iOS you can use the following configuration:
+
+```json eas.json
+{
+  /* @hide ... */ /* @end */
+  "build": {
+    /* @hide ... */ /* @end */
+    "productionBuild": {
+      "android": {
+        "config": "production-build-android.yml"
+      },
+      "ios": {
+        "config": "production-build-ios.yml"
+      }
+    }
+    /* @hide ... */ /* @end */
+  }
+  /* @hide ... */ /* @end */
+}
+```
+
+```yaml .eas/build/production-build-android.yml
+build:
+  name: Customized Android Play Store build example
+  steps:
+    - eas/checkout
+
+    - eas/install_node_modules
+
+    - eas/prebuild
+
+    - eas/inject_android_credentials
+
+    - eas/run_gradle
+
+    - eas/find_and_upload_build_artifacts
+```
+
+```yaml .eas/build/production-build-ios.yml
+build:
+  name: Customized iOS App Store build example
+  steps:
+    - eas/checkout
+
+    - eas/install_node_modules
+
+    - eas/resolve_apple_team_id_from_credentials:
+        id: resolve_apple_team_id_from_credentials
+
+    - eas/prebuild:
+        inputs:
+          apple_team_id: ${ steps.resolve_apple_team_id_from_credentials.apple_team_id }
+
+    - run:
+        name: Install pods
+        working_directory: ./ios
+        command: pod install
+
+    - eas/configure_ios_credentials
+
+    - eas/generate_gymfile_from_template:
+        inputs:
+          credentials: ${ eas.job.secrets.buildCredentials }
+
+    - eas/run_fastlane
+
+    - eas/find_and_upload_build_artifacts
+```
+
+Check out the **example repository** for more detailed examples:
+
+<BoxLink
+  title="Custom build example repository"
+  description="A custom EAS Build example that includes examples for workflows such as setting up functions, using environment variables, uploading artifacts, and more."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-custom-builds-example/tree/main"
+/>
+
+### Use a reusable function in a `build`
+
+For example, a workflow with the following reusable function contains a single command to print a message that is echoed.
+
+```yaml
+functions:
+  greetings:
+    - name: name
+      default_value: Hello world
+    inputs: [value]
+    command: echo "${ inputs.name }, { inputs.value }"
+```
+
+The above function can be used in a `build` as follows:
+
+```yaml
+build:
+  name: Functions Demo
+  steps:
+    # @info #
+    - greetings:
+        inputs:
+          value: Expo
+    # @end #
+```
+
+> **info** **Tip:** `build.steps` can execute multiple reusable `functions` sequentially.
+
+## Override values in a `build`
+
+You can override values for following properties:
+
+- `working_directory`
+- `name`
+- `shell`
+
+For example, a reusable function called `list_files`:
+
+```yaml
+functions:
+  # @info #
+  list_files:
+    name: List files
+    command: ls -la
+  # @end #
+```
+
+When `list_files` is called in a workflow, it lists all files in the root directory of a project:
+
+```yaml
+build:
+  name: List files
+  # @info #
+  steps:
+    - eas/checkout
+    - list_files
+  # @end #
+```
+
+You can use the `working_directory` property to override the behavior in the function call to list the files in a different directory by specifying the path to that directory:
+
+```yaml
+build:
+  name: List files
+    steps:
+      # @info #
+      - eas/checkout
+      - list_files:
+          working_directory: /a/b/c
+      # @end #
+```

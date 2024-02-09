@@ -46,7 +46,6 @@ export function getAndroidSplashConfig(
   return null;
 }
 
-// TODO: dark isn't supported in the Expo config spec yet.
 export function getAndroidDarkSplashConfig(
   config: Pick<ExpoConfig, 'splash' | 'android'>
 ): SplashScreenConfig | null {

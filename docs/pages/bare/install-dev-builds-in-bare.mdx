@@ -6,6 +6,7 @@ description: Learn how to configure development builds for bare React Native pro
 
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
 The installation steps on this page are only required to add the `expo-dev-client` library to a React Native or a bare project.
 
@@ -65,7 +66,11 @@ There are a few more changes you can make to get the best experience, but you [c
 
 When you start your project on iOS, the metro bundler will start automatically. This behavior might not be ideal when you want to use `npx expo start`. Our recommended solution is to remove the `Start Packager` action from building scripts. To do that you need to open the Xcode, go to **Build Phases** and remove the **Start Packager** action.
 
-<img src="/static/images/client/remove_start_packager.png" style={{ maxWidth: '100%' }} />
+<ImageSpotlight
+  alt="Remove start package manager from Xcode."
+  src="/static/images/bare/remove_start_packager.png"
+  style={{ maxWidth: 720 }}
+/>
 
 ### Add better error handlers
 
@@ -97,6 +102,6 @@ After doing so, if your project has an **ios/** directory on disk, you will need
 
 ## Build and install
 
-You're now ready to [build your first development build](develop/development-builds/create-a-build/#initialize-eas-build).
+You're now ready to [build your first development build](/develop/development-builds/create-a-build/#initialize-eas-build).
 
 </Step>

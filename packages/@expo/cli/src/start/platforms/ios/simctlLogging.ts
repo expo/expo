@@ -4,10 +4,10 @@ import { EOL } from 'os';
 import path from 'path';
 import wrapAnsi from 'wrap-ansi';
 
+import { Device, getContainerPathAsync } from './simctl';
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
-import { Device, getContainerPathAsync } from './simctl';
 
 export type SimControlLog = {
   /**
@@ -96,7 +96,10 @@ export class SimulatorLogStreamer {
     );
   };
 
-  constructor(public device: Pick<Device, 'udid'>, public resolver: ProcessResolver) {}
+  constructor(
+    public device: Pick<Device, 'udid'>,
+    public resolver: ProcessResolver
+  ) {}
 
   isAttached() {
     return !!this.childProcess;

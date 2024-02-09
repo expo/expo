@@ -66,7 +66,7 @@ class MediaLibraryModule : Module() {
       return@Constants mapOf(
         "MediaType" to MediaType.getConstants(),
         "SortBy" to SortBy.getConstants(),
-        "CHANGE_LISTENER_NAME" to LIBRARY_DID_CHANGE_EVENT,
+        "CHANGE_LISTENER_NAME" to LIBRARY_DID_CHANGE_EVENT
       )
     }
 
@@ -154,7 +154,7 @@ class MediaLibraryModule : Module() {
       }
     }
 
-    AsyncFunction("getAssetInfoAsync") { assetId: String, _: Map<String, Any?>? /* unused on android atm */, promise: Promise ->
+    AsyncFunction("getAssetInfoAsync") { assetId: String, _: Map<String, Any?>?/* unused on android atm */, promise: Promise ->
       throwUnlessPermissionsGranted(isWrite = false) {
         withModuleScope(promise) {
           GetAssetInfo(context, assetId, promise).execute()
@@ -162,7 +162,7 @@ class MediaLibraryModule : Module() {
       }
     }
 
-    AsyncFunction("getAlbumsAsync") { _: Map<String, Any?>? /* unused on android atm */, promise: Promise ->
+    AsyncFunction("getAlbumsAsync") { _: Map<String, Any?>?/* unused on android atm */, promise: Promise ->
       throwUnlessPermissionsGranted(isWrite = false) {
         withModuleScope(promise) {
           GetAlbums(context, promise).execute()
@@ -218,10 +218,18 @@ class MediaLibraryModule : Module() {
         return@AsyncFunction
       }
 
+      val assetsIds = getAssetsInAlbums(context, albumId)
+        .filter { it.isNotEmpty() }
+        .toTypedArray()
+      // The album is empty, nothing to migrate
+      if (assetsIds.isEmpty()) {
+        return@AsyncFunction
+      }
+
       val assets = MediaLibraryUtils.getAssetsById(
         context,
         null,
-        *getAssetsInAlbums(context, albumId).toTypedArray()
+        *assetsIds
       )
 
       val albumsMap = assets
@@ -254,8 +262,12 @@ class MediaLibraryModule : Module() {
       throwUnlessPermissionsGranted(isWrite = false) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
           moduleCoroutineScope.launch {
-            CheckIfAlbumShouldBeMigrated(context, albumId, promise)
-              .execute()
+            try {
+              CheckIfAlbumShouldBeMigrated(context, albumId, promise)
+                .execute()
+            } catch (e: CodedException) {
+              promise.reject(e)
+            }
           }
         }
         promise.resolve(false)
@@ -433,6 +445,8 @@ class MediaLibraryModule : Module() {
           awaitingAction = null
           throw e
         }
+        // the action will be called when permissions are granted
+        return
       }
     }
     action.runWithPermissions(true)

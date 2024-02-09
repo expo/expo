@@ -4,7 +4,6 @@
 #import <ExpoModulesCore/EXReactDelegateWrapper+Private.h>
 #import <ExpoModulesCore/Swift.h>
 
-
 @interface EXAppDelegateWrapper()
 
 @property (nonatomic, strong) EXReactDelegateWrapper *reactDelegate;
@@ -44,32 +43,14 @@
 
 #if __has_include(<React-RCTAppDelegate/RCTAppDelegate.h>) || __has_include(<React_RCTAppDelegate/RCTAppDelegate.h>)
 
-- (UIView *)findRootView:(UIApplication *)application
-{
-  UIWindow *mainWindow = application.delegate.window;
-  if (mainWindow == nil) {
-    return nil;
-  }
-  UIViewController *rootViewController = mainWindow.rootViewController;
-  if (rootViewController == nil) {
-    return nil;
-  }
-  UIView *rootView = rootViewController.view;
-  return rootView;
-}
-
+#if !TARGET_OS_OSX
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  UIView *rootView = [self findRootView:application];
-  // Backward compatible with react-native 0.71 running with legacy template,
-  // i.e. still creating bridge, rootView in AppDelegate.mm.
-  // In this case, we don't go through RCTAppDelegate's setup.
-  if (rootView == nil || ![rootView isKindOfClass:[RCTRootView class]]) {
-    [super application:application didFinishLaunchingWithOptions:launchOptions];
-    [_expoAppDelegate application:application didFinishLaunchingWithOptions:launchOptions];
-  }
+  [super application:application didFinishLaunchingWithOptions:launchOptions];
+  [_expoAppDelegate application:application didFinishLaunchingWithOptions:launchOptions];
   return YES;
 }
+#endif // !TARGET_OS_OSX
 
 - (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
 {
@@ -85,10 +66,17 @@
   enableFabric = self.fabricEnabled;
 #endif
 
-  return [self.reactDelegate createRootViewWithBridge:bridge
-                                         moduleName:moduleName
-                                    initialProperties:initProps
-                                        fabricEnabled:enableFabric];
+  UIView *rootView = [self.reactDelegate createRootViewWithBridge:bridge
+                                                       moduleName:moduleName
+                                                initialProperties:initProps
+                                                    fabricEnabled:enableFabric];
+#if TARGET_OS_IOS
+  rootView.backgroundColor = UIColor.systemBackgroundColor;
+#elif TARGET_OS_OSX
+  rootView.wantsLayer = YES;
+  rootView.layer.backgroundColor = NSColor.windowBackgroundColor.CGColor;
+#endif
+  return rootView;
 }
 
 - (UIViewController *)createRootViewController

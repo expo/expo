@@ -8,9 +8,100 @@
 
 ### 🐛 Bug fixes
 
-- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+### 💡 Others
+
+## 6.4.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 6.4.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- On `Android`, add event to module definition to prevent `new NativeEventEmitter()` warning. ([#24943](https://github.com/expo/expo/pull/24943) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 6.0.6 — 2023-10-20
+
+### 🐛 Bug fixes
+
+- On `Android`, add event to module definition to prevent `new NativeEventEmitter()` warning. ([#24943](https://github.com/expo/expo/pull/24943) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 6.3.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+## 6.2.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+## 6.1.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 6.1.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.5 — 2023-07-25
+
+### 🐛 Bug fixes
+
+- Fix addOrientationChangeListener not working on iPadOS. ([#23656](https://github.com/expo/expo/pull/23656) by [@behenate](https://github.com/behenate))
+
+## 6.0.4 — 2023-07-23
+
+### 🐛 Bug fixes
+
+- [iOS] Fix event emitter sending events with no registered listeners. ([#23462](https://github.com/expo/expo/pull/23462) by [@behenate](https://github.com/behenate))
+- [iOS] Fix config plugin deleting the orientations key from `Info.plist` when the initial orientation value is set to `DEFAULT`. ([#23637](https://github.com/expo/expo/pull/23637) by [@behenate](https://github.com/behenate))
+
+## 6.0.3 — 2023-07-12
+
+### 🐛 Bug fixes
+
+- [iOS] When config plugin is not configured the initial orientation is now based on values in `Info.plist` instead of being set to portrait. ([#23456](https://github.com/expo/expo/pull/23456) by [@behenate](https://github.com/behenate))
+
+## 6.0.2 — 2023-07-04
 
 ### 💡 Others
+
+- [iOS] Refactor the singleton class to work properly in versioned code in Expo Go. ([#23228](https://github.com/expo/expo/pull/23228) by [@tsapeta](https://github.com/tsapeta))
+
+## 6.0.1 — 2023-06-23
+
+### 🐛 Bug fixes
+
+- [iOS] Fix crash when reading `rootViewController` value. ([#23039](https://github.com/expo/expo/pull/23039) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 6.0.0 — 2023-06-21
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.0-beta.1 — 2023-06-13
+
+### 🎉 New features
+
+- Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- [iOS] Fixed screen orientation on iOS 16. ([#22152](https://github.com/expo/expo/pull/22152) by [@behenate](https://github.com/behenate))
+- [iOS] Fixed status bar and navigation bar following the device's orientation regardless of applied orientation lock. ([#22152](https://github.com/expo/expo/pull/22152) by [@behenate](https://github.com/behenate))
+- [iOS] Fixed SafeAreaViews failing after pulling down quick settings when the device is in a different orientation than the current orientation lock allows. ([#22152](https://github.com/expo/expo/pull/22152) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- [iOS] Migrated to new modules API. ([#22152](https://github.com/expo/expo/pull/22152) by [@behenate](https://github.com/behenate))
 
 ## 5.2.0 — 2023-05-08
 

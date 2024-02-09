@@ -1,6 +1,7 @@
 package expo.modules.kotlin.jni
 
 import com.facebook.jni.HybridData
+import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import com.facebook.soloader.SoLoader
 import expo.modules.core.interfaces.DoNotStrip
@@ -29,22 +30,22 @@ class JSIInteropModuleRegistry(appContext: AppContext) : Destructible {
   /**
    * Initializes the `ExpoModulesHostObject` and adds it to the global object.
    */
+  @OptIn(FrameworkAPI::class)
   external fun installJSI(
     jsRuntimePointer: Long,
     jniDeallocator: JNIDeallocator,
-    jsInvokerHolder: CallInvokerHolderImpl,
-    nativeInvokerHolder: CallInvokerHolderImpl
+    jsInvokerHolder: CallInvokerHolderImpl
   )
 
   /**
    * Initializes the test runtime. Shouldn't be used in the production.
    */
   external fun installJSIForTests(
-    jniDeallocator: JNIDeallocator,
+    jniDeallocator: JNIDeallocator
   )
 
   fun installJSIForTests() = installJSIForTests(
-    JNIDeallocator(shouldCreateDestructorThread = false)
+    appContextHolder.get()!!.jniDeallocator
   )
 
   /**
@@ -68,6 +69,11 @@ class JSIInteropModuleRegistry(appContext: AppContext) : Destructible {
    * Drains the JavaScript VM internal Microtask (a.k.a. event loop) queue.
    */
   external fun drainJSEventLoop()
+
+  /**
+   * Informs C++ that runtime was deallocated.
+   */
+  external fun wasDeallocated()
 
   /**
    * Returns a `JavaScriptModuleObject` that is a bridge between [expo.modules.kotlin.modules.Module]
@@ -104,6 +110,30 @@ class JSIInteropModuleRegistry(appContext: AppContext) : Destructible {
       .get()
       ?.sharedObjectRegistry
       ?.add(native as SharedObject, js)
+  }
+
+  @Suppress("unused")
+  @DoNotStrip
+  fun registerClass(native: Class<*>, js: JavaScriptObject) {
+    appContextHolder
+      .get()
+      ?.classRegistry
+      ?.add(native, js)
+  }
+
+  @Suppress("unused")
+  @DoNotStrip
+  fun getJavascriptClass(native: java.lang.Class<*>): JavaScriptObject? {
+    return appContextHolder
+      .get()
+      ?.classRegistry
+      ?.toJavaScriptObject(native)
+  }
+
+  @Suppress("unused")
+  @DoNotStrip
+  fun getCoreModuleObject(): JavaScriptModuleObject? {
+    return appContextHolder.get()?.coreModule?.jsObject
   }
 
   @Throws(Throwable::class)

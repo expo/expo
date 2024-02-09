@@ -2,8 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
+	<key>CFBundleDisplayName</key>
+	<string>BareExpo</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -38,21 +42,28 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>FacebookAppID</key>
+	<string>1696089354000816</string>
+	<key>FacebookDisplayName</key>
+	<string>Expo APIs</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>fbapi</string>
+		<string>fb-messenger-api</string>
+		<string>fbauth2</string>
+		<string>fbshareextension</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+		<key>NSAllowsLocalNetworking</key>
 		<true/>
-		<key>NSExceptionDomains</key>
-		<dict>
-			<key>localhost</key>
-			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
-			</dict>
-		</dict>
 	</dict>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>Allow bare-expo to access your calendar</string>
 	<key>NSCalendarsUsageDescription</key>
 	<string>Allow bare-expo to access your calendar</string>
 	<key>NSCameraUsageDescription</key>
@@ -70,17 +81,24 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow bare-expo to access your microphone</string>
 	<key>NSMotionUsageDescription</key>
-	<string>Allow bare-expo to access your device&apos;s accelerometer</string>
+	<string>Allow bare-expo to access your device's accelerometer</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Give bare-expo periences permission to save photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Give bare-expo periences permission to access your photos</string>
+	<key>NSRemindersFullAccessUsageDescription</key>
+	<string>Allow bare-expo to access your reminders</string>
 	<key>NSRemindersUsageDescription</key>
 	<string>Allow bare-expo to access your reminders</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>Allow Expo projects to use data for tracking the user or the device</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>icomoon.ttf</string>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>audio</string>
 		<string>fetch</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
@@ -89,6 +107,8 @@
 	<array>
 		<string>armv7</string>
 	</array>
+	<key>UIRequiresFullScreen</key>
+	<false/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -98,20 +118,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>UIRequiresFullScreen</key>
-	<false/>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>fbapi</string>
-		<string>fb-messenger-api</string>
-		<string>fbauth2</string>
-		<string>fbshareextension</string>
-	</array>
-	<key>CFBundleDisplayName</key>
-	<string>BareExpo</string>
-	<key>FacebookAppID</key>
-	<string>1696089354000816</string>
-	<key>FacebookDisplayName</key>
-	<string>Expo APIs</string>
 </dict>
 </plist>

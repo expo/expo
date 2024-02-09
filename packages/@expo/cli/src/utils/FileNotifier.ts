@@ -3,8 +3,8 @@ import { watchFile } from 'fs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import * as Log from '../log';
 import { memoize } from './fn';
+import * as Log from '../log';
 
 const debug = require('debug')('expo:utils:fileNotifier') as typeof console.log;
 

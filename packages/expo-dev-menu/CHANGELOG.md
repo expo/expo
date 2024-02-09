@@ -2,15 +2,191 @@
 
 ## Unpublished
 
-### 📚 3rd party library updates
-
-- Updated `robolectric` to `4.10`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
-
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
-- [Android] Added support for the new architecture. ([#22607](https://github.com/expo/expo/pull/22607) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+### 🐛 Bug fixes
+
+- Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357), [#26740](https://github.com/expo/expo/pull/26740) by [@kudo](https://github.com/kudo))
+- Fixed `Unrecognised selector` crash for `extraModulesForBridge:` on iOS. ([#26523](https://github.com/expo/expo/pull/26523) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Remove classic updates SDK version. ([#26061](https://github.com/expo/expo/pull/26061) by [@wschurman](https://github.com/wschurman))
+- Updated `androidx.browser:browser` to `1.6.0` [#26619](https://github.com/expo/expo/pull/26619) by [@zoontek](https://github.com/zoontek)
+- Allow registerDevMenuItems in non-dev bundles. ([#26955](https://github.com/expo/expo/pull/26955) by [@wschurman](https://github.com/wschurman))
+
+### 📚 3rd party library updates
+
+- Update react-native to 0.73.2. ([#26311](https://github.com/expo/expo/pull/26311) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- update semver from 7.5.3 to 7.5.4. ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
+- Update react-native to 0.73.4. ([#26774](https://github.com/expo/expo/pull/26774) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 4.5.4 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 4.5.3 - 2024-01-10
+
+### 💡 Others
+
+- Replace deprecated `com.facebook.react:react-native:+` Android dependency with `com.facebook.react:react-android`. ([#26237](https://github.com/expo/expo/pull/26237) by [@kudo](https://github.com/kudo))
+
+## 4.5.2 - 2023-12-19
+
+### 🎉 New features
+
+- Added support for React Native 0.73.1. ([#25998](https://github.com/expo/expo/pull/25998) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 4.5.1 — 2023-12-12
+
+### 🐛 Bug fixes
+
+- Fix opening JS debugger from dev menu ([#25881](https://github.com/expo/expo/pull/25881) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 4.5.0 — 2023-12-12
+
+### 🎉 New features
+
+- Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix `Unable to find module for ExpoModulesCore.ViewModuleWrapper`. ([#25813](https://github.com/expo/expo/pull/25813) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+- Bump C++ compiler setting to C++20. ([#25548](https://github.com/expo/expo/pull/25548) by [@kudo](https://github.com/kudo))
+
+## 4.4.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- Remove deprecated `REACT_NATIVE_OVERRIDE_VERSION` for React Native nightly testing. ([#25151](https://github.com/expo/expo/pull/25151) by [@kudo](https://github.com/kudo))
+- Removed backward compatible code for deprecated SDKs. ([#25154](https://github.com/expo/expo/pull/25154) by [@kudo](https://github.com/kudo))
+
+## 4.3.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- [Android] Fixed Fast Refresh being disabled by default ([#24643](https://github.com/expo/expo/pull/24643) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
+- Drop support for configuring SDK 44 and below with Prebuild. ([#24504](https://github.com/expo/expo/pull/24504) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 3.2.1 — 2023-09-25
+
+_This version does not introduce any user-facing changes._
+
+## 4.2.1 — 2023-09-18
+
+### 💡 Others
+
+- Fix eslint and TypeScript warnings ([#24497](https://github.com/expo/expo/pull/24497) by [@kadikraman](https://github.com/kadikraman))
+
+## 3.2.0 — 2023-09-15
+
+### 🎉 New features
+
+- Add `control+d` as a hotkey to open the menu. ([#24434](https://github.com/expo/expo/pull/24434) by [@alanjhughes](https://github.com/alanjhughes))
+- Separate `refresh` button from the rest ([#24426](https://github.com/expo/expo/pull/24426) by [@kadikraman](https://github.com/kadikraman))
+
+## 4.2.0 — 2023-09-15
+
+### 🎉 New features
+
+- Add `control+d` as a hotkey to open the menu. ([#24434](https://github.com/expo/expo/pull/24434) by [@alanjhughes](https://github.com/alanjhughes))
+- Separate `refresh` button from the rest ([#24426](https://github.com/expo/expo/pull/24426) by [@kadikraman](https://github.com/kadikraman))
+
+### 🐛 Bug fixes
+
+- Fixed task ':expo-dev-menu:packageReleaseAssets' uses this output of task ':expo-dev-menu:copyAssets' without declaring an explicit or implicit dependency on Android. ([#24393](https://github.com/expo/expo/pull/24393) by [@lukmccall](https://github.com/lukmccall))
+
+## 4.1.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018), [#24019](https://github.com/expo/expo/pull/24019) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Migrate to Expo CLI. ([#23806](https://github.com/expo/expo/pull/23806) by [@EvanBacon](https://github.com/EvanBacon))
+- Use dedicated `requireOptionalNativeModule` instead of try-catching `requireNativeModule`. ([#24262](https://github.com/expo/expo/pull/24262) by [@tsapeta](https://github.com/tsapeta))
+
+## 4.0.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 3.1.9 — 2023-07-26
+
+_This version does not introduce any user-facing changes._
+
+## 3.1.8 - 2023-07-12
+
+### 💡 Others
+
+- Added support for React Native 0.72.3 ([#23502](https://github.com/expo/expo/pull/23502) by [@tsapeta](https://github.com/tsapeta))
+
+## 3.1.7 - 2023-07-10
+
+### 🐛 Bug fixes
+
+- Fixed release build runtime crashes when there is `import 'expo-dev-client'` in JavaScript entry file. ([#23413](https://github.com/expo/expo/pull/23413) by [@kudo](https://github.com/kudo))
+
+## 3.1.6 - 2023-07-04
+
+_This version does not introduce any user-facing changes._
+
+## 3.1.5 - 2023-06-30
+
+### 🐛 Bug fixes
+
+- Fixed the `Cannot read property 'addDevMenuCallbacks' of null` error when registering custom menu item on iOS. ([#23219](https://github.com/expo/expo/pull/23219) by [@kudo](https://github.com/kudo))
+- Fixed iOS build errors in `use_frameworks!` mode. ([#23218](https://github.com/expo/expo/pull/23218) by [@kudo](https://github.com/kudo))
+- Added support for React Native 0.72.1. ([#23262](https://github.com/expo/expo/pull/23262) by [@kudo](https://github.com/kudo))
+
+## 3.1.4 — 2023-06-28
+
+_This version does not introduce any user-facing changes._
+
+## 3.1.3 — 2023-06-27
+
+### 💡 Others
+
+- Upgrade `semver` lib. ([#23113](https://github.com/expo/expo/pull/23113) by [@felipemillhouse](https://github.com/felipemillhouse))
+- Remove unused fonts. ([#23107](https://github.com/expo/expo/pull/23107) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 3.1.2 — 2023-06-23
+
+### 🐛 Bug fixes
+
+- Fixed compatibility issue with react-native-reanimated on iOS. ([#23057](https://github.com/expo/expo/pull/23057) by [@kudo](https://github.com/kudo))
+
+## 3.1.1 — 2023-06-22
+
+_This version does not introduce any user-facing changes._
+
+## 3.1.0 — 2023-06-21
+
+### 📚 3rd party library updates
+
+- Updated `robolectric` to `4.10`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+
+### 🎉 New features
+
+- Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+- Added support for the new architecture. ([#22607](https://github.com/expo/expo/pull/22607), [#22184](https://github.com/expo/expo/pull/22184) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
@@ -18,6 +194,9 @@
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+- Update onboarding text to be more concise and clear, and fix compat with large text accessibiltiy settings. ([#22712](https://github.com/expo/expo/pull/22712) by [@brentvatne](https://github.com/brentvatne))
+- Bump `babel-plugin-module-resolver` dev dependency. ([#22871](https://github.com/expo/expo/pull/22871) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.0.0 — 2023-05-08
 

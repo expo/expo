@@ -8,9 +8,48 @@
 
 ### 🐛 Bug fixes
 
-- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- [Android] Enhanced resource management in VideoThumbnails module by ensuring closure of `ParcelFileDescriptor` and releasing `MediaMetadataRetriever` post-use. ([#26100](https://github.com/expo/expo/pull/26100) by [@hirbod](https://github.com/hirbod))
+  
+### 💡 Others
+
+## 7.9.0 — 2023-12-12
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed an issue where `timeFrame` exceeding video duration failed to generate a thumbnail. Implemented clamping. ([#25681](https://github.com/expo/expo/pull/25681) by [@hirbod](https://github.com/hirbod))
 
 ### 💡 Others
+
+- [iOS] Replace legacy `FileSystem` interfaces usage with core `FileSystemUtilities`. ([#25495](https://github.com/expo/expo/pull/25495) by [@alanhughes](https://github.com/alanjhughes))
+
+## 7.8.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 7.7.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+## 7.6.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+## 7.5.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 7.4.0 — 2023-06-21
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ## 7.3.0 — 2023-05-08
 

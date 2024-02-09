@@ -1,11 +1,13 @@
 import { useEffect, useRef } from 'react';
 
-import * as Updates from './Updates';
 import { UpdateEvent } from './Updates.types';
+import { addListener } from './UpdatesEmitter';
 
 /**
  * React hook to create an [`UpdateEvent`](#updateevent) listener subscription on mount, using
  * [`addListener`](#updatesaddlistenerlistener). It calls `remove()` on the subscription during unmount.
+ * @deprecated This API is deprecated and will be removed in a future release corresponding with SDK 51.
+ * Use [`useUpdates()`](#useupdates) instead.
  *
  * @param listener A function that will be invoked with an [`UpdateEvent`](#updateevent) instance
  * and should not return any value.
@@ -36,7 +38,7 @@ export const useUpdateEvents = (listener: (event: UpdateEvent) => void) => {
 
   useEffect(() => {
     if (listenerRef.current) {
-      const subscription = Updates.addListener(listenerRef.current);
+      const subscription = addListener(listenerRef.current);
       return () => {
         subscription.remove();
       };

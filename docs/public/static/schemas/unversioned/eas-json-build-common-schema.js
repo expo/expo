@@ -1,5 +1,12 @@
 export default [
   {
+    name: 'withoutCredentials',
+    type: 'boolean',
+    description: [
+      "When set to `true`, EAS CLI won't require you to configure credentials when building the app. This comes in handy when using EAS Build [custom builds](/custom-builds/get-started/).",
+    ],
+  },
+  {
     name: 'extends',
     type: 'string',
     description: [
@@ -19,14 +26,20 @@ export default [
     name: 'releaseChannel',
     type: 'string',
     description: [
-      'Name of the release channel for the `expo-updates` package ([Learn more about this](../../archive/classic-updates/release-channels)). If you do not specify a channel, your binary will pull releases from the `default` channel. If you do not use `expo-updates` in your project then this property will have no effect. **This field only applies to the Classic Update service**; if you use EAS Update, use the [channel](#channel) field instead.',
+      '**Deprecated**: Name of the release channel for the Classic Updates service, which is only supported in SDK 49 and lower. If you do not specify a channel, your binary will pull releases from the `default` channel.',
+      '',
+      'EAS Update uses the [channel](#channel) field, so you can remove [releaseChannel](#releasechannel) after migrating to EAS Update. [Learn more about migrating from Classic Updates to EAS Update](/eas-update/migrate-from-classic-updates/).',
     ],
   },
   {
     name: 'channel',
     type: 'string',
     description: [
-      'The channel is a name we can give to multiple builds to identify them easily. [Learn more](../../eas-update/how-eas-update-works). **This field only applies to the EAS Update service**, if your project still uses Classic Updates then use the [releaseChannel](#releasechannel) field instead.',
+      'The EAS Update channel where this build will look for updates. [Learn more](../../eas-update/how-it-works). Standalone builds will check for and download updates matching platform, native runtime, and channel.',
+      '',
+      'This field has no effect when [developmentClient](#developmentclient) is set to `true`, as development builds can run updates from any channnel.',
+      '',
+      'If you have not yet migrated from Classic Updates to EAS Update, then continue to use the [releaseChannel](#releasechannel) field instead.',
     ],
   },
   {
@@ -53,7 +66,9 @@ export default [
     enum: ['default', 'medium', 'large'],
     description: [
       'The resource class that will be used to run this build.',
-      'To see mapping for `default` and `medium` resource classes for each platform, see [Android-specific resource class field](eas-json/#resourceclass-1) and [iOS-specific resource class field](eas-json/#resourceclass-2) documentation.',
+      'To see mapping for each platform, see [Android-specific resource class field](#resourceclass-1) and [iOS-specific resource class field](#resourceclass-2) documentation.',
+      '',
+      'The `large` resource class is not available on the free plan.',
     ],
   },
   {
@@ -82,6 +97,11 @@ export default [
     name: 'yarn',
     type: 'string',
     description: ['Version of Yarn.'],
+  },
+  {
+    name: 'pnpm',
+    type: 'string',
+    description: ['Version of pnpm.'],
   },
   {
     name: 'expoCli',

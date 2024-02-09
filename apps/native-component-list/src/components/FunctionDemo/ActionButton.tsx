@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 
-import Colors from '../../constants/Colors';
 import { ActionFunction } from './index.types';
+import Colors from '../../constants/Colors';
 
 export default function ActionButton({
   name,

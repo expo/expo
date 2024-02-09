@@ -1,5 +1,15 @@
 class KotlinExpoModulesCorePlugin implements Plugin<Project> {
   void apply(Project project) {
+    // For compatibility reasons the plugin needs to declare that it provides common build.gradle
+    // options for the modules
+    project.rootProject.ext.expoProvidesDefaultConfig = {
+      true
+    }
+
+    project.ext.safeExtGet = { prop, fallback ->
+      project.rootProject.ext.has(prop) ? project.rootProject.ext.get(prop) : fallback
+    }
+
     project.buildscript {
       project.ext.kotlinVersion = {
         project.rootProject.ext.has("kotlinVersion")
@@ -13,14 +23,31 @@ class KotlinExpoModulesCorePlugin implements Plugin<Project> {
           "1.6.21": "1.6.21-1.0.6",
           "1.7.22": "1.7.22-1.0.8",
           "1.8.0": "1.8.0-1.0.9",
-          "1.8.10": "1.8.10-1.0.9"
+          "1.8.10": "1.8.10-1.0.9",
+          "1.8.22": "1.8.22-1.0.11"
         ]
 
         project.rootProject.ext.has("kspVersion")
           ? project.rootProject.ext.get("kspVersion")
           : kspVersionsMap.containsKey(project.ext.kotlinVersion())
           ? kspVersionsMap.get(project.ext.kotlinVersion())
-          : "1.8.10-1.0.9"
+          : "1.8.22-1.0.11"
+      }
+    }
+
+    // Setup build options that are common for all modules
+    if (project.plugins.hasPlugin('kotlin-android')) {
+      project.android {
+        compileSdkVersion project.ext.safeExtGet("compileSdkVersion", 34)
+
+        defaultConfig {
+          minSdkVersion project.ext.safeExtGet("minSdkVersion", 23)
+          targetSdkVersion project.ext.safeExtGet("targetSdkVersion", 34)
+        }
+
+        lintOptions {
+          abortOnError false
+        }
       }
     }
   }
@@ -30,205 +57,41 @@ ext.applyKotlinExpoModulesCorePlugin = {
   apply plugin: KotlinExpoModulesCorePlugin
 }
 
+ext.useExpoPublishing = {
+  afterEvaluate {
+    publishing {
+      publications {
+        release(MavenPublication) {
+          from components.release
+        }
+      }
+      repositories {
+        maven {
+          url = mavenLocal().url
+        }
+      }
+    }
+  }
+
+  android {
+    publishing {
+      singleVariant("release") {
+        withSourcesJar()
+      }
+    }
+  }
+}
+
+ext.useCoreDependencies = {
+  dependencies {
+    // Avoids cyclic dependencies
+    if (!project.project.name.startsWith("expo-modules-core")) {
+      implementation project.project(':expo-modules-core')
+    }
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${project.ext.kotlinVersion()}"
+  }
+}
+
 ext.boolish = { value ->
   return value.toString().toBoolean()
 }
-
-// [BEGIN] Remove when we drop SDK 47
-abstract class ExtractReactNativeAARTask extends DefaultTask {
-  @Input
-  abstract Property<String> getBuildType()
-
-  @Input
-  abstract Property<String> getReactNativeDir()
-
-  @TaskAction
-  def taskAction() {
-    def suffix = buildType.get() == 'Debug' ? '-debug' : '-release'
-    def rnAARs = project.fileTree("${reactNativeDir.get()}/android").matching { include "**/react-native/**/*${suffix}.aar" }
-    if (rnAARs.isEmpty()) {
-      rnAARs = project.fileTree("${reactNativeDir.get()}/android").matching { include "**/react-native/**/*.aar" }
-    }
-    if (rnAARs.any()) {
-      // node_modules/react-native has a .aar, extract headers
-      if (rnAARs.size() > 1) {
-        logger.error("More than one React Native AAR file has been found:")
-        rnAARs.each {println(it) }
-        throw new GradleException("Multiple React Native AARs found:\n${rnAARs.join("\n")}" +
-            "\nRemove the old ones and try again")
-      }
-    }
-    def rnAAR = rnAARs.singleFile
-    def file = rnAAR.absoluteFile
-    def packageName = file.name.tokenize('-')[0]
-    project.copy {
-      from project.zipTree(file)
-      into "${project.buildDir}/${packageName}"
-      include "jni/**/*"
-    }
-  }
-}
-
-class LegacyReactNativeLibsExtractionPlugin implements Plugin<Project> {
-  void nativeBuildDependsOn(project, dependsOnTask, buildTypesIncludes) {
-    def buildTasks = project.tasks.findAll { task ->
-      def taskName = task.name
-      if (taskName.contains("Clean")) { return false }
-      if (taskName.contains("externalNative") || taskName.contains("CMake") || taskName.contains("generateJsonModel")) {
-        if (buildTypesIncludes == null) { return true }
-        for (buildType in buildTypesIncludes) {
-          if (taskName.contains(buildType)) { return true }
-        }
-      }
-      return false
-    }
-    buildTasks.forEach { task -> task.dependsOn(dependsOnTask) }
-  }
-
-  void apply(Project project) {
-    def REACT_NATIVE_BUILD_FROM_SOURCE = project.findProject(":ReactAndroid") != null
-    def REACT_NATIVE_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
-      ? project.findProject(":ReactAndroid").getProjectDir().parent
-      : new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, project.rootDir).text.trim()).parent
-
-    def reactProperties = new Properties()
-    new File("$REACT_NATIVE_DIR/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
-    def FOLLY_VERSION = reactProperties.getProperty("FOLLY_VERSION")
-    def DOUBLE_CONVERSION_VERSION = reactProperties.getProperty("DOUBLE_CONVERSION_VERSION")
-    def REACT_NATIVE_VERSION = System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: reactProperties.getProperty("VERSION_NAME")
-    def REACT_NATIVE_TARGET_VERSION = REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
-
-    def isNewArchitectureEnabled = project.findProperty("newArchEnabled") == "true"
-    def customDownloadsDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
-    def downloadsDir = customDownloadsDir ? new File(customDownloadsDir) : new File("${project.buildDir}/downloads")
-    def thirdPartyNdkDir = new File("${project.buildDir}/third-party-ndk")
-    def reactNativeThirdParty = new File("$REACT_NATIVE_DIR/ReactAndroid/src/main/jni/third-party")
-
-    def createNativeDepsDirectories = project.tasks.findByName('createNativeDepsDirectories') ?: project.tasks.register('createNativeDepsDirectories') {
-      downloadsDir.mkdirs()
-      thirdPartyNdkDir.mkdirs()
-    }
-
-    def extractReactNativeAARRelease = project.tasks.register('extractReactNativeAARRelease', ExtractReactNativeAARTask) {
-      reactNativeDir = REACT_NATIVE_DIR
-      buildType = 'Release'
-    }
-    def extractReactNativeAARDebug = project.tasks.register('extractReactNativeAARDebug', ExtractReactNativeAARTask) {
-      reactNativeDir = REACT_NATIVE_DIR
-      buildType = 'Debug'
-    }
-
-    def packageReactNdkDebugLibs = project.tasks.register("packageReactNdkDebugLibs", Copy) {
-      dependsOn(":ReactAndroid:packageReactNdkDebugLibsForBuck")
-      from("$REACT_NATIVE_DIR/ReactAndroid/src/main/jni/prebuilt/lib")
-      into("${project.buildDir}/react-ndk/exported")
-    }
-    def packageReactNdkReleaseLibs = project.tasks.register("packageReactNdkReleaseLibs", Copy) {
-      dependsOn(":ReactAndroid:packageReactNdkReleaseLibsForBuck")
-      from("$REACT_NATIVE_DIR/ReactAndroid/src/main/jni/prebuilt/lib")
-      into("${project.buildDir}/react-ndk/exported")
-    }
-
-    // [BEGIN] Extra libs
-   def downloadDoubleConversion = project.tasks.create('downloadDoubleConversion', project.Download) {
-      dependsOn(createNativeDepsDirectories)
-      src("https://github.com/google/double-conversion/archive/v${DOUBLE_CONVERSION_VERSION}.tar.gz")
-      onlyIfNewer(true)
-      overwrite(false)
-      dest(new File(downloadsDir, "double-conversion-${DOUBLE_CONVERSION_VERSION}.tar.gz"))
-    }
-
-    def prepareDoubleConversion = project.tasks.register('prepareDoubleConversion', Copy) {
-      dependsOn(downloadDoubleConversion)
-      from(project.tarTree(downloadDoubleConversion.dest))
-      from("$reactNativeThirdParty/double-conversion/Android.mk")
-      include("double-conversion-${DOUBLE_CONVERSION_VERSION}/src/**/*", "Android.mk")
-      filesMatching("*/src/**/*", { fname -> fname.path = "double-conversion/${fname.name}" })
-      includeEmptyDirs = false
-      into("$thirdPartyNdkDir/double-conversion")
-    }
-
-    def downloadFolly = project.tasks.create('downloadFolly', project.Download) {
-      dependsOn(createNativeDepsDirectories)
-      src("https://github.com/facebook/folly/archive/v${FOLLY_VERSION}.tar.gz")
-      onlyIfNewer(true)
-      overwrite(false)
-      dest(new File(downloadsDir, "folly-${FOLLY_VERSION}.tar.gz"))
-    }
-
-    def prepareFolly = project.tasks.register('prepareFolly', Copy) {
-      dependsOn(downloadFolly)
-      from(project.tarTree(downloadFolly.dest))
-      from("$reactNativeThirdParty/folly/Android.mk")
-      include("folly-${FOLLY_VERSION}/folly/**/*", "Android.mk")
-      eachFile { fname -> fname.path = (fname.path - "folly-${FOLLY_VERSION}/") }
-      // Fixes problem with Folly failing to build on certain systems. See
-      // https://github.com/software-mansion/react-native-reanimated/issues/1024
-      def follyReplaceContent = '''
-      ssize_t r;
-      do {
-        r = open(name, flags, mode);
-      } while (r == -1 && errno == EINTR);
-        return r;
-      '''
-      filter { line -> line.replaceAll("return int\\(wrapNoInt\\(open, name, flags, mode\\)\\);", follyReplaceContent) }
-      includeEmptyDirs = false
-      into("$thirdPartyNdkDir/folly")
-    }
-    // [END] Extra libs
-
-    project.afterEvaluate {
-      if (REACT_NATIVE_BUILD_FROM_SOURCE) {
-        nativeBuildDependsOn(project, ":ReactAndroid:copyReleaseJniLibsProjectOnly", ["Release", "RelWithDebInfo"])
-        nativeBuildDependsOn(project, ":ReactAndroid:copyDebugJniLibsProjectOnly", ["Debug"])
-      } else {
-        nativeBuildDependsOn(project, extractReactNativeAARRelease, ["Release", "RelWithDebInfo"])
-        nativeBuildDependsOn(project, extractReactNativeAARDebug, ["Debug"])
-      }
-
-      def extraLibs = project.extensions.extraProperties.has('extraLegacyReactNativeLibs')
-        ? project.extensions.extraProperties.get('extraLegacyReactNativeLibs')
-        : []
-      extraLibs.each {
-        nativeBuildDependsOn(project, project.tasks.named(it), null)
-      }
-
-      if (isNewArchitectureEnabled) {
-        def preDebugBuild = project.tasks.named('preDebugBuild')
-        def preReleaseBuild = project.tasks.named('preReleaseBuild')
-        preDebugBuild.configure {
-          dependsOn(packageReactNdkDebugLibs)
-        }
-        preReleaseBuild.configure {
-          dependsOn(packageReactNdkReleaseLibs)
-        }
-
-        // Due to a bug inside AGP, we have to explicitly set a dependency
-        // between configureCMake* tasks and the preBuild tasks.
-        // This can be removed once this is solved: https://issuetracker.google.com/issues/207403732
-        project.tasks.named('configureCMakeDebug').configure {
-          dependsOn(preDebugBuild)
-        }
-        project.tasks.named('configureCMakeRelWithDebInfo').configure {
-          dependsOn(preReleaseBuild)
-        }
-        def reactNativeArchitectures = project.getProperties().get("reactNativeArchitectures")?.split(",") ?: ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
-
-        reactNativeArchitectures.each { architecture ->
-          project.tasks.named("configureCMakeDebug[${architecture}]")?.configure {
-            dependsOn("preDebugBuild")
-          }
-          project.tasks.named("configureCMakeRelWithDebInfo[${architecture}]")?.configure {
-            dependsOn("preReleaseBuild")
-          }
-        }
-      }
-    }
-  }
-}
-
-ext.applyLegacyReactNativeLibsExtractionPlugin = {
-  apply plugin: LegacyReactNativeLibsExtractionPlugin
-}
-
-// [END] Remove when we drop SDK 47

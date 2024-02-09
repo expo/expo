@@ -4,13 +4,20 @@
 
 import ExpoModulesCore
 
-internal final class UpdatesDisabledException: Exception {
-  override var code: String {
+public final class UpdatesDisabledException: Exception {
+  private let jsMethodName: String
+
+  public init(_ jsMethodName: String, file: String = #fileID, line: UInt = #line, function: String = #function) {
+    self.jsMethodName = jsMethodName
+    super.init(file: file, line: line, function: function)
+  }
+
+  public override var code: String {
     "ERR_UPDATES_DISABLED"
   }
 
-  override var reason: String {
-    "Cannot call module method when expo-updates is disabled"
+  public override var reason: String {
+    "\(jsMethodName) is not supported when expo-updates is not enabled."
   }
 }
 
@@ -24,12 +31,39 @@ internal final class UpdatesNotInitializedException: Exception {
   }
 }
 
-internal final class UpdatesReloadException: Exception {
-  override var code: String {
+public final class UpdatesReloadException: Exception {
+  public override var code: String {
     "ERR_UPDATES_RELOAD"
   }
 
-  override var reason: String {
+  public override var reason: String {
     "Could not reload application. Ensure you have set the `bridge` property of AppController."
+  }
+}
+
+internal final class UpdatesUnsupportedDirectiveException: Exception {
+  override var code: String {
+    "ERR_UPDATES_UNSUPPORTED_DIRECTIVE"
+  }
+
+  override var reason: String {
+    "Updates service response included a directive that this client does not support."
+  }
+}
+
+internal final class NotAvailableInDevClientException: Exception {
+  private let jsMethodName: String
+
+  internal init(_ jsMethodName: String, file: String = #fileID, line: UInt = #line, function: String = #function) {
+    self.jsMethodName = jsMethodName
+    super.init(file: file, line: line, function: function)
+  }
+
+  override var code: String {
+    "ERR_NOT_AVAILABLE_IN_DEV_CLIENT"
+  }
+
+  override var reason: String {
+    "\(jsMethodName) is not supported in development builds."
   }
 }

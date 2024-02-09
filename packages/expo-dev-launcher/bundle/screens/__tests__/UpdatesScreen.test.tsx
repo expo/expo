@@ -1,4 +1,5 @@
 import * as React from 'react';
+
 import { queryClient } from '../../providers/QueryProvider';
 import { Update } from '../../queries/useUpdatesForBranch';
 import { render, waitFor, act, fireEvent, mockGraphQLResponse } from '../../test-utils';
@@ -58,7 +59,7 @@ describe('<UpdatesScreen />', () => {
       runtimeVersion: '1',
       createdAt: new Date().toISOString(),
       message: 'hi joe',
-      manifestPermalink: '123'
+      manifestPermalink: '123',
     };
 
     mockUpdatesResponse([testUpdate]);

@@ -54,6 +54,9 @@ export type SQLTransactionCallback = (transaction: SQLTransaction) => void;
 // @docsMissing
 export type SQLTransactionErrorCallback = (error: SQLError) => void;
 
+// @docsMissing
+export type SQLStatementArg = string | number | null;
+
 // @needsAudit
 /**
  * A `SQLTransaction` object is passed in as a parameter to the `callback` parameter for the
@@ -77,7 +80,7 @@ export interface SQLTransaction {
    */
   executeSql(
     sqlStatement: string,
-    args?: (number | string | null)[],
+    args?: SQLStatementArg[],
     callback?: SQLStatementCallback,
     errorCallback?: SQLStatementErrorCallback
   ): void;
@@ -135,7 +138,7 @@ export declare class SQLError {
   message: string;
 }
 
-// @docsMissing
+/** @deprecated Use `SQLiteDatabase` instead. */
 export interface WebSQLDatabase extends Database {
   exec(queries: Query[], readOnly: boolean, callback: SQLiteCallback): void;
 
@@ -155,16 +158,16 @@ export interface WebSQLDatabase extends Database {
 export type Query = { sql: string; args: unknown[] };
 
 // @docsMissing
-export type ResultSetError = {
+export interface ResultSetError {
   error: Error;
-};
+}
 
 // @needsAudit
 /**
  * `ResultSet` objects are returned through second parameter of the `success` callback for the
  * `tx.executeSql()` method on a `SQLTransaction` (see above).
  */
-export type ResultSet = {
+export interface ResultSet {
   /**
    * The row ID of the row that the SQL statement inserted into the database, if a row was inserted.
    */
@@ -174,10 +177,19 @@ export type ResultSet = {
    */
   rowsAffected: number;
   rows: { [column: string]: any }[];
-};
+}
 
 // @docsMissing
 export type SQLiteCallback = (
   error?: Error | null,
   resultSet?: (ResultSetError | ResultSet)[]
 ) => void;
+
+/** A transaction object to perform SQL statements in async mode. */
+export interface SQLTransactionAsync {
+  /** Executes a SQL statement in async mode. */
+  executeSqlAsync(sqlStatement: string, args?: SQLStatementArg[]): Promise<ResultSet>;
+}
+
+/** A transaction callback with given `SQLTransactionAsync` object to perform SQL statements in async mode. */
+export type SQLTransactionAsyncCallback = (transaction: SQLTransactionAsync) => Promise<void>;

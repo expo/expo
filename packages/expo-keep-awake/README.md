@@ -1,4 +1,11 @@
-# expo-keep-awake
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/keep-awake/">
+    <img
+      src="../../.github/resources/expo-keep-awake.svg"
+      alt="expo-keep-awake"
+      height="64" />
+  </a>
+</p>
 
 Provides a React component that prevents the screen sleeping when rendered. It also exposes static methods to control the behavior imperatively.
 

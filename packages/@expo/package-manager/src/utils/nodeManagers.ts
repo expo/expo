@@ -1,25 +1,31 @@
 import fs from 'fs';
 import path from 'path';
 
-import { PackageManagerOptions } from '../PackageManager';
-import { NpmPackageManager } from '../node/NpmPackageManager';
-import { PnpmPackageManager } from '../node/PnpmPackageManager';
-import { YarnPackageManager } from '../node/YarnPackageManager';
 import {
   findPnpmWorkspaceRoot,
   findYarnOrNpmWorkspaceRoot,
   NPM_LOCK_FILE,
   PNPM_LOCK_FILE,
   YARN_LOCK_FILE,
+  BUN_LOCK_FILE,
 } from './nodeWorkspaces';
+import { PackageManagerOptions } from '../PackageManager';
+import { BunPackageManager } from '../node/BunPackageManager';
+import { NpmPackageManager } from '../node/NpmPackageManager';
+import { PnpmPackageManager } from '../node/PnpmPackageManager';
+import { YarnPackageManager } from '../node/YarnPackageManager';
 
-export type NodePackageManager = NpmPackageManager | PnpmPackageManager | YarnPackageManager;
+export type NodePackageManager =
+  | NpmPackageManager
+  | PnpmPackageManager
+  | YarnPackageManager
+  | BunPackageManager;
 
 export type NodePackageManagerForProject = PackageManagerOptions &
   Partial<Record<NodePackageManager['name'], boolean>>;
 
 /** The order of the package managers to use when resolving automatically */
-export const RESOLUTION_ORDER: NodePackageManager['name'][] = ['yarn', 'npm', 'pnpm'];
+export const RESOLUTION_ORDER: NodePackageManager['name'][] = ['bun', 'yarn', 'npm', 'pnpm'];
 
 /**
  * Resolve the workspace root for a project, if its part of a monorepo.
@@ -33,6 +39,7 @@ export function findWorkspaceRoot(
     npm: findYarnOrNpmWorkspaceRoot,
     yarn: findYarnOrNpmWorkspaceRoot,
     pnpm: findPnpmWorkspaceRoot,
+    bun: findYarnOrNpmWorkspaceRoot,
   };
 
   if (preferredManager) {
@@ -63,6 +70,7 @@ export function resolvePackageManager(
     npm: NPM_LOCK_FILE,
     pnpm: PNPM_LOCK_FILE,
     yarn: YARN_LOCK_FILE,
+    bun: BUN_LOCK_FILE,
   };
 
   if (preferredManager) {
@@ -97,6 +105,8 @@ export function createForProject(
     return new YarnPackageManager({ cwd: projectRoot, ...options });
   } else if (options.pnpm) {
     return new PnpmPackageManager({ cwd: projectRoot, ...options });
+  } else if (options.bun) {
+    return new BunPackageManager({ cwd: projectRoot, ...options });
   }
 
   switch (resolvePackageManager(projectRoot)) {
@@ -106,6 +116,8 @@ export function createForProject(
       return new PnpmPackageManager({ cwd: projectRoot, ...options });
     case 'yarn':
       return new YarnPackageManager({ cwd: projectRoot, ...options });
+    case 'bun':
+      return new BunPackageManager({ cwd: projectRoot, ...options });
     default:
       return new NpmPackageManager({ cwd: projectRoot, ...options });
   }

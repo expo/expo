@@ -12,9 +12,8 @@ import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.jni.JavaScriptObject
 import expo.modules.kotlin.recycle
 import expo.modules.kotlin.types.AnyType
+import kotlin.reflect.KClass
 import kotlin.reflect.KType
-import kotlin.reflect.full.isSubtypeOf
-import kotlin.reflect.typeOf
 
 /**
  * Base class of all exported functions
@@ -25,20 +24,33 @@ abstract class AnyFunction(
 ) {
   internal val argsCount get() = desiredArgsTypes.size
 
+  @PublishedApi
   internal var canTakeOwner: Boolean = false
 
   @PublishedApi
   internal var ownerType: KType? = null
 
   internal val takesOwner: Boolean
-    get() = canTakeOwner &&
-      desiredArgsTypes.firstOrNull()?.kType?.isSubtypeOf(typeOf<JavaScriptObject>()) == true ||
-      (ownerType != null && desiredArgsTypes.firstOrNull()?.kType?.isSubtypeOf(ownerType!!) == true)
+    get() {
+      if (canTakeOwner) {
+        val firstArgumentType = desiredArgsTypes.firstOrNull()?.kType?.classifier as? KClass<*>
+          ?: return false
+
+        if (firstArgumentType == JavaScriptObject::class) {
+          return true
+        }
+
+        val ownerClass = ownerType?.classifier as? KClass<*> ?: return false
+
+        return firstArgumentType == ownerClass
+      }
+      return false
+    }
 
   /**
    * A minimum number of arguments the functions needs which equals to `argumentsCount` reduced by the number of trailing optional arguments.
    */
-  internal val requiredArgumentsCount = run {
+  private val requiredArgumentsCount = run {
     val nonNullableArgIndex = desiredArgsTypes
       .reversed()
       .indexOfFirst { !it.kType.isMarkedNullable }

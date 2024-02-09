@@ -22,13 +22,6 @@ function _path() {
   };
   return data;
 }
-function _iosPlugins() {
-  const data = require("../plugins/ios-plugins");
-  _iosPlugins = function () {
-    return data;
-  };
-  return data;
-}
 function _Paths() {
   const data = require("./Paths");
   _Paths = function () {
@@ -46,6 +39,13 @@ function _XcodeProjectFile() {
 function _Xcodeproj() {
   const data = require("./utils/Xcodeproj");
   _Xcodeproj = function () {
+    return data;
+  };
+  return data;
+}
+function _iosPlugins() {
+  const data = require("../plugins/ios-plugins");
+  _iosPlugins = function () {
     return data;
   };
   return data;
@@ -127,7 +127,7 @@ function getDesignatedSwiftBridgingHeaderFileReference({
   } of Object.values(configurations || {})) {
     // Guessing that this is the best way to emulate Xcode.
     // Using `project.addToBuildSettings` modifies too many targets.
-    if (typeof (buildSettings === null || buildSettings === void 0 ? void 0 : buildSettings.PRODUCT_NAME) !== 'undefined') {
+    if (typeof buildSettings?.PRODUCT_NAME !== 'undefined') {
       if (typeof buildSettings.SWIFT_OBJC_BRIDGING_HEADER === 'string' && buildSettings.SWIFT_OBJC_BRIDGING_HEADER) {
         return buildSettings.SWIFT_OBJC_BRIDGING_HEADER;
       }
@@ -152,7 +152,7 @@ function linkBridgingHeaderFile({
   } of Object.values(configurations || {})) {
     // Guessing that this is the best way to emulate Xcode.
     // Using `project.addToBuildSettings` modifies too many targets.
-    if (typeof (buildSettings === null || buildSettings === void 0 ? void 0 : buildSettings.PRODUCT_NAME) !== 'undefined') {
+    if (typeof buildSettings?.PRODUCT_NAME !== 'undefined') {
       buildSettings.SWIFT_OBJC_BRIDGING_HEADER = bridgingHeader;
     }
   }

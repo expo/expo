@@ -1,28 +1,29 @@
 ---
-title: Using Next.js with Expo for Web
-sidebar_title: Using Next.js
+title: Use Next.js with Expo for Web
+sidebar_title: Use Next.js
 description: A guide for integrating Next.js with Expo for the web.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 
-> **Warning:** Using Next.js is not an official part of Expo's universal app development workflow.
+> **warning** Using Next.js is not an official part of Expo's universal app development workflow.
 
-[Next.js][nextjs] is a React framework that provides simple page-based routing as well as server-side rendering. To use Next.js with the Expo SDK, we recommend using [`@expo/next-adapter`][next-adapter] library to handle the configuration.
+[Next.js](https://nextjs.org/) is a React framework that provides simple page-based routing as well as server-side rendering. To use Next.js with the Expo SDK, we recommend using [`@expo/next-adapter`](https://github.com/expo/expo-cli/tree/main/packages/next-adapter) library to handle the configuration.
 
-Using Expo with Next.js means you can share some of your existing components and APIs across your mobile and web app. Next.js has its own CLI that you'll need to use when developing for the web platform, so **you'll need to start your web projects with the Next.js CLI and not with `npx expo start`.**
+Using Expo with Next.js means you can share some of your existing components and APIs across your mobile and web app. Next.js has its own CLI that you'll need to use when developing for the web platform, so **you'll need to start your web projects with the Next.js CLI and not with `npx expo start`**.
 
-> Next.js can only be used with Expo for web, this doesn't provide Server-Side Rendering (SSR) for native apps.
+> Next.js can only be used with Expo for web as there is no support for Server-Side Rendering (SSR) for native apps.
 
-## Setup
+## Automatic setup
 
-To get started, create a new project with [the template](https://github.com/expo/examples/tree/master/with-nextjs):
+To quickly get started, create a new project using [with-nextjs](https://github.com/expo/examples/tree/master/with-nextjs) template:
 
-<Terminal cmd={["$ npx create-expo-app -e with-nextjs"]} />
+<Terminal cmd={['$ npx create-expo-app -e with-nextjs']} />
 
-- **Native**: `npx expo start` -- start the Expo project
-- **Web**: `npx next dev` -- start the Next.js project
+- **Native**: `npx expo start` &mdash; start the Expo project
+- **Web**: `npx next dev` &mdash; start the Next.js project
 
 ## Manual setup
 
@@ -30,15 +31,15 @@ To get started, create a new project with [the template](https://github.com/expo
 
 Ensure you have `expo`, `next`, `@expo/next-adapter` installed in your project:
 
-<Terminal cmd={["$ yarn add expo next @expo/next-adapter"]} />
+<Terminal cmd={['$ yarn add expo next @expo/next-adapter']} />
 
 ### Transpilation
 
 Configure Next.js to transform language features:
 
 <Collapsible summary={<>Next.js with swc. (Recommended)</>}>
-  
-  When using Next.js with SWC, you can configure the **babel.config.js** to only account for native.
+
+Using Next.js with SWC is recommended. You can configure the **babel.config.js** to only account for native:
 
 ```js babel.config.js
 module.exports = function (api) {
@@ -62,8 +63,8 @@ module.exports = {
 </Collapsible>
 
 <Collapsible summary={<>Next.js with Babel. (Not recommended)</>}>
-  
-  Adjust your **babel.config.js** to conditionally add `next/babel` when bundling with webpack for web.
+
+Adjust your **babel.config.js** to conditionally add `next/babel` when bundling with webpack for web:
 
 ```js babel.config.js
 module.exports = function (api) {
@@ -97,7 +98,7 @@ module.exports = withExpo({
   transpilePackages: [
     'react-native',
     'expo',
-    // Add more React Native / Expo packages here...
+    // Add more React Native/Expo packages here...
   ],
 });
 ```
@@ -114,7 +115,7 @@ const nextConfig = withExpo({
   transpilePackages: [
     'react-native',
     'expo',
-    // Add more React Native / Expo packages here...
+    // Add more React Native/Expo packages here...
   ],
   experimental: {
     forceSwcTransforms: true,
@@ -128,7 +129,7 @@ module.exports = nextConfig;
 
 The package `react-native-web` builds on the assumption of reset CSS styles. Here's how you reset styles in Next.js using the **pages** directory.
 
-```js pages/_document.js
+```jsx pages/_document.js
 import { Children } from 'react';
 import Document, { Html, Head, Main, NextScript } from 'next/document';
 import { AppRegistry } from 'react-native';
@@ -188,7 +189,7 @@ export default class MyDocument extends Document {
 }
 ```
 
-```js pages/_app.js
+```jsx pages/_app.js
 import Head from 'next/head';
 
 export default function App({ Component, pageProps }) {
@@ -218,21 +219,18 @@ module.exports = withExpo({
       // is aliased to `react-native`. Adding `react-native-web` will not work.
       'react-native',
       'expo',
-      // Add more React Native / Expo packages here...
+      // Add more React Native/Expo packages here...
     ],
   },
 });
 ```
 
-## Guides
-
-### Deploy to Vercel
-
-(Formerly ZEIT Now)
+## Deploy to Vercel
 
 This is Vercel's preferred method for deploying Next.js projects to production.
 
-- Add a **build** script to your **package.json**
+<Step label="1">
+  Add a **build** script to your **package.json**:
   ```json package.json
   {
     "scripts": {
@@ -240,21 +238,31 @@ This is Vercel's preferred method for deploying Next.js projects to production.
     }
   }
   ```
-- Install the Vercel CLI: `npm i -g vercel`
-- Deploy to Vercel: `vercel`
+</Step>
 
-## Limitations or differences comparing to the default Expo for Web
+<Step label="2">
+  Install the Vercel CLI:
+  <Terminal cmd={['$ npm i -g vercel']} />
+</Step>
+
+
+<Step label="3">
+  Deploy to Vercel:
+  <Terminal cmd={['$ vercel']} />
+</Step>
+
+## Limitations or differences compared to the default Expo for Web
 
 Using Next.js for the web means you will be bundling with the Next.js webpack config. This will lead to some core differences in how you develop your app vs your website.
 
-- Expo Next.js adapter does not support the experimental app directory.
-- For File-based routing on native, we recommend using [Expo Router](https://github.com/expo/router).
+- Expo Next.js adapter does not support the experimental **app** directory.
+- For file-based routing on native, we recommend using [Expo Router](https://github.com/expo/router).
 
 ## Contributing
 
 If you would like to help make Next.js support in Expo better, feel free to open a PR or submit an issue:
 
-- [@expo/next-adapter][next-adapter]
+- [@expo/next-adapter](https://github.com/expo/expo-cli/tree/main/packages/next-adapter)
 
 ## Troubleshooting
 
@@ -270,16 +278,8 @@ module.exports = withExpo({
     transpilePackages: [
       'react-native',
       'expo',
-      // Add failing package here, and restart the server...
+      // Add the failing package here, and restart the server...
     ],
   },
 });
 ```
-
-{/* Footer */}
-
-[expo-packages]: https://github.com/expo/expo/tree/main/packages
-[nextjs]: https://nextjs.org/
-[next-adapter]: https://github.com/expo/expo-cli/tree/main/packages/next-adapter
-[next-docs]: https://nextjs.org/docs
-[next-optimized-images]: https://github.com/cyrilwanner/next-optimized-images

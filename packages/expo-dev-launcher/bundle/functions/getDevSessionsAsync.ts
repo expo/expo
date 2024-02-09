@@ -10,7 +10,7 @@ const baseAddress = Platform.select({
 });
 
 const statusPage = 'status';
-const portsToCheck = [8081, 8082, 19000, 19001, 19002, 19003, 19004, 19005];
+const portsToCheck = [8081, 8082, 8083, 8084, 8085, 19000, 19001, 19002];
 
 export async function getDevSessionsAsync({
   isAuthenticated = false,
@@ -58,7 +58,7 @@ export async function getLocalPackagersAsync(): Promise<DevSession[]> {
             source: 'desktop',
           });
         }
-      } catch (e) {}
+      } catch {}
     })
   );
 

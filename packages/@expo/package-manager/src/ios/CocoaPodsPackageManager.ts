@@ -13,7 +13,11 @@ export class CocoaPodsError extends Error {
   readonly name = 'CocoaPodsError';
   readonly isPackageManagerError = true;
 
-  constructor(message: string, public code: CocoaPodsErrorCode, public cause?: Error) {
+  constructor(
+    message: string,
+    public code: CocoaPodsErrorCode,
+    public cause?: Error
+  ) {
     super(cause ? `${message}\n└─ Cause: ${cause.message}` : message);
   }
 }

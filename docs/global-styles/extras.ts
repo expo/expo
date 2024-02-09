@@ -13,6 +13,12 @@ export const globalExtras = css`
     line-height: 1;
   }
 
+  *:focus-visible {
+    outline: 3px solid ${theme.button.tertiary.icon};
+    outline-offset: 1px;
+    border-radius: 3px;
+  }
+
   ::selection {
     background-color: ${theme.palette.blue5};
     color: ${theme.text.default};
@@ -68,5 +74,13 @@ export const globalExtras = css`
 
   .strike {
     text-decoration: line-through;
+  }
+
+  code {
+    font-variant-ligatures: none;
+  }
+
+  [cmdk-input] {
+    outline: none;
   }
 `;

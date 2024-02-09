@@ -4,9 +4,9 @@ import fs from 'fs-extra';
 import { createRequire } from 'module';
 import path from 'path';
 
+import { getProjectPackageJsonPathAsync, mergeLinkingOptionsAsync } from './mergeLinkingOptions';
 import { requireAndResolveExpoModuleConfig } from '../ExpoModuleConfig';
 import { PackageRevision, SearchOptions, SearchResults } from '../types';
-import { mergeLinkingOptionsAsync, projectPackageJsonPath } from './mergeLinkingOptions';
 
 // Names of the config files. From lowest to highest priority.
 const EXPO_MODULE_CONFIG_FILENAMES = ['unimodule.json', 'expo-module.config.json'];
@@ -21,11 +21,13 @@ export async function findModulesAsync(providedOptions: SearchOptions): Promise<
   const nativeModuleNames = new Set<string>();
 
   // custom native modules should be resolved first so that they can override other modules
-  const searchPaths =
+  const searchPaths = new Set(
     options.nativeModulesDir && fs.existsSync(options.nativeModulesDir)
       ? [options.nativeModulesDir, ...options.searchPaths]
-      : options.searchPaths;
+      : options.searchPaths
+  );
 
+  // `searchPaths` can be mutated to discover all "isolated modules groups", when using isolated modules
   for (const searchPath of searchPaths) {
     const isNativeModulesDir = searchPath === options.nativeModulesDir;
 
@@ -40,6 +42,23 @@ export async function findModulesAsync(providedOptions: SearchOptions): Promise<
       const { name, version } = resolvePackageNameAndVersion(packagePath, {
         fallbackToDirName: isNativeModulesDir,
       });
+
+      // Check if the project is using isolated modules, by checking
+      // if the parent dir of `packagePath` is a `node_modules` folder.
+      // Isolated modules installs dependencies in small groups such as:
+      //   - /.pnpm/expo@50.x.x(...)/node_modules/@expo/cli
+      //   - /.pnpm/expo@50.x.x(...)/node_modules/expo
+      //   - /.pnpm/expo@50.x.x(...)/node_modules/expo-application
+      // When isolated modules are detected, expand the `searchPaths`
+      // to include possible nested dependencies.
+      const maybeIsolatedModulesPath = path.join(
+        packagePath,
+        name.startsWith('@') && name.includes('/') ? '../..' : '..' // scoped packages are nested deeper
+      );
+      const isIsolatedModulesPath = path.basename(maybeIsolatedModulesPath) === 'node_modules';
+      if (isIsolatedModulesPath && !searchPaths.has(maybeIsolatedModulesPath)) {
+        searchPaths.add(maybeIsolatedModulesPath);
+      }
 
       // we ignore the `exclude` option for custom native modules
       if (
@@ -70,11 +89,11 @@ export async function findModulesAsync(providedOptions: SearchOptions): Promise<
   // (excluding custom native modules path)
   // Workspace root usually doesn't specify all its dependencies (see Expo Go),
   // so in this case we should link everything.
-  if (options.searchPaths.length <= 1) {
+  if (options.searchPaths.length <= 1 || options.onlyProjectDeps === false) {
     return searchResults;
   }
 
-  return filterToProjectDependencies(searchResults, {
+  return await filterToProjectDependenciesAsync(searchResults, {
     ...providedOptions,
     // Custom native modules are not filtered out
     // when they're not specified in package.json dependencies.
@@ -180,10 +199,12 @@ function resolvePackageNameAndVersion(
 /**
  * Filters out packages that are not the dependencies of the project.
  */
-function filterToProjectDependencies(
+async function filterToProjectDependenciesAsync(
   results: SearchResults,
-  options: Pick<SearchOptions, 'silent'> & { alwaysIncludedPackagesNames?: Set<string> } = {}
-) {
+  options: Pick<SearchOptions, 'projectRoot' | 'silent'> & {
+    alwaysIncludedPackagesNames?: Set<string>;
+  }
+): Promise<SearchResults> {
   const filteredResults: SearchResults = {};
   const visitedPackages = new Set<string>();
 
@@ -244,6 +265,7 @@ function filterToProjectDependencies(
   }
 
   // Visit project's package.
+  const projectPackageJsonPath = await getProjectPackageJsonPathAsync(options.projectRoot);
   visitPackage(projectPackageJsonPath);
 
   return filteredResults;

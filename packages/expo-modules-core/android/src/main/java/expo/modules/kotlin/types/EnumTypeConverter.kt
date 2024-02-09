@@ -8,8 +8,6 @@ import expo.modules.kotlin.logger
 import expo.modules.kotlin.toKType
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createType
-import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.primaryConstructor
 
 class EnumTypeConverter(
@@ -29,7 +27,7 @@ class EnumTypeConverter(
   }
 
   init {
-    if (!enumClass.isSubclassOf(Enumerable::class)) {
+    if (Enumerable::class.java.isAssignableFrom(enumClass.java)) {
       logger.warn("Enum '$enumClass' should inherit from ${Enumerable::class}.")
     }
   }
@@ -87,22 +85,20 @@ class EnumTypeConverter(
     enumConstants: Array<out Enum<*>>,
     parameterName: String
   ): Enum<*> {
-    // To obtain the value of parameter, we have to find a property that is connected with this parameter.
-    @Suppress("UNCHECKED_CAST")
-    val parameterProperty = enumClass
-      .declaredMemberProperties
-      .find { it.name == parameterName }
-    requireNotNull(parameterProperty) { "Cannot find a property for $parameterName parameter" }
+    val filed = enumClass.java.getDeclaredField(parameterName)
+    requireNotNull(filed) { "Cannot find a property for $parameterName parameter" }
 
-    val parameterType = parameterProperty.returnType.classifier
+    filed.isAccessible = true
+
+    val parameterType = filed.type
     val jsUnwrapValue = if (jsValue is Dynamic) {
-      if (parameterType == String::class) {
+      if (parameterType == String::class.java) {
         jsValue.asString()
       } else {
         jsValue.asInt()
       }
     } else {
-      if (parameterType == String::class) {
+      if (parameterType == String::class.java) {
         jsValue as String
       } else {
         if (jsValue is Double) {
@@ -115,7 +111,7 @@ class EnumTypeConverter(
 
     return requireNotNull(
       enumConstants.find {
-        parameterProperty.get(it) == jsUnwrapValue
+        filed.get(it) == jsUnwrapValue
       }
     ) { "Couldn't convert '$jsValue' to ${enumClass.simpleName} where $parameterName is the enum parameter" }
   }

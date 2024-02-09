@@ -1,5 +1,7 @@
 /**
- * The types of update-related events.
+ * The types of update-related events, used with `addListener()` and `useUpdateEvents()`.
+ * @deprecated These APIs are deprecated and will be removed in a future release corresponding with SDK 51.
+ * Use [`useUpdates()`](#useupdates) instead.
  */
 export var UpdateEventType;
 (function (UpdateEventType) {
@@ -18,6 +20,32 @@ export var UpdateEventType;
      */
     UpdateEventType["ERROR"] = "error";
 })(UpdateEventType || (UpdateEventType = {}));
+export var UpdateCheckResultNotAvailableReason;
+(function (UpdateCheckResultNotAvailableReason) {
+    /**
+     * No update manifest or rollback directive received from the update server.
+     */
+    UpdateCheckResultNotAvailableReason["NO_UPDATE_AVAILABLE_ON_SERVER"] = "noUpdateAvailableOnServer";
+    /**
+     * An update manifest was received from the update server, but the update is not launchable,
+     * or does not pass the configured selection policy.
+     */
+    UpdateCheckResultNotAvailableReason["UPDATE_REJECTED_BY_SELECTION_POLICY"] = "updateRejectedBySelectionPolicy";
+    /**
+     * An update manifest was received from the update server, but the update has been previously
+     * launched on this device and never successfully launched.
+     */
+    UpdateCheckResultNotAvailableReason["UPDATE_PREVIOUSLY_FAILED"] = "updatePreviouslyFailed";
+    /**
+     * A rollback directive was received from the update server, but the directive does not pass
+     * the configured selection policy.
+     */
+    UpdateCheckResultNotAvailableReason["ROLLBACK_REJECTED_BY_SELECTION_POLICY"] = "rollbackRejectedBySelectionPolicy";
+    /**
+     * A rollback directive was received from the update server, but this app has no embedded update.
+     */
+    UpdateCheckResultNotAvailableReason["ROLLBACK_NO_EMBEDDED"] = "rollbackNoEmbeddedConfiguration";
+})(UpdateCheckResultNotAvailableReason || (UpdateCheckResultNotAvailableReason = {}));
 /**
  * The possible code values for expo-updates log entries
  */
@@ -32,6 +60,7 @@ export var UpdatesLogEntryCode;
     UpdatesLogEntryCode["UPDATE_FAILED_TO_LOAD"] = "UpdateFailedToLoad";
     UpdatesLogEntryCode["ASSETS_FAILED_TO_LOAD"] = "AssetsFailedToLoad";
     UpdatesLogEntryCode["JS_RUNTIME_ERROR"] = "JSRuntimeError";
+    UpdatesLogEntryCode["INITIALIZATION_ERROR"] = "InitializationError";
     UpdatesLogEntryCode["UNKNOWN"] = "Unknown";
 })(UpdatesLogEntryCode || (UpdatesLogEntryCode = {}));
 /**
@@ -48,7 +77,9 @@ export var UpdatesLogEntryLevel;
 })(UpdatesLogEntryLevel || (UpdatesLogEntryLevel = {}));
 /**
  * The possible settings that determine if expo-updates will check for updates on app startup.
- * By default, Expo will check for updates every time the app is loaded. Set this to `ON_ERROR_RECOVERY` to disable automatic checking unless recovering from an error. Set this to `NEVER` to completely disable automatic checking. Must be one of `ON_LOAD` (default value), `ON_ERROR_RECOVERY`, `WIFI_ONLY`, or `NEVER`
+ * By default, Expo will check for updates every time the app is loaded.
+ * Set this to `ON_ERROR_RECOVERY` to disable automatic checking unless recovering from an error.
+ * Set this to `NEVER` to completely disable automatic checking.
  */
 export var UpdatesCheckAutomaticallyValue;
 (function (UpdatesCheckAutomaticallyValue) {
@@ -61,7 +92,7 @@ export var UpdatesCheckAutomaticallyValue;
      */
     UpdatesCheckAutomaticallyValue["ON_ERROR_RECOVERY"] = "ON_ERROR_RECOVERY";
     /**
-     * Only checks for updates when the app starts and has a WiFi connection.
+     * Only checks for updates when the app starts and has a Wi-Fi connection.
      */
     UpdatesCheckAutomaticallyValue["WIFI_ONLY"] = "WIFI_ONLY";
     /**

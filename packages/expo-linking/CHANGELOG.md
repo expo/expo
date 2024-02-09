@@ -10,6 +10,56 @@
 
 ### 💡 Others
 
+## 6.2.2 - 2024-01-12
+
+_This version does not introduce any user-facing changes._
+
+## 6.2.1 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
+## 6.2.0 — 2023-11-14
+
+### 💡 Others
+
+- Migrate to new standard `URL` support on native. ([#24941](https://github.com/expo/expo/pull/24941) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 6.1.1 — 2023-10-17
+
+_This version does not introduce any user-facing changes._
+
+## 6.1.0 — 2023-09-15
+
+### 🛠 Breaking changes
+
+- Remove deprecated `makeUrl` function. ([#24300](https://github.com/expo/expo/pull/24300) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+- Fix parsing web URLs with `+` symbols in the pathname. ([#24300](https://github.com/expo/expo/pull/24300) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Reduce bundle size on web. ([#24300](https://github.com/expo/expo/pull/24300) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 6.0.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.2 — 2023-06-24
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.1 — 2023-06-22
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0 — 2023-06-21
+
+### 🛠 Breaking changes
+
+- Drop support for `detach.scheme` schemes (ExpoKit). ([#22848](https://github.com/expo/expo/pull/22848) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 4.1.0 — 2023-05-08
 
 ### 💡 Others

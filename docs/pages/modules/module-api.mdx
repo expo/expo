@@ -1,23 +1,26 @@
 ---
 title: Module API Reference
 description: An API reference of Expo modules API.
+sidebar_title: Module API
 ---
 
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 import { APIBox } from '~/components/plugins/APIBox';
-import { PlatformTags } from '~/ui/components/Tag';
+import { PlatformTags, StatusTag } from '~/ui/components/Tag';
+import { A, CALLOUT } from '~/ui/components/Text';
 import { APIMethod } from '~/components/plugins/api/APISectionMethods';
+import { FileTree } from '~/ui/components/FileTree';
 
-The native modules API is an abstraction layer on top of [JSI](https://reactnative.dev/architecture/glossary#javascript-interfaces-jsi) and other low-level primitives that React Native is built upon. It is built with modern languages (Swift and Kotlin) and provides an easy to use and convenient API that is consistent across platforms where possible.
+The native modules API is an abstraction layer on top of [JSI](https://reactnative.dev/architecture/glossary#javascript-interfaces-jsi) and other low-level primitives that React Native is built upon. It is built with modern languages (Swift and Kotlin) and provides an easy-to-use and convenient API that is consistent across platforms where possible.
 
-## Definition Components
+## Definition components
 
-As you might have noticed in the snippets on the [Get Started](./get-started.mdx) page, each module class must implement the `definition` function.
+As you might have noticed in the snippets on the [Get Started](/modules/get-started) page, each module class must implement the `definition` function.
 The module definition consists of the DSL components that describe the module's functionality and behavior.
 
 <APIBox header="Name">
 
-Sets the name of the module that JavaScript code will use to refer to the module. Takes a string as an argument. Can be inferred from module's class name, but it's recommended to set it explicitly for clarity.
+Sets the name of the module that JavaScript code will use to refer to the module. Takes a string as an argument. This can be inferred from the module's class name, but it's recommended to set it explicitly for clarity.
 
 ```swift Swift / Kotlin
 Name("MyModuleName")
@@ -69,9 +72,9 @@ Defines a native synchronous function that will be exported to JavaScript. Synch
 - **name**: `String` — Name of the function that you'll call from JavaScript.
 - **body**: `(args...) -> ReturnType` — The closure to run when the function is called.
 
-The function can receive up to 8 arguments. This is due to the limitations of generics in both Swift and Kotlin, because this component must be implemented separately for each arity.
+The function can receive up to 8 arguments. This is due to the limitations of generics in both Swift and Kotlin because this component must be implemented separately for each arity.
 
-See the [Argument Types](#argument-types) section for more details on what types can be used in the function body.
+See the [Argument types](#argument-types) section for more details on what types can be used in the function body.
 
 <CodeBlocksTable>
 
@@ -103,7 +106,7 @@ function getMessage() {
 </APIBox>
 <APIBox header="AsyncFunction">
 
-Defines a JavaScript function that always returns a `Promise` and whose native code is by default dispatched on the different thread than the JavaScript runtime runs on.
+Defines a JavaScript function that always returns a `Promise` and whose native code is by default dispatched on a different thread than the JavaScript runtime runs on.
 
 #### Arguments
 
@@ -113,30 +116,40 @@ Defines a JavaScript function that always returns a `Promise` and whose native c
 If the type of the last argument is `Promise`, the function will wait for the promise to be resolved or rejected before the response is passed back to JavaScript. Otherwise, the function is immediately resolved with the returned value or rejected if it throws an exception.
 The function can receive up to 8 arguments (including the promise).
 
-See the [Argument Types](#argument-types) section for more details on what types can be used in the function body.
+See the [Argument types](#argument-types) section for more details on what types can be used in the function body.
 
 It is recommended to use `AsyncFunction` over `Function` when it:
 
 - does I/O bound tasks such as sending network requests or interacting with the file system
-- needs to be run on different thread, e.g. the main UI thread for UI-related tasks
+- needs to be run on a different thread, for example, the main UI thread for UI-related tasks
 - is an extensive or long-lasting operation that would block the JavaScript thread which in turn would reduce the responsiveness of the application
 
 <CodeBlocksTable>
 
 ```swift
-AsyncFunction("asyncFunction") { (message: String, promise: Promise) in
-  DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-    promise.resolve(message)
-  }
+AsyncFunction("asyncFunction") { (message: String) in
+  return message
 }
+
+// or
+
+AsyncFunction("asyncFunction") { (message: String, promise: Promise) in
+  promise.resolve(message)
+}
+
 ```
 
 ```kotlin
-AsyncFunction("asyncFunction") { message: String, promise: Promise ->
-  launch(Dispatchers.Main) {
-    promise.resolve(message)
-  }
+AsyncFunction("asyncFunction") { message: String ->
+  return@AsyncFunction message
 }
+
+// or
+
+AsyncFunction("asyncFunction") { message: String, promise: Promise ->
+  promise.resolve(message)
+}
+
 ```
 
 </CodeBlocksTable>
@@ -152,13 +165,31 @@ async function getMessageAsync() {
 }
 ```
 
+It is possible to change the native queue of `AsyncFunction` by calling the `.runOnQueue` function on the result of that component.
+
+<CodeBlocksTable>
+
+```swift
+AsyncFunction("asyncFunction") { (message: String) in
+  return message
+}.runOnQueue(.main)
+```
+
+```kotlin
+AsyncFunction("asyncFunction") { message: String ->
+  return@AsyncFunction message
+}.runOnQueue(Queues.MAIN)
+```
+
+</CodeBlocksTable>
+
 ---
 
 #### Kotlin coroutines <PlatformTags prefix="" platforms={['android']} />
 
 `AsyncFunction` can receive a suspendable body on Android. However, it has to be passed in the infix notation after the `Coroutine` block. You can read more about suspendable functions and coroutines on [coroutine overview](https://kotlinlang.org/docs/coroutines-overview.html).
 
-`AsyncFunction` with suspendable body can't receive `Promise` as an argument. It uses a suspension mechanism to execute asynchronous calls.
+`AsyncFunction` with a suspendable body can't receive `Promise` as an argument. It uses a suspension mechanism to execute asynchronous calls.
 The function is immediately resolved with the returned value of the provided suspendable block or rejected if it throws an exception. The function can receive up to 8 arguments.
 
 By default, suspend functions are dispatched on the module's coroutine scope. Moreover, every other suspendable function called from the body block is run within the same scope.
@@ -259,43 +290,12 @@ MyModule.foo = 'foobar';
 ```
 
 </APIBox>
-<APIBox header="ViewManager">
-
-> **warning** **Deprecated**: To better integrate with [React Native's new architecture (Fabric)](https://reactnative.dev/architecture/fabric-renderer) and its recycling mechanism, as of SDK 47 the `ViewManager` component is deprecated in favor of [`View`](#view) with a view class passed as the first argument. This component will be removed in SDK 48.
-
-Enables the module to be used as a view manager. The view manager definition is built from the definition components used in the closure passed to `ViewManager`. Definition components that are accepted as part of the view manager definition: [`View`](#view), [`Prop`](#prop).
-
-<CodeBlocksTable>
-
-```swift
-ViewManager {
-  View {
-    MyNativeView()
-  }
-
-  Prop("isHidden") { (view: UIView, hidden: Bool) in
-    view.isHidden = hidden
-  }
-}
-```
-
-```kotlin
-ViewManager {
-  View { context ->
-    MyNativeView(context)
-  }
-
-  Prop("isHidden") { view: View, hidden: Bool ->
-    view.isVisible = !hidden
-  }
-}
-```
-
-</CodeBlocksTable>
-</APIBox>
 <APIBox header="View">
 
-Enables the module to be used as a native view. Definition components that are accepted as part of the view definition: [`Prop`](#prop), [`Events`](#events), [`GroupView`](#groupview).
+Enables the module to be used as a native view. Definition components that are accepted as part of the view definition: [`Prop`](#prop), [`Events`](#events), [`GroupView`](#groupview) and [`AsyncFunction`](#asyncfunction).
+
+[`AsyncFunction`](#asyncfunction) in the view definition is added to the React ref of the React component representing the native view.
+Such async functions automatically receive an instance of the native view as the first argument and run on the UI thread by default.
 
 #### Arguments
 
@@ -307,18 +307,28 @@ Enables the module to be used as a native view. Definition components that are a
 ```swift
 View(UITextView.self) {
   Prop("text") { ... }
+
+  AsyncFunction("focus") { (view: UITextView) in
+    view.becomeFirstResponder()
+  }
 }
 ```
 
 ```kotlin
 View(TextView::class) {
   Prop("text") { ... }
+
+  AsyncFunction("focus") { view: TextView ->
+    view.requestFocus()
+  }
 }
 ```
 
 </CodeBlocksTable>
 
-> Support for rendering SwiftUI views is planned. For now, you can use [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) and add its content view to your UIKit view.
+> **Info** Support for rendering SwiftUI views is planned. For now, you can use [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) and add its content view to your UIKit view.
+
+> **Info** View functions are available as of SDK 49.
 
 </APIBox>
 <APIBox header="Prop">
@@ -528,9 +538,9 @@ RemoveChildViewAt { parent, index ->
 
 </APIBox>
 
-## Argument Types
+## Argument types
 
-Fundamentally, only primitive and serializable data can be passed back and forth between the runtimes. However, usually native modules need to receive custom data structures — more sophisticated than just the dictionary/map where the values are of unknown (`Any`) type and so each value has to be validated and casted on its own. The Expo Modules API provides protocols to make it more convenient to work with data objects, to provide automatic validation, and finally, to ensure native type-safety on each object member.
+Fundamentally, only primitive and serializable data can be passed back and forth between the runtimes. However, usually native modules need to receive custom data structures — more sophisticated than just the dictionary/map where the values are of unknown (`Any`) type and so each value has to be validated and cast on its own. The Expo Modules API provides protocols to make it more convenient to work with data objects, to provide automatic validation, and finally, to ensure native type-safety on each object member.
 
 <APIBox header="Primitives">
 
@@ -552,13 +562,14 @@ Some common iOS types from `CoreGraphics` and `UIKit` system frameworks are alre
 
 | Native iOS Type         | TypeScript                                                                                                                                                                        |
 | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `URL`                   | `string` with a URL. When scheme is not provided, it's assumed to be a file URL.                                                                                                  |
+| `URL`                   | `string` with a URL. When a scheme is not provided, it's assumed to be a file URL.                                                                                                |
 | `CGFloat`               | `number`                                                                                                                                                                          |
 | `CGPoint`               | `{ x: number, y: number }` or `number[]` with _x_ and _y_ coords                                                                                                                  |
 | `CGSize`                | `{ width: number, height: number }` or `number[]` with _width_ and _height_                                                                                                       |
 | `CGVector`              | `{ dx: number, dy: number }` or `number[]` with _dx_ and _dy_ vector differentials                                                                                                |
 | `CGRect`                | `{ x: number, y: number, width: number, height: number }` or `number[]` with _x_, _y_, _width_ and _height_ values                                                                |
 | `CGColor`<br/>`UIColor` | Color hex strings (`#RRGGBB`, `#RRGGBBAA`, `#RGB`, `#RGBA`), named colors following the [CSS3/SVG specification](https://www.w3.org/TR/css-color-3/#svg-color) or `"transparent"` |
+| `Data`                  | `Uint8Array` <StatusTag note="SDK 50+" />                                                                                                                                         |
 
 ---
 
@@ -571,12 +582,13 @@ Similarly, some common Android types from packages like `java.io`, `java.net`, o
 | `java.io.File`<br/>`java.nio.file.Path` (is only available on Android API 26) | `string` with a path to the file                                                                                                                                                  |
 | `android.graphics.Color`                                                      | Color hex strings (`#RRGGBB`, `#RRGGBBAA`, `#RGB`, `#RGBA`), named colors following the [CSS3/SVG specification](https://www.w3.org/TR/css-color-3/#svg-color) or `"transparent"` |
 | `kotlin.Pair<A, B>`                                                           | Array with two values, where the first one is of type _A_ and the second is of type _B_                                                                                           |
+| `kotlin.ByteArray`                                                            | `Uint8Array` <StatusTag note="SDK 50+" />                                                                                                                                         |
 
 </APIBox>
 <APIBox header="Records">
 
-_Record_ is a convertible type and an equivalent of the dictionary (Swift) or map (Kotlin), but represented as a struct where each field can have its own type and provide a default value.
-It is a better way to represent a JavaScript object with the native type-safety.
+_Record_ is a convertible type and an equivalent of the dictionary (Swift) or map (Kotlin), but represented as a struct where each field can have its type and provide a default value.
+It is a better way to represent a JavaScript object with the native type safety.
 
 <CodeBlocksTable>
 
@@ -620,7 +632,7 @@ Function("readFile") { path: String, options: FileReadOptions ->
 </APIBox>
 <APIBox header="Enums">
 
-With enums we can go even further with the above example (with `FileReadOptions` record) and limit supported encodings to `"utf8"` and `"base64"`. To use an enum as an argument or record field, it must represent a primitive value (e.g. `String`, `Int`) and conform to `Enumerable`.
+With enums, we can go even further with the above example (with `FileReadOptions` record) and limit supported encodings to `"utf8"` and `"base64"`. To use an enum as an argument or record field, it must represent a primitive value (for example, `String`, `Int`) and conform to `Enumerable`.
 
 <CodeBlocksTable>
 
@@ -690,11 +702,57 @@ The implementation for three Either types is currently provided out of the box, 
 - `EitherOfThree<FirstType, SecondType, ThirdType>` — A container for one of three types.
 - `EitherOfFour<FirstType, SecondType, ThirdType, FourthType>` — A container for one of four types.
 
-> Either types are available as of SDK 47.
+> **Info** Either types are available as of SDK 47.
+
+</APIBox>
+<APIBox header="JavaScript values">
+
+It's also possible to use a `JavaScriptValue` type which is a holder for any value that can be represented in JavaScript.
+This type is useful when you want to mutate the given argument or when you want to omit type validations and conversions.
+Note that using JavaScript-specific types is restricted to synchronous functions as all reads and writes in the JavaScript runtime must happen on the JavaScript thread.
+Any access to these values from different threads will result in a crash.
+
+In addition to the raw value, the `JavaScriptObject` type can be used to allow only object types and `JavaScriptFunction<ReturnType>` for callbacks.
+
+<CodeBlocksTable>
+
+```swift
+Function("mutateMe") { (value: JavaScriptValue) in
+  if value.isObject() {
+    let jsObject = value.getObject()
+    jsObject.setProperty("expo", value: "modules")
+  }
+}
+
+// or
+
+Function("mutateMe") { (jsObject: JavaScriptObject) in
+  jsObject.setProperty("expo", value: "modules")
+}
+```
+
+```kotlin
+Function("mutateMe") { value: JavaScriptValue ->
+  if (value.isObject()) {
+    val jsObject = value.getObject()
+    jsObject.setProperty("expo", "modules")
+  }
+}
+
+// or
+
+Function("mutateMe") { jsObject: JavaScriptObject ->
+  jsObject.setProperty("expo", "modules")
+}
+```
+
+</CodeBlocksTable>
+
+> **Info** JavaScript types are available as of SDK 49.
 
 </APIBox>
 
-## Native Classes
+## Native classes
 
 <APIBox header="Module">
 
@@ -837,7 +895,7 @@ The app context is an interface to a single Expo app.
 
 A base class that should be used by all exported views.
 
-On iOS, `ExpoView` extends the `RCTView` which handles some styles (e.g. borders) and accessibility.
+On iOS, `ExpoView` extends the `RCTView` which handles some styles (for example, borders) and accessibility.
 
 #### Properties
 
@@ -1096,17 +1154,63 @@ class MyModule : Module() {
 
 For more examples from real modules, you can refer to Expo modules that already use this API on GitHub:
 
-- `expo-battery` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-battery/ios))
-- `expo-cellular` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-cellular/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-cellular/android/src/main/java/expo/modules/cellular))
-- `expo-clipboard` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-clipboard/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-clipboard/android/src/main/java/expo/modules/clipboard))
-- `expo-crypto` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-crypto/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-crypto/android/src/main/java/expo/modules/crypto))
-- `expo-device` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-device/ios))
-- `expo-haptics` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-haptics/ios))
-- `expo-image-manipulator` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-image-manipulator/ios))
-- `expo-image-picker` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-image-picker/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-image-picker/android/src/main/java/expo/modules/imagepicker))
-- `expo-linear-gradient` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-linear-gradient/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-linear-gradient/android/src/main/java/expo/modules/lineargradient))
-- `expo-localization` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-localization/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-localization/android/src/main/java/expo/modules/localization))
-- `expo-store-review` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-store-review/ios))
-- `expo-system-ui` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-system-ui/ios/ExpoSystemUI))
-- `expo-video-thumbnails` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-video-thumbnails/ios))
-- `expo-web-browser` ([Swift](https://github.com/expo/expo/blob/main/packages/expo-web-browser/ios), [Kotlin](https://github.com/expo/expo/blob/main/packages/expo-web-browser/android/src/main/java/expo/modules/webbrowser))
+<FileTree
+  files={[
+    ['expo-battery', <A href="https://github.com/expo/expo/tree/main/packages/expo-battery/ios">Swift</A>],
+    [
+      'expo-cellular',
+      <CALLOUT>
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-cellular/android/src/main/java/expo/modules/cellular">Kotlin</A>,{' '}
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-cellular/ios">Swift</A>
+      </CALLOUT>
+    ],
+    [
+      'expo-clipboard',
+      <CALLOUT>
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-clipboard/android/src/main/java/expo/modules/clipboard">Kotlin</A>,{' '}
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-clipboard/ios">Swift</A>
+      </CALLOUT>
+    ],
+    [
+      'expo-crypto',
+      <CALLOUT>
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-crypto/android/src/main/java/expo/modules/crypto">Kotlin</A>,{' '}
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-crypto/ios">Swift</A>
+      </CALLOUT>
+    ],
+    ['expo-device', <A href="https://github.com/expo/expo/tree/main/packages/expo-device/ios">Swift</A>],
+    ['expo-haptics', <A href="https://github.com/expo/expo/tree/main/packages/expo-haptics/ios">Swift</A>],
+    ['expo-image-manipulator', <A href="https://github.com/expo/expo/tree/main/packages/expo-image-manipulator/ios">Swift</A>],
+    [
+      'expo-image-picker',
+      <CALLOUT>
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-image-picker/android/src/main/java/expo/modules/imagepicker">Kotlin</A>,{' '}
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-image-picker/ios">Swift</A>
+      </CALLOUT>
+    ],
+    [
+      'expo-linear-gradient',
+      <CALLOUT>
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-linear-gradient/android/src/main/java/expo/modules/lineargradient">Kotlin</A>,{' '}
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-linear-gradient/ios">Swift</A>
+      </CALLOUT>
+    ],
+    [
+      'expo-localization',
+      <CALLOUT>
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-localization/android/src/main/java/expo/modules/localization">Kotlin</A>,{' '}
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-localization/ios">Swift</A>
+      </CALLOUT>
+    ],
+    ['expo-store-review', <A href="https://github.com/expo/expo/tree/main/packages/expo-store-review/ios">Swift</A>],
+    ['expo-system-ui', <A href="https://github.com/expo/expo/tree/main/packages/expo-system-ui/ios/ExpoSystemUI">Swift</A>],
+    ['expo-video-thumbnails', <A href="https://github.com/expo/expo/tree/main/packages/expo-video-thumbnails/ios">Swift</A>],
+    [
+      'expo-web-browser',
+      <CALLOUT>
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-web-browser/android/src/main/java/expo/modules/webbrowser">Kotlin</A>,{' '}
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-web-browser/ios">Swift</A>
+      </CALLOUT>
+    ]
+  ]}
+/>

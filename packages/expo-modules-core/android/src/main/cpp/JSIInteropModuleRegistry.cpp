@@ -14,6 +14,7 @@ namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
 
 namespace expo {
+
 jni::local_ref<JSIInteropModuleRegistry::jhybriddata>
 JSIInteropModuleRegistry::initHybrid(jni::alias_ref<jhybridobject> jThis) {
   return makeCxxInstance(jThis);
@@ -29,6 +30,7 @@ void JSIInteropModuleRegistry::registerNatives() {
                    makeNativeMethod("global", JSIInteropModuleRegistry::global),
                    makeNativeMethod("createObject", JSIInteropModuleRegistry::createObject),
                    makeNativeMethod("drainJSEventLoop", JSIInteropModuleRegistry::drainJSEventLoop),
+                   makeNativeMethod("wasDeallocated", JSIInteropModuleRegistry::jniWasDeallocated),
                  });
 }
 
@@ -38,8 +40,7 @@ JSIInteropModuleRegistry::JSIInteropModuleRegistry(jni::alias_ref<jhybridobject>
 void JSIInteropModuleRegistry::installJSI(
   jlong jsRuntimePointer,
   jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
-  jni::alias_ref<react::CallInvokerHolder::javaobject> jsInvokerHolder,
-  jni::alias_ref<react::CallInvokerHolder::javaobject> nativeInvokerHolder
+  jni::alias_ref<react::CallInvokerHolder::javaobject> jsInvokerHolder
 ) {
   this->jniDeallocator = jni::make_global(jniDeallocator);
 
@@ -50,9 +51,10 @@ void JSIInteropModuleRegistry::installJSI(
   runtimeHolder = std::make_shared<JavaScriptRuntime>(
     this,
     runtime,
-    jsInvokerHolder->cthis()->getCallInvoker(),
-    nativeInvokerHolder->cthis()->getCallInvoker()
+    jsInvokerHolder->cthis()->getCallInvoker()
   );
+
+  runtimeHolder->installMainObject();
 
   auto expoModules = std::make_shared<ExpoModulesHostObject>(this);
   auto expoModulesObject = jsi::Object::createFromHostObject(*runtime, expoModules);
@@ -63,15 +65,6 @@ void JSIInteropModuleRegistry::installJSI(
     ->setProperty(
       *runtime,
       "modules",
-      expoModulesObject
-    );
-
-  // Also define `global.ExpoModules` for backwards compatibility (used before SDK47, can be removed in SDK48).
-  runtime
-    ->global()
-    .setProperty(
-      *runtime,
-      "ExpoModules",
       expoModulesObject
     );
 }
@@ -88,6 +81,8 @@ void JSIInteropModuleRegistry::installJSIForTests(
   jsi::Runtime &jsiRuntime = runtimeHolder->get();
 
   jsRegistry = std::make_unique<JSReferencesCache>(jsiRuntime);
+
+  runtimeHolder->installMainObject();
 
   auto expoModules = std::make_shared<ExpoModulesHostObject>(this);
   auto expoModulesObject = jsi::Object::createFromHostObject(jsiRuntime, expoModules);
@@ -113,6 +108,16 @@ JSIInteropModuleRegistry::callGetJavaScriptModuleObjectMethod(const std::string 
   return method(javaPart_, moduleName);
 }
 
+jni::local_ref<JavaScriptModuleObject::javaobject>
+JSIInteropModuleRegistry::callGetCoreModuleObject() const {
+  const static auto method = expo::JSIInteropModuleRegistry::javaClassLocal()
+    ->getMethod<jni::local_ref<JavaScriptModuleObject::javaobject>()>(
+      "getCoreModuleObject"
+    );
+
+  return method(javaPart_);
+}
+
 jni::local_ref<jni::JArrayClass<jni::JString>>
 JSIInteropModuleRegistry::callGetJavaScriptModulesNames() const {
   const static auto method = expo::JSIInteropModuleRegistry::javaClassLocal()
@@ -133,6 +138,10 @@ bool JSIInteropModuleRegistry::callHasModule(const std::string &moduleName) cons
 jni::local_ref<JavaScriptModuleObject::javaobject>
 JSIInteropModuleRegistry::getModule(const std::string &moduleName) const {
   return callGetJavaScriptModuleObjectMethod(moduleName);
+}
+
+jni::local_ref<JavaScriptModuleObject::javaobject> JSIInteropModuleRegistry::getCoreModule() const {
+  return callGetCoreModuleObject();
 }
 
 bool JSIInteropModuleRegistry::hasModule(const std::string &moduleName) const {
@@ -170,5 +179,30 @@ void JSIInteropModuleRegistry::registerSharedObject(
       "registerSharedObject"
     );
   method(javaPart_, std::move(native), std::move(js));
+}
+
+void JSIInteropModuleRegistry::registerClass(
+  jni::local_ref<jclass> native,
+  jni::local_ref<JavaScriptObject::javaobject> jsClass
+) {
+  const static auto method = expo::JSIInteropModuleRegistry::javaClassLocal()
+    ->getMethod<void(jni::local_ref<jclass>, jni::local_ref<JavaScriptObject::javaobject>)>(
+      "registerClass"
+    );
+  method(javaPart_, std::move(native), std::move(jsClass));
+}
+
+jni::local_ref<JavaScriptObject::javaobject> JSIInteropModuleRegistry::getJavascriptClass(
+  jni::local_ref<jclass> native
+) {
+  const static auto method = expo::JSIInteropModuleRegistry::javaClassLocal()
+    ->getMethod<jni::local_ref<JavaScriptObject::javaobject>(jni::local_ref<jclass>)>(
+      "getJavascriptClass"
+    );
+  return method(javaPart_, std::move(native));
+}
+
+void JSIInteropModuleRegistry::jniWasDeallocated() {
+  wasDeallocated = true;
 }
 } // namespace expo

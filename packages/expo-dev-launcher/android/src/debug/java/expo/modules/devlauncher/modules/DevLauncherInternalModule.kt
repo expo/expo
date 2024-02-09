@@ -53,7 +53,7 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
     return mapOf(
       "installationID" to installationIDHelper.getOrCreateInstallationID(reactApplicationContext),
       "isDevice" to !isRunningOnEmulator,
-      "updatesConfig" to getUpdatesConfig(),
+      "updatesConfig" to getUpdatesConfig()
     )
   }
 
@@ -61,7 +61,6 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
     val map = Arguments.createMap()
 
     val runtimeVersion = DevLauncherController.getMetadataValue(reactApplicationContext, "expo.modules.updates.EXPO_RUNTIME_VERSION")
-    val sdkVersion = DevLauncherController.getMetadataValue(reactApplicationContext, "expo.modules.updates.EXPO_SDK_VERSION")
     var projectUrl = DevLauncherController.getMetadataValue(reactApplicationContext, "expo.modules.updates.EXPO_UPDATE_URL")
 
     val appId = if (projectUrl.isNotEmpty()) {
@@ -78,7 +77,6 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
     return map.apply {
       putString("appId", appId)
       putString("runtimeVersion", runtimeVersion)
-      putString("sdkVersion", sdkVersion)
       putBoolean("usesEASUpdates", usesEASUpdates)
       putString("projectUrl", projectUrl)
     }
@@ -87,7 +85,7 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
   private fun sanitizeUrlString(url: String): Uri {
     var sanitizedUrl = url.trim()
     // If the url does contain a scheme use "http://"
-    if(!sanitizedUrl.contains("://")) {
+    if (!sanitizedUrl.contains("://")) {
       sanitizedUrl = "http://" + sanitizedUrl
     }
 
@@ -234,7 +232,6 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
     val applicationInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
     val appName = packageManager.getApplicationLabel(applicationInfo).toString()
     val runtimeVersion = DevLauncherController.getMetadataValue(reactApplicationContext, "expo.modules.updates.EXPO_RUNTIME_VERSION")
-    val sdkVersion = DevLauncherController.getMetadataValue(reactApplicationContext, "expo.modules.updates.EXPO_SDK_VERSION")
     var appIcon = getApplicationIconUri()
 
     var updatesUrl = DevLauncherController.getMetadataValue(reactApplicationContext, "expo.modules.updates.EXPO_UPDATE_URL")
@@ -251,7 +248,6 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
       putString("appName", appName)
       putString("appIcon", appIcon)
       putString("runtimeVersion", runtimeVersion)
-      putString("sdkVersion", sdkVersion)
     }
 
     promise.resolve(map)

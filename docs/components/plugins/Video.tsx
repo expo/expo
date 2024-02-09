@@ -1,8 +1,10 @@
 import { css } from '@emotion/react';
 import { borderRadius, breakpoints } from '@expo/styleguide-base';
+import dynamic from 'next/dynamic';
 import { PropsWithChildren, useState } from 'react';
-import ReactPlayer from 'react-player';
 import VisibilitySensor from 'react-visibility-sensor';
+
+const ReactPlayer = dynamic(() => import('react-player/lazy'), { ssr: false });
 
 const PLAYER_WIDTH = '100%' as const;
 const PLAYER_HEIGHT = 400 as const;
@@ -38,9 +40,13 @@ const Video = ({ controls, spaceAfter, url, file, loop = true }: VideoProps) => 
               className="react-player"
               width={PLAYER_WIDTH}
               height={PLAYER_HEIGHT}
-              style={playerStyle}
+              style={{
+                outline: 'none',
+                backgroundColor: '#000',
+                borderRadius: borderRadius.md,
+              }}
               muted
-              playing={isVisible}
+              playing={isVisible && !!file}
               controls={typeof controls === 'undefined' ? forceShowControls : controls}
               playsinline
               loop={loop}
@@ -81,12 +87,6 @@ const videoWrapperStyle = css({
   width: PLAYER_WIDTH,
   height: PLAYER_HEIGHT,
   backgroundColor: '#000',
-});
-
-const playerStyle = css({
-  outline: 'none',
-  backgroundColor: '#000',
-  borderRadius: borderRadius.md,
 });
 
 const dimmerStyle = css({

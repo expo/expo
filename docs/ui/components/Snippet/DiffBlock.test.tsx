@@ -12,7 +12,7 @@ const DIFF_PATH = '/static/diffs/expo-ios.diff';
 const DIFF_CONTENT = fs.readFileSync(path.join(dirname, '../../../public', DIFF_PATH)).toString();
 
 const validateDiffContent = (screen: Screen) => {
-  expect(screen.getByText('ios/MyApp/AppDelegate.h')).toBeInTheDocument();
+  expect(screen.getByText('ios/myapp/AppDelegate.h')).toBeInTheDocument();
   expect(screen.getByText('ios/Podfile')).toBeInTheDocument();
   expect(screen.getByText('#import <UIKit/UIKit.h>')).toBeInTheDocument();
   expect(screen.getByText('#import <Expo/Expo.h>')).toBeInTheDocument();
@@ -28,7 +28,7 @@ describe(DiffBlock, () => {
 
     render(<DiffBlock source={DIFF_PATH} />);
 
-    await screen.findByText('ios/MyApp/AppDelegate.h');
+    await screen.findByText('ios/myapp/AppDelegate.h');
 
     validateDiffContent(screen);
   });
@@ -47,5 +47,34 @@ describe(DiffBlock, () => {
     render(<DiffBlock raw={noCommitDataDiff} />);
 
     validateDiffContent(screen);
+  });
+
+  it('Shows the operation in header when showOperation is true', () => {
+    render(<DiffBlock raw={DIFF_CONTENT} showOperation />);
+
+    expect(screen.getAllByText('MODIFIED')).toBeTruthy();
+  });
+
+  it('Collapses deleted files when collapseDeletedFiles is true', () => {
+    const diffWithDelete = `
+diff --git a/templates/expo-template-bare-minimum/__tests__/App.js b/templates/expo-template-bare-minimum/__tests__/App.js
+deleted file mode 100644
+index fa45c70206..0000000000
+--- a/templates/expo-template-bare-minimum/__tests__/App.js
++++ /dev/null
+@@ -1,10 +0,0 @@
+-import 'react-native';
+-import React from 'react';
+-import App from '../App';
+-
+-// Note: test renderer must be required after react-native.
+-import renderer from 'react-test-renderer';
+-
+-it('renders correctly', () => {
+-  renderer.create(<App />);
+-});`;
+    render(<DiffBlock raw={diffWithDelete} collapseDeletedFiles />);
+
+    expect(screen.queryByText(`import 'react-native';`)).not.toBeInTheDocument();
   });
 });

@@ -51,3 +51,28 @@ internal class InvalidArgumentsException: Exception {
     "args must be an array"
   }
 }
+
+internal class InvalidBindParameterException: Exception {
+  override var reason: String {
+    "Invalid bind parameter"
+  }
+}
+
+internal class AccessClosedResourceException: Exception {
+  override var reason: String {
+    "Access to closed resource"
+  }
+}
+
+internal class SQLiteErrorException: GenericException<String> {
+  override var code: String {
+    "ERR_INTERNAL_SQLITE_ERROR"
+  }
+
+  override var reason: String {
+    "\(param)"
+  }
+}
+
+internal class InvalidConvertibleException: GenericException<String> {
+}

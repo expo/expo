@@ -1,20 +1,25 @@
-import { EventSubscription } from 'fbemitter';
-import { LocalAssets, Manifest, UpdateCheckResult, UpdateEvent, UpdateFetchResult, UpdatesCheckAutomaticallyValue, UpdatesLogEntry } from './Updates.types';
-export * from './Updates.types';
+import { LocalAssets, Manifest, UpdateCheckResult, UpdateFetchResult, UpdatesCheckAutomaticallyValue, UpdatesLogEntry, UpdatesNativeStateMachineContext } from './Updates.types';
 /**
- * The UUID that uniquely identifies the currently running update if `expo-updates` is enabled. The
- * UUID is represented in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) and
- * will always use lowercase letters. In development mode, or any other environment in which
- * `expo-updates` is disabled, this value is `null`.
+ * Whether expo-updates is enabled. This may be false in a variety of cases including:
+ * - enabled set to false in configuration
+ * - missing or invalid URL in configuration
+ * - missing runtime version or SDK version in configuration
+ * - error accessing storage on device during initialization
+ *
+ * When false, the embedded update is loaded.
+ */
+export declare const isEnabled: boolean;
+/**
+ * The UUID that uniquely identifies the currently running update. The
+ * UUID is represented in its canonical string form and will always use lowercase letters.
+ * This value is `null` when running in a local development environment or any other environment where `expo-updates` is disabled.
+ * @example xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
  */
 export declare const updateId: string | null;
 /**
- * The name of the release channel currently configured in this standalone or bare app when using
- * classic updates. When using Expo Updates, the value of this field is always `"default"`.
- */
-export declare const releaseChannel: string;
-/**
- * The channel name of the current build, if configured for use with EAS Update. Null otherwise.
+ * The channel name of the current build, if configured for use with EAS Update. `null` otherwise.
+ *
+ * Expo Go and development builds are not set to a specific channel and can run any updates compatible with their native runtime. Therefore, this value will always be `null` when running an update on Expo Go or a development build.
  */
 export declare const channel: string | null;
 /**
@@ -77,8 +82,8 @@ export declare const createdAt: Date | null;
  * executed after the `Updates.reloadAsync` method call resolves, since that depends on the OS and
  * the state of the native module and main threads.
  *
- * This method cannot be used in development mode, and the returned promise will be rejected if you
- * try to do so.
+ * This method cannot be used in Expo Go or development mode, and the returned promise will be rejected if you
+ * try to do so. It also rejects when expo-updates is not enabled.
  *
  * @return A promise that fulfills right before the reload instruction is sent to the JS runtime, or
  * rejects if it cannot find a reference to the JS runtime. If the promise is rejected in production
@@ -102,26 +107,22 @@ export declare function reloadAsync(): Promise<void>;
  *
  * @return A promise that fulfills with an [`UpdateCheckResult`](#updatecheckresult) object.
  *
- * The promise rejects if the app is in development mode, or if there is an unexpected error or
- * timeout communicating with the server.
+ * The promise rejects in Expo Go or if the app is in development mode, or if there is an unexpected error or
+ * timeout communicating with the server. It also rejects when expo-updates is not enabled.
  */
 export declare function checkForUpdateAsync(): Promise<UpdateCheckResult>;
 /**
  * Retrieves the current extra params.
+ *
+ * This method cannot be used in Expo Go or development mode. It also rejects when expo-updates is not enabled.
  */
-export declare function getExtraParamsAsync(): Promise<{
-    [key: string]: string;
-}>;
+export declare function getExtraParamsAsync(): Promise<Record<string, string>>;
 /**
  * Sets an extra param if value is non-null, otherwise unsets the param.
- * Extra params are sent in a header of update requests.
- * The update server may use these params when evaluating logic to determine which update to serve.
- * EAS Update merges these params into the fields used to evaluate channel–branch mapping logic.
+ * Extra params are sent as an [Expo Structured Field Value Dictionary](https://docs.expo.dev/technical-specs/expo-sfv-0/)
+ * in the `Expo-Extra-Params` header of update requests. A compliant update server may use these params when selecting an update to serve.
  *
- * @example An app may want to add a feature where users can opt-in to beta updates. In this instance,
- * extra params could be set to `{userType: 'beta'}`, and then the server can use this information
- * when deciding which update to serve. If using EAS Update, the channel-branch mapping can be set to
- * discriminate branches based on the `userType`.
+ * This method cannot be used in Expo Go or development mode. It also rejects when expo-updates is not enabled.
  */
 export declare function setExtraParamAsync(key: string, value: string | null | undefined): Promise<void>;
 /**
@@ -151,10 +152,14 @@ export declare function clearLogEntriesAsync(): Promise<void>;
  * storage. This method cannot be used in development mode, and the returned promise will be
  * rejected if you try to do so.
  *
+ > **Note:** [`reloadAsync()`](#updatesreloadasync) can be called after promise resolution to
+ * reload the app using the most recently downloaded version. Otherwise, the update will be applied
+ * on the next app cold start.
+ *
  * @return A promise that fulfills with an [`UpdateFetchResult`](#updatefetchresult) object.
  *
- * The promise rejects if the app is in development mode, or if there is an unexpected error or
- * timeout communicating with the server.
+ * The promise rejects in Expo Go or if the app is in development mode, or if there is an unexpected error or
+ * timeout communicating with the server. It also rejects when expo-updates is not enabled.
  */
 export declare function fetchUpdateAsync(): Promise<UpdateFetchResult>;
 /**
@@ -162,14 +167,16 @@ export declare function fetchUpdateAsync(): Promise<UpdateFetchResult>;
  */
 export declare function clearUpdateCacheExperimentalAsync(_sdkVersion?: string): void;
 /**
- * Adds a callback to be invoked when updates-related events occur (such as upon the initial app
- * load) due to auto-update settings chosen at build-time. See also the
- * [`useUpdateEvents`](#useupdateeventslistener) React hook.
- *
- * @param listener A function that will be invoked with an [`UpdateEvent`](#updateevent) instance
- * and should not return any value.
- * @return An `EventSubscription` object on which you can call `remove()` to unsubscribe the
- * listener.
+ * @hidden
  */
-export declare function addListener(listener: (event: UpdateEvent) => void): EventSubscription;
+export declare function transformNativeStateMachineContext(originalNativeContext: UpdatesNativeStateMachineContext & {
+    latestManifestString?: string;
+    downloadedManifestString?: string;
+    lastCheckForUpdateTimeString?: string;
+    rollbackString?: string;
+}): UpdatesNativeStateMachineContext;
+/**
+ * @hidden
+ */
+export declare function getNativeStateMachineContextAsync(): Promise<UpdatesNativeStateMachineContext>;
 //# sourceMappingURL=Updates.d.ts.map

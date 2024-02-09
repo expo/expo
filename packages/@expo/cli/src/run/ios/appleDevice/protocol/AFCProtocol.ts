@@ -8,9 +8,9 @@
 import Debug from 'debug';
 import { Socket } from 'net';
 
-import { CommandError } from '../../../../utils/errors';
 import type { ProtocolReaderCallback, ProtocolWriter } from './AbstractProtocol';
 import { ProtocolClient, ProtocolReader, ProtocolReaderFactory } from './AbstractProtocol';
+import { CommandError } from '../../../../utils/errors';
 
 const debug = Debug('expo:apple-device:protocol:afc');
 
@@ -337,13 +337,19 @@ function isErrorStatusResponse(resp: AFCResponse): boolean {
 }
 
 class AFCInternalError extends Error {
-  constructor(msg: string, public requestId: number) {
+  constructor(
+    msg: string,
+    public requestId: number
+  ) {
     super(msg);
   }
 }
 
 export class AFCError extends Error {
-  constructor(msg: string, public status: AFC_STATUS) {
+  constructor(
+    msg: string,
+    public status: AFC_STATUS
+  ) {
     super(msg);
   }
 }

@@ -247,13 +247,11 @@ export type ImagePickerAsset = {
    * Preferred filename to use when saving this item. This might be `null` when the name is unavailable
    * or user gave limited permission to access the media library.
    *
-   * @platform ios
    */
   fileName?: string | null;
   /**
    * File size of the picked image or video, in bytes.
    *
-   * @platform ios
    */
   fileSize?: number;
   /**
@@ -278,6 +276,10 @@ export type ImagePickerAsset = {
    * Length of the video in milliseconds or `null` if the asset is not a video.
    */
   duration?: number | null;
+  /**
+   * The MIME type of the selected asset or `null` if could not be determined.
+   */
+  mimeType?: string;
 };
 
 // @needsAudit

@@ -4,9 +4,10 @@ import android.os.Bundle
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 
-data class BarCodeScannedEvent(
+data class BarcodeScannedEvent(
   @Field val target: Int,
   @Field val data: String,
+  @Field val raw: String,
   @Field val type: Int,
   @Field val cornerPoints: ArrayList<Bundle>,
   @Field val boundingBox: Bundle

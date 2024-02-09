@@ -1,5 +1,6 @@
 ---
 title: Use an image picker
+description: In this tutorial, learn how to use Expo Image Picker.
 ---
 
 import { SnackInline, Terminal } from '~/ui/components/Snippet';
@@ -12,7 +13,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons';
 React Native provides built-in components that are standard building blocks used by every application, such as `<View>`, `<Text>`, and `<Pressable>`.
 We want to build a feature that isn't possible with these core components and API: selecting an image from the device's media library. For that, we will need a library.
 
-To achieve this, we'll use an Expo SDK library called <A href="/versions/latest/sdk/imagepicker" openInNewTab>`expo-image-picker`</A>.
+To achieve this, we'll use an Expo SDK library called <A href="/versions/latest/sdk/imagepicker">`expo-image-picker`</A>.
 
 > `expo-image-picker` provides access to the system's UI to select images and videos from the phone's library or take a photo with the camera.
 
@@ -72,7 +73,7 @@ export default function App() {
 Let's learn what the above code does.
 
 - The `launchImageLibraryAsync()` receives an object in which different options are specified.
-  This object is an <A href="/versions/latest/sdk/imagepicker/#imagepickeroptions" openInNewTab>`ImagePickerOptions` object</A>.
+  This object is an <A href="/versions/latest/sdk/imagepicker/#imagepickeroptions">`ImagePickerOptions` object</A>.
   We can pass the object to specify different options when invoking the method.
 - When `allowsEditing` is set to `true`, the user can crop the image during the selection process on Android and iOS but not on the web.
 
@@ -87,15 +88,15 @@ To call it, update the `onPress` property of the `<Button>` component in **compo
 
 {/* prettier-ignore */}
 ```jsx Button.js
-export default function Button({ label,  theme, /* @info Pass this prop to trigger the handler method from the parent component. */ onPress/* @end */}) {
+export default function Button({ label, theme, /* @info Pass this prop to trigger the handler method from the parent component. */onPress/* @end */}) {
   // ...rest of the code remains same
   if (theme === "primary") {
     return (
       <View>
-        /* ...rest of the code remains same */
+        {/* ...rest of the code remains same */}
         <Pressable
           style={[styles.button, { backgroundColor: '#fff' }]}
-          /* @info */ onPress={onPress} /* @end */
+          onPress={/* @info */onPress/* @end */}
         >
       </View>
     );
@@ -112,8 +113,8 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      /* ...rest of the code remains same */
-      <Button theme="primary" label="Choose a photo" /* @info */ onPress={pickImageAsync} /* @end */ />
+      {/* ...rest of the code remains same */}
+      <Button theme="primary" label="Choose a photo" onPress={/* @info */pickImageAsync/* @end */} />
     </View>
   );
 }
@@ -194,7 +195,7 @@ export default function App() {
         />
         /* @end */
       </View>
-      /* ...rest of the code remains same */
+      {/* ...rest of the code remains same */}
     </View>
   );
 }
@@ -220,9 +221,7 @@ files={{
 ```jsx
 export default function ImageViewer({ placeholderImageSource, /* @info Pass the selectedImage prop.*/selectedImage/* @end */ }) {
   /* @info If the selected image is not null, show the image from the device, otherwise, show the placeholder image. */
-  const imageSource = selectedImage !== null
-    ? { uri: selectedImage }
-    : placeholderImageSource;
+  const imageSource = selectedImage  ? { uri: selectedImage } : placeholderImageSource;
   /* @end */
 
   return <Image /* @info */source={imageSource}/* @end */ style={styles.image} />;

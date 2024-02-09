@@ -23,6 +23,19 @@ export type Scalars = {
   JSONObject: any;
 };
 
+export type AccountAppsFilterInput = {
+  sortByField: AccountAppsSortByField;
+};
+
+export enum AccountAppsSortByField {
+  LatestActivityTime = 'LATEST_ACTIVITY_TIME',
+  /**
+   * Name prefers the display name but falls back to full_name with @account/
+   * part stripped.
+   */
+  Name = 'NAME'
+}
+
 export type AccountDataInput = {
   name: Scalars['String'];
 };
@@ -40,6 +53,7 @@ export type AccountSsoConfigurationData = {
   authProviderIdentifier: Scalars['String'];
   clientIdentifier: Scalars['String'];
   clientSecret: Scalars['String'];
+  endSessionEndpoint?: InputMaybe<Scalars['String']>;
   issuer: Scalars['String'];
   jwksEndpoint?: InputMaybe<Scalars['String']>;
   revokeEndpoint?: InputMaybe<Scalars['String']>;
@@ -291,6 +305,10 @@ export type AppleDeviceInput = {
   softwareVersion?: InputMaybe<Scalars['String']>;
 };
 
+export type AppleDeviceUpdateInput = {
+  name?: InputMaybe<Scalars['String']>;
+};
+
 export type AppleDistributionCertificateInput = {
   appleTeamId?: InputMaybe<Scalars['ID']>;
   certP12: Scalars['String'];
@@ -338,11 +356,10 @@ export enum AuthProtocolType {
 }
 
 export type BuildCacheInput = {
-  cacheDefaultPaths?: InputMaybe<Scalars['Boolean']>;
   clear?: InputMaybe<Scalars['Boolean']>;
-  customPaths?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   disabled?: InputMaybe<Scalars['Boolean']>;
   key?: InputMaybe<Scalars['String']>;
+  paths?: InputMaybe<Array<Scalars['String']>>;
 };
 
 export enum BuildCredentialsSource {
@@ -399,6 +416,7 @@ export type BuildMetadataInput = {
   channel?: InputMaybe<Scalars['String']>;
   cliVersion?: InputMaybe<Scalars['String']>;
   credentialsSource?: InputMaybe<BuildCredentialsSource>;
+  customWorkflowName?: InputMaybe<Scalars['String']>;
   distribution?: InputMaybe<DistributionType>;
   gitCommitHash?: InputMaybe<Scalars['String']>;
   gitCommitMessage?: InputMaybe<Scalars['String']>;
@@ -454,6 +472,14 @@ export enum BuildResourceClass {
   IosMLarge = 'IOS_M_LARGE',
   IosMMedium = 'IOS_M_MEDIUM',
   Legacy = 'LEGACY'
+}
+
+export enum BuildRetryDisabledReason {
+  AlreadyRetried = 'ALREADY_RETRIED',
+  InvalidStatus = 'INVALID_STATUS',
+  IsGithubBuild = 'IS_GITHUB_BUILD',
+  NotCompletedYet = 'NOT_COMPLETED_YET',
+  TooMuchTimeElapsed = 'TOO_MUCH_TIME_ELAPSED'
 }
 
 export enum BuildStatus {
@@ -539,6 +565,11 @@ export enum DistributionType {
   Internal = 'INTERNAL',
   Simulator = 'SIMULATOR',
   Store = 'STORE'
+}
+
+export enum EasBuildBillingResourceClass {
+  Large = 'LARGE',
+  Medium = 'MEDIUM'
 }
 
 export enum EasBuildDeprecationInfoType {
@@ -864,6 +895,15 @@ export enum Role {
   ViewOnly = 'VIEW_ONLY'
 }
 
+export type SsoUserDataInput = {
+  firstName?: InputMaybe<Scalars['String']>;
+  githubUsername?: InputMaybe<Scalars['String']>;
+  industry?: InputMaybe<Scalars['String']>;
+  lastName?: InputMaybe<Scalars['String']>;
+  location?: InputMaybe<Scalars['String']>;
+  twitterUsername?: InputMaybe<Scalars['String']>;
+};
+
 export type SecondFactorDeviceConfiguration = {
   isPrimary: Scalars['Boolean'];
   method: SecondFactorMethod;
@@ -1003,6 +1043,7 @@ export type UpdateRollBackToEmbeddedGroup = {
 export type UpdatesFilter = {
   platform?: InputMaybe<AppPlatform>;
   runtimeVersions?: InputMaybe<Array<Scalars['String']>>;
+  sdkVersions?: InputMaybe<Array<Scalars['String']>>;
 };
 
 export enum UploadSessionType {

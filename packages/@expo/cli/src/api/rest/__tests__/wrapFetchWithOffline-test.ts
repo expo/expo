@@ -1,22 +1,15 @@
-import { APISettings } from '../../settings';
 import { wrapFetchWithOffline } from '../wrapFetchWithOffline';
-
-jest.mock('../../settings', () => ({
-  APISettings: {
-    isOffline: true,
-  },
-}));
 
 describe(wrapFetchWithOffline, () => {
   it(`supports normal requests`, async () => {
-    APISettings.isOffline = false;
+    delete process.env.EXPO_OFFLINE;
     const input = jest.fn();
     const next = wrapFetchWithOffline(input);
     await next('https://example.com/', {});
     expect(input).toBeCalledWith('https://example.com/', {});
   });
   it(`times out instantly when offline`, async () => {
-    APISettings.isOffline = true;
+    process.env.EXPO_OFFLINE = '1';
     const input = jest.fn();
     const next = wrapFetchWithOffline(input);
     await next('https://example.com/', {});

@@ -24,8 +24,6 @@ export const INTERNAL_CALLSITES_REGEX = new RegExp(
     'node_modules/react-native/Libraries/Utilities/HMRClient.js$',
     'node_modules/eventemitter3/index.js',
     'node_modules/event-target-shim/dist/.+\\.js$',
-    // Ignore the log forwarder used in the expo package.
-    '/expo/build/logs/RemoteConsole.js$',
     // Improve errors thrown by invariant (ex: `Invariant Violation: "main" has not been registered`).
     'node_modules/invariant/.+\\.js$',
     // Remove babel runtime additions
@@ -40,6 +38,23 @@ export const INTERNAL_CALLSITES_REGEX = new RegExp(
     `\\[native code\\]`,
     // Hide react-dom (web)
     'node_modules/react-dom/.+\\.js$',
+    // Hide node.js evaluation code
+    'node_modules/require-from-string/.+\\.js$',
+    // Block expo's metro-runtime
+    '@expo/metro-runtime/.+\\.ts',
+    // Block upstream metro-runtime
+    '/metro-runtime/.+\\.js$',
+
+    // Block all whatwg polyfills
+    'node_modules/whatwg-.+\\.js$',
+    // Hide expo-router warnings which are often wrapping all routes and imports.
+    'node_modules/expo-router/build/',
+    // No Expo CLI logs
+    '/@expo/cli/.+',
+    // No context modules as these are virtual
+    '.+?ctx=[a-zA-Z0-9]+$',
+    // Hide react-native-web warning wrappers. These are most likely related to style deprecations.
+    '/react-native-web/dist/.+\\.js$',
   ].join('|')
 );
 

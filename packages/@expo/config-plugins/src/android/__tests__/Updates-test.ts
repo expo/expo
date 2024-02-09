@@ -1,5 +1,4 @@
 import { ExpoConfig } from '@expo/config-types';
-import fs from 'fs';
 import { vol } from 'memfs';
 import path from 'path';
 
@@ -42,6 +41,9 @@ describe('Android Updates config', () => {
     const config: ExpoConfig = {
       name: 'foo',
       sdkVersion: '37.0.0',
+      runtimeVersion: {
+        policy: 'sdkVersion',
+      },
       slug: 'my-app',
       owner: 'owner',
       updates: {
@@ -59,11 +61,10 @@ describe('Android Updates config', () => {
         },
       },
     };
-    androidManifestJson = Updates.setUpdatesConfig(
+    androidManifestJson = await Updates.setUpdatesConfigAsync(
       '/app',
       config,
       androidManifestJson,
-      'user',
       '0.11.0'
     );
     const mainApplication = getMainApplication(androidManifestJson)!;
@@ -80,8 +81,7 @@ describe('Android Updates config', () => {
     const sdkVersion = mainApplication['meta-data'].filter(
       (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_SDK_VERSION'
     );
-    expect(sdkVersion).toHaveLength(1);
-    expect(sdkVersion[0].$['android:value']).toMatch('37.0.0');
+    expect(sdkVersion).toHaveLength(0);
 
     const enabled = mainApplication['meta-data'].filter(
       (e) => e.$['android:name'] === 'expo.modules.updates.ENABLED'
@@ -126,110 +126,11 @@ describe('Android Updates config', () => {
       '{"expo-channel-name":"test","testheader":"test"}'
     );
 
-    // For this config, runtime version should not be defined, so check that it does not appear in the manifest
     const runtimeVersion = mainApplication['meta-data']?.filter(
       (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_RUNTIME_VERSION'
     );
-    expect(runtimeVersion).toHaveLength(0);
-  });
-
-  it('set correct values in AndroidManifest.xml for useClassicUpdates', async () => {
-    vol.fromJSON({
-      '/app/hello': fsReal.readFileSync(sampleCodeSigningCertificatePath, 'utf-8'),
-    });
-
-    let androidManifestJson = await getFixtureManifestAsync();
-    const config: ExpoConfig = {
-      name: 'foo',
-      sdkVersion: '37.0.0',
-      slug: 'my-app',
-      owner: 'owner',
-      updates: {
-        useClassicUpdates: true,
-      },
-    };
-    androidManifestJson = Updates.setUpdatesConfig(
-      '/app',
-      config,
-      androidManifestJson,
-      'user',
-      '0.11.0'
-    );
-    const mainApplication = getMainApplication(androidManifestJson)!;
-
-    if (!mainApplication['meta-data']) {
-      throw new Error('No meta-data found in AndroidManifest.xml');
-    }
-
-    const updateUrl = mainApplication['meta-data'].filter(
-      (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_UPDATE_URL'
-    );
-    expect(updateUrl).toHaveLength(1);
-    expect(updateUrl[0].$['android:value']).toMatch('https://exp.host/@owner/my-app');
-
-    const sdkVersion = mainApplication['meta-data'].filter(
-      (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_SDK_VERSION'
-    );
-    expect(sdkVersion).toHaveLength(1);
-    expect(sdkVersion[0].$['android:value']).toMatch('37.0.0');
-
-    const enabled = mainApplication['meta-data'].filter(
-      (e) => e.$['android:name'] === 'expo.modules.updates.ENABLED'
-    );
-    expect(enabled).toHaveLength(1);
-    expect(enabled[0].$['android:value']).toMatch('true');
-  });
-
-  describe(Updates.ensureBuildGradleContainsConfigurationScript, () => {
-    it('adds create-manifest-android.gradle line to build.gradle', async () => {
-      vol.fromJSON(
-        {
-          'android/app/build.gradle': fsReal.readFileSync(
-            path.join(__dirname, 'fixtures/build-without-create-manifest-android.gradle'),
-            'utf-8'
-          ),
-          'node_modules/expo-updates/scripts/create-manifest-android.gradle': 'whatever',
-        },
-        '/app'
-      );
-
-      const contents = rnFixture['android/app/build.gradle'];
-      const newContents = Updates.ensureBuildGradleContainsConfigurationScript('/app', contents);
-      expect(newContents).toMatchSnapshot();
-    });
-
-    it('fixes the path to create-manifest-android.gradle in case of a monorepo', async () => {
-      // Pseudo node module resolution since actually mocking it could prove challenging.
-      // In a yarn workspace, resolve-from would be able to locate a module in any node_module folder if properly linked.
-      const resolveFrom = require('resolve-from');
-      resolveFrom.silent = (p, a) => {
-        return silent(path.join(p, '..'), a);
-      };
-
-      vol.fromJSON(
-        {
-          'workspace/android/app/build.gradle': fsReal.readFileSync(
-            path.join(
-              __dirname,
-              'fixtures/build-with-incorrect-create-manifest-android-path.gradle'
-            ),
-            'utf-8'
-          ),
-          'node_modules/expo-updates/scripts/create-manifest-android.gradle': 'whatever',
-        },
-        '/app'
-      );
-
-      const contents = await fs.promises.readFile(
-        '/app/workspace/android/app/build.gradle',
-        'utf-8'
-      );
-      const newContents = Updates.ensureBuildGradleContainsConfigurationScript(
-        '/app/workspace',
-        contents
-      );
-      expect(newContents).toMatchSnapshot();
-    });
+    expect(runtimeVersion).toHaveLength(1);
+    expect(runtimeVersion[0].$['android:value']).toMatch('@string/expo_runtime_version');
   });
 
   describe('Runtime version tests', () => {
@@ -260,11 +161,10 @@ describe('Android Updates config', () => {
           policy: 'appVersion',
         },
       };
-      androidManifestJson = Updates.setUpdatesConfig(
+      androidManifestJson = await Updates.setUpdatesConfigAsync(
         '/app',
         config,
         androidManifestJson,
-        'user',
         '0.11.0'
       );
       const mainApplication = getMainApplication(androidManifestJson);
@@ -283,16 +183,22 @@ describe('Android Updates config', () => {
       const stringsJSON = await readResourcesXMLAsync({ path: stringsPath });
       const config = {
         runtimeVersion: '1.10',
-      };
-      Updates.applyRuntimeVersionFromConfig(config, stringsJSON);
+        modRequest: {
+          projectRoot: '/',
+        },
+      } as any;
+      await Updates.applyRuntimeVersionFromConfigAsync(config, stringsJSON);
       expect(format(stringsJSON)).toEqual(
         '<resources>\n  <string name="expo_runtime_version">1.10</string>\n</resources>'
       );
 
       const config2 = {
         sdkVersion: '1.10',
-      };
-      Updates.applyRuntimeVersionFromConfig(config2, stringsJSON);
+        modRequest: {
+          projectRoot: '/',
+        },
+      } as any;
+      await Updates.applyRuntimeVersionFromConfigAsync(config2, stringsJSON);
       expect(format(stringsJSON)).toEqual('<resources/>');
     });
 

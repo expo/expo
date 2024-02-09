@@ -1,6 +1,6 @@
 import { ExpoConfig } from '@expo/config-types';
 import { InfoPlist } from './IosConfig.types';
-export declare const withScheme: import("..").ConfigPlugin<void>;
+export declare const withScheme: import("..").ConfigPlugin;
 export declare function getScheme(config: {
     scheme?: string | string[];
 }): string[];

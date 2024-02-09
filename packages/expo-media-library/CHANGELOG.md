@@ -2,20 +2,75 @@
 
 ## Unpublished
 
-### 📚 3rd party library updates
-
-- Updated `robolectric` to `4.10`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
-
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 15.9.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 15.9.0 — 2023-12-12
+
+### 🐛 Bug fixes
+
+- On iOS, fix iOS 14 limited library picker presentation, using `presentPermissionsPickerAsync`, on nested views and `reject` Promise if state is not `limited`. ([#25521](https://github.com/expo/expo/pull/25521) by [@exodusanto](https://github.com/exodusanto))
+- Fix promises being resolved twice on Android. ([#25763](https://github.com/expo/expo/pull/25763) by [@lukmccall](https://github.com/lukmccall))
+
+## 15.8.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 15.7.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+## 15.6.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+## 15.5.1 — 2023-08-02
+
+### 🐛 Bug fixes
+
+- On iOS, fix issue where the wrong requester class was used if the user had requested `writeOnly` permissions. ([#23780](https://github.com/expo/expo/pull/23780) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 15.5.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
+## 15.4.1 - 2023-07-23
+
+### 🐛 Bug fixes
+
+- Fix `albumNeedsMigrationAsync` crashing if called with invalid `albumId` on Android. ([#23516](https://github.com/expo/expo/pull/23516) by [@lukmccall](https://github.com/lukmccall))
+- Fix `the bind value at index 1 is null` exception thrown by `ExpoMediaLibrary.migrateAlbumIfNeededAsync` on Android. ([#23515](https://github.com/expo/expo/pull/23515) by [@lukmccall](https://github.com/lukmccall))
+
+## 15.4.0 — 2023-06-21
+
+### 📚 3rd party library updates
+
+- Updated `robolectric` to `4.10`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+
+### 🎉 New features
+
+- Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
 - Fixed missing permissions error on Android when the user only requests write permissions ([#22457](https://github.com/expo/expo/pull/22457) by [@alanjhughes](https://github.com/alanjhughes))
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 15.3.0 — 2023-05-08
 

@@ -3,7 +3,6 @@
 package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
-import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
@@ -17,7 +16,7 @@ class JavaScriptObjectTest {
 
   @Before
   fun before() {
-    jsiInterop = JSIInteropModuleRegistry(mockk()).apply {
+    jsiInterop = JSIInteropModuleRegistry(defaultAppContextMock()).apply {
       installJSIForTests()
     }
   }
@@ -161,19 +160,16 @@ class JavaScriptObjectTest {
   @Test
   fun should_be_passed_as_a_reference() {
     var receivedObject: JavaScriptObject? = null
-    withJSIInterop(
-      inlineModule {
-        Name("TestModule")
-        Function("f") { jsObject: JavaScriptObject ->
-          receivedObject = jsObject
-          jsObject.setProperty("expo", 123)
-        }
+    withSingleModule({
+      Function("f") { jsObject: JavaScriptObject ->
+        receivedObject = jsObject
+        jsObject.setProperty("expo", 123)
       }
-    ) {
+    }) {
       val result = evaluateScript(
         """
         const x = {};
-        expo.modules.TestModule.f(x);
+        $moduleRef.f(x);
         x
         """.trimIndent()
       ).getObject()

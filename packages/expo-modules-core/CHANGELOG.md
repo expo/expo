@@ -2,16 +2,284 @@
 
 ## Unpublished
 
+### 🛠 Breaking changes
+
+- Removed `ReactNativeHostHandler.onRegisterJSIModules` interface. ([#26357](https://github.com/expo/expo/pull/26357) by [@kudo](https://github.com/kudo))
+
+### 🎉 New features
+
+- Add timer capability to Logger. ([#26454](https://github.com/expo/expo/pull/26454), [#26477](https://github.com/expo/expo/pull/26477) by [@wschurman](https://github.com/wschurman))
+- Add iOS support for `PlatformColor` and `DynamicColorIOS` color props. ([#26724](https://github.com/expo/expo/pull/26724) by [@dlindenkreuz](https://github.com/dlindenkreuz))
+- `BarCodeScannerResult` interface now declares an additional `raw` field corresponding to the barcode value as it was encoded in the barcode without parsing. Will always be undefined on iOS. ([#25391](https://github.com/expo/expo/pull/25391) by [@ajacquierbret](https://github.com/ajacquierbret))
+- [Android] Added syntactic sugar for defining a prop group. ([#27004](https://github.com/expo/expo/pull/27004) by [@lukmccall](https://github.com/lukmccall))
+
+### 🐛 Bug fixes
+
+- Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357) by [@kudo](https://github.com/kudo))
+- Fix proguard rules so `Serializable` types are not obfuscated. ([#26545](https://github.com/expo/expo/pull/26545) by [@alanjhughes](https://github.com/alanjhughes))
+- Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357), [#26587](https://github.com/expo/expo/pull/26587) by [@kudo](https://github.com/kudo))
+- [Android] Fixed activity contract registration after host destruction. ([#26881](https://github.com/expo/expo/pull/26881) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Ensured that `onCreate` before `OnActivityEntersForeground` event. ([#26944](https://github.com/expo/expo/pull/26944) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+- Removed deprecated `global.ExpoModules`. ([#26027](https://github.com/expo/expo/pull/26027) by [@tsapeta](https://github.com/tsapeta))
+- Remove most of Constants.appOwnership. ([#26313](https://github.com/expo/expo/pull/26313) by [@wschurman](https://github.com/wschurman))
+- Added an alternative way of installing the JSI bindings. ([#26691](https://github.com/expo/expo/pull/26691) by [@lukmccall](https://github.com/lukmccall))
+- `ObjectDeallocator` is now a native state instead of a host object. ([#26906](https://github.com/expo/expo/pull/26906) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.11.7 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 1.11.6 - 2024-01-12
+
+_This version does not introduce any user-facing changes._
+
+## 1.11.5 - 2024-01-10
+
+### 🎉 New features
+
+- Added support for returning shared refs from async functions. ([#26341](https://github.com/expo/expo/pull/26341) by [@aleqsio](https://github.com/aleqsio))
+- Added support for macOS platform. ([#26186](https://github.com/expo/expo/pull/26186) by [@tsapeta](https://github.com/tsapeta))
+- Add `Date` type converter. ([#26148](https://github.com/expo/expo/pull/26148) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- Adjust proguard rules to prevent issues with types implementing `Enumerable`. ([#26108](https://github.com/expo/expo/pull/26108) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- Replace deprecated `com.facebook.react:react-native:+` Android dependency with `com.facebook.react:react-android`. ([#26237](https://github.com/expo/expo/pull/26237) by [@kudo](https://github.com/kudo))
+
+## 1.11.4 - 2023-12-21
+
+_This version does not introduce any user-facing changes._
+
+## 1.11.3 - 2023-12-19
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `SharedObjectRegistry` crash for accessing internal data structures from multi-threads. ([#25997](https://github.com/expo/expo/pull/25997) by [@kudo](https://github.com/kudo))
+- Fixed splash screen view flickering in dark mode on iOS. ([#26015](https://github.com/expo/expo/pull/26015), [#26029](https://github.com/expo/expo/pull/26029) by [@kudo](https://github.com/kudo))
+- Fixed `SharedObject` leakage on Android. ([#25995](https://github.com/expo/expo/pull/25995) by [@kudo](https://github.com/kudo))
+
+## 1.11.2 — 2023-12-15
+
+### 💡 Others
+
+- [Android] Bump Kotlin version from `1.8.10` to `1.8.22`. ([#25945](https://github.com/expo/expo/pull/25945) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.11.1 — 2023-12-12
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `OnCreate` was called before the `React` instance was ready. ([#25866](https://github.com/expo/expo/pull/25866) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.11.0 — 2023-12-12
+
+### 🎉 New features
+
+- Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added `Data <-> Uint8Array` convertible on iOS. ([#25726](https://github.com/expo/expo/pull/25726) by [@kudo](https://github.com/kudo))
+- Added `ByteArray <-> Uint8Array` convertible on Android. ([#25727](https://github.com/expo/expo/pull/25727) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- [Android] Prevent the app from crashing during reloading when an unfinished promise tries to execute.
+- [Android] Fix `JavaScriptFunction` not working when the return type wasn't provided. ([#25688](https://github.com/expo/expo/pull/25688) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fix requesting only `WRITE_SETTINGS` rejecting promise even if the permission was granted. ([#25732](https://github.com/expo/expo/pull/25732) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fix functions that are scheduled on the main thread weren't being called as soon as possible. ([#25757](https://github.com/expo/expo/pull/25757) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+- [iOS] Made dynamic types creation faster. ([#25390](https://github.com/expo/expo/pull/25390) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add `FileSystemUtilities` to replace legacy interfaces. ([#25495](https://github.com/expo/expo/pull/25495) by [@alanhughes](https://github.com/alanjhughes))
+- Bump C++ compiler setting to C++20. ([#25548](https://github.com/expo/expo/pull/25548) by [@kudo](https://github.com/kudo))
+- Marked `NativeModulesProxy` as deprecated in favor of `requireNativeModule` and `requireOptionalNativeModule`. ([#25666](https://github.com/expo/expo/pull/25666) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.10.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🎉 New features
+
+- Add `preventModuleOverriding` to `ModuleRegistry.register` method. ([#24860](https://github.com/expo/expo/pull/24860) by [@wschurman](https://github.com/wschurman))
+- [iOS] `CGFloat` can now be used as an argument type. ([#25140](https://github.com/expo/expo/pull/25140) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Mock native code on web platforms. ([#25264](https://github.com/expo/expo/pull/25264) by [@EvanBacon](https://github.com/EvanBacon))
+- [iOS] Fixed the object identifier for shared object types. ([#25060](https://github.com/expo/expo/pull/25060) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fixed concurrent functions (async/await) not converting results such as records and shared objects. ([#25075](https://github.com/expo/expo/pull/25075) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fixed concurrent functions (async/await) not supporting an owner argument (view and class functions). ([#25141](https://github.com/expo/expo/pull/25141) by [@tsapeta](https://github.com/tsapeta))
+- Fixed UIView arguments not being resolved correctly when passed in with findNodeHandle ([#24703](https://github.com/expo/expo/pull/24703) by [@javache](https://github.com/javache))
+- [Android] Improve boot time on low-end devices. ([#25267](https://github.com/expo/expo/pull/25267) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Improve performance of enum and map converters. ([#25272](https://github.com/expo/expo/pull/25272) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Improve logic responsible for obtaining converters that slow down the startup time. ([#25273](https://github.com/expo/expo/pull/25273) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Improving the creation process of views for better performance. ([#25274](https://github.com/expo/expo/pull/25274) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+- Remove `unimodule.json` in favour of `expo-module.config.json`. ([#25100](https://github.com/expo/expo/pull/25100) by [@reichhartd](https://github.com/reichhartd))
+- Remove deprecated `REACT_NATIVE_OVERRIDE_VERSION` for React Native nightly testing. ([#25151](https://github.com/expo/expo/pull/25151) by [@kudo](https://github.com/kudo))
+- Removed backward compatible code for deprecated SDKs. ([#25154](https://github.com/expo/expo/pull/25154) by [@kudo](https://github.com/kudo))
+
+## 1.9.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 🎉 New features
+
+- Add `CommonExceptions.ModuleNotFound`. ([#24898](https://github.com/expo/expo/pull/24898) by [@lukmccall](https://github.com/lukmccall))
+- [Android] `Set<T>` can now be passed as an argument to a module method. ([#24897](https://github.com/expo/expo/pull/24897) by [@lukmccall](https://github.com/lukmccall))
+
+### 🐛 Bug fixes
+
+- Fixed typed arrays couldn't be returned from synchronous functions. ([#24744](https://github.com/expo/expo/pull/24744) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fixed exception when deallocating shared objects. ([#24836](https://github.com/expo/expo/pull/24836) by [@kudo](https://github.com/kudo))
+- [Android] Fixed `null` or `undefined` wasn't converted to `JavaScriptValue`. ([#24899](https://github.com/expo/expo/pull/24899) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed `Either` converter not working with types that have common representation in JavaScript. ([#24903](https://github.com/expo/expo/pull/24903) by [@lukmccall](https://github.com/lukmccall))
+- [Android] `Any` converter doesn't use `ReadableMap` or `ReadableList` anymore. Objects and arrays are converted to Kotlin's primitives. ([#24963](https://github.com/expo/expo/pull/24963) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+- Improve tracking on Android. ([#24625](https://github.com/expo/expo/pull/24625) by [@lukmccall](https://github.com/lukmccall))
+- Use native UUIDv5 generation on `Android` and `iOS`. ([#24200](https://github.com/expo/expo/pull/24200) by [@behenate](https://github.com/behenate))
+- Ensure native modules are installed before required. ([#24746](https://github.com/expo/expo/pull/24746) by [@tsapeta](https://github.com/tsapeta))
+- Clean up and restructure the modules core package directory. ([#24816](https://github.com/expo/expo/pull/24816) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.8.0 — 2023-09-15
+
+### 🎉 New features
+
+- Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
+
+### 💡 Others
+
+- Remove deprecated `RCTDeviceEventEmitter`. ([#24298](https://github.com/expo/expo/pull/24298) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove `deprecate` utility function. ([#24298](https://github.com/expo/expo/pull/24298) by [@EvanBacon](https://github.com/EvanBacon))
+- Deprecate `SyntheticPlatformEmitter` in favor of `DeviceEventEmitter`. ([#24298](https://github.com/expo/expo/pull/24298) by [@EvanBacon](https://github.com/EvanBacon))
+- Introduced an AppContext config to provide things like documents and caches directories for the modules. ([#24292](https://github.com/expo/expo/pull/24292) by [@tsapeta](https://github.com/tsapeta))
+- Fixed random `NullPointerExceptions` when calling `Updates.reloadAsync` on Android. ([#24442](https://github.com/expo/expo/pull/24442) by [@lukmccall](https://github.com/lukmccall))
+- Converting shared object id passed as a prop to the associated native object. ([#24431](https://github.com/expo/expo/pull/24431) by [@tsapeta](https://github.com/tsapeta))
+- Added a convenient method to get the app delegate subscriber of the given type. ([#23943](https://github.com/expo/expo/pull/23943) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.7.0 — 2023-09-04
+
+### 🎉 New features
+
+- [Android] Surfaced errorManager to allow throwing errors and warnings from modules. ([#23848](https://github.com/expo/expo/pull/23848) by [@aleqsio](https://github.com/aleqsio))
+- [Android] Enums can now be used to define events. ([#23875](https://github.com/expo/expo/pull/23875) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Promises can now be resolved without arguments. ([#23907](https://github.com/expo/expo/pull/23907) by [@lukmccall](https://github.com/lukmccall))
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018), [#24019](https://github.com/expo/expo/pull/24019) by [@kudo](https://github.com/kudo))
+- [Android] `Property` component can now take the native shared object instance as the first argument. ([#24206](https://github.com/expo/expo/pull/24206) by [@lukmccall](https://github.com/lukmccall))
+- Introduced `requireOptionalNativeModule` that returns `null` when the module cannot be found instead of throwing an error. ([#24262](https://github.com/expo/expo/pull/24262) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Introduced shared refs – a way to pass native objects among different independent modules. ([#24446](https://github.com/expo/expo/pull/24446) by [@lukmccall](https://github.com/lukmccall))
+
+### 🐛 Bug fixes
+
+- [Android] Refresh NativeModulesProxy if app bundle is reloaded. ([#23824](https://github.com/expo/expo/pull/23824) by [@douglowder](https://github.com/douglowder))
+- [Android] Fix nullability of parameter type in `List` and `Map` when converting from JS to native. ([#23942](https://github.com/expo/expo/pull/23942) by [@lukmccall](https://github.com/lukmccall))
+- Fixed Fabric setup error on iOS. ([#24004](https://github.com/expo/expo/pull/24004) by [@kudo](https://github.com/kudo))
+- Fixed uuid v4 generation. ([#24123](https://github.com/expo/expo/pull/24123) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Fixed owner type of view functions. ([#24135](https://github.com/expo/expo/pull/24135) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed IOException `No space left on device` when saving persistent log. ([#24247](https://github.com/expo/expo/pull/24247) by [@RodolfoGS](https://github.com/RodolfoGS))
+
+### 💡 Others
+
+- Use native UUIDv4 generation on `Android` and `iOS`. ([#24199](https://github.com/expo/expo/pull/24199) by [@behenate](https://github.com/behenate))
+- [Android] Add type converter for the `ReadableArguments` class to allow backward compatibility with older modules. ([#24137](https://github.com/expo/expo/pull/24137) by [@lukmccall](https://github.com/lukmccall))
+- [Android] `SharedObjectTypeConverter` now can work with the `Dynamic` class. ([#24207](https://github.com/expo/expo/pull/24207) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Expose a conversion between id and shared objects. ([#24220](https://github.com/expo/expo/pull/24220) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.6.0 — 2023-07-28
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed custom fonts support on Fabric. ([#23666](https://github.com/expo/expo/pull/23666) by [@aleqsio](https://github.com/aleqsio))
+- [Android] Fixed splash screen is missing when using the `getDelayLoadAppHandler()` from expo-updates. ([#23747](https://github.com/expo/expo/pull/23747) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Fork `uuid@3.4.0` and move into `expo-modules-core`. Remove the original dependency. ([#23249](https://github.com/expo/expo/pull/23249) by [@alanhughes](https://github.com/alanjhughes))
+- Improved error handling when working with native promises on Android. ([#23571](https://github.com/expo/expo/pull/23571) by [@lukmccall](https://github.com/lukmccall))
+- Added tracing to avoid slow app startup on Android. ([#23653](https://github.com/expo/expo/pull/23653) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.5.8 - 2023-07-23
+
+### 🐛 Bug fixes
+
+- Fixed the `ErrorViewGroup` cannot be cast to module view class exception on Android. ([#23651](https://github.com/expo/expo/pull/23651) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fix allowed orientations set in `Info.plist` being ignored when no delegates requested a different orientation. ([#23593](https://github.com/expo/expo/pull/23593) by [@behenate](https://github.com/behenate))
+
+## 1.5.7 — 2023-07-12
+
+### 🐛 Bug fixes
+
+- Fixed regressions and crashes in the dev client introduced by [#23405](https://github.com/expo/expo/pull/23405). ([#23491](https://github.com/expo/expo/pull/23491) by [@kudo](https://github.com/kudo))
+
+## 1.5.6 - 2023-07-10
+
+### 🐛 Bug fixes
+
+- Fixed the Network Inspector cannot preview response body for response without the `Content-Length` header. ([#23405](https://github.com/expo/expo/pull/23405) by [@kudo](https://github.com/kudo))
+- Fixed `SoLoader` does not work on Android. ([#23415](https://github.com/expo/expo/pull/23415) by [@kudo](https://github.com/kudo))
+- Fixed slower boot time on Android. ([#23345](https://github.com/expo/expo/pull/23345) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.5.5 - 2023-07-07
+
+### 🐛 Bug fixes
+
+- Improved the OkHttp network inspector stability on Android. ([#23350](https://github.com/expo/expo/pull/23350) by [@kudo](https://github.com/kudo))
+- [iOS] Fix conversion to `URL` type that failed despite receiving a string that contained a valid URL. ([#23331](https://github.com/expo/expo/pull/23331) by [@alanhughes](https://github.com/alanjhughes)) ([#23331](https://github.com/expo/expo/pull/23331) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 1.5.4 - 2023-07-04
+
+### 🐛 Bug fixes
+
+- Fix the `View cannot be cast to ViewGroup` exception on Android. ([#23264](https://github.com/expo/expo/pull/23264) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+- Changed Objective-C names for `ExpoReactDelegate` and `ExpoReactDelegateHandler` to fix issues with versioning in Expo Go. ([#23229](https://github.com/expo/expo/pull/23229) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.5.3 — 2023-06-24
+
+### 🎉 New features
+
+- Supported other network CDP types like `Image` and `Media` rather than `Fetch`. ([#23058](https://github.com/expo/expo/pull/23058) by [@kudo](https://github.com/kudo))
+
+## 1.5.2 — 2023-06-24
+
+_This version does not introduce any user-facing changes._
+
+## 1.5.1 — 2023-06-22
+
+_This version does not introduce any user-facing changes._
+
+## 1.5.0 — 2023-06-21
+
+### 💡 Others
+
+- [iOS] Added Interface Geometry Management section to ExpoAppDelegate. ([#22599](https://github.com/expo/expo/pull/22599) by [@behenate](https://github.com/behenate))
+
+## 1.4.0 — 2023-06-13
+
 ### 📚 3rd party library updates
 
 - Updated `robolectric` to `4.10` and `junit` to `4.13.2`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
-
-### 🛠 Breaking changes
 
 ### 🎉 New features
 
 - Added `ReactActivityHandler.getDelayLoadAppHandler` interface on Android. ([#20273](https://github.com/expo/expo/pull/20273) by [@kudo](https://github.com/kudo))
 - [iOS] Introduced shared refs – a way to pass native objects among different independent modules. ([#22583](https://github.com/expo/expo/pull/22583) by [@tsapeta](https://github.com/tsapeta))
+- Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 

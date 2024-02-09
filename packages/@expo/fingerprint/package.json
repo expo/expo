@@ -1,21 +1,27 @@
 {
   "name": "@expo/fingerprint",
-  "version": "0.0.7",
+  "version": "0.6.0",
   "description": "A library to generate a fingerprint from a React Native project",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
-    "watch": "tsc --watch --preserveWatchOutput",
-    "build": "tsc --sourceMap",
-    "prepare": "yarn run clean && yarn build",
-    "clean": "rimraf build ./tsconfig.tsbuildinfo",
-    "lint": "eslint .",
-    "test": "jest",
-    "test:e2e": "jest --config e2e/jest.config.js"
+    "build": "expo-module tsc",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "prepare": "expo-module clean && expo-module tsc",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "test": "expo-module test",
+    "test:e2e": "yarn run prepare && expo-module test --config e2e/jest.config.js",
+    "typecheck": "expo-module typecheck",
+    "watch": "expo-module tsc --watch"
   },
   "bin": {
     "fingerprint": "bin/cli.js"
   },
+  "files": [
+    "bin",
+    "build"
+  ],
   "keywords": [
     "expo",
     "react-native",
@@ -35,7 +41,7 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/fingerprint#readme",
   "dependencies": {
-    "@expo/spawn-async": "^1.5.0",
+    "@expo/spawn-async": "^1.7.2",
     "chalk": "^4.1.2",
     "debug": "^4.3.4",
     "find-up": "^5.0.0",
@@ -45,17 +51,8 @@
   },
   "devDependencies": {
     "@types/find-up": "^4.0.0",
-    "@types/jest": "^29.2.1",
-    "@types/rimraf": "^3.0.0",
-    "eslint": "^8.29.0",
-    "eslint-config-universe": "^11.1.0",
-    "expo": "^49.0.0-alpha.1",
+    "expo-module-scripts": "^3.3.0",
     "glob": "^7.1.7",
-    "jest": "^29.2.1",
-    "jest-watch-typeahead": "2.2.1",
-    "memfs": "^3.4.12",
-    "rimraf": "^3.0.2",
-    "temp-dir": "^2.0.0",
-    "typescript": "^4.3.5"
+    "temp-dir": "^2.0.0"
   }
 }

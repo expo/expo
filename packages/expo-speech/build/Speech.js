@@ -1,8 +1,7 @@
-import { UnavailabilityError } from 'expo-modules-core';
-import { NativeEventEmitter } from 'react-native';
+import { UnavailabilityError, EventEmitter } from 'expo-modules-core';
 import ExponentSpeech from './ExponentSpeech';
 import { VoiceQuality } from './Speech.types';
-const SpeechEventEmitter = ExponentSpeech && new NativeEventEmitter(ExponentSpeech);
+const SpeechEventEmitter = new EventEmitter(ExponentSpeech);
 export { VoiceQuality };
 const _CALLBACKS = {};
 let _nextCallbackId = 1;
@@ -123,12 +122,7 @@ export async function resume() {
     return ExponentSpeech.resume();
 }
 function setSpeakingListener(eventName, callback) {
-    // @ts-ignore: the EventEmitter interface has been changed in react-native@0.64.0
-    const listenerCount = SpeechEventEmitter.listenerCount
-        ? // @ts-ignore: this is available since 0.64
-            SpeechEventEmitter.listenerCount(eventName)
-        : // @ts-ignore: this is available in older versions
-            SpeechEventEmitter.listeners(eventName).length;
+    const listenerCount = SpeechEventEmitter._listenerCount;
     if (listenerCount > 0) {
         SpeechEventEmitter.removeAllListeners(eventName);
     }

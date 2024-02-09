@@ -3,10 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateAndroidProguardRules = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidFlipper = exports.withAndroidBuildProperties = void 0;
+exports.withAndroidQueries = exports.withAndroidCleartextTraffic = exports.updateAndroidProguardRules = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidBuildProperties = void 0;
 const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const androidQueryUtils_1 = require("./androidQueryUtils");
 const fileContentsUtils_1 = require("./fileContentsUtils");
 const { createBuildGradlePropsConfigPlugin } = config_plugins_1.AndroidConfig.BuildProperties;
 exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
@@ -60,34 +61,13 @@ exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
     },
     {
         propName: 'EX_DEV_CLIENT_NETWORK_INSPECTOR',
-        propValueGetter: (config) => config.android?.unstable_networkInspector?.toString(),
+        propValueGetter: (config) => (config.android?.networkInspector ?? true).toString(),
+    },
+    {
+        propName: 'expo.useLegacyPackaging',
+        propValueGetter: (config) => (config.android?.useLegacyPackaging ?? false).toString(),
     },
 ], 'withAndroidBuildProperties');
-const withAndroidFlipper = (config, props) => {
-    const ANDROID_FLIPPER_KEY = 'FLIPPER_VERSION';
-    const FLIPPER_FALLBACK = '0.125.0';
-    // when not set, make no changes
-    if (props.android?.flipper === undefined) {
-        return config;
-    }
-    return (0, config_plugins_1.withGradleProperties)(config, (c) => {
-        // check for Flipper version in package. If set, use that
-        let existing;
-        const found = c.modResults.find((item) => item.type === 'property' && item.key === ANDROID_FLIPPER_KEY);
-        if (found && found.type === 'property') {
-            existing = found.value;
-        }
-        // strip key and re-add based on setting
-        c.modResults = c.modResults.filter((item) => !(item.type === 'property' && item.key === ANDROID_FLIPPER_KEY));
-        c.modResults.push({
-            type: 'property',
-            key: ANDROID_FLIPPER_KEY,
-            value: (props.android?.flipper ?? existing ?? FLIPPER_FALLBACK),
-        });
-        return c;
-    });
-};
-exports.withAndroidFlipper = withAndroidFlipper;
 /**
  * Appends `props.android.extraProguardRules` content into `android/app/proguard-rules.pro`
  */
@@ -174,3 +154,41 @@ function updateAndroidProguardRules(contents, newProguardRules, updateMode) {
     return newContents;
 }
 exports.updateAndroidProguardRules = updateAndroidProguardRules;
+const withAndroidCleartextTraffic = (config, props) => {
+    return (0, config_plugins_1.withAndroidManifest)(config, (config) => {
+        if (props.android?.usesCleartextTraffic == null) {
+            return config;
+        }
+        config.modResults = setUsesCleartextTraffic(config.modResults, props.android?.usesCleartextTraffic);
+        return config;
+    });
+};
+exports.withAndroidCleartextTraffic = withAndroidCleartextTraffic;
+function setUsesCleartextTraffic(androidManifest, value) {
+    const mainApplication = config_plugins_1.AndroidConfig.Manifest.getMainApplicationOrThrow(androidManifest);
+    if (mainApplication?.$) {
+        mainApplication.$['android:usesCleartextTraffic'] = String(value);
+    }
+    return androidManifest;
+}
+const withAndroidQueries = (config, props) => {
+    return (0, config_plugins_1.withAndroidManifest)(config, (config) => {
+        if (props.android?.manifestQueries == null) {
+            return config;
+        }
+        const { manifestQueries } = props.android;
+        // Default template adds a single intent to the `queries` tag
+        const defaultIntents = config.modResults.manifest.queries.map((q) => q.intent ?? []).flat() ?? [];
+        const additionalQueries = {
+            package: (0, androidQueryUtils_1.renderQueryPackages)(manifestQueries.package),
+            intent: [...defaultIntents, ...(0, androidQueryUtils_1.renderQueryIntents)(manifestQueries.intent)],
+        };
+        const provider = (0, androidQueryUtils_1.renderQueryProviders)(manifestQueries.provider);
+        if (provider != null) {
+            additionalQueries.provider = provider;
+        }
+        config.modResults.manifest.queries = [additionalQueries];
+        return config;
+    });
+};
+exports.withAndroidQueries = withAndroidQueries;

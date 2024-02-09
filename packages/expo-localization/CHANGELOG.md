@@ -8,9 +8,80 @@
 
 ### 🐛 Bug fixes
 
-- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+### 💡 Others
+
+## 14.8.3 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 14.8.2 - 2024-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 14.8.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 14.8.0 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
+## 14.7.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix expo-localization tvOS compile, add CI. ([#25082](https://github.com/expo/expo/pull/25082) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
+
+- [iOS] Use newer, non-deprecated platform APIs in `getLocales()`. ([#24884](https://github.com/expo/expo/pull/24884) by [@aleqsio](https://github.com/aleqsio))
+
+### ⚠️ Notices
+
+- Deprecated `locale` constant. ([#25078](https://github.com/expo/expo/pull/25078) by [@aleqsio](https://github.com/aleqsio))
+
+## 14.6.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- [iOS] fix tvOS compilation. ([#24845](https://github.com/expo/expo/pull/24845) by [@douglowder](https://github.com/douglowder))
+
+## 14.5.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- Added a `temperatureUnit` field, which contains the default temperature unit for the locale. ([#24059](https://github.com/expo/expo/pull/24059) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- Change documentation to refer to a correct replacement method in a deprecated field. ([#23811](https://github.com/expo/expo/pull/23811) by [@aleqsio](https://github.com/aleqsio))
+
+## 14.4.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 14.3.0 — 2023-06-21
+
+### 🎉 New features
+
+- Changing locale on Android no longer reloads the app if the `expo-localization` config plugin is added to app.json. ([#22763](https://github.com/expo/expo/pull/22763) by [@aleqsio](https://github.com/aleqsio))
+- Added hooks to get current locale and calendar. ([#22763](https://github.com/expo/expo/pull/22763) by [@aleqsio](https://github.com/aleqsio))
+- Measurement system now returns `uk` and `us` values on iOS 16 and higher. ([#22763](https://github.com/expo/expo/pull/22763) by [@aleqsio](https://github.com/aleqsio))
+
+### 🐛 Bug fixes
+
+- User settings for delimiters and other locale preferences now override default locale settings for each locale in the list. ([#22763](https://github.com/expo/expo/pull/22763) by [@aleqsio](https://github.com/aleqsio))
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ## 14.2.0 — 2023-05-08
 

@@ -2,20 +2,73 @@
 
 ## Unpublished
 
-### 📚 3rd party library updates
-
-- Updated `robolectric` to `4.10`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
-
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+- Update error message to reflect that web crypto works on web with a localhost hostname and often doesn't require `https`. ([#26729](https://github.com/expo/expo/pull/26729) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove `compare-urls` and `url` dependencies in favor of built-in URL support. ([#26702](https://github.com/expo/expo/pull/26702) by [@EvanBacon](https://github.com/EvanBacon))
+- Updated `androidx.browser:browser` to `1.6.0` [#26619](https://github.com/expo/expo/pull/26619) by [@zoontek](https://github.com/zoontek)
+
+## 12.8.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 12.8.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 12.7.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+## 12.6.0 — 2023-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 12.5.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+## 12.4.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 12.4.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
+## 12.3.2 — 2023-06-28
+
+_This version does not introduce any user-facing changes._
+
+## 12.3.1 — 2023-06-27
+
+### 🐛 Bug fixes
+
+- On `iOS`, fixed crash when opening an invalid URL in the web browser. ([#22986](https://github.com/expo/expo/pull/23084) by [@hirbod](https://github.com/hirbod))
+
+## 12.3.0 — 2023-06-21
+
+### 📚 3rd party library updates
+
+- Updated `robolectric` to `4.10`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+
+### 🐛 Bug fixes
+
 - On `iOS` fix browser session being kept alive after view controller is dismissed. ([#22415](https://github.com/expo/expo/pull/22415) by [@alanjhughes](https://github.com/alanjhughes))
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 12.2.0 — 2023-05-08
 

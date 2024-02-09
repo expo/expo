@@ -7,10 +7,43 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
-
-- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- On Android, intent number extras are converted to `double`. However, it must be `int`. ([#26164](https://github.com/expo/expo/pull/26164) by [@Alperengozum](https://github.com/Alperengozum))
 
 ### 💡 Others
+
+## 10.11.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 10.10.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+## 10.9.1 — 2023-09-18
+
+### 🐛 Bug fixes
+
+- Fixed errors in debug and crashes in production when an intent is launched without found activities. ([#24481](https://github.com/expo/expo/pull/24481) by [@robertying](https://github.com/robertying))
+
+## 10.9.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+## 10.8.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 10.7.0 — 2023-06-21
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ## 10.6.0 — 2023-05-08
 
@@ -80,7 +113,7 @@ _This version does not introduce any user-facing changes._
 
 - Replace the stand-alone action constant strings with String Enum named `ActivityAction`. ([#14070](https://github.com/expo/expo/pull/14070) by [@Simek](https://github.com/Simek))
 
-````diff
+```diff
 - IntentLauncher.ACTION_* // ACTION_ACCESSIBILITY_SETTINGS
 + IntentLauncher.ActivityAction.* // ActivityAction.ACCESSIBILITY_SETTINGS
 ```## 9.1.0 — 2021-06-16
@@ -119,8 +152,4 @@ _This version does not introduce any user-facing changes._
 ## 8.2.0 — 2020-05-27
 
 *This version does not introduce any user-facing changes.*
-````
-
-```
-
 ```

@@ -2,7 +2,7 @@ import spawnAsync from '@expo/spawn-async';
 import { vol } from 'memfs';
 import path from 'path';
 
-import { mockSpawnPromise, mockedSpawnAsync, STUB_SPAWN_CHILD } from '../../__tests__/spawn-utils';
+import { mockSpawnPromise, STUB_SPAWN_CHILD } from '../../__tests__/spawn-utils';
 import { YarnPackageManager } from '../YarnPackageManager';
 
 jest.mock('@expo/spawn-async');
@@ -104,9 +104,9 @@ describe('YarnPackageManager', () => {
 
   describe('versionAsync', () => {
     it('returns version from yarn', async () => {
-      mockedSpawnAsync.mockImplementation(() =>
-        mockSpawnPromise(Promise.resolve({ stdout: '4.2.0\n' }))
-      );
+      jest
+        .mocked(spawnAsync)
+        .mockImplementation(() => mockSpawnPromise(Promise.resolve({ stdout: '4.2.0\n' })));
 
       const yarn = new YarnPackageManager({ cwd: projectRoot });
 
@@ -117,9 +117,11 @@ describe('YarnPackageManager', () => {
 
   describe('getConfigAsync', () => {
     it('returns a configuration key from yarn', async () => {
-      mockedSpawnAsync.mockImplementation(() =>
-        mockSpawnPromise(Promise.resolve({ stdout: 'https://custom.registry.org/\n' }))
-      );
+      jest
+        .mocked(spawnAsync)
+        .mockImplementation(() =>
+          mockSpawnPromise(Promise.resolve({ stdout: 'https://custom.registry.org/\n' }))
+        );
 
       const yarn = new YarnPackageManager({ cwd: projectRoot });
 

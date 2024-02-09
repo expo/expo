@@ -7,3 +7,9 @@ final class WebBrowserAlreadyOpenException: Exception {
     "Another web browser is already open"
   }
 }
+
+final class WebBrowserInvalidURLException: Exception {
+  override var reason: String {
+    return "The provided URL is not valid."
+  }
+}

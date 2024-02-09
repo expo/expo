@@ -1,19 +1,33 @@
 import React from 'react';
+import { View } from 'react-native-web';
 
 import { ImageNativeProps, ImageSource, ImageLoadEventData } from './Image.types';
 import AnimationManager, { AnimationManagerNode } from './web/AnimationManager';
 import ImageWrapper from './web/ImageWrapper';
-import loadStyle from './web/style';
+import loadStyle from './web/imageStyles';
 import useSourceSelection from './web/useSourceSelection';
 
 loadStyle();
 
 export const ExpoImageModule = {
-  prefetch(urls: string | string[]): void {
+  async prefetch(urls: string | string[], _): Promise<boolean> {
     const urlsArray = Array.isArray(urls) ? urls : [urls];
-    urlsArray.forEach((url) => {
-      const img = new Image();
-      img.src = url;
+
+    return new Promise<boolean>((resolve) => {
+      let imagesLoaded = 0;
+
+      urlsArray.forEach((url) => {
+        const img = new Image();
+        img.src = url;
+        img.onload = () => {
+          imagesLoaded++;
+
+          if (imagesLoaded === urlsArray.length) {
+            resolve(true);
+          }
+        };
+        img.onerror = () => resolve(false);
+      });
     });
   },
 
@@ -49,10 +63,20 @@ function onErrorAdapter(onError?: { (event: { error: string }): void }) {
   };
 }
 
-const setCssVariables = (element: HTMLElement, size: DOMRect) => {
+// Used for flip transitions to mimic native animations
+function setCssVariablesForFlipTransitions(element: HTMLElement, size: DOMRect) {
   element?.style.setProperty('--expo-image-width', `${size.width}px`);
   element?.style.setProperty('--expo-image-height', `${size.height}px`);
-};
+}
+
+function isFlipTransition(transition: ImageNativeProps['transition']) {
+  return (
+    transition?.effect === 'flip-from-bottom' ||
+    transition?.effect === 'flip-from-top' ||
+    transition?.effect === 'flip-from-left' ||
+    transition?.effect === 'flip-from-right'
+  );
+}
 
 export default function ExpoImage({
   source,
@@ -60,6 +84,7 @@ export default function ExpoImage({
   contentFit,
   contentPosition,
   placeholderContentFit,
+  cachePolicy,
   onLoad,
   transition,
   onError,
@@ -68,17 +93,18 @@ export default function ExpoImage({
   priority,
   blurRadius,
   recyclingKey,
+  style,
+  nativeViewRef,
   ...props
 }: ImageNativeProps) {
-  const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
   const imagePlaceholderContentFit = placeholderContentFit || 'scale-down';
-  const blurhashStyle = {
+  const imageHashStyle = {
     objectFit: placeholderContentFit || contentFit,
   };
   const { containerRef, source: selectedSource } = useSourceSelection(
     source,
     responsivePolicy,
-    setCssVariables
+    isFlipTransition(transition) ? setCssVariablesForFlipTransitions : null
   );
 
   const initialNodeAnimationKey =
@@ -88,25 +114,25 @@ export default function ExpoImage({
     ? [
         initialNodeAnimationKey,
         ({ onAnimationFinished }) =>
-          (className, style) =>
-            (
-              <ImageWrapper
-                {...props}
-                source={placeholder?.[0]}
-                style={{
-                  objectFit: imagePlaceholderContentFit,
-                  ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
-                  ...style,
-                }}
-                className={className}
-                events={{
-                  onTransitionEnd: [onAnimationFinished],
-                }}
-                contentPosition={{ left: '50%', top: '50%' }}
-                hashPlaceholderContentPosition={contentPosition}
-                hashPlaceholderStyle={blurhashStyle}
-              />
-            ),
+          (className, style) => (
+            <ImageWrapper
+              {...props}
+              ref={nativeViewRef as React.Ref<HTMLImageElement> | undefined}
+              source={placeholder?.[0]}
+              style={{
+                objectFit: imagePlaceholderContentFit,
+                ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
+                ...style,
+              }}
+              className={className}
+              events={{
+                onTransitionEnd: [onAnimationFinished],
+              }}
+              contentPosition={{ left: '50%', top: '50%' }}
+              hashPlaceholderContentPosition={contentPosition}
+              hashPlaceholderStyle={imageHashStyle}
+            />
+          ),
       ]
     : null;
 
@@ -118,47 +144,37 @@ export default function ExpoImage({
   const currentNode: AnimationManagerNode = [
     currentNodeAnimationKey,
     ({ onAnimationFinished, onReady, onMount, onError: onErrorInner }) =>
-      (className, style) =>
-        (
-          <ImageWrapper
-            {...props}
-            source={selectedSource || placeholder?.[0]}
-            events={{
-              onError: [onErrorAdapter(onError), onLoadEnd, onErrorInner],
-              onLoad: [onLoadAdapter(onLoad), onLoadEnd, onReady],
-              onMount: [onMount],
-              onTransitionEnd: [onAnimationFinished],
-            }}
-            style={{
-              objectFit: selectedSource ? contentFit : imagePlaceholderContentFit,
-              ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
-              ...style,
-            }}
-            className={className}
-            priority={priority}
-            contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }}
-            hashPlaceholderContentPosition={contentPosition}
-            hashPlaceholderStyle={blurhashStyle}
-            accessibilityLabel={props.accessibilityLabel}
-          />
-        ),
+      (className, style) => (
+        <ImageWrapper
+          {...props}
+          ref={nativeViewRef as React.Ref<HTMLImageElement> | undefined}
+          source={selectedSource || placeholder?.[0]}
+          events={{
+            onError: [onErrorAdapter(onError), onLoadEnd, onErrorInner],
+            onLoad: [onLoadAdapter(onLoad), onLoadEnd, onReady],
+            onMount: [onMount],
+            onTransitionEnd: [onAnimationFinished],
+          }}
+          style={{
+            objectFit: selectedSource ? contentFit : imagePlaceholderContentFit,
+            ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
+            ...style,
+          }}
+          className={className}
+          cachePolicy={cachePolicy}
+          priority={priority}
+          contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }}
+          hashPlaceholderContentPosition={contentPosition}
+          hashPlaceholderStyle={imageHashStyle}
+          accessibilityLabel={props.accessibilityLabel}
+        />
+      ),
   ];
   return (
-    <div
-      ref={containerRef}
-      className="expo-image-container"
-      style={{
-        aspectRatio: String(aspectRatio),
-        backgroundColor: backgroundColor?.toString(),
-        transform: transform?.toString(),
-        borderColor: borderColor?.toString(),
-        position: 'relative',
-        overflow: 'hidden',
-        ...style,
-      }}>
+    <View ref={containerRef} dataSet={{ expoimage: true }} style={[{ overflow: 'hidden' }, style]}>
       <AnimationManager transition={transition} recyclingKey={recyclingKey} initial={initialNode}>
         {currentNode}
       </AnimationManager>
-    </div>
+    </View>
   );
 }

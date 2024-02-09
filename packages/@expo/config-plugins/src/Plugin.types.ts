@@ -52,6 +52,13 @@ export interface ModProps<T = any> {
    */
   readonly projectName?: string;
 
+  /**
+   * Ignore any of the user's local native files and solely rely on the generated files.
+   * This makes prebuild data, like entitlements, more aligned to what users expects.
+   * When enabling this, users must be informed and have a way to disable this exclusion.
+   */
+  readonly ignoreExistingNativeFiles?: boolean;
+
   nextMod?: Mod<T>;
 }
 
@@ -112,9 +119,13 @@ export type Mod<Props = any> = ((
 export interface ModConfig {
   android?: {
     /**
-     * Dangerously make a modification before any other android mods have been run.
+     * Dangerously make a modification before any other platform mods have been run.
      */
     dangerous?: Mod<unknown>;
+    /**
+     * Dangerously make a modification after all the other platform mods have been run.
+     */
+    finalized?: Mod<unknown>;
     /**
      * Modify the `android/app/src/main/AndroidManifest.xml` as JSON (parsed with [`xml2js`](https://www.npmjs.com/package/xml2js)).
      */
@@ -162,9 +173,13 @@ export interface ModConfig {
   };
   ios?: {
     /**
-     * Dangerously make a modification before any other android mods have been run.
+     * Dangerously make a modification before any other platform mods have been run.
      */
     dangerous?: Mod<unknown>;
+    /**
+     * Dangerously make a modification after all the other platform mods have been run.
+     */
+    finalized?: Mod<unknown>;
     /**
      * Modify the `ios/<name>/Info.plist` as JSON (parsed with [`@expo/plist`](https://www.npmjs.com/package/@expo/plist)).
      */

@@ -1,11 +1,12 @@
 /* eslint-env jest */
 import { ExpoConfig, getConfig, PackageJSONConfig } from '@expo/config';
 import JsonFile from '@expo/json-file';
-import { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import mockedSpawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
 import assert from 'assert';
 import execa from 'execa';
 import findProcess from 'find-process';
 import fs from 'fs';
+import * as htmlParser from 'node-html-parser';
 import os from 'os';
 import path from 'path';
 import treeKill from 'tree-kill';
@@ -34,9 +35,7 @@ export async function abortingSpawnAsync(
   args: string[],
   options?: SpawnOptions
 ): Promise<SpawnResult> {
-  const spawnAsync = jest.requireActual(
-    '@expo/spawn-async'
-  ) as typeof import('@expo/spawn-async').default;
+  const spawnAsync = jest.requireActual('@expo/spawn-async') as typeof mockedSpawnAsync;
 
   const promise = spawnAsync(cmd, args, options);
   promise.child.stdout?.pipe(process.stdout);
@@ -66,7 +65,7 @@ function isSpawnResult(errorOrResult: Error): errorOrResult is Error & SpawnResu
 }
 
 export async function installAsync(projectRoot: string, pkgs: string[] = []) {
-  return abortingSpawnAsync('yarn', pkgs, {
+  return abortingSpawnAsync('bun', ['install', ...pkgs], {
     cwd: projectRoot,
     stdio: ['ignore', 'pipe', 'pipe'],
   });
@@ -183,7 +182,7 @@ const testingLocally = !process.env.CI;
 export async function setupTestProjectAsync(
   name: string,
   fixtureName: string,
-  sdkVersion: string = '47.0.0'
+  sdkVersion: string = '49.0.0'
 ): Promise<string> {
   // If you're testing this locally, you can set the projectRoot to a local project (you created with expo init) to save time.
   const projectRoot = await createFromFixtureAsync(os.tmpdir(), {
@@ -227,4 +226,49 @@ export async function ensurePortFreeAsync(port: number) {
   } catch (error: any) {
     console.log(`Failed to kill process ${portProcess.name} on port ${port}: ${error.message}`);
   }
+}
+
+export async function getPage(output: string, route: string): Promise<string> {
+  return await fs.promises.readFile(path.join(output, route), 'utf8');
+}
+
+export async function getPageHtml(output: string, route: string) {
+  return htmlParser.parse(await getPage(output, route));
+}
+
+export function getRouterE2ERoot(): string {
+  const root = path.join(__dirname, '../../../../../apps/router-e2e');
+  return root;
+}
+
+export function getHtmlHelpers(outputDir: string) {
+  async function getScriptTagsAsync(name: string) {
+    const tags = (await getPageHtml(outputDir, name)).querySelectorAll('script').map((script) => {
+      expect(fs.existsSync(path.join(outputDir, script.attributes.src))).toBe(true);
+
+      return script.attributes.src;
+    });
+
+    ensureEntryChunk(tags[0]);
+
+    return tags;
+  }
+
+  function ensureEntryChunk(relativePath: string) {
+    expect(fs.readFileSync(path.join(outputDir, relativePath), 'utf8')).toMatch(
+      /__BUNDLE_START_TIME__/
+    );
+  }
+
+  return {
+    getScriptTagsAsync,
+  };
+}
+
+export function expectChunkPathMatching(name: string) {
+  return expect.stringMatching(
+    new RegExp(
+      `_expo\\/static\\/js\\/web\\/${name.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}-.*\\.js`
+    )
+  );
 }

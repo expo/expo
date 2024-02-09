@@ -5,11 +5,10 @@ import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatf
 import {
   CommentTextBlock,
   getTagNamesList,
-  STYLE_APIBOX_NO_SPACING,
   STYLES_APIBOX,
   H3Code,
 } from '~/components/plugins/api/APISectionUtils';
-import { H2, BOLD, P, MONOSPACE } from '~/ui/components/Text';
+import { H2, DEMI, P, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionConstantsProps = {
   data: ConstantDefinitionData[];
@@ -20,24 +19,22 @@ const renderConstant = (
   { name, comment, type }: ConstantDefinitionData,
   apiName?: string
 ): JSX.Element => (
-  <div key={`constant-definition-${name}`} css={STYLES_APIBOX}>
+  <div key={`constant-definition-${name}`} css={STYLES_APIBOX} className="[&>*:last-child]:!mb-0">
     <APISectionDeprecationNote comment={comment} />
-    <APISectionPlatformTags comment={comment} prefix="Only for:" />
+    <APISectionPlatformTags comment={comment} />
     <H3Code tags={getTagNamesList(comment)}>
-      <MONOSPACE weight="medium">
+      <MONOSPACE weight="medium" className="wrap-anywhere">
         {apiName ? `${apiName}.` : ''}
         {name}
       </MONOSPACE>
     </H3Code>
     {type && (
       <P>
-        <BOLD>Type:</BOLD> <APIDataType typeDefinition={type} />
+        <DEMI theme="secondary">Type:</DEMI> <APIDataType typeDefinition={type} />
       </P>
     )}
     {comment && (
-      <div css={STYLE_APIBOX_NO_SPACING}>
-        <CommentTextBlock comment={comment} includePlatforms={false} beforeContent={<br />} />
-      </div>
+      <CommentTextBlock comment={comment} includePlatforms={false} beforeContent={<br />} />
     )}
   </div>
 );

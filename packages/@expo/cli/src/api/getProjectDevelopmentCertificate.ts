@@ -1,5 +1,5 @@
-import { CommandError } from '../utils/errors';
 import { fetchAsync } from './rest/client';
+import { CommandError } from '../utils/errors';
 
 export async function getProjectDevelopmentCertificateAsync(
   easProjectId: string,

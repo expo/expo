@@ -70,8 +70,25 @@ export type ActionCrop = {
   };
 };
 
+// @needsAudit
+export type ActionExtent = {
+  /**
+   * Set the image size and offset. If the image is enlarged, unfilled areas are set to the `backgroundColor`.
+   * To position the image, use `originX` and `originY`.
+   *
+   * @platform web
+   */
+  extent: {
+    backgroundColor?: string | null;
+    originX?: number;
+    originY?: number;
+    width: number;
+    height: number;
+  };
+};
+
 // @docsMissing
-export type Action = ActionResize | ActionRotate | ActionFlip | ActionCrop;
+export type Action = ActionResize | ActionRotate | ActionFlip | ActionCrop | ActionExtent;
 
 // @docsMissing
 export enum SaveFormat {

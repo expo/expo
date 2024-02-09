@@ -1,3 +1,2 @@
-import { ConfigPlugin } from 'expo/config-plugins';
-declare const _default: ConfigPlugin<unknown>;
+declare const _default: import("expo/config-plugins").ConfigPlugin<void>;
 export default _default;

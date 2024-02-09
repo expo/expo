@@ -1,5 +1,5 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
-#import "EXDevMenuAppInfo.h"
+#import <EXDevMenu/EXDevMenuAppInfo.h>
 #import <React/RCTBridge+Private.h>
 #if __has_include(<EXDevMenu/EXDevMenu-Swift.h>)
 #import <EXDevMenu/EXDevMenu-Swift.h>
@@ -17,7 +17,6 @@
 
   NSString *appIcon = [EXDevMenuAppInfo getAppIcon];
   NSString *runtimeVersion = [EXDevMenuAppInfo getUpdatesConfigForKey:@"EXUpdatesRuntimeVersion"];
-  NSString *sdkVersion = [EXDevMenuAppInfo getUpdatesConfigForKey:@"EXUpdatesSDKVersion"];
   NSString *appVersion = [EXDevMenuAppInfo getFormattedAppVersion];
   NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleDisplayName"] ?: [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleExecutable"];
 
@@ -44,7 +43,6 @@
   appInfo[@"appIcon"] = appIcon;
   appInfo[@"appVersion"] = appVersion;
   appInfo[@"runtimeVersion"] = runtimeVersion;
-  appInfo[@"sdkVersion"] = sdkVersion;
   appInfo[@"hostUrl"] = hostUrl;
   appInfo[@"engine"] = engine;
 

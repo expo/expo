@@ -1,8 +1,12 @@
 ---
-title: Configuring EAS Build with eas.json
-sidebar_title: Configuration with eas.json
+title: Configure EAS Build with eas.json
+sidebar_title: Configure with eas.json
 description: Learn how a project using EAS services is configured with eas.json.
 ---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { BuildIcon } from '@expo/styleguide-icons';
 
 **eas.json** is the configuration file for EAS CLI and services. It is located at the root of your project next to your **package.json**. Configuration for EAS Build all belongs under the `build` key. A minimal **eas.json** is shown below:
 
@@ -109,11 +113,11 @@ A minimal `production` profile looks like this:
 
 ### Installing multiple builds of the same app on a single device
 
-It's common to have development and production builds installed simultaneously on the same device. See [installing app variants on the same device](/build-reference/variants/).
+It's common to have development and production builds installed simultaneously on the same device. See [Install app variants on the same device](/build-reference/variants/).
 
 ## Configuring your build tools
 
-Every build depends either implicitly or explicitly on a specific set of versions of related tools that are needed to carry out the build process. These include but are not limited to: Node.js, npm, yarn, Ruby, Bundler, Cocoapods, Fastlane, Xcode, and Android NDK.
+Every build depends either implicitly or explicitly on a specific set of versions of related tools that are needed to carry out the build process. These include but are not limited to: Node.js, npm, Yarn, Ruby, Bundler, CocoaPods, Fastlane, Xcode, and Android NDK.
 
 ### Selecting build tool versions
 
@@ -154,11 +158,186 @@ It's common to want to share build tool configuration between profiles, and we c
 }
 ```
 
+### Selecting resource class
+
+Resource class is the virtual machine resources configuration (CPU cores, RAM size) EAS Build provides to your jobs. By default, the resource class is set to `medium`, which is usually sufficient for both small and bigger projects. However, if your project requires a more powerful CPU or bigger memory, or if you want your builds to finish faster, you can switch to `large` workers.
+
+For more details on resources provided to each class, see [`android.resourceClass`](/eas/json/#resourceclass-1) and [`ios.resourceClass`](/eas/json/#resourceclass-2) property documentations. To run your build on a worker of a specific resource class, configure this property in your build profile:
+
+{/* prettier-ignore */}
+```json eas.json
+{
+  "build": {
+    "production": {
+      "ios": {
+        "resourceClass": "large"
+      },
+      "android": {
+        "resourceClass": "medium"
+      }
+    }
+    /* @hide ... */ /* @end */
+  }
+  /* @hide ... */ /* @end */
+}
+```
+
+> **Note**: Running jobs on a `large` worker requires a paid EAS plan. [Subscribe here](https://expo.dev/accounts/[account]/settings/billing).
+
 ### Selecting a base image
 
-The base image for the build job controls the default versions for a variety of dependencies, such as Node.js, Yarn, and Cocoapods. You can override them using the specific named fields as described in the previous section. However, the image includes specific versions of tools that can't be explicitly set any other way, such as the operating system version and Xcode version.
+The base image for the build job controls the default versions for a variety of dependencies, such as Node.js, Yarn, and CocoaPods. You can override them using the specific named fields as described in the previous section. However, the image includes specific versions of tools that can't be explicitly set any other way, such as the operating system version and Xcode version.
 
 If you are using the Expo managed workflow, EAS Build will pick the appropriate image to use with a reasonable set of dependencies for the SDK version that you are building for. Otherwise, it is recommended to read about the available images on [Build server infrastructure](/build-reference/infrastructure).
+
+### Examples
+
+#### Schema
+
+{/* prettier-ignore */}
+```json eas.json
+{
+  "cli": {
+    "version": /* @info Required EAS CLI version range. */"SEMVER_RANGE"/* @end */,
+    "requireCommit": /* @info If true, ensures that all changes are committed before a build. Defaults to false. */boolean/* @end */,
+    "appVersionSource": /* @info If set to remote, values stored on EAS servers will take precedence over local values. Defaults to local. */string/* @end */,
+    "promptToConfigurePushNotifications": /* @info If set to false, skips Push Notifications credentials setup for EAS Build. Defaults to true. */boolean/* @end */,
+  },
+  "build": {
+    /* @info any arbitrary name - used as an identifier */"BUILD_PROFILE_NAME_1"/* @end */: {
+      /* @info Options common to both platforms*/...COMMON_OPTIONS/* @end */,
+      "android": {
+        /* @info Options common to both platforms*/...COMMON_OPTIONS/* @end */,
+        /* @info Options specific for Android and common to both platforms*/...ANDROID_OPTIONS/* @end */
+      },
+      "ios": {
+        /* @info Options common to both platforms*/...COMMON_OPTIONS/* @end */,
+        /* @info Options specific for iOS and common to both platforms*/...IOS_OPTIONS/* @end */
+      }
+    },
+    /* @info Any arbitrary name - used as an identifier */"BUILD_PROFILE_NAME_2"/* @end */: {},
+	...
+  }
+}
+```
+
+> You can specify [common properties](/eas/json/##common-properties-for-native-platforms) both in the platform-specific configuration object or at the profile's root. The platform-specific options take precedence over globally-defined ones.
+
+<Collapsible summary="A managed project with several profiles">
+
+```json eas.json
+{
+  "build": {
+    "base": {
+      "node": "12.13.0",
+      "yarn": "1.22.5",
+      "env": {
+        "EXAMPLE_ENV": "example value"
+      },
+      "android": {
+        "image": "default",
+        "env": {
+          "PLATFORM": "android"
+        }
+      },
+      "ios": {
+        "image": "latest",
+        "env": {
+          "PLATFORM": "ios"
+        }
+      }
+    },
+    "development": {
+      "extends": "base",
+      "developmentClient": true,
+      "env": {
+        "ENVIRONMENT": "development"
+      },
+      "android": {
+        "distribution": "internal",
+        "withoutCredentials": true
+      },
+      "ios": {
+        "simulator": true
+      }
+    },
+    "staging": {
+      "extends": "base",
+      "env": {
+        "ENVIRONMENT": "staging"
+      },
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "production": {
+      "extends": "base",
+      "env": {
+        "ENVIRONMENT": "production"
+      }
+    }
+  }
+}
+```
+
+</Collapsible>
+
+<Collapsible summary="A bare project with several profiles">
+
+```json eas.json
+{
+  "build": {
+    "base": {
+      "env": {
+        "EXAMPLE_ENV": "example value"
+      },
+      "android": {
+        "image": "ubuntu-18.04-android-30-ndk-r19c",
+        "ndk": "21.4.7075529"
+      },
+      "ios": {
+        "image": "latest",
+        "node": "12.13.0",
+        "yarn": "1.22.5"
+      }
+    },
+    "development": {
+      "extends": "base",
+      "env": {
+        "ENVIRONMENT": "staging"
+      },
+      "android": {
+        "distribution": "internal",
+        "withoutCredentials": true,
+        "gradleCommand": ":app:assembleDebug"
+      },
+      "ios": {
+        "simulator": true,
+        "buildConfiguration": "Debug"
+      }
+    },
+    "staging": {
+      "extends": "base",
+      "env": {
+        "ENVIRONMENT": "staging"
+      },
+      "distribution": "internal",
+      "android": {
+        "gradleCommand": ":app:assembleRelease"
+      }
+    },
+    "production": {
+      "extends": "base",
+      "env": {
+        "ENVIRONMENT": "production"
+      }
+    }
+  }
+}
+```
+
+</Collapsible>
 
 ## Environment variables
 
@@ -187,3 +366,12 @@ You can configure environment variables on your build profiles using the `"env"`
 ```
 
 The [Environment variables and secrets](/build-reference/variables) reference explains this topic in greater detail, and the [updates guide](/build/updates) provides guidance on considerations when using this feature alongside `expo-updates`.
+
+## Next step
+
+<BoxLink
+  title="EAS Build schema reference"
+  description="See complete reference of available properties  for EAS Build."
+  href="/eas/json/#eas-build"
+  Icon={BuildIcon}
+/>

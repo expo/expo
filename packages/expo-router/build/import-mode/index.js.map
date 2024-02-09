@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/import-mode/index.ts"],"names":[],"mappings":";;AAAA,kBAAe,OAAO,CAAC,GAAG,CAAC,uBAAuB,IAAK,MAA0B,CAAC","sourcesContent":["export default process.env.EXPO_ROUTER_IMPORT_MODE || ('sync' as 'sync' | 'lazy');\n"]}

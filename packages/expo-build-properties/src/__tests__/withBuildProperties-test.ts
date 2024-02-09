@@ -1,8 +1,8 @@
 import { AndroidConfig, withGradleProperties, withPodfileProperties } from 'expo/config-plugins';
 
+import { compileMockModWithResultsAsync } from './mockMods';
 import type { PluginConfigType } from '../pluginConfig';
 import { withBuildProperties } from '../withBuildProperties';
-import { compileMockModWithResultsAsync } from './mockMods';
 
 jest.mock('expo/config-plugins', () => {
   const plugins = jest.requireActual('expo/config-plugins');
@@ -87,13 +87,11 @@ describe(withBuildProperties, () => {
         modResults: [{ type: 'property', key: 'android.compileSdkVersion', value: '30' }],
       }
     );
-    expect(androidModResults).toEqual([
-      {
-        type: 'property',
-        key: 'android.compileSdkVersion',
-        value: '31',
-      },
-    ]);
+    expect(androidModResults).toContainEqual({
+      type: 'property',
+      key: 'android.compileSdkVersion',
+      value: '31',
+    });
 
     const { modResults: iosModResults } = await compileMockModWithResultsAsync(
       {},
@@ -104,7 +102,7 @@ describe(withBuildProperties, () => {
         modResults: { 'ios.useFrameworks': 'dynamic' } as Record<string, string>,
       }
     );
-    expect(iosModResults).toEqual({
+    expect(iosModResults).toMatchObject({
       'ios.useFrameworks': 'static',
     });
   });
@@ -121,13 +119,11 @@ describe(withBuildProperties, () => {
         modResults: [{ type: 'property', key: 'android.compileSdkVersion', value: '30' }],
       }
     );
-    expect(androidModResults).toEqual([
-      {
-        type: 'property',
-        key: 'android.compileSdkVersion',
-        value: '30',
-      },
-    ]);
+    expect(androidModResults).toContainEqual({
+      type: 'property',
+      key: 'android.compileSdkVersion',
+      value: '30',
+    });
 
     const { modResults: iosModResults } = await compileMockModWithResultsAsync(
       {},
@@ -138,7 +134,7 @@ describe(withBuildProperties, () => {
         modResults: { 'ios.useFrameworks': 'dynamic' } as Record<string, string>,
       }
     );
-    expect(iosModResults).toEqual({
+    expect(iosModResults).toMatchObject({
       'ios.useFrameworks': 'dynamic',
     });
   });

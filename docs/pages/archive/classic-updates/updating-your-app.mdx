@@ -15,11 +15,11 @@ If possible, we highly recommend starting with a boilerplate project that has th
 
 To install the `expo-updates` module in an existing bare workflow app, follow the [installation instructions in the package README](https://github.com/expo/expo/tree/main/packages/expo-updates/README.mdx#installation).
 
-Additionally, you'll need to host your updates and their respective assets (JavaScript bundles, images, fonts, etc.) on a server somewhere that deployed client apps can access. `expo-cli` provides a couple of easy options for this: (1) `expo export` creates prebuilt update packages that you can upload to any static hosting site (e.g. GitHub Pages), and (2) `expo publish` packages and deploys your updates to Expo's updates service, which is part of the services we offer.
+Additionally, you'll need to host your updates and their respective assets (JavaScript bundles, images, fonts, and so on) on a server somewhere that deployed client apps can access. `expo-cli` provides a couple of easy options for this: (1) `expo export` creates prebuilt update packages that you can upload to any static hosting site (for example, GitHub Pages), and (2) `expo publish` packages and deploys your updates to Expo's updates service, which is part of the services we offer.
 
 You can also run your own server to host your updates, provided it conforms to the protocol `expo-updates` expects. You can read more about these requirements below.
 
-## Served Update Requirements
+## Served update requirements
 
 > If you're using `expo export` or `expo publish`, you're welcome to skip this section as it will be taken care of for you!
 
@@ -49,17 +49,17 @@ The response to these requests should be a manifest JSON object with metadata ab
 
 If you use `expo export` to create a prebuilt package of your update, the manifests in `ios-index.json` and `android-index.json` satisfy these requirements. Expo's update service, which you publish to if you use `expo publish`, dynamically creates these manifest objects upon each update request.
 
-## Update Compatibility
+## Update compatibility
 
-A critical consideration with updates is compatibility between the JavaScript bundle and the native runtime (i.e. the native modules present in a given binary and the methods they export). To illustrate, consider the following example:
+A critical consideration with updates is compatibility between the JavaScript bundle and the native runtime (the native modules present in a given binary and the methods they export). To illustrate, consider the following example:
 
 Say you have an existing build, build A, of your app running in production. Build A runs JavaScript bundle version 1 and everything works smoothly. In the next version of your app, you need some new functionality, so in development you install a new native module like `expo-media-library`, and use some of its functions. You create build B of your app which includes the `MediaLibrary` native module. Build B runs JavaScript bundle version 2 which calls `MediaLibrary.getAlbumsAsync()`, and this works.
 
 However, if build A of your app fetches JavaScript version 2 as an update and tries to run it, it will error on the `MediaLibrary.getAlbumsAsync()` method call because the `MediaLibrary` native module is not present in build A. If your JavaScript doesn't catch this error, it will propagate and your app will crash, rendering JavaScript version 2 unusable on build A of your app.
 
-We need some way, therefore, of preventing JavaScript version 2 from being deployed to build A - or, in general, controlling which updates are deployed to specific builds of your app. `expo-updates` provides two ways to control this: Runtime Version and Release Channels.
+We need some way of preventing JavaScript version 2 from being deployed to build A - or, in general, controlling which updates are deployed to specific builds of your app. `expo-updates` provides two ways to control this: Runtime Version and Release Channels.
 
-### Runtime Version
+### Runtime version
 
 Updates hosted on your own server can make use of a concept called Runtime Version. Runtime Version represents a versioning scheme for the native-JavaScript interface, or the native modules and the methods they export. In other words, anytime you make a change to your native module layer, such as adding, removing, or updating a native module, you would increment the Runtime Version number.
 
@@ -67,21 +67,21 @@ The Runtime Version of a particular binary should be configured at build time (s
 
 The Runtime Version expected by a given update must also be provided as a field (`runtimeVersion`) in the manifest returned to `expo-updates`. `expo-updates` keeps track of the Runtime Version of all updates it has downloaded; this way, if a user updates their app binary through the App Store, it will not attempt to run a previously downloaded and newly incompatible update.
 
-### Release Channels
+### Release channels
 
 Because the current implementation of the Expo updates service relies heavily on SDK version (a managed-workflow concept), if you're using `expo publish` you cannot yet use Runtime Version to manage compatibility of your updates and binaries. Instead, you can use [release channels](./release-channels). A typical workflow would be to create a new release channel for each new binary you build (or at least every new binary with an incompatible change in the native-JavaScript interface) by publishing to that new release channel with `expo publish --release-channel <channel-name>`. After creating a build with this release channel name configured, you can continue to publish future updates to this same release channel as long as they remain compatible with that build. Only builds that were configured to use that release channel will receive those updates.
 
-### Statically Hosted Updates
+### Statically hosted updates
 
-Since headers sent in requests by `expo-updates` do not affect statically hosted updates (such as update packages created by `expo export`), you must host incompatible updates at different static URLs in order to control compatibility.
+Since headers sent in requests by `expo-updates` do not affect statically hosted updates (such as update packages created by `expo export`), you must host incompatible updates at different static URLs to control compatibility.
 
-## Embedding Assets
+## Embedding assets
 
 In addition to loading updates from remote servers, apps with `expo-updates` installed also include the necessary capability to load updates embedded in the app binary. This is critical to ensure that your app can launch offline for all users immediately upon installation, without needing an internet connection.
 
 When you make a release build of your app, the build process will bundle your JavaScript source code into a minified bundle and embed this in the binary, along with any other assets your app imports (with `require` or `import` or used in **app.json**). `expo-updates` includes an extra script on each platform to embed some additional metadata about the embedded assets -- namely, a minimal manifest JSON object for the update.
 
-## Including Assets in Updates
+## Including assets in updates
 
 Assets that you import in your JavaScript source can also be atomically downloaded as part of a published update. `expo-updates` will not consider an update "ready" and will not launch the update unless it has downloaded all required assets.
 
@@ -95,9 +95,9 @@ If you use `expo-asset` in your project (included by default if you have the `ex
 
 Assets with paths matching the given patterns will be pre-downloaded by clients before the update that uses them will launch. If you have an asset that should be lazily downloaded at runtime rather than before your JavaScript is evaluated, you can use `assetBundlePatterns` to exclude it while still importing it in your JavaScript source.
 
-Note that in order to use `expo-asset` successfully, you must use the `--assetPlugins` option to provide the Metro bundler with the `node_modules/expo-asset/tools/hashAssetFiles` plugin when you create your JavaScript bundle. If you use `expo export` or `expo publish` to create your update, this will be done automatically for you.
+Note that to use `expo-asset` successfully, you must use the `--assetPlugins` option to provide the Metro bundler with the `node_modules/expo-asset/tools/hashAssetFiles` plugin when you create your JavaScript bundle. If you use `expo export` or `expo publish` to create your update, this will be done automatically for you.
 
-## Configuration Options
+## Configuration options
 
 Some build-time configuration options are available to control various behaviors of the `expo-updates` library. You can set the URL where your app is hosted, set compatibility/version information, and choose whether your app should update automatically on launch.
 
@@ -151,7 +151,7 @@ The number of milliseconds `expo-updates` should delay the app launch and stay o
 
 Some common configuration patterns are explained below:
 
-### Automatic Updates
+### Automatic updates
 
 By default, `expo-updates` will immediately launch your app with a previously downloaded (or embedded) update when a user opens your app from being closed. It will additionally check for updates asynchronously in the background, and will try to fetch the latest published version. If a new update is available, `expo-updates` will try to download it and notify the running JavaScript of its success or failure using [events](../versions/latest/sdk/updates.mdx#updatesaddlistenereventlistener). A newly fetched update will be launched next time the user swipes closed and reopens the app; if you want to run it sooner, you can call [`Updates.reloadAsync`](../versions/latest/sdk/updates.mdx#updatesreloadasync) in your application code at an appropriate time.
 
@@ -159,15 +159,15 @@ You may also configure `expo-updates` to wait a specific amount of time to launc
 
 If you want this automatic update behavior to occur only when your users are on a Wi-Fi connection, you can set the `checkOnLaunch` setting to `WIFI_ONLY`.
 
-### Manual Updates
+### Manual updates
 
-It's also possible to turn off these automatic updates, and to instead control updates entirely within your JS code. This is desirable if you want some custom logic around fetching updates (e.g. only when users take a specific action in your UI).
+It's also possible to turn off these automatic updates, and to instead control updates entirely within your JS code. This is desirable if you want some custom logic around fetching updates (for example, only when users take a specific action in your UI).
 
 Setting `checkOnLaunch` to `NEVER` will prevent `expo-updates` from automatically fetching the latest update every time your app is launched. Only the most recent cached version of your bundle will be loaded.
 
 You can then use the [`expo-updates`](../versions/latest/sdk/updates.mdx) module included with this library to download new updates and, if appropriate, notify the user and reload the experience.
 
-```javascript
+```js
 try {
   const update = await Updates.checkForUpdateAsync();
   if (update.isAvailable) {

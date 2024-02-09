@@ -2,11 +2,88 @@
 
 ## Unpublished
 
+### 🛠 Breaking changes
+
+- Remove classic updates. ([#26036](https://github.com/expo/expo/pull/26036), [#26048](https://github.com/expo/expo/pull/26048) by [@wschurman](https://github.com/wschurman))
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- [Android] Remove unsafe internal mutation capability. ([#26229](https://github.com/expo/expo/pull/26229) by [@wschurman](https://github.com/wschurman))
+- Rename manifest classes. ([#26234](https://github.com/expo/expo/pull/26234), [#26235](https://github.com/expo/expo/pull/26235), [#26257](https://github.com/expo/expo/pull/26257) by [@wschurman](https://github.com/wschurman))
+- Remove use of legacy sdkVersion runtimeVersion policy. ([#26957](https://github.com/expo/expo/pull/26957) by [@wschurman](https://github.com/wschurman))
+
+## 0.13.2 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.1 - 2024-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.0 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
+## 0.12.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.11.0 — 2023-10-17
+
+_This version does not introduce any user-facing changes._
+
+## 0.10.0 — 2023-09-15
+
+### 🎉 New features
+
+- Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
+
+## 0.9.0 — 2023-09-04
+
+### 🛠 Breaking changes
+
+- Remove classic manifest types. ([#24053](https://github.com/expo/expo/pull/24053) by [@wschurman](https://github.com/wschurman))
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- Make expo-manifests source of truth for manifest TS types. ([#24049](https://github.com/expo/expo/pull/24049) by [@wschurman](https://github.com/wschurman))
+
+## 0.8.1 — 2023-08-02
+
+### 🛠 Breaking changes
+
+- Drop support for `logUrl` which sent console logs to the legacy `expo-cli`. ([#18596](https://github.com/expo/expo/pull/18596) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.8.0 — 2023-07-28
+
+### 🎉 New features
+
+- [iOS] Expose getMetadata method to match android. ([#23445](https://github.com/expo/expo/pull/23445) by [@wschurman](https://github.com/wschurman))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix error in handling nested array. ([#23562](https://github.com/expo/expo/pull/23562) by [@douglowder](https://github.com/douglowder))
+
+## 0.7.1 - 2023-06-30
+
+### 🐛 Bug fixes
+
+- Fixed iOS build errors in `use_frameworks!` mode. ([#23218](https://github.com/expo/expo/pull/23218) by [@kudo](https://github.com/kudo))
+
+## 0.7.0 — 2023-06-21
+
 ### 📚 3rd party library updates
 
 - Updated `junit` to `4.13.2`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
-
-### 🛠 Breaking changes
 
 ### 🎉 New features
 
@@ -15,8 +92,6 @@
 ### 🐛 Bug fixes
 
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 0.6.0 — 2023-05-08
 

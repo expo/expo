@@ -20,6 +20,7 @@ __exportStar(require("./ios/CocoaPodsPackageManager"), exports);
 __exportStar(require("./node/NpmPackageManager"), exports);
 __exportStar(require("./node/PnpmPackageManager"), exports);
 __exportStar(require("./node/YarnPackageManager"), exports);
+__exportStar(require("./node/BunPackageManager"), exports);
 __exportStar(require("./utils/nodeManagers"), exports);
 __exportStar(require("./utils/nodeWorkspaces"), exports);
 var yarn_1 = require("./utils/yarn");

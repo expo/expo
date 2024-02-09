@@ -25,7 +25,6 @@ We at Expo recommend using platform agnostic primitives like `View`, `Image`, an
   - For example, the `H1` component will render an `<h1 />` on web, a `UILabel` on iOS, and a `TextView` on Android.
 - Every component can accept styles from the `StyleSheet` API.
 - TypeScript works for iOS, Android, and web, no more having to create monkey patches to use `href` on a `Text` element.
-- Every component is tested render **tested universally** for iOS, Android, and Web using the package [`jest-expo-enzyme`](https://www.npmjs.com/package/jest-expo-enzyme). Each element is also **E2E tested** on iOS with Detox, and web with [`jest-expo-puppeteer`](https://www.npmjs.com/package/jest-expo-puppeteer).
 - This package is completely side-effect free!
 
 ## Setup
@@ -89,15 +88,15 @@ Here is a list of all the currently supported elements and the web feature they 
 | [`<tr />`][html-tr]                 |         [`<TR />`](#tr)         |
 | [`<ul />`][html-ul]                 |         [`<UL />`](#ul)         |
 | [`<li />`][html-li]                 |         [`<LI />`](#li)         |
-| [`<details />`][html-details]       |            ⏱ Pending            |
-| [`<summary />`][html-summary]       |            ⏱ Pending            |
-| [`<progress />`][html-progress]     |            ⏱ Pending            |
-| [`<select />`][html-select]         |            ⏱ Pending            |
-| [`<picture />`][html-picture]       |            ⏱ Pending            |
-| [`<figure />`][html-figure]         |            ⏱ Pending            |
-| [`<figcaption />`][html-figcaption] |            ⏱ Pending            |
-| [`<form />`][html-form]             |            ⏱ Pending            |
-| [`<label />`][html-label]           |            ⏱ Pending            |
+| [`<details />`][html-details]       |           ⏱ Pending            |
+| [`<summary />`][html-summary]       |           ⏱ Pending            |
+| [`<progress />`][html-progress]     |           ⏱ Pending            |
+| [`<select />`][html-select]         |           ⏱ Pending            |
+| [`<picture />`][html-picture]       |           ⏱ Pending            |
+| [`<figure />`][html-figure]         |           ⏱ Pending            |
+| [`<figcaption />`][html-figcaption] |           ⏱ Pending            |
+| [`<form />`][html-form]             |           ⏱ Pending            |
+| [`<label />`][html-label]           |           ⏱ Pending            |
 
 ## External
 
@@ -148,10 +147,10 @@ import { H1 } from '@expo/html-elements';
 export default () => <H1>Example<H1/>
 ```
 
-| Platform | Output                                                 |
-| -------- | ------------------------------------------------------ |
-| Web      | `<h1 aria-level="1" dir="auto" role="heading" />`      |
-| Native   | `<Text accessibilityRole="header" style={[Custom]} />` |
+| Platform | Output                                            |
+| -------- | ------------------------------------------------- |
+| Web      | `<h1 aria-level="1" dir="auto" role="heading" />` |
+| Native   | `<Text role="header" style={[Custom]} />`         |
 
 ### `<H2/>`
 
@@ -160,10 +159,10 @@ import { H2 } from '@expo/html-elements';
 export default () => <H2>Example<H2/>
 ```
 
-| Platform | Output                                                 |
-| -------- | ------------------------------------------------------ |
-| Web      | `<h2 aria-level="2" dir="auto" role="heading" />`      |
-| Native   | `<Text accessibilityRole="header" style={[Custom]} />` |
+| Platform | Output                                            |
+| -------- | ------------------------------------------------- |
+| Web      | `<h2 aria-level="2" dir="auto" role="heading" />` |
+| Native   | `<Text role="header" style={[Custom]} />`         |
 
 ### `<H3/>`
 
@@ -172,10 +171,10 @@ import { H3 } from '@expo/html-elements';
 export default () => <H3>Example<H3/>
 ```
 
-| Platform | Output                                                 |
-| -------- | ------------------------------------------------------ |
-| Web      | `<h3 aria-level="3" dir="auto" role="heading" />`      |
-| Native   | `<Text accessibilityRole="header" style={[Custom]} />` |
+| Platform | Output                                            |
+| -------- | ------------------------------------------------- |
+| Web      | `<h3 aria-level="3" dir="auto" role="heading" />` |
+| Native   | `<Text role="header" style={[Custom]} />`         |
 
 ### `<H4/>`
 
@@ -184,10 +183,10 @@ import { H4 } from '@expo/html-elements';
 export default () => <H4>Example<H4/>
 ```
 
-| Platform | Output                                                 |
-| -------- | ------------------------------------------------------ |
-| Web      | `<h4 aria-level="4" dir="auto" role="heading" />`      |
-| Native   | `<Text accessibilityRole="header" style={[Custom]} />` |
+| Platform | Output                                            |
+| -------- | ------------------------------------------------- |
+| Web      | `<h4 aria-level="4" dir="auto" role="heading" />` |
+| Native   | `<Text role="header" style={[Custom]} />`         |
 
 ### `<H5/>`
 
@@ -196,10 +195,10 @@ import { H5 } from '@expo/html-elements';
 export default () => <H5>Example<H5/>
 ```
 
-| Platform | Output                                                 |
-| -------- | ------------------------------------------------------ |
-| Web      | `<h5 aria-level="5" dir="auto" role="heading" />`      |
-| Native   | `<Text accessibilityRole="header" style={[Custom]} />` |
+| Platform | Output                                            |
+| -------- | ------------------------------------------------- |
+| Web      | `<h5 aria-level="5" dir="auto" role="heading" />` |
+| Native   | `<Text role="header" style={[Custom]} />`         |
 
 ### `<H6/>`
 
@@ -208,10 +207,10 @@ import { H6 } from '@expo/html-elements';
 export default () => <H6>Example<H6/>
 ```
 
-| Platform | Output                                                 |
-| -------- | ------------------------------------------------------ |
-| Web      | `<h6 aria-level="6" dir="auto" role="heading" />`      |
-| Native   | `<Text accessibilityRole="header" style={[Custom]} />` |
+| Platform | Output                                            |
+| -------- | ------------------------------------------------- |
+| Web      | `<h6 aria-level="6" dir="auto" role="heading" />` |
+| Native   | `<Text role="header" style={[Custom]} />`         |
 
 ## Link
 
@@ -232,7 +231,7 @@ export default () => <A href="#" target="_blank" />;
 | Platform | Output                                                                          |
 | -------- | ------------------------------------------------------------------------------- |
 | Web      | `<a data-focusable="{true}" dir="auto" href="#" role="link" target="_blank" />` |
-| Native   | `<Text accessibilityRole="link" onPress={[Function]} />`                        |
+| Native   | `<Text role="link" onPress={[Function]} />`                                     |
 
 ## Layout
 
@@ -342,7 +341,7 @@ export default () => <Section />;
 | Platform | Output                                           |
 | -------- | ------------------------------------------------ |
 | Web      | `<section role="region" style="display:flex" />` |
-| Native   | `<View accessibilityRole="summary" />`           |
+| Native   | `<View role="summary" />`                        |
 
 ### `<Article/>`
 

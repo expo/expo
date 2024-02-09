@@ -8,9 +8,60 @@
 
 ### 🐛 Bug fixes
 
-- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+### 💡 Others
+
+## 2.9.3 - 2024-01-10
 
 ### 💡 Others
+
+- Replace deprecated `com.facebook.react:react-native:+` Android dependency with `com.facebook.react:react-android`. ([#26237](https://github.com/expo/expo/pull/26237) by [@kudo](https://github.com/kudo))
+
+## 2.9.2 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 2.9.1 — 2023-12-15
+
+### 🐛 Bug fixes
+
+- Fixed custom `backgroundColor` is broken on iOS. ([#25946](https://github.com/expo/expo/pull/25946) by [@kudo](https://github.com/kudo))
+
+## 2.9.0 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
+## 2.8.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 2.7.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+## 2.6.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+## 2.5.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 2.4.0 — 2023-06-21
+
+### 🎉 New features
+
+- Persist user selected background color and restore automatically on iOS. Added `restoreBackgroundColorAsync` to restore it on Android. ([#22773](https://github.com/expo/expo/pull/22773) by [@alanhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ## 2.3.0 — 2023-05-08
 

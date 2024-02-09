@@ -13,11 +13,12 @@ export const expoExport: Command = async (argv) => {
       '--clear': Boolean,
       '--dump-assetmap': Boolean,
       '--dev': Boolean,
-      '--dump-sourcemap': Boolean,
+      '--source-maps': Boolean,
       '--max-workers': Number,
       '--output-dir': String,
-      '--platform': String,
+      '--platform': [String],
       '--no-minify': Boolean,
+      '--no-bytecode': Boolean,
 
       // Hack: This is added because EAS CLI always includes the flag.
       // If supplied, we'll do nothing with the value, but at least the process won't crash.
@@ -26,12 +27,15 @@ export const expoExport: Command = async (argv) => {
 
       // Aliases
       '-h': '--help',
-      // '-s': '--dump-sourcemap',
+      '-s': '--source-maps',
       // '-d': '--dump-assetmap',
       '-c': '--clear',
       '-p': '--platform',
       // Interop with Metro docs and RedBox errors.
       '--reset-cache': '--clear',
+
+      // Deprecated
+      '--dump-sourcemap': '--source-maps',
     },
     argv
   );
@@ -42,13 +46,14 @@ export const expoExport: Command = async (argv) => {
       chalk`npx expo export {dim <dir>}`,
       [
         chalk`<dir>                      Directory of the Expo project. {dim Default: Current working directory}`,
-        `--dev                      Configure static files for developing locally using a non-https server`,
         chalk`--output-dir <dir>         The directory to export the static files to. {dim Default: dist}`,
-        `--max-workers <number>     Maximum number of tasks to allow the bundler to spawn`,
-        `--dump-assetmap            Dump the asset map for further processing`,
-        `--dump-sourcemap           Dump the source map for debugging the JS bundle`,
-        chalk`-p, --platform <platform>  Options: android, ios, web, all. {dim Default: all}`,
+        `--dev                      Configure static files for developing locally using a non-https server`,
         `--no-minify                Prevent minifying source`,
+        `--no-bytecode              Prevent generating Hermes bytecode`,
+        `--max-workers <number>     Maximum number of tasks to allow the bundler to spawn`,
+        `--dump-assetmap            Emit an asset map for further processing`,
+        chalk`-p, --platform <platform>  Options: android, ios, web, all. {dim Default: all}`,
+        `-s, --source-maps          Emit JavaScript source maps`,
         `-c, --clear                Clear the bundler cache`,
         `-h, --help                 Usage info`,
       ].join('\n')
@@ -56,9 +61,9 @@ export const expoExport: Command = async (argv) => {
   }
 
   const projectRoot = getProjectRoot(args);
-  const { resolveOptionsAsync } = await import('./resolveOptions');
+  const { resolveOptionsAsync } = await import('./resolveOptions.js');
   const options = await resolveOptionsAsync(projectRoot, args).catch(logCmdError);
 
-  const { exportAsync } = await import('./exportAsync');
+  const { exportAsync } = await import('./exportAsync.js');
   return exportAsync(projectRoot, options).catch(logCmdError);
 };

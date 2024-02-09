@@ -51,8 +51,8 @@ interface VendoredModuleConfig {
   warnings?: string[];
 }
 
-const IOS_DIR = Directories.getIosDir();
-const ANDROID_DIR = Directories.getAndroidDir();
+const IOS_DIR = Directories.getExpoGoIosDir();
+const ANDROID_DIR = Directories.getExpoGoAndroidDir();
 
 const SvgModifier: ModuleModifier = async function (
   moduleConfig: VendoredModuleConfig,
@@ -75,6 +75,20 @@ const SvgModifier: ModuleModifier = async function (
 
   await removeMacFiles();
   await addHeaderImport();
+};
+
+const MapsModifier: ModuleModifier = async function (
+  moduleConfig: VendoredModuleConfig,
+  clonedProjectPath: string
+): Promise<void> {
+  const fixGoogleMapsImports = async () => {
+    const targetPath = path.join(clonedProjectPath, 'ios', 'AirGoogleMaps', 'AIRGoogleMap.m');
+    let content = await fs.readFile(targetPath, 'utf8');
+    content = content.replace(/^#import "(GMU.+?\.h)"$/gm, '#import <Google-Maps-iOS-Utils/$1>');
+    await fs.writeFile(targetPath, content, 'utf8');
+  };
+
+  await fixGoogleMapsImports();
 };
 
 const ReanimatedModifier: ModuleModifier = async function (
@@ -196,6 +210,45 @@ const PickerModifier: ModuleModifier = once(async function (moduleConfig, cloned
 
   await addResourceImportAsync();
 });
+
+const DateTimePickerModifier: ModuleModifier = once(
+  async function (moduleConfig, clonedProjectPath) {
+    const CHANGES = [
+      {
+        path: '/android/src/main/java/com/reactcommunity/rndatetimepicker/RNDatePickerDialogFragment.java',
+        find: /R.style.SpinnerDatePickerDialog/,
+        replaceWith: 'host.exp.expoview.R.style.SpinnerDatePickerDialog',
+      },
+      {
+        path: '/android/src/main/java/com/reactcommunity/rndatetimepicker/RNDateTimePickerPackage.java',
+        find: /boolean isTurboModule = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED/,
+        replaceWith:
+          'boolean isTurboModule = host.exp.expoview.BuildConfig.IS_NEW_ARCHITECTURE_ENABLED',
+      },
+      {
+        path: '/android/src/main/java/com/reactcommunity/rndatetimepicker/RNTimePickerDialogFragment.java',
+        find: /R.style.SpinnerTimePickerDialog/,
+        replaceWith: '\t\t\t\thost.exp.expoview.R.style.SpinnerTimePickerDialog',
+      },
+      {
+        path: '/ios/RNDateTimePickerShadowView.m',
+        find: /YGNodeRef/,
+        replaceWith: 'YGNodeConstRef',
+      },
+    ];
+
+    await Promise.all(
+      CHANGES.map((change) => ({
+        ...change,
+        path: path.resolve(`${clonedProjectPath}${change.path}`),
+      })).map(async (file) => {
+        let content = await fs.readFile(file.path, 'utf8');
+        content = content.replace(file.find, file.replaceWith);
+        await fs.writeFile(file.path, content, 'utf8');
+      })
+    );
+  }
+);
 
 const GestureHandlerModifier: ModuleModifier = async function (
   moduleConfig: VendoredModuleConfig,
@@ -498,22 +551,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
-  'react-native-branch': {
-    repoUrl: 'https://github.com/BranchMetrics/react-native-branch-deep-linking.git',
-    steps: [
-      {
-        sourceIosPath: 'ios',
-        targetIosPath: '../../../../packages/expo-branch/ios/EXBranch/RNBranch',
-        sourceAndroidPath: 'android/src/main/java/io/branch/rnbranch',
-        targetAndroidPath:
-          '../../../../../../../../../packages/expo-branch/android/src/main/java/io/branch/rnbranch',
-        sourceAndroidPackage: 'io.branch.rnbranch',
-        targetAndroidPackage: 'io.branch.rnbranch',
-        recursive: false,
-        updatePbxproj: false,
-      },
-    ],
-  },
   'lottie-react-native': {
     repoUrl: 'https://github.com/react-native-community/lottie-react-native.git',
     installableInManagedApps: true,
@@ -548,6 +585,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
   'react-native-maps': {
     repoUrl: 'https://github.com/react-native-community/react-native-maps.git',
     installableInManagedApps: true,
+    moduleModifier: MapsModifier,
     steps: [
       {
         sourceIosPath: 'ios/AirGoogleMaps',
@@ -557,9 +595,9 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         recursive: true,
         sourceIosPath: 'ios/AirMaps',
         targetIosPath: 'Api/Components/Maps',
-        sourceAndroidPath: 'android/src/main/java/com/airbnb/android/react/maps',
+        sourceAndroidPath: 'android/src/main/java/com/rnmaps/maps',
         targetAndroidPath: 'modules/api/components/maps',
-        sourceAndroidPackage: 'com.airbnb.android.react.maps',
+        sourceAndroidPackage: 'com.rnmaps.maps',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.maps',
       },
     ],
@@ -589,6 +627,24 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/components/webview',
         sourceAndroidPackage: 'com.reactnativecommunity.webview',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.webview',
+      },
+      {
+        sourceAndroidPath: 'android/src/oldarch/com/reactnativecommunity/webview',
+        cleanupTargetPath: false,
+        targetAndroidPath: 'modules/api/components/webview',
+        sourceAndroidPackage: 'com.reactnativecommunity.webview',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.webview',
+        onDidVendorAndroidFile: async (file: string) => {
+          const fileName = path.basename(file);
+          if (fileName === 'RNCWebViewPackage.java') {
+            let content = await fs.readFile(file, 'utf8');
+            content = content.replace(
+              /^(package .+)$/gm,
+              '$1\nimport host.exp.expoview.BuildConfig;'
+            );
+            await fs.writeFile(file, content, 'utf8');
+          }
+        },
       },
     ],
   },
@@ -647,6 +703,13 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         sourceAndroidPackage: 'com.reactcommunity.rndatetimepicker',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.datetimepicker',
       },
+      {
+        sourceAndroidPath: 'android/src/paper/java/com/reactcommunity/rndatetimepicker',
+        targetAndroidPath: 'modules/api/components/datetimepicker',
+        sourceAndroidPackage: 'com.reactcommunity.rndatetimepicker',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.datetimepicker',
+        cleanupTargetPath: false,
+      },
     ],
     warnings: [
       `NOTE: In Expo, native Android styles are prefixed with ${chalk.magenta(
@@ -655,6 +718,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         'resourceName'
       )}s used for grabbing style of dialogs are being resolved properly.`,
     ],
+    moduleModifier: DateTimePickerModifier,
   },
   '@react-native-masked-view/masked-view': {
     repoUrl: 'https://github.com/react-native-masked-view/masked-view',
@@ -667,20 +731,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/components/maskedview',
         sourceAndroidPackage: 'org.reactnative.maskedview',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.maskedview',
-      },
-    ],
-  },
-  'react-native-shared-element': {
-    repoUrl: 'https://github.com/IjzerenHein/react-native-shared-element',
-    installableInManagedApps: true,
-    steps: [
-      {
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/Components/SharedElement',
-        sourceAndroidPath: 'android/src/main/java/com/ijzerenhein/sharedelement',
-        targetAndroidPath: 'modules/api/components/sharedelement',
-        sourceAndroidPackage: 'com.ijzerenhein.sharedelement',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.sharedelement',
       },
     ],
   },

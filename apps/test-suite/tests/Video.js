@@ -369,6 +369,15 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         t.expect(status.naturalSize.height).toBeDefined();
         t.expect(status.naturalSize.orientation).toBe('portrait');
       });
+
+      t.it('correctly orientation for HLS streams', async () => {
+        const props = {
+          style,
+          source: { uri: hlsStreamUri },
+        };
+        const status = await mountAndWaitFor(<Video {...props} />, 'onReadyForDisplay');
+        t.expect(status.naturalSize.orientation).toBe('landscape');
+      });
     });
 
     t.describe('Video fullscreen player', () => {

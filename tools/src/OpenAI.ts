@@ -9,7 +9,7 @@ const openai = new OpenAIApi(configuration);
 
 export async function askChatGPTAsync(question: string): Promise<string | undefined> {
   const response = await openai.createChatCompletion({
-    model: 'gpt-4',
+    model: 'gpt-4-1106-preview',
     messages: [{ role: 'user', content: question }],
   });
 

@@ -2,10 +2,14 @@ import { useState, useEffect, EffectCallback, DependencyList } from 'react';
 
 const useDelayedEffect = (callback: EffectCallback, deps: DependencyList, delay: number) => {
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout | undefined;
+    let timeoutId: ReturnType<typeof setInterval> | undefined;
     timeoutId && clearTimeout(timeoutId);
     timeoutId = setTimeout(callback, delay);
-    return () => timeoutId && clearTimeout(timeoutId);
+    return () => {
+      if (timeoutId !== undefined) {
+        clearTimeout(timeoutId);
+      }
+    };
   }, [callback, delay, ...deps]);
 };
 

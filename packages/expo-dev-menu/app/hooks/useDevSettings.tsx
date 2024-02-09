@@ -17,7 +17,7 @@ const defaultDevSettings: DevMenu.DevSettings = {
   isJSInspectorAvailable: false,
 };
 
-const DevSettingsContext = React.createContext<DevMenu.DevSettings>(defaultDevSettings);
+const DevSettingsContext = React.createContext<DevMenu.DevSettings | undefined>(defaultDevSettings);
 
 export type DevSettingsProviderProps = {
   children: React.ReactNode;
@@ -88,8 +88,7 @@ export function useDevSettings() {
   }, []);
 
   const openRNDevMenu = React.useCallback(async () => {
-    await DevMenu.openDevMenuFromReactNative();
-    DevMenu.closeMenu();
+    DevMenu.openDevMenuFromReactNative();
   }, []);
 
   const openJSInspector = React.useCallback(async () => {

@@ -29,7 +29,10 @@ export class AsyncNgrok {
   /** Info about the currently running instance of ngrok. */
   private serverUrl: string | null = null;
 
-  constructor(private projectRoot: string, private port: number) {
+  constructor(
+    private projectRoot: string,
+    private port: number
+  ) {
     this.resolver = new NgrokResolver(projectRoot);
   }
 
@@ -56,7 +59,7 @@ export class AsyncNgrok {
 
   /** Exposed for testing. */
   async _getProjectHostnameAsync(): Promise<string> {
-    return [...(await this._getIdentifyingUrlSegmentsAsync()), NGROK_CONFIG.domain].join('.');
+    return `${(await this._getIdentifyingUrlSegmentsAsync()).join('-')}.${NGROK_CONFIG.domain}`;
   }
 
   /** Exposed for testing. */
@@ -161,14 +164,13 @@ export class AsyncNgrok {
       const url = await instance.connect({
         ...urlProps,
         authtoken: NGROK_CONFIG.authToken,
-        proto: 'http',
         configPath,
         onStatusChange(status) {
           if (status === 'closed') {
             Log.error(
               chalk.red(
                 'Tunnel connection has been closed. This is often related to intermittent connection problems with the Ngrok servers. Restart the dev server to try connecting to Ngrok again.'
-              )
+              ) + chalk.gray('\nCheck the Ngrok status page for outages: https://status.ngrok.com/')
             );
           } else if (status === 'connected') {
             Log.log('Tunnel connected.');
@@ -182,10 +184,20 @@ export class AsyncNgrok {
         if (isNgrokClientError(error)) {
           throw new CommandError(
             'NGROK_CONNECT',
-            [error.body.msg, error.body.details?.err].filter(Boolean).join('\n\n')
+            [
+              error.body.msg,
+              error.body.details?.err,
+              chalk.gray('Check the Ngrok status page for outages: https://status.ngrok.com/'),
+            ]
+              .filter(Boolean)
+              .join('\n\n')
           );
         }
-        throw new CommandError('NGROK_CONNECT', error.toString());
+        throw new CommandError(
+          'NGROK_CONNECT',
+          error.toString() +
+            chalk.gray('\nCheck the Ngrok status page for outages: https://status.ngrok.com/')
+        );
       };
 
       // Attempt to connect 3 times

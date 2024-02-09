@@ -4,6 +4,7 @@ import FormData from 'form-data';
 import * as fs from 'fs';
 import * as path from 'path';
 import { serializeDictionary } from 'structured-headers';
+import { setTimeout as setTimeoutNormal } from 'timers';
 import { setTimeout } from 'timers/promises';
 
 const app = express();
@@ -22,11 +23,13 @@ let multipartResponseToServe: any = null;
 let requestedStaticFiles: string[] = [];
 
 let protocolVersion: number = 1;
+let artificialDelay: number = 0;
 
-function start(port: any, protocol: number = 1) {
+function start(port: any, protocol: number = 1, artificialDelayMs: number = 0) {
   if (!server) {
     server = app.listen(port);
     protocolVersion = protocol;
+    artificialDelay = artificialDelayMs;
   }
 }
 
@@ -42,6 +45,10 @@ function stop() {
   manifestHeadersToServe = null;
   multipartResponseToServe = null;
   requestedStaticFiles = [];
+}
+
+function getRequestedStaticFilesLength() {
+  return requestedStaticFiles.length;
 }
 
 function consumeRequestedStaticFiles() {
@@ -123,13 +130,23 @@ app.get('/update', (req: any, res: any) => {
       });
     }
 
-    res.statusCode = 200;
-    res.setHeader('expo-protocol-version', 1);
-    res.setHeader('expo-sfv-version', 0);
-    res.setHeader('cache-control', 'private, max-age=0');
-    res.setHeader('content-type', `multipart/mixed; boundary=${form.getBoundary()}`);
-    res.write(form.getBuffer());
-    res.end();
+    const sendResponse = () => {
+      res.statusCode = 200;
+      res.setHeader('expo-protocol-version', 1);
+      res.setHeader('expo-sfv-version', 0);
+      res.setHeader('cache-control', 'private, max-age=0');
+      res.setHeader('content-type', `multipart/mixed; boundary=${form.getBoundary()}`);
+      res.write(form.getBuffer());
+      res.end();
+    };
+
+    if (artificialDelay > 0) {
+      setTimeoutNormal(() => {
+        sendResponse();
+      }, artificialDelay);
+    } else {
+      sendResponse();
+    }
   } else {
     // Protocol 0
     if (manifestToServe) {
@@ -255,6 +272,7 @@ const Server = {
   serveManifest,
   serveSignedManifest,
   serveSignedDirective,
+  getRequestedStaticFilesLength,
   consumeRequestedStaticFiles,
 };
 

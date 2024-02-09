@@ -1,7 +1,6 @@
 import { ConfigPlugin } from 'expo/config-plugins';
 import type { PluginConfigType } from './pluginConfig';
 export declare const withAndroidBuildProperties: ConfigPlugin<PluginConfigType>;
-export declare const withAndroidFlipper: ConfigPlugin<PluginConfigType>;
 /**
  * Appends `props.android.extraProguardRules` content into `android/app/proguard-rules.pro`
  */
@@ -19,3 +18,5 @@ export declare const withAndroidPurgeProguardRulesOnce: ConfigPlugin;
  * @returns return updated contents
  */
 export declare function updateAndroidProguardRules(contents: string, newProguardRules: string | null, updateMode: 'append' | 'overwrite'): string;
+export declare const withAndroidCleartextTraffic: ConfigPlugin<PluginConfigType>;
+export declare const withAndroidQueries: ConfigPlugin<PluginConfigType>;

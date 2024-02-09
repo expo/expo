@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalStdlibApi::class)
-
 package expo.modules.kotlin.functions
 
 import com.facebook.react.bridge.JavaOnlyArray
@@ -12,16 +10,16 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.ArgumentCastException
 import expo.modules.kotlin.exception.InvalidArgsNumberException
+import expo.modules.kotlin.types.AnyType
 import expo.modules.kotlin.types.toAnyType
 import io.mockk.mockk
 import org.junit.Test
-import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
 class AnyFunctionTest {
   class MockedAnyFunction(
-    desiredArgsTypes: Array<KType>
-  ) : AsyncFunction("my-method", desiredArgsTypes.map { it.toAnyType() }.toTypedArray()) {
+    desiredArgsTypes: Array<AnyType>
+  ) : AsyncFunction("my-method", desiredArgsTypes) {
     override fun callUserImplementation(args: ReadableArray, promise: Promise) {
       convertArgs(args)
       throw NullPointerException()
@@ -34,7 +32,7 @@ class AnyFunctionTest {
 
   @Test
   fun `call should throw if pass more arguments then expected`() {
-    val method = MockedAnyFunction(arrayOf(typeOf<Int>()))
+    val method = MockedAnyFunction(arrayOf({ typeOf<Int>() }.toAnyType<Int>()))
     val promise = PromiseMock()
 
     assertThrows<InvalidArgsNumberException>("Received 2 arguments, but 1 was expected") {
@@ -53,7 +51,7 @@ class AnyFunctionTest {
 
   @Test
   fun `call should throw if pass less arguments then expected`() {
-    val method = MockedAnyFunction(arrayOf(typeOf<Int>(), typeOf<Int>()))
+    val method = MockedAnyFunction(arrayOf({ typeOf<Int>() }.toAnyType<Int>(), { typeOf<Int>() }.toAnyType<Int>()))
     val promise = PromiseMock()
 
     assertThrows<InvalidArgsNumberException>("Received 1 arguments, but 2 was expected") {
@@ -71,7 +69,7 @@ class AnyFunctionTest {
 
   @Test
   fun `call should throw if cannot convert args`() {
-    val method = MockedAnyFunction(arrayOf(typeOf<Int>()))
+    val method = MockedAnyFunction(arrayOf({ typeOf<Int>() }.toAnyType<Int>()))
     val promise = PromiseMock()
 
     assertThrows<ArgumentCastException>(

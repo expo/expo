@@ -8,7 +8,14 @@ import {
   generatePackageListAsync,
   mergeLinkingOptionsAsync,
 } from './autolinking';
-import { GenerateOptions, ResolveOptions, SearchOptions, SearchResults } from './types';
+import { resolveExtraDependenciesAsync } from './autolinking/extraDependencies';
+import {
+  GenerateModulesProviderOptions,
+  GenerateOptions,
+  ResolveOptions,
+  SearchOptions,
+  SearchResults,
+} from './types';
 
 /**
  * Registers a command that only searches for available expo modules.
@@ -31,10 +38,22 @@ function registerSearchCommand<OptionsType extends SearchOptions>(
     )
     .option(
       '-p, --platform [platform]',
-      'The platform that the resulting modules must support. Available options: "ios", "android"',
-      'ios'
+      'The platform that the resulting modules must support. Available options: "apple", "android"',
+      'apple'
     )
     .option('--silent', 'Silence resolution warnings')
+    .addOption(
+      new commander.Option(
+        '--project-root <projectRoot>',
+        'The path to the root of the project'
+      ).default(process.cwd(), 'process.cwd()')
+    )
+    .option(
+      '--only-project-deps',
+      'For a monorepo, include only modules that are the project dependencies.',
+      true
+    )
+    .option('--no-only-project-deps', 'Opposite of --only-project-deps', false)
     .action(async (searchPaths, providedOptions) => {
       const options = await mergeLinkingOptionsAsync<OptionsType>({
         ...providedOptions,
@@ -75,8 +94,8 @@ module.exports = async function (args: string[]) {
   }).option<boolean>('-j, --json', 'Output results in the plain JSON format.', () => true, false);
 
   // Checks whether there are no resolving issues in the current setup.
-  registerSearchCommand('verify', (results) => {
-    const numberOfDuplicates = verifySearchResults(results);
+  registerSearchCommand('verify', (results, options) => {
+    const numberOfDuplicates = verifySearchResults(results, options);
     if (!numberOfDuplicates) {
       console.log('✅ Everything is fine!');
     }
@@ -85,15 +104,17 @@ module.exports = async function (args: string[]) {
   // Searches for available expo modules and resolves the results for given platform.
   registerResolveCommand('resolve', async (results, options) => {
     const modules = await resolveModulesAsync(results, options);
+    const extraDependencies = await resolveExtraDependenciesAsync(options.projectRoot);
 
     if (options.json) {
-      console.log(JSON.stringify({ modules }));
+      console.log(JSON.stringify({ extraDependencies, modules }));
     } else {
-      console.log(require('util').inspect({ modules }, false, null, true));
+      console.log(require('util').inspect({ extraDependencies, modules }, false, null, true));
     }
   }).option<boolean>('-j, --json', 'Output results in the plain JSON format.', () => true, false);
 
   // Generates a source file listing all packages to link.
+  // It's deprecated, use `generate-modules-provider` instead.
   registerResolveCommand<GenerateOptions>('generate-package-list', async (results, options) => {
     const modules = options.empty ? [] : await resolveModulesAsync(results, options);
     generatePackageListAsync(modules, options);
@@ -110,6 +131,26 @@ module.exports = async function (args: string[]) {
       '--empty',
       'Whether to only generate an empty list. Might be used when the user opts-out of autolinking.',
       false
+    );
+
+  // Generates a source file listing all packages to link in the runtime.
+  registerResolveCommand<GenerateModulesProviderOptions>(
+    'generate-modules-provider',
+    async (results, options) => {
+      const packages = options.packages ?? [];
+      const modules = await resolveModulesAsync(results, options);
+      const filteredModules = modules.filter((module) => packages.includes(module.packageName));
+
+      generatePackageListAsync(filteredModules, options);
+    }
+  )
+    .option(
+      '-t, --target <path>',
+      'Path to the target file, where the package list should be written to.'
+    )
+    .option(
+      '-p, --packages <packages...>',
+      'Names of the packages to include in the generated modules provider.'
     );
 
   registerPatchReactImportsCommand();

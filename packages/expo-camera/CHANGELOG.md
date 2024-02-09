@@ -2,17 +2,119 @@
 
 ## Unpublished
 
-- Fixed `Expo camera - Cannot take landscape photos if screen orientation is locked'` on iOS. ([#21938](https://github.com/expo/expo/issues/21938) by [@chalenascholl](https://github.com/chalenascholl)) ([#21956](https://github.com/expo/expo/pull/21956) by [@chalenascholl](https://github.com/chalenascholl))
-
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
+- `BarCodeAnalyzer` now passes an additional `raw` field to its `onComplete` callback, corresponding to the barcode value as it was encoded in the barcode without parsing. Will always be undefined on iOS. ([#25391](https://github.com/expo/expo/pull/25391) by [@ajacquierbret](https://github.com/ajacquierbret))
+
+### 🐛 Bug fixes
+
+- Fix naming of web files. ([#26505](https://github.com/expo/expo/pull/26505) by [@alanjhughes](https://github.com/alanjhughes))
+- On `iOS`, barcode types were not converted correctly causing the scanner to not start immediately. ([#26704](https://github.com/expo/expo/pull/26704) by [@alanjhughes](https://github.com/alanjhughes))
+- Set a higher resolution for barcode scans to allow scanning of high resolution barcodes. ([#26886](https://github.com/expo/expo/pull/26886)) by [@byudaniel](https://github.com/byudaniel))
+- Fix barcode types casing errors. ([#26888](https://github.com/expo/expo/pull/26888) by [@byudaniel](https://github.com/byudaniel))
+- On `iOS`, fix `maxDuration` timescale on videos. ([#26882](https://github.com/expo/expo/pull/26882) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- Make the casing of `Barcode` consistent. ([#26900](https://github.com/expo/expo/pull/26900) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 14.0.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.0 — 2023-12-12
+
+### 🎉 New features
+
+- Methods `stopRecording`, `pausePreview` and `resumePreview` have been updated to return promises. ([#25737](https://github.com/expo/expo/pull/25737) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+- [iOS] Replace legacy `FileSystem` interfaces usage with core `FileSystemUtilities`. ([#25495](https://github.com/expo/expo/pull/25495) by [@alanhughes](https://github.com/alanjhughes))
+
+## 13.9.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🎉 New features
+
+- [iOS] Rewrote Objective-C classes to Swift. ([#22604](https://github.com/expo/expo/pull/22604) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix a regression from ([#22604](https://github.com/expo/expo/pull/22604) that prevented the barcode scanner from starting.([#25053](https://github.com/expo/expo/pull/25053) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- Use `pointerEvent` style instead of prop. ([#24931](https://github.com/expo/expo/pull/24931) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 13.8.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+- Mark the `ratio` param of `getAvailablePictureSizes` as required because omitting it causes a crash on Android. On iOS, the param has no effect. ([#24234](https://github.com/expo/expo/pull/24234) by [@vonovak](https://github.com/vonovak))
+
+### 💡 Others
+
+- Ship untranspiled JSX to support custom handling of `jsx` and `createElement`. ([#24889](https://github.com/expo/expo/pull/24889) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 13.7.0 — 2023-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 13.4.4 — 2023-09-11
+
+### 🐛 Bug fixes
+
+- Remove @koale/useworker. ([#23967](https://github.com/expo/expo/pull/23967) by [@marklawlor](https://github.com/marklawlor))
+
+## 13.6.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Fixed flash is not enabled during recordings. ([#23776](https://github.com/expo/expo/pull/23776) by [@tszheichoi](https://github.com/tszheichoi))
+- On iOS, fix dead frames when starting a video recording. ([#22037](https://github.com/expo/expo/pull/22037) by [@alanjhughes](https://github.com/alanjhughes))
+- Remove @koale/useworker. ([#23967](https://github.com/expo/expo/pull/23967) by [@marklawlor](https://github.com/marklawlor))
+
+## 13.5.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 13.5.0 — 2023-07-28
+
+### 🐛 Bug fixes
+
+- Fixed issue with checking camera/microphone permissions in Firefox. ([#22855](https://github.com/expo/expo/pull/22855) by [@loganrosen](https://github.com/loganrosen))
+
+## 13.4.2 - 2023-07-04
+
+### 🐛 Bug fixes
+
+- Fix crash when onBarCodeScanned or onFacesDetected callback is removed. ([#23223](https://github.com/expo/expo/pull/23223) by [@thespacemanatee](https://github.com/thespacemanatee))
+
+## 13.4.1 — 2023-06-28
+
+### 🐛 Bug fixes
+
+- Resolved an issue on Android where recording a video, even with the mute: true option, would still result in an audio permission exception. Furthermore, the mute flag was incorrectly referred to as muteValue, causing it to be consistently ignored ([#23145](https://github.com/expo/expo/pull/23145) by [@hirbod](https://github.com/hirbod))
+
+## 13.4.0 — 2023-06-13
+
+- Fixed `Expo camera - Cannot take landscape photos if screen orientation is locked'` on iOS. ([#21938](https://github.com/expo/expo/issues/21938) by [@chalenascholl](https://github.com/chalenascholl)) ([#21956](https://github.com/expo/expo/pull/21956) by [@chalenascholl](https://github.com/chalenascholl))
+
 ### 🐛 Bug fixes
 
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 13.3.0 — 2023-05-08
 

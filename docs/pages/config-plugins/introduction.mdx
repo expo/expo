@@ -5,7 +5,6 @@ sidebar_title: Introduction
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
-import { BoxLink } from '~/ui/components/BoxLink';
 
 An automatic setup for adding a native module to your project is possible. Sometimes, a module requires a more complex setup. A config plugin can be used to automatically configure your native project for a module and reduce the complexity by avoiding interaction with the native project.
 
@@ -23,7 +22,7 @@ Expo config plugins mostly come from Node.js modules. You can install them just 
 
 For example, `expo-camera` has a plugin that adds camera permissions to the **AndroidManifest.xml** and **Info.plist**. To install it in your project, run the following command:
 
-<Terminal cmd={['$ expo install expo-camera']} />
+<Terminal cmd={['$ npx expo install expo-camera']} />
 
 In your app's config (**app.json**, or **app.config.js**), you can add `expo-camera` to the list of plugins:
 
@@ -58,11 +57,3 @@ On running the `npx expo prebuild`, the [`mods`]() are compiled, and the native 
 
 The changes don't take effect until you rebuild the native project, for example, with Xcode. **If you're using config plugins in a managed app,
 they will be applied during the prebuild phase on `eas build`**.
-
-## Next step
-
-<BoxLink
-  title="Creating a plugin"
-  description="Learn about how you can create a config plugin."
-  href="/config-plugins/plugins-and-mods"
-/>

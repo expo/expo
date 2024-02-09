@@ -1,13 +1,21 @@
-import Constants, { ExecutionEnvironment } from 'expo-constants';
-import { Platform } from 'expo-modules-core';
-import * as Notifications from 'expo-notifications';
 import React from 'react';
+import { Platform } from 'react-native';
 
-import ExpoAPIIcon from '../components/ExpoAPIIcon';
 import ComponentListScreen from './ComponentListScreen';
+import ExpoAPIIcon from '../components/ExpoAPIIcon';
 
 if (Platform.OS !== 'web') {
-  Notifications.setNotificationHandler({
+  // Optionally require expo-notifications as we cannot assume that the module is linked.
+  // It's not available on macOS and tvOS yet and we want to avoid errors caused by the top-level import.
+  const Notifications = (() => {
+    try {
+      return require('expo-notifications');
+    } catch {
+      return null;
+    }
+  })();
+
+  Notifications?.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
       shouldPlaySound: true,
@@ -79,10 +87,6 @@ const screens = [
   'ViewShot',
   'WebBrowser',
 ];
-
-if (Constants.executionEnvironment !== ExecutionEnvironment.StoreClient) {
-  screens.push('InAppPurchases');
-}
 
 export const ScreenItems = screens.map((name) => ({
   name,

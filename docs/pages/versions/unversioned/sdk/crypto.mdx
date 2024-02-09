@@ -1,5 +1,6 @@
 ---
 title: Crypto
+description: A universal library for crypto operations.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-crypto'
 packageName: 'expo-crypto'
 iconUrl: '/static/images/packages/expo-crypto.png'
@@ -8,7 +9,7 @@ iconUrl: '/static/images/packages/expo-crypto.png'
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { SnackInline} from '~/ui/components/Snippet';
+import { SnackInline } from '~/ui/components/Snippet';
 
 `expo-crypto` enables you to hash data in an equivalent manner to the Node.js core `crypto` API.
 
@@ -68,9 +69,9 @@ import * as Crypto from 'expo-crypto';
 
 <APISection packageName="expo-crypto" apiName="Crypto" />
 
-## Error Codes
+## Error codes
 
-| Code                     | Description                                                                                                                                                              |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `ERR_CRYPTO_UNAVAILABLE` | **Web Only.** Access to the WebCrypto API is restricted to secure origins (https). <br/>You can run your web project from a secure origin with `npx expo start --https`. |
-| `ERR_CRYPTO_DIGEST`      | An invalid encoding type provided.                                                                                                                                       |
+| Code                     | Description                                                                                  |
+| ------------------------ | -------------------------------------------------------------------------------------------- |
+| `ERR_CRYPTO_UNAVAILABLE` | **Web Only.** Access to the WebCrypto API is restricted to secure origins (localhost/https). |
+| `ERR_CRYPTO_DIGEST`      | An invalid encoding type provided.                                                           |

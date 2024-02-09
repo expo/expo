@@ -2,20 +2,59 @@
 
 ## Unpublished
 
-### 📚 3rd party library updates
-
-- Updated `robolectric` to `4.10` and `junit` to `4.13.2`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
-
 ### 🛠 Breaking changes
 
 ### 🎉 New features
+
+- Added support for macOS platform. ([#26831](https://github.com/expo/expo/pull/26831) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Update error message to reflect that web crypto works on web with a localhost hostname and often doesn't require `https`. ([#26729](https://github.com/expo/expo/pull/26729) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 12.8.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 12.7.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- Change getRandomBytesAsync to use native getRandomValues when available. ([#24716](https://github.com/expo/expo/pull/24716) by [@aleqsio](https://github.com/aleqsio))
+
+## 12.6.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+## 12.5.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 12.5.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
+## 12.4.0 — 2023-06-13
+
+### 📚 3rd party library updates
+
+- Updated `robolectric` to `4.10` and `junit` to `4.13.2`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
 
 ### 🐛 Bug fixes
 
 - Return lower case UUID on iOS. ([#22509](https://github.com/expo/expo/pull/22509) by [@LinusU](https://github.com/LinusU))
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 12.3.0 — 2023-05-08
 

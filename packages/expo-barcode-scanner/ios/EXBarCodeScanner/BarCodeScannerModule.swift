@@ -79,8 +79,10 @@ public final class BarCodeScannerModule: Module {
         }
       }
 
-      Prop("barCodeTypes") { (view, barcodeTypes: [String]) in
-        view.barCodeTypes = barcodeTypes
+      Prop("barCodeTypes") { (view, barcodeTypes: [String?]) in
+        view.barCodeTypes = barcodeTypes.compactMap {
+          $0
+        }
       }
     }
   }

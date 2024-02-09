@@ -1,5 +1,5 @@
 import { ClassAttributes, ComponentProps, ComponentType } from 'react';
-import { AccessibilityRole, StyleProp, Text as NativeText, TextStyle as NativeTextStyle } from 'react-native';
+import { StyleProp, Text as NativeText, TextStyle as NativeTextStyle } from 'react-native';
 import { WebViewStyle } from './View';
 type NativeTextProps = ComponentProps<typeof NativeText> & ClassAttributes<typeof NativeText>;
 export interface WebTextStyle {
@@ -28,8 +28,12 @@ export type WebTextProps = {
     /** @platform web */
     tabIndex?: number;
     /** @platform web */
+    'aria-level'?: number;
+    /**
+     * @deprecated use `aria-level` instead.
+     * @platform web
+     */
     accessibilityLevel?: number;
-    accessibilityRole?: 'listitem' | 'heading' | AccessibilityRole;
     /** @platform web */
     href?: string;
     /** @deprecated use the prop `hrefAttrs={{ target: '...' }}` instead. */
@@ -46,7 +50,7 @@ export type WebTextProps = {
     /** @platform web */
     lang?: string;
 };
-export type TextProps = Omit<NativeTextProps, 'style' | 'accessibilityRole'> & WebTextProps;
+export type TextProps = Omit<NativeTextProps, 'style'> & WebTextProps;
 declare const _default: ComponentType<TextProps>;
 export default _default;
 //# sourceMappingURL=Text.d.ts.map

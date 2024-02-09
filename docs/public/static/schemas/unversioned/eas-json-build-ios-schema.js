@@ -1,4 +1,13 @@
+import { ResourceClasses } from '~/ui/components/utils/infrastructure';
+
 export default [
+  {
+    name: 'withoutCredentials',
+    type: 'boolean',
+    description: [
+      "When set to `true`, EAS CLI won't require you to configure credentials when building the app. This comes in handy when using EAS Build [custom builds](/custom-builds/get-started/).",
+    ],
+  },
   {
     name: 'simulator',
     type: 'boolean',
@@ -33,13 +42,13 @@ export default [
   },
   {
     name: 'resourceClass',
-    enum: ['default', 'medium', 'large', 'm-medium', 'intel-medium'],
+    enum: ['default', ...ResourceClasses.ios],
     description: [
-      'The iOS-specific resource class that will be used to run this build. [Learn more](../../build-reference/infrastructure#ios-build-server-configurations)',
-      '- For SDK version >= 45 or React Native version >= 0.71.0 `default` maps to `m-medium`, otherwise it maps to `intel-medium`',
-      '- For SDK version >= 45 or React Native version >= 0.71.0 `medium` maps to `m-medium`, otherwise it maps to `intel-medium`',
+      `The iOS-specific resource class that will be used to run this build. Defaults to \`${ResourceClasses.ios[0]}\`.`,
       '',
-      'This can change over time. To ensure you stay on the same configuration even when we change our defaults, use the specific resource class name.',
+      'To learn more about what build resources are available to each resource class, check out [iOS build server configurations](../../build-reference/infrastructure#ios-build-server-configurations).',
+      '',
+      'The `large` resource class is not available on the free plan.',
     ],
   },
   {

@@ -4,67 +4,81 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
 import chalk from 'chalk';
 import * as dotenv from 'dotenv';
-import { expand } from 'dotenv-expand';
+import { expand as dotenvExpand } from 'dotenv-expand';
 import * as fs from 'fs';
+import { boolish } from 'getenv';
 import * as path from 'path';
+
+type LoadOptions = {
+  silent?: boolean;
+  force?: boolean;
+};
 
 const debug = require('debug')('expo:env') as typeof console.log;
 
+export function isEnabled(): boolean {
+  return !boolish('EXPO_NO_DOTENV', false);
+}
+
 export function createControlledEnvironment() {
-  const IS_DEBUG = require('debug').enabled('expo:env');
-
   let userDefinedEnvironment: NodeJS.ProcessEnv | undefined = undefined;
-  let memoEnvironment: NodeJS.ProcessEnv | undefined = undefined;
+  let memo: { env: NodeJS.ProcessEnv; files: string[] } | undefined = undefined;
 
-  function _getForce(projectRoot: string): Record<string, string | undefined> {
+  function _getForce(
+    projectRoot: string,
+    options: LoadOptions = {}
+  ): { env: Record<string, string | undefined>; files: string[] } {
+    if (!isEnabled()) {
+      debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
+      return { env: {}, files: [] };
+    }
+
     if (!userDefinedEnvironment) {
       userDefinedEnvironment = { ...process.env };
     }
 
     // https://github.com/bkeepers/dotenv#what-other-env-files-can-i-use
-    const dotenvFiles = getFiles(process.env.NODE_ENV);
-
-    const loadedEnvFiles: string[] = [];
-    const parsed: dotenv.DotenvParseOutput = {};
+    const dotenvFiles = getFiles(process.env.NODE_ENV, options);
 
     // Load environment variables from .env* files. Suppress warnings using silent
-    // if this file is missing. dotenv will never modify any environment variables
-    // that have already been set. Variable expansion is supported in .env files.
+    // if this file is missing. Dotenv will only parse the environment variables,
+    // `@expo/env` will set the resulting variables to the current process.
+    // Variable expansion is supported in .env files, and executed as final step.
     // https://github.com/motdotla/dotenv
     // https://github.com/motdotla/dotenv-expand
-    dotenvFiles.forEach((dotenvFile) => {
+    const parsedEnv: dotenv.DotenvParseOutput = {};
+    const loadedEnvFiles: string[] = [];
+
+    // Iterate over each dotenv file in lowest prio to highest prio order.
+    // This step won't write to the process.env, but will overwrite the parsed envs.
+    dotenvFiles.reverse().forEach((dotenvFile) => {
       const absoluteDotenvFile = path.resolve(projectRoot, dotenvFile);
       if (!fs.existsSync(absoluteDotenvFile)) {
         return;
       }
+
       try {
-        const results = expand(
-          dotenv.config({
-            debug: IS_DEBUG,
-            path: absoluteDotenvFile,
-            // We will handle overriding ourselves to allow for HMR.
-            override: true,
-          })
-        );
-        if (results.parsed) {
+        const result = dotenv.parse(fs.readFileSync(absoluteDotenvFile, 'utf-8'));
+
+        if (!result) {
+          debug(`Failed to load environment variables from: ${absoluteDotenvFile}%s`);
+        } else {
           loadedEnvFiles.push(absoluteDotenvFile);
           debug(`Loaded environment variables from: ${absoluteDotenvFile}`);
 
-          for (const key of Object.keys(results.parsed || {})) {
-            if (
-              typeof parsed[key] === 'undefined' &&
-              // Custom override logic to prevent overriding variables that
-              // were set before the CLI process began.
-              typeof userDefinedEnvironment?.[key] === 'undefined'
-            ) {
-              parsed[key] = results.parsed[key];
+          for (const key of Object.keys(result)) {
+            if (typeof userDefinedEnvironment?.[key] !== 'undefined') {
+              debug(`"${key}" is already defined and IS NOT overwritten by: ${absoluteDotenvFile}`);
+            } else {
+              if (typeof parsedEnv[key] !== 'undefined') {
+                debug(`"${key}" is already defined and overwritten by: ${absoluteDotenvFile}`);
+              }
+
+              parsedEnv[key] = result[key];
             }
           }
-        } else {
-          debug(`Failed to load environment variables from: ${absoluteDotenvFile}`);
         }
       } catch (error: unknown) {
         if (error instanceof Error) {
@@ -81,25 +95,76 @@ export function createControlledEnvironment() {
       debug(`No environment variables loaded from .env files.`);
     }
 
-    return parsed;
+    return { env: _expandEnv(parsedEnv), files: loadedEnvFiles.reverse() };
+  }
+
+  /** Expand environment variables based on the current and parsed envs */
+  function _expandEnv(parsedEnv: Record<string, string>) {
+    const expandedEnv: Record<string, string> = {};
+
+    // When not ignoring `process.env`, values from the parsed env are overwritten by the current env if defined.
+    // We handle this ourselves, expansion should always use the current state of "current + parsed env".
+    const allExpandedEnv = dotenvExpand({
+      parsed: { ...process.env, ...parsedEnv } as Record<string, string>,
+      ignoreProcessEnv: true,
+    });
+
+    if (allExpandedEnv.error) {
+      console.error(
+        `Failed to expand environment variables, using non-expanded environment variables: ${allExpandedEnv.error}`
+      );
+      return parsedEnv;
+    }
+
+    for (const key of Object.keys(parsedEnv)) {
+      if (allExpandedEnv.parsed?.[key]) {
+        expandedEnv[key] = allExpandedEnv.parsed[key];
+      }
+    }
+
+    return expandedEnv;
   }
 
   /** Get the environment variables without mutating the environment. This returns memoized values unless the `force` property is provided. */
   function get(
     projectRoot: string,
-    { force }: { force?: boolean } = {}
-  ): Record<string, string | undefined> {
-    if (!force && memoEnvironment) {
-      return memoEnvironment;
+    options: LoadOptions = {}
+  ): { env: Record<string, string | undefined>; files: string[] } {
+    if (!isEnabled()) {
+      debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
+      return { env: {}, files: [] };
     }
-    memoEnvironment = _getForce(projectRoot);
-    return memoEnvironment;
+    if (!options.force && memo) {
+      return memo;
+    }
+    memo = _getForce(projectRoot, options);
+    return memo;
   }
 
   /** Load environment variables from .env files and mutate the current `process.env` with the results. */
-  function load(projectRoot: string, { force }: { force?: boolean } = {}) {
-    const env = get(projectRoot, { force });
-    process.env = { ...process.env, ...env };
+  function load(projectRoot: string, options: LoadOptions = {}) {
+    if (!isEnabled()) {
+      debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
+      return process.env;
+    }
+
+    const envInfo = get(projectRoot, options);
+
+    if (!options.force) {
+      const keys = Object.keys(envInfo.env);
+      if (keys.length) {
+        console.log(
+          chalk.gray('env: load', envInfo.files.map((file) => path.basename(file)).join(' '))
+        );
+        console.log(chalk.gray('env: export', keys.join(' ')));
+      }
+    }
+
+    for (const key of Object.keys(envInfo.env)) {
+      // Avoid creating a new object, mutate it instead as this causes problems in Bun
+      process.env[key] = envInfo.env[key];
+    }
+
     return process.env;
   }
 
@@ -110,14 +175,26 @@ export function createControlledEnvironment() {
   };
 }
 
-export function getFiles(mode: string | undefined): string[] {
+export function getFiles(
+  mode: string | undefined,
+  { silent = false }: Pick<LoadOptions, 'silent'> = {}
+): string[] {
+  if (!isEnabled()) {
+    debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
+    return [];
+  }
+
   if (!mode) {
-    console.error(
-      chalk.red(
-        'The NODE_ENV environment variable is required but was not specified. Ensure the project is bundled with Expo CLI or NODE_ENV is set.'
-      )
-    );
-    console.error(chalk.red('Proceeding without mode-specific .env'));
+    if (silent) {
+      debug('NODE_ENV is not defined, proceeding without mode-specific .env');
+    } else {
+      console.error(
+        chalk.red(
+          'The NODE_ENV environment variable is required but was not specified. Ensure the project is bundled with Expo CLI or NODE_ENV is set.'
+        )
+      );
+      console.error(chalk.red('Proceeding without mode-specific .env'));
+    }
   }
 
   if (mode && !['development', 'test', 'production'].includes(mode)) {

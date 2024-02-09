@@ -106,6 +106,7 @@
     return EXStructuredHeadersParserFieldTypeItem;
   } else {
     XCTAssert(NO, @"unexpected header_type");
+    return EXStructuredHeadersParserFieldTypeDictionary;
   }
 }
 

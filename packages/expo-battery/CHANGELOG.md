@@ -2,19 +2,62 @@
 
 ## Unpublished
 
-### 📚 3rd party library updates
-
-- Updated `robolectric` to `4.10` and `junit` to `4.13.2`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
-
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
-- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+### 💡 Others
+
+## 7.7.2 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 7.7.1 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
+## 7.7.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 7.6.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+## 7.5.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+- Migrated Android codebase to use Expo Modules API. ([#23883](https://github.com/expo/expo/pull/23883) by [@lukmccall](https://github.com/lukmccall))
+
+## 7.4.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 7.3.0 — 2023-06-13
+
+### 📚 3rd party library updates
+
+- Updated `robolectric` to `4.10` and `junit` to `4.13.2`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+
+### 🎉 New features
+
+- Added hooks `useBatteryLevel`, `useBatteryState`, `useLowPowerMode`, and `usePowerState`. ([#22646](https://github.com/expo/expo/pull/22646) by [@Adam-Schlichtmann](https://github.com/Adam-Schlichtmann))
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ## 7.2.0 — 2023-05-08
 

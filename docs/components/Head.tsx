@@ -1,18 +1,19 @@
 import NextHead from 'next/head';
 import type { PropsWithChildren } from 'react';
 
-type HeadProps = PropsWithChildren<{ title?: string; description?: string }>;
+type HeadProps = PropsWithChildren<{ title?: string; description?: string; canonicalUrl?: string }>;
 
 const BASE_TITLE = 'Expo Documentation';
 const BASE_DESCRIPTION = `Expo is an open-source platform for making universal native apps for Android, iOS, and the web with JavaScript and React.`;
 
-const Head = ({ title, description, children }: HeadProps) => (
+const Head = ({ title, description, canonicalUrl, children }: HeadProps) => (
   <NextHead>
     <title>{title ? `${title} - ${BASE_TITLE}` : BASE_TITLE}</title>
     <meta charSet="utf-8" />
     <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href="/static/images/favicon.ico" sizes="32x32" />
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
 
     <meta name="description" content={description === '' ? BASE_DESCRIPTION : description} />
     <meta property="og:title" content={title} />
@@ -32,6 +33,7 @@ const Head = ({ title, description, children }: HeadProps) => (
       content={description === '' ? BASE_DESCRIPTION : description}
     />
     <meta property="twitter:image" content="https://docs.expo.dev/static/images/twitter.png" />
+    <meta name="google-site-verification" content="izrqNurn_EXfYbNIFgVIhEXkkZk9DleELH4UouM8s3k" />
 
     {children}
   </NextHead>

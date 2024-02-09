@@ -1,5 +1,6 @@
 ---
 title: Build a screen
+description: In this tutorial, learn how to use React Native components such as Image, Pressable, and Vector icons to build a screen.
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
@@ -112,14 +113,16 @@ export default function App() {
   return (
     <View style={styles.container}>
       /* @info Replace the default value of color property to '#fff'. */
-      <Text style={{ color: '#fff' }}>Open up App.js to start working on your app!</Text>
+      <Text style={{ color: '#fff' }}>
+        Open up App.js to start working on your app!
+      </Text>
       /* @end */
       <StatusBar style="auto" />
     </View>
   );
 }
 
-/* @hide const styles = StyleSheet.create({*/
+/* @hide const styles = StyleSheet.create( */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -151,7 +154,7 @@ We can use React Native's `<Image>` component to display the image in the app. T
 Next, import and use the `<Image>` component from React Native and `background-image.png` in the **App.js**. Let's also add styles to display the image.
 
 <SnackInline label="Display placeholder image" dependencies={['expo-status-bar']} files={{
-    'assets/images/background-image.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/503001f14bb7b8fe48a4e318ad07e910'
+  'assets/images/background-image.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/503001f14bb7b8fe48a4e318ad07e910'
 }}>
 
 {/* prettier-ignore */}
@@ -169,7 +172,8 @@ export default function App() {
       /* @info Wrap the Image component inside a container. Also, add the image component to display the placeholder image. */
       <View style={styles.imageContainer}>
         <Image source={PlaceholderImage} style={styles.image} />
-      </View> /* @end */
+      </View>
+      /* @end */
       <StatusBar style="auto" />
     </View>
   );
@@ -275,7 +279,7 @@ const styles = StyleSheet.create({
 
 <Step label="6">
 
-## Create buttons using Pressable
+## Create buttons using `Pressable`
 
 React Native provides various components to handle touch events on native platforms. For this tutorial, we'll use the [`<Pressable>`](https://reactnative.dev/docs/pressable) component. It is a core component wrapper that can detect various stages of interactions, from basic single-tap events to advanced events such as a long press.
 
@@ -376,7 +380,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-Let's take a look at our app on iOS, Android and the web:
+Let's take a look at our app on Android, iOS and the web:
 
 <ImageSpotlight
   alt="Initial layout."
@@ -394,13 +398,13 @@ The second button with the label "Use this photo" resembles the actual button fr
 ## Enhance the reusable button component
 
 The "Choose a photo" button requires different styling than the "Use this photo" button, so we will add a new button theme prop that will allow us to apply a `primary` theme.
-This button also has an icon before the label. We will use an icon from the <A href="/guides/icons/#expovector-icons" openInNewTab>`@expo/vector-icons`</A> library that includes icons from popular icon sets.
+This button also has an icon before the label. We will use an icon from the <A href="/guides/icons/#expovector-icons">`@expo/vector-icons`</A> library that includes icons from popular icon sets.
 
 Stop the development server by pressing <kbd>Ctrl</kbd> + <kbd>c</kbd> in the terminal. Then, install the `@expo/vector-icons` library:
 
 <Terminal cmd={['$ npx expo install @expo/vector-icons']} />
 
-The <A href="/more/expo-cli/#installation" openInNewTab>`npx expo install`</A> command will install the library and add it to the project's dependencies in **package.json**.
+The <A href="/more/expo-cli/#installation">`npx expo install`</A> command will install the library and add it to the project's dependencies in **package.json**.
 
 After installing the library, restart the development server by running the `npx expo start` command.
 
@@ -411,13 +415,12 @@ To load and display the icon on the button, let's use `FontAwesome` from the lib
 import { StyleSheet, View, Pressable, Text } from 'react-native';
 /* @info Import FontAwesome. */import FontAwesome from "@expo/vector-icons/FontAwesome";/* @end */
 
-export default function Button({ label, /* @info The prop theme to detect the button variant. */ theme/* @end */ }) {
+export default function Button({ label, /* @info The prop theme to detect the button variant. */theme/* @end */ }) {
   /* @info Conditionally render the primary themed button. */
   if (theme === "primary") {
+  /* @end */
     return (
-      <View
-      style={[styles.buttonContainer, { borderWidth: 4, borderColor: "#ffd33d", borderRadius: 18 }]}
-      >
+      <View style={[styles.buttonContainer, { borderWidth: 4, borderColor: "#ffd33d", borderRadius: 18 }]}>
         <Pressable
           style={[styles.button, { backgroundColor: "#fff" }]}
           onPress={() => alert('You pressed a button.')}
@@ -430,10 +433,11 @@ export default function Button({ label, /* @info The prop theme to detect the bu
           />
           <Text style={[styles.buttonLabel, { color: "#25292e" }]}>{label}</Text>
         </Pressable>
-    </View>
+      </View>
     );
+  /* @info */
   }
- /* @end */
+  /* @end */
 
   return (
     <View style={styles.buttonContainer}>
@@ -485,7 +489,7 @@ export default function App() {
 
 </SnackInline>
 
-Let's take a look at our app on iOS, Android and the web:
+Let's take a look at our app on Android, iOS and the web:
 
 <Video file="tutorial/02-complete-layout.mp4" />
 

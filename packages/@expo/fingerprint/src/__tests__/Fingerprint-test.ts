@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 
 import { createFingerprintAsync, diffFingerprintChangesAsync } from '../Fingerprint';
 import type { Fingerprint } from '../Fingerprint.types';
-import { normalizeOptions } from '../Options';
+import { normalizeOptionsAsync } from '../Options';
 
 jest.mock('fs');
 jest.mock('fs/promises');
@@ -15,8 +15,12 @@ describe(diffFingerprintChangesAsync, () => {
 
   it('should return empty array when fingerprint matched', async () => {
     vol.fromJSON(require('../sourcer/__tests__/fixtures/ExpoManaged47Project.json'));
-    const fingerprint = await createFingerprintAsync('/app', normalizeOptions());
-    const diff = await diffFingerprintChangesAsync(fingerprint, '/app', normalizeOptions());
+    const fingerprint = await createFingerprintAsync('/app', await normalizeOptionsAsync('/app'));
+    const diff = await diffFingerprintChangesAsync(
+      fingerprint,
+      '/app',
+      await normalizeOptionsAsync('/app')
+    );
     expect(diff.length).toBe(0);
   });
 
@@ -27,16 +31,21 @@ describe(diffFingerprintChangesAsync, () => {
       hash: '',
     };
 
-    const diff = await diffFingerprintChangesAsync(fingerprint, '/app', normalizeOptions());
+    const diff = await diffFingerprintChangesAsync(
+      fingerprint,
+      '/app',
+      await normalizeOptionsAsync('/app')
+    );
     expect(diff).toMatchInlineSnapshot(`
       [
         {
-          "filePath": "app.json",
-          "hash": "1fd2d92d50dc1da96b41795046b9ea4e30dd2b48",
+          "contents": "{"android":{"adaptiveIcon":{"backgroundColor":"#FFFFFF","foregroundImage":"./assets/adaptive-icon.png"}},"assetBundlePatterns":["**/*"],"icon":"./assets/icon.png","ios":{"supportsTablet":true},"name":"sdk47","orientation":"portrait","platforms":["android","ios","web"],"slug":"sdk47","splash":{"backgroundColor":"#ffffff","image":"./assets/splash.png","resizeMode":"contain"},"updates":{"fallbackToCacheTimeout":0},"userInterfaceStyle":"light","version":"1.0.0","web":{"favicon":"./assets/favicon.png"}}",
+          "hash": "33b2b95de3b0b474810630e51527a2c0a6e5de9c",
+          "id": "expoConfig",
           "reasons": [
             "expoConfig",
           ],
-          "type": "file",
+          "type": "contents",
         },
       ]
     `);
@@ -46,19 +55,27 @@ describe(diffFingerprintChangesAsync, () => {
     vol.fromJSON(require('../sourcer/__tests__/fixtures/ExpoManaged47Project.json'));
     const packageJson = JSON.parse(vol.readFileSync('/app/package.json', 'utf8').toString());
     jest.doMock('/app/package.json', () => packageJson, { virtual: true });
-    const fingerprint = await createFingerprintAsync('/app', normalizeOptions());
+    const fingerprint = await createFingerprintAsync('/app', await normalizeOptionsAsync('/app'));
 
     // first round for bumping package version which should not cause changes
     packageJson.version = '111.111.111';
     jest.doMock('/app/package.json', () => packageJson, { virtual: true });
-    let diff = await diffFingerprintChangesAsync(fingerprint, '/app', normalizeOptions());
+    let diff = await diffFingerprintChangesAsync(
+      fingerprint,
+      '/app',
+      await normalizeOptionsAsync('/app')
+    );
     expect(diff.length).toBe(0);
 
     // second round to update scripts section and it should cause changes
     packageJson.scripts ||= {};
     packageJson.scripts.postinstall = 'echo "hello"';
     jest.doMock('/app/package.json', () => packageJson, { virtual: true });
-    diff = await diffFingerprintChangesAsync(fingerprint, '/app', normalizeOptions());
+    diff = await diffFingerprintChangesAsync(
+      fingerprint,
+      '/app',
+      await normalizeOptionsAsync('/app')
+    );
     jest.dontMock('/app/package.json');
     expect(diff).toMatchInlineSnapshot(`
       [
@@ -77,20 +94,25 @@ describe(diffFingerprintChangesAsync, () => {
 
   it('should return diff from file changes', async () => {
     vol.fromJSON(require('../sourcer/__tests__/fixtures/ExpoManaged47Project.json'));
-    const fingerprint = await createFingerprintAsync('/app', normalizeOptions());
+    const fingerprint = await createFingerprintAsync('/app', await normalizeOptionsAsync('/app'));
     const config = JSON.parse(vol.readFileSync('/app/app.json', 'utf8').toString());
     config.expo.jsEngine = 'jsc';
     vol.writeFileSync('/app/app.json', JSON.stringify(config, null, 2));
-    const diff = await diffFingerprintChangesAsync(fingerprint, '/app', normalizeOptions());
+    const diff = await diffFingerprintChangesAsync(
+      fingerprint,
+      '/app',
+      await normalizeOptionsAsync('/app')
+    );
     expect(diff).toMatchInlineSnapshot(`
       [
         {
-          "filePath": "app.json",
-          "hash": "9ff1b51ca9b9435e8b849bcc82e3900d70f0feee",
+          "contents": "{"android":{"adaptiveIcon":{"backgroundColor":"#FFFFFF","foregroundImage":"./assets/adaptive-icon.png"}},"assetBundlePatterns":["**/*"],"icon":"./assets/icon.png","ios":{"supportsTablet":true},"jsEngine":"jsc","name":"sdk47","orientation":"portrait","platforms":["android","ios","web"],"slug":"sdk47","splash":{"backgroundColor":"#ffffff","image":"./assets/splash.png","resizeMode":"contain"},"updates":{"fallbackToCacheTimeout":0},"userInterfaceStyle":"light","version":"1.0.0","web":{"favicon":"./assets/favicon.png"}}",
+          "hash": "7068a4234e7312c6ac54b776ea4dfad0ac789b2a",
+          "id": "expoConfig",
           "reasons": [
             "expoConfig",
           ],
-          "type": "file",
+          "type": "contents",
         },
       ]
     `);
@@ -98,9 +120,13 @@ describe(diffFingerprintChangesAsync, () => {
 
   it('should return diff from dir changes', async () => {
     vol.fromJSON(require('../sourcer/__tests__/fixtures/BareReactNative70Project.json'));
-    const fingerprint = await createFingerprintAsync('/app', normalizeOptions());
+    const fingerprint = await createFingerprintAsync('/app', await normalizeOptionsAsync('/app'));
     vol.writeFileSync('/app/ios/README.md', '# Adding new file in ios dir');
-    const diff = await diffFingerprintChangesAsync(fingerprint, '/app', normalizeOptions());
+    const diff = await diffFingerprintChangesAsync(
+      fingerprint,
+      '/app',
+      await normalizeOptionsAsync('/app')
+    );
     expect(diff).toMatchInlineSnapshot(`
       [
         {

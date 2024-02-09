@@ -13,13 +13,13 @@ import { vol } from 'memfs';
 import * as path from 'path';
 import xcode from 'xcode';
 
+import rnFixture from './fixtures/react-native-project';
+import { getDirFromFS } from './getDirFromFS';
 import {
   withAndroidExpoPlugins,
   withIosExpoPlugins,
   withVersionedExpoSDKPlugins,
 } from '../withDefaultPlugins';
-import rnFixture from './fixtures/react-native-project';
-import { getDirFromFS } from './getDirFromFS';
 
 const { withOrientation } = IOSConfig.Orientation;
 
@@ -48,7 +48,7 @@ function getLargeConfig(): ExportedConfig {
     // owner?: string;
     // privacy?: 'public' | 'unlisted' | 'hidden';
     // sdkVersion?: string;
-    // runtimeVersion?: string;
+    runtimeVersion: '1.0',
     splash: {
       backgroundColor: '#ff00ff',
     },
@@ -107,9 +107,6 @@ function getLargeConfig(): ExportedConfig {
       backgroundColor: '#ff0000',
       appStoreUrl: 'https://itunes.apple.com/us/app/pillar-valley/id1336398804?ls=1&mt=8',
       config: {
-        branch: {
-          apiKey: 'MY_BRANCH_KEY',
-        },
         usesNonExemptEncryption: true,
         googleMapsApiKey: 'TEST_googleMapsApiKey',
         googleMobileAdsAppId: 'TEST_googleMobileAdsAppId',
@@ -183,7 +180,7 @@ function getLargeConfig(): ExportedConfig {
 
 function getPrebuildConfig() {
   let config = { ...getLargeConfig() };
-  config = withVersionedExpoSDKPlugins(config, { expoUsername: 'bacon' });
+  config = withVersionedExpoSDKPlugins(config);
 
   config = withIosExpoPlugins(config, {
     bundleIdentifier: 'com.bacon.todo',
@@ -303,6 +300,7 @@ describe('built-in plugins', () => {
     await compileModsAsync(config, { introspect: true, projectRoot: '/app' });
 
     expect(modRequest).toStrictEqual({
+      ignoreExistingNativeFiles: false,
       introspect: true,
       modName: 'gradleProperties',
       platform: 'android',
@@ -327,8 +325,6 @@ describe('built-in plugins', () => {
         CFBundleURLSchemes.includes('com.googleusercontent.apps.1234567890123-abcdef')
       )
     ).toBeDefined();
-    // Branch
-    expect(config.ios?.infoPlist?.branch_key?.live).toBe('MY_BRANCH_KEY');
 
     // Mods should all be functions
     expect(Object.values(config.mods!.ios!).every((value) => typeof value === 'function')).toBe(
@@ -375,17 +371,15 @@ describe('built-in plugins', () => {
       'android/app/debug.keystore',
       'android/app/proguard-rules.pro',
       'android/app/src/debug/AndroidManifest.xml',
-      'android/app/src/debug/java/com/bacon/todo/ReactNativeFlipper.java',
       'android/app/src/main/AndroidManifest.xml',
-      'android/app/src/main/java/com/bacon/todo/MainActivity.java',
-      'android/app/src/main/java/com/bacon/todo/MainApplication.java',
+      'android/app/src/main/java/com/bacon/todo/MainActivity.kt',
+      'android/app/src/main/java/com/bacon/todo/MainApplication.kt',
       'android/app/src/main/res/drawable/rn_edit_text_material.xml',
       'android/app/src/main/res/drawable/splashscreen.xml',
       'android/app/src/main/res/values/colors.xml',
       'android/app/src/main/res/values/strings.xml',
       'android/app/src/main/res/values/styles.xml',
       'android/app/src/main/res/values-night/colors.xml',
-      'android/app/src/release/java/com/bacon/todo/ReactNativeFlipper.java',
       'android/app/google-services.json',
       'android/build.gradle',
       'android/gitignore',
@@ -410,8 +404,8 @@ describe('built-in plugins', () => {
     );
     expect(after['ios/HelloWorld/GoogleService-Info.plist']).toBe(googleServiceInfoFixture);
 
-    expect(after['android/app/src/main/java/com/bacon/todo/MainApplication.java']).toMatch(
-      'package com.bacon.todo;'
+    expect(after['android/app/src/main/java/com/bacon/todo/MainApplication.kt']).toMatch(
+      'package com.bacon.todo'
     );
 
     expect(after['android/app/src/main/res/values/strings.xml']).toMatch(
@@ -475,8 +469,6 @@ describe('built-in plugins', () => {
         CFBundleURLSchemes.includes('com.googleusercontent.apps.1234567890123-abcdef')
       )
     ).toBeDefined();
-    // Branch
-    expect(config.ios?.infoPlist?.branch_key?.live).toBe('MY_BRANCH_KEY');
 
     const mods = config.mods!;
     // Mods should all be functions
@@ -534,16 +526,14 @@ describe('built-in plugins', () => {
       'android/app/debug.keystore',
       'android/app/proguard-rules.pro',
       'android/app/src/debug/AndroidManifest.xml',
-      'android/app/src/debug/java/com/helloworld/ReactNativeFlipper.java',
       'android/app/src/main/AndroidManifest.xml',
-      'android/app/src/main/java/com/helloworld/MainActivity.java',
-      'android/app/src/main/java/com/helloworld/MainApplication.java',
+      'android/app/src/main/java/com/helloworld/MainActivity.kt',
+      'android/app/src/main/java/com/helloworld/MainApplication.kt',
       'android/app/src/main/res/drawable/rn_edit_text_material.xml',
       'android/app/src/main/res/drawable/splashscreen.xml',
       'android/app/src/main/res/values/colors.xml',
       'android/app/src/main/res/values/strings.xml',
       'android/app/src/main/res/values/styles.xml',
-      'android/app/src/release/java/com/helloworld/ReactNativeFlipper.java',
       'android/build.gradle',
       'android/gitignore',
       'android/gradle/wrapper/gradle-wrapper.jar',
@@ -564,11 +554,11 @@ describe('built-in plugins', () => {
 
     expect(after['ios/HelloWorld/Info.plist']).toBe(rnFixture['ios/HelloWorld/Info.plist']);
 
-    expect(after['android/app/src/main/java/com/helloworld/MainApplication.java']).toBe(
-      rnFixture['android/app/src/main/java/com/helloworld/MainApplication.java']
+    expect(after['android/app/src/main/java/com/helloworld/MainApplication.kt']).toBe(
+      rnFixture['android/app/src/main/java/com/helloworld/MainApplication.kt']
     );
-    expect(after['android/app/src/main/java/com/helloworld/MainActivity.java']).toBe(
-      rnFixture['android/app/src/main/java/com/helloworld/MainActivity.java']
+    expect(after['android/app/src/main/java/com/helloworld/MainActivity.kt']).toBe(
+      rnFixture['android/app/src/main/java/com/helloworld/MainActivity.kt']
     );
     expect(after['android/app/src/main/res/values/styles.xml']).toMatch(
       rnFixture['android/app/src/main/res/values/styles.xml']
@@ -622,8 +612,6 @@ describe('built-in plugins', () => {
         CFBundleURLSchemes.includes('com.googleusercontent.apps.1234567890123-abcdef')
       )
     ).toBeDefined();
-    // Branch
-    expect(config.ios?.infoPlist?.branch_key?.live).toBe('MY_BRANCH_KEY');
 
     const mods = config.mods!;
     // Mods should all be functions

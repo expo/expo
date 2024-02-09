@@ -9,6 +9,8 @@ import android.os.Bundle
 import android.view.Choreographer
 import android.view.Surface
 import android.view.WindowManager
+import expo.modules.core.interfaces.services.EventEmitter
+import expo.modules.core.interfaces.services.UIManager
 import expo.modules.interfaces.sensors.SensorServiceInterface
 import expo.modules.interfaces.sensors.SensorServiceSubscriptionInterface
 import expo.modules.interfaces.sensors.services.AccelerometerServiceInterface
@@ -16,108 +18,101 @@ import expo.modules.interfaces.sensors.services.GravitySensorServiceInterface
 import expo.modules.interfaces.sensors.services.GyroscopeServiceInterface
 import expo.modules.interfaces.sensors.services.LinearAccelerationSensorServiceInterface
 import expo.modules.interfaces.sensors.services.RotationVectorSensorServiceInterface
-import expo.modules.core.ExportedModule
-import expo.modules.core.ModuleRegistry
-import expo.modules.core.Promise
-import expo.modules.core.interfaces.ExpoMethod
-import expo.modules.core.interfaces.services.EventEmitter
-import expo.modules.core.interfaces.services.UIManager
+import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.Promise
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.sensors.getServiceInterface
 
-class DeviceMotionModule(context: Context?) : ExportedModule(context), SensorEventListener2 {
-  private var mLastUpdate: Long = 0
-  private var mUpdateInterval = 1.0f / 60.0f
-  private val mRotationMatrix = FloatArray(9)
-  private val mRotationResult = FloatArray(3)
-  private var mAccelerationEvent: SensorEvent? = null
-  private var mAccelerationIncludingGravityEvent: SensorEvent? = null
-  private var mRotationEvent: SensorEvent? = null
-  private var mRotationRateEvent: SensorEvent? = null
-  private var mGravityEvent: SensorEvent? = null
-  private lateinit var mServiceSubscriptions: MutableList<SensorServiceSubscriptionInterface>
-  private lateinit var mUIManager: UIManager
-  private lateinit var mModuleRegistry: ModuleRegistry
+class DeviceMotionModule : Module(), SensorEventListener2 {
+  private var lastUpdate = 0L
+  private var updateInterval = 1.0f / 60.0f
+  private val rotationMatrix = FloatArray(9)
+  private val rotationResult = FloatArray(3)
+  private var accelerationEvent: SensorEvent? = null
+  private var accelerationIncludingGravityEvent: SensorEvent? = null
+  private var rotationEvent: SensorEvent? = null
+  private var rotationRateEvent: SensorEvent? = null
+  private var gravityEvent: SensorEvent? = null
+  private lateinit var serviceSubscriptions: MutableList<SensorServiceSubscriptionInterface>
+  private lateinit var uiManager: UIManager
 
-  private val mCurrentFrameCallback: ScheduleDispatchFrameCallback = ScheduleDispatchFrameCallback()
-  private val mDispatchEventRunnable = DispatchEventRunnable()
-  private lateinit var mEventEmitter: EventEmitter
+  private val currentFrameCallback: ScheduleDispatchFrameCallback = ScheduleDispatchFrameCallback()
+  private val dispatchEventRunnable = DispatchEventRunnable()
+  private lateinit var eventEmitter: EventEmitter
 
-  override fun getName(): String = "ExponentDeviceMotion"
+  override fun definition() = ModuleDefinition {
+    Name("ExponentDeviceMotion")
 
-  override fun getConstants(): Map<String, Any> {
-    // Gravity on the planet this module supports (currently just Earth) represented as m/s^2.
-    return mapOf(Pair("Gravity", 9.80665))
-  }
+    Events("deviceMotionDidUpdate")
 
-  @ExpoMethod
-  fun setUpdateInterval(updateInterval: Int, promise: Promise) {
-    mUpdateInterval = updateInterval.toFloat()
-    promise.resolve(null)
-  }
+    Constants("Gravity" to SensorManager.GRAVITY_EARTH)
 
-  @ExpoMethod
-  fun startObserving(promise: Promise) {
-    if (!this::mServiceSubscriptions.isInitialized) {
-      mServiceSubscriptions = ArrayList()
-      for (kernelService in getSensorKernelServices()) {
-        val subscription = kernelService.createSubscriptionForListener(this)
-        // We want handle update interval on our own,
-        // because we need to coordinate updates from multiple sensor services.
-        subscription.updateInterval = 0
-        mServiceSubscriptions.add(subscription)
+    OnCreate {
+      uiManager = appContext.legacyModule()!!
+      eventEmitter = appContext.legacyModule()!!
+    }
+
+    AsyncFunction("setUpdateInterval") { updateInterval: Float ->
+      this@DeviceMotionModule.updateInterval = updateInterval
+    }
+
+    OnStartObserving {
+      if (!this@DeviceMotionModule::serviceSubscriptions.isInitialized) {
+        serviceSubscriptions = ArrayList()
+        for (kernelService in getSensorKernelServices(appContext)) {
+          val subscription = kernelService.createSubscriptionForListener(this@DeviceMotionModule)
+          // We want handle update interval on our own,
+          // because we need to coordinate updates from multiple sensor services.
+          subscription.updateInterval = 0
+          serviceSubscriptions.add(subscription)
+        }
+      }
+      serviceSubscriptions.forEach { it.start() }
+    }
+
+    // We can't use `OnStopObserving`, because we need access to the promise.
+    AsyncFunction("stopObserving") { promise: Promise ->
+      uiManager.runOnUiQueueThread {
+        serviceSubscriptions.forEach { it.stop() }
+        currentFrameCallback.stop()
+        promise.resolve(null)
       }
     }
-    mServiceSubscriptions.forEach { it.start() }
-    promise.resolve(null)
-  }
 
-  @ExpoMethod
-  fun stopObserving(promise: Promise) {
-    mUIManager.runOnUiQueueThread {
-      mServiceSubscriptions.forEach { it.stop() }
-      mCurrentFrameCallback.stop()
-      promise.resolve(null)
-    }
-  }
-
-  @ExpoMethod
-  fun isAvailableAsync(promise: Promise) {
-    val mSensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-    val sensorTypes = arrayListOf(Sensor.TYPE_GYROSCOPE, Sensor.TYPE_ACCELEROMETER, Sensor.TYPE_LINEAR_ACCELERATION, Sensor.TYPE_ROTATION_VECTOR, Sensor.TYPE_GRAVITY)
-    for (type in sensorTypes) {
-      if (mSensorManager.getDefaultSensor(type!!) == null) {
-        promise.resolve(false)
-        return
+    AsyncFunction("isAvailableAsync") {
+      val mSensorManager = appContext.reactContext?.getSystemService(Context.SENSOR_SERVICE) as? SensorManager
+        ?: return@AsyncFunction false
+      val sensorTypes = arrayListOf(Sensor.TYPE_GYROSCOPE, Sensor.TYPE_ACCELEROMETER, Sensor.TYPE_LINEAR_ACCELERATION, Sensor.TYPE_ROTATION_VECTOR, Sensor.TYPE_GRAVITY)
+      for (type in sensorTypes) {
+        if (mSensorManager.getDefaultSensor(type) == null) {
+          return@AsyncFunction false
+        }
       }
+      return@AsyncFunction true
     }
-    promise.resolve(true)
   }
 
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    mEventEmitter = moduleRegistry.getModule(EventEmitter::class.java)
-    mUIManager = moduleRegistry.getModule(UIManager::class.java)
-    mModuleRegistry = moduleRegistry
-  }
-
-  private fun getSensorKernelServices(): List<SensorServiceInterface> {
+  private fun getSensorKernelServices(appContext: AppContext): List<SensorServiceInterface> {
     return arrayListOf(
-      mModuleRegistry.getModule(GyroscopeServiceInterface::class.java),
-      mModuleRegistry.getModule(LinearAccelerationSensorServiceInterface::class.java),
-      mModuleRegistry.getModule(AccelerometerServiceInterface::class.java),
-      mModuleRegistry.getModule(RotationVectorSensorServiceInterface::class.java),
-      mModuleRegistry.getModule(GravitySensorServiceInterface::class.java)
+      appContext.getServiceInterface<GyroscopeServiceInterface>(),
+      appContext.getServiceInterface<LinearAccelerationSensorServiceInterface>(),
+      appContext.getServiceInterface<AccelerometerServiceInterface>(),
+      appContext.getServiceInterface<RotationVectorSensorServiceInterface>(),
+      appContext.getServiceInterface<GravitySensorServiceInterface>()
     )
   }
 
   override fun onSensorChanged(sensorEvent: SensorEvent) {
     val sensor = sensorEvent.sensor
     when (sensor.type) {
-      Sensor.TYPE_GYROSCOPE -> mRotationRateEvent = sensorEvent
-      Sensor.TYPE_ACCELEROMETER -> mAccelerationIncludingGravityEvent = sensorEvent
-      Sensor.TYPE_LINEAR_ACCELERATION -> mAccelerationEvent = sensorEvent
-      Sensor.TYPE_ROTATION_VECTOR -> mRotationEvent = sensorEvent
-      Sensor.TYPE_GRAVITY -> mGravityEvent = sensorEvent
+      Sensor.TYPE_GYROSCOPE -> rotationRateEvent = sensorEvent
+      Sensor.TYPE_ACCELEROMETER -> accelerationIncludingGravityEvent = sensorEvent
+      Sensor.TYPE_LINEAR_ACCELERATION -> accelerationEvent = sensorEvent
+      Sensor.TYPE_ROTATION_VECTOR -> rotationEvent = sensorEvent
+      Sensor.TYPE_GRAVITY -> gravityEvent = sensorEvent
     }
-    mCurrentFrameCallback.maybePostFromNonUI()
+    currentFrameCallback.maybePostFromNonUI()
   }
 
   override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) = Unit
@@ -127,6 +122,7 @@ class DeviceMotionModule(context: Context?) : ExportedModule(context), SensorEve
   private inner class ScheduleDispatchFrameCallback : Choreographer.FrameCallback {
     @Volatile
     private var mIsPosted = false
+
     private var mShouldStop = false
 
     override fun doFrame(frameTimeNanos: Long) {
@@ -136,9 +132,9 @@ class DeviceMotionModule(context: Context?) : ExportedModule(context), SensorEve
         post()
       }
       val curTime = System.currentTimeMillis()
-      if (curTime - mLastUpdate > mUpdateInterval) {
-        mUIManager.runOnClientCodeQueueThread(mDispatchEventRunnable)
-        mLastUpdate = curTime
+      if (curTime - lastUpdate > updateInterval) {
+        uiManager.runOnClientCodeQueueThread(dispatchEventRunnable)
+        lastUpdate = curTime
       }
     }
 
@@ -154,71 +150,71 @@ class DeviceMotionModule(context: Context?) : ExportedModule(context), SensorEve
     }
 
     private fun post() {
-      Choreographer.getInstance().postFrameCallback(mCurrentFrameCallback)
+      Choreographer.getInstance().postFrameCallback(currentFrameCallback)
     }
 
     fun maybePostFromNonUI() {
       if (mIsPosted) {
         return
       }
-      mUIManager.runOnUiQueueThread { maybePost() }
+      uiManager.runOnUiQueueThread { maybePost() }
     }
   }
 
   private inner class DispatchEventRunnable : Runnable {
     override fun run() {
-      mEventEmitter.emit("deviceMotionDidUpdate", eventsToMap())
+      eventEmitter.emit("deviceMotionDidUpdate", eventsToMap())
     }
   }
 
   private fun eventsToMap(): Bundle {
     val map = Bundle()
     var interval = 0.0
-    if (mAccelerationEvent != null) {
+    if (accelerationEvent != null) {
       map.putBundle(
         "acceleration",
         Bundle().apply {
-          putDouble("x", mAccelerationEvent!!.values[0].toDouble())
-          putDouble("y", mAccelerationEvent!!.values[1].toDouble())
-          putDouble("z", mAccelerationEvent!!.values[2].toDouble())
+          putDouble("x", accelerationEvent!!.values[0].toDouble())
+          putDouble("y", accelerationEvent!!.values[1].toDouble())
+          putDouble("z", accelerationEvent!!.values[2].toDouble())
         }
       )
-      interval = mAccelerationEvent!!.timestamp.toDouble()
+      interval = accelerationEvent!!.timestamp.toDouble()
     }
-    if (mAccelerationIncludingGravityEvent != null && mGravityEvent != null) {
+    if (accelerationIncludingGravityEvent != null && gravityEvent != null) {
       map.putBundle(
         "accelerationIncludingGravity",
         Bundle().apply {
-          putDouble("x", (mAccelerationIncludingGravityEvent!!.values[0] - 2 * mGravityEvent!!.values[0]).toDouble())
-          putDouble("y", (mAccelerationIncludingGravityEvent!!.values[1] - 2 * mGravityEvent!!.values[1]).toDouble())
-          putDouble("z", (mAccelerationIncludingGravityEvent!!.values[2] - 2 * mGravityEvent!!.values[2]).toDouble())
+          putDouble("x", (accelerationIncludingGravityEvent!!.values[0] - 2 * gravityEvent!!.values[0]).toDouble())
+          putDouble("y", (accelerationIncludingGravityEvent!!.values[1] - 2 * gravityEvent!!.values[1]).toDouble())
+          putDouble("z", (accelerationIncludingGravityEvent!!.values[2] - 2 * gravityEvent!!.values[2]).toDouble())
         }
       )
-      interval = mAccelerationIncludingGravityEvent!!.timestamp.toDouble()
+      interval = accelerationIncludingGravityEvent!!.timestamp.toDouble()
     }
-    if (mRotationRateEvent != null) {
+    if (rotationRateEvent != null) {
       map.putBundle(
         "rotationRate",
         Bundle().apply {
-          putDouble("alpha", Math.toDegrees(mRotationRateEvent!!.values[0].toDouble()))
-          putDouble("beta", Math.toDegrees(mRotationRateEvent!!.values[1].toDouble()))
-          putDouble("gamma", Math.toDegrees(mRotationRateEvent!!.values[2].toDouble()))
+          putDouble("alpha", Math.toDegrees(rotationRateEvent!!.values[0].toDouble()))
+          putDouble("beta", Math.toDegrees(rotationRateEvent!!.values[1].toDouble()))
+          putDouble("gamma", Math.toDegrees(rotationRateEvent!!.values[2].toDouble()))
         }
       )
-      interval = mRotationRateEvent!!.timestamp.toDouble()
+      interval = rotationRateEvent!!.timestamp.toDouble()
     }
-    if (mRotationEvent != null) {
-      SensorManager.getRotationMatrixFromVector(mRotationMatrix, mRotationEvent!!.values)
-      SensorManager.getOrientation(mRotationMatrix, mRotationResult)
+    if (rotationEvent != null) {
+      SensorManager.getRotationMatrixFromVector(rotationMatrix, rotationEvent!!.values)
+      SensorManager.getOrientation(rotationMatrix, rotationResult)
       map.putBundle(
         "rotation",
         Bundle().apply {
-          putDouble("alpha", (-mRotationResult[0]).toDouble())
-          putDouble("beta", (-mRotationResult[1]).toDouble())
-          putDouble("gamma", mRotationResult[2].toDouble())
+          putDouble("alpha", (-rotationResult[0]).toDouble())
+          putDouble("beta", (-rotationResult[1]).toDouble())
+          putDouble("gamma", rotationResult[2].toDouble())
         }
       )
-      interval = mRotationEvent!!.timestamp.toDouble()
+      interval = rotationEvent!!.timestamp.toDouble()
     }
     map.putDouble("interval", interval)
     map.putInt("orientation", getOrientation())
@@ -226,7 +222,7 @@ class DeviceMotionModule(context: Context?) : ExportedModule(context), SensorEve
   }
 
   private fun getOrientation(): Int {
-    val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager?
+    val windowManager = appContext.reactContext?.getSystemService(Context.WINDOW_SERVICE) as? WindowManager
     if (windowManager != null) {
       when (windowManager.defaultDisplay.rotation) {
         Surface.ROTATION_0 -> return 0

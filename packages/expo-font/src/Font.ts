@@ -1,4 +1,4 @@
-import { CodedError, UnavailabilityError } from 'expo-modules-core';
+import { CodedError, Platform, UnavailabilityError } from 'expo-modules-core';
 
 import ExpoFontLoader from './ExpoFontLoader';
 import { FontDisplay, FontSource, FontResource, UnloadFontOptions } from './Font.types';
@@ -8,9 +8,8 @@ import {
   fontFamilyNeedsScoping,
   getNativeFontName,
 } from './FontLoader';
-
-const loaded: { [name: string]: boolean } = {};
-const loadPromises: { [name: string]: Promise<void> } = {};
+import { loaded, loadPromises } from './memory';
+import { registerStaticFont } from './server';
 
 // @needsAudit
 // note(brentvatne): at some point we may want to warn if this is called outside of a managed app.
@@ -30,19 +29,15 @@ export function processFontFamily(fontFamily: string | null): string | null {
   if (!isLoaded(fontFamily)) {
     if (__DEV__) {
       if (isLoading(fontFamily)) {
-        console.error(
+        console.warn(
           `You started loading the font "${fontFamily}", but used it before it finished loading. You need to wait for Font.loadAsync to complete before using the font.`
         );
       } else {
-        console.error(
-          `fontFamily "${fontFamily}" is not a system font and has not been loaded through Font.loadAsync.\n
-- If you intended to use a system font, make sure you typed the name correctly and that it is supported by your device operating system.\n
-- If this is a custom font, be sure to load it with Font.loadAsync.`
+        console.warn(
+          `fontFamily "${fontFamily}" is not a system font and has not been loaded through expo-font.`
         );
       }
     }
-
-    return 'System';
   }
 
   return `ExpoFont-${getNativeFontName(fontFamily)}`;
@@ -56,7 +51,10 @@ export function processFontFamily(fontFamily: string | null): string | null {
  * @return Returns `true` if the font has fully loaded.
  */
 export function isLoaded(fontFamily: string): boolean {
-  return fontFamily in loaded;
+  if (Platform.OS === 'web') {
+    return fontFamily in loaded || !!ExpoFontLoader.isLoaded(fontFamily);
+  }
+  return fontFamily in loaded || ExpoFontLoader.customNativeFonts?.includes(fontFamily);
 }
 
 // @needsAudit
@@ -83,24 +81,43 @@ export function isLoading(fontFamily: string): boolean {
  * @return Returns a promise that fulfils when the font has loaded. Often you may want to wrap the
  * method in a `try/catch/finally` to ensure the app continues if the font fails to load.
  */
-export async function loadAsync(
+export function loadAsync(
   fontFamilyOrFontMap: string | Record<string, FontSource>,
   source?: FontSource
 ): Promise<void> {
+  // NOTE(EvanBacon): Static render pass on web must be synchronous to collect all fonts.
+  // Because of this, `loadAsync` doesn't use the `async` keyword and deviates from the
+  // standard Expo SDK style guide.
+  const isServer = Platform.OS === 'web' && typeof window === 'undefined';
+
   if (typeof fontFamilyOrFontMap === 'object') {
     if (source) {
-      throw new CodedError(
-        `ERR_FONT_API`,
-        `No fontFamily can be used for the provided source: ${source}. The second argument of \`loadAsync()\` can only be used with a \`string\` value as the first argument.`
+      return Promise.reject(
+        new CodedError(
+          `ERR_FONT_API`,
+          `No fontFamily can be used for the provided source: ${source}. The second argument of \`loadAsync()\` can only be used with a \`string\` value as the first argument.`
+        )
       );
     }
     const fontMap = fontFamilyOrFontMap;
     const names = Object.keys(fontMap);
-    await Promise.all(names.map((name) => loadFontInNamespaceAsync(name, fontMap[name])));
-    return;
+
+    if (isServer) {
+      names.map((name) => registerStaticFont(name, fontMap[name]));
+      return Promise.resolve();
+    }
+
+    return Promise.all(names.map((name) => loadFontInNamespaceAsync(name, fontMap[name]))).then(
+      () => {}
+    );
   }
 
-  return await loadFontInNamespaceAsync(fontFamilyOrFontMap, source);
+  if (isServer) {
+    registerStaticFont(fontFamilyOrFontMap, source);
+    return Promise.resolve();
+  }
+
+  return loadFontInNamespaceAsync(fontFamilyOrFontMap, source);
 }
 
 async function loadFontInNamespaceAsync(

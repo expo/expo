@@ -8,19 +8,25 @@
 #import <React/RCTConstants.h>
 #import <React/RCTKeyCommands.h>
 
-#import "EXDevLauncherController.h"
-#import "EXDevLauncherRCTBridge.h"
-#import "EXDevLauncherManifestParser.h"
-#import "EXDevLauncherLoadingView.h"
-#import "EXDevLauncherRCTDevSettings.h"
-#import "EXDevLauncherUpdatesHelper.h"
-#import "RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h"
+#import <EXDevLauncher/EXDevLauncherController.h>
+#import <EXDevLauncher/EXDevLauncherRCTBridge.h>
+#import <EXDevLauncher/EXDevLauncherManifestParser.h>
+#import <EXDevLauncher/EXDevLauncherLoadingView.h>
+#import <EXDevLauncher/EXDevLauncherRCTDevSettings.h>
+#import <EXDevLauncher/EXDevLauncherUpdatesHelper.h>
+#import <EXDevLauncher/RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h>
+
+#import <EXDevLauncher/EXDevLauncherBridgeDelegate.h>
 
 #if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
 // For cocoapods framework, the generated swift header will be inside EXDevLauncher module
 #import <EXDevLauncher/EXDevLauncher-Swift.h>
 #else
 #import <EXDevLauncher-Swift.h>
+#endif
+
+#ifdef RCT_NEW_ARCH_ENABLED
+#import <React/RCTSurfaceView.h>
 #endif
 
 @import EXManifests;
@@ -50,6 +56,8 @@
 @property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
 @property (nonatomic, strong) EXDevLauncherNetworkInterceptor *networkInterceptor;
 @property (nonatomic, assign) BOOL isStarted;
+@property (nonatomic, strong) EXDevLauncherBridgeDelegate *bridgeDelegate;
+@property (nonatomic, strong) NSURL *lastOpenedAppUrl;
 
 @end
 
@@ -76,6 +84,7 @@
     self.installationIDHelper = [EXDevLauncherInstallationIDHelper new];
     self.networkInterceptor = [EXDevLauncherNetworkInterceptor new];
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
+    self.bridgeDelegate = [EXDevLauncherBridgeDelegate new];
   }
   return self;
 }
@@ -181,14 +190,28 @@
 
 - (NSDictionary<UIApplicationLaunchOptionsKey, NSObject*> *)getLaunchOptions;
 {
+  NSMutableDictionary *launchOptions = [self.launchOptions mutableCopy];
   NSURL *deepLink = [self.pendingDeepLinkRegistry consumePendingDeepLink];
-  if (!deepLink) {
-    return nil;
+
+  if (deepLink) {
+    // Passes pending deep link to initialURL if any
+    launchOptions[UIApplicationLaunchOptionsURLKey] = deepLink;
+  } else if (launchOptions[UIApplicationLaunchOptionsURLKey] && [EXDevLauncherURLHelper isDevLauncherURL:launchOptions[UIApplicationLaunchOptionsURLKey]]) {
+    // Strips initialURL if it is from myapp://expo-development-client/?url=...
+    // That would make dev-launcher acts like a normal app.
+    launchOptions[UIApplicationLaunchOptionsURLKey] = nil;
   }
 
-  return @{
-    UIApplicationLaunchOptionsURLKey: deepLink
-  };
+  if ([launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey][UIApplicationLaunchOptionsUserActivityTypeKey] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+    // Strips universal launch link if it is from https://expo-development-client/?url=...
+    // That would make dev-launcher acts like a normal app, though this case should rarely happen.
+    NSUserActivity *userActivity = launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey][@"UIApplicationLaunchOptionsUserActivityKey"];
+    if (userActivity.webpageURL && [EXDevLauncherURLHelper isDevLauncherURL:userActivity.webpageURL]) {
+      userActivity.webpageURL = nil;
+    }
+  }
+
+  return launchOptions;
 }
 
 - (EXManifestsManifest *)appManifest
@@ -227,18 +250,39 @@
   _window = window;
   EXDevLauncherUncaughtExceptionHandler.isInstalled = true;
 
-  if (!launchOptions[UIApplicationLaunchOptionsURLKey]) {
-    [self navigateToLauncher];
-  } else {
+  if (launchOptions[UIApplicationLaunchOptionsURLKey]) {
     // For deeplink launch, we need the keyWindow for expo-splash-screen to setup correctly.
     [_window makeKeyWindow];
+    return;
   }
+
+  NSNumber *devClientTryToLaunchLastBundleValue = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
+  BOOL shouldTryToLaunchLastOpenedBundle = (devClientTryToLaunchLastBundleValue != nil) ? [devClientTryToLaunchLastBundleValue boolValue] : YES;
+  if (_lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle) {
+    [self loadApp:_lastOpenedAppUrl withProjectUrl:nil onSuccess:nil onError:^(NSError *error) {
+       __weak typeof(self) weakSelf = self;
+       dispatch_async(dispatch_get_main_queue(), ^{
+         typeof(self) self = weakSelf;
+         if (!self) {
+           return;
+         }
+
+         [self navigateToLauncher];
+       });
+    }];
+    return;
+  }
+  [self navigateToLauncher];
 }
 
 - (void)autoSetupPrepare:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions
 {
   _delegate = delegate;
   _launchOptions = launchOptions;
+  NSDictionary *lastOpenedApp = [self.recentlyOpenedAppsRegistry mostRecentApp];
+  if (lastOpenedApp != nil) {
+    _lastOpenedAppUrl = [NSURL URLWithString:lastOpenedApp[@"url"]];
+  }
   EXDevLauncherBundleURLProviderInterceptor.isInstalled = true;
 }
 
@@ -266,14 +310,8 @@
   }
 
   [self _removeInitModuleObserver];
-
-  _launcherBridge = [[EXDevLauncherRCTBridge alloc] initWithDelegate:self launchOptions:_launchOptions];
-
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:_launcherBridge
-                                                   moduleName:@"main"
-                                            initialProperties:@{}];
-
-  [self _ensureUserInterfaceStyleIsInSyncWithTraitEnv:rootView];
+  UIView *rootView = [_bridgeDelegate createRootViewWithModuleName:@"main" launchOptions:_launchOptions application:UIApplication.sharedApplication];
+  _launcherBridge = _bridgeDelegate.bridge;
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(onAppContentDidAppear)
@@ -291,6 +329,8 @@
   if (url != nil) {
     // Connect to the websocket
     [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:url];
+  } else {
+    [self _addInitModuleObserver];
   }
 #endif
 
@@ -564,12 +604,18 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTContentDidAppearNotification object:nil];
 
   dispatch_async(dispatch_get_main_queue(), ^{
+    #ifdef RCT_NEW_ARCH_ENABLED
+      #define EXPECTED_ROOT_VIEW RCTSurfaceView
+    #else
+      #define EXPECTED_ROOT_VIEW RCTRootContentView
+    #endif
     NSArray<UIView *> *views = [[[self->_window rootViewController] view] subviews];
     for (UIView *view in views) {
-      if (![view isKindOfClass:[RCTRootContentView class]]) {
+      if (![view isKindOfClass:[EXPECTED_ROOT_VIEW class]]) {
         [view removeFromSuperview];
       }
     }
+    #undef EXPECTED_ROOT_VIEW
   });
 }
 
@@ -625,7 +671,6 @@
 
   NSString *appIcon = [self getAppIcon];
   NSString *runtimeVersion = [self getUpdatesConfigForKey:@"EXUpdatesRuntimeVersion"];
-  NSString *sdkVersion = [self getUpdatesConfigForKey:@"EXUpdatesSDKVersion"];
   NSString *appVersion = [self getFormattedAppVersion];
   NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleDisplayName"] ?: [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleExecutable"];
 
@@ -633,7 +678,6 @@
   [buildInfo setObject:appIcon forKey:@"appIcon"];
   [buildInfo setObject:appVersion forKey:@"appVersion"];
   [buildInfo setObject:runtimeVersion forKey:@"runtimeVersion"];
-  [buildInfo setObject:sdkVersion forKey:@"sdkVersion"];
 
   return buildInfo;
 }
@@ -705,7 +749,6 @@
   NSMutableDictionary *updatesConfig = [NSMutableDictionary new];
 
   NSString *runtimeVersion = [self getUpdatesConfigForKey:@"EXUpdatesRuntimeVersion"];
-  NSString *sdkVersion = [self getUpdatesConfigForKey:@"EXUpdatesSDKVersion"];
 
   // url structure for EASUpdates: `http://u.expo.dev/{appId}`
   // this url field is added to app.json.updates when running `eas update:configure`
@@ -721,8 +764,6 @@
   BOOL usesEASUpdates = isModernManifestProtocol && expoUpdatesInstalled && hasAppId;
 
   [updatesConfig setObject:runtimeVersion forKey:@"runtimeVersion"];
-  [updatesConfig setObject:sdkVersion forKey:@"sdkVersion"];
-
 
   if (usesEASUpdates) {
     [updatesConfig setObject:appId forKey:@"appId"];
@@ -751,6 +792,14 @@
   }
   [existingSettings removeObjectForKey:kRCTDevSettingIsDebuggingRemotely];
   [userDefaults setObject:existingSettings forKey:kRCTDevSettingsUserDefaultsKey];
+}
+
+- (void)updatesExternalInterfaceDidRequestRelaunch:(id<EXUpdatesExternalInterface> _Nonnull)updatesExternalInterface {
+  NSURL * _Nullable appUrl = self.appManifestURLWithFallback;
+  if (!appUrl) {
+    return;
+  }
+  [self loadApp:appUrl onSuccess:nil onError:nil];
 }
 
 @end

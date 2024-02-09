@@ -36,7 +36,7 @@ export function PendingDeepLinkProvider({
 
   React.useEffect(() => {
     const listener = addDeepLinkListener((payload) => {
-      const url = Platform.OS === 'ios'? payload.url : payload;
+      const url = Platform.OS === 'ios' ? payload.url : payload;
       if (url) {
         setPendingDeepLink(url);
         modalStack.push(() => <DeepLinkModal pendingDeepLink={url} />);

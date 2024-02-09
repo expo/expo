@@ -1,10 +1,11 @@
 import chalk from 'chalk';
 import os from 'os';
 
+import { ADBServer } from './ADBServer';
 import * as Log from '../../../log';
+import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { learnMore } from '../../../utils/link';
-import { ADBServer } from './ADBServer';
 
 const debug = require('debug')('expo:start:platforms:android:adb') as typeof console.log;
 
@@ -73,7 +74,16 @@ export async function isPackageInstalledAsync(
   androidPackage: string
 ): Promise<boolean> {
   const packages = await getServer().runAsync(
-    adbArgs(device.pid, 'shell', 'pm', 'list', 'packages', androidPackage)
+    adbArgs(
+      device.pid,
+      'shell',
+      'pm',
+      'list',
+      'packages',
+      '--user',
+      env.EXPO_ADB_USER,
+      androidPackage
+    )
   );
 
   const lines = packages.split(/\r?\n/);
@@ -184,7 +194,9 @@ export async function uninstallAsync(
   device: DeviceContext,
   { appId }: { appId: string }
 ): Promise<string> {
-  return await getServer().runAsync(adbArgs(device.pid, 'uninstall', appId));
+  return await getServer().runAsync(
+    adbArgs(device.pid, 'uninstall', '--user', env.EXPO_ADB_USER, appId)
+  );
 }
 
 /** Get package info from an app based on its Android package name. */
@@ -198,7 +210,9 @@ export async function getPackageInfoAsync(
 /** Install an app on a connected device. */
 export async function installAsync(device: DeviceContext, { filePath }: { filePath: string }) {
   // TODO: Handle the `INSTALL_FAILED_INSUFFICIENT_STORAGE` error.
-  return await getServer().runAsync(adbArgs(device.pid, 'install', '-r', '-d', filePath));
+  return await getServer().runAsync(
+    adbArgs(device.pid, 'install', '-r', '-d', '--user', env.EXPO_ADB_USER, filePath)
+  );
 }
 
 /** Format ADB args with process ID. */
@@ -207,6 +221,7 @@ export function adbArgs(pid: Device['pid'], ...options: string[]): string[] {
   if (pid) {
     args.push('-s', pid);
   }
+
   return args.concat(options);
 }
 

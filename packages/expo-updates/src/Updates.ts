@@ -1,29 +1,32 @@
-import {
-  RCTDeviceEventEmitter,
-  CodedError,
-  NativeModulesProxy,
-  UnavailabilityError,
-} from 'expo-modules-core';
-import { EventEmitter, EventSubscription } from 'fbemitter';
+import { CodedError } from 'expo-modules-core';
 
 import ExpoUpdates from './ExpoUpdates';
 import {
   LocalAssets,
   Manifest,
   UpdateCheckResult,
-  UpdateEvent,
   UpdateFetchResult,
   UpdatesCheckAutomaticallyValue,
   UpdatesLogEntry,
+  UpdatesNativeStateMachineContext,
 } from './Updates.types';
 
-export * from './Updates.types';
+/**
+ * Whether expo-updates is enabled. This may be false in a variety of cases including:
+ * - enabled set to false in configuration
+ * - missing or invalid URL in configuration
+ * - missing runtime version or SDK version in configuration
+ * - error accessing storage on device during initialization
+ *
+ * When false, the embedded update is loaded.
+ */
+export const isEnabled: boolean = !!ExpoUpdates.isEnabled;
 
 /**
- * The UUID that uniquely identifies the currently running update if `expo-updates` is enabled. The
- * UUID is represented in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) and
- * will always use lowercase letters. In development mode, or any other environment in which
- * `expo-updates` is disabled, this value is `null`.
+ * The UUID that uniquely identifies the currently running update. The
+ * UUID is represented in its canonical string form and will always use lowercase letters.
+ * This value is `null` when running in a local development environment or any other environment where `expo-updates` is disabled.
+ * @example xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
  */
 export const updateId: string | null =
   ExpoUpdates.updateId && typeof ExpoUpdates.updateId === 'string'
@@ -31,13 +34,9 @@ export const updateId: string | null =
     : null;
 
 /**
- * The name of the release channel currently configured in this standalone or bare app when using
- * classic updates. When using Expo Updates, the value of this field is always `"default"`.
- */
-export const releaseChannel: string = ExpoUpdates.releaseChannel ?? 'default';
-
-/**
- * The channel name of the current build, if configured for use with EAS Update. Null otherwise.
+ * The channel name of the current build, if configured for use with EAS Update. `null` otherwise.
+ *
+ * Expo Go and development builds are not set to a specific channel and can run any updates compatible with their native runtime. Therefore, this value will always be `null` when running an update on Expo Go or a development build.
  */
 export const channel: string | null = ExpoUpdates.channel ?? null;
 
@@ -111,13 +110,23 @@ export const createdAt: Date | null = ExpoUpdates.commitTime
   ? new Date(ExpoUpdates.commitTime)
   : null;
 
-const isUsingDeveloperTool = !!(manifest as any).developer?.tool;
-const isUsingExpoDevelopmentClient = NativeModulesProxy.ExponentConstants?.appOwnership === 'expo';
-const manualUpdatesInstructions = isUsingExpoDevelopmentClient
-  ? 'To test manual updates, publish your project using `expo publish` and open the published ' +
-    'version in this development client.'
-  : 'To test manual updates, make a release build with `npm run ios --configuration Release` or ' +
-    '`npm run android --variant Release`.';
+/**
+ * During non-expo development we block accessing the updates API methods on the JS side, but when developing in
+ * Expo Go or a development client build, the controllers should have control over which API methods should
+ * be allowed.
+ */
+const shouldDeferToNativeForAPIMethodAvailabilityInDevelopment =
+  !!ExpoUpdates.shouldDeferToNativeForAPIMethodAvailabilityInDevelopment;
+
+/**
+ * Developer tool is set when a project is served by `expo start`.
+ */
+const isUsingDeveloperTool =
+  'extra' in manifest ? !!manifest.extra?.expoGo?.developer?.tool : false;
+
+const manualUpdatesInstructions =
+  'To test usage of the expo-updates JS API in your app, make a release build with `npx expo run:ios --configuration Release` or ' +
+  '`npx expo run:android --variant Release`.';
 
 /**
  * Instructs the app to reload using the most recently downloaded version. This is useful for
@@ -131,8 +140,8 @@ const manualUpdatesInstructions = isUsingExpoDevelopmentClient
  * executed after the `Updates.reloadAsync` method call resolves, since that depends on the OS and
  * the state of the native module and main threads.
  *
- * This method cannot be used in development mode, and the returned promise will be rejected if you
- * try to do so.
+ * This method cannot be used in Expo Go or development mode, and the returned promise will be rejected if you
+ * try to do so. It also rejects when expo-updates is not enabled.
  *
  * @return A promise that fulfills right before the reload instruction is sent to the JS runtime, or
  * rejects if it cannot find a reference to the JS runtime. If the promise is rejected in production
@@ -144,10 +153,10 @@ const manualUpdatesInstructions = isUsingExpoDevelopmentClient
  * proper instance of `ReactNativeHost`.
  */
 export async function reloadAsync(): Promise<void> {
-  if (!ExpoUpdates.reload) {
-    throw new UnavailabilityError('Updates', 'reloadAsync');
-  }
-  if (!ExpoUpdates?.nativeDebug && (__DEV__ || isUsingExpoDevelopmentClient)) {
+  if (
+    (__DEV__ || isUsingDeveloperTool) &&
+    !shouldDeferToNativeForAPIMethodAvailabilityInDevelopment
+  ) {
     throw new CodedError(
       'ERR_UPDATES_DISABLED',
       `You cannot use the Updates module in development mode in a production app. ${manualUpdatesInstructions}`
@@ -168,14 +177,14 @@ export async function reloadAsync(): Promise<void> {
  *
  * @return A promise that fulfills with an [`UpdateCheckResult`](#updatecheckresult) object.
  *
- * The promise rejects if the app is in development mode, or if there is an unexpected error or
- * timeout communicating with the server.
+ * The promise rejects in Expo Go or if the app is in development mode, or if there is an unexpected error or
+ * timeout communicating with the server. It also rejects when expo-updates is not enabled.
  */
 export async function checkForUpdateAsync(): Promise<UpdateCheckResult> {
-  if (!ExpoUpdates.checkForUpdateAsync) {
-    throw new UnavailabilityError('Updates', 'checkForUpdateAsync');
-  }
-  if (!ExpoUpdates?.nativeDebug && (__DEV__ || isUsingDeveloperTool)) {
+  if (
+    (__DEV__ || isUsingDeveloperTool) &&
+    !shouldDeferToNativeForAPIMethodAvailabilityInDevelopment
+  ) {
     throw new CodedError(
       'ERR_UPDATES_DISABLED',
       `You cannot check for updates in development mode. ${manualUpdatesInstructions}`
@@ -183,44 +192,36 @@ export async function checkForUpdateAsync(): Promise<UpdateCheckResult> {
   }
 
   const result = await ExpoUpdates.checkForUpdateAsync();
-  if (result.manifestString) {
-    result.manifest = JSON.parse(result.manifestString);
-    delete result.manifestString;
+  if ('manifestString' in result) {
+    const { manifestString, ...rest } = result;
+    return {
+      ...rest,
+      manifest: JSON.parse(manifestString),
+    };
   }
-
   return result;
 }
 
 /**
  * Retrieves the current extra params.
+ *
+ * This method cannot be used in Expo Go or development mode. It also rejects when expo-updates is not enabled.
  */
-export async function getExtraParamsAsync(): Promise<{ [key: string]: string }> {
-  if (!ExpoUpdates.getExtraParamsAsync) {
-    throw new UnavailabilityError('Updates', 'getExtraParamsAsync');
-  }
-
+export async function getExtraParamsAsync(): Promise<Record<string, string>> {
   return await ExpoUpdates.getExtraParamsAsync();
 }
 
 /**
  * Sets an extra param if value is non-null, otherwise unsets the param.
- * Extra params are sent in a header of update requests.
- * The update server may use these params when evaluating logic to determine which update to serve.
- * EAS Update merges these params into the fields used to evaluate channel–branch mapping logic.
+ * Extra params are sent as an [Expo Structured Field Value Dictionary](https://docs.expo.dev/technical-specs/expo-sfv-0/)
+ * in the `Expo-Extra-Params` header of update requests. A compliant update server may use these params when selecting an update to serve.
  *
- * @example An app may want to add a feature where users can opt-in to beta updates. In this instance,
- * extra params could be set to `{userType: 'beta'}`, and then the server can use this information
- * when deciding which update to serve. If using EAS Update, the channel-branch mapping can be set to
- * discriminate branches based on the `userType`.
+ * This method cannot be used in Expo Go or development mode. It also rejects when expo-updates is not enabled.
  */
 export async function setExtraParamAsync(
   key: string,
   value: string | null | undefined
 ): Promise<void> {
-  if (!ExpoUpdates.setExtraParamAsync) {
-    throw new UnavailabilityError('Updates', 'setExtraParamAsync');
-  }
-
   return await ExpoUpdates.setExtraParamAsync(key, value ?? null);
 }
 
@@ -234,9 +235,6 @@ export async function setExtraParamAsync(
  * The promise rejects if there is an unexpected error in retrieving the logs.
  */
 export async function readLogEntriesAsync(maxAge: number = 3600000): Promise<UpdatesLogEntry[]> {
-  if (!ExpoUpdates.readLogEntriesAsync) {
-    throw new UnavailabilityError('Updates', 'readLogEntriesAsync');
-  }
   return await ExpoUpdates.readLogEntriesAsync(maxAge);
 }
 
@@ -252,9 +250,6 @@ export async function readLogEntriesAsync(maxAge: number = 3600000): Promise<Upd
  *
  */
 export async function clearLogEntriesAsync(): Promise<void> {
-  if (!ExpoUpdates.clearLogEntriesAsync) {
-    throw new UnavailabilityError('Updates', 'clearLogEntriesAsync');
-  }
   await ExpoUpdates.clearLogEntriesAsync();
 }
 
@@ -263,16 +258,20 @@ export async function clearLogEntriesAsync(): Promise<void> {
  * storage. This method cannot be used in development mode, and the returned promise will be
  * rejected if you try to do so.
  *
+ > **Note:** [`reloadAsync()`](#updatesreloadasync) can be called after promise resolution to
+ * reload the app using the most recently downloaded version. Otherwise, the update will be applied
+ * on the next app cold start.
+ *
  * @return A promise that fulfills with an [`UpdateFetchResult`](#updatefetchresult) object.
  *
- * The promise rejects if the app is in development mode, or if there is an unexpected error or
- * timeout communicating with the server.
+ * The promise rejects in Expo Go or if the app is in development mode, or if there is an unexpected error or
+ * timeout communicating with the server. It also rejects when expo-updates is not enabled.
  */
 export async function fetchUpdateAsync(): Promise<UpdateFetchResult> {
-  if (!ExpoUpdates.fetchUpdateAsync) {
-    throw new UnavailabilityError('Updates', 'fetchUpdateAsync');
-  }
-  if (!ExpoUpdates?.nativeDebug && (__DEV__ || isUsingDeveloperTool)) {
+  if (
+    (__DEV__ || isUsingDeveloperTool) &&
+    !shouldDeferToNativeForAPIMethodAvailabilityInDevelopment
+  ) {
     throw new CodedError(
       'ERR_UPDATES_DISABLED',
       `You cannot fetch updates in development mode. ${manualUpdatesInstructions}`
@@ -280,11 +279,13 @@ export async function fetchUpdateAsync(): Promise<UpdateFetchResult> {
   }
 
   const result = await ExpoUpdates.fetchUpdateAsync();
-  if (result.manifestString) {
-    result.manifest = JSON.parse(result.manifestString);
-    delete result.manifestString;
+  if ('manifestString' in result) {
+    const { manifestString, ...rest } = result;
+    return {
+      ...rest,
+      manifest: JSON.parse(manifestString),
+    };
   }
-
   return result;
 }
 
@@ -297,43 +298,41 @@ export function clearUpdateCacheExperimentalAsync(_sdkVersion?: string) {
   );
 }
 
-let _emitter: EventEmitter | null;
-
-function _getEmitter(): EventEmitter {
-  if (!_emitter) {
-    _emitter = new EventEmitter();
-    RCTDeviceEventEmitter.addListener('Expo.nativeUpdatesEvent', _emitEvent);
+/**
+ * @hidden
+ */
+export function transformNativeStateMachineContext(
+  originalNativeContext: UpdatesNativeStateMachineContext & {
+    latestManifestString?: string;
+    downloadedManifestString?: string;
+    lastCheckForUpdateTimeString?: string;
+    rollbackString?: string;
   }
-  return _emitter;
-}
-
-function _emitEvent(params): void {
-  let newParams = { ...params };
-  if (typeof params === 'string') {
-    newParams = JSON.parse(params);
+): UpdatesNativeStateMachineContext {
+  const nativeContext = { ...originalNativeContext };
+  if (nativeContext.latestManifestString) {
+    nativeContext.latestManifest = JSON.parse(nativeContext.latestManifestString);
+    delete nativeContext.latestManifestString;
   }
-  if (newParams.manifestString) {
-    newParams.manifest = JSON.parse(newParams.manifestString);
-    delete newParams.manifestString;
+  if (nativeContext.downloadedManifestString) {
+    nativeContext.downloadedManifest = JSON.parse(nativeContext.downloadedManifestString);
+    delete nativeContext.downloadedManifestString;
   }
-
-  if (!_emitter) {
-    throw new Error(`EventEmitter must be initialized to use from its listener`);
+  if (nativeContext.lastCheckForUpdateTimeString) {
+    nativeContext.lastCheckForUpdateTime = new Date(nativeContext.lastCheckForUpdateTimeString);
+    delete nativeContext.lastCheckForUpdateTimeString;
   }
-  _emitter.emit('Expo.updatesEvent', newParams);
+  if (nativeContext.rollbackString) {
+    nativeContext.rollback = JSON.parse(nativeContext.rollbackString);
+    delete nativeContext.rollbackString;
+  }
+  return nativeContext;
 }
 
 /**
- * Adds a callback to be invoked when updates-related events occur (such as upon the initial app
- * load) due to auto-update settings chosen at build-time. See also the
- * [`useUpdateEvents`](#useupdateeventslistener) React hook.
- *
- * @param listener A function that will be invoked with an [`UpdateEvent`](#updateevent) instance
- * and should not return any value.
- * @return An `EventSubscription` object on which you can call `remove()` to unsubscribe the
- * listener.
+ * @hidden
  */
-export function addListener(listener: (event: UpdateEvent) => void): EventSubscription {
-  const emitter = _getEmitter();
-  return emitter.addListener('Expo.updatesEvent', listener);
+export async function getNativeStateMachineContextAsync(): Promise<UpdatesNativeStateMachineContext> {
+  const nativeContext = await ExpoUpdates.getNativeStateMachineContextAsync();
+  return transformNativeStateMachineContext(nativeContext);
 }

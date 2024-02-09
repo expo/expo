@@ -1,6 +1,6 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
-#import "EXDevLauncherUpdatesHelper.h"
+#import <EXDevLauncher/EXDevLauncherUpdatesHelper.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -23,7 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
     @"EXUpdatesHasEmbeddedUpdate": @(NO),
     @"EXUpdatesEnabled": @(YES),
     @"EXUpdatesRequestHeaders": requestHeaders,
-    @"EXUpdatesExpectsSignedManifest": @(NO),
   };
 }
 

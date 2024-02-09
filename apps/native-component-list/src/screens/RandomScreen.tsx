@@ -1,3 +1,4 @@
+import { uuid } from 'expo-modules-core';
 import { getRandomBytes, getRandomBytesAsync } from 'expo-random';
 import React from 'react';
 import { ScrollView } from 'react-native';
@@ -7,8 +8,8 @@ import MonoText from '../components/MonoText';
 import Colors from '../constants/Colors';
 
 // Placeholder polyfill
-if (!global.crypto) {
-  global.crypto = {
+if (!globalThis.crypto) {
+  globalThis.crypto = {
     // @ts-ignore
     getRandomValues: (array) => getRandomBytes(array.byteLength),
   };
@@ -28,7 +29,7 @@ export default class RandomScreen extends React.Component<object, State> {
   readonly state: State = {
     random: getRandomBytes(10),
     randomAsync: null,
-    uuid: require('uuid').v4(),
+    uuid: uuid.v4(),
   };
 
   async componentDidMount() {

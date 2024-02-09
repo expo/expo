@@ -4,18 +4,16 @@
 // swiftlint:disable unavailable_function
 
 // swiftlint:disable closure_body_length
-// swiftlint:disable function_body_length
-// swiftlint:disable type_body_length
 
 // this class uses a lot of implicit non-null stuff across function calls. not worth refactoring to just satisfy lint
 // swiftlint:disable force_unwrapping
 
 import Foundation
 
-typealias AppLoaderUpdateResponseBlock = (_ updateResponse: UpdateResponse) -> Bool
-typealias AppLoaderAssetBlock = (_ asset: UpdateAsset, _ successfulAssetCount: Int, _ failedAssetCount: Int, _ totalAssetCount: Int) -> Void
-typealias AppLoaderSuccessBlock = (_ updateResponse: UpdateResponse?) -> Void
-typealias AppLoaderErrorBlock = (_ error: Error) -> Void
+public typealias AppLoaderUpdateResponseBlock = (_ updateResponse: UpdateResponse) -> Bool
+public typealias AppLoaderAssetBlock = (_ asset: UpdateAsset, _ successfulAssetCount: Int, _ failedAssetCount: Int, _ totalAssetCount: Int) -> Void
+public typealias AppLoaderSuccessBlock = (_ updateResponse: UpdateResponse?) -> Void
+public typealias AppLoaderErrorBlock = (_ error: Error) -> Void
 
 /**
  * Responsible for loading an update's manifest, enumerating the assets required for it to launch,
@@ -26,20 +24,20 @@ typealias AppLoaderErrorBlock = (_ error: Error) -> Void
  */
 @objc(EXUpdatesAppLoader)
 @objcMembers
-public class AppLoader: NSObject {
+open class AppLoader: NSObject {
   private static let ErrorDomain = "EXUpdatesAppLoader"
 
-  internal let config: UpdatesConfig
-  internal let database: UpdatesDatabase
-  internal let directory: URL
-  internal let launchedUpdate: Update?
+  public let config: UpdatesConfig
+  public let database: UpdatesDatabase
+  public let directory: URL
+  public let launchedUpdate: Update?
 
   private var updateResponseContainingManifest: UpdateResponse?
 
-  internal var updateResponseBlock: AppLoaderUpdateResponseBlock?
-  internal var assetBlock: AppLoaderAssetBlock?
-  internal var successBlock: AppLoaderSuccessBlock?
-  internal var errorBlock: AppLoaderErrorBlock?
+  public var updateResponseBlock: AppLoaderUpdateResponseBlock?
+  public var assetBlock: AppLoaderAssetBlock?
+  public var successBlock: AppLoaderSuccessBlock?
+  public var errorBlock: AppLoaderErrorBlock?
 
   private var assetsToLoad: [UpdateAsset] = []
   private var erroredAssets: [UpdateAsset] = []
@@ -49,7 +47,7 @@ public class AppLoader: NSObject {
   private let arrayLock: NSLock = NSLock()
   private let completionQueue: DispatchQueue
 
-  public required init(config: UpdatesConfig, database: UpdatesDatabase, directory: URL, launchedUpdate: Update?, completionQueue: DispatchQueue) {
+  public init(config: UpdatesConfig, database: UpdatesDatabase, directory: URL, launchedUpdate: Update?, completionQueue: DispatchQueue) {
     self.config = config
     self.database = database
     self.directory = directory
@@ -82,7 +80,7 @@ public class AppLoader: NSObject {
    * The `asset` block is called when an asset has either been successfully downloaded
    * or failed to download.
    */
-  internal func loadUpdate(
+  open func loadUpdate(
     fromURL url: URL,
     onUpdateResponse updateResponseBlock: @escaping AppLoaderUpdateResponseBlock,
     asset assetBlock: @escaping AppLoaderAssetBlock,
@@ -92,13 +90,13 @@ public class AppLoader: NSObject {
     preconditionFailure("Must override in concrete class")
   }
 
-  public func downloadAsset(_ asset: UpdateAsset) {
+  open func downloadAsset(_ asset: UpdateAsset) {
     preconditionFailure("Must override in concrete class")
   }
 
   // MARK: - loading and database logic
 
-  internal func startLoading(fromUpdateResponse updateResponse: UpdateResponse) {
+  public func startLoading(fromUpdateResponse updateResponse: UpdateResponse) {
     guard shouldStartLoadingUpdate(updateResponse) else {
       successBlock.let { it in
         completionQueue.async {
@@ -151,9 +149,11 @@ public class AppLoader: NSObject {
       // but different scope keys, we should try to launch something rather than show a cryptic
       // error to the user.
       if let existingUpdate = existingUpdate,
-        existingUpdate.scopeKey != updateManifest.scopeKey {
+        let existingUpdateScopeKey = existingUpdate.scopeKey,
+        let updateManifestScopeKey = updateManifest.scopeKey,
+        existingUpdateScopeKey != updateManifestScopeKey {
         do {
-          try self.database.setScopeKey(updateManifest.scopeKey, onUpdate: existingUpdate)
+          try self.database.setScopeKey(updateManifestScopeKey, onUpdate: existingUpdate)
         } catch {
           self.finish(withError: error)
           return
@@ -232,7 +232,7 @@ public class AppLoader: NSObject {
     }
   }
 
-  internal func handleAssetDownloadAlreadyExists(_ asset: UpdateAsset) {
+  public func handleAssetDownloadAlreadyExists(_ asset: UpdateAsset) {
     arrayLock.lock()
     assetsToLoad.remove(asset)
     existingAssets.append(asset)
@@ -243,7 +243,7 @@ public class AppLoader: NSObject {
     arrayLock.unlock()
   }
 
-  internal func handleAssetDownload(withError error: Error, asset: UpdateAsset) {
+  public func handleAssetDownload(withError error: Error, asset: UpdateAsset) {
     // TODO: retry. for now log an error
     NSLog("error loading asset \(asset.key ?? "nil key"): \(error.localizedDescription)")
     arrayLock.lock()
@@ -256,7 +256,7 @@ public class AppLoader: NSObject {
     arrayLock.unlock()
   }
 
-  internal func handleAssetDownload(withData data: Data, response: URLResponse?, asset: UpdateAsset) {
+  public func handleAssetDownload(withData data: Data, response: URLResponse?, asset: UpdateAsset) {
     arrayLock.lock()
     assetsToLoad.remove(asset)
 
@@ -323,13 +323,19 @@ public class AppLoader: NSObject {
           // the database and filesystem have gotten out of sync
           // do our best to create a new entry for this file even though it already existed on disk
           // TODO: we should probably get rid of this assumption that if an asset exists on disk with the same filename, it's the same asset
-
-          // this has always force-tried implicitly, could probably do some better error handling
-          // swiftlint:disable:next force_try
-          let contents = try! Data(contentsOf: self.directory.appendingPathComponent(existingAsset.filename))
-          existingAsset.contentHash = UpdatesUtils.hexEncodedSHA256WithData(contents)
-          existingAsset.downloadTime = Date()
-          self.finishedAssets.append(existingAsset)
+          var contents = try? Data(contentsOf: self.directory.appendingPathComponent(existingAsset.filename))
+          if contents == nil {
+            if let embeddedUrl = UpdatesUtils.url(forBundledAsset: existingAsset) {
+              contents = try? Data(contentsOf: embeddedUrl)
+            }
+          }
+          // This replaces the old force try
+          assert(contents != nil)
+          if let contents = contents {
+            existingAsset.contentHash = UpdatesUtils.hexEncodedSHA256WithData(contents)
+            existingAsset.downloadTime = Date()
+            self.finishedAssets.append(existingAsset)
+          }
         }
       }
 
@@ -385,3 +391,7 @@ public class AppLoader: NSObject {
     }
   }
 }
+
+// swiftlint:enable unavailable_function
+// swiftlint:enable closure_body_length
+// swiftlint:enable force_unwrapping

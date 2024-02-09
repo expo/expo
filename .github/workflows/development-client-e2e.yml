@@ -18,13 +18,13 @@ concurrency:
 
 jobs:
   detox_e2e:
-    runs-on: macos-12
+    runs-on: macos-13
     strategy:
       matrix:
         api-level: [33]
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🍺 Install required tools
@@ -36,6 +36,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
+          ruby-version: 3.2.2
       - name: 💎 Install cocoapods
         run: sudo gem install cocoapods
       - name: ♻️ Restore caches

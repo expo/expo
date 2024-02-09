@@ -1,4 +1,3 @@
-import { Platform } from 'expo-modules-core';
 import * as React from 'react';
 import { findDOMNode } from 'react-dom';
 import { PixelRatio, StyleSheet, View } from 'react-native';
@@ -23,7 +22,7 @@ function setRef(refProp, ref) {
     }
 }
 const Canvas = React.forwardRef((props, ref) => createElement('canvas', { ...props, ref }));
-const CanvasWrapper = ({ pointerEvents, children, ...props }) => {
+const CanvasWrapper = ({ pointerEvents, children, style, ...props }) => {
     const [size, setSize] = React.useState(null);
     const ref = React.useRef(null);
     const _canvasRef = React.useRef(null);
@@ -43,7 +42,7 @@ const CanvasWrapper = ({ pointerEvents, children, ...props }) => {
         if (size) {
             return size;
         }
-        else if (!ref.current || !Platform.isDOMAvailable) {
+        else if (!ref.current || typeof window === 'undefined') {
             return { width: 0, height: 0 };
         }
         const element = getElement(ref.current);
@@ -74,9 +73,15 @@ const CanvasWrapper = ({ pointerEvents, children, ...props }) => {
         }
         setRef(props.canvasRef, canvas);
     }, [_canvasRef]);
-    return (React.createElement(View, { ...props, pointerEvents: "box-none", ref: ref, onLayout: onLayout },
-        React.createElement(Canvas, { ref: _canvasRef, pointerEvents: pointerEvents, style: StyleSheet.absoluteFill }),
-        children));
+    return (<View {...props} style={[styles.wrapper, style]} ref={ref} onLayout={onLayout}>
+      <Canvas ref={_canvasRef} pointerEvents={pointerEvents} style={StyleSheet.absoluteFill}/>
+      {children}
+    </View>);
 };
+const styles = StyleSheet.create({
+    wrapper: {
+        pointerEvents: 'box-none',
+    },
+});
 export default CanvasWrapper;
 //# sourceMappingURL=Canvas.js.map

@@ -1,4 +1,11 @@
-# expo-contacts
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/contacts/">
+    <img
+      src="../../.github/resources/expo-contacts.svg"
+      alt="expo-contacts"
+      height="64" />
+  </a>
+</p>
 
 Provides access to the phone's system contacts.
 

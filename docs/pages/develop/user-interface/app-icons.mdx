@@ -4,7 +4,6 @@ description: Learn about configuring the app's icon and best practices for Andro
 ---
 
 import Video from '~/components/plugins/Video';
-import { BoxLink } from '~/ui/components/BoxLink';
 
 An app's icon is what your app users see on their device's home screen and app stores. Android and iOS have different and strict requirements.
 
@@ -51,11 +50,3 @@ For iOS, you app's icon should follow the [Apple Human Interface Guidelines](htt
 - 1024x1024 is a good size. If you have an Expo managed project, [EAS Build](/build/setup) will generate the other sizes for you. If you have a bare workflow project, you should generate the icons on your own. The largest size EAS Build generates is 1024x1024.
 - The icon must be exactly square. For example, a 1023x1024 icon is not valid.
 - Make sure the icon fills the whole square, with no rounded corners or other transparent pixels. The operating system will mask your icon when appropriate.
-
-## Next step
-
-<BoxLink
-  title="Safe areas"
-  description="Learn more about creating a safe area is a great way to ensure that your app's content is appropriately positioned around notches, status bars, home indicators, and other device and operating system interface elements."
-  href="/develop/user-interface/safe-areas"
-/>

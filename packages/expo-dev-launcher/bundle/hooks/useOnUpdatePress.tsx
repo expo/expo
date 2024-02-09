@@ -44,7 +44,7 @@ export function useOnUpdatePress() {
           const serializedNavigationState = JSON.stringify(rootNavigation?.getState());
           // not necessary to await this as its effects are only applied on app launch
           saveNavigationStateAsync(serializedNavigationState);
-        } catch (error) {}
+        } catch {}
 
         return loadUpdate(updateUrl, projectUrl)
           .catch((error) => {

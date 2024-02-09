@@ -14,6 +14,7 @@ export const expoPrebuild: Command = async (argv) => {
       '--npm': Boolean,
       '--pnpm': Boolean,
       '--yarn': Boolean,
+      '--bun': Boolean,
       '--no-install': Boolean,
       '--template': String,
       '--platform': String,
@@ -37,6 +38,7 @@ export const expoPrebuild: Command = async (argv) => {
         chalk`--clean-soft                             Reset the native files that are safely modified to the given template. {dim WARNING: This will not reset dangerous modifications}`,
         chalk`--npm                                    Use npm to install dependencies. {dim Default when package-lock.json exists}`,
         chalk`--yarn                                   Use Yarn to install dependencies. {dim Default when yarn.lock exists}`,
+        chalk`--bun                                    Use bun to install dependencies. {dim Default when bun.lockb exists}`,
         chalk`--pnpm                                   Use pnpm to install dependencies. {dim Default when pnpm-lock.yaml exists}`,
         `--template <template>                    Project template to clone from. File path pointing to a local tar file or a github repo`,
         chalk`-p, --platform <all|android|ios>         Platforms to sync: ios, android, all. {dim Default: all}`,
@@ -55,9 +57,9 @@ export const expoPrebuild: Command = async (argv) => {
     // ../utils/errors
     { logCmdError },
   ] = await Promise.all([
-    import('./prebuildAsync'),
-    import('./resolveOptions'),
-    import('../utils/errors'),
+    import('./prebuildAsync.js'),
+    import('./resolveOptions.js'),
+    import('../utils/errors.js'),
   ]);
 
   return (() => {

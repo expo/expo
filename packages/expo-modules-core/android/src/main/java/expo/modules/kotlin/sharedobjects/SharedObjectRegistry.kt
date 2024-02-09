@@ -1,12 +1,23 @@
 package expo.modules.kotlin.sharedobjects
 
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.jni.JavaScriptObject
+import expo.modules.kotlin.jni.JavaScriptWeakObject
 
 @JvmInline
-value class SharedObjectId(val value: Int)
+value class SharedObjectId(val value: Int) {
 
-// TODO(@lukmccall): use weak ref to hold js object
-typealias SharedObjectPair = Pair<SharedObject, JavaScriptObject>
+  fun toNativeObject(appContext: AppContext): SharedObject? {
+    return appContext.sharedObjectRegistry.toNativeObject(this)
+  }
+
+  fun toJavaScriptObject(appContext: AppContext): JavaScriptObject? {
+    val nativeObject = toNativeObject(appContext) ?: return null
+    return appContext.sharedObjectRegistry.toJavaScriptObject(nativeObject)
+  }
+}
+
+typealias SharedObjectPair = Pair<SharedObject, JavaScriptWeakObject>
 
 const val sharedObjectIdPropertyName = "__expo_shared_object_id__"
 
@@ -15,7 +26,7 @@ class SharedObjectRegistry {
 
   internal var pairs = mutableMapOf<SharedObjectId, SharedObjectPair>()
 
-  private fun pullNextId(): SharedObjectId {
+  private fun pullNextId(): SharedObjectId = synchronized(this) {
     val current = currentId
     currentId = SharedObjectId(current.value + 1)
     return current
@@ -30,21 +41,27 @@ class SharedObjectRegistry {
       delete(id)
     }
 
-    pairs[id] = native to js
+    val jsWeakObject = js.createWeak()
+    synchronized(this) {
+      pairs[id] = native to jsWeakObject
+    }
     return id
   }
 
   internal fun delete(id: SharedObjectId) {
-    pairs.remove(id)?.let { (native, js) ->
+    val removedObject: SharedObjectPair? = synchronized(this) {
+      return@synchronized pairs.remove(id)
+    }
+    removedObject?.let { (native, js) ->
       native.sharedObjectId = SharedObjectId(0)
-      if (js.isValid()) {
-        js.defineProperty(sharedObjectIdPropertyName, 0)
-      }
+      native.deallocate()
     }
   }
 
   internal fun toNativeObject(id: SharedObjectId): SharedObject? {
-    return pairs[id]?.first
+    return synchronized(this) {
+      pairs[id]?.first
+    }
   }
 
   internal fun toNativeObject(js: JavaScriptObject): SharedObject? {
@@ -56,7 +73,9 @@ class SharedObjectRegistry {
     return pairs[id]?.first
   }
 
-  internal fun toJavaScriptObjet(native: SharedObject): JavaScriptObject? {
-    return pairs[native.sharedObjectId]?.second
+  internal fun toJavaScriptObject(native: SharedObject): JavaScriptObject? {
+    return synchronized(this) {
+      pairs[native.sharedObjectId]?.second?.lock()
+    }
   }
 }

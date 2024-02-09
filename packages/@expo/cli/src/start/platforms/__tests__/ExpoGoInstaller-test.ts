@@ -1,4 +1,3 @@
-import { asMock } from '../../../__tests__/asMock';
 import { getVersionsAsync, SDKVersion, Versions } from '../../../api/getVersions';
 import { downloadExpoGoAsync } from '../../../utils/downloadExpoGoAsync';
 import { confirmAsync } from '../../../utils/prompts';
@@ -21,7 +20,7 @@ function createInstaller(platform: 'ios' | 'android') {
 }
 
 function mockVersionsOnce(versions: Partial<Versions>) {
-  asMock(getVersionsAsync).mockResolvedValueOnce(asVersions(versions));
+  jest.mocked(getVersionsAsync).mockResolvedValueOnce(asVersions(versions));
 }
 
 function asVersions(versions: Partial<Versions>): Versions {
@@ -122,10 +121,10 @@ describe('uninstallExpoGoIfOutdatedAsync', () => {
     } as any;
   }
   beforeEach(() => {
-    asMock(confirmAsync).mockReset();
+    jest.mocked(confirmAsync).mockReset();
   });
   it(`returns true when the user uninstalls the outdated app`, async () => {
-    asMock(confirmAsync).mockResolvedValueOnce(true);
+    jest.mocked(confirmAsync).mockResolvedValueOnce(true);
     const installer = createInstaller('android');
     installer.isClientOutdatedAsync = jest.fn(async () => true);
     const deviceManager = createDeviceManager();
@@ -136,7 +135,7 @@ describe('uninstallExpoGoIfOutdatedAsync', () => {
   });
 
   it(`prevents checking the same device twice`, async () => {
-    asMock(confirmAsync).mockResolvedValueOnce(true);
+    jest.mocked(confirmAsync).mockResolvedValueOnce(true);
     const installer = createInstaller('android');
     installer.isClientOutdatedAsync = jest.fn(async () => true);
     const deviceManager = createDeviceManager();
@@ -149,7 +148,7 @@ describe('uninstallExpoGoIfOutdatedAsync', () => {
   });
 
   it(`returns false when the user uninstalls the outdated app`, async () => {
-    asMock(confirmAsync).mockResolvedValueOnce(false);
+    jest.mocked(confirmAsync).mockResolvedValueOnce(false);
     const installer = createInstaller('android');
     installer.isClientOutdatedAsync = jest.fn(async () => true);
     const deviceManager = createDeviceManager();
@@ -159,7 +158,7 @@ describe('uninstallExpoGoIfOutdatedAsync', () => {
   });
 
   it(`does not actually uninstall the outdated app on iOS`, async () => {
-    asMock(confirmAsync).mockResolvedValueOnce(true);
+    jest.mocked(confirmAsync).mockResolvedValueOnce(true);
     const installer = createInstaller('ios');
     installer.isClientOutdatedAsync = jest.fn(async () => true);
     const deviceManager = createDeviceManager();
@@ -169,7 +168,7 @@ describe('uninstallExpoGoIfOutdatedAsync', () => {
     expect(deviceManager.uninstallAppAsync).not.toBeCalled();
   });
   it(`does not prompt if the app is not up to date`, async () => {
-    asMock(confirmAsync).mockImplementationOnce(() => {
+    jest.mocked(confirmAsync).mockImplementationOnce(() => {
       throw new Error('Should not be called');
     });
     const installer = createInstaller('ios');
@@ -192,6 +191,9 @@ describe('uninstallExpoGoIfOutdatedAsync', () => {
 });
 
 describe('ensureAsync', () => {
+  beforeEach(() => {
+    delete process.env.EXPO_OFFLINE;
+  });
   function createDeviceManager(isAppInstalled: boolean) {
     return {
       name: 'Pixel 3',
@@ -250,8 +252,7 @@ describe('ensureAsync', () => {
   });
 
   it(`returns false when installed and running in offline mode`, async () => {
-    jest.resetModules();
-    jest.mock('../../../api/settings', () => ({ APISettings: { isOffline: true } }));
+    process.env.EXPO_OFFLINE = '1';
 
     // Reload the Expo Go installer to use the mocked settings
     const { ExpoGoInstaller } = require('../ExpoGoInstaller');
@@ -270,8 +271,7 @@ describe('ensureAsync', () => {
   });
 
   it(`throws when not installed and running in offline mode`, async () => {
-    jest.resetModules();
-    jest.mock('../../../api/settings', () => ({ APISettings: { isOffline: true } }));
+    process.env.EXPO_OFFLINE = '1';
 
     // Reload the Expo Go installer to use the mocked settings
     const { ExpoGoInstaller } = require('../ExpoGoInstaller');

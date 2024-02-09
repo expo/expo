@@ -54,14 +54,13 @@ object ExpoRequestCdpInterceptor : ExpoNetworkInspectOkHttpInterceptorsDelegate 
     val params = ResponseReceivedParams(now, requestId, request, response)
     dispatchEvent(Event("Network.responseReceived", params))
 
-    val params2 = LoadingFinishedParams(now, requestId, request, response)
-    dispatchEvent(Event("Network.loadingFinished", params2))
-
-    val contentLength = response.body?.contentLength() ?: 0
-    if (contentLength >= 0 && contentLength <= ExpoNetworkInspectOkHttpNetworkInterceptor.MAX_BODY_SIZE) {
-      val params3 = ExpoReceivedResponseBodyParams(now, requestId, request, response)
-      dispatchEvent(Event("Expo(Network.receivedResponseBody)", params3))
+    if (response.peekBody(ExpoNetworkInspectOkHttpNetworkInterceptor.MAX_BODY_SIZE + 1).contentLength() <= ExpoNetworkInspectOkHttpNetworkInterceptor.MAX_BODY_SIZE) {
+      val params2 = ExpoReceivedResponseBodyParams(now, requestId, request, response)
+      dispatchEvent(Event("Expo(Network.receivedResponseBody)", params2))
     }
+
+    val params3 = LoadingFinishedParams(now, requestId, request, response)
+    dispatchEvent(Event("Network.loadingFinished", params3))
   }
 
   //endregion ExpoNetworkInspectOkHttpInterceptorsDelegate implementations

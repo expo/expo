@@ -3,8 +3,8 @@ import chalk from 'chalk';
 import resolveFrom from 'resolve-from';
 
 import { getNativeModuleVersionsAsync } from '../../../api/getNativeModuleVersions';
-import { APISettings } from '../../../api/settings';
 import * as Log from '../../../log';
+import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 
 const debug = require('debug')(
@@ -22,16 +22,23 @@ export type BundledNativeModules = Record<string, string>;
  */
 export async function getVersionedNativeModulesAsync(
   projectRoot: string,
-  sdkVersion: string
+  sdkVersion: string,
+  options: {
+    skipRemoteVersions?: boolean;
+  } = {}
 ): Promise<BundledNativeModules> {
-  if (sdkVersion !== 'UNVERSIONED' && !APISettings.isOffline) {
+  if (sdkVersion !== 'UNVERSIONED' && !env.EXPO_OFFLINE && !options.skipRemoteVersions) {
     try {
       debug('Fetching bundled native modules from the server...');
       return await getNativeModuleVersionsAsync(sdkVersion);
-    } catch {
-      Log.warn(
-        chalk`Unable to reach Expo servers. Falling back to using the cached dependency map ({bold bundledNativeModules.json}) from the package "{bold expo}" installed in your project.`
-      );
+    } catch (error: any) {
+      if (error instanceof CommandError && (error.code === 'OFFLINE' || error.code === 'API')) {
+        Log.warn(
+          chalk`Unable to reach well-known versions endpoint. Using local dependency map {bold expo/bundledNativeModules.json} for version validation`
+        );
+      } else {
+        throw error;
+      }
     }
   }
 

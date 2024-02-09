@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '13.0'
+  s.platforms      = { :ios => '13.4', :tvos => '13.4' }
   s.swift_version  = '5.4'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
@@ -23,10 +23,7 @@ Pod::Spec.new do |s|
     'DEFINES_MODULE' => 'YES',
     'SWIFT_COMPILATION_MODE' => 'wholemodule'
   }
-
-  s.script_phase = {
-    :name => 'Copy Swift Header',
-    :script => 'COMPATIBILITY_HEADER_PATH="${BUILT_PRODUCTS_DIR}/Swift Compatibility Header/${PRODUCT_MODULE_NAME}-Swift.h"; ditto "${COMPATIBILITY_HEADER_PATH}" "${PODS_ROOT}/Headers/Public/${PRODUCT_MODULE_NAME}/${PRODUCT_MODULE_NAME}-Swift.h"',
-    :execution_position => :after_compile
+  s.user_target_xcconfig = {
+    'HEADER_SEARCH_PATHS' => '"${PODS_CONFIGURATION_BUILD_DIR}/EXUpdatesInterface/Swift Compatibility Header"',
   }
 end

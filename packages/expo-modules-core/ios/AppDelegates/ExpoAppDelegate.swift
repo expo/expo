@@ -1,4 +1,3 @@
-import UIKit
 import Dispatch
 import Foundation
 
@@ -18,6 +17,7 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
   @objc
   public let reactDelegate = ExpoReactDelegate(handlers: reactDelegateHandlers)
 
+  #if os(iOS) || os(tvOS)
   // MARK: - Initializing the App
 
   open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
@@ -33,7 +33,7 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     return parsedSubscribers.reduce(false) { result, subscriber in
-      return subscriber.application!(application, willFinishLaunchingWithOptions: launchOptions) || result
+      return subscriber.application?(application, willFinishLaunchingWithOptions: launchOptions) ?? false || result
     }
   }
 
@@ -202,6 +202,7 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
     }
   }
 
+#if !os(tvOS)
   open func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
     let selector = #selector(application(_:performActionFor:completionHandler:))
     let subs = subscribers.filter { $0.responds(to: selector) }
@@ -228,6 +229,7 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
       }
     }
   }
+#endif
 
   // MARK: - Background Fetch
 
@@ -251,12 +253,12 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
 
         if subscribersLeft == 0 {
           if newDataCount > 0 {
-             completionHandler(.newData)
-           } else if failedCount > 0 {
-             completionHandler(.failed)
-           } else {
-             completionHandler(.noData)
-           }
+            completionHandler(.newData)
+          } else if failedCount > 0 {
+            completionHandler(.failed)
+          } else {
+            completionHandler(.noData)
+          }
         }
       }
     }
@@ -288,7 +290,34 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
 
   // TODO: - Handling CloudKit Invitations
 
-  // TODO: - Managing Interface Geometry
+  // MARK: - Managing Interface Geometry
+
+  /**
+   * Sets allowed orientations for the application. It will use the values from `Info.plist`as the orientation mask unless a subscriber requested
+   * a different orientation.
+   */
+#if !os(tvOS)
+  public func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+    let deviceOrientationMask = allowedOrientations(for: UIDevice.current.userInterfaceIdiom)
+    let universalOrientationMask = allowedOrientations(for: .unspecified)
+    let infoPlistOrientations = deviceOrientationMask.isEmpty ? universalOrientationMask : deviceOrientationMask
+
+    let parsedSubscribers = subscribers.filter {
+      $0.responds(to: #selector(application(_:supportedInterfaceOrientationsFor:)))
+    }
+
+    // We want to create an intersection of all orientations set by subscribers.
+    let subscribersMask: UIInterfaceOrientationMask = parsedSubscribers.reduce(.all) { result, subscriber in
+      guard let requestedOrientation = subscriber.application?(application, supportedInterfaceOrientationsFor: window) else {
+        return result
+      }
+      return requestedOrientation.intersection(result)
+    }
+    return parsedSubscribers.isEmpty ? infoPlistOrientations : subscribersMask
+  }
+#endif
+
+  #endif // os(iOS)
 
   // MARK: - Statics
 
@@ -312,6 +341,10 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
     return subscribers.first { String(describing: $0) == name }
   }
 
+  public static func getSubscriberOfType<Subscriber>(_ type: Subscriber.Type) -> Subscriber? {
+    return subscribers.first { $0 is Subscriber } as? Subscriber
+  }
+
   @objc
   public static func registerReactDelegateHandlersFrom(modulesProvider: ModulesProvider) {
     modulesProvider.getReactDelegateHandlers()
@@ -323,3 +356,30 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
       }
   }
 }
+
+#if os(iOS)
+private func allowedOrientations(for userInterfaceIdiom: UIUserInterfaceIdiom) -> UIInterfaceOrientationMask {
+  // For now only iPad-specific orientations are supported
+  let deviceString = userInterfaceIdiom == .pad ? "~pad" : ""
+  var mask: UIInterfaceOrientationMask = []
+  guard let orientations = Bundle.main.infoDictionary?["UISupportedInterfaceOrientations\(deviceString)"] as? [String] else {
+    return mask
+  }
+
+  for orientation in orientations {
+    switch orientation {
+    case "UIInterfaceOrientationPortrait":
+      mask.insert(.portrait)
+    case "UIInterfaceOrientationLandscapeLeft":
+      mask.insert(.landscapeLeft)
+    case "UIInterfaceOrientationLandscapeRight":
+      mask.insert(.landscapeRight)
+    case "UIInterfaceOrientationPortraitUpsideDown":
+      mask.insert(.portraitUpsideDown)
+    default:
+      break
+    }
+  }
+  return mask
+}
+#endif // os(iOS)

@@ -3,22 +3,19 @@
 //
 // Forks https://github.com/facebook/metro/blob/b80d9a0f638ee9fb82ff69cd3c8d9f4309ca1da2/packages/metro/src/index.flow.js#L57
 // and adds the ability to access the bundler instance.
+import assert from 'assert';
 import http from 'http';
 import https from 'https';
-import { RunServerOptions, Server } from 'metro';
+import Metro, { RunServerOptions, Server } from 'metro';
+import MetroHmrServer from 'metro/src/HmrServer';
+import createWebsocketServer from 'metro/src/lib/createWebsocketServer';
 import { ConfigT } from 'metro-config';
-import { InspectorProxy } from 'metro-inspector-proxy';
 import { parse } from 'url';
 
-import { env } from '../../../utils/env';
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
-import { createInspectorProxy, ExpoInspectorProxy } from './inspector-proxy';
-import {
-  importMetroCreateWebsocketServerFromProject,
-  importMetroFromProject,
-  importMetroHmrServerFromProject,
-  importMetroInspectorProxyFromProject,
-} from './resolveFromProject';
+import { Log } from '../../../log';
+import { getRunningProcess } from '../../../utils/getRunningProcess';
+import type { ConnectAppType } from '../middleware/server.types';
 
 export const runServer = async (
   metroBundler: MetroBundlerDevServer,
@@ -34,16 +31,6 @@ export const runServer = async (
     watch,
   }: RunServerOptions
 ): Promise<{ server: http.Server | https.Server; metro: Server }> => {
-  const projectRoot = metroBundler.projectRoot;
-
-  const Metro = importMetroFromProject(projectRoot);
-
-  const createWebsocketServer = importMetroCreateWebsocketServerFromProject(projectRoot);
-
-  const { InspectorProxy } = importMetroInspectorProxyFromProject(projectRoot);
-
-  const MetroHmrServer = importMetroHmrServerFromProject(projectRoot);
-
   // await earlyPortCheck(host, config.server.port);
 
   // if (secure != null || secureCert != null || secureKey != null) {
@@ -55,26 +42,15 @@ export const runServer = async (
   //       "Metro's https development server.",
   //   );
   // }
-  // Lazy require
-  const connect = require('connect');
-
-  const serverApp = connect();
 
   const { middleware, end, metroServer } = await Metro.createConnectMiddleware(config, {
-    // @ts-expect-error
     hasReducedPerformance,
     waitForBundler,
     watch,
   });
 
-  serverApp.use(middleware);
-
-  let inspectorProxy: InspectorProxy | ExpoInspectorProxy | null = null;
-  if (config.server.runInspectorProxy && env.EXPO_USE_CUSTOM_INSPECTOR_PROXY) {
-    inspectorProxy = createInspectorProxy(metroBundler, config.projectRoot);
-  } else if (config.server.runInspectorProxy) {
-    inspectorProxy = new InspectorProxy(config.projectRoot);
-  }
+  assert(typeof (middleware as any).use === 'function');
+  const serverApp = middleware as ConnectAppType;
 
   let httpServer: http.Server | https.Server;
 
@@ -85,6 +61,17 @@ export const runServer = async (
   }
   return new Promise<{ server: http.Server | https.Server; metro: Server }>((resolve, reject) => {
     httpServer.on('error', (error) => {
+      if ('code' in error && error.code === 'EADDRINUSE') {
+        // If `Error: listen EADDRINUSE: address already in use :::8081` then print additional info
+        // about the process before throwing.
+        const info = getRunningProcess(config.server.port);
+        if (info) {
+          Log.error(
+            `Port ${config.server.port} is busy running ${info.command} in: ${info.directory}`
+          );
+        }
+      }
+
       if (onError) {
         onError(error);
       }
@@ -98,7 +85,7 @@ export const runServer = async (
       }
 
       Object.assign(websocketEndpoints, {
-        ...(inspectorProxy ? { ...inspectorProxy.createWebSocketListeners(httpServer) } : {}),
+        // @ts-expect-error: incorrect types
         '/hot': createWebsocketServer({
           websocketServer: new MetroHmrServer(
             metroServer.getBundler(),
@@ -118,14 +105,6 @@ export const runServer = async (
           socket.destroy();
         }
       });
-
-      if (inspectorProxy) {
-        // TODO(hypuk): Refactor inspectorProxy.processRequest into separate request handlers
-        // so that we could provide routes (/json/list and /json/version) here.
-        // Currently this causes Metro to give warning about T31407894.
-        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-        serverApp.use(inspectorProxy.processRequest.bind(inspectorProxy));
-      }
 
       resolve({ server: httpServer, metro: metroServer });
     });

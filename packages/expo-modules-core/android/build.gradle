@@ -3,18 +3,22 @@ import java.nio.file.Paths
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
-apply plugin: "de.undercouch.download"
 
 group = 'host.exp.exponent'
-version = '1.3.2'
+version = '1.11.2'
+
+def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+if (expoModulesCorePlugin.exists()) {
+  apply from: expoModulesCorePlugin
+  applyKotlinExpoModulesCorePlugin()
+
+  // Remove this check, but keep the contents after SDK49 support is dropped
+  if (safeExtGet("expoProvidesDefaultConfig", false)) {
+    useExpoPublishing()
+  }
+}
 
 buildscript {
-  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-  if (expoModulesCorePlugin.exists()) {
-    apply from: expoModulesCorePlugin
-    applyKotlinExpoModulesCorePlugin()
-  }
-
   // Simple helper that allows the root project to override versions declared by this library.
   ext.safeExtGet = { prop, fallback ->
     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
@@ -35,7 +39,6 @@ buildscript {
 
   dependencies {
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${getKotlinVersion()}")
-    classpath("de.undercouch:gradle-download-task:5.3.0")
   }
 }
 
@@ -49,26 +52,19 @@ def isExpoModulesCoreTests = {
   return false
 }.call()
 
-def customDownloadsDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
-def downloadsDir = customDownloadsDir ? new File(customDownloadsDir) : new File("$buildDir/downloads")
-def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
-
-def REACT_NATIVE_BUILD_FROM_SOURCE = findProject(":ReactAndroid") != null
+def REACT_NATIVE_BUILD_FROM_SOURCE = findProject(":packages:react-native:ReactAndroid") != null
 def REACT_NATIVE_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
-  ? findProject(":ReactAndroid").getProjectDir().parent
-  : new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).parent
-def REACT_NATIVE_SO_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
-  ? Paths.get(findProject(":ReactAndroid").getProjectDir().toString(), "build", "intermediates", "library_*", "*", "jni")
-  : "${buildDir}/react/jni"
+  ? findProject(":packages:react-native:ReactAndroid").getProjectDir().parent
+  : file(providers.exec {
+      workingDir(rootDir)
+      commandLine("node", "--print", "require.resolve('react-native/package.json')")
+    }.standardOutput.asText.get().trim()).parent
 
 def reactProperties = new Properties()
 file("$REACT_NATIVE_DIR/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
 
-def BOOST_VERSION = reactProperties.getProperty("BOOST_VERSION")
-def REACT_NATIVE_VERSION = System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: reactProperties.getProperty("VERSION_NAME")
+def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME")
 def REACT_NATIVE_TARGET_VERSION = REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
-
-def reactNativeThirdParty = new File("$REACT_NATIVE_DIR/ReactAndroid/src/main/jni/third-party")
 
 def reactNativeArchitectures() {
   def value = project.getProperties().get("reactNativeArchitectures")
@@ -76,73 +72,56 @@ def reactNativeArchitectures() {
 }
 
 // HERMES
-def prebuiltHermesDir = findProperty("expo.prebuiltHermesDir") ?: file("${rootDir}/prebuiltHermes")
-def prebuiltHermesVersion = file("${prebuiltHermesDir}/.hermesversion").exists() ? file("${prebuiltHermesDir}/.hermesversion").text : null
-def currentHermesVersion = file("${REACT_NATIVE_DIR}/sdks/.hermesversion").exists() ? file("${REACT_NATIVE_DIR}/sdks/.hermesversion").text : null
-def hasHermesProject = findProject(":ReactAndroid:hermes-engine") != null
-def prebuiltHermesCacheHit = hasHermesProject && currentHermesVersion == prebuiltHermesVersion
-
-// By default we are going to download and unzip hermes inside the /sdks/hermes folder
-// but you can provide an override for where the hermes source code is located.
-def hermesDir = System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR") ?: file("${REACT_NATIVE_DIR}/sdks/hermes")
-
-def USE_HERMES = false
-def NEED_DOWNLOAD_HERMES = false
-def HERMES_HEADER_DIR = null
-def HERMES_AAR = null
+def USE_HERMES = true
 if (findProject(":app")) {
-  def appProjectExt = project(":app").ext
-  if (appProjectExt.has("react")) {
-    USE_HERMES = project(":app").ext.react.enableHermes
-  } else {
-    USE_HERMES = (findProperty('expo.jsEngine') ?: "jsc") == "hermes"
-  }
-} else {
-  USE_HERMES = (findProperty('expo.jsEngine') ?: "jsc") == "hermes"
+  def appProject = project(":app")
+  USE_HERMES = appProject?.hermesEnabled?.toBoolean() || appProject?.ext?.react?.enableHermes?.toBoolean()
 }
 
 // Currently the needs for hermes/jsc are only for androidTest, so we turn on this flag only when `isExpoModulesCoreTests` is true
 USE_HERMES = USE_HERMES && isExpoModulesCoreTests
-
-if (USE_HERMES) {
-  if (prebuiltHermesCacheHit) {
-    HERMES_HEADER_DIR = file("${thirdPartyNdkDir}/hermes/prefab/modules/libhermes/include")
-    HERMES_AAR = file("${prebuiltHermesDir}/hermes-engine-debug.aar")
-  } else if (hasHermesProject) {
-    HERMES_HEADER_DIR = file("${thirdPartyNdkDir}/hermes/prefab/modules/libhermes/include")
-    HERMES_AAR = file("${REACT_NATIVE_DIR}/ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-debug.aar")
-  } else {
-    def prebuiltAAR = fileTree(REACT_NATIVE_DIR).matching { include "**/hermes-engine/**/hermes-engine-*-debug.aar" }
-    if (prebuiltAAR.any()) {
-      HERMES_AAR = prebuiltAAR.singleFile
-    } else {
-      HERMES_AAR = file("${hermesEngineDir}/android/hermes-debug.aar")
-    }
-    HERMES_HEADER_DIR = file("${hermesDir}")
-    NEED_DOWNLOAD_HERMES = true
-  }
-}
 // END HERMES
 
 def isNewArchitectureEnabled = findProperty("newArchEnabled") == "true"
 
-afterEvaluate {
-  publishing {
-    publications {
-      release(MavenPublication) {
-        from components.release
+// Remove this if and it's contents, when support for SDK49 is dropped
+if (!safeExtGet("expoProvidesDefaultConfig", false)) {
+  afterEvaluate {
+    publishing {
+      publications {
+        release(MavenPublication) {
+          from components.release
+        }
       }
-    }
-    repositories {
-      maven {
-        url = mavenLocal().url
+      repositories {
+        maven {
+          url = mavenLocal().url
+        }
       }
     }
   }
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 33)
+  // Remove this if and it's contents, when support for SDK49 is dropped
+  if (!safeExtGet("expoProvidesDefaultConfig", false)) {
+    compileSdkVersion safeExtGet("compileSdkVersion", 34)
+
+    defaultConfig {
+      minSdkVersion safeExtGet("minSdkVersion", 23)
+      targetSdkVersion safeExtGet("targetSdkVersion", 34)
+    }
+
+    publishing {
+      singleVariant("release") {
+        withSourcesJar()
+      }
+    }
+
+    lintOptions {
+      abortOnError false
+    }
+  }
 
   if (rootProject.hasProperty("ndkPath")) {
     ndkPath rootProject.ext.ndkPath
@@ -151,22 +130,23 @@ android {
     ndkVersion rootProject.ext.ndkVersion
   }
 
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_11
-    targetCompatibility JavaVersion.VERSION_11
-  }
+  def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
+  if (agpVersion.tokenize('.')[0].toInteger() < 8) {
+    compileOptions {
+      sourceCompatibility JavaVersion.VERSION_11
+      targetCompatibility JavaVersion.VERSION_11
+    }
 
-  kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_11.majorVersion
+    kotlinOptions {
+      jvmTarget = JavaVersion.VERSION_11.majorVersion
+    }
   }
 
   namespace "expo.modules"
   defaultConfig {
-    minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 33)
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
-    versionName "1.3.2"
+    versionName "1.11.2"
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled.toString()
 
     testInstrumentationRunner "expo.modules.TestRunner"
@@ -176,15 +156,9 @@ android {
         abiFilters (*reactNativeArchitectures())
         arguments "-DANDROID_STL=c++_shared",
           "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
-          "-DREACT_NATIVE_SO_DIR=${REACT_NATIVE_SO_DIR}",
           "-DREACT_NATIVE_TARGET_VERSION=${REACT_NATIVE_TARGET_VERSION}",
-          "-DBOOST_VERSION=${BOOST_VERSION}",
           "-DUSE_HERMES=${USE_HERMES}",
-          "-DHERMES_HEADER_DIR=${HERMES_HEADER_DIR}",
           "-DIS_NEW_ARCHITECTURE_ENABLED=${isNewArchitectureEnabled}",
-          "-DPROJECT_BUILD_DIR=$buildDir",
-          "-DREACT_ANDROID_DIR=${REACT_NATIVE_DIR}/ReactAndroid",
-          "-DREACT_ANDROID_BUILD_DIR=${REACT_NATIVE_DIR}/ReactAndroid/build",
           "-DUNIT_TEST=${isExpoModulesCoreTests}"
       }
     }
@@ -192,15 +166,12 @@ android {
 
   externalNativeBuild {
     cmake {
-      if (REACT_NATIVE_TARGET_VERSION >= 71) {
-        path "CMakeLists.txt"
-      } else {
-        path "legacy/CMakeLists.txt"
-      }
+      path "CMakeLists.txt"
     }
   }
 
   buildFeatures {
+    buildConfig true
     prefab true
   }
 
@@ -239,9 +210,6 @@ android {
     }
   }
 
-  lintOptions {
-    abortOnError false
-  }
 
   testOptions {
     unitTests.includeAndroidResources = true
@@ -256,174 +224,44 @@ android {
       }
     }
   }
-  publishing {
-    singleVariant("release") {
-      withSourcesJar()
-    }
-  }
 }
-
 
 dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   implementation "org.jetbrains.kotlin:kotlin-reflect:${getKotlinVersion()}"
-  implementation 'androidx.annotation:annotation:1.3.0'
+  implementation 'androidx.annotation:annotation:1.7.1'
 
   api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
-  api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0"
-  api "androidx.core:core-ktx:1.6.0"
+  api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
+  api "androidx.core:core-ktx:1.12.0"
   api project(':expo-modules-core$android-annotation')
 
-  /**
-   * ReactActivity (the base activity for every React Native application) is subclassing AndroidX classes.
-   * Unfortunately until https://github.com/facebook/react-native/pull/33072 is released React Native uses "androidx.appcompat:appcompat:1.0.2".
-   * Gradle is picking the highest version of the dependency so we enforce higher version here.
-   * see https://docs.gradle.org/current/userguide/dependency_resolution.html#sec:version-conflict
-   * We're enforcing the most up-to-date versions of the dependencies here that are used in subclassing chain for ReactActivity.
-   */
-  implementation "androidx.appcompat:appcompat:1.4.1"
-  implementation "androidx.activity:activity-ktx:1.7.1" // androidx.appcompat:appcompat:1.4.1 depends on version 1.2.3, so we enforce higher one here
-  implementation "androidx.fragment:fragment-ktx:1.5.7" // androidx.appcomapt:appcompat:1.4.1 depends on version 1.3.4, so we enforce higher one here
+  implementation("androidx.tracing:tracing-ktx:1.2.0")
 
-  //noinspection GradleDynamicVersion
-  implementation 'com.facebook.react:react-native:+'
+  implementation 'com.facebook.react:react-android'
 
-  compileOnly 'com.facebook.fbjni:fbjni:0.3.0'
+  compileOnly 'com.facebook.fbjni:fbjni:0.5.1'
 
-  testImplementation 'androidx.test:core:1.4.0'
+  testImplementation 'androidx.test:core:1.5.0'
   testImplementation 'junit:junit:4.13.2'
-  testImplementation 'io.mockk:mockk:1.12.3'
+  testImplementation 'io.mockk:mockk:1.13.5'
   testImplementation "com.google.truth:truth:1.1.2"
-  testImplementation "org.robolectric:robolectric:4.10"
+  testImplementation "org.robolectric:robolectric:4.11.1"
   testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
   testImplementation "org.json:json:20230227"
 
-  androidTestImplementation 'androidx.test:runner:1.4.0'
-  androidTestImplementation 'androidx.test:core:1.4.0'
-  androidTestImplementation 'androidx.test:rules:1.4.0'
+  androidTestImplementation 'androidx.test:runner:1.5.2'
+  androidTestImplementation 'androidx.test:core:1.5.0'
+  androidTestImplementation 'androidx.test:rules:1.5.0'
   androidTestImplementation "io.mockk:mockk-android:1.12.3"
   androidTestImplementation "com.google.truth:truth:1.1.2"
   androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
 
-  if (USE_HERMES) {
-    def hermesProject = findProject(":ReactAndroid:hermes-engine")
-    androidTestImplementation (hermesProject ?: files(HERMES_AAR))
-  } else {
-    androidTestImplementation "org.webkit:android-jsc:+"
-  }
-}
-
-/**
- * To make the users of annotations @OptIn and @RequiresOptIn aware of their experimental status,
- * the compiler raises warnings when compiling the code with these annotations:
- * This class can only be used with the compiler argument '-Xopt-in=kotlin.RequiresOptIn'
- * To remove the warnings, we add the compiler argument -Xopt-in=kotlin.RequiresOptIn.
- */
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
-  kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
-}
-
-def createNativeDepsDirectories = project.tasks.findByName('createNativeDepsDirectories') ?: project.tasks.register('createNativeDepsDirectories') {
-  downloadsDir.mkdirs()
-  thirdPartyNdkDir.mkdirs()
-}
-
-// TODO: Remove all these hermes code when we update our repo to react-native 0.71 by using prefab
-task downloadHermes(type: Download) {
-  def hermesVersion = currentHermesVersion ?: "main"
-  src("https://github.com/facebook/hermes/tarball/${hermesVersion}")
-  onlyIfNewer(true)
-  overwrite(false)
-  dest(new File(downloadsDir, "hermes-${hermesVersion}.tar.gz"))
-}
-
-task unzipHermes(dependsOn: downloadHermes, type: Copy) {
-  from(tarTree(downloadHermes.dest)) {
-    eachFile { file ->
-      // We flatten the unzip as the tarball contains a `facebook-hermes-<SHA>`
-      // folder at the top level.
-      if (file.relativePath.segments.size() > 1) {
-        file.relativePath = new org.gradle.api.file.RelativePath(!file.isDirectory(), file.relativePath.segments.drop(1))
-      }
+  if (isExpoModulesCoreTests) {
+    if (USE_HERMES) {
+      compileOnly "com.facebook.react:hermes-android"
+    } else {
+      compileOnly "org.webkit:android-jsc:+"
     }
   }
-  into(hermesDir)
-}
-
-task prepareHermes() {
-  if (!USE_HERMES) {
-    return
-  }
-  dependsOn(createNativeDepsDirectories)
-  if (NEED_DOWNLOAD_HERMES) {
-    dependsOn(unzipHermes)
-  }
-
-  doLast {
-    def files = zipTree(HERMES_AAR).matching({ it.include "**/*.so", "prefab/modules/libhermes/include/**/*" })
-
-    copy {
-      from files
-      from "$REACT_NATIVE_DIR/ReactAndroid/src/main/jni/first-party/hermes/Android.mk"
-      into "$thirdPartyNdkDir/hermes"
-    }
-  }
-}
-
-def downloadBoost = tasks.create('downloadBoost', Download) {
-  dependsOn(createNativeDepsDirectories)
-  def srcUrl = REACT_NATIVE_TARGET_VERSION >= 69
-    ? "https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION.replace("_", ".")}/source/boost_${BOOST_VERSION}.tar.gz"
-    : "https://github.com/react-native-community/boost-for-react-native/releases/download/v${BOOST_VERSION.replace("_", ".")}-0/boost_${BOOST_VERSION}.tar.gz"
-  src(srcUrl)
-  onlyIfNewer(true)
-  overwrite(false)
-  dest(new File(downloadsDir, "boost_${BOOST_VERSION}.tar.gz"))
-}
-
-def prepareBoost = tasks.register('prepareBoost', Copy) {
-  dependsOn(downloadBoost)
-  from(tarTree(resources.gzip(downloadBoost.dest)))
-  from("$reactNativeThirdParty/boost/Android.mk")
-  include("Android.mk", "boost_${BOOST_VERSION}/boost/**/*.hpp", "boost/boost/**/*.hpp")
-  includeEmptyDirs = false
-  into("$thirdPartyNdkDir/boost")
-  doLast {
-    new File("$thirdPartyNdkDir/boost/boost").renameTo("$thirdPartyNdkDir/boost/boost_${BOOST_VERSION}")
-  }
-}
-
-void nativeBuildDependsOn(project, dependsOnTask, buildTypesIncludes) {
-  def buildTasks = project.tasks.findAll { task ->
-    def taskName = task.name
-    if (taskName.contains("Clean")) { return false }
-    if (taskName.contains("externalNative") || taskName.contains("CMake") || taskName.contains("generateJsonModel")) {
-      if (buildTypesIncludes == null) { return true }
-      for (buildType in buildTypesIncludes) {
-        if (taskName.contains(buildType)) { return true }
-      }
-    }
-    return false
-  }
-  buildTasks.forEach { task -> task.dependsOn(dependsOnTask) }
-}
-
-afterEvaluate {
-  if (REACT_NATIVE_TARGET_VERSION < 71) {
-    nativeBuildDependsOn(project, prepareBoost, null)
-  }
-  if (USE_HERMES) {
-    nativeBuildDependsOn(project, prepareHermes, null)
-    if (hasHermesProject && !prebuiltHermesCacheHit) {
-      prepareHermes.dependsOn(":ReactAndroid:hermes-engine:assembleDebug")
-    }
-  }
-}
-
-if (REACT_NATIVE_TARGET_VERSION < 71) {
-  project.ext.extraLegacyReactNativeLibs = [
-    'prepareDoubleConversion',
-    'prepareFolly',
-  ]
-  applyLegacyReactNativeLibsExtractionPlugin()
 }

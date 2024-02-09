@@ -8,9 +8,96 @@
 
 ### 🐛 Bug fixes
 
-- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- Throw `UnavailabilityError` when trying to use `setNotificationCategoryAsync` on web. ([#26511](https://github.com/expo/expo/pull/26511) by [@marklawlor](https://github.com/marklawlor))
+- Remove `.native` hardcoded platform imports ([#26511](https://github.com/expo/expo/pull/26511) by [@marklawlor](https://github.com/marklawlor))
+- On `Android`, added events to module definition to clear warnings. ([#26654](https://github.com/expo/expo/pull/26654) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
+
+## 0.27.3 - 2024-01-10
+
+### 🐛 Bug fixes
+
+- [Android] Fix `expo-notifications` requiring the `expo-task-manager` module to start. ([#26227](https://github.com/expo/expo/pull/26227) by [@behenate](https://github.com/behenate))
+
+## 0.27.2 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 0.27.1 — 2023-12-13
+
+_This version does not introduce any user-facing changes._
+
+## 0.27.0 — 2023-12-12
+
+### 🐛 Bug fixes
+
+- On `Android`, make `tokenManager` nullable to prevent crash if we can't find it. ([#25860](https://github.com/expo/expo/pull/25860) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.26.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.25.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- Send background notifications through when the app is in the foreground ([#24684](https://github.com/expo/expo/pull/24684) by [@kadikraman](https://github.com/kadikraman))
+
+### 💡 Others
+
+- Migrated codebase to use Expo Modules API. ([#24499](https://github.com/expo/expo/pull/24499) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.24.2 — 2023-09-18
+
+_This version does not introduce any user-facing changes._
+
+## 0.24.1 — 2023-09-15
+
+### 💡 Others
+
+- Remove legacy expo package notifications module code. ([#24325](https://github.com/expo/expo/pull/24325) by [@wschurman](https://github.com/wschurman))
+
+## 0.24.0 — 2023-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.23.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Fix server rendering with Metro web. ([#24195](https://github.com/expo/expo/pull/24195) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.22.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 0.21.0 — 2023-07-28
+
+### 💡 Others
+
+- Fork `uuid@3.4.0` and move into `expo-modules-core`. Remove the original dependency. ([#23249](https://github.com/expo/expo/pull/23249) by [@alanhughes](https://github.com/alanjhughes))
+
+## 0.20.1 — 2023-06-24
+
+_This version does not introduce any user-facing changes._
+
+## 0.20.0 — 2023-06-21
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ## 0.19.0 — 2023-05-08
 

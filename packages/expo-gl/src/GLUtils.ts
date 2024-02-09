@@ -22,7 +22,7 @@ export function configureLogging(gl: ExpoWebGLRenderingContext): void {
     }
 
     // Turn off logging.
-    if (!option || option === GLLoggingOption.DISABLED) {
+    if (option === GLLoggingOption.DISABLED || !option) {
       Object.entries(gl).forEach(([key, value]) => {
         if (typeof value === 'function' && value.__logWrapper) {
           delete gl[key];

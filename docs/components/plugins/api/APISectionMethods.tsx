@@ -1,5 +1,4 @@
 import { CornerDownRightIcon } from '@expo/styleguide-icons';
-import ReactMarkdown from 'react-markdown';
 
 import { APIDataType } from '~/components/plugins/api/APIDataType';
 import {
@@ -16,17 +15,14 @@ import {
   CommentTextBlock,
   getMethodName,
   getTagNamesList,
-  mdComponents,
   renderParams,
   resolveTypeName,
   STYLES_APIBOX,
   STYLES_APIBOX_NESTED,
   STYLES_NOT_EXPOSED_HEADER,
   TypeDocKind,
-  H3Code,
-  H4Code,
+  getH3CodeWithBaseNestingLevel,
   getTagData,
-  getCommentContent,
   BoxSectionHeader,
 } from '~/components/plugins/api/APISectionUtils';
 import { H2, LI, UL, MONOSPACE } from '~/ui/components/Text';
@@ -42,11 +38,12 @@ export type RenderMethodOptions = {
   apiName?: string;
   header?: string;
   exposeInSidebar?: boolean;
+  baseNestingLevel?: number;
 };
 
 export const renderMethod = (
   method: MethodDefinitionData | AccessorDefinitionData | PropData,
-  { apiName, exposeInSidebar = true }: RenderMethodOptions = {}
+  { apiName, exposeInSidebar = true, ...options }: RenderMethodOptions = {}
 ) => {
   const signatures =
     (method as MethodDefinitionData).signatures ||
@@ -54,7 +51,8 @@ export const renderMethod = (
       (method as AccessorDefinitionData)?.getSignature,
     ] ||
     [];
-  const HeaderComponent = exposeInSidebar ? H3Code : H4Code;
+  const baseNestingLevel = options.baseNestingLevel ?? (exposeInSidebar ? 3 : 4);
+  const HeaderComponent = getH3CodeWithBaseNestingLevel(baseNestingLevel);
   return signatures.map(
     ({ name, parameters, comment, type }: MethodSignatureData | TypeSignaturesData) => {
       const returnComment = getTagData('returns', comment);
@@ -63,9 +61,12 @@ export const renderMethod = (
           key={`method-signature-${method.name || name}-${parameters?.length || 0}`}
           css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
           <APISectionDeprecationNote comment={comment} />
-          <APISectionPlatformTags comment={comment} prefix="Only for:" />
+          <APISectionPlatformTags comment={comment} />
           <HeaderComponent tags={getTagNamesList(comment)}>
-            <MONOSPACE weight="medium" css={!exposeInSidebar && STYLES_NOT_EXPOSED_HEADER}>
+            <MONOSPACE
+              weight="medium"
+              css={!exposeInSidebar && STYLES_NOT_EXPOSED_HEADER}
+              className="wrap-anywhere">
               {getMethodName(method as MethodDefinitionData, apiName, name, parameters)}
             </MONOSPACE>
           </HeaderComponent>
@@ -87,11 +88,7 @@ export const renderMethod = (
               </UL>
               <>
                 <br />
-                {returnComment ? (
-                  <ReactMarkdown components={mdComponents}>
-                    {getCommentContent(returnComment.content)}
-                  </ReactMarkdown>
-                ) : undefined}
+                {returnComment && <CommentTextBlock comment={{ summary: returnComment.content }} />}
               </>
             </>
           )}
@@ -150,7 +147,7 @@ export const APIMethod = ({
         comment: {
           summary: [{ kind: 'text', text: param.comment }],
         },
-      } as MethodParamData)
+      }) as MethodParamData
   );
   return renderMethod(
     {

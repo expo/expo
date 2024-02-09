@@ -5,6 +5,7 @@
 #include "JavaScriptObject.h"
 #include "Exceptions.h"
 #include "JSIInteropModuleRegistry.h"
+#include "JSIUtils.h"
 
 #if UNIT_TEST
 
@@ -16,11 +17,7 @@
 
 #else
 
-#if REACT_NATIVE_TARGET_VERSION >= 71
 #include <jsc/JSCRuntime.h>
-#else
-#include <jsi/JSCRuntime.h>
-#endif // REACT_NATIVE_TARGET_VERSION >= 71
 
 #endif
 
@@ -30,23 +27,35 @@ namespace jsi = facebook::jsi;
 
 namespace expo {
 
-void SyncCallInvoker::invokeAsync(std::function<void()> &&func) {
-  func();
-}
+namespace {
 
-void SyncCallInvoker::invokeSync(std::function<void()> &&func) {
-  func();
-}
+/**
+ * Dummy CallInvoker that invokes everything immediately.
+ * Used in the test environment to check the async flow.
+ */
+class SyncCallInvoker : public react::CallInvoker {
+public:
+  void invokeAsync(std::function<void()> &&func) noexcept override {
+    func();
+  }
+
+  void invokeSync(std::function<void()> &&func) override {
+    func();
+  }
+
+  ~SyncCallInvoker() override = default;
+};
+
+} // namespace
 
 JavaScriptRuntime::JavaScriptRuntime(
   JSIInteropModuleRegistry *jsiInteropModuleRegistry
 )
   : jsInvoker(std::make_shared<SyncCallInvoker>()),
-    nativeInvoker(std::make_shared<SyncCallInvoker>()),
     jsiInteropModuleRegistry(jsiInteropModuleRegistry) {
 #if !UNIT_TEST
   throw std::logic_error(
-    "The JavaScriptRuntime constructor is only avaiable when UNIT_TEST is defined.");
+    "The JavaScriptRuntime constructor is only available when UNIT_TEST is defined.");
 #else
 #if USE_HERMES
   auto config = ::hermes::vm::RuntimeConfig::Builder()
@@ -98,23 +107,19 @@ JavaScriptRuntime::JavaScriptRuntime(
     ),
     "<<evaluated>>"
   );
-
-  installMainObject();
 #endif // !UNIT_TEST
 }
 
 JavaScriptRuntime::JavaScriptRuntime(
   JSIInteropModuleRegistry *jsiInteropModuleRegistry,
   jsi::Runtime *runtime,
-  std::shared_ptr<react::CallInvoker> jsInvoker,
-  std::shared_ptr<react::CallInvoker> nativeInvoker
-) : jsInvoker(std::move(jsInvoker)), nativeInvoker(std::move(nativeInvoker)),
+  std::shared_ptr<react::CallInvoker> jsInvoker
+) : jsInvoker(std::move(jsInvoker)),
     jsiInteropModuleRegistry(jsiInteropModuleRegistry) {
   // Creating a shared pointer that points to the runtime but doesn't own it, thus doesn't release it.
   // In this code flow, the runtime should be owned by something else like the CatalystInstance.
   // See explanation for constructor (8): https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr
   this->runtime = std::shared_ptr<jsi::Runtime>(std::shared_ptr<jsi::Runtime>(), runtime);
-  installMainObject();
 }
 
 jsi::Runtime &JavaScriptRuntime::get() const {
@@ -162,23 +167,22 @@ void JavaScriptRuntime::drainJSEventLoop() {
 }
 
 void JavaScriptRuntime::installMainObject() {
-  mainObject = std::make_shared<jsi::Object>(*runtime);
+  auto coreModule = jsiInteropModuleRegistry->getCoreModule();
+  coreModule->cthis()->jsiInteropModuleRegistry = jsiInteropModuleRegistry;
+  mainObject = coreModule->cthis()->getJSIObject(*runtime);
+
   auto global = runtime->global();
-  auto objectClass = global.getPropertyAsObject(*runtime, "Object");
-  jsi::Function definePropertyFunction = objectClass.getPropertyAsFunction(
-    *runtime,
-    "defineProperty"
-  );
 
   jsi::Object descriptor = JavaScriptObject::preparePropertyDescriptor(*runtime, 1 << 1);
 
   descriptor.setProperty(*runtime, "value", jsi::Value(*runtime, *mainObject));
 
-  definePropertyFunction.callWithThis(*runtime, objectClass, {
-    jsi::Value(*runtime, global),
-    jsi::String::createFromUtf8(*runtime, "expo"),
+  common::definePropertyOnJSIObject(
+    *runtime,
+    &global,
+    "expo",
     std::move(descriptor)
-  });
+  );
 }
 
 std::shared_ptr<jsi::Object> JavaScriptRuntime::getMainObject() {

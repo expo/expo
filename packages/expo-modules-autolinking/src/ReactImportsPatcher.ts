@@ -36,7 +36,7 @@ export async function patchFileAsync(headerSet: Set<string>, file: string, dryRu
   let changed = false;
   const content = await fs.readFile(file, 'utf-8');
   let transformContent = content.replace(
-    /^#import\s+"(.+)"$/gm,
+    /(?<=^\s*)#import\s+"(.+)"(?=\s*$)/gm,
     (match: string, headerName: string): string => {
       // `#import "RCTBridge.h"` -> `#import <React/RCTBridge.h>`
       if (headerSet.has(headerName)) {
@@ -59,7 +59,7 @@ export async function patchFileAsync(headerSet: Set<string>, file: string, dryRu
   );
 
   transformContent = transformContent.replace(
-    /^#(if|elif)\s+__has_include\("(.+)"\)$/gm,
+    /(?<=^\s*)#(if|elif)\s+__has_include\("(.+)"\)(?=\s*$)/gm,
     (match: string, ifPrefix: string, headerName: string): string => {
       // `#if __has_include("RCTBridge.h")` -> `#if __has_include(<React/RCTBridge.h>)`
       if (headerSet.has(headerName)) {

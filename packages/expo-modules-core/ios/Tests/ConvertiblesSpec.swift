@@ -6,7 +6,7 @@ import ExpoModulesTestCore
 @testable import ExpoModulesCore
 
 class ConvertiblesSpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
     let appContext = AppContext.create()
 
     describe("URL") {
@@ -69,13 +69,6 @@ class ConvertiblesSpec: ExpoSpec {
           expect(url.path(percentEncoded: true)) == path
           expect(url.path(percentEncoded: false)) == path.removingPercentEncoding
         }
-      }
-
-      it("throws when url contains percent alone") {
-        // The percent character alone must be percent-encoded to `%25` beforehand, otherwise it should throw an exception.
-        let urlString = "https://expo.dev/?param=%"
-
-        expect({ try URL.convert(from: urlString, appContext: appContext) }).to(throwError(errorType: UrlContainsInvalidCharactersException.self))
       }
 
       it("converts from url containing the anchor") {
@@ -370,6 +363,22 @@ class ConvertiblesSpec: ExpoSpec {
         let transparent = try CGColor.convert(from: "transparent", appContext: appContext)
         expect(transparent.alpha) == .zero
       }
+      
+      it("converts from PlatformColor") {
+        let color = try CGColor.convert(from: ["semantic": ["invalid_color", "systemRed", "systemBlue"]], appContext: appContext)
+        expect(color) == UIColor.systemRed.cgColor
+      }
+      
+      it("converts from DynamicColorIOS") {
+        let color = try CGColor.convert(from: ["dynamic": ["light": "#000", "dark": ["semantic": "systemGray"]]], appContext: appContext)
+        testColorComponents(color, 0x00, 0x00, 0x00, 0xFF)
+      }
+      
+      it("converts from DynamicColorIOS with traits") {
+        let color = try UIColor.convert(from: ["dynamic": ["light": "#000", "dark": ["semantic": "systemGray"]]], appContext: appContext)
+        let traits = UITraitCollection(userInterfaceStyle: .dark)
+        expect(color.resolvedColor(with: traits)) == UIColor.systemGray.resolvedColor(with: traits)
+      }
 
       it("throws when string is invalid") {
         testInvalidHexColor("")
@@ -386,6 +395,22 @@ class ConvertiblesSpec: ExpoSpec {
           expect($0).to(beAKindOf(Conversions.HexColorOverflowException.self))
           expect(($0 as! CodedError).description) == Conversions.HexColorOverflowException(UInt64(hex)).description
         })
+      }
+    }
+    
+    describe("Date") {
+      it("converts from `ISO 8601` String to Date") {
+        let date = try Date.convert(from: "2023-12-27T10:58:20.654Z", appContext: appContext)
+        let components = Calendar.current.dateComponents([.day, .month], from: date)
+        expect(components.month) == 12
+        expect(components.day) == 27
+      }
+      
+      it("converts from `Date.now()` to Date") {
+        let date = try Date.convert(from: 1703718341639, appContext: appContext)
+        let components = Calendar.current.dateComponents([.day, .month], from: date)
+        expect(components.month) == 12
+        expect(components.day) == 27
       }
     }
   }

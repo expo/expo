@@ -70,10 +70,24 @@ export const ImageScreens = [
     },
   },
   {
+    name: 'Static responsiveness using srcSet',
+    route: 'image/srcset',
+    getComponent() {
+      return optionalRequire(() => require('./ImageSrcSetScreen'));
+    },
+  },
+  {
     name: 'Transitions',
     route: 'image/transitions',
     getComponent() {
       return optionalRequire(() => require('./ImageTransitionsScreen'));
+    },
+  },
+  {
+    name: 'Tinting',
+    route: 'image/tinting',
+    getComponent() {
+      return optionalRequire(() => require('./ImageTintingScreen'));
     },
   },
   {

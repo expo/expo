@@ -26,25 +26,24 @@ export type Channel = {
   branches: string[]; // branchNames
 };
 
-function getChannelsAsync(appId: string) {
+async function getChannelsAsync(appId: string) {
   const variables = { appId };
 
-  return apiClient.request(query, variables).then((response) => {
-    const updateChannels = response.app.byId.updateChannels;
+  const response = await apiClient.request(query, variables);
+  const updateChannels = response.app.byId.updateChannels;
 
-    const channels: Channel[] = [];
+  const channels: Channel[] = [];
 
-    updateChannels.forEach((updateChannel) => {
-      const channel: Channel = {
-        name: updateChannel.name,
-        branches: updateChannel.updateBranches.map((branch) => branch.name),
-      };
+  updateChannels.forEach((updateChannel) => {
+    const channel: Channel = {
+      name: updateChannel.name,
+      branches: updateChannel.updateBranches.map((branch) => branch.name),
+    };
 
-      channels.push(channel);
-    });
-
-    return channels;
+    channels.push(channel);
   });
+
+  return channels;
 }
 
 export function useChannelsForApp(appId: string) {

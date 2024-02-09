@@ -1,17 +1,10 @@
 package expo.modules.splashscreen.singletons
 
-import android.annotation.SuppressLint
 import android.app.Activity
-import android.os.Build
 import androidx.core.view.ViewCompat
 
 object SplashScreenStatusBar {
   fun configureTranslucent(activity: Activity, translucent: Boolean?) {
-    @SuppressLint("ObsoleteSdkInt")
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      return
-    }
-
     translucent?.let {
       activity.runOnUiThread {
         // If the status bar is translucent hook into the window insets calculations

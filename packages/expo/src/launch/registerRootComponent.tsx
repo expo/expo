@@ -1,9 +1,7 @@
-import 'expo/build/Expo.fx';
+import '../Expo.fx';
 
 import * as React from 'react';
 import { AppRegistry, Platform } from 'react-native';
-
-import { createRoot } from './createRoot';
 
 type InitialProps = {
   exp: {
@@ -26,33 +24,25 @@ export default function registerRootComponent<P extends InitialProps>(
     qualifiedComponent = withDevTools(component);
   }
 
-  if (Platform.OS !== 'web') {
-    AppRegistry.registerComponent('main', () => qualifiedComponent);
-  } else if (
-    // Skip querying the DOM if we're in a Node.js environment.
-    typeof document !== 'undefined'
-  ) {
-    let tag = document.getElementById('root');
-
-    if (!tag) {
-      tag = document.getElementById('main');
+  AppRegistry.registerComponent('main', () => qualifiedComponent);
+  if (Platform.OS === 'web') {
+    // Use two if statements for better dead code elimination.
+    if (
+      // Skip querying the DOM if we're in a Node.js environment.
+      typeof document !== 'undefined'
+    ) {
+      const rootTag = document.getElementById('root');
       if (process.env.NODE_ENV !== 'production') {
-        // This block will be removed in production
-        if (tag) {
-          console.warn(
-            'Mounting the root React component to an HTML element with id "main" is deprecated. Use id "root" instead.'
+        if (!rootTag) {
+          throw new Error(
+            'Required HTML element with id "root" was not found in the document HTML.'
           );
         }
       }
+      AppRegistry.runApplication('main', {
+        rootTag,
+        hydrate: process.env.EXPO_PUBLIC_USE_STATIC === '1',
+      });
     }
-
-    if (!tag) {
-      throw new Error(
-        'Required HTML element with id "root" was not found in the document HTML. This is required for mounting the root React component.'
-      );
-    }
-
-    const rootTag = createRoot(tag);
-    rootTag.render(React.createElement(qualifiedComponent));
   }
 }

@@ -14,8 +14,14 @@ set -eox pipefail
 # If this script exits, trap it first and clean up the emulator
 trap cleanup EXIT
 
-if [[ "$EAS_BUILD_PROFILE" != "updates_testing" ]]; then
-  exit
+if [[ "$EAS_BUILD_PROFILE" != "updates_testing_debug" && "$EAS_BUILD_PROFILE" != "updates_testing_release" ]]; then
+  exit 0
+fi
+
+if [[ "$TEST_TV_BUILD" == "1" ]]; then
+  mkdir ./logs
+  echo "TV built successfully" > ./logs/detox-tests.log
+  exit 0
 fi
 
 ANDROID_EMULATOR=pixel_4
@@ -30,7 +36,13 @@ export NO_FLIPPER=1
 
 mkdir ./logs
 
-yarn generate-test-update-bundles
+# Unpack keys
+if [ -f "keys.tar" ]; then
+  tar xf keys.tar
+fi
+
+# Generate test bundles
+yarn generate-test-update-bundles $EAS_BUILD_PLATFORM
 
 if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
   # Start emulator
@@ -55,10 +67,18 @@ if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
   adb reverse tcp:4747 tcp:4747
 
   # Execute Android tests
-  detox test --configuration android.release 2>&1 | tee ./logs/detox-tests.log
+  if [[ "$EAS_BUILD_PROFILE" == "updates_testing_debug" ]]; then
+    detox test --configuration android.debug 2>&1 | tee ./logs/detox-tests.log
+  else
+    detox test --configuration android.release 2>&1 | tee ./logs/detox-tests.log
+  fi
 else
   # Execute iOS tests
-  detox test --configuration ios.debug 2>&1 | tee ./logs/detox-tests.log
+  if [[ "$EAS_BUILD_PROFILE" == "updates_testing_debug" ]]; then
+    detox test --configuration ios.debug 2>&1 | tee ./logs/detox-tests.log
+  else
+    detox test --configuration ios.release 2>&1 | tee ./logs/detox-tests.log
+  fi
 fi
 
 

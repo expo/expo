@@ -1,13 +1,13 @@
 import Debug from 'debug';
 import path from 'path';
 
+import { BaseModOptions, withBaseMod } from './withMod';
 import {
   ConfigPlugin,
   ExportedConfig,
   ExportedConfigWithProps,
   ModPlatform,
 } from '../Plugin.types';
-import { BaseModOptions, withBaseMod } from './withMod';
 
 const debug = Debug('expo:config-plugins:base-mods');
 
@@ -17,7 +17,7 @@ export type ForwardedBaseModOptions = Partial<
 
 export type BaseModProviderMethods<
   ModType,
-  Props extends ForwardedBaseModOptions = ForwardedBaseModOptions
+  Props extends ForwardedBaseModOptions = ForwardedBaseModOptions,
 > = {
   getFilePath: (config: ExportedConfigWithProps<ModType>, props: Props) => Promise<string> | string;
   read: (
@@ -41,7 +41,7 @@ export type BaseModProviderMethods<
 
 export type CreateBaseModProps<
   ModType,
-  Props extends ForwardedBaseModOptions = ForwardedBaseModOptions
+  Props extends ForwardedBaseModOptions = ForwardedBaseModOptions,
 > = {
   methodName: string;
   platform: ModPlatform;
@@ -50,7 +50,7 @@ export type CreateBaseModProps<
 
 export function createBaseMod<
   ModType,
-  Props extends ForwardedBaseModOptions = ForwardedBaseModOptions
+  Props extends ForwardedBaseModOptions = ForwardedBaseModOptions,
 >({
   methodName,
   platform,
@@ -153,7 +153,7 @@ function upperFirst(name: string): string {
 
 export function createPlatformBaseMod<
   ModType,
-  Props extends ForwardedBaseModOptions = ForwardedBaseModOptions
+  Props extends ForwardedBaseModOptions = ForwardedBaseModOptions,
 >({ modName, ...props }: Omit<CreateBaseModProps<ModType, Props>, 'methodName'>) {
   // Generate the function name to ensure it's uniform and also to improve stack traces.
   const methodName = `with${upperFirst(props.platform)}${upperFirst(modName)}BaseMod`;

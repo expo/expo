@@ -3,58 +3,51 @@
 exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
 <div>
   <div
-    class="css-c2t1qw-AppConfigProperty"
+    class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
   >
     <p
-      class="  css-1kfqm4n-TextComponent"
+      class="group css-1kfqm4n-TextComponent"
       data-text="true"
     >
       <a
-        class="css-1y48vg3"
+        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
         href="#name"
+        id="name"
       >
         <span
-          class="css-s3qkfm"
-          id="name"
-        />
-        <span
-          class="css-6n7j50"
+          class="inline"
         >
           <code
-            class="css-2z1nlz-PropertyName"
+            class="css-10gpz29-PropertyName"
             data-text="true"
           >
             name
           </code>
         </span>
-        <span
-          class="css-1n7zw4g"
+        <svg
+          aria-label="permalink"
+          class="icon-md inline-flex invisible group-hover:visible group-focus-visible:visible"
+          fill="none"
+          height="24"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <svg
-            aria-label="permalink"
-            class="anchor-icon"
-            fill="none"
-            height="24"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-            <path
-              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-          </svg>
-        </span>
+          <path
+            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+            stroke="#9B9B9B"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+          />
+          <path
+            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+            stroke="#9B9B9B"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+          />
+        </svg>
       </a>
     </p>
     <p
@@ -63,7 +56,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     >
       Type: 
       <code
-        class="css-iwb7ur-TextComponent"
+        class="css-ite7ne-TextComponent"
         data-text="true"
       >
         string
@@ -76,16 +69,17 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       Name of your app.
     </p>
     <details
-      class="css-u1z7e0-Collapsible"
+      class="css-xpa10j"
+      id="bare-workflow"
     >
       <summary
-        class="css-1iomq2j-Collapsible"
+        class="group css-rdh8rz"
       >
         <div
-          class="css-166ujkg-Collapsible"
+          class="css-qos8r6"
         >
           <svg
-            class="icon-sm text-icon-default css-1wgpnk4-Collapsible"
+            class="icon-sm text-icon-default css-nlesit"
             fill="none"
             role="img"
             viewBox="0 0 24 24"
@@ -102,57 +96,19 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </g>
           </svg>
         </div>
-        <span
-          class="css-1n5kx9e-TextComponent"
-          data-text="true"
+        <a
+          class="inline-flex gap-1.5 items-center scroll-m-5 relative"
+          href="#bare-workflow"
         >
-          Bare Workflow
-        </span>
-      </summary>
-      <div
-        class="css-b8vpa7-Collapsible"
-      >
-        <p
-          class="mb-4 css-1kfqm4n-TextComponent"
-          data-text="true"
-        >
-          Edit the 'Display Name' field in Xcode
-        </p>
-      </div>
-    </details>
-    <div />
-  </div>
-  <div
-    class="css-c2t1qw-AppConfigProperty"
-  >
-    <p
-      class="  css-1kfqm4n-TextComponent"
-      data-text="true"
-    >
-      <a
-        class="css-1y48vg3"
-        href="#androidnavigationbar"
-      >
-        <span
-          class="css-s3qkfm"
-          id="androidnavigationbar"
-        />
-        <span
-          class="css-6n7j50"
-        >
-          <code
-            class="css-2z1nlz-PropertyName"
+          <span
+            class="css-1n5kx9e-TextComponent"
             data-text="true"
           >
-            androidNavigationBar
-          </code>
-        </span>
-        <span
-          class="css-1n7zw4g"
-        >
+            Bare Workflow
+          </span>
           <svg
             aria-label="permalink"
-            class="anchor-icon"
+            class="icon-sm inline-flex invisible group-hover:visible group-focus-visible:visible"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -174,7 +130,66 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               stroke-width="2"
             />
           </svg>
+        </a>
+      </summary>
+      <div
+        class="last:[&>*]:!mb-1 css-qbaxbl"
+      >
+        <p
+          class="mb-4 css-1kfqm4n-TextComponent"
+          data-text="true"
+        >
+          Edit the 'Display Name' field in Xcode
+        </p>
+      </div>
+    </details>
+  </div>
+  <div
+    class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
+  >
+    <p
+      class="group css-1kfqm4n-TextComponent"
+      data-text="true"
+    >
+      <a
+        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
+        href="#androidnavigationbar"
+        id="androidnavigationbar"
+      >
+        <span
+          class="inline"
+        >
+          <code
+            class="css-10gpz29-PropertyName"
+            data-text="true"
+          >
+            androidNavigationBar
+          </code>
         </span>
+        <svg
+          aria-label="permalink"
+          class="icon-md inline-flex invisible group-hover:visible group-focus-visible:visible"
+          fill="none"
+          height="24"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+            stroke="#9B9B9B"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+          />
+          <path
+            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+            stroke="#9B9B9B"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+          />
+        </svg>
       </a>
     </p>
     <p
@@ -183,7 +198,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     >
       Type: 
       <code
-        class="css-iwb7ur-TextComponent"
+        class="css-ite7ne-TextComponent"
         data-text="true"
       >
         object
@@ -196,16 +211,17 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       Configuration for the bottom navigation bar on Android.
     </p>
     <details
-      class="css-u1z7e0-Collapsible"
+      class="css-xpa10j"
+      id="expokit"
     >
       <summary
-        class="css-1iomq2j-Collapsible"
+        class="group css-rdh8rz"
       >
         <div
-          class="css-166ujkg-Collapsible"
+          class="css-qos8r6"
         >
           <svg
-            class="icon-sm text-icon-default css-1wgpnk4-Collapsible"
+            class="icon-sm text-icon-default css-nlesit"
             fill="none"
             role="img"
             viewBox="0 0 24 24"
@@ -222,415 +238,19 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </g>
           </svg>
         </div>
-        <span
-          class="css-1n5kx9e-TextComponent"
-          data-text="true"
+        <a
+          class="inline-flex gap-1.5 items-center scroll-m-5 relative"
+          href="#expokit"
         >
-          ExpoKit
-        </span>
-      </summary>
-      <div
-        class="css-b8vpa7-Collapsible"
-      >
-        <p
-          class="mb-4 css-1kfqm4n-TextComponent"
-          data-text="true"
-        >
-          Set this property using AppConstants.java.
-        </p>
-      </div>
-    </details>
-    <details
-      class="css-u1z7e0-Collapsible"
-    >
-      <summary
-        class="css-1iomq2j-Collapsible"
-      >
-        <div
-          class="css-166ujkg-Collapsible"
-        >
-          <svg
-            class="icon-sm text-icon-default css-1wgpnk4-Collapsible"
-            fill="none"
-            role="img"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <g
-              id="triangle-down"
-            >
-              <path
-                d="M18.8831 9.43005H5.11694L12 16.3131L18.8831 9.43005Z"
-                fill="currentColor"
-                id="Vector 250"
-              />
-            </g>
-          </svg>
-        </div>
-        <span
-          class="css-1n5kx9e-TextComponent"
-          data-text="true"
-        >
-          Bare Workflow
-        </span>
-      </summary>
-      <div
-        class="css-b8vpa7-Collapsible"
-      >
-        <p
-          class="mb-4 css-1kfqm4n-TextComponent"
-          data-text="true"
-        >
-          Set this property using just Xcode
-        </p>
-      </div>
-    </details>
-    <div>
-      <div
-        class="css-c2t1qw-AppConfigProperty"
-      >
-        <p
-          class="  css-1kfqm4n-TextComponent"
-          data-text="true"
-        >
-          <a
-            class="css-1y48vg3"
-            href="#visible"
-          >
-            <span
-              class="css-s3qkfm"
-              id="visible"
-            />
-            <span
-              class="css-6n7j50"
-            >
-              <code
-                class="css-2z1nlz-PropertyName"
-                data-text="true"
-              >
-                visible
-              </code>
-            </span>
-            <span
-              class="css-1n7zw4g"
-            >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </p>
-        <p
-          class="css-1lwc34i-AppConfigProperty"
-          data-text="true"
-        >
-          Type: 
-          <code
-            class="css-iwb7ur-TextComponent"
+          <span
+            class="css-1n5kx9e-TextComponent"
             data-text="true"
           >
-            enum
-          </code>
-           • Path:
-           
-          <code
-            class="css-te23k8-AppConfigProperty"
-          >
-            androidNavigationBar
-            .
-            visible
-          </code>
-        </p>
-        <p
-          class="mb-4 css-1kfqm4n-TextComponent"
-          data-text="true"
-        >
-          Determines how and when the navigation bar is shown.
-        </p>
-        <details
-          class="css-u1z7e0-Collapsible"
-        >
-          <summary
-            class="css-1iomq2j-Collapsible"
-          >
-            <div
-              class="css-166ujkg-Collapsible"
-            >
-              <svg
-                class="icon-sm text-icon-default css-1wgpnk4-Collapsible"
-                fill="none"
-                role="img"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <g
-                  id="triangle-down"
-                >
-                  <path
-                    d="M18.8831 9.43005H5.11694L12 16.3131L18.8831 9.43005Z"
-                    fill="currentColor"
-                    id="Vector 250"
-                  />
-                </g>
-              </svg>
-            </div>
-            <span
-              class="css-1n5kx9e-TextComponent"
-              data-text="true"
-            >
-              ExpoKit
-            </span>
-          </summary>
-          <div
-            class="css-b8vpa7-Collapsible"
-          >
-            <p
-              class="mb-4 css-1kfqm4n-TextComponent"
-              data-text="true"
-            >
-              Set this property using Xcode.
-            </p>
-          </div>
-        </details>
-        <div>
-          <div
-            class="css-c2t1qw-AppConfigProperty"
-          >
-            <p
-              class="  css-1kfqm4n-TextComponent"
-              data-text="true"
-            >
-              <a
-                class="css-1y48vg3"
-                href="#always"
-              >
-                <span
-                  class="css-s3qkfm"
-                  id="always"
-                />
-                <span
-                  class="css-6n7j50"
-                >
-                  <code
-                    class="css-2z1nlz-PropertyName"
-                    data-text="true"
-                  >
-                    always
-                  </code>
-                </span>
-                <span
-                  class="css-1n7zw4g"
-                >
-                  <svg
-                    aria-label="permalink"
-                    class="anchor-icon"
-                    fill="none"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                      stroke="#9B9B9B"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    />
-                    <path
-                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                      stroke="#9B9B9B"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    />
-                  </svg>
-                </span>
-              </a>
-            </p>
-            <p
-              class="css-1lwc34i-AppConfigProperty"
-              data-text="true"
-            >
-              Type: 
-              <code
-                class="css-iwb7ur-TextComponent"
-                data-text="true"
-              >
-                boolean
-              </code>
-               • Path:
-               
-              <code
-                class="css-te23k8-AppConfigProperty"
-              >
-                androidNavigationBar.visible
-                .
-                always
-              </code>
-            </p>
-            <p
-              class="mb-4 css-1kfqm4n-TextComponent"
-              data-text="true"
-            >
-              Test sub-sub-property
-            </p>
-            <div />
-          </div>
-        </div>
-      </div>
-      <div
-        class="css-c2t1qw-AppConfigProperty"
-      >
-        <p
-          class="  css-1kfqm4n-TextComponent"
-          data-text="true"
-        >
-          <a
-            class="css-1y48vg3"
-            href="#backgroundcolor"
-          >
-            <span
-              class="css-s3qkfm"
-              id="backgroundcolor"
-            />
-            <span
-              class="css-6n7j50"
-            >
-              <code
-                class="css-2z1nlz-PropertyName"
-                data-text="true"
-              >
-                backgroundColor
-              </code>
-            </span>
-            <span
-              class="css-1n7zw4g"
-            >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </p>
-        <p
-          class="css-1lwc34i-AppConfigProperty"
-          data-text="true"
-        >
-          Type: 
-          <code
-            class="css-iwb7ur-TextComponent"
-            data-text="true"
-          >
-            string
-          </code>
-           • Path:
-           
-          <code
-            class="css-te23k8-AppConfigProperty"
-          >
-            androidNavigationBar
-            .
-            backgroundColor
-          </code>
-        </p>
-        <p
-          class="mb-4 css-1kfqm4n-TextComponent"
-          data-text="true"
-        >
-          Specifies the background color of the navigation bar.
-        </p>
-        
-
-        <p
-          class="mb-4 css-1kfqm4n-TextComponent"
-          data-text="true"
-        >
-          6 character long hex color string, eg: 
-          <code
-            class="css-1a6y07t-TextComponent"
-            data-text="true"
-          >
-            '#000000'
-          </code>
-        </p>
-        <div />
-      </div>
-    </div>
-  </div>
-  <div
-    class="css-c2t1qw-AppConfigProperty"
-  >
-    <p
-      class="  css-1kfqm4n-TextComponent"
-      data-text="true"
-    >
-      <a
-        class="css-1y48vg3"
-        href="#intentfilters"
-      >
-        <span
-          class="css-s3qkfm"
-          id="intentfilters"
-        />
-        <span
-          class="css-6n7j50"
-        >
-          <code
-            class="css-2z1nlz-PropertyName"
-            data-text="true"
-          >
-            intentFilters
-          </code>
-        </span>
-        <span
-          class="css-1n7zw4g"
-        >
+            ExpoKit
+          </span>
           <svg
             aria-label="permalink"
-            class="anchor-icon"
+            class="icon-sm inline-flex invisible group-hover:visible group-focus-visible:visible"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -652,38 +272,31 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               stroke-width="2"
             />
           </svg>
-        </span>
-      </a>
-    </p>
-    <p
-      class="css-1lwc34i-AppConfigProperty"
-      data-text="true"
-    >
-      Type: 
-      <code
-        class="css-iwb7ur-TextComponent"
-        data-text="true"
+        </a>
+      </summary>
+      <div
+        class="last:[&>*]:!mb-1 css-qbaxbl"
       >
-        array
-      </code>
-    </p>
-    <p
-      class="mb-4 css-1kfqm4n-TextComponent"
-      data-text="true"
-    >
-      Configuration for setting an array of custom intent filters in Android manifest.
-    </p>
+        <p
+          class="mb-4 css-1kfqm4n-TextComponent"
+          data-text="true"
+        >
+          Set this property using AppConstants.java.
+        </p>
+      </div>
+    </details>
     <details
-      class="css-u1z7e0-Collapsible"
+      class="css-xpa10j"
+      id="bare-workflow-1"
     >
       <summary
-        class="css-1iomq2j-Collapsible"
+        class="group css-rdh8rz"
       >
         <div
-          class="css-166ujkg-Collapsible"
+          class="css-qos8r6"
         >
           <svg
-            class="icon-sm text-icon-default css-1wgpnk4-Collapsible"
+            class="icon-sm text-icon-default css-nlesit"
             fill="none"
             role="img"
             viewBox="0 0 24 24"
@@ -700,120 +313,249 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </g>
           </svg>
         </div>
-        <span
-          class="css-1n5kx9e-TextComponent"
-          data-text="true"
+        <a
+          class="inline-flex gap-1.5 items-center scroll-m-5 relative"
+          href="#bare-workflow-1"
         >
-          Bare Workflow
-        </span>
+          <span
+            class="css-1n5kx9e-TextComponent"
+            data-text="true"
+          >
+            Bare Workflow
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-sm inline-flex invisible group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
       </summary>
       <div
-        class="css-b8vpa7-Collapsible"
+        class="last:[&>*]:!mb-1 css-qbaxbl"
       >
         <p
           class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
-          This is set in AndroidManifest.xml directly.
+          Set this property using just Xcode
         </p>
       </div>
     </details>
-    <blockquote
-      class="css-zknray-Callout"
-      data-testid="callout-container"
+    <div
+      class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
     >
-      <div
-        class="css-7jywx8-Callout"
+      <p
+        class="group css-1kfqm4n-TextComponent"
+        data-text="true"
       >
-        <svg
-          class="icon-sm text-icon-default"
-          fill="currentColor"
-          role="img"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
+        <a
+          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
+          href="#visible"
+          id="visible"
         >
-          <g
-            id="info-circle"
+          <span
+            class="inline"
+          >
+            <code
+              class="css-10gpz29-PropertyName"
+              data-text="true"
+            >
+              visible
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
           >
             <path
-              clip-rule="evenodd"
-              d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
-              fill-rule="evenodd"
-              id="Solid"
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
             />
-          </g>
-        </svg>
-      </div>
-      <div
-        class="css-1m74yfi-Callout"
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </p>
+      <p
+        class="css-1lwc34i-AppConfigProperty"
+        data-text="true"
       >
-        <strong
-          class="css-bvflvn-TextComponent"
-        >
-          Example
-        </strong>
-        <p
-          class="mb-4 css-1kfqm4n-TextComponent"
+        Type: 
+        <code
+          class="css-ite7ne-TextComponent"
           data-text="true"
         >
-          [{  "autoVerify": true,  "data": {"host": "*.example.com"  }  }]
-        </p>
-      </div>
-    </blockquote>
-    <div>
+          enum
+        </code>
+         • Path:
+         
+        <code
+          class="css-te23k8-AppConfigProperty"
+        >
+          androidNavigationBar
+          .
+          visible
+        </code>
+      </p>
+      <p
+        class="mb-4 css-1kfqm4n-TextComponent"
+        data-text="true"
+      >
+        Determines how and when the navigation bar is shown.
+      </p>
+      <details
+        class="css-xpa10j"
+        id="expokit-1"
+      >
+        <summary
+          class="group css-rdh8rz"
+        >
+          <div
+            class="css-qos8r6"
+          >
+            <svg
+              class="icon-sm text-icon-default css-nlesit"
+              fill="none"
+              role="img"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g
+                id="triangle-down"
+              >
+                <path
+                  d="M18.8831 9.43005H5.11694L12 16.3131L18.8831 9.43005Z"
+                  fill="currentColor"
+                  id="Vector 250"
+                />
+              </g>
+            </svg>
+          </div>
+          <a
+            class="inline-flex gap-1.5 items-center scroll-m-5 relative"
+            href="#expokit-1"
+          >
+            <span
+              class="css-1n5kx9e-TextComponent"
+              data-text="true"
+            >
+              ExpoKit
+            </span>
+            <svg
+              aria-label="permalink"
+              class="icon-sm inline-flex invisible group-hover:visible group-focus-visible:visible"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </a>
+        </summary>
+        <div
+          class="last:[&>*]:!mb-1 css-qbaxbl"
+        >
+          <p
+            class="mb-4 css-1kfqm4n-TextComponent"
+            data-text="true"
+          >
+            Set this property using Xcode.
+          </p>
+        </div>
+      </details>
       <div
-        class="css-c2t1qw-AppConfigProperty"
+        class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
       >
         <p
-          class="  css-1kfqm4n-TextComponent"
+          class="group css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <a
-            class="css-1y48vg3"
-            href="#autoverify"
+            class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
+            href="#always"
+            id="always"
           >
             <span
-              class="css-s3qkfm"
-              id="autoverify"
-            />
-            <span
-              class="css-6n7j50"
+              class="inline"
             >
               <code
-                class="css-2z1nlz-PropertyName"
+                class="css-10gpz29-PropertyName"
                 data-text="true"
               >
-                autoVerify
+                always
               </code>
             </span>
-            <span
-              class="css-1n7zw4g"
+            <svg
+              aria-label="permalink"
+              class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
           </a>
         </p>
         <p
@@ -822,7 +564,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           Type: 
           <code
-            class="css-iwb7ur-TextComponent"
+            class="css-ite7ne-TextComponent"
             data-text="true"
           >
             boolean
@@ -832,72 +574,469 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           <code
             class="css-te23k8-AppConfigProperty"
           >
-            intentFilters
+            androidNavigationBar.visible
             .
-            autoVerify
+            always
           </code>
         </p>
         <p
           class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
-          You may also use an intent filter to set your app as the default handler for links
+          Test sub-sub-property
         </p>
-        <div />
       </div>
+    </div>
+    <div
+      class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
+    >
+      <p
+        class="group css-1kfqm4n-TextComponent"
+        data-text="true"
+      >
+        <a
+          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
+          href="#backgroundcolor"
+          id="backgroundcolor"
+        >
+          <span
+            class="inline"
+          >
+            <code
+              class="css-10gpz29-PropertyName"
+              data-text="true"
+            >
+              backgroundColor
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </p>
+      <p
+        class="css-1lwc34i-AppConfigProperty"
+        data-text="true"
+      >
+        Type: 
+        <code
+          class="css-ite7ne-TextComponent"
+          data-text="true"
+        >
+          string
+        </code>
+         • Path:
+         
+        <code
+          class="css-te23k8-AppConfigProperty"
+        >
+          androidNavigationBar
+          .
+          backgroundColor
+        </code>
+      </p>
+      <p
+        class="mb-4 css-1kfqm4n-TextComponent"
+        data-text="true"
+      >
+        Specifies the background color of the navigation bar.
+      </p>
+      
+
+      <p
+        class="mb-4 css-1kfqm4n-TextComponent"
+        data-text="true"
+      >
+        6 character long hex color string, eg: 
+        <code
+          class="css-qyuze8-TextComponent"
+          data-text="true"
+        >
+          '#000000'
+        </code>
+      </p>
+    </div>
+  </div>
+  <div
+    class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
+  >
+    <p
+      class="group css-1kfqm4n-TextComponent"
+      data-text="true"
+    >
+      <a
+        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
+        href="#intentfilters"
+        id="intentfilters"
+      >
+        <span
+          class="inline"
+        >
+          <code
+            class="css-10gpz29-PropertyName"
+            data-text="true"
+          >
+            intentFilters
+          </code>
+        </span>
+        <svg
+          aria-label="permalink"
+          class="icon-md inline-flex invisible group-hover:visible group-focus-visible:visible"
+          fill="none"
+          height="24"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+            stroke="#9B9B9B"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+          />
+          <path
+            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+            stroke="#9B9B9B"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+          />
+        </svg>
+      </a>
+    </p>
+    <p
+      class="css-1lwc34i-AppConfigProperty"
+      data-text="true"
+    >
+      Type: 
+      <code
+        class="css-ite7ne-TextComponent"
+        data-text="true"
+      >
+        array
+      </code>
+    </p>
+    <p
+      class="mb-4 css-1kfqm4n-TextComponent"
+      data-text="true"
+    >
+      Configuration for setting an array of custom intent filters in Android manifest.
+    </p>
+    <details
+      class="css-xpa10j"
+      id="bare-workflow-2"
+    >
+      <summary
+        class="group css-rdh8rz"
+      >
+        <div
+          class="css-qos8r6"
+        >
+          <svg
+            class="icon-sm text-icon-default css-nlesit"
+            fill="none"
+            role="img"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g
+              id="triangle-down"
+            >
+              <path
+                d="M18.8831 9.43005H5.11694L12 16.3131L18.8831 9.43005Z"
+                fill="currentColor"
+                id="Vector 250"
+              />
+            </g>
+          </svg>
+        </div>
+        <a
+          class="inline-flex gap-1.5 items-center scroll-m-5 relative"
+          href="#bare-workflow-2"
+        >
+          <span
+            class="css-1n5kx9e-TextComponent"
+            data-text="true"
+          >
+            Bare Workflow
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-sm inline-flex invisible group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </summary>
       <div
-        class="css-c2t1qw-AppConfigProperty"
+        class="last:[&>*]:!mb-1 css-qbaxbl"
       >
         <p
-          class="  css-1kfqm4n-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
+          data-text="true"
+        >
+          This is set in AndroidManifest.xml directly.
+        </p>
+      </div>
+    </details>
+    <span
+      class="grid grid-cols-1 gap-2 mb-6"
+    >
+      <strong
+        class="css-bvflvn-TextComponent"
+      >
+        Example
+      </strong>
+      <span
+        class="css-1nzh6mw-CodeBlock"
+        data-text="true"
+      >
+        <code
+          class="css-1360qeq-CodeBlock"
+          data-text="true"
+        >
+          [
+  {
+    "autoVerify": true,
+    "data": {
+      "host": "*.example.com"
+    }
+  }
+]
+        </code>
+      </span>
+    </span>
+    <div
+      class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
+    >
+      <p
+        class="group css-1kfqm4n-TextComponent"
+        data-text="true"
+      >
+        <a
+          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
+          href="#autoverify"
+          id="autoverify"
+        >
+          <span
+            class="inline"
+          >
+            <code
+              class="css-10gpz29-PropertyName"
+              data-text="true"
+            >
+              autoVerify
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </p>
+      <p
+        class="css-1lwc34i-AppConfigProperty"
+        data-text="true"
+      >
+        Type: 
+        <code
+          class="css-ite7ne-TextComponent"
+          data-text="true"
+        >
+          boolean
+        </code>
+         • Path:
+         
+        <code
+          class="css-te23k8-AppConfigProperty"
+        >
+          intentFilters
+          .
+          autoVerify
+        </code>
+      </p>
+      <p
+        class="mb-4 css-1kfqm4n-TextComponent"
+        data-text="true"
+      >
+        You may also use an intent filter to set your app as the default handler for links
+      </p>
+    </div>
+    <div
+      class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
+    >
+      <p
+        class="group css-1kfqm4n-TextComponent"
+        data-text="true"
+      >
+        <a
+          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
+          href="#data"
+          id="data"
+        >
+          <span
+            class="inline"
+          >
+            <code
+              class="css-10gpz29-PropertyName"
+              data-text="true"
+            >
+              data
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </p>
+      <p
+        class="css-1lwc34i-AppConfigProperty"
+        data-text="true"
+      >
+        Type: 
+        <code
+          class="css-ite7ne-TextComponent"
+          data-text="true"
+        >
+          array || object
+        </code>
+         • Path:
+         
+        <code
+          class="css-te23k8-AppConfigProperty"
+        >
+          intentFilters
+          .
+          data
+        </code>
+      </p>
+      <div
+        class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
+      >
+        <p
+          class="group css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <a
-            class="css-1y48vg3"
-            href="#data"
+            class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
+            href="#host"
+            id="host"
           >
             <span
-              class="css-s3qkfm"
-              id="data"
-            />
-            <span
-              class="css-6n7j50"
+              class="inline"
             >
               <code
-                class="css-2z1nlz-PropertyName"
+                class="css-10gpz29-PropertyName"
                 data-text="true"
               >
-                data
+                host
               </code>
             </span>
-            <span
-              class="css-1n7zw4g"
+            <svg
+              aria-label="permalink"
+              class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
           </a>
         </p>
         <p
@@ -906,101 +1045,21 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           Type: 
           <code
-            class="css-iwb7ur-TextComponent"
+            class="css-ite7ne-TextComponent"
             data-text="true"
           >
-            array || object
+            string
           </code>
            • Path:
            
           <code
             class="css-te23k8-AppConfigProperty"
           >
-            intentFilters
+            intentFilters.data
             .
-            data
+            host
           </code>
         </p>
-        <div>
-          <div
-            class="css-c2t1qw-AppConfigProperty"
-          >
-            <p
-              class="  css-1kfqm4n-TextComponent"
-              data-text="true"
-            >
-              <a
-                class="css-1y48vg3"
-                href="#host"
-              >
-                <span
-                  class="css-s3qkfm"
-                  id="host"
-                />
-                <span
-                  class="css-6n7j50"
-                >
-                  <code
-                    class="css-2z1nlz-PropertyName"
-                    data-text="true"
-                  >
-                    host
-                  </code>
-                </span>
-                <span
-                  class="css-1n7zw4g"
-                >
-                  <svg
-                    aria-label="permalink"
-                    class="anchor-icon"
-                    fill="none"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                      stroke="#9B9B9B"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    />
-                    <path
-                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                      stroke="#9B9B9B"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    />
-                  </svg>
-                </span>
-              </a>
-            </p>
-            <p
-              class="css-1lwc34i-AppConfigProperty"
-              data-text="true"
-            >
-              Type: 
-              <code
-                class="css-iwb7ur-TextComponent"
-                data-text="true"
-              >
-                string
-              </code>
-               • Path:
-               
-              <code
-                class="css-te23k8-AppConfigProperty"
-              >
-                intentFilters.data
-                .
-                host
-              </code>
-            </p>
-            <div />
-          </div>
-        </div>
       </div>
     </div>
   </div>

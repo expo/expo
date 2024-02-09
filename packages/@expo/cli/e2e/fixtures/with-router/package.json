@@ -1,22 +1,20 @@
 {
   "private": true,
+  "main": "expo-router/entry",
   "dependencies": {
-    "expo": "^48.0.4",
-    "expo-constants": "~14.2.1",
-    "expo-linking": "~4.0.1",
-    "expo-router": "1.4.3",
-    "expo-splash-screen": "~0.18.1",
-    "expo-status-bar": "~1.4.2",
+    "expo": "^49",
     "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "react-native": "0.71.3",
-    "react-native-gesture-handler": "~2.9.0",
-    "react-native-safe-area-context": "4.5.0",
-    "react-native-screens": "~3.20.0",
-    "react-native-web": "~0.18.7"
+    "react-native": "0.72.6",
+    "expo-constants": "^14.4.2",
+    "expo-linking": "^6.0.0",
+    "expo-router": "^2",
+    "expo-splash-screen": "^0.22.0",
+    "expo-status-bar": "^1.7.1",
+    "react-native-safe-area-context": "^4.7.4",
+    "react-native-screens": "^3.27.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.19.3"
-  },
-  "version": "1.0.0"
+    "@babel/core": "^7.20.0"
+  }
 }
+

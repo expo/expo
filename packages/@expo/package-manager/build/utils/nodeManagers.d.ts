@@ -1,8 +1,9 @@
 import { PackageManagerOptions } from '../PackageManager';
+import { BunPackageManager } from '../node/BunPackageManager';
 import { NpmPackageManager } from '../node/NpmPackageManager';
 import { PnpmPackageManager } from '../node/PnpmPackageManager';
 import { YarnPackageManager } from '../node/YarnPackageManager';
-export type NodePackageManager = NpmPackageManager | PnpmPackageManager | YarnPackageManager;
+export type NodePackageManager = NpmPackageManager | PnpmPackageManager | YarnPackageManager | BunPackageManager;
 export type NodePackageManagerForProject = PackageManagerOptions & Partial<Record<NodePackageManager['name'], boolean>>;
 /** The order of the package managers to use when resolving automatically */
 export declare const RESOLUTION_ORDER: NodePackageManager['name'][];

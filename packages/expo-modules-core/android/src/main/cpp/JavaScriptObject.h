@@ -8,6 +8,7 @@
 #include "WeakRuntimeHolder.h"
 #include "JNIFunctionBody.h"
 #include "JNIDeallocator.h"
+#include "JSIUtils.h"
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
@@ -18,9 +19,11 @@ namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
 
 namespace expo {
-class JavaScriptValue;
 
 class JavaScriptFunction;
+class JavaScriptValue;
+class JavaScriptWeakObject;
+
 
 /**
  * Represents any JavaScript object. Its purpose is to exposes `jsi::Object` API back to Kotlin.
@@ -71,13 +74,6 @@ public:
 
   static jsi::Object preparePropertyDescriptor(jsi::Runtime &jsRuntime, int options);
 
-  static void defineProperty(
-    jsi::Runtime &runtime,
-    jsi::Object *jsthis,
-    const std::string &name,
-    jsi::Object descriptor
-  );
-
   void defineNativeDeallocator(
     jni::alias_ref<JNIFunctionBody::javaobject> deallocator
   );
@@ -96,6 +92,8 @@ private:
   );
 
   jni::local_ref<jni::JArrayClass<jstring>> jniGetPropertyNames();
+
+  jni::local_ref<jni::HybridClass<JavaScriptWeakObject, Destructible>::javaobject> createWeak();
 
   jni::local_ref<jni::HybridClass<JavaScriptFunction, Destructible>::javaobject> jniAsFunction();
 
@@ -139,7 +137,7 @@ private:
     auto cName = name->toStdString();
     jsi::Object descriptor = preparePropertyDescriptor(jsRuntime, options);
     descriptor.setProperty(jsRuntime, "value", jsi_type_converter<T>::convert(jsRuntime, value));
-    JavaScriptObject::defineProperty(jsRuntime, jsObject.get(), cName, std::move(descriptor));
+    common::definePropertyOnJSIObject(jsRuntime, jsObject.get(), cName.c_str(), std::move(descriptor));
   }
 };
 } // namespace expo

@@ -4,7 +4,7 @@
  * This file is compiled without ARC - the memory needs to be managed by hand.
  */
 
-#import "RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h"
+#import <EXDevLauncher/RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h>
 
 #import <React/RCTReconnectingWebSocket.h>
 

@@ -1,103 +1,157 @@
 package expo.modules.battery
 
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
-import android.os.Build
+import android.os.Bundle
 import android.os.PowerManager
-import expo.modules.core.ExportedModule
-import expo.modules.core.ModuleRegistry
-import expo.modules.core.Promise
-import expo.modules.core.interfaces.ExpoMethod
-import expo.modules.core.interfaces.RegistryLifecycleListener
-import expo.modules.core.interfaces.services.EventEmitter
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.types.Enumerable
+import java.lang.ref.WeakReference
 
-class BatteryModule(context: Context) : ExportedModule(context), RegistryLifecycleListener {
-  private val NAME = "ExpoBattery"
+internal const val BATTERY_LEVEL_EVENT_NAME = "Expo.batteryLevelDidChange"
+internal const val BATTERY_CHARGED_EVENT_NAME = "Expo.batteryStateDidChange"
+internal const val POWER_MODE_EVENT_NAME = "Expo.powerModeDidChange"
 
+class BatteryModule : Module() {
   enum class BatteryState(val value: Int) : Enumerable {
-    UNKNOWN(0), UNPLUGGED(1), CHARGING(2), FULL(3);
+    UNKNOWN(0),
+    UNPLUGGED(1),
+    CHARGING(2),
+    FULL(3)
   }
 
-  override fun getName(): String {
-    return NAME
-  }
+  override fun definition() = ModuleDefinition {
+    Name("ExpoBattery")
 
-  override fun getConstants(): Map<String, Any> {
-    return hashMapOf("isSupported" to true)
-  }
+    Constants("isSupported" to true)
 
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    val eventEmitter = moduleRegistry.getModule(EventEmitter::class.java)
-    context.registerReceiver(BatteryStateReceiver(eventEmitter), IntentFilter(Intent.ACTION_BATTERY_CHANGED))
-    context.registerReceiver(PowerSaverReceiver(eventEmitter), IntentFilter("android.os.action.POWER_SAVE_MODE_CHANGED"))
-    val ifilter = IntentFilter().apply {
-      addAction(Intent.ACTION_BATTERY_LOW)
-      addAction(Intent.ACTION_BATTERY_OKAY)
-    }
-    context.registerReceiver(BatteryLevelReceiver(eventEmitter), ifilter)
-  }
-
-  @ExpoMethod
-  fun getBatteryLevelAsync(promise: Promise) {
-    val batteryIntent: Intent? = context.applicationContext.registerReceiver(
-      null,
-      IntentFilter(Intent.ACTION_BATTERY_CHANGED)
+    Events(
+      BATTERY_LEVEL_EVENT_NAME,
+      BATTERY_CHARGED_EVENT_NAME,
+      POWER_MODE_EVENT_NAME
     )
-    if (batteryIntent == null) {
-      promise.resolve(-1)
-      return
+
+    OnCreate {
+      registerBroadcastReceivers(context)
     }
-    val level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
-    val scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
-    val batteryLevel = if (level != -1 && scale != -1) {
-      level / scale.toFloat()
-    } else {
-      -1f
+
+    OnDestroy {
+      unregisterBroadcastReceivers(context)
     }
-    promise.resolve(batteryLevel)
+
+    OnActivityEntersForeground {
+      registerBroadcastReceivers(context)
+    }
+
+    OnActivityEntersBackground {
+      unregisterBroadcastReceivers(context)
+    }
+
+    AsyncFunction("getBatteryLevelAsync") {
+      val batteryIntent = context.applicationContext.registerReceiver(
+        null,
+        IntentFilter(Intent.ACTION_BATTERY_CHANGED)
+      ) ?: return@AsyncFunction -1
+
+      val level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
+      val scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
+      val batteryLevel = if (level != -1 && scale != -1) {
+        level / scale.toFloat()
+      } else {
+        -1f
+      }
+
+      return@AsyncFunction batteryLevel
+    }
+
+    AsyncFunction("getBatteryStateAsync") {
+      val batteryIntent = context.applicationContext.registerReceiver(
+        null,
+        IntentFilter(Intent.ACTION_BATTERY_CHANGED)
+      ) ?: return@AsyncFunction BatteryState.UNKNOWN.value
+
+      val status = batteryIntent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
+      return@AsyncFunction batteryStatusNativeToJS(status).value
+    }
+
+    AsyncFunction("isLowPowerModeEnabledAsync") {
+      isLowPowerModeEnabled
+    }
+
+    AsyncFunction("isBatteryOptimizationEnabledAsync") {
+      val packageName = context.applicationContext.packageName
+      val powerManager = context.applicationContext.getSystemService(Context.POWER_SERVICE) as? PowerManager
+      return@AsyncFunction powerManager?.isIgnoringBatteryOptimizations(packageName) == false
+    }
   }
 
-  @ExpoMethod
-  fun getBatteryStateAsync(promise: Promise) {
-    val batteryIntent: Intent? = context.applicationContext.registerReceiver(
-      null,
-      IntentFilter(Intent.ACTION_BATTERY_CHANGED)
-    )
-    if (batteryIntent == null) {
-      promise.resolve(BatteryState.UNKNOWN.value)
-      return
+  private val context: Context
+    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+
+  private val broadcastReceivers = mutableListOf<BroadcastReceiver>()
+
+  private inline fun accessBroadcastReceivers(block: MutableList<BroadcastReceiver>.() -> Unit) {
+    synchronized(broadcastReceivers) {
+      block.invoke(broadcastReceivers)
     }
-    val status = batteryIntent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
-    promise.resolve(batteryStatusNativeToJS(status).value)
   }
 
-  @ExpoMethod
-  fun isLowPowerModeEnabledAsync(promise: Promise) {
-    promise.resolve(isLowPowerModeEnabled)
+  private fun unregisterBroadcastReceivers(context: Context) {
+    accessBroadcastReceivers {
+      forEach {
+        context.unregisterReceiver(it)
+      }
+      clear()
+    }
   }
 
-  @ExpoMethod
-  fun isBatteryOptimizationEnabledAsync(promise: Promise) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      val packageName: String = context.applicationContext.packageName
-      val powerManager = context.applicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager?
-      if (powerManager != null && !powerManager.isIgnoringBatteryOptimizations(packageName)) {
-        promise.resolve(true)
+  private fun registerBroadcastReceivers(context: Context) {
+    accessBroadcastReceivers {
+      if (isNotEmpty()) {
         return
       }
     }
-    promise.resolve(false)
+
+    val weakModule = WeakReference(this@BatteryModule)
+    val emitEvent = { name: String, body: Bundle ->
+      try {
+        // It may thrown, because RN event emitter may not be available
+        // we can just ignore those cases
+        weakModule.get()?.sendEvent(name, body)
+      } catch (_: Throwable) {
+      }
+      Unit
+    }
+    val batteryStateReceiver = BatteryStateReceiver(emitEvent)
+    val powerSaverReceiver = PowerSaverReceiver(emitEvent)
+    val batteryLevelReceiver = BatteryLevelReceiver(emitEvent)
+
+    context.registerReceiver(batteryStateReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+    context.registerReceiver(powerSaverReceiver, IntentFilter("android.os.action.POWER_SAVE_MODE_CHANGED"))
+    context.registerReceiver(
+      batteryLevelReceiver,
+      IntentFilter().apply {
+        addAction(Intent.ACTION_BATTERY_LOW)
+        addAction(Intent.ACTION_BATTERY_OKAY)
+      }
+    )
+
+    accessBroadcastReceivers {
+      add(batteryStateReceiver)
+      add(batteryLevelReceiver)
+      add(powerSaverReceiver)
+    }
   }
 
-  // We default to false on web and any future platforms that haven't been
-  // implemented yet
+  // We default to false on web and any future platforms that haven't been implemented yet
   private val isLowPowerModeEnabled: Boolean
     get() {
-      val powerManager = context.applicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager // We default to false on web and any future platforms that haven't been
-        // implemented yet
+      val powerManager = context.applicationContext.getSystemService(Context.POWER_SERVICE) as? PowerManager
         ?: return false
       return powerManager.isPowerSaveMode
     }

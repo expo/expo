@@ -6,20 +6,7 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
-interface InternalJSONMutator {
-  @Throws(JSONException::class)
-  fun updateJSON(json: JSONObject)
-}
-
 abstract class Manifest(protected val json: JSONObject) {
-  @Deprecated(message = "Strive for manifests to be immutable")
-  @Throws(JSONException::class)
-  fun mutateInternalJSONInPlace(internalJSONMutator: InternalJSONMutator) {
-    json.apply {
-      internalJSONMutator.updateJSON(this)
-    }
-  }
-
   @Deprecated(message = "Prefer to use specific field getters")
   fun getRawJson(): JSONObject = json
 
@@ -105,7 +92,6 @@ abstract class Manifest(protected val json: JSONObject) {
 
   fun getDebuggerHost(): String = getExpoGoConfigRootObject()!!.require("debuggerHost")
   fun getMainModuleName(): String = getExpoGoConfigRootObject()!!.require("mainModuleName")
-  fun getLogUrl(): String? = getExpoGoConfigRootObject()?.getNullable("logUrl")
   fun getHostUri(): String? = getExpoClientConfigRootObject()?.getNullable("hostUri")
 
   fun isVerified(): Boolean = json.getNullable("isVerified") ?: false
@@ -245,14 +231,16 @@ abstract class Manifest(protected val json: JSONObject) {
   companion object {
     @JvmStatic fun fromManifestJson(manifestJson: JSONObject): Manifest {
       return when {
+        // TODO(wschurman): remove error in a few major releases after SDK 51 when it's unlikely classic updates
+        // may erroneously be served
         manifestJson.has("releaseId") -> {
-          LegacyManifest(manifestJson)
+          throw Exception("Legacy manifests are no longer supported")
         }
         manifestJson.has("metadata") -> {
-          NewManifest(manifestJson)
+          ExpoUpdatesManifest(manifestJson)
         }
         else -> {
-          BareManifest(manifestJson)
+          EmbeddedManifest(manifestJson)
         }
       }
     }
@@ -270,12 +258,19 @@ internal sealed class PluginType {
     private fun fromRawValue(value: Any): PluginType? {
       return when (value) {
         is JSONArray -> {
-          if (value.length() != 2) {
+          if (value.length() == 0) {
             throw IllegalArgumentException("Value for (key = plugins) has incorrect type")
           }
           val name = value.get(0) as? String ?: return null
-          val props = value.get(1) as? JSONObject ?: return null
-          WithProps(name to props.toMap())
+          when (value.length()) {
+            2 -> {
+              val props = value.get(1) as? JSONObject ?: return null
+              WithProps(name to props.toMap())
+            }
+            else -> {
+              WithoutProps(name)
+            }
+          }
         }
         is String -> {
           WithoutProps(value)

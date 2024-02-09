@@ -11,16 +11,16 @@ function _configPlugins() {
   };
   return data;
 }
-function _createLegacyPlugin() {
-  const data = require("../createLegacyPlugin");
-  _createLegacyPlugin = function () {
+function _withAndroidNotifications() {
+  const data = require("./withAndroidNotifications");
+  _withAndroidNotifications = function () {
     return data;
   };
   return data;
 }
-function _withAndroidNotifications() {
-  const data = require("./withAndroidNotifications");
-  _withAndroidNotifications = function () {
+function _createLegacyPlugin() {
+  const data = require("../createLegacyPlugin");
+  _createLegacyPlugin = function () {
     return data;
   };
   return data;
@@ -31,7 +31,7 @@ const withNotificationsEntitlement = (config, mode) => {
     return config;
   });
 };
-var _default = (0, _createLegacyPlugin().createLegacyPlugin)({
+var _default = exports.default = (0, _createLegacyPlugin().createLegacyPlugin)({
   packageName: 'expo-notifications',
   fallback: [
   // Android
@@ -39,5 +39,4 @@ var _default = (0, _createLegacyPlugin().createLegacyPlugin)({
   // iOS
   [withNotificationsEntitlement, 'development']]
 });
-exports.default = _default;
 //# sourceMappingURL=expo-notifications.js.map

@@ -1,63 +1,68 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 package expo.modules.sensors.modules
 
-import android.content.Context
-import android.content.pm.PackageManager
-import android.hardware.SensorEvent
+import android.Manifest
+import android.hardware.Sensor
+import android.os.Build
 import android.os.Bundle
-import expo.modules.interfaces.sensors.SensorServiceInterface
+import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.sensors.services.PedometerServiceInterface
-import expo.modules.core.Promise
-import expo.modules.core.interfaces.ExpoMethod
+import expo.modules.kotlin.Promise
+import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.sensors.UseSensorProxy
+import expo.modules.sensors.createSensorProxy
 
-class PedometerModule(reactContext: Context?) : BaseSensorModule(reactContext) {
+private const val EventName = "Exponent.pedometerUpdate"
+
+class NotSupportedException(message: String) : CodedException(message)
+
+class PedometerModule : Module() {
   private var stepsAtTheBeginning: Int? = null
-  override val eventName: String = "Exponent.pedometerUpdate"
 
-  override fun getName(): String {
-    return "ExponentPedometer"
-  }
-
-  override fun getSensorService(): SensorServiceInterface {
-    return moduleRegistry.getModule(PedometerServiceInterface::class.java)
-  }
-
-  override fun eventToMap(sensorEvent: SensorEvent): Bundle {
-    if (stepsAtTheBeginning == null) {
-      stepsAtTheBeginning = sensorEvent.values[0].toInt() - 1
-    }
-    return Bundle().apply {
-      putDouble("steps", (sensorEvent.values[0] - stepsAtTheBeginning!!).toDouble())
+  private val sensorProxy by lazy {
+    createSensorProxy<PedometerServiceInterface>(EventName) { sensorEvent ->
+      if (stepsAtTheBeginning == null) {
+        stepsAtTheBeginning = sensorEvent.values[0].toInt() - 1
+      }
+      Bundle().apply {
+        putDouble("steps", (sensorEvent.values[0] - (stepsAtTheBeginning ?: (sensorEvent.values[0].toInt() - 1))).toDouble())
+      }
     }
   }
 
-  @ExpoMethod
-  fun startObserving(promise: Promise) {
-    super.startObserving()
-    stepsAtTheBeginning = null
-    promise.resolve(null)
-  }
+  override fun definition() = ModuleDefinition {
+    Name("ExponentPedometer")
 
-  @ExpoMethod
-  fun stopObserving(promise: Promise) {
-    super.stopObserving()
-    stepsAtTheBeginning = null
-    promise.resolve(null)
-  }
+    UseSensorProxy(
+      this@PedometerModule,
+      Sensor.TYPE_STEP_COUNTER,
+      EventName,
+      listenerDecorator = { stepsAtTheBeginning = null }
+    ) { sensorProxy }
 
-  @ExpoMethod
-  fun setUpdateInterval(updateInterval: Int, promise: Promise) {
-    super.setUpdateInterval(updateInterval)
-    promise.resolve(null)
-  }
+    AsyncFunction("getPermissionsAsync") { promise: Promise ->
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        Permissions.getPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.ACTIVITY_RECOGNITION)
+      } else {
+        // Permissions don't need to be requested on Android versions below Q
+        Permissions.getPermissionsWithPermissionsManager(appContext.permissions, promise)
+      }
+    }
 
-  @ExpoMethod
-  fun isAvailableAsync(promise: Promise) {
-    promise.resolve(context.packageManager.hasSystemFeature(PackageManager.FEATURE_SENSOR_STEP_COUNTER))
-  }
+    AsyncFunction("requestPermissionsAsync") { promise: Promise ->
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.ACTIVITY_RECOGNITION)
+      } else {
+        // Permissions don't need to be requested on Android versions below Q
+        Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise)
+      }
+    }
 
-  @ExpoMethod
-  fun getStepCountAsync(startDate: Int?, endDate: Int?, promise: Promise) {
-    promise.reject("E_NOT_AVAILABLE", "Getting step count for date range is not supported on Android yet.")
+    AsyncFunction("getStepCountAsync") { _: Int, _: Int ->
+      throw NotSupportedException("Getting step count for date range is not supported on Android yet")
+      Unit
+    }
   }
 }

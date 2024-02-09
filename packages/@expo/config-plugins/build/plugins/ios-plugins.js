@@ -7,6 +7,13 @@ exports.createEntitlementsPlugin = createEntitlementsPlugin;
 exports.createInfoPlistPlugin = createInfoPlistPlugin;
 exports.createInfoPlistPluginWithPropertyGuard = createInfoPlistPluginWithPropertyGuard;
 exports.withXcodeProject = exports.withPodfileProperties = exports.withInfoPlist = exports.withExpoPlist = exports.withEntitlementsPlist = exports.withAppDelegate = void 0;
+function _withMod() {
+  const data = require("./withMod");
+  _withMod = function () {
+    return data;
+  };
+  return data;
+}
 function _obj() {
   const data = require("../utils/obj");
   _obj = function () {
@@ -17,13 +24,6 @@ function _obj() {
 function _warnings() {
   const data = require("../utils/warnings");
   _warnings = function () {
-    return data;
-  };
-  return data;
-}
-function _withMod() {
-  const data = require("./withMod");
-  _withMod = function () {
     return data;
   };
   return data;
@@ -47,10 +47,9 @@ function createInfoPlistPlugin(action, name) {
 }
 function createInfoPlistPluginWithPropertyGuard(action, settings, name) {
   const withUnknown = config => withInfoPlist(config, async config => {
-    var _config$modRawConfig$, _config$modRawConfig$2;
     const existingProperty = settings.expoPropertyGetter ? settings.expoPropertyGetter(config) : (0, _obj().get)(config, settings.expoConfigProperty);
     // If the user explicitly sets a value in the infoPlist, we should respect that.
-    if (((_config$modRawConfig$ = config.modRawConfig.ios) === null || _config$modRawConfig$ === void 0 ? void 0 : (_config$modRawConfig$2 = _config$modRawConfig$.infoPlist) === null || _config$modRawConfig$2 === void 0 ? void 0 : _config$modRawConfig$2[settings.infoPlistProperty]) === undefined) {
+    if (config.modRawConfig.ios?.infoPlist?.[settings.infoPlistProperty] === undefined) {
       config.modResults = await action(config, config.modResults);
     } else if (existingProperty !== undefined) {
       // Only warn if there is a conflict.

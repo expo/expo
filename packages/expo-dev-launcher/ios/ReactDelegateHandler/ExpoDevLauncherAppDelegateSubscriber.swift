@@ -8,7 +8,7 @@ public class ExpoDevLauncherAppDelegateSubscriber: ExpoAppDelegateSubscriber {
       return false
     }
 
-    guard let window = UIApplication.shared.windows.filter {$0.isKeyWindow}.first else {
+    guard let window = UIApplication.shared.delegate?.window ?? UIApplication.shared.windows.filter { $0.isKeyWindow }.first else {
       fatalError("Cannot find the keyWindow. Make sure to call `window.makeKeyAndVisible()`.")
     }
     EXDevLauncherController.sharedInstance().autoSetupStart(window)

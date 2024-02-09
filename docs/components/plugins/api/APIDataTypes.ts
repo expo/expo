@@ -64,6 +64,8 @@ export type TypeDefinitionData = {
     value: string;
   };
   qualifiedName?: string;
+  head?: string;
+  tail?: (TypeDefinitionData | string)[][];
 };
 
 export type MethodParamData = {
@@ -188,6 +190,7 @@ export type TypeGeneralData = {
   type: TypeDefinitionData;
   typeParameter?: TypeGeneralData[];
   kind: TypeDocKind;
+  variant?: string;
 };
 
 export type TypeDeclarationContentData = {

@@ -21,11 +21,20 @@ import {
   TypeDocKind,
   getCommentContent,
   BoxSectionHeader,
+  DEFAULT_BASE_NESTING_LEVEL,
 } from '~/components/plugins/api/APISectionUtils';
-import { H2, BOLD, P, CODE, MONOSPACE } from '~/ui/components/Text';
+import { H2, P, CODE, MONOSPACE, DEMI } from '~/ui/components/Text';
 
 export type APISectionClassesProps = {
   data: GeneratedData[];
+
+  /**
+   * Whether to expose all classes props in the sidebar.
+   * @default true when `data` has only one class, false otherwise.
+   *
+   * > **Note:** When you have multiple classes and want to enable this option, you should also set the mdx `maxHeadingDepth` at least to 3.
+   */
+  exposeAllClassPropsInSidebar?: boolean;
 };
 
 const classNamesMap: Record<string, string> = {
@@ -63,7 +72,10 @@ const remapClass = (clx: ClassDefinitionData) => {
   return clx;
 };
 
-const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.Element => {
+const renderClass = (
+  clx: ClassDefinitionData,
+  options: { exposeAllClassPropsInSidebar: boolean; baseNestingLevelForClassProps: number }
+): JSX.Element => {
   const { name, comment, type, extendedTypes, children, implementedTypes, isSensor } = clx;
 
   const properties = children?.filter(isProp);
@@ -75,13 +87,15 @@ const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.El
   return (
     <div key={`class-definition-${name}`} css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
       <APISectionDeprecationNote comment={comment} />
-      <APISectionPlatformTags comment={comment} prefix="Only for:" />
+      <APISectionPlatformTags comment={comment} />
       <H3Code tags={getTagNamesList(comment)}>
-        <MONOSPACE weight="medium">{name}</MONOSPACE>
+        <MONOSPACE weight="medium" className="wrap-anywhere">
+          {name}
+        </MONOSPACE>
       </H3Code>
       {(extendedTypes?.length || implementedTypes?.length) && (
         <P className="mb-3">
-          <BOLD>Type: </BOLD>
+          <DEMI theme="secondary">Type: </DEMI>
           {type ? <CODE>{resolveTypeName(type)}</CODE> : 'Class'}
           {extendedTypes?.length && (
             <>
@@ -114,31 +128,56 @@ const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.El
       )}
       {properties?.length ? (
         <>
-          <BoxSectionHeader text={`${name} Properties`} exposeInSidebar={exposeInSidebar} />
+          <BoxSectionHeader
+            text={`${name} Properties`}
+            exposeInSidebar={options.exposeAllClassPropsInSidebar}
+            baseNestingLevel={options.baseNestingLevelForClassProps}
+          />
           <div>
             {properties.map(property =>
-              renderProp(property, property?.defaultValue, exposeInSidebar)
+              renderProp(property, property?.defaultValue, {
+                exposeInSidebar: options.exposeAllClassPropsInSidebar,
+                baseNestingLevel: options.baseNestingLevelForClassProps + 1,
+              })
             )}
           </div>
         </>
       ) : null}
       {methods?.length > 0 && (
         <>
-          <BoxSectionHeader text={`${name} Methods`} exposeInSidebar={exposeInSidebar} />
-          {methods.map(method => renderMethod(method, { exposeInSidebar }))}
+          <BoxSectionHeader
+            text={`${name} Methods`}
+            exposeInSidebar={options.exposeAllClassPropsInSidebar}
+            baseNestingLevel={options.baseNestingLevelForClassProps}
+          />
+          {methods.map(method =>
+            renderMethod(method, {
+              exposeInSidebar: options.exposeAllClassPropsInSidebar,
+              baseNestingLevel: options.baseNestingLevelForClassProps + 1,
+            })
+          )}
         </>
       )}
     </div>
   );
 };
 
-const APISectionClasses = ({ data }: APISectionClassesProps) => {
+const APISectionClasses = ({ data, ...props }: APISectionClassesProps) => {
   if (data?.length) {
-    const exposeInSidebar = data.length < 2;
+    const hasMultipleClasses = data.length > 1;
+    const exposeAllClassPropsInSidebar = props.exposeAllClassPropsInSidebar ?? !hasMultipleClasses;
+    const baseNestingLevelForClassProps = hasMultipleClasses
+      ? DEFAULT_BASE_NESTING_LEVEL + 2
+      : DEFAULT_BASE_NESTING_LEVEL;
     return (
       <>
         <H2>Classes</H2>
-        {data.map(clx => renderClass(remapClass(clx), exposeInSidebar))}
+        {data.map(clx =>
+          renderClass(remapClass(clx), {
+            exposeAllClassPropsInSidebar,
+            baseNestingLevelForClassProps,
+          })
+        )}
       </>
     );
   }

@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalStdlibApi::class)
-
 package expo.modules.kotlin.views
 
 import android.view.View
@@ -20,7 +18,7 @@ class ConcreteViewPropTest {
     var providedValue = -1
     var providedView: View? = null
 
-    val prop = ConcreteViewProp<View, Int>("name", typeOf<Int>().toAnyType()) { view, value ->
+    val prop = ConcreteViewProp<View, Int>("name", { typeOf<Int>() }.toAnyType<Int>()) { view, value ->
       providedValue = value
       providedView = view
     }
@@ -44,7 +42,7 @@ class ConcreteViewPropTest {
     val mockedView = mockk<View>()
     var providedValue: MyRecord? = null
 
-    val prop = ConcreteViewProp<View, MyRecord>("name", typeOf<MyRecord>().toAnyType()) { _, value ->
+    val prop = ConcreteViewProp<View, MyRecord>("name", { typeOf<MyRecord>() }.toAnyType<MyRecord>()) { _, value ->
       providedValue = value
     }
 

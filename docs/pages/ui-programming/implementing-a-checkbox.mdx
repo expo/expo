@@ -5,7 +5,7 @@ description: Learn how to implement a fully customizable checkbox in your Expo p
 
 import { SnackInline } from '~/ui/components/Snippet';
 
-The [`expo-checkbox`](https://docs.expo.dev/versions/latest/sdk/checkbox/) package provides a quick implementation of a checkbox that you can directly use in your project. However, to have full customization, and control over the look and feel of the checkbox, this page goes in-depth on how to implement the component from scratch.
+The [`expo-checkbox`](/versions/latest/sdk/checkbox/) package provides a quick implementation of a checkbox that you can directly use in your project. However, to have full customization, and control over the look and feel of the checkbox, this page goes in-depth on how to implement the component from scratch.
 
 ## Understanding the checkbox
 
@@ -220,10 +220,8 @@ export default function App() {
         <MyCheckbox
           checked={checked}
           onChange={setChecked}
-          /* @info Pass in base and active styles for the checkbox */
-          buttonStyle={styles.checkboxBase}
-          activeButtonStyle={styles.checkboxChecked}
-          /* @end */
+          buttonStyle={/* @info Pass in base styles for the checkbox */styles.checkboxBase/* @end */}
+          activeButtonStyle={/* @info Pass in active styles for the checkbox */styles.checkboxChecked/* @end */}
         />
         <Text style={styles.checkboxLabel}>{`⬅️ Click!`}</Text>
       </View>

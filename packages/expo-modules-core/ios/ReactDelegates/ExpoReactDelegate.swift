@@ -3,7 +3,7 @@
 /**
  An extensible react instance creation delegate. This class will loop through each `ExpoReactDelegateHandler` to determine the winner to create the instance.
  */
-@objc
+@objc(EXReactDelegate)
 public class ExpoReactDelegate: NSObject {
   private let handlers: [ExpoReactDelegateHandler]
 

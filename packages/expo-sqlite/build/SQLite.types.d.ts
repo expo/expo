@@ -21,6 +21,7 @@ export interface Database {
 }
 export type SQLTransactionCallback = (transaction: SQLTransaction) => void;
 export type SQLTransactionErrorCallback = (error: SQLError) => void;
+export type SQLStatementArg = string | number | null;
 /**
  * A `SQLTransaction` object is passed in as a parameter to the `callback` parameter for the
  * `db.transaction()` method on a `Database` (see above). It allows enqueuing SQL statements to
@@ -41,7 +42,7 @@ export interface SQLTransaction {
      * @param errorCallback Called if an error occurred executing this particular query in the
      * transaction. Takes two parameters: the transaction itself, and the error object.
      */
-    executeSql(sqlStatement: string, args?: (number | string | null)[], callback?: SQLStatementCallback, errorCallback?: SQLStatementErrorCallback): void;
+    executeSql(sqlStatement: string, args?: SQLStatementArg[], callback?: SQLStatementCallback, errorCallback?: SQLStatementErrorCallback): void;
 }
 export type SQLStatementCallback = (transaction: SQLTransaction, resultSet: SQLResultSet) => void;
 export type SQLStatementErrorCallback = (transaction: SQLTransaction, error: SQLError) => boolean;
@@ -84,6 +85,7 @@ export declare class SQLError {
     code: number;
     message: string;
 }
+/** @deprecated Use `SQLiteDatabase` instead. */
 export interface WebSQLDatabase extends Database {
     exec(queries: Query[], readOnly: boolean, callback: SQLiteCallback): void;
     /**
@@ -100,14 +102,14 @@ export type Query = {
     sql: string;
     args: unknown[];
 };
-export type ResultSetError = {
+export interface ResultSetError {
     error: Error;
-};
+}
 /**
  * `ResultSet` objects are returned through second parameter of the `success` callback for the
  * `tx.executeSql()` method on a `SQLTransaction` (see above).
  */
-export type ResultSet = {
+export interface ResultSet {
     /**
      * The row ID of the row that the SQL statement inserted into the database, if a row was inserted.
      */
@@ -119,6 +121,13 @@ export type ResultSet = {
     rows: {
         [column: string]: any;
     }[];
-};
+}
 export type SQLiteCallback = (error?: Error | null, resultSet?: (ResultSetError | ResultSet)[]) => void;
+/** A transaction object to perform SQL statements in async mode. */
+export interface SQLTransactionAsync {
+    /** Executes a SQL statement in async mode. */
+    executeSqlAsync(sqlStatement: string, args?: SQLStatementArg[]): Promise<ResultSet>;
+}
+/** A transaction callback with given `SQLTransactionAsync` object to perform SQL statements in async mode. */
+export type SQLTransactionAsyncCallback = (transaction: SQLTransactionAsync) => Promise<void>;
 //# sourceMappingURL=SQLite.types.d.ts.map

@@ -1,8 +1,11 @@
+const {
+  createMetroServerAndBundleRequestAsync,
+  exportEmbedAssetsAsync,
+} = require('@expo/cli/build/src/export/embed/exportEmbedAsync');
+const { drawableFileTypes } = require('@expo/cli/build/src/export/metroAssetLocalPath');
 const { resolveEntryPoint } = require('@expo/config/paths');
-const { loadAsync } = require('@expo/metro-config');
 const crypto = require('crypto');
 const fs = require('fs');
-const Server = require('metro/src/Server');
 const path = require('path');
 
 const filterPlatformAssetScales = require('./filterPlatformAssetScales');
@@ -50,26 +53,28 @@ function getRelativeEntryPoint(projectRoot, platform) {
 
   process.chdir(projectRoot);
 
-  let metroConfig;
-  try {
-    metroConfig = await loadAsync(projectRoot);
-  } catch (e) {
-    let message = `Error loading Metro config and Expo app config: ${e.message}\n\nMake sure your project is configured properly and your app.json / app.config.js is valid.`;
-    if (process.env.EAS_BUILD) {
-      message +=
-        '\nIf you are using environment variables in app.config.js, verify that you have set them in your EAS Build profile configuration or secrets.';
-    }
-    throw new Error(message);
-  }
+  const options = {
+    platform,
+    entryFile,
+    minify: false,
+    dev: false,
+  };
+
+  const { server, bundleRequest } = await createMetroServerAndBundleRequestAsync(
+    projectRoot,
+    options
+  );
 
   let assets;
   try {
-    assets = await fetchAssetManifestAsync(platform, projectRoot, entryFile, metroConfig);
+    assets = await exportEmbedAssetsAsync(server, bundleRequest, projectRoot, options);
   } catch (e) {
     throw new Error(
       "Error loading assets JSON from Metro. Ensure you've followed all expo-updates installation steps correctly. " +
         e.message
     );
+  } finally {
+    server.end();
   }
 
   const manifest = {
@@ -113,8 +118,6 @@ function getRelativeEntryPoint(projectRoot, platform) {
   process.exit(1);
 });
 
-// See https://developer.android.com/guide/topics/resources/drawable-resource.html
-const drawableFileTypes = new Set(['gif', 'jpeg', 'jpg', 'png', 'svg', 'webp', 'xml']);
 function getAndroidResourceFolderName(asset) {
   return drawableFileTypes.has(asset.type) ? 'drawable' : 'raw';
 }
@@ -142,39 +145,4 @@ function getBasePath(asset) {
     basePath = basePath.substr(1);
   }
   return basePath;
-}
-
-// Spawn a Metro server to get the asset manifest
-async function fetchAssetManifestAsync(platform, projectRoot, entryFile, metroConfig) {
-  // Project-level babel config does not load unless we change to the
-  // projectRoot before instantiating the server
-  process.chdir(projectRoot);
-
-  const server = new Server(metroConfig);
-
-  const requestOpts = {
-    entryFile,
-    dev: false,
-    minify: false,
-    platform,
-  };
-
-  let assetManifest;
-  let error;
-  try {
-    assetManifest = await server.getAssets({
-      ...Server.DEFAULT_BUNDLE_OPTIONS,
-      ...requestOpts,
-    });
-  } catch (e) {
-    error = e;
-  } finally {
-    server.end();
-  }
-
-  if (error) {
-    throw error;
-  }
-
-  return assetManifest;
 }

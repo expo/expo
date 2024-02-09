@@ -4,53 +4,60 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import chalk from 'chalk';
+import { ExpoConfig, Platform } from '@expo/config';
 import fs from 'fs';
 import { ConfigT } from 'metro-config';
-import { Resolution, ResolutionContext } from 'metro-resolver';
+import { Resolution, ResolutionContext, CustomResolutionContext } from 'metro-resolver';
+import * as metroResolver from 'metro-resolver';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import { createFastResolver } from './createExpoMetroResolver';
+import {
+  EXTERNAL_REQUIRE_NATIVE_POLYFILL,
+  EXTERNAL_REQUIRE_POLYFILL,
+  METRO_SHIMS_FOLDER,
+  getNodeExternalModuleId,
+  isNodeExternal,
+  setupNodeExternals,
+  setupShimFiles,
+} from './externals';
+import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
+import {
+  withMetroErrorReportingResolver,
+  withMetroMutatedResolverContext,
+  withMetroResolvers,
+} from './withMetroResolvers';
 import { Log } from '../../../log';
 import { FileNotifier } from '../../../utils/FileNotifier';
 import { env } from '../../../utils/env';
 import { installExitHooks } from '../../../utils/exit';
-import { learnMore } from '../../../utils/link';
+import { isInteractive } from '../../../utils/interactive';
 import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
-import { WebSupportProjectPrerequisite } from '../../doctor/web/WebSupportProjectPrerequisite';
 import { PlatformBundlers } from '../platformBundlers';
-import {
-  EXTERNAL_REQUIRE_NATIVE_POLYFILL,
-  EXTERNAL_REQUIRE_POLYFILL,
-  getNodeExternalModuleId,
-  isNodeExternal,
-  setupNodeExternals,
-} from './externals';
-import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
-import { importMetroResolverFromProject } from './resolveFromProject';
-import { getAppRouterRelativeEntryPath } from './router';
-import { withMetroResolvers } from './withMetroResolvers';
+
+type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 
 const debug = require('debug')('expo:start:server:metro:multi-platform') as typeof console.log;
 
-function withWebPolyfills(config: ConfigT, projectRoot: string): ConfigT {
+function withWebPolyfills(config: ConfigT): ConfigT {
   const originalGetPolyfills = config.serializer.getPolyfills
     ? config.serializer.getPolyfills.bind(config.serializer)
     : () => [];
 
-  const getPolyfills = (ctx: { platform: string | null | undefined }): readonly string[] => {
+  const getPolyfills = (ctx: { platform: string | null }): readonly string[] => {
     if (ctx.platform === 'web') {
       return [
         // NOTE: We might need this for all platforms
-        path.join(projectRoot, EXTERNAL_REQUIRE_POLYFILL),
+        path.join(config.projectRoot, EXTERNAL_REQUIRE_POLYFILL),
         // TODO: runtime polyfills, i.e. Fast Refresh, error overlay, React Dev Tools...
       ];
     }
     // Generally uses `rn-get-polyfills`
     const polyfills = originalGetPolyfills(ctx);
 
-    return [...polyfills, EXTERNAL_REQUIRE_NATIVE_POLYFILL];
+    return [...polyfills, path.join(config.projectRoot, EXTERNAL_REQUIRE_NATIVE_POLYFILL)];
   };
 
   return {
@@ -66,6 +73,20 @@ function normalizeSlashes(p: string) {
   return p.replace(/\\/g, '/');
 }
 
+export function getNodejsExtensions(srcExts: readonly string[]): string[] {
+  const mjsExts = srcExts.filter((ext) => /mjs$/.test(ext));
+  const nodejsSourceExtensions = srcExts.filter((ext) => !/mjs$/.test(ext));
+  // find index of last `*.js` extension
+  const jsIndex = nodejsSourceExtensions.reduce((index, ext, i) => {
+    return /jsx?$/.test(ext) ? i : index;
+  }, -1);
+
+  // insert `*.mjs` extensions after `*.js` extensions
+  nodejsSourceExtensions.splice(jsIndex + 1, 0, ...mjsExts);
+
+  return nodejsSourceExtensions;
+}
+
 /**
  * Apply custom resolvers to do the following:
  * - Disable `.native.js` extensions on web.
@@ -76,44 +97,51 @@ function normalizeSlashes(p: string) {
 export function withExtendedResolver(
   config: ConfigT,
   {
-    projectRoot,
     tsconfig,
-    platforms,
     isTsconfigPathsEnabled,
+    isFastResolverEnabled,
+    isExporting,
   }: {
-    projectRoot: string;
     tsconfig: TsConfigPaths | null;
-    platforms: string[];
     isTsconfigPathsEnabled?: boolean;
+    isFastResolverEnabled?: boolean;
+    isExporting?: boolean;
   }
 ) {
+  if (isFastResolverEnabled) {
+    Log.warn(`Experimental bundling features are enabled.`);
+  }
+
   // Get the `transformer.assetRegistryPath`
   // this needs to be unified since you can't dynamically
   // swap out the transformer based on platform.
   const assetRegistryPath = fs.realpathSync(
-    // This is the native asset registry alias for native.
-    path.resolve(resolveFrom(projectRoot, 'react-native/Libraries/Image/AssetRegistry'))
-    // NOTE(EvanBacon): This is the newer import but it doesn't work in the expo/expo monorepo.
-    // path.resolve(resolveFrom(projectRoot, '@react-native/assets/registry.js'))
+    path.resolve(resolveFrom(config.projectRoot, '@react-native/assets-registry/registry.js'))
   );
 
-  const isWebEnabled = platforms.includes('web');
-
-  const { resolve } = importMetroResolverFromProject(projectRoot);
-
-  const extraNodeModules: { [key: string]: Record<string, string> } = {};
+  const defaultResolver = metroResolver.resolve;
+  const resolver = isFastResolverEnabled
+    ? createFastResolver({
+        preserveSymlinks: config.resolver?.unstable_enableSymlinks ?? true,
+        blockList: Array.isArray(config.resolver?.blockList)
+          ? config.resolver?.blockList
+          : [config.resolver?.blockList],
+      })
+    : defaultResolver;
 
   const aliases: { [key: string]: Record<string, string> } = {
     web: {
       'react-native': 'react-native-web',
+      'react-native/index': 'react-native-web',
     },
   };
 
-  if (isWebEnabled) {
-    // Allow `react-native-web` to be optional when web is not enabled but path aliases is.
-    extraNodeModules['web'] = {
-      'react-native': path.resolve(require.resolve('react-native-web/package.json'), '..'),
-    };
+  const universalAliases: [RegExp, string][] = [];
+
+  // This package is currently always installed as it is included in the `expo` package.
+  if (resolveFrom.silent(config.projectRoot, '@expo/vector-icons')) {
+    debug('Enabling alias: react-native-vector-icons -> @expo/vector-icons');
+    universalAliases.push([/^react-native-vector-icons(\/.*)?/, '@expo/vector-icons$1']);
   }
 
   const preferredMainFields: { [key: string]: string[] } = {
@@ -123,166 +151,244 @@ export function withExtendedResolver(
     web: ['browser', 'module', 'main'],
   };
 
-  let tsConfigResolve = tsconfig?.paths
-    ? resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
-        paths: tsconfig.paths ?? {},
-        baseUrl: tsconfig.baseUrl,
-      })
-    : null;
+  let tsConfigResolve =
+    isTsconfigPathsEnabled && (tsconfig?.paths || tsconfig?.baseUrl != null)
+      ? resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
+          paths: tsconfig.paths ?? {},
+          baseUrl: tsconfig.baseUrl ?? config.projectRoot,
+          hasBaseUrl: !!tsconfig.baseUrl,
+        })
+      : null;
 
-  if (isTsconfigPathsEnabled && !env.CI) {
-    // TODO: We should track all the files that used imports and invalidate them
-    // currently the user will need to save all the files that use imports to
-    // use the new aliases.
-    const configWatcher = new FileNotifier(projectRoot, ['./tsconfig.json', './jsconfig.json']);
-    configWatcher.startObserving(() => {
-      debug('Reloading tsconfig.json');
-      loadTsConfigPathsAsync(projectRoot).then((tsConfigPaths) => {
-        if (tsConfigPaths?.paths && !!Object.keys(tsConfigPaths.paths).length) {
-          debug('Enabling tsconfig.json paths support');
-          tsConfigResolve = resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
-            paths: tsConfigPaths.paths ?? {},
-            baseUrl: tsConfigPaths.baseUrl,
-          });
-        } else {
-          debug('Disabling tsconfig.json paths support');
-          tsConfigResolve = null;
-        }
+  // TODO: Move this to be a transform key for invalidation.
+  if (!isExporting && isInteractive()) {
+    if (isTsconfigPathsEnabled) {
+      // TODO: We should track all the files that used imports and invalidate them
+      // currently the user will need to save all the files that use imports to
+      // use the new aliases.
+      const configWatcher = new FileNotifier(config.projectRoot, [
+        './tsconfig.json',
+        './jsconfig.json',
+      ]);
+      configWatcher.startObserving(() => {
+        debug('Reloading tsconfig.json');
+        loadTsConfigPathsAsync(config.projectRoot).then((tsConfigPaths) => {
+          if (tsConfigPaths?.paths && !!Object.keys(tsConfigPaths.paths).length) {
+            debug('Enabling tsconfig.json paths support');
+            tsConfigResolve = resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
+              paths: tsConfigPaths.paths ?? {},
+              baseUrl: tsConfigPaths.baseUrl ?? config.projectRoot,
+              hasBaseUrl: !!tsConfigPaths.baseUrl,
+            });
+          } else {
+            debug('Disabling tsconfig.json paths support');
+            tsConfigResolve = null;
+          }
+        });
       });
-    });
 
-    // TODO: This probably prevents the process from exiting.
-    installExitHooks(() => {
-      configWatcher.stopObserving();
-    });
-  } else {
-    debug('Skipping tsconfig.json paths support');
+      // TODO: This probably prevents the process from exiting.
+      installExitHooks(() => {
+        configWatcher.stopObserving();
+      });
+    } else {
+      debug('Skipping tsconfig.json paths support');
+    }
   }
 
-  return withMetroResolvers(config, projectRoot, [
-    // Add a resolver to alias the web asset resolver.
-    (immutableContext: ResolutionContext, moduleName: string, platform: string | null) => {
-      let context = {
-        ...immutableContext,
-      } as ResolutionContext & {
-        mainFields: string[];
-        customResolverOptions?: Record<string, string>;
-      };
+  let nodejsSourceExtensions: string[] | null = null;
 
-      const environment = context.customResolverOptions?.environment;
-      const isNode = environment === 'node';
+  const shimsFolder = path.join(config.projectRoot, METRO_SHIMS_FOLDER);
 
-      // TODO: We need to prevent the require.context from including API routes as these use externals.
-      // Should be fine after async routes lands.
-      if (isNode) {
-        const moduleId = isNodeExternal(moduleName);
-        if (moduleId) {
-          moduleName = getNodeExternalModuleId(context.originModulePath, moduleId);
-          debug(`Redirecting Node.js external "${moduleId}" to "${moduleName}"`);
+  function getStrictResolver(
+    { resolveRequest, ...context }: ResolutionContext,
+    platform: string | null
+  ) {
+    return function doResolve(moduleName: string): Resolution {
+      return resolver(context, moduleName, platform);
+    };
+  }
+
+  function getOptionalResolver(context: ResolutionContext, platform: string | null) {
+    const doResolve = getStrictResolver(context, platform);
+    return function optionalResolve(moduleName: string): Resolution | null {
+      try {
+        return doResolve(moduleName);
+      } catch (error) {
+        // If the error is directly related to a resolver not being able to resolve a module, then
+        // we can ignore the error and try the next resolver. Otherwise, we should throw the error.
+        const isResolutionError =
+          isFailedToResolveNameError(error) || isFailedToResolvePathError(error);
+        if (!isResolutionError) {
+          throw error;
         }
       }
+      return null;
+    };
+  }
 
-      // Conditionally remap `react-native` to `react-native-web` on web in
-      // a way that doesn't require Babel to resolve the alias.
-      if (platform && platform in aliases && aliases[platform][moduleName]) {
-        moduleName = aliases[platform][moduleName];
-      }
-
-      // TODO: We may be able to remove this in the future, it's doing no harm
-      // by staying here.
-      // Conditionally remap `react-native` to `react-native-web`
-      if (platform && platform in extraNodeModules) {
-        context.extraNodeModules = {
-          ...extraNodeModules[platform],
-          ...context.extraNodeModules,
-        };
-      }
-
-      if (tsconfig?.baseUrl && isTsconfigPathsEnabled) {
-        context = {
-          ...context,
-          nodeModulesPaths: [
-            ...immutableContext.nodeModulesPaths,
-            // add last to ensure node modules are resolved first
-            tsconfig.baseUrl,
-          ],
-        };
-      }
-
-      let mainFields: string[] = context.mainFields;
-
-      if (isNode) {
-        // Node.js runtimes should only be importing main at the moment.
-        // This is a temporary fix until we can support the package.json exports.
-        mainFields = ['main'];
-      } else if (env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE) {
-        mainFields = context.mainFields;
-      } else if (platform && platform in preferredMainFields) {
-        mainFields = preferredMainFields[platform];
-      }
-      function doResolve(moduleName: string): Resolution | null {
-        return resolve(
-          {
-            ...context,
-            preferNativePlatform: platform !== 'web',
-            resolveRequest: undefined,
-
-            // @ts-expect-error
-            mainFields,
-            // Passing `mainFields` directly won't be considered (in certain version of Metro)
-            // we need to extend the `getPackageMainPath` directly to
-            // use platform specific `mainFields`.
-            getPackageMainPath(packageJsonPath) {
-              // @ts-expect-error: mainFields is not on type
-              const package_ = context.moduleCache.getPackage(packageJsonPath);
-              return package_.getMain(mainFields);
-            },
-          },
-          moduleName,
-          platform
-        );
-      }
-
-      function optionalResolve(moduleName: string): Resolution | null {
-        try {
-          return doResolve(moduleName);
-        } catch (error) {
-          // If the error is directly related to a resolver not being able to resolve a module, then
-          // we can ignore the error and try the next resolver. Otherwise, we should throw the error.
-          const isResolutionError =
-            isFailedToResolveNameError(error) || isFailedToResolvePathError(error);
-          if (!isResolutionError) {
-            throw error;
-          }
-        }
-        return null;
-      }
-
-      let result: Resolution | null = null;
-
-      if (tsConfigResolve) {
-        result = tsConfigResolve(
+  const metroConfigWithCustomResolver = withMetroResolvers(config, [
+    // tsconfig paths
+    (context: ResolutionContext, moduleName: string, platform: string | null) => {
+      return (
+        tsConfigResolve?.(
           {
             originModulePath: context.originModulePath,
             moduleName,
           },
-          optionalResolve
+          getOptionalResolver(context, platform)
+        ) ?? null
+      );
+    },
+
+    // Node.js externals support
+    (context: ResolutionContext, moduleName: string, platform: string | null) => {
+      // This is a web-only feature, we may extend the shimming to native platforms in the future.
+      if (platform !== 'web') {
+        return null;
+      }
+
+      const moduleId = isNodeExternal(moduleName);
+      if (!moduleId) {
+        return null;
+      }
+
+      if (
+        // In browser runtimes, we want to either resolve a local node module by the same name, or shim the module to
+        // prevent crashing when Node.js built-ins are imported.
+        context.customResolverOptions?.environment !== 'node'
+      ) {
+        // Perform optional resolve first. If the module doesn't exist (no module in the node_modules)
+        // then we can mock the file to use an empty module.
+        const result = getOptionalResolver(context, platform)(moduleName);
+        return (
+          result ?? {
+            // In this case, mock the file to use an empty module.
+            type: 'empty',
+          }
         );
       }
 
-      result ??= doResolve(moduleName);
+      const redirectedModuleName = getNodeExternalModuleId(context.originModulePath, moduleId);
+      debug(`Redirecting Node.js external "${moduleId}" to "${redirectedModuleName}"`);
+      return getStrictResolver(context, platform)(redirectedModuleName);
+    },
 
-      if (result) {
-        // Replace the web resolver with the original one.
-        // This is basically an alias for web-only.
-        if (shouldAliasAssetRegistryForWeb(platform, result)) {
-          // @ts-expect-error: `readonly` for some reason.
-          result.filePath = assetRegistryPath;
+    // Basic moduleId aliases
+    (context: ResolutionContext, moduleName: string, platform: string | null) => {
+      // Conditionally remap `react-native` to `react-native-web` on web in
+      // a way that doesn't require Babel to resolve the alias.
+      if (platform && platform in aliases && aliases[platform][moduleName]) {
+        const redirectedModuleName = aliases[platform][moduleName];
+        return getStrictResolver(context, platform)(redirectedModuleName);
+      }
+
+      for (const [matcher, alias] of universalAliases) {
+        const match = moduleName.match(matcher);
+        if (match) {
+          const aliasedModule = alias.replace(
+            /\$(\d+)/g,
+            (_, index) => match[parseInt(index, 10)] ?? ''
+          );
+          const doResolve = getStrictResolver(context, platform);
+          debug(`Alias "${moduleName}" to "${aliasedModule}"`);
+          return doResolve(aliasedModule);
         }
       }
+
+      return null;
+    },
+
+    // HACK(EvanBacon):
+    // React Native uses `event-target-shim` incorrectly and this causes the native runtime
+    // to fail to load. This is a temporary workaround until we can fix this upstream.
+    // https://github.com/facebook/react-native/pull/38628
+    (context: ResolutionContext, moduleName: string, platform: string | null) => {
+      if (platform !== 'web' && moduleName === 'event-target-shim') {
+        debug('For event-target-shim to use js:', context.originModulePath);
+        const doResolve = getStrictResolver(context, platform);
+        return doResolve('event-target-shim/dist/event-target-shim.js');
+      }
+
+      return null;
+    },
+
+    // TODO: Reduce these as much as possible in the future.
+    // Complex post-resolution rewrites.
+    (context: ResolutionContext, moduleName: string, platform: string | null) => {
+      const doResolve = getStrictResolver(context, platform);
+
+      const result = doResolve(moduleName);
+
+      if (result.type !== 'sourceFile') {
+        return result;
+      }
+
+      // Replace the web resolver with the original one.
+      // This is basically an alias for web-only.
+      // TODO: Drop this in favor of the standalone asset registry module.
+      if (shouldAliasAssetRegistryForWeb(platform, result)) {
+        // @ts-expect-error: `readonly` for some reason.
+        result.filePath = assetRegistryPath;
+      }
+
+      if (platform === 'web' && result.filePath.includes('node_modules')) {
+        // Replace with static shims
+
+        const normalName = normalizeSlashes(result.filePath)
+          // Drop everything up until the `node_modules` folder.
+          .replace(/.*node_modules\//, '');
+
+        const shimPath = path.join(shimsFolder, normalName);
+        if (fs.existsSync(shimPath)) {
+          // @ts-expect-error: `readonly` for some reason.
+          result.filePath = shimPath;
+        }
+      }
+
       return result;
     },
   ]);
+
+  // Ensure we mutate the resolution context to include the custom resolver options for server and web.
+  const metroConfigWithCustomContext = withMetroMutatedResolverContext(
+    metroConfigWithCustomResolver,
+    (
+      immutableContext: CustomResolutionContext,
+      moduleName: string,
+      platform: string | null
+    ): CustomResolutionContext => {
+      const context: Mutable<CustomResolutionContext> = {
+        ...immutableContext,
+        preferNativePlatform: platform !== 'web',
+      };
+
+      if (context.customResolverOptions?.environment === 'node') {
+        // Adjust nodejs source extensions to sort mjs after js, including platform variants.
+        if (nodejsSourceExtensions === null) {
+          nodejsSourceExtensions = getNodejsExtensions(context.sourceExts);
+        }
+        context.sourceExts = nodejsSourceExtensions;
+
+        context.unstable_enablePackageExports = true;
+        context.unstable_conditionNames = ['node', 'require'];
+        context.unstable_conditionsByPlatform = {};
+        // Node.js runtimes should only be importing main at the moment.
+        // This is a temporary fix until we can support the package.json exports.
+        context.mainFields = ['main', 'module'];
+      } else {
+        // Non-server changes
+
+        if (!env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE && platform && platform in preferredMainFields) {
+          context.mainFields = preferredMainFields[platform];
+        }
+      }
+
+      return context;
+    }
+  );
+
+  return withMetroErrorReportingResolver(metroConfigWithCustomContext);
 }
 
 /** @returns `true` if the incoming resolution should be swapped on web. */
@@ -299,76 +405,84 @@ export function shouldAliasAssetRegistryForWeb(
     )
   );
 }
+/** @returns `true` if the incoming resolution should be swapped. */
+export function shouldAliasModule(
+  input: {
+    platform: string | null;
+    result: Resolution;
+  },
+  alias: { platform: string; output: string }
+): boolean {
+  return (
+    input.platform === alias.platform &&
+    input.result?.type === 'sourceFile' &&
+    typeof input.result?.filePath === 'string' &&
+    normalizeSlashes(input.result.filePath).endsWith(alias.output)
+  );
+}
 
 /** Add support for `react-native-web` and the Web platform. */
 export async function withMetroMultiPlatformAsync(
   projectRoot: string,
   {
     config,
+    exp,
     platformBundlers,
     isTsconfigPathsEnabled,
     webOutput,
+    isFastResolverEnabled,
+    isExporting,
   }: {
     config: ConfigT;
+    exp: ExpoConfig;
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
-    webOutput?: 'single' | 'static';
+    webOutput?: 'single' | 'static' | 'server';
+    isFastResolverEnabled?: boolean;
+    isExporting?: boolean;
   }
 ) {
-  // Auto pick App entry: this is injected with a custom serializer.
-  process.env.EXPO_ROUTER_APP_ROOT = getAppRouterRelativeEntryPath(projectRoot);
+  if (!config.projectRoot) {
+    // @ts-expect-error: read-only types
+    config.projectRoot = projectRoot;
+  }
 
   // Required for @expo/metro-runtime to format paths in the web LogBox.
   process.env.EXPO_PUBLIC_PROJECT_ROOT = process.env.EXPO_PUBLIC_PROJECT_ROOT ?? projectRoot;
 
-  if (webOutput === 'static') {
+  if (['static', 'server'].includes(webOutput ?? '')) {
     // Enable static rendering in runtime space.
     process.env.EXPO_PUBLIC_USE_STATIC = '1';
   }
 
-  if (platformBundlers.web === 'metro') {
-    await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
-  } else if (!isTsconfigPathsEnabled) {
-    // Bail out early for performance enhancements if no special features are enabled.
-    return config;
+  // This is used for running Expo CLI in development against projects outside the monorepo.
+  if (!isDirectoryIn(__dirname, projectRoot)) {
+    if (!config.watchFolders) {
+      // @ts-expect-error: watchFolders is readonly
+      config.watchFolders = [];
+    }
+    // @ts-expect-error: watchFolders is readonly
+    config.watchFolders.push(path.join(require.resolve('metro-runtime/package.json'), '../..'));
   }
+
+  // @ts-expect-error
+  config.transformer._expoRouterWebRendering = webOutput;
+  // @ts-expect-error: Invalidate the cache when the location of expo-router changes on-disk.
+  config.transformer._expoRouterPath = resolveFrom.silent(projectRoot, 'expo-router');
 
   let tsconfig: null | TsConfigPaths = null;
 
   if (isTsconfigPathsEnabled) {
-    Log.warn(
-      chalk.yellow`Experimental path aliases feature is enabled. ` +
-        learnMore('https://docs.expo.dev/guides/typescript/#path-aliases')
-    );
     tsconfig = await loadTsConfigPathsAsync(projectRoot);
   }
 
+  await setupShimFiles(projectRoot);
   await setupNodeExternals(projectRoot);
 
-  return withMetroMultiPlatform(projectRoot, {
-    config,
-    platformBundlers,
-    tsconfig,
-    isTsconfigPathsEnabled,
-  });
-}
-
-function withMetroMultiPlatform(
-  projectRoot: string,
-  {
-    config,
-    platformBundlers,
-    isTsconfigPathsEnabled,
-    tsconfig,
-  }: {
-    config: ConfigT;
-    isTsconfigPathsEnabled: boolean;
-    platformBundlers: PlatformBundlers;
-    tsconfig: TsConfigPaths | null;
-  }
-) {
   let expoConfigPlatforms = Object.entries(platformBundlers)
-    .filter(([, bundler]) => bundler === 'metro')
+    .filter(
+      ([platform, bundler]) => bundler === 'metro' && exp.platforms?.includes(platform as Platform)
+    )
     .map(([platform]) => platform);
 
   if (Array.isArray(config.resolver.platforms)) {
@@ -378,14 +492,16 @@ function withMetroMultiPlatform(
   // @ts-expect-error: typed as `readonly`.
   config.resolver.platforms = expoConfigPlatforms;
 
-  if (expoConfigPlatforms.includes('web')) {
-    config = withWebPolyfills(config, projectRoot);
-  }
+  config = withWebPolyfills(config);
 
   return withExtendedResolver(config, {
-    projectRoot,
     tsconfig,
+    isExporting,
     isTsconfigPathsEnabled,
-    platforms: expoConfigPlatforms,
+    isFastResolverEnabled,
   });
+}
+
+function isDirectoryIn(a: string, b: string) {
+  return b.startsWith(a) && b.length > a.length;
 }

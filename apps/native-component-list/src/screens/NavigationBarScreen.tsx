@@ -9,7 +9,7 @@ import { getRandomColor } from '../utilities/getRandomColor';
 
 function usePosition(): [
   NavigationBar.NavigationBarPosition | null,
-  (position: NavigationBar.NavigationBarPosition) => void
+  (position: NavigationBar.NavigationBarPosition) => void,
 ] {
   const [position, setPosition] = React.useState<NavigationBar.NavigationBarPosition | null>(null);
 

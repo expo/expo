@@ -1,10 +1,8 @@
 package expo.modules.updates
 
 import android.content.Context
-import expo.modules.updates.UpdatesConfiguration.CheckAutomaticallyConfiguration
-import expo.modules.updates.db.entity.AssetEntity
-import android.os.AsyncTask
 import android.net.ConnectivityManager
+import android.os.AsyncTask
 import android.util.Base64
 import android.util.Log
 import com.facebook.react.ReactNativeHost
@@ -12,13 +10,14 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
+import expo.modules.updates.UpdatesConfiguration.CheckAutomaticallyConfiguration
+import expo.modules.updates.db.entity.AssetEntity
+import expo.modules.updates.logging.UpdatesErrorCode
+import expo.modules.updates.logging.UpdatesLogger
 import org.apache.commons.io.FileUtils
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.*
-import java.lang.ClassCastException
-import java.lang.Exception
-import java.lang.IllegalArgumentException
 import java.lang.ref.WeakReference
 import java.security.DigestInputStream
 import java.security.MessageDigest
@@ -36,7 +35,6 @@ object UpdatesUtils {
   private val TAG = UpdatesUtils::class.java.simpleName
 
   private const val UPDATES_DIRECTORY_NAME = ".expo-internal"
-  private const val UPDATES_EVENT_NAME = "Expo.nativeUpdatesEvent"
 
   @Throws(Exception::class)
   fun getMapFromJSONString(stringifiedJSON: String): Map<String, String> {
@@ -130,10 +128,19 @@ object UpdatesUtils {
       if (expectedBase64URLEncodedHash != null && expectedBase64URLEncodedHash != hashBase64String) {
         throw IOException("File download was successful but base64url-encoded SHA-256 did not match expected; expected: $expectedBase64URLEncodedHash; actual: $hashBase64String")
       }
-
       // only rename after the hash has been verified
-      if (!tmpFile.renameTo(destination)) {
-        throw IOException("File download was successful, but failed to move from temporary to permanent location " + destination.absolutePath)
+      // Since renameTo() does not expose detailed errors, and can fail if source and destination
+      // are not on the same mount point, we do a copyTo followed by delete
+      // if there are two assets with identical content, they will be written to the same file path,
+      // so we allow overwrites
+      try {
+        tmpFile.copyTo(destination, true)
+      } catch (e: NoSuchFileException) {
+        throw IOException("File download was successful, but temp file ${tmpFile.absolutePath} does not exist")
+      } catch (e: Exception) {
+        throw IOException("File download was successful, but an exception occurred: $e")
+      } finally {
+        tmpFile.delete()
       }
 
       return hash
@@ -148,12 +155,16 @@ object UpdatesUtils {
     return if (asset.key == null) {
       // create a filename that's unlikely to collide with any other asset
       "asset-" + Date().time + "-" + Random().nextInt() + fileExtension
-    } else asset.key + fileExtension
+    } else {
+      asset.key + fileExtension
+    }
   }
 
   fun sendEventToReactNative(
     reactNativeHost: WeakReference<ReactNativeHost>?,
+    logger: UpdatesLogger,
     eventName: String,
+    eventType: String,
     params: WritableMap?
   ) {
     val host = reactNativeHost?.get()
@@ -184,20 +195,21 @@ object UpdatesUtils {
               if (eventParams == null) {
                 eventParams = Arguments.createMap()
               }
-              eventParams!!.putString("type", eventName)
-              emitter.emit(UPDATES_EVENT_NAME, eventParams)
+              eventParams!!.putString("type", eventType)
+              logger.info("Emitted event: name = $eventName, type = $eventType")
+              emitter.emit(eventName, eventParams)
               return@execute
             }
           }
-          Log.e(TAG, "Could not emit $eventName event; no event emitter was found.")
+          logger.error("Could not emit $eventName $eventType event; no event emitter was found.", UpdatesErrorCode.JSRuntimeError)
         } catch (e: Exception) {
-          Log.e(TAG, "Could not emit $eventName event; no react context was found.")
+          logger.error("Could not emit $eventName $eventType event; no react context was found.", UpdatesErrorCode.JSRuntimeError)
         }
       }
     } else {
-      Log.e(
-        TAG,
-        "Could not emit $eventName event; UpdatesController was not initialized with an instance of ReactApplication."
+      logger.error(
+        "Could not emit $eventType event; UpdatesController was not initialized with an instance of ReactApplication.",
+        UpdatesErrorCode.Unknown
       )
     }
   }
@@ -206,9 +218,6 @@ object UpdatesUtils {
     updatesConfiguration: UpdatesConfiguration,
     context: Context
   ): Boolean {
-    if (updatesConfiguration.updateUrl == null) {
-      return false
-    }
     return when (updatesConfiguration.checkOnLaunch) {
       CheckAutomaticallyConfiguration.NEVER -> false
       // check will happen later on if there's an error
@@ -228,21 +237,6 @@ object UpdatesUtils {
     }
   }
 
-  fun getRuntimeVersion(updatesConfiguration: UpdatesConfiguration): String {
-    val runtimeVersion = updatesConfiguration.runtimeVersion
-    val sdkVersion = updatesConfiguration.sdkVersion
-    return if (runtimeVersion != null && runtimeVersion.isNotEmpty()) {
-      runtimeVersion
-    } else if (sdkVersion != null && sdkVersion.isNotEmpty()) {
-      sdkVersion
-    } else {
-      // various places in the code assume that we have a nonnull runtimeVersion, so if the developer
-      // hasn't configured either runtimeVersion or sdkVersion, we'll use a dummy value of "1" but warn
-      // the developer in JS that they need to configure one of these values
-      "1"
-    }
-  }
-
   // https://stackoverflow.com/questions/9655181/how-to-convert-a-byte-array-to-a-hex-string-in-java
   private val HEX_ARRAY = "0123456789ABCDEF".toCharArray()
   fun bytesToHex(bytes: ByteArray): String {
@@ -256,22 +250,22 @@ object UpdatesUtils {
   }
 
   @Throws(ParseException::class)
-  fun parseDateString(dateString: String?): Date {
-    return try {
-      val formatter: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.US)
-      formatter.parse(dateString)
-    } catch (e: ParseException) {
-      Log.e(TAG, "Failed to parse date string on first try: $dateString", e)
-      // some old Android versions don't support the 'X' character in SimpleDateFormat, so try without this
-      val formatter: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
-      formatter.timeZone = TimeZone.getTimeZone("GMT")
-      // throw if this fails too
-      formatter.parse(dateString)
-    } catch (e: IllegalArgumentException) {
-      Log.e(TAG, "Failed to parse date string on first try: $dateString", e)
-      val formatter: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
-      formatter.timeZone = TimeZone.getTimeZone("GMT")
-      formatter.parse(dateString)
+  fun parseDateString(dateString: String): Date {
+    try {
+      val formatter: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'X'", Locale.US)
+      return formatter.parse(dateString) as Date
+    } catch (e: Exception) {
+      // Don't throw on first attempt
+    }
+    // First attempt failed, try with 'Z' format string
+    try {
+      val formatter: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US).apply {
+        timeZone = TimeZone.getTimeZone("GMT")
+      }
+      return formatter.parse(dateString) as Date
+    } catch (e: Exception) {
+      // Throw if the second parse attempt fails
+      throw e
     }
   }
 }

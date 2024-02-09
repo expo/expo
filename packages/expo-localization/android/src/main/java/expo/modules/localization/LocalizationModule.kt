@@ -19,13 +19,16 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import java.text.DecimalFormatSymbols
 import java.util.*
 
-// EXPO_VERSIONING_NEEDS_EXPOVIEW_R
-
 // must be kept in sync with https://github.com/facebook/react-native/blob/main/ReactAndroid/src/main/java/com/facebook/react/modules/i18nmanager/I18nUtil.java
 private const val SHARED_PREFS_NAME = "com.facebook.react.modules.i18nmanager.I18nUtil"
 private const val KEY_FOR_PREFS_ALLOWRTL = "RCTI18nUtil_allowRTL"
 
+private const val LOCALE_SETTINGS_CHANGED = "onLocaleSettingsChanged"
+private const val CALENDAR_SETTINGS_CHANGED = "onCalendarSettingsChanged"
+
 class LocalizationModule : Module() {
+  private var observer: () -> Unit = {}
+
   override fun definition() = ModuleDefinition {
     Name("ExpoLocalization")
 
@@ -45,10 +48,21 @@ class LocalizationModule : Module() {
       return@Function getCalendars()
     }
 
+    Events(LOCALE_SETTINGS_CHANGED, CALENDAR_SETTINGS_CHANGED)
+
     OnCreate {
       appContext?.reactContext?.let {
         setRTLFromStringResources(it)
       }
+      observer = {
+        this@LocalizationModule.sendEvent(LOCALE_SETTINGS_CHANGED)
+        this@LocalizationModule.sendEvent(CALENDAR_SETTINGS_CHANGED)
+      }
+      Notifier.registerObserver(observer)
+    }
+
+    OnDestroy {
+      Notifier.deregisterObserver(observer)
     }
   }
 
@@ -104,15 +118,6 @@ class LocalizationModule : Module() {
       }
     }
 
-  private fun getRegionCode(locale: Locale): String? {
-    val miuiRegion = getSystemProperty("ro.miui.region")
-    return if (!TextUtils.isEmpty(miuiRegion)) {
-      miuiRegion
-    } else {
-      getCountryCode(locale)
-    }
-  }
-
   private fun getMeasurementSystem(locale: Locale): String? {
     return if (VERSION.SDK_INT >= VERSION_CODES.P) {
       when (LocaleData.getMeasurementSystem(ULocale.forLocale(locale))) {
@@ -122,9 +127,13 @@ class LocalizationModule : Module() {
         else -> "metric"
       }
     } else {
-      if (getRegionCode(locale).equals("uk")) "uk"
-      else if (USES_IMPERIAL.contains(getRegionCode(locale))) "us"
-      else "metric"
+      if (getRegionCode(locale).equals("uk")) {
+        "uk"
+      } else if (USES_IMPERIAL.contains(getRegionCode(locale))) {
+        "us"
+      } else {
+        "metric"
+      }
     }
   }
 
@@ -151,6 +160,7 @@ class LocalizationModule : Module() {
 
             // currency symbol can be localized to display locale (1st on the list) or to the locale for the currency (as done here).
             "currencySymbol" to Currency.getInstance(locale).getSymbol(locale),
+            "temperatureUnit" to getTemperatureUnit(locale)
           )
         )
       } catch (e: Exception) {

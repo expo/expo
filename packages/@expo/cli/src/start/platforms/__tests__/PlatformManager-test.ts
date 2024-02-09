@@ -30,8 +30,8 @@ describe('openAsync', () => {
     hasAppId = true,
   }: { customUrl?: string | null; isAppInstalled?: boolean; hasAppId?: boolean } = {}) {
     const getRedirectUrl = jest.fn((): null | string => null);
-    const getExpoGoUrl = jest.fn(() => 'exp://localhost:19000/');
-    const getDevServerUrl = jest.fn(() => 'http://localhost:19000/');
+    const getExpoGoUrl = jest.fn(() => 'exp://localhost:8081/');
+    const getDevServerUrl = jest.fn(() => 'http://localhost:8081/');
     const getCustomRuntimeUrl = jest.fn(() => customUrl);
     const device = {
       name: 'iPhone 13',
@@ -82,7 +82,7 @@ describe('openAsync', () => {
   it(`opens a project in Expo Go`, async () => {
     const { manager, getExpoGoUrl, device, resolveDeviceAsync } = createManager();
 
-    const url = 'exp://localhost:19000/';
+    const url = 'exp://localhost:8081/';
     expect(await manager.openAsync({ runtime: 'expo' })).toStrictEqual({
       url,
     });
@@ -109,7 +109,7 @@ describe('openAsync', () => {
       isAppInstalled: true,
     });
 
-    const url = 'http://localhost:19000/_expo/loading';
+    const url = 'http://localhost:8081/_expo/loading';
     getRedirectUrl.mockImplementationOnce(() => url);
 
     expect(await manager.openAsync({ runtime: 'expo' })).toStrictEqual({
@@ -139,8 +139,8 @@ describe('openAsync', () => {
       isAppInstalled: false,
     });
 
-    const url = 'exp://localhost:19000/';
-    getRedirectUrl.mockImplementationOnce(() => 'http://localhost:19000/_expo/loading');
+    const url = 'exp://localhost:8081/';
+    getRedirectUrl.mockImplementationOnce(() => 'http://localhost:8081/_expo/loading');
 
     expect(await manager.openAsync({ runtime: 'expo' })).toStrictEqual({
       url,
@@ -171,8 +171,8 @@ describe('openAsync', () => {
       hasAppId: false,
     });
 
-    const url = 'exp://localhost:19000/';
-    getRedirectUrl.mockImplementationOnce(() => 'http://localhost:19000/_expo/loading');
+    const url = 'exp://localhost:8081/';
+    getRedirectUrl.mockImplementationOnce(() => 'http://localhost:8081/_expo/loading');
 
     expect(await manager.openAsync({ runtime: 'expo' })).toStrictEqual({
       url,
@@ -197,7 +197,7 @@ describe('openAsync', () => {
   it(`opens a project in a web browser`, async () => {
     const { manager, getDevServerUrl, device, resolveDeviceAsync } = createManager();
 
-    const url = 'http://localhost:19000/';
+    const url = 'http://localhost:8081/';
     expect(await manager.openAsync({ runtime: 'web' })).toStrictEqual({
       url,
     });

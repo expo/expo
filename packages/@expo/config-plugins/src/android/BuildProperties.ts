@@ -1,9 +1,9 @@
 import type { ExpoConfig } from '@expo/config-types';
 
+import type { PropertiesItem } from './Properties';
 import type { ConfigPlugin } from '../Plugin.types';
 import { withGradleProperties } from '../plugins/android-plugins';
 import { BuildPropertiesConfig, ConfigToPropertyRuleType } from '../utils/BuildProperties.types';
-import type { PropertiesItem } from './Properties';
 
 /**
  * Creates a `withGradleProperties` config-plugin based on given config to property mapping rules.
@@ -50,15 +50,16 @@ export function createBuildGradlePropsConfigPlugin<SourceConfigType extends Buil
 export const withJsEngineGradleProps = createBuildGradlePropsConfigPlugin<ExpoConfig>(
   [
     {
-      propName: 'expo.jsEngine',
-      propValueGetter: (config) => config.android?.jsEngine ?? config.jsEngine ?? 'hermes',
+      propName: 'hermesEnabled',
+      propValueGetter: (config) =>
+        ((config.android?.jsEngine ?? config.jsEngine ?? 'hermes') === 'hermes').toString(),
     },
   ],
   'withJsEngineGradleProps'
 );
 
 export function updateAndroidBuildPropertiesFromConfig<
-  SourceConfigType extends BuildPropertiesConfig
+  SourceConfigType extends BuildPropertiesConfig,
 >(
   config: SourceConfigType,
   gradleProperties: PropertiesItem[],

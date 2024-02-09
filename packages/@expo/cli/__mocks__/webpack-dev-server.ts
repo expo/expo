@@ -1,5 +1,5 @@
 export default jest.fn(() => ({
   listen: jest.fn(),
-  sockWrite: jest.fn(),
+  sendMessage: jest.fn(),
   close: jest.fn(),
 }));

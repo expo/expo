@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.compileModsAsync = compileModsAsync;
 exports.evalModsAsync = evalModsAsync;
+exports.sortMods = sortMods;
 exports.withDefaultBaseMods = withDefaultBaseMods;
 exports.withIntrospectionBaseMods = withIntrospectionBaseMods;
 function _debug() {
@@ -17,27 +18,6 @@ function _debug() {
 function _path() {
   const data = _interopRequireDefault(require("path"));
   _path = function () {
-    return data;
-  };
-  return data;
-}
-function _Xcodeproj() {
-  const data = require("../ios/utils/Xcodeproj");
-  _Xcodeproj = function () {
-    return data;
-  };
-  return data;
-}
-function _errors() {
-  const data = require("../utils/errors");
-  _errors = function () {
-    return data;
-  };
-  return data;
-}
-function Warnings() {
-  const data = _interopRequireWildcard(require("../utils/warnings"));
-  Warnings = function () {
     return data;
   };
   return data;
@@ -63,8 +43,29 @@ function _withIosBaseMods() {
   };
   return data;
 }
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+function _Xcodeproj() {
+  const data = require("../ios/utils/Xcodeproj");
+  _Xcodeproj = function () {
+    return data;
+  };
+  return data;
+}
+function _errors() {
+  const data = require("../utils/errors");
+  _errors = function () {
+    return data;
+  };
+  return data;
+}
+function Warnings() {
+  const data = _interopRequireWildcard(require("../utils/warnings"));
+  Warnings = function () {
+    return data;
+  };
+  return data;
+}
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 const debug = (0, _debug().default)('expo:config-plugins:mod-compiler');
 function withDefaultBaseMods(config, props = {}) {
@@ -96,13 +97,11 @@ function withIntrospectionBaseMods(config, props = {}) {
     for (const platform of Object.keys(config.mods)) {
       // const platformPreserve = preserve[platform];
       for (const key of Object.keys(config.mods[platform] || {})) {
-        var _config$mods$platform, _config$mods$platform2;
         // @ts-ignore
-        if (!((_config$mods$platform = config.mods[platform]) !== null && _config$mods$platform !== void 0 && (_config$mods$platform2 = _config$mods$platform[key]) !== null && _config$mods$platform2 !== void 0 && _config$mods$platform2.isIntrospective)) {
-          var _config$mods$platform3;
+        if (!config.mods[platform]?.[key]?.isIntrospective) {
           debug(`removing non-idempotent mod: ${platform}.${key}`);
           // @ts-ignore
-          (_config$mods$platform3 = config.mods[platform]) === null || _config$mods$platform3 === void 0 ? true : delete _config$mods$platform3[key];
+          delete config.mods[platform]?.[key];
         }
       }
     }
@@ -110,7 +109,11 @@ function withIntrospectionBaseMods(config, props = {}) {
   return config;
 }
 
-/** Compile modifiers in a prebuild config. */
+/**
+ *
+ * @param projectRoot
+ * @param config
+ */
 async function compileModsAsync(config, props) {
   if (props.introspect === true) {
     config = withIntrospectionBaseMods(config);
@@ -119,18 +122,18 @@ async function compileModsAsync(config, props) {
   }
   return await evalModsAsync(config, props);
 }
-function sortMods(commands, order) {
-  const allKeys = commands.map(([key]) => key);
-  const completeOrder = [...new Set([...order, ...allKeys])];
-  const sorted = [];
-  while (completeOrder.length) {
-    const group = completeOrder.shift();
-    const commandSet = commands.find(([key]) => key === group);
-    if (commandSet) {
-      sorted.push(commandSet);
-    }
-  }
-  return sorted;
+function sortMods(commands, precedences) {
+  const seen = new Set();
+  const dedupedCommands = commands.filter(([key]) => {
+    const duplicate = seen.has(key);
+    seen.add(key);
+    return !duplicate;
+  });
+  return dedupedCommands.sort(([keyA], [keyB]) => {
+    const precedenceA = precedences[keyA] || 0;
+    const precedenceB = precedences[keyB] || 0;
+    return precedenceA - precedenceB;
+  });
 }
 function getRawClone({
   mods,
@@ -140,34 +143,42 @@ function getRawClone({
   // the mods.
   return Object.freeze(JSON.parse(JSON.stringify(config)));
 }
-const orders = {
-  ios: [
-  // dangerous runs first
-  'dangerous',
-  // run the XcodeProject mod second because many plugins attempt to read from it.
-  'xcodeproj']
+const precedences = {
+  ios: {
+    // dangerous runs first
+    dangerous: -2,
+    // run the XcodeProject mod second because many plugins attempt to read from it.
+    xcodeproj: -1,
+    // put the finalized mod at the last
+    finalized: 1
+  }
 };
-
-/** A generic plugin compiler. */
+/**
+ * A generic plugin compiler.
+ *
+ * @param config
+ */
 async function evalModsAsync(config, {
   projectRoot,
   introspect,
   platforms,
   assertMissingModProviders,
-  templateProjectRoot
+  ignoreExistingNativeFiles = false
 }) {
   const modRawConfig = getRawClone(config);
-  for (const [platformName, platform] of Object.entries((_config$mods = config.mods) !== null && _config$mods !== void 0 ? _config$mods : {})) {
-    var _config$mods;
+  for (const [platformName, platform] of Object.entries(config.mods ?? {})) {
     if (platforms && !platforms.includes(platformName)) {
       debug(`skip platform: ${platformName}`);
       continue;
     }
     let entries = Object.entries(platform);
     if (entries.length) {
-      var _orders$platformName;
-      // Move dangerous item to the first position if it exists, this ensures that all dangerous code runs first.
-      entries = sortMods(entries, (_orders$platformName = orders[platformName]) !== null && _orders$platformName !== void 0 ? _orders$platformName : ['dangerous']);
+      // Move dangerous item to the first position and finalized item to the last position if it exists.
+      // This ensures that all dangerous code runs first and finalized applies last.
+      entries = sortMods(entries, precedences[platformName] ?? {
+        dangerous: -1,
+        finalized: 1
+      });
       debug(`run in order: ${entries.map(([name]) => name).join(', ')}`);
       const platformProjectRoot = _path().default.join(projectRoot, platformName);
       const projectName = platformName === 'ios' ? (0, _Xcodeproj().getHackyProjectName)(projectRoot, config) : undefined;
@@ -179,7 +190,7 @@ async function evalModsAsync(config, {
           platform: platformName,
           modName,
           introspect: !!introspect,
-          templateProjectRoot
+          ignoreExistingNativeFiles
         };
         if (!mod.isProvider) {
           // In strict mode, throw an error.

@@ -13,11 +13,6 @@ namespace jsi = facebook::jsi;
  */
 static NSString *modulesHostObjectPropertyName = @"modules";
 
-/**
- Property name used to define the modules host object in the global object of the Expo JS runtime (legacy).
- */
-static NSString *modulesHostObjectLegacyPropertyName = @"ExpoModules";
-
 @interface RCTBridge (ExpoBridgeWithRuntime)
 
 - (void *)runtime;
@@ -27,15 +22,15 @@ static NSString *modulesHostObjectLegacyPropertyName = @"ExpoModules";
 
 @implementation EXJavaScriptRuntimeManager
 
-+ (nullable ExpoRuntime *)runtimeFromBridge:(nonnull RCTBridge *)bridge
++ (nullable EXRuntime *)runtimeFromBridge:(nonnull RCTBridge *)bridge
 {
   jsi::Runtime *jsiRuntime = [bridge respondsToSelector:@selector(runtime)] ? reinterpret_cast<jsi::Runtime *>(bridge.runtime) : nullptr;
-  return jsiRuntime ? [[ExpoRuntime alloc] initWithRuntime:jsiRuntime callInvoker:bridge.jsCallInvoker] : nil;
+  return jsiRuntime ? [[EXRuntime alloc] initWithRuntime:jsiRuntime callInvoker:bridge.jsCallInvoker] : nil;
 }
 
 + (BOOL)installExpoModulesHostObject:(nonnull EXAppContext *)appContext
 {
-  ExpoRuntime *runtime = [appContext _runtime];
+  EXRuntime *runtime = [appContext _runtime];
 
   // The runtime may be unavailable, e.g. remote debugger is enabled or it hasn't been set yet.
   if (!runtime) {
@@ -57,10 +52,6 @@ static NSString *modulesHostObjectLegacyPropertyName = @"ExpoModules";
                        value:modulesHostObject
                      options:EXJavaScriptObjectPropertyDescriptorEnumerable];
 
-  // Also define `global.ExpoModules` for backwards compatibility (used before SDK47, can be removed in SDK48).
-  [global defineProperty:modulesHostObjectLegacyPropertyName
-                   value:modulesHostObject
-                 options:EXJavaScriptObjectPropertyDescriptorEnumerable];
   return true;
 }
 

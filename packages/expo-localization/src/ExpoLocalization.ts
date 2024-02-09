@@ -1,5 +1,5 @@
 /* eslint-env browser */
-import { Platform } from 'expo-modules-core';
+import { Platform, Subscription } from 'expo-modules-core';
 import * as rtlDetect from 'rtl-detect';
 
 import { Localization, Calendar, Locale, CalendarIdentifier } from './Localization.types';
@@ -18,6 +18,43 @@ type ExtendedLocale = Intl.Locale &
     timeZone: string;
     calendars: string[];
   }>;
+
+const WEB_LANGUAGE_CHANGE_EVENT = 'languagechange';
+// https://wisevoter.com/country-rankings/countries-that-use-fahrenheit/
+const USES_FAHRENHEIT = [
+  'AG',
+  'BZ',
+  'VG',
+  'FM',
+  'MH',
+  'MS',
+  'KN',
+  'BS',
+  'CY',
+  'TC',
+  'US',
+  'LR',
+  'PW',
+  'KY',
+];
+
+export function addLocaleListener(listener: (event) => void): Subscription {
+  addEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener);
+  return {
+    remove: () => removeEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener),
+  };
+}
+
+export function addCalendarListener(listener: (event) => void): Subscription {
+  addEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener);
+  return {
+    remove: () => removeEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener),
+  };
+}
+
+export function removeSubscription(subscription: Subscription) {
+  subscription.remove();
+}
 
 export default {
   get currency(): string | null {
@@ -103,6 +140,7 @@ export default {
         Array.from((10000).toLocaleString(languageTag)).filter((c) => c > '9' || c < '0')[0] ||
         null; // using 1e5 instead of 1e4 since for some locales (like pl-PL) 1e4 does not use digit grouping
       const decimalSeparator = (1.1).toLocaleString(languageTag).substring(1, 2);
+      const temperatureUnit = region ? regionToTemperatureUnit(region) : null;
 
       return {
         languageTag,
@@ -114,6 +152,7 @@ export default {
         currencyCode: null,
         currencySymbol: null,
         regionCode: region || null,
+        temperatureUnit,
       };
     });
   },
@@ -130,6 +169,7 @@ export default {
       },
     ];
   },
+
   async getLocalizationAsync(): Promise<Omit<Localization, 'getCalendars' | 'getLocales'>> {
     const {
       currency,
@@ -157,3 +197,7 @@ export default {
     };
   },
 };
+
+function regionToTemperatureUnit(region: string) {
+  return USES_FAHRENHEIT.includes(region) ? 'fahrenheit' : 'celsius';
+}

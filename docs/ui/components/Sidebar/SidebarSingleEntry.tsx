@@ -11,6 +11,7 @@ type SidebarSingleEntryProps = {
   isActive?: boolean;
   isExternal?: boolean;
   secondary?: boolean;
+  shouldLeakReferrer?: boolean;
 };
 
 export const SidebarSingleEntry = ({
@@ -20,16 +21,19 @@ export const SidebarSingleEntry = ({
   isActive = false,
   isExternal = false,
   secondary = false,
+  shouldLeakReferrer,
 }: SidebarSingleEntryProps) => {
   return (
     <A
       href={href}
       className={mergeClasses(
-        'flex items-center gap-3 text-secondary rounded-md text-xs min-h-[32px] px-2 py-1 !leading-[100%] !opacity-100',
+        'flex items-center gap-3 text-secondary rounded-md text-sm min-h-[32px] px-2 py-1 !leading-[100%] !opacity-100',
         'hocus:bg-element',
+        'focus-visible:relative focus-visible:z-10',
         secondary && 'text-xs',
         isActive && 'bg-palette-blue3 text-link font-medium hocus:text-link hocus:bg-palette-blue4'
       )}
+      shouldLeakReferrer={shouldLeakReferrer}
       isStyled>
       <Icon
         className={mergeClasses(

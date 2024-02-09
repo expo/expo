@@ -1,5 +1,5 @@
 ---
-title: Using private npm packages
+title: Use private npm packages
 description: Learn how to configure EAS Build to use private npm packages.
 ---
 
@@ -13,13 +13,13 @@ Before starting the build, you will need to configure your project to provide EA
 
 By default, EAS Build uses a self-hosted npm cache that speeds up installing dependencies for all builds. Every EAS Build builder is configured with a **.npmrc** file for each platform:
 
-#### Android
+### Android
 
 ```ini
 registry=http://npm-cache-service.worker-infra-production.svc.cluster.local:4873
 ```
 
-#### iOS
+### iOS
 
 ```ini
 registry=http://10.254.24.8:4873
@@ -73,7 +73,9 @@ registry=https://registry.johndoe.com/
 
 ## Both private npm packages and private registry
 
-This is an advanced example, and you will probably never use it. Private npm packages are always [scoped](https://docs.npmjs.com/about-scopes#scopes-and-package-visibility). For example, if your npm username is `johndoe`, private self-hosted registry URL is `https://registry.johndoe.com/`. If you want to install dependencies from both sources, create a **.npmrc** in your project's root directory with the following:
+> This is an advanced example.
+
+Private npm packages are always [scoped](https://docs.npmjs.com/about-scopes#scopes-and-package-visibility). For example, if your npm username is `johndoe`, the private self-hosted registry URL is `https://registry.johndoe.com/`. If you want to install dependencies from both sources, create a **.npmrc** in your project's root directory with the following:
 
 ```ini .npmrc
 //registry.npmjs.org/:_authToken=${NPM_TOKEN}

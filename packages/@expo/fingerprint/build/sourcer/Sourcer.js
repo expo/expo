@@ -5,10 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getHashSourcesAsync = void 0;
 const chalk_1 = __importDefault(require("chalk"));
-const Profile_1 = require("../utils/Profile");
 const Bare_1 = require("./Bare");
 const Expo_1 = require("./Expo");
 const PatchPackage_1 = require("./PatchPackage");
+const Profile_1 = require("../utils/Profile");
 const debug = require('debug')('expo:fingerprint:sourcer:Sourcer');
 async function getHashSourcesAsync(projectRoot, options) {
     const results = await Promise.all([

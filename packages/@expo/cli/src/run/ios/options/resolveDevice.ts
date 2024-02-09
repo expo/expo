@@ -1,9 +1,9 @@
+import { promptDeviceAsync } from './promptDevice';
 import * as Log from '../../../log';
 import {
   AppleDeviceManager,
   ensureSimulatorOpenAsync,
 } from '../../../start/platforms/ios/AppleDeviceManager';
-import { assertSystemRequirementsAsync } from '../../../start/platforms/ios/assertSystemRequirements';
 import { sortDefaultDeviceToBeginningAsync } from '../../../start/platforms/ios/promptAppleDevice';
 import { OSType } from '../../../start/platforms/ios/simctl';
 import * as SimControl from '../../../start/platforms/ios/simctl';
@@ -11,7 +11,6 @@ import { CommandError } from '../../../utils/errors';
 import { profile } from '../../../utils/profile';
 import { logDeviceArgument } from '../../hints';
 import * as AppleDevice from '../appleDevice/AppleDevice';
-import { promptDeviceAsync } from './promptDevice';
 
 type AnyDevice = SimControl.Device | AppleDevice.ConnectedDevice;
 
@@ -41,7 +40,7 @@ export async function resolveDeviceAsync(
   device?: string | boolean,
   { osType }: { osType?: OSType } = {}
 ): Promise<AnyDevice> {
-  await assertSystemRequirementsAsync();
+  await AppleDeviceManager.assertSystemRequirementsAsync();
 
   if (!device) {
     /** Finds the first possible device and returns in a booted state. */

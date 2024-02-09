@@ -1,15 +1,26 @@
 import React from 'react';
+import { View } from 'react-native-web';
 import AnimationManager from './web/AnimationManager';
 import ImageWrapper from './web/ImageWrapper';
-import loadStyle from './web/style';
+import loadStyle from './web/imageStyles';
 import useSourceSelection from './web/useSourceSelection';
 loadStyle();
 export const ExpoImageModule = {
-    prefetch(urls) {
+    async prefetch(urls, _) {
         const urlsArray = Array.isArray(urls) ? urls : [urls];
-        urlsArray.forEach((url) => {
-            const img = new Image();
-            img.src = url;
+        return new Promise((resolve) => {
+            let imagesLoaded = 0;
+            urlsArray.forEach((url) => {
+                const img = new Image();
+                img.src = url;
+                img.onload = () => {
+                    imagesLoaded++;
+                    if (imagesLoaded === urlsArray.length) {
+                        resolve(true);
+                    }
+                };
+                img.onerror = () => resolve(false);
+            });
         });
     },
     async clearMemoryCache() {
@@ -40,28 +51,34 @@ function onErrorAdapter(onError) {
         });
     };
 }
-const setCssVariables = (element, size) => {
+// Used for flip transitions to mimic native animations
+function setCssVariablesForFlipTransitions(element, size) {
     element?.style.setProperty('--expo-image-width', `${size.width}px`);
     element?.style.setProperty('--expo-image-height', `${size.height}px`);
-};
-export default function ExpoImage({ source, placeholder, contentFit, contentPosition, placeholderContentFit, onLoad, transition, onError, responsivePolicy, onLoadEnd, priority, blurRadius, recyclingKey, ...props }) {
-    const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
+}
+function isFlipTransition(transition) {
+    return (transition?.effect === 'flip-from-bottom' ||
+        transition?.effect === 'flip-from-top' ||
+        transition?.effect === 'flip-from-left' ||
+        transition?.effect === 'flip-from-right');
+}
+export default function ExpoImage({ source, placeholder, contentFit, contentPosition, placeholderContentFit, cachePolicy, onLoad, transition, onError, responsivePolicy, onLoadEnd, priority, blurRadius, recyclingKey, style, nativeViewRef, ...props }) {
     const imagePlaceholderContentFit = placeholderContentFit || 'scale-down';
-    const blurhashStyle = {
+    const imageHashStyle = {
         objectFit: placeholderContentFit || contentFit,
     };
-    const { containerRef, source: selectedSource } = useSourceSelection(source, responsivePolicy, setCssVariables);
+    const { containerRef, source: selectedSource } = useSourceSelection(source, responsivePolicy, isFlipTransition(transition) ? setCssVariablesForFlipTransitions : null);
     const initialNodeAnimationKey = (recyclingKey ? `${recyclingKey}-${placeholder?.[0]?.uri}` : placeholder?.[0]?.uri) ?? '';
     const initialNode = placeholder?.[0]?.uri
         ? [
             initialNodeAnimationKey,
-            ({ onAnimationFinished }) => (className, style) => (React.createElement(ImageWrapper, { ...props, source: placeholder?.[0], style: {
+            ({ onAnimationFinished }) => (className, style) => (<ImageWrapper {...props} ref={nativeViewRef} source={placeholder?.[0]} style={{
                     objectFit: imagePlaceholderContentFit,
                     ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
                     ...style,
-                }, className: className, events: {
+                }} className={className} events={{
                     onTransitionEnd: [onAnimationFinished],
-                }, contentPosition: { left: '50%', top: '50%' }, hashPlaceholderContentPosition: contentPosition, hashPlaceholderStyle: blurhashStyle })),
+                }} contentPosition={{ left: '50%', top: '50%' }} hashPlaceholderContentPosition={contentPosition} hashPlaceholderStyle={imageHashStyle}/>),
         ]
         : null;
     const currentNodeAnimationKey = (recyclingKey
@@ -69,26 +86,21 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
         : selectedSource?.uri ?? placeholder?.[0]?.uri) ?? '';
     const currentNode = [
         currentNodeAnimationKey,
-        ({ onAnimationFinished, onReady, onMount, onError: onErrorInner }) => (className, style) => (React.createElement(ImageWrapper, { ...props, source: selectedSource || placeholder?.[0], events: {
+        ({ onAnimationFinished, onReady, onMount, onError: onErrorInner }) => (className, style) => (<ImageWrapper {...props} ref={nativeViewRef} source={selectedSource || placeholder?.[0]} events={{
                 onError: [onErrorAdapter(onError), onLoadEnd, onErrorInner],
                 onLoad: [onLoadAdapter(onLoad), onLoadEnd, onReady],
                 onMount: [onMount],
                 onTransitionEnd: [onAnimationFinished],
-            }, style: {
+            }} style={{
                 objectFit: selectedSource ? contentFit : imagePlaceholderContentFit,
                 ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
                 ...style,
-            }, className: className, priority: priority, contentPosition: selectedSource ? contentPosition : { top: '50%', left: '50%' }, hashPlaceholderContentPosition: contentPosition, hashPlaceholderStyle: blurhashStyle, accessibilityLabel: props.accessibilityLabel })),
+            }} className={className} cachePolicy={cachePolicy} priority={priority} contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }} hashPlaceholderContentPosition={contentPosition} hashPlaceholderStyle={imageHashStyle} accessibilityLabel={props.accessibilityLabel}/>),
     ];
-    return (React.createElement("div", { ref: containerRef, className: "expo-image-container", style: {
-            aspectRatio: String(aspectRatio),
-            backgroundColor: backgroundColor?.toString(),
-            transform: transform?.toString(),
-            borderColor: borderColor?.toString(),
-            position: 'relative',
-            overflow: 'hidden',
-            ...style,
-        } },
-        React.createElement(AnimationManager, { transition: transition, recyclingKey: recyclingKey, initial: initialNode }, currentNode)));
+    return (<View ref={containerRef} dataSet={{ expoimage: true }} style={[{ overflow: 'hidden' }, style]}>
+      <AnimationManager transition={transition} recyclingKey={recyclingKey} initial={initialNode}>
+        {currentNode}
+      </AnimationManager>
+    </View>);
 }
 //# sourceMappingURL=ExpoImage.web.js.map

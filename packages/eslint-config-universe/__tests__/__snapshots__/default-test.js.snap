@@ -87,7 +87,14 @@ function _fn() {}
 function* gen() {}
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
+    },
+  ],
   "warningCount": 1,
 }
 `;
@@ -159,7 +166,14 @@ export class Example {
 function _fn(...args: any): void {}
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
+    },
+  ],
   "warningCount": 2,
 }
 `;
@@ -212,7 +226,14 @@ function unused2() {
 }
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
+    },
+  ],
   "warningCount": 3,
 }
 `;
@@ -268,29 +289,25 @@ exports[`lints with the default config: fixtures/all-03.ts 1`] = `
       "ruleId": "@typescript-eslint/no-unused-vars",
       "severity": 1,
     },
-    {
-      "column": 28,
-      "endColumn": 37,
-      "endLine": 6,
-      "line": 6,
-      "message": "Use 'as string' instead of '<string>'.",
-      "messageId": "as",
-      "nodeType": "TSTypeAssertion",
-      "ruleId": "@typescript-eslint/consistent-type-assertions",
-      "severity": 1,
-    },
   ],
-  "source": "const tsUnused1 = 0;
+  "output": "const tsUnused1 = 0;
 
 function tsUnused2() {
   const x: any = 'hi';
   const asCast = x as string;
-  const angleBracketCast = <string>x;
+  const angleBracketCast = x as string;
 }
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
-  "warningCount": 5,
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
+    },
+  ],
+  "warningCount": 4,
 }
 `;
 
@@ -306,7 +323,14 @@ exports[`lints with the default config: fixtures/all-04.ts 1`] = `
 };
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
+    },
+  ],
   "warningCount": 0,
 }
 `;
@@ -321,7 +345,14 @@ exports[`lints with the default config: fixtures/all-05.ts 1`] = `
   "output": "export const blah = 3!;
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
+    },
+  ],
   "warningCount": 0,
 }
 `;
@@ -341,7 +372,14 @@ export const stringTest: string | null = null;
 export const objectShorthandTest: object | null = null;
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
+    },
+  ],
   "warningCount": 0,
 }
 `;
@@ -364,7 +402,14 @@ const e = require('e');
 export default a + b + c + d + e;
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
+    },
+  ],
   "warningCount": 0,
 }
 `;

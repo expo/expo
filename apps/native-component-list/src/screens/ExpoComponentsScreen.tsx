@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import ExpoAPIIcon from '../components/ExpoAPIIcon';
 import ComponentListScreen from './ComponentListScreen';
+import ExpoAPIIcon from '../components/ExpoAPIIcon';
 
 const screens = [
   'ActivityIndicator',
@@ -9,7 +9,10 @@ const screens = [
   'BlurView',
   'Button',
   'Camera',
+  'Camera (next)',
+  'Camera (next barcode)',
   'Checkbox',
+  'ClipboardPasteButton',
   'DateTimePicker',
   'DrawerLayoutAndroid',
   'ExpoMaps',
@@ -28,8 +31,6 @@ const screens = [
   'Modal',
   'Picker',
   'Pressable',
-  'ProgressBarAndroid',
-  'ProgressViewIOS',
   'QRCode',
   'Reanimated',
   'Skia',
@@ -37,14 +38,14 @@ const screens = [
   'Screens',
   'ScrollView',
   'SegmentedControl',
-  'SharedElement',
   'Slider',
   'Switch',
   'Text',
   'TextInput',
   'TouchableBounce',
   'Touchables',
-  'Video',
+  'Video (expo-av)',
+  'Video (expo-video)',
   'PagerView',
   'WebView',
 ];

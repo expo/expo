@@ -9,6 +9,9 @@ const assert_1 = __importDefault(require("assert"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 class BasePackageManager {
+    silent;
+    log;
+    options;
     constructor({ silent, log, env = process.env, ...options } = {}) {
         this.silent = !!silent;
         this.log = log ?? (!silent ? console.log : undefined);
@@ -33,15 +36,17 @@ class BasePackageManager {
         (0, assert_1.default)(cwd, `cwd is required for ${className}${methodName}`);
         return cwd;
     }
-    runAsync(command) {
+    runAsync(command, options = {}) {
         this.log?.(`> ${this.name} ${command.join(' ')}`);
-        return (0, spawn_async_1.default)(this.bin, command, this.options);
+        return (0, spawn_async_1.default)(this.bin, command, { ...this.options, ...options });
     }
     async versionAsync() {
-        return await this.runAsync(['--version']).then(({ stdout }) => stdout.trim());
+        const { stdout } = await this.runAsync(['--version'], { stdio: undefined });
+        return stdout.trim();
     }
     async getConfigAsync(key) {
-        return await this.runAsync(['config', 'get', key]).then(({ stdout }) => stdout.trim());
+        const { stdout } = await this.runAsync(['config', 'get', key]);
+        return stdout.trim();
     }
     async removeLockfileAsync() {
         const cwd = this.ensureCwdDefined('removeLockFile');

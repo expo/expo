@@ -1,5 +1,5 @@
-import { ImageTestGroup, ImageTestPropsFnInput } from '../types';
 import { tintColor, tintColor2 } from './constants';
+import { ImageTestGroup, ImageTestPropsFnInput } from '../types';
 
 const imageTests: ImageTestGroup = {
   name: 'Appearance',

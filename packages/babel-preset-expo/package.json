@@ -1,17 +1,20 @@
 {
   "name": "babel-preset-expo",
-  "version": "9.4.0",
+  "version": "10.0.0",
   "description": "The Babel preset for Expo projects",
-  "main": "index.js",
+  "main": "build/index.js",
   "files": [
-    "index.js",
-    "lazy-imports-blacklist.js",
-    "plugins"
+    "build",
+    "lazy-imports-blacklist.js"
   ],
   "scripts": {
-    "jest": "jest",
-    "lint": "eslint .",
-    "test": "jest --watch"
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
   },
   "repository": {
     "type": "git",
@@ -37,24 +40,20 @@
   "eslintConfig": {
     "extends": "universe/node"
   },
-  "jest": {
-    "testEnvironment": "node",
-    "testPathIgnorePatterns": [
-      "<rootDir>/node_modules/",
-      "<rootDir>/__tests__/samples/"
-    ]
-  },
   "dependencies": {
     "@babel/plugin-proposal-decorators": "^7.12.9",
-    "@babel/plugin-proposal-object-rest-spread": "^7.12.13",
-    "@babel/plugin-transform-react-jsx": "^7.12.17",
+    "@babel/plugin-transform-export-namespace-from": "^7.22.11",
+    "@babel/plugin-transform-object-rest-spread": "^7.12.13",
+    "@babel/plugin-transform-parameters": "^7.22.15",
     "@babel/preset-env": "^7.20.0",
-    "babel-plugin-module-resolver": "^4.1.0",
+    "@babel/preset-react": "^7.22.15",
+    "@react-native/babel-preset": "^0.73.18",
     "babel-plugin-react-native-web": "~0.18.10",
-    "metro-react-native-babel-preset": "0.73.9"
+    "react-refresh": "0.14.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "expo-module-scripts": "^3.3.0",
     "jest": "^29.2.1"
   }
 }

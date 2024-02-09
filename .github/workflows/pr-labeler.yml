@@ -1,0 +1,104 @@
+name: PR labeler
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/pr-labeler.yml
+      - apps/bare-expo/**
+      - apps/test-suite/**
+      - packages/**
+      - yarn.lock
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - .github/workflows/pr-labeler.yml
+      - apps/bare-expo/**
+      - apps/test-suite/**
+      - packages/**
+      - yarn.lock
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-suite-fingerprint:
+    runs-on: ubuntu-22.04
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'push' }}
+    # REQUIRED: limit concurrency when pushing main(default) branch to prevent conflict for this action to update its fingerprint database
+    concurrency: fingerprint-${{ github.event_name != 'pull_request' && 'main' || github.run_id }}
+    permissions:
+      # REQUIRED: Allow comments of PRs
+      pull-requests: write
+      # REQUIRED: Allow updating fingerprint in acton caches
+      actions: write
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
+        with:
+          yarn-workspace: 'true'
+      - name: 🧶 Install node modules in root dir
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+        run: yarn install --frozen-lockfile
+      - name: 📷 Check fingerprint
+        id: fingerprint
+        uses: expo/expo-github-action/fingerprint@main
+        with:
+          working-directory: apps/bare-expo
+
+      - name: 🏷️ Labeling PR
+        uses: actions/github-script@v6
+        if: ${{ github.event_name == 'pull_request' && steps.fingerprint.outputs.fingerprint-diff == '[]' }}
+        with:
+          script: |
+            try {
+              await github.rest.issues.removeLabel({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: ['bot: fingerprint changed']
+              })
+            } catch (e) {
+              if (e.status != 404) {
+                throw e;
+              }
+            }
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['bot: fingerprint compatible']
+            })
+      - name: 🏷️ Labeling PR
+        uses: actions/github-script@v6
+        if: ${{ github.event_name == 'pull_request' && steps.fingerprint.outputs.fingerprint-diff != '[]' }}
+        with:
+          script: |
+            try {
+              await github.rest.issues.removeLabel({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: ['bot: fingerprint compatible']
+              })
+            } catch (e) {
+              if (e.status != 404) {
+                throw e;
+              }
+            }
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['bot: fingerprint changed']
+            })

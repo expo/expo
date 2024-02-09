@@ -7,7 +7,7 @@
 #import <jsi/jsi.h>
 #import <ReactCommon/RCTTurboModule.h>
 #import <ReactCommon/TurboModuleUtils.h>
-#import <ExpoModulesCore/EXObjectDeallocator.h>
+#import <ExpoModulesCore/ObjectDeallocator.h>
 
 namespace jsi = facebook::jsi;
 namespace react = facebook::react;
@@ -52,17 +52,6 @@ std::shared_ptr<jsi::Object> createWeakRef(jsi::Runtime &runtime, std::shared_pt
  Returns the `WeakRef` object's target object, or an empty pointer if the target object has been reclaimed.
  */
 std::shared_ptr<jsi::Object> derefWeakRef(jsi::Runtime &runtime, std::shared_ptr<jsi::Object> object);
-
-#pragma mark - Define property
-
-void defineProperty(jsi::Runtime &runtime, const jsi::Object *object, const char *name, jsi::Value value);
-
-#pragma mark - Deallocator
-
-/**
- Sets the deallocator block on a given object, which is called when the object is being deallocated.
- */
-void setDeallocator(jsi::Runtime &runtime, std::shared_ptr<jsi::Object> object, ObjectDeallocatorBlock deallocatorBlock);
 
 #pragma mark - Errors
 

@@ -1,6 +1,5 @@
-import { getAccountUsername, getConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
 
 import { getAutolinkedPackagesAsync } from './getAutolinkedPackages';
 import {
@@ -16,7 +15,6 @@ export async function getPrebuildConfigAsync(
     bundleIdentifier?: string;
     packageName?: string;
     platforms: ModPlatform[];
-    expoUsername?: string | ((config: ExpoConfig) => string | null);
   }
 ): Promise<ReturnType<typeof getConfig>> {
   const autolinkedModules = await getAutolinkedPackagesAsync(projectRoot, props.platforms);
@@ -34,13 +32,11 @@ function getPrebuildConfig(
     bundleIdentifier,
     packageName,
     autolinkedModules,
-    expoUsername,
   }: {
     bundleIdentifier?: string;
     packageName?: string;
     platforms: ModPlatform[];
     autolinkedModules?: string[];
-    expoUsername?: string | ((config: ExpoConfig) => string | null);
   }
 ) {
   // let config: ExpoConfig;
@@ -56,17 +52,9 @@ function getPrebuildConfig(
     config._internal.autolinkedModules = autolinkedModules;
   }
 
-  const resolvedExpoUsername =
-    typeof expoUsername === 'function'
-      ? expoUsername(config)
-      : // If the user didn't pass a username then fallback on the static cached username.
-        expoUsername ?? getAccountUsername(config);
-
   // Add all built-in plugins first because they should take
   // priority over the unversioned plugins.
-  config = withVersionedExpoSDKPlugins(config, {
-    expoUsername: resolvedExpoUsername,
-  });
+  config = withVersionedExpoSDKPlugins(config);
   config = withLegacyExpoPlugins(config);
 
   if (platforms.includes('ios')) {

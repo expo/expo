@@ -7,6 +7,8 @@ import { Terminal } from '~/ui/components/Snippet';
 
 ## `EXPO_ROUTER_APP_ROOT` not defined
 
+> This applies to Expo Router v1 and the beta release.
+
 If `process.env.EXPO_ROUTER_APP_ROOT` is not defined you'll see the following error:
 
 <Terminal
@@ -24,7 +26,7 @@ This can happen when:
 
 Alternatively, you can circumvent this issue by creating an **index.js** file in the root of your project with the following contents:
 
-```js index.js
+```jsx index.js
 import { registerRootComponent } from 'expo';
 import { ExpoRoot } from 'expo-router';
 

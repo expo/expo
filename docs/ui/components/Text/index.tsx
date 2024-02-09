@@ -1,12 +1,12 @@
 import { css, CSSObject, SerializedStyles } from '@emotion/react';
-import { theme, typography, LinkBase, LinkBaseProps } from '@expo/styleguide';
+import { theme, typography, LinkBase, LinkBaseProps, mergeClasses } from '@expo/styleguide';
 import { spacing, borderRadius } from '@expo/styleguide-base';
 import * as React from 'react';
 
 import { TextComponentProps, TextElement } from './types';
 
 import { AdditionalProps, HeadingType } from '~/common/headingManager';
-import Permalink from '~/components/Permalink';
+import { Permalink } from '~/ui/components/Permalink';
 import { durations } from '~/ui/foundations/durations';
 
 export { AnchorContext } from './withAnchor';
@@ -25,10 +25,12 @@ export const createPermalinkedComponent = (
   options?: {
     baseNestingLevel?: number;
     sidebarType?: HeadingType;
+    iconSize?: 'sm' | 'xs';
+    className?: string;
   }
 ) => {
-  const { baseNestingLevel, sidebarType = HeadingType.Text } = options || {};
-  return ({ children, level, id, ...props }: PermalinkedComponentProps) => {
+  const { baseNestingLevel, iconSize = 'sm', sidebarType = HeadingType.Text } = options || {};
+  return ({ children, level, id, className, ...props }: PermalinkedComponentProps) => {
     const cleanChildren = React.Children.map(children, child => {
       if (React.isValidElement(child) && child?.props?.href) {
         isDev &&
@@ -42,7 +44,15 @@ export const createPermalinkedComponent = (
     });
     const nestingLevel = baseNestingLevel != null ? (level ?? 0) + baseNestingLevel : undefined;
     return (
-      <Permalink nestingLevel={nestingLevel} additionalProps={{ ...props, sidebarType }} id={id}>
+      <Permalink
+        nestingLevel={nestingLevel}
+        additionalProps={{
+          ...props,
+          sidebarType,
+          iconSize,
+          className: mergeClasses(className, options?.className),
+        }}
+        id={id}>
         <BaseComponent>{cleanChildren}</BaseComponent>
       </Permalink>
     );
@@ -123,7 +133,6 @@ const linkStyled = css({
 const codeStyle = css({
   borderColor: theme.border.secondary,
   borderRadius: borderRadius.sm,
-  verticalAlign: 'initial',
   wordBreak: 'unset',
 });
 
@@ -142,7 +151,7 @@ export const kbdStyle = css({
 });
 
 const { h1, h2, h3, h4, h5 } = typography.headers.default;
-const codeInHeaderStyle = { '& code': { fontSize: 'inherit' } };
+const codeInHeaderStyle = { '& code': { fontSize: '90%' } };
 
 const h1Style = {
   ...h1,
@@ -157,6 +166,7 @@ const h2Style = {
   fontWeight: 600,
   marginTop: spacing[8],
   marginBottom: spacing[3.5],
+  '& a:focus-visible': { outlineOffset: spacing[1] },
   ...codeInHeaderStyle,
 };
 
@@ -165,6 +175,7 @@ const h3Style = {
   fontWeight: 600,
   marginTop: spacing[6],
   marginBottom: spacing[2.5],
+  '& a:focus-visible': { outlineOffset: spacing[1] },
   ...codeInHeaderStyle,
 };
 
@@ -210,6 +221,7 @@ export const LI = createTextComponent(TextElement.LI, css(typography.body.li));
 export const LABEL = createTextComponent(TextElement.SPAN, css(typography.body.label));
 export const HEADLINE = createTextComponent(TextElement.P, css(typography.body.headline));
 export const FOOTNOTE = createTextComponent(TextElement.P, css(typography.body.footnote));
+export const CAPTION = createTextComponent(TextElement.P, css(typography.body.caption));
 export const CALLOUT = createTextComponent(TextElement.P, css(typography.body.callout));
 export const BOLD = createTextComponent(TextElement.STRONG, css({ fontWeight: 600 }));
 export const DEMI = createTextComponent(TextElement.SPAN, css({ fontWeight: 500 }));
@@ -230,12 +242,14 @@ export const MONOSPACE = createTextComponent(TextElement.CODE);
 
 const isExternalLink = (href?: string) => href?.includes('://');
 
-export const A = (props: LinkBaseProps & { isStyled?: boolean }) => {
-  const { isStyled, openInNewTab, ...rest } = props;
+export const A = (props: LinkBaseProps & { isStyled?: boolean; shouldLeakReferrer?: boolean }) => {
+  const { isStyled, openInNewTab, shouldLeakReferrer, ...rest } = props;
+
   return (
     <LinkBase
       css={[link, !isStyled && linkStyled]}
-      openInNewTab={openInNewTab ?? isExternalLink(props.href)}
+      {...(shouldLeakReferrer && { target: '_blank', referrerPolicy: 'origin' })}
+      openInNewTab={(!shouldLeakReferrer && openInNewTab) ?? isExternalLink(props.href)}
       {...rest}
     />
   );

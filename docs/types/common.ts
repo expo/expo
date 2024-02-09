@@ -43,6 +43,8 @@ export type NavigationRoute = {
   children?: NavigationRoute[];
 };
 
+export type NavigationRouteWithSection = NavigationRoute & { section?: string };
+
 /**
  * Available platforms supported by our APIs.
  * Temporarily it also accepts other strings for compatibility reasons.

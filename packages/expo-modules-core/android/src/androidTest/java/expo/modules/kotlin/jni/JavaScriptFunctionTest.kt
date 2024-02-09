@@ -1,10 +1,6 @@
-@file:OptIn(ExperimentalCoroutinesApi::class)
-
 package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
-import io.mockk.mockk
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
 
@@ -13,7 +9,7 @@ class JavaScriptFunctionTest {
 
   @Before
   fun before() {
-    jsiInterop = JSIInteropModuleRegistry(mockk()).apply {
+    jsiInterop = JSIInteropModuleRegistry(defaultAppContextMock()).apply {
       installJSIForTests()
     }
   }
@@ -48,15 +44,12 @@ class JavaScriptFunctionTest {
   }
 
   @Test
-  fun should_be_accepted_as_a_function_arg() = withJSIInterop(
-    inlineModule {
-      Name("TestModule")
-      Function("decorate") { jsFunction: JavaScriptFunction<String> ->
-        "${jsFunction()}${jsFunction()}"
-      }
+  fun should_be_accepted_as_a_function_arg() = withSingleModule({
+    Function("decorate") { jsFunction: JavaScriptFunction<String> ->
+      "${jsFunction()}${jsFunction()}"
     }
-  ) {
-    val result = evaluateScript("expo.modules.TestModule.decorate(() => 'foo')").getString()
+  }) {
+    val result = call("decorate", "() => 'foo'").getString()
     Truth.assertThat(result).isEqualTo("foofoo")
   }
 }

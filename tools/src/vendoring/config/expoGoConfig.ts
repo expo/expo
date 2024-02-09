@@ -4,7 +4,13 @@ import minimatch from 'minimatch';
 import path from 'path';
 
 import { Podspec } from '../../CocoaPods';
-import { EXPO_DIR, EXPOTOOLS_DIR, REACT_NATIVE_SUBMODULE_DIR } from '../../Constants';
+import {
+  EXPO_DIR,
+  EXPO_GO_ANDROID_DIR,
+  EXPO_GO_IOS_DIR,
+  EXPOTOOLS_DIR,
+  REACT_NATIVE_SUBMODULE_DIR,
+} from '../../Constants';
 import logger from '../../Logger';
 import { transformFileAsync } from '../../Transforms';
 import { applyPatchAsync } from '../../Utils';
@@ -14,10 +20,10 @@ const config: VendoringTargetConfig = {
   name: 'Expo Go',
   platforms: {
     ios: {
-      targetDirectory: 'ios/vendored/unversioned',
+      targetDirectory: path.join(EXPO_GO_IOS_DIR, 'vendored/unversioned'),
     },
     android: {
-      targetDirectory: 'android/vendored/unversioned',
+      targetDirectory: path.join(EXPO_GO_ANDROID_DIR, 'vendored/unversioned'),
     },
   },
   modules: {
@@ -49,12 +55,13 @@ const config: VendoringTargetConfig = {
       // },
     },
     'lottie-react-native': {
-      source: 'https://github.com/lottie-react-native/lottie-react-native.git',
+      source: 'lottie-react-native',
+      sourceType: 'npm',
       ios: {},
-      // android: {
-      //   includeFiles: 'src/android/**',
-      //   excludeFiles: ['src/android/gradle.properties', 'src/android/gradle-maven-push.gradle'],
-      // },
+      android: {
+        includeFiles: ['android/**'],
+        excludeFiles: ['src/android/gradle.properties', 'src/android/gradle-maven-push.gradle'],
+      },
     },
     'react-native-gesture-handler': {
       source: 'https://github.com/software-mansion/react-native-gesture-handler.git',
@@ -98,11 +105,14 @@ const config: VendoringTargetConfig = {
           return podspecPath;
         },
         async mutatePodspec(podspec: Podspec) {
-          const rnForkPath = path.join(REACT_NATIVE_SUBMODULE_DIR, '..');
-          const relativeForkPath = path.relative(path.join(EXPO_DIR, 'ios'), rnForkPath);
+          const reactCommonDir = path.relative(
+            EXPO_DIR,
+            path.join(REACT_NATIVE_SUBMODULE_DIR, 'ReactCommon')
+          );
+          // `reanimated_utils.rb` generates wrong and confusing paths to ReactCommon headers, so we need to fix them.
           podspec.xcconfig['HEADER_SEARCH_PATHS'] = podspec.xcconfig[
             'HEADER_SEARCH_PATHS'
-          ]?.replace(rnForkPath, '${PODS_ROOT}/../' + relativeForkPath);
+          ]?.replace(/"\$\(PODS_ROOT\)\/\.\.\/.+?"/g, `"\${PODS_ROOT}/../../${reactCommonDir}"`);
         },
         transforms: {
           content: [
@@ -173,13 +183,19 @@ const config: VendoringTargetConfig = {
               // react-native root dir is in react-native-lab/react-native
               paths: 'build.gradle',
               find: /\b(def reactNativeRootDir)\s*=.+$/gm,
-              replaceWith: `$1 = Paths.get(projectDir.getPath(), '../../../../../react-native-lab/react-native').toFile()`,
+              replaceWith: `$1 = Paths.get(projectDir.getPath(), '../../../../../../../react-native-lab/react-native/packages/react-native').toFile()`,
             },
             {
               // no-op for extracting tasks
               paths: 'build.gradle',
               find: /\b(task (prepareHermes|unpackReactNativeAAR).*\{)$/gm,
               replaceWith: `$1\n    return`,
+            },
+            {
+              // project `:ReactAndroid` to `:packages:react-native:ReactAndroid`
+              paths: 'build.gradle',
+              find: /(:ReactAndroid)/g,
+              replaceWith: ':packages:react-native:$1',
             },
             {
               // compileOnly hermes-engine
@@ -234,7 +250,9 @@ const config: VendoringTargetConfig = {
     },
     '@react-native-community/netinfo': {
       source: 'https://github.com/react-native-netinfo/react-native-netinfo',
-      ios: {},
+      ios: {
+        excludeFiles: 'example/**/*',
+      },
     },
     'react-native-webview': {
       source: 'https://github.com/react-native-webview/react-native-webview.git',
@@ -281,33 +299,36 @@ const config: VendoringTargetConfig = {
 `,
             },
             {
-              paths: 'RNCWebView.h',
-              find: /@interface RNCWebView : RCTView/,
+              paths: 'RNCWebViewImpl.h',
+              find: /@interface RNCWebViewImpl : RCTView/,
               replaceWith: '$&\n@property (nonatomic, strong) NSString *scopeKey;',
             },
             {
-              paths: 'RNCWebView.m',
+              paths: 'RNCWebViewImpl.m',
               find: /(\[\[RNCWKProcessPoolManager sharedManager\] sharedProcessPool)]/,
               replaceWith: '$1ForScopeKey:self.scopeKey]',
             },
             {
-              paths: 'RNCWebViewManager.m',
+              paths: 'RNCWebViewManager.mm',
               find: /@implementation RNCWebViewManager\s*{/,
-              replaceWith: '$&\n  NSString *_scopeKey;',
+              replaceWith: '$&\n    NSString *_scopeKey;',
             },
             {
-              paths: 'RNCWebViewManager.m',
-              find: '*webView = [RNCWebView new];',
-              replaceWith: '*webView = [RNCWebView new];\n  webView.scopeKey = _scopeKey;',
+              paths: 'RNCWebViewManager.mm',
+              find: 'return [[RNCWebViewImpl alloc] init];',
+              replaceWith:
+                'RNCWebViewImpl *webview = [[RNCWebViewImpl alloc] init];\n  webview.scopeKey = _scopeKey;\n  return webview;',
             },
             {
-              paths: 'RNCWebViewManager.m',
-              find: /RCT_EXPORT_MODULE\(\)/,
-              replaceWith: `- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
-                                        scopeKey:(NSString *)scopeKey
-                                    easProjectId:(NSString *)easProjectId
-                           kernelServiceDelegate:(id)kernelServiceInstance
-                                          params:(NSDictionary *)params
+              paths: 'RNCWebViewManager.mm',
+              find: /RCT_EXPORT_MODULE\(RNCWebView\)/,
+              replaceWith: `RCT_EXPORT_MODULE(RNCWebView)
+
+- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
+                          scopeKey:(NSString *)scopeKey
+                      easProjectId:(NSString *)easProjectId
+              kernelServiceDelegate:(id)kernelServiceInstance
+                            params:(NSDictionary *)params
 {
   if (self = [super init]) {
     _scopeKey = scopeKey;
@@ -366,9 +387,6 @@ const config: VendoringTargetConfig = {
         excludeFiles: ['android/gradle{/**,**}', 'android/settings.gradle'],
       },
     },
-    'react-native-shared-element': {
-      source: 'https://github.com/IjzerenHein/react-native-shared-element',
-    },
     '@react-native-segmented-control/segmented-control': {
       source: 'https://github.com/react-native-segmented-control/segmented-control',
       ios: {},
@@ -402,7 +420,9 @@ const config: VendoringTargetConfig = {
               framework
             );
             const sharedFrameworkPath = path.join(vendoredCommonDir, path.basename(framework));
-            await fs.unlink(sharedFrameworkPath);
+            try {
+              await fs.unlink(sharedFrameworkPath);
+            } catch {}
             await fs.symlink(
               path.relative(path.dirname(sharedFrameworkPath), sourceFrameworkPath),
               sharedFrameworkPath
@@ -422,14 +442,20 @@ const config: VendoringTargetConfig = {
             podspec.pod_target_xcconfig = {};
           }
           podspec.pod_target_xcconfig['HEADER_SEARCH_PATHS'] =
-            '"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging" "$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers"';
+            '"$(PODS_TARGET_SRCROOT)/cpp/"/** "$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging" "$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers"';
         },
       },
       android: {
         includeFiles: ['android/**', 'cpp/**'],
         async postCopyFilesHookAsync(sourceDirectory, targetDirectory) {
           // create symlink from node_modules/@shopify/react-native-skia to common lib dir
-          const libs = ['libskia.a', 'libskshaper.a', 'libsvg.a'];
+          const libs = [
+            'libskia.a',
+            'libskparagraph.a',
+            'libskshaper.a',
+            'libsvg.a',
+            'libskunicode.a',
+          ];
           const archs = ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'];
           for (const lib of libs) {
             for (const arch of archs) {
@@ -441,7 +467,9 @@ const config: VendoringTargetConfig = {
               );
               const commonLibPath = path.join(targetDirectory, '../../../common/libs', arch, lib);
               await fs.ensureDir(path.dirname(commonLibPath));
-              await fs.unlink(commonLibPath);
+              try {
+                await fs.unlink(commonLibPath);
+              } catch {}
               await fs.symlink(
                 path.relative(path.dirname(commonLibPath), sourceLibPath),
                 commonLibPath

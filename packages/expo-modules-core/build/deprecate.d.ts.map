@@ -1,1 +1,0 @@
-{"version":3,"file":"deprecate.d.ts","sourceRoot":"","sources":["../src/deprecate.ts"],"names":[],"mappings":"AAMA;;GAEG;AACH,MAAM,CAAC,OAAO,UAAU,SAAS,CAC/B,OAAO,EAAE,MAAM,EACf,aAAa,EAAE,MAAM,EACrB,OAAO,GAAE;IACP,WAAW,CAAC,EAAE,MAAM,CAAC;IACrB,cAAc,CAAC,EAAE,MAAM,CAAC;IACxB,eAAe,CAAC,EAAE,MAAM,CAAC;CACrB,GACL,IAAI,CAgCN"}

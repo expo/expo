@@ -3,20 +3,17 @@
 import React
 
 @objc
-class DevMenuAppInstance: DevMenuRCTCxxBridgeDelegate, RCTBridgeDelegate {
+class DevMenuAppInstance: DevMenuRCTAppDelegate {
   static private var CloseEventName = "closeDevMenu"
   static private var OpenEventName = "openDevMenu"
 
   private let manager: DevMenuManager
 
-  var bridge: RCTBridge?
-
   init(manager: DevMenuManager) {
     self.manager = manager
 
     super.init()
-
-    self.bridge = DevMenuRCTBridge.init(delegate: self, launchOptions: nil)
+    self.createBridgeAndSetAdapter(launchOptions: nil)
   }
 
   init(manager: DevMenuManager, bridge: RCTBridge) {
@@ -38,35 +35,39 @@ class DevMenuAppInstance: DevMenuRCTCxxBridgeDelegate, RCTBridgeDelegate {
     bridge?.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.OpenEventName])
   }
 
-  // MARK: RCTBridgeDelegate
+  // MARK: RCTAppDelegate
 
-  func sourceURL(for bridge: RCTBridge!) -> URL! {
+  override func sourceURL(for bridge: RCTBridge) -> URL {
     #if DEBUG
     if let packagerHost = jsPackagerHost() {
       return RCTBundleURLProvider.jsBundleURL(
         forBundleRoot: "index",
         packagerHost: packagerHost,
         enableDev: true,
-        enableMinification: false)
+        enableMinification: false,
+        inlineSourceMap: false)
     }
     #endif
     return jsSourceUrl()
   }
 
-  func extraModules(for bridge: RCTBridge!) -> [RCTBridgeModule]! {
+  override func extraModules(for bridge: RCTBridge) -> [RCTBridgeModule] {
     var modules: [RCTBridgeModule] = [DevMenuLoadingView.init()]
     modules.append(DevMenuRCTDevSettings.init())
     return modules
   }
 
-  func bridge(_ bridge: RCTBridge!, didNotFindModule moduleName: String!) -> Bool {
+  override func bridge(_ bridge: RCTBridge, didNotFindModule moduleName: String) -> Bool {
     return moduleName == "DevMenu"
   }
 
   // MARK: private
 
-  private func jsSourceUrl() -> URL? {
-    return DevMenuUtils.resourcesBundle()?.url(forResource: "EXDevMenuApp.ios", withExtension: "js")
+  private func jsSourceUrl() -> URL {
+    guard let url = DevMenuUtils.resourcesBundle()?.url(forResource: "EXDevMenuApp.ios", withExtension: "js") else {
+      fatalError("Unable to get expo-dev-menu bundle URL")
+    }
+    return url
   }
 
   private func jsPackagerHost() -> String? {
