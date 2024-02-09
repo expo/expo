@@ -24,6 +24,7 @@ export type CommandOptions = {
   listUnpublished: boolean;
   grantAccess: boolean;
   checkIntegrity: boolean;
+  assignSdkTag: boolean;
 };
 
 /**
