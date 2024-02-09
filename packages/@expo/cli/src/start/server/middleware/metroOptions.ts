@@ -3,6 +3,7 @@ import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types
 import resolveFrom from 'resolve-from';
 
 import { env } from '../../../utils/env';
+import { CommandError } from '../../../utils/errors';
 import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
 
 const debug = require('debug')('expo:metro:options') as typeof console.log;
@@ -15,10 +16,10 @@ export type ExpoMetroOptions = {
   environment?: string;
   serializerOutput?: 'static';
   serializerIncludeMaps?: boolean;
-  serializerIncludeBytecode?: boolean;
   lazy?: boolean;
   engine?: 'hermes';
   preserveEnvVars?: boolean;
+  bytecode: boolean;
   asyncRoutes?: boolean;
 
   baseUrl?: string;
@@ -30,7 +31,6 @@ export type ExpoMetroOptions = {
 
 export type SerializerOptions = {
   includeSourceMaps?: boolean;
-  includeBytecode?: boolean;
   output?: 'static';
 };
 
@@ -57,6 +57,15 @@ function withDefaults({
   lazy,
   ...props
 }: ExpoMetroOptions): ExpoMetroOptions {
+  if (props.bytecode) {
+    if (props.platform === 'web') {
+      throw new CommandError('Cannot use bytecode with the web platform');
+    }
+    if (props.engine !== 'hermes') {
+      throw new CommandError('Bytecode is only supported with the Hermes engine');
+    }
+  }
+
   return {
     mode,
     minify,
@@ -108,7 +117,7 @@ export function getMetroDirectBundleOptions(
     environment,
     serializerOutput,
     serializerIncludeMaps,
-    serializerIncludeBytecode,
+    bytecode,
     lazy,
     engine,
     preserveEnvVars,
@@ -131,11 +140,7 @@ export function getMetroDirectBundleOptions(
   let fakeSourceMapUrl: string | undefined;
 
   // TODO: Upstream support to Metro for passing custom serializer options.
-  if (
-    serializerIncludeMaps != null ||
-    serializerOutput != null ||
-    serializerIncludeBytecode != null
-  ) {
+  if (serializerIncludeMaps != null || serializerOutput != null) {
     fakeSourceUrl = new URL(
       createBundleUrlPath(options).replace(/^\//, ''),
       'http://localhost:8081'
@@ -149,7 +154,7 @@ export function getMetroDirectBundleOptions(
     platform,
     entryFile: mainModuleName,
     dev,
-    minify: !isHermes && (minify ?? !dev),
+    minify: minify ?? !dev,
     inlineSourceMap: inlineSourceMap ?? false,
     lazy,
     unstable_transformProfile: isHermes ? 'hermes-stable' : 'default',
@@ -161,6 +166,7 @@ export function getMetroDirectBundleOptions(
       environment,
       baseUrl,
       routerRoot,
+      bytecode,
     },
     customResolverOptions: {
       __proto__: null,
@@ -171,7 +177,6 @@ export function getMetroDirectBundleOptions(
     serializerOptions: {
       output: serializerOutput,
       includeSourceMaps: serializerIncludeMaps,
-      includeBytecode: serializerIncludeBytecode,
     },
   };
 
@@ -199,8 +204,8 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
     environment,
     serializerOutput,
     serializerIncludeMaps,
-    serializerIncludeBytecode,
     lazy,
+    bytecode,
     engine,
     preserveEnvVars,
     asyncRoutes,
@@ -231,8 +236,14 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
     queryParams.append('minify', String(minify));
   }
 
+  // We split bytecode from the engine since you could technically use Hermes without bytecode.
+  // Hermes indicates the type of language features you want to transform out of the JS, whereas bytecode
+  // indicates whether you want to use the Hermes bytecode format.
   if (engine) {
     queryParams.append('transform.engine', engine);
+  }
+  if (bytecode) {
+    queryParams.append('transform.bytecode', String(bytecode));
   }
 
   if (asyncRoutes) {
@@ -258,9 +269,6 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
   }
   if (serializerIncludeMaps) {
     queryParams.append('serializer.map', String(serializerIncludeMaps));
-  }
-  if (serializerIncludeBytecode) {
-    queryParams.append('serializer.bytecode', String(serializerIncludeBytecode));
   }
 
   return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
