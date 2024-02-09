@@ -30,29 +30,24 @@ In this case, all **.png** files in all subdirectories of **app/images** will be
 
 If this new property is not in your app config, all assets resolved by the bundler will be included in updates (as per SDK 49 and earlier behavior).
 
-### Ensuring that an update contains all assets needed by your application
+## Verifying an update includes all required app assets
 
-When using this feature, assets that do not match any of the file patterns will still resolve in the Metro bundler, but will not be uploaded to the updates server. A developer needs to be certain that assets not included in updates are built into the native build of the app.
+When using this feature, assets that do not match any file patterns will resolve in the Metro bundler. However, these assets will not be uploaded to the updates server. You have to be certain that assets not included in updates are built into the native build of the app.
 
-If you are building your app locally, or have access to the correct build that you are publishing updates for (with the same **runtimeVersion**), then the **expo-updates** CLI contains a command, **assets:verify**, that will allow you to check whether all required assets will be included when you publish an update:
+If you are building your app locally or have access to the correct build for publishing updates (with the same **runtimeVersion**), then you can use the `npx expo updates assets:verify` command. It allows you to check whether all required assets will be included when you publish an update:
 
-```bash assets:verify help
-$ npx expo-updates assets:verify --help
+<Terminal cmd={['$ npx expo-updates assets:verify <dir>']} />
 
-Description
-Verify that all static files in an exported bundle are in either the export or an embedded bundle
+You can also use `--help` with the command to see the available options:
 
-Usage
-  $ npx expo-updates assets:verify <dir>
-
-  Options
+```sh
+Options
   <dir>                                  Directory of the Expo project. Default: Current working directory
   -a, --asset-map-path <path>            Path to the `assetmap.json` in an export produced by the command `npx expo export --dump-assetmap`
   -e, --exported-manifest-path <path>    Path to the `metadata.json` in an export produced by the command `npx expo export --dump-assetmap`
   -b, --build-manifest-path <path>       Path to the `app.manifest` file created by expo-updates in an Expo application build (either ios or android)
   -p, --platform <platform>              Options: ["android","ios"]
   -h, --help                             Usage info
-
 ```
 
 > **info** The CLI command is available for ([`expo-updates`](/versions/latest/sdk/updates/) >= 0.24.10).
