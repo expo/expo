@@ -69,6 +69,7 @@ export async function unstable_exportStaticAsync(projectRoot: string, options: O
     minify: options.minify,
     mode: options.mode,
     port,
+    isExporting: true,
     location: {},
     resetDevServer: options.clear,
     maxWorkers: options.maxWorkers,
