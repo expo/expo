@@ -104,6 +104,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     prerenderManifest,
     baseUrl,
     routerRoot,
+    isExporting,
   }: {
     mode: 'development' | 'production';
     outputDir: string;
@@ -111,6 +112,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     prerenderManifest: ExpoRouterServerManifestV1;
     baseUrl: string;
     routerRoot: string;
+    isExporting: boolean;
   }): Promise<{ files: ExportAssetMap; manifest: ExpoRouterServerManifestV1<string> }> {
     const appDir = path.join(this.projectRoot, routerRoot);
     const manifest = await this.getExpoRouterRoutesManifestAsync({ appDir });
@@ -125,6 +127,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         port: this.getInstance()?.location.port,
         shouldThrow: true,
         baseUrl,
+        isExporting,
       });
       const artifactFilename = path.join(
         outputDir,
@@ -171,11 +174,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     minify = mode !== 'development',
     baseUrl,
     routerRoot,
+    isExporting,
   }: {
     mode: 'development' | 'production';
     minify?: boolean;
     baseUrl: string;
     routerRoot: string;
+    isExporting: boolean;
   }): Promise<{
     serverManifest: ExpoRouterServerManifestV1;
     manifest: ExpoRouterRuntimeManifest;
@@ -191,6 +196,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         environment: 'node',
         baseUrl,
         routerRoot,
+        isExporting,
       });
 
     return {
@@ -316,11 +322,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       routerRoot: string;
     }
   ) {
+    const platform = 'web';
     const devBundleUrlPathname = createBundleUrlPath({
-      platform: 'web',
+      platform,
       mode,
       environment: 'client',
-      mainModuleName: resolveMainModuleName(this.projectRoot, { platform: 'web' }),
+      mainModuleName: resolveMainModuleName(this.projectRoot, { platform }),
       lazy: shouldEnableAsyncImports(this.projectRoot),
       baseUrl,
       isExporting,
@@ -339,6 +346,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           environment: 'node',
           baseUrl,
           routerRoot,
+          isExporting,
+          platform,
         }
       );
 
@@ -351,7 +360,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       bundleStaticHtml(),
     ]);
     const content = serializeHtmlWithAssets({
-      isExporting: false,
+      isExporting,
       resources,
       template: staticHtml,
       devBundleUrl: devBundleUrlPathname,

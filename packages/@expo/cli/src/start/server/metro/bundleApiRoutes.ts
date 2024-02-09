@@ -18,6 +18,7 @@ export type ApiRouteOptions = {
   port?: number;
   shouldThrow?: boolean;
   baseUrl: string;
+  isExporting: boolean;
 };
 
 // Bundle the API Route with Metro and return the string contents to be evaluated in the server.
@@ -43,6 +44,7 @@ export async function bundleApiRoute(
         environment: 'node',
         baseUrl: options.baseUrl,
         routerRoot: options.routerRoot,
+        isExporting: options.isExporting,
       });
 
       return middleware;

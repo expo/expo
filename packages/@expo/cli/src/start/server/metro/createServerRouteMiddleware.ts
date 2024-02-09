@@ -37,6 +37,7 @@ export function createRouteHandlerMiddleware(
     getWebBundleUrl: () => string;
     getStaticPageAsync: (pathname: string) => Promise<{ content: string }>;
     config: ProjectConfig;
+    isExporting: boolean;
   }
 ) {
   if (!resolveFrom.silent(projectRoot, 'expo-router')) {

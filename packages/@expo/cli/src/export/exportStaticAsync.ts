@@ -188,6 +188,7 @@ async function exportFromServerAsync(
   }: Options
 ): Promise<ExportAssetMap> {
   const platform = 'web';
+  const isExporting = true;
   const appDir = path.join(projectRoot, routerRoot);
   const injectFaviconTag = await getVirtualFaviconAssetsAsync(projectRoot, {
     outputDir,
@@ -213,6 +214,7 @@ async function exportFromServerAsync(
       minify,
       baseUrl,
       routerRoot,
+      isExporting,
     }),
   ]);
 
@@ -227,7 +229,7 @@ async function exportFromServerAsync(
     async renderAsync({ pathname, route }) {
       const template = await renderAsync(pathname);
       let html = await serializeHtmlWithAssets({
-        isExporting: true,
+        isExporting,
         resources: resources.artifacts,
         template,
         baseUrl,
