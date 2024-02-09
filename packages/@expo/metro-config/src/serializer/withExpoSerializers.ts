@@ -211,7 +211,6 @@ function getDefaultSerializer(
     const serializerOptions = (() => {
       if (customSerializerOptions) {
         return {
-          includeBytecode: customSerializerOptions.includeBytecode,
           outputMode: customSerializerOptions.output,
           includeSourceMaps: customSerializerOptions.includeSourceMaps,
         };
@@ -226,7 +225,6 @@ function getDefaultSerializer(
         return {
           outputMode: url.searchParams.get('serializer.output'),
           includeSourceMaps: url.searchParams.get('serializer.map') === 'true',
-          includeBytecode: url.searchParams.get('serializer.bytecode') === 'true',
         };
       }
       return null;
@@ -246,7 +244,6 @@ function getDefaultSerializer(
       config,
       {
         includeSourceMaps: !!serializerOptions.includeSourceMaps,
-        includeBytecode: !!serializerOptions.includeBytecode,
         ...configOptions,
       },
       ...props

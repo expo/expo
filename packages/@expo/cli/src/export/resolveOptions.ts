@@ -10,6 +10,7 @@ export type Options = {
   dev: boolean;
   clear: boolean;
   minify: boolean;
+  bytecode: boolean;
   dumpAssetmap: boolean;
   sourceMaps: boolean;
 };
@@ -81,6 +82,7 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
     platforms: resolvePlatformOption(exp, platformBundlers, args['--platform']),
     outputDir: args['--output-dir'] ?? 'dist',
     minify: !args['--no-minify'],
+    bytecode: !args['--no-bytecode'],
     clear: !!args['--clear'],
     dev: !!args['--dev'],
     maxWorkers: args['--max-workers'],

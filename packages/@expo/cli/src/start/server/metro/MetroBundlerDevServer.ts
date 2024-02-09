@@ -237,6 +237,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       baseUrl,
       isExporting,
       routerRoot,
+      bytecode: false,
     });
 
     const bundleUrl = new URL(devBundleUrlPathname, this.getDevServerUrl()!);
@@ -326,6 +327,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       isExporting,
       asyncRoutes,
       routerRoot,
+      bytecode: false,
     });
 
     const bundleStaticHtml = async (): Promise<string> => {

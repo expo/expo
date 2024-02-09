@@ -20,7 +20,6 @@ export type ExpoSerializerOptions = SerializerOptions & {
         baseUrl?: string;
         skipWrapping?: boolean;
         output?: string;
-        includeBytecode?: boolean;
         includeSourceMaps?: boolean;
     };
     debugId?: string;

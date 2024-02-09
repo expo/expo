@@ -37,7 +37,7 @@ Add a script to **package.json** to run it. You might have to adjust the input p
 If you are using the SDK 50 `server` output for web, then use the following to map web bundles:
 
 ```sh
-npx source-map-explorer dist/client/_expo/static/js/web/*.js dist/client/_expo/static/js/web/*.js.map
+npx source-map-explorer 'dist/client/_expo/static/js/web/*.js' 'dist/client/_expo/static/js/web/*.js.map'
 ```
 
 Web bundles are output to the **dist/client** subdirectory to prevent exposing server code to the client.
@@ -48,7 +48,13 @@ Web bundles are output to the **dist/client** subdirectory to prevent exposing s
 
 Export your production JavaScript bundle and include the `--source-maps` flag so that the source map explorer can read the source maps:
 
-<Terminal cmd={['$ npx expo export --source-maps --platform web']} />
+<Terminal
+  cmd={[
+    '$ npx expo export --source-maps --platform web',
+    '# Native apps using Hermes can disable bytecode for analyzing the JavaScript bundle.',
+    '$ npx expo export --source-maps --platform ios --no-bytecode',
+  ]}
+/>
 
 This command shows the JavaScript bundle and source map paths in the output. In the next step, you will pass these paths to the source map explorer.
 

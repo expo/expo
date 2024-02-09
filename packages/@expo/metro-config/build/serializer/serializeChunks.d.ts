@@ -7,7 +7,6 @@ type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 type SerializerParameters = Parameters<Serializer>;
 export type SerializeChunkOptions = {
     includeSourceMaps: boolean;
-    includeBytecode: boolean;
 } & SerializerConfigOptions;
 export declare function graphToSerialAssetsAsync(config: MetroConfig, serializeChunkOptions: SerializeChunkOptions, ...props: SerializerParameters): Promise<{
     artifacts: SerialAsset[] | null;
@@ -33,7 +32,8 @@ export declare class Chunk {
     private getComputedPathsForAsyncDependencies;
     private getAdjustedSourceMapUrl;
     private serializeToCode;
-    serializeToAssetsAsync(serializerConfig: Partial<SerializerConfigT>, chunks: Chunk[], { includeSourceMaps, includeBytecode, unstable_beforeAssetSerializationPlugins, }: SerializeChunkOptions): Promise<SerialAsset[]>;
+    private boolishTransformOption;
+    serializeToAssetsAsync(serializerConfig: Partial<SerializerConfigT>, chunks: Chunk[], { includeSourceMaps, unstable_beforeAssetSerializationPlugins }: SerializeChunkOptions): Promise<SerialAsset[]>;
     private supportsBytecode;
     isHermesEnabled(): boolean;
 }

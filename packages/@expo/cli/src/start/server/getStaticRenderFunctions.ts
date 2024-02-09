@@ -159,6 +159,7 @@ export async function createMetroEndpointAsync(
     asyncRoutes: false,
     routerRoot,
     inlineSourceMap: false,
+    bytecode: false,
   });
 
   let url: string;

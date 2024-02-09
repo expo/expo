@@ -69,6 +69,7 @@ describe(resolveOptionsAsync, () => {
     ).resolves.toEqual({
       clear: true,
       dev: true,
+      bytecode: true,
       minify: true,
       dumpAssetmap: true,
       sourceMaps: true,
@@ -82,6 +83,7 @@ describe(resolveOptionsAsync, () => {
     await expect(resolveOptionsAsync('/', {})).resolves.toEqual({
       clear: false,
       dev: false,
+      bytecode: true,
       minify: true,
       dumpAssetmap: false,
       sourceMaps: false,

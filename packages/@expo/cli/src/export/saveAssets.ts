@@ -205,32 +205,3 @@ export function getFilesFromSerialAssets(
 
   return files;
 }
-
-export function modifyBundlesWithSourceMaps(
-  filename: string,
-  source: string,
-  includeSourceMaps: boolean
-): string {
-  if (filename.endsWith('.js')) {
-    // If the bundle ends with source map URLs then update them to point to the correct location.
-
-    // TODO: baseUrl support
-    const normalizedFilename = '/' + filename.replace(/^\/+/, '');
-    // Ref: https://developer.chrome.com/blog/sourcemaps/#sourceurl-and-displayname-in-action-eval-and-anonymous-functions
-    //# sourceMappingURL=//localhost:8085/index.map?platform=web&dev=false&hot=false&lazy=true&minify=true&resolver.environment=client&transform.environment=client&serializer.output=static
-    //# sourceURL=http://localhost:8085/index.bundle//&platform=web&dev=false&hot=false&lazy=true&minify=true&resolver.environment=client&transform.environment=client&serializer.output=static
-    return source.replace(/^\/\/# (sourceMappingURL|sourceURL)=.*$/gm, (...props) => {
-      if (includeSourceMaps) {
-        // TODO: Drop sourceURL when the name is the same as the file output location.
-        if (props[1] === 'sourceURL') {
-          return `//# ${props[1]}=` + normalizedFilename;
-        } else if (props[1] === 'sourceMappingURL') {
-          const mapName = normalizedFilename + '.map';
-          return `//# ${props[1]}=` + mapName;
-        }
-      }
-      return '';
-    });
-  }
-  return source;
-}

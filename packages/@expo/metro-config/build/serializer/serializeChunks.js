@@ -257,7 +257,11 @@ class Chunk {
             debugId,
         });
     }
-    async serializeToAssetsAsync(serializerConfig, chunks, { includeSourceMaps, includeBytecode, unstable_beforeAssetSerializationPlugins, }) {
+    boolishTransformOption(name) {
+        const value = this.graph.transformOptions?.customTransformOptions?.[name];
+        return value === true || value === 'true';
+    }
+    async serializeToAssetsAsync(serializerConfig, chunks, { includeSourceMaps, unstable_beforeAssetSerializationPlugins }) {
         // Create hash without wrapping to prevent it changing when the wrapping changes.
         const outputFile = this.getFilenameForConfig(serializerConfig);
         // We already use a stable hash for the output filename, so we'll reuse that for the debugId.
@@ -332,7 +336,7 @@ class Chunk {
                 source: sourceMap,
             });
         }
-        if (includeBytecode && this.isHermesEnabled()) {
+        if (this.boolishTransformOption('bytecode') && this.isHermesEnabled()) {
             const adjustedSource = jsAsset.source.replace(/^\/\/# (sourceMappingURL)=(.*)$/gm, (...props) => {
                 if (props[1] === 'sourceMappingURL') {
                     const mapName = props[2].replace(/\.js\.map$/, '.hbc.map');

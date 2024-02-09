@@ -34,6 +34,7 @@ export async function exportAppAsync(
     dumpAssetmap,
     sourceMaps,
     minify,
+    bytecode,
     maxWorkers,
   }: Pick<
     Options,
@@ -44,6 +45,7 @@ export async function exportAppAsync(
     | 'outputDir'
     | 'platforms'
     | 'minify'
+    | 'bytecode'
     | 'maxWorkers'
   >
 ): Promise<void> {
@@ -62,6 +64,12 @@ export async function exportAppAsync(
 
   const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
   const baseUrl = getBaseUrlFromExpoConfig(exp);
+
+  if (!bytecode && (platforms.includes('ios') || platforms.includes('android'))) {
+    Log.warn(
+      `Bytecode makes the app startup faster, disabling bytecode is highly discouraged and should only be used for debugging purposes.`
+    );
+  }
 
   // Print out logs
   if (baseUrl) {
@@ -86,6 +94,7 @@ export async function exportAppAsync(
   const bundles = await createBundlesAsync(projectRoot, projectConfig, {
     clear: !!clear,
     minify,
+    bytecode,
     sourcemaps: sourceMaps,
     platforms: useServerRendering ? platforms.filter((platform) => platform !== 'web') : platforms,
     dev,

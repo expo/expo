@@ -623,6 +623,7 @@ it('skips minification in Hermes stable transform profile', async () => {
       dev: false,
       minify: true,
       unstable_transformProfile: 'hermes-canary',
+      customTransformOptions: { __proto__: null, bytecode: true },
     }
   );
   expect(result.output[0].data.code).toMatchInlineSnapshot(`
@@ -643,11 +644,32 @@ it('skips minification in Hermes canary transform profile', async () => {
       dev: false,
       minify: true,
       unstable_transformProfile: 'hermes-canary',
+      customTransformOptions: { __proto__: null, bytecode: true },
     }
   );
   expect(result.output[0].data.code).toMatchInlineSnapshot(`
     "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       arbitrary(code);
+    });"
+  `);
+});
+
+it('minifies with Hermes transform profile if bytecode is disabled', async () => {
+  const result = await Transformer.transform(
+    baseConfig,
+    '/root',
+    'local/file.js',
+    Buffer.from('arbitrary(code);', 'utf8'),
+    {
+      ...baseTransformOptions,
+      dev: false,
+      minify: true,
+      unstable_transformProfile: 'hermes-canary',
+    }
+  );
+  expect(result.output[0].data.code).toMatchInlineSnapshot(`
+    "__d(function (g, r, i, a, m, e, d) {
+      minified(code);
     });"
   `);
 });
