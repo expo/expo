@@ -257,7 +257,7 @@ describe('getStaticResourcesAsync', () => {
 
     expect(devServer['postStartAsync']).toHaveBeenCalled();
 
-    await expect(devServer.getStaticResourcesAsync({ asyncRoutes: false })).rejects.toThrowError(
+    await expect(devServer.getStaticResourcesAsync()).rejects.toThrowError(
       /Metro has encountered an error: While trying to resolve module `stylis` from/
     );
 
@@ -298,9 +298,7 @@ describe('getStaticResourcesAsync', () => {
 
     expect(devServer['postStartAsync']).toHaveBeenCalled();
 
-    await expect(
-      devServer.getStaticResourcesAsync({ asyncRoutes: false })
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
+    await expect(devServer.getStaticResourcesAsync()).rejects.toThrowErrorMatchingInlineSnapshot(
       `"Metro failed to bundle the project. Check the console for more information."`
     );
 

@@ -206,7 +206,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }: {
     includeSourceMaps?: boolean;
     mainModuleName?: string;
-  }): Promise<{ artifacts: SerialAsset[]; assets?: AssetData[] }> {
+  } = {}): Promise<{ artifacts: SerialAsset[]; assets?: AssetData[] }> {
     const { dev, minify, isExporting, baseUrl, routerRoot, asyncRoutes } =
       this.instanceMetroOptions;
     assert(
@@ -445,11 +445,34 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     );
   }
 
+  getExpoLineOptions() {
+    return this.instanceMetroOptions;
+  }
+
   protected async startImplementationAsync(
     options: BundlerStartOptions
   ): Promise<DevServerInstance> {
     options.port = await this.resolvePortAsync(options);
     this.urlCreator = this.getUrlCreator(options);
+
+    const config = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
+    const { exp } = config;
+    const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
+    const baseUrl = getBaseUrlFromExpoConfig(exp);
+    const asyncRoutes = getAsyncRoutesFromExpoConfig(exp, options.mode ?? 'development', 'web');
+    const routerRoot = getRouterDirectoryModuleIdWithManifest(this.projectRoot, exp);
+    const appDir = path.join(this.projectRoot, routerRoot);
+    const mode = options.mode ?? 'development';
+
+    this.instanceMetroOptions = {
+      isExporting: !!options.isExporting,
+      baseUrl,
+      dev: mode !== 'production',
+      routerRoot,
+      minify: options.minify,
+      asyncRoutes,
+      // Options that are changing between platforms like engine, platform, and environment aren't set here.
+    };
 
     const parsedOptions = {
       port: options.port,
@@ -507,25 +530,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     middleware.use(deepLinkMiddleware.getHandler());
 
     middleware.use(new CreateFileMiddleware(this.projectRoot).getHandler());
-
-    const config = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
-    const { exp } = config;
-    const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
-    const baseUrl = getBaseUrlFromExpoConfig(exp);
-    const asyncRoutes = getAsyncRoutesFromExpoConfig(exp, options.mode ?? 'development', 'web');
-    const routerRoot = getRouterDirectoryModuleIdWithManifest(this.projectRoot, exp);
-    const appDir = path.join(this.projectRoot, routerRoot);
-    const mode = options.mode ?? 'development';
-
-    this.instanceMetroOptions = {
-      isExporting: options.isExporting,
-      baseUrl,
-      dev: mode !== 'production',
-      routerRoot,
-      minify: options.minify,
-      asyncRoutes,
-      // Options that are changing between platforms like engine, platform, and environment aren't set here.
-    };
 
     // Append support for redirecting unhandled requests to the index.html page on web.
     if (this.isTargetingWeb()) {

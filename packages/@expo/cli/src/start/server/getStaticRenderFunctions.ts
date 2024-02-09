@@ -12,7 +12,7 @@ import resolveFrom from 'resolve-from';
 
 import { logMetroError, logMetroErrorAsync } from './metro/metroErrorInterface';
 import { getMetroServerRoot } from './middleware/ManifestMiddleware';
-import { createBundleUrlPath } from './middleware/metroOptions';
+import { createBundleUrlPath, ExpoMetroOptions } from './middleware/metroOptions';
 import { augmentLogs } from './serverLogLikeMetro';
 import { stripAnsi } from '../../utils/ansi';
 import { delayAsync } from '../../utils/delay';
@@ -21,17 +21,19 @@ import { memoize } from '../../utils/fn';
 import { profile } from '../../utils/profile';
 
 // TODO: Condense the Metro options into a single object.
-export type StaticRenderOptions = {
+export type StaticRenderOptions = Omit<
+  ExpoMetroOptions,
+  | 'mode'
+  | 'mainModuleName'
+  | 'preserveEnvVars'
+  | 'inlineSourceMap'
+  | 'lazy'
+  | 'serializerIncludeBytecode'
+  | 'serializerIncludeMaps'
+  | 'serializerOutput'
+> & {
   // Ensure the style format is `css-xxxx` (prod) instead of `css-view-xxxx` (dev)
   dev?: boolean;
-  minify?: boolean;
-  platform?: string;
-  environment?: 'node';
-  engine?: 'hermes';
-  baseUrl: string;
-  routerRoot: string;
-  isExporting: boolean;
-  asyncRoutes?: boolean;
 };
 
 class MetroNodeError extends Error {

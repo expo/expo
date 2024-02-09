@@ -16,10 +16,7 @@ import * as Log from '../log';
 import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';
 import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/router';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
-import {
-  getAsyncRoutesFromExpoConfig,
-  getBaseUrlFromExpoConfig,
-} from '../start/server/middleware/metroOptions';
+import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { env } from '../utils/env';
 import { setNodeEnv } from '../utils/nodeEnv';
