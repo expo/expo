@@ -17,7 +17,9 @@ export const withFontsAndroid: ConfigPlugin<string[]> = (config, fonts) => {
           );
           await fs.mkdir(fontsDir, { recursive: true });
           const output = path.join(fontsDir, path.basename(asset));
-          await fs.copyFile(asset, output);
+          if (output.endsWith('.ttf') || output.endsWith('.otf')) {
+            await fs.copyFile(asset, output);
+          }
         })
       );
       return config;

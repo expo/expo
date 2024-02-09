@@ -17,7 +17,9 @@ const withFontsAndroid = (config, fonts) => {
                 const fontsDir = path_1.default.join(config.modRequest.platformProjectRoot, 'app/src/main/assets/fonts');
                 await promises_1.default.mkdir(fontsDir, { recursive: true });
                 const output = path_1.default.join(fontsDir, path_1.default.basename(asset));
-                await promises_1.default.copyFile(asset, output);
+                if (output.endsWith('.ttf') || output.endsWith('.otf')) {
+                    await promises_1.default.copyFile(asset, output);
+                }
             }));
             return config;
         },
