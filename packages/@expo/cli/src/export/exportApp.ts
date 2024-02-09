@@ -75,6 +75,7 @@ export async function exportAppAsync(
     }
   }
 
+  const mode = dev ? 'development' : 'production';
   const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
   const outputPath = path.resolve(projectRoot, outputDir);
 
@@ -160,13 +161,14 @@ export async function exportAppAsync(
       }
 
       await unstable_exportStaticAsync(projectRoot, {
+        mode,
         files,
         clear: !!clear,
         outputDir: outputPath,
         minify,
         baseUrl,
         includeSourceMaps: sourceMaps,
-        asyncRoutes: getAsyncRoutesFromExpoConfig(exp, dev ? 'development' : 'production', 'web'),
+        asyncRoutes: getAsyncRoutesFromExpoConfig(exp, mode, 'web'),
         routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
         exportServer,
         maxWorkers,
@@ -175,7 +177,7 @@ export async function exportAppAsync(
       // TODO: Unify with exportStaticAsync
       // TODO: Maybe move to the serializer.
       let html = await serializeHtmlWithAssets({
-        mode: 'production',
+        isExporting: true,
         resources: bundles.web!.artifacts,
         template: await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
           scripts: [],

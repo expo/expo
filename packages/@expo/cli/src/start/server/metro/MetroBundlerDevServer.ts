@@ -351,7 +351,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       bundleStaticHtml(),
     ]);
     const content = serializeHtmlWithAssets({
-      mode,
+      isExporting: false,
       resources,
       template: staticHtml,
       devBundleUrl: devBundleUrlPathname,
@@ -474,6 +474,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         const asyncRoutes = getAsyncRoutesFromExpoConfig(exp, options.mode ?? 'development', 'web');
         const routerRoot = getRouterDirectoryModuleIdWithManifest(this.projectRoot, exp);
         const appDir = path.join(this.projectRoot, routerRoot);
+        const mode = options.mode ?? 'development';
         middleware.use(
           createRouteHandlerMiddleware(this.projectRoot, {
             ...options,
@@ -481,11 +482,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             baseUrl,
             routerRoot,
             config,
+            isExporting: !!options.isExporting,
+            mode,
             getWebBundleUrl: manifestMiddleware.getWebBundleUrl.bind(manifestMiddleware),
             getStaticPageAsync: (pathname) => {
               return this.getStaticPageAsync(pathname, {
                 isExporting: !!options.isExporting,
-                mode: options.mode ?? 'development',
+                mode,
                 minify: options.minify,
                 baseUrl,
                 asyncRoutes,
