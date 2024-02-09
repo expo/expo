@@ -6,6 +6,7 @@ hideTOC: true
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { GithubIcon } from '@expo/styleguide-icons';
+import { Terminal } from '~/ui/components/Snippet';
 
 > **info** Available for SDK 50 and above ([`expo-updates`](/versions/latest/sdk/updates/) >= 0.23.0).
 
@@ -30,11 +31,13 @@ In this case, all **.png** files in all subdirectories of **app/images** will be
 
 If this new property is not in your app config, all assets resolved by the bundler will be included in updates (as per SDK 49 and earlier behavior).
 
-## Verifying an update includes all required app assets
+## Verifying that an update includes all required app assets
 
 When using this feature, assets that do not match any file patterns will resolve in the Metro bundler. However, these assets will not be uploaded to the updates server. You have to be certain that assets not included in updates are built into the native build of the app.
 
-If you are building your app locally or have access to the correct build for publishing updates (with the same **runtimeVersion**), then you can use the `npx expo updates assets:verify` command. It allows you to check whether all required assets will be included when you publish an update:
+If you are building your app locally or have access to the correct build for publishing updates (with the same [runtime version](/eas-update/runtime-versions/)), then you can use the `npx expo-updates assets:verify` command. It allows you to check whether all required assets will be included when you publish an update:
+
+> **info** This new command is part of the `expo-updates` CLI, which also supports [EAS Update code signing](/eas-update/code-signing/). It is not part of the [Expo CLI](/more/expo-cli/). It is available for ([`expo-updates`](/versions/latest/sdk/updates/) >= 0.24.10).
 
 <Terminal cmd={['$ npx expo-updates assets:verify <dir>']} />
 
@@ -49,8 +52,6 @@ Options
   -p, --platform <platform>              Options: ["android","ios"]
   -h, --help                             Usage info
 ```
-
-> **info** The CLI command is available for ([`expo-updates`](/versions/latest/sdk/updates/) >= 0.24.10).
 
 ## Example
 
