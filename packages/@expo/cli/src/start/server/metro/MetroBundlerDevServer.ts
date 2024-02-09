@@ -13,6 +13,19 @@ import { AssetData } from 'metro';
 import fetch from 'node-fetch';
 import path from 'path';
 
+import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
+import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
+import { instantiateMetroAsync } from './instantiateMetro';
+import { logMetroErrorAsync } from './metroErrorInterface';
+import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
+import {
+  getRouterDirectoryModuleIdWithManifest,
+  hasWarnedAboutApiRoutes,
+  isApiRouteConvention,
+  warnInvalidWebOutput,
+} from './router';
+import { serializeHtmlWithAssets } from './serializeHtml';
+import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 import { ExportAssetMap } from '../../../export/saveAssets';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
@@ -33,6 +46,12 @@ import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
 import { resolveMainModuleName } from '../middleware/ManifestMiddleware';
+import { ReactDevToolsPageMiddleware } from '../middleware/ReactDevToolsPageMiddleware';
+import {
+  DeepLinkHandler,
+  RuntimeRedirectMiddleware,
+} from '../middleware/RuntimeRedirectMiddleware';
+import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import {
   createBundleUrlPath,
   getAsyncRoutesFromExpoConfig,
@@ -40,26 +59,7 @@ import {
   shouldEnableAsyncImports,
 } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
-import { ReactDevToolsPageMiddleware } from '../middleware/ReactDevToolsPageMiddleware';
-import {
-  DeepLinkHandler,
-  RuntimeRedirectMiddleware,
-} from '../middleware/RuntimeRedirectMiddleware';
-import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
-import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
-import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
-import { instantiateMetroAsync } from './instantiateMetro';
-import { logMetroErrorAsync } from './metroErrorInterface';
-import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
-import {
-  getRouterDirectoryModuleIdWithManifest,
-  hasWarnedAboutApiRoutes,
-  isApiRouteConvention,
-  warnInvalidWebOutput,
-} from './router';
-import { serializeHtmlWithAssets } from './serializeHtml';
-import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 
 export type ExpoRouterRuntimeManifest = Awaited<
   ReturnType<typeof import('expo-router/build/static/renderStaticContent').getManifest>
