@@ -93,17 +93,7 @@ const moveStaticRenderFunction = memoize(async (projectRoot: string, requiredMod
 async function getStaticRenderFunctionsContentAsync(
   projectRoot: string,
   devServerUrl: string,
-  {
-    mode = 'production',
-    minify = false,
-    environment,
-    baseUrl,
-    routerRoot,
-    engine,
-    platform,
-    isExporting,
-    // TODO: Use metroOptions type directly
-  }: StaticRenderOptions,
+  props: StaticRenderOptions,
   entry?: string
 ): Promise<{ src: string; filename: string }> {
   const root = getMetroServerRoot(projectRoot);
@@ -116,16 +106,7 @@ async function getStaticRenderFunctionsContentAsync(
     moduleId = await moveStaticRenderFunction(projectRoot, requiredModuleId);
   }
 
-  return requireFileContentsWithMetro(root, devServerUrl, moduleId, {
-    mode,
-    minify,
-    environment,
-    baseUrl,
-    routerRoot,
-    engine,
-    isExporting,
-    platform,
-  });
+  return requireFileContentsWithMetro(root, devServerUrl, moduleId, props);
 }
 
 async function ensureFileInRootDirectory(projectRoot: string, otherFile: string) {
@@ -150,34 +131,20 @@ export async function createMetroEndpointAsync(
   projectRoot: string,
   devServerUrl: string,
   absoluteFilePath: string,
-  {
-    mode = 'development',
-    platform = 'web',
-    minify = false,
-    environment,
-    engine = 'hermes',
-    baseUrl,
-    routerRoot,
-    isExporting,
-  }: StaticRenderOptions
+  props: StaticRenderOptions
 ): Promise<string> {
   const root = getMetroServerRoot(projectRoot);
   const safeOtherFile = await ensureFileInRootDirectory(projectRoot, absoluteFilePath);
   const serverPath = path.relative(root, safeOtherFile).replace(/\.[jt]sx?$/, '');
 
   const urlFragment = createBundleUrlPath({
-    platform,
-    mode,
     mainModuleName: serverPath,
-    engine,
-    environment,
     lazy: false,
-    minify,
-    baseUrl,
-    isExporting,
     asyncRoutes: false,
-    routerRoot,
     inlineSourceMap: false,
+    engine: 'hermes',
+    minify: false,
+    ...props,
   });
 
   let url: string;

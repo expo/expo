@@ -375,9 +375,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           platform: 'web',
           mode: 'development',
 
-          // TODO: This doesn't make sense in the context of SSR.
-          engine: 'hermes',
-
           ...this.instanceMetroOptions,
           baseUrl,
           routerRoot,
@@ -404,9 +401,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       environment: 'node',
       platform: 'web',
       mode: 'development',
-
-      // TODO: This doesn't make sense in the context of SSR.
-      engine: 'hermes',
 
       ...this.instanceMetroOptions,
       baseUrl,
@@ -544,15 +538,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       if (useServerRendering) {
         middleware.use(
           createRouteHandlerMiddleware(this.projectRoot, {
-            ...options,
             appDir,
-            baseUrl,
             routerRoot,
             config,
-            isExporting: !!options.isExporting,
-            mode,
             bundleApiRoute: (functionFilePath) => this.ssrImportApiRoute(functionFilePath),
-            getWebBundleUrl: manifestMiddleware.getWebBundleUrl.bind(manifestMiddleware),
             getStaticPageAsync: (pathname) => {
               return this.getStaticPageAsync(pathname);
             },

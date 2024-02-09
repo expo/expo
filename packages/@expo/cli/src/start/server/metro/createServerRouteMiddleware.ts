@@ -26,16 +26,11 @@ const resolveAsync = promisify(resolve) as any as (
 export function createRouteHandlerMiddleware(
   projectRoot: string,
   options: {
-    mode?: string;
     appDir: string;
     routerRoot: string;
-    port?: number;
-    baseUrl: string;
-    getWebBundleUrl: () => string;
     getStaticPageAsync: (pathname: string) => Promise<{ content: string }>;
     bundleApiRoute: (functionFilePath: string) => Promise<null | Record<string, Function>>;
     config: ProjectConfig;
-    isExporting: boolean;
   }
 ) {
   if (!resolveFrom.silent(projectRoot, 'expo-router')) {
