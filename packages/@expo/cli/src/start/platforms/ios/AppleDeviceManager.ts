@@ -163,7 +163,7 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
 
   private async waitForAppInstalledAsync(applicationId: string): Promise<boolean> {
     while (true) {
-      if (await this.isAppInstalledAsync(applicationId)) {
+      if (await this.isAppInstalledAndIfSoReturnContainerPathForIOSAsync(applicationId)) {
         return true;
       }
       await delayAsync(100);
@@ -176,7 +176,7 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
     });
   }
 
-  async isAppInstalledAsync(appId: string) {
+  async isAppInstalledAndIfSoReturnContainerPathForIOSAsync(appId: string) {
     return (
       (await SimControl.getContainerPathAsync(this.device, {
         appId,
@@ -214,7 +214,7 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
     await osascript.execAsync(`tell application "Simulator" to activate`);
   }
 
-  async ensureExpoGoAsync(sdkVersion?: string): Promise<boolean> {
+  async ensureExpoGoAsync(sdkVersion: string): Promise<boolean> {
     const installer = new ExpoGoInstaller('ios', EXPO_GO_BUNDLE_IDENTIFIER, sdkVersion);
     return installer.ensureAsync(this);
   }
