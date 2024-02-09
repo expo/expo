@@ -168,10 +168,10 @@ export async function exportAppAsync(
         minify,
         baseUrl,
         includeSourceMaps: sourceMaps,
-        asyncRoutes: getAsyncRoutesFromExpoConfig(exp, mode, 'web'),
         routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
         exportServer,
         maxWorkers,
+        isExporting: true,
       });
     } else {
       // TODO: Unify with exportStaticAsync

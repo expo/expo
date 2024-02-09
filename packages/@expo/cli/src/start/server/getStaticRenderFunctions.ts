@@ -31,6 +31,7 @@ export type StaticRenderOptions = {
   baseUrl: string;
   routerRoot: string;
   isExporting: boolean;
+  asyncRoutes?: boolean;
 };
 
 class MetroNodeError extends Error {

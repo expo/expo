@@ -203,15 +203,19 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   async getStaticResourcesAsync({
     includeSourceMaps,
     mainModuleName,
-    asyncRoutes,
   }: {
     includeSourceMaps?: boolean;
     mainModuleName?: string;
-    asyncRoutes: boolean;
   }): Promise<{ artifacts: SerialAsset[]; assets?: AssetData[] }> {
-    const { dev, minify, isExporting, baseUrl, routerRoot } = this.instanceMetroOptions;
+    const { dev, minify, isExporting, baseUrl, routerRoot, asyncRoutes } =
+      this.instanceMetroOptions;
     assert(
-      dev != null && minify != null && isExporting != null && baseUrl != null && routerRoot != null,
+      dev != null &&
+        minify != null &&
+        isExporting != null &&
+        baseUrl != null &&
+        routerRoot != null &&
+        asyncRoutes != null,
       'The server must be started before calling getStaticPageAsync.'
     );
     const mode = dev ? 'development' : 'production';
@@ -292,17 +296,16 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     );
   }
 
-  private async getStaticPageAsync(
-    pathname: string,
-    {
-      asyncRoutes,
-    }: {
-      asyncRoutes: boolean;
-    }
-  ) {
-    const { dev, minify, isExporting, baseUrl, routerRoot } = this.instanceMetroOptions;
+  private async getStaticPageAsync(pathname: string) {
+    const { dev, minify, isExporting, baseUrl, routerRoot, asyncRoutes } =
+      this.instanceMetroOptions;
     assert(
-      dev != null && minify != null && isExporting != null && baseUrl != null && routerRoot != null,
+      dev != null &&
+        minify != null &&
+        isExporting != null &&
+        baseUrl != null &&
+        routerRoot != null &&
+        asyncRoutes != null,
       'The server must be started before calling getStaticPageAsync.'
     );
     const mode = dev ? 'development' : 'production';
@@ -335,7 +338,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
 
     const [{ artifacts: resources }, staticHtml] = await Promise.all([
-      this.getStaticResourcesAsync({ asyncRoutes }),
+      this.getStaticResourcesAsync(),
       bundleStaticHtml(),
     ]);
     const content = serializeHtmlWithAssets({
@@ -520,6 +523,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       dev: mode !== 'production',
       routerRoot,
       minify: options.minify,
+      asyncRoutes,
       // Options that are changing between platforms like engine, platform, and environment aren't set here.
     };
 
@@ -544,9 +548,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             bundleApiRoute: (functionFilePath) => this.ssrImportApiRoute(functionFilePath),
             getWebBundleUrl: manifestMiddleware.getWebBundleUrl.bind(manifestMiddleware),
             getStaticPageAsync: (pathname) => {
-              return this.getStaticPageAsync(pathname, {
-                asyncRoutes,
-              });
+              return this.getStaticPageAsync(pathname);
             },
           })
         );

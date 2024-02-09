@@ -39,7 +39,6 @@ type Options = {
   includeSourceMaps: boolean;
   entryPoint?: string;
   clear: boolean;
-  asyncRoutes: boolean;
   routerRoot: string;
   maxWorkers?: number;
   isExporting: boolean;
@@ -179,15 +178,7 @@ function makeRuntimeEntryPointsAbsolute(manifest: ExpoRouterRuntimeManifest, app
 async function exportFromServerAsync(
   projectRoot: string,
   devServerManager: DevServerManager,
-  {
-    outputDir,
-    baseUrl,
-    exportServer,
-    includeSourceMaps,
-    routerRoot,
-    asyncRoutes,
-    files = new Map(),
-  }: Options
+  { outputDir, baseUrl, exportServer, includeSourceMaps, routerRoot, files = new Map() }: Options
 ): Promise<ExportAssetMap> {
   const platform = 'web';
   const isExporting = true;
@@ -204,7 +195,6 @@ async function exportFromServerAsync(
   const [resources, { manifest, serverManifest, renderAsync }] = await Promise.all([
     devServer.getStaticResourcesAsync({
       includeSourceMaps,
-      asyncRoutes,
     }),
     devServer.getStaticRenderFunctionAsync(),
   ]);
