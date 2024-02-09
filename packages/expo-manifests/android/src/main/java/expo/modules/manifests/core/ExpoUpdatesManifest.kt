@@ -5,8 +5,6 @@ import expo.modules.jsonutils.require
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 class ExpoUpdatesManifest(json: JSONObject) : Manifest(json) {
   /**
