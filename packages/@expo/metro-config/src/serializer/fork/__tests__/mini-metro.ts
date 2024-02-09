@@ -120,6 +120,7 @@ export function microBundle({
         platform: options.platform ?? 'web',
         customTransformOptions: {
           __proto__: null,
+          bytecode: options.hermes,
           baseUrl: options.baseUrl,
           engine: options.hermes ? 'hermes' : undefined,
         },
@@ -132,7 +133,6 @@ export function microBundle({
         options.output || options.hermes || options.sourceMaps
           ? {
               output: options.output,
-              includeBytecode: options.hermes,
               includeSourceMaps: options.sourceMaps,
             }
           : undefined,

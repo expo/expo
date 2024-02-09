@@ -135,6 +135,7 @@ export async function createMetroEndpointAsync(
     inlineSourceMap: false,
     engine: 'hermes',
     minify: false,
+    bytecode: false,
     ...props,
   });
 

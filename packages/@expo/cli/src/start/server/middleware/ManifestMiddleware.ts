@@ -257,6 +257,7 @@ export abstract class ManifestMiddleware<
       mainModuleName,
       lazy: shouldEnableAsyncImports(this.projectRoot),
       engine,
+      bytecode: engine === 'hermes',
       baseUrl,
       isExporting: !!isExporting,
       asyncRoutes,
@@ -345,6 +346,7 @@ export abstract class ManifestMiddleware<
       // Hermes doesn't support more modern JS features than most, if not all, modern browser.
       engine: 'hermes',
       isExporting: false,
+      bytecode: false,
     });
   }
 
