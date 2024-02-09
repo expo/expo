@@ -20,17 +20,8 @@ import { SilentError } from '../../utils/errors';
 import { memoize } from '../../utils/fn';
 import { profile } from '../../utils/profile';
 
-// TODO: Condense the Metro options into a single object.
-export type StaticRenderOptions = Omit<
-  ExpoMetroOptions,
-  | 'mainModuleName'
-  | 'preserveEnvVars'
-  | 'inlineSourceMap'
-  | 'lazy'
-  | 'serializerIncludeBytecode'
-  | 'serializerIncludeMaps'
-  | 'serializerOutput'
->;
+/** The list of input keys will become optional, everything else will remain the same. */
+export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 class MetroNodeError extends Error {
   constructor(
@@ -93,7 +84,7 @@ const moveStaticRenderFunction = memoize(async (projectRoot: string, requiredMod
 async function getStaticRenderFunctionsContentAsync(
   projectRoot: string,
   devServerUrl: string,
-  props: StaticRenderOptions,
+  props: PickPartial<ExpoMetroOptions, 'mainModuleName'>,
   entry?: string
 ): Promise<{ src: string; filename: string }> {
   const root = getMetroServerRoot(projectRoot);
@@ -131,7 +122,7 @@ export async function createMetroEndpointAsync(
   projectRoot: string,
   devServerUrl: string,
   absoluteFilePath: string,
-  props: StaticRenderOptions
+  props: PickPartial<ExpoMetroOptions, 'mainModuleName'>
 ): Promise<string> {
   const root = getMetroServerRoot(projectRoot);
   const safeOtherFile = await ensureFileInRootDirectory(projectRoot, absoluteFilePath);
@@ -160,7 +151,7 @@ export async function requireFileContentsWithMetro(
   projectRoot: string,
   devServerUrl: string,
   absoluteFilePath: string,
-  props: StaticRenderOptions
+  props: PickPartial<ExpoMetroOptions, 'mainModuleName'>
 ): Promise<{ src: string; filename: string }> {
   const url = await createMetroEndpointAsync(projectRoot, devServerUrl, absoluteFilePath, props);
   return await metroFetchAsync(projectRoot, url);
@@ -197,25 +188,10 @@ async function metroFetchAsync(
   return { src: wrapBundle(content), filename: url };
 }
 
-export async function getStaticRenderFunctions(
-  projectRoot: string,
-  devServerUrl: string,
-  options: StaticRenderOptions
-): Promise<Record<string, (...args: any[]) => Promise<any>>> {
-  return (
-    await getStaticRenderFunctionsForEntry(
-      projectRoot,
-      devServerUrl,
-      options,
-      'expo-router/node/render.js'
-    )
-  ).fn;
-}
-
 export async function getStaticRenderFunctionsForEntry<T = any>(
   projectRoot: string,
   devServerUrl: string,
-  options: StaticRenderOptions,
+  options: PickPartial<ExpoMetroOptions, 'mainModuleName'>,
   entry: string
 ) {
   const { src: scriptContents, filename } = await getStaticRenderFunctionsContentAsync(
@@ -248,7 +224,6 @@ function evalMetroAndWrapFunctions<T = Record<string, any>>(
       try {
         return await fn.apply(this, props);
       } catch (error: any) {
-        // console.error('Err:', error);
         await logMetroError(projectRoot, { error });
         throw new SilentError(error);
       }

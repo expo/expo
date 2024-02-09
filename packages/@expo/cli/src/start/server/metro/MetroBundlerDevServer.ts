@@ -34,11 +34,9 @@ import { CommandError } from '../../../utils/errors';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import {
-  evalMetro,
   evalMetroNoHandling,
   getStaticRenderFunctionsForEntry,
   requireFileContentsWithMetro,
-  StaticRenderOptions,
 } from '../getStaticRenderFunctions';
 import { ContextModuleSourceMapsMiddleware } from '../middleware/ContextModuleSourceMapsMiddleware';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
@@ -54,6 +52,7 @@ import {
 } from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import {
+  ExpoMetroOptions,
   createBundleUrlPath,
   getAsyncRoutesFromExpoConfig,
   getBaseUrlFromExpoConfig,
@@ -354,11 +353,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }
 
   // Set when the server is started.
-  private instanceMetroOptions: Partial<StaticRenderOptions> = {};
+  private instanceMetroOptions: Partial<ExpoMetroOptions> = {};
 
   async ssrLoadModule<T extends Record<string, any>>(
     filePath: string,
-    specificOptions: Partial<StaticRenderOptions> = {}
+    specificOptions: Partial<ExpoMetroOptions> = {}
   ): Promise<T> {
     const { baseUrl, routerRoot, isExporting } = this.instanceMetroOptions;
     assert(
@@ -389,7 +388,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   async ssrLoadModuleContents(
     filePath: string,
-    specificOptions: Partial<StaticRenderOptions> = {}
+    specificOptions: Partial<ExpoMetroOptions> = {}
   ): Promise<{ src: string; filename: string }> {
     const { baseUrl, routerRoot, isExporting } = this.instanceMetroOptions;
     assert(
