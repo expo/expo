@@ -3,14 +3,20 @@ package expo.modules.devlauncher.helpers
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.JSBundleLoader
+import com.facebook.react.bridge.NativeModule
+import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.devsupport.DevLauncherInternalSettings
+import com.facebook.react.shell.MainReactPackage
 import expo.interfaces.devmenu.annotations.ContainsDevMenuExtension
+import expo.modules.devlauncher.modules.DevLauncherDevLoadingModule
 import expo.modules.devlauncher.react.DevLauncherDevSupportManagerSwapper
 import expo.modules.devlauncher.rncompatibility.DevLauncherDevSupportManager
 import okhttp3.HttpUrl
+import org.koin.core.component.inject
 
 fun injectReactInterceptor(
   context: Context,
@@ -31,6 +37,7 @@ fun injectReactInterceptor(
   }
 
   injectDevSupportManager(reactNativeHost)
+  swapDevLoadingModule(reactNativeHost.reactInstanceManager)
 
   val result = injectDebugServerHost(
     context,
@@ -48,6 +55,25 @@ fun injectDevSupportManager(
 ) {
   DevLauncherDevSupportManagerSwapper()
     .swapDevSupportManagerImpl(reactNativeHost.reactInstanceManager)
+}
+
+fun swapDevLoadingModule(
+  reactInstanceManager: ReactInstanceManager
+){
+  val mPackages: List<ReactPackage>  = ReactInstanceManager::class.java.getProtectedFieldValue<ReactInstanceManager, List<ReactPackage>>(reactInstanceManager, "mPackages").toMutableList()
+  val newMainReactPackage: MainReactPackage = object : MainReactPackage() {
+    override fun getModule(name:String, context: ReactApplicationContext): NativeModule? {
+      if(name == "DevLoadingView"){
+        return DevLauncherDevLoadingModule(context)
+      }
+      return super.getModule(name, context)
+    }
+  }
+
+  val updatedPackages = mPackages.map {
+    if (it is MainReactPackage) newMainReactPackage else it
+  }
+  ReactInstanceManager::class.java.setProtectedDeclaredField(reactInstanceManager, "mPackages", updatedPackages)
 }
 
 fun injectDebugServerHost(
