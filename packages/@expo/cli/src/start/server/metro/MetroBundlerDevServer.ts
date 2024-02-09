@@ -16,7 +16,7 @@ import path from 'path';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
-import { logMetroErrorAsync } from './metroErrorInterface';
+import { getErrorOverlayHtmlAsync, logMetroErrorAsync } from './metroErrorInterface';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import {
   getRouterDirectoryModuleIdWithManifest,
@@ -35,6 +35,7 @@ import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import {
   evalMetro,
+  evalMetroNoHandling,
   getStaticRenderFunctionsForEntry,
   requireFileContentsWithMetro,
   StaticRenderOptions,
@@ -704,15 +705,41 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return route;
   }
 
-  private async ssrImportApiRoute(filePath: string): Promise<null | Record<string, Function>> {
-    const apiRoute = await this.bundleApiRoute(filePath);
-
-    if (!apiRoute?.src) {
-      return null;
-    }
-
+  private async ssrImportApiRoute(
+    filePath: string
+  ): Promise<null | Record<string, Function> | Response> {
     // TODO: Cache the evaluated function.
-    return evalMetro(this.projectRoot, apiRoute.src, apiRoute.filename);
+    try {
+      const apiRoute = await this.bundleApiRoute(filePath);
+
+      if (!apiRoute?.src) {
+        return null;
+      }
+      return evalMetroNoHandling(this.projectRoot, apiRoute.src, apiRoute.filename);
+    } catch (error) {
+      // Format any errors that were thrown in the global scope of the evaluation.
+      if (error instanceof Error) {
+        try {
+          const htmlServerError = await getErrorOverlayHtmlAsync({
+            error,
+            projectRoot: this.projectRoot,
+            routerRoot: this.getExpoLineOptions().routerRoot!,
+          });
+
+          return new Response(htmlServerError, {
+            status: 500,
+            headers: {
+              'Content-Type': 'text/html',
+            },
+          });
+        } catch (internalError) {
+          debug('Failed to generate Metro server error UI for API Route error:', internalError);
+          throw error;
+        }
+      } else {
+        throw error;
+      }
+    }
   }
 
   private invalidateApiRouteCache() {

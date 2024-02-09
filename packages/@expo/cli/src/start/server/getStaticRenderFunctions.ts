@@ -258,7 +258,6 @@ function evalMetroAndWrapFunctions<T = Record<string, any>>(
   script: string,
   filename: string
 ): Promise<T> {
-  // console.log('>>', script);
   const contents = evalMetro(projectRoot, script, filename);
   // wrap each function with a try/catch that uses Metro's error formatter
   return Object.keys(contents).reduce((acc, key) => {
@@ -281,9 +280,8 @@ function evalMetroAndWrapFunctions<T = Record<string, any>>(
 }
 
 export function evalMetro(projectRoot: string, src: string, filename: string) {
-  augmentLogs(projectRoot);
   try {
-    return profile(requireString, 'eval-metro-bundle')(src, filename);
+    return evalMetroNoHandling(projectRoot, src, filename);
   } catch (error: any) {
     // Format any errors that were thrown in the global scope of the evaluation.
     if (error instanceof Error) {
@@ -295,4 +293,10 @@ export function evalMetro(projectRoot: string, src: string, filename: string) {
       throw error;
     }
   }
+}
+
+export function evalMetroNoHandling(projectRoot: string, src: string, filename: string) {
+  augmentLogs(projectRoot);
+
+  return profile(requireString, 'eval-metro-bundle')(src, filename);
 }

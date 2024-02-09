@@ -29,7 +29,9 @@ export function createRouteHandlerMiddleware(
     appDir: string;
     routerRoot: string;
     getStaticPageAsync: (pathname: string) => Promise<{ content: string }>;
-    bundleApiRoute: (functionFilePath: string) => Promise<null | Record<string, Function>>;
+    bundleApiRoute: (
+      functionFilePath: string
+    ) => Promise<null | Record<string, Function> | Response>;
     config: ProjectConfig;
   }
 ) {
@@ -131,17 +133,10 @@ export function createRouteHandlerMiddleware(
 
         try {
           debug(`Bundling middleware at: ${resolvedFunctionPath}`);
-          const apiRouteModule = await options.bundleApiRoute(resolvedFunctionPath!);
-
-          if (!apiRouteModule) {
-            // TODO: Error handling
-            return null;
-          }
-
-          return apiRouteModule;
+          return await options.bundleApiRoute(resolvedFunctionPath!);
         } catch (error: any) {
           return new ExpoResponse(
-            'Failed to load middleware: ' + resolvedFunctionPath + '\n\n' + error.message,
+            'Failed to load API Route: ' + resolvedFunctionPath + '\n\n' + error.message,
             {
               status: 500,
               headers: {
