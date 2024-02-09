@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix react-native hot reload causing app to crash on Android. ([#27010](https://github.com/expo/expo/pull/27010) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ### 📚 3rd party library updates
