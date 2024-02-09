@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add fast reset system for serialized mods.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
@@ -138,7 +140,6 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - Update `Target.findApplicationTargetWithDependenciesAsync` to mark framework targets as non-signable. ([#22454](https://github.com/expo/expo/pull/22454) by [@dsokal](https://github.com/dsokal))
-- Update `ios.bundleIdentifier` to be modified safely.
 
 ### 💡 Others
 
