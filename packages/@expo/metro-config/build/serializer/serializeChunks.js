@@ -203,7 +203,7 @@ class Chunk {
         const computedAsyncModulePaths = {};
         this.deps.forEach((module) => {
             module.dependencies.forEach((dependency) => {
-                if (dependency.data.data.asyncType === 'async') {
+                if (dependency.data.data.asyncType) {
                     const chunkContainingModule = chunks.find((chunk) => chunk.hasAbsolutePath(dependency.absolutePath));
                     (0, assert_1.default)(chunkContainingModule, 'Chunk containing module not found: ' + dependency.absolutePath);
                     const moduleIdName = chunkContainingModule.getFilenameForConfig(serializerConfig);
@@ -408,7 +408,7 @@ function gatherChunks(chunks, settings, preModules, graph, options, isAsync = fa
     const splitChunks = (0, baseJSBundle_1.getSplitChunksOption)(graph, options);
     function includeModule(entryModule) {
         for (const dependency of entryModule.dependencies.values()) {
-            if (dependency.data.data.asyncType === 'async' &&
+            if (dependency.data.data.asyncType &&
                 // Support disabling multiple chunks.
                 splitChunks) {
                 gatherChunks(chunks, { test: pathToRegex(dependency.absolutePath) }, [], graph, options, true);
