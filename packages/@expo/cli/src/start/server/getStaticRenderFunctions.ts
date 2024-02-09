@@ -201,7 +201,7 @@ export async function requireFileContentsWithMetro(
   return await metroFetchAsync(projectRoot, url);
 }
 
-export async function metroFetchAsync(
+async function metroFetchAsync(
   projectRoot: string,
   url: string
 ): Promise<{ src: string; filename: string }> {
@@ -329,6 +329,5 @@ export function evalMetro(projectRoot: string, src: string, filename: string) {
     } else {
       throw error;
     }
-  } finally {
   }
 }

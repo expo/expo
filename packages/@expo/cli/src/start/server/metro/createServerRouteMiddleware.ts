@@ -6,17 +6,14 @@
  */
 
 import type { ProjectConfig } from '@expo/config';
-import requireString from 'require-from-string';
 import resolve from 'resolve';
 import resolveFrom from 'resolve-from';
 import { promisify } from 'util';
 
 import { ForwardHtmlError } from './MetroBundlerDevServer';
-import { bundleApiRoute } from './bundleApiRoutes';
 import { fetchManifest } from './fetchRouterManifest';
-import { getErrorOverlayHtmlAsync, logMetroError, logMetroErrorAsync } from './metroErrorInterface';
+import { getErrorOverlayHtmlAsync, logMetroError } from './metroErrorInterface';
 import { warnInvalidWebOutput } from './router';
-import { Log } from '../../../log';
 import { CommandError } from '../../../utils/errors';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
@@ -36,6 +33,7 @@ export function createRouteHandlerMiddleware(
     baseUrl: string;
     getWebBundleUrl: () => string;
     getStaticPageAsync: (pathname: string) => Promise<{ content: string }>;
+    bundleApiRoute: (functionFilePath: string) => Promise<null | Record<string, Function>>;
     config: ProjectConfig;
     isExporting: boolean;
   }
@@ -134,27 +132,19 @@ export function createRouteHandlerMiddleware(
         const resolvedFunctionPath = await resolveAsync(route.page, {
           extensions: ['.js', '.jsx', '.ts', '.tsx'],
           basedir: options.appDir,
-        });
-
-        const middlewareContents = await bundleApiRoute(
-          projectRoot,
-          resolvedFunctionPath!,
-          options
-        );
-        if (!middlewareContents) {
-          // TODO: Error handling
-          return null;
-        }
+        })!;
 
         try {
           debug(`Bundling middleware at: ${resolvedFunctionPath}`);
-          return requireString(middlewareContents.src, middlewareContents.filename);
-        } catch (error: any) {
-          if (error instanceof Error) {
-            await logMetroErrorAsync({ projectRoot, error });
-          } else {
-            Log.error('Failed to load middleware: ' + error);
+          const apiRouteModule = await options.bundleApiRoute(resolvedFunctionPath!);
+
+          if (!apiRouteModule) {
+            // TODO: Error handling
+            return null;
           }
+
+          return apiRouteModule;
+        } catch (error: any) {
           return new ExpoResponse(
             'Failed to load middleware: ' + resolvedFunctionPath + '\n\n' + error.message,
             {

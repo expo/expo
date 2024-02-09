@@ -73,6 +73,7 @@ export async function unstable_exportStaticAsync(projectRoot: string, options: O
     resetDevServer: options.clear,
     maxWorkers: options.maxWorkers,
   });
+
   await devServerManager.startAsync([
     {
       type: 'metro',
@@ -81,6 +82,7 @@ export async function unstable_exportStaticAsync(projectRoot: string, options: O
         mode: options.mode,
         location: {},
         isExporting: true,
+        minify: options.minify,
         resetDevServer: options.clear,
         maxWorkers: options.maxWorkers,
       },
@@ -180,12 +182,10 @@ async function exportFromServerAsync(
     outputDir,
     baseUrl,
     exportServer,
-    minify,
     includeSourceMaps,
     routerRoot,
     asyncRoutes,
     files = new Map(),
-    mode,
   }: Options
 ): Promise<ExportAssetMap> {
   const platform = 'web';
@@ -202,19 +202,10 @@ async function exportFromServerAsync(
 
   const [resources, { manifest, serverManifest, renderAsync }] = await Promise.all([
     devServer.getStaticResourcesAsync({
-      isExporting: true,
-      mode,
-      minify,
       includeSourceMaps,
-      baseUrl,
       asyncRoutes,
-      routerRoot,
     }),
-    devServer.getStaticRenderFunctionAsync({
-      mode,
-      minify,
-      isExporting,
-    }),
+    devServer.getStaticRenderFunctionAsync(),
   ]);
 
   makeRuntimeEntryPointsAbsolute(manifest, appDir);
@@ -264,11 +255,7 @@ async function exportFromServerAsync(
     const apiRoutes = await exportApiRoutesAsync({
       outputDir,
       server: devServer,
-      routerRoot,
       manifest: serverManifest,
-      baseUrl,
-      mode,
-      isExporting,
     });
 
     // Add the api routes to the files to export.
@@ -429,22 +416,14 @@ export function getPathVariations(routePath: string): string[] {
 async function exportApiRoutesAsync({
   outputDir,
   server,
-  routerRoot,
-  baseUrl,
-  mode,
-  isExporting,
   ...props
-}: Pick<Options, 'mode' | 'baseUrl' | 'routerRoot' | 'outputDir' | 'isExporting'> & {
+}: Pick<Options, 'outputDir'> & {
   server: MetroBundlerDevServer;
   manifest: ExpoRouterServerManifestV1;
 }): Promise<ExportAssetMap> {
   const { manifest, files } = await server.exportExpoRouterApiRoutesAsync({
-    mode,
-    routerRoot,
     outputDir: '_expo/functions',
     prerenderManifest: props.manifest,
-    baseUrl,
-    isExporting,
   });
 
   Log.log(chalk.bold`Exporting ${files.size} API Routes.`);
