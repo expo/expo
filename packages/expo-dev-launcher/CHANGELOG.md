@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+### 📚 3rd party library updates
+
+- Update react-native to 0.72.10. ([#26977](https://github.com/expo/expo/pull/26977) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 2.4.14 — 2023-11-08
 
 ### 🐛 Bug fixes
