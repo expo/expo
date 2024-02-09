@@ -279,7 +279,7 @@ export class Chunk {
 
     this.deps.forEach((module) => {
       module.dependencies.forEach((dependency) => {
-        if (dependency.data.data.asyncType === 'async') {
+        if (dependency.data.data.asyncType) {
           const chunkContainingModule = chunks.find((chunk) =>
             chunk.hasAbsolutePath(dependency.absolutePath)
           );
@@ -565,7 +565,7 @@ function gatherChunks(
   function includeModule(entryModule: Module<MixedOutput>) {
     for (const dependency of entryModule.dependencies.values()) {
       if (
-        dependency.data.data.asyncType === 'async' &&
+        dependency.data.data.asyncType &&
         // Support disabling multiple chunks.
         splitChunks
       ) {

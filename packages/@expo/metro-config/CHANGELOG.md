@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for splitting on `require.resolveWeak` syntax. ([#27014](https://github.com/expo/expo/pull/27014) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
