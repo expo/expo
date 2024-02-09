@@ -84,7 +84,7 @@ const moveStaticRenderFunction = memoize(async (projectRoot: string, requiredMod
 async function getStaticRenderFunctionsContentAsync(
   projectRoot: string,
   devServerUrl: string,
-  props: PickPartial<ExpoMetroOptions, 'mainModuleName'>,
+  props: PickPartial<ExpoMetroOptions, 'mainModuleName' | 'bytecode'>,
   entry?: string
 ): Promise<{ src: string; filename: string }> {
   const root = getMetroServerRoot(projectRoot);
@@ -122,7 +122,7 @@ export async function createMetroEndpointAsync(
   projectRoot: string,
   devServerUrl: string,
   absoluteFilePath: string,
-  props: PickPartial<ExpoMetroOptions, 'mainModuleName'>
+  props: PickPartial<ExpoMetroOptions, 'mainModuleName' | 'bytecode'>
 ): Promise<string> {
   const root = getMetroServerRoot(projectRoot);
   const safeOtherFile = await ensureFileInRootDirectory(projectRoot, absoluteFilePath);
@@ -152,7 +152,7 @@ export async function requireFileContentsWithMetro(
   projectRoot: string,
   devServerUrl: string,
   absoluteFilePath: string,
-  props: PickPartial<ExpoMetroOptions, 'mainModuleName'>
+  props: PickPartial<ExpoMetroOptions, 'mainModuleName' | 'bytecode'>
 ): Promise<{ src: string; filename: string }> {
   const url = await createMetroEndpointAsync(projectRoot, devServerUrl, absoluteFilePath, props);
   return await metroFetchAsync(projectRoot, url);
@@ -192,7 +192,7 @@ async function metroFetchAsync(
 export async function getStaticRenderFunctionsForEntry<T = any>(
   projectRoot: string,
   devServerUrl: string,
-  options: PickPartial<ExpoMetroOptions, 'mainModuleName'>,
+  options: PickPartial<ExpoMetroOptions, 'mainModuleName' | 'bytecode'>,
   entry: string
 ) {
   const { src: scriptContents, filename } = await getStaticRenderFunctionsContentAsync(

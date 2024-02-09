@@ -376,6 +376,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           environment: 'node',
           platform: 'web',
           mode: 'development',
+          bytecode: false,
 
           ...this.instanceMetroOptions,
           baseUrl,
@@ -403,6 +404,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       environment: 'node',
       platform: 'web',
       mode: 'development',
+      bytecode: false,
 
       ...this.instanceMetroOptions,
       baseUrl,
