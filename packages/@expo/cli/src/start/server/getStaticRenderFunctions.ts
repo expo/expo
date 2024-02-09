@@ -197,28 +197,6 @@ async function metroFetchAsync(
   return { src: wrapBundle(content), filename: url };
 }
 
-export function createMetroSsr(
-  projectRoot: string,
-  devServerUrl: string,
-  options: StaticRenderOptions
-) {
-  return {
-    async ssrLoadModule(
-      filePath: string,
-      specificOptions: Partial<StaticRenderOptions> = {}
-    ): Promise<any> {
-      return (
-        await getStaticRenderFunctionsForEntry(
-          projectRoot,
-          devServerUrl,
-          { ...options, ...specificOptions },
-          filePath
-        )
-      ).fn;
-    },
-  };
-}
-
 export async function getStaticRenderFunctions(
   projectRoot: string,
   devServerUrl: string,
