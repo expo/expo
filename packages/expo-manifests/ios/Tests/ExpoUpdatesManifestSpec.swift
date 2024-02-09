@@ -62,34 +62,27 @@ class ExpoUpdatesManifestSpec : ExpoSpec {
 
     describe("SDK Version") {
       it("is correct with valid numeric case") {
-        let runtimeVersion = "exposdk:39.0.0"
-        let manifestJson = ["runtimeVersion": runtimeVersion]
+        let manifestJson = [
+          "extra": [
+            "expoClient": [
+              "sdkVersion": "39.0.0"
+            ]
+          ]
+        ]
         let manifest = ExpoUpdatesManifest(rawManifestJSON: manifestJson)
         expect(manifest.expoGoSDKVersion()) == "39.0.0"
       }
 
       it("is UNVERSIONED with valid unversioned case") {
-        let runtimeVersion = "exposdk:UNVERSIONED"
-        let manifestJson = ["runtimeVersion": runtimeVersion]
+        let manifestJson = [
+          "extra": [
+            "expoClient": [
+              "sdkVersion": "UNVERSIONED"
+            ]
+          ]
+        ]
         let manifest = ExpoUpdatesManifest(rawManifestJSON: manifestJson)
         expect(manifest.expoGoSDKVersion()) == "UNVERSIONED"
-      }
-
-      it("is nil with non-sdk runtime version cases") {
-        let runtimeVersions = [
-          "exposdk:123",
-          "exposdkd:39.0.0",
-          "exposdk:hello",
-          "bexposdk:39.0.0",
-          "exposdk:39.0.0-beta.0",
-          "exposdk:39.0.0-alpha.256"
-        ]
-
-        for runtimeVersion in runtimeVersions {
-          let manifestJson = ["runtimeVersion": runtimeVersion]
-          let manifest = ExpoUpdatesManifest(rawManifestJSON: manifestJson)
-          expect(manifest.expoGoSDKVersion()).to(beNil())
-        }
       }
     }
   }
