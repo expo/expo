@@ -181,12 +181,13 @@ const RENAMED_PAGES: Record<string, string> = {
   '/introduction/project-lifecycle/': '/archive/managed-vs-bare/',
   '/versions/latest/sdk/': '/versions/latest/',
   '/versions/latest/sdk/overview/': '/versions/latest/',
-  '/guides/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
-  '/distribution/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
+  '/guides/building-standalone-apps/': '/archive/classic-builds/building-standalone-apps/',
+  '/distribution/building-standalone-apps/': '/archive/classic-builds/building-standalone-apps/',
   '/guides/genymotion/': '/workflow/android-studio-emulator/',
   '/workflow/upgrading-expo/': '/workflow/upgrading-expo-sdk-walkthrough/',
   '/workflow/create-react-native-app/': '/more/glossary-of-terms/#create-react-native-app',
   '/expokit/': '/archive/glossary/#expokit/',
+  '/build-reference/migrating/': '/archive/classic-builds/migrating/',
 
   // Development builds redirects
   '/development/build/': '/develop/development-builds/create-a-build/',
@@ -339,7 +340,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/errors/': '/debugging/runtime-issues/',
   '/guides/using-graphql/': '/guides/overview/',
   '/guides/using-styled-components/': '/guides/overview/',
-  '/guides/using-bugsnag/': '/guides/overview/',
   '/build/automating-submissions/': '/build/automate-submissions/',
   '/workflow/run-on-device/': '/build/internal-distribution/',
   '/guides/': '/guides/overview/',
@@ -361,8 +361,8 @@ const RENAMED_PAGES: Record<string, string> = {
     '/archive/classic-updates/preloading-and-caching-assets/',
   '/eas-update/bare-react-native/': '/eas-update/updating-your-app/',
   '/worfkflow/publishing/': '/archive/classic-updates/publishing/',
-  '/classic/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
-  '/classic/turtle-cli/': '/archive/classic-updates/turtle-cli/',
+  '/classic/building-standalone-apps/': '/archive/classic-builds/building-standalone-apps/',
+  '/classic/turtle-cli/': '/archive/classic-builds/turtle-cli/',
   '/archive/classic-updates/getting-started/': '/eas-update/getting-started/',
 
   // Redirects for removed API docs based on Sentry

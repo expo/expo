@@ -5,12 +5,12 @@ import * as React from 'react';
 import { Platform } from 'react-native';
 import { useInfiniteQuery } from 'react-query';
 
+import { primeCacheWithUpdates, Update } from './useUpdatesForBranch';
 import { apiClient } from '../apiClient';
 import { Toasts } from '../components/Toasts';
 import { queryClient, useQueryOptions } from '../providers/QueryProvider';
 import { useToastStack } from '../providers/ToastStackProvider';
 import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
-import { primeCacheWithUpdates, Update } from './useUpdatesForBranch';
 
 const query = gql`
   query getBranches(

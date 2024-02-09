@@ -14,6 +14,10 @@
 
 ### 💡 Others
 
+### 📚 3rd party library updates
+
+- update semver from 7.5.3 to 7.5.4. ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
+
 ## 0.11.0 — 2023-11-14
 
 ### 🛠 Breaking changes

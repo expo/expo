@@ -11,7 +11,7 @@ index 4e6ce00391..bc0b76356d 100644
  android/app/build
  android/.gradle
 diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
-index 189390e7e3..a265c80fa9 100644
+index 189390e7e3..27c6e63957 100644
 --- a/templates/expo-template-bare-minimum/android/app/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/app/build.gradle
 @@ -1,17 +1,8 @@
@@ -130,7 +130,7 @@ index 189390e7e3..a265c80fa9 100644
      }
      signingConfigs {
          debug {
-@@ -151,22 +114,6 @@ android {
+@@ -151,20 +114,9 @@ android {
              proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
          }
      }
@@ -148,12 +148,13 @@ index 189390e7e3..a265c80fa9 100644
 -                        defaultConfig.versionCode * 1000 + versionCodes.get(abi)
 -            }
 -
--        }
--    }
++    packagingOptions {
++        jniLibs {
++            useLegacyPackaging (findProperty('expo.useLegacyPackaging')?.toBoolean() ?: false)
+         }
+     }
  }
- 
- // Apply static values from `gradle.properties` to the `android.packagingOptions`
-@@ -196,35 +143,22 @@ dependencies {
+@@ -196,35 +148,22 @@ dependencies {
      def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
      def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
      def isWebpAnimatedEnabled = (findProperty('expo.webp.animated') ?: "") == "true";
@@ -193,7 +194,7 @@ index 189390e7e3..a265c80fa9 100644
  
      if (hermesEnabled.toBoolean()) {
          implementation("com.facebook.react:hermes-android")
-@@ -233,5 +167,5 @@ dependencies {
+@@ -233,5 +172,5 @@ dependencies {
      }
  }
  
@@ -293,10 +294,10 @@ index 595dd5831c..0000000000
 -  }
 -}
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
-index 6536fc03ad..34a7ca8314 100644
+index 6536fc03ad..f8d77fc832 100644
 --- a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
-@@ -18,7 +18,7 @@
+@@ -18,10 +18,10 @@
      </intent>
    </queries>
  
@@ -304,7 +305,18 @@ index 6536fc03ad..34a7ca8314 100644
 +  <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme">
      <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="YOUR-APP-URL-HERE"/>
      <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="YOUR-APP-SDK-VERSION-HERE"/>
-     <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
+-    <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
++    <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
+       <intent-filter>
+         <action android:name="android.intent.action.MAIN"/>
+         <category android:name="android.intent.category.LAUNCHER"/>
+@@ -29,4 +29,4 @@
+     </activity>
+     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" android:exported="false"/>
+   </application>
+-</manifest>
++</manifest>
+\ No newline at end of file
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainActivity.java b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainActivity.java
 deleted file mode 100644
 index 7e2823fb6c..0000000000
@@ -690,7 +702,7 @@ index e5fda82878..513b766148 100644
  
          google()
 diff --git a/templates/expo-template-bare-minimum/android/gradle.properties b/templates/expo-template-bare-minimum/android/gradle.properties
-index 9911ac4afd..a4efc8b9d8 100644
+index 9911ac4afd..41b173c48a 100644
 --- a/templates/expo-template-bare-minimum/android/gradle.properties
 +++ b/templates/expo-template-bare-minimum/android/gradle.properties
 @@ -25,9 +25,6 @@ android.useAndroidX=true
@@ -716,13 +728,16 @@ index 9911ac4afd..a4efc8b9d8 100644
  
  # Enable GIF support in React Native images (~200 B increase)
  expo.gif.enabled=true
-@@ -51,3 +48,6 @@ expo.webp.enabled=true
+@@ -51,3 +48,9 @@ expo.webp.enabled=true
  # Enable animated webp support (~3.4 MB increase)
  # Disabled by default because iOS doesn't support animated webp
  expo.webp.animated=false
 +
 +# Enable network inspector
 +EX_DEV_CLIENT_NETWORK_INSPECTOR=true
++
++# Use legacy packaging to compress native libraries in the resulting APK.
++expo.useLegacyPackaging=false
 diff --git a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar
 index 249e5832f0..7f93135c49 100644
 Binary files a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar and b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar differ
@@ -1159,7 +1174,7 @@ index bf722cb92e..b93b7b2b0f 100644
    ],
    "info" : {
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
-index 9f116db7f2..552b63e06c 100644
+index 9f116db7f2..5a1db7145b 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
 @@ -2,6 +2,8 @@
@@ -1184,24 +1199,25 @@ index 9f116db7f2..552b63e06c 100644
  	<key>CFBundleVersion</key>
  	<string>1</string>
  	<key>LSRequiresIPhoneOS</key>
-@@ -25,11 +27,15 @@
+@@ -25,15 +27,9 @@
  	<key>NSAppTransportSecurity</key>
  	<dict>
  		<key>NSAllowsArbitraryLoads</key>
 +		<false/>
 +		<key>NSAllowsLocalNetworking</key>
  		<true/>
- 		<key>NSExceptionDomains</key>
- 		<dict>
+-		<key>NSExceptionDomains</key>
+-		<dict>
 -			<key>localhost</key>
-+			<key>exp.direct</key>
- 			<dict>
-+				<key>NSIncludesSubdomains</key>
-+				<true/>
- 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
- 				<true/>
- 			</dict>
-@@ -41,6 +47,8 @@
+-			<dict>
+-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+-				<true/>
+-			</dict>
+-		</dict>
+ 	</dict>
+ 	<key>UILaunchStoryboardName</key>
+ 	<string>SplashScreen</string>
+@@ -41,6 +37,8 @@
  	<array>
  		<string>armv7</string>
  	</array>
@@ -1210,7 +1226,7 @@ index 9f116db7f2..552b63e06c 100644
  	<key>UISupportedInterfaceOrientations</key>
  	<array>
  		<string>UIInterfaceOrientationPortrait</string>
-@@ -49,7 +57,5 @@
+@@ -49,7 +47,5 @@
  	</array>
  	<key>UIViewControllerBasedStatusBarAppearance</key>
  	<false/>
@@ -1289,7 +1305,7 @@ index 9430b0f9b6..07c9fce65d 100644
 +
 +module.exports = config;
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index d1fcd513cc..a828360d9b 100644
+index d1fcd513cc..95ebad358f 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -1297,7 +1313,7 @@ index d1fcd513cc..a828360d9b 100644
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "48.0.21",
-+  "version": "50.0.31",
++  "version": "50.0.36",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -1308,11 +1324,11 @@ index d1fcd513cc..a828360d9b 100644
 -    "expo": "~48.0.21",
 -    "expo-splash-screen": "~0.18.2",
 -    "expo-status-bar": "~1.4.4",
-+    "expo": "~50.0.3",
++    "expo": "~50.0.6",
 +    "expo-status-bar": "~1.11.1",
      "react": "18.2.0",
 -    "react-native": "0.71.14"
-+    "react-native": "0.73.2"
++    "react-native": "0.73.4"
    },
    "devDependencies": {
      "@babel/core": "^7.20.0"

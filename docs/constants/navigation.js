@@ -270,7 +270,6 @@ const general = [
     makeGroup(
       'Reference',
       [
-        makePage('build-reference/migrating.mdx'),
         makePage('build-reference/npm-hooks.mdx'),
         makePage('build-reference/private-npm-packages.mdx'),
         makePage('build-reference/git-submodules.mdx'),
@@ -398,6 +397,7 @@ const general = [
         makePage('guides/using-eslint.mdx'),
         makePage('guides/using-nextjs.mdx'),
         makePage('guides/using-sentry.mdx'),
+        makePage('guides/using-bugsnag.mdx'),
         makePage('guides/building-for-tv.mdx'),
         makePage('guides/typescript.mdx'),
         makePage('guides/in-app-purchases.mdx'),
@@ -474,8 +474,9 @@ const preview = [
 
 const archive = [
   makeSection('Classic Builds', [
-    makePage('archive/classic-updates/building-standalone-apps.mdx'),
-    makePage('archive/classic-updates/turtle-cli.mdx'),
+    makePage('archive/classic-builds/building-standalone-apps.mdx'),
+    makePage('archive/classic-builds/turtle-cli.mdx'),
+    makePage('archive/classic-builds/migrating.mdx'),
   ]),
   makeSection('Classic Updates', [
     makePage('archive/classic-updates/introduction.mdx'),
