@@ -95,6 +95,7 @@ async function getStaticRenderFunctionsContentAsync(
   projectRoot: string,
   devServerUrl: string,
   {
+    // TODO: Migrate to mode
     dev = false,
     minify = false,
     environment,
@@ -103,6 +104,7 @@ async function getStaticRenderFunctionsContentAsync(
     engine,
     platform,
     isExporting,
+    // TODO: Use metroOptions type directly
   }: StaticRenderOptions,
   entry?: string
 ): Promise<{ src: string; filename: string }> {
@@ -267,12 +269,12 @@ export async function getStaticRenderFunctions(
   ).fn;
 }
 
-export async function getStaticRenderFunctionsForEntry(
+export async function getStaticRenderFunctionsForEntry<T = any>(
   projectRoot: string,
   devServerUrl: string,
   options: StaticRenderOptions,
   entry: string
-): Promise<{ filename: string; fn: Record<string, (...args: any[]) => Promise<any>> }> {
+) {
   const { src: scriptContents, filename } = await getStaticRenderFunctionsContentAsync(
     projectRoot,
     devServerUrl,
@@ -280,10 +282,13 @@ export async function getStaticRenderFunctionsForEntry(
     entry
   );
 
-  return { filename, fn: await evalMetroAndWrapFunctions(projectRoot, scriptContents, filename) };
+  return {
+    filename,
+    fn: await evalMetroAndWrapFunctions<T>(projectRoot, scriptContents, filename),
+  };
 }
 
-function evalMetroAndWrapFunctions<T = Record<string, (...args: any[]) => Promise<any>>>(
+function evalMetroAndWrapFunctions<T = Record<string, any>>(
   projectRoot: string,
   script: string,
   filename: string

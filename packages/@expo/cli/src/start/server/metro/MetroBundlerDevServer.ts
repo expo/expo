@@ -11,6 +11,7 @@ import chalk from 'chalk';
 import { AssetData } from 'metro';
 import fetch from 'node-fetch';
 import path from 'path';
+import assert from 'assert';
 
 import { bundleApiRoute, invalidateApiRouteCache } from './bundleApiRoutes';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
@@ -32,7 +33,7 @@ import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { CommandError } from '../../../utils/errors';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
-import { getStaticRenderFunctions } from '../getStaticRenderFunctions';
+import { StaticRenderOptions, getStaticRenderFunctionsForEntry } from '../getStaticRenderFunctions';
 import { ContextModuleSourceMapsMiddleware } from '../middleware/ContextModuleSourceMapsMiddleware';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { DevToolsPluginMiddleware } from '../middleware/DevToolsPluginMiddleware';
@@ -172,14 +173,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   async getStaticRenderFunctionAsync({
     mode,
     minify = mode !== 'development',
-    baseUrl,
-    routerRoot,
     isExporting,
   }: {
     mode: 'development' | 'production';
     minify?: boolean;
-    baseUrl: string;
-    routerRoot: string;
     isExporting: boolean;
   }): Promise<{
     serverManifest: ExpoRouterServerManifestV1;
@@ -189,20 +186,21 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const url = this.getDevServerUrl()!;
 
     const { getStaticContent, getManifest, getBuildTimeServerManifestAsync } =
-      await getStaticRenderFunctions(this.projectRoot, url, {
-        minify,
-        dev: mode !== 'production',
-        // Ensure the API Routes are included
-        environment: 'node',
-        baseUrl,
-        routerRoot,
-        isExporting,
-      });
+      await this.ssrLoadModule<typeof import('expo-router/build/static/renderStaticContent')>(
+        'expo-router/node/render.js',
+        {
+          minify,
+          dev: mode !== 'production',
+          environment: 'node',
+          platform: 'web',
+          isExporting,
+        }
+      );
 
     return {
       serverManifest: await getBuildTimeServerManifestAsync(),
       // Get routes from Expo Router.
-      manifest: await getManifest({ fetchData: true, preserveApiRoutes: false }),
+      manifest: await getManifest({ preserveApiRoutes: false }),
       // Get route generating function
       async renderAsync(path: string) {
         return await getStaticContent(new URL(path, url));
@@ -336,20 +334,16 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     });
 
     const bundleStaticHtml = async (): Promise<string> => {
-      const { getStaticContent } = await getStaticRenderFunctions(
-        this.projectRoot,
-        this.getDevServerUrl()!,
-        {
-          minify: false,
-          dev: mode !== 'production',
-          // Ensure the API Routes are included
-          environment: 'node',
-          baseUrl,
-          routerRoot,
-          isExporting,
-          platform,
-        }
-      );
+      const { getStaticContent } = await this.ssrLoadModule<
+        typeof import('expo-router/build/static/renderStaticContent')
+      >('expo-router/node/render.js', {
+        minify: false,
+        dev: mode !== 'production',
+        isExporting,
+        platform,
+        // Ensure the API Routes are included
+        environment: 'node',
+      });
 
       const location = new URL(pathname, this.getDevServerUrl()!);
       return await getStaticContent(location);
@@ -370,6 +364,35 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       content,
       resources,
     };
+  }
+
+  // Set when the server is started.
+  private instanceMetroOptions: Partial<StaticRenderOptions> = {};
+
+  async ssrLoadModule<T extends Record<string, any>>(
+    filePath: string,
+    specificOptions: Partial<StaticRenderOptions> = {}
+  ): Promise<T> {
+    const { baseUrl, routerRoot, isExporting } = this.instanceMetroOptions;
+    assert(
+      baseUrl != null && routerRoot != null && isExporting != null,
+      'The server must be started before calling ssrLoadModule.'
+    );
+
+    return (
+      await getStaticRenderFunctionsForEntry<T>(
+        this.projectRoot,
+        this.getDevServerUrl()!,
+        {
+          ...this.instanceMetroOptions,
+          baseUrl,
+          routerRoot,
+          isExporting,
+          ...specificOptions,
+        },
+        filePath
+      )
+    ).fn;
   }
 
   async watchEnvironmentVariables() {
@@ -466,12 +489,26 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     middleware.use(new CreateFileMiddleware(this.projectRoot).getHandler());
 
+    const config = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
+    const { exp } = config;
+    const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
+    const baseUrl = getBaseUrlFromExpoConfig(exp);
+    const asyncRoutes = getAsyncRoutesFromExpoConfig(exp, options.mode ?? 'development', 'web');
+    const routerRoot = getRouterDirectoryModuleIdWithManifest(this.projectRoot, exp);
+    const appDir = path.join(this.projectRoot, routerRoot);
+    const mode = options.mode ?? 'development';
+
+    this.instanceMetroOptions = {
+      isExporting: options.isExporting,
+      baseUrl,
+      dev: mode !== 'production',
+      routerRoot,
+      minify: options.minify,
+      // Options that are changing between platforms like engine, platform, and environment aren't set here.
+    };
+
     // Append support for redirecting unhandled requests to the index.html page on web.
     if (this.isTargetingWeb()) {
-      const config = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
-      const { exp } = config;
-      const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
-
       // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
       middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
 
@@ -479,11 +516,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       middleware.use(new FaviconMiddleware(this.projectRoot).getHandler());
 
       if (useServerRendering) {
-        const baseUrl = getBaseUrlFromExpoConfig(exp);
-        const asyncRoutes = getAsyncRoutesFromExpoConfig(exp, options.mode ?? 'development', 'web');
-        const routerRoot = getRouterDirectoryModuleIdWithManifest(this.projectRoot, exp);
-        const appDir = path.join(this.projectRoot, routerRoot);
-        const mode = options.mode ?? 'development';
         middleware.use(
           createRouteHandlerMiddleware(this.projectRoot, {
             ...options,

@@ -213,8 +213,6 @@ async function exportFromServerAsync(
     devServer.getStaticRenderFunctionAsync({
       mode,
       minify,
-      baseUrl,
-      routerRoot,
       isExporting,
     }),
   ]);

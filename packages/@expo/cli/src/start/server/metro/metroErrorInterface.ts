@@ -261,6 +261,7 @@ export async function getErrorOverlayHtmlAsync({
       minify: false,
       baseUrl: '',
       routerRoot,
+      isExporting: false,
     }
   );
 
