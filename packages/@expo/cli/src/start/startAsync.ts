@@ -108,9 +108,8 @@ export async function startAsync(
 
     // After the server starts, we can start attempting to bootstrap TypeScript.
     await devServerManager.bootstrapTypeScriptAsync();
-  }
 
-  if (!settings.webOnly && !options.devClient) {
+    // Check the dependencies are compatible with expo and show warning if not
     await profile(validateDependenciesVersionsAsync)(projectRoot, exp, pkg);
   }
 
