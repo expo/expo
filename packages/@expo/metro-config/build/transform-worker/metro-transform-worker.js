@@ -52,6 +52,7 @@ const metro_transform_plugins_1 = __importDefault(require("metro-transform-plugi
 const getMinifier_1 = __importDefault(require("metro-transform-worker/src/utils/getMinifier"));
 const node_assert_1 = __importDefault(require("node:assert"));
 const assetTransformer = __importStar(require("./asset-transformer"));
+const resolveOptions_1 = require("./resolveOptions");
 // asserts non-null
 function nullthrows(x, message) {
     (0, node_assert_1.default)(x != null, message);
@@ -237,13 +238,11 @@ async function transformJS(file, { config, options, projectRoot }) {
             ({ ast: wrappedAst } = JsFileWrapping_1.default.wrapModule(ast, importDefault, importAll, dependencyMapName, config.globalPrefix));
         }
     }
-    const minify = options.minify &&
-        options.unstable_transformProfile !== 'hermes-canary' &&
-        options.unstable_transformProfile !== 'hermes-stable';
     const reserved = [];
     if (config.unstable_dependencyMapReservedName != null) {
         reserved.push(config.unstable_dependencyMapReservedName);
     }
+    const minify = (0, resolveOptions_1.shouldMinify)(options);
     if (minify &&
         file.inputFileSize <= config.optimizationSizeLimit &&
         !config.unstable_disableNormalizePseudoGlobals) {
@@ -320,10 +319,7 @@ async function transformJSON(file, { options, config, projectRoot }) {
         ? JsFileWrapping_1.default.jsonToCommonJS(file.code)
         : JsFileWrapping_1.default.wrapJson(file.code, config.globalPrefix);
     let map = [];
-    // TODO: When we can reuse transformJS for JSON, we should not derive `minify` separately.
-    const minify = options.minify &&
-        options.unstable_transformProfile !== 'hermes-canary' &&
-        options.unstable_transformProfile !== 'hermes-stable';
+    const minify = (0, resolveOptions_1.shouldMinify)(options);
     if (minify) {
         ({ map, code } = await minifyCode(config, projectRoot, file.filename, code, file.code, map));
     }
