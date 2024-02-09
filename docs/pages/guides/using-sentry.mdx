@@ -16,7 +16,7 @@ import { CODE } from '~/ui/components/Text';
 
 [Sentry](http://getsentry.com/) is a crash reporting platform that provides you with **real-time insight into production deployments with info to reproduce and fix crashes**.
 
-It notifies you of exceptions or errors that your users run into while using your app, and organizes them for you on a web dashboard. Reported exceptions include stacktraces, device info, version, and other relevant context automatically; you can also provide additional context that is specific to your application, like the current route and user id.
+It notifies you of exceptions or errors that your users run into while using your app and organizes them for you on a web dashboard. Reported exceptions include stacktraces, device info, version, and other relevant context automatically. You can also provide additional context that is specific to your application such as the current route and user id.
 
 <PlatformsSection title="Platform compatibility" android emulator ios simulator web />
 
@@ -30,7 +30,7 @@ It notifies you of exceptions or errors that your users run into while using you
 
 ### Sign up for a Sentry account and create a project
 
-Before proceeding with installing Sentry, you'll need to make sure you have created a Sentry account and project. Here's how to do that:
+Before proceeding with installing Sentry, you'll need to make sure you have created a Sentry account and project:
 
 <Step label="1.1">
 
@@ -47,7 +47,7 @@ them later:
 
 <Step label="1.2">
 
-Go to the [DEVELOPER SETTINGS → Auth Tokens](https://sentry.io/settings/) page and create a new token. The token is automatically scoped for Source Map Upload and Release Creation. Save it.
+Go to the [Developer Settings > Auth Tokens](https://sentry.io/settings/) page and create a new token. The token is automatically scoped for Source Map Upload and Release Creation. Save it.
 
 </Step>
 
@@ -69,7 +69,7 @@ Run the following command in your project directory to install the official Reac
 
 ### App configuration
 
-Configuring `@sentry/react-native` can be done through the config plugin in your [app config](/workflow/configuration/). Add the plugin to your project's **app.json** or **app.config.js** file:
+Configuring `@sentry/react-native` can be done through the config plugin. Add the plugin to your project's [app config](/workflow/configuration/) file:
 
 ```json app.json
 {
@@ -88,7 +88,7 @@ Configuring `@sentry/react-native` can be done through the config plugin in your
 }
 ```
 
-Next, in any environment where you would like to be able to create releases and upload sourcemaps to Sentry, you will need to set the `SENTRY_AUTH_TOKEN` environment variable to your [Sentry auth token](https://docs.sentry.io/product/cli/configuration/). If you are using EAS Build, you can set the environment variable by [creating a secret named SENTRY_AUTH_TOKEN](/build-reference/variables/#using-secrets-in-environment-variables).
+Next, in an environment where you want to create releases and upload sourcemaps to Sentry, you will need to set the `SENTRY_AUTH_TOKEN` environment variable to your [Sentry auth token](https://docs.sentry.io/product/cli/configuration/). If you are using EAS Build, you can set the environment variable by [creating a secret named SENTRY_AUTH_TOKEN](/build-reference/variables/#using-secrets-in-environment-variables).
 
 > **warning** The Sentry auth token should be stored securely. Do not commit it to a public repository, and treat it as you would any other sensitive API key.
 
@@ -104,9 +104,9 @@ If you do not use [Continuous Native Generation (CNG)](https://docs.expo.dev/wor
 
 ### Update Metro configuration
 
-Sentry hooks into Metro to inject a "debug ID" into your source maps. This debug ID is used to associate source maps with releases. To enable this, you need to add the following to your **metro.config.js** file (if you don't have the file yet, create it in the root of your project):
+Sentry hooks into Metro to inject a "debug ID" into your source maps. This debug ID is used to associate source maps with releases. To enable this, you need to add the following to your **metro.config.js** (if you don't have the file yet, create it in the root of your project):
 
-```js
+```js metro.config.js
 // This replaces `const { getDefaultConfig } = require('expo/metro-config');`
 const { getSentryExpoConfig } = require('@sentry/react-native/metro');
 
@@ -133,7 +133,7 @@ Sentry.init({
 });
 ```
 
-Now wrap the root component of your app with Sentry. This may be **App.js** or **index.js** depending on your project, or in [**app/\_layout.js** with Expo Router](https://docs.expo.dev/router/layouts/#create-a-layout-route).
+Now wrap the root component of your app with Sentry. This may be **App.js** or **index.js** depending on your project. If you are using Expo Router, see the example configuration in the [Usage with Expo Router](#usage-with-expo-router) section below.
 
 ```js
 import * as Sentry from '@sentry/react-native';
@@ -151,11 +151,12 @@ export default Sentry.wrap(App);
 
 Create a new release build of your app and verify that it uploads source maps correctly. You may want to add a button in your app to test that it is working and sourcemaps are wired up as expected, for example:
 
+{/* prettier-ignore */}
 ```jsx
 import { Button } from 'react-native';
 
 // Inside some component
-<Button title="Press me" onPress={() => { throw new Error('Hello, Sentry!')}; } />;
+<Button title="Press me" onPress={() => { throw new Error('Hello, again, Sentry!'); }}/>
 ```
 
 </Step>
@@ -234,7 +235,7 @@ You can chain the commands together with `&&` to publish an update and upload th
 
 <Collapsible summary="Do you want to append additional update-related metadata to error reports?">
 
-Configuring Sentry to tag your scope with information about your update allows to see errors happening on certain updates in Sentry dashboard.
+Configuring Sentry to tag your scope with information about your update allows you to see errors happening on certain updates in the Sentry dashboard.
 
 Add the following snippet in the global scope as early as possible in your application's lifecycle.
 
