@@ -1958,7 +1958,7 @@ SPEC CHECKSUMS:
   ExpoAppleAuthentication: 4fc9972356977f009911f2f3a5f56319c2a5b11b
   ExpoBackgroundFetch: 094377b73648adb55032a440f50cad1a5d3c3a89
   ExpoBattery: c75a7c094d64d89d96d3e3f419627b152da94f29
-  ExpoBlur: 6c4602d729a492663b0916e5862b334a23157f0a
+  ExpoBlur: af75411ec9ec077d5da8ff0b59d77701f9982c2a
   ExpoBrightness: 6d160de5877289d11674aea61aacdb37422774cf
   ExpoCalendar: a2da7fc1bdb0d20caf25891f7de6f709038bb8c1
   ExpoCamera: a3f3681963815533c24f698a22c239e68724fb99
@@ -1975,7 +1975,7 @@ SPEC CHECKSUMS:
   ExpoImagePicker: 247fc7d2c13426a835525b67d5fb221864b79612
   ExpoInsights: 28a5bab3d75d32c6266b00c5166668561a0bf756
   ExpoKeepAwake: fe7be5056ccf39dd1e05afcdb32a5569973f3685
-  ExpoLinearGradient: 6ff7b35f824f18f77d9c3ad3ee09fe0b4229e669
+  ExpoLinearGradient: c50eade5d1279fdcc1a0b127690547584640776c
   ExpoLocalAuthentication: c55ffb179683efed04cb144fc80ccf26891f0cb4
   ExpoLocalization: b3b77d35b8c7653700ae3045bf6d8175ab91d042
   ExpoMailComposer: 1f980bbdd0647500178625f453e509cef1282d43
