@@ -23,7 +23,6 @@ import { profile } from '../../utils/profile';
 // TODO: Condense the Metro options into a single object.
 export type StaticRenderOptions = Omit<
   ExpoMetroOptions,
-  | 'mode'
   | 'mainModuleName'
   | 'preserveEnvVars'
   | 'inlineSourceMap'
@@ -31,10 +30,7 @@ export type StaticRenderOptions = Omit<
   | 'serializerIncludeBytecode'
   | 'serializerIncludeMaps'
   | 'serializerOutput'
-> & {
-  // Ensure the style format is `css-xxxx` (prod) instead of `css-view-xxxx` (dev)
-  dev?: boolean;
-};
+>;
 
 class MetroNodeError extends Error {
   constructor(
@@ -98,8 +94,7 @@ async function getStaticRenderFunctionsContentAsync(
   projectRoot: string,
   devServerUrl: string,
   {
-    // TODO: Migrate to mode
-    dev = false,
+    mode = 'production',
     minify = false,
     environment,
     baseUrl,
@@ -122,7 +117,7 @@ async function getStaticRenderFunctionsContentAsync(
   }
 
   return requireFileContentsWithMetro(root, devServerUrl, moduleId, {
-    dev,
+    mode,
     minify,
     environment,
     baseUrl,
@@ -156,7 +151,7 @@ export async function createMetroEndpointAsync(
   devServerUrl: string,
   absoluteFilePath: string,
   {
-    dev = false,
+    mode = 'development',
     platform = 'web',
     minify = false,
     environment,
@@ -172,7 +167,7 @@ export async function createMetroEndpointAsync(
 
   const urlFragment = createBundleUrlPath({
     platform,
-    mode: dev ? 'development' : 'production',
+    mode,
     mainModuleName: serverPath,
     engine,
     environment,

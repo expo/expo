@@ -171,9 +171,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     manifest: ExpoRouterRuntimeManifest;
     renderAsync: (path: string) => Promise<string>;
   }> {
-    const { dev, minify, isExporting } = this.instanceMetroOptions;
+    const { mode, minify, isExporting } = this.instanceMetroOptions;
     assert(
-      dev != null && minify != null && isExporting != null,
+      mode != null && minify != null && isExporting != null,
       'The server must be started before calling ssrLoadModule.'
     );
 
@@ -184,7 +184,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         'expo-router/node/render.js',
         {
           minify,
-          dev,
+          mode,
           isExporting,
         }
       );
@@ -207,10 +207,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     includeSourceMaps?: boolean;
     mainModuleName?: string;
   } = {}): Promise<{ artifacts: SerialAsset[]; assets?: AssetData[] }> {
-    const { dev, minify, isExporting, baseUrl, routerRoot, asyncRoutes } =
+    const { mode, minify, isExporting, baseUrl, routerRoot, asyncRoutes } =
       this.instanceMetroOptions;
     assert(
-      dev != null &&
+      mode != null &&
         minify != null &&
         isExporting != null &&
         baseUrl != null &&
@@ -218,7 +218,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         asyncRoutes != null,
       'The server must be started before calling getStaticPageAsync.'
     );
-    const mode = dev ? 'development' : 'production';
 
     const platform = 'web';
 
@@ -297,10 +296,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }
 
   private async getStaticPageAsync(pathname: string) {
-    const { dev, minify, isExporting, baseUrl, routerRoot, asyncRoutes } =
+    const { mode, minify, isExporting, baseUrl, routerRoot, asyncRoutes } =
       this.instanceMetroOptions;
     assert(
-      dev != null &&
+      mode != null &&
         minify != null &&
         isExporting != null &&
         baseUrl != null &&
@@ -308,7 +307,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         asyncRoutes != null,
       'The server must be started before calling getStaticPageAsync.'
     );
-    const mode = dev ? 'development' : 'production';
     const platform = 'web';
 
     const devBundleUrlPathname = createBundleUrlPath({
@@ -328,7 +326,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         typeof import('expo-router/build/static/renderStaticContent')
       >('expo-router/node/render.js', {
         minify: false,
-        dev: mode !== 'production',
+        mode,
         isExporting,
         platform,
       });
@@ -375,6 +373,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           // Bundle in Node.js mode for SSR.
           environment: 'node',
           platform: 'web',
+          mode: 'development',
+
           // TODO: This doesn't make sense in the context of SSR.
           engine: 'hermes',
 
@@ -403,6 +403,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // Bundle in Node.js mode for SSR.
       environment: 'node',
       platform: 'web',
+      mode: 'development',
+
       // TODO: This doesn't make sense in the context of SSR.
       engine: 'hermes',
 
@@ -467,7 +469,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     this.instanceMetroOptions = {
       isExporting: !!options.isExporting,
       baseUrl,
-      dev: mode !== 'production',
+      mode,
       routerRoot,
       minify: options.minify,
       asyncRoutes,

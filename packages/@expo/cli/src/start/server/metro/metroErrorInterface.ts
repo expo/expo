@@ -256,7 +256,7 @@ export async function getErrorOverlayHtmlAsync({
     '',
     resolveFrom(projectRoot, 'expo-router/_error'),
     {
-      dev: true,
+      mode: 'development',
       platform: 'web',
       minify: false,
       baseUrl: '',
