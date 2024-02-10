@@ -134,6 +134,8 @@ public final class AppContext: NSObject {
 
   // MARK: - Classes
 
+  internal lazy var sharedObjectRegistry = SharedObjectRegistry()
+
   /**
    A registry containing references to JavaScript classes.
    - ToDo: Make one registry per module, not the entire app context.
@@ -397,9 +399,7 @@ public final class AppContext: NSObject {
    Unsets runtime objects that we hold for each module.
    */
   private func releaseRuntimeObjects() {
-    // FIXME: Release objects only from the current context.
-    // Making the registry non-global (similarly to the class registry) would fix it.
-    SharedObjectRegistry.clear()
+    sharedObjectRegistry.clear()
     classRegistry.clear()
 
     for module in moduleRegistry {
