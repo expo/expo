@@ -101,6 +101,8 @@ jobs:
           brew tap facebook/fb
           brew install facebook/fb/idb-companion
           echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
+        env:
+          MAESTRO_VERSION: '1.33.1'
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
