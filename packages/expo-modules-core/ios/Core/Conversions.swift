@@ -173,7 +173,7 @@ internal final class Conversions {
           log.warn("Unable to create a JS object for \(dynamicType.description)")
           return Optional<Any>.none
         }
-        SharedObjectRegistry.add(native: value, javaScript: object)
+        appContext.sharedObjectRegistry.add(native: value, javaScript: object)
         return object
       }
     }
