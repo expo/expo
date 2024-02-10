@@ -37,9 +37,9 @@ When using this feature, assets that do not match any file patterns will resolve
 
 If you are building your app locally or have access to the correct build for publishing updates (with the same [runtime version](/eas-update/runtime-versions/)), then you can use the `npx expo-updates assets:verify` command. It allows you to check whether all required assets will be included when you publish an update:
 
-> **info** This new command is part of the `expo-updates` CLI, which also supports [EAS Update code signing](/eas-update/code-signing/). It is not part of the [Expo CLI](/more/expo-cli/). It is available for ([`expo-updates`](/versions/latest/sdk/updates/) >= 0.24.10).
-
 <Terminal cmd={['$ npx expo-updates assets:verify <dir>']} />
+> **info** This new command is part of the `expo-updates` CLI, which also supports [EAS Update code signing](/eas-update/code-signing/). It is not part of the [Expo CLI](/more/expo-cli/) or the [EAS CLI](https://github.com/expo/eas-cli). It is available for ([`expo-updates`](/versions/latest/sdk/updates/) >= 0.24.10).
+
 
 You can also use `--help` with the command to see the available options:
 
