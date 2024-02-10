@@ -77,7 +77,7 @@ Learn how to configure the native projects in the [installation instructions in 
 > **warning** Only one Camera preview can be active at any given time. If you have multiple screens in your app, you should unmount `Camera` components whenever a screen is unfocused.
 
 ```jsx
-import { CameraView, useCameraPermissions, CameraType } from 'expo-camera/next';
+import { CameraView, useCameraPermissions } from 'expo-camera/next';
 import { useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -160,7 +160,7 @@ When using **Chrome versions 64+**, if you try to use a web camera in a cross-or
 
 ```html
 <iframe src="..." allow="microphone; camera;">
-  <!-- <Camera /> -->
+  <!-- <CameraView /> -->
 </iframe>
 ```
 
