@@ -35,9 +35,9 @@ export async function test({ describe, expect, it, ...t }) {
           await throws(() => FS.copyAsync({ from: 'c', to: p + '../a/b' }));
           await throws(() => FS.makeDirectoryAsync(p + '../hello/world'));
           await throws(() => FS.readDirectoryAsync(p + '../hello/world'));
-          await throws(() => FS.downloadAsync('http://www.google.com', p + '../hello/world'));
+          await throws(() => FS.downloadAsync('https://www.google.com', p + '../hello/world'));
           await throws(() => FS.readDirectoryAsync(p + '../'));
-          await throws(() => FS.downloadAsync('http://www.google.com', p + '../hello/world'));
+          await throws(() => FS.downloadAsync('https://www.google.com', p + '../hello/world'));
         });
       });
     }

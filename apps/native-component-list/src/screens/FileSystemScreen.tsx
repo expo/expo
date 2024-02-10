@@ -41,14 +41,14 @@ export default class FileSystemScreen extends React.Component<object, State> {
   upload?: UploadTask;
 
   _download = async () => {
-    const url = 'http://ipv4.download.thinkbroadband.com/256KB.zip';
-    await FileSystem.downloadAsync(url, FileSystem.documentDirectory + '256KB.zip');
+    const url = 'https://getsamplefiles.com/download/zip/sample-1.zip';
+    await FileSystem.downloadAsync(url, FileSystem.documentDirectory + 'sample-1.zip');
     alert('Download complete!');
   };
 
   _startDownloading = async () => {
-    const url = 'http://ipv4.download.thinkbroadband.com/5MB.zip';
-    const fileUri = FileSystem.documentDirectory + '5MB.zip';
+    const url = 'https://getsamplefiles.com/download/zip/sample-5.zip';
+    const fileUri = FileSystem.documentDirectory + 'sample-5.zip';
     const callback: FileSystemNetworkTaskProgressCallback<DownloadProgressData> = (
       downloadProgress
     ) => {
@@ -162,8 +162,8 @@ export default class FileSystemScreen extends React.Component<object, State> {
 
   _upload = async () => {
     try {
-      const fileUri = FileSystem.documentDirectory + '5MB.zip';
-      const downloadUrl = 'https://xcal1.vodafone.co.uk/5MB.zip';
+      const fileUri = FileSystem.documentDirectory + 'sample-4.zip';
+      const downloadUrl = 'https://getsamplefiles.com/download/zip/sample-4.zip';
       await FileSystem.downloadAsync(downloadUrl, fileUri);
 
       const callback: FileSystemNetworkTaskProgressCallback<UploadProgressData> = (
@@ -174,7 +174,7 @@ export default class FileSystemScreen extends React.Component<object, State> {
           uploadProgress: progress,
         });
       };
-      const uploadUrl = 'http://httpbin.org/post';
+      const uploadUrl = 'https://httpbin.org/post';
       this.upload = FileSystem.createUploadTask(uploadUrl, fileUri, {}, callback);
 
       await this.upload.uploadAsync();
@@ -311,8 +311,8 @@ export default class FileSystemScreen extends React.Component<object, State> {
   render() {
     return (
       <ScrollView style={{ padding: 10 }}>
-        <ListButton onPress={this._download} title="Download file (512KB)" />
-        <ListButton onPress={this._startDownloading} title="Start Downloading file (5MB)" />
+        <ListButton onPress={this._download} title="Download file (1.1MB)" />
+        <ListButton onPress={this._startDownloading} title="Start Downloading file (8.4MB)" />
         {this.state.downloadProgress ? (
           <Text style={{ paddingVertical: 15 }}>
             Download progress: {this.state.downloadProgress * 100}%
@@ -323,7 +323,7 @@ export default class FileSystemScreen extends React.Component<object, State> {
         <ListButton onPress={this._pause} title="Pause Download" />
         <ListButton onPress={this._resume} title="Resume Download" />
         <ListButton onPress={this._cancel} title="Cancel Download" />
-        <ListButton onPress={this._upload} title="Download & Upload file (5MB)" />
+        <ListButton onPress={this._upload} title="Download & Upload file (2.8MB)" />
         {this.state.uploadProgress ? (
           <Text style={{ paddingVertical: 15 }}>
             Upload progress: {this.state.uploadProgress * 100}%
