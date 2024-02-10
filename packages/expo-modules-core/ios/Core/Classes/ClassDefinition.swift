@@ -49,7 +49,7 @@ public final class ClassDefinition: ObjectDefinition {
 
       // Register the shared object if returned by the constructor.
       if let result = result as? SharedObject {
-        SharedObjectRegistry.add(native: result, javaScript: this)
+        appContext.sharedObjectRegistry.add(native: result, javaScript: this)
       }
     }
 
