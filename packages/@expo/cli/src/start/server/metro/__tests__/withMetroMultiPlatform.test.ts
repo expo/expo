@@ -191,15 +191,19 @@ describe(withExtendedResolver, () => {
       isTsconfigPathsEnabled: false,
     });
 
-    modified.resolver.resolveRequest!({
-      ...getDefaultRequestContext(),
-      dev: true,
-      originModulePath: '/Users/path/to/expo/node_modules/react/index.js'
-    }, './cjs/react.production.min.js', 'web')
-    
+    modified.resolver.resolveRequest!(
+      {
+        ...getDefaultRequestContext(),
+        dev: true,
+        originModulePath: '/Users/path/to/expo/node_modules/react/index.js',
+      },
+      './cjs/react.production.min.js',
+      'web'
+    );
+
     expect(getResolveFunc()).not.toBeCalled();
   });
- 
+
   it(`resolves production react files normally when bundling for production`, async () => {
     mockMinFs();
 
@@ -208,12 +212,16 @@ describe(withExtendedResolver, () => {
       isTsconfigPathsEnabled: false,
     });
 
-    modified.resolver.resolveRequest!({
-      ...getDefaultRequestContext(),
-      dev: false,
-      originModulePath: '/Users/path/to/expo/node_modules/react/index.js'
-    }, './cjs/react.production.min.js', 'web')
-    
+    modified.resolver.resolveRequest!(
+      {
+        ...getDefaultRequestContext(),
+        dev: false,
+        originModulePath: '/Users/path/to/expo/node_modules/react/index.js',
+      },
+      './cjs/react.production.min.js',
+      'web'
+    );
+
     expect(getResolveFunc()).toBeCalled();
   });
 

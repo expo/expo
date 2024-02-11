@@ -230,7 +230,6 @@ export function withExtendedResolver(
   const metroConfigWithCustomResolver = withMetroResolvers(config, [
     // Mock out production react imports in development.
     (context: ResolutionContext, moduleName: string, platform: string | null) => {
-      
       // This resolution is dev-only to prevent bundling the production React packages in development.
       // @ts-expect-error: dev is not on type.
       if (!context.dev) return null;
