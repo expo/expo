@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Directly resolve plugins.
+
 ## 10.0.1 - 2023-12-19
 
 ### 💡 Others
