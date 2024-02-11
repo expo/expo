@@ -64,7 +64,7 @@ class RemoteLoaderTest {
     manifest = ExpoUpdatesUpdate.fromExpoUpdatesManifest(ExpoUpdatesManifest(JSONObject(manifestString)), null, configuration)
 
     every { mockFileDownloader.downloadRemoteUpdate(any(), any(), any()) } answers {
-      val callback = arg<FileDownloader.RemoteUpdateDownloadCallback>(3)
+      val callback = arg<FileDownloader.RemoteUpdateDownloadCallback>(2)
       callback.onSuccess(
         UpdateResponse(
           responseHeaderData = null,
@@ -76,7 +76,7 @@ class RemoteLoaderTest {
 
     every { mockFileDownloader.downloadAsset(any(), any(), any(), any()) } answers {
       val asset = firstArg<AssetEntity>()
-      val callback = arg<AssetDownloadCallback>(4)
+      val callback = arg<AssetDownloadCallback>(3)
       callback.onSuccess(asset, true)
     }
 
@@ -103,7 +103,7 @@ class RemoteLoaderTest {
   fun testRemoteLoader_FailureToDownloadAssets() {
     every { mockFileDownloader.downloadAsset(any(), any(), any(), any()) } answers {
       val asset = firstArg<AssetEntity>()
-      val callback = arg<AssetDownloadCallback>(4)
+      val callback = arg<AssetDownloadCallback>(3)
       callback.onFailure(IOException("mock failed to download asset"), asset)
     }
 
@@ -257,7 +257,7 @@ class RemoteLoaderTest {
     manifest = ExpoUpdatesUpdate.fromExpoUpdatesManifest(ExpoUpdatesManifest(JSONObject(manifestString)), null, configuration)
 
     every { mockFileDownloader.downloadRemoteUpdate(any(), any(), any()) } answers {
-      val callback = arg<FileDownloader.RemoteUpdateDownloadCallback>(3)
+      val callback = arg<FileDownloader.RemoteUpdateDownloadCallback>(2)
       callback.onSuccess(
         UpdateResponse(
           responseHeaderData = null,
@@ -282,7 +282,7 @@ class RemoteLoaderTest {
   fun testRemoteLoader_RollBackDirective() {
     val updateDirective = UpdateDirective.RollBackToEmbeddedUpdateDirective(commitTime = Date(), signingInfo = null)
     every { mockFileDownloader.downloadRemoteUpdate(any(), any(), any()) } answers {
-      val callback = arg<FileDownloader.RemoteUpdateDownloadCallback>(3)
+      val callback = arg<FileDownloader.RemoteUpdateDownloadCallback>(2)
       callback.onSuccess(
         UpdateResponse(
           responseHeaderData = null,
