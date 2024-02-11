@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Directly resolve plugins.
+- Directly resolve plugins. ([#27041](https://github.com/expo/expo/pull/27041) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 10.0.1 - 2023-12-19
 
