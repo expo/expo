@@ -29,6 +29,7 @@ jest.mock('metro-resolver', () => {
 
 function getDefaultRequestContext(): CustomResolutionContext {
   return {
+    dev: true,
     extraNodeModules: {},
     mainFields: ['react-native', 'browser', 'main'],
     nodeModulesPaths: ['/node_modules'],
@@ -180,6 +181,40 @@ describe(withExtendedResolver, () => {
       'react-native-web',
       platform
     );
+  });
+
+  it(`resolves production react files to empty when bundling for development`, async () => {
+    mockMinFs();
+
+    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
+      tsconfig: {},
+      isTsconfigPathsEnabled: false,
+    });
+
+    modified.resolver.resolveRequest!({
+      ...getDefaultRequestContext(),
+      dev: true,
+      originModulePath: '/Users/path/to/expo/node_modules/react/index.js'
+    }, './cjs/react.production.min.js', 'web')
+    
+    expect(getResolveFunc()).not.toBeCalled();
+  });
+ 
+  it(`resolves production react files normally when bundling for production`, async () => {
+    mockMinFs();
+
+    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
+      tsconfig: {},
+      isTsconfigPathsEnabled: false,
+    });
+
+    modified.resolver.resolveRequest!({
+      ...getDefaultRequestContext(),
+      dev: false,
+      originModulePath: '/Users/path/to/expo/node_modules/react/index.js'
+    }, './cjs/react.production.min.js', 'web')
+    
+    expect(getResolveFunc()).toBeCalled();
   });
 
   it(`resolves to @expo/vector-icons on any platform`, async () => {

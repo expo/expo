@@ -228,6 +228,31 @@ export function withExtendedResolver(
   }
 
   const metroConfigWithCustomResolver = withMetroResolvers(config, [
+    // Mock out production react imports in development.
+    (context: ResolutionContext, moduleName: string, platform: string | null) => {
+      
+      // This resolution is dev-only to prevent bundling the production React packages in development.
+      // @ts-expect-error: dev is not on type.
+      if (!context.dev) return null;
+
+      if (
+        // Match production imports.
+        moduleName.includes('.production.') &&
+        // Match if the import originated from a react package.
+        context.originModulePath.match(/[\\/]node_modules[\\/](react[-\\/]|scheduler[\\/])/)
+      ) {
+        // /Users/path/to/expo/node_modules/react/index.js ./cjs/react.production.min.js
+        // /Users/path/to/expo/node_modules/react/jsx-dev-runtime.js ./cjs/react-jsx-dev-runtime.production.min.js
+        // /Users/path/to/expo/node_modules/react-is/index.js ./cjs/react-is.production.min.js
+        // /Users/path/to/expo/node_modules/react-refresh/runtime.js ./cjs/react-refresh-runtime.production.min.js
+        // /Users/path/to/expo/node_modules/react-native/node_modules/scheduler/index.native.js ./cjs/scheduler.native.production.min.js
+        // /Users/path/to/expo/node_modules/react-native/node_modules/react-is/index.js ./cjs/react-is.production.min.js
+        return {
+          type: 'empty',
+        };
+      }
+      return null;
+    },
     // tsconfig paths
     (context: ResolutionContext, moduleName: string, platform: string | null) => {
       return (
