@@ -30,6 +30,11 @@ export function logLikeMetro(
         ? chalk.inverse.yellow
         : chalk.inverse.white;
 
+  // TODO: Remove this once API routes properly read from metro config
+  if (filterRequireCycle(data)) {
+    return;
+  }
+
   if (level === 'group') {
     groupStack.push(level);
   } else if (level === 'groupCollapsed') {
@@ -70,6 +75,15 @@ export function logLikeMetro(
       ...data
     );
   }
+}
+
+// TODO: Remove this once API routes properly read from metro config
+function filterRequireCycle(...data: any[]): boolean {
+  return data.some((d) =>
+    Array.isArray(d)
+      ? filterRequireCycle(d)
+      : d.includes('Require cycle') && d.includes('node_modules')
+  );
 }
 
 const escapedPathSep = path.sep === '\\' ? '\\\\' : path.sep;
