@@ -52,20 +52,8 @@ export function requireNativeViewManager<P>(viewName: string): React.ComponentTy
   const reactNativeViewName = `ViewManagerAdapter_${viewName}`;
   const ReactNativeComponent = requireCachedNativeComponent(reactNativeViewName);
 
-  class NativeComponent extends React.PureComponent<P> {
-    static displayName = viewName;
-
-    // This will be accessed from native when the prototype functions are called,
-    // in order to find the associated native view.
-    nativeTag: number | null = null;
-
-    componentDidMount(): void {
-      this.nativeTag = findNodeHandle(this);
-    }
-
-    render(): React.ReactNode {
-      return <ReactNativeComponent {...this.props} />;
-    }
+  const NativeComponent = React.forwardRef((props: P, ref: React.Ref<React.Component>) => {
+    return <ReactNativeComponent {...props} ref={ref} />;
   }
 
   try {
