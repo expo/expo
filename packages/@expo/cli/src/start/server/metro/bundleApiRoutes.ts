@@ -10,7 +10,7 @@ import { requireFileContentsWithMetro } from '../getStaticRenderFunctions';
 
 const debug = require('debug')('expo:api-routes') as typeof console.log;
 
-const pendingRouteOperations = new Map<string, Promise<string | null>>();
+const pendingRouteOperations = new Map<string, Promise<{ src: string; filename: string } | null>>();
 
 export type ApiRouteOptions = {
   mode?: string;
@@ -25,7 +25,7 @@ export async function bundleApiRoute(
   projectRoot: string,
   filepath: string,
   options: ApiRouteOptions
-): Promise<string | null | undefined> {
+): Promise<{ src: string; filename: string } | null | undefined> {
   if (pendingRouteOperations.has(filepath)) {
     return pendingRouteOperations.get(filepath);
   }
@@ -65,11 +65,6 @@ export async function bundleApiRoute(
   return route;
 }
 
-export async function rebundleApiRoute(
-  projectRoot: string,
-  filepath: string,
-  options: ApiRouteOptions
-) {
-  pendingRouteOperations.delete(filepath);
-  return bundleApiRoute(projectRoot, filepath, options);
+export async function invalidateApiRouteCache() {
+  pendingRouteOperations.clear();
 }

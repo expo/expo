@@ -82,7 +82,7 @@ class JavaScriptModuleObject(
     setter: JNIFunctionBody?
   )
 
-  external fun registerClass(name: String, classModule: JavaScriptModuleObject, takesOwner: Boolean, args: Int, desiredTypes: Array<ExpectedType>, body: JNIFunctionBody)
+  external fun registerClass(name: String, classModule: JavaScriptModuleObject, takesOwner: Boolean, ownerClass: Class<*>?, args: Int, desiredTypes: Array<ExpectedType>, body: JNIFunctionBody)
 
   external fun registerViewPrototype(viewPrototype: JavaScriptModuleObject)
 

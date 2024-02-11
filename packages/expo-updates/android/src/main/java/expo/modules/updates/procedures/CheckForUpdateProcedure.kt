@@ -11,7 +11,7 @@ import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.loader.UpdateDirective
 import expo.modules.updates.loader.UpdateResponse
 import expo.modules.updates.logging.UpdatesLogger
-import expo.modules.updates.manifest.EmbeddedManifest
+import expo.modules.updates.manifest.EmbeddedManifestUtils
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
 
@@ -25,11 +25,13 @@ class CheckForUpdateProcedure(
   private val launchedUpdate: UpdateEntity?,
   private val callback: (IUpdatesController.CheckForUpdateResult) -> Unit
 ) : StateMachineProcedure() {
+  override val loggerTimerLabel = "timer-check-for-update"
+
   override fun run(procedureContext: ProcedureContext) {
     procedureContext.processStateEvent(UpdatesStateEvent.Check())
 
     AsyncTask.execute {
-      val embeddedUpdate = EmbeddedManifest.get(context, updatesConfiguration)?.updateEntity
+      val embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, updatesConfiguration)?.updateEntity
       val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(
         databaseHolder.database,
         updatesConfiguration,
@@ -38,7 +40,6 @@ class CheckForUpdateProcedure(
       )
       databaseHolder.releaseDatabase()
       fileDownloader.downloadRemoteUpdate(
-        updatesConfiguration,
         extraHeaders,
         context,
         object : FileDownloader.RemoteUpdateDownloadCallback {
@@ -50,7 +51,7 @@ class CheckForUpdateProcedure(
 
           override fun onSuccess(updateResponse: UpdateResponse) {
             val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
-            val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
+            val update = updateResponse.manifestUpdateResponsePart?.update
 
             if (updateDirective != null) {
               when (updateDirective) {
@@ -112,7 +113,7 @@ class CheckForUpdateProcedure(
               }
             }
 
-            if (updateManifest == null) {
+            if (update == null) {
               callback(
                 IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(
                   LoaderTask.RemoteCheckResultNotAvailableReason.NO_UPDATE_AVAILABLE_ON_SERVER
@@ -126,8 +127,8 @@ class CheckForUpdateProcedure(
             if (launchedUpdate == null) {
               // this shouldn't ever happen, but if we don't have anything to compare
               // the new manifest to, let the user know an update is available
-              callback(IUpdatesController.CheckForUpdateResult.UpdateAvailable(updateManifest))
-              procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteWithUpdate(updateManifest.manifest.getRawJson()))
+              callback(IUpdatesController.CheckForUpdateResult.UpdateAvailable(update))
+              procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteWithUpdate(update.manifest.getRawJson()))
               procedureContext.onComplete()
               return
             }
@@ -135,7 +136,7 @@ class CheckForUpdateProcedure(
             var shouldLaunch = false
             var failedPreviously = false
             if (selectionPolicy.shouldLoadNewUpdate(
-                updateManifest.updateEntity,
+                update.updateEntity,
                 launchedUpdate,
                 updateResponse.responseHeaderData?.manifestFilters
               )
@@ -146,7 +147,7 @@ class CheckForUpdateProcedure(
               // We check to see if the new update is already in the DB, and if so,
               // only allow the update if it has had no launch failures.
               shouldLaunch = true
-              updateManifest.updateEntity?.let { updateEntity ->
+              update.updateEntity?.let { updateEntity ->
                 val storedUpdateEntity = databaseHolder.database.updateDao().loadUpdateWithId(
                   updateEntity.id
                 )
@@ -159,8 +160,8 @@ class CheckForUpdateProcedure(
               }
             }
             if (shouldLaunch) {
-              callback(IUpdatesController.CheckForUpdateResult.UpdateAvailable(updateManifest))
-              procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteWithUpdate(updateManifest.manifest.getRawJson()))
+              callback(IUpdatesController.CheckForUpdateResult.UpdateAvailable(update))
+              procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteWithUpdate(update.manifest.getRawJson()))
               procedureContext.onComplete()
               return
             } else {

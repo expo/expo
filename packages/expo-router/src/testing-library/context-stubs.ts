@@ -12,16 +12,23 @@ export type FileStub =
 
 export { requireContext };
 
+const validExtensions = ['.js', '.jsx', '.ts', '.tsx'];
+
 export function inMemoryContext(context: Record<string, FileStub>) {
   return Object.assign(
     function (id: string) {
-      id = id.replace(/^\.\//, '').replace(/\.js$/, '');
+      id = id.replace(/^\.\//, '').replace(/\.\w*$/, '');
       return typeof context[id] === 'function' ? { default: context[id] } : context[id];
     },
     {
-      keys: () => Object.keys(context).map((key) => './' + key + '.js'),
       resolve: (key: string) => key,
       id: '0',
+      keys: () =>
+        Object.keys(context).map((key) => {
+          const ext = path.extname(key);
+          key = key.replace(/^\.\//, '');
+          return validExtensions.includes(ext) ? `./${key}` : `./${key}.js`;
+        }),
     }
   );
 }

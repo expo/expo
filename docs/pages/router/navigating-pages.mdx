@@ -12,22 +12,22 @@ Expo Router uses "links" to move between pages in the app. This is conceptually 
 In the following example, there are two `<Link />` components which navigate to different routes.
 
 {/* prettier-ignore */}
-```js app/index.js
+```jsx app/index.js
 import { View } from 'react-native';
-/* @info Import the <b>Link</b> React component from <b>expo-router</b> */
+/* @info Import the <strong>Link</strong> React component from <strong>expo-router</strong> */
 import { Link } from 'expo-router';
 /* @end */
 
 export default function Page() {
   return (
     <View>
-      /* @info Tapping this will link to the <b>about</b> page */
+      /* @info Tapping this will link to the <strong>about</strong> page */
       <Link href="/about">About</Link>
-    /* @end */
-
-      /* @info Tapping this will navigate to the dynamic route <b>user/[id]</b> where <b>id=bacon</b> */
+      /* @end */
+      {/* ...other links */}
+      /* @info Tapping this will navigate to the dynamic route <strong>user/[id]</strong> where <strong>id=bacon</strong> */
       <Link href="/user/bacon">View user</Link>
-    /* @end */
+      /* @end */
     </View>
   );
 }
@@ -38,13 +38,13 @@ export default function Page() {
 The Link component wraps the children in a `<Text>` component by default, this is useful for accessibility but not always desired. You can customize the component by passing the `asChild` prop, which will forward all props to the first child of the `Link` component. The child component must support the `onPress` and `onClick` props, `href` and `role` will also be passed down.
 
 {/* prettier-ignore */}
-```js
+```jsx
 import { Pressable, Text } from "react-native";
 import { Link } from "expo-router";
 
 export default function Page() {
   return (
-    /* @info The <b>onPress</b> event that navigates to <b>/other</b> will be passed to <b>Pressable</b> */
+    /* @info The <strong>onPress</strong> event that navigates to <strong>/other</strong> will be passed to <strong>Pressable</strong> */
     <Link href="/other" asChild>
     /* @end */
       <Pressable>
@@ -55,6 +55,16 @@ export default function Page() {
 }
 ```
 
+## Understanding native navigation
+
+Expo Router uses a stack-based navigation approach. Each new route you navigate to gets added to a stack. If you navigate a route already in the stack, the stack unwinds back to that existing route.
+
+For example, when you navigate from `/feed` to `/profile`, the stack contains `/feed` and `/profile`. If you then navigate to `/settings`, the stack contains `/feed`, `/profile`, and `/settings`. If you then navigate back to `/feed`, the stack unwinds back to `/feed`.
+
+To navigate to a route without the stack unwinding, you can use the `push` prop on the `<Link>` component. This always pushes the route onto the stack, even if it already exists.
+
+In contrast, the `replace` method substitutes the current route in the navigation stack with a new one, effectively replacing the current screen with the new one without adding to the stack.
+
 ## Imperative navigation
 
 You may want to navigate from a global store when a user logs in or out. You can use the `router` object or `useRouter` hook to navigate imperatively (outside of React).
@@ -63,7 +73,7 @@ You may want to navigate from a global store when a user logs in or out. You can
 import { router } from 'expo-router';
 
 export function logout() {
-  /* @info Navigate to <b>/login</b> */
+  /* @info Navigate to <strong>/login</strong> */
   router.replace('/login');
   /* @end */
 }
@@ -71,8 +81,9 @@ export function logout() {
 
 The `router` object is immutable and contains the following functions:
 
-- **push**: `(href: Href) => void` Navigate to a route. You can provide a full path like **/profile/settings** or a relative path like **../settings**. Navigate to dynamic routes by passing an object like `{ pathname: 'profile', params: { id: '123' } }`.
-- **replace**: `(href: Href) => void` Same API as push but replaces the current route in the history instead of pushing a new one. This is useful for redirects.
+- **navigate**: `(href: Href) => void` Navigate to a route using the default behavior. You can provide a full path like **/profile/settings** or a relative path like **../settings**. Navigate to dynamic routes by passing an object like `{ pathname: 'profile', params: { id: '123' } }`.
+- **push**: `(href: Href) => void` Navigate to a route by always pushing onto the stack. You can provide a full path like **/profile/settings** or a relative path like **../settings**. Navigate to dynamic routes by passing an object like `{ pathname: 'profile', params: { id: '123' } }`.
+- **replace**: `(href: Href) => void` Navigate to a route by substituting the current route with a new one. This is useful for redirects.
 - **back**: `() => void` Navigate back to previous route.
 - **canGoBack**: `() => boolean` Returns `true` if a valid history stack exists and the `back()` function can pop back.
 - **setParams**: `(params: Record<string, string>) => void` Update the query params for the currently selected route.
@@ -82,8 +93,8 @@ The `router` object is immutable and contains the following functions:
 Dynamic routes and query parameters can be provided statically or with the convenience **Href** object.
 
 {/* prettier-ignore */}
-```js app/index.js
-/* @info Import the <b>Link</b> React component from <b>expo-router</b> */
+```jsx app/index.js
+/* @info Import the <strong>Link</strong> React component from <strong>expo-router</strong> */
 import { Link } from 'expo-router';
 /* @end */
 
@@ -92,7 +103,7 @@ export default function Page() {
     <View>
       <Link
         href={{
-          /* @info Navigate to <b>/user/bacon</b> */
+          /* @info Navigate to <strong>/user/bacon</strong> */
           pathname: "/user/[id]",
           params: { id: 'bacon' }
           /* @end */
@@ -104,30 +115,45 @@ export default function Page() {
 }
 ```
 
-## Replacing screens
+## Pushing screens
 
-By default, links "push" routes onto the navigation stack. It follows the same rules as [`navigation.navigate()`](https://reactnavigation.org/docs/navigating/#navigate-to-a-route-multiple-times). This means that the previous screen will be available when the user navigates back. You can use the `replace` prop to replace the current screen instead of pushing a new one.
+By default, links `navigate` to the nearest route in the navigation stack, either by pushing a new route or unwinding to an existing route. You can use the `push` prop to always push the route onto the stack.
 
 {/* prettier-ignore */}
-```js app/index.js
+```jsx app/index.js
 import { Link } from 'expo-router';
 
 export default function Page() {
   return (
     <View>
-      <Link
-        /* @info Navigate to <b>/feed</b> without adding it to the stack. */
-        replace
+      /* @info Navigate to <strong>/feed</strong> and always add it to the stack. */
+      <Link push href="/feed">Login</Link>
       /* @end */
-        href="/feed">
-        Login
-      </Link>
     </View>
   );
 }
 ```
 
-Use **router.replace()** to replace the current screen imperatively.
+## Replacing screens
+
+By default, links "push" routes onto the navigation stack. It follows the same rules as [`navigation.navigate()`](https://reactnavigation.org/docs/navigating/#navigate-to-a-route-multiple-times). This means that the previous screen will be available when the user navigates back. You can use the `replace` prop to replace the current screen instead of pushing a new one.
+
+{/* prettier-ignore */}
+```jsx app/index.js
+import { Link } from 'expo-router';
+
+export default function Page() {
+  return (
+    <View>
+      /* @info Navigate to <strong>/feed</strong> without adding it to the stack. */
+      <Link replace href="/feed">Login</Link>
+      /* @end */
+    </View>
+  );
+}
+```
+
+Use `router.replace()` to replace the current screen imperatively.
 
 Native navigation does not always support `replace`. For example on Twitter, you wouldn't be able to "replace" directly from a profile to a tweet, this is because the UI requires a back button to return to the feed or other top-level tab screen. In this case, replace would switch to the feed tab, and push the tweet route on top of it, or if you were on a different tweet inside the feed tab, it would replace the current tweet with the new tweet. This exact behavior can be obtained in Expo Router by using [`unstable_settings`](/router/advanced/router-settings).
 

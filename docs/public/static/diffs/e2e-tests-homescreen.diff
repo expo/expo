@@ -1,7 +1,7 @@
-diff --git a/e2e/homeScreen.e2e.js b/e2e/homeScreen.e2e.js
+diff --git a/e2e/homeScreen.test.js b/e2e/homeScreen.test.js
 index e28acfa..c65e90c 100644
---- a/e2e/homeScreen.e2e.js
-+++ b/e2e/homeScreen.e2e.js
+--- a/e2e/homeScreen.test.js
++++ b/e2e/homeScreen.test.js
 @@ -8,7 +8,7 @@ describe('Home screen', () => {
    });
 

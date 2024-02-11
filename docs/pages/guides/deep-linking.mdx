@@ -223,7 +223,7 @@ Implementing deep links on Android (without a custom URL scheme) is somewhat sim
 
 It may be desirable for links to your domain to always open your app (without presenting the user a dialog where they can choose the browser or a different handler). You can implement this with Android App Links, which use a similar verification process as Universal Links on iOS.
 
-Create a JSON file for the website verification (a.k.a. [digital asset links](https://developers.google.com/digital-asset-links/v1/getting-started) file) at **public/.well-known/assetlinks.json** (or **web/.well-known/assetlinks.json** for legacy Expo webpack websites), and collect the following information:
+Create a JSON file for the website verification (also known as [digital asset links](https://developers.google.com/digital-asset-links/v1/getting-started) file) at **public/.well-known/assetlinks.json** (or **web/.well-known/assetlinks.json** for legacy Expo webpack websites), and collect the following information:
 
 - `package_name`: The Android [application ID](/versions/latest/config/app/#package) of your app (for example, `com.bacon.app`). This can be found in the **app.json** file under `expo.android.package`.
 - `sha256_cert_fingerprints`: The SHA256 fingerprints of your app's signing certificate. This can be obtained in one of two ways:
@@ -246,7 +246,7 @@ Create a JSON file for the website verification (a.k.a. [digital asset links](ht
 ]
 ```
 
-Installing the native app on a device will trigger the [Android app verification](https://developer.android.com/training/app-links/verify-android-applinks#web-assoc) process, which can take up to 20 seconds.
+Installing the native app on a device will trigger the [Android app verification](https://developer.android.com/training/app-links/verify-android-applinks#web-assoc) process, which can take up to 20 seconds. Once you have got your app opened, move to the [Handling links into your app](/guides/linking/#handling-links) section for details on how to handle the inbound link and show the user the content they requested.
 
 <ConfigReactNative title="Manual native configuration">
 
@@ -423,6 +423,6 @@ An example of this is Gmail which strips the `href` property from the links of m
 
 Instead of linking to `example://path/into/app`, you could link to `https://example.com/redirect-to-app.html` and `redirect-to-app.html` would contain the following code:
 
-```js
+```html
 <script>window.location.replace("example://path/into/app");</script>
 ```

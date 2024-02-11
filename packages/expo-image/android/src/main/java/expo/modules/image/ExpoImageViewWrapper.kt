@@ -26,11 +26,13 @@ import expo.modules.image.events.OkHttpProgressListener
 import expo.modules.image.okhttp.GlideUrlWrapper
 import expo.modules.image.records.CachePolicy
 import expo.modules.image.records.ContentPosition
+import expo.modules.image.records.DecodeFormat
 import expo.modules.image.records.ImageErrorEvent
 import expo.modules.image.records.ImageLoadEvent
 import expo.modules.image.records.ImageProgressEvent
 import expo.modules.image.records.ImageTransition
 import expo.modules.image.records.SourceMap
+import expo.modules.image.svg.SVGPictureDrawable
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.tracing.beginAsyncTraceBlock
 import expo.modules.kotlin.tracing.trace
@@ -127,7 +129,12 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   internal var tintColor: Int? = null
     set(value) {
       field = value
-      activeView.setTintColor(value)
+      // To apply the tint color to the SVG, we need to recreate the drawable.
+      if (activeView.drawable is SVGPictureDrawable) {
+        shouldRerender = true
+      } else {
+        activeView.setTintColor(value)
+      }
     }
 
   internal var isFocusableProp: Boolean = false
@@ -155,6 +162,12 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     }
 
   internal var allowDownscaling: Boolean = true
+    set(value) {
+      field = value
+      shouldRerender = true
+    }
+
+  internal var decodeFormat: DecodeFormat = DecodeFormat.ARGB_8888
     set(value) {
       field = value
       shouldRerender = true
@@ -506,10 +519,16 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       }
       newTarget.hasSource = sourceToLoad != null
 
-      val downsampleStrategy = if (allowDownscaling) {
+      val downsampleStrategy = if (!allowDownscaling) {
+        DownsampleStrategy.NONE
+      } else if (
+        contentFit != ContentFit.Fill &&
+        contentFit != ContentFit.None
+      ) {
         ContentFitDownsampleStrategy(newTarget, contentFit)
       } else {
-        DownsampleStrategy.NONE
+        // it won't downscale the image if the image is smaller than hardware bitmap size limit
+        SafeDownsampleStrategy(decodeFormat)
       }
 
       val request = requestManager
@@ -534,6 +553,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
         .downsample(downsampleStrategy)
         .addListener(GlideRequestListener(WeakReference(this)))
         .encodeQuality(100)
+        .format(decodeFormat.toGlideFormat())
         .apply(propOptions)
 
       tintColor?.let {

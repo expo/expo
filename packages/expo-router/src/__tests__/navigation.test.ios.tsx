@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import Constants from 'expo-constants';
 import React, { Text } from 'react-native';
 
 import {
@@ -552,16 +551,43 @@ it('supports multi-level 404s', async () => {
   renderRouter({
     index: () => <Text>found</Text>,
     '+not-found': () => <Text>404</Text>,
+    'nested/+not-found': () => <Text>Nested 404</Text>,
   });
 
-  expect(screen).toHavePathname('/');
+  expect(screen).toHavePathnameWithParams('/');
   expect(await screen.findByText('found')).toBeOnTheScreen();
 
   act(() => router.push('/123'));
   expect(await screen.findByText('404')).toBeOnTheScreen();
+  expect(screen).toHavePathname('/123');
+  expect(screen).toHaveSearchParams({
+    'not-found': ['123'],
+  });
 
-  act(() => router.push('/123/456'));
+  act(() => router.push('/123/456?test=true'));
   expect(await screen.findByText('404')).toBeOnTheScreen();
+  // Should only have `test` and not include `not-found`
+  expect(screen).toHavePathnameWithParams('/123/456?test=true');
+  expect(screen).toHaveSearchParams({
+    test: 'true',
+    'not-found': ['123', '456'],
+  });
+
+  act(() => router.push('/nested/123?test=true'));
+  expect(await screen.findByText('Nested 404')).toBeOnTheScreen();
+  expect(screen).toHavePathnameWithParams('/nested/123?test=true');
+  expect(screen).toHaveSearchParams({
+    test: 'true',
+    'not-found': ['123'],
+  });
+
+  act(() => router.push('/nested/123/456?test=true'));
+  expect(await screen.findByText('Nested 404')).toBeOnTheScreen();
+  expect(screen).toHavePathnameWithParams('/nested/123/456?test=true');
+  expect(screen).toHaveSearchParams({
+    test: 'true',
+    'not-found': ['123', '456'],
+  });
 });
 
 it('supports dynamic 404s next to dynamic routes', async () => {
@@ -622,25 +648,12 @@ it('can deep link, pop back, and move around with initialRouteName in root layou
   expect(screen).toHavePathname('/a/b');
 });
 
-jest.mock('expo-constants', () => ({
-  __esModule: true,
-  ExecutionEnvironment: jest.requireActual('expo-constants').ExecutionEnvironment,
-  default: {
-    expoConfig: {},
-  },
-}));
-
 afterEach(() => {
-  Constants.expoConfig!.experiments = undefined;
+  delete process.env.EXPO_BASE_URL;
 });
 
 it('respects baseUrl', async () => {
-  // @ts-expect-error
-  Constants.expoConfig = {
-    experiments: {
-      baseUrl: '/one/two',
-    },
-  };
+  process.env.EXPO_BASE_URL = '/one/two';
 
   renderRouter({
     index: function Index() {
@@ -686,22 +699,18 @@ it('can replace across groups', async () => {
 
   expect(screen).toHavePathname('/');
 
-  act(() => router.push('/two/screen'));
-  expect(screen).toHavePathname('/two/screen');
-  expect(screen.getByTestId('two/screen')).toBeOnTheScreen();
-
+  // Go to one
   act(() => router.push('/one/screen'));
   expect(screen).toHavePathname('/one/screen');
   expect(screen.getByTestId('one/screen')).toBeOnTheScreen();
 
-  // Should replace at the top Tabs
-  act(() => router.replace('/two/screen'));
+  // Push to two
+  act(() => router.push('/two/screen'));
   expect(screen).toHavePathname('/two/screen');
   expect(screen.getByTestId('two/screen')).toBeOnTheScreen();
 
-  act(() => router.back());
-
-  act(() => router.push('/one/screen'));
+  // Replace with one. This will create a history of ['one', 'one']
+  act(() => router.replace('/one/screen'));
   expect(screen).toHavePathname('/one/screen');
   expect(screen.getByTestId('one/screen')).toBeOnTheScreen();
 
@@ -744,11 +753,7 @@ it('can push & replace with nested Slots', async () => {
     'one/index': () => <Text testID="one" />,
   });
 
-  expect(screen).toHavePathname('/');
-  expect(screen.getByTestId('index')).toBeOnTheScreen();
-
   // Push
-
   act(() => router.push('/one'));
   expect(screen).toHavePathname('/one');
   expect(screen.getByTestId('one')).toBeOnTheScreen();
@@ -758,13 +763,49 @@ it('can push & replace with nested Slots', async () => {
   expect(screen.getByTestId('index')).toBeOnTheScreen();
 
   // Replace
-
   act(() => router.replace('/one'));
   expect(screen).toHavePathname('/one');
   expect(screen.getByTestId('one')).toBeOnTheScreen();
 
   act(() => router.replace('/'));
   expect(screen).toHavePathname('/');
+});
+
+it('can push with top-level catch-all route', () => {
+  renderRouter({
+    '[...all]': () => <Text testID="index" />,
+  });
+
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('index')).toBeOnTheScreen();
+
+  // // If we push once and go back, we are back to index
+  act(() => router.push('/test'));
+  expect(screen.getByTestId('index')).toBeOnTheScreen();
+});
+
+it('can push the same route multiple times', () => {
+  renderRouter({
+    index: () => <Text testID="index" />,
+    test: () => <Text testID="test" />,
+  });
+
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('index')).toBeOnTheScreen();
+
+  // // If we push once and go back, we are back to index
+  act(() => router.push('/test'));
+  expect(screen.getByTestId('test')).toBeOnTheScreen();
+  act(() => router.back());
+  expect(screen.getByTestId('index')).toBeOnTheScreen();
+
+  // If we push twice we will need to go back twice
+  act(() => router.push('/test'));
+  act(() => router.push('/test'));
+  expect(screen.getByTestId('test')).toBeOnTheScreen();
+  act(() => router.back());
+  expect(screen.getByTestId('test')).toBeOnTheScreen();
+  act(() => router.back());
   expect(screen.getByTestId('index')).toBeOnTheScreen();
 });
 
@@ -785,8 +826,8 @@ it('can push relative links from index routes', async () => {
   expect(screen.getByTestId('two')).toBeOnTheScreen();
 
   act(() => router.push('./bar'));
-  // expect(screen.getByTestId('three')).toBeOnTheScreen();
-  // expect(screen).toHavePathname('/test/bar');
+  expect(screen.getByTestId('three')).toBeOnTheScreen();
+  expect(screen).toHavePathname('/test/bar');
 });
 
 it('can navigation to a relative route without losing path params', async () => {

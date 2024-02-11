@@ -33,26 +33,13 @@ class FileDownloaderTest {
   }
 
   @Test
-  fun testCacheControl_LegacyManifest() {
-    val configMap = mapOf<String, Any>(
-      "updateUrl" to Uri.parse("https://exp.host/@test/test"),
-      "runtimeVersion" to "1.0",
-      "usesLegacyManifest" to true
-    )
-    val config = UpdatesConfiguration(null, configMap)
-    val actual = FileDownloader.createRequestForRemoteUpdate(config, null, context)
-    Assert.assertNull(actual.header("Cache-Control"))
-  }
-
-  @Test
-  fun testCacheControl_NewManifest() {
+  fun testCacheControl() {
     val configMap = mapOf<String, Any>(
       "updateUrl" to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
-      "runtimeVersion" to "1.0",
-      "usesLegacyManifest" to false
+      "runtimeVersion" to "1.0"
     )
     val config = UpdatesConfiguration(null, configMap)
-    val actual = FileDownloader.createRequestForRemoteUpdate(config, null, context)
+    val actual = FileDownloader.createRequestForRemoteUpdate(null, config, context)
     Assert.assertNull(actual.header("Cache-Control"))
   }
 
@@ -61,7 +48,7 @@ class FileDownloaderTest {
   fun testExtraHeaders_ObjectTypes() {
     val configMap = mapOf<String, Any>(
       "updateUrl" to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
-      "runtimeVersion" to "1.0",
+      "runtimeVersion" to "1.0"
 
     )
     val config = UpdatesConfiguration(null, configMap)
@@ -73,7 +60,7 @@ class FileDownloaderTest {
     }
 
     // manifest extraHeaders should have their values coerced to strings
-    val actual = FileDownloader.createRequestForRemoteUpdate(config, extraHeaders, context)
+    val actual = FileDownloader.createRequestForRemoteUpdate(extraHeaders, config, context)
     Assert.assertEquals("test", actual.header("expo-string"))
     Assert.assertEquals("47.5", actual.header("expo-number"))
     Assert.assertEquals("true", actual.header("expo-boolean"))
@@ -97,7 +84,7 @@ class FileDownloaderTest {
     val extraHeaders = JSONObject()
     extraHeaders.put("expo-platform", "ios")
 
-    val actual = FileDownloader.createRequestForRemoteUpdate(config, extraHeaders, context)
+    val actual = FileDownloader.createRequestForRemoteUpdate(extraHeaders, config, context)
     Assert.assertEquals("android", actual.header("expo-platform"))
     Assert.assertEquals("custom", actual.header("expo-updates-environment"))
   }
@@ -131,7 +118,7 @@ class FileDownloaderTest {
   fun testAssetExtraHeaders_ObjectTypes() {
     val configMap = mapOf<String, Any>(
       "updateUrl" to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
-      "runtimeVersion" to "1.0",
+      "runtimeVersion" to "1.0"
     )
 
     val config = UpdatesConfiguration(null, configMap)
@@ -195,7 +182,7 @@ class FileDownloaderTest {
   fun test_downloadAsset_mismatchedAssetHash() {
     val configMap = mapOf<String, Any>(
       UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
-      UpdatesConfiguration.UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY to "1.0",
+      UpdatesConfiguration.UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY to "1.0"
     )
 
     val config = UpdatesConfiguration(null, configMap)
@@ -206,7 +193,7 @@ class FileDownloaderTest {
       expectedHash = "badhash"
     }
 
-    val client = mockk<OkHttpClient>() {
+    val client = mockk<OkHttpClient> {
       every { newCall(any()) } returns mockk {
         every { enqueue(any()) } answers {
           firstArg<Callback>().onResponse(
@@ -223,8 +210,10 @@ class FileDownloaderTest {
     var error: Exception? = null
     var didSucceed = false
 
-    FileDownloader(context, client).downloadAsset(
-      assetEntity, File(context.cacheDir, "test"), config, context,
+    FileDownloader(context, config, client).downloadAsset(
+      assetEntity,
+      File(context.cacheDir, "test"),
+      context,
       object : FileDownloader.AssetDownloadCallback {
         override fun onFailure(e: Exception, assetEntity: AssetEntity) {
           error = e
@@ -244,7 +233,7 @@ class FileDownloaderTest {
   fun test_downloadAsset_nullExpectedAssetHash() {
     val configMap = mapOf<String, Any>(
       UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
-      UpdatesConfiguration.UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY to "1.0",
+      UpdatesConfiguration.UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY to "1.0"
     )
 
     val config = UpdatesConfiguration(null, configMap)
@@ -254,7 +243,7 @@ class FileDownloaderTest {
       extraRequestHeaders = JSONObject().apply { put("expo-platform", "ios") }
     }
 
-    val client = mockk<OkHttpClient>() {
+    val client = mockk<OkHttpClient> {
       every { newCall(any()) } returns mockk {
         every { enqueue(any()) } answers {
           firstArg<Callback>().onResponse(
@@ -271,8 +260,10 @@ class FileDownloaderTest {
     var error: Exception? = null
     var didSucceed = false
 
-    FileDownloader(context, client).downloadAsset(
-      assetEntity, File(context.cacheDir, "test"), config, context,
+    FileDownloader(context, config, client).downloadAsset(
+      assetEntity,
+      File(context.cacheDir, "test"),
+      context,
       object : FileDownloader.AssetDownloadCallback {
         override fun onFailure(e: Exception, assetEntity: AssetEntity) {
           error = e

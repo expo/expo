@@ -1,12 +1,14 @@
 import { css } from '@emotion/react';
 import { shadows, theme, typography } from '@expo/styleguide';
 import { borderRadius, breakpoints, spacing } from '@expo/styleguide-base';
-import type { ComponentProps, ComponentType } from 'react';
+import type { ComponentType } from 'react';
 import { Fragment } from 'react';
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkSupsub from 'remark-supersub';
 
 import { APIDataType } from './APIDataType';
+import { ELEMENT_SPACING, STYLES_OPTIONAL } from './styles';
 
 import { HeadingType } from '~/common/headingManager';
 import { Code as PrismCodeBlock } from '~/components/base/code';
@@ -56,12 +58,13 @@ export enum TypeDocKind {
   Method = 2048,
   Parameter = 32768,
   Accessor = 262144,
-  TypeAlias = 4194304,
+  TypeAlias = 2097152,
+  TypeAlias_Legacy = 4194304,
 }
 
 export const DEFAULT_BASE_NESTING_LEVEL = 2;
 
-export type MDComponents = ComponentProps<typeof ReactMarkdown>['components'];
+export type MDComponents = Components;
 
 const getInvalidLinkMessage = (href: string) =>
   `Using "../" when linking other packages in doc comments produce a broken link! Please use "./" instead. Problematic link:\n\t${href}`;
@@ -99,7 +102,8 @@ export const mdComponents: MDComponents = {
   thead: ({ children }) => <TableHead>{children}</TableHead>,
   tr: ({ children }) => <Row>{children}</Row>,
   th: ({ children }) => <HeaderCell>{children}</HeaderCell>,
-  td: ({ children }) => <Cell>{children}</Cell>,
+  sup: ({ children }) => <sup>{children}</sup>,
+  sub: ({ children }) => <sub>{children}</sub>,
 };
 
 export const mdComponentsNoValidation: MDComponents = {
@@ -142,7 +146,7 @@ const omittableTypes = [
 ];
 
 /**
- * Map of internal names/type names that should be replaced with something more developer-friendly.
+ * Map of internal entity/type names that should be replaced with something more developer-friendly.
  */
 const replaceableTypes: Partial<Record<string, string>> = {
   ForwardRefExoticComponent: 'Component',
@@ -151,6 +155,9 @@ const replaceableTypes: Partial<Record<string, string>> = {
   LocationActivityType: 'ActivityType',
 };
 
+/**
+ * Map of entity/type names that should be linked to user specified source, internal or external.
+ */
 const hardcodedTypeLinks: Record<string, string> = {
   AsyncIterableIterator:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator',
@@ -164,6 +171,7 @@ const hardcodedTypeLinks: Record<string, string> = {
   Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
   ExpoConfig:
     'https://github.com/expo/expo/blob/main/packages/%40expo/config-types/src/ExpoConfig.ts',
+  ExpoUpdatesManifest: '/versions/latest/sdk/updates/#expoupdatesmanifest',
   File: 'https://developer.mozilla.org/en-US/docs/Web/API/File',
   FileList: 'https://developer.mozilla.org/en-US/docs/Web/API/FileList',
   IterableIterator:
@@ -177,6 +185,7 @@ const hardcodedTypeLinks: Record<string, string> = {
   Promise:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
   ReactNode: 'https://reactnative.dev/docs/react-node',
+  ShareOptions: 'https://reactnative.dev/docs/share#share',
   SyntheticEvent: 'https://react.dev/reference/react-dom/components/common#react-event-object',
   View: 'https://reactnative.dev/docs/view',
   ViewProps: 'https://reactnative.dev/docs/view#props',
@@ -208,7 +217,7 @@ const renderUnion = (types: TypeDefinitionData[]) =>
     .map((valueToRender, index) => (
       <span key={`union-type-${index}`}>
         {valueToRender}
-        {index + 1 !== types.length && ' | '}
+        {index + 1 !== types.length && <span className="text-quaternary"> | </span>}
       </span>
     ));
 
@@ -241,28 +250,33 @@ export const resolveTypeName = (
           if (name === 'Record' || name === 'React.ComponentProps') {
             return (
               <>
-                {name}&lt;
+                {name}
+                <span className="text-quaternary">{'<'}</span>
                 {typeArguments.map((type, index) => (
                   <span key={`record-type-${index}`}>
                     {resolveTypeName(type)}
-                    {index !== typeArguments.length - 1 ? ', ' : null}
+                    {index !== typeArguments.length - 1 ? (
+                      <span className="text-quaternary">, </span>
+                    ) : null}
                   </span>
                 ))}
-                &gt;
+                <span className="text-quaternary">{'>'}</span>
               </>
             );
           } else {
             return (
               <>
                 {renderWithLink(name)}
-                &lt;
+                <span className="text-quaternary">{'<'}</span>
                 {typeArguments.map((type, index) => (
                   <span key={`${name}-nested-type-${index}`}>
                     {resolveTypeName(type)}
-                    {index !== typeArguments.length - 1 ? ', ' : null}
+                    {index !== typeArguments.length - 1 ? (
+                      <span className="text-quaternary">, </span>
+                    ) : null}
                   </span>
                 ))}
-                &gt;
+                <span className="text-quaternary">{'>'}</span>
               </>
             );
           }
@@ -301,27 +315,29 @@ export const resolveTypeName = (
       if (baseSignature?.parameters?.length) {
         return (
           <>
-            (
+            <span className="text-quaternary">(</span>
             {baseSignature.parameters?.map((param, index) => (
               <span key={`param-${index}-${param.name}`}>
-                {param.name}: {resolveTypeName(param.type)}
+                {param.name}
+                <span className="text-quaternary">:</span> {resolveTypeName(param.type)}
                 {index + 1 !== baseSignature.parameters?.length && ', '}
               </span>
             ))}
-            ) {'=>'} {resolveTypeName(baseSignature.type)}
+            <span className="text-quaternary">)</span>{' '}
+            <span className="text-quaternary">{'=>'}</span> {resolveTypeName(baseSignature.type)}
           </>
         );
       } else {
         return (
           <>
-            {'() =>'} {resolveTypeName(baseSignature.type)}
+            <span className="text-quaternary">{'() =>'}</span> {resolveTypeName(baseSignature.type)}
           </>
         );
       }
     } else if (type === 'reflection' && declaration?.children) {
       return (
         <>
-          {'{\n'}
+          <span className="text-quaternary">{'{\n'}</span>
           {declaration?.children.map((child: PropData, i) => (
             <span key={`reflection-${name}-${i}`}>
               {'  '}
@@ -331,7 +347,7 @@ export const resolveTypeName = (
               {'\n'}
             </span>
           ))}
-          {'}'}
+          <span className="text-quaternary">{'}'}</span>
         </>
       );
     } else if (type === 'tuple' && elements) {
@@ -467,7 +483,7 @@ export const listParams = (parameters: MethodParamData[]) =>
 export const renderDefaultValue = (defaultValue?: string) =>
   defaultValue && defaultValue !== '...' ? (
     <div css={defaultValueContainerStyle}>
-      <DEMI>Default:</DEMI> <CODE>{defaultValue}</CODE>
+      <DEMI theme="secondary">Default:</DEMI> <CODE className="!text-[90%]">{defaultValue}</CODE>
     </div>
   ) : undefined;
 
@@ -479,17 +495,19 @@ export const renderTypeOrSignatureType = (
   if (signatures && signatures.length) {
     return (
       <CODE key={`signature-type-${signatures[0].name}`}>
-        (
+        <span className="text-quaternary">(</span>
         {signatures?.map(
           ({ parameters }) =>
             parameters?.map(param => (
               <span key={`signature-param-${param.name}`}>
                 {param.name}
-                {param.flags?.isOptional && '?'}: {resolveTypeName(param.type)}
+                {param.flags?.isOptional && '?'}
+                <span className="text-quaternary">:</span> {resolveTypeName(param.type)}
               </span>
             ))
         )}
-        ) =&gt; {signatures[0].type ? resolveTypeName(signatures[0].type) : 'void'}
+        <span className="text-quaternary">{') =>'}</span>{' '}
+        {signatures[0].type ? resolveTypeName(signatures[0].type) : 'void'}
       </CODE>
     );
   } else if (type) {
@@ -505,7 +523,7 @@ export const renderFlags = (flags?: TypePropertyDataFlags, defaultValue?: string
   (flags?.isOptional || defaultValue) && (
     <>
       <br />
-      <span css={STYLES_OPTIONAL}>(optional)</span>
+      <span className={STYLES_OPTIONAL}>(optional)</span>
     </>
   );
 
@@ -514,7 +532,7 @@ export const renderIndexSignature = (kind: TypeDocKind) =>
     <>
       <br />
       <A
-        css={STYLES_OPTIONAL}
+        className={STYLES_OPTIONAL}
         href="https://www.typescriptlang.org/docs/handbook/2/objects.html#index-signatures"
         openInNewTab
         isStyled>
@@ -599,13 +617,13 @@ export const CommentTextBlock = ({
 }: CommentTextBlockProps) => {
   const content = comment && comment.summary ? getCommentContent(comment.summary) : undefined;
 
-  if (emptyCommentFallback && (!comment || !content || !content.length)) {
-    return <>{emptyCommentFallback}</>;
+  if (emptyCommentFallback && (!content || !content.length)) {
+    return <span className="text-quaternary">{emptyCommentFallback}</span>;
   }
 
   const paramTags = content ? getParamTags(content) : undefined;
   const parsedContent = (
-    <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm]}>
+    <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm, remarkSupsub]}>
       {parseCommentContent(paramTags ? content?.replaceAll(PARAM_TAGS_REGEX, '') : content)}
     </ReactMarkdown>
   );
@@ -614,20 +632,22 @@ export const CommentTextBlock = ({
   const exampleText = examples?.map((example, index) => (
     <Fragment key={'example-' + index}>
       {inlineHeaders ? (
-        <div css={STYLES_EXAMPLE_IN_TABLE}>
-          <BOLD>Example</BOLD>
-        </div>
+        <DEMI theme="secondary" className="my-2">
+          Example
+        </DEMI>
       ) : (
         <BoxSectionHeader text="Example" />
       )}
-      <ReactMarkdown components={mdComponents}>{getCommentContent(example.content)}</ReactMarkdown>
+      <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm, remarkSupsub]}>
+        {getCommentContent(example.content)}
+      </ReactMarkdown>
     </Fragment>
   ));
 
   const see = getTagData('see', comment);
   const seeText = see && (
     <Callout>
-      <ReactMarkdown components={mdComponents}>
+      <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm, remarkSupsub]}>
         {`**See:** ` + getCommentContent(see.content)}
       </ReactMarkdown>
     </Callout>
@@ -637,12 +657,10 @@ export const CommentTextBlock = ({
 
   return (
     <>
-      {includePlatforms && hasPlatforms && (
-        <APISectionPlatformTags comment={comment} prefix="Only for:" />
-      )}
+      {includePlatforms && hasPlatforms && <APISectionPlatformTags comment={comment} />}
       {paramTags && (
         <>
-          <BOLD>Only for:&ensp;</BOLD>
+          <DEMI theme="secondary">Only for:&ensp;</DEMI>
           {paramTags.map(tag => (
             <Tag key={tag} name={tag.split('-')[1]} />
           ))}
@@ -714,7 +732,7 @@ export const STYLES_APIBOX = css({
 
 export const STYLES_APIBOX_NESTED = css({
   boxShadow: 'none',
-  marginBottom: spacing[4],
+  marginBottom: spacing[5],
   padding: `${spacing[4]}px ${spacing[5]}px 0`,
 
   h4: {
@@ -731,12 +749,10 @@ export const STYLES_APIBOX_WRAPPER = css({
   },
 });
 
-export const STYLE_APIBOX_NO_SPACING = css({ marginBottom: -spacing[5] });
-
 export const STYLES_NESTED_SECTION_HEADER = css({
   display: 'flex',
-  borderTop: `1px solid ${theme.border.default}`,
-  borderBottom: `1px solid ${theme.border.default}`,
+  borderTop: `1px solid ${theme.border.secondary}`,
+  borderBottom: `1px solid ${theme.border.secondary}`,
   margin: `${spacing[4]}px -${spacing[5]}px ${spacing[4]}px`,
   padding: `${spacing[2.5]}px ${spacing[5]}px`,
   backgroundColor: theme.background.subtle,
@@ -759,18 +775,6 @@ export const STYLES_NOT_EXPOSED_HEADER = css({
   },
 });
 
-export const STYLES_OPTIONAL = css({
-  color: theme.text.secondary,
-  fontSize: '90%',
-  paddingTop: 22,
-});
-
-export const STYLES_SECONDARY = css({
-  color: theme.text.secondary,
-  fontSize: '90%',
-  fontWeight: 600,
-});
-
 const defaultValueContainerStyle = css({
   marginTop: spacing[2],
   marginBottom: spacing[2],
@@ -779,9 +783,3 @@ const defaultValueContainerStyle = css({
     marginBottom: 0,
   },
 });
-
-const STYLES_EXAMPLE_IN_TABLE = css({
-  margin: `${spacing[2]}px 0`,
-});
-
-export const ELEMENT_SPACING = 'mb-4';

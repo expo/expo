@@ -1,5 +1,5 @@
 import { createPermissionHook } from 'expo-modules-core';
-import CameraManager from '../ExponentCameraManager';
+import CameraManager from '../ExpoCameraManager';
 export { default as CameraView } from './CameraView';
 // @needsAudit
 /**
@@ -64,6 +64,9 @@ export const useMicrophonePermissions = createPermissionHook({
     requestMethod: requestMicrophonePermissionsAsync,
 });
 export * from './Camera.types';
+/**
+ * @hidden
+ */
 export const Camera = {
     getCameraPermissionsAsync,
     requestCameraPermissionsAsync,

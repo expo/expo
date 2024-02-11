@@ -76,14 +76,6 @@
         "googleMobileAdsAppId": "ca-app-pub-3940256099942544~1458002511"
       }
     },
-    "web": {
-      "build": {
-        "babel": {
-          "root": "./",
-          "include": ["test-suite", "native-component-list", "bare-expo"]
-        }
-      }
-    },
     "assetBundlePatterns": [
       "assets/**",
       "node_modules/react-navigation/src/**/*.png",

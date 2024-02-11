@@ -4,11 +4,19 @@
 
 ### 🛠 Breaking changes
 
+- Removed Flipper support. ([#26581](https://github.com/expo/expo/pull/26581) by [@kudo](https://github.com/kudo))
+
 ### 🎉 New features
+
+- Added `useLegacyPackaging` property to instruct AGP to compress native libraries in the APK. ([#26779](https://github.com/expo/expo/pull/26779) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+### 📚 3rd party library updates
+
+- update semver from 7.5.3 to 7.5.4. ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
 
 ## 0.11.0 — 2023-11-14
 

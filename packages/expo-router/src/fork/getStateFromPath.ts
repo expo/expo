@@ -171,8 +171,8 @@ function assertConfigDuplicates(configs: RouteConfig[]) {
           const routeType = last?.startsWith(':')
             ? 'dynamic route'
             : last?.startsWith('*')
-            ? 'dynamic-rest route'
-            : 'route';
+              ? 'dynamic-rest route'
+              : 'route';
           throw new Error(
             `The ${routeType} pattern '${config.pattern || '/'}' resolves to both '${
               alpha.userReadableName

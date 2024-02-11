@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 12.8.2 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 12.8.1 - 2024-01-10
+
+### 🎉 New features
+
+- Added support for macOS platform. ([#26221](https://github.com/expo/expo/pull/26221) by [@tsapeta](https://github.com/tsapeta))
+
 ## 12.8.0 — 2023-11-14
 
 ### 🛠 Breaking changes

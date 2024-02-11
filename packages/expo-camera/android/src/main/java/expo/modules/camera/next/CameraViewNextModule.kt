@@ -81,8 +81,8 @@ class CameraViewNextModule : Module() {
     View(ExpoCameraView::class) {
       Events(cameraEvents)
 
-      Prop("type") { view, type: CameraType ->
-        view.lenFacing = type
+      Prop("facing") { view, facing: CameraType ->
+        view.lenFacing = facing
       }
 
       Prop("flashMode") { view, flashMode: FlashMode ->
@@ -117,11 +117,11 @@ class CameraViewNextModule : Module() {
         if (settings == null) {
           return@Prop
         }
-        view.setBarCodeScannerSettings(settings)
+        view.setBarcodeScannerSettings(settings)
       }
 
-      Prop("barcodeScannerEnabled") { view, barCodeScannerEnabled: Boolean? ->
-        view.setShouldScanBarcodes(barCodeScannerEnabled ?: false)
+      Prop("barcodeScannerEnabled") { view, enabled: Boolean? ->
+        view.setShouldScanBarcodes(enabled ?: false)
       }
 
       AsyncFunction("takePicture") { view: ExpoCameraView, options: PictureOptions, promise: Promise ->

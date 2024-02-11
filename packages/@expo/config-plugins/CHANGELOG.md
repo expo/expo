@@ -10,6 +10,36 @@
 
 ### 💡 Others
 
+- Remove classic updates SDK version and release channel. ([#26061](https://github.com/expo/expo/pull/26061), [#26065](https://github.com/expo/expo/pull/26065) by [@wschurman](https://github.com/wschurman))
+- [expo-updates] Remove unused methods. ([#26810](https://github.com/expo/expo/pull/26810) by [@wschurman](https://github.com/wschurman))
+
+### 📚 3rd party library updates
+
+- update semver from 7.5.3 to 7.5.4. ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
+
+## 7.8.4 - 2024-01-18
+
+### 💡 Others
+
+- Added a `finalized` mod that will run after all the other mods. ([#26413](https://github.com/expo/expo/pull/26413) by [@kudo](https://github.com/kudo))
+
+## 7.8.3 - 2024-01-05
+
+_This version does not introduce any user-facing changes._
+
+## 7.8.2 - 2023-12-19
+
+### 🐛 Bug fixes
+
+- Add missing `slugify` dependency. ([#26019](https://github.com/expo/expo/pull/26019) by [@byCedric](https://github.com/byCedric))
+
+## 7.8.1 — 2023-12-15
+
+### 🐛 Bug fixes
+
+- Fixed bug on mergeContents when tags have the same prefix. ([#25972](https://github.com/expo/expo/pull/25972) by [@alfonsocj](https://github.com/alfonsocj))
+- Separate out runtime version setting method for eas-cli. ([#25874](https://github.com/expo/expo/pull/25874) by [@wschurman](https://github.com/wschurman))
+
 ## 7.8.0 — 2023-12-12
 
 ### 🎉 New features

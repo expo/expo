@@ -33,7 +33,7 @@ We recommend making the following modifications to your codebase before beginnin
 
 Refactor screens to [use serializable top-level query parameters](https://reactnavigation.org/docs/params/#what-should-be-in-params). We recommend this in React Navigation as well.
 
-In Expo Router, search parameters can only serializable top-level values such as `number`, `boolean`, and `string`. React Navigation doesn't have the same restrictions, so users can sometimes pass invalid parameters like Functions, Objects, Maps, and so on.
+In Expo Router, search parameters can only serialize top-level values such as `number`, `boolean`, and `string`. React Navigation doesn't have the same restrictions, so users can sometimes pass invalid parameters like Functions, Objects, Maps, and so on.
 
 If your code has something similar to the below:
 
@@ -63,22 +63,21 @@ On web, returning `null` from the root will cause [static rendering](/router/ref
 
 ### Delete unused or managed code
 
-Expo Router automatically adds `react-native-gesture-handler` (when installed) and `react-native-safe-area-context` support.
+Expo Router automatically adds `react-native-safe-area-context` support.
 
 ```diff
-- import { GestureHandlerRootView } from 'react-native-gesture-handler';
 - import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function App() {
   return (
--    <GestureHandlerRootView style={{ flex: 1 }}>
--      <SafeAreaProvider>
-        <MyApp />
--      </SafeAreaProvider>
--    </GestureHandlerRootView>
+-    <SafeAreaProvider>
+      <MyApp />
+-    </SafeAreaProvider>
   )
 }
 ```
+
+Expo Router **does not** add `react-native-gesture-handler` (as of v3), so you'll have to add this yourself if you are using Gesture Handler or `<Drawer />` layout. Avoid using this package on web since it adds a lot of JavaScript that is often unused.
 
 ### Copy screens to the app directory
 
@@ -101,17 +100,15 @@ function HomeTabs() {
 
 function App() {
   return (
-    /* @info NavigationContainer is managed by Expo Router. */
+    // NavigationContainer is managed by Expo Router.
     <NavigationContainer
-      /* @end */
-
-      /* @info Delete the linking configuration, this is managed by Expo Router. */
       linking={
+        /* @info Delete the linking configuration, this is managed by Expo Router. */
         {
-          // ...
+          // ...linking configuration
         }
+        /* @end */
       }
-      /* @end */
     >
       <Stack.Navigator>
         /* @info Standard screens can be moved to files. */
@@ -120,13 +117,13 @@ function App() {
         <Stack.Screen name="Profile" component={Profile} />
         /* @info A screen that exports a navigator should be converted to a directory with a layout route. */
         <Stack.Screen
-          /* @end */
           name="Home"
           component={HomeTabs}
           options={{
             title: 'Home Screen',
           }}
         />
+          /* @end */
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -158,11 +155,11 @@ export default function RootLayout() {
     <Stack>
       <Stack.Screen
         name="(home)"
-        /* @info Options can be expressed using the Screen component on a navigator. This has the same types as React Navigation. */
-        options={{
-          title: 'Home Screen',
-        }}
-        /* @end */
+        options={
+          /* @info Options can be expressed using the Screen component on a navigator. This has the same types as React Navigation. */ {
+            title: 'Home Screen',
+          } /* @end */
+        }
       />
     </Stack>
   );
@@ -383,7 +380,7 @@ Use the [Head component](/router/reference/static-rendering#meta-tags) to set th
 
 #### `ref`
 
-Use the `useRootNavigation()` hook instead.
+Use the `useNavigationContainerRef()` hook instead.
 
 </Collapsible>
 
@@ -421,17 +418,14 @@ import { Navigator, usePathname, Slot, Link } from 'expo-router';
 
 export default function App() {
   return (
-    /* @info */
-    <Navigator router={TabRouter}>
-      /* @end */
+    /* @info */<Navigator router={TabRouter}>/* @end */
       <Header />
       <Slot />
     </Navigator>
   );
 }
 
-function Header() {
-  const { navigation, state, descriptors, router } = Navigator.useContext();
+function Header() {;
   const pathname = usePathname();
 
   return (
@@ -439,9 +433,7 @@ function Header() {
       <Link href="/">Home</Link>
       <Link
         href="/profile"
-        /* @info Use <code>pathname</code> to determine if the link is active. */
-        style={[pathname === '/profile' && { color: 'blue' }]}>
-        /* @end */
+        style={/* @info Use <code>pathname</code> to determine if the link is active. */[pathname === '/profile' && { color: 'blue' }]/* @end */}>
         Profile
       </Link>
       <Link href="/settings">Settings</Link>
@@ -499,10 +491,10 @@ export default function Screen() {
 
   return (
     <>
-      /* @hide ... */ /* @end */
-      <Button title='Reset' onPress={handleResetAction}>
+      {/* ...rest of the code */}
+      <Button title='Reset' onPress={handleResetAction} />
     </>
-  )
+  );
 }
 ```
 

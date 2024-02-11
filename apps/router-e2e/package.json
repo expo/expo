@@ -9,13 +9,11 @@
     "expo": "~50.0.0-alpha.0",
     "expo-router": "^3.0.0",
     "react": "18.2.0",
-    "react-native": "0.73.0"
+    "react-native": "0.73.4"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.16",
-    "expo-yarn-workspaces": "^2.0.0",
     "morgan": "^1.10.0",
-    "postcss": "^8.4.31",
     "tailwindcss": "^3.3.5",
     "tiny": "^0.0.10"
   },

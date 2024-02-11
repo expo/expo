@@ -5,13 +5,18 @@ sidebar_title: Create pages
 ---
 
 import { Tabs, Tab } from '~/ui/components/Tabs';
+import { FileTree } from '~/ui/components/FileTree';
 
 When a file is created in the **app** directory, it automatically becomes a route in the app. For example, the following files will create the following routes:
 
-- **app/index.js** matches `/`
-- **app/home.js** matches `/home`
-- **app/settings/index.js** matches `/settings`
-- **app/[user].js** matches dynamic paths like `/expo` or `/evanbacon`
+<FileTree
+  files={[
+    ['app/index.js', "matches '/'"],
+    ['app/home.js', "matches '/home'"],
+    ['app/[user].js', "matches dynamic paths like '/expo' or '/evanbacon'"],
+    ['app/settings/index.js', "matches '/settings'"],
+  ]}
+/>
 
 ## Pages
 
@@ -25,7 +30,7 @@ For example, create the **app** directory in your project and then create a file
 
     Render text on any platform with the `<Text>` component from React Native.
 
-    ```js app/index.js
+    ```jsx app/index.js
     import { Text } from 'react-native';
 
     export default function Page() {
@@ -39,7 +44,7 @@ For example, create the **app** directory in your project and then create a file
 
     Alternatively, you can write web-only React components such as `<div>`, `<p>`, and so on. However, these won't render on native platforms.
 
-    ```js app/index.js
+    ```jsx app/index.js
     export default function Page() {
       return <p>Home page</p>;
     }
@@ -69,7 +74,7 @@ Multiple slugs can be matched in a single route by using the rest syntax (`...`)
 Dynamic segments are accessible as [search parameters](/router/reference/search-parameters) in the page component.
 
 {/* prettier-ignore */}
-```js app/blog/[slug].js
+```jsx app/blog/[slug].js
 /* @info Import the <b>useLocalSearchParams</b> React hook */
 import { useLocalSearchParams } from 'expo-router';
 /* @end */

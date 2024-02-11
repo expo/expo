@@ -25,7 +25,7 @@ export const Checkbox = forwardRef(function Checkbox(
         data-label={label}
         disabled={disabled}
         className={mergeClasses(
-          'rounded-sm border-palette-gray8 bg-default transition-colors border w-4 h-4',
+          'rounded-sm border-palette-gray8 bg-default transition-colors border size-4',
           !disabled &&
             'focus-within:ring-palette-blue10 hocus:cursor-pointer hocus:border-palette-blue10 hocus:bg-palette-blue3',
           !disabled && 'dark:focus:ring-palette-blue8 dark:hocus:border-palette-blue8',

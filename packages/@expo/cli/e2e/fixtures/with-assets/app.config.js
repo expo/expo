@@ -7,7 +7,4 @@ module.exports = {
   ios: {
     bundleIdentifier: 'com.example.minimal',
   },
-  web: {
-    bundler: 'metro',
-  },
 };

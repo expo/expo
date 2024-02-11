@@ -65,7 +65,7 @@ export class DevelopmentSession {
       }
 
       if (this.url) {
-        debug(`Development session ping (runtime: ${runtime}, url: ${this.url})`);
+        // debug(`Development session ping (runtime: ${runtime}, url: ${this.url})`);
 
         await updateDevelopmentSessionAsync({
           url: this.url,

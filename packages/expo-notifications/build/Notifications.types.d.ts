@@ -168,9 +168,7 @@ export interface YearlyNotificationTrigger {
  */
 export interface FirebaseRemoteMessage {
     collapseKey: string | null;
-    data: {
-        [key: string]: string;
-    };
+    data: Record<string, string>;
     from: string | null;
     messageId: string | null;
     messageType: string | null;
@@ -462,9 +460,11 @@ export type NotificationContentInput = {
      */
     color?: string;
     /**
-     * If set to `true`, the notification cannot be dismissed by swipe. This setting defaults
-     * to `false` if not provided or is invalid. Corresponds directly do Android's `isOngoing` behavior.
-     * See [Android developer documentation](https://developer.android.com/reference/android/app/Notification.Builder#setOngoing(boolean))
+     * If set to `false`, the notification will not be automatically dismissed when clicked.
+     * The setting will be used when the value is not provided or is invalid is set to `true`, and the notification
+     * will be dismissed automatically anyway. Corresponds directly to Android's `setAutoCancel` behavior.
+     *
+     * See [Android developer documentation](https://developer.android.com/reference/android/app/Notification.Builder#setAutoCancel(boolean))
      * for more details.
      * @platform android
      */
@@ -475,12 +475,11 @@ export type NotificationContentInput = {
      */
     categoryIdentifier?: string;
     /**
-     * If set to `false`, the notification will not be automatically dismissed when clicked.
-     * the setting used when the value is not provided or is invalid is `true` (the notification
-     * will be dismissed automatically). Corresponds directly to Android's `setAutoCancel`
-     * behavior. In Firebase terms this property of a notification is called `sticky`.
+     * If set to `true`, the notification cannot be dismissed by swipe. This setting defaults
+     * to `false` if not provided or is invalid. Corresponds directly do Android's `isOngoing` behavior.
+     * In Firebase terms this property of a notification is called `sticky`.
      *
-     * See [Android developer documentation](https://developer.android.com/reference/android/app/Notification.Builder#setAutoCancel(boolean))
+     * See [Android developer documentation](https://developer.android.com/reference/android/app/Notification.Builder#setOngoing(boolean))
      * and [Firebase documentation](https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages#AndroidNotification.FIELDS.sticky)
      * for more details.
      * @platform android

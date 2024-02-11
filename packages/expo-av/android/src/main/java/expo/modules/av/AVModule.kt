@@ -20,6 +20,12 @@ class AVModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExponentAV")
 
+    Events(
+      "didUpdatePlaybackStatus",
+      "ExponentAV.onError",
+      "Expo.Recording.recorderUnloaded"
+    )
+
     AsyncFunction("setAudioIsEnabled") { value: Boolean ->
       avManager.setAudioIsEnabled(value)
     }

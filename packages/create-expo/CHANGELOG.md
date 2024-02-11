@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- Add support for GitHub URLs in `--template` option. ([#26554](https://github.com/expo/expo/pull/26554) by [@byCedric](https://github.com/byCedric))
+
 ### 🐛 Bug fixes
+
+- Mark compressed `.gz` files as binary to avoid corruption when unpacking with `create-expo --template` ([#26741](https://github.com/expo/expo/pull/26741) by [@shirakaba](https://github.com/shirakaba))
 
 ### 💡 Others
 

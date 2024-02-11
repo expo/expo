@@ -14,8 +14,14 @@ export function useRouteInfo() {
   return useStoreRouteInfo();
 }
 
+/** @deprecated use `useNavigationContainerRef()` instead, which returns a React ref. */
 export function useRootNavigation() {
   return store.navigationRef.current;
+}
+
+/** @return the root `<NavigationContainer />` ref for the app. The `ref.current` may be `null` if the `<NavigationContainer />` hasn't mounted yet. */
+export function useNavigationContainerRef() {
+  return store.navigationRef;
 }
 
 export function useRouter(): Router {
@@ -26,6 +32,7 @@ export function useRouter(): Router {
       replace: store.replace,
       setParams: store.setParams,
       canGoBack: store.canGoBack,
+      navigate: store.navigate,
       // TODO(EvanBacon): add `reload`
     }),
     []

@@ -3,12 +3,15 @@ title: Reference
 hideTOC: true
 ---
 
-import VersionedRedirectNotification from '~/components/plugins/VersionedRedirectNotification';
+import RedirectNotification from '~/components/plugins/RedirectNotification';
 import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { CODE } from '~/ui/components/Text';
 
-<VersionedRedirectNotification />
+<RedirectNotification>
+  The page you are looking for does not exist in this SDK version. It may have been deprecated or
+  added to a newer SDK version.
+</RedirectNotification>
 
 The Expo SDK provides access to device and system functionality such as contacts, camera, gyroscope, GPS location, and so on, in the form of packages. You can install any Expo SDK package using the `npx expo install` command. For example, three different packages are installed using the following command:
 
@@ -16,7 +19,7 @@ The Expo SDK provides access to device and system functionality such as contacts
 
 After installing one or more packages, you can import them into your JavaScript code:
 
-```javascript
+```js
 import { Camera } from 'expo-camera';
 import * as Contacts from 'expo-contacts';
 import { Gyroscope } from 'expo-sensors';
@@ -70,7 +73,7 @@ You can often use pre-release versions of individual packages with stable releas
 
 ### Beta releases
 
-Prior to each Expo SDK release, we publish beta versions of the `expo` package and all of the Expo SDK packages. Beta releases are considered much more stable than canary releases, and we encourage developers to try them out on their apps and share their feedback. Beta releases use the `beta` tag on npm and follow the instructions in the related [changelog](https://expo.dev/changelog) post.
+Before each Expo SDK release, we publish beta versions of the `expo` package and all of the Expo SDK packages. Beta releases are considered much more stable than canary releases, and we encourage developers to try them out on their apps and share their feedback. Beta releases use the `beta` tag on npm and follow the instructions in the related [changelog](https://expo.dev/changelog) post.
 
 ## Each Expo SDK version depends on a React Native version
 
@@ -81,8 +84,6 @@ Approximately every four months there is a new Expo SDK release that typically u
 | 50.0.0           | 0.73                 | 0.19.6                   |
 | 49.0.0           | 0.72                 | 0.19.6                   |
 | 48.0.0           | 0.71                 | 0.18.10                  |
-| 47.0.0           | 0.70                 | 0.18.9                   |
-| 46.0.0           | 0.69                 | 0.18.7                   |
 
 ### Support for other React Native versions
 
@@ -97,5 +98,3 @@ Each version of Expo SDK supports a minimum OS version of Android and iOS. For A
 | 50.0.0           | 6+              | 34                  | 13.4+       |
 | 49.0.0           | 5+              | 33                  | 13+         |
 | 48.0.0           | 5+              | 33                  | 13+         |
-| 47.0.0           | 5+              | 31                  | 13+         |
-| 46.0.0           | 5+              | 31                  | 12.4+       |

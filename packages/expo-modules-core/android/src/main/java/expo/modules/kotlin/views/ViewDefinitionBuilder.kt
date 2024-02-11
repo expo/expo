@@ -62,7 +62,7 @@ class ViewDefinitionBuilder<T : View>(
       callbacksDefinition = callbacksDefinition,
       viewGroupDefinition = viewGroupDefinition,
       onViewDidUpdateProps = onViewDidUpdateProps,
-      asyncFunctions = asyncFunctions.values.toList(),
+      asyncFunctions = asyncFunctions.values.toList()
     )
   }
 
@@ -129,6 +129,15 @@ class ViewDefinitionBuilder<T : View>(
       { typeOf<PropType>() }.toAnyType<PropType>(),
       body
     )
+  }
+
+  private inline fun <reified ViewType : View, reified PropType, reified CustomValueType> PropGroup(
+    vararg props: Pair<String, CustomValueType>,
+    noinline body: (view: ViewType, value: CustomValueType, prop: PropType) -> Unit
+  ) {
+    for ((name, value) in props) {
+      Prop<ViewType, PropType>(name) { view, prop -> body(view, value, prop) }
+    }
   }
 
   /**

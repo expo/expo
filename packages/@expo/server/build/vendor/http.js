@@ -67,7 +67,7 @@ async function respond(res, expoRes) {
     res.statusCode = expoRes.status;
     for (const [key, values] of Object.entries(expoRes.headers.raw())) {
         for (const value of values) {
-            res.setHeader(key, value);
+            res.appendHeader(key, value);
         }
     }
     if (expoRes.body) {

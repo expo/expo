@@ -1,13 +1,16 @@
 import { Inter_900Black } from '@expo-google-fonts/inter';
 import Constants from 'expo-constants';
-import { NativeModulesProxy } from 'expo-modules-core';
+import { requireNativeModule } from 'expo-modules-core';
 import { StatusBar } from 'expo-status-bar';
 import * as Updates from 'expo-updates';
 import { UpdatesLogEntry } from 'expo-updates';
 import React from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+const ExpoUpdatesE2ETest = requireNativeModule('ExpoUpdatesE2ETest');
+
 require('./includedAssets/test.png');
+require('./includedAssets/lock-filled.svg');
 // eslint-disable-next-line no-unused-expressions
 Inter_900Black;
 
@@ -107,13 +110,13 @@ export default function App() {
   });
 
   const handleReadAssetFiles = runBlockAsync(async () => {
-    const numFiles = await NativeModulesProxy.ExpoUpdatesE2ETest.readInternalAssetsFolderAsync();
+    const numFiles = await ExpoUpdatesE2ETest.readInternalAssetsFolderAsync();
     setNumAssetFiles(numFiles);
   });
 
   const handleClearAssetFiles = runBlockAsync(async () => {
-    await NativeModulesProxy.ExpoUpdatesE2ETest.clearInternalAssetsFolderAsync();
-    const numFiles = await NativeModulesProxy.ExpoUpdatesE2ETest.readInternalAssetsFolderAsync();
+    await ExpoUpdatesE2ETest.clearInternalAssetsFolderAsync();
+    const numFiles = await ExpoUpdatesE2ETest.readInternalAssetsFolderAsync();
     setNumAssetFiles(numFiles);
   });
 

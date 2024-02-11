@@ -23,7 +23,7 @@ import {
   BoxSectionHeader,
   DEFAULT_BASE_NESTING_LEVEL,
 } from '~/components/plugins/api/APISectionUtils';
-import { H2, BOLD, P, CODE, MONOSPACE } from '~/ui/components/Text';
+import { H2, P, CODE, MONOSPACE, DEMI } from '~/ui/components/Text';
 
 export type APISectionClassesProps = {
   data: GeneratedData[];
@@ -87,13 +87,15 @@ const renderClass = (
   return (
     <div key={`class-definition-${name}`} css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
       <APISectionDeprecationNote comment={comment} />
-      <APISectionPlatformTags comment={comment} prefix="Only for:" />
+      <APISectionPlatformTags comment={comment} />
       <H3Code tags={getTagNamesList(comment)}>
-        <MONOSPACE weight="medium">{name}</MONOSPACE>
+        <MONOSPACE weight="medium" className="wrap-anywhere">
+          {name}
+        </MONOSPACE>
       </H3Code>
       {(extendedTypes?.length || implementedTypes?.length) && (
         <P className="mb-3">
-          <BOLD>Type: </BOLD>
+          <DEMI theme="secondary">Type: </DEMI>
           {type ? <CODE>{resolveTypeName(type)}</CODE> : 'Class'}
           {extendedTypes?.length && (
             <>

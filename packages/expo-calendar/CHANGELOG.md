@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+- On iOS, migrate to Expo Modules API. ([#24282](https://github.com/expo/expo/pull/24282) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 12.2.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
 ## 12.2.0 — 2023-11-14
 
 ### 🛠 Breaking changes

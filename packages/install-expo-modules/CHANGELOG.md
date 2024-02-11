@@ -7,8 +7,16 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+- Fixed vulnerability with update semver from 7.5.3 to 7.5.4. ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
 
 ### 💡 Others
+
+## 0.8.1 - 2024-01-10
+
+### 🐛 Bug fixes
+
+- Avoid installing dependencies when running `npx install-expo-modules`. ([#26075](https://github.com/expo/expo/pull/26075) by [@byCedric](https://github.com/byCedric))
+- Fixed the unknown syntax error when running on a Yarn v3 project. ([#26123](https://github.com/expo/expo/pull/26123) by [@kudo](https://github.com/kudo))
 
 ## 0.8.0 — 2023-12-14
 

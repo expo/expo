@@ -92,6 +92,7 @@ it(`can create a micro Metro graph fixture`, () => {
         "transformOptions": {
           "customTransformOptions": {
             "baseUrl": undefined,
+            "bytecode": undefined,
             "engine": undefined,
           },
           "dev": true,
@@ -108,6 +109,7 @@ it(`can create a micro Metro graph fixture`, () => {
         "dev": true,
         "getRunModuleStatement": [Function],
         "includeAsyncPaths": true,
+        "inlineSourceMap": undefined,
         "modulesOnly": false,
         "processModuleFilter": [Function],
         "projectRoot": "/app/",

@@ -3,7 +3,7 @@ import CameraManager from '../ExpoCameraManager';
 // Values under keys from this object will be transformed to native options
 export const ConversionTables = {
     type: CameraManager.Type,
-    flashMode: CameraManager.FlashMode,
+    flash: CameraManager.FlashMode,
 };
 export function convertNativeProps(props) {
     if (!props || typeof props !== 'object') {
@@ -22,9 +22,7 @@ export function convertNativeProps(props) {
 }
 export function ensureNativeProps(props) {
     const newProps = convertNativeProps(props);
-    if (newProps.onBarcodeScanned) {
-        newProps.barcodeScannerEnabled = true;
-    }
+    newProps.barcodeScannerEnabled = !!newProps.onBarcodeScanned;
     if (Platform.OS !== 'web') {
         delete newProps.poster;
     }

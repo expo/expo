@@ -10,7 +10,7 @@ import kotlin.reflect.KType
 
 class SetTypeConverter(
   converterProvider: TypeConverterProvider,
-  private val setType: KType,
+  private val setType: KType
 ) : DynamicAwareTypeConverters<Set<*>>(setType.isMarkedNullable) {
   private val elementConverter = converterProvider.obtainTypeConverter(
     requireNotNull(setType.arguments.first().type) {

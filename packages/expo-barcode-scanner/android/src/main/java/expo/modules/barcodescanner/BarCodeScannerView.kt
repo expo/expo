@@ -20,7 +20,7 @@ import kotlin.math.roundToInt
 
 class BarCodeScannerView(
   context: Context,
-  appContext: AppContext,
+  appContext: AppContext
 ) : ExpoView(context, appContext) {
   private val onBarCodeScanned by EventDispatcher<BarCodeScannedEvent>(
     coalescingKey = { event -> (event.data.hashCode() % Short.MAX_VALUE).toShort() }
@@ -69,6 +69,7 @@ class BarCodeScannerView(
       BarCodeScannedEvent(
         target = id,
         data = barCode.value,
+        raw = barCode.raw,
         type = barCode.type,
         cornerPoints = cornerPoints,
         bounds = boundingBox
@@ -107,7 +108,7 @@ class BarCodeScannerView(
 
   private fun getCornerPointsAndBoundingBox(
     cornerPoints: List<Int>,
-    boundingBox: BarCodeScannerResult.BoundingBox,
+    boundingBox: BarCodeScannerResult.BoundingBox
   ): Pair<ArrayList<Bundle>, Bundle> {
     val convertedCornerPoints = ArrayList<Bundle>()
     for (i in cornerPoints.indices step 2) {

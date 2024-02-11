@@ -6,7 +6,7 @@ import resolveFrom from 'resolve-from';
 
 import { Log } from '../../../log';
 import { directoryExistsSync } from '../../../utils/dir';
-import { memoize } from '../../../utils/fn';
+import { learnMore } from '../../../utils/link';
 
 const debug = require('debug')('expo:start:server:metro:router') as typeof console.log;
 
@@ -47,9 +47,12 @@ export function getRouterDirectoryModuleIdWithManifest(
   return exp.extra?.router?.root ?? getRouterDirectory(projectRoot);
 }
 
-const logSrcDir = memoize(() =>
-  Log.log(chalk.gray('Using src/app as the root directory for Expo Router.'))
-);
+let hasWarnedAboutSrcDir = false;
+const logSrcDir = () => {
+  if (hasWarnedAboutSrcDir) return;
+  hasWarnedAboutSrcDir = true;
+  Log.log(chalk.gray('Using src/app as the root directory for Expo Router.'));
+};
 
 export function getRouterDirectory(projectRoot: string): string {
   // more specific directories first
@@ -82,4 +85,22 @@ export function getRoutePaths(cwd: string) {
 
 function normalizePaths(p: string) {
   return p.replace(/\\/g, '/');
+}
+
+let hasWarnedAboutApiRouteOutput = false;
+
+export function hasWarnedAboutApiRoutes() {
+  return hasWarnedAboutApiRouteOutput;
+}
+
+export function warnInvalidWebOutput() {
+  if (!hasWarnedAboutApiRouteOutput) {
+    Log.warn(
+      chalk.yellow`Using API routes requires the {bold web.output} to be set to {bold "server"} in the project {bold app.json}. ${learnMore(
+        'https://docs.expo.dev/router/reference/api-routes/'
+      )}`
+    );
+  }
+
+  hasWarnedAboutApiRouteOutput = true;
 }

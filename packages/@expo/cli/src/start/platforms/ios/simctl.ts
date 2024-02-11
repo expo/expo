@@ -88,17 +88,23 @@ export async function getInfoPlistValueAsync(
   {
     appId,
     key,
+    containerPath,
   }: {
     appId: string;
     key: string;
+    containerPath?: string;
   }
 ): Promise<string | null> {
-  const containerPath = await getContainerPathAsync(device, { appId });
-  if (containerPath) {
+  const ensuredContainerPath = containerPath ?? (await getContainerPathAsync(device, { appId }));
+  if (ensuredContainerPath) {
     try {
-      const { output } = await spawnAsync('defaults', ['read', `${containerPath}/Info`, key], {
-        stdio: 'pipe',
-      });
+      const { output } = await spawnAsync(
+        'defaults',
+        ['read', `${ensuredContainerPath}/Info`, key],
+        {
+          stdio: 'pipe',
+        }
+      );
       return output.join('\n').trim();
     } catch {
       return null;

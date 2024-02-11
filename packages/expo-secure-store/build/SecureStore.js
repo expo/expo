@@ -129,6 +129,13 @@ export function getItem(key, options = {}) {
     ensureValidKey(key);
     return ExpoSecureStore.getValueWithKeySync(key, options);
 }
+/**
+ * Checks if the value can be saved with `requireAuthentication` option enabled.
+ * @return `true` if the device supports biometric authentication and the enrolled method is sufficiently secure. Otherwise, returns `false`.
+ */
+export function canUseBiometricAuthentication() {
+    return ExpoSecureStore.canUseBiometricAuthentication();
+}
 function ensureValidKey(key) {
     if (!isValidKey(key)) {
         throw new Error(`Invalid key provided to SecureStore. Keys must not be empty and contain only alphanumeric characters, ".", "-", and "_".`);
@@ -142,7 +149,7 @@ function isValidValue(value) {
         return false;
     }
     if (byteCount(value) > VALUE_BYTES_LIMIT) {
-        console.warn('Provided value to SecureStore is larger than 2048 bytes. An attempt to store such a value will throw an error in SDK 35.');
+        console.warn('Value being stored in SecureStore is larger than 2048 bytes and it may not be stored successfully. In a future SDK version, this call may throw an error.');
     }
     return true;
 }

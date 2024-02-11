@@ -29,8 +29,7 @@ const withIosAdMob = config => {
 // you don't have an id to fall back to.
 exports.withIosAdMob = withIosAdMob;
 function getGoogleMobileAdsAppId(config) {
-  var _config$ios$config$go, _config$ios, _config$ios$config;
-  return (_config$ios$config$go = (_config$ios = config.ios) === null || _config$ios === void 0 ? void 0 : (_config$ios$config = _config$ios.config) === null || _config$ios$config === void 0 ? void 0 : _config$ios$config.googleMobileAdsAppId) !== null && _config$ios$config$go !== void 0 ? _config$ios$config$go : null;
+  return config.ios?.config?.googleMobileAdsAppId ?? null;
 }
 function setGoogleMobileAdsAppId(config, {
   GADApplicationIdentifier,

@@ -71,7 +71,6 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
   private lateinit var mSensorManager: SensorManager
   private lateinit var mUIManager: UIManager
   private lateinit var mLocationProvider: FusedLocationProviderClient
-  private lateinit var mTaskManager: TaskManagerInterface
   private lateinit var mActivityProvider: ActivityProvider
 
   private var mGravity: FloatArray = FloatArray(9)
@@ -82,14 +81,17 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
   private var mLastUpdate: Long = 0
   private var mGeocoderPaused = false
 
+  private val mTaskManager: TaskManagerInterface by lazy {
+    return@lazy appContext.legacyModule<TaskManagerInterface>()
+      ?: throw TaskManagerNotFoundException()
+  }
+
   override fun definition() = ModuleDefinition {
     Name("ExpoLocation")
 
     OnCreate {
       mContext = appContext.reactContext ?: throw Exceptions.ReactContextLost()
       mUIManager = appContext.legacyModule<UIManager>() ?: throw MissingUIManagerException()
-      mTaskManager = appContext.legacyModule<TaskManagerInterface>()
-        ?: throw TaskManagerNotFoundException()
       mActivityProvider = appContext.legacyModule<ActivityProvider>()
         ?: throw MissingActivityManagerException()
       mLocationProvider = LocationServices.getFusedLocationProviderClient(mContext)
@@ -522,7 +524,8 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       }
     }
     mSensorManager.registerListener(
-      this, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
+      this,
+      mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
       SensorManager.SENSOR_DELAY_NORMAL
     )
     mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL)
@@ -749,7 +752,9 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
         return it.isPermissionPresentInManifest(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
       }
       throw NoPermissionsModuleException()
-    } else true
+    } else {
+      true
+    }
   }
 
   /**

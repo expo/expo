@@ -54,7 +54,7 @@ android {
   // Remove this if and it's contents, when support for SDK49 is dropped
   if (!safeExtGet("expoProvidesDefaultConfig", false)) {
     compileSdkVersion safeExtGet("compileSdkVersion", 34)
-    
+
     defaultConfig {
       minSdkVersion safeExtGet("minSdkVersion", 23)
       targetSdkVersion safeExtGet("targetSdkVersion", 34)
@@ -91,17 +91,21 @@ android {
   }
 
   sourceSets {
+    def rnVersion = getRNVersion()
+    main {
+      java {
+        if (rnVersion >= versionToNumber(0, 74, 0)) {
+          srcDirs += "src/react-native-74/main"
+        } else {
+          srcDirs += "src/react-native-73/main"
+        }
+      }
+    }
     debug {
       java {
         srcDirs += ['../vendored/react-native-gesture-handler/android/']
         srcDirs += ['../vendored/react-native-safe-area-context/android/']
 
-        def expoPackageVersion = getExpoPackageVersion()
-        if (expoPackageVersion >= versionToNumber(45, 0, 0)) {
-          srcDirs += "src/expo-45"
-        } else {
-          srcDirs += "src/expo-44"
-        }
       }
     }
 
@@ -165,8 +169,7 @@ dependencies {
   implementation 'com.squareup.okhttp3:okhttp:3.14.9'
   implementation 'com.google.code.gson:gson:2.8.6'
 
-  //noinspection GradleDynamicVersion
-  implementation 'com.facebook.react:react-native:+'
+  implementation 'com.facebook.react:react-android'
   implementation "androidx.transition:transition:1.1.0" // use by react-native-reanimated
 
   // Fixes
@@ -182,7 +185,7 @@ dependencies {
   // Needed by gesture handler
   implementation "androidx.core:core-ktx:1.6.0"
 
-  api "androidx.browser:browser:1.2.0"
+  api "androidx.browser:browser:1.6.0"
 
   testImplementation "com.google.truth:truth:1.1.2"
   testImplementation "org.robolectric:robolectric:4.10"
@@ -195,7 +198,10 @@ def versionToNumber(major, minor, patch) {
 }
 
 def getNodeModulesPackageVersion(packageName, overridePropName) {
-  def nodeModulesVersion = ["node", "-e", "console.log(require('$packageName/package.json').version);"].execute(null, projectDir).text.trim()
+  def nodeModulesVersion = providers.exec {
+    workingDir(projectDir)
+    commandLine("node", "-e", "console.log(require('$packageName/package.json').version);")
+  }.standardOutput.asText.get().trim()
   def version = safeExtGet(overridePropName, nodeModulesVersion)
 
   def coreVersion = version.split("-")[0]
@@ -208,6 +214,6 @@ def getNodeModulesPackageVersion(packageName, overridePropName) {
   )
 }
 
-def getExpoPackageVersion() {
-  return getNodeModulesPackageVersion("expo", "expoPackageVersion")
+def getRNVersion() {
+  return getNodeModulesPackageVersion("react-native", "reactNativeVersion")
 }

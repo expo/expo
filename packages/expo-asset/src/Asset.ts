@@ -5,7 +5,7 @@ import { AssetMetadata, selectAssetSource } from './AssetSources';
 import * as AssetUris from './AssetUris';
 import * as ImageAssets from './ImageAssets';
 import { getLocalAssetUri } from './LocalAssets';
-import { downloadAsync, IS_ENV_WITH_UPDATES_ENABLED } from './PlatformUtils';
+import { downloadAsync, IS_ENV_WITH_LOCAL_ASSETS } from './PlatformUtils';
 import resolveAssetSource from './resolveAssetSource';
 
 // @docsMissing
@@ -25,34 +25,27 @@ type DownloadPromiseCallbacks = {
 
 export { AssetMetadata };
 
-// @needsAudit
 /**
  * The `Asset` class represents an asset in your app. It gives metadata about the asset (such as its
  * name and type) and provides facilities to load the asset data.
  */
 export class Asset {
-  /**
-   * @private
-   */
-  static byHash = {};
-  /**
-   * @private
-   */
-  static byUri = {};
+  private static byHash = {};
+  private static byUri = {};
 
   /**
    * The name of the asset file without the extension. Also without the part from `@` onward in the
    * filename (used to specify scale factor for images).
    */
-  name: string;
+  public name: string;
   /**
    * The extension of the asset filename.
    */
-  type: string;
+  public readonly type: string;
   /**
    * The MD5 hash of the asset's data.
    */
-  hash: string | null = null;
+  public readonly hash: string | null = null;
   /**
    * A URI that points to the asset's data on the remote server. When running the published version
    * of your app, this refers to the location on Expo's asset server where Expo has stored your
@@ -61,30 +54,30 @@ export class Asset {
    * are not using Classic Updates (legacy), this field should be ignored as we ensure your assets
    * are on device before before running your application logic.
    */
-  uri: string;
+  public readonly uri: string;
   /**
    * If the asset has been downloaded (by calling [`downloadAsync()`](#downloadasync)), the
    * `file://` URI pointing to the local file on the device that contains the asset data.
    */
-  localUri: string | null = null;
+  public localUri: string | null = null;
   /**
    * If the asset is an image, the width of the image data divided by the scale factor. The scale
    * factor is the number after `@` in the filename, or `1` if not present.
    */
-  width: number | null = null;
+  public width: number | null = null;
   /**
    * If the asset is an image, the height of the image data divided by the scale factor. The scale factor is the number after `@` in the filename, or `1` if not present.
    */
-  height: number | null = null;
-  // @docsMissing
-  downloading: boolean = false;
-  // @docsMissing
-  downloaded: boolean = false;
+  public height: number | null = null;
+
+  private downloading: boolean = false;
 
   /**
-   * @private
+   * Whether the asset has finished downloading from a call to [`downloadAsync()`](#downloadasync).
    */
-  _downloadCallbacks: DownloadPromiseCallbacks[] = [];
+  public downloaded: boolean = false;
+
+  private _downloadCallbacks: DownloadPromiseCallbacks[] = [];
 
   constructor({ name, type, hash = null, uri, width, height }: AssetDescriptor) {
     this.name = name;
@@ -152,7 +145,7 @@ export class Asset {
 
     // Outside of the managed env we need the moduleId to initialize the asset
     // because resolveAssetSource depends on it
-    if (!IS_ENV_WITH_UPDATES_ENABLED) {
+    if (!IS_ENV_WITH_LOCAL_ASSETS) {
       // null-check is performed above with `getAssetByID`.
       const { uri } = resolveAssetSource(virtualAssetModule)!;
 
@@ -262,7 +255,7 @@ export class Asset {
           this.name = AssetUris.getFilename(this.uri);
         }
       }
-      this.localUri = await downloadAsync(this.uri, this.hash, this.type, this.name);
+      this.localUri = await downloadAsync(this.uri, this.hash, this.type);
 
       this.downloaded = true;
       this._downloadCallbacks.forEach(({ resolve }) => resolve());

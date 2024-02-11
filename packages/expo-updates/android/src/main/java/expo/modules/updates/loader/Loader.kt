@@ -11,7 +11,7 @@ import expo.modules.updates.db.enums.UpdateStatus
 import expo.modules.updates.loader.FileDownloader.AssetDownloadCallback
 import expo.modules.updates.loader.FileDownloader.RemoteUpdateDownloadCallback
 import expo.modules.updates.manifest.ManifestMetadata
-import expo.modules.updates.manifest.UpdateManifest
+import expo.modules.updates.manifest.Update
 import java.io.File
 import java.util.*
 
@@ -97,7 +97,9 @@ abstract class Loader protected constructor(
     this.callback = callback
 
     loadRemoteUpdate(
-      context, database, configuration,
+      context,
+      database,
+      configuration,
       object : RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           finishWithError(message, e)
@@ -105,12 +107,12 @@ abstract class Loader protected constructor(
 
         override fun onSuccess(updateResponse: UpdateResponse) {
           this@Loader.updateResponse = updateResponse
-          val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
+          val update = updateResponse.manifestUpdateResponsePart?.update
           val onUpdateResponseLoadedResult = this@Loader.callback!!.onUpdateResponseLoaded(updateResponse)
-          if (updateManifest !== null && onUpdateResponseLoadedResult.shouldDownloadManifestIfPresentInResponse) {
+          if (update !== null && onUpdateResponseLoadedResult.shouldDownloadManifestIfPresentInResponse) {
             // if onUpdateResponseLoaded returns true that is a sign that the delegate wants the update manifest
-            // to be processed/downloaded, and therefore the updateManifest needs to exist
-            processUpdateManifest(updateManifest)
+            // to be processed/downloaded, and therefore the update needs to exist
+            processUpdate(update)
           } else {
             updateEntity = null
             finishWithSuccess()
@@ -169,18 +171,18 @@ abstract class Loader protected constructor(
   }
 
   // private helper methods
-  private fun processUpdateManifest(updateManifest: UpdateManifest) {
-    if (updateManifest.isDevelopmentMode) {
+  private fun processUpdate(update: Update) {
+    if (update.isDevelopmentMode) {
       // insert into database but don't try to load any assets;
       // the RN runtime will take care of that and we don't want to cache anything
-      val updateEntity = updateManifest.updateEntity
+      val updateEntity = update.updateEntity
       database.updateDao().insertUpdate(updateEntity!!)
       database.updateDao().markUpdateFinished(updateEntity)
       finishWithSuccess()
       return
     }
 
-    val newUpdateEntity = updateManifest.updateEntity
+    val newUpdateEntity = update.updateEntity
     val existingUpdateEntity = database.updateDao().loadUpdateWithId(
       newUpdateEntity!!.id
     )
@@ -210,12 +212,14 @@ abstract class Loader protected constructor(
         // however, it's not ready, so we should try to download all the assets again.
         updateEntity = existingUpdateEntity
       }
-      downloadAllAssets(updateManifest.assetEntityList)
+      downloadAllAssets(update.assetEntityList)
     }
   }
 
   private enum class AssetLoadResult {
-    FINISHED, ALREADY_EXISTS, ERRORED
+    FINISHED,
+    ALREADY_EXISTS,
+    ERRORED
   }
 
   private fun downloadAllAssets(assetList: List<AssetEntity>) {
@@ -234,9 +238,9 @@ abstract class Loader protected constructor(
       // if we already have a local copy of this asset, don't try to download it again!
       if (assetEntity.relativePath != null && loaderFiles.fileExists(
           File(
-              updatesDirectory,
-              assetEntity.relativePath
-            )
+            updatesDirectory,
+            assetEntity.relativePath
+          )
         )
       ) {
         handleAssetDownloadCompleted(assetEntity, AssetLoadResult.ALREADY_EXISTS)
@@ -244,12 +248,19 @@ abstract class Loader protected constructor(
       }
 
       loadAsset(
-        context, assetEntity, updatesDirectory, configuration,
+        context,
+        assetEntity,
+        updatesDirectory,
+        configuration,
         object : AssetDownloadCallback {
           override fun onFailure(e: Exception, assetEntity: AssetEntity) {
-            val identifier = if (assetEntity.hash != null) "hash " + UpdatesUtils.bytesToHex(
-              assetEntity.hash!!
-            ) else "key " + assetEntity.key
+            val identifier = if (assetEntity.hash != null) {
+              "hash " + UpdatesUtils.bytesToHex(
+                assetEntity.hash!!
+              )
+            } else {
+              "key " + assetEntity.key
+            }
             Log.e(TAG, "Failed to download asset with $identifier", e)
             handleAssetDownloadCompleted(assetEntity, AssetLoadResult.ERRORED)
           }

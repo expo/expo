@@ -4,11 +4,70 @@
 
 ### 🛠 Breaking changes
 
+- Deprecated `UpdatesController.initialize(Context, Map)` and replaced with `UpdatesController.overrideConfiguration()` method to prevent ANR when overriding the `UpdatesConfiguration` on Android. [#26093](https://github.com/expo/expo/pull/26093) by [@kudo](https://github.com/kudo))
+
 ### 🎉 New features
+
+- Add more failure logs in asset download. ([#26268](https://github.com/expo/expo/pull/26268) by [@wschurman](https://github.com/wschurman))
+- Add timer capability to Logger. ([#26454](https://github.com/expo/expo/pull/26454), [#26477](https://github.com/expo/expo/pull/26477) by [@wschurman](https://github.com/wschurman))
+- Add assets:verify command to CLI. ([#26756](https://github.com/expo/expo/pull/26756) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
+- Fix development status for modern updates. ([#26042](https://github.com/expo/expo/pull/26042) by [@wschurman](https://github.com/wschurman))
+- [Android] correct drawable types in updates embedded manifest. ([#26676](https://github.com/expo/expo/pull/26676) by [@douglowder](https://github.com/douglowder))
+- [Android] Fix case where launch wait ms timeout is greater than okhttp default timeout. ([#26731](https://github.com/expo/expo/pull/26731) by [@wschurman](https://github.com/wschurman))
+- Fix assets:verify command for images with multiple scales. ([#26940](https://github.com/expo/expo/pull/26940) by [@douglowder](https://github.com/douglowder))
+- Make error messages consistent across platforms for dev client and disabled controllers. ([#26988](https://github.com/expo/expo/pull/26988) by [@wschurman](https://github.com/wschurman))
+
 ### 💡 Others
+
+- [ios] Remove unnecessary delegate from FileDownloader. ([#25783](https://github.com/expo/expo/pull/25783) by [@wschurman](https://github.com/wschurman))
+- Migrate to requireNativeModule/requireOptionalNativeModule. ([#25648](https://github.com/expo/expo/pull/25648) by [@wschurman](https://github.com/wschurman))
+- Remove classic updates. ([#26036](https://github.com/expo/expo/pull/26036), [#26037](https://github.com/expo/expo/pull/26037), [#26048](https://github.com/expo/expo/pull/26048), [#26059](https://github.com/expo/expo/pull/26059), [#26061](https://github.com/expo/expo/pull/26061), [#26065](https://github.com/expo/expo/pull/26065), [#26080](https://github.com/expo/expo/pull/26080), [#26230](https://github.com/expo/expo/pull/26230) by [@wschurman](https://github.com/wschurman))
+- [Android] Remove try/catch in expo-updates module constants block. ([#26228](https://github.com/expo/expo/pull/26228) by [@wschurman](https://github.com/wschurman))
+- Rename native classes. ([#26234](https://github.com/expo/expo/pull/26234), [#26235](https://github.com/expo/expo/pull/26235) by [@wschurman](https://github.com/wschurman))
+- Remove support for multiple runtime versions. ([#26258](https://github.com/expo/expo/pull/26258) by [@wschurman](https://github.com/wschurman))
+- Improve updates types and clarity in expo-asset. ([#26337](https://github.com/expo/expo/pull/26337) by [@wschurman](https://github.com/wschurman))
+
+## 0.24.8 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 0.24.7 - 2024-01-10
+
+### 🎉 New features
+
+- Added `AppController.overrideConfiguration()` to override the `UpdatesConfig` on iOS. ([#26093](https://github.com/expo/expo/pull/26093) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Fix metro asset call in embedded manifest creation step. ([#26307](https://github.com/expo/expo/pull/26307) by [@wschurman](https://github.com/wschurman))
+- [expo-updates] dev launcher updates controller should not read embedded manifest. ([#26336](https://github.com/expo/expo/pull/26336) by [@douglowder](https://github.com/douglowder))
+
+### 💡 Others
+
+- Replace deprecated `com.facebook.react:react-native:+` Android dependency with `com.facebook.react:react-android`. ([#26237](https://github.com/expo/expo/pull/26237) by [@kudo](https://github.com/kudo))
+
+## 0.24.5 - 2023-12-21
+
+_This version does not introduce any user-facing changes._
+
+## 0.24.4 - 2023-12-19
+
+### 🐛 Bug fixes
+
+- Add relaunch to disabled and dev client controllers. ([#25973](https://github.com/expo/expo/pull/25973) by [@wschurman](https://github.com/wschurman))
+
+## 0.24.3 — 2023-12-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.18.18 — 2023-12-15
+
+### 🐛 Bug fixes
+
+- [Android] overwrite duplicates when copying assets. ([#25898](https://github.com/expo/expo/pull/25898) by [@douglowder](https://github.com/douglowder))
 
 ## 0.24.2 — 2023-12-13
 

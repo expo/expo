@@ -291,7 +291,12 @@ function decodeParams(params) {
     const parsed = {};
     for (const [key, value] of Object.entries(params)) {
         try {
-            parsed[key] = decodeURIComponent(value);
+            if (Array.isArray(value)) {
+                parsed[key] = value.map((v) => decodeURIComponent(v));
+            }
+            else {
+                parsed[key] = decodeURIComponent(value);
+            }
         }
         catch {
             parsed[key] = value;
@@ -376,7 +381,9 @@ function getParamsWithConventionsCollapsed({ pattern, routeName, params, }) {
     // Deep Dynamic Routes
     if (segments.some((segment) => segment.startsWith('*'))) {
         // NOTE(EvanBacon): Drop the param name matching the wildcard route name -- this is specific to Expo Router.
-        const name = (0, matchers_1.matchDeepDynamicRouteName)(routeName) ?? routeName;
+        const name = (0, matchers_1.testNotFound)(routeName)
+            ? 'not-found'
+            : (0, matchers_1.matchDeepDynamicRouteName)(routeName) ?? routeName;
         delete processedParams[name];
     }
     return processedParams;

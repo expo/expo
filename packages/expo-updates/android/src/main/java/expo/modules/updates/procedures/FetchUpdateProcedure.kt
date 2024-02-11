@@ -26,6 +26,8 @@ class FetchUpdateProcedure(
   private val launchedUpdate: UpdateEntity?,
   private val callback: (IUpdatesController.FetchUpdateResult) -> Unit
 ) : StateMachineProcedure() {
+  override val loggerTimerLabel = "timer-fetch-update"
+
   override fun run(procedureContext: ProcedureContext) {
     procedureContext.processStateEvent(UpdatesStateEvent.Download())
 
@@ -69,12 +71,12 @@ class FetchUpdateProcedure(
                 )
               }
 
-              val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
+              val update = updateResponse.manifestUpdateResponsePart?.update
                 ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
 
               return Loader.OnUpdateResponseLoadedResult(
                 shouldDownloadManifestIfPresentInResponse = selectionPolicy.shouldLoadNewUpdate(
-                  updateManifest.updateEntity,
+                  update.updateEntity,
                   launchedUpdate,
                   updateResponse.responseHeaderData?.manifestFilters
                 )

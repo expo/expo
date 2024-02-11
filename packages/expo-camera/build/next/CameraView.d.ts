@@ -1,7 +1,7 @@
 import { Subscription } from 'expo-modules-core';
 import * as React from 'react';
 import { Ref } from 'react';
-import { CameraCapturedPicture, CameraOrientation, CameraPictureOptions, CameraProps, CameraRecordingOptions, CameraViewRef, ModernScanningOptions, ModernBarcodeScanningResult, VideoCodec } from './Camera.types';
+import { CameraCapturedPicture, CameraOrientation, CameraPictureOptions, CameraProps, CameraRecordingOptions, CameraViewRef, ScanningOptions, ScanningResult, VideoCodec } from './Camera.types';
 export default class CameraView extends React.Component<CameraProps> {
     /**
      * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+).
@@ -22,7 +22,7 @@ export default class CameraView extends React.Component<CameraProps> {
     static getAvailableVideoCodecsAsync(): Promise<VideoCodec[]>;
     static ConversionTables: {
         type: Record<number | typeof Symbol.iterator | "link" | "search" | "charAt" | "charCodeAt" | "concat" | "indexOf" | "lastIndexOf" | "localeCompare" | "match" | "replace" | "slice" | "split" | "substring" | "toLowerCase" | "toLocaleLowerCase" | "toUpperCase" | "toLocaleUpperCase" | "trim" | "length" | "substr" | "codePointAt" | "includes" | "endsWith" | "normalize" | "repeat" | "startsWith" | "anchor" | "big" | "blink" | "bold" | "fixed" | "fontcolor" | "fontsize" | "italics" | "small" | "strike" | "sub" | "sup" | "padStart" | "padEnd" | "trimEnd" | "trimStart" | "trimLeft" | "trimRight" | "matchAll" | "replaceAll" | "at" | "toString" | "valueOf", string | undefined>;
-        flashMode: Record<number | typeof Symbol.iterator | "link" | "search" | "charAt" | "charCodeAt" | "concat" | "indexOf" | "lastIndexOf" | "localeCompare" | "match" | "replace" | "slice" | "split" | "substring" | "toLowerCase" | "toLocaleLowerCase" | "toUpperCase" | "toLocaleUpperCase" | "trim" | "length" | "substr" | "codePointAt" | "includes" | "endsWith" | "normalize" | "repeat" | "startsWith" | "anchor" | "big" | "blink" | "bold" | "fixed" | "fontcolor" | "fontsize" | "italics" | "small" | "strike" | "sub" | "sup" | "padStart" | "padEnd" | "trimEnd" | "trimStart" | "trimLeft" | "trimRight" | "matchAll" | "replaceAll" | "at" | "toString" | "valueOf", string | undefined>;
+        flash: Record<number | typeof Symbol.iterator | "link" | "search" | "charAt" | "charCodeAt" | "concat" | "indexOf" | "lastIndexOf" | "localeCompare" | "match" | "replace" | "slice" | "split" | "substring" | "toLowerCase" | "toLocaleLowerCase" | "toUpperCase" | "toLocaleUpperCase" | "trim" | "length" | "substr" | "codePointAt" | "includes" | "endsWith" | "normalize" | "repeat" | "startsWith" | "anchor" | "big" | "blink" | "bold" | "fixed" | "fontcolor" | "fontsize" | "italics" | "small" | "strike" | "sub" | "sup" | "padStart" | "padEnd" | "trimEnd" | "trimStart" | "trimLeft" | "trimRight" | "matchAll" | "replaceAll" | "at" | "toString" | "valueOf", string | undefined>;
     };
     static defaultProps: CameraProps;
     _cameraHandle?: number | null;
@@ -46,19 +46,29 @@ export default class CameraView extends React.Component<CameraProps> {
      * for an `Image` element for example. `exif` is included if the `exif` option was truthy, and is an object containing EXIF
      * data for the image--the names of its properties are EXIF tags and their values are the values for those tags.
      *
-     * > On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem.md#filesystemcopyasyncoptions)
+     * > On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem/#filesystemcopyasyncoptions)
      * > to make a permanent copy of the image.
      */
     takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture | undefined>;
     /**
-     * Presents a modal view controller that uses the `DataScannerViewController` available on iOS 16+.
+     * Presents a modal view controller that uses the [`DataScannerViewController`](https://developer.apple.com/documentation/visionkit/scanning_data_with_the_camera) available on iOS 16+.
+     * @platform ios
      */
-    static launchModernScanner(options?: ModernScanningOptions): Promise<void>;
+    static launchScanner(options?: ScanningOptions): Promise<void>;
     /**
-     * Dimiss `DataScannerViewController`
+     * Dimiss the scanner presented by `launchScanner`.
+     * @platform ios
      */
     static dismissScanner(): Promise<void>;
-    static onModernBarcodeScanned(listener: (event: ModernBarcodeScanningResult) => void): Subscription;
+    /**
+     * Invokes the `listener` function when a bar code has been successfully scanned. The callback is provided with
+     * an object of the `ScanningResult` shape, where the `type` refers to the bar code type that was scanned and the `data` is the information encoded in the bar code
+     * (in this case of QR codes, this is often a URL). See [`BarcodeType`](#barcodetype) for supported values.
+     * @param listener Invoked with the [ScanningResult](#scanningresult) when a bar code has been successfully scanned.
+     *
+     * @platform ios
+     */
+    static onModernBarcodeScanned(listener: (event: ScanningResult) => void): Subscription;
     /**
      * Starts recording a video that will be saved to cache directory. Videos are rotated to match device's orientation.
      * Flipping camera during a recording results in stopping it.

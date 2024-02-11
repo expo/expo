@@ -5,7 +5,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '1.11.1'
+version = '1.11.2'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 if (expoModulesCorePlugin.exists()) {
@@ -55,7 +55,10 @@ def isExpoModulesCoreTests = {
 def REACT_NATIVE_BUILD_FROM_SOURCE = findProject(":packages:react-native:ReactAndroid") != null
 def REACT_NATIVE_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
   ? findProject(":packages:react-native:ReactAndroid").getProjectDir().parent
-  : new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).parent
+  : file(providers.exec {
+      workingDir(rootDir)
+      commandLine("node", "--print", "require.resolve('react-native/package.json')")
+    }.standardOutput.asText.get().trim()).parent
 
 def reactProperties = new Properties()
 file("$REACT_NATIVE_DIR/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
@@ -143,7 +146,7 @@ android {
   defaultConfig {
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
-    versionName "1.11.1"
+    versionName "1.11.2"
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled.toString()
 
     testInstrumentationRunner "expo.modules.TestRunner"
@@ -223,46 +226,33 @@ android {
   }
 }
 
-
 dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   implementation "org.jetbrains.kotlin:kotlin-reflect:${getKotlinVersion()}"
-  implementation 'androidx.annotation:annotation:1.3.0'
+  implementation 'androidx.annotation:annotation:1.7.1'
 
   api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
-  api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0"
-  api "androidx.core:core-ktx:1.6.0"
+  api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
+  api "androidx.core:core-ktx:1.12.0"
   api project(':expo-modules-core$android-annotation')
 
-  /**
-   * ReactActivity (the base activity for every React Native application) is subclassing AndroidX classes.
-   * Unfortunately until https://github.com/facebook/react-native/pull/33072 is released React Native uses "androidx.appcompat:appcompat:1.0.2".
-   * Gradle is picking the highest version of the dependency so we enforce higher version here.
-   * see https://docs.gradle.org/current/userguide/dependency_resolution.html#sec:version-conflict
-   * We're enforcing the most up-to-date versions of the dependencies here that are used in subclassing chain for ReactActivity.
-   */
-  implementation "androidx.appcompat:appcompat:1.4.1"
-  implementation "androidx.activity:activity-ktx:1.7.1" // androidx.appcompat:appcompat:1.4.1 depends on version 1.2.3, so we enforce higher one here
-  implementation "androidx.fragment:fragment-ktx:1.5.7" // androidx.appcomapt:appcompat:1.4.1 depends on version 1.3.4, so we enforce higher one here
+  implementation("androidx.tracing:tracing-ktx:1.2.0")
 
-  implementation("androidx.tracing:tracing-ktx:1.1.0")
+  implementation 'com.facebook.react:react-android'
 
-  //noinspection GradleDynamicVersion
-  implementation 'com.facebook.react:react-native:+'
+  compileOnly 'com.facebook.fbjni:fbjni:0.5.1'
 
-  compileOnly 'com.facebook.fbjni:fbjni:0.3.0'
-
-  testImplementation 'androidx.test:core:1.4.0'
+  testImplementation 'androidx.test:core:1.5.0'
   testImplementation 'junit:junit:4.13.2'
-  testImplementation 'io.mockk:mockk:1.12.3'
+  testImplementation 'io.mockk:mockk:1.13.5'
   testImplementation "com.google.truth:truth:1.1.2"
-  testImplementation "org.robolectric:robolectric:4.10"
+  testImplementation "org.robolectric:robolectric:4.11.1"
   testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
   testImplementation "org.json:json:20230227"
 
-  androidTestImplementation 'androidx.test:runner:1.4.0'
-  androidTestImplementation 'androidx.test:core:1.4.0'
-  androidTestImplementation 'androidx.test:rules:1.4.0'
+  androidTestImplementation 'androidx.test:runner:1.5.2'
+  androidTestImplementation 'androidx.test:core:1.5.0'
+  androidTestImplementation 'androidx.test:rules:1.5.0'
   androidTestImplementation "io.mockk:mockk-android:1.12.3"
   androidTestImplementation "com.google.truth:truth:1.1.2"
   androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"

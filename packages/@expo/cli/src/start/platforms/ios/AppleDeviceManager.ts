@@ -96,10 +96,14 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
     return this.device.udid;
   }
 
-  async getAppVersionAsync(appId: string): Promise<string | null> {
+  async getAppVersionAsync(
+    appId: string,
+    { containerPath }: { containerPath?: string } = {}
+  ): Promise<string | null> {
     return await SimControl.getInfoPlistValueAsync(this.device, {
       appId,
       key: 'CFBundleShortVersionString',
+      containerPath,
     });
   }
 
@@ -159,7 +163,7 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
 
   private async waitForAppInstalledAsync(applicationId: string): Promise<boolean> {
     while (true) {
-      if (await this.isAppInstalledAsync(applicationId)) {
+      if (await this.isAppInstalledAndIfSoReturnContainerPathForIOSAsync(applicationId)) {
         return true;
       }
       await delayAsync(100);
@@ -172,10 +176,12 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
     });
   }
 
-  async isAppInstalledAsync(appId: string) {
-    return !!(await SimControl.getContainerPathAsync(this.device, {
-      appId,
-    }));
+  async isAppInstalledAndIfSoReturnContainerPathForIOSAsync(appId: string) {
+    return (
+      (await SimControl.getContainerPathAsync(this.device, {
+        appId,
+      })) ?? false
+    );
   }
 
   async openUrlAsync(url: string) {
@@ -208,7 +214,7 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
     await osascript.execAsync(`tell application "Simulator" to activate`);
   }
 
-  async ensureExpoGoAsync(sdkVersion?: string): Promise<boolean> {
+  async ensureExpoGoAsync(sdkVersion: string): Promise<boolean> {
     const installer = new ExpoGoInstaller('ios', EXPO_GO_BUNDLE_IDENTIFIER, sdkVersion);
     return installer.ensureAsync(this);
   }

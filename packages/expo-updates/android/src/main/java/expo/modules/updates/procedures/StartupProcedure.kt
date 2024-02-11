@@ -20,7 +20,7 @@ import expo.modules.updates.loader.UpdateDirective
 import expo.modules.updates.loader.UpdateResponse
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
-import expo.modules.updates.manifest.UpdateManifest
+import expo.modules.updates.manifest.Update
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
 import expo.modules.updates.statemachine.UpdatesStateValue
@@ -37,6 +37,8 @@ class StartupProcedure(
   private val logger: UpdatesLogger,
   private val callback: StartupProcedureCallback
 ) : StateMachineProcedure() {
+  override val loggerTimerLabel = "timer-startup"
+
   interface StartupProcedureCallback {
     fun onFinished()
 
@@ -133,7 +135,7 @@ class StartupProcedure(
         procedureContext.processStateEvent(event)
       }
 
-      override fun onRemoteUpdateManifestResponseManifestLoaded(updateManifest: UpdateManifest) {
+      override fun onRemoteUpdateManifestResponseUpdateLoaded(update: Update) {
         remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADING
       }
 
@@ -265,8 +267,11 @@ class StartupProcedure(
 
           override fun onSuccess(loaderResult: Loader.LoaderResult) {
             setRemoteLoadStatus(
-              if (loaderResult.updateEntity != null || loaderResult.updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADED
-              else ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
+              if (loaderResult.updateEntity != null || loaderResult.updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
+                ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADED
+              } else {
+                ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
+              }
             )
             databaseHolder.releaseDatabase()
           }
@@ -284,14 +289,18 @@ class StartupProcedure(
               )
             }
 
-            val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
-            return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = selectionPolicy.shouldLoadNewUpdate(updateManifest.updateEntity, launchedUpdate, updateResponse.responseHeaderData?.manifestFilters))
+            val update = updateResponse.manifestUpdateResponsePart?.update ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
+            return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = selectionPolicy.shouldLoadNewUpdate(update.updateEntity, launchedUpdate, updateResponse.responseHeaderData?.manifestFilters))
           }
         })
       }
 
-      override fun relaunch(callback: Launcher.LauncherCallback) { this@StartupProcedure.callback.onRequestRelaunch(shouldRunReaper = false, callback) }
-      override fun throwException(exception: Exception) { throw exception }
+      override fun relaunch(callback: Launcher.LauncherCallback) {
+        this@StartupProcedure.callback.onRequestRelaunch(shouldRunReaper = false, callback)
+      }
+      override fun throwException(exception: Exception) {
+        throw exception
+      }
 
       override fun markFailedLaunchForLaunchedUpdate() {
         if (isEmergencyLaunch) {

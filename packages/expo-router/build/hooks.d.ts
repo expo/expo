@@ -2,7 +2,10 @@ import { Router } from './types';
 type SearchParams = Record<string, string | string[]>;
 export declare function useRootNavigationState(): import("./fork/getStateFromPath").ResultState;
 export declare function useRouteInfo(): import("./LocationProvider").UrlObject;
+/** @deprecated use `useNavigationContainerRef()` instead, which returns a React ref. */
 export declare function useRootNavigation(): import("@react-navigation/native").NavigationContainerRef<ReactNavigation.RootParamList> | null;
+/** @return the root `<NavigationContainer />` ref for the app. The `ref.current` may be `null` if the `<NavigationContainer />` hasn't mounted yet. */
+export declare function useNavigationContainerRef(): import("@react-navigation/native").NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
 export declare function useRouter(): Router;
 /**
  * @private

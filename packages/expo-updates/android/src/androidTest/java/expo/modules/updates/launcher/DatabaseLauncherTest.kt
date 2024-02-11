@@ -11,7 +11,6 @@ import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.launcher.Launcher.LauncherCallback
-import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import io.mockk.every
 import io.mockk.mockk
@@ -59,11 +58,11 @@ class DatabaseLauncherTest {
         null,
         mapOf(
           "updateUrl" to Uri.parse("https://example.com"),
-          "hasEmbeddedUpdate" to false,
+          "hasEmbeddedUpdate" to false
         )
       ),
       File("test"),
-      FileDownloader(context),
+      mockk(),
       SelectionPolicy(
         mockk(),
         mockk(),

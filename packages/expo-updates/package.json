@@ -1,6 +1,6 @@
 {
   "name": "expo-updates",
-  "version": "0.24.2",
+  "version": "0.24.3",
   "description": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -58,6 +58,7 @@
     "expo-module-scripts": "^3.0.0",
     "express": "^4.17.2",
     "form-data": "^4.0.0",
+    "fs-extra": "~8.1.0",
     "memfs": "^3.2.0",
     "xstate": "^4.37.2"
   },

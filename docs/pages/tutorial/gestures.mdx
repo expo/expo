@@ -29,9 +29,9 @@ To install them, stop the development server by pressing <kbd>Ctrl</kbd> + <kbd>
 
 <Terminal cmd={['$ npx expo install react-native-gesture-handler react-native-reanimated']} />
 
-Next, also install `@babel/plugin-proposal-export-namespace-from`, which is required to configure the Reanimated library:
+Next, also install `@babel/plugin-transform-export-namespace-from`, which is required to configure the Reanimated library:
 
-<Terminal cmd={['$ npm install -D @babel/plugin-proposal-export-namespace-from ']} />
+<Terminal cmd={['$ npm install -D @babel/plugin-transform-export-namespace-from ']} />
 
 Then, add Reanimated's Babel plugin to **babel.config.js**:
 
@@ -43,7 +43,7 @@ module.exports = function (api) {
     presets: ['babel-preset-expo'],
     /* @info Add the plugins array and inside it, add the plugins.*/
     plugins: [
-      "@babel/plugin-proposal-export-namespace-from",
+      "@babel/plugin-transform-export-namespace-from",
       "react-native-reanimated/plugin",
     ],
     /* @end */
@@ -67,9 +67,13 @@ To accomplish this, replace the root level `<View>` component in the **App.js** 
 
 export default function App() {
   return (
-    /* @info Replace the root level View component with GestureHandlerRootView. */<GestureHandlerRootView style={styles.container}> /* @end */
-    /* ...rest of the code remains */
-    /* @info */</GestureHandlerRootView>/* @end */
+    /* @info Replace the root level View component with GestureHandlerRootView. */
+    <GestureHandlerRootView style={styles.container}>
+    /* @end */
+      {/* ...rest of the code remains */}
+    /* @info */
+    </GestureHandlerRootView>
+    /* @end */
   )
 }
 ```
@@ -92,19 +96,18 @@ Reanimated exports animated components such as `<Animated.View>`, `<Animated.Tex
 
 Replace the `<Image>` component with `<Animated.Image>`.
 
-
-
-
 {/* prettier-ignore */}
 ```jsx EmojiSticker.js
 export default function EmojiSticker({ imageSize, stickerSource }) {
   return (
     <View style={{ top: -350 }}>
-      /* @info Replace the Image component with Animated.Image. */<Animated.Image /* @end */
+      /* @info Replace the Image component with Animated.Image. */
+      <Animated.Image
         source={stickerSource}
         resizeMode="contain"
         style={{ width: imageSize, height: imageSize }}
       />
+      /* @end */
     </View>
   );
 }
@@ -168,7 +171,7 @@ const imageStyle = useAnimatedStyle(() => {
 });
 ```
 
-Next, wrap the `<Animated.Image>` component that displays the sticker on the screen with the `<GestureDetector>` component.
+Next, wrap the `<Animated.Image>` component that displays the sticker on the screen with the `<GestureDetector>` component and modify the `style` prop on the `Animated.Image` to pass the `imageStyle`.
 
 <SnackInline
 label="Handling tap gesture"
@@ -197,11 +200,11 @@ export default function EmojiSticker({ imageSize, stickerSource }) {
   // ...rest of the code remains same
   return (
     <View style={{ top: -350 }}>
-      /* @info Wrap the Animated.Image component with GestureDetector. */ <GestureDetector gesture={doubleTap}>/* @end */
+      /* @info Wrap the Animated.Image component with GestureDetector. */<GestureDetector gesture={doubleTap}>/* @end */
         <Animated.Image
           source={stickerSource}
           resizeMode="contain"
-          /* @info Modify the style prop on the AnimatedImage to pass the imageStyle. */ style={[imageStyle, { width: imageSize, height: imageSize }]} /* @end */
+          style={/* @info Modify the style prop on the AnimatedImage to pass the imageStyle. */[imageStyle, { width: imageSize, height: imageSize }]/* @end */}
         />
       /* @info */</GestureDetector>/* @end */
     </View>
@@ -213,7 +216,7 @@ export default function EmojiSticker({ imageSize, stickerSource }) {
 
 In the above snippet, the `gesture` prop takes the value of the `doubleTap` which triggers a gesture when a user double-taps the sticker image.
 
-Let's take a look at our app on iOS, Android and the web:
+Let's take a look at our app on Android, iOS and the web:
 
 <Video file="tutorial/tap-gesture.mp4" />
 
@@ -324,7 +327,7 @@ export default function EmojiSticker({ imageSize, stickerSource }) {
 
   return (
     /* @info Wrap all components inside GestureDetector. */<GestureDetector gesture={drag}>/* @end */
-      /* @info Add containerStyle to the AnimatedView style prop. */<Animated.View style={[containerStyle, { top: -350 }]}>/* @end */
+      <Animated.View style={/* @info Add containerStyle to the AnimatedView style prop. */[containerStyle, { top: -350 }]/* @end */}>
         <GestureDetector gesture={doubleTap}>
           <Animated.Image
             source={stickerSource}
@@ -340,7 +343,7 @@ export default function EmojiSticker({ imageSize, stickerSource }) {
 
 </SnackInline>
 
-Let's take a look at our app on iOS, Android and the web:
+Let's take a look at our app on Android, iOS and the web:
 
 <Video file="tutorial/pan-gesture.mp4" />
 

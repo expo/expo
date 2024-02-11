@@ -1,4 +1,5 @@
 import { renderMethod } from './APISectionMethods';
+import { ELEMENT_SPACING } from './styles';
 
 import { APIDataType } from '~/components/plugins/api/APIDataType';
 import {
@@ -21,13 +22,12 @@ import {
   STYLES_APIBOX,
   getTagNamesList,
   STYLES_APIBOX_NESTED,
-  ELEMENT_SPACING,
   H3Code,
   getCommentContent,
   BoxSectionHeader,
 } from '~/components/plugins/api/APISectionUtils';
 import { Cell, Row, Table } from '~/ui/components/Table';
-import { H2, BOLD, P, CODE, DEMI, MONOSPACE } from '~/ui/components/Text';
+import { H2, BOLD, CALLOUT, CODE, DEMI, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionInterfacesProps = {
   data: InterfaceDefinitionData[];
@@ -120,17 +120,21 @@ const renderInterface = ({
   return (
     <div key={`interface-definition-${name}`} css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
       <APISectionDeprecationNote comment={comment} />
-      <APISectionPlatformTags comment={comment} prefix="Only for:" />
+      <APISectionPlatformTags comment={comment} />
       <H3Code tags={getTagNamesList(comment)}>
-        <MONOSPACE weight="medium">{name}</MONOSPACE>
+        <MONOSPACE weight="medium" className="wrap-anywhere">
+          {name}
+        </MONOSPACE>
       </H3Code>
       {extendedTypes?.length ? (
-        <P className={ELEMENT_SPACING}>
-          <DEMI>Extends: </DEMI>
+        <CALLOUT className={ELEMENT_SPACING}>
+          <CALLOUT tag="span" theme="secondary" weight="semiBold">
+            Extends:{' '}
+          </CALLOUT>
           {extendedTypes.map(extendedType => (
             <CODE key={`extend-${extendedType.name}`}>{resolveTypeName(extendedType)}</CODE>
           ))}
-        </P>
+        </CALLOUT>
       ) : null}
       <CommentTextBlock comment={comment} includePlatforms={false} />
       {interfaceMethods.length ? (

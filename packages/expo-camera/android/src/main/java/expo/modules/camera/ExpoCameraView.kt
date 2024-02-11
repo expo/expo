@@ -45,7 +45,7 @@ import expo.modules.kotlin.viewevent.EventDispatcher
 
 class ExpoCameraView(
   context: Context,
-  appContext: AppContext,
+  appContext: AppContext
 ) : ExpoView(context, appContext),
   LifecycleEventListener,
   BarCodeScannerAsyncTaskDelegate,
@@ -276,6 +276,7 @@ class ExpoCameraView(
         BarcodeScannedEvent(
           target = id,
           data = barCode.value,
+          raw = barCode.raw,
           type = barCode.type,
           cornerPoints = cornerPoints,
           boundingBox = boundingBox

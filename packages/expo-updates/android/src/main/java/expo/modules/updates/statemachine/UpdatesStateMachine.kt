@@ -12,21 +12,27 @@ import java.util.Date
  */
 class UpdatesStateMachine(
   androidContext: Context,
-  private val changeEventSender: UpdatesStateChangeEventSender
+  private val changeEventSender: UpdatesStateChangeEventSender,
+  private val validUpdatesStateValues: Set<UpdatesStateValue>
 ) {
-  private val serialExecutorQueue = StateMachineSerialExecutorQueue(object : StateMachineProcedure.StateMachineProcedureContext {
-    override fun processStateEvent(event: UpdatesStateEvent) {
-      this@UpdatesStateMachine.processEvent(event)
-    }
+  private val logger = UpdatesLogger(androidContext)
 
-    override fun getCurrentState(): UpdatesStateValue {
-      return state
-    }
+  private val serialExecutorQueue = StateMachineSerialExecutorQueue(
+    logger,
+    object : StateMachineProcedure.StateMachineProcedureContext {
+      override fun processStateEvent(event: UpdatesStateEvent) {
+        this@UpdatesStateMachine.processEvent(event)
+      }
 
-    override fun resetState() {
-      reset()
+      override fun getCurrentState(): UpdatesStateValue {
+        return state
+      }
+
+      override fun resetState() {
+        reset()
+      }
     }
-  })
+  )
 
   /**
    * Queue a StateMachineProcedure procedure for serial execution.
@@ -34,8 +40,6 @@ class UpdatesStateMachine(
   fun queueExecution(stateMachineProcedure: StateMachineProcedure) {
     serialExecutorQueue.queueExecution(stateMachineProcedure)
   }
-
-  private val logger = UpdatesLogger(androidContext)
 
   /**
    * The current state
@@ -79,7 +83,12 @@ class UpdatesStateMachine(
       assert(false) { "UpdatesState: invalid transition requested: state = $state, event = ${event.type}" }
       return false
     }
-    state = updatesStateTransitions[event.type] ?: UpdatesStateValue.Idle
+    val newStateValue = updatesStateTransitions[event.type] ?: UpdatesStateValue.Idle
+    if (!validUpdatesStateValues.contains(newStateValue)) {
+      assert(false) { "UpdatesState: invalid transition requested: state = $state, event = ${event.type}" }
+      return false
+    }
+    state = newStateValue
     return true
   }
 
@@ -129,7 +138,7 @@ class UpdatesStateMachine(
           latestManifest = null,
           rollback = null,
           isUpdateAvailable = false,
-          lastCheckForUpdateTime = Date(),
+          lastCheckForUpdateTime = Date()
         )
         is UpdatesStateEvent.CheckCompleteWithRollback -> context.copy(
           isChecking = false,
@@ -156,7 +165,7 @@ class UpdatesStateMachine(
         is UpdatesStateEvent.DownloadComplete -> context.copy(
           isDownloading = false,
           downloadError = null,
-          isUpdatePending = true,
+          isUpdatePending = true
         )
         is UpdatesStateEvent.DownloadCompleteWithRollback -> context.copy(
           isDownloading = false,

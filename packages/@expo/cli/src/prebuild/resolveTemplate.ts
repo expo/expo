@@ -1,4 +1,5 @@
-import { ExpoConfig } from '@expo/config-types';
+import { ExpoConfig } from '@expo/config';
+import assert from 'assert';
 import chalk from 'chalk';
 import fs from 'fs';
 import { Ora } from 'ora';
@@ -7,8 +8,10 @@ import semver from 'semver';
 
 import { fetchAsync } from '../api/rest/client';
 import * as Log from '../log';
+import { createGlobFilter } from '../utils/createFileTransform';
 import { AbortCommandError, CommandError } from '../utils/errors';
 import {
+  ExtractProps,
   downloadAndExtractNpmModuleAsync,
   extractLocalNpmTarballAsync,
   extractNpmTarballFromUrlAsync,
@@ -34,12 +37,12 @@ export async function cloneTemplateAsync({
   template?: string;
   exp: Pick<ExpoConfig, 'name' | 'sdkVersion'>;
   ora: Ora;
-}) {
+}): Promise<string> {
   if (template) {
-    await resolveTemplateArgAsync(templateDirectory, ora, exp.name, template);
+    return await resolveTemplateArgAsync(templateDirectory, ora, exp.name, template);
   } else {
     const templatePackageName = await getTemplateNpmPackageName(exp.sdkVersion);
-    await downloadAndExtractNpmModuleAsync(templatePackageName, {
+    return await downloadAndExtractNpmModuleAsync(templatePackageName, {
       cwd: templateDirectory,
       name: exp.name,
     });
@@ -90,21 +93,30 @@ function hasRepo({ username, name, branch, filePath }: RepoInfo) {
 }
 
 async function downloadAndExtractRepoAsync(
-  root: string,
-  { username, name, branch, filePath }: RepoInfo
-): Promise<void> {
-  const projectName = path.basename(root);
-
-  const strip = filePath ? filePath.split('/').length + 1 : 1;
-
+  { username, name, branch, filePath }: RepoInfo,
+  props: ExtractProps
+): Promise<string> {
   const url = `https://codeload.github.com/${username}/${name}/tar.gz/${branch}`;
+
   debug('Downloading tarball from:', url);
-  await extractNpmTarballFromUrlAsync(url, {
-    cwd: root,
-    name: projectName,
-    strip,
-    fileList: [`${name}-${branch}${filePath ? `/${filePath}` : ''}`],
-  });
+
+  // Extract the (sub)directory into non-empty path segments
+  const directory = filePath.replace(/^\//, '').split('/').filter(Boolean);
+  // Remove the (sub)directory paths, and the root folder added by GitHub
+  const strip = directory.length + 1;
+  // Only extract the relevant (sub)directories, ignoring irrelevant files
+  // The filder auto-ignores dotfiles, unless explicitly included
+  const filter = createGlobFilter(
+    !directory.length
+      ? ['*/**', '*/ios/.xcode.env']
+      : [`*/${directory.join('/')}/**`, `*/${directory.join('/')}/ios/.xcode.env`],
+    {
+      // Always ignore the `.xcworkspace` folder
+      ignore: ['**/ios/*.xcworkspace/**'],
+    }
+  );
+
+  return await extractNpmTarballFromUrlAsync(url, { ...props, strip, filter });
 }
 
 export async function resolveTemplateArgAsync(
@@ -113,76 +125,73 @@ export async function resolveTemplateArgAsync(
   appName: string,
   template: string,
   templatePath?: string
-) {
-  let repoInfo: RepoInfo | undefined;
+): Promise<string> {
+  assert(template, 'template is required');
 
-  if (template) {
-    // @ts-ignore
-    let repoUrl: URL | undefined;
+  let repoUrl: URL | undefined;
 
-    try {
-      // @ts-ignore
-      repoUrl = new URL(template);
-    } catch (error: any) {
-      if (error.code !== 'ERR_INVALID_URL') {
-        oraInstance.fail(error);
-        throw error;
-      }
-    }
-
-    // On Windows, we can actually create a URL from a local path
-    // Double-check if the created URL is not a path to avoid mixing up URLs and paths
-    if (process.platform === 'win32' && repoUrl && path.isAbsolute(repoUrl.toString())) {
-      repoUrl = undefined;
-    }
-
-    if (!repoUrl) {
-      const templatePath = path.resolve(template);
-      if (!fs.existsSync(templatePath)) {
-        throw new CommandError(`template file does not exist: ${templatePath}`);
-      }
-
-      await extractLocalNpmTarballAsync(templatePath, { cwd: templateDirectory, name: appName });
-      return templateDirectory;
-    }
-
-    if (repoUrl.origin !== 'https://github.com') {
-      oraInstance.fail(
-        `Invalid URL: ${chalk.red(
-          `"${template}"`
-        )}. Only GitHub repositories are supported. Please use a GitHub URL and try again.`
-      );
-      throw new AbortCommandError();
-    }
-
-    repoInfo = await getRepoInfo(repoUrl, templatePath);
-
-    if (!repoInfo) {
-      oraInstance.fail(
-        `Found invalid GitHub URL: ${chalk.red(`"${template}"`)}. Please fix the URL and try again.`
-      );
-      throw new AbortCommandError();
-    }
-
-    const found = await hasRepo(repoInfo);
-
-    if (!found) {
-      oraInstance.fail(
-        `Could not locate the repository for ${chalk.red(
-          `"${template}"`
-        )}. Please check that the repository exists and try again.`
-      );
-      throw new AbortCommandError();
+  try {
+    repoUrl = new URL(template);
+  } catch (error: any) {
+    if (error.code !== 'ERR_INVALID_URL') {
+      oraInstance.fail(error);
+      throw error;
     }
   }
 
-  if (repoInfo) {
-    oraInstance.text = chalk.bold(
-      `Downloading files from repo ${chalk.cyan(template)}. This might take a moment.`
+  // On Windows, we can actually create a URL from a local path
+  // Double-check if the created URL is not a path to avoid mixing up URLs and paths
+  if (process.platform === 'win32' && repoUrl && path.isAbsolute(repoUrl.toString())) {
+    repoUrl = undefined;
+  }
+
+  if (!repoUrl) {
+    const templatePath = path.resolve(template);
+    if (!fs.existsSync(templatePath)) {
+      throw new CommandError(`template file does not exist: ${templatePath}`);
+    }
+
+    return await extractLocalNpmTarballAsync(templatePath, {
+      cwd: templateDirectory,
+      name: appName,
+    });
+  }
+
+  if (repoUrl.origin !== 'https://github.com') {
+    oraInstance.fail(
+      `Invalid URL: ${chalk.red(
+        `"${template}"`
+      )}. Only GitHub repositories are supported. Please use a GitHub URL and try again.`
     );
-
-    await downloadAndExtractRepoAsync(templateDirectory, repoInfo);
+    throw new AbortCommandError();
   }
 
-  return true;
+  const repoInfo = await getRepoInfo(repoUrl, templatePath);
+
+  if (!repoInfo) {
+    oraInstance.fail(
+      `Found invalid GitHub URL: ${chalk.red(`"${template}"`)}. Please fix the URL and try again.`
+    );
+    throw new AbortCommandError();
+  }
+
+  const found = await hasRepo(repoInfo);
+
+  if (!found) {
+    oraInstance.fail(
+      `Could not locate the repository for ${chalk.red(
+        `"${template}"`
+      )}. Please check that the repository exists and try again.`
+    );
+    throw new AbortCommandError();
+  }
+
+  oraInstance.text = chalk.bold(
+    `Downloading files from repo ${chalk.cyan(template)}. This might take a moment.`
+  );
+
+  return await downloadAndExtractRepoAsync(repoInfo, {
+    cwd: templateDirectory,
+    name: appName,
+  });
 }

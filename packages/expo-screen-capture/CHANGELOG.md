@@ -8,7 +8,17 @@
 
 ### 🐛 Bug fixes
 
+- Fix screenshot listener not being called on Android 34. ([#26549](https://github.com/expo/expo/pull/26549) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
+
+- Native module on iOS is now written in Swift using the Sweet API. ([#26103](https://github.com/expo/expo/pull/26103) by [@fobos531](https://github.com/fobos531))
+
+## 5.8.0 — 2023-12-15
+
+### 🎉 New features
+
+- Added `getPermissionsAsync` and `requestPermissionsAsync` methods. ([#25849](https://github.com/expo/expo/pull/25849) by [@behenate](https://github.com/behenate))
 
 ## 5.7.0 — 2023-11-14
 

@@ -12,7 +12,9 @@ fun RGBAtoARGB(rgba: String?): String? {
   }
   return if (rgba.startsWith("#") && rgba.length == 9) {
     "#" + rgba.substring(7, 9) + rgba.substring(1, 7)
-  } else rgba
+  } else {
+    rgba
+  }
 }
 
 fun isValidColor(color: String?): Boolean {

@@ -17,7 +17,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.renderRouter = void 0;
+exports.renderRouter = exports.getMockContext = exports.getMockConfig = void 0;
 /// <reference types="../../types/jest" />
 require("./expect");
 const react_native_1 = require("@testing-library/react-native");
@@ -26,29 +26,41 @@ const react_1 = __importDefault(require("react"));
 const context_stubs_1 = require("./context-stubs");
 const mocks_1 = require("./mocks");
 const ExpoRoot_1 = require("../ExpoRoot");
+const getPathFromState_1 = __importDefault(require("../fork/getPathFromState"));
 const getLinkingConfig_1 = require("../getLinkingConfig");
+const getRoutes_1 = require("../getRoutes");
 const router_store_1 = require("../global-state/router-store");
 // re-export everything
 __exportStar(require("@testing-library/react-native"), exports);
 function isOverrideContext(context) {
     return Boolean(typeof context === 'object' && 'appDir' in context);
 }
+function getMockConfig(context) {
+    return (0, getLinkingConfig_1.getNavigationConfig)((0, getRoutes_1.getExactRoutes)(getMockContext(context)));
+}
+exports.getMockConfig = getMockConfig;
+function getMockContext(context) {
+    if (typeof context === 'string') {
+        return (0, context_stubs_1.requireContext)(path_1.default.resolve(process.cwd(), context));
+    }
+    else if (Array.isArray(context)) {
+        return (0, context_stubs_1.inMemoryContext)(Object.fromEntries(context.map((filename) => [filename, { default: () => null }])));
+    }
+    else if (isOverrideContext(context)) {
+        return (0, context_stubs_1.requireContextWithOverrides)(context.appDir, context.overrides);
+    }
+    else {
+        return (0, context_stubs_1.inMemoryContext)(context);
+    }
+}
+exports.getMockContext = getMockContext;
 function renderRouter(context = './app', { initialUrl = '/', ...options } = {}) {
     jest.useFakeTimers();
-    let ctx;
+    const mockContext = getMockContext(context);
     // Reset the initial URL
     (0, mocks_1.setInitialUrl)(initialUrl);
     // Force the render to be synchronous
     process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
-    if (typeof context === 'string') {
-        ctx = (0, context_stubs_1.requireContext)(path_1.default.resolve(process.cwd(), context));
-    }
-    else if (isOverrideContext(context)) {
-        ctx = (0, context_stubs_1.requireContextWithOverrides)(context.appDir, context.overrides);
-    }
-    else {
-        ctx = (0, context_stubs_1.inMemoryContext)(context);
-    }
     getLinkingConfig_1.stateCache.clear();
     let location;
     if (typeof initialUrl === 'string') {
@@ -57,7 +69,7 @@ function renderRouter(context = './app', { initialUrl = '/', ...options } = {}) 
     else if (initialUrl instanceof URL) {
         location = initialUrl;
     }
-    const result = (0, react_native_1.render)(<ExpoRoot_1.ExpoRoot context={ctx} location={location}/>, {
+    const result = (0, react_native_1.render)(<ExpoRoot_1.ExpoRoot context={mockContext} location={location}/>, {
         ...options,
     });
     return Object.assign(result, {
@@ -69,6 +81,9 @@ function renderRouter(context = './app', { initialUrl = '/', ...options } = {}) 
         },
         getSearchParams() {
             return router_store_1.store.routeInfoSnapshot().params;
+        },
+        getPathnameWithParams() {
+            return (0, getPathFromState_1.default)(router_store_1.store.rootState, router_store_1.store.linking.config);
         },
     });
 }

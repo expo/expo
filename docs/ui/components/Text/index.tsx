@@ -1,12 +1,12 @@
 import { css, CSSObject, SerializedStyles } from '@emotion/react';
-import { theme, typography, LinkBase, LinkBaseProps } from '@expo/styleguide';
+import { theme, typography, LinkBase, LinkBaseProps, mergeClasses } from '@expo/styleguide';
 import { spacing, borderRadius } from '@expo/styleguide-base';
 import * as React from 'react';
 
 import { TextComponentProps, TextElement } from './types';
 
 import { AdditionalProps, HeadingType } from '~/common/headingManager';
-import Permalink from '~/components/Permalink';
+import { Permalink } from '~/ui/components/Permalink';
 import { durations } from '~/ui/foundations/durations';
 
 export { AnchorContext } from './withAnchor';
@@ -25,9 +25,11 @@ export const createPermalinkedComponent = (
   options?: {
     baseNestingLevel?: number;
     sidebarType?: HeadingType;
+    iconSize?: 'sm' | 'xs';
+    className?: string;
   }
 ) => {
-  const { baseNestingLevel, sidebarType = HeadingType.Text } = options || {};
+  const { baseNestingLevel, iconSize = 'sm', sidebarType = HeadingType.Text } = options || {};
   return ({ children, level, id, className, ...props }: PermalinkedComponentProps) => {
     const cleanChildren = React.Children.map(children, child => {
       if (React.isValidElement(child) && child?.props?.href) {
@@ -42,7 +44,15 @@ export const createPermalinkedComponent = (
     });
     const nestingLevel = baseNestingLevel != null ? (level ?? 0) + baseNestingLevel : undefined;
     return (
-      <Permalink nestingLevel={nestingLevel} additionalProps={{ ...props, sidebarType }} id={id}>
+      <Permalink
+        nestingLevel={nestingLevel}
+        additionalProps={{
+          ...props,
+          sidebarType,
+          iconSize,
+          className: mergeClasses(className, options?.className),
+        }}
+        id={id}>
         <BaseComponent>{cleanChildren}</BaseComponent>
       </Permalink>
     );
@@ -123,7 +133,6 @@ const linkStyled = css({
 const codeStyle = css({
   borderColor: theme.border.secondary,
   borderRadius: borderRadius.sm,
-  verticalAlign: 'initial',
   wordBreak: 'unset',
 });
 
@@ -142,7 +151,7 @@ export const kbdStyle = css({
 });
 
 const { h1, h2, h3, h4, h5 } = typography.headers.default;
-const codeInHeaderStyle = { '& code': { fontSize: '95%' } };
+const codeInHeaderStyle = { '& code': { fontSize: '90%' } };
 
 const h1Style = {
   ...h1,

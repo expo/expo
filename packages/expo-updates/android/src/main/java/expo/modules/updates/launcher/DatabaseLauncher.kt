@@ -14,7 +14,7 @@ import expo.modules.updates.loader.FileDownloader.AssetDownloadCallback
 import expo.modules.updates.loader.LoaderFiles
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
-import expo.modules.updates.manifest.EmbeddedManifest
+import expo.modules.updates.manifest.EmbeddedManifestUtils
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import java.io.File
@@ -126,11 +126,11 @@ class DatabaseLauncher(
     // We can only run an update marked as embedded if it's actually the update embedded in the
     // current binary. We might have an older update from a previous binary still listed as
     // "EMBEDDED" in the database so we need to do this check.
-    val embeddedUpdateManifest = EmbeddedManifest.get(context, configuration)
+    val embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, configuration)
     val filteredLaunchableUpdates = mutableListOf<UpdateEntity>()
     for (update in launchableUpdates) {
       if (update.status == UpdateStatus.EMBEDDED) {
-        if (embeddedUpdateManifest != null && embeddedUpdateManifest.updateEntity.id != update.id) {
+        if (embeddedUpdate != null && embeddedUpdate.updateEntity.id != update.id) {
           continue
         }
       }
@@ -141,7 +141,7 @@ class DatabaseLauncher(
   }
 
   private fun embeddedAssetFileMap(context: Context): MutableMap<AssetEntity, String> {
-    val embeddedManifest = EmbeddedManifest.get(context, configuration)
+    val embeddedManifest = EmbeddedManifestUtils.getEmbeddedUpdate(context, configuration)
     val embeddedAssets = embeddedManifest?.assetEntityList ?: listOf()
     logger?.info("embeddedAssetFileMap: embeddedAssets count = ${embeddedAssets.count()}")
     return mutableMapOf<AssetEntity, String>().apply {
@@ -171,9 +171,9 @@ class DatabaseLauncher(
     if (!assetFileExists) {
       // something has gone wrong, we're missing this asset
       // first we check to see if a copy is embedded in the binary
-      val embeddedUpdateManifest = EmbeddedManifest.get(context, configuration)
-      if (embeddedUpdateManifest != null) {
-        val embeddedAssets = embeddedUpdateManifest.assetEntityList
+      val embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, configuration)
+      if (embeddedUpdate != null) {
+        val embeddedAssets = embeddedUpdate.assetEntityList
         var matchingEmbeddedAsset: AssetEntity? = null
         for (embeddedAsset in embeddedAssets) {
           if (embeddedAsset.key != null && embeddedAsset.key == asset.key) {
@@ -202,7 +202,6 @@ class DatabaseLauncher(
       fileDownloader.downloadAsset(
         asset,
         updatesDirectory,
-        configuration,
         context,
         object : AssetDownloadCallback {
           override fun onFailure(e: Exception, assetEntity: AssetEntity) {

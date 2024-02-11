@@ -7,7 +7,7 @@ module.exports = function (api) {
         {
           modules: false, // Disable the default `modules-commonjs`, to enable lazy evaluation
           targets: {
-            node: '12.0.0',
+            node: '18.0.0',
           },
         },
       ],
@@ -15,11 +15,11 @@ module.exports = function (api) {
     ],
     plugins: [
       require('babel-plugin-dynamic-import-node'),
-      require('@babel/plugin-proposal-export-namespace-from'),
+      require('@babel/plugin-transform-export-namespace-from'),
       [
         require('@babel/plugin-transform-modules-commonjs'),
         {
-          lazy: /* istanbul ignore next */ (source) => true,
+          lazy: () => true,
         },
       ],
     ],

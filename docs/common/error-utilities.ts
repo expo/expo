@@ -181,12 +181,13 @@ const RENAMED_PAGES: Record<string, string> = {
   '/introduction/project-lifecycle/': '/archive/managed-vs-bare/',
   '/versions/latest/sdk/': '/versions/latest/',
   '/versions/latest/sdk/overview/': '/versions/latest/',
-  '/guides/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
-  '/distribution/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
+  '/guides/building-standalone-apps/': '/archive/classic-builds/building-standalone-apps/',
+  '/distribution/building-standalone-apps/': '/archive/classic-builds/building-standalone-apps/',
   '/guides/genymotion/': '/workflow/android-studio-emulator/',
   '/workflow/upgrading-expo/': '/workflow/upgrading-expo-sdk-walkthrough/',
   '/workflow/create-react-native-app/': '/more/glossary-of-terms/#create-react-native-app',
   '/expokit/': '/archive/glossary/#expokit/',
+  '/build-reference/migrating/': '/archive/classic-builds/migrating/',
 
   // Development builds redirects
   '/development/build/': '/develop/development-builds/create-a-build/',
@@ -234,9 +235,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/routing/layouts/': '/router/layouts/',
   '/routing/appearance/': '/router/appearance/',
   '/routing/error-handling/': '/router/error-handling/',
-
-  // Move overview to index
-  '/versions/v37.0.0/sdk/overview/': '/versions/v37.0.0/',
 
   // Errors and debugging is better suited for getting started than tutorial
   '/tutorial/errors/': '/debugging/errors-and-warnings/',
@@ -291,6 +289,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/v41.0.0/sdk/permissions/': '/guides/permissions/',
   '/versions/v42.0.0/sdk/permissions/': '/guides/permissions/',
   '/versions/v43.0.0/sdk/permissions/': '/guides/permissions/',
+  '/versions/v46.0.0/sdk/permissions/': '/guides/permissions/',
+  '/versions/v47.0.0/sdk/permissions/': '/guides/permissions/',
   '/versions/latest/sdk/permissions/': '/guides/permissions/',
 
   // Redirect bare guides to unified workflow guides
@@ -340,13 +340,15 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/errors/': '/debugging/runtime-issues/',
   '/guides/using-graphql/': '/guides/overview/',
   '/guides/using-styled-components/': '/guides/overview/',
-  '/guides/using-bugsnag/': '/guides/overview/',
   '/build/automating-submissions/': '/build/automate-submissions/',
   '/workflow/run-on-device/': '/build/internal-distribution/',
   '/guides/': '/guides/overview/',
   '/archive/workflow/customizing/': '/workflow/customizing/',
   '/errors-and-warnings/': '/debugging/errors-and-warnings/',
   '/guides/education': '/additional-resources/',
+  '/versions/latest/sdk/in-app-purchases/': '/guides/in-app-purchases/',
+  '/versions/v50.0.0/sdk/in-app-purchases/': '/guides/in-app-purchases/',
+  '/guides/web-performance/': '/guides/analyzing-bundles/',
 
   // Classic updates moved to archive
   '/guides/configuring-ota-updates/': '/archive/classic-updates/getting-started/',
@@ -354,14 +356,13 @@ const RENAMED_PAGES: Record<string, string> = {
   '/distribution/release-channels/': '/archive/classic-updates/release-channels/',
   '/distribution/advanced-release-channels/': '/archive/classic-updates/advanced-release-channels/',
   '/distribution/optimizing-updates/': '/archive/classic-updates/optimizing-updates/',
-  '/eas-update/custom-updates-server/': '/distribution/custom-updates-server/',
   '/guides/offline-support/': '/archive/classic-updates/offline-support/',
   '/guides/preloading-and-caching-assets/':
     '/archive/classic-updates/preloading-and-caching-assets/',
   '/eas-update/bare-react-native/': '/eas-update/updating-your-app/',
   '/worfkflow/publishing/': '/archive/classic-updates/publishing/',
-  '/classic/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
-  '/classic/turtle-cli/': '/archive/classic-updates/turtle-cli/',
+  '/classic/building-standalone-apps/': '/archive/classic-builds/building-standalone-apps/',
+  '/classic/turtle-cli/': '/archive/classic-builds/turtle-cli/',
   '/archive/classic-updates/getting-started/': '/eas-update/getting-started/',
 
   // Redirects for removed API docs based on Sentry
@@ -387,8 +388,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/using-preact/': '/guides/overview/',
   '/versions/latest/sdk/shared-element/': '/versions/latest/',
   '/workflow/hermes/': '/guides/using-hermes/',
-
-  // Push notifications
   '/config/app/': '/workflow/configuration/',
   '/versions/latest/sdk/settings/': '/versions/latest/',
   '/archive/expokit/eject/': '/archive/glossary/#eject',
@@ -405,6 +404,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/eas-update/debug-updates/': '/eas-update/debug/',
   '/eas-update/how-eas-update-works/': '/eas-update/how-it-works/',
   '/eas-update/migrate-to-eas-update/': '/eas-update/migrate-from-classic-updates/',
+  '/distribution/custom-updates-server/': '/eas-update/custom-updates-server/',
 
   // Expo Router Advanced guides
   '/router/advance/root-layout': '/router/advanced/root-layout/',
@@ -416,4 +416,27 @@ const RENAMED_PAGES: Record<string, string> = {
   '/router/advance/platform-specific-modules': '/router/advanced/platform-specific-modules/',
   '/router/advance/shared-routes': '/router/advanced/shared-routes/',
   '/router/advance/router-settings': '/router/advanced/router-settings/',
+
+  // Redirects as per Algolia 404 report
+  '/workflow/build/building-on-ci': '/build/building-on-ci/',
+  'versions/latest/sdk/filesystem.md': '/versions/latest/sdk/filesystem/',
+  '/versions/v49.0.0/sdk/filesystem.md': '/versions/v49.0.0/sdk/filesystem/',
+  '/versions/v48.0.0/sdk/filesystem.md': '/versions/v48.0.0/sdk/filesystem/',
+  '/versions/v47.0.0/sdk/filesystem.md': '/versions/latest/sdk/filesystem/',
+  '/versions/v46.0.0/sdk/filesystem.md': '/versions/latest/sdk/filesystem/',
+  '/versions/v50.0.0/sdk/taskmanager': '/versions/v50.0.0/sdk/task-manager/',
+  '/versions/v49.0.0/sdk/taskmanager': '/versions/v49.0.0/sdk/task-manager/',
+  '/versions/v48.0.0/sdk/taskmanager': '/versions/v48.0.0/sdk/task-manager/',
+  '/versions/v47.0.0/sdk/taskmanager': '/versions/v48.0.0/sdk/task-manager/',
+  '/versions/v46.0.0/sdk/taskmanager': '/versions/latest/sdk/task-manager/',
+  '/task-manager/': '/versions/latest/sdk/task-manager',
+  'versions/v48.0.0/sdk': '/versions/latest',
+  'versions/v48.0.0/sdk/config/app': '/versions/v48.0.0/sdk/config/app/',
+  '/versions/v50.0.0/sdk': '/versions/v50.0.0',
+  '/versions/v49.0.0/sdk': '/versions/v49.0.0',
+  '/versions/v47.0.0/sdk': '/versions/latest',
+  '/versions/v46.0.0/sdk': '/versions/latest',
+
+  // Deprecated Webpack support
+  '/guides/customizing-webpack': '/archive/customizing-webpack',
 };

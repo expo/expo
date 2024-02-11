@@ -85,10 +85,10 @@ index 0e77904834..0000000000
 -    ],
 -)
 diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
-index f0293fe400..52d31e3c5e 100644
+index f0293fe400..57a6967e8c 100644
 --- a/templates/expo-template-bare-minimum/android/app/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/app/build.gradle
-@@ -1,235 +1,97 @@
+@@ -1,235 +1,95 @@
  apply plugin: "com.android.application"
 -
 -import com.android.build.OutputFile
@@ -318,7 +318,7 @@ index f0293fe400..52d31e3c5e 100644
 -                    // Make sure this target name is the same you specify inside the
 -                    // src/main/jni/Android.mk file for the `LOCAL_MODULE` variable.
 -                    targets "helloworld_appmodules"
- 
+-
 -                    // Fix for windows limit on number of character in file paths and in command lines
 -                    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
 -                        arguments "NDK_APP_SHORT_COMMANDS=true"
@@ -381,11 +381,10 @@ index f0293fe400..52d31e3c5e 100644
 -            universalApk false  // If true, also generate a universal APK
 -            include (*reactNativeArchitectures())
 -        }
-+        buildConfigField("boolean", "REACT_NATIVE_UNSTABLE_USE_RUNTIME_SCHEDULER_ALWAYS", (findProperty("reactNative.unstable_useRuntimeSchedulerAlways") ?: true).toString())
      }
      signingConfigs {
          debug {
-@@ -247,25 +109,11 @@ android {
+@@ -247,23 +107,14 @@ android {
              // Caution! In production, you need to generate your own keystore file.
              // see https://reactnative.dev/docs/signed-apk-android.
              signingConfig signingConfigs.debug
@@ -407,12 +406,13 @@ index f0293fe400..52d31e3c5e 100644
 -                        versionCodes.get(abi) * 1048576 + defaultConfig.versionCode
 -            }
 -
--        }
--    }
++    packagingOptions {
++        jniLibs {
++            useLegacyPackaging (findProperty('expo.useLegacyPackaging')?.toBoolean() ?: false)
+         }
+     }
  }
- 
- // Apply static values from `gradle.properties` to the `android.packagingOptions`
-@@ -289,10 +137,8 @@ android {
+@@ -289,88 +140,33 @@ android {
  }
  
  dependencies {
@@ -425,30 +425,29 @@ index f0293fe400..52d31e3c5e 100644
  
      def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
      def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
-@@ -301,76 +147,32 @@ dependencies {
- 
-     // If your app supports Android versions before Ice Cream Sandwich (API level 14)
-     if (isGifEnabled || isWebpEnabled) {
+     def isWebpAnimatedEnabled = (findProperty('expo.webp.animated') ?: "") == "true";
+-    def frescoVersion = rootProject.ext.frescoVersion
+-
+-    // If your app supports Android versions before Ice Cream Sandwich (API level 14)
+-    if (isGifEnabled || isWebpEnabled) {
 -        implementation "com.facebook.fresco:fresco:${frescoVersion}"
 -        implementation "com.facebook.fresco:imagepipeline-okhttp3:${frescoVersion}"
-+        implementation("com.facebook.fresco:fresco:${frescoVersion}")
-+        implementation("com.facebook.fresco:imagepipeline-okhttp3:${frescoVersion}")
-     }
+-    }
  
      if (isGifEnabled) {
          // For animated gif support
 -        implementation "com.facebook.fresco:animated-gif:${frescoVersion}"
-+        implementation("com.facebook.fresco:animated-gif:${frescoVersion}")
++        implementation("com.facebook.fresco:animated-gif:${reactAndroidLibs.versions.fresco.get()}")
      }
  
      if (isWebpEnabled) {
          // For webp support
 -        implementation "com.facebook.fresco:webpsupport:${frescoVersion}"
-+        implementation("com.facebook.fresco:webpsupport:${frescoVersion}")
++        implementation("com.facebook.fresco:webpsupport:${reactAndroidLibs.versions.fresco.get()}")
          if (isWebpAnimatedEnabled) {
              // Animated webp support
 -            implementation "com.facebook.fresco:animated-webp:${frescoVersion}"
-+            implementation("com.facebook.fresco:animated-webp:${frescoVersion}")
++            implementation("com.facebook.fresco:animated-webp:${reactAndroidLibs.versions.fresco.get()}")
          }
      }
  
@@ -463,8 +462,7 @@ index f0293fe400..52d31e3c5e 100644
 -    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}") {
 -        exclude group:'com.facebook.flipper'
 -    }
-+    implementation("com.facebook.react:flipper-integration")
- 
+-
 -    if (enableHermes) {
 -        //noinspection GradleDynamicVersion
 -        implementation("com.facebook.react:hermes-engine:+") { // From node_modules
@@ -624,7 +622,7 @@ index 8cddb11cb2..0000000000
 -}
 \ No newline at end of file
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
-index 0cad655b33..34a7ca8314 100644
+index 0cad655b33..d40cad0264 100644
 --- a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
 @@ -1,4 +1,4 @@
@@ -633,15 +631,20 @@ index 0cad655b33..34a7ca8314 100644
  
    <uses-permission android:name="android.permission.INTERNET"/>
    <!-- OPTIONAL PERMISSIONS, REMOVE WHATEVER YOU DO NOT NEED -->
-@@ -18,7 +18,7 @@
+@@ -18,10 +18,10 @@
      </intent>
    </queries>
  
 -  <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme" android:usesCleartextTraffic="true">
 +  <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme">
      <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="YOUR-APP-URL-HERE"/>
-     <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="YOUR-APP-SDK-VERSION-HERE"/>
-     <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
+-    <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="YOUR-APP-SDK-VERSION-HERE"/>
+-    <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
++    <meta-data android:name="expo.modules.updates.EXPO_RUNTIME_VERSION" android:value="YOUR-APP-RUNTIME-VERSION-HERE"/>
++    <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
+       <intent-filter>
+         <action android:name="android.intent.action.MAIN"/>
+         <category android:name="android.intent.category.LAUNCHER"/>
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainActivity.java b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainActivity.java
 deleted file mode 100644
 index 8e13797d9b..0000000000
@@ -912,10 +915,10 @@ index 7deb688b07..0000000000
 -}
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
 new file mode 100644
-index 0000000000..dd90f54e04
+index 0000000000..95ef45de96
 --- /dev/null
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
-@@ -0,0 +1,63 @@
+@@ -0,0 +1,57 @@
 +package com.helloworld
 +
 +import android.app.Application
@@ -927,11 +930,9 @@ index 0000000000..dd90f54e04
 +import com.facebook.react.ReactNativeHost
 +import com.facebook.react.ReactPackage
 +import com.facebook.react.ReactHost
-+import com.facebook.react.config.ReactFeatureFlags
 +import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
 +import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 +import com.facebook.react.defaults.DefaultReactNativeHost
-+import com.facebook.react.flipper.ReactNativeFlipper
 +import com.facebook.soloader.SoLoader
 +
 +import expo.modules.ApplicationLifecycleDispatcher
@@ -963,14 +964,10 @@ index 0000000000..dd90f54e04
 +  override fun onCreate() {
 +    super.onCreate()
 +    SoLoader.init(this, false)
-+    if (!BuildConfig.REACT_NATIVE_UNSTABLE_USE_RUNTIME_SCHEDULER_ALWAYS) {
-+      ReactFeatureFlags.unstable_useRuntimeSchedulerAlways = false
-+    }
 +    if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
 +      // If you opted-in for the New Architecture, we load the native entry point for this app.
 +      load()
 +    }
-+    ReactNativeFlipper.initializeFlipper(this, reactNativeHost.reactInstanceManager)
 +    ApplicationLifecycleDispatcher.onApplicationCreate(this)
 +  }
 +
@@ -1535,10 +1532,10 @@ index f35d996202..73b37e4d99 100644
            The item below with state_pressed="false" and state_focused="false" causes a NullPointerException.
            NullPointerException:tempt to invoke virtual method 'android.graphics.drawable.Drawable android.graphics.drawable.Drawable$ConstantState.newDrawable(android.content.res.Resources)'
 diff --git a/templates/expo-template-bare-minimum/android/build.gradle b/templates/expo-template-bare-minimum/android/build.gradle
-index f259b31a11..9da06cc296 100644
+index f259b31a11..513b766148 100644
 --- a/templates/expo-template-bare-minimum/android/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/build.gradle
-@@ -1,72 +1,41 @@
+@@ -1,72 +1,40 @@
 -import org.apache.tools.ant.taskdefs.condition.Os
 -
  // Top-level build file where you can add configuration options common to all sub-projects/modules.
@@ -1546,17 +1543,18 @@ index f259b31a11..9da06cc296 100644
  buildscript {
      ext {
 -        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '31.0.0'
-+        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '34.0.0'
-         minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '21')
+-        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '21')
 -        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '31')
 -        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '31')
 -        if (findProperty('android.kotlinVersion')) {
 -            kotlinVersion = findProperty('android.kotlinVersion')
 -        }
+-        frescoVersion = findProperty('expo.frescoVersion') ?: '2.5.0'
++        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '34.0.0'
++        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '23')
 +        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '34')
 +        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
 +        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.8.10'
-         frescoVersion = findProperty('expo.frescoVersion') ?: '2.5.0'
  
 -        if (System.properties['os.arch'] == 'aarch64') {
 -            // For M1 Users we need to use the NDK 24 which added support for aarch64
@@ -1639,7 +1637,7 @@ index 64436baaf5..877b87e9a5 100644
  # Bundle artifacts
  *.jsbundle
 diff --git a/templates/expo-template-bare-minimum/android/gradle.properties b/templates/expo-template-bare-minimum/android/gradle.properties
-index fab3fb6bcf..a4efc8b9d8 100644
+index fab3fb6bcf..41b173c48a 100644
 --- a/templates/expo-template-bare-minimum/android/gradle.properties
 +++ b/templates/expo-template-bare-minimum/android/gradle.properties
 @@ -25,9 +25,6 @@ android.useAndroidX=true
@@ -1665,13 +1663,16 @@ index fab3fb6bcf..a4efc8b9d8 100644
  
  # Enable GIF support in React Native images (~200 B increase)
  expo.gif.enabled=true
-@@ -51,3 +48,6 @@ expo.webp.enabled=true
+@@ -51,3 +48,9 @@ expo.webp.enabled=true
  # Enable animated webp support (~3.4 MB increase)
  # Disabled by default because iOS doesn't support animated webp
  expo.webp.animated=false
 +
 +# Enable network inspector
 +EX_DEV_CLIENT_NETWORK_INSPECTOR=true
++
++# Use legacy packaging to compress native libraries in the resulting APK.
++expo.useLegacyPackaging=false
 diff --git a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar
 index 7454180f2a..7f93135c49 100644
 Binary files a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar and b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar differ
@@ -1835,10 +1836,20 @@ index ac1b06f938..53a6b238d4 100644
  :mainEnd
  if "%OS%"=="Windows_NT" endlocal
 diff --git a/templates/expo-template-bare-minimum/android/settings.gradle b/templates/expo-template-bare-minimum/android/settings.gradle
-index b3332319f9..17ab7a41d7 100644
+index b3332319f9..0fcba3d9bb 100644
 --- a/templates/expo-template-bare-minimum/android/settings.gradle
 +++ b/templates/expo-template-bare-minimum/android/settings.gradle
-@@ -3,15 +3,8 @@ rootProject.name = 'HelloWorld'
+@@ -1,17 +1,18 @@
+ rootProject.name = 'HelloWorld'
+ 
++dependencyResolutionManagement {
++  versionCatalogs {
++    reactAndroidLibs {
++      from(files(new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), "../gradle/libs.versions.toml")))
++    }
++  }
++}
++
  apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle");
  useExpoModules()
  
@@ -2214,7 +2225,7 @@ index a6e13e11ab..37d415b57d 100644
  #else
    return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
  #endif
-@@ -124,43 +59,4 @@ - (void)application:(UIApplication *)application didReceiveRemoteNotification:(N
+@@ -124,43 +59,4 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
    return [super application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
  }
  
@@ -2361,11 +2372,26 @@ index 9f116db7f2..5a1db7145b 100644
 -  <string>UIStatusBarStyleDefault</string>
  </dict>
  </plist>
+diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Supporting/Expo.plist b/templates/expo-template-bare-minimum/ios/HelloWorld/Supporting/Expo.plist
+index 03410dc8b3..f4f9f60993 100644
+--- a/templates/expo-template-bare-minimum/ios/HelloWorld/Supporting/Expo.plist
++++ b/templates/expo-template-bare-minimum/ios/HelloWorld/Supporting/Expo.plist
+@@ -2,8 +2,8 @@
+ <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+ <plist version="1.0">
+ <dict>
+-        <key>EXUpdatesSDKVersion</key>
+-        <string>YOUR-APP-SDK-VERSION-HERE</string>
++        <key>EXUpdatesRuntimeVersion</key>
++        <string>YOUR-APP-RUNTIME-VERSION-HERE</string>
+         <key>EXUpdatesURL</key>
+         <string>YOUR-APP-URL-HERE</string>
+ </dict>
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
-index 91612acca9..b3978b9515 100644
+index 91612acca9..eaf07ca4c2 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile
 +++ b/templates/expo-template-bare-minimum/ios/Podfile
-@@ -1,41 +1,64 @@
+@@ -1,41 +1,38 @@
  require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
  require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
 -require File.join(File.dirname(`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"`), "native_modules")
@@ -2382,30 +2408,6 @@ index 91612acca9..b3978b9515 100644
    :deterministic_uuids => false
  
 +prepare_react_native_project!
-+
-+# If you are using a `react-native-flipper` your iOS build will fail when `NO_FLIPPER=1` is set.
-+# because `react-native-flipper` depends on (FlipperKit,...), which will be excluded. To fix this,
-+# you can also exclude `react-native-flipper` in `react-native.config.js`
-+#
-+# ```js
-+# module.exports = {
-+#   dependencies: {
-+#     ...(process.env.NO_FLIPPER ? { 'react-native-flipper': { platforms: { ios: null } } } : {}),
-+#   }
-+# }
-+# ```
-+flipper_config = FlipperConfiguration.disabled
-+if ENV['NO_FLIPPER'] == '1' then
-+  # Explicitly disabled through environment variables
-+  flipper_config = FlipperConfiguration.disabled
-+elsif podfile_properties.key?('ios.flipper') then
-+  # Configure Flipper in Podfile.properties.json
-+  if podfile_properties['ios.flipper'] == 'true' then
-+    flipper_config = FlipperConfiguration.enabled(["Debug", "Release"])
-+  elsif podfile_properties['ios.flipper'] != 'false' then
-+    flipper_config = FlipperConfiguration.enabled(["Debug", "Release"], { 'Flipper' => podfile_properties['ios.flipper'] })
-+  end
-+end
 +
  target 'HelloWorld' do
    use_expo_modules!
@@ -2425,8 +2427,6 @@ index 91612acca9..b3978b9515 100644
      # An absolute path to your application root.
 -    :app_path => "#{Dir.pwd}/.."
 +    :app_path => "#{Pod::Config.instance.installation_root}/..",
-+    # Note that if you have use_frameworks! enabled, Flipper will not work if enabled
-+    :flipper_configuration => flipper_config
    )
  
 -  # Uncomment to opt-in to using Flipper
@@ -2471,7 +2471,7 @@ index 9430b0f9b6..07c9fce65d 100644
 +
 +module.exports = config;
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index d5ca09a584..684df0ef2e 100644
+index d5ca09a584..150bb72764 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -2479,7 +2479,7 @@ index d5ca09a584..684df0ef2e 100644
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "46.0.37",
-+  "version": "50.0.14",
++  "version": "50.0.17",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -2494,10 +2494,10 @@ index d5ca09a584..684df0ef2e 100644
 -    "react-dom": "18.0.0",
 -    "react-native": "0.69.9",
 -    "react-native-web": "~0.18.7"
-+    "expo": "~50.0.0-preview.1",
++    "expo": "~50.0.0-preview.4",
 +    "expo-status-bar": "~1.11.0",
 +    "react": "18.2.0",
-+    "react-native": "0.73.0"
++    "react-native": "0.73.2"
    },
    "devDependencies": {
 -    "@babel/core": "^7.12.9"

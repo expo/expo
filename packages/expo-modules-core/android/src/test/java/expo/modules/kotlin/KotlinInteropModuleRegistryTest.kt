@@ -25,7 +25,7 @@ private class TestRecord : Record {
   lateinit var string: String
 }
 
-private class TestModule_1 : Module() {
+private class TestModule1 : Module() {
   override fun definition() = ModuleDefinition {
     Name("test-1")
     AsyncFunction("f1") {
@@ -43,7 +43,7 @@ private class TestModule_1 : Module() {
   }
 }
 
-private class TestModule_2 : Module() {
+private class TestModule2 : Module() {
   override fun definition() = ModuleDefinition {
     Name("test-2")
     AsyncFunction("f1") {
@@ -60,8 +60,8 @@ private class TestModule_2 : Module() {
 private val provider = object : ModulesProvider {
   override fun getModulesList(): List<Class<out Module>> {
     return listOf(
-      TestModule_1::class.java,
-      TestModule_2::class.java
+      TestModule1::class.java,
+      TestModule2::class.java
     )
   }
 }
@@ -85,8 +85,10 @@ class KotlinInteropModuleRegistryTest {
   fun `should export constants`() {
     Truth.assertThat(interopModuleRegistry.exportedModulesConstants())
       .containsAtLeast(
-        "test-1", mapOf("c1" to 123, "c2" to "123"),
-        "test-2", emptyMap<String, Any>()
+        "test-1",
+        mapOf("c1" to 123, "c2" to "123"),
+        "test-2",
+        emptyMap<String, Any>()
       )
   }
 

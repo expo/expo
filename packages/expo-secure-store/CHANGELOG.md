@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
+- Add `canUseBiometricAuthentication` function. ([#26767](https://github.com/expo/expo/pull/26767) by [@behenate](https://github.com/behenate))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 12.8.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
 
 ## 12.8.0 — 2023-12-12
 

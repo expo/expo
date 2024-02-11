@@ -46,9 +46,9 @@ For reference, the following table provides what formats work on which platforms
 
 There are two ways to use a custom font in your project: either embed the font in your native project or load it at runtime. The first approach is recommended as it is simpler and more reliable. The second approach is useful if you want to load the font in Expo Go/without creating a new native build that includes it or loading it from a remote URL.
 
-### Embed the font in your native project
+### Embed font in a native project
 
-> **Note:** The `expo-font` config plugin is only available for SDK 50 and above. If you are using an older SDK, you can [load the font at runtime](#load-the-font-at-runtime) instead. 
+> **Note:** The `expo-font` config plugin is only available for SDK 50 and above. If you are using an older SDK, you can [load the font at runtime](#load-the-font-at-runtime) instead.
 
 Install [`expo-font`](/versions/latest/sdk/font/#installation) library and add the config plugin to your [app config](/versions/latest/config/app/) file. The plugin will embed the font in your native project.
 
@@ -59,9 +59,7 @@ Install [`expo-font`](/versions/latest/sdk/font/#installation) library and add t
       [
         "expo-font",
         {
-          "fonts": [
-            "./assets/fonts/Inter-Black.otf"
-          ]
+          "fonts": ["./assets/fonts/Inter-Black.otf"]
         }
       ]
     ]
@@ -71,9 +69,9 @@ Install [`expo-font`](/versions/latest/sdk/font/#installation) library and add t
 
 The `fonts` option takes an array of one or more font files to link to the native project. The path to each font file is relative to the project's root.
 
-[Create a new native build](/develop/development-builds/create-a-build/), and you can now use the font in your project with the `fontFamily` style prop. On Android, the font family name will be the name of the font file without the extension. On iOS, the font family name will be read from the font file itself. We recommend naming the font file the same as the font family so the family name is consistent on both platforms. For example, if you have a font family named "Inter-Black" and name the file **Inter-Black.otf**, then the font family name will be **Inter-Black** on both Android and iOS.
+After [creating a new native build](/develop/development-builds/create-a-build/), you can use the font in your project with the `fontFamily` style prop. On Android, the font family name will be the name of the font file without the extension. On iOS, the font family name will be read from the font file itself. We recommend naming the font file the same as the font family so the family name is consistent on both platforms. For example, if you have a font family named "Inter-Black" and the name of the file **Inter-Black.otf**, then the font family name will be **Inter-Black** on both Android and iOS.
 
-If you want to try a font without creating a new build, you can load it at runtime. This is what the next section explains.
+If you want to try a font without creating a new native build, you can load it at runtime. See the next section for details.
 
 <ConfigReactNative>
 
@@ -82,7 +80,7 @@ If you want to try a font without creating a new build, you can load it at runti
 
 </ConfigReactNative>
 
-### Load the font at runtime
+### Load font at runtime
 
 After getting the font file, in your project, you need to install [`expo-font`](/versions/latest/sdk/font/#installation) library.
 
@@ -201,9 +199,11 @@ For example, to use Inter font you can install the [`@expo-google-fonts/inter`](
 
 <Terminal cmd={['$ npx expo install expo-font @expo-google-fonts/inter']} />
 
-Then, you can [embed it into your project with the config plugin](#embed-the-font-in-your-native-project) by passing the path to the desired font file to the `expo-font.fonts` option, or you can use the `useFonts` hook.
+To use it in your project, you can [embed it in your project with the config plugin](#with-config-plugin) or use the [`useFonts` hook](#usefonts-hook).
 
-An example of the path provided to the `fonts` option in the config plugin:
+### With config plugin
+
+To use this approach, you need to [create a new native build](/develop/development-builds/create-a-build/) that includes the font. It is done by passing the path to the desired font file to the `expo-fonts.fonts` option. An example is shown below:
 
 ```json app.json
 {
@@ -211,14 +211,36 @@ An example of the path provided to the `fonts` option in the config plugin:
     [
       "expo-font",
       {
-        "fonts": "node_modules/@expo-google-fonts/inter/Inter_100Thin.ttf"
+        "fonts": ["node_modules/@expo-google-fonts/inter/Inter_100Thin.ttf"]
       }
     ]
   ]
 }
 ```
 
-The Google Fonts package provides the `useFonts` hook for convenience. Under the hood, the hook uses [`Font.loadAsync`](/versions/latest/sdk/font/#loadasyncfontfamilyorfontmap-source). You do not have to explicitly import the font file since the package itself does that.
+If the font you are using includes multiple weights (for example, `Inter_100Thin`, `Inter_700Bold` and so on), you can directly use the font file name for Android. For iOS, use the font and its weight name.
+
+The example below demonstrates how to use `Platform` to select the correct font family name for each platform:
+
+{/* prettier-ignore */}
+```jsx
+import { Platform } from 'react-native';
+
+// Inside a component:
+<Text
+  style={{
+    fontFamily: Platform.select({
+      android: 'Inter_100Thin',
+      ios: 'Inter-Thin',
+    })
+  }}>
+  Inter Bold
+</Text>
+```
+
+### `useFonts` hook
+
+Each Google Fonts package provides the `useFonts` hook for convenience. Under the hood, the hook uses [`Font.loadAsync`](/versions/latest/sdk/font/#loadasyncfontfamilyorfontmap-source). You do not have to explicitly import the font file since the package itself does that.
 
 <SnackInline label="Using Google fonts" dependencies={['@expo-google-fonts/inter']}>
 

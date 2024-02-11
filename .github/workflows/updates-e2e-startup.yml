@@ -37,9 +37,9 @@ jobs:
       UPDATES_PORT: 4747
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: ⬢ Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18
       - name: ➕ Add `bin` to GITHUB_PATH
@@ -96,6 +96,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_api }}
+          MATRIX_CONTEXT: ${{ toJson(matrix) }}
         with:
           channel: '#expo-sdk'
           status: ${{ job.status }}

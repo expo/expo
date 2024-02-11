@@ -1,6 +1,22 @@
 import { createBundleUrlPath, getMetroDirectBundleOptions } from '../metroOptions';
 
 describe(getMetroDirectBundleOptions, () => {
+  it(`asserts unsupported options: using bytecode on web`, () => {
+    expect(() =>
+      getMetroDirectBundleOptions({
+        bytecode: true,
+        platform: 'web',
+      })
+    ).toThrowError(/Cannot use bytecode with the web platform/);
+  });
+  it(`asserts unsupported options: using bytecode without hermes`, () => {
+    expect(() =>
+      getMetroDirectBundleOptions({
+        bytecode: true,
+      })
+    ).toThrowError(/Bytecode is only supported with the Hermes engine/);
+  });
+
   it(`returns basic options`, () => {
     expect(
       getMetroDirectBundleOptions({

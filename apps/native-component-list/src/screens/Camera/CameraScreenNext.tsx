@@ -1,6 +1,5 @@
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
-import * as BarCodeScanner from 'expo-barcode-scanner';
 import {
   BarcodePoint,
   BarcodeScanningResult,
@@ -41,7 +40,7 @@ const photos: CameraCapturedPicture[] = [];
 interface State {
   flash: FlashMode;
   zoom: number;
-  type: CameraType;
+  facing: CameraType;
   barcodeScanning: boolean;
   mute: boolean;
   torchEnabled: boolean;
@@ -60,7 +59,7 @@ export default class CameraScreen extends React.Component<object, State> {
   readonly state: State = {
     flash: 'off',
     zoom: 0,
-    type: 'back',
+    facing: 'back',
     barcodeScanning: false,
     torchEnabled: false,
     cornerPoints: undefined,
@@ -100,7 +99,7 @@ export default class CameraScreen extends React.Component<object, State> {
 
   toggleFacing = () =>
     this.setState((state) => ({
-      type: state.type === 'back' ? 'front' : 'back',
+      facing: state.facing === 'back' ? 'front' : 'back',
     }));
 
   toggleFlash = () => this.setState((state) => ({ flash: flashModeOrder[state.flash] }));
@@ -234,7 +233,7 @@ export default class CameraScreen extends React.Component<object, State> {
             <MaterialCommunityIcons name="stop-circle" size={64} color="red" />
           ) : (
             <Ionicons
-              name="ios-radio-button-on"
+              name="radio-button-on"
               size={64}
               color={this.state.mode === 'picture' ? 'white' : 'red'}
             />
@@ -265,7 +264,7 @@ export default class CameraScreen extends React.Component<object, State> {
     </View>
   );
 
-  renderBarCode = () => {
+  renderBarcode = () => {
     const origin: BarcodePoint | undefined = this.state.cornerPoints
       ? this.state.cornerPoints[0]
       : undefined;
@@ -295,24 +294,21 @@ export default class CameraScreen extends React.Component<object, State> {
           console.log('ready');
         }}
         enableTorch={this.state.torchEnabled}
-        type={this.state.type}
-        flashMode={this.state.flash}
+        facing={this.state.facing}
+        flash={this.state.flash}
         mode={this.state.mode}
         mute={this.state.mute}
         zoom={this.state.zoom}
         videoQuality="2160p"
         onMountError={this.handleMountError}
         barcodeScannerSettings={{
-          barCodeTypes: [
-            BarCodeScanner.Constants.BarCodeType.qr,
-            BarCodeScanner.Constants.BarCodeType.pdf417,
-          ],
+          barcodeTypes: ['qr', 'pdf417'],
         }}
         onBarcodeScanned={this.state.barcodeScanning ? this.onBarcodeScanned : undefined}>
         {this.renderTopBar()}
         {this.renderBottomBar()}
       </CameraView>
-      {this.state.barcodeScanning && this.renderBarCode()}
+      {this.state.barcodeScanning && this.renderBarcode()}
       {this.state.showMoreOptions && this.renderMoreOptions()}
     </View>
   );

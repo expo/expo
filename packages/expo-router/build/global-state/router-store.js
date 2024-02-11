@@ -59,6 +59,7 @@ class RouterStore {
     push = routing_1.push.bind(this);
     replace = routing_1.replace.bind(this);
     setParams = routing_1.setParams.bind(this);
+    navigate = routing_1.navigate.bind(this);
     initialize(context, navigationRef, initialLocation) {
         // Clean up any previous state
         this.initialState = undefined;
@@ -99,7 +100,7 @@ class RouterStore {
             };
         }
         /**
-         * Counter intuitively - this fires AFTER both React Navigations state change and the subsequent paint.
+         * Counter intuitively - this fires AFTER both React Navigation's state changes and the subsequent paint.
          * This poses a couple of issues for Expo Router,
          *   - Ensuring hooks (e.g. useSearchParams()) have data in the initial render
          *   - Reacting to state changes after a navigation event

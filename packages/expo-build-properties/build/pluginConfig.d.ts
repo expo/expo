@@ -60,14 +60,6 @@ export interface PluginConfigTypeAndroid {
      */
     packagingOptions?: PluginConfigTypeAndroidPackagingOptions;
     /**
-     * By default, Flipper is enabled with the version that comes bundled with `react-native`.
-     *
-     * Use this to change the [Flipper](https://fbflipper.com/) version when
-     * running your app on Android. You can set the `flipper` property to a
-     * semver string and specify an alternate Flipper version.
-     */
-    flipper?: string;
-    /**
      * Enable the Network Inspector.
      *
      * @default true
@@ -100,6 +92,14 @@ export interface PluginConfigTypeAndroid {
      */
     usesCleartextTraffic?: boolean;
     /**
+     * Instructs the Android Gradle plugin to compress native libraries in the APK using the legacy packaging system.
+     *
+     * @default false
+     *
+     * @see [Android documentation](https://developer.android.com/build/releases/past-releases/agp-4-2-0-release-notes#compress-native-libs-dsl)
+     */
+    useLegacyPackaging?: boolean;
+    /**
      * Specifies the set of other apps that an app intends to interact with. These other apps are specified by package name,
      * by intent signature, or by provider authority.
      *
@@ -125,21 +125,8 @@ export interface PluginConfigTypeIos {
     /**
      * Enable [`use_frameworks!`](https://guides.cocoapods.org/syntax/podfile.html#use_frameworks_bang)
      * in `Podfile` to use frameworks instead of static libraries for Pods.
-     *
-     * > You cannot use `useFrameworks` and `flipper` at the same time, and
-     * doing so will generate an error.
      */
     useFrameworks?: 'static' | 'dynamic';
-    /**
-     * Enable [Flipper](https://fbflipper.com/) when running your app on iOS in
-     * Debug mode. Setting `true` enables the default version of Flipper, while
-     * setting a semver string will enable a specific version of Flipper you've
-     * declared in your **package.json**. The default for this configuration is `false`.
-     *
-     * > You cannot use `flipper` at the same time as `useFrameworks`, and
-     * doing so will generate an error.
-     */
-    flipper?: boolean | string;
     /**
      * Enable the Network Inspector.
      *
@@ -174,12 +161,18 @@ export interface ExtraIosPodDependency {
     /**
      * Version of the pod.
      * CocoaPods supports various [versioning options](https://guides.cocoapods.org/using/the-podfile.html#pod).
-     * @example `~> 0.1.2`
+     * @example
+     * ```
+     * ~> 0.1.2
+     * ```
      */
     version?: string;
     /**
      * Build configurations for which the pod should be installed.
-     * @example `['Debug', 'Release']`
+     * @example
+     * ```
+     * ['Debug', 'Release']
+     * ```
      */
     configurations?: string[];
     /**
@@ -188,22 +181,32 @@ export interface ExtraIosPodDependency {
     modular_headers?: boolean;
     /**
      * Custom source to search for this dependency.
-     * @example `https://github.com/CocoaPods/Specs.git`
+     * @example
+     * ```
+     * https://github.com/CocoaPods/Specs.git
+     * ```
      */
     source?: string;
     /**
      * Custom local filesystem path to add the dependency.
-     * @example `~/Documents/AFNetworking`
+     * @example
+     * ```
+     * ~/Documents/AFNetworking
+     * ```
      */
     path?: string;
     /**
      * Custom podspec path.
-     * @example `https://example.com/JSONKit.podspec`
+     * @example
+     * ```https://example.com/JSONKit.podspec```
      */
     podspec?: string;
     /**
      * Test specs can be optionally included via the :testspecs option. By default, none of a Pod's test specs are included.
-     * @example `['UnitTests', 'SomeOtherTests']`
+     * @example
+     * ```
+     * ['UnitTests', 'SomeOtherTests']
+     * ```
      */
     testspecs?: string[];
     /**

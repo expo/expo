@@ -8,7 +8,7 @@ import { Terminal } from '~/ui/components/Snippet';
 import { StatusTag } from '~/ui/components/Tag';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
-> **info** This documentation refers to the Local Expo CLI (SDK 46 and above). For information on legacy Expo CLI, see [Global Expo CLI](/archive/expo-cli).
+> **info** This documentation refers to the Local Expo CLI. For information on legacy CLI, see [Global Expo CLI](/archive/expo-cli).
 
 The `expo` package provides a small and powerful CLI tool `npx expo` which is designed to keep you moving fast during app development.
 
@@ -28,12 +28,12 @@ To view a list of available commands in Expo CLI, run the following in your proj
 
 The output should look something like below:
 
-```shell
+```sh
 Usage
   $ npx expo <command>
 
 Commands
-  start, export, export:web
+  start, export
   run:ios, run:android, prebuild
   install, customize, config
   login, logout, whoami, register
@@ -251,18 +251,13 @@ The following options are provided:
 - `--max-workers <number>`: Maximum number of tasks to allow the bundler to spawn. Setting this to `0` will run all transpilation on the same process, meaning you can easily debug Babel transpilation.
 - `-c, --clear`: Clear the bundler cache before exporting.
 - `--no-minify`: Skip minifying JavaScript and CSS assets (SDK 49 and above).
+- `--no-bytecode`: Skip generating Hermes bytecode for native platforms (SDK 50 and above). Only use this for analyzing bundle sizes and never ship UTF-8 bundles to native platforms as this will lead to drastically longer startup times.
 
 #### Hosting with sub-paths
 
-> Experimental functionality. It will be available from SDK 50.
+> Experimental functionality. Available from SDK 50.
 
 <Tabs>
-
-<Tab label="SDK 49 and below">
-
-    Exporting for a sub-path is not supported in SDK 49 and below.
-
-</Tab>
 
 <Tab label="SDK 50 and above">
 
@@ -282,7 +277,7 @@ This will export the website with all resources prefixed with `/my-root`. For ex
 
 Expo Router has built-in support for `baseUrl`. When using the `Link` and `router` APIs, the `baseUrl` will be automatically prepended to the URL.
 
-```js app/blog/index.tsx
+```jsx app/blog/index.tsx
 import { Link } from 'expo-router';
 
 export default function Blog() {
@@ -302,7 +297,7 @@ The `baseUrl` functionality is production-only and must be set before exporting 
 
 Images and other assets will work automatically if you `require` or `import` them. If you directly reference a resource URL then you will need to append the **baseUrl** manually.
 
-```js app/index.tsx
+```jsx app/index.tsx
 import { Image } from 'expo-image';
 
 export default function Blog() {
@@ -318,7 +313,7 @@ This will **export** to the following:
 
 Manually passing a URL will need to be manually prefixed:
 
-```js app/index.tsx
+```jsx app/index.tsx
 export default function Blog() {
   return <img src="/my-root/assets/image.png" />;
 }
@@ -326,11 +321,17 @@ export default function Blog() {
 
 </Tab>
 
+<Tab label="SDK 49 and below">
+
+    Exporting for a sub-path is not supported in SDK 49 and below.
+
+</Tab>
+
 </Tabs>
 
 ### Exporting with webpack
 
-> webpack is only supported for the Web platform.
+> **warning** **Deprecated**: In SDK 50 and above, Expo Webpack has been deprecated in favor of universal Metro (`npx expo export`). Learn more in [migrating from Webpack to Expo Router](/router/migrate/from-expo-webpack).
 
 You can export the JavaScript and assets for your web app using webpack by running the following:
 
@@ -500,7 +501,8 @@ From here, you can choose to generate basic project files like:
 | `EXPO_USE_TYPED_ROUTES`             | **boolean** | Use `expo.experiments.typedRoutes` to enable statically typed routes in Expo Router.                                                                                                                                                                                                                                                                                                 |
 | `EXPO_METRO_UNSTABLE_ERRORS`        | **boolean** | <StatusTag status="experimental" /><br/>Enable unstable error message improvements in Metro bundler. The features behind this flag are subject to removal and may be upstreamed.                                                                                                                                                                                                     |
 | `EXPO_USE_METRO_WORKSPACE_ROOT`     | **boolean** | Enable auto server root detection for Metro. This will change the server root to the workspace root. Useful for monorepos.                                                                                                                                                                                                                                                           |
-| `EXPO_USE_UNSTABLE_DEBUGGER`        | **boolean** | <StatusTag status="experimental" /><br/>Enable the experimental debugger from React Native.                                                                                                                                                                                                                                                                              |
+| `EXPO_USE_UNSTABLE_DEBUGGER`        | **boolean** | <StatusTag status="experimental" /><br/>Enable the experimental debugger from React Native.                                                                                                                                                                                                                                                                                          |
+| `EXPO_ADB_USER`                     | **string**  | <StatusTag status="SDK 50+" /><br/>Set the `user` number that should be passed to `--user` with ADB commands. Used for installing APKs on Android devices with multiple profiles. Defaults to `0`.                                                                                                                                                                                   |
 
 ## Telemetry
 

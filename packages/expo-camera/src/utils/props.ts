@@ -8,7 +8,7 @@ import {
   WhiteBalance,
   CameraProps,
 } from '../Camera.types';
-import CameraManager from '../ExponentCameraManager';
+import CameraManager from '../ExpoCameraManager';
 
 // Values under keys from this object will be transformed to native options
 export const ConversionTables: {
