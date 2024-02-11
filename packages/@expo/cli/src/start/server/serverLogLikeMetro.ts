@@ -78,7 +78,7 @@ export function logLikeMetro(
 }
 
 // TODO: Remove this once API routes properly read from metro config
-function filterRequireCycle(...data: any[]): boolean {
+function filterRequireCycle(data: any[]): boolean {
   return data.some((d) =>
     Array.isArray(d)
       ? filterRequireCycle(d)
