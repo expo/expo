@@ -52,6 +52,7 @@ const metro_transform_plugins_1 = __importDefault(require("metro-transform-plugi
 const getMinifier_1 = __importDefault(require("metro-transform-worker/src/utils/getMinifier"));
 const node_assert_1 = __importDefault(require("node:assert"));
 const assetTransformer = __importStar(require("./asset-transformer"));
+const CustomJsFileWrapping = __importStar(require("./iife-wrap"));
 const resolveOptions_1 = require("./resolveOptions");
 // asserts non-null
 function nullthrows(x, message) {
@@ -234,8 +235,8 @@ async function transformJS(file, { config, options, projectRoot }) {
             wrappedAst = ast;
         }
         else {
-            // TODO: Replace this with a cheaper transform that doesn't require AST.
-            ({ ast: wrappedAst } = JsFileWrapping_1.default.wrapModule(ast, importDefault, importAll, dependencyMapName, config.globalPrefix));
+            // NOTE(EvanBacon): Using a cheaper method than the upstream which doesn't rename `require`s.
+            wrappedAst = CustomJsFileWrapping.wrapModule(ast, importDefault, importAll, dependencyMapName, config.globalPrefix);
         }
     }
     const reserved = [];

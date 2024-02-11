@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Preserve require names and drop `$$_REQUIRE` in transform.
+
 ### 🎉 New features
 
 - Add `--no-bytecode` flag to `expo export` to disable generating Hermes bytecode for use with debugging tools. ([#26985](https://github.com/expo/expo/pull/26985) by [@EvanBacon](https://github.com/EvanBacon))

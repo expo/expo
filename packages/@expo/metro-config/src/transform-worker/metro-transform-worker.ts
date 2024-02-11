@@ -41,6 +41,7 @@ import getMinifier from 'metro-transform-worker/src/utils/getMinifier';
 import assert from 'node:assert';
 
 import * as assetTransformer from './asset-transformer';
+import * as CustomJsFileWrapping from './iife-wrap';
 import { shouldMinify } from './resolveOptions';
 
 export { JsTransformOptions };
@@ -301,14 +302,14 @@ async function transformJS(
     if (config.unstable_disableModuleWrapping === true) {
       wrappedAst = ast;
     } else {
-      // TODO: Replace this with a cheaper transform that doesn't require AST.
-      ({ ast: wrappedAst } = JsFileWrapping.wrapModule(
+      // NOTE(EvanBacon): Using a cheaper method than the upstream which doesn't rename `require`s.
+      wrappedAst = CustomJsFileWrapping.wrapModule(
         ast,
         importDefault,
         importAll,
         dependencyMapName,
         config.globalPrefix
-      ));
+      )!;
     }
   }
   const reserved: string[] = [];
