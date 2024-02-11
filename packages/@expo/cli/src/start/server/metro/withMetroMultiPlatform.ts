@@ -235,11 +235,16 @@ export function withExtendedResolver(
       if (!context.dev) return null;
 
       if (
-        // Match production imports.
-        moduleName.includes('.production.') &&
-        // Match if the import originated from a react package.
-        context.originModulePath.match(/[\\/]node_modules[\\/](react[-\\/]|scheduler[\\/])/)
+        // Match react-native renderers.
+        (platform !== 'web' &&
+          context.originModulePath.match(/[\\/]node_modules[\\/]react-native[\\/]/) &&
+          moduleName.match(/([\\/]ReactFabric|ReactNativeRenderer)-prod/)) ||
+        // Match react production imports.
+        (moduleName.match(/\.production(\.min)?\.js$/) &&
+          // Match if the import originated from a react package.
+          context.originModulePath.match(/[\\/]node_modules[\\/](react[-\\/]|scheduler[\\/])/))
       ) {
+        debug(`Skipping production module: ${moduleName}`);
         // /Users/path/to/expo/node_modules/react/index.js ./cjs/react.production.min.js
         // /Users/path/to/expo/node_modules/react/jsx-dev-runtime.js ./cjs/react-jsx-dev-runtime.production.min.js
         // /Users/path/to/expo/node_modules/react-is/index.js ./cjs/react-is.production.min.js
