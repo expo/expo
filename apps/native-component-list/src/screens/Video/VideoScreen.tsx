@@ -19,7 +19,7 @@ export default function VideoScreen() {
   }, [ref]);
 
   const player = useVideoPlayer(
-    'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
+    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
   );
 
   const togglePlayer = useCallback(() => {
@@ -32,7 +32,7 @@ export default function VideoScreen() {
 
   const replaceItem = useCallback(() => {
     player.replace(
-      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4'
+      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4'
     );
   }, []);
 

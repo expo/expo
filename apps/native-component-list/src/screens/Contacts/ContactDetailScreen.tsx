@@ -167,7 +167,7 @@ function ContactDetailView({
               transform = {
                 value: item.url,
                 onPress: () => {
-                  const webUrl = item.url.indexOf('://') === -1 ? 'http://' + item.url : item.url;
+                  const webUrl = item.url.indexOf('://') === -1 ? 'https://' + item.url : item.url;
                   console.log('open', item.url, webUrl);
                   Linking.openURL(webUrl);
                 },
@@ -193,8 +193,8 @@ function ContactDetailView({
                   onPress: () =>
                     Linking.openURL(
                       Platform.select<string>({
-                        ios: `http://maps.apple.com/maps?daddr=${targetUriAdress}`,
-                        default: `http://maps.google.com/maps?daddr=${targetUriAdress}`,
+                        ios: `https://maps.apple.com/maps?daddr=${targetUriAdress}`,
+                        default: `https://maps.google.com/maps?daddr=${targetUriAdress}`,
                       })
                     ),
                 };

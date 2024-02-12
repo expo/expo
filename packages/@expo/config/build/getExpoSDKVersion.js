@@ -31,8 +31,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * version of the `expo` package.
  */
 function getExpoSDKVersion(projectRoot, exp = {}) {
-  var _exp$sdkVersion;
-  return (_exp$sdkVersion = exp === null || exp === void 0 ? void 0 : exp.sdkVersion) !== null && _exp$sdkVersion !== void 0 ? _exp$sdkVersion : getExpoSDKVersionFromPackage(projectRoot);
+  return exp?.sdkVersion ?? getExpoSDKVersionFromPackage(projectRoot);
 }
 
 /**

@@ -203,7 +203,7 @@ class Chunk {
         const computedAsyncModulePaths = {};
         this.deps.forEach((module) => {
             module.dependencies.forEach((dependency) => {
-                if (dependency.data.data.asyncType === 'async') {
+                if (dependency.data.data.asyncType) {
                     const chunkContainingModule = chunks.find((chunk) => chunk.hasAbsolutePath(dependency.absolutePath));
                     (0, assert_1.default)(chunkContainingModule, 'Chunk containing module not found: ' + dependency.absolutePath);
                     const moduleIdName = chunkContainingModule.getFilenameForConfig(serializerConfig);
@@ -257,7 +257,11 @@ class Chunk {
             debugId,
         });
     }
-    async serializeToAssetsAsync(serializerConfig, chunks, { includeSourceMaps, includeBytecode, unstable_beforeAssetSerializationPlugins, }) {
+    boolishTransformOption(name) {
+        const value = this.graph.transformOptions?.customTransformOptions?.[name];
+        return value === true || value === 'true';
+    }
+    async serializeToAssetsAsync(serializerConfig, chunks, { includeSourceMaps, unstable_beforeAssetSerializationPlugins }) {
         // Create hash without wrapping to prevent it changing when the wrapping changes.
         const outputFile = this.getFilenameForConfig(serializerConfig);
         // We already use a stable hash for the output filename, so we'll reuse that for the debugId.
@@ -332,7 +336,7 @@ class Chunk {
                 source: sourceMap,
             });
         }
-        if (includeBytecode && this.isHermesEnabled()) {
+        if (this.boolishTransformOption('bytecode') && this.isHermesEnabled()) {
             const adjustedSource = jsAsset.source.replace(/^\/\/# (sourceMappingURL)=(.*)$/gm, (...props) => {
                 if (props[1] === 'sourceMappingURL') {
                     const mapName = props[2].replace(/\.js\.map$/, '.hbc.map');
@@ -408,7 +412,7 @@ function gatherChunks(chunks, settings, preModules, graph, options, isAsync = fa
     const splitChunks = (0, baseJSBundle_1.getSplitChunksOption)(graph, options);
     function includeModule(entryModule) {
         for (const dependency of entryModule.dependencies.values()) {
-            if (dependency.data.data.asyncType === 'async' &&
+            if (dependency.data.data.asyncType &&
                 // Support disabling multiple chunks.
                 splitChunks) {
                 gatherChunks(chunks, { test: pathToRegex(dependency.absolutePath) }, [], graph, options, true);

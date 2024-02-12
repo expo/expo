@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "expo-dev-menu-interface": "1.7.0",
-    "semver": "^7.5.3"
+    "semver": "^7.5.4"
   },
   "devDependencies": {
     "@apollo/client": "^3.4.10",
@@ -63,7 +63,7 @@
     "graphql": "^15.3.0",
     "graphql-tag": "^2.10.1",
     "react": "18.2.0",
-    "react-native": "0.73.2",
+    "react-native": "0.73.4",
     "url": "^0.11.0",
     "use-subscription": "^1.8.0"
   },

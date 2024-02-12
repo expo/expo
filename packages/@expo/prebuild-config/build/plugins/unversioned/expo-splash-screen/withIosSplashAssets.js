@@ -72,7 +72,6 @@ const withIosSplashAssets = (config, splash) => {
     return config;
   }
   return (0, _configPlugins().withDangerousMod)(config, ['ios', async config => {
-    var _splash$dark, _splash$dark2;
     const iosNamedProjectRoot = _configPlugins().IOSConfig.Paths.getSourceRoot(config.modRequest.projectRoot);
     await createSplashScreenBackgroundImageAsync({
       iosNamedProjectRoot,
@@ -82,9 +81,9 @@ const withIosSplashAssets = (config, splash) => {
       projectRoot: config.modRequest.projectRoot,
       iosNamedProjectRoot,
       image: splash.image,
-      darkImage: (_splash$dark = splash.dark) === null || _splash$dark === void 0 ? void 0 : _splash$dark.image,
+      darkImage: splash.dark?.image,
       tabletImage: splash.tabletImage,
-      darkTabletImage: (_splash$dark2 = splash.dark) === null || _splash$dark2 === void 0 ? void 0 : _splash$dark2.tabletImage
+      darkTabletImage: splash.dark?.tabletImage
     });
     return config;
   }]);
@@ -190,11 +189,10 @@ async function createSplashScreenBackgroundImageAsync({
   iosNamedProjectRoot,
   splash
 }) {
-  var _splash$dark3, _splash$dark4;
   const color = splash.backgroundColor;
-  const darkColor = (_splash$dark3 = splash.dark) === null || _splash$dark3 === void 0 ? void 0 : _splash$dark3.backgroundColor;
+  const darkColor = splash.dark?.backgroundColor;
   const tabletColor = splash.tabletBackgroundColor;
-  const darkTabletColor = (_splash$dark4 = splash.dark) === null || _splash$dark4 === void 0 ? void 0 : _splash$dark4.tabletBackgroundColor;
+  const darkTabletColor = splash.dark?.tabletBackgroundColor;
   const imagesetPath = path().join(iosNamedProjectRoot, BACKGROUND_IMAGESET_PATH);
   // Ensure the Images.xcassets/... path exists
   await _fsExtra().default.remove(imagesetPath);
@@ -265,7 +263,7 @@ function buildContentsJsonImages({
   darkTabletImage && (0, _AssetContents().createContentsJsonItem)({
     idiom: 'ipad',
     appearances: darkAppearances,
-    filename: darkTabletImage !== null && darkTabletImage !== void 0 ? darkTabletImage : undefined,
+    filename: darkTabletImage ?? undefined,
     scale: '1x'
   }), darkTabletImage && (0, _AssetContents().createContentsJsonItem)({
     idiom: 'ipad',

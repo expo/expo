@@ -6,11 +6,18 @@
 
 ### 🎉 New features
 
+- Add `--no-bytecode` flag to `expo export` to disable generating Hermes bytecode for use with debugging tools. ([#26985](https://github.com/expo/expo/pull/26985) by [@EvanBacon](https://github.com/EvanBacon))
+- Add stack traces for warnings and errors that originate from API routes or server rendering. ([#26812](https://github.com/expo/expo/pull/26812) by [@EvanBacon](https://github.com/EvanBacon))
 - Add better error when `metro.config.js` does not extend `expo/metro-config`. ([#26726](https://github.com/expo/expo/pull/26726) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for GitHub URLs in `expo prebuild --template`. ([#26631](https://github.com/expo/expo/pull/26631) by [@byCedric](https://github.com/byCedric))
+- Added building only for connected CPU architectures on Android when using the new architecture. ([#26800](https://github.com/expo/expo/pull/26800) by [@alanjhughes](https://github.com/alanjhughes))
+- Add HTTPS support for using tunnels with ngrok. ([#26838](https://github.com/expo/expo/pull/26838) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
+- Fix expo router src log memo. ([#27013](https://github.com/expo/expo/pull/27013) by [@EvanBacon](https://github.com/EvanBacon))
+- Prevent run commands from hanging when the process completes. ([#26960](https://github.com/expo/expo/pull/26960) by [@EvanBacon](https://github.com/EvanBacon))
+- Mark compressed `.gz` files as binary to avoid corruption when unpacking with `expo prebuild --template`. ([#26741](https://github.com/expo/expo/pull/26741) by [@shirakaba](https://github.com/shirakaba))
 - Add better validation for Metro web when exporting production bundles. ([#26732](https://github.com/expo/expo/pull/26732) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix `tsconfig.json` resolution of `baseUrl` when `paths` is not defined. ([#26734](https://github.com/expo/expo/pull/26734) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix stack traces for Node.js errors. ([#26607](https://github.com/expo/expo/pull/26607) by [@EvanBacon](https://github.com/EvanBacon))
@@ -21,7 +28,14 @@
 
 ### 💡 Others
 
+- Filter URL files out of stacks in Node logs. ([#26868](https://github.com/expo/expo/pull/26868) by [@EvanBacon](https://github.com/EvanBacon))
+- Change server log tag. ([#26834](https://github.com/expo/expo/pull/26834) by [@EvanBacon](https://github.com/EvanBacon))
+- Eagerly perform iOS system checks to speed up iOS simulator launches. ([#26746](https://github.com/expo/expo/pull/26746) by [@EvanBacon](https://github.com/EvanBacon))
 - Improve warning for favicon missing during web export. ([#26733](https://github.com/expo/expo/pull/26733) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 📚 3rd party library updates
+
+- update semver from 7.5.3 to 7.5.4. ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
 
 ## 0.17.1 - 2024-01-18
 

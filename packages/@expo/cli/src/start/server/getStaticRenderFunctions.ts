@@ -13,6 +13,7 @@ import resolveFrom from 'resolve-from';
 import { logMetroError, logMetroErrorAsync } from './metro/metroErrorInterface';
 import { getMetroServerRoot } from './middleware/ManifestMiddleware';
 import { createBundleUrlPath } from './middleware/metroOptions';
+import { augmentLogs } from './serverLogLikeMetro';
 import { stripAnsi } from '../../utils/ansi';
 import { delayAsync } from '../../utils/delay';
 import { SilentError } from '../../utils/errors';
@@ -158,6 +159,7 @@ export async function createMetroEndpointAsync(
     asyncRoutes: false,
     routerRoot,
     inlineSourceMap: false,
+    bytecode: false,
   });
 
   let url: string;
@@ -244,11 +246,7 @@ function evalMetroAndWrapFunctions<T = Record<string, (...args: any[]) => Promis
 }
 
 function evalMetro(projectRoot: string, src: string, filename: string) {
-  const originalConsole = {
-    log: console.log,
-    warn: console.warn,
-    error: console.error,
-  };
+  augmentLogs(projectRoot);
   try {
     return profile(requireString, 'eval-metro-bundle')(src, filename);
   } catch (error: any) {
@@ -262,9 +260,5 @@ function evalMetro(projectRoot: string, src: string, filename: string) {
       throw error;
     }
   } finally {
-    // Restore the original console in case it was modified.
-    console.log = originalConsole.log;
-    console.warn = originalConsole.warn;
-    console.error = originalConsole.error;
   }
 }

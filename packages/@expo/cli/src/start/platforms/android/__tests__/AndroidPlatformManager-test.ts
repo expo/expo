@@ -20,7 +20,9 @@ describe('openAsync', () => {
   beforeEach(() => {
     AndroidDeviceManager.resolveAsync = jest.fn(async () => {
       const manager = new AndroidDeviceManager({ udid: '123', name: 'Pixel 5' } as any);
-      manager.isAppInstalledAsync = jest.fn(() => Promise.resolve(true));
+      manager.isAppInstalledAndIfSoReturnContainerPathForIOSAsync = jest.fn(() =>
+        Promise.resolve(true)
+      );
       return manager;
     });
   });

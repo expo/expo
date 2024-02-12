@@ -22,12 +22,12 @@ jobs:
       fail-fast: true
       matrix:
         build-type: [debug, release]
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
-      - name: 🔨 Switch to Xcode 14.3
-        run: sudo xcode-select --switch /Applications/Xcode_14.3.app
+      - name: 🔨 Switch to Xcode 15.2
+        run: sudo xcode-select --switch /Applications/Xcode_15.2.app
       - name: 🍺 Install required tools
         run: |
           brew install watchman || true
@@ -40,7 +40,7 @@ jobs:
         with:
           ruby-version: 3.2.2
       - name: 💎 Install Ruby gems
-        run: gem install cocoapods xcpretty
+        run: gem install 'cocoapods:1.14.3' xcpretty
       - name: ♻️ Restore workspace node modules
         # Use restore only cache here because we don't want to nightly react-native version saving back to the cache
         uses: actions/cache/restore@v3

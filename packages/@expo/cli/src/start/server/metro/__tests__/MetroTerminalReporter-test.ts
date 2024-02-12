@@ -15,6 +15,7 @@ describe('_getBundleStatusMessage', () => {
     log: jest.fn(),
     persistStatus: jest.fn(),
     status: jest.fn(),
+    flush: jest.fn(),
   });
   reporter._getElapsedTime = jest.fn(() => 100);
   reporter._bundleTimers.set(buildID, 0);
@@ -58,7 +59,7 @@ describe('_getBundleStatusMessage', () => {
           'in_progress'
         )
       )
-    ).toMatchInlineSnapshot(`"Server ./index.js ▓▓▓▓▓▓▓▓░░░░░░░░ 50.0% ( 50/100)"`);
+    ).toMatchSnapshot();
   });
 
   it(`should format standard progress at 0%`, () => {
@@ -97,7 +98,7 @@ describe('_getBundleStatusMessage', () => {
           'done'
         )
       )
-    ).toMatchInlineSnapshot(`"Android Bundling complete 100ms (./index.js)"`);
+    ).toMatchInlineSnapshot(`"Android Bundled 100ms (./index.js)"`);
   });
   it(`should format failed loading`, () => {
     expect(

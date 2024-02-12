@@ -31,7 +31,7 @@
     "build"
   ],
   "dependencies": {
-    "@expo/spawn-async": "1.5.0",
+    "@expo/spawn-async": "^1.7.2",
     "chalk": "^4.0.0",
     "fs-extra": "9.0.0",
     "getenv": "^1.0.0",
@@ -39,7 +39,7 @@
     "node-fetch": "^2.6.0",
     "parse-png": "^2.1.0",
     "resolve-from": "^5.0.0",
-    "semver": "7.3.2",
+    "semver": "7.5.4",
     "tempy": "0.3.0"
   },
   "devDependencies": {

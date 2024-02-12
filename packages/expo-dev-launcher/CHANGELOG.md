@@ -13,13 +13,18 @@
 
 ### 💡 Others
 
+- Update ModalStack animations. ([#26802](https://github.com/expo/expo/pull/26802) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Remove classic updates. ([#26036](https://github.com/expo/expo/pull/26036), [#26230](https://github.com/expo/expo/pull/26230) by [@wschurman](https://github.com/wschurman))
 - Remove classic updates SDK version. ([#26061](https://github.com/expo/expo/pull/26061) by [@wschurman](https://github.com/wschurman))
+- Update auth session URL to prompt user to select account. ([#26780](https://github.com/expo/expo/pull/26780) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Fixed lint warning ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
 
 ### 📚 3rd party library updates
 
 - Update react-native to 0.73.2. ([#26311](https://github.com/expo/expo/pull/26311) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Replace deprecated `@babel/plugin-proposal-export-namespace-from` with updated, non-proposal package. ([#26525](https://github.com/expo/expo/pull/26525) by [@simek](https://github.com/simek))
+- update semver from 7.5.3 to 7.5.4. ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
+- Update react-native to 0.73.4. ([#26774](https://github.com/expo/expo/pull/26774) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 3.6.3 - 2024-01-18
 

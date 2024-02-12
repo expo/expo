@@ -21,6 +21,8 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
+import androidx.camera.core.resolutionselector.ResolutionSelector
+import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.core.UseCaseGroup
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.video.FileOutputOptions
@@ -280,6 +282,11 @@ class ExpoCameraView(
 
   private fun createImageAnalyzer(): ImageAnalysis =
     ImageAnalysis.Builder()
+      .setResolutionSelector(
+        ResolutionSelector.Builder()
+          .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
+          .build()
+      )
       .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
       .build()
       .also { analyzer ->
@@ -325,12 +332,12 @@ class ExpoCameraView(
     }
   }
 
-  fun setShouldScanBarcodes(shouldScanBarCodes: Boolean) {
-    this.shouldScanBarcodes = shouldScanBarCodes
+  fun setShouldScanBarcodes(shouldScanBarcodes: Boolean) {
+    this.shouldScanBarcodes = shouldScanBarcodes
     createCamera()
   }
 
-  fun setBarCodeScannerSettings(settings: BarcodeSettings?) {
+  fun setBarcodeScannerSettings(settings: BarcodeSettings?) {
     barcodeFormats = settings?.barcodeTypes ?: emptyList()
   }
 
@@ -407,6 +414,7 @@ class ExpoCameraView(
         BarcodeScannedEvent(
           target = id,
           data = barcode.value,
+          raw = barcode.raw,
           type = barcode.type,
           cornerPoints = cornerPoints,
           boundingBox = boundingBox

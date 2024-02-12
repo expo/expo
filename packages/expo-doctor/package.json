@@ -1,6 +1,6 @@
 {
   "name": "expo-doctor",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "main": "build/index.js",
   "description": "Check your Expo project for known issues",
   "keywords": [
@@ -36,13 +36,13 @@
     "@expo/config": "~8.5.0",
     "@expo/json-file": "~8.3.0",
     "@expo/schemer": "1.5.0",
-    "@expo/spawn-async": "^1.7.0",
+    "@expo/spawn-async": "^1.7.2",
     "@types/debug": "^4.1.8",
     "chalk": "^4.0.0",
     "debug": "^4.3.4",
     "expo-module-scripts": "^3.3.0",
     "ora": "3.4.0",
     "resolve-from": "^5.0.0",
-    "semver": "7.3.2"
+    "semver": "7.5.4"
   }
 }

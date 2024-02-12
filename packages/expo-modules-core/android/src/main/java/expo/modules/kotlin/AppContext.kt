@@ -43,6 +43,7 @@ import expo.modules.kotlin.jni.JNIDeallocator
 import expo.modules.kotlin.jni.JSIInteropModuleRegistry
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.providers.CurrentActivityProvider
+import expo.modules.kotlin.sharedobjects.ClassRegistry
 import expo.modules.kotlin.sharedobjects.SharedObjectRegistry
 import expo.modules.kotlin.tracing.trace
 import kotlinx.coroutines.CoroutineName
@@ -62,6 +63,8 @@ class AppContext(
   val registry = ModuleRegistry(WeakReference(this))
   private val reactLifecycleDelegate = ReactLifecycleDelegate(this)
 
+  private var hostWasDestroyed = false
+
   // We postpone creating the `JSIInteropModuleRegistry` to not load so files in unit tests.
   internal lateinit var jsiInterop: JSIInteropModuleRegistry
 
@@ -77,6 +80,8 @@ class AppContext(
   }
 
   internal val sharedObjectRegistry = SharedObjectRegistry()
+
+  internal val classRegistry = ClassRegistry()
 
   private val modulesQueueDispatcher = HandlerThread("expo.modules.AsyncFunctionQueue")
     .apply { start() }
@@ -133,9 +138,7 @@ class AppContext(
   }
 
   fun onCreate() = trace("AppContext.onCreate") {
-    registry.readyForPostingEvents()
-    registry.post(EventName.MODULE_CREATE)
-    registry.flushTheEventQueue()
+    registry.postOnCreate()
   }
 
   /**
@@ -326,6 +329,12 @@ class AppContext(
       "Current Activity is of incorrect class, expected AppCompatActivity, received ${currentActivity?.localClassName}"
     }
 
+    // We need to re-register activity contracts when reusing AppContext with new Activity after host destruction.
+    if (hostWasDestroyed) {
+      hostWasDestroyed = false
+      registry.registerActivityContracts()
+    }
+
     activityResultsManager.onHostResume(activity)
     registry.post(EventName.ACTIVITY_ENTERS_FOREGROUND)
   }
@@ -343,6 +352,9 @@ class AppContext(
       activityResultsManager.onHostDestroy(it)
     }
     registry.post(EventName.ACTIVITY_DESTROYS)
+    // The host (Activity) was destroyed, but it doesn't mean that modules will be destroyed too.
+    // So we save that information, and we will re-register activity contracts when the host will be resumed with new Activity.
+    hostWasDestroyed = true
   }
 
   internal fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {

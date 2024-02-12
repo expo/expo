@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357) by [@kudo](https://github.com/kudo))
+- Fixed React Native Community CLI not being able to autolink the `expo` package when Expo autolinking is not used. ([#26932](https://github.com/expo/expo/pull/26932) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
@@ -18,6 +19,7 @@
 ### 📚 3rd party library updates
 
 - Update react-native to 0.73.2. ([#26311](https://github.com/expo/expo/pull/26311) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Update react-native to 0.73.4. ([#26774](https://github.com/expo/expo/pull/26774) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 50.0.2 - 2024-01-18
 

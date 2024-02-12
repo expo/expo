@@ -7,7 +7,7 @@ export default function CameraScreenNextBarcode() {
   const [result, setResult] = useState<ScanningResult | null>(null);
   const [options, setOptions] = useState<ScanningOptions>({
     isGuidanceEnabled: false,
-    barCodeTypes: ['qr'],
+    barcodeTypes: ['qr'],
     isHighlightingEnabled: false,
     isPinchToZoomEnabled: false,
   });

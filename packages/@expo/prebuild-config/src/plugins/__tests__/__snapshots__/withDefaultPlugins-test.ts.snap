@@ -445,12 +445,6 @@ exports[`built-in plugins compiles mods 1`] = `
       "NSAppTransportSecurity": {
         "NSAllowsArbitraryLoads": false,
         "NSAllowsLocalNetworking": true,
-        "NSExceptionDomains": {
-          "exp.direct": {
-            "NSExceptionAllowsInsecureHTTPLoads": true,
-            "NSIncludesSubdomains": true,
-          },
-        },
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
       "UILaunchStoryboardName": "SplashScreen",
@@ -790,6 +784,18 @@ exports[`built-in plugins introspects mods 1`] = `
             "key": "EX_DEV_CLIENT_NETWORK_INSPECTOR",
             "type": "property",
             "value": "true",
+          },
+          {
+            "type": "empty",
+          },
+          {
+            "type": "comment",
+            "value": "Use legacy packaging to compress native libraries in the resulting APK.",
+          },
+          {
+            "key": "expo.useLegacyPackaging",
+            "type": "property",
+            "value": "false",
           },
           {
             "type": "empty",
@@ -1256,12 +1262,6 @@ exports[`built-in plugins introspects mods 1`] = `
           "NSAppTransportSecurity": {
             "NSAllowsArbitraryLoads": false,
             "NSAllowsLocalNetworking": true,
-            "NSExceptionDomains": {
-              "exp.direct": {
-                "NSExceptionAllowsInsecureHTTPLoads": true,
-                "NSIncludesSubdomains": true,
-              },
-            },
           },
           "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
           "UILaunchStoryboardName": "SplashScreen",
@@ -1728,12 +1728,6 @@ exports[`built-in plugins introspects mods 1`] = `
       "NSAppTransportSecurity": {
         "NSAllowsArbitraryLoads": false,
         "NSAllowsLocalNetworking": true,
-        "NSExceptionDomains": {
-          "exp.direct": {
-            "NSExceptionAllowsInsecureHTTPLoads": true,
-            "NSIncludesSubdomains": true,
-          },
-        },
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
       "UILaunchStoryboardName": "SplashScreen",

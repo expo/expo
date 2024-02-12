@@ -15,10 +15,13 @@
 
 - Remove classic updates SDK version. ([#26061](https://github.com/expo/expo/pull/26061) by [@wschurman](https://github.com/wschurman))
 - Updated `androidx.browser:browser` to `1.6.0` [#26619](https://github.com/expo/expo/pull/26619) by [@zoontek](https://github.com/zoontek)
+- Allow registerDevMenuItems in non-dev bundles. ([#26955](https://github.com/expo/expo/pull/26955) by [@wschurman](https://github.com/wschurman))
 
 ### 📚 3rd party library updates
 
 - Update react-native to 0.73.2. ([#26311](https://github.com/expo/expo/pull/26311) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- update semver from 7.5.3 to 7.5.4. ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
+- Update react-native to 0.73.4. ([#26774](https://github.com/expo/expo/pull/26774) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 4.5.4 - 2024-01-18
 

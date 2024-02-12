@@ -19,8 +19,7 @@ const withOrientation = exports.withOrientation = (0, _iosPlugins().createInfoPl
   expoConfigProperty: 'orientation'
 }, 'withOrientation');
 function getOrientation(config) {
-  var _config$orientation;
-  return (_config$orientation = config.orientation) !== null && _config$orientation !== void 0 ? _config$orientation : null;
+  return config.orientation ?? null;
 }
 const PORTRAIT_ORIENTATIONS = exports.PORTRAIT_ORIENTATIONS = ['UIInterfaceOrientationPortrait', 'UIInterfaceOrientationPortraitUpsideDown'];
 const LANDSCAPE_ORIENTATIONS = exports.LANDSCAPE_ORIENTATIONS = ['UIInterfaceOrientationLandscapeLeft', 'UIInterfaceOrientationLandscapeRight'];

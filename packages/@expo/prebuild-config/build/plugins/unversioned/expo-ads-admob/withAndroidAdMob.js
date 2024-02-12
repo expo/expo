@@ -29,12 +29,10 @@ const withAndroidAdMob = config => {
 };
 exports.withAndroidAdMob = withAndroidAdMob;
 function getGoogleMobileAdsAppId(config) {
-  var _config$android$confi, _config$android;
-  return (_config$android$confi = (_config$android = config.android) === null || _config$android === void 0 || (_config$android = _config$android.config) === null || _config$android === void 0 ? void 0 : _config$android.googleMobileAdsAppId) !== null && _config$android$confi !== void 0 ? _config$android$confi : null;
+  return config.android?.config?.googleMobileAdsAppId ?? null;
 }
 function getGoogleMobileAdsAutoInit(config) {
-  var _config$android$confi2, _config$android2;
-  return (_config$android$confi2 = (_config$android2 = config.android) === null || _config$android2 === void 0 || (_config$android2 = _config$android2.config) === null || _config$android2 === void 0 ? void 0 : _config$android2.googleMobileAdsAutoInit) !== null && _config$android$confi2 !== void 0 ? _config$android$confi2 : false;
+  return config.android?.config?.googleMobileAdsAutoInit ?? false;
 }
 function setAdMobConfig(config, androidManifest) {
   const appId = getGoogleMobileAdsAppId(config);

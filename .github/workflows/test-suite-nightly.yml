@@ -20,14 +20,14 @@ concurrency:
 
 jobs:
   ios-build:
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
         with:
           submodules: true
-      - name: 🔨 Switch to Xcode 14.3
-        run: sudo xcode-select --switch /Applications/Xcode_14.3.app
+      - name: 🔨 Switch to Xcode 15.2
+        run: sudo xcode-select --switch /Applications/Xcode_15.2.app
       - name: 🍺 Install required tools
         run: |
           brew install watchman || true
@@ -79,12 +79,14 @@ jobs:
 
   ios-test:
     needs: ios-build
-    runs-on: macos-12
+    runs-on: macos-14
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
         with:
           submodules: true
+      - name: 🔨 Switch to Xcode 15.2
+        run: sudo xcode-select --switch /Applications/Xcode_15.2.app
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🌠 Download builds
@@ -98,6 +100,8 @@ jobs:
           brew tap facebook/fb
           brew install facebook/fb/idb-companion
           echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
+        env:
+          MAESTRO_VERSION: '1.33.1'
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches

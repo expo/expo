@@ -146,11 +146,8 @@ We use our fork of React Native for building Expo Go, but it is not used otherwi
 
 Web is comparatively well-tested in CI, so a few manual smoke tests suffice for web QA.
 
-- Make sure the `expo-cli` version in the `expo/expo` repo is up-to-date.
-- `cd apps/native-component-list`
-- Run `yarn web` and press `w` to open in the browser. Make sure the app loads successfully in development.
-- Run `expo build:web`, `npx serve web-build` and then `open http://localhost:5000/`. Ensure the built version of the app loads successfully.
-- Finally, test deploying the app by running `npx now web-build`.
+- `cd apps/router-e2e`
+- Run `yarn start` and press `w` to open in the browser. Make sure the app loads successfully in development.
 
 ## 1.4. Publish demo apps
 
@@ -276,6 +273,7 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
   - `@expo/webpack-config`
   - `@expo/prebuild-config`
   - `expo-modules-autolinking`
+  - `metro`
 - One way to get the right version numbers is to run `yarn why <package-name>` to see which version is used by apps in the expo/expo repo. Generally the version numbers should use the caret (`^`) semver symbol, please refer to the semver symbol used for the package on the most recent release on the versions endpoint.
 
 ## 4.3. Re-publish project templates

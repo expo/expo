@@ -20,7 +20,7 @@ export type UserActivity = {
     dateModified?: Date;
     expirationDate?: Date;
 };
-export declare const ExpoHead: {
+declare let ExpoHead: {
     activities: {
         INDEXED_ROUTE: string;
     };
@@ -30,4 +30,5 @@ export declare const ExpoHead: {
     suspendActivity(id: string): void;
     revokeActivity(id: string): void;
 } | null;
+export { ExpoHead };
 //# sourceMappingURL=ExpoHeadModule.d.ts.map

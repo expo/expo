@@ -215,9 +215,16 @@ export type BarcodeScanningResult = {
      */
     type: string;
     /**
-     * The information encoded in the bar code.
+     * The parsed information encoded in the barcode.
      */
     data: string;
+    /**
+     * The raw information encoded in the barcode.
+     * May be different from `data` depending on the barcode type.
+     * @platform android
+     * @hidden
+     */
+    raw?: string;
     /**
      * Corner points of the bounding box.
      * `cornerPoints` is not always available and may be empty. On iOS, for `code39` and `pdf417`
@@ -225,7 +232,7 @@ export type BarcodeScanningResult = {
      */
     cornerPoints: BarcodePoint[];
     /**
-     * The [BarCodeBounds](#barcodebounds) object.
+     * The [BarcodeBounds](#barcodebounds) object.
      * `bounds` in some case will be representing an empty rectangle.
      * Moreover, `bounds` doesn't have to bound the whole barcode.
      * For some types, they will represent the area used by the scanner.
@@ -290,19 +297,19 @@ export type CameraProps = ViewProps & {
     /**
      * @example
      * ```tsx
-     * <Camera
-     *   barCodeScannerSettings={{
-     *     barCodeTypes: ["qr"],
+     * <CameraView
+     *   barcodeScannerSettings={{
+     *     barcodeTypes: ["qr"],
      *   }}
      * />
      * ```
      */
     barcodeScannerSettings?: BarcodeSettings;
     /**
-     * Callback that is invoked when a bar code has been successfully scanned. The callback is provided with
-     * an object of the [`BarCodeScanningResult`](#barcodescanningresult) shape, where the `type`
-     * refers to the bar code type that was scanned and the `data` is the information encoded in the bar code
-     * (in this case of QR codes, this is often a URL). See [`BarCodeType`](#barcodetype) for supported values.
+     * Callback that is invoked when a barcode has been successfully scanned. The callback is provided with
+     * an object of the [`BarcodeScanningResult`](#barcodescanningresult) shape, where the `type`
+     * refers to the barcode type that was scanned and the `data` is the information encoded in the barcode
+     * (in this case of QR codes, this is often a URL). See [`BarcodeType`](#barcodetype) for supported values.
      * for supported values.
      * @param scanningResult
      */
@@ -360,7 +367,7 @@ export type CameraNativeProps = {
     responsiveOrientationWhenOrientationLocked?: boolean;
 };
 export type BarcodeSettings = {
-    barCodeTypes: BarCodeType[];
+    barcodeTypes: BarcodeType[];
     interval?: number;
 };
 /**
@@ -370,7 +377,7 @@ export type ScanningOptions = {
     /**
      * The type of codes to scan for.
      */
-    barCodeTypes: BarCodeType[];
+    barcodeTypes: BarcodeType[];
     /**
      * Indicates whether people can use a two-finger pinch-to-zoom gesture.
      * @default true
@@ -388,8 +395,8 @@ export type ScanningOptions = {
     isHighlightingEnabled?: boolean;
 };
 /**
- * The available bar code types that can be scanned.
+ * The available barcode types that can be scanned.
  */
-export type BarCodeType = 'aztec' | 'ean13' | 'ean8' | 'qr' | 'pdf417' | 'upc_e' | 'datamatrix' | 'code39' | 'code93' | 'itf14' | 'codabar' | 'code128' | 'upc_a';
+export type BarcodeType = 'aztec' | 'ean13' | 'ean8' | 'qr' | 'pdf417' | 'upc_e' | 'datamatrix' | 'code39' | 'code93' | 'itf14' | 'codabar' | 'code128' | 'upc_a';
 export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };
 //# sourceMappingURL=Camera.types.d.ts.map

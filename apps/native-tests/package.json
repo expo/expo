@@ -13,14 +13,14 @@
     "expo-camera": "~14.0.0",
     "expo-dev-client": "~3.3.0",
     "expo-face-detector": "~12.6.0",
-    "expo-image": "~1.10.0",
+    "expo-image": "~1.11.0",
     "expo-notifications": "~0.27.0",
     "expo-random": "~13.6.0",
     "expo-splash-screen": "~0.26.0",
     "native-component-list": "*",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "0.73.2"
+    "react-native": "0.73.4"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"

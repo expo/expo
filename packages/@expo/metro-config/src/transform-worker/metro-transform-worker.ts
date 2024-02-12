@@ -41,6 +41,7 @@ import getMinifier from 'metro-transform-worker/src/utils/getMinifier';
 import assert from 'node:assert';
 
 import * as assetTransformer from './asset-transformer';
+import { shouldMinify } from './resolveOptions';
 
 export { JsTransformOptions };
 
@@ -310,16 +311,12 @@ async function transformJS(
       ));
     }
   }
-
-  const minify =
-    options.minify &&
-    options.unstable_transformProfile !== 'hermes-canary' &&
-    options.unstable_transformProfile !== 'hermes-stable';
-
   const reserved: string[] = [];
   if (config.unstable_dependencyMapReservedName != null) {
     reserved.push(config.unstable_dependencyMapReservedName);
   }
+
+  const minify = shouldMinify(options);
 
   if (
     minify &&
@@ -444,11 +441,7 @@ async function transformJSON(
       : JsFileWrapping.wrapJson(file.code, config.globalPrefix);
   let map: MetroSourceMapSegmentTuple[] = [];
 
-  // TODO: When we can reuse transformJS for JSON, we should not derive `minify` separately.
-  const minify =
-    options.minify &&
-    options.unstable_transformProfile !== 'hermes-canary' &&
-    options.unstable_transformProfile !== 'hermes-stable';
+  const minify = shouldMinify(options);
 
   if (minify) {
     ({ map, code } = await minifyCode(config, projectRoot, file.filename, code, file.code, map));

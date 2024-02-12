@@ -6,10 +6,14 @@
 
 ### 🎉 New features
 
+- Add `--no-bytecode` flag to `expo export` to disable generating Hermes bytecode for use with debugging tools. ([#26985](https://github.com/expo/expo/pull/26985) by [@EvanBacon](https://github.com/EvanBacon))
+- Add support for splitting on `require.resolveWeak` syntax. ([#27014](https://github.com/expo/expo/pull/27014) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
+- Add more node modules to collapsed stack regex. ([#26812](https://github.com/expo/expo/pull/26812) by [@EvanBacon](https://github.com/EvanBacon))
 - Uncomment all Metro tests. ([#26610](https://github.com/expo/expo/pull/26610) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove lazy loading in build process for easier development. ([#26559](https://github.com/expo/expo/pull/26559) by [@EvanBacon](https://github.com/EvanBacon))
 

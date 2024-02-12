@@ -76,8 +76,7 @@ public final class ModuleHolder {
       let result = try function.call(by: self, withArguments: arguments, appContext: appContext)
 
       if let result = result as? SharedObject {
-        let jsObject = SharedObjectRegistry.ensureSharedJavaScriptObject(runtime: try appContext.runtime, nativeObject: result)
-        return jsObject
+        return appContext.sharedObjectRegistry.ensureSharedJavaScriptObject(runtime: try appContext.runtime, nativeObject: result)
       }
       return result
     } catch {

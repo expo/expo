@@ -156,8 +156,6 @@ class JavaScriptClassTest {
       val jsObject = callClass("MySharedObject").getObject()
       id = SharedObjectId(jsObject.getProperty(sharedObjectIdPropertyName).getInt())
       registry = jsiInterop.appContextHolder.get()?.sharedObjectRegistry
-
-      Truth.assertThat(jsObject.hasProperty("__expo_shared_object_deallocator__")).isTrue()
     }
 
     Truth.assertThat(registry!!.pairs[id!!]).isNull()
