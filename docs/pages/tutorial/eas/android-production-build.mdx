@@ -10,3 +10,303 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
+
+In this chapter, we're going to create our app's final version and submit it to the Google Play Store. We'll also explore how to automate the creation and release of new app versions.
+
+## Prerequisites
+
+To publish and distribute an app on Google Play Store, we need to:
+
+- Have a paid developer account. To create one, follow the instructions on the [Google Play sign-up page](https://play.google.com/apps/publish/signup/).
+- Google Service Account email and JSON key. To create one, follow the instructions from our [expo.fyi](https://github.com/expo/fyi/blob/main/creating-google-service-account.md) guide. Once you've followed the steps, come back to this guide.
+
+## What is a production build
+
+A production Android build has a **.aab** format and is optimized for distribution on the Google Play Store. Unlike **.apk** builds, **.aab** builds can only be distributed and installed through the Google Play Store.
+
+<Step label="1">
+
+## Required EAS configuration
+
+The only required configuration to create our production build for Android is to have `production` build profile in **eas.json** which is added by default.
+
+</Step>
+
+<Step label="2">
+
+## Create a production build
+
+To create an Android production build, open the terminal and run:
+
+<Terminal cmd={['$ eas build --platform android']} />
+
+The `production` profile in EAS configuration is the default profile. We don't have to pass it using the `--profile` flag.
+
+The command will queue the build. Also, notice in the Expo dashboard that the **Version Code** is auto-incremented.
+
+</Step>
+
+<Step label="3">
+
+## Create an app on the Google Play Console
+
+To upload the app to the Google Play Store for the first time, we need to:
+
+- Go to the Google Play dashboard.
+- On the **Home** page, click **Create app** to make a new app.
+
+<ImageSpotlight
+  alt="Create app on Google Play Console"
+  src="/static/images/tutorial/eas/play-store-01.png"
+  style={{ maxWidth: 600 }}
+/>
+
+- Fill out our app details and click the **Create app** button.
+
+<ImageSpotlight
+  alt="Create app form on Google Play Console"
+  src="/static/images/tutorial/eas/play-store-02.png"
+  style={{ maxWidth: 600 }}
+/>
+
+</Step>
+
+<Step label="4">
+
+## Release an internal testing version
+
+After the app is created on Google Play Console, it redirects us to the app's Dashboard screen.
+
+- To prepare an internal test version of our app, click **Start testing now** on the **Dashboard**.
+
+<ImageSpotlight
+  alt="Steps under start testing now on Google Play Console"
+  src="/static/images/tutorial/eas/play-store-03.png"
+  style={{ maxWidth: 600 }}
+/>
+
+- Create an email list of users under **Internal Testing** > **Testers for the internal testing release**.
+
+<ImageSpotlight
+  alt="Create an email list for internal testers"
+  src="/static/images/tutorial/eas/play-store-04.png"
+  style={{ maxWidth: 600 }}
+/>
+
+- Google Play Console prompts us to create a **Release**.
+- To create a new release, go to **Releases** and click **Create new release**.
+- To store the signing key, go to **App integrity** > **App bundles** and click **Choose signing key** > **Use Google-generated key**.
+
+<ImageSpotlight
+  alt="Selecting the signing key for the app bundle"
+  src="/static/images/tutorial/eas/play-store-05.png"
+  style={{ maxWidth: 600 }}
+/>
+
+<ImageSpotlight
+  alt="Creating a new internal release"
+  src="/static/images/tutorial/eas/play-store-06.png"
+  style={{ maxWidth: 600 }}
+/>
+
+</Step>
+
+<Step label="5">
+
+## Upload the app binary
+
+After EAS has created a production build:
+
+- Open the EAS dashboard and click on **Download** to get the **.aab** build file.
+
+<ImageSpotlight
+  alt="Downloading the aab file"
+  src="/static/images/tutorial/eas/play-store-07.png"
+/>
+
+- Return to the Google Play Console and go to **App bundles**. Click on **Upload** to add the **.aab**.
+- Provide the release details for our app and click on **Next**.
+- On the following screen, click on **Save and publish**.
+
+<ImageSpotlight
+  alt="Uploading aab file to Google Play Console"
+  src="/static/images/tutorial/eas/play-store-08.png"
+  style={{ maxWidth: 600 }}
+/>
+
+</Step>
+
+<Step label="6">
+
+## Share the internal release version
+
+Under **Track Summary**, we see that the latest release shows a temporary app name. This is because our app is not reviewed yet.
+
+<ImageSpotlight
+  alt="App pending review on Google Play Console"
+  src="/static/images/tutorial/eas/play-store-09.png"
+  style={{ maxWidth: 600 }}
+/>
+
+Under **Releases**, we see that the app is available to internal testers. To share the app with a team of testers:
+
+- Open the Internal testing dashboard, then click on **View release details**.
+- Click on **copy link** under **How testers join your test**.
+
+<ImageSpotlight
+  alt="Sharing the internal release version"
+  src="/static/images/tutorial/eas/play-store-14.png"
+  style={{ maxWidth: 600 }}
+/>
+
+- On the device, open the test email and follow the steps to download the app.
+
+<ImageSpotlight
+  alt="Downloading app on the device as an internal tester"
+  src="/static/images/tutorial/eas/play-store-15.png"
+  style={{ maxWidth: 300 }}
+/>
+
+- The testing email holder needs to accept the invite, and once accepted, the app can be installed on the device.
+
+<ImageSpotlight
+  alt="On accepting the invite, the app can be installed on the device"
+  src="/static/images/tutorial/eas/play-store-16.png"
+  style={{ maxWidth: 300 }}
+/>
+
+<ImageSpotlight
+  alt="App installed on the device as an internal tester"
+  src="/static/images/tutorial/eas/play-store-17.png"
+  style={{ maxWidth: 300 }}
+/>
+
+> **info** **Tip**: To publish our app on the Play Store, in the Google Dashboard, we need to finish the steps under **Set up your app**. These steps are required before releasing the app on the Play Store for the first time. We'll have to provide details like a link to a privacy policy, a target audience, data safety and so on.
+
+> **Complete app store listing**: To prepare the app for store listing, see our [Create app store assets guide](/guides/store-assets/) on how to create screenshots and previews.
+
+<Collapsible summary="Promoting a testing release">
+
+To promote our internal test release version to **alpha**, in Google Play Store Console:
+
+- Go to internal testing and click **Promote release**.
+- Open the dropdown menu and click **Closes testing** > **Closed testing - Alpha**.
+
+</Collapsible>
+
+</Step>
+
+<Step label="7">
+
+## Add Google Service Account permissions key
+
+From now on, we can use EAS Submit to automate releases and avoid the manual process. To do that, we need to add the service account key to our project's **eas.json**.
+
+After following the Google Service Account guide steps, we can use the downloaded JSON key:
+
+- Open our project and copy the JSON file from the Google Service Account to the project's root directory.
+- To secure sensitive data, ensure this file is excluded from version control by listing it in our **.gitignore**.
+
+</Step>
+
+<Step label="8">
+
+## Internal release
+
+Let's add the path to Google Service Account file path in **eas.json**.
+
+- Under `submit.production` profile, add `android.serviceAccountKeyPath` and the relative file path as its value:
+
+```json
+{
+  /* @hide ... */ /* @end */
+  "submit": {
+    "production": {
+      "android": {
+        "serviceAccountKeyPath": "./service-account-file.json",
+        "track": "internal"
+      }
+    }
+  }
+}
+```
+
+In the above snippet, we're also adding [`track`](/eas/json/#track) property and setting its value to `internal`. This will enable `eas submit` command to upload our production build and release it for internal testing on the Google Play Store.
+
+- Now run the `eas submit` command to release a new internal testing version:
+
+<Terminal cmd={['$ eas submit --platform android']} />
+
+- This command will automatically create a new internal release version in Google Play Console:
+
+<ImageSpotlight
+  alt="Automatic internal release version created in Google Play Console by EAS Submit"
+  src="/static/images/tutorial/eas/play-store-18.png"
+  style={{ maxWidth: 800 }}
+/>
+
+</Step>
+
+<Step label="9">
+
+## Production release
+
+To release the app for production:
+
+- Change the value for `track` to `production` in **eas.json**:
+
+```json
+{
+  /* @hide ... */ /* @end */
+  "submit": {
+    "production": {
+      "android": {
+        "serviceAccountKeyPath": "./service-account-file.json",
+        "track": "production"
+      }
+    }
+  }
+}
+```
+
+- We can also use the same EAS Build we did for the internal testing release. Run `eas submit` command to release to the Play Store:
+
+<Terminal cmd={['$ eas submit -platform android']} />
+
+- To create a track and submit our app to the Google Play Store's review process, we need to **Release** > **Production** and under **Releases**, select the build we want to send for review.
+
+<ImageSpotlight
+  alt="Submitting app for Google Play Store review process"
+  src="/static/images/tutorial/eas/play-store-19.png"
+  style={{ maxWidth: 800 }}
+/>
+
+</Step>
+
+<Step label="10">
+
+## 10. Automated release
+
+For future releases, we can streamline the process by combining build creation and Play Store submission into a single step by using the `--auto-submit` flag with `eas build`:
+
+<Terminal cmd={['$ eas build --platform android --auto-submit']} />
+
+</Step>
+
+## Summary
+
+In this chapter, we learned about:
+
+- Creating a production-ready Android build of our project.
+- Manually uploading the app binary (`.aab`).
+- Automating the process of building and submitting to Google Play Store Console with Google Service Account credentials and `eas submit`.
+- Automating the release process using the `--auto-submit` flag with `eas build`.
+
+## Next step
+
+<BoxLink
+  title="Create a production build for iOS"
+  Icon={BookOpen02Icon}
+  description="In the next chapter, learn about the process of creating a production build for iOS."
+  href="/tutorial/eas/ios-production-build/"
+/>
