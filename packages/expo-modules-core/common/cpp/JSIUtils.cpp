@@ -117,6 +117,7 @@ void defineProperty(jsi::Runtime &runtime, jsi::Object *object, const char *name
       1,
       [&descriptor](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
         descriptor.set(runtime, thisValue.asObject(runtime), jsi::Value(runtime, args[0]));
+        return jsi::Value::undefined();
       });
 
     jsDescriptor.setProperty(runtime, setPropName, set);
