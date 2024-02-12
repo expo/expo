@@ -1,4 +1,4 @@
-import { type NavigationState } from '@react-navigation/native';
+import { StackActions, type NavigationState } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
 
 import type { RouterStore } from './router-store';
@@ -23,8 +23,16 @@ export function push(this: RouterStore, url: Href) {
   return this.linkTo(resolveHref(url), 'PUSH');
 }
 
+export function dismiss(this: RouterStore, count?: number) {
+  this.navigationRef?.dispatch(StackActions.pop(count));
+}
+
 export function replace(this: RouterStore, url: Href) {
   return this.linkTo(resolveHref(url), 'REPLACE');
+}
+
+export function dismissAll(this: RouterStore) {
+  this.navigationRef?.dispatch(StackActions.popToTop());
 }
 
 export function goBack(this: RouterStore) {
@@ -42,6 +50,22 @@ export function canGoBack(this: RouterStore): boolean {
     return false;
   }
   return this.navigationRef?.current?.canGoBack() ?? false;
+}
+
+export function canDismiss(this: RouterStore): boolean {
+  let state = this.rootState;
+
+  // Keep traversing down the state tree until we find a stack navigator that we can pop
+  while (state) {
+    if (state.type === 'stack' && state.routes.length > 1) {
+      return true;
+    }
+    if (state.index === undefined) return false;
+
+    state = state.routes?.[state.index]?.state as any;
+  }
+
+  return false;
 }
 
 export function setParams(this: RouterStore, params: Record<string, string | number> = {}) {
