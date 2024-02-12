@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added config plugin to allow assets to be linked at build time.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
