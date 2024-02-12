@@ -19,7 +19,7 @@ Use the [`expo-localization`](/versions/latest/sdk/localization/) library to get
 
 Then, you will be able to access localization methods and data in your app:
 
-```ts
+```tsx
 import { getLocales } from 'expo-localization';
 
 const deviceLanguage = getLocales()[0].languageCode;
@@ -168,17 +168,14 @@ Now, iOS knows to set the display name of your app to `こんにちは` whenever
 
 Several regions around the world write text from right to left. If you want to localize your app, so it looks as expected in RTL languages, you need to make sure your app handles these layout and text direction changes accordingly.
 
-To enable RTL support in your application using SDK 48 or later, install the `expo-localization` package and add the following properties in the app config:
-
-<Terminal cmd={['$ npx expo install expo-localization']} />
+For SDK 48 or above, to enable RTL support using SDK 48 or later you have to install [`expo-localization`](/versions/latest/sdk/localization/#installation) library and enable `extra.supports.RTL` property in app config:
 
 ```json app.json
 {
   "expo": {
     "extra": {
       "supportsRTL": true
-    },
-    "plugins": ["expo-localization"]
+    }
   }
 }
 ```
@@ -248,7 +245,7 @@ const styles = StyleSheet.create({
 You don't need to manually adjust `<View>` styling properties based on locale. You can use properties like `justifyContext`, `alignItems`, and others. Their property values change behavior as required.
 
 - On LTR locales, `start` and `end` are the same as `left` and `right`.
-- On RTL locales, `start` and `end` are the same as `right` and `left`, respectively.
+- On RTL locales, `start` and `end` are the same as `right` and `left`.
 
 > **info** For more details on how RTL works in React Native check out the React Native [blog article](https://reactnative.dev/blog/2016/08/19/right-to-left-support-for-react-native-apps) introducing RTL support.
 
@@ -256,8 +253,7 @@ You don't need to manually adjust `<View>` styling properties based on locale. Y
 
 Web support for RTL layouts requires no app config changes.
 
-Expo uses `react-native-web` for running Expo projects in the browser.
-To make `react-native-web` automatically adapt to locale direction, add a `dir` property to your root `<View>` component.
+Expo uses `react-native-web` for running Expo projects in the browser. To make `react-native-web` automatically adapt to locale direction, add a `dir` property to your root `<View>` component.
 
 ```tsx App.tsx
 import { View } from 'react-native';
@@ -288,8 +284,7 @@ export default MobileText;
 
 #### Web support
 
-For each text tag, you need to add the `lang` property with the current locale identifier.
-It's best to define this style in a custom reusable component.
+For each text tag, you need to add the `lang` property with the current locale identifier. It's best to define this style in a custom reusable component.
 
 ```tsx WebText.tsx
 import { getLocales } from 'expo-localization';
