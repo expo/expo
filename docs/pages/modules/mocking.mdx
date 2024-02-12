@@ -20,7 +20,7 @@ However, to provide default mocks in your Expo Module, we offer a method to bund
 ## Providing mocks for a module
 
 Create a file with the same name as the native module you want to mock and place it in your module's **mocks** directory. Make sure to export the mock implementation from this file.
-The `jest-expo` preset will automatically return the exported functions as a result of a `requireNativeModule` call when running during a unit test.
+The `jest-expo` preset will automatically return the exported functions because of a `requireNativeModule` call when running during a unit test.
 
 For example, the `expo-clipboard` library has a native module called `ExpoClipboard`. You will create a **ExpoClipboard.ts** in the **mocks** directory to mock it.
 
