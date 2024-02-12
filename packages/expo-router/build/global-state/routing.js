@@ -157,13 +157,15 @@ function rewriteNavigationStateToParams(state, params = {}) {
     }
     return JSON.parse(JSON.stringify(params));
 }
-function getNavigateAction(state, parentState, type = 'NAVIGATE') {
+function getNavigateAction(state, parentState, type = 'NAVIGATE', target = parentState.key) {
+    // Get the current route, which will be the last in the stack
     const route = state.routes[state.routes.length - 1];
-    const currentRoute = parentState.routes.find((parentRoute) => parentRoute.name === route.name);
-    const routesAreEqual = parentState.routes[parentState.index] === currentRoute;
-    // If there is nested state and the routes are equal, we should keep going down the tree
-    if (route.state && routesAreEqual && currentRoute.state) {
-        return getNavigateAction(route.state, currentRoute.state, type);
+    // Find the previous route in the parent state
+    const previousRoute = parentState.routes.findLast((parentRoute) => {
+        return isSameRoute(route, parentRoute);
+    });
+    if (route.state && previousRoute?.state) {
+        // return getNavigateAction(route.state, previousRoute.state as NavigationState, type, target);
     }
     // Either we reached the bottom of the state or the point where the routes diverged
     const { screen, params } = rewriteNavigationStateToParams(state);
@@ -175,11 +177,22 @@ function getNavigateAction(state, parentState, type = 'NAVIGATE') {
     }
     return {
         type,
-        target: parentState.key,
+        target,
         payload: {
             name: screen,
             params,
         },
     };
+}
+/**
+ * Routes match if they share the same name and their preferredId's match
+ * @see: https://github.com/react-navigation/react-navigation/blob/a2993721f59d92257cef5608c33a993f8d420a80/packages/routers/src/StackRouter.tsx#L378-L382
+ */
+function isSameRoute(a = {}, b = {}) {
+    if (a.name !== b.name)
+        return false;
+    if ('state' in b && b.state?.type !== 'stack')
+        return false;
+    return true;
 }
 //# sourceMappingURL=routing.js.map
