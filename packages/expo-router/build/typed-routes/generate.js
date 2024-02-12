@@ -48,14 +48,11 @@ function walkRouteNode(routeNode, staticRoutes, dynamicRoutes, dynamicRouteConte
  * Modifies the RouteNode.route to be a typed-route string
  */
 function addRouteNode(routeNode, staticRoutes, dynamicRoutes, dynamicRouteContextKeys) {
-    if (!routeNode)
+    if (!routeNode?.route)
         return;
-    if (!(0, matchers_1.isTypedRoutesFilename)(routeNode.contextKey))
+    if (!(0, matchers_1.isTypedRoute)(routeNode.route))
         return;
-    let routePath = (0, matchers_1.removeSupportedExtensions)(routeNode.contextKey)
-        .replace(/^\./, '') // Remove the leading ./
-        .replace(/\/?index$/, ''); // replace /index with /
-    routePath ||= '/'; // or default to '/'
+    const routePath = `/${(0, matchers_1.removeSupportedExtensions)(routeNode.route).replace(/\/?index$/, '')}`; // replace /index with /
     if (routeNode.dynamic) {
         dynamicRouteContextKeys.add(routePath);
         dynamicRoutes.add(`${routePath

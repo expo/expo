@@ -15,7 +15,7 @@ const ctx = (0, require_context_ponyfill_1.default)(process.env.EXPO_ROUTER_APP_
  * Generate a Metro watch handler that regenerates the typed routes declaration file
  */
 function getWatchHandler(outputDir) {
-    const routeFiles = new Set(ctx.keys().filter((key) => (0, matchers_1.isTypedRoutesFilename)(key)));
+    const routeFiles = new Set(ctx.keys().filter((key) => (0, matchers_1.isTypedRoute)(key)));
     return async function callback({ filePath, type }) {
         let shouldRegenerate = false;
         if (type === 'delete') {
@@ -27,7 +27,7 @@ function getWatchHandler(outputDir) {
         }
         else if (type === 'add') {
             ctx.__add(filePath);
-            shouldRegenerate = (0, matchers_1.isTypedRoutesFilename)(filePath);
+            shouldRegenerate = (0, matchers_1.isTypedRoute)(filePath);
         }
         else {
             shouldRegenerate = routeFiles.has(filePath);

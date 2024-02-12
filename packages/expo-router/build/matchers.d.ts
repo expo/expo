@@ -20,5 +20,5 @@ export declare function stripInvisibleSegmentsFromPath(path: string): string;
  *  - _layout files, +html, +not-found, string+api, etc
  *  - Routes can still use `+`, but it cannot be in the last segment.
  */
-export declare function isTypedRoutesFilename(name: string): boolean;
+export declare function isTypedRoute(name: string): boolean;
 //# sourceMappingURL=matchers.d.ts.map

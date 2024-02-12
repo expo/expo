@@ -118,10 +118,10 @@ exports.testRouter = {
         return imperative_api_1.router.canGoBack();
     },
     /** Update the current route query params and assert the new pathname */
-    setParams(params) {
+    setParams(params, path) {
         imperative_api_1.router.setParams(params);
-        if (path_1.default) {
-            expect(react_native_1.screen).toHavePathnameWithParams(path_1.default);
+        if (path) {
+            expect(react_native_1.screen).toHavePathnameWithParams(path);
         }
     },
 };
