@@ -14,6 +14,7 @@ module.exports = function (task) {
       options: {
         module: {
           type: 'commonjs',
+          lazy: true,
         },
         env: {
           targets: {
