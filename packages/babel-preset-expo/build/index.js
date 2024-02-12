@@ -52,10 +52,7 @@ function babelPresetExpo(api, options = {}) {
         // `@react-native/babel-preset` configures this plugin with `{ loose: true }`, which breaks all
         // getters and setters in spread objects. We need to add this plugin ourself without that option.
         // @see https://github.com/expo/expo/pull/11960#issuecomment-887796455
-        extraPlugins.push([
-            require.resolve('@babel/plugin-transform-object-rest-spread'),
-            { loose: false },
-        ]);
+        extraPlugins.push([require('@babel/plugin-transform-object-rest-spread'), { loose: false }]);
     }
     else {
         // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
@@ -100,7 +97,7 @@ function babelPresetExpo(api, options = {}) {
         extraPlugins.push(inline_env_vars_1.expoInlineEnvVars);
     }
     if (platform === 'web') {
-        extraPlugins.push(require.resolve('babel-plugin-react-native-web'));
+        extraPlugins.push(require('babel-plugin-react-native-web'));
         // Webpack uses the DefinePlugin to provide the manifest to `expo-constants`.
         if (bundler !== 'webpack') {
             extraPlugins.push(expo_inline_manifest_plugin_1.expoInlineManifestPlugin);
@@ -184,12 +181,12 @@ function babelPresetExpo(api, options = {}) {
         plugins: [
             ...extraPlugins,
             // TODO: Remove
-            [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
-            require.resolve('@babel/plugin-transform-export-namespace-from'),
+            [require('@babel/plugin-proposal-decorators'), { legacy: true }],
+            require('@babel/plugin-transform-export-namespace-from'),
             // Automatically add `react-native-reanimated/plugin` when the package is installed.
             // TODO: Move to be a customTransformOption.
             (0, common_1.hasModule)('react-native-reanimated') &&
-                platformOptions.reanimated !== false && [require.resolve('react-native-reanimated/plugin')],
+                platformOptions.reanimated !== false && [require('react-native-reanimated/plugin')],
         ].filter(Boolean),
     };
 }
