@@ -28,7 +28,7 @@ export declare function useSortedScreens(order: ScreenProps[]): React.ReactNode[
 /** Wrap the component with various enhancements and add access to child routes. */
 export declare function getQualifiedRouteComponent(value: RouteNode): React.ComponentType<any> | React.ForwardRefExoticComponent<Pick<any, string | number | symbol> & React.RefAttributes<unknown>>;
 /** @returns a function which provides a screen id that matches the dynamic route name in params. */
-export declare function createGetIdForRoute(route: Pick<RouteNode, 'dynamic' | 'route'>): (({ params }: {
+export declare function createGetIdForRoute(route: Pick<RouteNode, 'dynamic' | 'route' | 'contextKey' | 'children'>): ({ params }?: {
     params?: Record<string, any> | undefined;
-}) => string | undefined) | undefined;
+}) => string;
 //# sourceMappingURL=useScreens.d.ts.map
