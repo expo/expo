@@ -104,10 +104,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     // `@react-native/babel-preset` configures this plugin with `{ loose: true }`, which breaks all
     // getters and setters in spread objects. We need to add this plugin ourself without that option.
     // @see https://github.com/expo/expo/pull/11960#issuecomment-887796455
-    extraPlugins.push([
-      require.resolve('@babel/plugin-transform-object-rest-spread'),
-      { loose: false },
-    ]);
+    extraPlugins.push([require('@babel/plugin-transform-object-rest-spread'), { loose: false }]);
   } else {
     // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
     // JSX is used in a function body. This is technically not required in production, but we
@@ -158,7 +155,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   }
 
   if (platform === 'web') {
-    extraPlugins.push(require.resolve('babel-plugin-react-native-web'));
+    extraPlugins.push(require('babel-plugin-react-native-web'));
 
     // Webpack uses the DefinePlugin to provide the manifest to `expo-constants`.
     if (bundler !== 'webpack') {
@@ -255,12 +252,12 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     plugins: [
       ...extraPlugins,
       // TODO: Remove
-      [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
-      require.resolve('@babel/plugin-transform-export-namespace-from'),
+      [require('@babel/plugin-proposal-decorators'), { legacy: true }],
+      require('@babel/plugin-transform-export-namespace-from'),
       // Automatically add `react-native-reanimated/plugin` when the package is installed.
       // TODO: Move to be a customTransformOption.
       hasModule('react-native-reanimated') &&
-        platformOptions.reanimated !== false && [require.resolve('react-native-reanimated/plugin')],
+        platformOptions.reanimated !== false && [require('react-native-reanimated/plugin')],
     ].filter(Boolean) as PluginItem[],
   };
 }
