@@ -17,7 +17,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.renderRouter = exports.getMockContext = exports.getMockConfig = void 0;
+exports.testRouter = exports.renderRouter = exports.getMockContext = exports.getMockConfig = void 0;
 /// <reference types="../../types/jest" />
 require("./expect");
 const react_native_1 = require("@testing-library/react-native");
@@ -30,6 +30,7 @@ const getPathFromState_1 = __importDefault(require("../fork/getPathFromState"));
 const getLinkingConfig_1 = require("../getLinkingConfig");
 const getRoutes_1 = require("../getRoutes");
 const router_store_1 = require("../global-state/router-store");
+const imperative_api_1 = require("../imperative-api");
 // re-export everything
 __exportStar(require("@testing-library/react-native"), exports);
 function isOverrideContext(context) {
@@ -88,4 +89,40 @@ function renderRouter(context = './app', { initialUrl = '/', ...options } = {}) 
     });
 }
 exports.renderRouter = renderRouter;
+exports.testRouter = {
+    /** Navigate to the provided pathname and the pathname */
+    navigate(path) {
+        (0, react_native_1.act)(() => imperative_api_1.router.navigate(path));
+        expect(react_native_1.screen).toHavePathnameWithParams(path);
+    },
+    /** Push the provided pathname and assert the pathname */
+    push(path) {
+        (0, react_native_1.act)(() => imperative_api_1.router.push(path));
+        expect(react_native_1.screen).toHavePathnameWithParams(path);
+    },
+    /** Replace with provided pathname and assert the pathname */
+    replace(path) {
+        (0, react_native_1.act)(() => imperative_api_1.router.replace(path));
+        expect(react_native_1.screen).toHavePathnameWithParams(path);
+    },
+    /** Go back in history and asset the new pathname */
+    back(path) {
+        expect(imperative_api_1.router.canGoBack()).toBe(true);
+        (0, react_native_1.act)(() => imperative_api_1.router.back());
+        if (path) {
+            expect(react_native_1.screen).toHavePathnameWithParams(path);
+        }
+    },
+    /** If there's history that supports invoking the `back` function. */
+    canGoBack() {
+        return imperative_api_1.router.canGoBack();
+    },
+    /** Update the current route query params and assert the new pathname */
+    setParams(params) {
+        imperative_api_1.router.setParams(params);
+        if (path_1.default) {
+            expect(react_native_1.screen).toHavePathnameWithParams(path_1.default);
+        }
+    },
+};
 //# sourceMappingURL=index.js.map

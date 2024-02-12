@@ -137,30 +137,58 @@ function getQualifiedRouteComponent(value) {
 exports.getQualifiedRouteComponent = getQualifiedRouteComponent;
 /** @returns a function which provides a screen id that matches the dynamic route name in params. */
 function createGetIdForRoute(route) {
-    if (!route.dynamic?.length) {
-        return undefined;
+    const include = new Map();
+    if (route.dynamic) {
+        for (const segment of route.dynamic) {
+            include.set(segment.name, segment);
+        }
     }
-    return ({ params }) => {
-        const getPreferredId = (segment) => {
-            // Params can be undefined when there are no params in the route.
-            const preferredId = params?.[segment.name];
-            // If the route has a dynamic segment, use the matching parameter
-            // as the screen id. This enables pushing a screen like `/[user]` multiple times
-            // when the user is different.
-            if (preferredId) {
-                if (!Array.isArray(preferredId)) {
-                    return preferredId;
-                }
-                else if (preferredId.length) {
-                    // Deep dynamic routes will return as an array, so we'll join them to create a
-                    // fully qualified string.
-                    return preferredId.join('/');
-                }
-                // Empty arrays...
+    return ({ params = {} } = {}) => {
+        const segments = [];
+        const unprocessedParams = new Set(Object.keys(params));
+        for (const dynamic of include.values()) {
+            unprocessedParams.delete(dynamic.name);
+            const value = params?.[dynamic.name];
+            if (Array.isArray(value) && value.length > 0) {
+                // If we are an array with a value
+                segments.push(value.join('/'));
             }
-            return segment.deep ? `[...${segment.name}]` : `[${segment.name}]`;
-        };
-        return route.dynamic?.map((segment) => getPreferredId(segment)).join('/');
+            else if (value && !Array.isArray(value)) {
+                // If we have a value and not an empty array
+                segments.push(value);
+            }
+            else if (dynamic.deep) {
+                segments.push(`[...${dynamic.name}]`);
+            }
+            else {
+                segments.push(`[${dynamic.name}]`);
+            }
+        }
+        let id = segments.join('/');
+        const searchParams = [];
+        if (route.children?.length === 0) {
+            /**
+             * Child routes IDs are a combination of their dynamic segments and the search parameters
+             * As search parameters can be anything, we build an exclude list of its parents dynamic segments.
+             */
+            for (const key of unprocessedParams) {
+                // These are internal React Navigation values and should not be included
+                if (key === 'screen' || key === 'params') {
+                    continue;
+                }
+                searchParams.push(`${key}=${params[key]}`);
+            }
+        }
+        if (searchParams.length) {
+            // Return the context key if there is no id. This way we can at least ensure its the same route
+            id = `${id || route.contextKey}?${searchParams.join('&')}`;
+        }
+        /**
+         * We should always return a truthy value, failing to do so will cause React Navigation to
+         * fall back to `key` based navigation. This is an issue for search parameters where are either
+         * part of the key or the id.
+         */
+        return id;
     };
 }
 exports.createGetIdForRoute = createGetIdForRoute;
