@@ -1,12 +1,187 @@
 ---
 title: Configure multiple app variants
 sidebar_title: Multiple app variants
-description: learn how to configure app config to install multiple app variants on a single device.
+description: Learn how to configure app config to install multiple app variants on a single device.
 ---
 
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import { Collapsible } from '~/ui/components/Collapsible';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
+
+In this chapter, we're going to configure our project to run multiple build types (development, preview, production) so that they can be installed simultaneously on a single device. This setup is useful for testing various stages of our app without the hassle of uninstalling and reinstalling different versions.
+
+> We're also going to use this setup in the next chapter when we learn and create internal distribution builds.
+
+## Configure app for multiple variants
+
+Our **app.json** file already has IDs for both Android and iOS:
+
+```json app.json
+{
+  "ios": {
+    "bundleIdentifier": "com.amanhimself.stickersmash"
+    /* @hide ... */ /* @end */
+  },
+  "android": {
+    "package": "com.amanhimself.stickersmash"
+    /* @hide ... */ /* @end */
+  }
+  /* @hide ... */ /* @end */
+}
+```
+
+Each variant needs a unique Android Application ID and iOS Bundle Identifier to run multiple variants on one device.
+
+<Step label="1">
+
+## Convert app.json to app.config.js for dynamic configuration
+
+**app.json** contains app-related configuration in a JSON file. It's static and doesn't suit our use case if we want to use dynamic values for certain fields. We're going to add different Android Application ID and iOS Bundle Identifier for `development`, `preview` and `production` build profiles based on environment variables.
+
+Let's modify it:
+
+- In our code editor, rename **app.json** to **app.config.js**.
+- In **app.config.js**, add environment variables called `IS_DEV`, which takes `development` as its value and `IS_PREVIEW`, which takes `preview` as its value:
+
+```js app.config.js
+const IS_DEV = process.env.APP_VARIANT === 'development';
+const IS_PREVIEW = process.env.APP_VARIANT === 'preview';
+```
+
+- Add two functions that dynamically change the app name, Android Application ID and iOS Bundle Identifier:
+
+```js app.config.js
+const getUniqueIdentifier = () => {
+  if (IS_DEV) {
+    return 'com.amanhimself.stickersmash.dev';
+  }
+
+  if (IS_PREVIEW) {
+    return 'com.amanhimself.stickersmash.preview';
+  }
+
+  return 'com.amanhimself.stickersmash';
+};
+
+const getAppName = () => {
+  if (IS_DEV) {
+    return 'StickerSmash (Dev)';
+  }
+
+  if (IS_PREVIEW) {
+    return 'StickerSmash (Preview)';
+  }
+
+  return 'StickerSmash: Emoji Stickers';
+};
+```
+
+- We'll use `getAppName()` to assign varying `name` values for the app and `getUniqueIdentifier()` to differentiate `android.package` and `ios.bundleIdentifier` for development and preview builds:
+
+```js app.config.js
+export default {
+  name: getAppName(),
+  /* @hide ... */ /* @end */
+  ios: {
+    bundleIdentifier: getUniqueIdentifier(),
+    /* @hide ... */ /* @end */
+  },
+  android: {
+    package: getUniqueIdentifier(),
+    /* @hide ... */ /* @end */
+  },
+};
+```
+
+</Step>
+
+<Step label="2">
+
+## Configure eas.json
+
+In **eas.json**, add the `APP_VARIANT` environment variable for development builds:
+
+```json eas.json
+{
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {
+        "APP_VARIANT": "development"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "env": {
+        "APP_VARIANT": "preview"
+      }
+    }
+    /* @hide ... */ /* @end */
+  }
+}
+```
+
+Running `eas build --profile development` will now set `APP_VARIANT` to `development`.
+
+> **Note**: Since we changed Android Application ID and iOS Bundle Identifier, the EAS CLI will prompt us to generate a new Keystore for Android and a new provisioning profile for iOS. To learn more about what these steps include, see the previous chapter for more information.
+
+Also, since our `ios-simulator` build profile extends `development`, this configuration is automatically applied.
+
+</Step>
+
+<Step label="3">
+
+## Run development server
+
+> After builds are complete, follow the same procedure from previous chapters to install them on a device or emulator/simulator.
+
+Now that we're identifying our development build with the `APP_VARIANT` environment variable, we need to incorporate it when starting the development server. To do this, add a `dev` script in the `"scripts"` section of our project's **package.json**:
+
+```json package.json
+{
+  "scripts": {
+    "dev": "APP_VARIANT=development npx expo start"
+  }
+}
+```
+
+Run `npm run dev` to start the development server:
+
+<Terminal cmd={['$ npm run dev']} />
+
+This will evaluate **app.config.js** locally and load the environment variable for the `development` profile.
+
+Now, our development build will run on both Android and iOS, displaying the modified app name from **app.config.js**.
+
+For example, the below development build is running on an iOS Simulator. See that the app name is **StickerSmash (Dev)**:
+
+<ImageSpotlight
+  alt="Development variant running on Android device."
+  src="/static/images/tutorial/eas/ios-dev-variant.png"
+  style={{ maxWidth: 280 }}
+/>
+
+</Step>
+
+## Summary
+
+In this chapter, we learned about:
+
+- Setting up various build types on a single device.
+- Transitioning from **app.json** to **app.config.js** for distinct build identifiers and app metadata like name.
+- Implementing environment variables in **eas.json** for development builds.
+- Introduced a script in **package.json** and initiated the development server with `npm run dev`.
+
+## Next step
+
+We can go beyond and add more development related indicators (such as a different app icon or splash screen), but for brevity, we are not going to do that in this tutorial. However, you should try it out.
+
+<BoxLink
+  title="Configure multiple app variants"
+  Icon={BookOpen02Icon}
+  description="In the next chapter, learn about what are internal distribution builds, why we need them, and how to create them.."
+  href="/tutorial/eas/internal-distribution-builds/"
+/>
