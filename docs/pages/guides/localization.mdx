@@ -120,26 +120,19 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-<Collapsible summary="Using other translation libraries">
+### Other translation libraries
 
-While this guide uses `i18n-js` as an example, there are many other libraries that can help you with translations, and they each have different features:
+This guide uses `i18n-js` as an example. Other libraries can also help you with translations, and each has different features:
 
-- Creating translations is a huge effort, and you'd ideally want to hire someone. It's also hard for them to edit translations directly in your code. Some translation libraries can integrate with translation management tools (essentially a web service that lets you outsource, auto-generate, or make it easier to create translations).
+- Creating translations is a huge effort. Consider hiring experts and using translation libraries with management tools for easier edits and automation. Some translation libraries can integrate with translation management tools (essentially, a web service that lets you outsource, auto-generate, or make it easier to create translations).
 
-- Some libraries make it easy to move the component structure around (not just words of your copy) based on translation strings. Imagine you want to localize a string that includes a `<Pressable>` link, and you want the link to be in a different order from the rest of the text, depending on the translation.
+- Some libraries allow rearranging component structures based on translation strings. For example, you want to localize a string that includes a `<Pressable>`, and depending on the translation you want the link to be in a different order from the rest of the text.
 
 Here are some libraries that can be a good option depending on your needs:
 
-- [`React i18next`](https://react.i18next.com/)
+- [`React i18next`](https://react.i18next.com/) is a stable, well-maintained library based on `i18next`.
 
-  `React i18next` is a stable, well-maintained library based on `i18next`.
-
-- [`typesafe-i18n`](https://github.com/ivanhofer/typesafe-i18n)
-
-  `typesafe-i18n` compiles translations to save space in the production bundle. It also generates TypeScript types for your translations so that you can use them in your code and get autocomplete and type safety.
-  It requires the `Intl` API for some features, so it's only usable in projects with Hermes enabled.
-
-</Collapsible>
+- [`typesafe-i18n`](https://github.com/ivanhofer/typesafe-i18n) compiles translations to save space in the production bundle. It also generates TypeScript types for your translations so that you can use them in your code and get autocomplete and type safety. It requires the `Intl` API for some features, so it's only usable in projects with Hermes enabled.
 
 ### Translating app metadata
 
