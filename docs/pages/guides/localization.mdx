@@ -7,13 +7,12 @@ import { SnackInline } from '~/ui/components/Snippet';
 import { Terminal } from '~/ui/components/Snippet';
 import { Collapsible } from '~/ui/components/Collapsible';
 
-If you want your app to be easy to use for users who speak different languages or come from different cultures, you should localize it.
 
 Localizing an app makes it adapt to the locale of the user's device. The app will show translations and currencies that the user knows and understands. Numbers, lists, and more will be formatted in a way that the user is used to.
 
 ## Getting the user's language
 
-Use the [`expo-localization`](/versions/latest/sdk/localization/) module to get the user's current language. Install the package by running the following command:
+Use the [`expo-localization`](/versions/latest/sdk/localization/) library to get the user's current language. Install the package by running the following command:
 
 <Terminal cmd={['$ npx expo install expo-localization']} />
 
@@ -323,7 +322,7 @@ If you need to use different icons for LTR/RTL or change styles based on this se
 
 ## Locale settings and units
 
-Expo provides the `expo-localization` module to allow you to read the user's locale and other preferences.
+Expo provides the `expo-localization` library to allow you to read the user's locale and other preferences.
 
 You can use synchronous `getLocales()` and `getCalendars()` methods to get the current locale settings of the user device.
 
