@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import { getTypedRoutesDeclarationFile } from './generate';
 import { EXPO_ROUTER_CTX_IGNORE } from '../../_ctx-shared';
-import { isTypedRoutesFilename } from '../matchers';
+import { isTypedRoute } from '../matchers';
 import requireContext from '../testing-library/require-context-ponyfill';
 
 const ctx = requireContext(process.env.EXPO_ROUTER_APP_ROOT, true, EXPO_ROUTER_CTX_IGNORE);
@@ -12,7 +12,7 @@ const ctx = requireContext(process.env.EXPO_ROUTER_APP_ROOT, true, EXPO_ROUTER_C
  * Generate a Metro watch handler that regenerates the typed routes declaration file
  */
 export function getWatchHandler(outputDir: string) {
-  const routeFiles = new Set(ctx.keys().filter((key) => isTypedRoutesFilename(key)));
+  const routeFiles = new Set(ctx.keys().filter((key) => isTypedRoute(key)));
 
   return async function callback({ filePath, type }: { filePath: string; type: string }) {
     let shouldRegenerate = false;
@@ -25,7 +25,7 @@ export function getWatchHandler(outputDir: string) {
       }
     } else if (type === 'add') {
       ctx.__add(filePath);
-      shouldRegenerate = isTypedRoutesFilename(filePath);
+      shouldRegenerate = isTypedRoute(filePath);
     } else {
       shouldRegenerate = routeFiles.has(filePath);
     }

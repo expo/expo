@@ -3,7 +3,7 @@ import path from 'path';
 
 import { RouteNode } from '../Route';
 import { getRoutes } from '../getRoutes';
-import { isTypedRoutesFilename, removeSupportedExtensions } from '../matchers';
+import { isTypedRoute, removeSupportedExtensions } from '../matchers';
 import { RequireContext } from '../types';
 
 // /[...param1]/ - Match [...param1]
@@ -77,14 +77,10 @@ function addRouteNode(
   dynamicRoutes: Set<string>,
   dynamicRouteContextKeys: Set<string>
 ) {
-  if (!routeNode) return;
-  if (!isTypedRoutesFilename(routeNode.contextKey)) return;
+  if (!routeNode?.route) return;
+  if (!isTypedRoute(routeNode.route)) return;
 
-  let routePath = removeSupportedExtensions(routeNode.contextKey)
-    .replace(/^\./, '') // Remove the leading ./
-    .replace(/\/?index$/, ''); // replace /index with /
-
-  routePath ||= '/'; // or default to '/'
+  const routePath = `/${removeSupportedExtensions(routeNode.route).replace(/\/?index$/, '')}`; // replace /index with /
 
   if (routeNode.dynamic) {
     dynamicRouteContextKeys.add(routePath);

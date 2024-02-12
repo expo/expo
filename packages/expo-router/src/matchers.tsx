@@ -70,6 +70,6 @@ export function stripInvisibleSegmentsFromPath(path: string): string {
  *  - _layout files, +html, +not-found, string+api, etc
  *  - Routes can still use `+`, but it cannot be in the last segment.
  */
-export function isTypedRoutesFilename(name: string) {
-  return name.match(/(_layout|[^/]*?\+[^/]*?)\.[tj]sx?$/) === null;
+export function isTypedRoute(name: string) {
+  return !name.startsWith('+') && name.match(/(_layout|[^/]*?\+[^/]*?)\.[tj]sx?$/) === null;
 }
