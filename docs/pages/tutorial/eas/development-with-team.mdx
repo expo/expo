@@ -1,0 +1,178 @@
+---
+title: Development with team
+description: Learn how to use the EAS Update to send OTA updates and share previews with our team.
+---
+
+import { Step } from '~/ui/components/Step';
+import { Terminal } from '~/ui/components/Snippet';
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { Collapsible } from '~/ui/components/Collapsible';
+import Video from '~/components/plugins/Video';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { BookOpen02Icon } from '@expo/styleguide-icons';
+
+In this chapter, we are going to send Over-The-Air (OTA) updates using EAS Update and share them with our team. This will help us streamline the process of creating builds and instead use Updates for the app's code modifications.
+
+## Understanding OTA updates
+
+An Over-The-Air update helps fix small bugs and push quick updates in between app store submissions. It allows updating non-native parts of an app, such as JavaScript code, styling, and images, with a new update.
+
+EAS Update is tailored for React Native applications, offering a streamlined way to deploy hotfixes and improvements directly to users devices. This service facilitates a more efficient workflow among development teams, allowing for faster iteration and enhanced collaboration when managing app updates.
+
+<Step label="1">
+
+## Install expo-updates library
+
+To initialize our project and send an update, we need to use `expo-updates` library. Run the command to install it:
+
+<Terminal cmd={['$ npx expo install expo-updates']} />
+
+</Step>
+
+<Step label="2">
+
+## Configure EAS Update
+
+To initialize our project with EAS Update, we need to:
+
+- Update **app.config.js** by adding `updates` and `runtimeVersion` properties to establish a link between the build and the update. Since we are using dynamic configuration, we can execute the following command to obtain these properties and their values from EAS and manually copy them to **app.config.js**.
+
+<Terminal cmd={['$ eas update:configure']} />
+
+- Add the `channel` to the `development`, `preview`, and `production` build profiles in the **eas.json**. To automatically update this file, re-run the `eas update:configure` command:
+
+{/* prettier-ignore */}
+```json eas.json
+{
+  "build": {
+    "development": {
+      /* @hide ... */ /* @end */
+      "channel": "development"
+    },
+    "ios-simulator": {
+      /* @hide ... */ /* @end */
+      "channel": "ios-simulator"
+    },
+    "preview": {
+      /* @hide ... */ /* @end */
+      "channel": "preview"
+    },
+    "production": {
+      /* @hide ... */ /* @end */
+      "channel": "production"
+    }
+  }
+  /* @hide ... */ /* @end */
+}
+```
+
+<Collapsible summary="What about non-dynamic (app.json) projects?">
+
+In case a project doesn't use dynamic app config (uses **app.json** instead of **app.config.js**), then running the above command will add the `channels` to each build profile in the **eas.json** automatically without running the command twice.
+
+</Collapsible>
+
+<Collapsible summary="What is a channel?">
+
+The `channel` allows us to point updates to a build profile. It creates a link between a build and an update and ensures that when we send an update, it will run for the correct build. It is used to identify each build.
+
+</Collapsible>
+
+</Step>
+
+<Step label="3">
+
+## Create a development build
+
+We need to create a new preview build since our latest build doesn't contain `expo-updates` library. Run:
+
+<Terminal cmd={['$ eas build --platform android --profile development']} />
+
+> We are using a `development` build for Android devices to demonstrate OTA updates. However, we can use `--platform all` or `--platform ios` to create a build for both platforms or iOS.
+
+After the new version of the development build is created, make sure to install it on a device.
+
+</Step>
+
+<Step label="4">
+
+## Modify JavaScript code of the app
+
+Let's update the text of the first button in our app that says **Choose a photo** to **Select a photo**.
+
+```jsx App.js
+<Button theme="primary" label="Select a photo" onPress={pickImageAsync} />
+```
+
+</Step>
+
+<Step label="5">
+
+## Publish an update
+
+Instead of creating a new build to share this change with our team for testing, let's publish an update:
+
+<Terminal cmd={['$ eas update --branch development --message "Change first button label"']} />
+
+The `branch` is defined by us and should correspond to a `channel` for any build type so that each branch for a specific build type is linked with its channel.
+
+After the update is published, the CLI will prompt us with information about it.
+
+<ImageSpotlight
+  alt="EAS Update published successfully with CLI prompt"
+  src="/static/images/tutorial/eas/update-01.png"
+/>
+
+Click on the website link to see the Update on the Expo dashboard under **Updates**:
+
+<ImageSpotlight
+  alt="Expo dashboard shows the latest published update for the development build"
+  src="/static/images/tutorial/eas/update-02.png"
+  style={{ maxWidth: 800 }}
+/>
+
+</Step>
+
+<Step label="6">
+
+## See the update live in a development build
+
+To view the live update in a development build:
+
+- Log in to your Expo account within the development build.
+- Open the **Extensions** tab.
+- Look for **Branch: development** listed under **EAS Update**.
+- Tap on **Open** to access the update.
+
+</Step>
+
+<Step label="7">
+
+## Sharing changes with preview or production builds
+
+Updates for non-development builds (preview or production) are automatically downloaded to the device.
+
+Any team member running the preview or production build will receive the update with the changes we push to those specific branches.
+
+For example, for a `preview` build, we can run:
+
+<Terminal cmd={['$ eas update --branch preview --message "Change first button label"']} />
+
+Here is an example where we've published an update for the `preview` build. To test the update. Force close and reopen the app twice to download and view the changes:
+
+<Video file="tutorial/eas/running-update-on-dev.mp4" />
+
+</Step>
+
+## Summary
+
+OTA updates help fix bugs, push quick updates between app store submissions, and ease the process of sharing them with our team members while the app is in development. In this chapter, we learned about:
+
+- Installing the `expo-updates` library and configuring EAS Update in our project.
+- The `channel` property in the build profiles establishes a link between a build and an update.
+- The ability to make and publish modifications to the JavaScript code in our app as new updates without necessitating a new build, leveraging the convenience of OTA updates.
+- Published updates using `eas update --branch development --message "Change description"`.
+- Used a development build to view updates by logging in to the Expo account and accessing the update through the Extensions tab.
+- How preview and production builds automatically download updates, and force reopen the app to see the changes. We can also extend this behavior to programmatically control the behavior of available updates by using [`useUpdates()`](/versions/latest/sdk/updates/#useupdates)` hook.
+
+## Next step

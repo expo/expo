@@ -7,7 +7,6 @@ description: Learn about the process of creating a production build for iOS.
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import { Collapsible } from '~/ui/components/Collapsible';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
 
@@ -140,7 +139,7 @@ To prepare our app for App Store submission, go to the **App Store** tab:
   style={{ maxWidth: 600 }}
 />
 
-> **Complete App store listing**: To prepare the app for store listing, see our [Create app store assets guide](/guides/store-assets/) on how to create screenshots and previews.
+> **Complete App Store listing**: To prepare the app for store listing, see our [Create app store assets guide](/guides/store-assets/) on how to create screenshots and previews.
 
 - Once our app is ready, click on **Submit to App Review**. After that, Apple will review our app, and if approved, the app will be available on the App Store.
 
@@ -169,6 +168,13 @@ In this chapter, we learned about:
 - Creating an App Store-ready build by making a build with the `production` build profile.
 - Distributing a production build using TestFlight or the Apple App Store.
 - Submitting the app to the App Store using `eas submit`.
-- Automatting the submission process using the `--auto-submit` flag with `eas build`.
+- Automating the submission process using the `--auto-submit` flag with `eas build`.
 
-In the next chapter, we'll learn how to use the EAS Update to send OTA updates and share previews with our team.
+## Next step
+
+<BoxLink
+  title="Development with team"
+  Icon={BookOpen02Icon}
+  description="In the next chapter, learn how to use the EAS Update to send OTA updates and share previews with our team."
+  href="/tutorial/eas/development-with-team/"
+/>
