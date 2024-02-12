@@ -1,38 +1,48 @@
 ---
 title: Configure a development build in cloud
 sidebar_title: Configure development build
-description: Create a new development build using EAS
+description: Learn how to configure a development build for a project using EAS Build.
 ---
 
-In this chapter, we're going to learn about the setup required to configure a development build with EAS from our example app.
+import { Step } from '~/ui/components/Step';
+import { Terminal } from '~/ui/components/Snippet';
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { CODE } from '~/ui/components/Text';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { BookOpen02Icon } from '@expo/styleguide-icons';
+
+In this chapter, we're going to learn about the setup required to configure a development build with EAS for our example app.
 
 ## Understanding development builds
 
 Let's start by learning about what are development builds and why do we need them.
 
-A development build is a debug version of our project. It is optimized for quick iterations when creating an app. Using Expo means including the `expo-dev-client` library, which offers a robust and complete development environment. This setup allows us to integrate any native library or change code inside the [native directories](https://docs.expo.dev/workflow/overview/#android-and-ios-native-projects) as required.
+A development build is a debug version of our project. It is optimized for quick iterations when creating an app. Using Expo means including the `expo-dev-client` library, which offers a robust and complete development environment. This setup allows us to integrate any native library or change code inside the [native directories](/workflow/overview/#android-and-ios-native-projects) as required.
 
 > **Note:** If you are familiar with Expo Go, think of a development build as a customizable version of Expo Go that is unique to the requirements of a project.
 
-## 1 Install expo-dev-client library
+<Step label="1">
 
-To initialize our project for a development build, let's navigate inside our project directory and install `expo-dev-client` library by running the following command:
+## Install expo-dev-client library
 
-```
-npx expo install expo-dev-client
-```
+To initialize our project for a development build, let's [`cd`](https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Understanding_client-side_tools/Command_line#basic_built-in_terminal_commands) inside our project directory and run the following command to install the library:
+
+<Terminal cmd={['$ npx expo install expo-dev-client']} />
 
 ### Start the development server
 
 Run `npx expo start` to start the development server:
 
-```
-npx expo start
-```
+<Terminal cmd={['$ npx expo start']} />
 
-`npx expo start` starts your metro development server. In the terminal window, we see the familiar QR code followed by the `Metro waiting on...`:
+This command starts the metro development server. In the terminal window, we see the familiar QR code followed by the `Metro waiting on...`:
 
-![02-1.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/fb75e014-3067-4300-9385-30e46c46e728/125572a3-d930-486f-8c3f-a9f1bd563a33/02-1.png)
+<ImageSpotlight
+  alt="Running development server"
+  src="/static/images/tutorial/eas/development-server.png"
+  style={{ maxWidth: 600 }}
+/>
 
 Let's notice the changes installing `expo-dev-client` has done for us:
 
@@ -41,101 +51,107 @@ Let's notice the changes installing `expo-dev-client` has done for us:
 
 Since we do not have a development build installed on one of our devices or an emulator/simulator, we can't run our project yet.
 
+</Step>
+
 ## Benefits of creating a development build
 
 A development build offers several advantages. Here are some key highlights:
 
-- During development, it helps iterate quickly to achieve a web-like iteration speed when developing a mobile app
-- It allows sharing the native runtime with your team so that they can test features in development
-- You can install any third-party library that requires custom native code or make changes to the native projects (if required)
-- It allows the use of custom config plugins
-- Provides a reduced bundled app size. A development client is not bundled with all libraries from Expo SDK. It only contains the libraries you add to the project. The `expo` package only adds 1 MB one time to the final app binary size and has a marginal size cost. For example, it adds only 150 Kib on Android. The rest comes from the language, such as Kotlin on Android.
+- During development, it helps iterate quickly to achieve a web-like iteration speed when developing a mobile app.
+- It allows sharing the native runtime with our team so that they can test features in development.
+- We can install any third-party library that requires custom native code or make changes to the native projects (if required).
+- It allows using config plugins.
+- Provides a reduced bundled app size. A development client is not bundled with all libraries from Expo SDK. It only contains the libraries we add to the project. The `expo` package only adds 1 MB one time to the final app binary size and has a marginal size cost. For example, it adds only 150 Kib on Android. The rest comes from the language, such as Kotlin on Android.
 
-## 2 Create a development build
+<Step label="2">
+## Initialize a development build
 
 We will use EAS Build, a hosted service for building app binaries, to create our first development build. This service is cloud-based and works for any React Native project.
 
 ### Install EAS CLI
 
-To interact with EAS services, we need to install its Command Line Interface (CLI) tool called EAS CLI, as a global dependency in our development environment. Run the command:
+To use EAS services, we need to install EAS Command Line Interface (CLI) tool as a global dependency in our development environment. Run the command:
 
-```
-npm install -g eas-cli
-```
+<Terminal cmd={['$ npm install -g eas-cli']} />
 
-> Tip: You can also use the above command to check if a new version of EAS CLI is available and then update it. We encourage you to always stay up to date with the latest version.
+> **info** **Tip**: You can also use the above command to check if a new version of EAS CLI is available and then update it. We encourage you to always stay up to date with the latest version.
 
 ### Log in or sign up Expo account
 
 > If you have an Expo account and are signed in using Expo CLI, skip this step.
+> If you don't have an Expo account, [sign up here](https://expo.dev/signup) and proceed with the login command described above.
 
 To log in, run the following command:
 
-```
-eas login
-```
+<Terminal cmd={['$ eas login']} />
 
 This command asks for our EAS email or username and password to complete the login.
 
-> Tip: Using eas whoami we can always check whether we are logged in or not from our Expo account and from which account (in case we have multiple Expo accounts).
-
-If you don't have an Expo account, [sign up here](https://expo.dev/signup) and proceed with the login command described above.
+> **info** **Tip**: Use `eas whoami` to verify your Expo account login status and identify the current account, especially useful if managing multiple accounts.
 
 ### Initialize and link the project to EAS
 
 For any new project, the first step is to initialize and link it to the EAS servers. Run `eas init` command:
 
-```
-eas init
-```
+<Terminal cmd={['$ eas init']} />
 
-This command prompts us to verify the account owner (using our Expo account's credentials) and asks if we want to create a new EAS project:
+On execution, this command:
 
-![02-2.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/fb75e014-3067-4300-9385-30e46c46e728/ac0f477d-9642-4739-9e1b-56db998af93c/02-2.png)
+- Requests verification of the account owner by entering your Expo account credentials and then inquires if we want to create a new EAS project:
 
-On execution, `eas init` command:
+<ImageSpotlight alt="EAS init command prompt" src="/static/images/tutorial/eas/eas-init.png" />
 
-- Creates EAS project and provides a link to that project (for example, [https://expo.dev/accounts/[acccount]/projects/[project-name]](https://expo.dev/accounts/%5Bacccount%5D/projects/%5Bproject-name%5D)) which we can open in the Expo dashboard.
+- Creates EAS project and provides a link to that project (for example, [https://expo.dev/accounts/[acccount]/projects/[project-name]](https://expo.dev/accounts/%5Bacccount%5D/projects/%5Bproject-name%5D)) which we can open in the Expo dashboard:
 
-  ![02-3.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/fb75e014-3067-4300-9385-30e46c46e728/849f6b20-c4dc-4496-ab28-ebe98aabf21c/02-3.png)
+<ImageSpotlight
+  alt="New project in Expo dashboard"
+  src="/static/images/tutorial/eas/new-project.png"
+/>
 
 - Creates a unique `projectId` and links the EAS project to the example app on our developer machine.
-- Modifies **app.json** to add `[extra.eas.projectId](https://docs.expo.dev/versions/latest/sdk/constants/#easconfig)` and updates its value with the unique ID created in the above step. It also adds an `owner` property to the **app.json** file with our Expo account username.
+- Modifies **app.json** to add [`extra.eas.projectId`](/versions/latest/sdk/constants/#easconfig) and updates its value with the unique ID created in the above step. It also adds an `owner` property to the **app.json** file with our Expo account username.
 
-### What is projectId in app.json
+<Collapsible summary={<>What is <CODE>projectId</CODE> in app.json</>}>
 
-When `eas init` command runs, it associates a unique identifier for your project in **app.json** under `extra.eas.projectId`. It is used to identify our project on EAS servers.
+When `eas init` runs, it associates a unique identifier for our project in **app.json** under `extra.eas.projectId`. The value of this property is used to identify our project on EAS servers.
 
 ```json
 {
   "expo": {
-    // ...
+    /* @hide ... */ /* @end */
     "extra": {
       "eas": {
-        "projectId": "0cd3da2d-6148-4071-b6db-fdc55b17f274"
+        "projectId": "0cd3da2d-xxx-xxx-xxx-xxxxxxxxxx"
       }
     }
   }
 }
 ```
 
-### 3 Configure a project for EAS Build
+</Collapsible>
 
-To set up our project for EAS Build, run the following command:
+</Step>
 
-```
-eas build:configure
-```
+<Step label="3">
 
-This command:
+## Configure project for EAS Build
 
-- Prompts to select a platform: Android, iOS, or All. Since we are creating Android and iOS apps, let’s select **All**.
+To set up our project for EAS Build, run the command:
 
-  ![02-4.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/fb75e014-3067-4300-9385-30e46c46e728/ec5f5375-8d2e-42df-ac13-bf1ba50a6356/02-4.png)
+<Terminal cmd={['$ eas build:configure']} />
 
-- Creates an **eas.json** file in the root of our project’s directory with the following default configuration:
+On execution, this command:
 
-```json
+- Prompts to select a platform: Android, iOS, or All. As we are creating Android and iOS apps, let's select **All**.
+
+<ImageSpotlight
+  alt="EAS Build command asks for which platform to select"
+  src="/static/images/tutorial/eas/eas-build.png"
+/>
+
+- Creates **eas.json** in the root of our project's directory with the following default configuration:
+
+```json eas.json
 {
   "cli": {
     "version": ">= 6.0.0"
@@ -160,33 +176,42 @@ This command:
 }
 ```
 
-In the above file, **eas.json** does two things:
+The above file does two things:
 
 - Defines the current EAS CLI version
 - Adds three build profiles: `development`, `preview`, and `production`
 
-This is the default configuration for **eas.json** file. In any project, when we run `eas build:configure` command for the first time, we will see this configuration.
+This is the default configuration for **eas.json**. In any project, when we run `eas build:configure` for the first time, we will see this configuration.
+
+</Step>
 
 ### Exploring development profile
 
-**eas.json** is a collection of build profiles where each profile has a specific configuration. Using the configuration, we can create a certain type of build (for example, development, preview, production, and so on). Each profile can also contain platform-specific (`android` or `ios`) properties for a build type.
+**eas.json** is a collection of different build profiles. Each profile is tailored with distinct configurations to produce specific build types. These profiles can also include platform-specific settings for Android or iOS.
 
-Right now, we are interested in the `development` profile. This build profile is configured with the following properties:
+Currently, our focus is on the `development` profile, which has the following configuration:
 
-- `developmentClient` that is set to `true` to create a debug build. It allows `expo-dev-client` library to load the app and provide tools to develop it. It also generates a build artifact we will install on a device or emulator/simulator.
-- `distribution` that is set to `internal`. It makes the build ready for internal distribution.
+- `developmentClient`: Enabled (`true`) for creating a debug build. It loads the app using `expo-dev-client` library, which provides development tools and generates a build artifact for device or emulator/simulator installation.
+- `distribution`: Configured as `internal` to prepare the build for internal distribution.
 
-> Note: Each build is customizable and can be configured further. You can add platform-specific options or extend one build profile's configuration in another. Learn more about [build profiles](https://docs.expo.dev/build/eas-json/#build-profiles).
+> **Note**: Builds are highly customizable and allow further configuration. This includes platform-specific options and the ability to extend configurations from one build profile to another. Learn more about customizing [build profiles](/build/eas-json/#build-profiles).
 
 ## Summary
 
-In this chapter, we learned:
+In this chapter, we learned about:
 
-- How to install EAS CLI and use it to log in to our Expo account
-- Use EAS CLI to initialize our example project
-- Use EAS CLI to link our project in local machine to EAS servers
-- Configure a project to be ready to create a development build with EAS Build
-- What **eas.json** and what kind of configuration it contains
-- An overview of different types of build profiles
+- Installing the EAS CLI and logging into our Expo account.
+- Initializing our sample project with the EAS CLI.
+- Linking our local project to EAS servers using the EAS CLI.
+- Preparing our project for a development build using EAS Build.
+- Understanding **eas.json** and its default configuration.
+- Exploring `development` build profile and its purpose.
 
-In the next chapter, let’s create a development build for Android, install it on a device and on an emulator/simulator, and get it running.
+## Next step
+
+<BoxLink
+  title="Create and run a cloud build for Android"
+  Icon={BookOpen02Icon}
+  description="In the next chapter, let's create a development build for Android, install it on a device and an emulator/simulator, and get it running."
+  href="/tutorial/eas/android-development-build/"
+/>
