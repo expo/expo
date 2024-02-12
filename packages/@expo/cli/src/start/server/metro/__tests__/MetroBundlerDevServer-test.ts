@@ -226,7 +226,7 @@ describe('getStaticResourcesAsync', () => {
     );
     const scope = nock('http://localhost:8081')
       .get(
-        '/index.bundle?platform=web&dev=true&hot=false&resolver.environment=client&transform.environment=client&serializer.output=static'
+        '/index.bundle?platform=web&dev=true&hot=false&transform.routerRoot=app&resolver.environment=client&transform.environment=client&serializer.output=static'
       )
       .reply(
         200,
@@ -274,7 +274,7 @@ describe('getStaticResourcesAsync', () => {
     );
     const scope = nock('http://localhost:8081')
       .get(
-        '/index.bundle?platform=web&dev=true&hot=false&resolver.environment=client&transform.environment=client&serializer.output=static'
+        '/index.bundle?platform=web&dev=true&hot=false&transform.routerRoot=app&resolver.environment=client&transform.environment=client&serializer.output=static'
       )
       .reply(
         500,
