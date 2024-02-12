@@ -35,75 +35,31 @@ it('stacks should always push a new route', () => {
   act(() => router.push('/user/2'));
 
   expect(store.rootStateSnapshot()).toStrictEqual({
-    index: 4,
+    stale: false,
+    type: 'stack',
     key: expect.any(String),
+    index: 5,
     routeNames: ['index', '(group)', '_sitemap', '+not-found'],
     routes: [
       {
-        key: expect.any(String),
         name: 'index',
-        params: undefined,
         path: '/',
+        key: expect.any(String),
+        params: undefined,
       },
       {
         key: expect.any(String),
         name: '(group)',
         params: {
           id: '1',
+          screen: 'post/[id]',
           params: {
             id: '1',
+            screen: 'index',
             params: {
               id: '1',
             },
-            screen: 'index',
           },
-          screen: 'post/[id]',
-        },
-        state: {
-          index: 1,
-          key: expect.any(String),
-          routeNames: ['user/[id]', 'post/[id]'],
-          routes: [
-            {
-              key: expect.any(String),
-              name: 'post/[id]',
-              params: {
-                id: '1',
-                params: {
-                  id: '1',
-                },
-                screen: 'index',
-              },
-            },
-            {
-              key: expect.any(String),
-              name: 'user/[id]',
-              params: {
-                id: '1',
-                params: {
-                  id: '1',
-                },
-                screen: 'index',
-              },
-            },
-          ],
-          stale: false,
-          type: 'stack',
-        },
-      },
-      {
-        key: expect.any(String),
-        name: '(group)',
-        params: {
-          id: '2',
-          params: {
-            id: '2',
-            params: {
-              id: '2',
-            },
-            screen: 'index',
-          },
-          screen: 'post/[id]',
         },
       },
       {
@@ -111,14 +67,14 @@ it('stacks should always push a new route', () => {
         name: '(group)',
         params: {
           id: '1',
+          screen: 'user/[id]',
           params: {
             id: '1',
+            screen: 'index',
             params: {
               id: '1',
             },
-            screen: 'index',
           },
-          screen: 'user/[id]',
         },
       },
       {
@@ -126,19 +82,47 @@ it('stacks should always push a new route', () => {
         name: '(group)',
         params: {
           id: '2',
+          screen: 'post/[id]',
           params: {
             id: '2',
+            screen: 'index',
             params: {
               id: '2',
             },
-            screen: 'index',
           },
+        },
+      },
+      {
+        key: expect.any(String),
+        name: '(group)',
+        params: {
+          id: '1',
           screen: 'user/[id]',
+          params: {
+            id: '1',
+            screen: 'index',
+            params: {
+              id: '1',
+            },
+          },
+        },
+      },
+      {
+        key: expect.any(String),
+        name: '(group)',
+        params: {
+          id: '2',
+          screen: 'user/[id]',
+          params: {
+            id: '2',
+            screen: 'index',
+            params: {
+              id: '2',
+            },
+          },
         },
       },
     ],
-    stale: false,
-    type: 'stack',
   });
 });
 
@@ -183,25 +167,15 @@ it('should navigate as expected when nested Stacks & Tabs', async () => {
   act(() => router.push('/apple/2/taste')); // [type] is outside of the tabs, so it pushed to apple/_layout
   expect(screen).toHavePathname('/apple/2/taste');
 
-  act(() => router.push('/apple/2/color')); // Tabs don't push, so this doesn't affect the history
-  expect(screen).toHavePathname('/apple/2/color');
-
-  /**
-   * When we go back, it will return to the last route in the stack.
-   * It goes to the taste tab, as its the first router in the Tab history
-   */
-  act(() => router.back());
-  expect(screen).toHavePathname('/apple/1/taste');
-
-  /**
-   * We move forward, targeting both a new Stack and Tab
-   */
   act(() => router.push('/apple/2/color'));
   expect(screen).toHavePathname('/apple/2/color');
 
-  /**
-   * And if we go back it takes us back to where we were
-   */
   act(() => router.back());
-  expect(screen).toHavePathname('/apple/1/taste');
+  expect(screen).toHavePathname('/apple/2/taste');
+
+  act(() => router.push('/apple/2/color'));
+  expect(screen).toHavePathname('/apple/2/color');
+
+  act(() => router.back());
+  expect(screen).toHavePathname('/apple/2/taste');
 });

@@ -5,7 +5,6 @@ import { type RouterStore } from './router-store';
 import { ResultState } from '../fork/getStateFromPath';
 import { Href, resolveHref } from '../link/href';
 import { resolve } from '../link/path';
-import { matchDeepDynamicRouteName, matchDynamicName } from '../matchers';
 import { shouldLinkExternally } from '../utils/url';
 
 function assertIsReady(store: RouterStore) {
@@ -211,17 +210,4 @@ function isSameRoute(
   if (a.name !== b.name) return false;
   if ('state' in b && b.state?.type !== 'stack') return false;
   return true;
-}
-
-function getId(a: PartialRoute<any>) {
-  return a.name
-    .split('/')
-    .map((segment) => {
-      const dynamicName = matchDeepDynamicRouteName(segment) ?? matchDynamicName(segment);
-      if (dynamicName) {
-        return a.params?.[dynamicName] ?? segment;
-      }
-    })
-    .filter(Boolean)
-    .join('-');
 }

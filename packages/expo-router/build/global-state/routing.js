@@ -28,7 +28,6 @@ const native_1 = require("@react-navigation/native");
 const Linking = __importStar(require("expo-linking"));
 const href_1 = require("../link/href");
 const path_1 = require("../link/path");
-const matchers_1 = require("../matchers");
 const url_1 = require("../utils/url");
 function assertIsReady(store) {
     if (!store.navigationRef.isReady()) {
@@ -195,17 +194,5 @@ function isSameRoute(a = {}, b = {}) {
     if ('state' in b && b.state?.type !== 'stack')
         return false;
     return true;
-}
-function getId(a) {
-    return a.name
-        .split('/')
-        .map((segment) => {
-        const dynamicName = (0, matchers_1.matchDeepDynamicRouteName)(segment) ?? (0, matchers_1.matchDynamicName)(segment);
-        if (dynamicName) {
-            return a.params?.[dynamicName] ?? segment;
-        }
-    })
-        .filter(Boolean)
-        .join('-');
 }
 //# sourceMappingURL=routing.js.map
