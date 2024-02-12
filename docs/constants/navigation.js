@@ -448,6 +448,11 @@ const learn = [
     { expanded: true }
   ),
   makeSection(
+    'EAS tutorial',
+    [makePage('tutorial/introduction.mdx'), makePage('tutorial/configure-development-build.mdx')],
+    { expanded: true }
+  ),
+  makeSection(
     'UI programming',
     [
       makePage('ui-programming/image-background.mdx'),
