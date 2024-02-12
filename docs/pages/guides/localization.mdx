@@ -25,9 +25,7 @@ import { getLocales } from 'expo-localization';
 const deviceLanguage = getLocales()[0].languageCode;
 ```
 
-The `getLocales` method returns the current locale based on the system settings of the device.
-
-On new Android and iOS versions, app language can be set per app, so you usually don't need to build a custom UI to allow users to change the current locale inside of your app.
+The `getLocales` method returns the current locale based on the system settings of the device. On newer Android and iOS versions, app language can be set per app, so you usually don't need to build a custom UI to allow users to change the current locale inside of your app.
 
 Sometimes, it makes sense to build a UI to allow the user to set other localization preferences on a per-app basis. As a general rule, you should allow the user to change the following:
 
