@@ -3,9 +3,19 @@
   "compilerOptions": {
     "outDir": "./build",
     "rootDir": "./src",
-    "module": "commonjs"
+    "module": "commonjs",
+    "types": [
+      "jest",
+      "jest-require",
+      "node"
+    ],
   },
-  "include": ["./src", "./types/jest.d.ts", "./types/expect.d.ts", "../expo/src/ts-declarations"],
+  "include": [
+    "./src",
+    "./types/jest.d.ts",
+    "./types/expect.d.ts",
+    "../expo/src/ts-declarations"
+  ],
   "exclude": [
     "**/__mocks__/*",
     "**/.expo/*",

@@ -140,7 +140,7 @@ export const testRouter = {
     return router.canGoBack();
   },
   /** Update the current route query params and assert the new pathname */
-  setParams(params?: Record<string, string>) {
+  setParams(params?: Record<string, string>, path?: string) {
     router.setParams(params);
     if (path) {
       expect(screen).toHavePathnameWithParams(path);

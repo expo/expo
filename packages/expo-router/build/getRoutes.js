@@ -38,6 +38,7 @@ exports.getExactRoutes = getExactRoutes;
  * Converts the RequireContext keys (file paths) into a directory tree.
  */
 function getDirectoryTree(contextModule, options) {
+    const importMode = options.importMode || process.env.EXPO_ROUTER_IMPORT_MODE;
     const ignoreList = [/^\.\/\+html\.[tj]sx?$/]; // Ignore the top level ./+html file
     if (options.ignore) {
         ignoreList.push(...options.ignore);
@@ -81,6 +82,15 @@ function getDirectoryTree(contextModule, options) {
             dynamic: null,
             children: [], // While we are building the directory tree, we don't know the node's children just yet. This is added during hoisting
         };
+        if (process.env.NODE_ENV === 'development') {
+            // If the user has set the `EXPO_ROUTER_IMPORT_MODE` to `sync` then we should
+            // filter the missing routes.
+            if (node.type !== 'api' && importMode === 'sync') {
+                if (node.loadRoute()?.default) {
+                    continue;
+                }
+            }
+        }
         /**
          * A single filepath may be extrapolated into multiple routes if it contains array syntax.
          * Another way to thinking about is that a filepath node is present in multiple leaves of the directory tree.

@@ -18,7 +18,7 @@ function requireContext(base = '.', scanSubDirectories = true, regularExpression
                     readDirectory(fullPath);
                 return;
             }
-            if (!regularExpression.test(fullPath))
+            if (!regularExpression.test(relativePath))
                 return;
             files[relativePath] = true;
         });
@@ -30,6 +30,12 @@ function requireContext(base = '.', scanSubDirectories = true, regularExpression
         keys: () => Object.keys(files),
         resolve: (key) => key,
         id: '0',
+        __add(file) {
+            files[file] = true;
+        },
+        __delete(file) {
+            delete files[file];
+        },
     });
     return context;
 }

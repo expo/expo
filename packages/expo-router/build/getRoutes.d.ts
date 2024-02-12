@@ -7,6 +7,7 @@ export type Options = {
     ignoreEntryPoints?: boolean;
     internal_stripLoadRoute?: boolean;
     skipGenerated?: boolean;
+    importMode?: string;
 };
 /**
  * Given a Metro context module, return an array of nested routes.
