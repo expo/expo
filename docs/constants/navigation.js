@@ -454,6 +454,7 @@ const learn = [
       makePage('tutorial/eas/configure-development-build.mdx'),
       makePage('tutorial/eas/android-development-build.mdx'),
       makePage('tutorial/eas/ios-development-build.mdx'),
+      makePage('tutorial/eas/multiple-app-variants.mdx'),
     ],
     { expanded: true }
   ),

@@ -25,7 +25,7 @@ For Android devices or emulators, the development build must be in the **.apk** 
 
 To create a **.apk**, make sure:
 
-- The `developmentClient` is set to `true` in **eas.json**, which is the default setting.
+- The `developmentClient` is set to `true` in **eas.json**, which is the default configuration.
 - Then, execute `eas build` command with `android` as the platform and `development` as the build profile:
 
 <Terminal cmd={['$ eas build --platform android --profile development']} />
@@ -34,16 +34,18 @@ To create a **.apk**, make sure:
 
 This command prompts us with the following questions:
 
-- What would you like your Android application id to be? Press <kbd>return</kbd> to select the default value provided for this prompt.
-- Generate a new Android Keystore? Press <kbd>Y</kbd>.
+- **What would you like your Android application id to be?** Press <kbd>return</kbd> to select the default value provided for this prompt.
+- **Generate a new Android Keystore**? Press <kbd>Y</kbd>.
 
 <Collapsible summary="What is an Android application ID?">
 
-Also known as the package name of our Android app, it stores the value in DNS reverse notation format: `com.owner.app-name`. Each component of this notation should start with a lowercase letter.
+Also known as the package name of our Android app, it stores the value in DNS reverse notation format (`com.owner.app-name`). Each component of this notation should start with a lowercase letter.
+
+For example, our example app has `com.owner-name.stickersmash` where `com.owner-name` is the domain and `stickermsash` is our app name.
 
 </Collapsible>
 
-When we select these prompts, the EAS CLI updates the [`android.package`](/versions/latest/config/app/#package) property in **app.json**. After responding to the prompts, our EAS Build is queued, and the EAS CLI provides a link to view build details and track progress on the Expo dashboard.
+When we answer these prompts, the EAS CLI updates the [`android.package`](/versions/latest/config/app/#package) property in **app.json**. After responding to the prompts, our EAS Build is queued, and the EAS CLI provides a link to view build details and track progress on the Expo dashboard.
 
 <ImageSpotlight
   alt="Android development details and progress in Expo dashboard"
@@ -55,7 +57,7 @@ When we select these prompts, the EAS CLI updates the [`android.package`](/versi
 
 The build details page displays the build type, profile, Expo SDK version, app version, version code, last commit hash, and the identity of the developer or account owner who initiated the build.
 
-In the **Build artifact** section, the current status shows that the build is in progress. Upon completion, this section will offer an option to download the build. The "Logs" section outlines every step taken during the Android build process on EAS Build. For the sake of brevity, we won't explore each step in detail here. To learn more, see [Android build process](/build-reference/android-builds/).
+In the **Build artifact** section, the current status shows that the build is in progress. Upon completion, this section will offer an option to download the build. The **Logs** section outlines every step taken during the Android build process on EAS Build. For the sake of brevity, we won't explore each step in detail here. To learn more, see [Android build process](/build-reference/android-builds/).
 
 </Collapsible>
 
@@ -65,7 +67,7 @@ In the **Build artifact** section, the current status shows that the build is in
 
 ## Install development build on Android device
 
-Once the build finishes, the Build artifact section gets updated, indicating that the build is complete:
+Once the build finishes, the **Build artifact** section gets updated, indicating that the build is complete:
 
 <ImageSpotlight
   alt="Build artifact gives the option to download development build for Android devices and emulators"
@@ -78,8 +80,6 @@ This section provides the methods available for running the development build on
 - Install button
 
 ### Using Expo Orbit
-
-> Expo Orbit is currently only available for macOS.
 
 [Expo Orbit](https://github.com/expo/orbit) allows for seamless installation of the development build on an Android device. To use this method:
 

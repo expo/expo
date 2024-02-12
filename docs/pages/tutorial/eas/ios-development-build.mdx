@@ -10,3 +10,339 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
+
+In this chapter, let's create our development build for iOS devices and simulators with EAS Build.
+
+## Trigger a build
+
+For iOS devices and simulators, the process of creating and running a development build requires different configurations. Development builds for iOS devices are generated in the **.ipa** format, which is standard for iOS app installations. For simulators, the format used is **.app**.
+
+> **Note**: Apple Developer membership is required to create and install a development build on an iOS device.
+
+## iOS device
+
+<Step label="1">
+
+### Register an iOS device with an ad hoc provisioning profile
+
+To initiate development on an iOS device, we have to:
+
+- Register the device by creating a new ad hoc provisioning profile
+- Download and install this profile onto the device.
+
+With EAS CLI, run the command to register a new Apple device:
+
+<Terminal cmd={['$ eas device:create']} />
+
+This command prompts us with the following questions:
+
+- **You're inside the project directory. Would you like to use the** **your-account-name** **account?** Press <kbd>Y</kbd>.
+- **Apple ID.** For this step, enter your Apple ID. It will then log in to our Apple Developer account. Follow the steps in the terminal window.
+- **How would you like to register your devices?** Select **Website** that generates a registration URL that can be opened on the iOS device.
+
+> **info** **Tip**: If you or your team have multiple devices, you can share the provisioning profile link with those devices for downloading and installing the profile.
+
+</Step>
+
+<Step label="2">
+
+### Download and install the provisioning profile
+
+To register an iOS device for development:
+
+- On a device's web browser, Open the link from the previous step and tap the **Download Profile button**.
+
+<ImageSpotlight
+  alt="Download the provisioning profile"
+  src="/static/images/tutorial/eas/ios-ad-hoc-01.png"
+  style={{ maxWidth: 300 }}
+/>
+
+- Open the **Settings** app, which prompts us to register our device.
+
+<ImageSpotlight
+  alt="Install the provisioning profile"
+  src="/static/images/tutorial/eas/ios-ad-hoc-02.png"
+  style={{ maxWidth: 300 }}
+/>
+
+- Tap **Install** to register the iOS device.
+
+After the provisioning profile is installed, our device redirects us back to the web browser, displaying a success message indicating the completion of the process.
+
+<ImageSpotlight
+  alt="Provisioning profile installed successfully"
+  src="/static/images/tutorial/eas/ios-ad-hoc-03.png"
+  style={{ maxWidth: 300 }}
+/>
+
+</Step>
+
+<Step label="3">
+
+### Create a development build for iOS device
+
+To create and install a development build on an iOS device, make sure:
+
+- The `developmentClient` is set to `true` in **eas.json**, which is the default configuration.
+- Then, execute `eas build` command with `ios` as the platform and `development` as the build profile:
+
+<Terminal cmd={['$ eas build --platform ios --profile development']} />
+
+> **info** **Tip**: Next time you run `eas build` command, you can also use `-p` to specify the platform. It is short for `--platform`.
+
+This command prompts us with the following questions:
+
+- **What would you like your iOS bundle identifier to be?** Press <kbd>return</kbd> to select the default value provided for this prompt.
+- **Log in to our Apple Developer account**. Since we are creating a development build for the first time, it will ask us to **Generate a new Apple Distribution Certificate**. Press <kbd>Y</kbd>.
+- **Select a device for ad hoc build**. This is the key part, which is why we had to register an ad hoc provisioning profile before. We can select one or all of our registered devices here and then press return to install that build on those devices later.
+
+<Collapsible summary="What is iOS bundle identifier?">
+
+The [`ios.bundleIdentifier`](/versions/latest/config/app/#bundleidentifier)` is a unique name of our app. If we publish our app right now, the Apple App Store will use this property and its value to identify our app on the store.
+
+This notation is defined as `host.owner.app-name`. For example, our example app has `com.owner-name.stickersmash` where `com.owner-name` is the domain and `stickermsash` is our app name.
+
+</Collapsible>
+
+Once this process is completed, it shows us the Project Credentials Configuration and prompts the following question:
+
+- **Would you like to set up Push Notifications for your project?** Press <kbd>n</kbd>.
+
+When we answer these prompts, the EAS CLI updates the `ios.bundleIdentifier` property in **app.json**. After responding to the prompts, our EAS Build is queued, and the EAS CLI provides a link to view build details and track progress on the Expo dashboard:
+
+<ImageSpotlight
+  alt="iOS build details page"
+  src="/static/images/tutorial/eas/ios-build.png"
+  style={{ maxWidth: 600 }}
+/>
+
+<Collapsible summary="What does a build details page contain?">
+
+The build details page displays the build type, profile, Expo SDK version, app version, version code, last commit hash, and the identity of the developer or account owner who initiated the build.
+
+In the **Build artifact** section, the current status shows that the build is in progress. Upon completion, this section will offer an option to download the build. The **Logs** section outlines every step taken during the iOS build process on EAS Build. For the sake of brevity, we won't explore each step in detail here. To learn more, see [iOS build process](/build-reference/ios-builds/).
+
+</Collapsible>
+
+</Step>
+
+<Step label="4">
+
+### Install development build on iOS device
+
+> **Note**: For devices operating on iOS 16 and higher, activating the OS-level Developer Mode is necessary to install development builds. If this setting is not yet enabled or if it's your first time installing a development build on your device, see [iOS Developer Mode](/guides/ios-developer-mode/) instructions to enable it.
+
+Once the build finishes, the Build artifact section gets updated, indicating that the build is complete:
+
+<ImageSpotlight
+  alt="Build artifact gives the option to download development build for iOS devices and emulators"
+  src="/static/images/tutorial/eas/ios-build-artifact.png"
+/>
+
+This section provides the methods available for running the development build on an iOS device, including:
+
+- Open with Expo Orbit (macOS only)
+- Install button
+
+#### Using Expo Orbit
+
+[Expo Orbit](https://github.com/expo/orbit) allows for seamless installation of the development build on an iOS device. To use this method:
+
+- Connect our iOS device to our developer machine using USB.
+- Open the Orbit menu bar app.
+- Select the **Device** in the Orbit app.
+
+<ImageSpotlight
+  alt="Open with Orbit button on Expo dashboard in Build artifact"
+  src="/static/images/tutorial/eas/ios-orbit.png"
+  style={{ maxWidth: 300 }}
+/>
+
+- On the Expo dashboard, under **Build artifact**, click the **Open with Orbit**.
+
+After the build is installed, the Orbit app launches the development build on the device.
+
+#### Using Install button
+
+The **Install** button in the **Build artifact** section generates a QR code for easy installation:
+
+- Click **Install** to display a popup with the QR code.
+
+<ImageSpotlight
+  alt="Install button generates a QR code for easy installation on iOS devices and emulators"
+  src="/static/images/tutorial/eas/ios-qr-code.png"
+  style={{ maxWidth: 300 }}
+/>
+
+- Scan the QR code with our iOS device's camera to open and tap the link to download the development build on the device.
+
+</Step>
+
+<Step label="5">
+
+### Run development build on iOS device
+
+Start the development server by running `npx expo start` from the project directory:
+
+<Terminal cmd={['$ npx expo start']} />
+
+- On the device, tap the app icon to open the development build.
+
+<ImageSpotlight
+  alt="Development build's launcher UI on iOS device"
+  src="/static/images/tutorial/eas/ios-dev-build-01.png"
+  style={{ maxWidth: 300 }}
+/>
+
+- Use the account syncing feature by ensuring we're logged into both the EAS CLI and development build. As we're already logged into the EAS CLI, the next step is to log in through the UI of your development build.
+
+<ImageSpotlight
+  alt="Modal to login to Expo account on iOS device"
+  src="/static/images/tutorial/eas/ios-dev-build-02.png"
+  style={{ maxWidth: 300 }}
+/>
+
+- Tap **Fetch development servers** and select the server running from the list under Development servers.
+
+<ImageSpotlight
+  alt="Fetching development servers to connect"
+  src="/static/images/tutorial/eas/ios-dev-build-03.png"
+  style={{ maxWidth: 300 }}
+/>
+
+</Step>
+
+## iOS Simulator
+
+<Step label="1">
+
+### Create a simulator build profile in eas.json
+
+To create and install a development build on the iOS Simulator requires a bit of extra configuration:
+
+- In **eas.json**, add a new development profile called `ios-simulator` and the [`ios.simulator`](/eas/json/#simulator) property. Set its value `true`:
+
+{/* prettier-ignore */}
+```json eas.json
+{
+  "build": {
+    "development": {
+      /* @hide ... */ /* @end */
+    },
+    "ios-simulator": {
+      "ios": {
+        "simulator": true
+      }
+    }
+  }
+}
+```
+
+- For a development build, it's necessary to have the `developmentClient` and `distribution` properties defined in the profile. To avoid redundancy, we can employ the extends keyword to inherit properties from an existing build profile:
+
+{/* prettier-ignore */}
+```json eas.json
+{
+  "build": {
+    "development": {
+      /* @hide ... */ /* @end */
+    },
+    "ios-simulator": {
+      "extends": "development",
+      "ios": {
+        "simulator": true
+      }
+    }
+  }
+}
+```
+
+</Step>
+
+<Step label="2">
+
+### Create a development build for ios-simulator profile
+
+Run `eas build` command with `ios` as a platform and `ios-simulator` as the build profile:
+
+<Terminal cmd={['$ eas build --platform ios --profile ios-simulator']} />
+
+This command prompts us with the following question:
+
+- **What would you like your iOS bundle identifier to be?** Press <kbd>return</kbd> to select the default value provided for this prompt.
+
+<Collapsible summary="What is iOS bundle identifier?">
+
+The [`ios.bundleIdentifier`](/versions/latest/config/app/#bundleidentifier)` is a unique name of our app. If we publish our app right now, the Apple App Store will use this property and its value to identify our app on the store.
+
+This notation is defined as `host.owner.app-name`. For example, our example app has `com.owner-name.stickersmash` where `com.owner-name` is the domain and `stickermsash` is our app name.
+
+</Collapsible>
+
+After responding to the prompts, our EAS Build is queued, and the EAS CLI provides a link to view build details and track progress on the Expo dashboard:
+
+<ImageSpotlight
+  alt="iOS Simulator build details page"
+  src="/static/images/tutorial/eas/ios-sim-build.png"
+  style={{ maxWidth: 600 }}
+/>
+
+<Collapsible summary="What does a build details page contain?">
+
+The build details page displays the build type, profile, Expo SDK version, app version, version code, last commit hash, and the identity of the developer or account owner who initiated the build.
+
+In the **Build artifact** section, the current status shows that the build is in progress. Upon completion, this section will offer an option to download the build. The **Logs** section outlines every step taken during the iOS build process on EAS Build. For the sake of brevity, we won't explore each step in detail here. To learn more, see [iOS build process](/build-reference/ios-builds/).
+
+</Collapsible>
+
+</Step>
+
+<Step label="3">
+
+### Install development build on iOS Simulator
+
+In terminal, once the build finishes, EAS CLI prompts us by asking whether we want to run the build on an iOS Simulator. Press <kbd>Y</kbd>.
+
+<ImageSpotlight
+  alt="EAS CLI automatically gives to run build on iOS Simulator"
+  src="/static/images/tutorial/eas/ios-sim-cli.png"
+  style={{ maxWidth: 600 }}
+/>
+
+<Collapsible summary="Using Expo Orbit">
+
+Alternatively, Expo Orbit can be used for installation. From **Build artifact** on the Expo dashboard, click **Open with Expo Orbit** to install the development build on the iOS Simulator.
+
+</Collapsible>
+
+</Step>
+
+<Step label="5">
+
+### Run the development build on iOS Simulator
+
+Start the development server by running `npx expo start` from the project directory:
+
+<Terminal cmd={['$ npx expo start']} />
+Press <kbd>i</kbd> in the terminal window to open the project on the iOS Simulator.
+
+</Step>
+
+## Summary
+
+In this chapter, we learned about:
+
+- Prerequisites for generating a development build for iOS devices and simulators.
+- Creating and executing a cloud build using EAS Build for iOS devices and simulators.
+- The difference between the **.ipa** and **.app** file formats for iOS.
+- Various approaches for installing and launching development builds on iOS devices and simulators.
+
+## Next step
+
+<BoxLink
+  title="Configure multiple app variants"
+  Icon={BookOpen02Icon}
+  description="In the next chapter, learn how to configure our app config to install multiple app variants on a single device."
+  href="/tutorial/eas/multiple-app-variants/"
+/>
