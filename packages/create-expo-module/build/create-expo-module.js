@@ -169,15 +169,11 @@ async function getNpmTarballUrl(packageName, version = 'latest') {
     return stdout.trim();
 }
 /**
- * Gets expo SDK version from the local package.json.
+ * Gets expo SDK version major from the local package.json.
  */
-async function getLocalSdkVersion() {
-    const packageJsonPath = await (0, find_up_1.default)('package.json', { cwd: CWD });
-    if (!packageJsonPath) {
-        return null;
-    }
-    const packageJson = await fs_extra_1.default.readJSON(packageJsonPath);
-    return packageJson.dependencies?.expo ?? null;
+async function getLocalSdkMajorVersion() {
+    const { version } = require('expo/package.json') ?? {};
+    return version?.split('.')[0] ?? null;
 }
 /**
  * Selects correct version of the template based on the SDK version for local modules and EXPO_BETA flag.
@@ -189,9 +185,8 @@ async function getTemplateVersion(targetDir, isLocal) {
     if (!isLocal) {
         return 'latest';
     }
-    const sdkVersion = await getLocalSdkVersion();
-    const npmMajorOnlyRegex = /([0-9]+)\..*/m;
-    return sdkVersion ? sdkVersion.match(npmMajorOnlyRegex)?.[1] : 'latest';
+    const sdkVersionMajor = await getLocalSdkMajorVersion();
+    return sdkVersionMajor ? `sdk-${sdkVersionMajor}` : 'latest';
 }
 /**
  * Downloads the template from NPM registry.

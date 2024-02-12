@@ -211,15 +211,11 @@ async function getNpmTarballUrl(packageName: string, version: string = 'latest')
 }
 
 /**
- * Gets expo SDK version from the local package.json.
+ * Gets expo SDK version major from the local package.json.
  */
-async function getLocalSdkVersion(): Promise<string | null> {
-  const packageJsonPath = await findUp('package.json', { cwd: CWD });
-  if (!packageJsonPath) {
-    return null;
-  }
-  const packageJson = await fs.readJSON(packageJsonPath);
-  return packageJson.dependencies?.expo ?? null;
+async function getLocalSdkMajorVersion(): Promise<string | null> {
+  const { version } = require('expo/package.json') ?? {};
+  return version?.split('.')[0] ?? null;
 }
 
 /**
@@ -232,10 +228,9 @@ async function getTemplateVersion(targetDir: string, isLocal) {
   if (!isLocal) {
     return 'latest';
   }
-  const sdkVersion = await getLocalSdkVersion();
+  const sdkVersionMajor = await getLocalSdkMajorVersion();
 
-  const npmMajorOnlyRegex = /([0-9]+)\..*/m;
-  return sdkVersion ? sdkVersion.match(npmMajorOnlyRegex)?.[1] : 'latest';
+  return sdkVersionMajor ? `sdk-${sdkVersionMajor}` : 'latest';
 }
 
 /**
