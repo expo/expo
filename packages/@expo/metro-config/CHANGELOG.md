@@ -55,6 +55,7 @@
 ### 🐛 Bug fixes
 
 - Unpin minor upgrades for `@babel/generator` to `^7.20.5`. ([#25872](https://github.com/expo/expo/pull/25872) by [@kitten](https://github.com/kitten))
+- Remove extraneous Babel pass. ([#25930](https://github.com/expo/expo/pull/25930) by [@kitten](https://github.com/kitten))
 
 ## 0.16.1 — 2023-12-13
 
