@@ -231,7 +231,7 @@ export function createGetIdForRoute(
   }
 
   return ({ params = {} } = {} as { params?: Record<string, any> }) => {
-    let segments: string[] = [];
+    const segments: string[] = [];
 
     const unprocessedParams = new Set(Object.keys(params));
 
@@ -253,7 +253,7 @@ export function createGetIdForRoute(
 
     let id = segments.join('/');
 
-    segments = [];
+    const searchParams: string[] = [];
     if (route.children?.length === 0) {
       /**
        * Child routes IDs are a combination of their dynamic segments and the search parameters
@@ -264,12 +264,13 @@ export function createGetIdForRoute(
         if (key === 'screen' || key === 'params') {
           continue;
         }
-        segments.push(`${key}=${params[key]}`);
+        searchParams.push(`${key}=${params[key]}`);
       }
     }
 
-    if (segments.length) {
-      id = `${id}?${segments.join('&')}`;
+    if (searchParams.length) {
+      // Return the context key if there is no id. This way we can at least ensure its the same route
+      id = `${id || route.contextKey}?${searchParams.join('&')}`;
     }
 
     /**
@@ -277,7 +278,7 @@ export function createGetIdForRoute(
      * fall back to `key` based navigation. This is an issue for search parameters where are either
      * part of the key or the id.
      */
-    return id || route.contextKey;
+    return id;
   };
 }
 
