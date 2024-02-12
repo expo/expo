@@ -10,13 +10,6 @@ import { Terminal } from '~/ui/components/Snippet';
 
 The recommended way to write unit tests for an Expo project is to use [Jest](https://jestjs.io/) and the `jest-expo` preset.
 
-<BoxLink
-  title="Unit testing"
-  description="Learn how to set up and configure the jest-expo package to write unit tests and snapshot tests for a project."
-  href="/develop/unit-testing/"
-  Icon={Grid01Icon}
-/>
-
 To write a unit test for an app that uses native code, you need to mock native calls.
 The term **Mocking** means to replace the actual implementation of a function with a fake version that does not perform any actions. This approach is useful for running unit tests on a local computer as it involves bypassing the need for native code which is only available on a device, and any code that calls native functions on a local machine will not work.
 
@@ -54,3 +47,10 @@ To use this script, you have to install [SourceKitten](https://github.com/jpsim/
 The command above generates **ExpoModuleName.ts** in the **mocks** directory of your module. It contains a mock implementation for each native method and view in your module.
 
 > **Tip:** You can also run `generate-js-mocks` to generate mocks in JavaScript.
+
+<BoxLink
+  title="Unit testing"
+  description="Learn how to set up and configure the jest-expo package to write unit tests and snapshot tests for a project."
+  href="/develop/unit-testing/"
+  Icon={Grid01Icon}
+/>
