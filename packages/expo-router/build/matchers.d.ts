@@ -15,4 +15,10 @@ export declare function removeSupportedExtensions(name: string): string;
 export declare function removeFileSystemDots(filePath: string): string;
 export declare function stripGroupSegmentsFromPath(path: string): string;
 export declare function stripInvisibleSegmentsFromPath(path: string): string;
+/**
+ * Match:
+ *  - _layout files, +html, +not-found, string+api, etc
+ *  - Routes can still use `+`, but it cannot be in the last segment.
+ */
+export declare function isTypedRoute(name: string): boolean;
 //# sourceMappingURL=matchers.d.ts.map
