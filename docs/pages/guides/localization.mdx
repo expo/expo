@@ -354,11 +354,11 @@ const { calendar, timeZone, uses24hourClock, firstWeekday } = getCalendars()[0];
 ```
 
 <Collapsible summary="Limitations">
-  There are a few limitations to keep in mind when relying on auto-detected locale preferences from
-  `expo-localization`: - There is yet to be a way to read temperature units from user preferences.
-  On Android, you can use a lookup table based on locale, but on iOS, the user can change it in
-  device preferences. - Some properties can be null when they are unavailable on the current
-  platform.
+There are a few limitations to keep in mind when relying on auto-detected locale preferences from `expo-localization`.
+
+- There is yet to be a way to read temperature units from user preferences. On Android, you can use a lookup table based on locale. However, on iOS, the user can change it in device preferences.
+- Some properties can be null when they are unavailable on the current platform.
+
 </Collapsible>
 
 ## Intl API
