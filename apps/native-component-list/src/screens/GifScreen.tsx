@@ -11,7 +11,7 @@ export default function GifScreen() {
         justifyContent: 'center',
       }}>
       <Image
-        source={{ uri: 'http://d23dyxeqlo5psv.cloudfront.net/cat.gif' }}
+        source={{ uri: 'https://d23dyxeqlo5psv.cloudfront.net/cat.gif' }}
         style={{ height: 140, width: 200 }}
       />
     </View>

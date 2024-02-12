@@ -1,7 +1,7 @@
 /// <reference types="../../types/jest" />
 import './expect';
 
-import { render, RenderResult } from '@testing-library/react-native';
+import { act, render, RenderResult, screen } from '@testing-library/react-native';
 import path from 'path';
 import React from 'react';
 
@@ -17,6 +17,7 @@ import getPathFromState from '../fork/getPathFromState';
 import { getNavigationConfig, stateCache } from '../getLinkingConfig';
 import { getExactRoutes } from '../getRoutes';
 import { store } from '../global-state/router-store';
+import { router } from '../imperative-api';
 
 // re-export everything
 export * from '@testing-library/react-native';
@@ -109,3 +110,40 @@ export function renderRouter(
     },
   });
 }
+
+export const testRouter = {
+  /** Navigate to the provided pathname and the pathname */
+  navigate(path: string) {
+    act(() => router.navigate(path));
+    expect(screen).toHavePathnameWithParams(path);
+  },
+  /** Push the provided pathname and assert the pathname */
+  push(path: string) {
+    act(() => router.push(path));
+    expect(screen).toHavePathnameWithParams(path);
+  },
+  /** Replace with provided pathname and assert the pathname */
+  replace(path: string) {
+    act(() => router.replace(path));
+    expect(screen).toHavePathnameWithParams(path);
+  },
+  /** Go back in history and asset the new pathname */
+  back(path: string) {
+    expect(router.canGoBack()).toBe(true);
+    act(() => router.back());
+    if (path) {
+      expect(screen).toHavePathnameWithParams(path);
+    }
+  },
+  /** If there's history that supports invoking the `back` function. */
+  canGoBack() {
+    return router.canGoBack();
+  },
+  /** Update the current route query params and assert the new pathname */
+  setParams(params?: Record<string, string>) {
+    router.setParams(params);
+    if (path) {
+      expect(screen).toHavePathnameWithParams(path);
+    }
+  },
+};

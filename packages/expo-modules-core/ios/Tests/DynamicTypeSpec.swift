@@ -300,7 +300,7 @@ final class DynamicTypeSpec: ExpoSpec {
           let nativeObject = TestSharedObject()
           let jsObjectValue = try appContext.runtime.eval("({})")
 
-          SharedObjectRegistry.add(native: nativeObject, javaScript: try jsObjectValue.asObject())
+          appContext.sharedObjectRegistry.add(native: nativeObject, javaScript: try jsObjectValue.asObject())
 
           // `DynamicSharedObjectType` only supports casting
           // from `JavaScriptValue`, but not from `JavaScriptObject`.

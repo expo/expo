@@ -735,3 +735,25 @@ it('allows outputting comments when `minify: true`', async () => {
     });"
   `);
 });
+
+it('allows the constantFoldingPlugin to not remove used helpers when `dev: false`', async () => {
+  // NOTE(kitten): The `constantFoldingPlugin` removes used, inlined Babel helpers, unless
+  // the AST path has been re-crawled. If this regressed, check whether `programPath.scope.crawl()`
+  // is called before this plugin is run.
+  jest.mock('metro-transform-plugins', () => ({
+    ...jest.requireActual('metro-transform-plugins'),
+    inlinePlugin: () => ({}),
+    constantFoldingPlugin: jest.requireActual('metro-transform-plugins').constantFoldingPlugin,
+  }));
+
+  const contents = ['import * as test from "test-module";', 'export { test };'].join('\n');
+
+  const result = await Transformer.transform(
+    baseConfig,
+    '/root',
+    'local/file.js',
+    Buffer.from(contents, 'utf8'),
+    { ...baseTransformOptions, dev: false }
+  );
+  expect(result.output[0].data.code).toMatchSnapshot();
+});

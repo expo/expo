@@ -408,7 +408,12 @@ class ConvertiblesSpec: ExpoSpec {
       
       it("converts from `Date.now()` to Date") {
         let date = try Date.convert(from: 1703718341639, appContext: appContext)
-        let components = Calendar.current.dateComponents([.day, .month], from: date)
+        var components = Calendar.current.dateComponents([.day, .month], from: date)
+
+        // The current calendar uses the local timezone, so basically the `day` component
+        // could differ depending on the current timezone. Set it to GMT for correctness.
+        components.timeZone = TimeZone(abbreviation: "GMT")
+
         expect(components.month) == 12
         expect(components.day) == 27
       }
