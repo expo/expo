@@ -25,7 +25,7 @@ Development builds for iOS devices are generated in the **.ipa** format, which i
 
 To initiate development on an iOS device, we have to:
 
-- Register the device by creating a new provisioning profile
+- Register the device by creating a new [provisioning profile](/app-signing/app-credentials/#provisioning-profiles).
 - Download and install this profile onto the device.
 
 With EAS CLI, run the command to register a new Apple device:
@@ -97,7 +97,7 @@ This command prompts us with the following questions:
 
 <Collapsible summary="What is iOS bundle identifier?">
 
-The [`ios.bundleIdentifier`](/versions/latest/config/app/#bundleidentifier) is a unique name of our app. If we publish our app right now, the Apple App Store will use this property and its value to identify our app on the store.
+The `ios.bundleIdentifier` is a unique name of our app. If we publish our app right now, the Apple App Store will use this property and its value to identify our app on the store.
 
 This notation is defined as `host.owner.app-name`. For example, our example app has `com.owner-name.stickersmash` where `com.owner-name` is the domain and `stickermsash` is our app name.
 
@@ -107,7 +107,7 @@ Once this process is completed, it shows us the Project Credentials Configuratio
 
 - **Would you like to set up Push Notifications for your project?** Press <kbd>n</kbd>.
 
-When we answer these prompts, the EAS CLI updates the `ios.bundleIdentifier` property in **app.json**. After responding to the prompts, our EAS Build is queued, and the EAS CLI provides a link to view build details and track progress on the Expo dashboard:
+When we answer these prompts, the EAS CLI updates the [`ios.bundleIdentifier`](/versions/latest/config/app/#bundleidentifier) property in **app.json**. After responding to the prompts, our EAS Build is queued, and the EAS CLI provides a link to view build details and track progress on the Expo dashboard:
 
 <ImageSpotlight
   alt="iOS preview build details and progress in Expo dashboard"
@@ -145,7 +145,7 @@ This section provides the methods available for running the development build on
 
 ### Using Expo Orbit
 
-[Expo Orbit](https://github.com/expo/orbit) allows for seamless installation of the development build on an iOS device. To use this method:
+[Expo Orbit](https://expo.dev/orbit) allows for seamless installation of the development build on an iOS device. To use this method:
 
 - Connect our iOS device to our developer machine using USB.
 - Open the Orbit menu bar app.
@@ -161,7 +161,7 @@ This section provides the methods available for running the development build on
 
 After the build is installed, the Orbit app launches the development build on the device.
 
-### Using Install button
+### Using the Install button
 
 The **Install** button in the **Build artifact** section generates a QR code for easy installation:
 

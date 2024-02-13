@@ -7,7 +7,7 @@ description: Learn about the process of triggering builds from a GitHub reposito
 import { Step } from '~/ui/components/Step';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
-Expo GitHub App automatically triggers builds from our GitHub projects with EAS. We can trigger builds for any build profile based on our development team's preferences. It also allows triggering builds for `git` push committed directly to a repository or a pull request.
+[Expo GitHub App](/build/building-from-github/) automatically triggers builds from our GitHub projects with EAS. We can trigger builds for any build profile based on our development team's preferences. It also allows triggering builds for `git` push committed directly to a repository or a pull request.
 
 In this chapter, we're to configure this functionality. We already have a GitHub repository for our example app to demonstrate this.
 
@@ -75,7 +75,7 @@ The Expo GitHub app provides us [multiple options](/build/building-from-github/#
 
 To automatically trigger a build using a GitHub PR label, we're going to utilize the third option from the list above:
 
-- We need to specify the build image that we will be using. Open **eas.json**, and under the `development` profile, add `android.image` and `ios.image` properties and set their value to `latest`.
+- We need to specify the build image that we will be using. Open **eas.json**, and under the `development` profile, add [`android.image`](/eas/json/#image) and [`ios.image`](/eas/json/#image-1) properties and set their value to [`latest`](/build-reference/infrastructure/#configuring-build-environment).
 
 ```json eas.json
 {
@@ -96,8 +96,8 @@ To automatically trigger a build using a GitHub PR label, we're going to utilize
 }
 ```
 
-- Next, we modify our app's JavaScript code. We create a git branch called `dev` and submit a PR to our example repository from that branch.
-- In the PR link, under **Labels**, we create a label called `eas-build-all:development`.
+- Next, modify our app's JavaScript code. We create a git branch called `dev` and submit a PR to our example repository from that branch.
+- In the PR link, under **Labels**, create a label called `eas-build-all:development`.
 
 <ImageSpotlight
   alt="Creating a label in a GitHub PR"

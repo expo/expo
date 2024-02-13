@@ -13,7 +13,7 @@ import { CODE } from '~/ui/components/Text';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
 
-In this chapter, we're going to learn how to set up internal distribution builds. Creating an internal build is quite similar to creating a development build. However, the difference is how it used and distributed.
+In this chapter, we're going to learn how to set up [internal distribution builds](/guides/sharing-preview-releases/#internal-distribution). Creating an internal build is quite similar to creating a development build. However, the difference is how it is used and distributed.
 
 ## Internal distribution build
 
@@ -56,7 +56,7 @@ In the previous chapter, we learned that after initializing **eas.json** in our 
 }
 ```
 
-This is all we need to create our first internal distribution build. The `preview` build profile from the above snippet has `distribution` property whose value is set to `internal`. This value allows us to share our build URLs with anyone so they to install it on their device and do not require a development server to run the app.
+This is all we need to create our first internal distribution build. The `preview` build profile from the above snippet has a `distribution` property whose value is set to `internal`. This value allows us to share our build URLs with anyone so they to install it on their device and do not require a development server to run the app.
 
 As discussed in the previous chapters, for non-app store builds, Android requires **.apk** and iOS needs **.ipa** formats. This applies to internal distribution builds as well. The `distribution` when set to `internal`, automatically creates the app binary in these file formats.
 
@@ -118,7 +118,7 @@ Apple has stricter rules for app distribution on iOS devices. We need an ad hoc 
 
 <Collapsible summary={<>Alternative method to register devices using <CODE>eas build:resign</CODE></>}>
 
-`eas build:resign` command can be used to re-sign an existing iOS **.ipa** with a new ad hoc provisioning profile, eliminating the need for a full rebuild. For more details, refer to the [Re-signing new credentials](/app-signing/app-credentials/#re-signing-new-credentials).
+[`eas build:resign`](/app-signing/app-credentials/#re-signing-new-credentials) command can be used to re-sign an existing iOS **.ipa** with a new ad hoc provisioning profile, eliminating the need for a full rebuild.
 
 </Collapsible>
 
@@ -134,7 +134,7 @@ Apple has stricter rules for app distribution on iOS devices. We need an ad hoc 
 
 To install the build on a device:
 
-- Open build's detail page on the Expo dashboard.
+- Open the build's detail page on the Expo dashboard.
 - Click **Install** under the Build artifact section to display the **Install on a test device** popup.
 - Copy the link from **Send a link to a device** section and send it to the test device.
 

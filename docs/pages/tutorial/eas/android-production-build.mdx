@@ -22,13 +22,13 @@ To publish and distribute an app on the Google Play Store, we need to:
 
 ## What is a production build
 
-A production Android build has a **.aab** format and is optimized for distribution on the Google Play Store. Unlike **.apk** builds, **.aab** builds can only be distributed and installed through the Google Play Store.
+A [production Android build](/build/eas-json/#production-builds) has a **.aab** format and is optimized for distribution on the Google Play Store. Unlike **.apk** builds, **.aab** builds can only be distributed and installed through the Google Play Store.
 
 <Step label="1">
 
 ## Required EAS configuration
 
-The only required configuration to create our production build for Android is to have `production` build profile in **eas.json** which is added by default.
+The only required configuration to create our production build for Android is to have a `production` build profile in **eas.json** which is added by default.
 
 </Step>
 
@@ -40,7 +40,7 @@ To create an Android production build, open the terminal and run:
 
 <Terminal cmd={['$ eas build --platform android']} />
 
-The `production` profile in EAS configuration is the default profile. We don't have to pass it using the `--profile` flag.
+The `production` profile in the EAS configuration is the default profile. We don't have to pass it using the `--profile` flag.
 
 The command will queue the build. Notice in the Expo dashboard that the **Version Code** is auto-incremented.
 
@@ -184,7 +184,7 @@ Under **Releases**, we see that the app is available to internal testers. To sha
 
 > **info** **Tip**: To publish an app on the Play Store, in the Google Dashboard, finish the steps under **Set up your app**. These steps are required before releasing the app on the Play Store for the first time. You'll have to provide details like a link to a privacy policy, a target audience, data safety and so on.
 
-> **Complete app store listing**: To prepare the app for store listing, see our [Create app store assets guide](/guides/store-assets/) on how to create screenshots and previews.
+> **Complete app store listing**: To prepare the app for store listing, see [Create app store assets](/guides/store-assets/) on how to create screenshots and previews.
 
 <Collapsible summary="Promoting a testing release">
 
@@ -201,7 +201,7 @@ To promote our internal test release version to **alpha**, in Google Play Store 
 
 ## Add Google Service Account permissions key
 
-From now on, we can use EAS Submit to automate releases and avoid the manual process. To do that, we need to add the service account key to our project's **eas.json**.
+From now on, we can use [EAS Submit](/submit/introduction/) to automate releases and avoid the manual process. To do that, we need to add the service account key to our project's **eas.json**.
 
 After following the Google Service Account guide steps, we can use the downloaded JSON key:
 
@@ -214,7 +214,7 @@ After following the Google Service Account guide steps, we can use the downloade
 
 ## Internal release
 
-Let's add the path to Google Service Account file path in **eas.json**.
+Let's add the path to the Google Service Account file path in **eas.json**.
 
 - Under `submit.production` profile, add `android.serviceAccountKeyPath` and the relative file path as its value:
 
@@ -235,7 +235,7 @@ Let's add the path to Google Service Account file path in **eas.json**.
 }
 ```
 
-In the above snippet, we're also adding [`track`](/eas/json/#track) property and setting its value to `internal`. This will enable `eas submit` command to upload our production build and release it for internal testing on the Google Play Store.
+In the above snippet, we're also adding [`track`](/eas/json/#track) property and setting its value to `internal`. This will enable the `eas submit` command to upload our production build and release it for internal testing on the Google Play Store.
 
 - Now run the `eas submit` command to release a new internal testing version:
 
@@ -275,7 +275,7 @@ To release the app for production:
 }
 ```
 
-- We can also use the same EAS Build we did for the internal testing release. Run `eas submit` command to release to the Play Store:
+- We can also use the same EAS Build we did for the internal testing release. Run the `eas submit` command to release to the Play Store:
 
 <Terminal cmd={['$ eas submit -platform android']} />
 
@@ -293,7 +293,7 @@ To release the app for production:
 
 ## Automated release
 
-For future releases, we can streamline the process by combining build creation and Play Store submission into a single step by using the `--auto-submit` flag with `eas build`:
+For future releases, we can streamline the process by combining build creation and Play Store submission into a single step by using the [`--auto-submit`](/build/automate-submissions/) flag with `eas build`:
 
 <Terminal cmd={['$ eas build --platform android --auto-submit']} />
 

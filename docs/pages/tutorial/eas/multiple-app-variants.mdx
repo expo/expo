@@ -12,7 +12,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 In this chapter, we're going to configure our project to run multiple build types (development, preview, production) so that they can be installed simultaneously on a single device. This setup is useful for testing various stages of our app without the hassle of uninstalling and reinstalling different versions.
 
-Our **app.json** file already has IDs for both Android and iOS:
+Our [**app.json**](/workflow/configuration/) file already has IDs for both Android and iOS:
 
 ```json app.json
 {
@@ -40,7 +40,7 @@ Each variant needs a unique Android Application ID and iOS Bundle Identifier to 
 
 ## Convert app.json to app.config.js for dynamic configuration
 
-**app.json** contains app-related configuration in a JSON file. It's static and doesn't suit our use case if we want to use dynamic values for certain fields. We're going to add different Android Application IDs and iOS Bundle Identifiers for all build profiles based on environment variables.
+**app.json** contains app-related configuration in a JSON file. It's static and doesn't suit our use case if we want to use [dynamic values for certain properties](/workflow/configuration/#dynamic-configuration). We're going to add different Android Application IDs and iOS Bundle Identifiers for all build profiles based on [environment variables](/workflow/configuration/#switching-configuration-based-on-the-environment).
 
 Let's modify it:
 
@@ -140,7 +140,7 @@ In **eas.json**, add the `APP_VARIANT` environment variable:
 
 Running `eas build --profile development` will now set `APP_VARIANT` to `development`.
 
-> **Note**: Since we changed Android Application ID and iOS Bundle Identifier, the EAS CLI will prompt us to generate a new Keystore for Android and a new provisioning profile for iOS. To learn more about what these steps include, see the previous chapter for more information.
+> **Note**: Since we changed the Android Application ID and iOS Bundle Identifier, the EAS CLI will prompt us to generate a new Keystore for Android and a new provisioning profile for iOS. To learn more about what these steps include, see the previous chapter for more information.
 
 Since our `ios-simulator` build profile extends `development`, this configuration is automatically applied.
 
@@ -152,7 +152,7 @@ Since our `ios-simulator` build profile extends `development`, this configuratio
 
 > After builds are complete, follow the same procedure from previous chapters to install them on a device or emulator/simulator.
 
-Since we're identifying our development build with the `APP_VARIANT` environment variable, we need to pass it to the command when starting the development server. To do this, add a `dev` script in the `"scripts"` section of our project's **package.json**:
+Since we're identifying our development build with the `APP_VARIANT` environment variable, we need to pass it to the command when starting the development server. To do this, add a `dev` script in the [`"scripts"`](https://docs.npmjs.com/cli/v10/using-npm/scripts) field of our project's **package.json**:
 
 ```json package.json
 {
@@ -162,7 +162,7 @@ Since we're identifying our development build with the `APP_VARIANT` environment
 }
 ```
 
-Run `npm run dev` command to start the development server:
+Run the `npm run dev` command to start the development server:
 
 <Terminal cmd={['$ npm run dev']} />
 
@@ -180,7 +180,7 @@ Now, our development build will run on both Android and iOS, displaying the modi
 
 ## Summary
 
-In this chapter, we
+In this chapter, we:
 
 - Set up various build types on a single device.
 - Transitioned from static **app.json** to dynamic **app.config.js** for distinct build identifiers and app metadata such as name.

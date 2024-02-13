@@ -13,13 +13,13 @@ import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 Updates generally fix small bugs and push small changes in between app store releases. They allow updating the non-native parts of our app, such as JavaScript code, styling, and images.
 
-In this chapter, we're going to use EAS Update to share changes with our team. This will help us and our team quickly share previews of the changes with each other.
+In this chapter, we're going to use [EAS Update](/eas-update/introduction/) to share changes with our team. This will help [us and our team quickly share previews](/eas-update/develop-faster/) of the change.
 
 <Step label="1">
 
 ## Install expo-updates library
 
-To initialize our project and send an update, we need to use the expo-updates library. Run the following command to install it:
+To initialize our project and send an update, we need to use the [`expo-updates`](/versions/latest/sdk/updates/) library. Run the following command to install it:
 
 <Terminal cmd={['$ npx expo install expo-updates']} />
 
@@ -31,7 +31,7 @@ To initialize our project and send an update, we need to use the expo-updates li
 
 To initialize our project with EAS Update, we need to:
 
-- Since we are using dynamic **app.config.js** for our app's configuration, adding `updates` and `runtimeVersion` properties is required to make our project compatible with EAS Update. Run the following command to obtain these properties and their values from EAS and manually copy them to **app.config.js**:
+- Since we are using dynamic **app.config.js** for our app's configuration, adding [`updates`](/versions/latest/config/app/#updates) and [`runtimeVersion`](/eas-update/runtime-versions/#setting-runtimeversion) properties are required to make our project compatible with EAS Update. Run the following command to obtain these properties and their values from EAS and manually copy them to **app.config.js**:
 
 <Terminal cmd={['$ eas update:configure']} />
 
@@ -41,7 +41,7 @@ If a project doesn't use dynamic app config (uses **app.json** instead of **app.
 
 </Collapsible>
 
-- Next, add a `channel` to every build profile in the **eas.json**. To automatically update this file, re-run the `eas update:configure` command:
+- Add a [`channel`](/eas/json/#channel) to every build profile in the **eas.json**. To automatically update this file, re-run the `eas update:configure` command:
 
 {/* prettier-ignore */}
 ```json eas.json
@@ -70,7 +70,7 @@ If a project doesn't use dynamic app config (uses **app.json** instead of **app.
 
 <Collapsible summary="What is a channel?">
 
-Channels are used to group builds together. If we have an Android and iOS build, both on the app store, we can give them both a channel of production. Later, we can tell EAS Update to target the production channel, so our update will affect all builds with a production channel.
+[Channels](/eas-update/how-it-works/#conceptual-overview) are used to group builds together. If we have an Android and iOS build, both on the app store, we can give them both a channel of production. Later, we can tell EAS Update to target the production channel, so our update will affect all builds with a production channel.
 
 </Collapsible>
 
@@ -80,7 +80,7 @@ Channels are used to group builds together. If we have an Android and iOS build,
 
 ## Create a development build
 
-We need to create a new development build since our last build doesn't contain the expo-updates library. Run the following command:
+We need to create a new development build since our last build doesn't contain the `expo-updates` library. Run the following command:
 
 <Terminal cmd={['$ eas build --platform android --profile development']} />
 
@@ -110,9 +110,9 @@ Instead of creating a new build to share this change with our team for testing, 
 
 <Terminal cmd={['$ eas update --branch development --message "Change first button label"']} />
 
-In the command above, we used the `development` branch. Every update is associated with an EAS update branch. It is similar to every commit that we make with git, which is associated with a git branch.
+In the command above, we used the `development` branch. Every update is associated with an [update branch](/eas-update/how-it-works/#publishing-an-update). It is similar to every commit that we make with git, which is associated with a git branch.
 
-By default, EAS will map branches and channels with the same name, if no other mapping has been specified. So, by using the channel `development` in our build profile and then publishing an update on the development branch, we’re asking EAS to deliver this update to builds with the `development` channel. When we make an EAS Update branch, we can map it to a channel.
+By default, EAS will map branches and channels with the same name, if no other mapping has been specified. So, by using the channel `development` in our build profile and then publishing an update on the development branch, we're asking EAS to deliver this update to builds with the `development` channel. When we make an EAS Update branch, we can map it to a channel.
 
 After the update is published, the CLI will prompt us with information about it.
 
@@ -133,9 +133,9 @@ Click on the website link to see the Update on the Expo dashboard under **Update
 
 <Step label="6">
 
-## See the update live in a development build
+## Preview the update live in a development build
 
-To view the live update in a development build:
+To preview the live update in a development build:
 
 - Log in to your Expo account within the development build.
 - Open the **Extensions** tab.

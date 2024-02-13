@@ -18,13 +18,13 @@ To submit an app, we need a paid Apple Developer account. To create one, see [Ap
 
 ## What is a production build
 
-A production iOS build is optimized for Apple's App Store Connect, which allows distributing builds to testers with TestFlight and public end users through the App Store. This build type cannot be side-loaded on a simulator or device and can only be distributed through App Store Connect.
+A [production iOS build](/build/eas-json/#production-builds) is optimized for Apple's App Store Connect, which allows distributing builds to testers with TestFlight and public end users through the App Store. This build type cannot be side-loaded on a simulator or device and can only be distributed through App Store Connect.
 
 <Step label="1">
 
 ## Required EAS configuration
 
-The only required configuration to create our production build for iOS is to have `production` build profile in **eas.json** which is added by default.
+The only required configuration to create our production build for iOS is to have a `production` build profile in **eas.json** which is added by default.
 
 </Step>
 
@@ -52,7 +52,7 @@ To create an iOS production build, open the terminal and run:
 
 <Terminal cmd={['$ eas build --platform ios']} />
 
-The `production` profile in EAS configuration is the default profile. We don't have to pass it using the `--profile` flag.
+The `production` profile in the EAS configuration is the default profile. We don't have to pass it using the `--profile` flag.
 
 The command will queue the build. Notice on the Expo dashboard that the **Build Number** is auto-incremented.
 
@@ -62,7 +62,7 @@ The command will queue the build. Notice on the Expo dashboard that the **Build 
 
 ## Submit the app binary to the App Store
 
-To submit the app binary created from our latest EAS Build, run:
+To submit the app binary created from our latest EAS Build, run the [`eas submit`](/submit/introduction/) command:
 
 <Terminal cmd={['$ eas submit --platform ios']} />
 
@@ -139,7 +139,7 @@ To prepare our app for App Store submission, go to the **App Store** tab:
   style={{ maxWidth: 800 }}
 />
 
-> **Complete App Store listing**: To prepare the app for store listing, see our [Create app store assets guide](/guides/store-assets/) on how to create screenshots and previews.
+> **Complete App Store listing**: To prepare the app for store listing, see [Create app store assets](/guides/store-assets/) on how to create screenshots and previews.
 
 - Once our app is ready, click on **Submit to App Review**. After that, Apple will review our app, and if approved, the app will be available on the App Store.
 
@@ -155,7 +155,7 @@ To prepare our app for App Store submission, go to the **App Store** tab:
 
 ## Automated submissions
 
-For future releases, we can streamline the process by combining build creation and App Store submission into a single step by using the `--auto-submit` flag with `eas build`:
+For future releases, we can streamline the process by combining build creation and App Store submission into a single step by using the [`--auto-submit`](/build/automate-submissions/) flag with `eas build`:
 
 <Terminal cmd={['$ eas build --platform ios --auto-submit']} />
 

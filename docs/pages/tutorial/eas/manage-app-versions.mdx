@@ -13,7 +13,7 @@ In this chapter, we're going to configure our app to auto-increment the develope
 
 An app version is composed of two values:
 
-- The `versionCode` for Android and `buildNumber` for iOS (also known as developer-facing values)
+- The [`versionCode`](/versions/latest/config/app/#versioncode) for Android and [`buildNumber`](/versions/latest/config/app/#buildnumber) for iOS (also known as developer-facing values)
 - The [`version`](/versions/latest/config/app/#version) property in **app.json** (also known as user-facing values)
 
 ## Manually manage developer-facing values
@@ -41,12 +41,12 @@ However, we are not going to set them up manually. We are going to use EAS Build
 
 ## Automate app version management with EAS Build
 
-EAS Build can assist us in automating these values by utilizing the [Remote version resource](/build-reference/app-versions/#remote-version-source). This feature automatically increments developer-facing values and keeps track of them whenever a new production release is made.
+EAS Build can assist us in automating these values by utilizing the [remote version resource](/build-reference/app-versions/#remote-version-source). This feature automatically increments developer-facing values and keeps track of them whenever a new production release is made.
 
 In **eas.json**:
 
 - Add `cli.appVersionSource` and set it to `remote`
-- Set `build.production.autoIncrement` to `true`:
+- Set [`build.production.autoIncrement`](/eas/json/#autoincrement-1) to `true`:
 
 {/* prettier-ignore */}
 ```json eas.json
