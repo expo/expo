@@ -1,20 +1,19 @@
 import { EventEmitter, Subscription } from 'expo-modules-core';
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 
-import { AudioSource, AudioPlayerState } from './Audio.types';
-import AudioModule from './AudioModule';
 import {
-  AudioCategory,
-  AudioPlayer,
-  AudioRecorder,
+  AudioMode,
+  AudioSource,
   AudioStatus,
+  RecorderState,
+  RecordingOptions,
   RecordingStatus,
-} from './AudioModule.types';
-import RecordingModule from './RecordingModule';
+} from './Audio.types';
+import AudioModule from './AudioModule';
+import { AudioPlayer, AudioRecorder } from './AudioModule.types';
 import { resolveSource } from './utils/resolveSource';
 
-const audioEmitter = new EventEmitter(AudioModule);
-const recordingEmitter = new EventEmitter(RecordingModule);
+const audioModuleEmitter = new EventEmitter(AudioModule);
 
 export function useAudioPlayer(
   source: AudioSource | string | number | null = null,
@@ -35,26 +34,53 @@ export function useAudioPlayer(
   return player;
 }
 
-export function useAudioRecorder(url: string | null = null): AudioRecorder {
-  return useMemo(() => new AudioModule.AudioRecorder(url), [url]);
+export function useAudioRecorder(
+  options: RecordingOptions,
+  statusListener?: (status: RecordingStatus) => void
+): AudioRecorder {
+  const recorder = useMemo(() => new AudioModule.AudioRecorder(options), []);
+  const [state, setState] = useState<RecorderState>(recorder.getStatus());
+
+  useEffect(() => {
+    const subscription = addRecordingStatusListener((status) => {
+      if (status.id === recorder.id) {
+        console.log({ status, state });
+        statusListener?.(status);
+      }
+    });
+    return () => subscription.remove();
+  }, [recorder.id]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (recorder.isRecording) {
+        setState(recorder.getStatus());
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [recorder.id]);
+
+  return recorder;
 }
 
 export function addStatusUpdateListener(listener: (event: AudioStatus) => void): Subscription {
-  return audioEmitter.addListener<AudioStatus>('onPlaybackStatusUpdate', listener);
+  return audioModuleEmitter.addListener<AudioStatus>('onPlaybackStatusUpdate', listener);
 }
 
 export function addRecordingStatusListener(
   listener: (event: RecordingStatus) => void
 ): Subscription {
-  return recordingEmitter.addListener<RecordingStatus>('onRecordingStatusUpdate', listener);
+  return audioModuleEmitter.addListener<RecordingStatus>('onRecordingStatusUpdate', listener);
 }
 
 export async function setIsAudioActiveAsync(active: boolean): Promise<void> {
   return await AudioModule.setIsAudioActiveAsync(active);
 }
 
-export async function setAudioCategoryAsync(category: AudioCategory): Promise<void> {
-  return await AudioModule.setCategoryAsync(category);
+export async function setAudioModeAsync(mode: AudioMode): Promise<void> {
+  return await AudioModule.setAudioModeAsync(mode);
 }
 
-export { AudioStatus as ChangeEventPayload, AudioSource, AudioPlayerState };
+export { AudioStatus as ChangeEventPayload, AudioModule, AudioPlayer, AudioRecorder };
+export * from './Audio.types';

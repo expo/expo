@@ -1,8 +1,9 @@
 import Ionicons from '@expo/vector-icons/build/Ionicons';
-import { useAudioRecorder } from 'expo-audio';
+import { AudioQuality, OutputFormat, useAudioRecorder, AudioModule } from 'expo-audio';
 import { Audio } from 'expo-av';
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
+  Alert,
   ScrollView,
   StyleProp,
   StyleSheet,
@@ -12,9 +13,9 @@ import {
   ViewStyle,
 } from 'react-native';
 
+import AudioInputSelector from './AudioInputSelector';
 import Button from '../../components/Button';
 import Colors from '../../constants/Colors';
-import AudioInputSelector from '../AV/AudioInputSelector';
 
 interface State {
   options?: Audio.RecordingOptions;
@@ -25,101 +26,104 @@ interface State {
 }
 
 type RecorderProps = {
-  onDone: (uri: string) => void;
+  onDone?: (uri: string) => void;
   style?: StyleProp<ViewStyle>;
 };
 
-function RecorderNew({ onDone, style }: RecorderProps) {
+export default function Recorder({ onDone, style }: RecorderProps) {
   const [state, setState] = React.useState<State>({
     canRecord: false,
     durationMillis: 0,
     isRecording: false,
+    errorMessage: '',
   });
 
-  const audioRecorder = useAudioRecorder('');
-}
-export default class Recorder extends React.Component<
-  { onDone: (uri: string) => void; style?: StyleProp<ViewStyle> },
-  State
-> {
-  readonly state: State = {
-    canRecord: false,
-    durationMillis: 0,
-    isRecording: false,
-  };
+  useEffect(() => {
+    (async () => {
+      const status = await AudioModule.requestRecordingPermissionsAsync();
+      if (!status.granted) {
+        Alert.alert('Permission to access microphone was denied');
+      }
+    })();
+  }, []);
 
-  _recorder?: Audio.Recording;
-
-  componentWillUnmount() {
-    if (this._recorder) {
-      this._recorder.stopAndUnloadAsync();
+  const audioRecorder = useAudioRecorder(
+    {
+      extension: '.caf',
+      outputFormat: OutputFormat.MPEG4AAC,
+      audioQuality: AudioQuality.MAX,
+      sampleRate: 44100,
+      numberOfChannels: 2,
+      bitRate: 128000,
+      linearPCMBitDepth: 16,
+      linearPCMIsBigEndian: false,
+      linearPCMIsFloat: false,
+    },
+    (status) => {
+      console.log(status);
     }
-  }
+  );
 
-  _prepare = (options: Audio.RecordingOptions) => async () => {
-    const recordingObject = new Audio.Recording();
+  const prepare = (options: Audio.RecordingOptions) => async () => {
     try {
-      await Audio.requestPermissionsAsync();
-      await recordingObject.prepareToRecordAsync(options);
-      recordingObject.setOnRecordingStatusUpdate(this._updateStateToStatus);
-      const status = await recordingObject.getStatusAsync();
-      this.setState({ ...status, options });
-      this._recorder = recordingObject;
+      await AudioModule.requestRecordingPermissionsAsync();
+      const status = audioRecorder.getStatus();
+      setState({ ...status, options });
     } catch (error) {
-      this.setState({ errorMessage: error.message });
+      setState((state) => ({ ...state, errorMessage: error.message }));
     }
   };
 
-  _updateStateToStatus = (status: Audio.RecordingStatus) => this.setState(status);
+  const record = () => audioRecorder.record();
 
-  _record = () => this._recorder!.startAsync();
-
-  _togglePause = () => {
-    if (this.state.isRecording) {
-      this._recorder!.pauseAsync();
+  const togglePause = () => {
+    if (audioRecorder.isRecording) {
+      audioRecorder.pause();
     } else {
-      this._recorder!.startAsync();
+      audioRecorder.record();
     }
   };
 
-  _stopAndUnload = async () => {
-    await this._recorder!.stopAndUnloadAsync();
-    if (this.props.onDone) {
-      this.props.onDone(this._recorder!.getURI()!);
+  const stopAndUnload = async () => {
+    if (onDone) {
+      onDone(audioRecorder.uri!);
     }
-    this._recorder = undefined;
-    this.setState({ options: undefined, durationMillis: 0 });
+    setState((state) => ({ ...state, options: undefined, durationMillis: 0 }));
   };
 
-  _maybeRenderErrorOverlay = () => {
-    if (this.state.errorMessage) {
+  useEffect(() => {
+    return () => audioRecorder.release();
+  }, []);
+
+  const maybeRenderErrorOverlay = () => {
+    if (state.errorMessage) {
       return (
         <ScrollView style={styles.errorMessage}>
-          <Text style={styles.errorText}>{this.state.errorMessage}</Text>
+          <Text style={styles.errorText}>{state.errorMessage}</Text>
         </ScrollView>
       );
     }
     return null;
   };
 
-  _renderPrepareButton = (title: string, options: Audio.RecordingOptions) => (
+  const renderPrepareButton = (title: string, options: Audio.RecordingOptions) => (
     <Button
-      disabled={!!this.state.options}
-      onPress={this._prepare(options)}
-      title={`${this.state.options === options ? '✓ ' : ''}${title}`}
+      disabled={!!state.options}
+      onPress={prepare(options)}
+      title={`${state.options === options ? '✓ ' : ''}${title}`}
     />
   );
 
-  _renderRecorderButtons = () => {
-    if (!this.state.isRecording && this.state.durationMillis === 0) {
+  const renderRecorderButtons = () => {
+    if (!state.isRecording && state.durationMillis === 0) {
       return (
         <TouchableOpacity
-          onPress={this._record}
-          disabled={!this.state.canRecord}
+          onPress={record}
+          disabled={state.canRecord}
           style={[
             styles.bigRoundButton,
             { backgroundColor: 'gray' },
-            this.state.canRecord && { backgroundColor: 'red' },
+            state.canRecord && { backgroundColor: 'red' },
           ]}>
           <Ionicons name="mic" style={[styles.bigIcon, { color: 'white' }]} />
         </TouchableOpacity>
@@ -129,15 +133,15 @@ export default class Recorder extends React.Component<
     return (
       <View>
         <TouchableOpacity
-          onPress={this._togglePause}
+          onPress={togglePause}
           style={[styles.bigRoundButton, { borderColor: 'red', borderWidth: 5 }]}>
           <Ionicons
-            name={`${this.state.isRecording ? 'pause' : 'mic'}` as any}
+            name={`${state.isRecording ? 'pause' : 'mic'}` as any}
             style={[styles.bigIcon, { color: 'red' }]}
           />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={this._stopAndUnload}
+          onPress={stopAndUnload}
           style={[
             styles.smallRoundButton,
             {
@@ -155,24 +159,22 @@ export default class Recorder extends React.Component<
     );
   };
 
-  render() {
-    return (
-      <View style={this.props.style}>
-        <View style={styles.container}>
-          {this._renderPrepareButton('High quality', Audio.RecordingOptionsPresets.HIGH_QUALITY)}
-          {this._renderPrepareButton('Low quality', Audio.RecordingOptionsPresets.LOW_QUALITY)}
-        </View>
-        <View style={styles.centerer}>
-          {this._renderRecorderButtons()}
-          <Text style={{ fontWeight: 'bold', marginVertical: 10 }}>
-            {_formatTime(this.state.durationMillis / 1000)}
-          </Text>
-        </View>
-        <AudioInputSelector recordingObject={this._recorder} />
-        {this._maybeRenderErrorOverlay()}
+  return (
+    <View style={style}>
+      <View style={styles.container}>
+        {renderPrepareButton('High quality', Audio.RecordingOptionsPresets.HIGH_QUALITY)}
+        {renderPrepareButton('Low quality', Audio.RecordingOptionsPresets.LOW_QUALITY)}
       </View>
-    );
-  }
+      <View style={styles.centerer}>
+        {renderRecorderButtons()}
+        <Text style={{ fontWeight: 'bold', marginVertical: 10 }}>
+          {_formatTime(state.durationMillis / 1000)}
+        </Text>
+      </View>
+      <AudioInputSelector recorder={audioRecorder} />
+      {maybeRenderErrorOverlay()}
+    </View>
+  );
 }
 
 const _formatTime = (duration: number) => {

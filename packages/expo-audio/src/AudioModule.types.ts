@@ -1,41 +1,18 @@
 import { PermissionResponse } from 'expo-modules-core';
 import { NativeModule } from 'react-native';
 
-import { AudioSource, PitchCorrectionQuality } from './Audio.types';
-
-export type AudioStatus = {
-  id: number;
-  currentPosition: number;
-  status: string;
-  timeControlStatus: string;
-  reasonForWaitingToPlay: string;
-  isMuted: boolean;
-  totalDuration: number;
-  isPlaying: boolean;
-  isLooping: boolean;
-  isBuffering: boolean;
-  isLoaded: boolean;
-  rate: number;
-  shouldCorrectPitch: boolean;
-};
-
-export type RecordingStatus = {
-  isFinished: boolean;
-  hasError: boolean;
-  error: string | null;
-};
-
-export type AudioCategory =
-  | 'ambient'
-  | 'multiRoute'
-  | 'playAndRecord'
-  | 'playback'
-  | 'record'
-  | 'soloAmbient';
+import {
+  AudioMode,
+  AudioSource,
+  PitchCorrectionQuality,
+  RecorderState,
+  RecordingInput,
+  RecordingOptions,
+} from './Audio.types';
 
 export interface AudioModule extends NativeModule {
   setIsAudioActiveAsync(active: boolean): Promise<void>;
-  setCategoryAsync(category: AudioCategory): Promise<void>;
+  setAudioModeAsync(category: AudioMode): Promise<void>;
   requestRecordingPermissionsAsync(): Promise<RecordingPermissionResponse>;
   getRecordingPermissionsAsync(): Promise<RecordingPermissionResponse>;
 
@@ -48,6 +25,9 @@ export type RecordingPermissionResponse = PermissionResponse;
 export interface AudioPlayer {
   new (source: AudioSource | string | number | null): AudioPlayer;
 
+  /**
+   * Unique identifier for the player object.
+   */
   id: number;
   /**
    * Boolean value indicating whether the player is currently playing.
@@ -123,13 +103,18 @@ export interface AudioPlayer {
   setRate(second: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;
 
   /**
-   * Destroys the player and frees up resources.
+   * Release the player and frees up resources.
    */
-  destroy(): void;
+  release(): void;
 }
 
 export interface AudioRecorder {
-  new (url: string | null): AudioRecorder;
+  new (options: RecordingOptions): AudioRecorder;
+
+  /**
+   * Unique identifier for the recorder object.
+   */
+  id: number;
 
   /**
    * The current length of the recording, in seconds.
@@ -142,6 +127,11 @@ export interface AudioRecorder {
   isRecording: boolean;
 
   /**
+   * The uri of the recording.
+   */
+  uri: string | null;
+
+  /**
    * Starts the recording.
    */
   record(): void;
@@ -150,6 +140,20 @@ export interface AudioRecorder {
    * Stop the recording.
    */
   stop(): void;
+
+  /**
+   * Pause the recording.
+   */
+  pause(): void;
+
+  getAvailableInputs(): RecordingInput[];
+  getCurrentInput(): RecordingInput;
+  setInput(input: string): void;
+
+  /**
+   * Status of the current recording.
+   */
+  getStatus(): RecorderState;
 
   /**
    * Starts the recording at the given time.
@@ -162,4 +166,9 @@ export interface AudioRecorder {
    * @param seconds The time in seconds to stop recording at.
    */
   recordForDuration(seconds: number): void;
+
+  /**
+   * Release the recorder and frees up resources.
+   */
+  release(): void;
 }
