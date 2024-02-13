@@ -308,6 +308,7 @@ const general = [
     makePage('eas-update/github-actions.mdx'),
     makePage('eas-update/eas-cli.mdx'),
     makePage('eas-update/develop-faster.mdx'),
+    makePage('eas-update/faq.mdx'),
     makeGroup('Concepts', [
       makePage('eas-update/how-it-works.mdx'),
       makePage('eas-update/runtime-versions.mdx'),
@@ -332,7 +333,6 @@ const general = [
       makePage('eas-update/custom-updates-server.mdx'),
       makePage('eas-update/codepush.mdx'),
       makePage('eas-update/updating-your-app.mdx'),
-      makePage('eas-update/faq.mdx'),
       makePage('eas-update/known-issues.mdx'),
     ]),
   ]),
