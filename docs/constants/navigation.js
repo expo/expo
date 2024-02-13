@@ -459,7 +459,7 @@ const learn = [
       makePage('tutorial/eas/manage-app-versions.mdx'),
       makePage('tutorial/eas/android-production-build.mdx'),
       makePage('tutorial/eas/ios-production-build.mdx'),
-      makePage('tutorial/eas/development-with-team.mdx'),
+      makePage('tutorial/eas/developing-with-team.mdx'),
     ],
     { expanded: true }
   ),
