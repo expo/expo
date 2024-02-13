@@ -231,6 +231,7 @@ const general = [
         makePage('modules/appdelegate-subscribers.mdx'),
         makePage('modules/autolinking.mdx'),
         makePage('modules/module-config.mdx'),
+        makePage('modules/mocking.mdx'),
       ]),
     ],
     { expanded: false }
