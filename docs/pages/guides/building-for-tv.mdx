@@ -85,29 +85,29 @@ In **package.json**, modify the `react-native` dependency to use the TV repo, an
 
 ## Add the TV config plugin
 
-<Terminal cmd={['npx expo install @react-native-tvos/config-tv']} />
-
-Installing the library adds the `@react-native-tvos/config-tv` plugin to your project's **app.json**.
+<Terminal cmd={['npx expo install --dev @react-native-tvos/config-tv']} />
 
 When installed, the plugin will modify the project for TV when either:
 
 - The environment variable `EXPO_TV` is set to `1`
 - The plugin parameter `isTV` is set to `true`
 
-Make sure that this plugin appears in `app.json`. It is recommended to set the `showVerboseWarnings` property to `true` to see additional information during prebuild.
+Make sure that this plugin appears in `app.json`:
 
 ```json app.json
 {
   "plugins": [
-    [
-      "@react-native-tvos/config-tv",
-      {
-        "showVerboseWarnings": true
-      }
-    ]
+    "@react-native-tvos/config-tv"
   ]
 }
 ```
+
+ To see additional information on the plugin's actions during prebuild, you can set [debug environment variables](https://github.com/debug-js/debug#conventions) before running prebuild. (See also our documentation on [Expo CLI environment variables](/more/expo-cli/#environment-variables).)
+
+<Terminal cmd={[
+  'export DEBUG=expo:* # see all Expo CLI and config plugin debug information',
+  'export DEBUG=expo:react-native-tvos:config-tv # see only debug information for the TV plugin']}
+/>
 
 </Step>
 
