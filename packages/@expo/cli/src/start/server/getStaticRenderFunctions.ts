@@ -12,7 +12,7 @@ import resolveFrom from 'resolve-from';
 
 import { logMetroError, logMetroErrorAsync } from './metro/metroErrorInterface';
 import { getMetroServerRoot } from './middleware/ManifestMiddleware';
-import { createBundleUrlPath } from './middleware/metroOptions';
+import { createBundleUrlPath, ExpoMetroOptions } from './middleware/metroOptions';
 import { augmentLogs } from './serverLogLikeMetro';
 import { stripAnsi } from '../../utils/ansi';
 import { delayAsync } from '../../utils/delay';
@@ -20,16 +20,8 @@ import { SilentError } from '../../utils/errors';
 import { memoize } from '../../utils/fn';
 import { profile } from '../../utils/profile';
 
-type StaticRenderOptions = {
-  // Ensure the style format is `css-xxxx` (prod) instead of `css-view-xxxx` (dev)
-  dev?: boolean;
-  minify?: boolean;
-  platform?: string;
-  environment?: 'node';
-  engine?: 'hermes';
-  baseUrl: string;
-  routerRoot: string;
-};
+/** The list of input keys will become optional, everything else will remain the same. */
+export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 class MetroNodeError extends Error {
   constructor(
@@ -62,8 +54,11 @@ function wrapBundle(str: string) {
 }
 
 // TODO(EvanBacon): Group all the code together and version.
-const getRenderModuleId = (projectRoot: string): string => {
-  const moduleId = resolveFrom.silent(projectRoot, 'expo-router/node/render.js');
+const getRenderModuleId = (
+  projectRoot: string,
+  entry: string = 'expo-router/node/render.js'
+): string => {
+  const moduleId = resolveFrom.silent(projectRoot, entry);
   if (!moduleId) {
     throw new Error(
       `A version of expo-router with Node.js support is not installed in the project.`
@@ -89,10 +84,11 @@ const moveStaticRenderFunction = memoize(async (projectRoot: string, requiredMod
 async function getStaticRenderFunctionsContentAsync(
   projectRoot: string,
   devServerUrl: string,
-  { dev = false, minify = false, environment, baseUrl, routerRoot }: StaticRenderOptions
+  props: PickPartial<ExpoMetroOptions, 'mainModuleName' | 'bytecode'>,
+  entry?: string
 ): Promise<{ src: string; filename: string }> {
   const root = getMetroServerRoot(projectRoot);
-  const requiredModuleId = getRenderModuleId(root);
+  const requiredModuleId = getRenderModuleId(root, entry);
   let moduleId = requiredModuleId;
 
   // Cannot be accessed using Metro's server API, we need to move the file
@@ -101,13 +97,7 @@ async function getStaticRenderFunctionsContentAsync(
     moduleId = await moveStaticRenderFunction(projectRoot, requiredModuleId);
   }
 
-  return requireFileContentsWithMetro(root, devServerUrl, moduleId, {
-    dev,
-    minify,
-    environment,
-    baseUrl,
-    routerRoot,
-  });
+  return requireFileContentsWithMetro(root, devServerUrl, moduleId, props);
 }
 
 async function ensureFileInRootDirectory(projectRoot: string, otherFile: string) {
@@ -132,34 +122,21 @@ export async function createMetroEndpointAsync(
   projectRoot: string,
   devServerUrl: string,
   absoluteFilePath: string,
-  {
-    dev = false,
-    platform = 'web',
-    minify = false,
-    environment,
-    engine = 'hermes',
-    baseUrl,
-    routerRoot,
-  }: StaticRenderOptions
+  props: PickPartial<ExpoMetroOptions, 'mainModuleName' | 'bytecode'>
 ): Promise<string> {
   const root = getMetroServerRoot(projectRoot);
   const safeOtherFile = await ensureFileInRootDirectory(projectRoot, absoluteFilePath);
   const serverPath = path.relative(root, safeOtherFile).replace(/\.[jt]sx?$/, '');
 
   const urlFragment = createBundleUrlPath({
-    platform,
-    mode: dev ? 'development' : 'production',
     mainModuleName: serverPath,
-    engine,
-    environment,
     lazy: false,
-    minify,
-    baseUrl,
-    isExporting: true,
     asyncRoutes: false,
-    routerRoot,
     inlineSourceMap: false,
+    engine: 'hermes',
+    minify: false,
     bytecode: false,
+    ...props,
   });
 
   let url: string;
@@ -168,7 +145,6 @@ export async function createMetroEndpointAsync(
   } else {
     url = '/' + urlFragment.replace(/^\/+/, '');
   }
-  debug('fetching from Metro:', root, serverPath, url);
   return url;
 }
 
@@ -176,10 +152,18 @@ export async function requireFileContentsWithMetro(
   projectRoot: string,
   devServerUrl: string,
   absoluteFilePath: string,
-  props: StaticRenderOptions
+  props: PickPartial<ExpoMetroOptions, 'mainModuleName' | 'bytecode'>
 ): Promise<{ src: string; filename: string }> {
   const url = await createMetroEndpointAsync(projectRoot, devServerUrl, absoluteFilePath, props);
+  return await metroFetchAsync(projectRoot, url);
+}
 
+async function metroFetchAsync(
+  projectRoot: string,
+  url: string
+): Promise<{ src: string; filename: string }> {
+  debug('Fetching from Metro:', url);
+  // TODO: Skip the dev server and use the Metro instance directly for better results, faster.
   const res = await fetch(url);
 
   // TODO: Improve error handling
@@ -205,27 +189,31 @@ export async function requireFileContentsWithMetro(
   return { src: wrapBundle(content), filename: url };
 }
 
-export async function getStaticRenderFunctions(
+export async function getStaticRenderFunctionsForEntry<T = any>(
   projectRoot: string,
   devServerUrl: string,
-  options: StaticRenderOptions
-): Promise<Record<string, (...args: any[]) => Promise<any>>> {
+  options: PickPartial<ExpoMetroOptions, 'mainModuleName' | 'bytecode'>,
+  entry: string
+) {
   const { src: scriptContents, filename } = await getStaticRenderFunctionsContentAsync(
     projectRoot,
     devServerUrl,
-    options
+    options,
+    entry
   );
 
-  return evalMetroAndWrapFunctions(projectRoot, scriptContents, filename);
+  return {
+    filename,
+    fn: await evalMetroAndWrapFunctions<T>(projectRoot, scriptContents, filename),
+  };
 }
 
-function evalMetroAndWrapFunctions<T = Record<string, (...args: any[]) => Promise<any>>>(
+function evalMetroAndWrapFunctions<T = Record<string, any>>(
   projectRoot: string,
   script: string,
   filename: string
 ): Promise<T> {
   const contents = evalMetro(projectRoot, script, filename);
-
   // wrap each function with a try/catch that uses Metro's error formatter
   return Object.keys(contents).reduce((acc, key) => {
     const fn = contents[key];
@@ -245,10 +233,9 @@ function evalMetroAndWrapFunctions<T = Record<string, (...args: any[]) => Promis
   }, {} as any);
 }
 
-function evalMetro(projectRoot: string, src: string, filename: string) {
-  augmentLogs(projectRoot);
+export function evalMetro(projectRoot: string, src: string, filename: string) {
   try {
-    return profile(requireString, 'eval-metro-bundle')(src, filename);
+    return evalMetroNoHandling(projectRoot, src, filename);
   } catch (error: any) {
     // Format any errors that were thrown in the global scope of the evaluation.
     if (error instanceof Error) {
@@ -259,6 +246,11 @@ function evalMetro(projectRoot: string, src: string, filename: string) {
     } else {
       throw error;
     }
-  } finally {
   }
+}
+
+export function evalMetroNoHandling(projectRoot: string, src: string, filename: string) {
+  augmentLogs(projectRoot);
+
+  return profile(requireString, 'eval-metro-bundle')(src, filename);
 }

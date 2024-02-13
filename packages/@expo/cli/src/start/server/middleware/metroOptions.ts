@@ -20,12 +20,12 @@ export type ExpoMetroOptions = {
   engine?: 'hermes';
   preserveEnvVars?: boolean;
   bytecode: boolean;
+  /** Enable async routes (route-based bundle splitting) in Expo Router. */
   asyncRoutes?: boolean;
-
-  baseUrl?: string;
-  isExporting: boolean;
   /** Module ID relative to the projectRoot for the Expo Router app directory. */
   routerRoot: string;
+  baseUrl?: string;
+  isExporting: boolean;
   inlineSourceMap?: boolean;
 };
 
