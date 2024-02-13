@@ -1,5 +1,4 @@
-import { useAudioPlayer, AudioSource, AudioPlayerState } from 'expo-audio';
-import { AudioStatus } from 'expo-audio/build/AudioModule.types';
+import { useAudioPlayer, AudioSource, AudioPlayerState, AudioStatus } from 'expo-audio';
 import { useCallback, useEffect, useState } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 
@@ -25,7 +24,6 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
   );
 
   const [state, setState] = useState<AudioPlayerState>({
-    androidImplementation: 'SimpleExoPlayer',
     isLoaded: player.isLoaded,
     isLooping: player.isLooping,
     isMuted: player.isMuted,
@@ -60,7 +58,7 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
   };
 
   useEffect(() => {
-    return () => player.destroy();
+    return () => player.release();
   }, []);
 
   return (

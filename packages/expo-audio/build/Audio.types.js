@@ -1,2 +1,46 @@
-export {};
+export var OutputFormat;
+(function (OutputFormat) {
+    OutputFormat["LINEARPCM"] = "lpcm";
+    OutputFormat["AC3"] = "ac-3";
+    OutputFormat["60958AC3"] = "cac3";
+    OutputFormat["APPLEIMA4"] = "ima4";
+    OutputFormat["MPEG4AAC"] = "aac ";
+    OutputFormat["MPEG4CELP"] = "celp";
+    OutputFormat["MPEG4HVXC"] = "hvxc";
+    OutputFormat["MPEG4TWINVQ"] = "twvq";
+    OutputFormat["MACE3"] = "MAC3";
+    OutputFormat["MACE6"] = "MAC6";
+    OutputFormat["ULAW"] = "ulaw";
+    OutputFormat["ALAW"] = "alaw";
+    OutputFormat["QDESIGN"] = "QDMC";
+    OutputFormat["QDESIGN2"] = "QDM2";
+    OutputFormat["QUALCOMM"] = "Qclp";
+    OutputFormat["MPEGLAYER1"] = ".mp1";
+    OutputFormat["MPEGLAYER2"] = ".mp2";
+    OutputFormat["MPEGLAYER3"] = ".mp3";
+    OutputFormat["APPLELOSSLESS"] = "alac";
+    OutputFormat["MPEG4AAC_HE"] = "aach";
+    OutputFormat["MPEG4AAC_LD"] = "aacl";
+    OutputFormat["MPEG4AAC_ELD"] = "aace";
+    OutputFormat["MPEG4AAC_ELD_SBR"] = "aacf";
+    OutputFormat["MPEG4AAC_ELD_V2"] = "aacg";
+    OutputFormat["MPEG4AAC_HE_V2"] = "aacp";
+    OutputFormat["MPEG4AAC_SPATIAL"] = "aacs";
+    OutputFormat["AMR"] = "samr";
+    OutputFormat["AMR_WB"] = "sawb";
+    OutputFormat["AUDIBLE"] = "AUDB";
+    OutputFormat["ILBC"] = "ilbc";
+    OutputFormat[OutputFormat["DVIINTELIMA"] = 1836253201] = "DVIINTELIMA";
+    OutputFormat[OutputFormat["MICROSOFTGSM"] = 1836253233] = "MICROSOFTGSM";
+    OutputFormat["AES3"] = "aes3";
+    OutputFormat["ENHANCEDAC3"] = "ec-3";
+})(OutputFormat || (OutputFormat = {}));
+export var AudioQuality;
+(function (AudioQuality) {
+    AudioQuality[AudioQuality["MIN"] = 0] = "MIN";
+    AudioQuality[AudioQuality["LOW"] = 32] = "LOW";
+    AudioQuality[AudioQuality["MEDIUM"] = 64] = "MEDIUM";
+    AudioQuality[AudioQuality["HIGH"] = 96] = "HIGH";
+    AudioQuality[AudioQuality["MAX"] = 127] = "MAX";
+})(AudioQuality || (AudioQuality = {}));
 //# sourceMappingURL=Audio.types.js.map
