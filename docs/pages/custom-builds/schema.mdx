@@ -1310,10 +1310,13 @@ build:
   steps:
     - eas/build
     # ... simulator / emulator setup
+    # @info #
     - eas/install_maestro:
-        name: Install Maestro
+    # @end #
         inputs:
+          # @info If you need to, you can provide the Maestro version to install. #
           maestro_version: 1.35.0
+          # @end #
     - run:
         command: maestro test flows/signin.yml
     - eas/upload_artifact:
@@ -1343,20 +1346,18 @@ build:
   name: Build and test
   steps:
     - eas/build
-    - eas/start_android_emulator
-        name: Start Android emulator
+    # @info #
+    - eas/start_android_emulator:
         inputs:
           system_image_package: system-images;android-30;default;x86_64
+    # @end #
     # ... Maestro setup and tests
 ```
 
-| Input                  | Description                                                                                                                                             |
-|------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `device_name`          | **string** Name for the created device. You may wish to customize it if starting multiple emulators.                                                    |
-| `system_image_package` | **string** Android package path you wish to use for the emulator, e.g. `system-images;android-30;default;x86_64`.                                       |
-|                        | To get list of available system images, run `sdkmanager --list` on your computer ([command docs](https://developer.android.com/tools/sdkmanager#list)). |
-|                        | VMs run on x86_64 architecture, so always choose `x86_64` package variants.                                                                             |
-|                        | The `sdkmanager` tool comes from Android SDK command-line tools ([installation instructions](https://developer.android.com/tools/sdkmanager)).          |
+| Input                  | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+|------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `device_name`          | **string** Name for the created device. You may wish to customize it if starting multiple emulators.                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `system_image_package` | **string** Android package path you wish to use for the emulator, e.g. `system-images;android-30;default;x86_64`.<br />To get list of available system images, run `sdkmanager --list` on your computer ([command docs](https://developer.android.com/tools/sdkmanager#list)). VMs run on x86_64 architecture, so always choose `x86_64` package variants. The `sdkmanager` tool comes from Android SDK command-line tools ([installation instructions](https://developer.android.com/tools/sdkmanager)). |
 
 <BoxLink
   title="eas/start_android_emulator source code"
@@ -1374,19 +1375,15 @@ build:
   name: Build and test
   steps:
     - eas/build
+    # @info #
     - eas/start_ios_simulator
-        name: Start iOS Simulator
+    # @end #
     # ... Maestro setup and tests
 ```
 
-| Input               | Description                                                                                                                                      |
-|---------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
-| `device_identifier` | **string** Name or UDID of the Simulator you want to start.                                                                                      |
-|                     | Examples include `iPhone [XY] Pro`, `AEF997BB-222C-4379-89BA-D21070B1D787`.                                                                      |
-|                     | **Note:** available Simulators are different for every image, so if you change the image, the Simulator for a given name may become unavailable. |
-|                     | For instance, an Xcode 14 image will have iPhone 14 Simulators while an Xcode 15 image will have iPhone 15 simulators.                           |
-|                     | In general we encourage not providing this input.                                                                                                |
-|                     | Learn more about [runner images](/build/eas-json/#selecting-a-base-image).                                                                       |
+| Input               | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+|---------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `device_identifier` | **string** Name or UDID of the Simulator you want to start. Examples include `iPhone [XY] Pro`, `AEF997BB-222C-4379-89BA-D21070B1D787`.<br />**Note:** available Simulators are different for every image, so if you change the image, the Simulator for a given name may become unavailable. For instance, an Xcode 14 image will have iPhone 14 Simulators while an Xcode 15 image will have iPhone 15 simulators. In general we encourage not providing this input. Learn more about [runner images](/build/eas-json/#selecting-a-base-image). |
 
 <BoxLink
   title="eas/start_ios_simulator source code"
