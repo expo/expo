@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Document basic assumptions about the templating system.
+
 ## 2.1.4 - 2024-02-06
 
 ### 🐛 Bug fixes
