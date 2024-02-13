@@ -1,5 +1,3 @@
-import { ExpoResponse } from 'expo-router/server';
-
-export function GET(): ExpoResponse {
+export function GET() {
   throw new Error('This is a test error');
 }

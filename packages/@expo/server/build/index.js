@@ -143,7 +143,7 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
             if (func instanceof environment_1.ExpoResponse) {
                 return func;
             }
-            const routeHandler = func[request.method];
+            const routeHandler = func?.[request.method];
             if (!routeHandler) {
                 return new environment_1.ExpoResponse('Method not allowed', {
                     status: 405,

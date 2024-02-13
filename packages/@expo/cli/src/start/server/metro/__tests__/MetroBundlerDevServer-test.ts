@@ -226,7 +226,7 @@ describe('getStaticResourcesAsync', () => {
     );
     const scope = nock('http://localhost:8081')
       .get(
-        '/index.bundle?platform=web&dev=true&hot=false&resolver.environment=client&transform.environment=client&serializer.output=static'
+        '/index.bundle?platform=web&dev=true&hot=false&transform.routerRoot=app&resolver.environment=client&transform.environment=client&serializer.output=static'
       )
       .reply(
         200,
@@ -249,13 +249,15 @@ describe('getStaticResourcesAsync', () => {
         })
       );
 
-    const devServer = await getStartedDevServer();
+    const devServer = await getStartedDevServer({
+      mode: 'development',
+      minify: false,
+      isExporting: false,
+    });
 
     expect(devServer['postStartAsync']).toHaveBeenCalled();
 
-    await expect(
-      devServer.getStaticResourcesAsync({ mode: 'development', minify: false })
-    ).rejects.toThrowError(
+    await expect(devServer.getStaticResourcesAsync()).rejects.toThrowError(
       /Metro has encountered an error: While trying to resolve module `stylis` from/
     );
 
@@ -272,7 +274,7 @@ describe('getStaticResourcesAsync', () => {
     );
     const scope = nock('http://localhost:8081')
       .get(
-        '/index.bundle?platform=web&dev=true&hot=false&resolver.environment=client&transform.environment=client&serializer.output=static'
+        '/index.bundle?platform=web&dev=true&hot=false&transform.routerRoot=app&resolver.environment=client&transform.environment=client&serializer.output=static'
       )
       .reply(
         500,
@@ -288,13 +290,15 @@ describe('getStaticResourcesAsync', () => {
         </html>`
       );
 
-    const devServer = await getStartedDevServer();
+    const devServer = await getStartedDevServer({
+      mode: 'development',
+      minify: false,
+      isExporting: false,
+    });
 
     expect(devServer['postStartAsync']).toHaveBeenCalled();
 
-    await expect(
-      devServer.getStaticResourcesAsync({ mode: 'development', minify: false })
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
+    await expect(devServer.getStaticResourcesAsync()).rejects.toThrowErrorMatchingInlineSnapshot(
       `"Metro failed to bundle the project. Check the console for more information."`
     );
 

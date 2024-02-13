@@ -16,10 +16,7 @@ import * as Log from '../log';
 import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';
 import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/router';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
-import {
-  getAsyncRoutesFromExpoConfig,
-  getBaseUrlFromExpoConfig,
-} from '../start/server/middleware/metroOptions';
+import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { env } from '../utils/env';
 import { setNodeEnv } from '../utils/nodeEnv';
@@ -83,6 +80,7 @@ export async function exportAppAsync(
     }
   }
 
+  const mode = dev ? 'development' : 'production';
   const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
   const outputPath = path.resolve(projectRoot, outputDir);
 
@@ -169,22 +167,23 @@ export async function exportAppAsync(
       }
 
       await unstable_exportStaticAsync(projectRoot, {
+        mode,
         files,
         clear: !!clear,
         outputDir: outputPath,
         minify,
         baseUrl,
         includeSourceMaps: sourceMaps,
-        asyncRoutes: getAsyncRoutesFromExpoConfig(exp, dev ? 'development' : 'production', 'web'),
         routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
         exportServer,
         maxWorkers,
+        isExporting: true,
       });
     } else {
       // TODO: Unify with exportStaticAsync
       // TODO: Maybe move to the serializer.
       let html = await serializeHtmlWithAssets({
-        mode: 'production',
+        isExporting: true,
         resources: bundles.web!.artifacts,
         template: await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
           scripts: [],
