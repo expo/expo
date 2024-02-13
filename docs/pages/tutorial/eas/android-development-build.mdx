@@ -15,18 +15,18 @@ In this chapter, let's create our development build for Android devices and emul
 
 ## Trigger a build
 
-For Android devices or emulators, the process of creating and running a build remains the same. The only difference comes during the installation of the development build on each platform.
+For Android devices or emulators, the process of creating and running a build remains the same. The only difference comes during the installation of the development build on each.
 
 <Step label="1">
 
-## Create a build for development profile
+## Create a build for the development profile
 
 For Android devices or emulators, the development build must be in the **.apk** file format. While the default Android format is **.aab**, which is ideal for Google Play Store distribution, it cannot be directly installed on devices or emulators.
 
 To create a **.apk**, make sure:
 
 - The `developmentClient` is set to `true` in **eas.json**, which is the default configuration.
-- Then, execute `eas build` command with `android` as the platform and `development` as the build profile:
+- Then, run the `eas build` command with `android` as the platform and `development` as the build profile:
 
 <Terminal cmd={['$ eas build --platform android --profile development']} />
 
@@ -45,19 +45,19 @@ For example, our example app has `com.owner-name.stickersmash` where `com.owner-
 
 </Collapsible>
 
-When we answer these prompts, the EAS CLI updates the [`android.package`](/versions/latest/config/app/#package) property in **app.json**. After responding to the prompts, our EAS Build is queued, and the EAS CLI provides a link to view build details and track progress on the Expo dashboard.
+When we answer these prompts, the EAS CLI updates the [`android.package`](/versions/latest/config/app/#package) property in **app.json**. After responding to the prompts, our EAS Build is queued, and the EAS CLI provides a link to view build details and track progress on the Expo dashboard:
 
 <ImageSpotlight
   alt="Android development build details and progress in Expo dashboard"
   src="/static/images/tutorial/eas/android-build-details.png"
-  style={{ maxWidth: 600 }}
+  style={{ maxWidth: 800 }}
 />
 
 <Collapsible summary="What information does a build details page contain?">
 
 The build details page displays the build type, profile, Expo SDK version, app version, version code, last commit hash, and the identity of the developer or account owner who initiated the build.
 
-In the **Build artifact** section, the current status shows that the build is in progress. Upon completion, this section will offer an option to download the build. The **Logs** section outlines every step taken during the Android build process on EAS Build. For the sake of brevity, we won't explore each step in detail here. To learn more, see [Android build process](/build-reference/android-builds/).
+In the above image, the current status of the **Build artifact** shows that the build is in progress. Upon completion, this section will offer an option to download the build. The **Logs** outlines every step taken during the Android build process on EAS Build. For the sake of brevity, we won't explore each step in detail here. To learn more, see [Android build process](/build-reference/android-builds/).
 
 </Collapsible>
 
@@ -74,7 +74,7 @@ Once the build finishes, the **Build artifact** section gets updated, indicating
   src="/static/images/tutorial/eas/android-build-artifact.png"
 />
 
-This section provides the methods available for running the development build on an Android device, including:
+This section provides the methods available for running the development build on an Android device:
 
 - Open with Expo Orbit (macOS only)
 - Install button
@@ -97,21 +97,21 @@ This section provides the methods available for running the development build on
 
 After the build is installed, the Orbit app launches the development build on the device.
 
-### Using Install button
+### Using the Install button
 
-The **Install** button in the **Build artifact** section generates a QR code for easy installation:
+The **Install** button in the **Build artifact** generates a QR code for installation:
 
 - Click **Install** to display a popup with the QR code.
 
 <ImageSpotlight
   alt="Install button generates a QR code for easy installation on Android devices and emulators"
   src="/static/images/tutorial/eas/android-qr-code.png"
-  style={{ maxWidth: 300 }}
+  style={{ maxWidth: 480 }}
 />
 
 - Scan the QR code with our Android device's camera to open the build link in the default web browser.
 - Tap the **Install** button on the webpage to download the **.apk** file.
-- Once downloaded, open the **.apk** file to start the installation process.
+- Once downloaded, open the **.apk** to start the installation process.
 - If an **Unsafe app blocked message** appears, select **Install anyway**. This warning can safely be ignored as the source of the **.apk** (which we generated) is trusted.
 
 <ImageSpotlight
@@ -124,7 +124,7 @@ The **Install** button in the **Build artifact** section generates a QR code for
 
 <Step label="3">
 
-## Run development build on Android device
+## Run development build on an Android device
 
 Start the development server by running `npx expo start` from the project directory:
 
@@ -136,9 +136,9 @@ Press <kbd>a</kbd> in the terminal window to open the project on the Android dev
 
 <Step label="4">
 
-## Install the development build on Android Emulator
+## Install the development build on an Android Emulator
 
-In terminal, once the build finishes, EAS CLI prompts us by asking whether we want to run the build on an Android Emulator. Press <kbd>Y</kbd>.
+In the terminal, once the build finishes, EAS CLI prompts us by asking whether we want to run the build on an Android Emulator. Press <kbd>Y</kbd>.
 
 <ImageSpotlight
   alt="EAS CLI automatically gives to run build on Android Emulator"
@@ -176,16 +176,16 @@ Press <kbd>a</kbd> in the terminal window to open the project on the Android Emu
 
 In this chapter, we:
 
-- Prerequisites to generate a development build for Android devices or emulators.
-- Created and executed a cloud build using EAS Build for Android.
-- Difference between the **.apk** and **.aab** file formats for Android.
-- Various approaches to install and launch development builds on Android devices and emulators.
+- Learned about prerequisites to generate a development build for Android devices or emulators.
+- Created and triggered a cloud build using EAS Build for Android.
+- Learned about the difference between the **.apk** and **.aab** file formats for Android.
+- Explored various approaches to install and launch development builds on Android devices and emulators.
 
 ## Next step
 
 <BoxLink
-  title="Create and run a cloud build for iOS"
+  title="Create and run a cloud build for iOS device"
   Icon={BookOpen02Icon}
-  description="In the next chapter, let's create a development build for iOS, install it on a device and a simulator, and get it running."
-  href="/tutorial/eas/ios-development-build/"
+  description="In the next chapter, let's create a development build for iOS, install it on a device, and get it running."
+  href="/tutorial/eas/ios-development-build-for-devices/"
 />

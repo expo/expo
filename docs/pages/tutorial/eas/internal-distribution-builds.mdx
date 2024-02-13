@@ -13,9 +13,9 @@ import { CODE } from '~/ui/components/Text';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
 
-In this chapter, we're going to learn how to set up internal distribution builds. Creating an internal build is quite similar to creating a development build. However, the difference is in its application.
+In this chapter, we're going to learn how to set up internal distribution builds. Creating an internal build is quite similar to creating a development build. However, the difference is how it used and distributed.
 
-## What is an internal distribution build
+## Internal distribution build
 
 An internal distribution build is great for sharing an app's progress with our team (technical and non-technical stakeholders) to gather feedback without running a development server. Our team can directly install the build and run it like an app on their device.
 
@@ -30,7 +30,7 @@ However, both of these traditional methods have their limitations. For example, 
 
 ### EAS Build for faster distribution
 
-EAS Build speeds up the process. It creates shareable links for your builds and provides instructions on using them. It has a default configuration designed to facilitate internal distribution, offering a more efficient alternative to traditional methods.
+EAS Build speeds up the process. It creates shareable links for our builds and provides instructions on using them. It has a default configuration designed to facilitate internal distribution, offering a more efficient alternative to traditional methods.
 
 ## Steps to create an internal distribution build
 
@@ -56,7 +56,7 @@ In the previous chapter, we learned that after initializing **eas.json** in our 
 }
 ```
 
-This is all we need to create our first internal distribution build. The `preview` build profile from the above snippet has `distribution` property whose value is set to `internal` which allows us to share our build URLs with anyone for them to install it on their device.
+This is all we need to create our first internal distribution build. The `preview` build profile from the above snippet has `distribution` property whose value is set to `internal`. This value allows us to share our build URLs with anyone so they to install it on their device and do not require a development server to run the app.
 
 As discussed in the previous chapters, for non-app store builds, Android requires **.apk** and iOS needs **.ipa** formats. This applies to internal distribution builds as well. The `distribution` when set to `internal`, automatically creates the app binary in these file formats.
 
@@ -76,12 +76,12 @@ Creating a preview build for Android is similar to making a development build:
 
 <Terminal cmd={['$ eas build --platform android --profile preview']} />
 
-- This command triggers the EAS Build, and on Expo dashboard, we can see the build's progress:
+- This command triggers the EAS Build, and on the Expo dashboard, we can see the build's progress:
 
 <ImageSpotlight
   alt="Android preview build details and progress in Expo dashboard"
   src="/static/images/tutorial/eas/android-preview-build.png"
-  style={{ maxWidth: 600 }}
+  style={{ maxWidth: 800 }}
 />
 
 <Collapsible summary="Android app signing credentials">
@@ -108,15 +108,15 @@ Apple has stricter rules for app distribution on iOS devices. We need an ad hoc 
 
 <Terminal cmd={['$ eas build --platform ios --profile preview']} />
 
-- This command triggers the EAS Build, and on Expo dashboard, we can see the build's progress:
+- This command triggers the EAS Build, and on the Expo dashboard, we can see the build's progress:
 
 <ImageSpotlight
   alt="iOS preview build details and progress in Expo dashboard"
   src="/static/images/tutorial/eas/ios-preview-build.png"
-  style={{ maxWidth: 600 }}
+  style={{ maxWidth: 800 }}
 />
 
-<Collapsible summary={<>Alternative method to register devices using <CODE>eas build:resign</CODE> for iOS</>}>
+<Collapsible summary={<>Alternative method to register devices using <CODE>eas build:resign</CODE></>}>
 
 `eas build:resign` command can be used to re-sign an existing iOS **.ipa** with a new ad hoc provisioning profile, eliminating the need for a full rebuild. For more details, refer to the [Re-signing new credentials](/app-signing/app-credentials/#re-signing-new-credentials).
 
@@ -159,7 +159,7 @@ Since we have set up multiple app variants, we can see both the development and 
 <ImageSpotlight
   alt="Internal distribution build details and install link in Expo dashboard"
   src="/static/images/tutorial/eas/android-multi-variants-installed.png"
-  style={{ maxWidth: 300 }}
+  style={{ maxWidth: 270 }}
 />
 
 - On iOS:
@@ -167,19 +167,19 @@ Since we have set up multiple app variants, we can see both the development and 
 <ImageSpotlight
   alt="Internal distribution build details and install link in Expo dashboard"
   src="/static/images/tutorial/eas/ios-multi-variants-installed.png"
-  style={{ maxWidth: 280 }}
+  style={{ maxWidth: 250 }}
 />
 
 </Step>
 
 ## Summary
 
-In this chapter, we learned about:
+In this chapter, we:
 
-- Configuration and creation of preview (internal distribution) builds for both Android and iOS.
-- Using ad hoc provisioning profiles for registering multiple iOS devices.
-- Installing preview builds using shareable links.
-- Development and preview builds can exist simultaneously on one device using multiple variants.
+- Configured and created internal distribution builds for both Android and iOS.
+- Used ad hoc provisioning profiles for registering multiple iOS devices.
+- Installed preview builds using shareable links.
+- Learned that development and preview builds of the same app can exist simultaneously on one device using multiple variants.
 
 ## Next step
 
