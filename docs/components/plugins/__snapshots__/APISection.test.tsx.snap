@@ -239,7 +239,7 @@ not appear on the screen.
           xmlns="http://www.w3.org/2000/svg"
         >
           <g
-            id="info-circle"
+            id="info-circle-solid-icon"
           >
             <path
               clip-rule="evenodd"
@@ -1060,7 +1060,7 @@ This should come from the user field of an
           xmlns="http://www.w3.org/2000/svg"
         >
           <g
-            id="info-circle"
+            id="info-circle-solid-icon"
           >
             <path
               clip-rule="evenodd"
@@ -1113,7 +1113,7 @@ This should come from the user field of an
           xmlns="http://www.w3.org/2000/svg"
         >
           <g
-            id="corner-down-right"
+            id="corner-down-right-outline-icon"
           >
             <path
               d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
@@ -1254,7 +1254,7 @@ value depending on the state of the credential.
           xmlns="http://www.w3.org/2000/svg"
         >
           <g
-            id="corner-down-right"
+            id="corner-down-right-outline-icon"
           >
             <path
               d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
@@ -1476,7 +1476,7 @@ Calling this method will show the sign in modal before actually refreshing the u
           xmlns="http://www.w3.org/2000/svg"
         >
           <g
-            id="corner-down-right"
+            id="corner-down-right-outline-icon"
           >
             <path
               d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
@@ -1757,7 +1757,7 @@ the user, since this remains the same for apps released by the same developer.
           xmlns="http://www.w3.org/2000/svg"
         >
           <g
-            id="corner-down-right"
+            id="corner-down-right-outline-icon"
           >
             <path
               d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
@@ -2025,7 +2025,7 @@ from using
           xmlns="http://www.w3.org/2000/svg"
         >
           <g
-            id="corner-down-right"
+            id="corner-down-right-outline-icon"
           >
             <path
               d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
@@ -2280,7 +2280,7 @@ sign-out operation.
           xmlns="http://www.w3.org/2000/svg"
         >
           <g
-            id="corner-down-right"
+            id="corner-down-right-outline-icon"
           >
             <path
               d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
@@ -2453,7 +2453,7 @@ which contains all of the pertinent user and credential information.
           xmlns="http://www.w3.org/2000/svg"
         >
           <g
-            id="info-circle"
+            id="info-circle-solid-icon"
           >
             <path
               clip-rule="evenodd"
@@ -3314,7 +3314,7 @@ You must include the ID string of the user whose credentials you'd like to refre
           xmlns="http://www.w3.org/2000/svg"
         >
           <g
-            id="info-circle"
+            id="info-circle-solid-icon"
           >
             <path
               clip-rule="evenodd"
@@ -3621,7 +3621,7 @@ None of these options are required.
           xmlns="http://www.w3.org/2000/svg"
         >
           <g
-            id="info-circle"
+            id="info-circle-solid-icon"
           >
             <path
               clip-rule="evenodd"
@@ -3945,7 +3945,7 @@ You must include the ID string of the user to sign out.
           xmlns="http://www.w3.org/2000/svg"
         >
           <g
-            id="info-circle"
+            id="info-circle-solid-icon"
           >
             <path
               clip-rule="evenodd"
@@ -4744,7 +4744,7 @@ OAuth 2.0 protocol
             xmlns="http://www.w3.org/2000/svg"
           >
             <g
-              id="apple"
+              id="apple-custom-icon"
             >
               <path
                 d="M20.4478 17.3538C20.1312 18.0852 19.7564 18.7585 19.3222 19.3775C18.7303 20.2214 18.2457 20.8055 17.8722 21.1299C17.2933 21.6623 16.673 21.935 16.0088 21.9505C15.5319 21.9505 14.9568 21.8148 14.2874 21.5395C13.6158 21.2656 12.9986 21.1299 12.4343 21.1299C11.8424 21.1299 11.2076 21.2656 10.5287 21.5395C9.84865 21.8148 9.30085 21.9582 8.88201 21.9724C8.24504 21.9996 7.61014 21.7192 6.9764 21.1299C6.57191 20.7771 6.06598 20.1723 5.45989 19.3155C4.80961 18.4005 4.27499 17.3396 3.85615 16.13C3.4076 14.8235 3.18274 13.5583 3.18274 12.3335C3.18274 10.9304 3.48591 9.72034 4.09316 8.70628C4.5704 7.89174 5.20531 7.24922 5.99994 6.77753C6.79457 6.30584 7.65317 6.06547 8.57781 6.0501C9.08374 6.0501 9.7472 6.20659 10.5717 6.51416C11.3938 6.82276 11.9217 6.97926 12.1532 6.97926C12.3262 6.97926 12.9127 6.79627 13.9068 6.43145C14.847 6.09313 15.6404 5.95304 16.2905 6.00823C18.0519 6.15038 19.3752 6.84473 20.2552 8.09567C18.6799 9.05016 17.9007 10.387 17.9162 12.102C17.9304 13.4379 18.415 14.5495 19.3674 15.4321C19.799 15.8418 20.2811 16.1584 20.8174 16.3833C20.7011 16.7206 20.5783 17.0436 20.4478 17.3538ZM16.4081 1.45728C16.4081 2.50431 16.0256 3.48192 15.2631 4.38678C14.343 5.46249 13.2301 6.08408 12.0232 5.986C12.0078 5.86039 11.9989 5.72819 11.9989 5.58926C11.9989 4.58412 12.4365 3.50841 13.2135 2.62888C13.6015 2.18355 14.0949 1.81327 14.6932 1.51789C15.2902 1.22692 15.855 1.066 16.3861 1.03845C16.4016 1.17842 16.4081 1.3184 16.4081 1.45727V1.45728Z"
@@ -4904,7 +4904,7 @@ OAuth 2.0 protocol
             xmlns="http://www.w3.org/2000/svg"
           >
             <g
-              id="info-circle"
+              id="info-circle-solid-icon"
             >
               <path
                 clip-rule="evenodd"
@@ -5541,7 +5541,7 @@ for more details.
             xmlns="http://www.w3.org/2000/svg"
           >
             <g
-              id="info-circle"
+              id="info-circle-solid-icon"
             >
               <path
                 clip-rule="evenodd"
@@ -5583,7 +5583,7 @@ You will still need to handle null values for any fields you request.
             xmlns="http://www.w3.org/2000/svg"
           >
             <g
-              id="info-circle"
+              id="info-circle-solid-icon"
             >
               <path
                 clip-rule="evenodd"
@@ -5811,7 +5811,7 @@ for more details.
             xmlns="http://www.w3.org/2000/svg"
           >
             <g
-              id="info-circle"
+              id="info-circle-solid-icon"
             >
               <path
                 clip-rule="evenodd"
@@ -6106,7 +6106,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
             xmlns="http://www.w3.org/2000/svg"
           >
             <g
-              id="alert-triangle"
+              id="alert-triangle-solid-icon"
             >
               <path
                 clip-rule="evenodd"
@@ -6497,7 +6497,7 @@ provided with an
               xmlns="http://www.w3.org/2000/svg"
             >
               <g
-                id="info-circle"
+                id="info-circle-solid-icon"
               >
                 <path
                   clip-rule="evenodd"
@@ -7042,7 +7042,7 @@ This uses both
           xmlns="http://www.w3.org/2000/svg"
         >
           <g
-            id="corner-down-right"
+            id="corner-down-right-outline-icon"
           >
             <path
               d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
@@ -7242,7 +7242,7 @@ This uses both
           xmlns="http://www.w3.org/2000/svg"
         >
           <g
-            id="corner-down-right"
+            id="corner-down-right-outline-icon"
           >
             <path
               d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
@@ -7404,7 +7404,7 @@ This uses both
           xmlns="http://www.w3.org/2000/svg"
         >
           <g
-            id="corner-down-right"
+            id="corner-down-right-outline-icon"
           >
             <path
               d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
@@ -7634,7 +7634,7 @@ the platform.
                     xmlns="http://www.w3.org/2000/svg"
                   >
                     <g
-                      id="info-circle"
+                      id="info-circle-solid-icon"
                     >
                       <path
                         clip-rule="evenodd"
@@ -7699,7 +7699,7 @@ the platform.
           xmlns="http://www.w3.org/2000/svg"
         >
           <g
-            id="corner-down-right"
+            id="corner-down-right-outline-icon"
           >
             <path
               d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
@@ -9698,7 +9698,7 @@ exports[`APISection expo-pedometer 1`] = `
           xmlns="http://www.w3.org/2000/svg"
         >
           <g
-            id="corner-down-right"
+            id="corner-down-right-outline-icon"
           >
             <path
               d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
@@ -9769,7 +9769,7 @@ exports[`APISection expo-pedometer 1`] = `
           xmlns="http://www.w3.org/2000/svg"
         >
           <g
-            id="apple"
+            id="apple-custom-icon"
           >
             <path
               d="M20.4478 17.3538C20.1312 18.0852 19.7564 18.7585 19.3222 19.3775C18.7303 20.2214 18.2457 20.8055 17.8722 21.1299C17.2933 21.6623 16.673 21.935 16.0088 21.9505C15.5319 21.9505 14.9568 21.8148 14.2874 21.5395C13.6158 21.2656 12.9986 21.1299 12.4343 21.1299C11.8424 21.1299 11.2076 21.2656 10.5287 21.5395C9.84865 21.8148 9.30085 21.9582 8.88201 21.9724C8.24504 21.9996 7.61014 21.7192 6.9764 21.1299C6.57191 20.7771 6.06598 20.1723 5.45989 19.3155C4.80961 18.4005 4.27499 17.3396 3.85615 16.13C3.4076 14.8235 3.18274 13.5583 3.18274 12.3335C3.18274 10.9304 3.48591 9.72034 4.09316 8.70628C4.5704 7.89174 5.20531 7.24922 5.99994 6.77753C6.79457 6.30584 7.65317 6.06547 8.57781 6.0501C9.08374 6.0501 9.7472 6.20659 10.5717 6.51416C11.3938 6.82276 11.9217 6.97926 12.1532 6.97926C12.3262 6.97926 12.9127 6.79627 13.9068 6.43145C14.847 6.09313 15.6404 5.95304 16.2905 6.00823C18.0519 6.15038 19.3752 6.84473 20.2552 8.09567C18.6799 9.05016 17.9007 10.387 17.9162 12.102C17.9304 13.4379 18.415 14.5495 19.3674 15.4321C19.799 15.8418 20.2811 16.1584 20.8174 16.3833C20.7011 16.7206 20.5783 17.0436 20.4478 17.3538ZM16.4081 1.45728C16.4081 2.50431 16.0256 3.48192 15.2631 4.38678C14.343 5.46249 13.2301 6.08408 12.0232 5.986C12.0078 5.86039 11.9989 5.72819 11.9989 5.58926C11.9989 4.58412 12.4365 3.50841 13.2135 2.62888C13.6015 2.18355 14.0949 1.81327 14.6932 1.51789C15.2902 1.22692 15.855 1.066 16.3861 1.03845C16.4016 1.17842 16.4081 1.3184 16.4081 1.45727V1.45728Z"
@@ -9973,7 +9973,7 @@ exports[`APISection expo-pedometer 1`] = `
           xmlns="http://www.w3.org/2000/svg"
         >
           <g
-            id="corner-down-right"
+            id="corner-down-right-outline-icon"
           >
             <path
               d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
@@ -10070,7 +10070,7 @@ exports[`APISection expo-pedometer 1`] = `
           xmlns="http://www.w3.org/2000/svg"
         >
           <g
-            id="info-circle"
+            id="info-circle-solid-icon"
           >
             <path
               clip-rule="evenodd"
@@ -10174,7 +10174,7 @@ a start date that is more than seven days in the past returns only the available
           xmlns="http://www.w3.org/2000/svg"
         >
           <g
-            id="corner-down-right"
+            id="corner-down-right-outline-icon"
           >
             <path
               d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
@@ -10305,7 +10305,7 @@ available on this device.
           xmlns="http://www.w3.org/2000/svg"
         >
           <g
-            id="corner-down-right"
+            id="corner-down-right-outline-icon"
           >
             <path
               d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
@@ -10512,7 +10512,7 @@ provided with a single argument that is
           xmlns="http://www.w3.org/2000/svg"
         >
           <g
-            id="corner-down-right"
+            id="corner-down-right-outline-icon"
           >
             <path
               d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
