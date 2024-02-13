@@ -17,11 +17,15 @@ Our **app.json** file already has IDs for both Android and iOS:
 ```json app.json
 {
   "ios": {
+    /* @info */
     "bundleIdentifier": "com.amanhimself.stickersmash"
+    /* @end */
     /* @hide ... */ /* @end */
   },
   "android": {
+    /* @info */
     "package": "com.amanhimself.stickersmash"
+    /* @end */
     /* @hide ... */ /* @end */
   }
   /* @hide ... */ /* @end */
@@ -78,16 +82,23 @@ const getAppName = () => {
 
 - We'll use `getAppName()` to assign varying `name` values for the app and `getUniqueIdentifier()` to differentiate `android.package` and `ios.bundleIdentifier` for development and preview builds:
 
+{/* prettier-ignore */}
 ```js app.config.js
 export default {
+  /* @info Using getAppName() for "name" property */
   name: getAppName(),
+  /* @end */
   /* @hide ... */ /* @end */
   ios: {
+    /* @info Using getUniqueIdentifier() for "bundleIdentifier" property */
     bundleIdentifier: getUniqueIdentifier(),
+    /* @end */
     /* @hide ... */ /* @end */
   },
   android: {
+    /* @info Using getUniqueIdentifier() for "package" property */
     package: getUniqueIdentifier(),
+    /* @end */
     /* @hide ... */ /* @end */
   },
 };
@@ -101,21 +112,26 @@ export default {
 
 In **eas.json**, add the `APP_VARIANT` environment variable:
 
+{/* prettier-ignore */}
 ```json eas.json
 {
   "build": {
     "development": {
       "developmentClient": true,
       "distribution": "internal",
+      /* @info Add env.APP_VARIANT property to access the environment variable for the build profile*/
       "env": {
         "APP_VARIANT": "development"
       }
+      /* @end */
     },
     "preview": {
       "distribution": "internal",
+      /* @info Add env.APP_VARIANT property to access the environment variable for the build profile*/
       "env": {
         "APP_VARIANT": "preview"
       }
+      /* @end */
     }
     /* @hide ... */ /* @end */
   }

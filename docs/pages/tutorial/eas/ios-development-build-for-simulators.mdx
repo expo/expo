@@ -32,11 +32,13 @@ Creating a development build on the iOS Simulator requires a bit of extra config
     "development": {
       /* @hide ... */ /* @end */
     },
+    /* @info The `simulator` property is required for iOS Simulator builds. */
     "ios-simulator": {
       "ios": {
         "simulator": true
       }
     }
+    /* @end */
   }
 }
 ```
@@ -51,7 +53,9 @@ Creating a development build on the iOS Simulator requires a bit of extra config
       /* @hide ... */ /* @end */
     },
     "ios-simulator": {
+      /* @info The `extends` keyword inherits properties from the `development` profile. */
       "extends": "development",
+      /* @end */
       "ios": {
         "simulator": true
       }
@@ -104,10 +108,10 @@ In the above image, the current status of the **Build artifact** shows that the 
 
 ## Install development build
 
-In terminal, once the build finishes, EAS CLI prompts us by asking whether we want to run the build on an iOS Simulator. Press <kbd>Y</kbd>.
+In the terminal, once the build finishes, EAS CLI prompts us by asking whether we want to run the build on an iOS Simulator. Press <kbd>Y</kbd>.
 
 <ImageSpotlight
-  alt="EAS CLI automatically gives to run build on iOS Simulator"
+  alt="EAS CLI automatically gives option to run a build on iOS Simulator"
   src="/static/images/tutorial/eas/ios-sim-cli.png"
   style={{ maxWidth: 600 }}
 />

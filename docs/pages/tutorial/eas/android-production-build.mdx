@@ -218,15 +218,18 @@ Let's add the path to Google Service Account file path in **eas.json**.
 
 - Under `submit.production` profile, add `android.serviceAccountKeyPath` and the relative file path as its value:
 
+{/* prettier-ignore */}
 ```json
 {
   /* @hide ... */ /* @end */
   "submit": {
     "production": {
+      /* @info Add the path to the Google Service Account file and set track to internal */
       "android": {
         "serviceAccountKeyPath": "./service-account-file.json",
         "track": "internal"
       }
+      /* @end */
     }
   }
 }
@@ -263,7 +266,9 @@ To release the app for production:
     "production": {
       "android": {
         "serviceAccountKeyPath": "./service-account-file.json",
+        /* @info Change the track to production */
         "track": "production"
+        /* @end */
       }
     }
   }

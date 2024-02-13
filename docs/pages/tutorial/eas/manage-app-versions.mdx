@@ -53,11 +53,15 @@ In **eas.json**:
 {
   "cli": {
     /* @hide ... */ /* @end */
+    /* @info Add the appVersionSource property and set it to remote*/
     "appVersionSource": "remote"
+    /* @end */
   },
   "build": {
     "production": {
+      /* @info Set the autoIncrement property to true to automatically increment the versionCode or buildNumber */
       "autoIncrement": true
+      /* @end */
     }
   }
   /* @hide ... */ /* @end */
