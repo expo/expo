@@ -1304,6 +1304,25 @@ build:
 
 Makes sure [Maestro](https://maestro.mobile.dev), the mobile UI testing framework, is installed, along with all its dependencies. 
 
+```yaml build-and-test.yml
+build:
+  name: Build and test
+  steps:
+    - eas/build
+    # ... simulator / emulator setup
+    - eas/install_maestro:
+        name: Install Maestro
+        inputs:
+          maestro_version: 1.35.0
+    - run:
+        command: maestro test flows/signin.yml
+    - eas/upload_artifact:
+        name: Upload Maestro artifacts
+        inputs:
+          type: build-artifact
+          path: ${ eas.env.HOME }/.maestro/tests
+```
+
 | Input             | Description                                                                                                              |
 |-------------------|--------------------------------------------------------------------------------------------------------------------------|
 | `maestro_version` | **string** Maestro version to install (e.g. 1.35.0). If not provided, `install_maestro` will install the latest version. |
@@ -1318,6 +1337,18 @@ Makes sure [Maestro](https://maestro.mobile.dev), the mobile UI testing framewor
 #### `eas/start_android_emulator`
 
 Starts an Android emulator you can use to test your apps on. Only available when running a build for Android.
+
+```yaml build-and-test.yml
+build:
+  name: Build and test
+  steps:
+    - eas/build
+    - eas/start_android_emulator
+        name: Start Android emulator
+        inputs:
+          system_image_package: system-images;android-30;default;x86_64
+    # ... Maestro setup and tests
+```
 
 | Input                  | Description                                                                                                                                             |
 |------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -1337,6 +1368,16 @@ Starts an Android emulator you can use to test your apps on. Only available when
 #### `eas/start_ios_simulator`
 
 Starts an iOS Simulator you can use to test your apps on. Only available when running a build for iOS.
+
+```yaml build-and-test.yml
+build:
+  name: Build and test
+  steps:
+    - eas/build
+    - eas/start_ios_simulator
+        name: Start iOS Simulator
+    # ... Maestro setup and tests
+```
 
 | Input               | Description                                                                                                                                      |
 |---------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
