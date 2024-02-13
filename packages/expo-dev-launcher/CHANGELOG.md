@@ -10,6 +10,7 @@
 
 - Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357), [#26740](https://github.com/expo/expo/pull/26740) by [@kudo](https://github.com/kudo))
 - [Android] Fixed unable to load dev client bundle on device. ([#26630](https://github.com/expo/expo/pull/26630) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed to not add dev client host handler when `enableAutoSetup` is false. ([#27068](https://github.com/expo/expo/pull/27068) by [@jayshah123](https://github.com/jayshah123))
 
 ### 💡 Others
 
