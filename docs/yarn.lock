@@ -497,27 +497,27 @@
   dependencies:
     "@radix-ui/colors" "^0.1.8"
 
-"@expo/styleguide-icons@^1.0.7":
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide-icons/-/styleguide-icons-1.0.7.tgz#aa8a6420c7d8667b9c1235216a059c461fd17a4b"
-  integrity sha512-r/4YIxW9pOqjreq84zzakyhDDEGBXqnkZ0s9R3DqZokqhPV3NSZk1XoBVE4gugF+YqFZQe7Y2+a+74GBtD0tzw==
+"@expo/styleguide-icons@^1.0.8":
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide-icons/-/styleguide-icons-1.0.8.tgz#093f6099598f4765a04cb67b38d259a4e7fa4cb3"
+  integrity sha512-jqbgMgz1C15p82dBL3Cgg6K49nS+kxAP4gIlD06hRVCgYA9y0z8Xy7uc9ulb2ZE69vtxCv783QPXMSdEBlybiA==
   dependencies:
     tailwind-merge "^2.2.0"
 
-"@expo/styleguide-search-ui@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide-search-ui/-/styleguide-search-ui-1.0.2.tgz#e07cfa14161c74a6d89c0dc5e8897e053d6d54e7"
-  integrity sha512-V+ec5E3gnxZc13TuG5xV7C7WP3wr86kuZw+kZgbgf4IAgEgadlnoMjAtbtckN8r/KeYuT2FBsZR+9PVu4Lr1iw==
+"@expo/styleguide-search-ui@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide-search-ui/-/styleguide-search-ui-1.0.4.tgz#146b33aa5b01a65066f8a2048852ffc7dd3c3f21"
+  integrity sha512-YkUYs9ccAiHssM5sfL4d1YKVG0YN4fmcfYHuY7uauNSx/kCb2pyk+rc4dIRy0eJhn1xpLNoRkQx7h9PkO6CDJw==
   dependencies:
-    "@expo/styleguide" "^8.2.1"
-    "@expo/styleguide-icons" "^1.0.7"
+    "@expo/styleguide" "^8.2.2"
+    "@expo/styleguide-icons" "^1.0.8"
     cmdk "^0.2.0"
     lodash.groupby "^4.6.0"
 
-"@expo/styleguide@^8.2.1":
-  version "8.2.1"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-8.2.1.tgz#5ce3d3adecbf0ff868d8c1276126b29d4a98a75a"
-  integrity sha512-kKBhuKjhv/6caOdWpI//sGDyT5zpQWcxXR1TwH/81uFyLCYZGqxURXRyIJR/aZeGn+jK03vtmyUvBCT6uG013g==
+"@expo/styleguide@^8.2.2":
+  version "8.2.2"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-8.2.2.tgz#b4e7b8a57db756eb823d92a3aa958b6167e5b7b5"
+  integrity sha512-Qt+j3pCI5DiIZZcQZlWWkiIk/Q2/RATlZuJJgJ/yj84A46u8VZH9dStluMppCsC/hWsr+/Dl+GDSTefie4Zb/Q==
   dependencies:
     "@expo/styleguide-base" "^1.0.1"
     tailwind-merge "^2.2.0"

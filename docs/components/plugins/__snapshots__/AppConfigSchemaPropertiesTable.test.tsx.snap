@@ -86,7 +86,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             xmlns="http://www.w3.org/2000/svg"
           >
             <g
-              id="triangle-down"
+              id="triangle-down-custom-icon"
             >
               <path
                 d="M18.8831 9.43005H5.11694L12 16.3131L18.8831 9.43005Z"
@@ -228,7 +228,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             xmlns="http://www.w3.org/2000/svg"
           >
             <g
-              id="triangle-down"
+              id="triangle-down-custom-icon"
             >
               <path
                 d="M18.8831 9.43005H5.11694L12 16.3131L18.8831 9.43005Z"
@@ -303,7 +303,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             xmlns="http://www.w3.org/2000/svg"
           >
             <g
-              id="triangle-down"
+              id="triangle-down-custom-icon"
             >
               <path
                 d="M18.8831 9.43005H5.11694L12 16.3131L18.8831 9.43005Z"
@@ -453,7 +453,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               xmlns="http://www.w3.org/2000/svg"
             >
               <g
-                id="triangle-down"
+                id="triangle-down-custom-icon"
               >
                 <path
                   d="M18.8831 9.43005H5.11694L12 16.3131L18.8831 9.43005Z"
@@ -762,7 +762,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             xmlns="http://www.w3.org/2000/svg"
           >
             <g
-              id="triangle-down"
+              id="triangle-down-custom-icon"
             >
               <path
                 d="M18.8831 9.43005H5.11694L12 16.3131L18.8831 9.43005Z"
