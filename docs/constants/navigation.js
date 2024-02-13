@@ -462,6 +462,7 @@ const learn = [
       makePage('tutorial/eas/ios-production-build.mdx'),
       makePage('tutorial/eas/team-development.mdx'),
       makePage('tutorial/eas/using-github.mdx'),
+      makePage('tutorial/eas/next-steps.mdx'),
     ],
     { expanded: true }
   ),
