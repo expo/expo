@@ -1,0 +1,138 @@
+---
+title: Trigger builds from a GitHub repository
+sidebar_title: Builds from GitHub
+description: Learn about the process of triggering builds from a GitHub repository.
+---
+
+import { Step } from '~/ui/components/Step';
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+
+Expo GitHub App automatically triggers builds from our GitHub projects with EAS. We can trigger builds for any build profile based on our development team's preferences. It also allows triggering builds for `git` push committed directly to a repository or a pull request.
+
+In this chapter, we're to configure this functionality. We already have a GitHub repository for our example app to demonstrate this.
+
+<Step label="1">
+
+## Configure Expo GitHub app
+
+To use this functionality, we need to connect our GitHub account:
+
+- In the Expo dashboard navigation menu, under **Account settings**, click **GitHub**. This opens the **Connect GitHub** accounts page.
+- Click the **Get started** button which opens a popup to authorize the Expo GitHub app. Click **Install & Authorize**.
+- Once the app is installed on our GitHub account, we need to link it to our Expo account. In the next popup, click **Link installation**.
+- Once the account is linked, it will show under **GitHub accounts**.
+
+<ImageSpotlight
+  alt="Linked GitHub account shows in Expo dashboard"
+  src="/static/images/tutorial/eas/github-01.png"
+  style={{ maxWidth: 800 }}
+/>
+
+</Step>
+
+<Step label="2">
+
+## Connect the GitHub repository
+
+To enable triggering builds from a GitHub repository, we need to connect it to our project in the Expo dashboard:
+
+- Open the project from the navigation menu under **Project settings**, and click **GitHub**.
+- Under **Connect a GitHub repository**, we'll see a list of our GitHub repos. We need to connect the right one. In the example, we're searching for our repo **sticker-smash.**
+
+<ImageSpotlight
+  alt="List of GitHub repositories to connect to the project in Expo dashboard"
+  src="/static/images/tutorial/eas/github-02.png"
+  style={{ maxWidth: 800 }}
+/>
+
+- Click **Connect** for the project repository.
+
+</Step>
+
+<Step label="3">
+
+## Configure repository settings in the Expo dashboard
+
+The Expo GitHub app needs to know where to find the source code of our project. By default, it selects the root directory using `/`. In our example project, the source code is also available in the root repository.
+
+<ImageSpotlight
+  alt="Default settings for configuring a GitHub repository in Expo dashboard"
+  src="/static/images/tutorial/eas/github-03.png"
+  style={{ maxWidth: 800 }}
+/>
+
+</Step>
+
+<Step label="4">
+
+## Trigger a build using a GitHub PR label
+
+The Expo GitHub app provides us [multiple options](/build/building-from-github/#trigger-a-build-from-github) to trigger a build, such as:
+
+- Manually from the Builds page for a specific platform
+- Automatically when new code is pushed to the repository
+- Automatically using GitHub PR labels
+
+To automatically trigger a build using a GitHub PR label, we're going to utilize the third option from the list above:
+
+- We need to specify the build image that we will be using. Open **eas.json**, and under the `development` profile, add `android.image` and `ios.image` properties and set their value to `latest`.
+
+```json eas.json
+{
+  "build": {
+    "development": {
+      /* @hide ... */ /* @end */
+      "android": {
+        "image": "latest"
+      },
+      "ios": {
+        "image": "latest"
+      }
+    }
+  }
+  /* @hide ... */ /* @end */
+}
+```
+
+- Next, we modify our app's JavaScript code. We create a git branch called `dev` and submit a PR to our example repository from that branch.
+- In the PR link, under **Labels**, we create a label called `eas-build-all:development`.
+
+<ImageSpotlight
+  alt="Creating a label in a GitHub PR"
+  src="/static/images/tutorial/eas/github-04.png"
+  style={{ maxWidth: 320 }}
+/>
+
+- Click **Create pull request** button to create the PR. The Expo GitHub app will start the process of creating a development build.
+
+<ImageSpotlight
+  alt="The Expo GitHub app starts the process of creating a development build"
+  src="/static/images/tutorial/eas/github-05.png"
+  style={{ maxWidth: 600 }}
+/>
+
+- In the Expo dashboard, on the **Builds** page, we can verify that the builds for both Android and iOS are triggered.
+
+<ImageSpotlight
+  alt="Builds triggered in the Expo dashboard for Android and iOS platforms"
+  src="/static/images/tutorial/eas/github-06.png"
+  style={{ maxWidth: 800 }}
+/>
+
+- If we check the details of an individual build, we can see under **Created by** that the build is created by the GitHub app.
+
+<ImageSpotlight
+  alt="Individual build details in the Expo dashboard"
+  src="/static/images/tutorial/eas/github-07.png"
+  style={{ maxWidth: 760 }}
+/>
+
+</Step>
+
+## Summary
+
+In this chapter, we:
+
+- Connected and authorized our GitHub account with Expo.
+- Linked our GitHub repository to our EAS project.
+- Automated creating builds by applying GitHub PR labels.

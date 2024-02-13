@@ -58,7 +58,7 @@ To upload the app to the Google Play Store for the first time, we need to:
 <ImageSpotlight
   alt="Create app on Google Play Console"
   src="/static/images/tutorial/eas/play-store-01.png"
-  style={{ maxWidth: 600 }}
+  style={{ maxWidth: 800 }}
 />
 
 - Fill out our app details and click the **Create app** button.
@@ -66,7 +66,7 @@ To upload the app to the Google Play Store for the first time, we need to:
 <ImageSpotlight
   alt="Create app form on Google Play Console"
   src="/static/images/tutorial/eas/play-store-02.png"
-  style={{ maxWidth: 600 }}
+  style={{ maxWidth: 800 }}
 />
 
 </Step>
@@ -75,14 +75,14 @@ To upload the app to the Google Play Store for the first time, we need to:
 
 ## Release an internal testing version
 
-After the app is created on Google Play Console, it redirects us to the app's Dashboard screen.
+After the app is created on Google Play Console, it redirects us to the app's Dashboard screen. To prepare an internal test version of our app:
 
-- To prepare an internal test version of our app, click **Start testing now** on the **Dashboard**.
+- Click **Start testing now** on the **Dashboard**.
 
 <ImageSpotlight
   alt="Steps under start testing now on Google Play Console"
   src="/static/images/tutorial/eas/play-store-03.png"
-  style={{ maxWidth: 600 }}
+  style={{ maxWidth: 800 }}
 />
 
 - Create an email list of users under **Internal Testing** > **Testers for the internal testing release**.
@@ -90,23 +90,24 @@ After the app is created on Google Play Console, it redirects us to the app's Da
 <ImageSpotlight
   alt="Create an email list for internal testers"
   src="/static/images/tutorial/eas/play-store-04.png"
-  style={{ maxWidth: 600 }}
+  style={{ maxWidth: 800 }}
 />
 
 - Google Play Console prompts us to create a **Release**.
 - To create a new release, go to **Releases** and click **Create new release**.
-- To store the signing key, go to **App integrity** > **App bundles** and click **Choose signing key** > **Use Google-generated key**.
 
 <ImageSpotlight
   alt="Selecting the signing key for the app bundle"
   src="/static/images/tutorial/eas/play-store-05.png"
-  style={{ maxWidth: 600 }}
+  style={{ maxWidth: 800 }}
 />
+
+- To store the signing key, go to **App integrity** > **App bundles** and click **Choose signing key** > **Use Google-generated key**.
 
 <ImageSpotlight
   alt="Creating a new internal release"
   src="/static/images/tutorial/eas/play-store-06.png"
-  style={{ maxWidth: 600 }}
+  style={{ maxWidth: 400 }}
 />
 
 </Step>
@@ -117,7 +118,7 @@ After the app is created on Google Play Console, it redirects us to the app's Da
 
 After EAS has created a production build:
 
-- Open the EAS dashboard and click on **Download** to get the **.aab** build file.
+- Open the EAS dashboard and click on **Download** to get the **.aab** file.
 
 <ImageSpotlight
   alt="Downloading the aab file"
@@ -131,7 +132,7 @@ After EAS has created a production build:
 <ImageSpotlight
   alt="Uploading aab file to Google Play Console"
   src="/static/images/tutorial/eas/play-store-08.png"
-  style={{ maxWidth: 600 }}
+  style={{ maxWidth: 800 }}
 />
 
 </Step>
@@ -145,7 +146,7 @@ Under **Track Summary**, we see that the latest release shows a temporary app na
 <ImageSpotlight
   alt="App pending review on Google Play Console"
   src="/static/images/tutorial/eas/play-store-09.png"
-  style={{ maxWidth: 600 }}
+  style={{ maxWidth: 800 }}
 />
 
 Under **Releases**, we see that the app is available to internal testers. To share the app with a team of testers:
@@ -156,7 +157,7 @@ Under **Releases**, we see that the app is available to internal testers. To sha
 <ImageSpotlight
   alt="Sharing the internal release version"
   src="/static/images/tutorial/eas/play-store-14.png"
-  style={{ maxWidth: 600 }}
+  style={{ maxWidth: 800 }}
 />
 
 - On the device, open the test email and follow the steps to download the app.
@@ -164,7 +165,7 @@ Under **Releases**, we see that the app is available to internal testers. To sha
 <ImageSpotlight
   alt="Downloading app on the device as an internal tester"
   src="/static/images/tutorial/eas/play-store-15.png"
-  style={{ maxWidth: 300 }}
+  style={{ maxWidth: 280 }}
 />
 
 - The testing email holder needs to accept the invite, and once accepted, the app can be installed on the device.
@@ -172,7 +173,7 @@ Under **Releases**, we see that the app is available to internal testers. To sha
 <ImageSpotlight
   alt="On accepting the invite, the app can be installed on the device"
   src="/static/images/tutorial/eas/play-store-16.png"
-  style={{ maxWidth: 300 }}
+  style={{ maxWidth: 280 }}
 />
 
 <ImageSpotlight
@@ -181,7 +182,7 @@ Under **Releases**, we see that the app is available to internal testers. To sha
   style={{ maxWidth: 300 }}
 />
 
-> **info** **Tip**: To publish our app on the Play Store, in the Google Dashboard, we need to finish the steps under **Set up your app**. These steps are required before releasing the app on the Play Store for the first time. We'll have to provide details like a link to a privacy policy, a target audience, data safety and so on.
+> **info** **Tip**: To publish an app on the Play Store, in the Google Dashboard, finish the steps under **Set up your app**. These steps are required before releasing the app on the Play Store for the first time. You'll have to provide details like a link to a privacy policy, a target audience, data safety and so on.
 
 > **Complete app store listing**: To prepare the app for store listing, see our [Create app store assets guide](/guides/store-assets/) on how to create screenshots and previews.
 
@@ -285,7 +286,7 @@ To release the app for production:
 
 <Step label="10">
 
-## 10. Automated release
+## Automated release
 
 For future releases, we can streamline the process by combining build creation and Play Store submission into a single step by using the `--auto-submit` flag with `eas build`:
 
@@ -295,12 +296,12 @@ For future releases, we can streamline the process by combining build creation a
 
 ## Summary
 
-In this chapter, we learned about:
+In this chapter, we:
 
-- Creating a production-ready Android build of our project.
-- Manually uploading the app binary (`.aab`).
-- Automating the process of building and submitting to Google Play Store Console with Google Service Account credentials and `eas submit`.
-- Automating the release process using the `--auto-submit` flag with `eas build`.
+- Created a production-ready Android build for our project.
+- Manually uploaded the app binary (`.aab`).
+- Learned about automating the process of building and submitting to the Google Play Store Console with Google Service Account credentials and `eas submit`.
+- Learned about automating the release process using the `--auto-submit` flag with `eas build`.
 
 ## Next step
 

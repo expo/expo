@@ -32,7 +32,7 @@ The only required configuration to create our production build for iOS is to hav
 
 ## Create a distribution provisioning profile
 
-Run `eas credentials` command in the terminal and then answer the following prompts by EAS CLI:
+Run the `eas credentials` command in the terminal and then answer the following prompts by EAS CLI:
 
 - **Select platform** iOS.
 - **Which build profile do you want to configure?** Select production.
@@ -54,13 +54,13 @@ To create an iOS production build, open the terminal and run:
 
 The `production` profile in EAS configuration is the default profile. We don't have to pass it using the `--profile` flag.
 
-The command will queue the build. Also, notice on the Expo dashboard that the **Build Number** is auto-incremented.
+The command will queue the build. Notice on the Expo dashboard that the **Build Number** is auto-incremented.
 
 </Step>
 
 <Step label="4">
 
-## Submit the app binary to App Store
+## Submit the app binary to the App Store
 
 To submit the app binary created from our latest EAS Build, run:
 
@@ -92,7 +92,7 @@ After the submission process is complete, we'll need to log in to the Apple Deve
 <ImageSpotlight
   alt="Create a test user group in App Store Connect"
   src="/static/images/tutorial/eas/app-store-01.png"
-  style={{ maxWidth: 600 }}
+  style={{ maxWidth: 800 }}
 />
 
 - Once the group is created, an email will be sent to all the test users.
@@ -100,7 +100,7 @@ After the submission process is complete, we'll need to log in to the Apple Deve
 <ImageSpotlight
   alt="Email sent to test users for internal testing"
   src="/static/images/tutorial/eas/app-store-02.jpg"
-  style={{ maxWidth: 300 }}
+  style={{ maxWidth: 280 }}
 />
 
 - In the email, click **View in TestFlight,** accept the invite, and then tap **Install**.
@@ -108,7 +108,7 @@ After the submission process is complete, we'll need to log in to the Apple Deve
 <ImageSpotlight
   alt="TestFlight app showing the app to install"
   src="/static/images/tutorial/eas/app-store-03.jpg"
-  style={{ maxWidth: 300 }}
+  style={{ maxWidth: 280 }}
 />
 
 After that, the app will download on our device so that we can test it.
@@ -128,7 +128,7 @@ To prepare our app for App Store submission, go to the **App Store** tab:
 <ImageSpotlight
   alt="App Store Connect showing the app details and screenshots"
   src="/static/images/tutorial/eas/app-store-04.png"
-  style={{ maxWidth: 600 }}
+  style={{ maxWidth: 800 }}
 />
 
 - Then, manually select the build.
@@ -136,7 +136,7 @@ To prepare our app for App Store submission, go to the **App Store** tab:
 <ImageSpotlight
   alt="App Store Connect showing the build selection for the app"
   src="/static/images/tutorial/eas/app-store-05.png"
-  style={{ maxWidth: 600 }}
+  style={{ maxWidth: 800 }}
 />
 
 > **Complete App Store listing**: To prepare the app for store listing, see our [Create app store assets guide](/guides/store-assets/) on how to create screenshots and previews.
@@ -146,7 +146,7 @@ To prepare our app for App Store submission, go to the **App Store** tab:
 <ImageSpotlight
   alt="App Store Connect showing the app submission for review"
   src="/static/images/tutorial/eas/app-store-06.png"
-  style={{ maxWidth: 600 }}
+  style={{ maxWidth: 800 }}
 />
 
 </Step>
@@ -165,16 +165,16 @@ For future releases, we can streamline the process by combining build creation a
 
 In this chapter, we learned about:
 
-- Creating an App Store-ready build by making a build with the `production` build profile.
-- Distributing a production build using TestFlight or the Apple App Store.
-- Submitting the app to the App Store using `eas submit`.
-- Automating the submission process using the `--auto-submit` flag with `eas build`.
+- Created a production-ready iOS build for our project.
+- Distributed a production build using TestFlight or the Apple App Store.
+- Learned about submitting the app to the App Store using `eas submit`.
+- Learned about automating the submission process using the `--auto-submit` flag with `eas build`.
 
 ## Next step
 
 <BoxLink
-  title="Development with team"
+  title="Develop with your team"
   Icon={BookOpen02Icon}
   description="In the next chapter, learn how to use the EAS Update to send OTA updates and share previews with our team."
-  href="/tutorial/eas/development-with-team/"
+  href="/tutorial/eas/team-development/"
 />

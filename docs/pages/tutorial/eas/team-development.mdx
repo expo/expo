@@ -1,5 +1,5 @@
 ---
-title: Developing with a team
+title: Develop with your team
 description: Learn how to use the EAS Update to send OTA updates and share previews with a team.
 ---
 
@@ -11,9 +11,9 @@ import Video from '~/components/plugins/Video';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
 
-Updates generally fix small bugs and push small changes in between app store releases. They allow updating the non-native parts of our app, like JavaScript code, styling, and images.
+Updates generally fix small bugs and push small changes in between app store releases. They allow updating the non-native parts of our app, such as JavaScript code, styling, and images.
 
-In this chapter, we are going to use EAS Update to share changes with our team. This will help us and our team quickly share previews of the changes with each other.
+In this chapter, we're going to use EAS Update to share changes with our team. This will help us and our team quickly share previews of the changes with each other.
 
 <Step label="1">
 
@@ -168,19 +168,17 @@ In this chapter, we:
 
 - Installed the `expo-updates` library and configured EAS Update in our project.
 - The `channel` property in the build profiles establishes a link between a build and an update.
-- Learned how channels are used to group builds of different platforms together and create a target for updates.
+- Learned how channels are used to group builds of different platforms and create a target for updates.
 - Updates allow us to deliver changes to the non-native layer of our apps, such as JavaScript changes.
 - Published updates using `eas update --branch development --message "Change description"`.
 - Used a development build to view updates by logging into an Expo account and accessing the update through the Extensions tab.
-- Published updates that affect preview and production builds. We also learned that they fetch and download new updates when the app opens, which requires us to force close and reopen the app a second time to see the update applied. We can also extend this behavior to programmatically control the behavior of available updates by using [`useUpdates()`](/versions/latest/sdk/updates/#useupdates)` hook.
-
-OTA updates help fix bugs, push quick updates between app store submissions, and ease the process of sharing them with our team members while the app is in development. In this chapter, we:
-
-- Installing the `expo-updates` library and configuring EAS Update in our project.
-- The `channel` property in the build profiles establishes a link between a build and an update.
-- The ability to make and publish modifications to the JavaScript code in our app as new updates without necessitating a new build, leveraging the convenience of OTA updates.
-- Published updates using `eas update --branch development --message "Change description"`.
-- Used a development build to view updates by logging in to the Expo account and accessing the update through the Extensions tab.
-- How preview and production builds automatically download updates, and force reopen the app to see the changes. We can also extend this behavior to programmatically control the behavior of available updates by using
+- Published updates that affect preview and production builds. We also learned that they fetch and download new updates when the app opens, which requires us to force close and reopen the app a second time to see the update applied. We can also extend this behavior to programmatically control the behavior of available updates by using [`useUpdates()`](/versions/latest/sdk/updates/#useupdates) hook.
 
 ## Next step
+
+<BoxLink
+  title="Trigger builds from a GitHub repository"
+  Icon={BookOpen02Icon}
+  description="In the next chapter, learn about the process of triggering builds from a GitHub repository."
+  href="/tutorial/eas/using-github/"
+/>
