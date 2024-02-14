@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 3.2.4 — 2024-02-14
+
+_This version does not introduce any user-facing changes._
+
 ## 3.2.3 — 2024-02-14
 
 ### 📚 3rd party library updates
