@@ -151,6 +151,7 @@ class CameraViewNextModule : Module() {
 
       OnViewDestroys { view ->
         view.cancelCoroutineScope()
+        view.releaseCamera()
       }
     }
   }
