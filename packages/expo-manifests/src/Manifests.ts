@@ -79,7 +79,7 @@ export type NewManifest = ExpoUpdatesManifest;
 /**
  * An embedded manifest.
  *
- * Generated during build in createManifest.js build step script.
+ * Generated during native builds in `npx expo export:embed` via the build step script.
  */
 export type EmbeddedManifest = {
   id: string;
