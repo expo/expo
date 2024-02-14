@@ -2,4 +2,8 @@
 <resources>
   <string name="expo_splash_screen_resize_mode" translatable="false">contain</string>
   <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
+  <integer name="expo_splash_screen_top">0</integer>
+  <integer name="expo_splash_screen_left">0</integer>
+  <integer name="expo_splash_screen_right">0</integer>
+  <integer name="expo_splash_screen_bottom">0</integer>
 </resources>
