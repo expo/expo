@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+## 49.0.23 — 2024-02-14
+
 ### 📚 3rd party library updates
 
 - Update react-native to 0.72.10. ([#26977](https://github.com/expo/expo/pull/26977) by [@gabrieldonadel](https://github.com/gabrieldonadel))

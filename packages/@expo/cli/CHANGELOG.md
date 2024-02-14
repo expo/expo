@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.10.17 — 2024-02-14
+
+### 🐛 Bug fixes
+
 - Add support for `webpack-dev-server@4`. ([#25863](https://github.com/expo/expo/pull/25863) by [@byCedric](https://github.com/byCedric))
 - Handle locked iOS devices when launching app through devicectl. ([#26203](https://github.com/expo/expo/pull/26203) by [@byCedric](https://github.com/byCedric))
-
-### 💡 Others
 
 ## 0.10.16 — 2023-11-24
 
