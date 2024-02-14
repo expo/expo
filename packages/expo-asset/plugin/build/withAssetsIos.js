@@ -13,7 +13,6 @@ const utils_1 = require("./utils");
 const IMAGE_DIR = 'Images.xcassets';
 const withAssetsIos = (config, assets) => {
     config = addAssetsToTarget(config, assets);
-    config = addFontsToPlist(config, assets);
     return config;
 };
 exports.withAssetsIos = withAssetsIos;
@@ -24,8 +23,8 @@ function addAssetsToTarget(config, assets) {
         const project = config.modResults;
         const platformProjectRoot = config.modRequest.platformProjectRoot;
         config_plugins_1.IOSConfig.XcodeUtils.ensureGroupRecursively(project, 'Resources');
-        const images = validAssets.filter((asset) => utils_1.imageTypes.includes(path_1.default.extname(asset)));
-        const assetsForResourcesDir = validAssets.filter((asset) => !utils_1.imageTypes.includes(path_1.default.extname(asset)));
+        const images = validAssets.filter((asset) => utils_1.IMAGE_TYPES.includes(path_1.default.extname(asset)));
+        const assetsForResourcesDir = validAssets.filter((asset) => !utils_1.IMAGE_TYPES.includes(path_1.default.extname(asset)));
         await addImageAssets(images, config.modRequest.projectRoot);
         addResourceFiles(project, platformProjectRoot, assetsForResourcesDir);
         return config;
@@ -77,26 +76,5 @@ function buildContentsJsonImages({ image }) {
             idiom: 'universal',
             scale: '3x',
         }),
-    ].filter(Boolean);
-}
-function addFontsToPlist(config, fonts) {
-    return (0, config_plugins_1.withInfoPlist)(config, async (config) => {
-        const resolvedAssets = await (0, utils_1.resolveAssetPaths)(fonts, config.modRequest.projectRoot);
-        const resolvedFonts = resolvedAssets.filter((asset) => utils_1.fontTypes.includes(path_1.default.extname(asset)));
-        if (!resolvedFonts) {
-            return config;
-        }
-        const existingFonts = getUIAppFonts(config.modResults);
-        const fontList = resolvedFonts.map((font) => path_1.default.basename(font)) ?? [];
-        const allFonts = [...existingFonts, ...fontList];
-        config.modResults.UIAppFonts = Array.from(new Set(allFonts));
-        return config;
-    });
-}
-function getUIAppFonts(infoPlist) {
-    const fonts = infoPlist['UIAppFonts'];
-    if (fonts != null && Array.isArray(fonts) && fonts.every((font) => typeof font === 'string')) {
-        return fonts;
-    }
-    return [];
+    ];
 }

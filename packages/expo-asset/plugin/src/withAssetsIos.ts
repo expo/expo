@@ -5,24 +5,16 @@ import {
   createContentsJsonItem,
   writeContentsJsonAsync,
 } from '@expo/prebuild-config/build/plugins/icons/AssetContents';
-import {
-  ConfigPlugin,
-  IOSConfig,
-  InfoPlist,
-  XcodeProject,
-  withInfoPlist,
-  withXcodeProject,
-} from 'expo/config-plugins';
+import { ConfigPlugin, IOSConfig, XcodeProject, withXcodeProject } from 'expo/config-plugins';
 import { ensureDir, writeFile } from 'fs-extra';
 import path from 'path';
 
-import { fontTypes, imageTypes, resolveAssetPaths, validateAssets } from './utils';
+import { IMAGE_TYPES, resolveAssetPaths, validateAssets } from './utils';
 
 const IMAGE_DIR = 'Images.xcassets';
 
 export const withAssetsIos: ConfigPlugin<string[]> = (config, assets) => {
   config = addAssetsToTarget(config, assets);
-  config = addFontsToPlist(config, assets);
   return config;
 };
 
@@ -34,9 +26,9 @@ function addAssetsToTarget(config: ExpoConfig, assets: string[]) {
     const platformProjectRoot = config.modRequest.platformProjectRoot;
     IOSConfig.XcodeUtils.ensureGroupRecursively(project, 'Resources');
 
-    const images = validAssets.filter((asset) => imageTypes.includes(path.extname(asset)));
+    const images = validAssets.filter((asset) => IMAGE_TYPES.includes(path.extname(asset)));
     const assetsForResourcesDir = validAssets.filter(
-      (asset) => !imageTypes.includes(path.extname(asset))
+      (asset) => !IMAGE_TYPES.includes(path.extname(asset))
     );
 
     await addImageAssets(images, config.modRequest.projectRoot);
@@ -104,31 +96,5 @@ function buildContentsJsonImages({ image }: { image: string }): ContentsJsonImag
       idiom: 'universal',
       scale: '3x',
     }),
-  ].filter(Boolean) as ContentsJsonImage[];
-}
-
-function addFontsToPlist(config: ExpoConfig, fonts: string[]) {
-  return withInfoPlist(config, async (config) => {
-    const resolvedAssets = await resolveAssetPaths(fonts, config.modRequest.projectRoot);
-    const resolvedFonts = resolvedAssets.filter((asset) => fontTypes.includes(path.extname(asset)));
-
-    if (!resolvedFonts) {
-      return config;
-    }
-
-    const existingFonts = getUIAppFonts(config.modResults);
-    const fontList = resolvedFonts.map((font) => path.basename(font)) ?? [];
-    const allFonts = [...existingFonts, ...fontList];
-    config.modResults.UIAppFonts = Array.from(new Set(allFonts));
-
-    return config;
-  });
-}
-
-function getUIAppFonts(infoPlist: InfoPlist): string[] {
-  const fonts = infoPlist['UIAppFonts'];
-  if (fonts != null && Array.isArray(fonts) && fonts.every((font) => typeof font === 'string')) {
-    return fonts as string[];
-  }
-  return [];
+  ] as ContentsJsonImage[];
 }

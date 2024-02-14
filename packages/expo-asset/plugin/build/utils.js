@@ -3,13 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateAssets = exports.resolveAssetPaths = exports.ACCEPTED_TYPES = exports.mediaTypes = exports.fontTypes = exports.imageTypes = void 0;
+exports.validateAssets = exports.resolveAssetPaths = exports.ACCEPTED_TYPES = exports.MEDIA_TYPES = exports.FONT_TYPES = exports.IMAGE_TYPES = void 0;
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
-exports.imageTypes = ['.png', '.jpg', '.gif'];
-exports.fontTypes = ['.otf', '.ttf'];
-exports.mediaTypes = ['.mp4', '.mp3'];
-exports.ACCEPTED_TYPES = ['.json', '.db', ...exports.imageTypes, ...exports.mediaTypes, ...exports.fontTypes];
+exports.IMAGE_TYPES = ['.png', '.jpg', '.gif'];
+exports.FONT_TYPES = ['.otf', '.ttf'];
+exports.MEDIA_TYPES = ['.mp4', '.mp3'];
+exports.ACCEPTED_TYPES = ['.json', '.db', ...exports.IMAGE_TYPES, ...exports.MEDIA_TYPES, ...exports.FONT_TYPES];
 async function resolveAssetPaths(assets, projectRoot) {
     const promises = assets.map(async (p) => {
         const resolvedPath = path_1.default.resolve(projectRoot, p);
@@ -24,11 +24,16 @@ async function resolveAssetPaths(assets, projectRoot) {
 }
 exports.resolveAssetPaths = resolveAssetPaths;
 function validateAssets(assets) {
-    return assets?.filter((asset) => {
+    return assets.filter((asset) => {
         const ext = path_1.default.extname(asset);
         const accepted = exports.ACCEPTED_TYPES.includes(ext);
+        const isFont = exports.FONT_TYPES.includes(ext);
         if (!accepted) {
             console.warn(`\`${ext}\` is not a supported asset type`);
+            return;
+        }
+        if (isFont) {
+            console.warn(`Fonts are not supported with the \`expo-asset\` plugin. Please use \`expo-font\` for this functionality. Ignoring ${asset}`);
             return;
         }
         return asset;
