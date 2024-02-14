@@ -5,15 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { getConfig } from '@expo/config';
+import { EmbeddedManifest } from 'expo-manifests';
 import fs from 'fs';
 import { sync as globSync } from 'glob';
 import Server from 'metro/src/Server';
 import output from 'metro/src/shared/output/bundle';
-import type { BundleOptions } from 'metro/src/shared/types';
+import crypto from 'crypto';
 import path from 'path';
+import resolveFrom from 'resolve-from';
 
-import { Options } from './resolveOptions';
-import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompilerLogger';
 import { Log } from '../../log';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
 import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/middleware/metroOptions';
@@ -23,8 +23,12 @@ import { setNodeEnv } from '../../utils/nodeEnv';
 import { profile } from '../../utils/profile';
 import { isEnableHermesManaged } from '../exportHermes';
 import { getAssets } from '../fork-bundleAsync';
-import { persistMetroAssetsAsync } from '../persistMetroAssets';
+import { getAssetLocalPath } from '../metroAssetLocalPath';
+import { filterPlatformAssetScales, persistMetroAssetsAsync } from '../persistMetroAssets';
+import { Options } from './resolveOptions';
+import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompilerLogger';
 
+import type { BundleOptions } from 'metro/src/shared/types';
 const debug = require('debug')('expo:export:embed');
 
 function guessCopiedAppleBundlePath(bundleOutput: string) {
@@ -63,6 +67,22 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
   const { bundle, assets } = await exportEmbedBundleAndAssetsAsync(projectRoot, options);
 
   fs.mkdirSync(path.dirname(options.bundleOutput), { recursive: true, mode: 0o755 });
+
+  // TODO: Some system for detecting if we should export the manifest, this is low priority since
+  // the assets are already calculated.
+  // NOTE: iOS used to leverage the cocoapods setting `$expo_updates_create_manifest = false` to disable this.
+  if (resolveFrom.silent(projectRoot, 'expo-updates')) {
+    const manifest = getUpdatesManifest({ assets, platform: options.platform });
+
+    if (options.platform === 'ios') {
+      // TODO: Check this location.
+      const outputDir = path.join(options.assetsDest!, 'EXUpdates.bundle', 'app.manifest');
+      fs.mkdirSync(path.dirname(outputDir), { recursive: true, mode: 0o755 });
+      fs.writeFileSync(JSON.stringify(manifest), outputDir);
+    } else if (options.platform === 'android') {
+      // TODO: Write the android manifest somewhere.
+    }
+  }
 
   // Persist bundle and source maps.
   await Promise.all([
@@ -138,6 +158,55 @@ export async function createMetroServerAndBundleRequestAsync(
   });
 
   return { server, bundleRequest };
+}
+
+export function getUpdatesManifest({
+  assets,
+  platform,
+}: {
+  assets: Awaited<ReturnType<typeof getAssets>>;
+  platform: string;
+}): EmbeddedManifest {
+  const manifest: EmbeddedManifest = {
+    id: crypto.randomUUID(),
+    commitTime: new Date().getTime(),
+    assets: [],
+  };
+
+  assets.forEach(function (asset) {
+    // TODO: We could possibly calculate this lazily.
+    if (!asset.fileHashes) {
+      throw new Error(
+        'The hashAssetFiles Metro plugin is not configured. You need to add a metro.config.js to your project that configures Metro to use this plugin. See https://github.com/expo/expo/blob/main/packages/expo-updates/README.md#metroconfigjs for an example.'
+      );
+    }
+    filterPlatformAssetScales(platform, asset.scales).forEach(function (scale, index) {
+      const baseAssetInfoForManifest = {
+        name: asset.name,
+        type: asset.type,
+        scale,
+        packagerHash: asset.fileHashes[index],
+        subdirectory: asset.httpServerLocation,
+      };
+      const assetPath = getAssetLocalPath(asset, { scale, platform });
+      if (platform === 'ios') {
+        manifest.assets.push({
+          ...baseAssetInfoForManifest,
+          nsBundleDir: path.dirname(assetPath),
+          nsBundleFilename: path.basename(assetPath, path.extname(assetPath)),
+        });
+      } else if (platform === 'android') {
+        manifest.assets.push({
+          ...baseAssetInfoForManifest,
+          scales: asset.scales,
+          resourcesFolder: path.dirname(assetPath),
+          resourcesFilename: path.basename(assetPath, path.extname(assetPath)),
+        });
+      }
+    });
+  });
+
+  return manifest;
 }
 
 export async function exportEmbedBundleAndAssetsAsync(
