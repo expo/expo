@@ -131,6 +131,7 @@ const GET_IMAGE_ASYNC_CONFIG: FunctionDescription = {
           values: [
             { name: "'png'", value: 'png' },
             { name: "'jpeg'", value: 'jpeg' },
+            { name: "'gif'", value: 'gif' },
           ],
         },
         {

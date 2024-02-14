@@ -13,6 +13,7 @@ internal struct GetImageOptions: Record {
 internal enum ImageFormat: String, EnumArgument {
   case jpeg
   case png
+  case gif
 
   func getMimeType() -> String {
     switch self {
@@ -20,6 +21,8 @@ internal enum ImageFormat: String, EnumArgument {
       return "image/jpeg"
     case .png:
       return "image/png"
+    case .gif:
+      return "image/gif"
     }
   }
 }

@@ -4,8 +4,9 @@ import { ViewProps, StyleProp, ViewStyle } from 'react-native';
 export interface GetImageOptions {
   /**
    * The format of the clipboard image to be converted to.
+   * GIF support is experimental and only availible on IOS.
    */
-  format: 'png' | 'jpeg';
+  format: 'png' | 'jpeg' | 'gif';
   /**
    * Specify the quality of the returned image, between `0` and `1`. Defaults to `1` (highest quality).
    * Applicable only when `format` is set to `jpeg`, ignored otherwise.
