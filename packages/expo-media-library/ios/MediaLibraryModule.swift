@@ -75,7 +75,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
 
       let assetType = assetType(for: uri)
       if assetType == .unknown || assetType == .audio {
-        promise.reject(UnsupportedAssetTypeException())
+        promise.reject(UnsupportedAssetTypeException(uri.absoluteString))
         return
       }
 
@@ -341,9 +341,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       result["localUri"] = contentInput?.fullSizeImageURL?.absoluteString
       result["orientation"] = contentInput?.fullSizeImageOrientation
       if !options.shouldDownloadFromNetwork {
-        result["isNetworkAsset"] = info[PHContentEditingInputResultIsInCloudKey] != nil
-        ? info[PHContentEditingInputResultIsInCloudKey]
-        : false
+        result["isNetworkAsset"] = info[PHContentEditingInputResultIsInCloudKey] ?? false
       }
 
       if let url = contentInput?.fullSizeImageURL, let ciImage = CIImage(contentsOf: url) {
@@ -363,9 +361,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
         let urlAsset = asset as? AVURLAsset
         result["localUri"] = urlAsset?.url.absoluteString
         if !options.shouldDownloadFromNetwork {
-          result["isNetworkAsset"] = info?[PHImageResultIsInCloudKey] != nil
-          ? info?[PHImageResultIsInCloudKey]
-          : false
+          result["isNetworkAsset"] = info?[PHImageResultIsInCloudKey] ?? false
         }
         promise.resolve(result)
         return
@@ -391,8 +387,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
         case .completed:
           result["localUri"] = videoFileOutputURL?.absoluteString
           if !options.shouldDownloadFromNetwork {
-            result["isNetworkAsset"] = info?[PHImageResultIsInCloudKey] != nil ? info?[PHImageResultIsInCloudKey]
-            : false
+            result["isNetworkAsset"] = info?[PHImageResultIsInCloudKey] ?? false
           }
 
           promise.resolve(result)

@@ -18,9 +18,9 @@ internal class FileExtensionException: Exception {
   }
 }
 
-internal class UnsupportedAssetTypeException: Exception {
+internal class UnsupportedAssetTypeException: GenericException<String>  {
   override var reason: String {
-    "This file type is not supported yet"
+    "This URL does not contain a valid asset type: \(param)"
   }
 }
 
@@ -56,13 +56,13 @@ internal class SaveVideoException: Exception {
 
 internal class SaveAlbumException: Exception {
   override var reason: String {
-    "Couldn\'t add assets to album"
+    "Couldn't add assets to album"
   }
 }
 
 internal class RemoveFromAlbumException: Exception {
   override var reason: String {
-    "Couldn\'t remove assets from album"
+    "Couldn't remove assets from album"
   }
 }
 
