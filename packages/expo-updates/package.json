@@ -9,16 +9,12 @@
     "expo-updates": "bin/cli.js"
   },
   "scripts": {
-    "build:cli": "tsc -p tsconfig.cli.json",
-    "test:cli": "jest --config jest.cli.config.js",
-    "build:cli-and-utils": "tsc -p tsconfig.cli.json && tsc -p tsconfig.utils.json",
-    "test:cli-and-utils": "jest --config jest.cli.config.js && jest --config jest.utils.config.js",
     "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "npm run build:cli-and-utils && expo-module prepare",
-    "prepublishOnly": "npm run build:cli-and-utils && expo-module prepublishOnly",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
   "keywords": [

@@ -31,6 +31,7 @@
 - Remove support for multiple runtime versions. ([#26258](https://github.com/expo/expo/pull/26258) by [@wschurman](https://github.com/wschurman))
 - Improve updates types and clarity in expo-asset. ([#26337](https://github.com/expo/expo/pull/26337) by [@wschurman](https://github.com/wschurman))
 - Convert manifest creation scripts to typescript. ([#27082](https://github.com/expo/expo/pull/27082) by [@wschurman](https://github.com/wschurman))
+- Move cli and utils subpackages to new expo-module-scripts system. ([#27083](https://github.com/expo/expo/pull/27083) by [@wschurman](https://github.com/wschurman))
 
 ## 0.24.8 - 2024-01-18
 

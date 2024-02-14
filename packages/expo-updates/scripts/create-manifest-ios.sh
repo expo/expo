@@ -37,4 +37,4 @@ cd "$PROJECT_ROOT" || exit
 # We should get the physical path (/var/folders -> /private/var/folders) for metro to resolve correct files
 PROJECT_ROOT="$(pwd -P)"
 
-"${EXPO_UPDATES_PACKAGE_DIR}/scripts/with-node.sh" "${EXPO_UPDATES_PACKAGE_DIR}/build-utils/createManifest.js" ios "$PROJECT_ROOT" "$DEST/$RESOURCE_BUNDLE_NAME" "$ENTRY_FILE"
+"${EXPO_UPDATES_PACKAGE_DIR}/scripts/with-node.sh" "${EXPO_UPDATES_PACKAGE_DIR}/utils/build/createManifest.js" ios "$PROJECT_ROOT" "$DEST/$RESOURCE_BUNDLE_NAME" "$ENTRY_FILE"

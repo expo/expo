@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for package cli and utils subpackages (like plugins). ([#27083](https://github.com/expo/expo/pull/27083) by [@wschurman](https://github.com/wschurman))
+
 ### 🐛 Bug fixes
 
 - Use `node18` tsconfig in `expo-module-scripts` to match the dependencies. ([#26738](https://github.com/expo/expo/pull/26738)) by ([@krystofwoldrich](https://github.com/krystofwoldrich))

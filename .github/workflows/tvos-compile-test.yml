@@ -58,9 +58,6 @@ jobs:
       - name: 🧶 Yarn install
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: Build expo-updates CLI
-        working-directory: packages/expo-updates
-        run: yarn build:cli
       - name: 🔧 Install eas-cli
         run: yarn global add eas-cli
       - name: 🌳 Add EXPO_REPO_ROOT to environment

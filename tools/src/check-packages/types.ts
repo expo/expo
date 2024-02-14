@@ -1,3 +1,5 @@
+type CheckPackageType = 'package' | 'plugin' | 'cli' | 'utils';
+
 /**
  * Type representing options for the `check-packages` command.
  */
@@ -10,5 +12,5 @@ export type ActionOptions = {
   fixLint: boolean;
   uniformityCheck: boolean;
   packageNames: string[];
-  isPlugin?: boolean;
+  checkPackageType: CheckPackageType;
 };
