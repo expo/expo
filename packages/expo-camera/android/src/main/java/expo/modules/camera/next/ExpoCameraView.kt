@@ -79,6 +79,7 @@ class ExpoCameraView(
   var camera: Camera? = null
   var activeRecording: Recording? = null
 
+  private var cameraProvider: ProcessCameraProvider? = null
   private val providerFuture = ProcessCameraProvider.getInstance(context)
   private var imageCaptureUseCase: ImageCapture? = null
   private var imageAnalysisUseCase: ImageAnalysis? = null
@@ -270,6 +271,7 @@ class ExpoCameraView(
           camera?.let {
             observeCameraState(it.cameraInfo)
           }
+          this.cameraProvider = cameraProvider
         } catch (e: Exception) {
           onMountError(
             CameraMountErrorEvent("Camera component could not be rendered - is there any other instance running?")
@@ -326,7 +328,6 @@ class ExpoCameraView(
         CameraState.Type.OPEN -> {
           onCameraReady(Unit)
         }
-
         else -> {}
       }
     }
@@ -343,6 +344,12 @@ class ExpoCameraView(
 
   private fun getDeviceOrientation() =
     (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.rotation
+
+  fun releaseCamera() {
+    appContext.mainQueue.launch {
+      cameraProvider?.unbindAll()
+    }
+  }
 
   private fun transformBarcodeScannerResultToViewCoordinates(barcode: BarCodeScannerResult) {
     val cornerPoints = barcode.cornerPoints
