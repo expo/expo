@@ -33,10 +33,15 @@ export const publishPackages = new Task<TaskArgs>(
 
     for (const { pkg, state } of parcels) {
       const packageJsonPath = path.join(pkg.path, 'package.json');
+      const releaseVersion = state.releaseVersion;
+
+      if (!releaseVersion) {
+        continue;
+      }
 
       logger.log(
         '  ',
-        `${green(pkg.packageName)} version ${cyan(state.releaseVersion!)} as ${yellow(options.tag)}`
+        `${green(pkg.packageName)} version ${cyan(releaseVersion)} as ${yellow(options.tag)}`
       );
 
       // If there is a tarball already built, use it instead of packing it again
@@ -58,6 +63,9 @@ export const publishPackages = new Task<TaskArgs>(
 
       // Delete `gitHead` from `package.json` – no need to clutter it.
       await JsonFile.deleteKeyAsync(packageJsonPath, 'gitHead');
+
+      // Update stored package.json
+      pkg.packageJson.version = releaseVersion;
 
       state.published = true;
     }
