@@ -28,7 +28,7 @@ function getExpoDependencyChunks({
       'expo-modules-core',
       'expo-modules-autolinking',
     ],
-    ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants'],
+    ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants', 'expo-manifests'],
     [
       'babel-preset-expo',
       'expo-application',
@@ -38,7 +38,6 @@ function getExpoDependencyChunks({
       'expo-font',
       'expo-json-utils',
       'expo-keep-awake',
-      'expo-manifests',
       'expo-splash-screen',
       'expo-status-bar',
       'expo-structured-headers',
@@ -48,7 +47,9 @@ function getExpoDependencyChunks({
     ...(includeDevClient
       ? [['expo-dev-menu-interface'], ['expo-dev-menu'], ['expo-dev-launcher'], ['expo-dev-client']]
       : []),
-    ...(includeTV ? [['expo-av', 'expo-blur', 'expo-image', 'expo-linear-gradient', 'expo-localization']] : []),
+    ...(includeTV
+      ? [['expo-av', 'expo-blur', 'expo-image', 'expo-linear-gradient', 'expo-localization']]
+      : []),
   ];
 }
 
@@ -107,7 +108,7 @@ async function packExpoDependency(
   try {
     await spawnAsync('npm', ['pack', '--pack-destination', destPath], {
       cwd: dependencyPath,
-      stdio: process.env.CI ? 'ignore' : 'pipe',
+      stdio: 'pipe',
     });
   } finally {
     // Restore the original package JSON
