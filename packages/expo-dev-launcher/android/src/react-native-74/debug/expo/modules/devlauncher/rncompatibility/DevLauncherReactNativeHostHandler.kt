@@ -13,7 +13,10 @@ import java.lang.ref.WeakReference
 
 class DevLauncherReactNativeHostHandler(context: Context) : ReactNativeHostHandler {
   private val contextHolder = WeakReference(context)
-  override fun getDevSupportManagerFactory(): DevSupportManagerFactory {
+  override fun getDevSupportManagerFactory(): DevSupportManagerFactory? {
+    if(DevLauncherPackageDelegate.enableAutoSetup != null && DevLauncherPackageDelegate.enableAutoSetup == false) {
+        return null
+    }
     return DevLauncherDevSupportManagerFactory()
   }
 
