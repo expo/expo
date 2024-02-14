@@ -79,26 +79,25 @@ To automatically trigger a build using a GitHub PR label, we're going to utilize
 
 - We need to specify the build image that we will be using. Open **eas.json**, and under the `development` profile, add [`android.image`](/eas/json/#image) and [`ios.image`](/eas/json/#image-1) properties and set their value to [`latest`](/build-reference/infrastructure/#configuring-build-environment).
 
-```json eas.json
-{
-  "build": {
-    "development": {
-      /* @hide ... */ /* @end */
-      /* @info */
-      "android": {
-        "image": "latest"
-      },
-      "ios": {
-        "image": "latest"
+  ```json eas.json
+  {
+    "build": {
+      "development": {
+        /* @hide ... */ /* @end */
+        /* @info */
+        "android": {
+          "image": "latest"
+        },
+        "ios": {
+          "image": "latest"
+        }
+        /* @end */
       }
-      /* @end */
     }
+    /* @hide ... */ /* @end */
   }
-  /* @hide ... */ /* @end */
-}
-```
 
-- Next, modify our app's JavaScript code. We create a git branch called `dev` and submit a PR to our example repository from that branch.
+- Next, let's create a new branch called `dev`, and make a change in our app's JavaScript code. Then, commit the change, push the branch, and create a PR from that branch.
 - In the PR link, under **Labels**, create a label called `eas-build-all:development`.
 
 <ImageSpotlight
