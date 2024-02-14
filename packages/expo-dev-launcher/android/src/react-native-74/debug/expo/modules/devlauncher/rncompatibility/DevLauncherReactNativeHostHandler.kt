@@ -9,6 +9,7 @@ import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.facebook.soloader.SoLoader
 import expo.modules.core.interfaces.ReactNativeHostHandler
 import expo.modules.devlauncher.DevLauncherController
+import expo.modules.devlauncher.DevLauncherPackageDelegate
 import java.lang.ref.WeakReference
 
 class DevLauncherReactNativeHostHandler(context: Context) : ReactNativeHostHandler {
