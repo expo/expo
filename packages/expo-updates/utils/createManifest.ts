@@ -1,17 +1,24 @@
-const {
+import {
   createMetroServerAndBundleRequestAsync,
   exportEmbedAssetsAsync,
-} = require('@expo/cli/build/src/export/embed/exportEmbedAsync');
-const { drawableFileTypes } = require('@expo/cli/build/src/export/metroAssetLocalPath');
-const { resolveEntryPoint } = require('@expo/config/paths');
-const crypto = require('crypto');
-const fs = require('fs');
-const path = require('path');
+} from '@expo/cli/build/src/export/embed/exportEmbedAsync';
+import { drawableFileTypes } from '@expo/cli/build/src/export/metroAssetLocalPath';
+import { resolveEntryPoint } from '@expo/config/paths';
+import { HashedAssetData } from '@expo/metro-config/build/transform-worker/getAssets';
+import assert from 'assert';
+import crypto from 'crypto';
+import { EmbeddedManifest } from 'expo-manifests';
+import fs from 'fs';
+import Server from 'metro/src/Server';
+import type { BundleOptions } from 'metro/src/shared/types';
+import path from 'path';
 
-const filterPlatformAssetScales = require('./filterPlatformAssetScales');
+import { filterPlatformAssetScales } from './filterPlatformAssetScales';
 
-function findUpProjectRoot(cwd) {
-  if (['.', path.sep].includes(cwd)) return null;
+function findUpProjectRoot(cwd: string): string | null {
+  if (['.', path.sep].includes(cwd)) {
+    return null;
+  }
 
   if (fs.existsSync(path.join(cwd, 'package.json'))) {
     return cwd;
@@ -21,7 +28,7 @@ function findUpProjectRoot(cwd) {
 }
 
 /** Resolve the relative entry file using Expo's resolution method. */
-function getRelativeEntryPoint(projectRoot, platform) {
+function getRelativeEntryPoint(projectRoot: string, platform: 'ios' | 'android'): string {
   const entry = resolveEntryPoint(projectRoot, { platform });
   if (entry) {
     return path.relative(projectRoot, entry);
@@ -30,8 +37,11 @@ function getRelativeEntryPoint(projectRoot, platform) {
 }
 
 (async function () {
-  const platform = process.argv[2];
-  const possibleProjectRoot = findUpProjectRoot(process.argv[3]);
+  const platform = process.argv[2] as 'ios' | 'android';
+  const projectRootArg = process.argv[3];
+  assert(projectRootArg, 'Must provide a valid project root');
+  const possibleProjectRoot = findUpProjectRoot(projectRootArg);
+  assert(possibleProjectRoot, 'Must provide a valid project root');
   const destinationDir = process.argv[4];
   const entryFile =
     process.argv[5] ||
@@ -40,7 +50,7 @@ function getRelativeEntryPoint(projectRoot, platform) {
     'index.js';
 
   // Remove projectRoot validation when we no longer support React Native <= 62
-  let projectRoot;
+  let projectRoot: string;
   if (fs.existsSync(path.join(possibleProjectRoot, entryFile))) {
     projectRoot = path.resolve(possibleProjectRoot);
   } else if (fs.existsSync(path.join(possibleProjectRoot, '..', entryFile))) {
@@ -58,17 +68,21 @@ function getRelativeEntryPoint(projectRoot, platform) {
     entryFile,
     minify: false,
     dev: false,
+    sourcemapUseAbsolutePath: false,
   };
 
-  const { server, bundleRequest } = await createMetroServerAndBundleRequestAsync(
+  const { server, bundleRequest } = (await createMetroServerAndBundleRequestAsync(
     projectRoot,
     options
-  );
+  )) as {
+    server: Server;
+    bundleRequest: BundleOptions;
+  };
 
-  let assets;
+  let assets: HashedAssetData[];
   try {
     assets = await exportEmbedAssetsAsync(server, bundleRequest, projectRoot, options);
-  } catch (e) {
+  } catch (e: any) {
     throw new Error(
       "Error loading assets JSON from Metro. Ensure you've followed all expo-updates installation steps correctly. " +
         e.message
@@ -77,7 +91,7 @@ function getRelativeEntryPoint(projectRoot, platform) {
     server.end();
   }
 
-  const manifest = {
+  const manifest: EmbeddedManifest = {
     id: crypto.randomUUID(),
     commitTime: new Date().getTime(),
     assets: [],
@@ -90,7 +104,7 @@ function getRelativeEntryPoint(projectRoot, platform) {
       );
     }
     filterPlatformAssetScales(platform, asset.scales).forEach(function (scale, index) {
-      const assetInfoForManifest = {
+      const baseAssetInfoForManifest = {
         name: asset.name,
         type: asset.type,
         scale,
@@ -98,15 +112,19 @@ function getRelativeEntryPoint(projectRoot, platform) {
         subdirectory: asset.httpServerLocation,
       };
       if (platform === 'ios') {
-        assetInfoForManifest.nsBundleDir = getIosDestinationDir(asset);
-        assetInfoForManifest.nsBundleFilename =
-          scale === 1 ? asset.name : asset.name + '@' + scale + 'x';
+        manifest.assets.push({
+          ...baseAssetInfoForManifest,
+          nsBundleDir: getIosDestinationDir(asset),
+          nsBundleFilename: scale === 1 ? asset.name : asset.name + '@' + scale + 'x',
+        });
       } else if (platform === 'android') {
-        assetInfoForManifest.scales = asset.scales;
-        assetInfoForManifest.resourcesFilename = getAndroidResourceIdentifier(asset);
-        assetInfoForManifest.resourcesFolder = getAndroidResourceFolderName(asset);
+        manifest.assets.push({
+          ...baseAssetInfoForManifest,
+          scales: asset.scales,
+          resourcesFilename: getAndroidResourceIdentifier(asset),
+          resourcesFolder: getAndroidResourceFolderName(asset),
+        });
       }
-      manifest.assets.push(assetInfoForManifest);
     });
   });
 
@@ -118,12 +136,12 @@ function getRelativeEntryPoint(projectRoot, platform) {
   process.exit(1);
 });
 
-function getAndroidResourceFolderName(asset) {
-  return drawableFileTypes.has(asset.type) ? 'drawable' : 'raw';
+function getAndroidResourceFolderName(asset: HashedAssetData) {
+  return (drawableFileTypes as Set<string>).has(asset.type) ? 'drawable' : 'raw';
 }
 
 // copied from react-native/Libraries/Image/assetPathUtils.js
-function getAndroidResourceIdentifier(asset) {
+function getAndroidResourceIdentifier(asset: HashedAssetData) {
   const folderPath = getBasePath(asset);
   return (folderPath + '/' + asset.name)
     .toLowerCase()
@@ -132,14 +150,14 @@ function getAndroidResourceIdentifier(asset) {
     .replace(/^assets_/, ''); // Remove "assets_" prefix
 }
 
-function getIosDestinationDir(asset) {
+function getIosDestinationDir(asset: HashedAssetData) {
   // react-native-cli replaces `..` with `_` when embedding assets in the iOS app bundle
   // https://github.com/react-native-community/cli/blob/0a93be1a42ed1fb05bb0ebf3b82d58b2dd920614/packages/cli/src/commands/bundle/getAssetDestPathIOS.ts
   return getBasePath(asset).replace(/\.\.\//g, '_');
 }
 
 // copied from react-native/Libraries/Image/assetPathUtils.js
-function getBasePath(asset) {
+function getBasePath(asset: HashedAssetData) {
   let basePath = asset.httpServerLocation;
   if (basePath[0] === '/') {
     basePath = basePath.substr(1);

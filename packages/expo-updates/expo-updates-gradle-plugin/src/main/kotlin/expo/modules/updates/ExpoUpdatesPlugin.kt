@@ -67,7 +67,7 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
       project.exec {
         val args = mutableListOf<String>().apply {
           addAll(nodeExecutableAndArgs.get())
-          add("${getExpoUpdatesPackageDir()}/scripts/createManifest.js")
+          add("${getExpoUpdatesPackageDir()}/build-utils/createManifest.js")
           add("android")
           add(projectRoot.get())
           add(assetDir.get().toString())
