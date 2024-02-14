@@ -21,8 +21,6 @@ PODS:
     - ZXingObjC/PDF417
   - EXConstants (15.4.1):
     - ExpoModulesCore
-  - EXContacts (12.8.1):
-    - ExpoModulesCore
   - EXFont (11.10.0):
     - ExpoModulesCore
   - EXImageLoader (4.6.0):
@@ -69,6 +67,8 @@ PODS:
   - ExpoClipboard/Tests (5.0.0):
     - ExpoModulesCore
     - ExpoModulesTestCore
+  - ExpoContacts (12.8.1):
+    - ExpoModulesCore
   - ExpoCrypto (12.8.0):
     - ExpoModulesCore
   - ExpoDevice (5.9.0):
@@ -1497,7 +1497,6 @@ DEPENDENCIES:
   - EXAV (from `../../../packages/expo-av/ios`)
   - EXBarCodeScanner (from `../../../packages/expo-barcode-scanner/ios`)
   - EXConstants (from `../../../packages/expo-constants/ios`)
-  - EXContacts (from `../../../packages/expo-contacts/ios`)
   - EXFont (from `../../../packages/expo-font/ios`)
   - EXImageLoader (from `../../../packages/expo-image-loader/ios`)
   - EXJSONUtils (from `../../../packages/expo-json-utils/ios`)
@@ -1518,6 +1517,7 @@ DEPENDENCIES:
   - ExpoCellular (from `../../../packages/expo-cellular/ios`)
   - ExpoClipboard (from `../../../packages/expo-clipboard/ios`)
   - ExpoClipboard/Tests (from `../../../packages/expo-clipboard/ios`)
+  - ExpoContacts (from `../../../packages/expo-contacts/ios`)
   - ExpoCrypto (from `../../../packages/expo-crypto/ios`)
   - ExpoDevice (from `../../../packages/expo-device/ios`)
   - ExpoDocumentPicker (from `../../../packages/expo-document-picker/ios`)
@@ -1688,8 +1688,6 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-barcode-scanner/ios"
   EXConstants:
     :path: "../../../packages/expo-constants/ios"
-  EXContacts:
-    :path: "../../../packages/expo-contacts/ios"
   EXFont:
     :path: "../../../packages/expo-font/ios"
   EXImageLoader:
@@ -1724,6 +1722,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-cellular/ios"
   ExpoClipboard:
     :path: "../../../packages/expo-clipboard/ios"
+  ExpoContacts:
+    :path: "../../../packages/expo-contacts/ios"
   ExpoCrypto:
     :path: "../../../packages/expo-crypto/ios"
   ExpoDevice:
@@ -1948,7 +1948,6 @@ SPEC CHECKSUMS:
   EXAV: 69adaa7433e7123a7dc9df9841fd80e954916d2d
   EXBarCodeScanner: 2c2fee40a33902612792b2f0de4e9da40f080613
   EXConstants: cefee7155f9ed25c610d0b6cf96972f485e4cbae
-  EXContacts: 2ef734aa7b13c8e5ff20fb77d04f1cb172b61456
   EXFont: b4a7dd9f19df9c55e9b9a1849e801d6726e7a8a3
   EXImageLoader: 55080616b2fe9da19ef8c7f706afd9814e279b6b
   EXJSONUtils: d138005ee11b84fc4e3bf7119a160034db5d5e20
@@ -1966,6 +1965,7 @@ SPEC CHECKSUMS:
   ExpoCamera: a3f3681963815533c24f698a22c239e68724fb99
   ExpoCellular: 463763547a7489d8fc68d3cc539b666f308a0fe9
   ExpoClipboard: ecbf3edb5dcb460fdefca945923c38f8ad6c7859
+  ExpoContacts: f38a91d87fa5e5e25ef144f2619de24fdd0f9eb7
   ExpoCrypto: f1c0cbaa168759159e781abf16cf8055a9a1a624
   ExpoDevice: 30d5e44aff42048ab016fa0c37a51fdb6b1f8608
   ExpoDocumentPicker: 015978166ecdb556dbeff1db7413a051f8c03bc7
