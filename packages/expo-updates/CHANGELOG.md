@@ -11,6 +11,7 @@
 - Add more failure logs in asset download. ([#26268](https://github.com/expo/expo/pull/26268) by [@wschurman](https://github.com/wschurman))
 - Add timer capability to Logger. ([#26454](https://github.com/expo/expo/pull/26454), [#26477](https://github.com/expo/expo/pull/26477) by [@wschurman](https://github.com/wschurman))
 - Add assets:verify command to CLI. ([#26756](https://github.com/expo/expo/pull/26756) by [@douglowder](https://github.com/douglowder))
+- Fix fingerprint runtime version policy. Calculate fingerprint at build time. ([#26901](https://github.com/expo/expo/pull/26901) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 
