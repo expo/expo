@@ -39,13 +39,14 @@ class DevMenuAppInstance: DevMenuRCTAppDelegate {
 
   override func sourceURL(for bridge: RCTBridge) -> URL {
     #if DEBUG
-    if let packagerHost = jsPackagerHost() {
-      return RCTBundleURLProvider.jsBundleURL(
+    if let packagerHost = jsPackagerHost(),
+      let url = RCTBundleURLProvider.jsBundleURL(
         forBundleRoot: "index",
         packagerHost: packagerHost,
         enableDev: true,
         enableMinification: false,
-        inlineSourceMap: false)
+        inlineSourceMap: false) {
+      return url
     }
     #endif
     return jsSourceUrl()
