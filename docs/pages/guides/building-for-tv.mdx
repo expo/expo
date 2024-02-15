@@ -47,6 +47,30 @@ You will need:
 
 > **Info** If you are starting with an SDK 49 project, you will need to [upgrade to SDK 50 or higher](/workflow/upgrading-expo-sdk-walkthrough/) before proceeding through the following steps.
 
+## Supported modules
+
+At this time, TV applications work with the following packages and APIs listed in our Expo API docs.
+
+- [AppleAuthentication](/versions/latest/sdk/apple-authentication/)
+- [Application](/versions/latest/sdk/application/)
+- [Asset](/versions/latest/sdk/asset/)
+- [AV](/versions/latest/sdk/av/)
+- [BlurView](/versions/latest/sdk/blur-view/)
+- [Crypto](/versions/latest/sdk/crypto/)
+- [Device](/versions/latest/sdk/device/)
+- [FileSystem](/versions/latest/sdk/filesystem/)
+- [FlashList](/versions/latest/sdk/flash-list/)
+- [Font](/versions/latest/sdk/font/)
+- [Image](/versions/latest/sdk/image)
+- [KeepAwake](/versions/latest/sdk/keep-awake/)
+- [LinearGradient](/versions/latest/sdk/linear-gradient/)
+- [Localization](/versions/latest/sdk/localization/)
+- [Reanimated](/versions/latest/sdk/reanimated/)
+- [SplashScreen](/versions/latest/sdk/splash-screen/)
+- [Updates](/versions/latest/sdk/updates/)
+
+TV also works with react-navigation, react-native-video, and many other commonly used 3rd party React Native libraries.
+
 ## Limitations
 
 Certain Expo modules are not supported at this time, most notably:
@@ -105,10 +129,10 @@ Verify that this plugin appears in **app.json**:
  To see additional information on the plugin's actions during prebuild, you can set [debug environment variables](https://github.com/debug-js/debug#conventions) before running prebuild. (See also our documentation on [Expo CLI environment variables](/more/expo-cli/#environment-variables).)
 
 <Terminal cmd={[
-  '# See all Expo CLI and config plugin debug information'
+  '# See all Expo CLI and config plugin debug information',
   'export DEBUG=expo:*',
   '',
-  '# See only debug information for the TV plugin'
+  '# See only debug information for the TV plugin',
   'export DEBUG=expo:react-native-tvos:config-tv']}
 />
 
