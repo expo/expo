@@ -20,17 +20,6 @@ using PromiseInvocationBlock = void (^)(RCTPromiseResolveBlock resolveWrapper, R
 
 void callPromiseSetupWithBlock(jsi::Runtime &runtime, std::shared_ptr<react::CallInvoker> jsInvoker, std::shared_ptr<react::Promise> promise, PromiseInvocationBlock setupBlock);
 
-#pragma mark - Classes
-
-using ClassConstructor = std::function<void(jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count)>;
-
-std::shared_ptr<jsi::Function> createClass(jsi::Runtime &runtime, const char *name, ClassConstructor constructor);
-
-/**
- Creates a new object, using the provided object as the prototype.
- */
-std::shared_ptr<jsi::Object> createObjectWithPrototype(jsi::Runtime &runtime, std::shared_ptr<jsi::Object> prototype);
-
 #pragma mark - Weak objects
 
 /**

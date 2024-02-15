@@ -61,7 +61,7 @@ void decorateObjectWithProperties(
       jsi::Value(runtime, *setter.toJSFunction(runtime,
                                                jsiInteropModuleRegistry))
     );
-    common::definePropertyOnJSIObject(runtime, jsObject, name.c_str(), std::move(descriptor));
+    common::defineProperty(runtime, jsObject, name.c_str(), std::move(descriptor));
   }
 }
 
@@ -226,8 +226,7 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
     auto descriptor = JavaScriptObject::preparePropertyDescriptor(runtime, 0);
     descriptor.setProperty(runtime, "value", jsi::Value(runtime, nativeConstructor));
 
-    common::definePropertyOnJSIObject(runtime, &prototype, nativeConstructorKey.c_str(),
-                                      std::move(descriptor));
+    common::defineProperty(runtime, &prototype, nativeConstructorKey.c_str(), std::move(descriptor));
 
     moduleObject->setProperty(
       runtime,

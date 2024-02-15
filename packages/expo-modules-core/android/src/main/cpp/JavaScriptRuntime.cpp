@@ -177,7 +177,7 @@ void JavaScriptRuntime::installMainObject() {
 
   descriptor.setProperty(*runtime, "value", jsi::Value(*runtime, *mainObject));
 
-  common::definePropertyOnJSIObject(
+  common::defineProperty(
     *runtime,
     &global,
     "expo",

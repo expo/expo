@@ -167,20 +167,20 @@ public:
 - (nonnull EXJavaScriptObject *)createClass:(nonnull NSString *)name
                                 constructor:(nonnull ClassConstructorBlock)constructor
 {
-  expo::ClassConstructor jsConstructor = [self, constructor](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) {
+  expo::common::ClassConstructor jsConstructor = [self, constructor](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) {
     std::shared_ptr<jsi::Object> thisPtr = std::make_shared<jsi::Object>(thisValue.asObject(runtime));
     EXJavaScriptObject *caller = [[EXJavaScriptObject alloc] initWith:thisPtr runtime:self];
     NSArray<EXJavaScriptValue *> *arguments = expo::convertJSIValuesToNSArray(self, args, count);
 
     constructor(caller, arguments);
   };
-  std::shared_ptr<jsi::Function> klass = expo::createClass(*_runtime, [name UTF8String], jsConstructor);
+  std::shared_ptr<jsi::Function> klass = std::make_shared<jsi::Function>(expo::common::createClass(*_runtime, [name UTF8String], jsConstructor));
   return [[EXJavaScriptObject alloc] initWith:klass runtime:self];
 }
 
 - (nullable EXJavaScriptObject *)createObjectWithPrototype:(nonnull EXJavaScriptObject *)prototype
 {
-  std::shared_ptr<jsi::Object> object = expo::createObjectWithPrototype(*_runtime, [prototype getShared]);
+  std::shared_ptr<jsi::Object> object = std::make_shared<jsi::Object>(expo::common::createObjectWithPrototype(*_runtime, [prototype getShared].get()));
   return object ? [[EXJavaScriptObject alloc] initWith:object runtime:self] : nil;
 }
 

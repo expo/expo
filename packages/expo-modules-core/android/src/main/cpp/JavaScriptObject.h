@@ -137,7 +137,7 @@ private:
     auto cName = name->toStdString();
     jsi::Object descriptor = preparePropertyDescriptor(jsRuntime, options);
     descriptor.setProperty(jsRuntime, "value", jsi_type_converter<T>::convert(jsRuntime, value));
-    common::definePropertyOnJSIObject(jsRuntime, jsObject.get(), cName.c_str(), std::move(descriptor));
+    common::defineProperty(jsRuntime, jsObject.get(), cName.c_str(), std::move(descriptor));
   }
 };
 } // namespace expo
