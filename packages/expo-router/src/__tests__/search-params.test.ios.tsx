@@ -99,7 +99,7 @@ describe('replace', () => {
   });
 });
 
-it.only('can handle search params with special characters', async () => {
+it('can handle search params with special characters', async () => {
   renderRouter({
     index: () => null,
   });
