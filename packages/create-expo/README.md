@@ -32,17 +32,14 @@
 <!-- Body -->
 
 ```sh
-# With NPM
+# Usage for bun, npm, pnpm, and yarn
 npx create-expo
-
-# With Yarn
+bun create expo
+pnpm create expo
 yarn create expo
 
-# With pnpm
-pnpm create expo
-
-# With Bun
-bunx create-expo
+# Output help information with all available options
+npx create-expo --help
 ```
 
 Once you're up and running with Create Expo App, visit [this tutorial](https://docs.expo.dev/tutorial/planning/) for more information on building mobile apps with React.
@@ -52,7 +49,11 @@ Once you're up and running with Create Expo App, visit [this tutorial](https://d
 Create Expo App prepares an empty Expo project by default. You can choose to use a project with more prepared functionality. For that, you can start Create Expo App with the `--template` flag.
 
 ```sh
+# Pick from Expo's templates
 npx create-expo --template
+
+# Pick the expo-template-tabs template
+npx create-expo --template tabs
 ```
 
 ### npm templates
@@ -71,6 +72,10 @@ npx create-expo --template expo-template-blank@50
 npx create-expo --template ./path/to/template.tgz
 ```
 
+#### Private npm registry
+
+Create Expo App does not support private registries. In order to use a private template, use the local tarball option.
+
 ### GitHub templates
 
 Besides the templates provided by Expo, you can also create your own or use a 3rd party template directly from GitHub. The `--template` flag supports GitHub URLs, including branch, tag, or even specific commit.
@@ -79,8 +84,8 @@ Besides the templates provided by Expo, you can also create your own or use a 3r
 # Create from repository
 npx create-expo --template https://github.com/:owner/:repo
 
-# Create from repository using the `test` branch or tag
-npx create-expo --template https://github.com/:owner/:repo/tree/test
+# Create from repository using the `:ref` branch or tag
+npx create-expo --template https://github.com/:owner/:repo/tree/:ref
 
 # Create from repository using the `sdk-50` branch, and "templates/expo-template-bare-minimum" subdirectory
 npx create-expo --template https://github.com/expo/expo/tree/sdk-50/templates/expo-template-bare-minimum
@@ -102,8 +107,12 @@ Some characters aren't allowed in certain places, that's why Create Expo App app
 - Normalize the string using Unicode's normalization form "canonical composition" or `NFD`.
 - Remove all accent characters `u0300-u036f`.
 
-## Special files
+### Special files
 
 Due to some limitations with `npm pack`, some files are handled differently.
 
 - `gitignore` → Renamed to `.gitignore` due to `npm pack` skipping `.gitignore` files, see [npm/npm#1862](https://github.com/npm/npm/issues/1862)
+
+### Binary files
+
+Placeholder replacements only apply to non-binary files and folder names during unpacking. [These extensions](./src/createFileTransform.ts#L57) are left as-is without any modifications due to possible corrupting binary files.
