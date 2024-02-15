@@ -5,7 +5,6 @@ import {
 import { drawableFileTypes } from '@expo/cli/build/src/export/metroAssetLocalPath';
 import { resolveEntryPoint } from '@expo/config/paths';
 import { HashedAssetData } from '@expo/metro-config/build/transform-worker/getAssets';
-import assert from 'assert';
 import crypto from 'crypto';
 import { EmbeddedManifest } from 'expo-manifests';
 import fs from 'fs';
@@ -15,36 +14,14 @@ import path from 'path';
 
 import { filterPlatformAssetScales } from './filterPlatformAssetScales';
 
-function findUpProjectRoot(cwd: string): string | null {
-  if (['.', path.sep].includes(cwd)) {
-    return null;
-  }
-
-  if (fs.existsSync(path.join(cwd, 'package.json'))) {
-    return cwd;
-  } else {
-    return findUpProjectRoot(path.dirname(cwd));
-  }
-}
-
-/** Resolve the relative entry file using Expo's resolution method. */
-function getRelativeEntryPoint(projectRoot: string, platform: 'ios' | 'android'): string {
-  const entry = resolveEntryPoint(projectRoot, { platform });
-  if (entry) {
-    return path.relative(projectRoot, entry);
-  }
-  return entry;
-}
-
-(async function () {
-  const platform = process.argv[2] as 'ios' | 'android';
-  const projectRootArg = process.argv[3];
-  assert(projectRootArg, 'Must provide a valid project root');
-  const possibleProjectRoot = findUpProjectRoot(projectRootArg);
-  assert(possibleProjectRoot, 'Must provide a valid project root');
-  const destinationDir = process.argv[4];
+export async function createManifestAsync(
+  platform: 'ios' | 'android',
+  possibleProjectRoot: string,
+  destinationDir: string,
+  entryFileArg?: string
+): Promise<void> {
   const entryFile =
-    process.argv[5] ||
+    entryFileArg ||
     process.env.ENTRY_FILE ||
     getRelativeEntryPoint(possibleProjectRoot, platform) ||
     'index.js';
@@ -129,12 +106,18 @@ function getRelativeEntryPoint(projectRoot: string, platform: 'ios' | 'android')
   });
 
   fs.writeFileSync(path.join(destinationDir, 'app.manifest'), JSON.stringify(manifest));
-})().catch((e) => {
-  // Wrap in regex to make it easier for log parsers (like `@expo/xcpretty`) to find this error.
-  e.message = `@build-script-error-begin\n${e.message}\n@build-script-error-end\n`;
-  console.error(e);
-  process.exit(1);
-});
+}
+
+/**
+ * Resolve the relative entry file using Expo's resolution method.
+ */
+function getRelativeEntryPoint(projectRoot: string, platform: 'ios' | 'android'): string {
+  const entry = resolveEntryPoint(projectRoot, { platform });
+  if (entry) {
+    return path.relative(projectRoot, entry);
+  }
+  return entry;
+}
 
 function getAndroidResourceFolderName(asset: HashedAssetData) {
   return (drawableFileTypes as Set<string>).has(asset.type) ? 'drawable' : 'raw';

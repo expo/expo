@@ -1,5 +1,4 @@
 import { Android, ExpoConfig, IOS } from '@expo/config-types';
-import * as Fingerprint from '@expo/fingerprint';
 import { getRuntimeVersionForSDKVersion } from '@expo/sdk-runtime-versions';
 import fs from 'fs';
 import { boolish } from 'getenv';
@@ -13,6 +12,8 @@ export type ExpoConfigUpdates = Pick<
   ExpoConfig,
   'sdkVersion' | 'owner' | 'runtimeVersion' | 'updates' | 'slug'
 >;
+
+export const FINGERPRINT_RUNTIME_VERSION_SENTINEL = 'file:fingerprint';
 
 export function getExpoUpdatesPackageVersion(projectRoot: string): string | null {
   const expoUpdatesPackageJsonPath = resolveFrom.silent(projectRoot, 'expo-updates/package.json');
@@ -83,6 +84,11 @@ export async function getRuntimeVersionAsync(
   }
 
   if (typeof runtimeVersion === 'string') {
+    if (runtimeVersion === FINGERPRINT_RUNTIME_VERSION_SENTINEL) {
+      throw new Error(
+        `${FINGERPRINT_RUNTIME_VERSION_SENTINEL} is a reserved value for runtime version. To use a fingerprint runtime version, use the "fingerprintExperimental" runtime version policy.`
+      );
+    }
     return runtimeVersion;
   } else if (runtimeVersion.policy === 'appVersion') {
     return getAppVersion(config);
@@ -95,15 +101,15 @@ export async function getRuntimeVersionAsync(
     return getRuntimeVersionForSDKVersion(config.sdkVersion);
   } else if (runtimeVersion.policy === 'fingerprintExperimental') {
     console.warn(
-      "Use of the experimental 'fingerprintExperimental' runtime policy may result in unexpected system behavior."
+      `Use of the experimental '${runtimeVersion.policy}' runtime policy may result in unexpected system behavior.`
     );
-    return await Fingerprint.createProjectHashAsync(projectRoot);
+    return FINGERPRINT_RUNTIME_VERSION_SENTINEL;
   }
 
   throw new Error(
     `"${
       typeof runtimeVersion === 'object' ? JSON.stringify(runtimeVersion) : runtimeVersion
-    }" is not a valid runtime version. getRuntimeVersionAsync only supports a string, "sdkVersion", "appVersion", "nativeVersion" or "fingerprintExperimental" policy.`
+    }" is not a valid runtime version. getRuntimeVersionAsync only supports a string or one of the following policies: sdkVersion, appVersion, nativeVersion, fingerprintExperimental.`
   );
 }
 

@@ -2,14 +2,16 @@
 
 set -eo pipefail
 
+CREATE_UPDATES_RESOURCES_MODE="all"
+
 if [[ "$SKIP_BUNDLING" ]]; then
   echo "SKIP_BUNDLING enabled; skipping create-manifest-ios.sh."
-  exit 0;
+  CREATE_UPDATES_RESOURCES_MODE="only-fingerprint"
 elif [[ "$CONFIGURATION" == *Debug* ]]; then
   if [[ "$FORCE_BUNDLING" ]]; then
     echo "FORCE_BUNDLING enabled; continuing create-manifest-ios.sh."
   else
-    exit 0;
+    CREATE_UPDATES_RESOURCES_MODE="only-fingerprint"
   fi
 fi
 
@@ -19,7 +21,7 @@ DEST="$CONFIGURATION_BUILD_DIR"
 RESOURCE_BUNDLE_NAME="EXUpdates.bundle"
 RCT_METRO_PORT=${RCT_METRO_PORT:=8081}
 
-# For classic main project build phases integration, will be no-op to prevent duplicated app.manifest creation.
+# For classic main project build phases integration, will be no-op to prevent duplicated app.manifest or fingerprint creation.
 #
 # `$PROJECT_DIR` is passed by Xcode as the directory to the xcodeproj file.
 # in classic main project setup it is something like /path/to/app/ios
@@ -37,4 +39,5 @@ cd "$PROJECT_ROOT" || exit
 # We should get the physical path (/var/folders -> /private/var/folders) for metro to resolve correct files
 PROJECT_ROOT="$(pwd -P)"
 
-"${EXPO_UPDATES_PACKAGE_DIR}/scripts/with-node.sh" "${EXPO_UPDATES_PACKAGE_DIR}/utils/build/createManifest.js" ios "$PROJECT_ROOT" "$DEST/$RESOURCE_BUNDLE_NAME" "$ENTRY_FILE"
+"${EXPO_UPDATES_PACKAGE_DIR}/scripts/with-node.sh" "${EXPO_UPDATES_PACKAGE_DIR}/utils/build/createUpdatesResources.js" ios "$PROJECT_ROOT" "$DEST/$RESOURCE_BUNDLE_NAME" "$CREATE_UPDATES_RESOURCES_MODE" "$ENTRY_FILE"
+

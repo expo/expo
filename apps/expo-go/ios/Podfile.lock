@@ -2003,7 +2003,7 @@ SPEC CHECKSUMS:
   EXSplashScreen: d6d7ea9582e4ed7655cf893b32dca13ef0712279
   EXStructuredHeaders: 3b8ec10c65a4607dc976b6cdfa5136d2ea2ece19
   EXTaskManager: 81b2dfaaba6d9f9a4bc3e3e2a786a98004eb9e98
-  EXUpdates: eedf5578c7d6b9587e8dc81f35cf1f73efadca0f
+  EXUpdates: 7b69ed2ccee7b0a5fbb5363f6459b3732545fd8e
   EXUpdatesInterface: 4f787eeabc62c258f978ea4865c67adfb6b2f19f
   FBLazyVector: 84f6edbe225f38aebd9deaf1540a4160b1f087d7
   FBReactNativeSpec: c6ea14d5cfd8a86d2a6e5820f51a8e78e759f723
@@ -2016,7 +2016,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2
   GoogleMaps: a146f275ee429d14822178c7a841c03366ec92a1
   GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
-  hermes-engine: 0933c22606de894dccc3248ae93129951a6e8e6b
+  hermes-engine: 28e2e707bfbe85a3df99c3994b8de25f75006473
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libaom: 144606b1da4b5915a1054383c3a4459ccdb3c661
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
@@ -2105,6 +2105,6 @@ SPEC CHECKSUMS:
   Yoga: 64cd2a583ead952b0315d5135bf39e053ae9be70
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: 82c30c34489b3166ad869e6ed29c1e5e0e7ef5f5
+PODFILE CHECKSUM: ba2da38b1c358dd85d6beed85aa41ca1bb11d217
 
 COCOAPODS: 1.14.2
