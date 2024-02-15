@@ -39,7 +39,7 @@ body:
         - No (only happens in a standalone build)
         - No (web-only issue)
       description: |
-      While we accept reports for possible bugs within Expo Go itself, if you are reporting an issue within your standalone app that is not reproducible in Expo Go, you should test your code in a [development build](https://docs.expo.dev/develop/development-builds/introduction/) before submitting an issue. A development build is a much more accurate representation of how your standalone app will work, and many such issues can be resolved by troubleshooting with a development build.
+        While we accept reports for possible bugs within Expo Go itself, if you are reporting an issue within your standalone app that is not reproducible in Expo Go, you should test your code in a [development build](https://docs.expo.dev/develop/development-builds/introduction/) before submitting an issue. A development build is a much more accurate representation of how your standalone app will work, and many such issues can be resolved by troubleshooting with a development build.
     validations:
       required: true
   - type: markdown
