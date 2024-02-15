@@ -73,7 +73,7 @@ final class ExpoGoExpoUpdatesModule: Module {
 
     AsyncFunction("reload") { (promise: Promise) in
       guard let config = updatesKernelService.configForScopeKey(scopeKey) else {
-        throw UpdatesDisabledException()
+        throw UpdatesDisabledException("Updates.reloadAsync()")
       }
 
       updatesKernelService.requestRelaunchForScopeKey(scopeKey) { success in
