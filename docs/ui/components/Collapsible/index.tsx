@@ -65,15 +65,14 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
     return (
       <details id={heading.current.slug} css={detailsStyle} open={isOpen} data-testid={testID}>
         <summary css={summaryStyle} className="group">
-          <div css={markerWrapperStyle} onClick={onToggle}>
+          <div css={markerWrapperStyle}>
             <TriangleDownIcon className="icon-sm text-icon-default" css={markerStyle} />
           </div>
           <LinkBase
             href={'#' + heading.current.slug}
-            onClick={onToggle}
             ref={heading.current.ref}
             className="inline-flex gap-1.5 items-center scroll-m-5 relative">
-            <DEMI>{summary}</DEMI>
+            <DEMI onClick={onToggle}>{summary}</DEMI>
             <PermalinkIcon className="icon-sm inline-flex invisible group-hover:visible group-focus-visible:visible" />
           </LinkBase>
         </summary>
