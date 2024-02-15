@@ -19,6 +19,29 @@ body:
         [Learn more about creating a minimal reproducible example](https://stackoverflow.com/help/mcve).
     validations:
       required: true
+  - type: dropdown
+    attributes:
+      label: What platform(s) does this occur on?
+      multiple: true
+      options:
+        - Android
+        - iOS
+        - Web
+    validations:
+      required: false
+  - type: dropdown
+    attributes:
+      label: Did you reproduce this issue in a development build?
+      multiple: false
+      options:
+        - Yes
+        - No (tested in Expo Go)
+        - No (only happens in a standalone build)
+        - No (web-only issue)
+      description: |
+      While we accept reports for possible bugs within Expo Go itself, if you are reporting an issue within your standalone app that is not reproducible in Expo Go, you should test your code in a [development build](https://docs.expo.dev/develop/development-builds/introduction/) before submitting an issue. A development build is a much more accurate representation of how your standalone app will work, and many such issues can be resolved by troubleshooting with a development build.
+    validations:
+      required: true
   - type: markdown
     attributes:
       value: |
@@ -36,5 +59,11 @@ body:
     attributes:
       label: Environment
       description: Run the `npx expo-env-info` command and paste its output in the field below.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expo Doctor Diagnostics
+      description: Run the `npx expo-doctor@latest` command on your minimal reproduction and paste its output in the field below. If Doctor reports any errors, fix them before submitting the issue.
     validations:
       required: true
