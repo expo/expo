@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const assert_1 = __importDefault(require("assert"));
-const createFingerprintAsync_1 = require("./createFingerprintAsync");
-const createManifestAsync_1 = require("./createManifestAsync");
+const createFingerprintForBuildAsync_1 = require("./createFingerprintForBuildAsync");
+const createManifestForBuildAsync_1 = require("./createManifestForBuildAsync");
 const findUpProjectRoot_1 = require("./findUpProjectRoot");
 (async function () {
     const platform = process.argv[2];
@@ -25,9 +25,9 @@ const findUpProjectRoot_1 = require("./findUpProjectRoot");
     const entryFileArg = process.argv[6];
     await Promise.all([
         createUpdatesResourcesMode === 'all'
-            ? (0, createManifestAsync_1.createManifestAsync)(platform, possibleProjectRoot, destinationDir, entryFileArg)
+            ? (0, createManifestForBuildAsync_1.createManifestForBuildAsync)(platform, possibleProjectRoot, destinationDir, entryFileArg)
             : null,
-        (0, createFingerprintAsync_1.createFingerprintAsync)(platform, possibleProjectRoot, destinationDir),
+        (0, createFingerprintForBuildAsync_1.createFingerprintForBuildAsync)(platform, possibleProjectRoot, destinationDir),
     ]);
 })().catch((e) => {
     // Wrap in regex to make it easier for log parsers (like `@expo/xcpretty`) to find this error.

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createManifestAsync = void 0;
+exports.createManifestForBuildAsync = void 0;
 const exportEmbedAsync_1 = require("@expo/cli/build/src/export/embed/exportEmbedAsync");
 const metroAssetLocalPath_1 = require("@expo/cli/build/src/export/metroAssetLocalPath");
 const paths_1 = require("@expo/config/paths");
@@ -11,7 +11,7 @@ const crypto_1 = __importDefault(require("crypto"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const filterPlatformAssetScales_1 = require("./filterPlatformAssetScales");
-async function createManifestAsync(platform, possibleProjectRoot, destinationDir, entryFileArg) {
+async function createManifestForBuildAsync(platform, possibleProjectRoot, destinationDir, entryFileArg) {
     const entryFile = entryFileArg ||
         process.env.ENTRY_FILE ||
         getRelativeEntryPoint(possibleProjectRoot, platform) ||
@@ -83,7 +83,7 @@ async function createManifestAsync(platform, possibleProjectRoot, destinationDir
     });
     fs_1.default.writeFileSync(path_1.default.join(destinationDir, 'app.manifest'), JSON.stringify(manifest));
 }
-exports.createManifestAsync = createManifestAsync;
+exports.createManifestForBuildAsync = createManifestForBuildAsync;
 /**
  * Resolve the relative entry file using Expo's resolution method.
  */

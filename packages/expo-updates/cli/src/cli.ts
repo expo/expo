@@ -22,6 +22,8 @@ const commands: { [command: string]: () => Promise<Command> } = {
   'codesigning:configure': () =>
     import('./configureCodeSigning.js').then((i) => i.configureCodeSigning),
   'assets:verify': () => import('./assetsVerify.js').then((i) => i.expoAssetsVerify),
+  'fingerprint:generate': () =>
+    import('./generateFingerprint.js').then((i) => i.generateFingerprint),
 };
 
 const args = arg(

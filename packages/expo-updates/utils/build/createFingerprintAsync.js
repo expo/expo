@@ -22,57 +22,24 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createFingerprintAsync = void 0;
-const config_1 = require("@expo/config");
 const Fingerprint = __importStar(require("@expo/fingerprint"));
-const fs_1 = __importDefault(require("fs"));
-const path_1 = __importDefault(require("path"));
 const workflow_1 = require("./workflow");
-async function createFingerprintAsync(platform, possibleProjectRoot, destinationDir) {
-    // Remove projectRoot validation when we no longer support React Native <= 62
-    let projectRoot;
-    if (fs_1.default.existsSync(path_1.default.join(possibleProjectRoot, 'package.json'))) {
-        projectRoot = possibleProjectRoot;
-    }
-    else if (fs_1.default.existsSync(path_1.default.join(possibleProjectRoot, '..', 'package.json'))) {
-        projectRoot = path_1.default.resolve(possibleProjectRoot, '..');
-    }
-    else {
-        throw new Error('Error loading app package. Ensure there is a package.json in your app.');
-    }
-    process.chdir(projectRoot);
-    const { exp: config } = (0, config_1.getConfig)(projectRoot, {
-        isPublicConfig: true,
-        skipSDKVersionRequirement: true,
-    });
-    const runtimeVersion = config[platform]?.runtimeVersion ?? config.runtimeVersion;
-    if (!runtimeVersion || typeof runtimeVersion === 'string') {
-        return;
-    }
-    if (runtimeVersion.policy !== 'fingerprintExperimental') {
-        // not a policy that needs fingerprinting
-        return;
-    }
+async function createFingerprintAsync(projectRoot, platform) {
     const workflow = await (0, workflow_1.resolveWorkflowAsync)(projectRoot, platform);
-    let fingerprint;
     if (workflow === 'generic') {
-        fingerprint = await Fingerprint.createFingerprintAsync(projectRoot, {
+        return await Fingerprint.createFingerprintAsync(projectRoot, {
             platforms: [platform],
         });
     }
     else {
         // ignore everything in native directories to ensure fingerprint is the same
         // no matter whether project has been prebuilt
-        fingerprint = await Fingerprint.createFingerprintAsync(projectRoot, {
+        return await Fingerprint.createFingerprintAsync(projectRoot, {
             platforms: [platform],
             ignorePaths: ['/android/**/*', '/ios/**/*'],
         });
     }
-    console.log(JSON.stringify(fingerprint.sources));
-    fs_1.default.writeFileSync(path_1.default.join(destinationDir, 'fingerprint'), fingerprint.hash);
 }
 exports.createFingerprintAsync = createFingerprintAsync;
