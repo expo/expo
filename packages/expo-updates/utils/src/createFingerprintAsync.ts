@@ -39,19 +39,21 @@ export async function createFingerprintAsync(
 
   const workflow = await resolveWorkflowAsync(projectRoot, platform);
 
-  let fingerprint: string;
+  let fingerprint: Fingerprint.Fingerprint;
   if (workflow === 'generic') {
-    fingerprint = await Fingerprint.createProjectHashAsync(projectRoot, {
+    fingerprint = await Fingerprint.createFingerprintAsync(projectRoot, {
       platforms: [platform],
     });
   } else {
     // ignore everything in native directories to ensure fingerprint is the same
     // no matter whether project has been prebuilt
-    fingerprint = await Fingerprint.createProjectHashAsync(projectRoot, {
+    fingerprint = await Fingerprint.createFingerprintAsync(projectRoot, {
       platforms: [platform],
       ignorePaths: ['/android/**/*', '/ios/**/*'],
     });
   }
 
-  fs.writeFileSync(path.join(destinationDir, 'fingerprint'), fingerprint);
+  console.log(JSON.stringify(fingerprint.sources));
+
+  fs.writeFileSync(path.join(destinationDir, 'fingerprint'), fingerprint.hash);
 }
