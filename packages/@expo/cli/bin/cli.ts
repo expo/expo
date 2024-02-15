@@ -13,7 +13,7 @@ if (boolish('EXPO_DEBUG', false)) {
 
 const defaultCmd = 'start';
 
-export type Command = (argv?: string[]) => void;
+export type Command = (argv?: string[], passThroughArgs?: string[]) => void;
 
 const commands: { [command: string]: () => Promise<Command> } = {
   // Add a new command here
@@ -40,6 +40,13 @@ const commands: { [command: string]: () => Promise<Command> } = {
   whoami: () => import('../src/whoami/index.js').then((i) => i.expoWhoami),
 };
 
+// NOTE(cedric): To support "pass-through" arguments, we need to split `-- <pass-through>` before parsing the args
+const passThroughArgIndex = process.argv.indexOf('--');
+const [argv, passThroughArgs] =
+  passThroughArgIndex >= 0
+    ? [process.argv.slice(2, passThroughArgIndex), process.argv.slice(passThroughArgIndex + 1)]
+    : [process.argv.slice(2), []];
+
 const args = arg(
   {
     // Types
@@ -54,6 +61,7 @@ const args = arg(
     '-h': '--help',
   },
   {
+    argv,
     permissive: true,
   }
 );
@@ -170,7 +178,7 @@ if (!isSubcommand) {
   if (subcommand in migrationMap) {
     const replacement = migrationMap[subcommand];
     console.log();
-    const instruction = subcommand === 'upgrade' ? 'follow this guide' : 'use'
+    const instruction = subcommand === 'upgrade' ? 'follow this guide' : 'use';
     console.log(
       chalk.yellow`  {gray $} {bold expo ${subcommand}} is not supported in the local CLI, please ${instruction} {bold ${replacement}} instead`
     );
@@ -199,7 +207,7 @@ process.on('SIGINT', () => process.exit(0));
 process.on('SIGTERM', () => process.exit(0));
 
 commands[command]().then((exec) => {
-  exec(commandArgs);
+  exec(commandArgs, passThroughArgs);
 
   if (!boolish('EXPO_NO_TELEMETRY', false)) {
     // NOTE(EvanBacon): Track some basic telemetry events indicating the command
