@@ -198,9 +198,8 @@ export function getFiles(
   }
 
   if (mode && !['development', 'test', 'production'].includes(mode)) {
-    throw new Error(
-      `Environment variable "NODE_ENV=${mode}" is invalid. Valid values are "development", "test", and "production`
-    );
+    console.warn(chalk.yellow(`Environment variable "NODE_ENV=${mode}" is non-conventional and might cause development code to be bundled in production.`));
+    console.warn(chalk.yellow('Use "development", "test", or "production" for NODE_ENV instead.'))
   }
 
   if (!mode) {

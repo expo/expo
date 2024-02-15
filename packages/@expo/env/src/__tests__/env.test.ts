@@ -67,9 +67,15 @@ describe(getFiles, () => {
       expect.stringContaining('Proceeding without mode-specific .env')
     );
   });
-  it(`throws if NODE_ENV is not valid`, () => {
-    expect(() => getFiles('invalid')).toThrowErrorMatchingInlineSnapshot(
-      `"Environment variable "NODE_ENV=invalid" is invalid. Valid values are "development", "test", and "production"`
+  it(`warns if NODE_ENV is not valid`, () => {
+    const warnSpy = jest.spyOn(console, 'warn');
+
+    expect(() => getFiles('invalid')).not.toThrow();
+    expect(warnSpy).toBeCalledWith(
+      expect.stringContaining('"NODE_ENV=invalid" is non-conventional')
+    );
+    expect(warnSpy).toBeCalledWith(
+      expect.stringContaining('Use "development", "test", or "production" for NODE_ENV instead')
     );
   });
 });
