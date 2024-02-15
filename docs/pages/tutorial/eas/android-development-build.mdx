@@ -11,9 +11,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
 
-In this chapter, let's create our development build for Android devices and [emulators](/workflow/android-studio-emulator/) with EAS Build.
-
-## Trigger a build
+In this chapter, we're going to create a development build that can run Android devices and [emulators](/workflow/android-studio-emulator/) with EAS Build.
 
 For Android devices or emulators, the process of creating and running a build remains the same. The only difference comes during the installation of the development build on each.
 
@@ -23,9 +21,9 @@ For Android devices or emulators, the process of creating and running a build re
 
 For Android devices or emulators, the development build must be in the [**.apk** file format](/build-reference/apk/). While the default Android format is **.aab**, which is ideal for Google Play Store distribution, it cannot be directly installed on devices or emulators.
 
-To create a **.apk**, make sure:
+To create a **.apk**, in **eas.json**, make sure the under **build.development** profile:
 
-- The `developmentClient` is set to `true` in **eas.json**, which is the default configuration.
+- The `developmentClient` is set to `true` in **eas.json**.
 - Then, run the `eas build` command with `android` as the platform and `development` as the build profile:
 
 <Terminal cmd={['$ eas build --platform android --profile development']} />
@@ -184,8 +182,8 @@ In this chapter, we:
 ## Next step
 
 <BoxLink
-  title="Create and run a cloud build for iOS device"
+  title="Create and run a cloud build for iOS Simulator"
   Icon={BookOpen02Icon}
-  description="In the next chapter, let's create a development build for iOS, install it on a device, and get it running."
-  href="/tutorial/eas/ios-development-build-for-devices/"
+  description="In the next chapter, Learn how to configure a development build for iOS Simulators using EAS Build."
+  href="/tutorial/eas/ios-development-build-for-simulators/"
 />

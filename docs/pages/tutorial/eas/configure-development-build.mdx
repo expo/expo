@@ -191,8 +191,8 @@ This is the default configuration for **eas.json**. In any project, when we run 
 
 Currently, our focus is on the `development` profile, which includes the following configuration:
 
-- [`developmentClient`](/eas/json/#developmentclient): Enabled (`true`) for creating a debug build. It loads the app using the `expo-dev-client` library, which provides development tools and generates a build artifact for device or emulator/simulator installation.
-- [`distribution`](/eas/json/#distribution): Configured as `internal` to prepare the build for internal distribution.
+- [`developmentClient`](/eas/json/#developmentclient): Enabled (`true`) for creating a debug build. It loads the app using the `expo-dev-client` library, which provides development tools and generates a build artifact for device or emulator/simulator installation and allows using the app for local development as it supports updating the JavaScript on the fly.
+- [`distribution`](/eas/json/#distribution): Configured as `internal` to indicate that we want to share the build internally (instead of uploading it on the app stores).
 
 > **Note**: Builds are highly customizable and allow further configuration. This includes platform-specific options and the ability to extend configurations from one build profile to another. Learn more about customizing [build profiles](/build/eas-json/#build-profiles).
 
