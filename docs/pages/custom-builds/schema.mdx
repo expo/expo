@@ -1200,9 +1200,9 @@ build:
 
 #### `eas/find_and_upload_build_artifacts`
 
-> **Warning** You can currently upload each artifact type only once per workflow.
+> **Warning** **You can currently upload each artifact type only once per workflow.**<br />If you use [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts) while having [`buildArtifactPaths`](/eas/json/#buildartifactpaths) configured in your build profile and the step finds and uploads some build artifacts, any following `eas/upload_artifact` step will fail.<br />To solve this, for now, we recommend removing `buildArtifactPaths` from custom build's profiles and uploading artifacts manually with `eas/upload_artifact` in the YAML workflow if you need to call it there.
 
-Automatically finds and uploads application archive, other build artifacts, and Xcode logs looking at default locations and respecting `${ eas.job.buildArtifactPaths }` setting. Uploads found artifacts to the EAS servers.
+Automatically finds and uploads application archive, other build artifacts, and Xcode logs looking at default locations and respecting [`buildArtifactPaths`](/eas/json#buildartifactpaths) setting. Uploads found artifacts to the EAS servers.
 
 ```yaml example.yml
 build:
@@ -1264,9 +1264,9 @@ build:
 
 #### `eas/upload_artifact`
 
-Uploads a build artifact.
+Uploads build artifacts from provided paths.
 
-> **Warning** You can currently upload each artifact type only once per workflow.
+> **Warning** **You can currently upload each artifact type only once per workflow.**<br />If you use [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts) while having [`buildArtifactPaths`](/eas/json/#buildartifactpaths) configured in your build profile and the step finds and uploads some build artifacts, any following `eas/upload_artifact` step will fail.<br />To solve this, for now, we recommend removing `buildArtifactPaths` from custom build's profiles and uploading artifacts manually with `eas/upload_artifact` in the YAML workflow if you need to call it there.
 
 For example, a workflow with the following `steps` will upload an artifact to the EAS servers:
 
@@ -1281,17 +1281,18 @@ build:
         inputs:
           path: fixtures/app-debug.apk
     - eas/upload_artifact:
-        name: Upload build artifact
+        name: Upload artifacts
         inputs:
           type: build-artifact
-          path: assets/icon.png
+          path: |
+            assets/*.jpg
+            assets/*.png
 ```
 
-| Property      | Description                                                                                                                                                     |
-| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`        | The name of the step in the reusable function that shows in the build logs.                                                                                     |
-| `inputs.path` | **string** Required. The path to the artifact that is uploaded to the EAS servers.                                                                              |
-| `inputs.type` | **string** The type of artifact that is uploaded to the EAS servers. Allowed values: `application-archive`, `build-artifact`. Defaults to `application-archive` |
+| Input  | Description                                                                                                                                                                                                                               |
+|--------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `path` | **string** Required. Path or newline-delimited list of paths to the artifacts to upload to EAS servers. You can use `*` wildcard and other [glob patterns that `fast-glob` supports](https://github.com/mrmlnc/fast-glob#pattern-syntax). |
+| `type` | **string** The type of artifact that is uploaded to the EAS servers. Allowed values: `application-archive`, `build-artifact`. Defaults to `application-archive`.                                                                          |
 
 <BoxLink
   title="eas/upload_artifact source code"
