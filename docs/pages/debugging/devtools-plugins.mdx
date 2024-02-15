@@ -67,6 +67,8 @@ After installing the dev tools plugin and adding the connecting required code to
 
 Expo provides some dev tools plugins for common debugging tasks. Follow the instructions below to start using them in your app.
 
+> Each of these dev tools plugin hooks will only enable the plugin in development mode, so you don't need to worry about this code affecting your production builds.
+
 ### React Navigation
 
 Inspired by [`@react-navigation/devtools`](https://github.com/react-navigation/react-navigation/tree/main/packages/devtools) and [`flipper-plugin-react-navigation`](https://github.com/react-navigation/react-navigation/tree/main/packages/flipper-plugin-react-navigation), the React Navigation dev tools plugin allows seeing history of [React Navigation](https://reactnavigation.org/) actions and state. You can also rewind to previous points in your navigation history and send deep links to your app. Since Expo Router is built upon React Navigation, this plugin is fully compatible with [Expo Router](/router/introduction).
