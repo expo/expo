@@ -198,8 +198,17 @@ export function getFiles(
   }
 
   if (mode && !['development', 'test', 'production'].includes(mode)) {
-    console.warn(chalk.yellow(`Environment variable "NODE_ENV=${mode}" is non-conventional and might cause development code to be bundled in production.`));
-    console.warn(chalk.yellow('Use "development", "test", or "production" for NODE_ENV instead.'))
+    if (silent) {
+      debug(
+        `NODE_ENV="${mode}" is non-conventional and might cause development code to run in production. Use "development", "test", or "production" instead.`
+      );
+    } else {
+      console.warn(
+        chalk.yellow(
+          `"NODE_ENV=${mode}" is non-conventional and might cause development code to run in production. Use "development", "test", or "production" instead`
+        )
+      );
+    }
   }
 
   if (!mode) {

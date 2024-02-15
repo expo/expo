@@ -75,8 +75,18 @@ describe(getFiles, () => {
       expect.stringContaining('"NODE_ENV=invalid" is non-conventional')
     );
     expect(warnSpy).toBeCalledWith(
-      expect.stringContaining('Use "development", "test", or "production" for NODE_ENV instead')
+      expect.stringContaining('Use "development", "test", or "production"')
     );
+
+    warnSpy.mockClear();
+  });
+  it(`does not warn if NODE_ENV is not valid when in silent mode`, () => {
+    const warnSpy = jest.spyOn(console, 'warn');
+
+    expect(() => getFiles('invalid', { silent: true })).not.toThrow();
+    expect(warnSpy).not.toBeCalled();
+
+    warnSpy.mockClear();
   });
 });
 
