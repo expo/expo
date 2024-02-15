@@ -112,6 +112,12 @@ export interface VideoViewProps extends ViewProps {
      * @platform ios 14.2+
      */
     startsPictureInPictureAutomatically?: boolean;
+    /**
+     * Determines whether the player should continue playing after the app enters the background.
+     * @default false
+     * @platform ios
+     */
+    staysActiveInBackground?: boolean;
 }
 export {};
 //# sourceMappingURL=VideoView.types.d.ts.map

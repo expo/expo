@@ -13,6 +13,7 @@ export default function VideoScreen() {
     React.useState(false);
   const [showNativeControls, setShowNativeControls] = React.useState(true);
   const [requiresLinearPlayback, setRequiresLinearPlayback] = React.useState(false);
+  const [staysActiveInBackground, setStaysActiveInBackground] = React.useState(false);
 
   const enterFullscreen = useCallback(() => {
     ref.current?.enterFullscreen();
@@ -71,6 +72,7 @@ export default function VideoScreen() {
         contentPosition={{ dx: 0, dy: 0 }}
         allowsFullscreen
         showsTimecodes={false}
+        staysActiveInBackground={staysActiveInBackground}
         requiresLinearPlayback={requiresLinearPlayback}
         allowsPictureInPicture={allowPictureInPicture}
         startsPictureInPictureAutomatically={startPictureInPictureAutomatically}
@@ -128,6 +130,15 @@ export default function VideoScreen() {
             titleStyle={styles.switchTitle}
           />
         </View>
+        <View style={styles.row}>
+          <TitledSwitch
+            title="Stays active in background"
+            value={staysActiveInBackground}
+            setValue={setStaysActiveInBackground}
+            style={styles.switch}
+            titleStyle={styles.switchTitle}
+          />
+        </View>
       </ScrollView>
     </View>
   );
@@ -142,6 +153,11 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
+    justifyContent: 'space-evenly',
+  },
+  picker: {
+    alignSelf: 'stretch',
+    backgroundColor: '#e0e0e0',
   },
   switch: {
     flexDirection: 'column',

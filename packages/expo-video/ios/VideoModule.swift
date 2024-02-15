@@ -3,6 +3,9 @@
 import ExpoModulesCore
 
 public final class VideoModule: Module {
+  internal static let nowPlayingManager = NowPlayingManager()
+  internal static let videoViewManager = VideoViewManager()
+
   public func definition() -> ModuleDefinition {
     Name("ExpoVideo")
 
@@ -57,6 +60,10 @@ public final class VideoModule: Module {
 
       Prop("startsPictureInPictureAutomatically") { (view, startsPictureInPictureAutomatically: Bool?) in
         view.startPictureInPictureAutomatically = startsPictureInPictureAutomatically ?? false
+      }
+
+      Prop("staysActiveInBackground") { (view, staysActiveInBackground: Bool?) in
+        view.staysActiveInBackground = staysActiveInBackground ?? false
       }
 
       AsyncFunction("enterFullscreen") { view in
@@ -128,6 +135,14 @@ public final class VideoModule: Module {
       Function("replay") { player in
         player.pointer.seek(to: CMTime.zero)
       }
+    }
+
+    OnAppEntersBackground {
+      VideoModule.videoViewManager.onAppBackgrounded()
+    }
+
+    OnAppEntersForeground {
+      VideoModule.videoViewManager.onAppForegrounded()
     }
   }
 }

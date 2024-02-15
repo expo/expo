@@ -9,6 +9,9 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
   var player: AVPlayer? {
     didSet {
       playerViewController.player = player
+      // We have to update the now playing by ourselves, otherwise it stops working when the video is backgrounded
+      // (view controller updates it based on player, which has to be nil)
+      playerViewController.updatesNowPlayingInfoCenter = false
     }
   }
 
@@ -26,15 +29,17 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
       if allowPictureInPicture {
         // We need to set the audio session when the prop first changes to allow, because the PiP button in the native
         // controls shows up automatically only when a correct audioSession category is set.
-        let audioSession = AVAudioSession.sharedInstance()
-        do {
-          try audioSession.setCategory(.playback, mode: .default)
-          try audioSession.setActive(true)
-        } catch {
-          log.warn("Failed to set the audio session category. This might break Picture in Picture functionality")
-        }
+        switchToActiveAudioSessionOrWarn(warning: "Failed to set the audio session category. This might break Picture in Picture functionality")
       }
       playerViewController.allowsPictureInPicturePlayback = allowPictureInPicture
+    }
+  }
+
+  var staysActiveInBackground = false {
+    didSet {
+      if staysActiveInBackground {
+        switchToActiveAudioSessionOrWarn(warning: "Failed to set the audio session category. Video may pause when the app enters background")
+      }
     }
   }
 
@@ -54,12 +59,18 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
   public required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
 
+    VideoModule.videoViewManager.register(videoView: self)
+
     clipsToBounds = true
     playerViewController.delegate = self
     playerViewController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     playerViewController.view.backgroundColor = .clear
 
     addSubview(playerViewController.view)
+  }
+
+  deinit {
+    VideoModule.videoViewManager.unregister(videoView: self)
   }
 
   func enterFullscreen() {
@@ -108,6 +119,20 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
     }
   }
 
+  // MARK: - Lifecycle
+
+  func onAppBackgrounded() {
+    if staysActiveInBackground {
+      setPlayerTracksEnabled(enabled: false)
+    } else {
+      player?.pause()
+    }
+  }
+
+  func onAppForegrounded() {
+    setPlayerTracksEnabled(enabled: true)
+  }
+
   // MARK: - AVPlayerViewControllerDelegate
 
   public func playerViewController(
@@ -141,5 +166,40 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
 
   public func playerViewControllerDidStopPictureInPicture(_ playerViewController: AVPlayerViewController) {
     onPictureInPictureStop()
+  }
+
+  // MARK: - Utils
+
+  /**
+   * iOS automatically pauses videos when the app enters the background. Only way of avoiding this is to detach the player from the playerLayer.
+   * Typical way of doing this for `AVPlayerViewController` is setting `playerViewController.player = nil`, but that makes the
+   * video invisible for around a second after foregrounding, disabling the tracks requires more code, but works a lot faster.
+   */
+  private func setPlayerTracksEnabled(enabled: Bool) {
+    if let player, let tracks = player.currentItem?.tracks {
+      tracks.forEach { track in
+        guard let assetTrack = track.assetTrack else {
+          return
+        }
+
+        if assetTrack.hasMediaCharacteristic(AVMediaCharacteristic.visual) {
+          track.isEnabled = enabled
+        }
+      }
+    }
+  }
+
+  private func switchToActiveAudioSession() throws {
+    let audioSession = AVAudioSession.sharedInstance()
+    try audioSession.setCategory(.playback, mode: .default)
+    try audioSession.setActive(true)
+  }
+
+  private func switchToActiveAudioSessionOrWarn(warning: String) {
+    do {
+      try switchToActiveAudioSession()
+    } catch {
+      log.warn(warning)
+    }
   }
 }
