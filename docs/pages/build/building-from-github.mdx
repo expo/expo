@@ -14,14 +14,18 @@ This guide explains how to trigger builds directly from your GitHub repository u
 
 ### Set the `image` field in your eas.json
 
-For the build profiles you want to use with GitHub, you need to specify the image to use for the
-build. This is done in the **eas.json** file in your project's root directory. See [the eas.json reference](/eas/json/#image) to learn more.
+For the build profiles you want to use with GitHub, specify an [`image`](/eas/json/#image) to use for the native platform in **eas.json**.
+
+Use the `latest` image if your project's configuration does not rely on a specific [build image](/build-reference/infrastructure/). For example:
 
 ```json eas.json
 {
-  // ...
+  /* @hide ... */ /* @end */
   "build": {
     "production": {
+      "android": {
+        "image": "latest"
+      },
       "ios": {
         "image": "latest"
       }
