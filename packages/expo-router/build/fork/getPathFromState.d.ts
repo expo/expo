@@ -44,6 +44,7 @@ export declare function getPathDataFromState<ParamList extends object>(state: St
 }): {
     path: string;
     params: Record<string, any>;
+    pathWithHash: string;
 };
 export declare function deepEqual(a: any, b: any): boolean;
 export declare function appendBaseUrl(path: string, baseUrl?: string | undefined): string;

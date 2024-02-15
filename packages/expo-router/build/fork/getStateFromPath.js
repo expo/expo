@@ -17,17 +17,15 @@ function getUrlWithReactNavigationConcessions(path, baseUrl = process.env.EXPO_B
         // Do nothing with invalid URLs.
         return {
             nonstandardPathname: '',
-            inputPathnameWithoutHash: '',
             url: null,
         };
     }
-    const pathname = parsed.pathname;
+    const pathname = stripBaseUrl(parsed.pathname, baseUrl);
+    parsed.pathname = pathname;
     // Make sure there is a trailing slash
     return {
         // The slashes are at the end, not the beginning
-        nonstandardPathname: stripBaseUrl(pathname, baseUrl).replace(/^\/+/g, '').replace(/\/+$/g, '') + '/',
-        // React Navigation doesn't support hashes, so here
-        inputPathnameWithoutHash: stripBaseUrl(path, baseUrl).replace(/#.*$/, ''),
+        nonstandardPathname: pathname.replace(/^\/+/g, '').replace(/\/+$/g, '') + '/',
         url: parsed,
     };
 }
@@ -267,23 +265,18 @@ function getStateFromEmptyPathWithConfigs(path, configs, initialRoutes) {
 }
 function getStateFromPathWithConfigs(path, configs, initialRoutes, baseUrl = process.env.EXPO_BASE_URL) {
     const formattedPaths = getUrlWithReactNavigationConcessions(path);
-    if (!formattedPaths.url)
+    if (formattedPaths.url === null)
         return;
-    let cleanPath = stripBaseUrl((0, matchers_1.stripGroupSegmentsFromPath)(formattedPaths.url.pathname), baseUrl) +
-        formattedPaths.url.search;
-    if (!path.startsWith('/'))
-        cleanPath = cleanPath.slice(1);
     if (formattedPaths.nonstandardPathname === '/') {
-        return getStateFromEmptyPathWithConfigs(cleanPath, configs, initialRoutes);
+        return getStateFromEmptyPathWithConfigs(formattedPaths.url, configs, initialRoutes);
     }
     // We match the whole path against the regex instead of segments
     // This makes sure matches such as wildcard will catch any unmatched routes, even if nested
     const routes = matchAgainstConfigs(formattedPaths.nonstandardPathname, configs);
-    if (routes == null) {
-        return undefined;
-    }
+    if (routes == null)
+        return;
     // This will always be empty if full path matched
-    return createNestedStateObject(cleanPath, routes, configs, initialRoutes);
+    return createNestedStateObject(formattedPaths.url, routes, configs, initialRoutes);
 }
 const joinPaths = (...paths) => []
     .concat(...paths.map((p) => p.split('/')))
@@ -504,7 +497,7 @@ const createStateObject = (route, isEmpty, initialRoute) => {
         routes: [{ ...route, state: { routes: [] } }],
     };
 };
-const createNestedStateObject = (path, routes, routeConfigs, initialRoutes) => {
+const createNestedStateObject = (url, routes, routeConfigs, initialRoutes) => {
     let route = routes.shift();
     const parentScreens = [];
     let initialRoute = findInitialRoute(route.name, parentScreens, initialRoutes);
@@ -524,7 +517,7 @@ const createNestedStateObject = (path, routes, routeConfigs, initialRoutes) => {
     }
     route = (0, findFocusedRoute_1.findFocusedRoute)(state);
     // Remove groups from the path while preserving a trailing slash.
-    route.path = path;
+    route.path = (0, matchers_1.stripGroupSegmentsFromPath)(url.pathname + url.search);
     const params = parseQueryParams(route.path, findParseConfigForRoute(route.name, routeConfigs));
     if (params) {
         route.params = Object.assign(Object.create(null), route.params);
@@ -542,6 +535,10 @@ const createNestedStateObject = (path, routes, routeConfigs, initialRoutes) => {
         if (Object.keys(route.params).length === 0) {
             delete route.params;
         }
+    }
+    if (url.hash) {
+        route.params ??= {};
+        route.params['#'] = url.hash.slice(1);
     }
     return state;
 };

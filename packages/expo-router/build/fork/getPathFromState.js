@@ -72,7 +72,7 @@ function encodeURIComponentPreservingBrackets(str) {
  * @returns Path representing the state, e.g. /foo/bar?count=42.
  */
 function getPathFromState(state, _options) {
-    return getPathDataFromState(state, _options).path;
+    return getPathDataFromState(state, _options).pathWithHash;
 }
 exports.default = getPathFromState;
 function getPathDataFromState(state, _options = { screens: DEFAULT_SCREENS }) {
@@ -141,6 +141,7 @@ function walkConfigItems(route, focusedRoute, configs, { preserveDynamicRoutes, 
     }
     let pattern = null;
     let focusedParams;
+    let hash;
     const collectedParams = {};
     while (route.name in configs) {
         const configItem = configs[route.name];
@@ -151,6 +152,10 @@ function walkConfigItems(route, focusedRoute, configs, { preserveDynamicRoutes, 
         }
         pattern = inputPattern;
         if (route.params) {
+            if (route.params['#']) {
+                hash = route.params['#'];
+                delete route.params['#'];
+            }
             const params = processParamsWithUserSettings(configItem, route.params);
             if (pattern !== undefined && pattern !== null) {
                 Object.assign(collectedParams, params);
@@ -231,12 +236,14 @@ function walkConfigItems(route, focusedRoute, configs, { preserveDynamicRoutes, 
         pattern,
         nextRoute: route,
         focusedParams,
+        hash,
         params: collectedParams,
     };
 }
 function getPathFromResolvedState(state, configs, { preserveGroups, preserveDynamicRoutes, }) {
     let path = '';
     let current = state;
+    let hash;
     const allParams = {};
     while (current) {
         path += '/';
@@ -247,7 +254,10 @@ function getPathFromResolvedState(state, configs, { preserveGroups, preserveDyna
         if (!route.state && isInvalidParams(route.params)) {
             route.state = createFakeState(route.params);
         }
-        const { pattern, params, nextRoute, focusedParams } = walkConfigItems(route, getActiveRoute(current), { ...configs }, { preserveDynamicRoutes });
+        const { pattern, params, nextRoute, focusedParams, hash: $hash, } = walkConfigItems(route, getActiveRoute(current), { ...configs }, { preserveDynamicRoutes });
+        if ($hash) {
+            hash = $hash;
+        }
         Object.assign(allParams, params);
         path += getPathWithConventionsCollapsed({
             pattern,
@@ -285,7 +295,13 @@ function getPathFromResolvedState(state, configs, { preserveGroups, preserveDyna
             break;
         }
     }
-    return { path: appendBaseUrl(basicSanitizePath(path)), params: decodeParams(allParams) };
+    const params = decodeParams(allParams);
+    let pathWithHash = path;
+    if (hash) {
+        pathWithHash += `#${hash}`;
+        params['#'] = hash;
+    }
+    return { path: appendBaseUrl(basicSanitizePath(path)), params, pathWithHash };
 }
 function decodeParams(params) {
     const parsed = {};

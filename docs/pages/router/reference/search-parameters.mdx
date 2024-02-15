@@ -251,3 +251,25 @@ export default function User() {
   );
 }
 ```
+
+## Hash support
+
+The URL (hash)[https://developer.mozilla.org/en-US/docs/Web/API/URL/hash] is a string that follows the `#` symbol in a URL. It is commonly used to link to a specific section of a page, but it can also be used to store data. Expo Router treats the hash as a special search parameter using the name `#`, and it can be accessed and modified using the same hooks and APIs are search parameters
+
+```tsx app/hash.tsx
+import { Text } from 'react-native';
+import { router, useLocalSearchParams, Link } from 'expo-router';
+
+export default function User() {
+  // Access the hash
+  const { '#': hash } = useSearchParams<{ '#': string }>();
+
+  return (
+    <>
+      <Text onPress={() => router.setParams({ '#': 'my-hash' })}>Set a new hash</Text>
+      <Text onPress={() => router.push('/#my-hash')}>Push with a new hash</Text>
+      <Link href="/#my-hash">Link with a hash</Link>
+    </>
+  );
+}
+```

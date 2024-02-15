@@ -51,7 +51,7 @@ export function getNormalizedStatePath(
   },
   baseUrl?: string
 ): Pick<UrlObject, 'segments' | 'params'> {
-  const [pathname] = statePath.split('?');
+  const pathname = new URL(statePath, 'http://localhost').pathname;
   return {
     // Strip empty path at the start
     segments: stripBaseUrl(pathname, baseUrl).split('/').filter(Boolean).map(decodeURIComponent),
