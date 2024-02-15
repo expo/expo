@@ -34,7 +34,7 @@ body:
       label: Did you reproduce this issue in a development build?
       multiple: false
       options:
-        - Yes
+        - "Yes"
         - No (tested in Expo Go)
         - No (only happens in a standalone build)
         - No (web-only issue)
