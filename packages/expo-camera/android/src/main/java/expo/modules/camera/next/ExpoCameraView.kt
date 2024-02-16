@@ -305,10 +305,10 @@ class ExpoCameraView(
       }
 
   private fun createVideoCapture(info: List<CameraInfo>): VideoCapture<Recorder> {
-    var preferredQuality = videoQuality.mapToQuality()
-    var fallbackStrategy = FallbackStrategy.lowerQualityOrHigherThan(preferredQuality)
+    val preferredQuality = videoQuality.mapToQuality()
+    val fallbackStrategy = FallbackStrategy.lowerQualityOrHigherThan(preferredQuality)
 
-    var qualitySelector = QualitySelector.from(preferredQuality, fallbackStrategy)
+    val qualitySelector = QualitySelector.from(preferredQuality, fallbackStrategy)
 
     val recorder = Recorder.Builder()
       .setExecutor(ContextCompat.getMainExecutor(context))
