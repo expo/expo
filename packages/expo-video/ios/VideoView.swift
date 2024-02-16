@@ -124,7 +124,7 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
   func onAppBackgrounded() {
     if staysActiveInBackground {
       setPlayerTracksEnabled(enabled: isInPictureInPicture || false)
-    } else if (!isInPictureInPicture) {
+    } else if !isInPictureInPicture {
       player?.pause()
     }
   }
