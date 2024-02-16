@@ -9,6 +9,7 @@ iconUrl: '/static/images/packages/expo-camera.png'
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import PrereleaseNotice from '~/components/PrereleaseNotice';
 import {
   ConfigReactNative,
   ConfigPluginExample,
@@ -17,6 +18,8 @@ import {
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 
 > **info** This page documents an upcoming version of Camera library. To try it, switch to `expo-camera/next` imports in your code.
+
+<PrereleaseNotice />
 
 `expo-camera` provides a React component that renders a preview of the device's front or back camera. The camera's parameters such as zoom, torch, and flash mode are adjustable. Using `CameraView`, you can take photos and record videos that are saved to the app's cache. The component is also capable of detecting bar codes appearing in the preview. Run the [example](#usage) on your device to see all these features working together.
 
