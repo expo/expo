@@ -74,13 +74,11 @@ for await (const row of db.getEachAsync('SELECT * FROM test')) {
 ### Prepared statements
 
 Prepared statement allows you compile your SQL query once and execute it multiple times with different parameters. You can get a prepared statement by calling [`prepareAsync()`](#prepareasyncsource) or [`prepareSync()`](#preparesyncsource) method on a database instance. The prepared statement can fulfill CRUD operations by calling [`executeAsync()`](#executeasyncparams) or [`executeSync()`](#executesyncparams) method.
-
 > **Note:** Remember to call [`finalizeAsync()`](#finalizeasync) or [`finalizeSync()`](#finalizesync) method to release the prepared statement after you finish using the statement. `try-finally` block is recommended to ensure the prepared statement is finalized.
 
 ```ts Prepared statements
-const statement = await db.prepareAsync(
-  'INSERT INTO test (value, intValue) VALUES ($value, $intValue)'
-);
+
+const statement = await db.prepareAsync('INSERT INTO test (value, intValue) VALUES ($value, $intValue)');
 try {
   let result = await statement.executeAsync({ $value: 'bbb', $intValue: 101 });
   console.log('bbb and 101:', result.lastInsertRowId, result.changes);
@@ -96,9 +94,7 @@ try {
 
 const statement2 = await db.prepareAsync('SELECT * FROM test WHERE intValue >= $intValue');
 try {
-  const result = await statement2.executeAsync<{ value: string; intValue: number }>({
-    $intValue: 100,
-  });
+  const result = await statement2.executeAsync<{ value: string, intValue: number }>({ $intValue: 100 });
 
   // `getFirstAsync()` is useful when you want to get a single row from the database.
   const firstRow = await result.getFirstAsync();
@@ -148,9 +144,7 @@ export function Header() {
   const [version, setVersion] = useState('');
   useEffect(() => {
     async function setup() {
-      const result = await db.getFirstAsync<{ 'sqlite_version()': string }>(
-        'SELECT sqlite_version()'
-      );
+      const result = await db.getFirstAsync<{ 'sqlite_version()': string }>('SELECT sqlite_version()');
       setVersion(result['sqlite_version()']);
     }
     setup();
@@ -276,8 +270,8 @@ Promise.all([
   //    This `UPDATE` query runs in the transaction even though its code is
   //    outside of it because the transaction happens to be active at the time
   //    this query runs.
-  sleep(1000).then(async () => db.execAsync('UPDATE test SET data = "second"')),
-]);
+  sleep(1000).then(async() => db.execAsync('UPDATE test SET data = "second"')),
+])
 ```
 
 The [`withExclusiveTransactionAsync()`](#withexclusivetransactionasynctask) function addresses this. Only queries that run within the scope function passed to `withExclusiveTransactionAsync()` will run within the actual SQL transaction.
