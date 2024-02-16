@@ -36,15 +36,11 @@ internal class DevMenuReactInternalSettings(
 
   override fun setFpsDebugEnabled(enabled: Boolean) = Unit
 
-  override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) = Unit
-
   override fun isRemoteJSDebugEnabled() = false
 
   override fun isHotModuleReplacementEnabled() = true
 
   override fun setHotModuleReplacementEnabled(enabled: Boolean) = Unit
-
-  override fun addMenuItem(title: String?) = Unit
 
   override fun isFpsDebugEnabled() = false
 

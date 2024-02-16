@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357), [#26740](https://github.com/expo/expo/pull/26740) by [@kudo](https://github.com/kudo))
+- Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357), [#26740](https://github.com/expo/expo/pull/26740), [#27118](https://github.com/expo/expo/pull/27118) by [@kudo](https://github.com/kudo))
 - Fixed `Unrecognised selector` crash for `extraModulesForBridge:` on iOS. ([#26523](https://github.com/expo/expo/pull/26523) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
