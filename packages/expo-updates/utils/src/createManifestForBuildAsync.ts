@@ -14,7 +14,7 @@ import path from 'path';
 
 import { filterPlatformAssetScales } from './filterPlatformAssetScales';
 
-export async function createManifestAsync(
+export async function createManifestForBuildAsync(
   platform: 'ios' | 'android',
   possibleProjectRoot: string,
   destinationDir: string,
