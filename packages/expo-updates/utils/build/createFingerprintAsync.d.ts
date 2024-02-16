@@ -1,1 +1,2 @@
-export declare function createFingerprintAsync(platform: 'ios' | 'android', possibleProjectRoot: string, destinationDir: string): Promise<void>;
+import * as Fingerprint from '@expo/fingerprint';
+export declare function createFingerprintAsync(projectRoot: string, platform: 'ios' | 'android'): Promise<Fingerprint.Fingerprint>;

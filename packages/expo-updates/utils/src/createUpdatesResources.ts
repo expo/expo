@@ -1,7 +1,7 @@
 import assert from 'assert';
 
-import { createFingerprintAsync } from './createFingerprintAsync';
-import { createManifestAsync } from './createManifestAsync';
+import { createFingerprintForBuildAsync } from './createFingerprintForBuildAsync';
+import { createManifestForBuildAsync } from './createManifestForBuildAsync';
 import { findUpProjectRoot } from './findUpProjectRoot';
 
 (async function () {
@@ -28,9 +28,9 @@ import { findUpProjectRoot } from './findUpProjectRoot';
 
   await Promise.all([
     createUpdatesResourcesMode === 'all'
-      ? createManifestAsync(platform, possibleProjectRoot, destinationDir, entryFileArg)
+      ? createManifestForBuildAsync(platform, possibleProjectRoot, destinationDir, entryFileArg)
       : null,
-    createFingerprintAsync(platform, possibleProjectRoot, destinationDir),
+    createFingerprintForBuildAsync(platform, possibleProjectRoot, destinationDir),
   ]);
 })().catch((e) => {
   // Wrap in regex to make it easier for log parsers (like `@expo/xcpretty`) to find this error.
