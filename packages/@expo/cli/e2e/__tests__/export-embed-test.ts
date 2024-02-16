@@ -141,3 +141,71 @@ it(
   // Could take 45s depending on how fast npm installs
   120 * 1000
 );
+
+it(
+  'runs `npx expo export:embed` with source maps',
+  async () => {
+    const projectRoot = ensureTesterReady('static-rendering');
+    const output = 'dist-export-embed-source-maps';
+    await fs.remove(path.join(projectRoot, output));
+    await fs.ensureDir(path.join(projectRoot, output));
+
+    await execa(
+      'node',
+      [
+        bin,
+        'export:embed',
+        '--entry-file',
+        path.join(projectRoot, './index.js'),
+        '--bundle-output',
+        `./${output}/output.js`,
+        '--assets-dest',
+        output,
+        '--platform',
+        'ios',
+        '--dev',
+        'false',
+        '--sourcemap-output',
+        `./${output}/output.js.map`,
+        '--sourcemap-sources-root',
+        projectRoot,
+      ],
+      {
+        cwd: projectRoot,
+        env: {
+          NODE_ENV: 'production',
+          EXPO_USE_STATIC: 'static',
+          E2E_ROUTER_SRC: 'static-rendering',
+          E2E_ROUTER_ASYNC: 'development',
+        },
+      }
+    );
+
+    const outputDir = path.join(projectRoot, output);
+    // List output files with sizes for snapshotting.
+    // This is to make sure that any changes to the output are intentional.
+    // Posix path formatting is used to make paths the same across OSes.
+    const files = klawSync(outputDir)
+      .map((entry) => {
+        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
+          return null;
+        }
+        return path.posix.relative(outputDir, entry.path);
+      })
+      .filter(Boolean);
+
+    // If this changes then everything else probably changed as well.
+    expect(files).toEqual([
+      'assets/__e2e__/static-rendering/sweet.ttf',
+      'assets/__packages/expo-router/assets/error.png',
+      'assets/__packages/expo-router/assets/file.png',
+      'assets/__packages/expo-router/assets/forward.png',
+      'assets/__packages/expo-router/assets/pkg.png',
+      'assets/assets/icon.png',
+      'output.js',
+      'output.js.map',
+    ]);
+  },
+  // Could take 45s depending on how fast npm installs
+  120 * 1000
+);
