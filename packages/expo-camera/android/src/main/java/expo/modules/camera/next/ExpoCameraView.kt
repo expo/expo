@@ -25,8 +25,10 @@ import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.core.UseCaseGroup
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.video.FallbackStrategy
 import androidx.camera.video.FileOutputOptions
 import androidx.camera.video.QualitySelector
+import androidx.camera.video.Quality
 import androidx.camera.video.Recorder
 import androidx.camera.video.Recording
 import androidx.camera.video.VideoCapture
@@ -303,11 +305,10 @@ class ExpoCameraView(
       }
 
   private fun createVideoCapture(info: List<CameraInfo>): VideoCapture<Recorder> {
-    val supportedQualities = QualitySelector.getSupportedQualities(info[0])
-    val filteredQualities = arrayListOf(videoQuality.mapToQuality())
-      .filter { supportedQualities.contains(it) }
+    var preferredQuality = videoQuality.mapToQuality()
+    var fallbackStrategy = FallbackStrategy.lowerQualityOrHigherThan(preferredQuality)
 
-    val qualitySelector = QualitySelector.fromOrderedList(filteredQualities)
+    var qualitySelector = QualitySelector.from(preferredQuality, fallbackStrategy)
 
     val recorder = Recorder.Builder()
       .setExecutor(ContextCompat.getMainExecutor(context))
