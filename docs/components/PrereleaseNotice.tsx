@@ -1,17 +1,18 @@
+import { PropsWithChildren } from 'react';
 import ReactMarkdown from 'react-markdown';
 
-import { mdComponents } from './plugins/api/APISectionUtils';
+import { mdComponents } from '~/components/plugins/api/APISectionUtils';
+import { Callout } from '~/ui/components/Callout';
 
-import { Collapsible } from '~/ui/components/Collapsible';
+type Props = PropsWithChildren<object>;
 
-const PrereleaseNotice = () => {
+export default function PrereleaseNotice({ children }: Props) {
   return (
-    <Collapsible summary="What is a (Next) package?">
+    <Callout type="info">
+      {children}
       <ReactMarkdown components={mdComponents}>
         {`\`/next\` packages are pre-release versions of SDK libraries. We provide them to get feedback from the community and test new features before their stable release. If you encounter any issue, we encourage reporting on the [Expo](https://github.com/expo/expo/issues/new?assignees=&labels=needs+validation&projects=&template=bug_report.yml) GitHub repository.`}
       </ReactMarkdown>
-    </Collapsible>
+    </Callout>
   );
-};
-
-export default PrereleaseNotice;
+}
