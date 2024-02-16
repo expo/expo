@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+## 3.6.7 — 2024-02-16
+
 ### 📚 3rd party library updates
 
 - Update react-native to 0.73.4. ([#26774](https://github.com/expo/expo/pull/26774) by [@gabrieldonadel](https://github.com/gabrieldonadel))

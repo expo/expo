@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Only include supported font files when using the plugin. ([#27002](https://github.com/expo/expo/pull/27002) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 11.10.3 — 2024-02-16
+
+### 🐛 Bug fixes
+
+- Only include supported font files when using the plugin. ([#27002](https://github.com/expo/expo/pull/27002) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 11.10.2 — 2024-01-18
 

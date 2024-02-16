@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 50.0.7 — 2024-02-16
+
+### 💡 Others
+
 - Mark the exp prop as optional, this is only used in Expo Go ([#27095](https://github.com/expo/expo/pull/27095) by [@brentvatne](https://github.com/brentvatne))
 
 ### 📚 3rd party library updates

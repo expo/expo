@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.24.11 — 2024-02-16
+
+_This version does not introduce any user-facing changes._
+
 ## 0.24.10 — 2024-02-06
 
 ### 🎉 New features

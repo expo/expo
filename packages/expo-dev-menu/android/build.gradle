@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '4.5.5'
+version = '4.5.6'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 if (expoModulesCorePlugin.exists()) {
@@ -80,7 +80,7 @@ android {
   namespace "expo.modules.devmenu"
   defaultConfig {
     versionCode 10
-    versionName '4.5.5'
+    versionName '4.5.6'
   }
 
   buildTypes {

@@ -53,7 +53,7 @@ android {
     minSdkVersion safeExtGet('minSdkVersion', 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 34)
     versionCode 9
-    versionName "3.6.6"
+    versionName "3.6.7"
   }
 
 
