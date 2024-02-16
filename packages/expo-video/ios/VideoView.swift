@@ -4,13 +4,13 @@ import AVKit
 import ExpoModulesCore
 
 public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
+  private var isInPictureInPicture = false
   lazy var playerViewController = AVPlayerViewController()
 
   var player: AVPlayer? {
     didSet {
       playerViewController.player = player
-      // We have to update the now playing by ourselves, otherwise it stops working when the video is backgrounded
-      // (view controller updates it based on player, which has to be nil)
+      // Now playing is updated by the `NowPlayingManager`
       playerViewController.updatesNowPlayingInfoCenter = false
     }
   }
@@ -123,8 +123,8 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
 
   func onAppBackgrounded() {
     if staysActiveInBackground {
-      setPlayerTracksEnabled(enabled: false)
-    } else {
+      setPlayerTracksEnabled(enabled: isInPictureInPicture || false)
+    } else if (!isInPictureInPicture) {
       player?.pause()
     }
   }
@@ -161,10 +161,12 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
   }
 
   public func playerViewControllerDidStartPictureInPicture(_ playerViewController: AVPlayerViewController) {
+    isInPictureInPicture = true
     onPictureInPictureStart()
   }
 
   public func playerViewControllerDidStopPictureInPicture(_ playerViewController: AVPlayerViewController) {
+    isInPictureInPicture = false
     onPictureInPictureStop()
   }
 
