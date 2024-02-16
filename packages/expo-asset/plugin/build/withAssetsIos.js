@@ -49,7 +49,9 @@ async function addImageAssets(assets, root) {
         const image = path_1.default.basename(asset);
         const assetPath = path_1.default.resolve(iosNamedProjectRoot, `${IMAGE_DIR}/${name}.imageset`);
         await (0, fs_extra_1.ensureDir)(assetPath);
-        const buffer = await (0, image_utils_1.generateImageAsync)({ projectRoot: root }, { src: asset });
+        const buffer = await (0, image_utils_1.generateImageAsync)({ projectRoot: root }, {
+            src: asset,
+        });
         await (0, fs_extra_1.writeFile)(path_1.default.resolve(assetPath, image), buffer.source);
         await writeContentsJsonFileAsync({
             assetPath,

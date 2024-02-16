@@ -1,5 +1,5 @@
 import { ExpoConfig } from '@expo/config-types';
-import { generateImageAsync } from '@expo/image-utils';
+import { ImageOptions, generateImageAsync } from '@expo/image-utils';
 import {
   ContentsJsonImage,
   createContentsJsonItem,
@@ -60,7 +60,9 @@ async function addImageAssets(assets: string[], root: string) {
     const assetPath = path.resolve(iosNamedProjectRoot, `${IMAGE_DIR}/${name}.imageset`);
     await ensureDir(assetPath);
 
-    const buffer = await generateImageAsync({ projectRoot: root }, { src: asset } as any);
+    const buffer = await generateImageAsync({ projectRoot: root }, {
+      src: asset,
+    } as unknown as ImageOptions);
     await writeFile(path.resolve(assetPath, image), buffer.source);
 
     await writeContentsJsonFileAsync({

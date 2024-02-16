@@ -8,7 +8,7 @@ const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
 exports.IMAGE_TYPES = ['.png', '.jpg', '.gif'];
 exports.FONT_TYPES = ['.otf', '.ttf'];
-exports.MEDIA_TYPES = ['.mp4', '.mp3'];
+exports.MEDIA_TYPES = ['.mp4', '.mp3', '.lottie'];
 exports.ACCEPTED_TYPES = ['.json', '.db', ...exports.IMAGE_TYPES, ...exports.MEDIA_TYPES, ...exports.FONT_TYPES];
 async function resolveAssetPaths(assets, projectRoot) {
     const promises = assets.map(async (p) => {
