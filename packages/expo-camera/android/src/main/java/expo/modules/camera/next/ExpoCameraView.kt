@@ -28,7 +28,6 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.video.FallbackStrategy
 import androidx.camera.video.FileOutputOptions
 import androidx.camera.video.QualitySelector
-import androidx.camera.video.Quality
 import androidx.camera.video.Recorder
 import androidx.camera.video.Recording
 import androidx.camera.video.VideoCapture
