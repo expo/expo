@@ -4,7 +4,7 @@ import * as React from 'react';
 import { AppRegistry, Platform } from 'react-native';
 
 type InitialProps = {
-  exp: {
+  exp?: {
     notification?: any;
     manifestString?: string;
     [key: string]: any;
