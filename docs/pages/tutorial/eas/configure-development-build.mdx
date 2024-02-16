@@ -16,21 +16,24 @@ In this chapter, we're going to learn about the setup required to configure a de
 
 ## Understanding development builds
 
-Let's start by learning about what are development builds and why do we need them.
+Let's start by learning about what are development builds and why we need them.
 
 A [development build](/develop/development-builds/introduction/) is a debug version of our project. It is optimized for quick iterations when creating an app. Using Expo means including the [`expo-dev-client`](/versions/latest/sdk/dev-client/) library, which offers a robust and complete development environment. This setup allows us to integrate any native library or change code inside the [native directories](/workflow/overview/#android-and-ios-native-projects) as required.
 
-> **Note:** If you are familiar with [Expo Go](/get-started/expo-go/), think of a development build as a customizable version of Expo Go that is unique to the requirements of a project.
-
 ## Benefits of creating a development build
 
-A development build offers several advantages. Here are some key highlights:
+> **Note:** If you are familiar with [Expo Go](/get-started/expo-go/), think of a development build as a customizable version of Expo Go that is unique to the requirements of a project.
 
-- During development, it helps iterate quickly to achieve a web-like iteration speed when developing a mobile app.
-- It allows sharing the native runtime with our team so that they can test features in development.
-- We can install any [third-party library](/workflow/using-libraries/#third-party-libraries) that requires custom native code or make changes to the native projects (if required).
-- It allows using [config plugins](/config-plugins/introduction/).
-- Provides a reduced bundled app size. A development client is not bundled with all libraries from Expo SDK. It only contains the libraries we add to the project. The `expo` package only adds 1 MB one time to the final app binary size and has a marginal size cost. For example, it adds only 150 Kib on Android. The rest comes from the language, such as Kotlin on Android.
+A development build offers several advantages. Here are some key highlights in comparison to Expo Go:
+
+| Feature                           | Development Builds                                                                                                                             | Expo Go                                                                                              |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Development phase**             | Offers web-like iteration speed for mobile app development.                                                                                    | Allows for quick iteration and testing of Expo SDK projects using the client app.                    |
+| **Collaboration**                 | Facilitates team testing with shared native runtime.                                                                                           | Easy project sharing via QR codes on a device.                                                       |
+| **Third-party libraries support** | Full support for any [third-party library](/workflow/using-libraries/#third-party-libraries), including those that require custom native code. | Limited to libraries within the Expo SDK, not suitable for custom native dependencies.               |
+| **Customization**                 | Extensive customization with [config plugins](/config-plugins/introduction/) and direct access to native code.                                 | Limited customization with a focus on Expo SDK capabilities without direct native code modification. |
+| **App size**                      | Optimized app size, including only the libraries used in the project.                                                                          | Generally larger due to the inclusion of the entire Expo SDK.                                        |
+| **Intended use**                  | Ideal for full-fledged app development aimed at store deployment, offering a complete development environment.                                 | Ideal for learning, prototyping, and experimenting. Not recommended for production apps.             |
 
 <Step label="1">
 

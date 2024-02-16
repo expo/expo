@@ -11,11 +11,9 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
 
-In this chapter, let's create our development build for iOS devices with EAS Build.
+In this chapter, we're going to create our development build for iOS devices with EAS Build.
 
-Development builds for iOS devices are generated in the **.ipa** format, which is standard for iOS app installations.
-
-> **Note**: Apple Developer membership is required to create and install a development build on an iOS device.
+Development builds for iOS devices are generated in the **.ipa** format, which is standard for iOS app installations. Each build needs to be signed with [necessary credentials](/app-signing/app-credentials/#ios) to ensure that the app is from a trusted source. **Apple Developer account membership is required because it provides access to these credentials for signing our app.** EAS Build simplifies this process by managing those credentials for us.
 
 <Step label="1">
 
@@ -30,7 +28,7 @@ With EAS CLI, run the command to register a new Apple device:
 
 <Terminal cmd={['$ eas device:create']} />
 
-This command prompts us with the following questions:
+This command prompts us with the following questions
 
 - **You're inside the project directory. Would you like to use the** **your-account-name** **account?** Press <kbd>Y</kbd>.
 - **Apple ID.** For this step, enter your Apple ID. It will then log in to our Apple Developer account. Follow the steps in the terminal window.
@@ -78,7 +76,7 @@ After the provisioning profile is installed, our device redirects us back to the
 
 ## Create a development build
 
-To create and install a development build on an iOS device, make sure:
+To create and install a development build on an iOS device, make sure the under **build.development** profile:
 
 - The `developmentClient` is set to `true` in **eas.json**, which is done by the default configuration.
 - Then, run the `eas build` command with `ios` as the platform and `development` as the build profile:
@@ -87,7 +85,7 @@ To create and install a development build on an iOS device, make sure:
 
 > **info** **Tip**: Next time you run `eas build` command, you can also use `-p` to specify the platform. It is short for `--platform`.
 
-This command prompts us with the following questions:
+This command prompts us with the following questions when we create the build for the first time:
 
 - **What would you like your iOS bundle identifier to be?** Press <kbd>return</kbd> to select the default value provided for this prompt.
 - **Log in to our Apple Developer account**. Since we are creating a development build for the first time, it will ask us to **Generate a new Apple Distribution Certificate**. Press <kbd>Y</kbd>.
