@@ -134,7 +134,7 @@ public final class AppContext: NSObject {
 
   // MARK: - Classes
 
-  internal lazy var sharedObjectRegistry = SharedObjectRegistry()
+  internal lazy var sharedObjectRegistry = SharedObjectRegistry(appContext: self)
 
   /**
    A registry containing references to JavaScript classes.
@@ -393,6 +393,11 @@ public final class AppContext: NSObject {
 
     // Install the modules host object as the `global.expo.modules`.
     EXJavaScriptRuntimeManager.installExpoModulesHostObject(self)
+
+    // Install `global.expo.SharedObject`.
+    EXJavaScriptRuntimeManager.installSharedObjectClass(runtime) { [weak sharedObjectRegistry] objectId in
+      sharedObjectRegistry?.delete(objectId)
+    }
   }
 
   /**
