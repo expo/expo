@@ -8,7 +8,7 @@ import { PassThrough, Stream } from 'stream';
 import tar from 'tar';
 import { promisify } from 'util';
 
-import { createEntryResolver, createFileTransform } from './createFileTransform';
+import { createEntryResolver } from './createFileTransform';
 import { ensureDirectoryAsync } from './dir';
 import { CommandError } from './errors';
 import { createCachedFetch } from '../api/rest/client';
@@ -164,7 +164,6 @@ export async function extractNpmTarballAsync(
       {
         cwd,
         filter,
-        transform: createFileTransform(name),
         onentry: createEntryResolver(name),
         strip: strip ?? 1,
       },

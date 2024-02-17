@@ -243,8 +243,8 @@ export async function getTemplateFilesToRenameAsync({
 
   return await glob(config, {
     cwd,
-    // `true` is consistent with `.gitignore`. It allows `*.xml` to match `.xml`
-    // files in all subdirs.
+    // `true` is consistent with .gitignore. Allows `*.xml` to match .xml files
+    // in all subdirs.
     baseNameMatch: true,
     dot: true,
   });

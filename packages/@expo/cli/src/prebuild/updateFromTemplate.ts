@@ -3,6 +3,7 @@ import { ModPlatform } from '@expo/config-plugins';
 import chalk from 'chalk';
 
 import { copyTemplateFiles, createCopyFilesSuccessMessage } from './copyTemplateFiles';
+import { getTemplateFilesToRenameAsync, renameTemplateAppNameAsync } from './renameTemplateAppName';
 import { cloneTemplateAsync } from './resolveTemplate';
 import { DependenciesModificationResults, updatePackageJSONAsync } from './updatePackageJson';
 import { validateTemplatePlatforms } from './validateTemplatePlatforms';
@@ -105,6 +106,13 @@ export async function cloneTemplateAndCopyToProjectAsync({
 
   try {
     const templateChecksum = await cloneTemplateAsync({ templateDirectory, template, exp, ora });
+
+    const files = await getTemplateFilesToRenameAsync({ cwd: projectRoot });
+    await renameTemplateAppNameAsync({
+      cwd: projectRoot,
+      files,
+      name: exp.name,
+    });
 
     const platforms = validateTemplatePlatforms({
       templateDirectory,
