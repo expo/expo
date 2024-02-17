@@ -9,7 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix screenshot listener not being called on Android 34. ([#26549](https://github.com/expo/expo/pull/26549) by [@alanjhughes](https://github.com/alanjhughes))
-- Reverse api level constraint on the `DETECT_SCREEN_CAPTURE` permission.
+- Reverse api level constraint on the `DETECT_SCREEN_CAPTURE` permission. ([#27148](https://github.com/expo/expo/pull/27148) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
