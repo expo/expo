@@ -101,6 +101,92 @@ it('runs `npx expo prebuild` asserts when expo is not installed', async () => {
   );
 });
 
+async function expectTemplateAppNameToHaveBeenRenamed(projectRoot: string) {
+  const renamedFiles: Record<
+    string,
+    { negativeMatch: string; positiveMatch: string; contents?: string }
+  > = {
+    'app.json': {
+      negativeMatch: 'HelloWorld',
+      positiveMatch: 'com.example.minimal',
+    },
+    'android/settings.gradle': {
+      negativeMatch: 'HelloWorld',
+      positiveMatch: 'basic-prebuild',
+    },
+    'android/app/build.gradle': {
+      negativeMatch: 'com.helloworld',
+      positiveMatch: 'com.example.minimal',
+    },
+    'android/app/src/main/java/com/example/minimal/MainApplication.kt': {
+      negativeMatch: 'com.helloworld',
+      positiveMatch: 'com.basicprebuild',
+    },
+    'android/app/src/main/java/com/example/minimal/MainActivity.kt': {
+      negativeMatch: 'com.helloworld',
+      positiveMatch: 'com.basicprebuild',
+    },
+    'ios/Podfile': {
+      negativeMatch: 'HelloWorld',
+      positiveMatch: 'basicprebuild',
+    },
+    'ios/basicprebuild.xcodeproj/project.pbxproj': {
+      negativeMatch: 'HelloWorld',
+      positiveMatch: 'basicprebuild',
+    },
+    'ios/basicprebuild.xcodeproj/xcshareddata/xcschemes/basicprebuild.xcscheme': {
+      negativeMatch: 'HelloWorld',
+      positiveMatch: 'basicprebuild',
+    },
+
+    // Other typical files to look out for, in case this test is adapted for
+    // other templates in future:
+    // android/app/BUCK
+    // android/app/src/main/AndroidManifest.xml
+    // android/app/src/main/res/values/strings.xml
+    // android/app/src/debug/java/com/minimal/ReactNativeFlipper.java
+    // android/app/src/main/java/com/minimal/MainActivity.java
+    // android/app/src/main/java/com/minimal/MainApplication.java
+  };
+
+  // Read each of the renamedFiles, setting the 'contents' field for each entry.
+  await Promise.all(
+    Object.keys(renamedFiles).map(async (filePath) => {
+      renamedFiles[filePath].contents = await fs.readFile(
+        path.resolve(projectRoot, filePath),
+        'utf-8'
+      );
+    })
+  );
+
+  for (const relativeFilePath in renamedFiles) {
+    const entry = renamedFiles[relativeFilePath];
+    if (!('contents' in entry)) {
+      throw new Error('Expected to have populated the contents for this entry.');
+    }
+
+    // Rethrow the error to improve the error message to indicate which file it
+    // concerns, as Jest doesn't support custom error messages, nor nesting
+    // it.each().
+    try {
+      expect(entry.contents).toMatch(entry.positiveMatch);
+      expect(entry.contents).not.toMatch(entry.negativeMatch);
+    } catch (error) {
+      throw new Error(
+        `Failed assertion for renaming template app name in file: "${relativeFilePath}".\nFile can be inspected on-disk at: "${path.resolve(
+          projectRoot,
+          relativeFilePath
+        )}".`,
+        // @ts-ignore - Despite our tsconfig.node.json referencing
+        // @tsconfig/node18/tsconfig.json (which specifies `lib: ["es2023"]`,
+        // which pulls in the necessary lib.es2022.error.d.ts), this is still
+        // giving a compilation error in the IDE for some reason.
+        { cause: error }
+      );
+    }
+  }
+}
+
 it(
   'runs `npx expo prebuild`',
   async () => {
@@ -127,6 +213,10 @@ it(
 
     const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
+    // Somehow the `ios` and `android` directories will only be populated on
+    // second run-through. Not quite familiar with their test setup.
+    await expectTemplateAppNameToHaveBeenRenamed(projectRoot);
+
     // Added new packages
     expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
       'expo',
@@ -143,6 +233,7 @@ it(
     // If this changes then everything else probably changed as well.
     expect(files).toMatchInlineSnapshot(`
       [
+        ".expo-rename",
         "App.js",
         "android/.gitignore",
         "android/app/build.gradle",

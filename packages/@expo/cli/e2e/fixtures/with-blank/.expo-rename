@@ -1,0 +1,15 @@
+# Common
+!**/node_modules
+app.json
+
+# Android
+android/**/*.gradle
+android/app/BUCK
+android/app/src/**/*.java
+android/app/src/**/*.kt
+android/app/src/**/*.xml
+
+# iOS
+ios/Podfile
+ios/**/*.xcodeproj/project.pbxproj
+ios/**/*.xcodeproj/xcshareddata/xcschemes/*.xcscheme
