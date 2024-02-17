@@ -38,7 +38,7 @@ public final class ClassDefinition: ObjectDefinition {
   // MARK: - JavaScriptObjectBuilder
 
   public override func build(appContext: AppContext) throws -> JavaScriptObject {
-    let klass = try appContext.runtime.createClass(name) { [weak self, weak appContext] this, arguments in
+    let klass = try appContext.runtime.createSharedObjectClass(name) { [weak self, weak appContext] this, arguments in
       guard let self = self, let appContext else {
         // TODO: Throw an exception? (@tsapeta)
         return

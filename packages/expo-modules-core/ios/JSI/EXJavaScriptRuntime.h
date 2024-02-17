@@ -14,6 +14,7 @@ namespace react = facebook::react;
 
 @class EXJavaScriptValue;
 @class EXJavaScriptObject;
+@class EXJavaScriptSharedObject;
 
 typedef void (^JSAsyncFunctionBlock)(EXJavaScriptValue * _Nonnull thisValue,
                                      NSArray<EXJavaScriptValue *> * _Nonnull arguments,
@@ -101,6 +102,11 @@ typedef void (^ClassConstructorBlock)(EXJavaScriptObject * _Nonnull thisValue, N
  Creates a new object, using the provided object as the prototype.
  */
 - (nullable EXJavaScriptObject *)createObjectWithPrototype:(nonnull EXJavaScriptObject *)prototype;
+
+#pragma mark - Shared objects
+
+- (nonnull EXJavaScriptObject *)createSharedObjectClass:(nonnull NSString *)name
+                                            constructor:(nonnull ClassConstructorBlock)constructor;
 
 #pragma mark - Script evaluation
 
