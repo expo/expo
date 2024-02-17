@@ -21,6 +21,14 @@ const withCalendar = (config, { calendarPermission, remindersPermission } = {}) 
         remindersPermission ||
             config.ios.infoPlist.NSRemindersFullAccessUsageDescription ||
             REMINDERS_USAGE;
+    config.ios.infoPlist.NSCalendarsFullAccessUsageDescription =
+        calendarPermission ||
+            config.ios.infoPlist.NSCalendarsFullAccessUsageDescription ||
+            CALENDARS_USAGE;
+    config.ios.infoPlist.NSRemindersFullAccessUsageDescription =
+        remindersPermission ||
+            config.ios.infoPlist.NSRemindersFullAccessUsageDescription ||
+            REMINDERS_USAGE;
     return config_plugins_1.AndroidConfig.Permissions.withPermissions(config, [
         'android.permission.READ_CALENDAR',
         'android.permission.WRITE_CALENDAR',
