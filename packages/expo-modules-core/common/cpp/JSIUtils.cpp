@@ -103,8 +103,8 @@ void defineProperty(jsi::Runtime &runtime, jsi::Object *object, const char *name
       runtime,
       getPropName,
       0,
-      [&descriptor](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
-        return descriptor.get(runtime, thisValue.asObject(runtime));
+      [getter = descriptor.get](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
+        return getter(runtime, thisValue.asObject(runtime));
       });
 
     jsDescriptor.setProperty(runtime, getPropName, get);
@@ -115,8 +115,8 @@ void defineProperty(jsi::Runtime &runtime, jsi::Object *object, const char *name
       runtime,
       setPropName,
       1,
-      [&descriptor](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
-        descriptor.set(runtime, thisValue.asObject(runtime), jsi::Value(runtime, args[0]));
+      [setter = descriptor.set](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
+        setter(runtime, thisValue.asObject(runtime), jsi::Value(runtime, args[0]));
         return jsi::Value::undefined();
       });
 

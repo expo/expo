@@ -4,6 +4,7 @@
 #import <ExpoModulesCore/EXJavaScriptRuntime.h>
 #import <ExpoModulesCore/ExpoModulesHostObject.h>
 #import <ExpoModulesCore/LazyObject.h>
+#import <ExpoModulesCore/SharedObject.h>
 #import <ExpoModulesCore/Swift.h>
 
 namespace jsi = facebook::jsi;
@@ -53,6 +54,13 @@ static NSString *modulesHostObjectPropertyName = @"modules";
                      options:EXJavaScriptObjectPropertyDescriptorEnumerable];
 
   return true;
+}
+
++ (void)installSharedObjectClass:(nonnull EXRuntime *)runtime releaser:(void(^)(long))releaser
+{
+  expo::SharedObject::installBaseClass(*[runtime get], [releaser](expo::SharedObject::ObjectId objectId) {
+    releaser(objectId);
+  });
 }
 
 @end
