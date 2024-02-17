@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import inquirer from 'inquirer';
 import semver from 'semver';
 
 import { checkEnvironmentTask } from './checkEnvironmentTask';
@@ -14,9 +15,10 @@ import Git from '../../Git';
 import logger from '../../Logger';
 import { sdkVersionAsync } from '../../ProjectVersions';
 import { Task } from '../../TasksRunner';
+import { getSuggestedVersions, resolveReleaseTypeAndVersion, validateVersion } from '../helpers';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
 
-const { cyan } = chalk;
+const { green, cyan } = chalk;
 
 /**
  * An array of packages whose version is constrained to the SDK version.
@@ -35,15 +37,80 @@ export const prepareCanaries = new Task<TaskArgs>(
     const canarySuffix = await getCurrentCanaryVersionSuffix();
     const nextSdkVersion = await getNextSdkVersion();
 
-    for (const { pkg, state, pkgView } of parcels) {
-      const baseVersion = SDK_CONSTRAINED_PACKAGES.includes(pkg.packageName)
-        ? nextSdkVersion
-        : '0.0.1';
+    for (const parcel of parcels) {
+      const releaseVersion = resolveReleaseTypeAndVersion(parcel, options);
 
-      state.releaseVersion = findNextAvailableCanaryVersion(
+      const { pkg, state, pkgView } = parcel;
+      let baseVersion = SDK_CONSTRAINED_PACKAGES.includes(pkg.packageName)
+        ? nextSdkVersion
+        : releaseVersion;
+
+      const { selected } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'selected',
+          message: `Do you want to publish ${green.bold(
+            pkg.packageName
+          )} with base canary version ${cyan.bold(baseVersion)}?`,
+          default: true,
+        },
+      ]);
+
+      if (!selected) {
+        const suggestedBaseVersions = getSuggestedVersions(
+          parcel.pkg.packageVersion,
+          parcel.pkgView?.versions ?? [],
+          null
+        );
+
+        const customVersionId = 'custom-version';
+        const { version, customVersion } = await inquirer.prompt([
+          {
+            type: 'list',
+            name: 'version',
+            message: `What do you want to do with ${green.bold(pkg.packageName)}?`,
+            choices: [
+              {
+                name: "Don't publish",
+                value: null,
+              },
+              ...suggestedBaseVersions.map((version) => {
+                return {
+                  name: `Publish with canary base version set to ${cyan.bold(version)}`,
+                  value: version,
+                };
+              }),
+              {
+                name: 'Publish with custom canary base version',
+                value: customVersionId,
+              },
+            ],
+            validate: validateVersion(parcel),
+          },
+          {
+            type: 'input',
+            name: 'customVersion',
+            message: 'Type in custom version to publish:',
+            when(answers: Record<string, string>): boolean {
+              return answers.version === customVersionId;
+            },
+            validate: validateVersion(parcel),
+          },
+        ]);
+
+        if (customVersion || version) {
+          baseVersion = customVersion ?? version;
+        } else {
+          throw new Error('Must select base canary version');
+        }
+      }
+
+      const nextAvailableCanaryVersion = findNextAvailableCanaryVersion(
         `${baseVersion}-${canarySuffix}`,
         pkgView?.versions ?? []
       );
+
+      state.releaseVersion = nextAvailableCanaryVersion;
     }
 
     // Override the tag option – canary releases should always use `canary` tag
@@ -66,8 +133,8 @@ export const publishCanaryPipeline = new Task<TaskArgs>(
       updateBundledNativeModulesFile,
       updateModuleTemplate,
       updateWorkspaceProjects,
-      packPackageToTarball,
-      publishPackages,
+      // packPackageToTarball,
+      // publishPackages,
     ],
   },
   async (parcels: Parcel[]) => {
