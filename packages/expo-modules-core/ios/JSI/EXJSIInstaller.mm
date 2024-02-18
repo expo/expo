@@ -5,6 +5,7 @@
 #import <ExpoModulesCore/ExpoModulesHostObject.h>
 #import <ExpoModulesCore/LazyObject.h>
 #import <ExpoModulesCore/SharedObject.h>
+#import <ExpoModulesCore/EventEmitter.h>
 #import <ExpoModulesCore/Swift.h>
 
 namespace jsi = facebook::jsi;
@@ -61,6 +62,11 @@ static NSString *modulesHostObjectPropertyName = @"modules";
   expo::SharedObject::installBaseClass(*[runtime get], [releaser](expo::SharedObject::ObjectId objectId) {
     releaser(objectId);
   });
+}
+
++ (void)installEventEmitterClass:(nonnull EXRuntime *)runtime
+{
+  expo::EventEmitter::installClass(*[runtime get]);
 }
 
 @end
