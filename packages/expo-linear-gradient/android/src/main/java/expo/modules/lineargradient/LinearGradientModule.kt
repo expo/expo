@@ -30,7 +30,7 @@ class LinearGradientModule : Module() {
         view.setBorderRadii(borderRadii ?: FloatArray(8) { 0f })
       }
 
-      Prop("ditherPaintAndroid") { view: ViewType, ditherPaint: Boolean ->
+      Prop("ditherPaintAndroid") { view, ditherPaint: Boolean ->
         view.setDitherPaint(ditherPaint)
       }
     }
