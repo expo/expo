@@ -60,6 +60,7 @@ public class LinearGradientView extends View {
 
   public void setDitherPaint(final boolean ditherPaint){
     mPaint.setDither(ditherPaint);
+    drawGradient();
   }
 
   // Copied from RN PixelUtil
