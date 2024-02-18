@@ -58,6 +58,10 @@ public class LinearGradientView extends View {
     drawGradient();
   }
 
+  public void setDitherPaint(final boolean ditherPaint){
+    mPaint.setDither(ditherPaint);
+  }
+
   // Copied from RN PixelUtil
   // We might want to expose display metrics on @unimodules/core somewhere to avoid
   // having code similar to this littered throughout modules
