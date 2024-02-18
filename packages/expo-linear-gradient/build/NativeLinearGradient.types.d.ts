@@ -5,7 +5,6 @@ export type NativeLinearGradientProps = ViewProps & PropsWithChildren<{
     locations?: number[] | null;
     startPoint?: NativeLinearGradientPoint | null;
     endPoint?: NativeLinearGradientPoint | null;
-    ditherPaintAndroid?: boolean;
 }>;
 export type getLinearGradientBackgroundImage = (colors: number[], width?: number, height?: number, locations?: number[] | null, startPoint?: NativeLinearGradientPoint | null, endPoint?: NativeLinearGradientPoint | null) => string;
 export type NativeLinearGradientPoint = [number, number];
