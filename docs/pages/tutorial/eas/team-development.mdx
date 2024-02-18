@@ -29,7 +29,7 @@ To initialize our project and send an update, we need to use the [`expo-updates`
 
 ## Configure EAS Update
 
-To initialize our project with EAS Update, we need to:
+To initialize our project with EAS Update, we need to follow these steps:
 
 - Since we are using dynamic **app.config.js** for our app's configuration, adding [`updates`](/versions/latest/config/app/#updates) and [`runtimeVersion`](/eas-update/runtime-versions/#setting-runtimeversion) properties are required to make our project compatible with EAS Update. Run the following command to obtain these properties and their values from EAS and manually copy them to **app.config.js**:
 
@@ -41,7 +41,7 @@ If a project doesn't use dynamic app config (uses **app.json** instead of **app.
 
 </Collapsible>
 
-- Add a [`channel`](/eas/json/#channel) to every build profile in the **eas.json**. To automatically update this file, re-run the `eas update:configure` command:
+- Re-run `eas update:configure` to continue with the setup process. A [`channel`](/eas/json/#channel) should be added to every build profile in **eas.json**:
 
 {/* prettier-ignore */}
 ```json eas.json
