@@ -82,19 +82,6 @@ export function getTestModules() {
     modules.push(require('./tests/Hermes'));
   }
 
-  if (global.DETOX) {
-    modules.push(
-      require('./tests/Contacts'),
-      require('./tests/Haptics'),
-      require('./tests/Localization'),
-      require('./tests/SecureStore'),
-      require('./tests/SMS'),
-      require('./tests/StoreReview'),
-      require('./tests/Notifications')
-    );
-    return modules;
-  }
-
   if (Platform.OS === 'web') {
     modules.push(
       require('./tests/Contacts'),

@@ -95,17 +95,6 @@ allprojects {
           )
       )
     }
-    maven {
-      url(
-          new File(
-              providers.exec {
-                workingDir(rootDir)
-                commandLine("node", "--print", "require.resolve('detox/package.json')")
-              }.standardOutput.asText.get().trim(),
-              "../Detox-android"
-          )
-      )
-    }
 
     google()
     mavenCentral()

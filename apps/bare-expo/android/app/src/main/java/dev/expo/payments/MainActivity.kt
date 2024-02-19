@@ -42,7 +42,7 @@ class MainActivity : ReactActivity() {
         override fun onCreate(savedInstanceState: Bundle?) {
           super.onCreate(savedInstanceState)
 
-          // Hacky way to prevent onboarding DevMenuActivity breaks detox testing,
+          // Hacky way to prevent onboarding DevMenuActivity breaks e2e testing,
           // we do this by setting the dev-menu internal setting.
           val intent: Intent = getIntent()
           val action: String? = intent.action

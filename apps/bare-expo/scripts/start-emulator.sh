@@ -35,22 +35,21 @@ else
     echo " ✅ Emulator is running"
 fi
 
-$DIR/start-metro.sh $port
-
 if [ "${CURRENT_ENV}" = "test" ]; then
 
-    if [ -f "android/app/build/outputs/apk/debug/app-debug-androidTest.apk" ]; then
-        echo " ✅ Debug Detox project is built for Android"
+    if [ -f "android/app/build/outputs/apk/release/app-release.apk" && -f "android/app/build/outputs/apk/androidTest/release/app-release-androidTest.apk" ]; then
+        echo " ✅ Project is built for Android"
     else
-        echo " ⚠️  Building the debug Detox project..."
-        yarn run android:detox:build:debug
+        echo " ⚠️  Building the project..."
+        pushd android
+        ./gradlew -DtestBuildType=release :app:assembleRelease :app:assembleAndroidTest
+        popd
     fi
 
-    echo " ☛  Starting Detox in watch mode"
+    echo " ☛  Starting E2E tests"
     # Run our default E2E tests
-    yarn run android:detox:test:debug --watch
+    "${DIR}/start-android-e2e-test.sh"
 else
     echo " ☛  Running the Android project..."
-    # Build and run the Android project using `react-native run-android`
-    yarn react-native run-android --no-packager --port ${port}
+    npx expo run:android --port "${port}"
 fi
