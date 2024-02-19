@@ -178,7 +178,7 @@ public final class AppContext: NSObject {
    Provides access to the file system manager from legacy module registry.
    */
   public var fileSystem: EXFileSystemInterface? {
-    return FileSystemCommonModule(self)
+    return legacyModule(implementing: EXFileSystemInterface.self)
   }
 
   /**

@@ -4,6 +4,8 @@
 
 #import <ExpoModulesCore/EXModuleRegistry.h>
 #import <ExpoModulesCore/EXModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
+#import "Swift.h"
 
 @interface EXModuleRegistry ()
 
@@ -165,6 +167,8 @@
 }
 
 # pragma mark - Registry API
+
+
 
 - (id)getModuleImplementingProtocol:(Protocol *)protocol
 {

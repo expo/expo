@@ -7,27 +7,23 @@
 
 import Foundation
 
-class FileSystemCommonModule: EXFileSystemInterface {
+@objc(EXFileSystemLegacyUtilities)
+public class FileSystemLegacyUtilities: EXExportedModule, EXFileSystemInterface, EXFilePermissionModuleInterface {
+
+  @objc
+  public var documentDirectory: String!;
+
+  @objc
+  public var cachesDirectory: String!;
   
-  var appContext: AppContext!;
-  
-  init(_ appContext: AppContext?) {
-    self.appContext = appContext
+  @objc
+  public init(documentDirectory: String, cachesDirectory: String) {
+    self.documentDirectory = documentDirectory
+    self.cachesDirectory = cachesDirectory
   }
   
-  var documentDirectory: String! {
-    get {
-      return appContext?.config.documentDirectory?.absoluteString
-    }
-  }
-  
-  var cachesDirectory: String! {
-    get {
-      return appContext?.config.cacheDirectory?.absoluteString
-    }
-  }
-  
-  func permissions(forURI uri: URL!) -> EXFileSystemPermissionFlags {
+  @objc
+  public func permissions(forURI uri: URL!) -> EXFileSystemPermissionFlags {
     let validSchemas: [String] = [
         "assets-library",
         "http",
@@ -39,19 +35,21 @@ class FileSystemCommonModule: EXFileSystemInterface {
       return EXFileSystemPermissionFlags.read
     }
     if uri.scheme == "file" {
-      return getPathPermissions(uri)
+      return getPathPermissions(uri.absoluteString)
 
     }
     return []
   }
   
-  func generatePath(inDirectory directory: String!, withExtension ext: String!) -> String {
-    let fileName = "\(UUID().uuidString)\(ext)"
+  @objc
+  public func generatePath(inDirectory directory: String!, withExtension ext: String!) -> String {
+    let fileName = "\(UUID().uuidString)\(String(describing: ext))"
     ensureDirExists(withPath: directory)
     return (directory as NSString).appendingPathComponent(fileName)
   }
   
-  func ensureDirExists(withPath path: String!) -> Bool {
+  @objc
+  public func ensureDirExists(withPath path: String!) -> Bool {
     var isDir: ObjCBool = false
     let exists = FileManager.default.fileExists(atPath: path, isDirectory: &isDir)
     if !(exists && isDir.boolValue) {
@@ -64,16 +62,22 @@ class FileSystemCommonModule: EXFileSystemInterface {
     return true
   }
   
-  func getPathPermissions(_ path: URL) -> EXFileSystemPermissionFlags {
-      let permissionsForInternalDirectories = getInternalPathPermissions(path)
+  @objc
+  public func getPathPermissions(_ path: String!) -> EXFileSystemPermissionFlags {
+    let url = URL(string: path)
+    if(url == nil) {
+      return []
+    }
+    let permissionsForInternalDirectories = getInternalPathPermissions(url!)
     if permissionsForInternalDirectories != [] {
           return permissionsForInternalDirectories
       } else {
-          return getExternalPathPermissions(path)
+        return getExternalPathPermissions(url!)
       }
   }
 
-  func getInternalPathPermissions(_ path: URL) -> EXFileSystemPermissionFlags {
+  @objc
+  public func getInternalPathPermissions(_ path: URL) -> EXFileSystemPermissionFlags {
       let scopedDirs: [String] = [cachesDirectory, documentDirectory]
       let standardizedPath = path.standardized.path
       
@@ -86,7 +90,8 @@ class FileSystemCommonModule: EXFileSystemInterface {
       return []
   }
 
-  func getExternalPathPermissions(_ path: URL) -> EXFileSystemPermissionFlags {
+  @objc
+  public func getExternalPathPermissions(_ path: URL) -> EXFileSystemPermissionFlags {
       var filePermissions: EXFileSystemPermissionFlags = []
       
     if FileManager.default.isReadableFile(atPath: path.absoluteString) {
@@ -99,5 +104,4 @@ class FileSystemCommonModule: EXFileSystemInterface {
       
       return filePermissions
   }
-  
 }

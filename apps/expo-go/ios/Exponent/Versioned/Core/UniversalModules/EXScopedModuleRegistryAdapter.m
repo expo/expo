@@ -29,9 +29,12 @@
 
 #import <ExpoFileSystem/EXFileSystem.h>
 
+
 #if __has_include(<EXTaskManager/EXTaskManager.h>)
 #import <EXTaskManager/EXTaskManager.h>
 #endif
+
+#import <ExpoModulesCore-Swift.h>
 
 @implementation EXScopedModuleRegistryAdapter
 
@@ -58,8 +61,8 @@
     // Override the FileSystem module with custom document and cache directories
     NSString *documentDirectory = params[@"fileSystemDirectories"][@"documentDirectory"];
     NSString *cachesDirectory = params[@"fileSystemDirectories"][@"cachesDirectory"];
-    EXFileSystem *fileSystemModule = [[EXFileSystem alloc] initWithDocumentDirectory:documentDirectory
-                                                                     cachesDirectory:cachesDirectory];
+//    EXFileSystemLegacyUtilities
+    EXFileSystem *fileSystemModule = [[EXFileSystem alloc] initWithDocumentDirectory:documentDirectory cachesDirectory:cachesDirectory];
     [moduleRegistry registerExportedModule:fileSystemModule];
     [moduleRegistry registerInternalModule:fileSystemModule];
   }
