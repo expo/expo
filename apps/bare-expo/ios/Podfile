@@ -68,16 +68,6 @@ abstract_target 'BareExpoMain' do
     )
   end
 
-  target 'BareExpoDetox' do
-    use_react_native!(
-      :path => config[:reactNativePath],
-      :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
-      :new_arch_enabled => false,
-      # An absolute path to your application root.
-      :app_path => "#{Pod::Config.instance.installation_root}/..",
-    )
-  end
-
   target 'BareExpoTests' do
     use_react_native!(
       :path => config[:reactNativePath],

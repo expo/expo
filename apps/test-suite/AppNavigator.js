@@ -18,9 +18,9 @@ const spec = {
   },
 };
 
-const shouldDisableTransition = !!global.DETOX;
+// TODO: Disable transition animations in E2E tests
+const shouldDisableTransition = false;
 
-// Disable transition animations in E2E tests
 const transitionSpec = shouldDisableTransition ? { open: spec, close: spec } : undefined;
 
 export default function AppNavigator(props) {

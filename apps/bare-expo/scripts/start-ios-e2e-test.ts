@@ -147,10 +147,6 @@ async function queryDeviceIdAsync(device: string): Promise<string | null> {
   return null;
 }
 
-// Inject the `describe()` to current context and prevent loading **TestSuite-test.native.js** error
-// @ts-expect-error
-globalThis.describe = () => {};
-
 /**
  * Generate Maestro flow yaml file
  */
