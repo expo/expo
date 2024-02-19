@@ -54,6 +54,7 @@ export function getUrlWithReactNavigationConcessions(
     return {
       nonstandardPathname: '',
       inputPathnameWithoutHash: '',
+      url: null,
     };
   }
 
@@ -67,6 +68,7 @@ export function getUrlWithReactNavigationConcessions(
 
     // React Navigation doesn't support hashes, so here
     inputPathnameWithoutHash: stripBaseUrl(path, baseUrl).replace(/#.*$/, ''),
+    url: parsed,
   };
 }
 
@@ -360,16 +362,21 @@ function getStateFromEmptyPathWithConfigs(
 function getStateFromPathWithConfigs(
   path: string,
   configs: RouteConfig[],
-  initialRoutes: InitialRouteConfig[]
+  initialRoutes: InitialRouteConfig[],
+  baseUrl: string | undefined = process.env.EXPO_BASE_URL
 ): ResultState | undefined {
   const formattedPaths = getUrlWithReactNavigationConcessions(path);
 
+  if (!formattedPaths.url) return;
+
+  let cleanPath =
+    stripBaseUrl(stripGroupSegmentsFromPath(formattedPaths.url.pathname), baseUrl) +
+    formattedPaths.url.search;
+
+  if (!path.startsWith('/')) cleanPath = cleanPath.slice(1);
+
   if (formattedPaths.nonstandardPathname === '/') {
-    return getStateFromEmptyPathWithConfigs(
-      formattedPaths.inputPathnameWithoutHash,
-      configs,
-      initialRoutes
-    );
+    return getStateFromEmptyPathWithConfigs(cleanPath, configs, initialRoutes);
   }
 
   // We match the whole path against the regex instead of segments
@@ -380,12 +387,7 @@ function getStateFromPathWithConfigs(
     return undefined;
   }
   // This will always be empty if full path matched
-  return createNestedStateObject(
-    formattedPaths.inputPathnameWithoutHash,
-    routes,
-    configs,
-    initialRoutes
-  );
+  return createNestedStateObject(cleanPath, routes, configs, initialRoutes);
 }
 
 const joinPaths = (...paths: string[]): string =>
@@ -742,7 +744,7 @@ const createNestedStateObject = (
   route = findFocusedRoute(state) as ParsedRoute;
 
   // Remove groups from the path while preserving a trailing slash.
-  route.path = stripGroupSegmentsFromPath(path);
+  route.path = path;
 
   const params = parseQueryParams(route.path, findParseConfigForRoute(route.name, routeConfigs));
 
