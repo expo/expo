@@ -67,6 +67,12 @@
           "sounds": ["./assets/notification.wav"]
         }
       ],
+      [
+        "expo-tracking-transparency",
+        {
+          "userTrackingPermission": "Allow Expo projects to use data for tracking the user or the device"
+        }
+      ],
       "./plugins/withAndroidNetworkSecurityConfig"
     ]
   }
