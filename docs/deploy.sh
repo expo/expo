@@ -255,6 +255,7 @@ redirects[classic/turtle-cli]=archive/classic-builds/turtle-cli
 redirects[build-reference/migrating]=archive/classic-builds/migrating
 redirects[archive/classic-updates/getting-started]=eas-update/getting-started
 redirects[archived]=archive
+redirects[archive/classic-updates/building-standalone-apps]=archive/classic-builds/building-standalone-apps
 
 # Old tutorial pages
 redirects[introduction/walkthrough]=tutorial/introduction
