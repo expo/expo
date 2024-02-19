@@ -31,16 +31,16 @@ public class FileSystemLegacyUtilities: EXExportedModule, EXFileSystemInterface,
 
   @objc
   override public class func exportedModuleName() -> String {
-          return "EXFileSystemLegacyUtilities"
+    return "EXFileSystemLegacyUtilities"
   }
 
   @objc
   public func permissions(forURI uri: URL!) -> EXFileSystemPermissionFlags {
     let validSchemas: [String] = [
-        "assets-library",
-        "http",
-        "https",
-        "ph"
+      "assets-library",
+      "http",
+      "https",
+      "ph"
     ]
 
     if validSchemas.contains(uri.scheme ?? "") {
@@ -69,11 +69,11 @@ public class FileSystemLegacyUtilities: EXExportedModule, EXFileSystemInterface,
     var isDir: ObjCBool = false
     let exists = FileManager.default.fileExists(atPath: path, isDirectory: &isDir)
     if !(exists && isDir.boolValue) {
-        do {
-            try FileManager.default.createDirectory(atPath: path, withIntermediateDirectories: true, attributes: nil)
-        } catch {
-            return false
-        }
+      do {
+        try FileManager.default.createDirectory(atPath: path, withIntermediateDirectories: true, attributes: nil)
+      } catch {
+        return false
+      }
     }
     return true
   }
@@ -86,37 +86,36 @@ public class FileSystemLegacyUtilities: EXExportedModule, EXFileSystemInterface,
     }
     let permissionsForInternalDirectories = getInternalPathPermissions(url!)
     if permissionsForInternalDirectories != [] {
-          return permissionsForInternalDirectories
-      } else {
-        return getExternalPathPermissions(url!)
-      }
+      return permissionsForInternalDirectories
+    }
+    return getExternalPathPermissions(url!)
   }
 
   @objc
   public func getInternalPathPermissions(_ path: URL) -> EXFileSystemPermissionFlags {
-      let scopedDirs: [String] = [cachesDirectory, documentDirectory]
-      let standardizedPath = path.standardized.path
+    let scopedDirs: [String] = [cachesDirectory, documentDirectory]
+    let standardizedPath = path.standardized.path
 
-      for scopedDirectory in scopedDirs {
-          if standardizedPath.hasPrefix(scopedDirectory + "/") || standardizedPath == scopedDirectory {
-              return [.read, .write]
-          }
+    for scopedDirectory in scopedDirs {
+      if standardizedPath.hasPrefix(scopedDirectory + "/") || standardizedPath == scopedDirectory {
+        return [.read, .write]
       }
+    }
 
-      return []
+    return []
   }
 
   @objc
   public func getExternalPathPermissions(_ path: URL) -> EXFileSystemPermissionFlags {
-      var filePermissions: EXFileSystemPermissionFlags = []
+    var filePermissions: EXFileSystemPermissionFlags = []
 
-    if FileManager.default.isReadableFile(atPath: path.absoluteString) {
-          filePermissions.insert(.read)
+      if FileManager.default.isReadableFile(atPath: path.absoluteString) {
+        filePermissions.insert(.read)
       }
 
     if FileManager.default.isWritableFile(atPath: path.absoluteString) {
-          filePermissions.insert(.write)
-      }
+      filePermissions.insert(.write)
+    }
 
       return filePermissions
   }
