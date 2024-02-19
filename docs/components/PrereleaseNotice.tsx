@@ -12,7 +12,7 @@ export default function PrereleaseNotice({ children }: Props) {
   return (
     <Callout type="info">
       {children}
-      {/* <Collapsible
+      <Collapsible
         summary={
           <>
             What are Next (<CODE>/next</CODE>) libraries
@@ -25,7 +25,7 @@ export default function PrereleaseNotice({ children }: Props) {
           [Expo](https://github.com/expo/expo/issues/new?assignees=&labels=needs+validation&projects=&template=bug_report.yml)
           GitHub repository.
         </ReactMarkdown>
-      </Collapsible> */}
+      </Collapsible>
     </Callout>
   );
 }
