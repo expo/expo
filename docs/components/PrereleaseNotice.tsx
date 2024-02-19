@@ -4,9 +4,7 @@ import { Callout } from '~/ui/components/Callout';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { A, CODE } from '~/ui/components/Text';
 
-type Props = PropsWithChildren<object>;
-
-export default function PrereleaseNotice({ children }: Props) {
+export default function PrereleaseNotice({ children }: PropsWithChildren) {
   return (
     <Callout>
       {children}
