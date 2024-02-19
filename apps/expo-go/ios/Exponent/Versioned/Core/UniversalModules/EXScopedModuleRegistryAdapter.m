@@ -61,9 +61,7 @@
     // Override the FileSystem module with custom document and cache directories
     NSString *documentDirectory = params[@"fileSystemDirectories"][@"documentDirectory"];
     NSString *cachesDirectory = params[@"fileSystemDirectories"][@"cachesDirectory"];
-//    EXFileSystemLegacyUtilities
-    EXFileSystem *fileSystemModule = [[EXFileSystem alloc] initWithDocumentDirectory:documentDirectory cachesDirectory:cachesDirectory];
-    [moduleRegistry registerExportedModule:fileSystemModule];
+    EXFileSystemLegacyUtilities *fileSystemModule = [[EXFileSystemLegacyUtilities alloc] initWithDocumentDirectory:documentDirectory cachesDirectory:cachesDirectory];
     [moduleRegistry registerInternalModule:fileSystemModule];
   }
 #endif

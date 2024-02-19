@@ -56,7 +56,7 @@ typedef NS_ENUM(NSInteger, EXFileSystemUploadType) {
 
 @implementation EXFileSystem
 
-EX_REGISTER_MODULE();
+//EX_REGISTER_MODULE();
 
 + (const NSString *)exportedModuleName
 {

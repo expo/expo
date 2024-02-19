@@ -22,6 +22,19 @@ public class FileSystemLegacyUtilities: EXExportedModule, EXFileSystemInterface,
     self.cachesDirectory = cachesDirectory
   }
   
+  public override init() {
+    let documentPaths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
+    self.documentDirectory = documentPaths[0]
+
+    let cachesPaths = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true)
+    self.cachesDirectory = cachesPaths[0]
+  }
+  
+  @objc
+  override public class func exportedModuleName() -> String {
+          return "EXFileSystemLegacyUtilities"
+  }
+  
   @objc
   public func permissions(forURI uri: URL!) -> EXFileSystemPermissionFlags {
     let validSchemas: [String] = [
@@ -39,6 +52,11 @@ public class FileSystemLegacyUtilities: EXExportedModule, EXFileSystemInterface,
 
     }
     return []
+  }
+  
+  @objc
+  public override static func exportedInterfaces() -> [Protocol] {
+    return [EXFileSystemInterface.self]
   }
   
   @objc
