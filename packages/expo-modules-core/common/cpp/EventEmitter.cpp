@@ -6,7 +6,7 @@ namespace expo::EventEmitter {
 #pragma mark - Listeners
 
 void Listeners::add(jsi::Runtime &runtime, std::string eventName, const jsi::Function &listener) noexcept {
-  listenersMap[eventName].push_back(jsi::Value(runtime, listener));
+  listenersMap[eventName].emplace_back(runtime, listener);
 }
 
 void Listeners::remove(jsi::Runtime &runtime, std::string eventName, const jsi::Function &listener) noexcept {
