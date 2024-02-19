@@ -10,7 +10,7 @@ type Props = PropsWithChildren<object>;
 
 export default function PrereleaseNotice({ children }: Props) {
   return (
-    <Callout type="info">
+    <Callout>
       {children}
       <Collapsible
         summary={
