@@ -106,7 +106,9 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   implementation project(path: ':expo-modules-core')
 
-  def exoPlayerVersion = "1.2.0"
+  implementation 'com.facebook.react:react-android'
+
+  def exoPlayerVersion = "1.2.1"
   implementation "androidx.media3:media3-exoplayer:${exoPlayerVersion}"
   implementation "androidx.media3:media3-exoplayer-dash:${exoPlayerVersion}"
   implementation "androidx.media3:media3-ui:${exoPlayerVersion}"
