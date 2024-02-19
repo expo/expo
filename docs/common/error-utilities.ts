@@ -364,6 +364,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/classic/building-standalone-apps/': '/archive/classic-builds/building-standalone-apps/',
   '/classic/turtle-cli/': '/archive/classic-builds/turtle-cli/',
   '/archive/classic-updates/getting-started/': '/eas-update/getting-started/',
+  '/archive/classic-updates/building-standalone-apps/':
+    '/archive/classic-builds/building-standalone-apps/',
 
   // Redirects for removed API docs based on Sentry
   '/versions/latest/sdk/facebook/': '/guides/authentication/',
