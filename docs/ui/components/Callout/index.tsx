@@ -130,6 +130,7 @@ const iconStyle = css({
 const contentStyle = css({
   ...typography.fontSizes[16],
   color: theme.text.default,
+  width: '100%',
 
   '*:last-child': {
     marginBottom: 0,
