@@ -82,11 +82,6 @@
   EXExpoUserNotificationCenterProxy *userNotificationCenter = [[EXExpoUserNotificationCenterProxy alloc] initWithUserNotificationCenter:kernelServices[EX_UNVERSIONED(@"EXUserNotificationCenter")]];
   [moduleRegistry registerInternalModule:userNotificationCenter];
 
-#if __has_include(<ExpoFileSystem/EXFilePermissionModule.h>)
-  EXScopedFilePermissionModule *filePermissionModule = [[EXScopedFilePermissionModule alloc] init];
-  [moduleRegistry registerInternalModule:filePermissionModule];
-#endif
-
 #if __has_include(<EXSecureStore/EXSecureStore.h>)
   EXScopedSecureStore *secureStoreModule = [[EXScopedSecureStore alloc] initWithScopeKey:scopeKey andConstantsBinding:constantsBinding];
   [moduleRegistry registerExportedModule:secureStoreModule];
