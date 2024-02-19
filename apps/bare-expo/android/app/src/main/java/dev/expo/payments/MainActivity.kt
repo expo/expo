@@ -3,6 +3,7 @@ package dev.expo.payments
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 
 import com.facebook.react.ReactActivity
@@ -13,6 +14,13 @@ import com.facebook.react.defaults.DefaultReactActivityDelegate
 import expo.modules.ReactActivityDelegateWrapper
 
 class MainActivity : ReactActivity() {
+  override fun onCreate(savedInstanceState: Bundle?) {
+    // Set the theme to AppTheme BEFORE onCreate to support
+    // coloring the background, status bar, and navigation bar.
+    // This is required for expo-splash-screen.
+    setTheme(R.style.AppTheme);
+    super.onCreate(null)
+  }
 
   /**
    * Returns the name of the main component registered from JavaScript. This is used to schedule
@@ -20,44 +28,56 @@ class MainActivity : ReactActivity() {
    */
   override fun getMainComponentName(): String = "main"
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    // https://github.com/software-mansion/react-native-screens/issues/17#issuecomment-424704067
-    // https://reactnavigation.org/docs/getting-started/#installing-dependencies-into-a-bare-react-native-project
-    super.onCreate(null)
-  }
-
   /**
    * Returns the instance of the [ReactActivityDelegate]. We use [DefaultReactActivityDelegate]
    * which allows you to enable New Architecture with a single boolean flags [fabricEnabled]
    */
   override fun createReactActivityDelegate(): ReactActivityDelegate {
     return ReactActivityDelegateWrapper(
-      this,
-      BuildConfig.IS_NEW_ARCHITECTURE_ENABLED,
-      object : DefaultReactActivityDelegate(
-        this,
-        mainComponentName,
-        fabricEnabled
-      ) {
-        override fun onCreate(savedInstanceState: Bundle?) {
-          super.onCreate(savedInstanceState)
-
-          // Hacky way to prevent onboarding DevMenuActivity breaks e2e testing,
-          // we do this by setting the dev-menu internal setting.
-          val intent: Intent = getIntent()
-          val action: String? = intent.action
-          val initialUri: Uri? = intent.data
-          if (action == Intent.ACTION_VIEW &&
-            initialUri != null &&
-            initialUri.host == "test-suite"
+          this,
+          BuildConfig.IS_NEW_ARCHITECTURE_ENABLED,
+          object : DefaultReactActivityDelegate(
+              this,
+              mainComponentName,
+              fabricEnabled
           ) {
-            val devMenuPrefKey = "expo.modules.devmenu.sharedpreferences"
-            val pref: SharedPreferences =
-              applicationContext.getSharedPreferences(devMenuPrefKey, MODE_PRIVATE)
-            pref.edit().putBoolean("isOnboardingFinished", true).apply()
+            override fun onCreate(savedInstanceState: Bundle?) {
+              super.onCreate(savedInstanceState)
+
+              // Hacky way to prevent onboarding DevMenuActivity breaks e2e testing,
+              // we do this by setting the dev-menu internal setting.
+              val intent: Intent = getIntent()
+              val action: String? = intent.action
+              val initialUri: Uri? = intent.data
+              if (action == Intent.ACTION_VIEW &&
+                  initialUri != null &&
+                  initialUri.host == "test-suite"
+                 ) {
+              val devMenuPrefKey = "expo.modules.devmenu.sharedpreferences"
+                val pref: SharedPreferences =
+                applicationContext.getSharedPreferences(devMenuPrefKey, MODE_PRIVATE)
+                pref.edit().putBoolean("isOnboardingFinished", true).apply()
+              }
+            }
+          })
+  }
+
+  /**
+    * Align the back button behavior with Android S
+    * where moving root activities to background instead of finishing activities.
+    * @see <a href="https://developer.android.com/reference/android/app/Activity#onBackPressed()">onBackPressed</a>
+    */
+  override fun invokeDefaultOnBackPressed() {
+      if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
+          if (!moveTaskToBack(false)) {
+              // For non-root activities, use the default implementation to finish them.
+              super.invokeDefaultOnBackPressed()
           }
-        }
+          return
       }
-    )
+
+      // Use the default back button implementation on Android S
+      // because it's doing more than [Activity.moveTaskToBack] in fact.
+      super.invokeDefaultOnBackPressed()
   }
 }

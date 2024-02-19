@@ -16,9 +16,7 @@
     "version": "1.0.0",
     "platforms": ["ios", "android", "web"],
     "android": {
-      "scheme": [
-        "com.googleusercontent.apps.29635966244-knmlpr1upnv6rs4bumqea7hpit4o7kg2"
-      ],
+      "scheme": ["com.googleusercontent.apps.29635966244-knmlpr1upnv6rs4bumqea7hpit4o7kg2"],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000020"
@@ -33,7 +31,6 @@
       "bundleIdentifier": "dev.expo.Payments",
       "supportsTablet": true,
       "requireFullScreen": false
-
     },
     "notification": {
       "serviceWorkerPath": "/expo-service-worker.js",
@@ -43,6 +40,34 @@
       "eas": {
         "projectId": "2c28de10-a2cd-11e6-b8ce-59d1587e6774"
       }
-    }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "plugins": [
+      "@expo/video",
+      "expo-background-fetch",
+      [
+        "expo-font",
+        {
+          "fonts": ["./assets/icomoon.ttf"]
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "isAndroidBackgroundLocationEnabled": true
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/ic_stat_notifications.png",
+          "color": "#4630EB",
+          "sounds": ["./assets/notification.wav"]
+        }
+      ],
+      "./plugins/withAndroidNetworkSecurityConfig"
+    ]
   }
 }

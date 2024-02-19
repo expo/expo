@@ -24,7 +24,6 @@
       "exclude": [
         "expo-ads-facebook",
         "expo-ads-admob",
-        "expo-updates",
         "expo-module-template",
         "expo-module-template-local",
         "expo-face-detector"
