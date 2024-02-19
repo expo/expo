@@ -73,7 +73,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       id="bare-workflow"
     >
       <summary
-        class="group css-rdh8rz"
+        class="group css-kyy9e"
       >
         <div
           class="css-qos8r6"
@@ -215,7 +215,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       id="expokit"
     >
       <summary
-        class="group css-rdh8rz"
+        class="group css-kyy9e"
       >
         <div
           class="css-qos8r6"
@@ -290,7 +290,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       id="bare-workflow-1"
     >
       <summary
-        class="group css-rdh8rz"
+        class="group css-kyy9e"
       >
         <div
           class="css-qos8r6"
@@ -440,7 +440,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         id="expokit-1"
       >
         <summary
-          class="group css-rdh8rz"
+          class="group css-kyy9e"
         >
           <div
             class="css-qos8r6"
@@ -749,7 +749,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       id="bare-workflow-2"
     >
       <summary
-        class="group css-rdh8rz"
+        class="group css-kyy9e"
       >
         <div
           class="css-qos8r6"
