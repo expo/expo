@@ -6,8 +6,6 @@
 
 ### 🎉 New features
 
-- [Android] Adds support for boarders. ([#27003](https://github.com/expo/expo/pull/27003) by [@lukmccall](https://github.com/lukmccall))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
