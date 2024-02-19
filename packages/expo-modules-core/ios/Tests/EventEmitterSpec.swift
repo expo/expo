@@ -2,7 +2,7 @@ import ExpoModulesTestCore
 
 @testable import ExpoModulesCore
 
-final class JSEventEmitterSpec: ExpoSpec {
+final class EventEmitterSpec: ExpoSpec {
   override class func spec() {
     let appContext = AppContext.create()
     let runtime = try! appContext.runtime
