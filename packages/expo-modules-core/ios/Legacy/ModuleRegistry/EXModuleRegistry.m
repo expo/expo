@@ -168,8 +168,6 @@
 
 # pragma mark - Registry API
 
-
-
 - (id)getModuleImplementingProtocol:(Protocol *)protocol
 {
   [self resolveInternalModulesConflicts];
