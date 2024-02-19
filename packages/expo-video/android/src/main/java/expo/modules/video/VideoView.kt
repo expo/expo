@@ -1,12 +1,12 @@
 package expo.modules.video
 
-import android.R
 import android.app.Activity
 import android.app.PictureInPictureParams
-import android.os.Build
 import android.content.Context
 import android.content.Intent
+import android.graphics.Canvas
 import android.graphics.Rect
+import android.os.Build
 import android.util.Rational
 import android.view.View
 import android.view.ViewGroup
@@ -14,11 +14,16 @@ import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.fragment.app.FragmentActivity
 import androidx.media3.ui.PlayerView
+import com.facebook.react.modules.i18nmanager.I18nUtil
+import com.facebook.react.uimanager.PixelUtil
+import com.facebook.react.uimanager.Spacing
+import com.facebook.react.views.view.ReactViewBackgroundDrawable
+import com.facebook.yoga.YogaConstants
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
-import java.util.ArrayList
+import expo.modules.video.drawing.OutlineProvider
 import java.util.UUID
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
@@ -32,12 +37,36 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   private val currentActivity = appContext.currentActivity
     ?: throw Exceptions.MissingActivity()
   private val decorView = currentActivity.window.decorView
-  private val rootView = decorView.findViewById(R.id.content) as ViewGroup
+  private val rootView = decorView.findViewById(android.R.id.content) as ViewGroup
 
   private val rectHint: Rect = Rect()
   private val rootViewChildrenOriginalVisibility: ArrayList<Int> = arrayListOf()
 
   private var pictureInPictureHelperTag: String? = null
+
+  private var shouldInvalided = false
+
+  private val outlineProvider = OutlineProvider(context)
+
+  private val borderDrawableLazyHolder = lazy {
+    ReactViewBackgroundDrawable(context).apply {
+      callback = this@VideoView
+
+      outlineProvider.borderRadiiConfig
+        .map { it.ifYogaDefinedUse(PixelUtil::toPixelFromDIP) }
+        .withIndex()
+        .forEach { (i, radius) ->
+          if (i == 0) {
+            setRadius(radius)
+          } else {
+            setRadius(radius, i - 1)
+          }
+        }
+    }
+  }
+
+  private val borderDrawable
+    get() = borderDrawableLazyHolder.value
 
   var autoEnterPiP: Boolean = false
     set(value) {
@@ -190,6 +219,8 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     // For `contain` contentFit we need to calculate where the video content is in the view and set the rectHint to that area
     if (contentFit == ContentFit.CONTAIN) {
       val player = playerView.player ?: return
+      val width = playerView.width
+      val height = playerView.height
       val videoWidth = player.videoSize.width
       val videoHeight = player.videoSize.height
       val videoRatio = videoWidth.toFloat() / videoHeight.toFloat()
@@ -230,6 +261,30 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     applyRectHint()
   }
 
+  override fun draw(canvas: Canvas) {
+    // When the border-radii are not all the same, a convex-path
+    // is used for the Outline. Unfortunately clipping is not supported
+    // for convex-paths and we fallback to Canvas clipping.
+    outlineProvider.clipCanvasIfNeeded(canvas, this)
+
+    super.draw(canvas)
+
+    // Draw borders on top of the video
+    if (borderDrawableLazyHolder.isInitialized()) {
+      val layoutDirection = if (I18nUtil.getInstance().isRTL(context)) {
+        LAYOUT_DIRECTION_RTL
+      } else {
+        LAYOUT_DIRECTION_LTR
+      }
+
+      borderDrawable.apply {
+        resolvedLayoutDirection = layoutDirection
+        setBounds(0, 0, width, height)
+        draw(canvas)
+      }
+    }
+  }
+
   override fun onAttachedToWindow() {
     super.onAttachedToWindow()
     (currentActivity as? FragmentActivity)?.let {
@@ -244,10 +299,78 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   override fun onDetachedFromWindow() {
     super.onDetachedFromWindow()
     (currentActivity as? FragmentActivity)?.let {
-      val fragment = it.supportFragmentManager.findFragmentByTag(pictureInPictureHelperTag ?: "") ?: return
+      val fragment = it.supportFragmentManager.findFragmentByTag(pictureInPictureHelperTag ?: "")
+        ?: return
       it.supportFragmentManager.beginTransaction()
         .remove(fragment)
         .commitAllowingStateLoss()
+    }
+  }
+
+  internal fun setBorderRadius(position: Int, borderRadius: Float) {
+    val isInvalidated = outlineProvider.setBorderRadius(borderRadius, position)
+    if (isInvalidated) {
+      invalidateOutline()
+      if (!outlineProvider.hasEqualCorners()) {
+        shouldInvalided = true
+      }
+    }
+
+    // Setting the border-radius doesn't necessarily mean that a border
+    // should to be drawn. Only update the border-drawable when needed.
+    if (borderDrawableLazyHolder.isInitialized()) {
+      shouldInvalided = true
+      val radius = borderRadius.ifYogaDefinedUse(PixelUtil::toPixelFromDIP)
+      borderDrawableLazyHolder.value.apply {
+        if (position == 0) {
+          setRadius(radius)
+        } else {
+          setRadius(radius, position - 1)
+        }
+      }
+    }
+  }
+
+  internal fun setBorderWidth(position: Int, width: Float) {
+    borderDrawable.setBorderWidth(position, width)
+    shouldInvalided = true
+  }
+
+  internal fun setBorderColor(position: Int, rgb: Float, alpha: Float) {
+    borderDrawable.setBorderColor(position, rgb, alpha)
+    shouldInvalided = true
+  }
+
+  internal fun setBorderStyle(style: String?) {
+    borderDrawable.setBorderStyle(style)
+    shouldInvalided = true
+  }
+
+  fun didUpdateProps() {
+    val hasBorder = if (borderDrawableLazyHolder.isInitialized()) {
+      val spacings = listOf(
+        Spacing.ALL,
+        Spacing.LEFT,
+        Spacing.RIGHT,
+        Spacing.TOP,
+        Spacing.BOTTOM,
+        Spacing.START,
+        Spacing.END
+      )
+      spacings
+        .any {
+          val boarderWidth = borderDrawable.getBorderWidthOrDefaultTo(YogaConstants.UNDEFINED, it)
+          boarderWidth != YogaConstants.UNDEFINED && boarderWidth > 0f
+        }
+    } else {
+      false
+    }
+
+    // We need to enable drawing on the view to draw the border or background
+    setWillNotDraw(!isOpaque && !hasBorder)
+    if (shouldInvalided) {
+      shouldInvalided = false
+      invalidate()
     }
   }
 
