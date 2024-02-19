@@ -80,43 +80,37 @@ public class FileSystemLegacyUtilities: EXExportedModule, EXFileSystemInterface,
 
   @objc
   public func getPathPermissions(_ path: String) -> EXFileSystemPermissionFlags {
-    let url = URL(string: path)
-    if url == nil {
+    guard let url = URL(string: path) else {
       return []
     }
-    let permissionsForInternalDirectories = getInternalPathPermissions(url!)
-    if permissionsForInternalDirectories != [] {
+    let permissionsForInternalDirectories = getInternalPathPermissions(url)
+    if !permissionsForInternalDirectories.isEmpty {
       return permissionsForInternalDirectories
     }
-    return getExternalPathPermissions(url!)
+    return getExternalPathPermissions(url)
   }
 
   @objc
   public func getInternalPathPermissions(_ path: URL) -> EXFileSystemPermissionFlags {
     let scopedDirs: [String] = [cachesDirectory, documentDirectory]
     let standardizedPath = path.standardized.path
-
     for scopedDirectory in scopedDirs {
       if standardizedPath.hasPrefix(scopedDirectory + "/") || standardizedPath == scopedDirectory {
         return [.read, .write]
       }
     }
-
     return []
   }
 
   @objc
   public func getExternalPathPermissions(_ path: URL) -> EXFileSystemPermissionFlags {
     var filePermissions: EXFileSystemPermissionFlags = []
-
-      if FileManager.default.isReadableFile(atPath: path.absoluteString) {
-        filePermissions.insert(.read)
-      }
-
+    if FileManager.default.isReadableFile(atPath: path.absoluteString) {
+      filePermissions.insert(.read)
+    }
     if FileManager.default.isWritableFile(atPath: path.absoluteString) {
       filePermissions.insert(.write)
     }
-
-      return filePermissions
+    return filePermissions
   }
 }
