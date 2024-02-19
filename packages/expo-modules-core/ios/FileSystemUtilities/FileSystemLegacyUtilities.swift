@@ -10,10 +10,10 @@ import Foundation
 @objc(EXFileSystemLegacyUtilities)
 public class FileSystemLegacyUtilities: EXExportedModule, EXFileSystemInterface, EXFilePermissionModuleInterface {
   @objc
-  public var documentDirectory: String!
+  public var documentDirectory: String
 
   @objc
-  public var cachesDirectory: String!
+  public var cachesDirectory: String
 
   @objc
   public init(documentDirectory: String, cachesDirectory: String) {
@@ -35,7 +35,7 @@ public class FileSystemLegacyUtilities: EXExportedModule, EXFileSystemInterface,
   }
 
   @objc
-  public func permissions(forURI uri: URL!) -> EXFileSystemPermissionFlags {
+  public func permissions(forURI uri: URL) -> EXFileSystemPermissionFlags {
     let validSchemas: [String] = [
       "assets-library",
       "http",
@@ -58,14 +58,14 @@ public class FileSystemLegacyUtilities: EXExportedModule, EXFileSystemInterface,
   }
 
   @objc
-  public func generatePath(inDirectory directory: String!, withExtension ext: String!) -> String {
+  public func generatePath(inDirectory directory: String, withExtension ext: String) -> String {
     let fileName = "\(UUID().uuidString)\(String(describing: ext))"
     ensureDirExists(withPath: directory)
     return (directory as NSString).appendingPathComponent(fileName)
   }
 
   @objc
-  public func ensureDirExists(withPath path: String!) -> Bool {
+  public func ensureDirExists(withPath path: String) -> Bool {
     var isDir: ObjCBool = false
     let exists = FileManager.default.fileExists(atPath: path, isDirectory: &isDir)
     if !(exists && isDir.boolValue) {
@@ -79,7 +79,7 @@ public class FileSystemLegacyUtilities: EXExportedModule, EXFileSystemInterface,
   }
 
   @objc
-  public func getPathPermissions(_ path: String!) -> EXFileSystemPermissionFlags {
+  public func getPathPermissions(_ path: String) -> EXFileSystemPermissionFlags {
     let url = URL(string: path)
     if url == nil {
       return []
