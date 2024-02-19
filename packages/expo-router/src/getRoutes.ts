@@ -18,6 +18,7 @@ export type Options = {
   /* Used to simplify by skipping the generated routes */
   skipGenerated?: boolean;
   importMode?: string;
+  platform?: string;
 };
 
 type DirectoryNode = {
@@ -25,6 +26,8 @@ type DirectoryNode = {
   files: Map<string, RouteNode[]>;
   subdirectories: Map<string, DirectoryNode>;
 };
+
+const validPlatforms = new Set(['android', 'ios', 'native', 'web']);
 
 /**
  * Given a Metro context module, return an array of nested routes.
@@ -95,7 +98,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
 
     isValid = true;
 
-    const meta = getFileMeta(filePath);
+    const meta = getFileMeta(filePath, options);
 
     // This is a file that should be ignored. e.g maybe it has an invalid platform?
     if (meta.specificity < 0) {
@@ -280,7 +283,7 @@ function flattenDirectoryTreeToRoutes(
    */
   if (directory.layout) {
     const previousLayout = layout;
-    layout = directory.layout[0]; // TODO(Platform Routes): We need to pick the most specific layout.
+    layout = getMostSpecific(directory.layout);
 
     // Add the new layout as a child of its parent
     if (previousLayout) {
@@ -304,8 +307,7 @@ function flattenDirectoryTreeToRoutes(
   if (!layout) throw new Error('Expo Router Internal Error: No nearest layout');
 
   for (const routes of directory.files.values()) {
-    // TODO(Platform Routes): We need to pick the most specific layout and ensure that all routes have a non-platform route.
-    const routeNode = routes[0];
+    const routeNode = getMostSpecific(routes);
 
     // `route` is the absolute pathname. We need to make this relative to the nearest layout
     routeNode.route = routeNode.route.replace(pathToRemove, '');
@@ -326,11 +328,12 @@ function flattenDirectoryTreeToRoutes(
   return layout;
 }
 
-function getFileMeta(key: string) {
+function getFileMeta(key: string, options: Options) {
   // Remove the leading `./`
   key = key.replace(/^\.\//, '');
 
   const parts = key.split('/');
+  let route = removeSupportedExtensions(key);
   const filename = parts[parts.length - 1];
   const filenameWithoutExtensions = removeSupportedExtensions(filename);
   const isLayout = filenameWithoutExtensions === '_layout';
@@ -348,9 +351,35 @@ function getFileMeta(key: string) {
     );
   }
 
+  let specificity = 0;
+  const platformExtension = filenameWithoutExtensions.split('.')[1];
+  const hasPlatformExtension = validPlatforms.has(platformExtension);
+
+  if (hasPlatformExtension) {
+    if (platformExtension === options.platform) {
+      // If the platform extension is the same as the options.platform, then it is the most specific
+      specificity = 2;
+    } else if (platformExtension === 'native' && options.platform !== 'web') {
+      // `native` is allow but isn't as specific as the platform
+      specificity = 1;
+    } else if (options.platform) {
+      // If we have a platform, then we should ignore the other platform extensions
+      // We might not have a platform if we are generating the routes for the sitemap, typed routes, etc
+      specificity = -1;
+    }
+
+    if (isApi && specificity !== 0) {
+      throw new Error(
+        `Api routes cannot have platform extensions. Please remove ${platformExtension} from ./${key}`
+      );
+    }
+
+    route = route.replace(new RegExp(`.${platformExtension}$`), '');
+  }
+
   return {
-    route: removeSupportedExtensions(key),
-    specificity: 0,
+    route,
+    specificity,
     isLayout,
     isApi,
   };
@@ -563,4 +592,14 @@ function crawlAndAppendInitialRoutesAndEntryFiles(
       crawlAndAppendInitialRoutesAndEntryFiles(child, options, entryPoints);
     }
   }
+}
+
+function getMostSpecific(routes: RouteNode[]) {
+  const route = routes[routes.length - 1];
+
+  if (!routes[0]) {
+    throw new Error(`${route.contextKey} does not contain a non-platform fallback route`);
+  }
+
+  return routes[routes.length - 1];
 }
