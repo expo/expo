@@ -138,12 +138,10 @@ export function test(t) {
         const result = await SecureStore.setItemAsync(key, longValue);
         t.expect(result).toBe(undefined);
       });
-      if (!global.DETOX) {
-        t.it('Fetch long value', async () => {
-          const result = await SecureStore.getItemAsync(key);
-          t.expect(result).toBe(longValue);
-        });
-      }
+      t.it('Fetch long value', async () => {
+        const result = await SecureStore.getItemAsync(key);
+        t.expect(result).toBe(longValue);
+      });
     });
   });
 }
