@@ -73,7 +73,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       id="bare-workflow"
     >
       <summary
-        class="group css-kyy9e"
+        class="group css-rdh8rz"
       >
         <div
           class="css-qos8r6"
@@ -86,7 +86,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             xmlns="http://www.w3.org/2000/svg"
           >
             <g
-              id="triangle-down"
+              id="triangle-down-custom-icon"
             >
               <path
                 d="M18.8831 9.43005H5.11694L12 16.3131L18.8831 9.43005Z"
@@ -215,7 +215,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       id="expokit"
     >
       <summary
-        class="group css-kyy9e"
+        class="group css-rdh8rz"
       >
         <div
           class="css-qos8r6"
@@ -228,7 +228,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             xmlns="http://www.w3.org/2000/svg"
           >
             <g
-              id="triangle-down"
+              id="triangle-down-custom-icon"
             >
               <path
                 d="M18.8831 9.43005H5.11694L12 16.3131L18.8831 9.43005Z"
@@ -290,7 +290,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       id="bare-workflow-1"
     >
       <summary
-        class="group css-kyy9e"
+        class="group css-rdh8rz"
       >
         <div
           class="css-qos8r6"
@@ -303,7 +303,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             xmlns="http://www.w3.org/2000/svg"
           >
             <g
-              id="triangle-down"
+              id="triangle-down-custom-icon"
             >
               <path
                 d="M18.8831 9.43005H5.11694L12 16.3131L18.8831 9.43005Z"
@@ -440,7 +440,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         id="expokit-1"
       >
         <summary
-          class="group css-kyy9e"
+          class="group css-rdh8rz"
         >
           <div
             class="css-qos8r6"
@@ -453,7 +453,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               xmlns="http://www.w3.org/2000/svg"
             >
               <g
-                id="triangle-down"
+                id="triangle-down-custom-icon"
               >
                 <path
                   d="M18.8831 9.43005H5.11694L12 16.3131L18.8831 9.43005Z"
@@ -749,7 +749,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       id="bare-workflow-2"
     >
       <summary
-        class="group css-kyy9e"
+        class="group css-rdh8rz"
       >
         <div
           class="css-qos8r6"
@@ -762,7 +762,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             xmlns="http://www.w3.org/2000/svg"
           >
             <g
-              id="triangle-down"
+              id="triangle-down-custom-icon"
             >
               <path
                 d="M18.8831 9.43005H5.11694L12 16.3131L18.8831 9.43005Z"
