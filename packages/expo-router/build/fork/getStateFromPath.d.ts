@@ -16,6 +16,11 @@ export type ResultState = PartialState<NavigationState> & {
 export declare function getUrlWithReactNavigationConcessions(path: string, baseUrl?: string | undefined): {
     nonstandardPathname: string;
     inputPathnameWithoutHash: string;
+    url: null;
+} | {
+    nonstandardPathname: string;
+    inputPathnameWithoutHash: string;
+    url: URL;
 };
 /**
  * Utility to parse a path string to initial state object accepted by the container.

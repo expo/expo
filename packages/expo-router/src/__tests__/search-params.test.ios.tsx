@@ -1,4 +1,5 @@
-import { testRouter, renderRouter } from '../testing-library';
+import { router } from '../imperative-api';
+import { screen, testRouter, renderRouter, act } from '../testing-library';
 
 describe('push', () => {
   /*
@@ -96,4 +97,15 @@ describe('replace', () => {
 
     expect(testRouter.canGoBack()).toBe(false);
   });
+});
+
+it('can handle search params with special characters', async () => {
+  renderRouter({
+    index: () => null,
+  });
+
+  act(() => router.push('/?a=(param)'));
+
+  expect(screen).toHavePathnameWithParams('/?a=%28param%29');
+  expect(screen).toHaveSearchParams({ a: '(param)' });
 });

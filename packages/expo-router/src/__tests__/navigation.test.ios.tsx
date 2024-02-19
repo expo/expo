@@ -1004,6 +1004,42 @@ describe('consistent url encoding', () => {
     );
   });
 
+  it('can handle parenthesis in the url', async () => {
+    renderRouter(
+      {
+        '[param]': () => {
+          const local = useLocalSearchParams();
+          const global = useGlobalSearchParams();
+          return <Text testID="id">{JSON.stringify({ local, global })}</Text>;
+        },
+        '(app)/value/[param]': () => {
+          const local = useLocalSearchParams();
+          const global = useGlobalSearchParams();
+          return <Text testID="id">{JSON.stringify({ local, global })}</Text>;
+        },
+      },
+      {
+        initialUrl: '/(param)',
+      }
+    );
+
+    let component = screen.getByTestId('id');
+    expect(screen).toHavePathname('/(param)');
+    expect(screen).toHaveSearchParams({ param: '(param)' });
+    expect(component).toHaveTextContent(
+      JSON.stringify({ local: { param: '(param)' }, global: { param: '(param)' } })
+    );
+
+    act(() => router.push('/(app)/value/(param)'));
+
+    component = screen.getByTestId('id');
+    expect(screen).toHavePathname('/value/(param)');
+    expect(screen).toHaveSearchParams({ param: '(param)' });
+    expect(component).toHaveTextContent(
+      JSON.stringify({ local: { param: '(param)' }, global: { param: '(param)' } })
+    );
+  });
+
   it('can handle non-url encoded percent sign deep linking', async () => {
     renderRouter(
       {
