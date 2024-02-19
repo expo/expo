@@ -131,6 +131,7 @@ const summaryStyle = css({
 
   code: {
     backgroundColor: theme.background.element,
+    border: `1px solid ${theme.border.default}`,
     display: 'inline',
     fontSize: '90%',
   },
