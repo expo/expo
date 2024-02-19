@@ -21,7 +21,10 @@
 
   NSString *urlString2 = @"https://exp.host/@test/second-app";
   NSURL *url2 = [NSURL URLWithString:urlString2];
-  NSDictionary *configuration2 = [EXDevLauncherUpdatesHelper createUpdatesConfigurationWithURL:url2 projectURL:url2 installationID:@"test-installation-id"];
+  NSDictionary *configuration2 = [EXDevLauncherUpdatesHelper createUpdatesConfigurationWithURL:url2
+                                                                                    projectURL:url2
+                                                                                runtimeVersion:@"1.0.0"
+                                                                                installationID:@"test-installation-id"];
 
   NSString *scopeKey1 = configuration1[@"EXUpdatesScopeKey"];
   NSString *scopeKey2 = configuration2[@"EXUpdatesScopeKey"];
