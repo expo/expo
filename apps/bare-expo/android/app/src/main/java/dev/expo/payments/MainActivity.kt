@@ -1,8 +1,5 @@
 package dev.expo.payments
 
-import android.content.Intent
-import android.content.SharedPreferences
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 
@@ -40,26 +37,7 @@ class MainActivity : ReactActivity() {
               this,
               mainComponentName,
               fabricEnabled
-          ) {
-            override fun onCreate(savedInstanceState: Bundle?) {
-              super.onCreate(savedInstanceState)
-
-              // Hacky way to prevent onboarding DevMenuActivity breaks e2e testing,
-              // we do this by setting the dev-menu internal setting.
-              val intent: Intent = getIntent()
-              val action: String? = intent.action
-              val initialUri: Uri? = intent.data
-              if (action == Intent.ACTION_VIEW &&
-                  initialUri != null &&
-                  initialUri.host == "test-suite"
-                 ) {
-              val devMenuPrefKey = "expo.modules.devmenu.sharedpreferences"
-                val pref: SharedPreferences =
-                applicationContext.getSharedPreferences(devMenuPrefKey, MODE_PRIVATE)
-                pref.edit().putBoolean("isOnboardingFinished", true).apply()
-              }
-            }
-          })
+          ){})
   }
 
   /**
