@@ -9,19 +9,18 @@ import Foundation
 
 @objc(EXFileSystemLegacyUtilities)
 public class FileSystemLegacyUtilities: EXExportedModule, EXFileSystemInterface, EXFilePermissionModuleInterface {
+  @objc
+  public var documentDirectory: String!
 
   @objc
-  public var documentDirectory: String!;
+  public var cachesDirectory: String!
 
-  @objc
-  public var cachesDirectory: String!;
-  
   @objc
   public init(documentDirectory: String, cachesDirectory: String) {
     self.documentDirectory = documentDirectory
     self.cachesDirectory = cachesDirectory
   }
-  
+
   public override init() {
     let documentPaths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
     self.documentDirectory = documentPaths[0]
@@ -29,12 +28,12 @@ public class FileSystemLegacyUtilities: EXExportedModule, EXFileSystemInterface,
     let cachesPaths = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true)
     self.cachesDirectory = cachesPaths[0]
   }
-  
+
   @objc
   override public class func exportedModuleName() -> String {
           return "EXFileSystemLegacyUtilities"
   }
-  
+
   @objc
   public func permissions(forURI uri: URL!) -> EXFileSystemPermissionFlags {
     let validSchemas: [String] = [
@@ -49,23 +48,22 @@ public class FileSystemLegacyUtilities: EXExportedModule, EXFileSystemInterface,
     }
     if uri.scheme == "file" {
       return getPathPermissions(uri.absoluteString)
-
     }
     return []
   }
-  
+
   @objc
   public override static func exportedInterfaces() -> [Protocol] {
     return [EXFileSystemInterface.self]
   }
-  
+
   @objc
   public func generatePath(inDirectory directory: String!, withExtension ext: String!) -> String {
     let fileName = "\(UUID().uuidString)\(String(describing: ext))"
     ensureDirExists(withPath: directory)
     return (directory as NSString).appendingPathComponent(fileName)
   }
-  
+
   @objc
   public func ensureDirExists(withPath path: String!) -> Bool {
     var isDir: ObjCBool = false
@@ -79,11 +77,11 @@ public class FileSystemLegacyUtilities: EXExportedModule, EXFileSystemInterface,
     }
     return true
   }
-  
+
   @objc
   public func getPathPermissions(_ path: String!) -> EXFileSystemPermissionFlags {
     let url = URL(string: path)
-    if(url == nil) {
+    if url == nil {
       return []
     }
     let permissionsForInternalDirectories = getInternalPathPermissions(url!)
@@ -98,28 +96,28 @@ public class FileSystemLegacyUtilities: EXExportedModule, EXFileSystemInterface,
   public func getInternalPathPermissions(_ path: URL) -> EXFileSystemPermissionFlags {
       let scopedDirs: [String] = [cachesDirectory, documentDirectory]
       let standardizedPath = path.standardized.path
-      
+
       for scopedDirectory in scopedDirs {
           if standardizedPath.hasPrefix(scopedDirectory + "/") || standardizedPath == scopedDirectory {
               return [.read, .write]
           }
       }
-      
+
       return []
   }
 
   @objc
   public func getExternalPathPermissions(_ path: URL) -> EXFileSystemPermissionFlags {
       var filePermissions: EXFileSystemPermissionFlags = []
-      
+
     if FileManager.default.isReadableFile(atPath: path.absoluteString) {
           filePermissions.insert(.read)
       }
-      
+
     if FileManager.default.isWritableFile(atPath: path.absoluteString) {
           filePermissions.insert(.write)
       }
-      
+
       return filePermissions
   }
 }
