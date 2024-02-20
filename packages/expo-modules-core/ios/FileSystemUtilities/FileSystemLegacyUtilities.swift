@@ -1,9 +1,4 @@
-//
-//  FileSystemCommonModule.swift
-//  ExpoModulesCore
-//
-//  Created by Aleksander Mikucki on 13/02/2024.
-//
+// Copyright 2023-present 650 Industries. All rights reserved.
 
 import Foundation
 
