@@ -3,7 +3,8 @@
 import Foundation
 
 @objc(EXFileSystemLegacyUtilities)
-public class FileSystemLegacyUtilities: EXExportedModule, EXFileSystemInterface, EXFilePermissionModuleInterface {
+public class FileSystemLegacyUtilities: NSObject, EXInternalModule, EXFileSystemInterface, EXFilePermissionModuleInterface {
+
   @objc
   public var documentDirectory: String
 
@@ -16,7 +17,7 @@ public class FileSystemLegacyUtilities: EXExportedModule, EXFileSystemInterface,
     self.cachesDirectory = cachesDirectory
   }
 
-  public override init() {
+  required public override init() {
     let documentPaths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
     self.documentDirectory = documentPaths[0]
 
@@ -24,9 +25,8 @@ public class FileSystemLegacyUtilities: EXExportedModule, EXFileSystemInterface,
     self.cachesDirectory = cachesPaths[0]
   }
 
-  @objc
-  override public class func exportedModuleName() -> String {
-    return "EXFileSystemLegacyUtilities"
+  public static func exportedInterfaces() -> [Protocol]! {
+    return [EXFileSystemInterface.self, EXFilePermissionModuleInterface.self]
   }
 
   @objc
@@ -45,11 +45,6 @@ public class FileSystemLegacyUtilities: EXExportedModule, EXFileSystemInterface,
       return getPathPermissions(uri.absoluteString)
     }
     return []
-  }
-
-  @objc
-  public override static func exportedInterfaces() -> [Protocol] {
-    return [EXFileSystemInterface.self, EXFilePermissionModuleInterface.self]
   }
 
   @objc
