@@ -1,5 +1,5 @@
-import { Subscription } from 'expo-modules-core';
-import { ClipboardImage, ContentType, GetImageOptions, GetStringOptions, SetStringOptions } from './Clipboard.types';
+import { type Subscription } from 'expo-modules-core';
+import type { ClipboardImage, ContentType, GetImageOptions, GetStringOptions, SetStringOptions } from './Clipboard.types';
 import { ClipboardPasteButton } from './ClipboardPasteButton';
 type ClipboardEvent = {
     /**
@@ -154,5 +154,6 @@ export declare function removeClipboardListener(subscription: Subscription): voi
  */
 export declare const isPasteButtonAvailable: boolean;
 export * from './Clipboard.types';
+export { ClipboardPasteButtonProps } from './ClipboardPasteButton';
 export { ClipboardPasteButton };
 //# sourceMappingURL=Clipboard.d.ts.map
