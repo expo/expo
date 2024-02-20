@@ -27,8 +27,6 @@
 #import "EXScopedNotificationCategoriesModule.h"
 #import "EXScopedServerRegistrationModule.h"
 
-#import <ExpoFileSystem/EXFileSystem.h>
-
 #if __has_include(<EXTaskManager/EXTaskManager.h>)
 #import <EXTaskManager/EXTaskManager.h>
 #endif
@@ -55,15 +53,13 @@
   [moduleRegistry registerExportedModule:scopedFacebook];
 #endif
 
-#if __has_include(<ExpoFileSystem/EXFileSystem.h>)
-  if (params[@"fileSystemDirectories"]) {
-    // Override the FileSystem module with custom document and cache directories
-    NSString *documentDirectory = params[@"fileSystemDirectories"][@"documentDirectory"];
-    NSString *cachesDirectory = params[@"fileSystemDirectories"][@"cachesDirectory"];
-    EXFileSystemLegacyUtilities *fileSystemModule = [[EXFileSystemLegacyUtilities alloc] initWithDocumentDirectory:documentDirectory cachesDirectory:cachesDirectory];
-    [moduleRegistry registerInternalModule:fileSystemModule];
-  }
-#endif
+if (params[@"fileSystemDirectories"]) {
+  // Override the FileSystem module with custom document and cache directories
+  NSString *documentDirectory = params[@"fileSystemDirectories"][@"documentDirectory"];
+  NSString *cachesDirectory = params[@"fileSystemDirectories"][@"cachesDirectory"];
+  EXFileSystemLegacyUtilities *fileSystemModule = [[EXFileSystemLegacyUtilities alloc] initWithDocumentDirectory:documentDirectory cachesDirectory:cachesDirectory];
+  [moduleRegistry registerInternalModule:fileSystemModule];
+}
 
 #if __has_include(<EXFont/EXFontLoader.h>)
   EXScopedFontLoader *fontModule = [[EXScopedFontLoader alloc] init];
