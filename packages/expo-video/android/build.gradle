@@ -106,10 +106,11 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   implementation project(path: ':expo-modules-core')
 
-  def exoPlayerVersion = "1.2.0"
-  implementation "androidx.media3:media3-exoplayer:${exoPlayerVersion}"
-  implementation "androidx.media3:media3-exoplayer-dash:${exoPlayerVersion}"
-  implementation "androidx.media3:media3-ui:${exoPlayerVersion}"
+  def androidxMedia3Version = "1.2.1"
+  implementation "androidx.media3:media3-session:${androidxMedia3Version}"
+  implementation "androidx.media3:media3-exoplayer:${androidxMedia3Version}"
+  implementation "androidx.media3:media3-exoplayer-dash:${androidxMedia3Version}"
+  implementation "androidx.media3:media3-ui:${androidxMedia3Version}"
 
   def fragment_version = "1.6.2"
   implementation "androidx.fragment:fragment:$fragment_version"
