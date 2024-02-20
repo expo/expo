@@ -346,7 +346,10 @@ export default class FileSystemScreen extends React.Component<object, State> {
         <ListButton onPress={this._getInfoAsset} title="Get Info Asset" />
         <ListButton onPress={this._copyAndReadAsset} title="Copy and Read Asset" />
         <ListButton onPress={this._alertFreeSpace} title="Alert free space" />
-        <ListButton onPress={this._downloadAndReadLocalAsset} title="Download and read local asset" />
+        <ListButton
+          onPress={this._downloadAndReadLocalAsset}
+          title="Download and read local asset"
+        />
         {Platform.OS === 'android' && (
           <>
             <HeadingText>Storage Access Framework</HeadingText>
