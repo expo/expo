@@ -24,7 +24,7 @@ jsi::Function createClass(jsi::Runtime &runtime, const char *name, ClassConstruc
 /**
  Creates a class (function) that inherits from the provided base class.
  */
-jsi::Function createInheritingClass(jsi::Runtime &runtime, const char *className, jsi::Function &baseClass, ClassConstructor constructor);
+jsi::Function createInheritingClass(jsi::Runtime &runtime, const char *className, jsi::Function &baseClass, ClassConstructor constructor = nullptr);
 
 /**
  Creates an object from the given prototype, without calling the constructor.
