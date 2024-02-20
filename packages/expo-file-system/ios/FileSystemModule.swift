@@ -137,20 +137,20 @@ public final class FileSystemModule: Module {
       if sourceUrl.isFileURL {
         try ensurePathPermission(appContext, path: sourceUrl.path, flag: .read)
         EXFileSystemLocalFileHandler.copy(from: sourceUrl, to: localUrl, resolver: promise.resolver, rejecter: promise.legacyRejecter)
-      } else {
-        let session = options.sessionType == .background ? backgroundSession : foregroundSession
-        let request = createUrlRequest(url: sourceUrl, headers: options.headers)
-        let downloadTask = session.downloadTask(with: request)
-        let taskDelegate = EXSessionDownloadTaskDelegate(
-          resolve: promise.resolver,
-          reject: promise.legacyRejecter,
-          localUrl: localUrl,
-          shouldCalculateMd5: options.md5
-        )
-
-        sessionTaskDispatcher.register(taskDelegate, for: downloadTask)
-        downloadTask.resume()
+        return
       }
+      let session = options.sessionType == .background ? backgroundSession : foregroundSession
+      let request = createUrlRequest(url: sourceUrl, headers: options.headers)
+      let downloadTask = session.downloadTask(with: request)
+      let taskDelegate = EXSessionDownloadTaskDelegate(
+        resolve: promise.resolver,
+        reject: promise.legacyRejecter,
+        localUrl: localUrl,
+        shouldCalculateMd5: options.md5
+      )
+
+      sessionTaskDispatcher.register(taskDelegate, for: downloadTask)
+      downloadTask.resume()
     }
 
     AsyncFunction("uploadAsync") { (targetUrl: URL, localUrl: URL, options: UploadOptions, promise: Promise) in
