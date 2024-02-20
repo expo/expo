@@ -54,7 +54,7 @@ public class FileSystemLegacyUtilities: EXExportedModule, EXFileSystemInterface,
 
   @objc
   public override static func exportedInterfaces() -> [Protocol] {
-    return [EXFileSystemInterface.self]
+    return [EXFileSystemInterface.self, EXFilePermissionModuleInterface.self]
   }
 
   @objc
