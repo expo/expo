@@ -136,7 +136,7 @@ jobs:
   rerun-failed-ios-test:
     runs-on: ubuntu-latest
     needs: [ios-test]
-    if: failure()
+    if: failure() && fromJSON(github.run_attempt) <= 3
     steps:
       - name: Rerun failed ios-test job in the current workflow
         env:
