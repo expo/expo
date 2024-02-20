@@ -570,6 +570,100 @@ EAS provides a set of built-in reusable functions that you can use in a workflow
 
 > **info** **Tip:** Any function that is built-in and provided by EAS must start with the `eas/` prefix.
 
+#### `eas/maestro_test`
+
+All-in-one function that installs Maestro, prepares a testing environment (iOS Simulator or Android Emulator) and tests the app.
+
+| Input       | Description                                                                                                                                                 |
+|-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `flow_path` | **string** Path (or multiple paths, each in a separate line) to [Maestro flows](https://maestro.mobile.dev/getting-started/writing-your-first-flow) to run. |
+
+
+```yaml build-and-test.yml
+build:
+  name: Build and test
+  steps:
+    - eas/build
+    # @info #
+    - eas/maestro_test:
+        inputs:
+          flow_path: |
+            maestro/sign_in.yaml
+            maestro/create_post.yaml
+            maestro/sign_out.yaml
+    # @end #
+```
+
+ Behind the scenes, it uses:
+- [`eas/install_maestro`](#easinstall_maestro) to install Maestro,
+- [`eas/start_android_emulator`](#easstart_android_emulator) to start an Android Emulator if needed,
+- [`eas/start_ios_simulator`](#easstart_ios_simulator) to start an iOS Simulator if needed,
+- custom `run` to install APK/APP to the running Emulator/Simulator,
+- series of `run`s to execute `maestro test` for each of the provided flows,
+- [`eas/upload_artifact`](#easupload_artifact) to upload Maestro test artifacts as build artifact.
+
+If you need to customize Maestro version, run specific Simulator/Emulator or upload multiple build artifacts, you will need to write this series of steps yourself.
+
+```yaml build-and-test-android-expanded.yml
+build:
+  name: Build and test (Android, expanded)
+  steps:
+    - eas/build
+    # @info #
+    - eas/install_maestro
+    - eas/start_android_emulator:
+        inputs:
+          system_package_name: system-images;android-34;default;x86_64
+    - run:
+        command: |
+          shopt -s globstar
+          for APP_PATH in android/app/build/outputs/**/*.apk; do
+            adb install $APP_PATH
+          done
+    - run:
+        command: |
+          maestro test maestro/flow.yaml
+    - eas/upload_artifact:
+        name: Upload test artifact
+        if: ${ always() }
+        inputs:
+          type: build-artifact
+          path: ${ eas.env.HOME }/.maestro/tests
+    # @end #
+```
+
+```yaml build-and-test-ios-expanded.yml
+build:
+  name: Build and test (iOS, expanded)
+  steps:
+    - eas/build
+    # @info #
+    - eas/install_maestro
+    - eas/start_ios_simulator
+    - run:
+        command: |
+          for APP_PATH in ios/build/Build/Products/*simulator/*.app; do
+            xcrun simctl install booted $APP_PATH
+          done
+    - run:
+        command: |
+          maestro test maestro/flow.yaml
+    - eas/upload_artifact:
+        name: Upload test artifact
+        if: ${ always() }
+        inputs:
+          type: build-artifact
+          path: ${ eas.env.HOME }/.maestro/tests
+    # @end #
+```
+
+<BoxLink
+  title="eas/maestro_test source code"
+  description="View the source code for the eas/maestro_test function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functionGroups/maestroTest.ts"
+/>
+
 #### `eas/checkout`
 
 Checks out you project source files.
