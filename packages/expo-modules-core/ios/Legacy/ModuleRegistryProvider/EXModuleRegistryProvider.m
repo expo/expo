@@ -4,7 +4,7 @@
 #import <ExpoModulesCore/EXSingletonModule.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
-# import <Swift.h>
+#import <Swift.h>
 
 static dispatch_once_t onceToken;
 static NSMutableSet<Class> *EXModuleClasses;
