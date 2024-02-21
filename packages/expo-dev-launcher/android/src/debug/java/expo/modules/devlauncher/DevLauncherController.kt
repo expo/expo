@@ -349,22 +349,8 @@ class DevLauncherController private constructor() :
     internal var sAdditionalPackages: List<ReactPackage>? = null
 
     @JvmStatic
-    fun getMetadataValue(context: Context, key: String, defaultValue: String = ""): String {
-      val packageManager = context.packageManager
-      val packageName = context.packageName
-      val applicationInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
-      var metaDataValue = defaultValue
-
-      if (applicationInfo.metaData != null) {
-        val value = applicationInfo.metaData.get(key)
-
-        if (value != null) {
-          metaDataValue = value.toString()
-        }
-      }
-
-      return metaDataValue
-    }
+    fun getMetadataValue(context: Context, key: String, defaultValue: String = "") =
+      DevLauncherMetadataHelper.getMetadataValue(context, key, defaultValue)
 
     @JvmStatic
     fun wasInitialized() =
