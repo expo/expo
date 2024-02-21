@@ -79,3 +79,15 @@ final class FailedToAccessDirectoryException: Exception {
     "Failed to access `Caches` directory"
   }
 }
+
+final class FailedToCopyAssetException: GenericException<String> {
+  override var reason: String {
+    "Failed to copy photo library asset: \(param)"
+  }
+}
+
+final class FailedToFindAssetException: GenericException<String> {
+  override var reason: String {
+    "Failed to find photo library asset: \(param)"
+  }
+}

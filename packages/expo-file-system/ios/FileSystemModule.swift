@@ -100,6 +100,11 @@ public final class FileSystemModule: Module {
     AsyncFunction("copyAsync") { (options: RelocatingOptions, promise: Promise) in
       let (fromUrl, toUrl) = try options.asTuple()
 
+      if isPHAsset(path: fromUrl.absoluteString) {
+        copyPHAsset(fromUrl: fromUrl, toUrl: toUrl, promise: promise)
+        return
+      }
+
       try ensurePathPermission(appContext, path: fromUrl.path, flag: .read)
       try ensurePathPermission(appContext, path: toUrl.path, flag: .write)
 
