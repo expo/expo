@@ -69,7 +69,7 @@ If a project doesn't use dynamic app config (uses **app.json** instead of **app.
 }
 ```
 
-> **Note**: Notice that the `eas update:configure` command adds the `channel` to every build profile in **eas.json**. However, our `ios-simulator` profile extends the `development` profile and having a separate `channel` doesn't make sense. We can safely remove `ios-simulator.channel` from the above configuration.
+> **info** **Tip**: Notice that the `eas update:configure` command adds the `channel` to every build profile in **eas.json**. However, our `ios-simulator` profile extends the `development` profile and having a separate `channel` doesn't make sense. We can safely remove `ios-simulator.channel` from the above configuration.
 
 <Collapsible summary="What is a channel?">
 
