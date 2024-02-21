@@ -63,7 +63,25 @@ Developers using Expo tools usually end up having three different types of build
 
 By default, `eas build:configure` will create a `development` profile with `"developmentClient": true`. This indicates that this build depends on [`expo-dev-client`](/develop/development-builds/introduction/). These builds include developer tools, and they are never submitted to an app store.
 
-The `development` profile also defaults to [`"distribution": "internal"`](/build/internal-distribution). This will make it easy to distribute your app directly to physical Android and iOS devices. You can also configure your development builds to run on the [iOS Simulator](/build-reference/simulators).
+The `development` profile also defaults to [`"distribution": "internal"`](/build/internal-distribution). This will make it easy to distribute your app directly to physical Android and iOS devices.
+
+You can also configure your development builds to run on the [iOS Simulator](/build-reference/simulators). To do this, use the following configuration for the `development` profile:
+
+```json eas.json
+{
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      }
+    }
+    /* @hide ... */ /* @end */
+  }
+  /* @hide ... */ /* @end */
+}
+```
 
 > **Note:** For iOS, to create a build for internal distribution and another for the iOS Simulator, you can create a separate development profile for that build. You can give the profile a custom name. For example, `development-simulator`, and use the [iOS simulator specific configuration](/build-reference/simulators/#configuring-a-profile-to-build-for-simulators) on that profile instead of on `development`. No such configuration is required to run an [Android **.apk** on a device and an Android Emulator](/build-reference/apk) as the same **.apk** will run with both environments.
 
