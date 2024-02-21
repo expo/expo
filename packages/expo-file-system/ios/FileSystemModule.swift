@@ -134,6 +134,11 @@ public final class FileSystemModule: Module {
       try ensureFileDirectoryExists(localUrl)
       try ensurePathPermission(appContext, path: localUrl.path, flag: .write)
 
+      if sourceUrl.isFileURL {
+        try ensurePathPermission(appContext, path: sourceUrl.path, flag: .read)
+        EXFileSystemLocalFileHandler.copy(from: sourceUrl, to: localUrl, resolver: promise.resolver, rejecter: promise.legacyRejecter)
+        return
+      }
       let session = options.sessionType == .background ? backgroundSession : foregroundSession
       let request = createUrlRequest(url: sourceUrl, headers: options.headers)
       let downloadTask = session.downloadTask(with: request)
