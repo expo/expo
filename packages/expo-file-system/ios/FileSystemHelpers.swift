@@ -1,6 +1,9 @@
 // Copyright 2023-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import Photos
+
+private let assetIdentifier = "ph://"
 
 internal func ensureFileDirectoryExists(_ fileUrl: URL) throws {
   let directoryPath = fileUrl.deletingLastPathComponent()
@@ -63,4 +66,43 @@ internal func ensurePathPermission(_ appContext: AppContext?, path: String, flag
   guard permissionsManager.getPathPermissions(path).contains(flag) else {
     throw flag == .read ? FileNotReadableException(path) : FileNotWritableException(path)
   }
+}
+
+internal func isPHAsset(path: String) -> Bool {
+  return path.contains(assetIdentifier)
+}
+
+internal func copyPHAsset(fromUrl: URL, toUrl: URL, with resourceManager: PHAssetResourceManager, promise: Promise) {
+  if isPhotoLibraryStatusAuthorized() {
+    if FileManager.default.fileExists(atPath: toUrl.path) {
+      promise.reject(FileAlreadyExistsException(toUrl.path))
+      return
+    }
+
+    let identifier = fromUrl.absoluteString.replacingOccurrences(of: assetIdentifier, with: "")
+
+    guard let asset = PHAsset.fetchAssets(withLocalIdentifiers: [identifier], options: nil).firstObject else {
+      promise.reject(FailedToFindAssetException(fromUrl.absoluteString))
+      return
+    }
+
+    let firstResource = PHAssetResource.assetResources(for: asset).first
+    if let firstResource {
+      resourceManager.writeData(for: firstResource, toFile: toUrl, options: nil) { error in
+        if let error {
+          promise.reject(FailedToCopyAssetException(fromUrl.absoluteString))
+        }
+      }
+    } else {
+      promise.reject(FailedToCopyAssetException(fromUrl.absoluteString))
+    }
+  }
+}
+
+internal func isPhotoLibraryStatusAuthorized() -> Bool {
+  if #available(iOS 14, tvOS 14, *) {
+    let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
+    return status == .authorized || status == .limited
+  }
+  return PHPhotoLibrary.authorizationStatus() == .authorized
 }
