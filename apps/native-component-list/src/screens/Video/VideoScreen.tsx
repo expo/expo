@@ -14,14 +14,17 @@ export default function VideoScreen() {
   const [showNativeControls, setShowNativeControls] = React.useState(true);
   const [requiresLinearPlayback, setRequiresLinearPlayback] = React.useState(false);
   const [staysActiveInBackground, setStaysActiveInBackground] = React.useState(false);
+  const player = useVideoPlayer(
+    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
+  );
+
+  useEffect(() => {
+    player.staysActiveInBackground = true;
+  }, []);
 
   const enterFullscreen = useCallback(() => {
     ref.current?.enterFullscreen();
   }, [ref]);
-
-  const player = useVideoPlayer(
-    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
-  );
 
   const togglePlayer = useCallback(() => {
     if (player.isPlaying) {
@@ -57,6 +60,14 @@ export default function VideoScreen() {
     }
   }, [ref, isInPictureInPicture]);
 
+  const updateStaysActiveInBackground = useCallback(
+    (staysActive: boolean) => {
+      player.staysActiveInBackground = staysActive;
+      setStaysActiveInBackground(staysActive);
+    },
+    [staysActiveInBackground]
+  );
+
   useEffect(() => {
     player.play();
   }, []);
@@ -72,7 +83,6 @@ export default function VideoScreen() {
         contentPosition={{ dx: 0, dy: 0 }}
         allowsFullscreen
         showsTimecodes={false}
-        staysActiveInBackground={staysActiveInBackground}
         requiresLinearPlayback={requiresLinearPlayback}
         allowsPictureInPicture={allowPictureInPicture}
         startsPictureInPictureAutomatically={startPictureInPictureAutomatically}
@@ -134,7 +144,7 @@ export default function VideoScreen() {
           <TitledSwitch
             title="Stays active in background"
             value={staysActiveInBackground}
-            setValue={setStaysActiveInBackground}
+            setValue={updateStaysActiveInBackground}
             style={styles.switch}
             titleStyle={styles.switchTitle}
           />

@@ -3,9 +3,6 @@
 import ExpoModulesCore
 
 public final class VideoModule: Module {
-  internal static let nowPlayingManager = NowPlayingManager()
-  internal static let videoViewManager = VideoViewManager()
-
   public func definition() -> ModuleDefinition {
     Name("ExpoVideo")
 
@@ -20,7 +17,7 @@ public final class VideoModule: Module {
       )
 
       Prop("player") { (view, player: VideoPlayer?) in
-        view.player = player?.pointer
+        view.player = player
       }
 
       Prop("nativeControls") { (view, nativeControls: Bool?) in
@@ -60,10 +57,6 @@ public final class VideoModule: Module {
 
       Prop("startsPictureInPictureAutomatically") { (view, startsPictureInPictureAutomatically: Bool?) in
         view.startPictureInPictureAutomatically = startsPictureInPictureAutomatically ?? false
-      }
-
-      Prop("staysActiveInBackground") { (view, staysActiveInBackground: Bool?) in
-        view.staysActiveInBackground = staysActiveInBackground ?? false
       }
 
       AsyncFunction("enterFullscreen") { view in
@@ -107,6 +100,13 @@ public final class VideoModule: Module {
         return player.pointer.currentTime().seconds
       }
 
+      Property("staysActiveInBackground") { (player: VideoPlayer) -> Bool in
+        return player.staysActiveInBackground
+      }
+      .set { (player, staysActive: Bool) in
+        player.staysActiveInBackground = staysActive
+      }
+
       Function("play") { player in
         player.pointer.play()
       }
@@ -138,11 +138,11 @@ public final class VideoModule: Module {
     }
 
     OnAppEntersBackground {
-      VideoModule.videoViewManager.onAppBackgrounded()
+      VideoManager.shared.onAppBackgrounded()
     }
 
     OnAppEntersForeground {
-      VideoModule.videoViewManager.onAppForegrounded()
+      VideoManager.shared.onAppForegrounded()
     }
   }
 }

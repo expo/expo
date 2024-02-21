@@ -8,12 +8,15 @@ import MediaPlayer
  * are present the one that has most recently started playing and will be used as the source of information for the widget.
  * Paused player will be used as a data source for "NowPlaying" only if no other players are currently playing.
  */
-class NowPlayingManager: NSObject {
+class NowPlayingManager {
+  static var shared = {
+    NowPlayingManager()
+  }()
   private let skipTimeInterval = 10.0
 
   private var timeObserver: Any?
-  private var mostRecentInteractionPlayer: AVPlayer?
-  private var players: Set<AVPlayer> = Set()
+  private weak var mostRecentInteractionPlayer: AVPlayer?
+  private var players = NSHashTable<AVPlayer>.weakObjects()
   private var observations: [AVPlayer: NSKeyValueObservation] = [:]
 
   private var playTarget: Any?
@@ -22,30 +25,27 @@ class NowPlayingManager: NSObject {
   private var skipBackwardTarget: Any?
   private var playbackPositionTarget: Any?
 
-  override init() {
-    super.init()
+  init() {
     let commandCenter = MPRemoteCommandCenter.shared()
 
     commandCenter.skipForwardCommand.preferredIntervals = [NSNumber(value: skipTimeInterval)]
     commandCenter.skipBackwardCommand.preferredIntervals = [NSNumber(value: skipTimeInterval)]
   }
 
-  func registerPlayer(player: AVPlayer) {
-    players.insert(player)
-    let observation = observePlayerRate(player: player)
-
+  func registerPlayer(_ player: AVPlayer) {
     if let oldObservation = observations[player] {
       oldObservation.invalidate()
     }
-    observations[player] = observation
+    observations[player] = observePlayerRate(player: player)
+    players.add(player)
   }
 
-  func unregisterPlayer(player: AVPlayer) {
-    players.remove(player)
+  func unregisterPlayer(_ player: AVPlayer) {
     if let observation = observations[player] {
       observation.invalidate()
     }
     observations.removeValue(forKey: player)
+    players.remove(player)
   }
 
   private func setMostRecentInteractionPlayer(player: AVPlayer) {
@@ -89,7 +89,7 @@ class NowPlayingManager: NSObject {
         return .commandFailed
       }
 
-      for player in players {
+      for player in players.allObjects {
         player.pause()
       }
       return .success
@@ -188,7 +188,7 @@ class NowPlayingManager: NSObject {
 
       let newRate = value.newValue
       if newRate == 0 && mostRecentInteractionPlayer == changedPlayer {
-        if let newPlayer = players.first(where: { $0.rate != 0 }) {
+        if let newPlayer = players.allObjects.first(where: { $0.rate != 0 }) {
           setMostRecentInteractionPlayer(player: newPlayer)
         }
       } else if newRate != 0 && mostRecentInteractionPlayer != changedPlayer {
