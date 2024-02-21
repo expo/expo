@@ -48,7 +48,7 @@
     "@babel/preset-env": "^7.20.0",
     "@babel/preset-react": "^7.22.15",
     "@react-native/babel-preset": "^0.73.18",
-    "babel-plugin-react-native-web": "~0.18.10",
+    "babel-plugin-react-native-web": "~0.19.10",
     "react-refresh": "0.14.0"
   },
   "devDependencies": {
