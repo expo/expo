@@ -213,8 +213,6 @@ it(
 
     const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
-    // Somehow the `ios` and `android` directories will only be populated on
-    // second run-through. Not quite familiar with their test setup.
     await expectTemplateAppNameToHaveBeenRenamed(projectRoot);
 
     // Added new packages
@@ -233,7 +231,6 @@ it(
     // If this changes then everything else probably changed as well.
     expect(files).toMatchInlineSnapshot(`
       [
-        ".expo-rename",
         "App.js",
         "android/.gitignore",
         "android/app/build.gradle",
