@@ -64,7 +64,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: bare-expo-ios-builds
-          path: apps/bare-expo/ios/build/Bare Expo.app
+          path: apps/bare-expo/ios/build/BareExpo.app
       - name: 🔔 Notify on Slack
         uses: 8398a7/action-slack@v3
         if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main')
@@ -93,7 +93,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: bare-expo-ios-builds
-          path: apps/bare-expo/ios/build/Bare Expo.app
+          path: apps/bare-expo/ios/build/BareExpo.app
       - name: 🍺 Install Maestro
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
