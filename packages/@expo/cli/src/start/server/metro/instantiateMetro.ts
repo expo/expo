@@ -6,6 +6,7 @@ import http from 'http';
 import type Metro from 'metro';
 import { loadConfig, resolveConfig, ConfigT } from 'metro-config';
 import { Terminal } from 'metro-core';
+import util from 'node:util';
 import semver from 'semver';
 import { URL } from 'url';
 
@@ -49,6 +50,29 @@ function gteSdkVersion(exp: Pick<ExpoConfig, 'sdkVersion'>, sdkVersion: string):
   }
 }
 
+// Wrap terminal and polyfill console.log so we can log during bundling without breaking the indicator.
+class LogRespectingTerminal extends Terminal {
+  constructor(stream: import('node:net').Socket | import('node:stream').Writable) {
+    super(stream);
+
+    const sendLog = (...args: any[]) => {
+      // @ts-expect-error
+      this._logLines.push(
+        // format args like console.log
+        util.format(...args)
+      );
+      // @ts-expect-error
+      this._scheduleUpdate();
+    };
+
+    console.log = sendLog;
+    console.info = sendLog;
+  }
+}
+
+// Share one instance of Terminal for all instances of Metro.
+const terminal = new LogRespectingTerminal(process.stdout);
+
 export async function loadMetroConfigAsync(
   projectRoot: string,
   options: LoadOptions,
@@ -59,8 +83,6 @@ export async function loadMetroConfigAsync(
 ) {
   let reportEvent: ((event: any) => void) | undefined;
   const serverRoot = getMetroServerRoot(projectRoot);
-
-  const terminal = new Terminal(process.stdout);
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
 
   const hasConfig = await resolveConfig(options.config, projectRoot);
