@@ -9,18 +9,16 @@ import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 In this chapter, we're going to configure our app to auto-increment the developer-facing app version. Learning about it will be useful before we dive into production build in the next few chapters.
 
-## Difference between developer-facing and user-facing app versions
+## Understanding developer-facing and user-facing app versions
 
 An app version is composed of two values:
 
-- The [`versionCode`](/versions/latest/config/app/#versioncode) for Android and [`buildNumber`](/versions/latest/config/app/#buildnumber) for iOS (also known as developer-facing values)
-- The [`version`](/versions/latest/config/app/#version) property in **app.json** (also known as user-facing values)
+- Developer-facing value: Represented by [`versionCode`](/versions/latest/config/app/#versioncode) for Android and [`buildNumber`](/versions/latest/config/app/#buildnumber) for iOS.
+- User-facing value: Represented by [`version`](/versions/latest/config/app/#version) in **app.json**.
 
-## Manually manage developer-facing values
+Both Google Play Store and Apple App Store rely on developer-facing values to identify each unique build. Once we upload an app with an app version (combination of developer and user facing values), we cannot submit another build with the same app version. Submitting builds with duplicate app version numbers results in a failed submission.
 
-Google Play Store and Apple App Store use developer-facing values to identify each unique build. Submitting builds with duplicate version numbers will result in errors, necessitating a rebuild with a new version number.
-
-To manage app versions, `android.versionCode` and `ios.buildNumber` can be set in **app.config.js** and manually updated for each new production release:
+We can manually manage developer-facing values by setting them as `android.versionCode` and `ios.buildNumber` in **app.config.js** and manually update each value for every new production release:
 
 ```json app.config.js
 {
@@ -35,7 +33,7 @@ To manage app versions, `android.versionCode` and `ios.buildNumber` can be set i
 }
 ```
 
-However, we are not going to set them up manually. We are going to use EAS Build to automate this process in the next section.
+However, this manual update process can be streamlined to minimize the room for error before submitting a new production build to the app stores. We use EAS Build to automate this process in the next section.
 
 > **Note**: The user-facing version number is not handled by EAS. Instead, we define that in the app store developer portals before submitting our production app for review.
 

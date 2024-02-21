@@ -21,7 +21,7 @@ For Android devices or emulators, the process of creating and running a build re
 
 For Android devices or emulators, the development build must be in the [**.apk** file format](/build-reference/apk/). While the default Android format is **.aab**, which is ideal for Google Play Store distribution, it cannot be directly installed on devices or emulators.
 
-To create a **.apk**, in **eas.json**, make sure the under **build.development** profile:
+To create a **.apk**, in **eas.json**, make sure the under `build.development` profile:
 
 - The `developmentClient` is set to `true` in **eas.json**.
 - Then, run the `eas build` command with `android` as the platform and `development` as the build profile:
@@ -74,7 +74,7 @@ Once the build finishes, the **Build artifact** section gets updated, indicating
 
 This section provides the methods available for running the development build on an Android device:
 
-- Open with Expo Orbit (macOS only)
+- Open with Expo Orbit
 - Install button
 
 ### Using Expo Orbit
