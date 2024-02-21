@@ -3,8 +3,8 @@ import { NativeSyntheticEvent, StyleProp, ViewProps, ViewStyle } from 'react-nat
 
 import {
   AcceptedContentType,
-  CornerStyle,
-  DisplayMode,
+  CornerStyleType,
+  DisplayModeType,
   GetImageOptions,
   PasteEventPayload,
 } from './Clipboard.types';
@@ -46,14 +46,14 @@ export type ClipboardPasteButtonProps = {
    *
    * @see [Apple Documentation](https://developer.apple.com/documentation/uikit/uibutton/configuration/cornerstyle) for more details.
    */
-  cornerStyle?: CornerStyle | null;
+  cornerStyle?: CornerStyleType | null;
   /**
    * The displayMode of the button.
    * @default 'iconAndLabel'
    *
    * @see [Apple Documentation](https://developer.apple.com/documentation/uikit/uipastecontrol/displaymode) for more details.
    */
-  displayMode?: DisplayMode | null;
+  displayMode?: DisplayModeType | null;
   /**
    * The custom style to apply to the button. Should not include `backgroundColor`, `borderRadius` or `color`
    * properties.

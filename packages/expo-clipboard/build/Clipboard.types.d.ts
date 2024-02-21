@@ -70,8 +70,8 @@ export type SetStringOptions = {
     inputFormat?: StringFormat;
 };
 export type AcceptedContentType = 'plain-text' | 'image' | 'url' | 'html';
-export type CornerStyle = 'dynamic' | 'fixed' | 'capsule' | 'large' | 'medium' | 'small';
-export type DisplayMode = 'iconAndLabel' | 'iconOnly' | 'labelOnly';
+export type CornerStyleType = 'dynamic' | 'fixed' | 'capsule' | 'large' | 'medium' | 'small';
+export type DisplayModeType = 'iconAndLabel' | 'iconOnly' | 'labelOnly';
 export type PasteEventPayload = TextPasteEvent | ImagePasteEvent;
 export type TextPasteEvent = {
     text: string;

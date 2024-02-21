@@ -1,5 +1,5 @@
 import { StyleProp, ViewProps, ViewStyle } from 'react-native';
-import { AcceptedContentType, CornerStyle, DisplayMode, GetImageOptions, PasteEventPayload } from './Clipboard.types';
+import { AcceptedContentType, CornerStyleType, DisplayModeType, GetImageOptions, PasteEventPayload } from './Clipboard.types';
 export type ClipboardPasteButtonProps = {
     /**
      * A callback that is called with the result of the paste action.
@@ -35,14 +35,14 @@ export type ClipboardPasteButtonProps = {
      *
      * @see [Apple Documentation](https://developer.apple.com/documentation/uikit/uibutton/configuration/cornerstyle) for more details.
      */
-    cornerStyle?: CornerStyle | null;
+    cornerStyle?: CornerStyleType | null;
     /**
      * The displayMode of the button.
      * @default 'iconAndLabel'
      *
      * @see [Apple Documentation](https://developer.apple.com/documentation/uikit/uipastecontrol/displaymode) for more details.
      */
-    displayMode?: DisplayMode | null;
+    displayMode?: DisplayModeType | null;
     /**
      * The custom style to apply to the button. Should not include `backgroundColor`, `borderRadius` or `color`
      * properties.

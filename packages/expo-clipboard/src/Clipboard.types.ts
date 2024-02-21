@@ -79,9 +79,9 @@ export type SetStringOptions = {
 
 export type AcceptedContentType = 'plain-text' | 'image' | 'url' | 'html';
 
-export type CornerStyle = 'dynamic' | 'fixed' | 'capsule' | 'large' | 'medium' | 'small';
+export type CornerStyleType = 'dynamic' | 'fixed' | 'capsule' | 'large' | 'medium' | 'small';
 
-export type DisplayMode = 'iconAndLabel' | 'iconOnly' | 'labelOnly';
+export type DisplayModeType = 'iconAndLabel' | 'iconOnly' | 'labelOnly';
 
 export type PasteEventPayload = TextPasteEvent | ImagePasteEvent;
 
