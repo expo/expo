@@ -14,8 +14,9 @@ interface ProjectFile<L extends string = string> {
   contents: string;
 }
 
-type AppleLanguage = 'objc' | 'objcpp' | 'swift';
+type AppleLanguage = 'objc' | 'objcpp' | 'swift' | 'ruby';
 
+export type PodfileProjectFile = ProjectFile<'ruby'>;
 export type AppDelegateProjectFile = ProjectFile<AppleLanguage>;
 
 export function getAppDelegateHeaderFilePath(projectRoot: string): string {
@@ -92,8 +93,15 @@ export function getAppDelegateObjcHeaderFilePath(projectRoot: string): string {
   return using;
 }
 
+export function getPodfilePath(projectRoot: string): string {
+  return path.join(projectRoot, 'ios', 'Podfile');
+}
+
 function getLanguage(filePath: string): AppleLanguage {
   const extension = path.extname(filePath);
+  if (!extension && path.basename(filePath) === 'Podfile') {
+    return 'ruby';
+  }
   switch (extension) {
     case '.mm':
       return 'objcpp';
