@@ -133,17 +133,6 @@ jobs:
           fields: job,message,ref,eventName,author,took
           author_name: Test Suite Nightly (iOS)
 
-  rerun-failed-ios-test:
-    runs-on: ubuntu-latest
-    needs: [ios-test]
-    if: failure() && fromJSON(github.run_attempt) <= 3
-    env:
-      GH_REPO: ${{ github.repository }}
-      GH_TOKEN: ${{ github.token }}
-    steps:
-      - name: Rerun failed ios-test job in the current workflow
-        run: gh run rerun ${{ github.run_id }} --failed
-
   android-build:
     runs-on: ubuntu-22.04
     env:

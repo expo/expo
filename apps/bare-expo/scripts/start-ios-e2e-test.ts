@@ -34,7 +34,7 @@ enum StartMode {
       await fs.cp(binaryPath, appBinaryPath, { recursive: true });
     }
     if (startMode === StartMode.TEST || startMode === StartMode.BUILD_AND_TEST) {
-      await retryAsync(() => testAsync(projectRoot, deviceId, appBinaryPath), 3);
+      await retryAsync(() => testAsync(projectRoot, deviceId, appBinaryPath), 6);
     }
   } catch (e) {
     console.error('Uncaught Error', e);
