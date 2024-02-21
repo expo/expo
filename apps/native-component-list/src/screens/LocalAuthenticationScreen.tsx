@@ -1,101 +1,143 @@
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import * as LocalAuthentication from 'expo-local-authentication';
-import React from 'react';
-import { Text, View } from 'react-native';
+import { BiometricsSecurityLevel } from 'expo-local-authentication';
+import { Platform } from 'expo-modules-core';
+import React, { useState, useEffect } from 'react';
+import { Text, View, StyleSheet } from 'react-native';
 
 import Button from '../components/Button';
 import MonoText from '../components/MonoText';
 
-interface State {
-  waiting: boolean;
-  supportedAuthenticationTypes?: string[];
-  hasHardware?: boolean;
-  isEnrolled?: boolean;
-}
+const enrolledLevelMap = {
+  0: 'None',
+  1: 'Passcode',
+  2: 'Weak Biometric',
+  3: 'Strong Biometric',
+};
 
-// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
-// eslint-disable-next-line @typescript-eslint/ban-types
-export default class LocalAuthenticationScreen extends React.Component<{}, State> {
-  static navigationOptions = {
-    title: 'LocalAuthentication',
+const securityLevels: BiometricsSecurityLevel[] = ['strong', 'weak'];
+
+const LocalAuthenticationScreen = () => {
+  const [waiting, setWaiting] = useState(false);
+  const [supportedAuthenticationTypes, setSupportedAuthenticationTypes] = useState<
+    string[] | undefined
+  >();
+  const [enrolledLevel, setEnrolledLevel] = useState<LocalAuthentication.SecurityLevel>(0);
+  const [hasHardware, setHasHardware] = useState<boolean | undefined>();
+  const [isEnrolled, setIsEnrolled] = useState<boolean | undefined>();
+  const [securityLevelIndex, setSecurityLevelIndex] = useState(0);
+
+  useEffect(() => {
+    checkDevicePossibilities();
+  }, []);
+
+  const checkDevicePossibilities = async () => {
+    const [hasHardware, isEnrolled, supportedAuthenticationTypes, enrolledLevel] =
+      await Promise.all([
+        LocalAuthentication.hasHardwareAsync(),
+        LocalAuthentication.isEnrolledAsync(),
+        getAuthenticationTypes(),
+        LocalAuthentication.getEnrolledLevelAsync(),
+      ]);
+    setHasHardware(hasHardware);
+    setIsEnrolled(isEnrolled);
+    setSupportedAuthenticationTypes(supportedAuthenticationTypes);
+    setEnrolledLevel(enrolledLevel);
   };
 
-  readonly state: State = {
-    waiting: false,
-  };
-
-  componentDidMount() {
-    this.checkDevicePossibilities();
-  }
-
-  async checkDevicePossibilities() {
-    const [hasHardware, isEnrolled, supportedAuthenticationTypes] = await Promise.all([
-      LocalAuthentication.hasHardwareAsync(),
-      LocalAuthentication.isEnrolledAsync(),
-      this.getAuthenticationTypes(),
-    ]);
-    this.setState({ hasHardware, isEnrolled, supportedAuthenticationTypes });
-  }
-
-  async getAuthenticationTypes() {
+  const getAuthenticationTypes = async () => {
     return (await LocalAuthentication.supportedAuthenticationTypesAsync()).map(
       (type) => LocalAuthentication.AuthenticationType[type]
     );
-  }
-
-  authenticateWithFallback = () => {
-    this.authenticate(true);
   };
 
-  authenticateWithoutFallback = () => {
-    this.authenticate(false);
-  };
-
-  async authenticate(withFallback: boolean = true) {
-    this.setState({ waiting: true });
+  const authenticate = async (withFallback: boolean = true) => {
+    setWaiting(true);
     try {
       const result = await LocalAuthentication.authenticateAsync({
         promptMessage: 'Authenticate',
         cancelLabel: 'Cancel label',
         disableDeviceFallback: !withFallback,
+        biometricsSecurityLevel: securityLevels[securityLevelIndex],
       });
       if (result.success) {
         alert('Authenticated!');
       } else {
-        alert('Failed to authenticate, reason: ' + result.error);
+        // @ts-ignore
+        alert(`Failed to authenticate, reason: ${result.error}`);
       }
     } finally {
-      this.setState({ waiting: false });
+      setWaiting(false);
     }
-  }
+  };
 
-  render() {
-    const { waiting, ...capabilities } = this.state;
-
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <View style={{ paddingBottom: 30 }}>
-          <Text>Device capabilities:</Text>
-          <MonoText textStyle={{ fontSize: 14 }}>{JSON.stringify(capabilities, null, 2)}</MonoText>
-        </View>
-        <View style={{ height: 200 }}>
-          {waiting ? (
-            <Text>Waiting for authentication...</Text>
-          ) : (
-            <View>
-              <Button
-                style={{ margin: 5 }}
-                onPress={this.authenticateWithFallback}
-                title="Authenticate with device fallback"
-              />
-              <Button
-                style={{ margin: 5 }}
-                onPress={this.authenticateWithoutFallback}
-                title="Authenticate without device fallback"
-              />
-            </View>
+  return (
+    <View style={styles.container}>
+      <View style={styles.capabilitiesContainer}>
+        <Text>Device capabilities:</Text>
+        <MonoText textStyle={styles.monoText}>
+          {JSON.stringify(
+            {
+              hasHardware,
+              isEnrolled,
+              supportedAuthenticationTypes,
+              enrolledLevel: enrolledLevelMap[enrolledLevel as keyof typeof enrolledLevelMap],
+            },
+            null,
+            2
           )}
-        </View>
+        </MonoText>
       </View>
-    );
-  }
-}
+      <View>
+        {waiting ? (
+          <Text>Waiting for authentication...</Text>
+        ) : (
+          <View>
+            {Platform.OS === 'android' && (
+              <View style={styles.button}>
+                <Text>Authentication security level</Text>
+                <SegmentedControl
+                  values={securityLevels}
+                  selectedIndex={securityLevelIndex}
+                  onValueChange={(value) => {
+                    setSecurityLevelIndex(value === 'strong' ? 0 : 1);
+                  }}
+                />
+              </View>
+            )}
+            <Button
+              style={styles.button}
+              onPress={() => authenticate(true)}
+              title="Authenticate with device fallback"
+            />
+            <Button
+              style={styles.button}
+              onPress={() => authenticate(false)}
+              title="Authenticate without device fallback"
+            />
+          </View>
+        )}
+      </View>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'white',
+  },
+  capabilitiesContainer: {
+    paddingBottom: 30,
+  },
+  monoText: {
+    fontSize: 14,
+  },
+  button: {
+    margin: 5,
+  },
+});
+
+export default LocalAuthenticationScreen;
