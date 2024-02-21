@@ -15,12 +15,10 @@ export type GetImageOptions = {
 // @needsAudit
 export type ClipboardImage = {
   /**
-   * A Base64-encoded string of the image data.
-   * Its format is dependent on the `format` option.
+   * A Base64-encoded string of the image data. Its format is dependent on the `format` option.
+   * You can use it directly as the source of an `Image` element.
    *
    * > **NOTE:** The string is already prepended with `data:image/png;base64,` or `data:image/jpeg;base64,` prefix.
-   *
-   * You can use it directly as the source of an `Image` element.
    * @example
    * ```ts
    * <Image

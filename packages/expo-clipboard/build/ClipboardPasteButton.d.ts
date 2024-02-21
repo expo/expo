@@ -26,19 +26,19 @@ export type ClipboardPasteButtonProps = {
     backgroundColor?: string | null;
     /**
      * The foregroundColor of the button.
-     * @default white
+     * @default 'white'
      */
     foregroundColor?: string | null;
     /**
      * The cornerStyle of the button.
-     * @default capsule
+     * @default 'capsule'
      *
      * @see [Apple Documentation](https://developer.apple.com/documentation/uikit/uibutton/configuration/cornerstyle) for more details.
      */
     cornerStyle?: CornerStyle | null;
     /**
      * The displayMode of the button.
-     * @default `iconAndLabel`
+     * @default 'iconAndLabel'
      *
      * @see [Apple Documentation](https://developer.apple.com/documentation/uikit/uipastecontrol/displaymode) for more details.
      */
@@ -53,8 +53,8 @@ export type ClipboardPasteButtonProps = {
      */
     imageOptions?: GetImageOptions | null;
     /**
-     * An array of the content types that will cause the button to become active
-     * @note do not include `plain-text` and `html` at the same time as this will cause all text to be treated as `html`
+     * An array of the content types that will cause the button to become active.
+     * > Do not include `plain-text` and `html` at the same time as this will cause all text to be treated as `html`.
      * @default ['plain-text', 'image']
      */
     acceptedContentTypes?: AcceptedContentType[];
