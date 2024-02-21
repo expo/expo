@@ -4,7 +4,6 @@ import ExpoModulesCore
 import Photos
 
 private let assetIdentifier = "ph://"
-private let resourceManager = PHAssetResourceManager()
 
 internal func ensureFileDirectoryExists(_ fileUrl: URL) throws {
   let directoryPath = fileUrl.deletingLastPathComponent()
@@ -73,7 +72,7 @@ internal func isPHAsset(path: String) -> Bool {
   return path.contains(assetIdentifier)
 }
 
-internal func copyPHAsset(fromUrl: URL, toUrl: URL, promise: Promise) {
+internal func copyPHAsset(fromUrl: URL, toUrl: URL, with resourceManager: PHAssetResourceManager, promise: Promise) {
   if isPhotoLibraryStatusAuthorized() {
     if FileManager.default.fileExists(atPath: toUrl.path) {
       promise.reject(FileAlreadyExistsException(toUrl.path))
