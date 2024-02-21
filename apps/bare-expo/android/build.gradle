@@ -1,19 +1,12 @@
-import groovy.json.JsonSlurper
-
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
   ext {
-    buildToolsVersion = '34.0.0'
-    minSdkVersion = 23
-    compileSdkVersion = 34
-    targetSdkVersion = 34
-    // Some dependencies still expect supportLibVersion to be defined
-    supportLibVersion = "29.0.0"
-    kotlinVersion = '1.8.10'
-    // for expo-dev-client
-    expoUpdatesVersion = null
-
+    buildToolsVersion = findProperty('android.buildToolsVersion') ?: '34.0.0'
+    minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '23')
+    compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '34')
+    targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
+    kotlinVersion = findProperty('android.kotlinVersion') ?: '1.8.10'
     ndkVersion = "25.1.8937393"
   }
   repositories {
@@ -25,8 +18,6 @@ buildscript {
 
     classpath("com.facebook.react:react-native-gradle-plugin")
 
-    classpath 'com.google.gms:google-services:4.3.5'  // Google Services plugin
-
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
 
     classpath "com.diffplug.spotless:spotless-plugin-gradle:6.23.3"
@@ -34,26 +25,6 @@ buildscript {
 }
 
 allprojects {
-  // [Custom]
-  configurations.all {
-    if (findProperty("buildReactNativeFromSource") == "true") {
-      resolutionStrategy.dependencySubstitution {
-        substitute(module("com.facebook.react:react-native"))
-            .using(project(":ReactAndroid"))
-            .because("Building React Native from source")
-        substitute(module("com.facebook.react:react-android"))
-            .using(project(":ReactAndroid"))
-            .because("Building React Native from source")
-        substitute(module("com.facebook.react:hermes-engine"))
-            .using(project(":ReactAndroid:hermes-engine"))
-            .because("Building Hermes from source")
-        substitute(module("com.facebook.react:hermes-android"))
-            .using(project(":ReactAndroid:hermes-engine"))
-            .because("Building Hermes from source")
-      }
-    }
-  }
-
   repositories {
     mavenLocal()
     maven {
@@ -138,3 +109,7 @@ subprojects {
 }
 
 apply plugin: "com.facebook.react.rootproject"
+// @generated begin expo-camera-import - expo prebuild (DO NOT MODIFY) sync-f244f4f3d8bf7229102e8f992b525b8602c74770
+def expoCameraMavenPath = new File(["node", "--print", "require.resolve('expo-camera/package.json')"].execute(null, rootDir).text.trim(), "../android/maven")
+allprojects { repositories { maven { url(expoCameraMavenPath) } } }
+// @generated end expo-camera-import

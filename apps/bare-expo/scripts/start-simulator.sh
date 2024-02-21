@@ -22,7 +22,7 @@ if [ "${CURRENT_ENV}" = "test" ]; then
         brew install facebook/fb/idb-companion
     fi
 
-    if [ -d "ios/build/Bare Expo.app" ]; then
+    if [ -d "ios/build/BareExpo.app" ]; then
         echo " ✅ Project is built for iOS"
     else
         echo " ⚠️  Building the project..."
