@@ -72,7 +72,6 @@ class ExpoVideoPlaybackService : MediaSessionService() {
   }
 
   override fun onTaskRemoved(rootIntent: Intent?) {
-    cleanup()
     stopSelf()
   }
 
@@ -83,6 +82,11 @@ class ExpoVideoPlaybackService : MediaSessionService() {
   override fun onDestroy() {
     cleanup()
     super.onDestroy()
+  }
+
+  override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    super.onStartCommand(intent, flags, startId)
+    return START_NOT_STICKY
   }
 
   private fun createNotification(session: MediaSession) {
@@ -105,11 +109,6 @@ class ExpoVideoPlaybackService : MediaSessionService() {
 
     // Each of the players has it's own notification when playing.
     notificationManager.notify(session.player.hashCode(), notificationCompat)
-  }
-
-  override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-    super.onStartCommand(intent, flags, startId)
-    return START_NOT_STICKY
   }
 
   private fun cleanup() {

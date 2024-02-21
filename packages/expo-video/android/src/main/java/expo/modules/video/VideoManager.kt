@@ -61,9 +61,9 @@ object VideoManager {
   }
 
   fun onAppBackgrounded() {
-    for (videoPlayer in videoPlayersToVideoViews.keys) {
-      if (!videoPlayer.staysActiveInBackground) {
-        videoPlayer.player.pause()
+    for (videoView in videoViews.values) {
+      if (videoView.videoPlayer?.staysActiveInBackground == false) {
+        videoView.videoPlayer?.player?.pause()
       }
     }
   }
