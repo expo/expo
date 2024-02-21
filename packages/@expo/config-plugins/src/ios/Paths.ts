@@ -94,7 +94,27 @@ export function getAppDelegateObjcHeaderFilePath(projectRoot: string): string {
 }
 
 export function getPodfilePath(projectRoot: string): string {
-  return path.join(projectRoot, 'ios', 'Podfile');
+  const [using, ...extra] = globSync('ios/Podfile', {
+    absolute: true,
+    cwd: projectRoot,
+    ignore: ignoredPaths,
+  });
+
+  if (!using) {
+    throw new UnexpectedError(`Could not locate a valid Podfile at root: "${projectRoot}"`);
+  }
+
+  if (extra.length) {
+    warnMultipleFiles({
+      tag: 'podfile',
+      fileName: 'Podfile',
+      projectRoot,
+      using,
+      extra,
+    });
+  }
+
+  return using;
 }
 
 function getLanguage(filePath: string): AppleLanguage {
