@@ -156,6 +156,7 @@ jobs:
     steps:
       - name: Rerun failed ios-test job in the current workflow
         env:
+          GH_REPO: ${{ github.repository }}
           GH_TOKEN: ${{ github.token }}
         run: gh run rerun ${{ github.run_id }} --failed
 
