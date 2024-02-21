@@ -36,12 +36,12 @@ export declare enum SecurityLevel {
      */
     BIOMETRIC,
     /**
-     * Indicates weak biometric authentication. For example 2D image-based face unlock.
+     * Indicates weak biometric authentication. For example, a 2D image-based face unlock.
      * > There are currently no weak biometric authentication options on iOS.
      */
     BIOMETRIC_WEAK = 2,
     /**
-     * Indicates strong biometric authentication. For example a fingerprint scan or 3D face unlock.
+     * Indicates strong biometric authentication. For example, a fingerprint scan or 3D face unlock.
      */
     BIOMETRIC_STRONG = 3
 }
@@ -77,8 +77,8 @@ export type LocalAuthenticationOptions = {
     requireConfirmation?: boolean;
     /**
      * Sets the security class of biometric authentication to allow.
-     * `strong` allows only Android Class 3 biometrics, for example a fingerprint or a 3D face scan.
-     * `weak` allows both Android Class 3 and Class 2 biometrics. Class 2 biometrics are less secure than Class 3, for example camera-based face unlock.
+     * `strong` allows only Android Class 3 biometrics. For example, a fingerprint or a 3D face scan.
+     * `weak` allows both Android Class 3 and Class 2 biometrics. Class 2 biometrics are less secure than Class 3. For example, a camera-based face unlock.
      * @platform android
      * @default 'weak'
      */

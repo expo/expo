@@ -36,12 +36,12 @@ export var SecurityLevel;
         ? SecurityLevel.BIOMETRIC_WEAK
         : SecurityLevel.BIOMETRIC_STRONG] = "BIOMETRIC";
     /**
-     * Indicates weak biometric authentication. For example 2D image-based face unlock.
+     * Indicates weak biometric authentication. For example, a 2D image-based face unlock.
      * > There are currently no weak biometric authentication options on iOS.
      */
     SecurityLevel[SecurityLevel["BIOMETRIC_WEAK"] = 2] = "BIOMETRIC_WEAK";
     /**
-     * Indicates strong biometric authentication. For example a fingerprint scan or 3D face unlock.
+     * Indicates strong biometric authentication. For example, a fingerprint scan or 3D face unlock.
      */
     SecurityLevel[SecurityLevel["BIOMETRIC_STRONG"] = 3] = "BIOMETRIC_STRONG";
 })(SecurityLevel || (SecurityLevel = {}));
