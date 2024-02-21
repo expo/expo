@@ -308,6 +308,18 @@ export default class FileSystemScreen extends React.Component<object, State> {
     });
   };
 
+  _downloadAndReadLocalAsset = async () => {
+    const asset = Asset.fromModule(require('../../assets/index.html')).uri;
+    const tmpFile = FileSystem.cacheDirectory + 'test.html';
+    try {
+      await FileSystem.downloadAsync(asset, tmpFile);
+      const result = await FileSystem.readAsStringAsync(tmpFile);
+      Alert.alert('Result', result);
+    } catch (e) {
+      Alert.alert('Error', e.message);
+    }
+  };
+
   render() {
     return (
       <ScrollView style={{ padding: 10 }}>
@@ -334,6 +346,10 @@ export default class FileSystemScreen extends React.Component<object, State> {
         <ListButton onPress={this._getInfoAsset} title="Get Info Asset" />
         <ListButton onPress={this._copyAndReadAsset} title="Copy and Read Asset" />
         <ListButton onPress={this._alertFreeSpace} title="Alert free space" />
+        <ListButton
+          onPress={this._downloadAndReadLocalAsset}
+          title="Download and read local asset"
+        />
         {Platform.OS === 'android' && (
           <>
             <HeadingText>Storage Access Framework</HeadingText>
