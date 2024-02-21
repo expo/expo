@@ -17,7 +17,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix using dev server URL in development.
+- Fix using dev server URL in development. ([#27213](https://github.com/expo/expo/pull/27213) by [@EvanBacon](https://github.com/EvanBacon))
 - Always reset production bundler cache in run command. ([#27114](https://github.com/expo/expo/pull/27114) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix expo router src log memo. ([#27013](https://github.com/expo/expo/pull/27013) by [@EvanBacon](https://github.com/EvanBacon))
 - Prevent run commands from hanging when the process completes. ([#26960](https://github.com/expo/expo/pull/26960) by [@EvanBacon](https://github.com/EvanBacon))
