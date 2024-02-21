@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
+import expo.modules.updates.UpdatesConfiguration.Companion.UPDATES_CONFIGURATION_RUNTIME_VERSION_READ_FINGERPRINT_FILE_SENTINEL
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Assert
@@ -161,5 +162,30 @@ class UpdatesConfigurationInstrumentationTest {
     Assert.assertEquals(mapOf("test" to "override"), config.requestHeaders)
     Assert.assertEquals("override", config.codeSigningCertificate)
     Assert.assertEquals(mapOf("test" to "override"), config.codeSigningMetadata)
+  }
+
+  @Test
+  fun test_runtimeVersion_fingerprintReadFromFile() {
+    val testPackageName = "test"
+    val context = mockk<Context> {
+      every { assets } returns mockk {
+        every { open("fingerprint") } returns "testfingerprint".byteInputStream()
+      }
+      every { packageName } returns testPackageName
+      every { packageManager } returns mockk {
+        every { getApplicationInfo(testPackageName, PackageManager.GET_META_DATA) } returns mockk {
+          metaData = Bundle().apply {
+            putString(
+              "expo.modules.updates.EXPO_UPDATE_URL",
+              "https://example.com"
+            )
+            putString("expo.modules.updates.EXPO_RUNTIME_VERSION", UPDATES_CONFIGURATION_RUNTIME_VERSION_READ_FINGERPRINT_FILE_SENTINEL)
+          }
+        }
+      }
+    }
+
+    val config = UpdatesConfiguration(context, null)
+    Assert.assertEquals("testfingerprint", config.getRuntimeVersion())
   }
 }

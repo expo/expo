@@ -106,6 +106,8 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   implementation project(path: ':expo-modules-core')
 
+  implementation 'com.facebook.react:react-android'
+
   def androidxMedia3Version = "1.2.1"
   implementation "androidx.media3:media3-session:${androidxMedia3Version}"
   implementation "androidx.media3:media3-exoplayer:${androidxMedia3Version}"

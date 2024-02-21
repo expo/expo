@@ -40,7 +40,11 @@ export default async function checkPackageAsync(
       }
 
       if (options.uniformityCheck) {
-        await checkUniformityAsync(pkg, './build');
+        if (options.checkPackageType === 'package') {
+          await checkUniformityAsync(pkg, './build');
+        } else {
+          await checkUniformityAsync(pkg, `./${options.checkPackageType}/build`);
+        }
         if (pkg.scripts.bundle) {
           await checkUniformityAsync(pkg, '*bundle');
         }

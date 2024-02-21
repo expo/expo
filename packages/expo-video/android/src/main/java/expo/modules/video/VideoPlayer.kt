@@ -29,7 +29,10 @@ class VideoPlayer(context: Context, private val appContext: AppContext, private 
       ?: throw Exceptions.MissingActivity()
   }
 
-  val player = ExoPlayer.Builder(context).setLooper(context.mainLooper).build()
+  val player = ExoPlayer
+    .Builder(context)
+    .setLooper(context.mainLooper)
+    .build()
 
   // We duplicate some properties of the player, because we don't want to always use the mainQueue to access them.
   var isPlaying = false

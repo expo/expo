@@ -50,6 +50,10 @@ Transpiler used for removing language features that aren't available in the runt
 
 Projects can configure how Babel is used by modifying the **babel.config.js** file in the project directory. This file is optional when using [Expo CLI](#expo-cli). Expo projects should extend the default Babel preset [`babel-preset-expo`](https://github.com/expo/expo/tree/main/packages/babel-preset-expo).
 
+### Bun
+
+A JavaScript runtime and a drop-in alternative for Node.js. For more information about usage with Expo and EAS, see [using Bun](/guides/using-bun/) guide.
+
 ### CocoaPods
 
 The iOS package manager used to link native modules to the native iOS project. This package manager is configured using the **ios/Podfile** and updated when a user runs `pod install` in the **ios** directory.
@@ -69,6 +73,10 @@ Async functions that are appended to the [app config](#app-config) for use in [P
 ### Config Plugin
 
 A JavaScript function that is used to append [config mods](#config-mods) to the [app Config](#app-config) for use in [Prebuild](#prebuild). For more information, see [Config Plugins](/config-plugins/introduction/).
+
+### Continuous Native Generation (CNG)
+
+A process for building an Expo app where your native projects files (for example, **android** and **ios** directories) are generated on-demand from your **app.json** and **package.json** files, similar to how your **node_modules** are generated from your **package.json** file. See [CNG](/workflow/continuous-native-generation/) guide for more information.
 
 ### create-expo-app
 
@@ -106,7 +114,7 @@ The development server is typically hosted on `http://localhost:8081`. It hosts 
 
 ### EAS
 
-[Expo Application Services (EAS)](/eas) are deeply-integrated cloud services for Expo and React Native apps, such as [EAS Build](/build/introduction) and [EAS Submit](/submit/introduction).
+[Expo Application Services (EAS)](/eas) are deeply-integrated cloud services for Expo and React Native apps, such as [EAS Build](/build/introduction), [EAS Submit](/submit/introduction) and [EAS Update](/eas-update/introduction).
 
 ### EAS CLI
 
@@ -279,10 +287,7 @@ By default, platform extensions are resolved in `@expo/metro-config` using the f
 
 The process of generating the temporary native **android** and **ios** folders for a React Native project based on the [app config](#app-config). This process is performed by running the command `npx expo prebuild` from [Expo CLI](#expo-cli) in a project directory.
 
-See also:
-
-- [Prebuild template](#prebuild-template).
-- [Autolinking](#autolinking).
+See [Prebuild template](#prebuild-template) and [Autolinking](#autolinking) for further information.
 
 ### Prebuild template
 
@@ -302,7 +307,7 @@ We use the word "publish" as a synonym for "deploy". When you publish an app, it
 
 ### React Native Web
 
-A high-performing abstraction on top of `react-dom` which enables core primitives from [React Native](#react-native) to run in the browser. React Native for web (also known as RNW) was developed at Twitter and is currently used for their main website https://twitter.com. [Expo SDK](#expo-sdk) and [Expo CLI](#expo-cli) have first-class support for RNW.
+A high-performing abstraction on top of `react-dom` that enables core primitives from [React Native](#react-native) to run in the browser. React Native for web (RNW) was developed at X (Twitter) and is currently used for their [main website](https://x.com). [Expo SDK](#expo-sdk) and [Expo CLI](#expo-cli) have first-class support for RNW.
 
 ### React Navigation
 
@@ -326,11 +331,11 @@ We use the word "slug" in [**app.json**](#appjson) to refer to the name to use f
 
 ### Software Mansion
 
-A development agency in Krakow, Poland. Maintainers of `react-native-gesture-handler`, `react-native-screens`, and `react-native-reanimated`. The platform team at Expo is compromised of a number of contractors from Software Mansion. All of Software Mansion's core React Native libraries are supported in [Expo Go](#expo-go).
+A development agency in Krakow, Poland. Maintainers of `react-native-gesture-handler`, `react-native-screens`, and `react-native-reanimated`. The platform team at Expo is comprised of a number of contractors from Software Mansion. All of Software Mansion's core React Native libraries are supported in [Expo Go](#expo-go).
 
 ### Standalone app
 
-An application binary that can be submitted to the Android Play Store or iOS App Store. For more information, see [Building Standalone Apps](/archive/classic-updates/building-standalone-apps).
+An application binary that can be submitted to the Android Play Store or iOS App Store. For more information, see [Building Standalone Apps](/archive/classic-builds/building-standalone-apps/).
 
 ### Store Config
 
@@ -348,7 +353,7 @@ TypeScript is a strongly typed programming language that builds on JavaScript, g
 
 Traditionally, apps for Android and iOS are updated by submitting an updated binary to the App and Play stores. Updates allow you to push an update to your app without the overhead of submitting a new release to the stores. For more information, see [Publishing](/eas-update/introduction) documentation.
 
-### VS Code Expo
+### VS Code Expo Tools
 
 The VS Code extension for improving the developer experience of working with app config files. This extension provides autocomplete and intellisense for the [app config](#app-config), [Store Config](#store-config), [Expo Module Config](#expo-module-config), and [EAS Config](#eas-config). For more information, see the [VS Code Expo Tools extension](https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools).
 

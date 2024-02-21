@@ -20,4 +20,14 @@
  */
 + (BOOL)installExpoModulesHostObject:(nonnull EXAppContext *)appContext;
 
+/**
+ Installs the base class for shared objects, i.e. `global.expo.SharedObject`.
+ */
++ (void)installSharedObjectClass:(nonnull EXRuntime *)runtime releaser:(void(^)(long))releaser;
+
+/**
+ Installs the EventEmitter class in the given runtime as `global.expo.EventEmitter`.
+ */
++ (void)installEventEmitterClass:(nonnull EXRuntime *)runtime;
+
 @end

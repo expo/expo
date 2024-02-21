@@ -3,41 +3,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createManifestForBuildAsync = void 0;
 const exportEmbedAsync_1 = require("@expo/cli/build/src/export/embed/exportEmbedAsync");
 const metroAssetLocalPath_1 = require("@expo/cli/build/src/export/metroAssetLocalPath");
 const paths_1 = require("@expo/config/paths");
-const assert_1 = __importDefault(require("assert"));
 const crypto_1 = __importDefault(require("crypto"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const filterPlatformAssetScales_1 = require("./filterPlatformAssetScales");
-function findUpProjectRoot(cwd) {
-    if (['.', path_1.default.sep].includes(cwd)) {
-        return null;
-    }
-    if (fs_1.default.existsSync(path_1.default.join(cwd, 'package.json'))) {
-        return cwd;
-    }
-    else {
-        return findUpProjectRoot(path_1.default.dirname(cwd));
-    }
-}
-/** Resolve the relative entry file using Expo's resolution method. */
-function getRelativeEntryPoint(projectRoot, platform) {
-    const entry = (0, paths_1.resolveEntryPoint)(projectRoot, { platform });
-    if (entry) {
-        return path_1.default.relative(projectRoot, entry);
-    }
-    return entry;
-}
-(async function () {
-    const platform = process.argv[2];
-    const projectRootArg = process.argv[3];
-    (0, assert_1.default)(projectRootArg, 'Must provide a valid project root');
-    const possibleProjectRoot = findUpProjectRoot(projectRootArg);
-    (0, assert_1.default)(possibleProjectRoot, 'Must provide a valid project root');
-    const destinationDir = process.argv[4];
-    const entryFile = process.argv[5] ||
+async function createManifestForBuildAsync(platform, possibleProjectRoot, destinationDir, entryFileArg) {
+    const entryFile = entryFileArg ||
         process.env.ENTRY_FILE ||
         getRelativeEntryPoint(possibleProjectRoot, platform) ||
         'index.js';
@@ -107,12 +82,18 @@ function getRelativeEntryPoint(projectRoot, platform) {
         });
     });
     fs_1.default.writeFileSync(path_1.default.join(destinationDir, 'app.manifest'), JSON.stringify(manifest));
-})().catch((e) => {
-    // Wrap in regex to make it easier for log parsers (like `@expo/xcpretty`) to find this error.
-    e.message = `@build-script-error-begin\n${e.message}\n@build-script-error-end\n`;
-    console.error(e);
-    process.exit(1);
-});
+}
+exports.createManifestForBuildAsync = createManifestForBuildAsync;
+/**
+ * Resolve the relative entry file using Expo's resolution method.
+ */
+function getRelativeEntryPoint(projectRoot, platform) {
+    const entry = (0, paths_1.resolveEntryPoint)(projectRoot, { platform });
+    if (entry) {
+        return path_1.default.relative(projectRoot, entry);
+    }
+    return entry;
+}
 function getAndroidResourceFolderName(asset) {
     return metroAssetLocalPath_1.drawableFileTypes.has(asset.type) ? 'drawable' : 'raw';
 }

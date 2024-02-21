@@ -34,7 +34,7 @@
 
 <h6 align="center">Follow us on</h6>
 <p align="center">
-  <a aria-label="Follow @expo on X" href="https://twitter.com/intent/follow?screen_name=expo" target="_blank">
+  <a aria-label="Follow @expo on X" href="https://x.com/intent/follow?screen_name=expo" target="_blank">
     <img alt="Expo on X" src="https://img.shields.io/badge/X-000000?style=for-the-badge&logo=x&logoColor=white" target="_blank" />
   </a>&nbsp;
   <a aria-label="Follow @expo on GitHub" href="https://github.com/expo" target="_blank">
