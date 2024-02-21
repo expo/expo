@@ -26,7 +26,7 @@ export function serializeHtmlWithAssets({
     isExporting,
     template,
     baseUrl,
-    bundleUrl: isExporting ? devBundleUrl : undefined,
+    bundleUrl: isExporting ? undefined : devBundleUrl,
     route,
   });
 }
