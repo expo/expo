@@ -63,6 +63,9 @@ class LogRespectingTerminal extends Terminal {
       );
       // @ts-expect-error
       this._scheduleUpdate();
+
+      // Flush the logs to the terminal immediately so logs at the end of the process are not lost.
+      this.flush();
     };
 
     console.log = sendLog;
