@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Upgrade `babel-plugin-react-native-web` for latest `react-native-web` aliases.
+- Upgrade `babel-plugin-react-native-web` for latest `react-native-web` aliases. ([#27214](https://github.com/expo/expo/pull/27214) by [@EvanBacon](https://github.com/EvanBacon))
 - Directly resolve plugins. ([#27041](https://github.com/expo/expo/pull/27041) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 10.0.1 - 2023-12-19
