@@ -8,6 +8,12 @@ final class FileNotExistsException: GenericException<String> {
   }
 }
 
+final class FileAlreadyExistsException: GenericException<String> {
+  override var reason: String {
+    "File '\(param)' already exists"
+  }
+}
+
 final class DirectoryNotExistsException: GenericException<String> {
   override var reason: String {
     "Directory '\(param)' does not exist"
