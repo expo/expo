@@ -54,10 +54,11 @@ export class MetroTerminalReporter extends TerminalReporter {
 
       const time = startTime != null ? chalk.dim(this._getElapsedTime(startTime) + 'ms') : '';
       // iOS Bundled 150ms
+      const plural = progress.totalFileCount === 1 ? '' : 's';
       return (
         color(platform + status) +
         time +
-        chalk.reset.dim(` ${localPath} (${progress.totalFileCount} modules)`)
+        chalk.reset.dim(` ${localPath} (${progress.totalFileCount} module${plural})`)
       );
     }
 
