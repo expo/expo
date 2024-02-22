@@ -58,7 +58,7 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
     playerViewController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     playerViewController.view.backgroundColor = .clear
     // Now playing is managed by the `NowPlayingManager`
-    playerViewController.updatesNowPlayingInfoCenter = true
+    playerViewController.updatesNowPlayingInfoCenter = false
 
     addSubview(playerViewController.view)
   }

@@ -8,9 +8,8 @@ import ExpoModulesCore
  * Helper class used to keep track of all existing VideoViews and VideoPlayers and manage their lifecycle
  */
 class VideoManager {
-  static var shared = {
-    VideoManager()
-  }()
+  static var shared = VideoManager()
+
   private var videoViews = NSHashTable<VideoView>.weakObjects()
   private var videoPlayers = NSHashTable<VideoPlayer>.weakObjects()
 

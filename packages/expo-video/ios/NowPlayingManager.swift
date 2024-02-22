@@ -9,11 +9,9 @@ import MediaPlayer
  * Paused player will be used as a data source for "NowPlaying" only if no other players are currently playing.
  */
 class NowPlayingManager {
-  static var shared = {
-    NowPlayingManager()
-  }()
-  private let skipTimeInterval = 10.0
+  static var shared = NowPlayingManager()
 
+  private let skipTimeInterval = 10.0
   private var timeObserver: Any?
   private weak var mostRecentInteractionPlayer: AVPlayer?
   private var players = NSHashTable<AVPlayer>.weakObjects()
