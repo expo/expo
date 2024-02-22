@@ -12,7 +12,7 @@ The `expo-dev-launcher` repository consists of two different parts, the exported
 
 Local development is usually done through `bare-expo`.
 
-To use `dev-client` when running `bare-expo` on Android, open [MainApplication.java](/apps/bare-expo/android/app/src/main/java/dev/expo/payments/MainApplication.kt) and set the `USE_DEV_CLIENT` value to `true`.
+To use `dev-client` when running `bare-expo` on Android, open [MainApplication.kt](/apps/bare-expo/android/app/src/main/java/dev/expo/payments/MainApplication.kt) and set the `USE_DEV_CLIENT` value to `true`.
 
 ```diff
 - private const val USE_DEV_CLIENT = false;
