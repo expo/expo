@@ -1,6 +1,6 @@
-import { EventEmitter, Subscription, UnavailabilityError, Platform } from 'expo-modules-core';
+import { EventEmitter, type Subscription, UnavailabilityError, Platform } from 'expo-modules-core';
 
-import {
+import type {
   ClipboardImage,
   ContentType,
   GetImageOptions,
@@ -256,4 +256,6 @@ export const isPasteButtonAvailable: boolean =
   Platform.OS === 'ios' ? ExpoClipboard.isPasteButtonAvailable : false;
 
 export * from './Clipboard.types';
+export { ClipboardPasteButtonProps } from './ClipboardPasteButton';
+
 export { ClipboardPasteButton };
