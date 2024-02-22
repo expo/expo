@@ -18,7 +18,6 @@ import androidx.media3.session.SessionCommand
 import com.google.common.collect.ImmutableList
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
-import java.util.UUID
 
 class PlaybackServiceBinder(val service: ExpoVideoPlaybackService) : Binder()
 
@@ -47,13 +46,14 @@ class ExpoVideoPlaybackService : MediaSessionService() {
       return
     }
 
-    mediaSessions[player] = MediaSession.Builder(this, player)
-      .setId("ExpoVideoPlaybackService" + UUID.randomUUID().toString())
+    val mediaSession = MediaSession.Builder(this, player)
+      .setId("ExpoVideoPlaybackService_${player.hashCode()}")
       .setCallback(VideoMediaSessionCallback())
       .setCustomLayout(ImmutableList.of(seekBackwardButton, seekForwardButton))
       .build()
 
-    addSession(mediaSessions[player]!!)
+    mediaSessions[player] = mediaSession
+    addSession(mediaSession)
   }
 
   fun unregisterPlayer(player: ExoPlayer) {
