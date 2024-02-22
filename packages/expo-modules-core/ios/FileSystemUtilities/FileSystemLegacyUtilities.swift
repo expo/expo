@@ -17,6 +17,10 @@ public class FileSystemLegacyUtilities: NSObject, EXInternalModule, EXFileSystem
     self.documentDirectory = documentDirectory
     self.cachesDirectory = cachesDirectory
     self.isScoped = true
+
+    super.init()
+    ensureDirExists(withPath: self.cachesDirectory)
+    ensureDirExists(withPath: self.documentDirectory)
   }
 
   required public override init() {
@@ -25,6 +29,10 @@ public class FileSystemLegacyUtilities: NSObject, EXInternalModule, EXFileSystem
 
     let cachesPaths = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true)
     self.cachesDirectory = cachesPaths[0]
+
+    super.init()
+    ensureDirExists(withPath: self.cachesDirectory)
+    ensureDirExists(withPath: self.documentDirectory)
   }
 
   public static func exportedInterfaces() -> [Protocol] {
