@@ -116,7 +116,7 @@ public final class ImageModule: Module {
       var failed = false
 
       urls.forEach { url in
-        SDWebImagePrefetcher.shared.prefetchURLs([url], context: context, progress: nil, completed: { _, skipped in
+        SDWebImagePrefetcher.shared.prefetchURLs([url], context: context, progress: nil, completed: { loaded, skipped in
           if skipped > 0 && !failed {
             failed = true
             promise.resolve(false)
