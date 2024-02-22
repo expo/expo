@@ -11,10 +11,13 @@ public class FileSystemLegacyUtilities: NSObject, EXInternalModule, EXFileSystem
   @objc
   public var cachesDirectory: String
 
+  var isScoped: Bool = false
+
   @objc
   public init(documentDirectory: String, cachesDirectory: String) {
     self.documentDirectory = documentDirectory
     self.cachesDirectory = cachesDirectory
+    self.isScoped = true
   }
 
   required public override init() {
@@ -94,6 +97,9 @@ public class FileSystemLegacyUtilities: NSObject, EXInternalModule, EXFileSystem
 
   @objc
   public func getExternalPathPermissions(_ path: URL) -> EXFileSystemPermissionFlags {
+    if self.isScoped && path.path.contains("ExponentExperienceData") {
+      return []
+    }
     var filePermissions: EXFileSystemPermissionFlags = []
     if FileManager.default.isReadableFile(atPath: path.absoluteString) {
       filePermissions.insert(.read)
