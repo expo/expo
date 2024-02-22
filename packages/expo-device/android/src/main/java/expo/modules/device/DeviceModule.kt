@@ -41,7 +41,7 @@ class DeviceModule : Module() {
         "manufacturer" to Build.MANUFACTURER,
         "modelName" to Build.MODEL,
         "designName" to Build.DEVICE,
-        "productName" to Build.DEVICE,
+        "productName" to Build.PRODUCT,
         "deviceYearClass" to deviceYearClass,
         "totalMemory" to run {
           val memoryInfo = ActivityManager.MemoryInfo()
