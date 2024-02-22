@@ -11,7 +11,7 @@
 ### 🐛 Bug fixes
 
 - Fix server hosting root html in a group with a layout. ([#29948](https://github.com/expo/expo/pull/29948) by [@EvanBacon](https://github.com/EvanBacon))
-- Ensure initial route is created with params
+- Ensure initial route is created with params ([#27223](https://github.com/expo/expo/pull/27223) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
@@ -138,13 +138,6 @@ _This version does not introduce any user-facing changes._
 - Update typed route generation ([#26578](https://github.com/expo/expo/pull/26578) by [@marklawlor](https://github.com/marklawlor))
 - Fix `push` navigation not adding to history while inside a group ([#26678](https://github.com/expo/expo/pull/26678) by [@marklawlor](https://github.com/marklawlor))
 - Fix using parenthesis in urls ([#27120](https://github.com/expo/expo/pull/27120) by [@marklawlor](https://github.com/marklawlor))
-- Fix `push` navigation not pushing the same route multiple times ([#27307](https://github.com/expo/expo/pull/27307) by [@marklawlor](https://github.com/marklawlor))
-- Fix router.navigate will only push when path parameters change ([#27285](https://github.com/expo/expo/pull/27285) by [@marklawlor](https://github.com/marklawlor))
-- Fix incorrect route generation of array shared groups with brackets ([#27459](https://github.com/expo/expo/pull/27459) by [@marklawlor](https://github.com/marklawlor))
-- Fix incorrect initial URL on web when using baseUrl ([#27287](https://github.com/expo/expo/pull/27287) by [@marklawlor](https://github.com/marklawlor))
-- Cancel ExpoRouter SplashScreen during test teardown ([#27620](https://github.com/expo/expo/pull/27620) by [@marklawlor](https://github.com/marklawlor))
-- Export `toHaveRouterState` and other matcher types from `expo-router/testing-library` ([#27646](https://github.com/expo/expo/pull/27646) by [@marklawlor](https://github.com/marklawlor))
-- Fix missing types from typed routes ([#27412](https://github.com/expo/expo/pull/27412) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
