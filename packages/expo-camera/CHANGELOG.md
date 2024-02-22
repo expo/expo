@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Fix scanned frame bounds when scanning a barcode. ([#27207](https://github.com/expo/expo/pull/27207) by [@tamagokun](https://github.com/tamagokun))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
