@@ -4,7 +4,6 @@ package expo.modules.video
 
 import android.app.Activity
 import android.view.View
-import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackParameters
 import expo.modules.kotlin.apifeatures.EitherType
 import com.facebook.react.uimanager.PixelUtil
