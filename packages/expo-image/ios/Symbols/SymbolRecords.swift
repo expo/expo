@@ -1,13 +1,12 @@
 import ExpoModulesCore
 
-
 enum SymbolScale: String, Enumerable {
   case `default`
   case unspecified
   case small
   case medium
   case large
-  
+
   func imageSymbolScale() -> UIImage.SymbolScale {
     switch self {
     case .default:
@@ -35,7 +34,7 @@ enum SymbolWeight: String, Enumerable {
   case bold
   case heavy
   case black
-  
+
   func imageSymbolWeight() -> UIImage.SymbolWeight {
     switch self {
     case .unspecified:
@@ -76,7 +75,7 @@ enum SymbolContentMode: String, Enumerable {
   case topRight
   case bottomLeft
   case bottomRight
-  
+
   func toContentMode() -> UIView.ContentMode {
     switch self {
     case .scaleToFill:
@@ -139,7 +138,7 @@ internal struct AnimationEffect: Record {
   @Field var type: AnimationType = .bounce
   @Field var wholeSymbol: Bool?
   @Field var direction: AnimationDirection?
-  
+
   @available(iOS 17.0, *)
   func toEffect() -> EffectAdding {
     switch type {
@@ -160,36 +159,35 @@ internal struct VariableColorSpec: Record {
   @Field var iterative: Bool?
   @Field var hideInactiveLayers: Bool?
   @Field var dimInactiveLayers: Bool?
-  
+
   @available(iOS 17.0, *)
   func toVariableEffect() -> VariableColorSymbolEffect {
     var effect: VariableColorSymbolEffect = .variableColor
-    
+
     if cumulative != nil {
       effect = effect.cumulative
     }
-    
+
     if iterative != nil {
       effect = effect.iterative
     }
-    
+
     if hideInactiveLayers != nil {
       effect = effect.hideInactiveLayers
     }
-    
+
     if dimInactiveLayers != nil {
       effect = effect.dimInactiveLayers
     }
-    
+
     if reversing != nil {
       effect = effect.reversing
     }
-    
+
     if nonReversing != nil {
       effect = effect.nonReversing
     }
-    
+
     return effect
   }
 }
-

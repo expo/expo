@@ -10,7 +10,7 @@ struct ImageSource: Record {
   var height: Double = 0.0
 
   @Field
-  var uri: URL? = nil
+  var uri: URL?
 
   @Field
   var scale: Double = 1.0
