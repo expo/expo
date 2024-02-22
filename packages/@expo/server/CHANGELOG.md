@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- Throw "method not found" when an API route has no exports. ([#27024](https://github.com/expo/expo/pull/27024) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix http server not properly handling headers with multiple values like Set-Cookie. ([#26652](https://github.com/expo/expo/pull/26652) by [@hdwatts](https://github.com/hdwatts))
+
 ### 💡 Others
 
 ## 0.3.0 — 2023-12-12

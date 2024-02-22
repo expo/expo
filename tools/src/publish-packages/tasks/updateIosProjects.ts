@@ -18,7 +18,7 @@ export const updateIosProjects = new Task<TaskArgs>(
   {
     name: 'updateIosProjects',
     dependsOn: [selectPackagesToPublish],
-    filesToStage: ['ios', 'apps/*/ios/**'],
+    filesToStage: ['apps/*/ios/**'],
   },
   async (parcels: Parcel[]) => {
     logger.info('\n🍎 Updating iOS projects...');

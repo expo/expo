@@ -60,9 +60,11 @@ describe('bare project test', () => {
   it('should have different hash after changing podfile', async () => {
     const hash = await createProjectHashAsync(projectRoot);
     const filePath = path.join(projectRoot, 'ios', 'Podfile');
-    let contents = await fs.readFile(filePath, 'utf8');
-    contents = contents.replace(/(:fabric_enabled)\s*=>.*,$/gm, '$1 => true,');
-    await fs.writeFile(filePath, contents);
+    const contents = await fs.readFile(filePath, 'utf8');
+    await fs.writeFile(
+      filePath,
+      modifyPodfileContents(contents, /(:path)\s*=>.*,$/gm, `$1 => ../node_modules/react-native,`)
+    );
     const hash2 = await createProjectHashAsync(projectRoot);
     expect(hash).not.toBe(hash2);
   });
@@ -70,10 +72,26 @@ describe('bare project test', () => {
   it('should have same hash for specifing android platform after changing podfile', async () => {
     const hash = await createProjectHashAsync(projectRoot, { platforms: ['android'] });
     const filePath = path.join(projectRoot, 'ios', 'Podfile');
-    let contents = await fs.readFile(filePath, 'utf8');
-    contents = contents.replace(/(:fabric_enabled)\s*=>.*$/gm, '$1 => false,');
+    const contents = await fs.readFile(filePath, 'utf8');
+    await fs.writeFile(
+      filePath,
+      modifyPodfileContents(contents, /(:path)\s*=>.*,$/gm, `$1 => config[:reactNativePath],`)
+    );
     await fs.writeFile(filePath, contents);
     const hash2 = await createProjectHashAsync(projectRoot, { platforms: ['android'] });
     expect(hash).toBe(hash2);
   });
 });
+
+/** Search and replace contents by regex, with a guard against replacement failures */
+function modifyPodfileContents(podfile: string, find: RegExp, replace: string) {
+  const contents = podfile.replace(find, replace);
+
+  if (contents === podfile) {
+    throw new Error(
+      `Podfile was not modified, expected to find and replace "${find}" with "${replace}"`
+    );
+  }
+
+  return contents;
+}

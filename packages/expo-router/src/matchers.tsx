@@ -20,6 +20,11 @@ export function matchGroupName(name: string): string | undefined {
   return name.match(/^(?:[^\\(\\)])*?\(([^\\/]+)\).*?$/)?.[1];
 }
 
+/** Match `(a,b,c)/(d,c)` -> `[['a','b','c'], ['d','e']]` */
+export function matchArrayGroupName(name: string) {
+  return name.match(/\(\s*\w[\w\s]*?,.*?\)/g)?.map((match) => match.slice(1, -1));
+}
+
 export function getNameFromFilePath(name: string): string {
   return removeSupportedExtensions(removeFileSystemDots(name));
 }
@@ -58,4 +63,13 @@ export function stripGroupSegmentsFromPath(path: string): string {
 
 export function stripInvisibleSegmentsFromPath(path: string): string {
   return stripGroupSegmentsFromPath(path).replace(/\/?index$/, '');
+}
+
+/**
+ * Match:
+ *  - _layout files, +html, +not-found, string+api, etc
+ *  - Routes can still use `+`, but it cannot be in the last segment.
+ */
+export function isTypedRoute(name: string) {
+  return !name.startsWith('+') && name.match(/(_layout|[^/]*?\+[^/]*?)\.[tj]sx?$/) === null;
 }

@@ -14,7 +14,7 @@ const additionalProjectProps = {
   exp: {
     name: 'name',
     slug: 'slug',
-    sdkVersion: '48.0.0',
+    sdkVersion: '50.0.0',
   },
   projectRoot,
   hasUnusedStaticConfig: false,

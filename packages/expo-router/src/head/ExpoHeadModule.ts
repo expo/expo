@@ -30,7 +30,7 @@ export type UserActivity = {
   expirationDate?: Date;
 };
 
-export const ExpoHead: {
+let ExpoHead: {
   activities: {
     INDEXED_ROUTE: string;
   };
@@ -40,3 +40,10 @@ export const ExpoHead: {
   suspendActivity(id: string): void;
   revokeActivity(id: string): void;
 } | null = null;
+
+// If running in Expo Go.
+if (typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo) {
+  ExpoHead = globalThis.expo?.modules?.ExpoHead;
+}
+
+export { ExpoHead };

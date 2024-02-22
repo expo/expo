@@ -24,7 +24,8 @@ class VideoPlayer(context: Context, private val mediaItem: MediaItem) : AutoClos
     .setPrioritizeTimeOverSizeThresholds(false)
     .build()
 
-  val player = ExoPlayer.Builder(context, renderersFactory)
+  val player = ExoPlayer
+    .Builder(context, renderersFactory)
     .setLooper(context.mainLooper)
     .setLoadControl(loadControl)
     .build()

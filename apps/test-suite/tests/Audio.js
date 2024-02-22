@@ -8,10 +8,11 @@ import { retryForStatus, waitFor } from './helpers';
 
 export const name = 'Audio';
 const mainTestingSource = require('../assets/LLizard.mp3');
-const soundUri = 'http://www.noiseaddicts.com/samples_1w72b820/280.mp3';
-const hlsStreamUri = 'http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8';
-const hlsStreamUriWithRedirect = 'http://bit.ly/1iy90bn';
-const redirectingSoundUri = 'http://bit.ly/2qBMx80';
+const soundUri = 'https://file-examples.com/index.php/sample-audio-files/sample-mp3-download/';
+const hlsStreamUri =
+  'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8';
+const hlsStreamUriWithRedirect = 'https://bit.ly/1iy90bn';
+const redirectingSoundUri = 'https://bit.ly/2qBMx80';
 const authenticatedStaticFilesBackend = 'https://authenticated-static-files.vercel.app';
 
 export function test(t) {

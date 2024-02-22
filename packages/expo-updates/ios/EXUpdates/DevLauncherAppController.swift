@@ -318,19 +318,19 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
   }
 
   public func checkForUpdate(success successBlockArg: @escaping (CheckForUpdateResult) -> Void, error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void) {
-    errorBlockArg(NotAvailableInDevClientException())
+    errorBlockArg(NotAvailableInDevClientException("Updates.checkForUpdateAsync()"))
   }
 
   public func fetchUpdate(success successBlockArg: @escaping (FetchUpdateResult) -> Void, error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void) {
-    errorBlockArg(NotAvailableInDevClientException())
+    errorBlockArg(NotAvailableInDevClientException("Updates.fetchUpdateAsync()"))
   }
 
   public func getExtraParams(success successBlockArg: @escaping ([String: String]?) -> Void, error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void) {
-    errorBlockArg(NotAvailableInDevClientException())
+    errorBlockArg(NotAvailableInDevClientException("Updates.getExtraParamsAsync()"))
   }
 
   public func setExtraParam(key: String, value: String?, success successBlockArg: @escaping () -> Void, error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void) {
-    errorBlockArg(NotAvailableInDevClientException())
+    errorBlockArg(NotAvailableInDevClientException("Updates.setExtraParamAsync()"))
   }
 
   public func getNativeStateMachineContext(success successBlockArg: @escaping (UpdatesStateContext) -> Void, error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void) {

@@ -1,5 +1,3 @@
-@file:Suppress("UnusedImport") // this needs to stay for versioning to work
-
 package expo.modules.updates
 
 import android.content.Context
@@ -17,8 +15,6 @@ import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.statemachine.UpdatesStateContext
 import java.util.Date
-
-// these unused imports must stay because of versioning
 
 /**
  * Exported module which provides to the JS runtime information about the currently running update

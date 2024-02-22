@@ -62,17 +62,6 @@ Config types are exported directly from `expo/config`, so there is no need to in
 import { ExpoConfig, ConfigContext } from 'expo/config';
 ```
 
-<Collapsible summary="Using SDK 46 or lower?">
-
-For SDK 46 and lower, import the `@expo/config-plugins` package directly. This is installed automatically by the `expo` package, but not re-exported as it is in SDK 47 and higher.
-
-{/* prettier-ignore */}
-```js
-const { /* @hide ...*//* @end */ } = require('@expo/config-plugins');
-```
-
-</Collapsible>
-
 ### Best practices for mods
 
 - Avoid regex: [static modification](#static-modification) is key. If you want to modify a value in an Android gradle file, consider using `gradle.properties`. If you want to modify some code in the Podfile, consider writing to JSON and having the Podfile read the static values.
@@ -132,10 +121,6 @@ Here's an example of adding a `<meta-data android:name="..." android:value="..."
 import { AndroidConfig, ConfigPlugin, withAndroidManifest } from 'expo/config-plugins';
 import { ExpoConfig } from 'expo/config';
 
-// Use these imports in SDK 46 and lower
-// import { AndroidConfig, ConfigPlugin, withAndroidManifest } from '@expo/config-plugins';
-// import { ExpoConfig } from '@expo/config-types';
-
 // Using helpers keeps error messages unified and helps cut down on XML format changes.
 const { addMetaDataItemToMainApplication, getMainApplicationOrThrow } = AndroidConfig.Manifest;
 
@@ -177,10 +162,6 @@ Here's an example of adding a `GADApplicationIdentifier` to the **Info.plist**:
 ```ts my-config-plugin.ts
 import { ConfigPlugin, withInfoPlist } from 'expo/config-plugins';
 
-// Use these imports in SDK 46 and lower
-// import { ConfigPlugin, InfoPlist, withInfoPlist } from '@expo/config-plugins';
-// import { ExpoConfig } from '@expo/config-types';
-
 // Pass `<string>` to specify that this plugin requires a string property.
 export const withCustomConfig: ConfigPlugin<string> = (config, id) => {
   return withInfoPlist(config, config => {
@@ -213,9 +194,6 @@ This is used by [expo-build-properties](/versions/latest/sdk/build-properties) a
 
 ```ts my-config-plugin.ts
 import { ConfigPlugin, createRunOncePlugin } from 'expo/config-plugins';
-
-// Use this import in SDK 46 and lower
-// import { ConfigPlugin, createRunOncePlugin } from '@expo/config-plugins';
 
 // Keeping the name, and version in sync with it's package.
 const pkg = require('my-cool-plugin/package.json');

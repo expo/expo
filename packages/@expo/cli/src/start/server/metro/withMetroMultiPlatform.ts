@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { ExpoConfig, Platform } from '@expo/config';
 import fs from 'fs';
 import { ConfigT } from 'metro-config';
 import { Resolution, ResolutionContext, CustomResolutionContext } from 'metro-resolver';
@@ -34,7 +35,6 @@ import { installExitHooks } from '../../../utils/exit';
 import { isInteractive } from '../../../utils/interactive';
 import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
-import { WebSupportProjectPrerequisite } from '../../doctor/web/WebSupportProjectPrerequisite';
 import { PlatformBundlers } from '../platformBundlers';
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] };
@@ -151,13 +151,14 @@ export function withExtendedResolver(
     web: ['browser', 'module', 'main'],
   };
 
-  let tsConfigResolve = tsconfig?.paths
-    ? resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
-        paths: tsconfig.paths ?? {},
-        baseUrl: tsconfig.baseUrl ?? config.projectRoot,
-        hasBaseUrl: !!tsconfig.baseUrl,
-      })
-    : null;
+  let tsConfigResolve =
+    isTsconfigPathsEnabled && (tsconfig?.paths || tsconfig?.baseUrl != null)
+      ? resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
+          paths: tsconfig.paths ?? {},
+          baseUrl: tsconfig.baseUrl ?? config.projectRoot,
+          hasBaseUrl: !!tsconfig.baseUrl,
+        })
+      : null;
 
   // TODO: Move this to be a transform key for invalidation.
   if (!isExporting && isInteractive()) {
@@ -227,6 +228,35 @@ export function withExtendedResolver(
   }
 
   const metroConfigWithCustomResolver = withMetroResolvers(config, [
+    // Mock out production react imports in development.
+    (context: ResolutionContext, moduleName: string, platform: string | null) => {
+      // This resolution is dev-only to prevent bundling the production React packages in development.
+      // @ts-expect-error: dev is not on type.
+      if (!context.dev) return null;
+
+      if (
+        // Match react-native renderers.
+        (platform !== 'web' &&
+          context.originModulePath.match(/[\\/]node_modules[\\/]react-native[\\/]/) &&
+          moduleName.match(/([\\/]ReactFabric|ReactNativeRenderer)-prod/)) ||
+        // Match react production imports.
+        (moduleName.match(/\.production(\.min)?\.js$/) &&
+          // Match if the import originated from a react package.
+          context.originModulePath.match(/[\\/]node_modules[\\/](react[-\\/]|scheduler[\\/])/))
+      ) {
+        debug(`Skipping production module: ${moduleName}`);
+        // /Users/path/to/expo/node_modules/react/index.js ./cjs/react.production.min.js
+        // /Users/path/to/expo/node_modules/react/jsx-dev-runtime.js ./cjs/react-jsx-dev-runtime.production.min.js
+        // /Users/path/to/expo/node_modules/react-is/index.js ./cjs/react-is.production.min.js
+        // /Users/path/to/expo/node_modules/react-refresh/runtime.js ./cjs/react-refresh-runtime.production.min.js
+        // /Users/path/to/expo/node_modules/react-native/node_modules/scheduler/index.native.js ./cjs/scheduler.native.production.min.js
+        // /Users/path/to/expo/node_modules/react-native/node_modules/react-is/index.js ./cjs/react-is.production.min.js
+        return {
+          type: 'empty',
+        };
+      }
+      return null;
+    },
     // tsconfig paths
     (context: ResolutionContext, moduleName: string, platform: string | null) => {
       return (
@@ -425,6 +455,7 @@ export async function withMetroMultiPlatformAsync(
   projectRoot: string,
   {
     config,
+    exp,
     platformBundlers,
     isTsconfigPathsEnabled,
     webOutput,
@@ -432,6 +463,7 @@ export async function withMetroMultiPlatformAsync(
     isExporting,
   }: {
     config: ConfigT;
+    exp: ExpoConfig;
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
     webOutput?: 'single' | 'static' | 'server';
@@ -467,10 +499,6 @@ export async function withMetroMultiPlatformAsync(
   // @ts-expect-error: Invalidate the cache when the location of expo-router changes on-disk.
   config.transformer._expoRouterPath = resolveFrom.silent(projectRoot, 'expo-router');
 
-  if (platformBundlers.web === 'metro') {
-    await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
-  }
-
   let tsconfig: null | TsConfigPaths = null;
 
   if (isTsconfigPathsEnabled) {
@@ -481,7 +509,9 @@ export async function withMetroMultiPlatformAsync(
   await setupNodeExternals(projectRoot);
 
   let expoConfigPlatforms = Object.entries(platformBundlers)
-    .filter(([, bundler]) => bundler === 'metro')
+    .filter(
+      ([platform, bundler]) => bundler === 'metro' && exp.platforms?.includes(platform as Platform)
+    )
     .map(([platform]) => platform);
 
   if (Array.isArray(config.resolver.platforms)) {

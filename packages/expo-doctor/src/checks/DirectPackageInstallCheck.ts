@@ -52,6 +52,12 @@ export const directPackageInstallCheckItems: DirectPackageInstallCheckItem[] = [
       `The package  "@types/react-native" should not be installed directly in your project, as types are included with the "react-native" package.`,
     sdkVersionRange: '>=48.0.0',
   },
+  {
+    packageName: 'expo-permissions',
+    getMessage: () =>
+      `The package  "expo-permissions" was deprecated in SDK 41 and should be removed from your project because it may no longer compile on the latest SDK. It was replaced by permissions methods directly on modules, eg: MediaLibrary.requestPermissionsAsync().`,
+    sdkVersionRange: '>=50.0.0',
+  },
 ];
 
 export class DirectPackageInstallCheck extends DoctorMultiCheck<DirectPackageInstallCheckItem> {

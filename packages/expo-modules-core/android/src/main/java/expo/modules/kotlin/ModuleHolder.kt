@@ -1,6 +1,5 @@
 package expo.modules.kotlin
 
-import android.view.View
 import com.facebook.react.bridge.ReadableArray
 import expo.modules.kotlin.events.BasicEventListener
 import expo.modules.kotlin.events.EventListenerWithPayload
@@ -50,12 +49,15 @@ class ModuleHolder<T : Module>(val module: T) {
             val clazzModuleObject = JavaScriptModuleObject(jniDeallocator, clazz.name)
               .initUsingObjectDefinition(module.appContext, clazz.objectDefinition)
             appContext.jniDeallocator.addReference(clazzModuleObject)
-
             val constructor = clazz.constructor
+
+            val ownerClass = (constructor.ownerType?.classifier as? KClass<*>)?.java
+
             registerClass(
               clazz.name,
               clazzModuleObject,
               constructor.takesOwner,
+              ownerClass,
               constructor.argsCount,
               constructor.getCppRequiredTypes().toTypedArray(),
               constructor.getJNIFunctionBody(clazz.name, appContext)
@@ -112,9 +114,5 @@ class ModuleHolder<T : Module>(val module: T) {
         it.invoke(module.appContext.appContextActivityResultCaller)
       }
     }
-  }
-
-  fun viewClass(): KClass<out View>? {
-    return definition.viewManagerDefinition?.viewType?.kotlin
   }
 }

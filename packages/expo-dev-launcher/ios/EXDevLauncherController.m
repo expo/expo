@@ -425,7 +425,7 @@
   // an update url requires a matching projectUrl
   // if one isn't provided, default to the configured project url in Expo.plist
   if (isEASUpdate && projectUrl == nil) {
-    NSString *projectUrlString = [self getUpdatesConfigForKey:@"EXUpdatesURL"];
+    NSString *projectUrlString = [EXDevLauncherUpdatesHelper getUpdatesConfigForKey:@"EXUpdatesURL"];
     projectUrl = [NSURL URLWithString:projectUrlString];
   }
 
@@ -437,10 +437,12 @@
   // Disable onboarding popup if "&disableOnboarding=1" is a param
   [EXDevLauncherURLHelper disableOnboardingPopupIfNeeded:expoUrl];
 
+  NSString *runtimeVersion = [EXDevLauncherUpdatesHelper getUpdatesConfigForKey:@"EXUpdatesRuntimeVersion"];
   NSString *installationID = [_installationIDHelper getOrCreateInstallationID];
 
   NSDictionary *updatesConfiguration = [EXDevLauncherUpdatesHelper createUpdatesConfigurationWithURL:expoUrl
                                                                                           projectURL:projectUrl
+                                                                                      runtimeVersion:runtimeVersion
                                                                                       installationID:installationID];
 
   void (^launchReactNativeApp)(void) = ^{
@@ -670,7 +672,7 @@
   NSMutableDictionary *buildInfo = [NSMutableDictionary new];
 
   NSString *appIcon = [self getAppIcon];
-  NSString *runtimeVersion = [self getUpdatesConfigForKey:@"EXUpdatesRuntimeVersion"];
+  NSString *runtimeVersion = [EXDevLauncherUpdatesHelper getUpdatesConfigForKey:@"EXUpdatesRuntimeVersion"];
   NSString *appVersion = [self getFormattedAppVersion];
   NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleDisplayName"] ?: [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleExecutable"];
 
@@ -694,22 +696,6 @@
   }
 
   return appIcon;
-}
-
--(NSString *)getUpdatesConfigForKey:(NSString *)key
-{
-  NSString *value = @"";
-  NSString *path = [[NSBundle mainBundle] pathForResource:@"Expo" ofType:@"plist"];
-
-  if (path != nil) {
-    NSDictionary *expoConfig = [NSDictionary dictionaryWithContentsOfFile:path];
-
-    if (expoConfig != nil) {
-      value = [expoConfig objectForKey:key] ?: @"";
-    }
-  }
-
-  return value;
 }
 
 -(NSString *)getFormattedAppVersion
@@ -748,12 +734,12 @@
 {
   NSMutableDictionary *updatesConfig = [NSMutableDictionary new];
 
-  NSString *runtimeVersion = [self getUpdatesConfigForKey:@"EXUpdatesRuntimeVersion"];
+  NSString *runtimeVersion = [EXDevLauncherUpdatesHelper getUpdatesConfigForKey:@"EXUpdatesRuntimeVersion"];
 
   // url structure for EASUpdates: `http://u.expo.dev/{appId}`
   // this url field is added to app.json.updates when running `eas update:configure`
   // the `u.expo.dev` determines that it is the modern manifest protocol
-  NSString *projectUrl = [self getUpdatesConfigForKey:@"EXUpdatesURL"];
+  NSString *projectUrl = [EXDevLauncherUpdatesHelper getUpdatesConfigForKey:@"EXUpdatesURL"];
   NSURL *url = [NSURL URLWithString:projectUrl];
   NSString *appId = [[url pathComponents] lastObject];
 

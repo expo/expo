@@ -10,6 +10,7 @@ import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.slf4j.LoggerFactory
@@ -19,7 +20,7 @@ import java.util.Locale
 abstract class ExpoUpdatesPlugin : Plugin<Project> {
   override fun apply(project: Project) {
     val reactExtension = project.extensions.findByType(ReactExtension::class.java) ?: run {
-      logger.warn("Stop expo-updates app.manifest generation because ReactExtension is not registered")
+      logger.warn("Stop expo-updates resource generation because ReactExtension is not registered")
       return
     }
     val androidComponents = project.extensions.getByType(AndroidComponentsExtension::class.java)
@@ -36,26 +37,26 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
       val isDebuggableVariant =
         reactExtension.debuggableVariants.get().any { it.equals(variant.name, ignoreCase = true) }
 
-      val createManifestTask = project.tasks.register("create${targetName}ExpoManifest", CreateManifestTask::class.java) {
-        it.description = "expo-updates: Create manifest for ${targetName}."
+      val createUpdatesResourcesTask = project.tasks.register("create${targetName}UpdatesResources", CreateUpdatesResourcesTask::class.java) {
+        it.description = "expo-updates: Create updates resources for ${targetName}."
         it.projectRoot.set(projectRoot.toString())
         it.entryFile.set(entryFile.toString())
         it.nodeExecutableAndArgs.set(reactExtension.nodeExecutableAndArgs.get())
         it.enabled = !isDebuggableVariant
       }
-      variant.sources.assets?.addGeneratedSourceDirectory(createManifestTask, CreateManifestTask::assetDir)
+      variant.sources.assets?.addGeneratedSourceDirectory(createUpdatesResourcesTask, CreateUpdatesResourcesTask::assetDir)
     }
   }
 
-  abstract class CreateManifestTask : DefaultTask() {
+  abstract class CreateUpdatesResourcesTask : DefaultTask() {
     @get:Input
     abstract val projectRoot: Property<String>
 
     @get:Input
-    abstract val entryFile: Property<String>
+    abstract val nodeExecutableAndArgs: ListProperty<String>
 
     @get:Input
-    abstract val nodeExecutableAndArgs: ListProperty<String>
+    abstract val entryFile: Property<String>
 
     @get:OutputDirectory
     abstract val assetDir: DirectoryProperty
@@ -67,10 +68,11 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
       project.exec {
         val args = mutableListOf<String>().apply {
           addAll(nodeExecutableAndArgs.get())
-          add("${getExpoUpdatesPackageDir()}/scripts/createManifest.js")
+          add("${getExpoUpdatesPackageDir()}/utils/build/createUpdatesResources.js")
           add("android")
           add(projectRoot.get())
           add(assetDir.get().toString())
+          add("all")
           add(entryFile.get())
         }
 

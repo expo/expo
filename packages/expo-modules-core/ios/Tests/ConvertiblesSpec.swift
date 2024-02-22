@@ -363,6 +363,22 @@ class ConvertiblesSpec: ExpoSpec {
         let transparent = try CGColor.convert(from: "transparent", appContext: appContext)
         expect(transparent.alpha) == .zero
       }
+      
+      it("converts from PlatformColor") {
+        let color = try CGColor.convert(from: ["semantic": ["invalid_color", "systemRed", "systemBlue"]], appContext: appContext)
+        expect(color) == UIColor.systemRed.cgColor
+      }
+      
+      it("converts from DynamicColorIOS") {
+        let color = try CGColor.convert(from: ["dynamic": ["light": "#000", "dark": ["semantic": "systemGray"]]], appContext: appContext)
+        testColorComponents(color, 0x00, 0x00, 0x00, 0xFF)
+      }
+      
+      it("converts from DynamicColorIOS with traits") {
+        let color = try UIColor.convert(from: ["dynamic": ["light": "#000", "dark": ["semantic": "systemGray"]]], appContext: appContext)
+        let traits = UITraitCollection(userInterfaceStyle: .dark)
+        expect(color.resolvedColor(with: traits)) == UIColor.systemGray.resolvedColor(with: traits)
+      }
 
       it("throws when string is invalid") {
         testInvalidHexColor("")
@@ -392,7 +408,12 @@ class ConvertiblesSpec: ExpoSpec {
       
       it("converts from `Date.now()` to Date") {
         let date = try Date.convert(from: 1703718341639, appContext: appContext)
-        let components = Calendar.current.dateComponents([.day, .month], from: date)
+        var components = Calendar.current.dateComponents([.day, .month], from: date)
+
+        // The current calendar uses the local timezone, so basically the `day` component
+        // could differ depending on the current timezone. Set it to GMT for correctness.
+        components.timeZone = TimeZone(abbreviation: "GMT")
+
         expect(components.month) == 12
         expect(components.day) == 27
       }

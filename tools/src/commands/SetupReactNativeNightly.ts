@@ -9,7 +9,6 @@ import semver from 'semver';
 import { EXPO_DIR, EXPOTOOLS_DIR } from '../Constants';
 import logger from '../Logger';
 import { getPackageViewAsync } from '../Npm';
-import { transformFileAsync } from '../Transforms';
 import { applyPatchAsync } from '../Utils';
 import { installAsync as workspaceInstallAsync } from '../Workspace';
 
@@ -52,10 +51,9 @@ async function main() {
   logger.info('Yarning...');
   await workspaceInstallAsync();
 
-  await patchAndroidCallInvokerHolderAsync();
-
   const patches = [
     'datetimepicker.patch',
+    'lottie-react-native.patch',
     'react-native-gesture-handler.patch',
     'react-native-reanimated.patch',
     'react-native-safe-area-context.patch',
@@ -114,90 +112,12 @@ async function addPinnedPackagesAsync(packages: Record<string, string>) {
   await JsonFile.writeAsync(workspacePackageJsonPath, json);
 }
 
-async function patchAndroidCallInvokerHolderAsync() {
-  const nodeModulesDir = path.join(EXPO_DIR, 'node_modules');
-  const targetFiles = [
-    path.join(
-      EXPO_DIR,
-      'packages',
-      'expo-modules-core',
-      'android/src/main/java/expo/modules/adapters/react/services/UIManagerModuleWrapper.java'
-    ),
-    path.join(
-      EXPO_DIR,
-      'packages',
-      'expo-modules-core',
-      'android/src/main/java/expo/modules/core/interfaces/JavaScriptContextProvider.java'
-    ),
-    path.join(
-      EXPO_DIR,
-      'packages',
-      'expo-modules-core',
-      'android/src/main/java/expo/modules/core/interfaces/JavaScriptContextProvider.java'
-    ),
-    path.join(
-      EXPO_DIR,
-      'packages',
-      'expo-modules-core',
-      'android/src/main/java/expo/modules/kotlin/jni/JSIInteropModuleRegistry.kt'
-    ),
-    path.join(
-      EXPO_DIR,
-      'packages',
-      'expo-av',
-      'android/src/main/java/expo/modules/av/AVManager.java'
-    ),
-    path.join(
-      nodeModulesDir,
-      'react-native-reanimated',
-      'android/src/paper/java/com/swmansion/reanimated/NativeProxy.java'
-    ),
-    path.join(
-      nodeModulesDir,
-      'react-native-reanimated',
-      'android/src/fabric/java/com/swmansion/reanimated/NativeProxy.java'
-    ),
-    path.join(
-      nodeModulesDir,
-      '@shopify/react-native-skia',
-      'android/src/main/java/com/shopify/reactnative/skia/SkiaManager.java'
-    ),
-  ];
-
-  for (const file of targetFiles) {
-    await transformFileAsync(file, [
-      {
-        find: /^(import )(com\.facebook\.react\.turbomodule\.core\.CallInvokerHolderImpl)(;?)$/gm,
-        replaceWith: '$1com.facebook.react.internal.turbomodule.core.CallInvokerHolderImpl$3',
-      },
-    ]);
-  }
-}
-
 async function updateExpoModulesAsync() {
   // no-op currently
 }
 
 async function updateBareExpoAsync(nightlyVersion: string) {
-  const root = path.join(EXPO_DIR, 'apps', 'bare-expo');
-
-  // Flipper was removed in 0.74
-  await transformFileAsync(path.join(root, 'ios', 'Podfile'), [
-    {
-      find: `flipper_config = ENV['NO_FLIPPER'] == "1" || ENV['CI'] ? FlipperConfiguration.disabled : FlipperConfiguration.enabled`,
-      replaceWith: '',
-    },
-    {
-      find: /:flipper_configuration => FlipperConfiguration.disabled,/g,
-      replaceWith: '',
-    },
-  ]);
-  await transformFileAsync(path.join(root, 'android', 'app', 'build.gradle'), [
-    {
-      find: `implementation("com.facebook.react:flipper-integration")`,
-      replaceWith: '',
-    },
-  ]);
+  // no-op currently
 }
 
 async function queryNpmDistTagVersionAsync(pkg: string, distTag: string) {

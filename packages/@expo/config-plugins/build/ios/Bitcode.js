@@ -62,8 +62,7 @@ const withCustomBitcode = (config, bitcode) => {
  */
 exports.withCustomBitcode = withCustomBitcode;
 function getBitcode(config) {
-  var _config$ios;
-  return (_config$ios = config.ios) === null || _config$ios === void 0 ? void 0 : _config$ios.bitcode;
+  return config.ios?.bitcode;
 }
 
 /**

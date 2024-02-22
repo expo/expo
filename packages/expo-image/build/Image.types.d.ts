@@ -69,6 +69,12 @@ export type ImageStyle = RNImageStyle;
  */
 export type ImageContentFit = 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
 /**
+ * Determines which format should be used to decode the image.
+ * It's suggestion for the platform to use the specified format, but it's not guaranteed.
+ * @hidden Described in the {@link ImageProps['decodeFormat']}
+ */
+export type ImageDecodeFormat = 'argb' | 'rgb';
+/**
  * Some props are from React Native Image that Expo Image supports (more or less) for easier migration,
  * but all of them are deprecated and might be removed in the future.
  */
@@ -275,6 +281,18 @@ export interface ImageProps extends ViewProps {
      * @default true
      */
     allowDownscaling?: boolean;
+    /**
+     * The format in which the image data should be decoded.
+     * It's not guaranteed that the platform will use the specified format.
+     *
+     * - `'argb'` - The image is decoded into a 32-bit color space with alpha channel (https://developer.android.com/reference/android/graphics/Bitmap.Config#ARGB_8888).
+     *
+     * - `'rgb'` - The image is decoded into a 16-bit color space without alpha channel (https://developer.android.com/reference/android/graphics/Bitmap.Config#RGB_565).
+     *
+     * @default 'argb'
+     * @platform android
+     */
+    decodeFormat?: ImageDecodeFormat;
 }
 /**
  * It narrows down some props to types expected by the native/web side.

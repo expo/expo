@@ -12,6 +12,7 @@ import expo.modules.blur.BlurModule
 import expo.modules.brightness.BrightnessModule
 import expo.modules.calendar.CalendarModule
 import expo.modules.camera.CameraViewModule
+import expo.modules.camera.next.CameraViewNextModule
 import expo.modules.cellular.CellularModule
 import expo.modules.clipboard.ClipboardModule
 import expo.modules.constants.ConstantsModule
@@ -145,6 +146,7 @@ object ExperiencePackagePicker : ModulesProvider {
     BlurModule::class.java,
     CalendarModule::class.java,
     CameraViewModule::class.java,
+    CameraViewNextModule::class.java,
     CellularModule::class.java,
     ClipboardModule::class.java,
     CryptoModule::class.java,

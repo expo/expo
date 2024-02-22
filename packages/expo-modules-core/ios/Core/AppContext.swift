@@ -134,6 +134,8 @@ public final class AppContext: NSObject {
 
   // MARK: - Classes
 
+  internal lazy var sharedObjectRegistry = SharedObjectRegistry(appContext: self)
+
   /**
    A registry containing references to JavaScript classes.
    - ToDo: Make one registry per module, not the entire app context.
@@ -391,15 +393,21 @@ public final class AppContext: NSObject {
 
     // Install the modules host object as the `global.expo.modules`.
     EXJavaScriptRuntimeManager.installExpoModulesHostObject(self)
+
+    // Install `global.expo.SharedObject`.
+    EXJavaScriptRuntimeManager.installSharedObjectClass(runtime) { [weak sharedObjectRegistry] objectId in
+      sharedObjectRegistry?.delete(objectId)
+    }
+
+    // Install `global.expo.EventEmitter`.
+    EXJavaScriptRuntimeManager.installEventEmitterClass(runtime)
   }
 
   /**
    Unsets runtime objects that we hold for each module.
    */
   private func releaseRuntimeObjects() {
-    // FIXME: Release objects only from the current context.
-    // Making the registry non-global (similarly to the class registry) would fix it.
-    SharedObjectRegistry.clear()
+    sharedObjectRegistry.clear()
     classRegistry.clear()
 
     for module in moduleRegistry {

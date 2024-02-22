@@ -27,12 +27,6 @@ it('loads expected modules by default', async () => {
     `require('../../build/src/export/web').expoExportWeb`
   );
   expect(modules).toStrictEqual([
-    '../node_modules/ansi-styles/index.js',
-    '../node_modules/arg/index.js',
-    '../node_modules/chalk/source/index.js',
-    '../node_modules/chalk/source/util.js',
-    '../node_modules/has-flag/index.js',
-    '../node_modules/supports-color/index.js',
     '@expo/cli/build/src/export/web/index.js',
     '@expo/cli/build/src/log.js',
     '@expo/cli/build/src/utils/args.js',
@@ -45,7 +39,7 @@ it('runs `npx expo export:web --help`', async () => {
   expect(results.stdout).toMatchInlineSnapshot(`
     "
       Info
-        Export the static files of the web app for hosting on a web server
+        (Deprecated) Bundle the static files of the web app with Webpack for hosting on a web server
 
       Usage
         $ npx expo export:web <dir>

@@ -13,12 +13,10 @@ import { Options } from './resolveOptions';
 import { ExportAssetMap, getFilesFromSerialAssets, persistMetroFilesAsync } from './saveAssets';
 import { createAssetMap, createSourceMapDebugHtml } from './writeContents';
 import * as Log from '../log';
+import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';
 import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/router';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
-import {
-  getAsyncRoutesFromExpoConfig,
-  getBaseUrlFromExpoConfig,
-} from '../start/server/middleware/metroOptions';
+import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { env } from '../utils/env';
 import { setNodeEnv } from '../utils/nodeEnv';
@@ -33,6 +31,7 @@ export async function exportAppAsync(
     dumpAssetmap,
     sourceMaps,
     minify,
+    bytecode,
     maxWorkers,
   }: Pick<
     Options,
@@ -43,6 +42,7 @@ export async function exportAppAsync(
     | 'outputDir'
     | 'platforms'
     | 'minify'
+    | 'bytecode'
     | 'maxWorkers'
   >
 ): Promise<void> {
@@ -55,8 +55,18 @@ export async function exportAppAsync(
     skipValidation: platforms.length === 1 && platforms[0] === 'web',
   });
 
+  if (platforms.includes('web')) {
+    await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
+  }
+
   const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
   const baseUrl = getBaseUrlFromExpoConfig(exp);
+
+  if (!bytecode && (platforms.includes('ios') || platforms.includes('android'))) {
+    Log.warn(
+      `Bytecode makes the app startup faster, disabling bytecode is highly discouraged and should only be used for debugging purposes.`
+    );
+  }
 
   // Print out logs
   if (baseUrl) {
@@ -70,6 +80,7 @@ export async function exportAppAsync(
     }
   }
 
+  const mode = dev ? 'development' : 'production';
   const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
   const outputPath = path.resolve(projectRoot, outputDir);
 
@@ -81,6 +92,7 @@ export async function exportAppAsync(
   const bundles = await createBundlesAsync(projectRoot, projectConfig, {
     clear: !!clear,
     minify,
+    bytecode,
     sourcemaps: sourceMaps,
     platforms: useServerRendering ? platforms.filter((platform) => platform !== 'web') : platforms,
     dev,
@@ -155,22 +167,23 @@ export async function exportAppAsync(
       }
 
       await unstable_exportStaticAsync(projectRoot, {
+        mode,
         files,
         clear: !!clear,
         outputDir: outputPath,
         minify,
         baseUrl,
         includeSourceMaps: sourceMaps,
-        asyncRoutes: getAsyncRoutesFromExpoConfig(exp, dev ? 'development' : 'production', 'web'),
         routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
         exportServer,
         maxWorkers,
+        isExporting: true,
       });
     } else {
       // TODO: Unify with exportStaticAsync
       // TODO: Maybe move to the serializer.
       let html = await serializeHtmlWithAssets({
-        mode: 'production',
+        isExporting: true,
         resources: bundles.web!.artifacts,
         template: await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
           scripts: [],

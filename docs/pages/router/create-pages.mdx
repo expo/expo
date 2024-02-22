@@ -5,13 +5,18 @@ sidebar_title: Create pages
 ---
 
 import { Tabs, Tab } from '~/ui/components/Tabs';
+import { FileTree } from '~/ui/components/FileTree';
 
 When a file is created in the **app** directory, it automatically becomes a route in the app. For example, the following files will create the following routes:
 
-- **app/index.js** matches `/`
-- **app/home.js** matches `/home`
-- **app/settings/index.js** matches `/settings`
-- **app/[user].js** matches dynamic paths like `/expo` or `/evanbacon`
+<FileTree
+  files={[
+    ['app/index.js', "matches '/'"],
+    ['app/home.js', "matches '/home'"],
+    ['app/[user].js', "matches dynamic paths like '/expo' or '/evanbacon'"],
+    ['app/settings/index.js', "matches '/settings'"],
+  ]}
+/>
 
 ## Pages
 

@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+### 📚 3rd party library updates
+
+- update semver from 7.5.3 to 7.5.4. ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
+
+## 8.5.4 - 2024-01-18
+
+### 🐛 Bug fixes
+
+- Pin `sucrase@3.34.0` to avoid yarn v1 incompatibilities with `@isaacs/cliui` module aliases ([#26459](https://github.com/expo/expo/pull/26459) by [@byCedric](https://github.com/byCedric))
+
 ## 8.5.3 - 2024-01-05
 
 _This version does not introduce any user-facing changes._

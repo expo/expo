@@ -141,11 +141,18 @@ const general = [
       'Web',
       [
         makePage('workflow/web.mdx'),
-        makePage('guides/progressive-web-apps.mdx'),
         makePage('distribution/publishing-websites.mdx'),
+        makePage('guides/progressive-web-apps.mdx'),
+      ],
+      { expanded: false }
+    ),
+    makeGroup(
+      'Bundling',
+      [
         makePage('guides/customizing-metro.mdx'),
-        makePage('guides/customizing-webpack.mdx'),
-        makePage('guides/web-performance.mdx'),
+        makePage('guides/analyzing-bundles.mdx'),
+        makePage('guides/tree-shaking.mdx'),
+        makePage('guides/minify.mdx'),
       ],
       { expanded: false }
     ),
@@ -216,6 +223,7 @@ const general = [
         makePage('modules/use-standalone-expo-module-in-your-project.mdx'),
         makePage('modules/third-party-library.mdx'),
         makePage('modules/existing-library.mdx'),
+        makePage('modules/additional-platform-support.mdx'),
       ]),
       makeSection('Reference', [
         makePage('modules/module-api.mdx'),
@@ -223,6 +231,7 @@ const general = [
         makePage('modules/appdelegate-subscribers.mdx'),
         makePage('modules/autolinking.mdx'),
         makePage('modules/module-config.mdx'),
+        makePage('modules/mocking.mdx'),
       ]),
     ],
     { expanded: false }
@@ -262,7 +271,6 @@ const general = [
     makeGroup(
       'Reference',
       [
-        makePage('build-reference/migrating.mdx'),
         makePage('build-reference/npm-hooks.mdx'),
         makePage('build-reference/private-npm-packages.mdx'),
         makePage('build-reference/git-submodules.mdx'),
@@ -300,6 +308,7 @@ const general = [
     makePage('eas-update/github-actions.mdx'),
     makePage('eas-update/eas-cli.mdx'),
     makePage('eas-update/develop-faster.mdx'),
+    makePage('eas-update/faq.mdx'),
     makeGroup('Concepts', [
       makePage('eas-update/how-it-works.mdx'),
       makePage('eas-update/runtime-versions.mdx'),
@@ -321,9 +330,9 @@ const general = [
     ]),
     makeGroup('Reference', [
       makePage('eas-update/migrate-from-classic-updates.mdx'),
+      makePage('eas-update/custom-updates-server.mdx'),
       makePage('eas-update/codepush.mdx'),
       makePage('eas-update/updating-your-app.mdx'),
-      makePage('eas-update/faq.mdx'),
       makePage('eas-update/known-issues.mdx'),
     ]),
   ]),
@@ -359,7 +368,6 @@ const general = [
     makePage('distribution/introduction.mdx'),
     makePage('distribution/app-stores.mdx'),
     makePage('distribution/runtime-versions.mdx'),
-    makePage('distribution/custom-updates-server.mdx'),
     makePage('distribution/app-transfers.mdx'),
   ]),
   makeSection(
@@ -390,7 +398,10 @@ const general = [
         makePage('guides/using-eslint.mdx'),
         makePage('guides/using-nextjs.mdx'),
         makePage('guides/using-sentry.mdx'),
+        makePage('guides/using-bugsnag.mdx'),
+        makePage('guides/building-for-tv.mdx'),
         makePage('guides/typescript.mdx'),
+        makePage('guides/in-app-purchases.mdx'),
       ]),
       makeSection('Expo accounts', [
         makePage('accounts/account-types.mdx'),
@@ -464,8 +475,9 @@ const preview = [
 
 const archive = [
   makeSection('Classic Builds', [
-    makePage('archive/classic-updates/building-standalone-apps.mdx'),
-    makePage('archive/classic-updates/turtle-cli.mdx'),
+    makePage('archive/classic-builds/building-standalone-apps.mdx'),
+    makePage('archive/classic-builds/turtle-cli.mdx'),
+    makePage('archive/classic-builds/migrating.mdx'),
   ]),
   makeSection('Classic Updates', [
     makePage('archive/classic-updates/introduction.mdx'),
@@ -488,6 +500,8 @@ const archive = [
     makePage('archive/expo-cli.mdx'),
     makePage('archive/managed-vs-bare.mdx'),
     makePage('archive/notification-channels.mdx'),
+    makePage('archive/publishing-websites-webpack.mdx'),
+    makePage('archive/customizing-webpack.mdx'),
     makePage('archive/glossary.mdx'),
   ]),
 ];

@@ -4,15 +4,16 @@
   "description": "A Metro config for running React Native projects with the Metro bundler",
   "main": "build/ExpoMetroConfig.js",
   "scripts": {
-    "build": "tsc --emitDeclarationOnly && babel src --out-dir build --extensions \".ts\" --source-maps --ignore \"src/**/__mocks__/*\",\"src/**/__tests__/*\"",
+    "build": "expo-module tsc",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepare": "expo-module clean && yarn run build",
+    "prepare": "expo-module clean && expo-module tsc",
     "prepublishOnly": "expo-module prepublishOnly",
     "test": "expo-module test",
     "typecheck": "expo-module typecheck",
-    "watch": "expo-module build"
+    "watch": "expo-module tsc --watch --preserveWatchOutput"
   },
+
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
@@ -53,7 +54,7 @@
     "lightningcss": "~1.19.0",
     "postcss": "~8.4.32",
     "resolve-from": "^5.0.0",
-    "sucrase": "^3.20.0"
+    "sucrase": "3.34.0"
   },
   "peerDependencies": {
     "@react-native/babel-preset": "*"

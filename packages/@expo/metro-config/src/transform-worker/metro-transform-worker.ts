@@ -41,6 +41,7 @@ import getMinifier from 'metro-transform-worker/src/utils/getMinifier';
 import assert from 'node:assert';
 
 import * as assetTransformer from './asset-transformer';
+import { shouldMinify } from './resolveOptions';
 
 export { JsTransformOptions };
 
@@ -220,29 +221,47 @@ async function transformJS(
   // plugins.push([metroTransformPlugins.inlinePlugin, babelPluginOpts]);
 
   // TODO: This MUST be run even though no plugins are added, otherwise the babel runtime generators are broken.
-  // if (plugins.length) {
-  ast = nullthrows<babylon.ParseResult<types.File>>(
-    // @ts-expect-error
-    transformFromAstSync(ast, '', {
-      ast: true,
-      babelrc: false,
-      code: false,
-      configFile: false,
-      comments: true,
-      filename: file.filename,
-      plugins,
-      sourceMaps: false,
-      // Not-Cloning the input AST here should be safe because other code paths above this call
-      // are mutating the AST as well and no code is depending on the original AST.
-      // However, switching the flag to false caused issues with ES Modules if `experimentalImportSupport` isn't used https://github.com/facebook/metro/issues/641
-      // either because one of the plugins is doing something funky or Babel messes up some caches.
-      // Make sure to test the above mentioned case before flipping the flag back to false.
-      cloneInputAst: true,
-    }).ast!
-  );
-  // }
+  if (plugins.length) {
+    ast = nullthrows<babylon.ParseResult<types.File>>(
+      // @ts-expect-error
+      transformFromAstSync(ast, '', {
+        ast: true,
+        babelrc: false,
+        code: false,
+        configFile: false,
+        comments: true,
+        filename: file.filename,
+        plugins,
+        sourceMaps: false,
+
+        // NOTE(kitten): This was done to wipe the paths/scope caches, which the `constantFoldingPlugin` needs to work,
+        // but has been replaced with `programPath.scope.crawl()`.
+        // Old Note from Metro:
+        // > Not-Cloning the input AST here should be safe because other code paths above this call
+        // > are mutating the AST as well and no code is depending on the original AST.
+        // > However, switching the flag to false caused issues with ES Modules if `experimentalImportSupport` isn't used https://github.com/facebook/metro/issues/641
+        // > either because one of the plugins is doing something funky or Babel messes up some caches.
+        // > Make sure to test the above mentioned case before flipping the flag back to false.
+        cloneInputAst: false,
+      }).ast!
+    );
+  }
 
   if (!options.dev) {
+    // NOTE(kitten): Any Babel helpers that have been added (`path.hub.addHelper(...)`) will usually not have any
+    // references, and hence the `constantFoldingPlugin` below will remove them.
+    // To fix the references we add an explicit `programPath.scope.crawl()`. Alternatively, we could also wipe the
+    // Babel traversal cache (`traverse.cache.clear()`)
+    const clearProgramScopePlugin: PluginItem = {
+      visitor: {
+        Program: {
+          enter(path) {
+            path.scope.crawl();
+          },
+        },
+      },
+    };
+
     // Run the constant folding plugin in its own pass, avoiding race conditions
     // with other plugins that have exit() visitors on Program (e.g. the ESM
     // transform).
@@ -255,8 +274,15 @@ async function transformJS(
         configFile: false,
         comments: true,
         filename: file.filename,
-        plugins: [[metroTransformPlugins.constantFoldingPlugin, babelPluginOpts]],
+        plugins: [
+          clearProgramScopePlugin,
+          [metroTransformPlugins.constantFoldingPlugin, babelPluginOpts],
+        ],
         sourceMaps: false,
+
+        // NOTE(kitten): In Metro, this is also false, but only works because the prior run of `transformFromAstSync` was always
+        // running with `cloneInputAst: true`.
+        // This isn't needed anymore since `clearProgramScopePlugin` re-crawls the AST’s scope instead.
         cloneInputAst: false,
       }).ast
     );
@@ -310,16 +336,12 @@ async function transformJS(
       ));
     }
   }
-
-  const minify =
-    options.minify &&
-    options.unstable_transformProfile !== 'hermes-canary' &&
-    options.unstable_transformProfile !== 'hermes-stable';
-
   const reserved: string[] = [];
   if (config.unstable_dependencyMapReservedName != null) {
     reserved.push(config.unstable_dependencyMapReservedName);
   }
+
+  const minify = shouldMinify(options);
 
   if (
     minify &&
@@ -444,11 +466,7 @@ async function transformJSON(
       : JsFileWrapping.wrapJson(file.code, config.globalPrefix);
   let map: MetroSourceMapSegmentTuple[] = [];
 
-  // TODO: When we can reuse transformJS for JSON, we should not derive `minify` separately.
-  const minify =
-    options.minify &&
-    options.unstable_transformProfile !== 'hermes-canary' &&
-    options.unstable_transformProfile !== 'hermes-stable';
+  const minify = shouldMinify(options);
 
   if (minify) {
     ({ map, code } = await minifyCode(config, projectRoot, file.filename, code, file.code, map));

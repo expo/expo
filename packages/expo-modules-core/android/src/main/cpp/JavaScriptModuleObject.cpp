@@ -61,7 +61,7 @@ void decorateObjectWithProperties(
       jsi::Value(runtime, *setter.toJSFunction(runtime,
                                                jsiInteropModuleRegistry))
     );
-    common::definePropertyOnJSIObject(runtime, jsObject, name.c_str(), std::move(descriptor));
+    common::defineProperty(runtime, jsObject, name.c_str(), std::move(descriptor));
   }
 }
 
@@ -139,7 +139,7 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
   }
 
   for (auto &[name, classInfo]: classes) {
-    auto &[classRef, constructor] = classInfo;
+    auto &[classRef, constructor, ownerClass] = classInfo;
     auto classObject = classRef->cthis();
     classObject->jsiInteropModuleRegistry = jsiInteropModuleRegistry;
 
@@ -154,9 +154,20 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
 
     // Evaluate the code and obtain returned value (the constructor function).
     jsi::Object klass = runtime.evaluateJavaScript(sourceBuffer, "").asObject(runtime);
+    auto klassSharedPtr = std::make_shared<jsi::Object>(std::move(klass));
+
+    auto jsThisObject = JavaScriptObject::newInstance(
+      jsiInteropModuleRegistry,
+      jsiInteropModuleRegistry->runtimeHolder,
+      klassSharedPtr
+    );
+
+    if(ownerClass != nullptr) {
+      jsiInteropModuleRegistry->registerClass(jni::make_local(ownerClass), jsThisObject);
+    }
 
     // Set the native constructor in the prototype.
-    jsi::Object prototype = klass.getPropertyAsObject(runtime, "prototype");
+    jsi::Object prototype = klassSharedPtr->getPropertyAsObject(runtime, "prototype");
     jsi::PropNameID nativeConstructorPropId = jsi::PropNameID::forAscii(runtime,
                                                                         nativeConstructorKey);
     jsi::Function nativeConstructor = jsi::Function::createFromHostFunction(
@@ -215,13 +226,12 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
     auto descriptor = JavaScriptObject::preparePropertyDescriptor(runtime, 0);
     descriptor.setProperty(runtime, "value", jsi::Value(runtime, nativeConstructor));
 
-    common::definePropertyOnJSIObject(runtime, &prototype, nativeConstructorKey.c_str(),
-                                      std::move(descriptor));
+    common::defineProperty(runtime, &prototype, nativeConstructorKey.c_str(), std::move(descriptor));
 
     moduleObject->setProperty(
       runtime,
       jsi::String::createFromUtf8(runtime, name),
-      jsi::Value(runtime, klass.asFunction(runtime))
+      jsi::Value(runtime, klassSharedPtr->asFunction(runtime))
     );
 
     decorateObjectWithFunctions(
@@ -291,6 +301,7 @@ void JavaScriptModuleObject::registerClass(
   jni::alias_ref<jstring> name,
   jni::alias_ref<JavaScriptModuleObject::javaobject> classObject,
   jboolean takesOwner,
+  jni::alias_ref<jclass> ownerClass,
   jint args,
   jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
   jni::alias_ref<JNIFunctionBody::javaobject> body
@@ -305,11 +316,11 @@ void JavaScriptModuleObject::registerClass(
     jni::make_global(body)
   );
 
-  auto pair = std::make_pair(jni::make_global(classObject), std::move(constructor));
+  auto classTuple = std::make_tuple(jni::make_global(classObject), std::move(constructor), jni::make_global(ownerClass));
 
   classes.try_emplace(
     cName,
-    std::move(pair)
+    std::move(classTuple)
   );
 }
 

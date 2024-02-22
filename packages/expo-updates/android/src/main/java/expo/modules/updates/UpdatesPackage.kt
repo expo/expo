@@ -1,7 +1,6 @@
-@file:Suppress("UnusedImport") // this needs to stay for versioning to work
-
 package expo.modules.updates
 
+import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
@@ -10,6 +9,7 @@ import androidx.annotation.WorkerThread
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
+import expo.modules.core.interfaces.ApplicationLifecycleListener
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.ReactActivityHandler
 import expo.modules.core.interfaces.ReactNativeHostHandler
@@ -18,8 +18,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-
-// these unused imports must stay because of versioning
 
 /**
  * Defines the internal and exported modules for expo-updates, as well as the auto-setup behavior in
@@ -97,6 +95,21 @@ class UpdatesPackage : Package {
     return listOf(handler)
   }
 
+  override fun createApplicationLifecycleListeners(context: Context): List<ApplicationLifecycleListener> {
+    val handler = object : ApplicationLifecycleListener {
+      override fun onCreate(application: Application) {
+        super.onCreate(application)
+        if (shouldAutoSetup(context) && isRunningAndroidTest()) {
+          // Preload updates to prevent Detox ANR
+          UpdatesController.initialize(context)
+          UpdatesController.instance.launchAssetFile
+        }
+      }
+    }
+
+    return listOf(handler)
+  }
+
   private fun shouldAutoSetup(context: Context): Boolean {
     if (mShouldAutoSetup == null) {
       mShouldAutoSetup = try {
@@ -109,6 +122,15 @@ class UpdatesPackage : Package {
       }
     }
     return mShouldAutoSetup!!
+  }
+
+  private fun isRunningAndroidTest(): Boolean {
+    try {
+      Class.forName("androidx.test.espresso.Espresso")
+      return true
+    } catch (_: ClassNotFoundException) {
+    }
+    return false
   }
 
   companion object {

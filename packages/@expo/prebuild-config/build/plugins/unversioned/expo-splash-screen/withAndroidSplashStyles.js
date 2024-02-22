@@ -57,12 +57,11 @@ const withAndroidSplashStyles = config => {
 // Remove the old style group which didn't extend the base theme properly.
 exports.withAndroidSplashStyles = withAndroidSplashStyles;
 function removeOldSplashStyleGroup(styles) {
-  var _styles$resources$sty, _styles$resources$sty2;
   const group = {
     name: 'Theme.App.SplashScreen',
     parent: 'Theme.AppCompat.Light.NoActionBar'
   };
-  styles.resources.style = (_styles$resources$sty = styles.resources.style) === null || _styles$resources$sty === void 0 ? void 0 : (_styles$resources$sty2 = _styles$resources$sty.filter) === null || _styles$resources$sty2 === void 0 ? void 0 : _styles$resources$sty2.call(_styles$resources$sty, ({
+  styles.resources.style = styles.resources.style?.filter?.(({
     $: head
   }) => {
     let matches = head.name === group.name;
@@ -74,12 +73,10 @@ function removeOldSplashStyleGroup(styles) {
   return styles;
 }
 function getSplashBackgroundColor(config) {
-  var _getAndroidSplashConf, _getAndroidSplashConf2;
-  return (_getAndroidSplashConf = (_getAndroidSplashConf2 = (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config)) === null || _getAndroidSplashConf2 === void 0 ? void 0 : _getAndroidSplashConf2.backgroundColor) !== null && _getAndroidSplashConf !== void 0 ? _getAndroidSplashConf : null;
+  return (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config)?.backgroundColor ?? null;
 }
 function getSplashDarkBackgroundColor(config) {
-  var _getAndroidDarkSplash, _getAndroidDarkSplash2;
-  return (_getAndroidDarkSplash = (_getAndroidDarkSplash2 = (0, _getAndroidSplashConfig().getAndroidDarkSplashConfig)(config)) === null || _getAndroidDarkSplash2 === void 0 ? void 0 : _getAndroidDarkSplash2.backgroundColor) !== null && _getAndroidDarkSplash !== void 0 ? _getAndroidDarkSplash : null;
+  return (0, _getAndroidSplashConfig().getAndroidDarkSplashConfig)(config)?.backgroundColor ?? null;
 }
 function setSplashStylesForTheme(styles) {
   // Add splash screen image

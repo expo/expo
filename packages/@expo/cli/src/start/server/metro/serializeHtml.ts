@@ -4,30 +4,29 @@ import { RouteNode } from 'expo-router/build/Route';
 const debug = require('debug')('expo:metro:html') as typeof console.log;
 
 export function serializeHtmlWithAssets({
-  mode,
   resources,
   template,
   devBundleUrl,
   baseUrl,
   route,
+  isExporting,
 }: {
-  mode: 'development' | 'production';
   resources: SerialAsset[];
   template: string;
   /** asset prefix used for deploying to non-standard origins like GitHub pages. */
   baseUrl: string;
   devBundleUrl?: string;
   route?: RouteNode;
+  isExporting: boolean;
 }): string {
   if (!resources) {
     return '';
   }
-  const isDev = mode === 'development';
   return htmlFromSerialAssets(resources, {
-    dev: isDev,
+    isExporting,
     template,
     baseUrl,
-    bundleUrl: isDev ? devBundleUrl : undefined,
+    bundleUrl: isExporting ? undefined : devBundleUrl,
     route,
   });
 }
@@ -35,13 +34,13 @@ export function serializeHtmlWithAssets({
 function htmlFromSerialAssets(
   assets: SerialAsset[],
   {
-    dev,
+    isExporting,
     template,
     baseUrl,
     bundleUrl,
     route,
   }: {
-    dev: boolean;
+    isExporting: boolean;
     template: string;
     baseUrl: string;
     /** This is dev-only. */
@@ -53,13 +52,13 @@ function htmlFromSerialAssets(
   const styleString = assets
     .filter((asset) => asset.type === 'css')
     .map(({ metadata, filename, source }) => {
-      if (dev) {
-        return `<style data-expo-css-hmr="${metadata.hmrId}">` + source + '\n</style>';
-      } else {
+      if (isExporting) {
         return [
           `<link rel="preload" href="${baseUrl}/${filename}" as="style">`,
           `<link rel="stylesheet" href="${baseUrl}/${filename}">`,
         ].join('');
+      } else {
+        return `<style data-expo-css-hmr="${metadata.hmrId}">` + source + '\n</style>';
       }
     })
     .join('');

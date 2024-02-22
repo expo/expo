@@ -136,3 +136,16 @@
      yogaNode_.setStyle(adjustedStyle);
      yogaNode_.setDirty(true);
    }
+--- a/node_modules/react-native-safe-area-context/android/src/main/java/com/th3rdwave/safeareacontext/SafeAreaContextModule.kt
++++ b/node_modules/react-native-safe-area-context/android/src/main/java/com/th3rdwave/safeareacontext/SafeAreaContextModule.kt
+@@ -13,8 +13,8 @@ class SafeAreaContextModule(reactContext: ReactApplicationContext?) :
+     return NAME
+   }
+ 
+-  public override fun getTypedExportedConstants(): Map<String, Any> {
+-    return MapBuilder.of<String, Any>("initialWindowMetrics", getInitialWindowMetrics())
++  public override fun getTypedExportedConstants(): Map<String, Any?> {
++    return mapOf("initialWindowMetrics" to getInitialWindowMetrics())
+   }
+ 
+   private fun getInitialWindowMetrics(): Map<String, Any>? {

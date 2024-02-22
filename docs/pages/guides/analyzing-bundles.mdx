@@ -1,0 +1,96 @@
+---
+title: Analyzing JavaScript bundles
+description: Learn about improving the production JavaScript bundle size of Expo apps and websites.
+---
+
+import { Step } from '~/ui/components/Step';
+import { Terminal } from '~/ui/components/Snippet';
+
+Bundle performance varies for different platforms. For example, web browsers don't support precompiled bytecode, so the JavaScript bundle size is important for improving startup time and performance. The smaller the bundle, the faster it can be downloaded and parsed.
+
+## Analyzing bundle size
+
+The libraries used in a project influence the size of the production JavaScript bundle. You can use [source map explorer](https://www.npmjs.com/package/source-map-explorer) to visualize the production bundle and identify which libraries are contributing to the bundle size.
+
+<Step label="1">
+
+To use source map explorer, run the following command to install it:
+
+<Terminal cmd={['$ npm i --save-dev source-map-explorer']} />
+
+</Step>
+
+<Step label="2">
+
+Add a script to **package.json** to run it. You might have to adjust the input path depending on the platform or SDK you are using. For brevity, the following example assumes the project is Expo SDK 50 and does not use Expo Router `server` output.
+
+```json package.json
+{
+  "scripts": {
+    "analyze:web": "source-map-explorer 'dist/_expo/static/js/web/*.js' 'dist/_expo/static/js/web/*.js.map'",
+    "analyze:ios": "source-map-explorer 'dist/_expo/static/js/ios/*.js' 'dist/_expo/static/js/ios/*.js.map'",
+    "analyze:android": "source-map-explorer 'dist/_expo/static/js/android/*.js' 'dist/_expo/static/js/android/*.js.map'"
+  }
+}
+```
+
+If you are using the SDK 50 `server` output for web, then use the following to map web bundles:
+
+```sh
+npx source-map-explorer 'dist/client/_expo/static/js/web/*.js' 'dist/client/_expo/static/js/web/*.js.map'
+```
+
+Web bundles are output to the **dist/client** subdirectory to prevent exposing server code to the client.
+
+</Step>
+
+<Step label="3">
+
+Export your production JavaScript bundle and include the `--source-maps` flag so that the source map explorer can read the source maps:
+
+<Terminal
+  cmd={[
+    '$ npx expo export --source-maps --platform web',
+    '# Native apps using Hermes can disable bytecode for analyzing the JavaScript bundle.',
+    '$ npx expo export --source-maps --platform ios --no-bytecode',
+  ]}
+/>
+
+This command shows the JavaScript bundle and source map paths in the output. In the next step, you will pass these paths to the source map explorer.
+
+> Avoid publishing source maps to production as they can cause both security issues and performance issues (a browser will download the large maps).
+
+</Step>
+
+<Step label="4">
+
+Run the script to analyze your bundle:
+
+<Terminal cmd={['$ npm run analyze:web']} />
+
+On running this command, you might see the following error:
+
+```
+You must provide the URL of lib/mappings.wasm by calling SourceMapConsumer.initialize({ 'lib/mappings.wasm': ... }) before using SourceMapConsumer
+```
+
+This is probably due to a [known issue](https://github.com/danvk/source-map-explorer/issues/247) in `source-map-explorer` in Node.js 18 and above. To resolve this, set the environment variable `NODE_OPTIONS=--no-experimental-fetch` before running the analyze script.
+
+</Step>
+
+You might encounter a warning such as `Unable to map 809/13787 bytes (5.87%)`. This occurs because source maps often exclude bundler runtime definitions (for example, `__d(() => {}, [])`). This value is consistent and not a reason for concern.
+
+## Lighthouse
+
+Lighthouse is a great way to see how fast, accessible, and performant your website is. You can test your project with the **Audit** tab in Chrome, or with the [Lighthouse CLI](https://github.com/GoogleChrome/lighthouse#using-the-node-cli).
+
+After creating a production build with `npx expo export -p web` and serving it (using either `npx serve dist`, or production deployment, or custom server), run Lighthouse with the URL your site is hosted at.
+
+<Terminal
+  cmd={[
+    '# Install the lighthouse CLI',
+    '$ npm install -g lighthouse',
+    '# Run the lighthouse CLI for your site',
+    '$ npx lighthouse <url> --view',
+  ]}
+/>

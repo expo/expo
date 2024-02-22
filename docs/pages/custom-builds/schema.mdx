@@ -1300,6 +1300,98 @@ build:
   href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/uploadArtifact.ts"
 />
 
+#### `eas/install_maestro`
+
+Makes sure [Maestro](https://maestro.mobile.dev), the mobile UI testing framework, is installed along with all its dependencies. 
+
+```yaml build-and-test.yml
+build:
+  name: Build and test
+  steps:
+    - eas/build
+    # ... simulator/emulator setup
+    # @info #
+    - eas/install_maestro:
+    # @end #
+        inputs:
+          # @info If you need to, you can provide the Maestro version to install. #
+          maestro_version: 1.35.0
+          # @end #
+    - run:
+        command: maestro test flows/signin.yml
+    - eas/upload_artifact:
+        name: Upload Maestro artifacts
+        inputs:
+          type: build-artifact
+          path: ${ eas.env.HOME }/.maestro/tests
+```
+
+| Input             | Description                                                                                                                      |
+|-------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| `maestro_version` | **string** Maestro version to install (for example, 1.35.0). If not provided, `install_maestro` will install the latest version. |
+
+<BoxLink
+  title="eas/install_maestro source code"
+  description="View the source code for the eas/install_maestro function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/installMaestro.ts"
+/>
+
+#### `eas/start_android_emulator`
+
+Starts an Android Emulator you can use to test your apps on. Only available when running a build for Android.
+
+```yaml build-and-test.yml
+build:
+  name: Build and test
+  steps:
+    - eas/build
+    # @info #
+    - eas/start_android_emulator:
+        inputs:
+          system_image_package: system-images;android-30;default;x86_64
+    # @end #
+    # ... Maestro setup and tests
+```
+
+| Input                  | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+|------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `device_name`          | **string** Name for the created device. You can customize it if starting multiple emulators.                                                                                                                                                                                                                                                                                                                                                                       |
+| `system_image_package` | **string** Android package path to use for the emulator. For example, `system-images;android-30;default;x86_64`.<br />To get a list of available system images, run [`sdkmanager --list`](https://developer.android.com/tools/sdkmanager#list) on a local computer. VMs run on x86_64 architecture, so always choose `x86_64` package variants. The [`sdkmanager` tool](https://developer.android.com/tools/sdkmanager) comes from Android SDK command-line tools. |
+
+<BoxLink
+  title="eas/start_android_emulator source code"
+  description="View the source code for the eas/start_android_emulator function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/startAndroidEmulator.ts"
+/>
+
+#### `eas/start_ios_simulator`
+
+Starts an iOS Simulator you can use to test your apps on. Only available when running a build for iOS.
+
+```yaml build-and-test.yml
+build:
+  name: Build and test
+  steps:
+    - eas/build
+    # @info #
+    - eas/start_ios_simulator
+    # @end #
+    # ... Maestro setup and tests
+```
+
+| Input               | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+|---------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `device_identifier` | **string** Name or UDID of the Simulator you want to start. Examples include `iPhone [XY] Pro`, `AEF997BB-222C-4379-89BA-D21070B1D787`.<br />**Note:** Available Simulators are different for every image. If you change the image, the Simulator for a given name may become unavailable. For instance, an Xcode 14 image will have iPhone 14 Simulators, while an Xcode 15 image will have iPhone 15 simulators. In general, we encourage not providing this input. See [runner images](/build/eas-json/#selecting-a-base-image) for more information. |
+
+<BoxLink
+  title="eas/start_ios_simulator source code"
+  description="View the source code for the eas/start_ios_simulator function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/startIosSimulator.ts"
+/>
+
 ### Using built-in EAS functions to build an app
 
 Using the built-in EAS functions you can recreate the default EAS Build workflow for different build types.

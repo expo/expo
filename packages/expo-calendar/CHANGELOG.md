@@ -8,7 +8,11 @@
 
 ### 🐛 Bug fixes
 
+- Fix the problem that stringifyDateValues is not compatible with simple type arrays. ([#27147](https://github.com/expo/expo/pull/27147) by [@XHFkindergarten](https://github.com/XHFkindergarten))
+
 ### 💡 Others
+
+- On iOS, migrate to Expo Modules API. ([#24282](https://github.com/expo/expo/pull/24282) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 12.2.1 - 2023-12-19
 

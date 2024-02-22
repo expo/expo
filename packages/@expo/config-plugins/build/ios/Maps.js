@@ -57,8 +57,7 @@ function _generateCode() {
 }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 const debug = require('debug')('expo:config-plugins:ios:maps');
-const MATCH_INIT = /-\s*\(BOOL\)\s*application:\s*\(UIApplication\s*\*\s*\)\s*\w+\s+didFinishLaunchingWithOptions:/g;
-exports.MATCH_INIT = MATCH_INIT;
+const MATCH_INIT = exports.MATCH_INIT = /-\s*\(BOOL\)\s*application:\s*\(UIApplication\s*\*\s*\)\s*\w+\s+didFinishLaunchingWithOptions:/g;
 const withGoogleMapsKey = (0, _iosPlugins().createInfoPlistPlugin)(setGoogleMapsApiKey, 'withGoogleMapsKey');
 const withMaps = config => {
   config = withGoogleMapsKey(config);
@@ -78,8 +77,7 @@ const withMaps = config => {
 };
 exports.withMaps = withMaps;
 function getGoogleMapsApiKey(config) {
-  var _config$ios$config$go, _config$ios, _config$ios$config;
-  return (_config$ios$config$go = (_config$ios = config.ios) === null || _config$ios === void 0 ? void 0 : (_config$ios$config = _config$ios.config) === null || _config$ios$config === void 0 ? void 0 : _config$ios$config.googleMapsApiKey) !== null && _config$ios$config$go !== void 0 ? _config$ios$config$go : null;
+  return config.ios?.config?.googleMapsApiKey ?? null;
 }
 function setGoogleMapsApiKey(config, {
   GMSApiKey,

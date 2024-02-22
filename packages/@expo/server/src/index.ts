@@ -181,7 +181,7 @@ export function createRequestHandler(
         return func;
       }
 
-      const routeHandler = func[request.method];
+      const routeHandler = func?.[request.method];
       if (!routeHandler) {
         return new ExpoResponse('Method not allowed', {
           status: 405,

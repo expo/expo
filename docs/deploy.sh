@@ -85,10 +85,6 @@ redirects[versions/latest/sdk/introduction/index.html]=versions/latest/sdk/overv
 # project-lifecycle is now covered by managed-vs-bare
 redirects[versions/latest/introduction/project-lifecycle]=archive/managed-vs-bare
 
-# exp-cli is now expo-cli
-# redirects[versions/latest/guides/exp-cli.html]=versions/latest/workflow/expo-cli/
-# redirects[versions/latest/guides/exp-cli]=versions/latest/workflow/expo-cli/
-
 # Migrated FAQ pages
 redirects[faq/image-background]=ui-programming/image-background
 redirects[faq/react-native-styling-buttons]=ui-programming/react-native-styling-buttons
@@ -96,10 +92,10 @@ redirects[faq/react-native-version-mismatch]=troubleshooting/react-native-versio
 redirects[faq/clear-cache-windows]=troubleshooting/clear-cache-windows
 redirects[faq/clear-cache-macos-linux]=troubleshooting/clear-cache-macos-linux
 redirects[faq/application-has-not-been-registered]=troubleshooting/application-has-not-been-registered
-redirects[distribution/building-standalone-apps]=archive/classic-updates/building-standalone-apps
+redirects[distribution/building-standalone-apps]=archive/classic-builds/building-standalone-apps
 redirects[build-reference/build-webhook]=eas/webhooks
 redirects[distribution/webhooks]=eas/webhooks
-redirects[distribution/turtle-cli]=archive/classic-updates/turtle-cli
+redirects[distribution/turtle-cli]=archive/classic-builds/turtle-cli
 redirects[distribution/app-signing]=app-signing/app-credentials
 redirects[guides/adhoc-builds]=develop/development-builds/introduction
 redirects[archive/adhoc-builds]=develop/development-builds/introduction
@@ -146,6 +142,7 @@ redirects[distribution/uploading-apps]=submit/introduction
 redirects[guides/setup-native-firebase]=guides/using-firebase
 redirects[guides/using-clojurescript]=guides/overview
 redirects[distribution/hosting-your-app]=distribution/publishing-websites
+redirects[guides/web-performance/]=guides/analyzing-bundles
 
 # Redirects after adding Home to the docs
 redirects[next-steps/additional-resources]=additional-resources
@@ -181,11 +178,10 @@ redirects[workflow/expo-cli]=more/expo-cli
 redirects[versions/latest/workflow/expo-cli]=more/expo-cli
 redirects[bare/hello-world]=bare/overview
 redirects[guides/using-graphql]=guides/overview
-redirects[guides/using-bugsnag]=guides/overview
 redirects[build/automating-submissions]=build/automate-submissions
 redirects[workflow/run-on-device]=build/internal-distribution
 redirects[archive/workflow/customizing]=workflow/customizing
-redirects[guides/building-standalone-apps]=archive/classic-updates/building-standalone-apps
+redirects[guides/building-standalone-apps]=archive/classic-builds/building-standalone-apps
 redirects[versions/latest/sdk/permissions#expopermissionscamera_roll]=guides/permissions
 redirects[introduction/managed-vs-bare]=archive/managed-vs-bare
 redirects[push-notifications/using-fcm]=push-notifications/push-notifications-setup
@@ -203,7 +199,7 @@ redirects[eas-update/how-eas-update-works]=eas-update/how-it-works
 redirects[development/installation]=develop/development-builds/create-a-build
 redirects[bare/updating-your-app]=eas-update/updating-your-app
 redirects[versions/latest/introduction/managed-vs-bare]=archive/managed-vs-bare
-redirects[classic/turtle-cli]=archive/classic-updates/turtle-cli
+redirects[classic/turtle-cli]=archive/classic-builds/turtle-cli
 redirects[technical-specs/expo-updates-0]=technical-specs/expo-updates-1
 redirects[development/extending-the-dev-menu]=develop/development-builds/development-workflows
 redirects[archive/expokit/eject]=archive/glossary
@@ -249,16 +245,17 @@ redirects[guides/setting-up-continuous-integration]=build/building-on-ci
 redirects[distribution/release-channels]=archive/classic-updates/release-channels
 redirects[distribution/advanced-release-channels]=archive/classic-updates/advanced-release-channels
 redirects[distribution/optimizing-updates]=archive/classic-updates/optimizing-updates
-redirects[eas-update/custom-updates-server]=distribution/custom-updates-server
 redirects[guides/offline-support]=archive/classic-updates/offline-support
 redirects[guides/preloading-and-caching-assets]=archive/classic-updates/preloading-and-caching-assets
 redirects[guides/configuring-updates]=archive/classic-updates/configuring-updates
 redirects[eas-update/bare-react-native]=eas-update/updating-your-app
 redirects[worfkflow/publishing]=archive/classic-updates/publishing
-redirects[classic/building-standalone-apps]=archive/classic-updates/building-standalone-apps
-redirects[classic/turtle-cli]=archive/classic-updates/turtle-cli
+redirects[classic/building-standalone-apps]=archive/classic-builds/building-standalone-apps
+redirects[classic/turtle-cli]=archive/classic-builds/turtle-cli
+redirects[build-reference/migrating]=archive/classic-builds/migrating
 redirects[archive/classic-updates/getting-started]=eas-update/getting-started
 redirects[archived]=archive
+redirects[archive/classic-updates/building-standalone-apps]=archive/classic-builds/building-standalone-apps
 
 # Old tutorial pages
 redirects[introduction/walkthrough]=tutorial/introduction
@@ -275,6 +272,7 @@ redirects[eas-update/eas-update-and-eas-cli]=eas-update/eas-cli
 redirects[eas-update/debug-updates]=eas-update/debug
 redirects[eas-update/how-eas-update-works]=eas-update/how-it-works
 redirects[eas-update/migrate-to-eas-update]=eas-update/migrate-from-classic-updates
+redirects[distribution/custom-updates-server]=eas-update/custom-updates-server
 
 # Redirects after Expo Router docs reorganization from Home to Guides
 redirects[routing/next-steps]=router/introduction
@@ -303,6 +301,8 @@ redirects[versions/latest/sdk/util]=versions/latest
 redirects[versions/v45.0.0/sdk/google-sign-in]=guides/google-authentication
 redirects[versions/v44.0.0/sdk/google]=guides/google-authentication
 redirects[versions/latest/introduction/faq]=faq
+redirects[versions/v50.0.0/sdk/in-app-purchases]=guides/in-app-purchases/
+redirects[versions/latest/sdk/in-app-purchases]=guides/in-app-purchases/
 
 # Redirects based on Sentry reports
 redirects[push-notifications]=push-notifications/overview
@@ -325,12 +325,12 @@ redirects[workflow/build/building-on-ci]=build/building-on-ci
 redirects[versions/v50.0.0/sdk/taskmanager]=versions/v50.0.0/sdk/task-manager
 redirects[versions/v49.0.0/sdk/taskmanager]=versions/v49.0.0/sdk/task-manager
 redirects[versions/v48.0.0/sdk/taskmanager]=versions/v48.0.0/sdk/task-manager
-redirects[versions/v47.0.0/sdk/taskmanager]=versions/v47.0.0/sdk/task-manager
-redirects[versions/v46.0.0/sdk/taskmanager]=versions/v46.0.0/sdk/task-manager
+redirects[versions/v47.0.0/sdk/taskmanager]=versions/latest/sdk/task-manager
+redirects[versions/v46.0.0/sdk/taskmanager]=versions/latest/sdk/task-manager
 redirects[task-manager]=versions/latest/sdk/task-manager
 redirects[versions/v49.0.0/sdk/filesystem.md]=versions/v49.0.0/sdk/filesystem
 redirects[versions/v48.0.0/sdk/filesystem.md]=versions/v48.0.0/sdk/filesystem
-redirects[versions/v47.0.0/sdk/filesystem.md]=versions/v47.0.0/sdk/filesystem
+redirects[versions/v47.0.0/sdk/filesystem.md]=versions/latest/sdk/filesystem
 redirects[versions/v46.0.0/sdk/filesystem.md]=versions/latest/sdk/filesystem
 redirects[versions/latest/sdk/filesystem.md]=versions/latest/sdk/filesystem
 redirects[versions/v48.0.0/sdk]=versions/latest
@@ -339,11 +339,14 @@ redirects[guides/how-expo-works]=faq
 redirects[config/app]=workflow/configuration
 redirects[versions/v50.0.0/sdk]=versions/v50.0.0
 redirects[versions/v49.0.0/sdk]=versions/v49.0.0
-redirects[versions/v47.0.0/sdk]=versions/v47.0.0
-redirects[versions/v46.0.0/sdk]=versions/v46.0.0
+redirects[versions/v47.0.0/sdk]=versions/latest
+redirects[versions/v46.0.0/sdk]=versions/latest
 redirects[guides/authentication.md]=guides/authentication
 redirects[versions/latest/workflow/linking/]=guides/linking
 redirects[versions/latest/sdk/overview]=versions/latest
+
+# Deprecated webpack
+redirects[guides/customizing-webpack]=archive/customizing-webpack
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys

@@ -18,6 +18,7 @@ import expo.modules.image.enums.ContentFit
 import expo.modules.image.enums.Priority
 import expo.modules.image.records.CachePolicy
 import expo.modules.image.records.ContentPosition
+import expo.modules.image.records.DecodeFormat
 import expo.modules.image.records.ImageTransition
 import expo.modules.image.records.SourceMap
 import expo.modules.kotlin.Promise
@@ -42,7 +43,7 @@ class ExpoImageModule : Module() {
           .load(GlideUrl(it)) //  Use `load` instead of `download` to store the asset in the memory cache
           // We added `quality` and `downsample` to create the same cache key as in final image load.
           .encodeQuality(100)
-          .downsample(NoopDownsampleStrategy())
+          .downsample(NoopDownsampleStrategy)
           .apply {
             if (cachePolicy == CachePolicy.MEMORY) {
               diskCacheStrategy(DiskCacheStrategy.NONE)
@@ -237,6 +238,10 @@ class ExpoImageModule : Module() {
 
       Prop("autoplay") { view: ExpoImageViewWrapper, autoplay: Boolean? ->
         view.autoplay = autoplay ?: true
+      }
+
+      Prop("decodeFormat") { view: ExpoImageViewWrapper, format: DecodeFormat? ->
+        view.decodeFormat = format ?: DecodeFormat.ARGB_8888
       }
 
       AsyncFunction("startAnimating") { view: ExpoImageViewWrapper ->

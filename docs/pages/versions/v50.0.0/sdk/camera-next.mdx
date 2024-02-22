@@ -9,12 +9,18 @@ iconUrl: '/static/images/packages/expo-camera.png'
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import PrereleaseNotice from '~/components/PrereleaseNotice';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
 } from '~/components/plugins/ConfigSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+
+<PrereleaseNotice>
+  This page documents an upcoming version of the Camera library. **To try it, switch to
+  `expo-camera/next` imports in your code.**
+</PrereleaseNotice>
 
 `expo-camera` provides a React component that renders a preview of the device's front or back camera. The camera's parameters such as zoom, torch, and flash mode are adjustable. Using `CameraView`, you can take photos and record videos that are saved to the app's cache. The component is also capable of detecting bar codes appearing in the preview. Run the [example](#usage) on your device to see all these features working together.
 
@@ -75,7 +81,7 @@ Learn how to configure the native projects in the [installation instructions in 
 > **warning** Only one Camera preview can be active at any given time. If you have multiple screens in your app, you should unmount `Camera` components whenever a screen is unfocused.
 
 ```jsx
-import { CameraView, useCameraPermissions, CameraType } from 'expo-camera/next';
+import { CameraView, useCameraPermissions } from 'expo-camera/next';
 import { useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -158,7 +164,7 @@ When using **Chrome versions 64+**, if you try to use a web camera in a cross-or
 
 ```html
 <iframe src="..." allow="microphone; camera;">
-  <!-- <Camera /> -->
+  <!-- <CameraView /> -->
 </iframe>
 ```
 
