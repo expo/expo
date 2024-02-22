@@ -125,7 +125,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
       // If the user has set the `EXPO_ROUTER_IMPORT_MODE` to `sync` then we should
       // filter the missing routes.
       if (node.type !== 'api' && importMode === 'sync') {
-        if (node.loadRoute()?.default) {
+        if (!node.loadRoute()?.default) {
           continue;
         }
       }
