@@ -64,6 +64,7 @@ internal class ContentKeyDelegate: NSObject, AVContentKeySessionDelegate {
 
     let completionHandler = { [weak self] (spcData: Data?, error: Error?) in
       guard let self else {
+        keyRequest.processContentKeyResponseError(DRMLoadException("Couldn't find a reference to the key delegate in the online key completion handler."))
         return
       }
 
