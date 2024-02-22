@@ -15,8 +15,8 @@ Local development is usually done through `bare-expo`.
 To use `dev-client` when running `bare-expo` on Android, open [MainApplication.java](/apps/bare-expo/android/app/src/main/java/dev/expo/payments/MainApplication.java) and set the `USE_DEV_CLIENT` value to `true`.
 
 ```diff
-- static final boolean USE_DEV_CLIENT = false;
-+ static final boolean USE_DEV_CLIENT = true;
+- private const val USE_DEV_CLIENT = false;
++ private const val USE_DEV_CLIENT = true;
 ```
 
 To use `dev-client` when running `bare-expo` on iOS, open [AppDelegate.mm](/apps/bare-expo/ios/BareExpo/AppDelegate.mm) and set the `USE_DEV_CLIENT` value to `YES`.
