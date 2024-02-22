@@ -4,7 +4,6 @@ import Foundation
 
 @objc(EXFileSystemLegacyUtilities)
 public class FileSystemLegacyUtilities: NSObject, EXInternalModule, EXFileSystemInterface, EXFilePermissionModuleInterface {
-
   @objc
   public var documentDirectory: String
 
@@ -28,13 +27,13 @@ public class FileSystemLegacyUtilities: NSObject, EXInternalModule, EXFileSystem
     self.cachesDirectory = cachesPaths[0]
   }
 
-  public static func exportedInterfaces() -> [Protocol]! {
+  public static func exportedInterfaces() -> [Protocol] {
     return [EXFileSystemInterface.self, EXFilePermissionModuleInterface.self]
   }
 
   @objc
   public func permissions(forURI uri: URL) -> EXFileSystemPermissionFlags {
-    let validSchemas: [String] = [
+    let validSchemas = [
       "assets-library",
       "http",
       "https",
@@ -52,23 +51,15 @@ public class FileSystemLegacyUtilities: NSObject, EXInternalModule, EXFileSystem
 
   @objc
   public func generatePath(inDirectory directory: String, withExtension ext: String) -> String {
-    let fileName = "\(UUID().uuidString)\(String(describing: ext))"
+    let fileName = "\(UUID().uuidString)\(ext)"
     ensureDirExists(withPath: directory)
     return (directory as NSString).appendingPathComponent(fileName)
   }
 
   @objc
   public func ensureDirExists(withPath path: String) -> Bool {
-    var isDir: ObjCBool = false
-    let exists = FileManager.default.fileExists(atPath: path, isDirectory: &isDir)
-    if !(exists && isDir.boolValue) {
-      do {
-        try FileManager.default.createDirectory(atPath: path, withIntermediateDirectories: true, attributes: nil)
-      } catch {
-        return false
-      }
-    }
-    return true
+    let url = URL(fileURLWithPath: path)
+    return FileSystemUtilities.ensureDirExists(at: url)
   }
 
   @objc
