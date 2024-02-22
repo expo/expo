@@ -37,6 +37,12 @@ const qrWorkerMethod = ({ data, width, height }: ImageData): any => {
 };
 
 const createWorkerAsyncFunction = <T extends (data: any) => any>(fn: T, deps: string[]) => {
+  if (typeof window === 'undefined') {
+    return async () => {
+      throw new Error('Cannot use createWorkerAsyncFunction in a non-browser environment');
+    };
+  }
+
   const stringifiedFn = [
     `self.func = ${fn.toString()};`,
     'self.onmessage = (e) => {',
