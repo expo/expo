@@ -21,6 +21,10 @@ const additionalProjectProps = {
 };
 
 describe('runAsync', () => {
+  afterEach(() => {
+    vol.reset();
+  });
+
   it('returns result with isSuccessful = true if Expo config SDK version matches installed version', async () => {
     vol.fromJSON({
       [projectRoot + '/node_modules/expo/package.json']: `{

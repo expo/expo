@@ -25,6 +25,10 @@ describe('runAsync', () => {
     });
   });
 
+  afterEach(() => {
+    vol.reset();
+  });
+
   it('returns result with isSuccessful = true if empty dependencies, devDependencies, scripts', async () => {
     const check = new PackageJsonCheck();
     const result = await check.runAsync({

@@ -1,7 +1,7 @@
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { getDeepDependenciesWarningAsync } from '../utils/explainDependencies';
 
-export class GlobalPackageInstalledCheck implements DoctorCheck {
+export class GlobalPackageInstalledLocallyCheck implements DoctorCheck {
   description = 'Check for legacy global CLI installed locally';
 
   sdkVersionRange = '>=46.0.0';
