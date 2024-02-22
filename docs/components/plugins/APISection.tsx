@@ -171,7 +171,7 @@ const renderAPI = (
       entry =>
         isProp(entry) &&
         ([TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy].includes(entry.kind)
-          ? !!(entry.type?.types || entry.type?.declaration?.children)
+          ? !!(entry.type.types || entry.type.declaration?.children)
           : true)
     );
     const defaultProps = filterDataByKind(

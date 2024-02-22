@@ -1,8 +1,75 @@
 import React from 'react';
-import { NativeSyntheticEvent } from 'react-native';
+import { NativeSyntheticEvent, StyleProp, ViewProps, ViewStyle } from 'react-native';
 
-import { ClipboardPasteButtonProps, PasteEventPayload } from './Clipboard.types';
+import {
+  AcceptedContentType,
+  CornerStyleType,
+  DisplayModeType,
+  GetImageOptions,
+  PasteEventPayload,
+} from './Clipboard.types';
 import ExpoClipboardPasteButton from './ExpoClipboardPasteButton';
+
+// @needsAudit
+export type ClipboardPasteButtonProps = {
+  /**
+   * A callback that is called with the result of the paste action.
+   * Inspect the `type` property to determine the type of the pasted data.
+   *
+   * Can be one of `text` or `image`.
+   *
+   * @example
+   * ```ts
+   *   onPress={(data) => {
+   *     if (data.type === 'image') {
+   *       setImageData(data);
+   *    } else {
+   *       setTextData(data);
+   *     }
+   *   }}
+   * ```
+   */
+  onPress: (data: PasteEventPayload) => void;
+  /**
+   * The backgroundColor of the button.
+   * Leaving this as the default allows the color to adjust to the system theme settings.
+   */
+  backgroundColor?: string | null;
+  /**
+   * The foregroundColor of the button.
+   * @default 'white'
+   */
+  foregroundColor?: string | null;
+  /**
+   * The cornerStyle of the button.
+   * @default 'capsule'
+   *
+   * @see [Apple Documentation](https://developer.apple.com/documentation/uikit/uibutton/configuration/cornerstyle) for more details.
+   */
+  cornerStyle?: CornerStyleType | null;
+  /**
+   * The displayMode of the button.
+   * @default 'iconAndLabel'
+   *
+   * @see [Apple Documentation](https://developer.apple.com/documentation/uikit/uipastecontrol/displaymode) for more details.
+   */
+  displayMode?: DisplayModeType | null;
+  /**
+   * The custom style to apply to the button. Should not include `backgroundColor`, `borderRadius` or `color`
+   * properties.
+   */
+  style?: StyleProp<Omit<ViewStyle, 'backgroundColor' | 'borderRadius' | 'color'>>;
+  /**
+   * The options to use when pasting an image from the clipboard.
+   */
+  imageOptions?: GetImageOptions | null;
+  /**
+   * An array of the content types that will cause the button to become active.
+   * > Do not include `plain-text` and `html` at the same time as this will cause all text to be treated as `html`.
+   * @default ['plain-text', 'image']
+   */
+  acceptedContentTypes?: AcceptedContentType[];
+} & ViewProps;
 
 // @needsAudit
 /**
