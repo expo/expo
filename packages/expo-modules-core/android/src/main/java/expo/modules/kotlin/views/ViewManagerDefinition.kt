@@ -4,10 +4,10 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import com.facebook.react.bridge.ReactContext
-import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.functions.BaseAsyncFunctionComponent
+import expo.modules.kotlin.getUnimoduleProxy
 
 class ViewManagerDefinition(
   private val viewFactory: (Context, AppContext) -> View,
@@ -34,10 +34,7 @@ class ViewManagerDefinition(
 
   fun handleException(view: View, exception: CodedException) {
     val reactContext = (view.context as? ReactContext) ?: return
-    val nativeModulesProxy = reactContext
-      .catalystInstance
-      ?.getNativeModule("NativeUnimoduleProxy") as? NativeModulesProxy
-      ?: return
+    val nativeModulesProxy = reactContext.getUnimoduleProxy() ?: return
     val appContext = nativeModulesProxy.kotlinInteropModuleRegistry.appContext
 
     appContext.errorManager?.reportExceptionToLogBox(exception)
