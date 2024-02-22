@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Fix server hosting root html in a group with a layout. ([#29948](https://github.com/expo/expo/pull/29948) by [@EvanBacon](https://github.com/EvanBacon))
+- Ensure initial route is created with params
 
 ### 💡 Others
 
@@ -144,10 +145,6 @@ _This version does not introduce any user-facing changes._
 - Cancel ExpoRouter SplashScreen during test teardown ([#27620](https://github.com/expo/expo/pull/27620) by [@marklawlor](https://github.com/marklawlor))
 - Export `toHaveRouterState` and other matcher types from `expo-router/testing-library` ([#27646](https://github.com/expo/expo/pull/27646) by [@marklawlor](https://github.com/marklawlor))
 - Fix missing types from typed routes ([#27412](https://github.com/expo/expo/pull/27412) by [@marklawlor](https://github.com/marklawlor))
-- Fork NavigationContainer on web to use custom linking context ([#27712](https://github.com/expo/expo/pull/27712) by [@marklawlor](https://github.com/marklawlor))
-- Fix relative navigation on hoisted routes ([#27778](https://github.com/expo/expo/pull/27778) by [@marklawlor](https://github.com/marklawlor))
-- Fix setting an initial location to a hoisted index router in a group ([#27935](https://github.com/expo/expo/pull/27935) by [@marklawlor](https://github.com/marklawlor))
-- Flush test timers after each navigation ([#27981](https://github.com/expo/expo/pull/27981) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
