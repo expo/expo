@@ -25,6 +25,14 @@ export declare class VideoPlayer {
   volume: number;
 
   /**
+   * Determines whether the player should continue playing after the app enters the background.
+   * @default false
+   * @platform ios
+   * @platform android
+   */
+  staysActiveInBackground: boolean;
+
+  /**
    * Resumes the player.
    */
   play(): void;

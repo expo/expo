@@ -84,8 +84,14 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
 
   var videoPlayer: VideoPlayer? = null
     set(videoPlayer) {
+      field?.let {
+        VideoManager.onVideoPlayerDetachedFromView(it, this)
+      }
       playerView.player = videoPlayer?.player
       field = videoPlayer
+      videoPlayer?.let {
+        VideoManager.onVideoPlayerAttachedToView(it, this)
+      }
     }
 
   var useNativeControls: Boolean = true
@@ -116,7 +122,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   }
 
   init {
-    VideoViewManager.addVideoView(this)
+    VideoManager.registerVideoView(this)
     playerView.setFullscreenButtonClickListener { enterFullscreen() }
     addView(
       playerView,
@@ -129,7 +135,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
 
   fun enterFullscreen() {
     val intent = Intent(context, FullscreenPlayerActivity::class.java)
-    intent.putExtra(VideoViewManager.INTENT_PLAYER_KEY, id)
+    intent.putExtra(VideoManager.INTENT_PLAYER_KEY, id)
     currentActivity.startActivity(intent)
 
     // Disable the enter transition

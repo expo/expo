@@ -22,10 +22,10 @@ class FullscreenPlayerActivity : Activity() {
     mContentView = findViewById(R.id.enclosing_layout)
 
     playerView = findViewById(R.id.player_view)
-    videoViewId = intent.getStringExtra(VideoViewManager.INTENT_PLAYER_KEY)
+    videoViewId = intent.getStringExtra(VideoManager.INTENT_PLAYER_KEY)
       ?: throw FullScreenVideoViewNotFoundException()
 
-    videoView = VideoViewManager.getVideoView(videoViewId)
+    videoView = VideoManager.getVideoView(videoViewId)
     videoView.videoPlayer?.changePlayerView(playerView)
   }
 
@@ -43,7 +43,7 @@ class FullscreenPlayerActivity : Activity() {
 
   override fun finish() {
     super.finish()
-    VideoViewManager.getVideoView(videoViewId).exitFullscreen()
+    VideoManager.getVideoView(videoViewId).exitFullscreen()
 
     // Disable the exit transition
     if (Build.VERSION.SDK_INT >= 34) {

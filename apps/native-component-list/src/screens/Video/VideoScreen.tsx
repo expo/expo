@@ -42,12 +42,16 @@ export default function VideoScreen() {
   const [selectedSource, setSelectedSource] = React.useState<number>(0);
   const [showNativeControls, setShowNativeControls] = React.useState(true);
   const [requiresLinearPlayback, setRequiresLinearPlayback] = React.useState(false);
+  const [staysActiveInBackground, setStaysActiveInBackground] = React.useState(false);
+  const player = useVideoPlayer(videoSources[selectedSource]);
+
+  useEffect(() => {
+    player.staysActiveInBackground = true;
+  }, []);
 
   const enterFullscreen = useCallback(() => {
     ref.current?.enterFullscreen();
   }, [ref]);
-
-  const player = useVideoPlayer(videoSources[selectedSource]);
 
   const togglePlayer = useCallback(() => {
     if (player.isPlaying) {
@@ -76,6 +80,14 @@ export default function VideoScreen() {
       ref.current?.stopPictureInPicture();
     }
   }, [ref, isInPictureInPicture]);
+
+  const updateStaysActiveInBackground = useCallback(
+    (staysActive: boolean) => {
+      player.staysActiveInBackground = staysActive;
+      setStaysActiveInBackground(staysActive);
+    },
+    [staysActiveInBackground]
+  );
 
   useEffect(() => {
     player.play();
@@ -162,6 +174,15 @@ export default function VideoScreen() {
             titleStyle={styles.switchTitle}
           />
         </View>
+        <View style={styles.row}>
+          <TitledSwitch
+            title="Stays active in background"
+            value={staysActiveInBackground}
+            setValue={updateStaysActiveInBackground}
+            style={styles.switch}
+            titleStyle={styles.switchTitle}
+          />
+        </View>
       </ScrollView>
     </View>
   );
@@ -176,6 +197,7 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
+    justifyContent: 'space-evenly',
   },
   picker: {
     alignSelf: 'stretch',

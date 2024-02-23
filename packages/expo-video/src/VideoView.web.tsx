@@ -30,6 +30,7 @@ class VideoPlayerWeb implements VideoPlayer {
   _isMuted: boolean = false;
   timestamp: number = 0;
   _volume: number = 1;
+  staysActiveInBackground: boolean = false; // Not supported on web. Dummy to match the interface.
 
   set isMuted(value: boolean) {
     this._mountedVideos.forEach((video) => {

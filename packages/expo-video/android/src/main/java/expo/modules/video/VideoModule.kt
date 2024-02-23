@@ -133,13 +133,13 @@ class VideoModule : Module() {
       }
 
       OnViewDestroys {
-        VideoViewManager.removeVideoView(it.id)
+        VideoManager.unregisterVideoView(it)
       }
     }
 
     Class(VideoPlayer::class) {
       Constructor { source: VideoSource ->
-        VideoPlayer(activity.applicationContext, source.toMediaItem())
+        VideoPlayer(activity.applicationContext, appContext, source.toMediaItem())
       }
 
       Property("isPlaying")
@@ -181,6 +181,14 @@ class VideoModule : Module() {
           runBlocking(appContext.mainQueue.coroutineContext) {
             ref.player.currentPosition
           }
+        }
+
+      Property("staysActiveInBackground")
+        .get { ref: VideoPlayer ->
+          ref.staysActiveInBackground
+        }
+        .set { ref: VideoPlayer, staysActive: Boolean ->
+          ref.staysActiveInBackground = staysActive
         }
 
       Function("getPlaybackSpeed") { ref: VideoPlayer ->
@@ -230,6 +238,14 @@ class VideoModule : Module() {
           ref.player.play()
         }
       }
+    }
+
+    OnActivityEntersForeground {
+      VideoManager.onAppForegrounded()
+    }
+
+    OnActivityEntersBackground {
+      VideoManager.onAppBackgrounded()
     }
   }
 }
