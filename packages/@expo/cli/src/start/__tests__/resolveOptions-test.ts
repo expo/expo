@@ -45,6 +45,7 @@ describe(resolveSchemeAsync, () => {
         devClient: false,
       })
     ).toBe(null);
+    expect(getOptionalDevClientSchemeAsync).not.toHaveBeenCalled();
   });
 
   it(`always gives scheme option the highest priority`, async () => {
@@ -54,6 +55,8 @@ describe(resolveSchemeAsync, () => {
         devClient: true,
       })
     ).toBe('myapp');
+    expect(canResolveDevClient).not.toBeCalled();
+    expect(getOptionalDevClientSchemeAsync).not.toHaveBeenCalled();
   });
 
   it(`does not check if dev client can be resolved when dev client flag is passed`, async () => {
@@ -64,6 +67,7 @@ describe(resolveSchemeAsync, () => {
       })
     ).toBe('myapp');
     expect(canResolveDevClient).not.toHaveBeenCalled();
+    expect(getOptionalDevClientSchemeAsync).toHaveBeenCalled();
   });
 
   it(`checks for schemes if dev client is installed in the project and scheme isn't passed`, async () => {
