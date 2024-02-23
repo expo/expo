@@ -140,9 +140,10 @@ class LocalizationModule : Module() {
   private fun getCurrencyProperties(locale: Locale): Map<String, Any?> {
     return try {
       mapOf(
-      "currencyCode" to Currency.getInstance(locale).currencyCode,
-      // currency symbol can be localized to display locale (1st on the list) or to the locale for the currency (as done here).
-      "currencySymbol" to Currency.getInstance(locale).getSymbol(locale))
+        "currencyCode" to Currency.getInstance(locale).currencyCode,
+        // currency symbol can be localized to display locale (1st on the list) or to the locale for the currency (as done here).
+        "currencySymbol" to Currency.getInstance(locale).getSymbol(locale)
+      )
     } catch (e: Exception) {
       mapOf(
         "currencyCode" to null,
