@@ -246,7 +246,7 @@ function getEnvironmentForBuildDetails(bundleDetails?: BundleDetails | null): st
   if (env === 'node') {
     return chalk.bold('λ') + ' ';
   } else if (env === 'react-server') {
-    return chalk.bold('RSC') + ' ';
+    return chalk.bold(`RSC(${getPlatformTagForBuildDetails(bundleDetails).trim()})`) + ' ';
   }
 
   return '';
