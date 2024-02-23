@@ -138,12 +138,7 @@ export interface AndroidMavenRepository {
     /**
      * The authentication scheme to use when accessing the Maven repository.
      */
-    authentication?: AndroidMavenRepositoryAuthenticationScheme;
-}
-export declare enum AndroidMavenRepositoryAuthenticationScheme {
-    BasicAuthentication = "basic",
-    DigestAuthentication = "digest",
-    HttpHeaderAuthentication = "header"
+    authentication?: 'basic' | 'digest' | 'header';
 }
 interface AndroidMavenRepositoryPasswordCredentials {
     username: string;

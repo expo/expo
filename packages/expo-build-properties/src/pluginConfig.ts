@@ -161,13 +161,7 @@ export interface AndroidMavenRepository {
   /**
    * The authentication scheme to use when accessing the Maven repository.
    */
-  authentication?: AndroidMavenRepositoryAuthenticationScheme;
-}
-
-export enum AndroidMavenRepositoryAuthenticationScheme {
-  BasicAuthentication = 'basic',
-  DigestAuthentication = 'digest',
-  HttpHeaderAuthentication = 'header',
+  authentication?: 'basic' | 'digest' | 'header';
 }
 
 interface AndroidMavenRepositoryPasswordCredentials {
@@ -475,11 +469,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
                   },
                   authentication: {
                     type: 'string',
-                    enum: [
-                      AndroidMavenRepositoryAuthenticationScheme.BasicAuthentication,
-                      AndroidMavenRepositoryAuthenticationScheme.DigestAuthentication,
-                      AndroidMavenRepositoryAuthenticationScheme.HttpHeaderAuthentication,
-                    ],
+                    enum: ['basic', 'digest', 'header'],
                     nullable: true,
                   },
                 },
