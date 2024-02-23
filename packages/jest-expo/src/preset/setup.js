@@ -215,11 +215,27 @@ try {
       ...ExpoModulesCore,
       // Mock EventEmitter since it's commonly constructed in modules and causing warnings.
       EventEmitter: jest.fn().mockImplementation(() => {
+        const fbemitter = require('fbemitter');
+        const emitter = new fbemitter.EventEmitter();
         return {
-          addListener: jest.fn(),
-          removeAllListeners: jest.fn(),
-          removeSubscription: jest.fn(),
-          emit: jest.fn(),
+          addListener: jest.fn().mockImplementation((...args) => {
+            const subscription = emitter.addListener(...args);
+            subscription.__remove = subscription.remove;
+            return subscription;
+          }),
+          removeAllListeners: jest.fn().mockImplementation((...args) => {
+            emitter.removeAllListeners(...args);
+          }),
+          removeSubscription: jest.fn().mockImplementation((subscription) => {
+            // expo-sensor will override the `subscription.remove()` method,
+            // to prevent it from recursive call. we need to call the original remove method.
+            if (typeof subscription.__remove === 'function') {
+              subscription.__remove();
+            }
+          }),
+          emit: jest.fn().mockImplementation((...args) => {
+            emitter.emit(...args);
+          }),
         };
       }),
       requireNativeModule: (name) => {
