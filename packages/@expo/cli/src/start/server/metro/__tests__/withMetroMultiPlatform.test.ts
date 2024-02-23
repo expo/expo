@@ -460,6 +460,47 @@ describe(withExtendedResolver, () => {
       platform
     );
   });
+
+  it(`modifies resolution for React Server environments`, async () => {
+    mockMinFs();
+
+    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
+      tsconfig: null,
+      isTsconfigPathsEnabled: false,
+    });
+
+    const platform = 'ios';
+
+    modified.resolver.resolveRequest!(
+      {
+        ...getDefaultRequestContext(),
+        customResolverOptions: {
+          environment: 'react-server',
+        },
+      },
+      'react-dom',
+      platform
+    );
+
+    expect(getResolveFunc()).toBeCalledTimes(1);
+    expect(getResolveFunc()).toBeCalledWith(
+      {
+        customResolverOptions: { environment: 'react-server' },
+        dev: true,
+        extraNodeModules: {},
+        mainFields: ['main', 'module'],
+        nodeModulesPaths: ['/node_modules'],
+        originModulePath: '/index.js',
+        preferNativePlatform: true,
+        sourceExts: ['ts', 'tsx', 'js', 'jsx', 'mjs', 'json', 'css'],
+        unstable_conditionNames: ['node', 'require', 'react-server', 'server'],
+        unstable_conditionsByPlatform: {},
+        unstable_enablePackageExports: true,
+      },
+      'react-dom',
+      platform
+    );
+  });
 });
 
 describe(getNodejsExtensions, () => {
