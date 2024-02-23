@@ -82,7 +82,9 @@ async function getManagedDevClientSchemeAsync(projectRoot: string): Promise<stri
 }
 
 // TODO: Revisit and test after run code is merged.
-export async function getOptionalDevClientSchemeAsync(projectRoot: string): Promise<string | null> {
+export async function getOptionalDevClientSchemeAsync(
+  projectRoot: string
+): Promise<{ scheme: string | null; resolution: 'config' | 'shared' | 'android' | 'ios' }> {
   const [hasIos, hasAndroid] = await Promise.all([
     hasRequiredIOSFilesAsync(projectRoot),
     hasRequiredAndroidFilesAsync(projectRoot),
@@ -95,17 +97,15 @@ export async function getOptionalDevClientSchemeAsync(projectRoot: string): Prom
 
   // Allow managed projects
   if (!hasIos && !hasAndroid) {
-    return getManagedDevClientSchemeAsync(projectRoot);
+    return { scheme: await getManagedDevClientSchemeAsync(projectRoot), resolution: 'config' };
   }
 
-  let matching: string;
   // Allow for only one native project to exist.
   if (!hasIos) {
-    matching = android[0];
+    return { scheme: android[0], resolution: 'android' };
   } else if (!hasAndroid) {
-    matching = ios[0];
+    return { scheme: ios[0], resolution: 'ios' };
   } else {
-    [matching] = intersecting(ios, android);
+    return { scheme: intersecting(ios, android)[0], resolution: 'shared' };
   }
-  return matching ?? null;
 }
