@@ -94,8 +94,7 @@ const withPackageRefactor = config => {
 };
 exports.withPackageRefactor = withPackageRefactor;
 function getPackage(config) {
-  var _config$android$packa, _config$android;
-  return (_config$android$packa = (_config$android = config.android) === null || _config$android === void 0 ? void 0 : _config$android.package) !== null && _config$android$packa !== void 0 ? _config$android$packa : null;
+  return config.android?.package ?? null;
 }
 function getPackageRoot(projectRoot, type) {
   return _path().default.join(projectRoot, 'android', 'app', 'src', type, 'java');
@@ -271,7 +270,6 @@ function setPackageInBuildGradle(config, buildGradle) {
   return buildGradle.replace(pattern, `$1 '${packageName}'`);
 }
 async function getApplicationIdAsync(projectRoot) {
-  var _matchResult$;
   const buildGradlePath = (0, _Paths().getAppBuildGradleFilePath)(projectRoot);
   if (!_fs().default.existsSync(buildGradlePath)) {
     return null;
@@ -279,7 +277,7 @@ async function getApplicationIdAsync(projectRoot) {
   const buildGradle = await _fs().default.promises.readFile(buildGradlePath, 'utf8');
   const matchResult = buildGradle.match(/applicationId ['"](.*)['"]/);
   // TODO add fallback for legacy cases to read from AndroidManifest.xml
-  return (_matchResult$ = matchResult === null || matchResult === void 0 ? void 0 : matchResult[1]) !== null && _matchResult$ !== void 0 ? _matchResult$ : null;
+  return matchResult?.[1] ?? null;
 }
 
 /**

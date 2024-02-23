@@ -67,6 +67,7 @@ export function createFileTransform(name: string) {
         '.svg',
         '.jar',
         '.keystore',
+        '.gz',
         // Font files
         '.otf',
         '.ttf',

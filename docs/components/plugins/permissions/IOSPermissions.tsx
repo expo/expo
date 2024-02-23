@@ -11,6 +11,8 @@ type IOSPermissionsProps = {
 
 const PermissionPermalink = createPermalinkedComponent(P, {
   baseNestingLevel: 4,
+  iconSize: 'xs',
+  className: 'inline-flex items-center',
 });
 
 export function IOSPermissions(props: IOSPermissionsProps) {

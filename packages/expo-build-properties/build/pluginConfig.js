@@ -105,6 +105,7 @@ const schema = {
                     nullable: true,
                 },
                 usesCleartextTraffic: { type: 'boolean', nullable: true },
+                useLegacyPackaging: { type: 'boolean', nullable: true },
                 manifestQueries: {
                     required: ['package'],
                     type: 'object',

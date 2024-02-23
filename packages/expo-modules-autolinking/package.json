@@ -34,7 +34,7 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-autolinking#readme",
   "devDependencies": {
-    "@expo/spawn-async": "^1.5.0",
+    "@expo/spawn-async": "^1.7.2",
     "@types/fs-extra": "^9.0.11",
     "expo-module-scripts": "~3.4.0",
     "minimatch": "^3.0.4",

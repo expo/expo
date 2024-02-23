@@ -15,6 +15,42 @@ extension UIColor: Convertible {
     if let value = value as? Int {
       return try Conversions.toColor(argb: UInt64(value)) as! Self
     }
+
+    // Handle `PlatformColor` and `DynamicColorIOS`
+    if let opaqueValue = value as? [String: Any] {
+      if let semanticName = opaqueValue["semantic"] as? String,
+        let color = resolveNamedColor(name: semanticName) {
+        return color as! Self
+      }
+      if let semanticArray = opaqueValue["semantic"] as? [String] {
+        for semanticName in semanticArray {
+          if let color = resolveNamedColor(name: semanticName) {
+            return color as! Self
+          }
+        }
+      }
+      if let appearances = opaqueValue["dynamic"] as? [String: Any],
+        let lightColor = try appearances["light"].map({ try UIColor.convert(from: $0, appContext: appContext) }),
+        let darkColor = try appearances["dark"].map({ try UIColor.convert(from: $0, appContext: appContext) }) {
+        let highContrastLightColor = try appearances["highContrastLight"].map({ try UIColor.convert(from: $0, appContext: appContext) })
+        let highContrastDarkColor = try appearances["highContrastDark"].map({ try UIColor.convert(from: $0, appContext: appContext) })
+
+        let color = UIColor { (traitCollection: UITraitCollection) -> UIColor in
+          if traitCollection.userInterfaceStyle == .dark {
+            if traitCollection.accessibilityContrast == .high, let highContrastDarkColor {
+              return highContrastDarkColor
+            }
+            return darkColor
+          }
+
+          if traitCollection.accessibilityContrast == .high, let highContrastLightColor {
+            return highContrastLightColor
+          }
+          return lightColor
+        }
+        return color as! Self
+      }
+    }
     throw Conversions.ConvertingException<UIColor>(value)
     // swiftlint:enable force_cast
   }
@@ -31,6 +67,24 @@ extension CGColor: Convertible {
     }
     // swiftlint:enable force_cast
   }
+}
+
+private func resolveNamedColor(name: String) -> UIColor? {
+  return UIColor(named: name) ?? uiColorFromSemanticName(name: name)
+}
+
+private func uiColorFromSemanticName(name: String) -> UIColor? {
+  let selector: Selector
+  if name.hasSuffix("Color") {
+    selector = Selector(name)
+  } else {
+    selector = Selector("\(name)Color")
+  }
+  guard UIColor.responds(to: selector) else {
+    return nil
+  }
+
+  return UIColor.perform(selector).takeUnretainedValue() as? UIColor
 }
 
 private func uiColorWithComponents(_ components: [Double]) -> UIColor {

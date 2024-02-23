@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import Constants from 'expo-constants';
 import React, { Text } from 'react-native';
 
 import {
@@ -548,7 +547,7 @@ it('can pop back from a nested modal to a nested sibling', async () => {
   expect(screen).toHavePathname('/slot');
 });
 
-it.only('supports multi-level 404s', async () => {
+it('supports multi-level 404s', async () => {
   renderRouter({
     index: () => <Text>found</Text>,
     '+not-found': () => <Text>404</Text>,
@@ -649,25 +648,12 @@ it('can deep link, pop back, and move around with initialRouteName in root layou
   expect(screen).toHavePathname('/a/b');
 });
 
-jest.mock('expo-constants', () => ({
-  __esModule: true,
-  ExecutionEnvironment: jest.requireActual('expo-constants').ExecutionEnvironment,
-  default: {
-    expoConfig: {},
-  },
-}));
-
 afterEach(() => {
-  Constants.expoConfig!.experiments = undefined;
+  delete process.env.EXPO_BASE_URL;
 });
 
 it('respects baseUrl', async () => {
-  // @ts-expect-error
-  Constants.expoConfig = {
-    experiments: {
-      baseUrl: '/one/two',
-    },
-  };
+  process.env.EXPO_BASE_URL = '/one/two';
 
   renderRouter({
     index: function Index() {
@@ -783,6 +769,19 @@ it('can push & replace with nested Slots', async () => {
 
   act(() => router.replace('/'));
   expect(screen).toHavePathname('/');
+});
+
+it('can push with top-level catch-all route', () => {
+  renderRouter({
+    '[...all]': () => <Text testID="index" />,
+  });
+
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('index')).toBeOnTheScreen();
+
+  // // If we push once and go back, we are back to index
+  act(() => router.push('/test'));
+  expect(screen.getByTestId('index')).toBeOnTheScreen();
 });
 
 it('can push the same route multiple times', () => {

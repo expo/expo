@@ -18,7 +18,6 @@ module.exports = {
     'tailwindcss/no-custom-classname': ['warn', {
       'whitelist': [
         'diff-.+',
-        'anchor-icon',
         'react-player',
         'dark-theme',
         'dialog-.+'
@@ -31,6 +30,7 @@ module.exports = {
         "node_modules/@expo/styleguide/dist/global.css"
       ],
       callees: ["mergeClasses"],
+      classRegex: "^(confirmation)?(c|C)lass(Name)?$",
       config: "tailwind.config.cjs",
     }
   }

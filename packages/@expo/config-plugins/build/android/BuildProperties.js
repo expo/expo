@@ -31,7 +31,7 @@ function _androidPlugins() {
  */
 function createBuildGradlePropsConfigPlugin(configToPropertyRules, name) {
   const withUnknown = (config, sourceConfig) => (0, _androidPlugins().withGradleProperties)(config, config => {
-    config.modResults = updateAndroidBuildPropertiesFromConfig(sourceConfig !== null && sourceConfig !== void 0 ? sourceConfig : config, config.modResults, configToPropertyRules);
+    config.modResults = updateAndroidBuildPropertiesFromConfig(sourceConfig ?? config, config.modResults, configToPropertyRules);
     return config;
   });
   if (name) {
@@ -45,14 +45,10 @@ function createBuildGradlePropsConfigPlugin(configToPropertyRules, name) {
 /**
  * A config-plugin to update `android/gradle.properties` from the `jsEngine` in expo config
  */
-const withJsEngineGradleProps = createBuildGradlePropsConfigPlugin([{
+const withJsEngineGradleProps = exports.withJsEngineGradleProps = createBuildGradlePropsConfigPlugin([{
   propName: 'hermesEnabled',
-  propValueGetter: config => {
-    var _ref, _config$android$jsEng, _config$android;
-    return (((_ref = (_config$android$jsEng = (_config$android = config.android) === null || _config$android === void 0 ? void 0 : _config$android.jsEngine) !== null && _config$android$jsEng !== void 0 ? _config$android$jsEng : config.jsEngine) !== null && _ref !== void 0 ? _ref : 'hermes') === 'hermes').toString();
-  }
+  propValueGetter: config => ((config.android?.jsEngine ?? config.jsEngine ?? 'hermes') === 'hermes').toString()
 }], 'withJsEngineGradleProps');
-exports.withJsEngineGradleProps = withJsEngineGradleProps;
 function updateAndroidBuildPropertiesFromConfig(config, gradleProperties, configToPropertyRules) {
   for (const configToProperty of configToPropertyRules) {
     const value = configToProperty.propValueGetter(config);
@@ -74,7 +70,7 @@ function updateAndroidBuildProperty(gradleProperties, name, value, options) {
     } else {
       gradleProperties.push(newProp);
     }
-  } else if (options !== null && options !== void 0 && options.removePropWhenValueIsNull && oldPropIndex >= 0) {
+  } else if (options?.removePropWhenValueIsNull && oldPropIndex >= 0) {
     gradleProperties.splice(oldPropIndex, 1);
   }
   return gradleProperties;

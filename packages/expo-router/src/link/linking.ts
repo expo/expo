@@ -1,10 +1,11 @@
-import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Linking from 'expo-linking';
 import { Platform } from 'react-native';
 
 import { adjustPathname } from '../fork/extractPathFromURL';
 import getPathFromState from '../fork/getPathFromState';
 import getStateFromPath from '../fork/getStateFromPath';
+
+const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
 
 // A custom getInitialURL is used on native to ensure the app always starts at
 // the root path if it's launched from something other than a deep link.
@@ -31,7 +32,7 @@ export function getInitialURL(): Promise<string | null> | string {
       // since Expo Go is mostly just used in development.
 
       // Expo Go is weird and requires the root path to be `/--/`
-      if (url && Constants.executionEnvironment === ExecutionEnvironment.StoreClient) {
+      if (url && isExpoGo) {
         const parsed = Linking.parse(url);
         // If the URL is defined (default in Expo Go dev apps) and the URL has no path:
         // `exp://192.168.87.39:19000/` then use the default `exp://192.168.87.39:19000/--/`
@@ -71,7 +72,7 @@ export function getRootURL(): string {
 export function addEventListener(listener: (url: string) => void) {
   let callback: (({ url }: { url: string }) => void) | undefined = undefined;
 
-  if (Constants.executionEnvironment === ExecutionEnvironment.StoreClient) {
+  if (isExpoGo) {
     // This extra work is only done in the Expo Go app.
     callback = ({ url }: { url: string }) => {
       const parsed = Linking.parse(url);

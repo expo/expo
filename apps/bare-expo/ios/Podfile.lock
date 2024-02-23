@@ -16,8 +16,6 @@ PODS:
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
-  - EXCalendar (12.2.0):
-    - ExpoModulesCore
   - EXConstants (15.4.1):
     - ExpoModulesCore
   - EXContacts (12.8.1):
@@ -153,6 +151,8 @@ PODS:
   - ExpoBlur (12.9.0):
     - ExpoModulesCore
   - ExpoBrightness (11.8.0):
+    - ExpoModulesCore
+  - ExpoCalendar (12.2.0):
     - ExpoModulesCore
   - ExpoCamera (14.0.0):
     - ExpoModulesCore
@@ -1211,7 +1211,7 @@ PODS:
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
-  - react-native-safe-area-context (4.7.4):
+  - react-native-safe-area-context (4.8.2):
     - React-Core
   - react-native-segmented-control (2.4.1):
     - React-Core
@@ -1444,7 +1444,6 @@ DEPENDENCIES:
   - EXApplication (from `../../../packages/expo-application/ios`)
   - EXAV (from `../../../packages/expo-av/ios`)
   - EXBarCodeScanner (from `../../../packages/expo-barcode-scanner/ios`)
-  - EXCalendar (from `../../../packages/expo-calendar/ios`)
   - EXConstants (from `../../../packages/expo-constants/ios`)
   - EXContacts (from `../../../packages/expo-contacts/ios`)
   - EXFont (from `../../../packages/expo-font/ios`)
@@ -1470,6 +1469,7 @@ DEPENDENCIES:
   - ExpoBattery (from `../../../packages/expo-battery/ios`)
   - ExpoBlur (from `../../../packages/expo-blur/ios`)
   - ExpoBrightness (from `../../../packages/expo-brightness/ios`)
+  - ExpoCalendar (from `../../../packages/expo-calendar/ios`)
   - ExpoCamera (from `../../../packages/expo-camera/ios`)
   - ExpoCellular (from `../../../packages/expo-cellular/ios`)
   - ExpoClipboard (from `../../../packages/expo-clipboard/ios`)
@@ -1621,9 +1621,6 @@ EXTERNAL SOURCES:
   EXBarCodeScanner:
     inhibit_warnings: false
     :path: "../../../packages/expo-barcode-scanner/ios"
-  EXCalendar:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-calendar/ios"
   EXConstants:
     inhibit_warnings: false
     :path: "../../../packages/expo-constants/ios"
@@ -1680,6 +1677,9 @@ EXTERNAL SOURCES:
   ExpoBrightness:
     inhibit_warnings: false
     :path: "../../../packages/expo-brightness/ios"
+  ExpoCalendar:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-calendar/ios"
   ExpoCamera:
     inhibit_warnings: false
     :path: "../../../packages/expo-camera/ios"
@@ -1935,13 +1935,12 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  boost: 26fad476bfa736552bbfa698a06cc530475c1505
+  boost: d3f49c53809116a5d38da093a8aa78bf551aed09
   DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
   EASClient: b550a8d3d3d9d1211ba71eabf789cb46c7e92b3c
   EXApplication: 7d3063cc3cbd14a0d3c6e1c73854f4a71901ac67
   EXAV: 69adaa7433e7123a7dc9df9841fd80e954916d2d
   EXBarCodeScanner: 2c2fee40a33902612792b2f0de4e9da40f080613
-  EXCalendar: 3c6e6c545f617c89835a10fe251093cf36914b31
   EXConstants: cefee7155f9ed25c610d0b6cf96972f485e4cbae
   EXContacts: 2ef734aa7b13c8e5ff20fb77d04f1cb172b61456
   EXFont: b4a7dd9f19df9c55e9b9a1849e801d6726e7a8a3
@@ -1961,6 +1960,7 @@ SPEC CHECKSUMS:
   ExpoBattery: c75a7c094d64d89d96d3e3f419627b152da94f29
   ExpoBlur: 6c4602d729a492663b0916e5862b334a23157f0a
   ExpoBrightness: 6d160de5877289d11674aea61aacdb37422774cf
+  ExpoCalendar: a2da7fc1bdb0d20caf25891f7de6f709038bb8c1
   ExpoCamera: a3f3681963815533c24f698a22c239e68724fb99
   ExpoCellular: 463763547a7489d8fc68d3cc539b666f308a0fe9
   ExpoClipboard: ecbf3edb5dcb460fdefca945923c38f8ad6c7859
@@ -2041,7 +2041,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 9ee041e1d7be96da6d76a251f92e72b711c651d6
   react-native-netinfo: 3aa5637c18834966e0c932de8ae1ae56fea20a97
   react-native-pager-view: d81ab2060b9caf57ca8c3a0d57467ff407cdb825
-  react-native-safe-area-context: 2cd91d532de12acdb0a9cbc8d43ac72a8e4c897c
+  react-native-safe-area-context: 0ee144a6170530ccc37a0fd9388e28d06f516a89
   react-native-segmented-control: 0e4b5d93911e2234f110057df2b41738b326ab3e
   react-native-slider: 33b8d190b59d4f67a541061bb91775d53d617d9d
   react-native-view-shot: 6b7ed61d77d88580fed10954d45fad0eb2d47688
@@ -2085,6 +2085,6 @@ SPEC CHECKSUMS:
   Yoga: e64aa65de36c0832d04e8c7bd614396c77a80047
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 32480cfddc480a6497831faceff7275431fe44b9
+PODFILE CHECKSUM: e323337f4c1f505c9caeb1409aade62b82d8e9d8
 
 COCOAPODS: 1.14.2
