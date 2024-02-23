@@ -1392,6 +1392,97 @@ build:
   href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/startIosSimulator.ts"
 />
 
+#### `eas/send_slack_message`
+
+Sends a specified message to a configured Slack webhook URL, which then posts it in the related Slack channel.
+For more information on how to use Slack webhooks go to [Sending messages using incoming webhooks](https://api.slack.com/messaging/webhooks).
+
+```yaml send-slack-message.yml
+build:
+  name: Slack your team from custom build
+  steps:
+    # @info #
+    - eas/send_slack_message:
+        name: Send Slack message to a given webhook URL
+        inputs:
+          message: 'This is a message to plain input URL'
+          slack_hook_url: 'https://hooks.slack.com/services/[rest_of_hook_url]'
+    # @end #
+    # @info #
+    - eas/send_slack_message:
+        name: Send Slack message to a default webhook URL from SLACK_HOOK_URL secret
+        inputs:
+          message: 'This is a test message to default URL from SLACK_HOOK_URL secret'
+    # @end #
+    # @info #
+    - eas/send_slack_message:
+        name: Send Slack message to a webhook URL from specified secret
+        inputs:
+          message: 'This is a test message to a URL from specified secret'
+          slack_hook_url: ${ eas.env.ANOTHER_SLACK_HOOK_URL }
+    # @end #
+
+    - eas/build
+    # @info #
+    - eas/send_slack_message:
+        if: ${ always() }
+        name: Send Slack message when the build finishes (Android)
+        inputs:
+          message: |
+            This is a test message when Android build finishes
+            Status: `${ steps.run_gradle.status_text }`
+            Link: `${ eas.job.expoBuildUrl }`
+    # @end #
+    # @info #
+    - eas/send_slack_message:
+        if: ${ always() }
+        name: Send Slack message when the build finishes (iOS)
+        inputs:
+          message: |
+            This is a test message when iOS build finishes
+            Status: `${ steps.run_fastlane.status_text }`
+            Link: `${ eas.job.expoBuildUrl }`
+    # @end #
+    # @info #
+    - eas/send_slack_message:
+        if: ${ failure() }
+        name: Send Slack message when the build fails (Android)
+        inputs:
+          message: |
+            This is a test message when Android build fails
+            Error: `${ steps.run_gradle.error_text }`
+    # @end #
+    # @info #
+    - eas/send_slack_message:
+        if: ${ failure() }
+        name: Send Slack message when the build fails (iOS)
+        inputs:
+          message: |
+            This is a test message when iOS build fails
+            Error: `${ steps.run_fastlane.error_text }`
+    # @end #
+    # @info #
+    - eas/send_slack_message:
+        if: ${ success() }
+        name: Send Slack message when the build succeeds
+        inputs:
+          message: |
+            This is a test message when build succeeds
+    # @end #
+```
+
+| Input               | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+|---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `message`           | **string** The text of the message you want to be sent. Example: `'This is the content of the message'`<br />**Note:** You can reference build job properties and other steps outputs in the message for dynamic evaluation. Examples: `'Build URL: ${ eas.job.expoBuildUrl }'`, `Build finished with status: ${ steps.run_fastlane.status_text }`, `Build failed with error: ${ steps.run_gradle.error_text }`. For more information see [Use output from one step to another](https://docs.expo.dev/custom-builds/schema/#use-output-from-one-step-to-another)                                             |
+| `slack_hook_url`    | **string** The URL of the previously configured Slack webhook URL, which will post your message to the specified channel. You can provide the plain URL like `slack_hook_url: 'https://hooks.slack.com/services/[rest_of_hook_url]'`, use EAS secrets like `slack_hook_url: ${ eas.env.ANOTHER_SLACK_HOOK_URL }`, or set `SLACK_HOOK_URL` secret which will serve as a default webhook URL - in this case you don't need to provide `slack_hook_url` input. |
+
+<BoxLink
+  title="eas/send_slack_message source code"
+  description="View the source code for the eas/send_slack_message function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/sendSlackMessage.ts"
+/>
+
 ### Using built-in EAS functions to build an app
 
 Using the built-in EAS functions you can recreate the default EAS Build workflow for different build types.
