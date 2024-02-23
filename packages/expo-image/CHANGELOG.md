@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- On `iOS`, support loading assets in the native project. This already worked on android.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

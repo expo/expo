@@ -163,6 +163,11 @@ public final class ImageView: ExpoView {
     context[ImageView.contextSourceKey] = source
     context[ImageView.screenScaleKey] = screenScale
 
+    // Do it here so we don't waste resources trying to fetch from a remote URL
+    if maybeRenderLocalAsset(from: source) {
+      return
+    }
+
     onLoadStart([:])
 
     pendingOperation = imageManager.loadImage(
@@ -247,6 +252,28 @@ public final class ImageView: ExpoView {
     } else {
       displayPlaceholderIfNecessary()
     }
+  }
+
+  private func maybeRenderLocalAsset(from source: ImageSource) -> Bool {
+    let path = {
+      if #available(iOS 16.0, *) {
+        // .path() on iOS 16 will remove the leading slash
+        return source.uri?.path()
+      }
+      
+      // manually drop the leading slash below iOS 16
+      if let path = source.uri?.path {
+        return String(path.dropFirst())
+      }
+      return nil
+    }()
+    
+    if let path, let local = UIImage(named: path) {
+      renderImage(local)
+      return true
+    }
+      
+    return false
   }
 
   // MARK: - Placeholder
