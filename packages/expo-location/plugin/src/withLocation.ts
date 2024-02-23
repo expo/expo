@@ -27,6 +27,7 @@ const withLocation: ConfigPlugin<
     locationWhenInUsePermission?: string;
     isIosBackgroundLocationEnabled?: boolean;
     isAndroidBackgroundLocationEnabled?: boolean;
+    isAndroidForegroundServiceEnabled?: boolean;
   } | void
 > = (
   config,
@@ -36,6 +37,7 @@ const withLocation: ConfigPlugin<
     locationWhenInUsePermission,
     isIosBackgroundLocationEnabled,
     isAndroidBackgroundLocationEnabled,
+    isAndroidForegroundServiceEnabled,
   } = {}
 ) => {
   if (isIosBackgroundLocationEnabled) {
@@ -62,11 +64,14 @@ const withLocation: ConfigPlugin<
   return AndroidConfig.Permissions.withPermissions(
     config,
     [
+      // Note: these are already added in the library AndroidManifest.xml and so
+      // are not required here, we may want to remove them in the future.
       'android.permission.ACCESS_COARSE_LOCATION',
       'android.permission.ACCESS_FINE_LOCATION',
-      'android.permission.FOREGROUND_SERVICE',
-      // Optional
+      // These permissions are optional, and not listed in the library AndroidManifest.xml
       isAndroidBackgroundLocationEnabled && 'android.permission.ACCESS_BACKGROUND_LOCATION',
+      isAndroidForegroundServiceEnabled && 'android.permission.FOREGROUND_SERVICE',
+      isAndroidForegroundServiceEnabled && 'android.permission.FOREGROUND_SERVICE_LOCATION',
     ].filter(Boolean) as string[]
   );
 };
