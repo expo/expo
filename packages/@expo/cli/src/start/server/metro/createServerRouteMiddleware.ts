@@ -41,7 +41,6 @@ export function createRouteHandlerMiddleware(
     );
   }
 
-  const { ExpoResponse } = require('@expo/server') as typeof import('@expo/server');
   const { createRequestHandler } =
     require('@expo/server/build/vendor/http') as typeof import('@expo/server/build/vendor/http');
 
@@ -76,7 +75,7 @@ export function createRouteHandlerMiddleware(
         } catch (error: any) {
           // Forward the Metro server response as-is. It won't be pretty, but at least it will be accurate.
           if (error instanceof ForwardHtmlError) {
-            return new ExpoResponse(error.html, {
+            return new Response(error.html, {
               status: error.statusCode,
               headers: {
                 'Content-Type': 'text/html',
@@ -85,7 +84,7 @@ export function createRouteHandlerMiddleware(
           }
 
           try {
-            return new ExpoResponse(
+            return new Response(
               await getErrorOverlayHtmlAsync({
                 error,
                 projectRoot,
@@ -101,7 +100,7 @@ export function createRouteHandlerMiddleware(
           } catch (staticError: any) {
             debug('Failed to render static error overlay:', staticError);
             // Fallback error for when Expo Router is misconfigured in the project.
-            return new ExpoResponse(
+            return new Response(
               '<span><h3>Internal Error:</h3><b>Project is not setup correctly for static rendering (check terminal for more info):</b><br/>' +
                 error.message +
                 '<br/><br/>' +
@@ -135,7 +134,7 @@ export function createRouteHandlerMiddleware(
           debug(`Bundling middleware at: ${resolvedFunctionPath}`);
           return await options.bundleApiRoute(resolvedFunctionPath!);
         } catch (error: any) {
-          return new ExpoResponse(
+          return new Response(
             'Failed to load API Route: ' + resolvedFunctionPath + '\n\n' + error.message,
             {
               status: 500,
