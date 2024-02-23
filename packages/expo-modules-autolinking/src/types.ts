@@ -270,7 +270,7 @@ export interface AndroidMavenRepository {
   /**
    * The authentication scheme to use when accessing the Maven repository.
    */
-  authentication?: AndroidMavenRepositoryAuthenticationScheme;
+  authentication?: 'basic' | 'digest' | 'header';
 }
 
 interface IosPod {
