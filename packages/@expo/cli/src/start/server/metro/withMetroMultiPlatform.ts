@@ -35,8 +35,8 @@ import { installExitHooks } from '../../../utils/exit';
 import { isInteractive } from '../../../utils/interactive';
 import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
-import { PlatformBundlers } from '../platformBundlers';
 import { isServerEnvironment } from '../middleware/metroOptions';
+import { PlatformBundlers } from '../platformBundlers';
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 

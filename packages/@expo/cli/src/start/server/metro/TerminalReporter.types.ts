@@ -1,6 +1,7 @@
 import type { ReportableEvent } from 'metro';
 import type { TerminalReportableEvent } from 'metro/src/lib/TerminalReporter';
 import type { Terminal } from 'metro-core';
+
 import { MetroEnvironment } from '../middleware/metroOptions';
 
 export type GlobalCacheDisabledReason = 'too_many_errors' | 'too_many_misses';
