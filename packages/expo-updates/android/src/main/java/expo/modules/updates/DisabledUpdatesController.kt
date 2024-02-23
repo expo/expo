@@ -7,6 +7,7 @@ import com.facebook.react.ReactApplication
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.WritableMap
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.updates.launcher.Launcher
@@ -32,6 +33,13 @@ class DisabledUpdatesController(
   private val context: Context,
   private val fatalException: Exception?
 ) : IUpdatesController, UpdatesStateChangeEventSender {
+  override var appContext: WeakReference<AppContext>? = null
+  override var shouldEmitJsEvents = false
+    set(value) {
+      field = value
+      UpdatesUtils.sendQueuedEventsToAppContext(value, appContext, logger)
+    }
+
   private val reactNativeHost: WeakReference<ReactNativeHost>? = if (context is ReactApplication) {
     WeakReference(context.reactNativeHost)
   } else {
@@ -155,14 +163,14 @@ class DisabledUpdatesController(
     private val TAG = DisabledUpdatesController::class.java.simpleName
   }
 
-  override fun sendUpdateStateChangeEventToBridge(
+  override fun sendUpdateStateChangeEventToAppContext(
     eventType: UpdatesStateEventType,
     context: UpdatesStateContext
   ) {
-    sendEventToJS(EnabledUpdatesController.UPDATES_STATE_CHANGE_EVENT_NAME, eventType.type, context.writableMap)
+    sendEventToJS(UPDATES_STATE_CHANGE_EVENT_NAME, eventType.type, context.writableMap)
   }
 
   private fun sendEventToJS(eventName: String, eventType: String, params: WritableMap?) {
-    UpdatesUtils.sendEventToReactNative(reactNativeHost, logger, eventName, eventType, params)
+    UpdatesUtils.sendEventToAppContext(shouldEmitJsEvents, appContext, logger, eventName, eventType, params)
   }
 }

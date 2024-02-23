@@ -14,6 +14,7 @@ import expo.modules.updates.logging.UpdatesLogEntry
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.statemachine.UpdatesStateContext
+import java.lang.ref.WeakReference
 import java.util.Date
 
 /**
@@ -30,6 +31,14 @@ class UpdatesModule : Module() {
 
   override fun definition() = ModuleDefinition {
     Name("ExpoUpdates")
+
+    Events(
+      UPDATES_EVENT_NAME,
+      UPDATES_STATE_CHANGE_EVENT_NAME,
+      UPDATE_AVAILABLE_EVENT,
+      UPDATE_NO_UPDATE_AVAILABLE_EVENT,
+      UPDATE_ERROR_EVENT
+    )
 
     Constants {
       UpdatesLogger(context).info("UpdatesModule: getConstants called", UpdatesErrorCode.None)
@@ -65,6 +74,22 @@ class UpdatesModule : Module() {
           this["localAssets"] = localAssets
         }
       }
+    }
+
+    OnCreate {
+      UpdatesController.instance.appContext = WeakReference(appContext)
+    }
+
+    OnStartObserving {
+      UpdatesController.instance.shouldEmitJsEvents = true
+    }
+
+    OnStopObserving {
+      UpdatesController.instance.shouldEmitJsEvents = false
+    }
+
+    OnDestroy {
+      UpdatesController.instance.appContext = null
     }
 
     AsyncFunction("reload") { promise: Promise ->

@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
 import com.facebook.react.ReactInstanceManager
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.Reaper
@@ -26,6 +27,7 @@ import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
 import expo.modules.updatesinterface.UpdatesInterface
 import org.json.JSONObject
 import java.io.File
+import java.lang.ref.WeakReference
 
 /**
  * Main entry point to expo-updates in development builds with expo-dev-client. Similar to EnabledUpdatesController
@@ -44,6 +46,8 @@ class UpdatesDevLauncherController(
   private val updatesDirectoryException: Exception?,
   private val callbacks: UpdatesInterfaceCallbacks
 ) : IUpdatesController, UpdatesInterface {
+  override var appContext: WeakReference<AppContext>? = null
+  override var shouldEmitJsEvents = false
   override val isEmergencyLaunch = updatesDirectoryException != null
 
   private var launcher: Launcher? = null

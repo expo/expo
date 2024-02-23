@@ -18,7 +18,7 @@ import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
  * the callbacks that are invoked.
  *
  * This class also optionally holds a reference to the app's [ReactNativeHost], which allows
- * expo-updates to reload JS and send events through the bridge.
+ * expo-updates to reload JS and send events to JS.
  */
 class UpdatesController {
   companion object {
