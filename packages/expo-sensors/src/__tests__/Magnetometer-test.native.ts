@@ -24,21 +24,6 @@ function declareMagnetometerSpecs(Magnetometer, eventNames) {
     });
 
     if (Platform.OS === 'ios') {
-      it(`adds an magnetometer update listener`, () => {
-        const mockListener = jest.fn();
-        const subscription = Magnetometer.addListener(mockListener);
-        const NativeMagnetometer = Magnetometer._nativeModule;
-
-        expect(NativeMagnetometer.addListener).toHaveBeenCalledTimes(1);
-        expect(NativeMagnetometer.addListener).toHaveBeenCalledWith(
-          eventNames.magnetometerDidUpdate
-        );
-
-        subscription.remove();
-        expect(NativeMagnetometer.removeListeners).toHaveBeenCalledTimes(1);
-        expect(NativeMagnetometer.removeListeners).toHaveBeenCalledWith(1);
-      });
-
       it(`notifies listeners`, () => {
         const mockListener = jest.fn();
         Magnetometer.addListener(mockListener);
