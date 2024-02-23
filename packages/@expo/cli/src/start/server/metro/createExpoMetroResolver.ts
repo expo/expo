@@ -11,6 +11,7 @@ import path from 'path';
 import jestResolver from './createJResolver';
 import { isNodeExternal } from './externals';
 import { formatFileCandidates } from './formatFileCandidates';
+import { isServerEnvironment } from '../middleware/metroOptions';
 
 class FailedToResolvePathError extends Error {}
 
@@ -99,7 +100,7 @@ export function createFastResolver({
     platform: string | null
   ): Resolution {
     const environment = context.customResolverOptions?.environment;
-    const isServer = environment === 'node';
+    const isServer = isServerEnvironment(environment);
 
     const extensions = getAdjustedExtensions({
       metroSourceExtensions: context.sourceExts,
