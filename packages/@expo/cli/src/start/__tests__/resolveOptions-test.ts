@@ -9,7 +9,7 @@ jest.mock('../../utils/port', () => {
 });
 jest.mock('../../utils/scheme', () => {
   return {
-    getOptionalDevClientSchemeAsync: jest.fn(async () => []),
+    getOptionalDevClientSchemeAsync: jest.fn(async () => null),
   };
 });
 jest.mock('../../utils/analytics/getDevClientProperties', () => {

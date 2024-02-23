@@ -3,6 +3,8 @@ import assert from 'assert';
 import { hasDirectDevClientDependency } from '../utils/analytics/getDevClientProperties';
 import { AbortCommandError, CommandError } from '../utils/errors';
 import { resolvePortAsync } from '../utils/port';
+import { Log } from '../log';
+import chalk from 'chalk';
 
 export type Options = {
   privateKeyPath: string | null;
@@ -99,7 +101,21 @@ export async function resolveSchemeAsync(
     const { getOptionalDevClientSchemeAsync } =
       require('../utils/scheme') as typeof import('../utils/scheme');
     // Attempt to find the scheme or warn the user how to setup a custom scheme
-    return await getOptionalDevClientSchemeAsync(projectRoot);
+    const resolvedScheme = await getOptionalDevClientSchemeAsync(projectRoot);
+    if (!resolvedScheme.scheme) {
+      if (resolvedScheme.resolution === 'shared') {
+        // This can happen if one of the native projects has no URI schemes defined in it.
+        // Normally, this should never happen.
+        Log.warn(
+          chalk`Could not find a shared URI scheme for the dev client between the local {bold /ios} and {bold /android} directories. App launches (QR code, interstitial, terminal keys) may not work as expected. You can configure a custom scheme using the {bold --scheme} option, or by running {bold npx expo prebuild} to regenerate the native directories with URI schemes.`
+        );
+      } else if (['ios', 'android'].includes(resolvedScheme.resolution)) {
+        Log.warn(
+          chalk`The {bold /${resolvedScheme.resolution}} project does not contain any URI schemes. Expo CLI will not be able to use links to launch the project. You can configure a custom URI scheme using the {bold --scheme} option.`
+        );
+      }
+    }
+    return resolvedScheme.scheme;
   } else {
     // Ensure this is reset when users don't use `--scheme`, `--dev-client` and don't have the `expo-dev-client` package installed.
     return null;
