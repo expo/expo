@@ -501,6 +501,86 @@ describe(withExtendedResolver, () => {
       platform
     );
   });
+  it(`modifies resolution for React Server environments (web)`, async () => {
+    mockMinFs();
+
+    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
+      tsconfig: null,
+      isTsconfigPathsEnabled: false,
+    });
+
+    const platform = 'web';
+
+    modified.resolver.resolveRequest!(
+      {
+        ...getDefaultRequestContext(),
+        customResolverOptions: {
+          environment: 'react-server',
+        },
+      },
+      'react-dom',
+      platform
+    );
+
+    expect(getResolveFunc()).toBeCalledTimes(1);
+    expect(getResolveFunc()).toBeCalledWith(
+      {
+        customResolverOptions: { environment: 'react-server' },
+        dev: true,
+        extraNodeModules: {},
+        mainFields: ['main', 'module'],
+        nodeModulesPaths: ['/node_modules'],
+        originModulePath: '/index.js',
+        preferNativePlatform: false,
+        sourceExts: ['ts', 'tsx', 'js', 'jsx', 'mjs', 'json', 'css'],
+        unstable_conditionNames: ['node', 'require', 'react-server', 'server'],
+        unstable_conditionsByPlatform: {},
+        unstable_enablePackageExports: true,
+      },
+      'react-dom',
+      platform
+    );
+  });
+  it(`modifies resolution for Node.js environments (web + react-dom)`, async () => {
+    mockMinFs();
+
+    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
+      tsconfig: null,
+      isTsconfigPathsEnabled: false,
+    });
+
+    const platform = 'web';
+
+    modified.resolver.resolveRequest!(
+      {
+        ...getDefaultRequestContext(),
+        customResolverOptions: {
+          environment: 'node',
+        },
+      },
+      'react-dom',
+      platform
+    );
+
+    expect(getResolveFunc()).toBeCalledTimes(1);
+    expect(getResolveFunc()).toBeCalledWith(
+      {
+        customResolverOptions: { environment: 'node' },
+        dev: true,
+        extraNodeModules: {},
+        mainFields: ['main', 'module'],
+        nodeModulesPaths: ['/node_modules'],
+        originModulePath: '/index.js',
+        preferNativePlatform: false,
+        sourceExts: ['ts', 'tsx', 'js', 'jsx', 'mjs', 'json', 'css'],
+        unstable_conditionNames: ['node', 'require'],
+        unstable_conditionsByPlatform: {},
+        unstable_enablePackageExports: true,
+      },
+      'react-dom',
+      platform
+    );
+  });
 });
 
 describe(getNodejsExtensions, () => {
