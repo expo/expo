@@ -571,6 +571,90 @@ EAS provides a set of built-in reusable functions that you can use in a workflow
 
 > **info** **Tip:** Any function that is built-in and provided by EAS must start with the `eas/` prefix.
 
+#### `eas/build`
+
+The all-in-one function that encapsulates the entire EAS Build build process. It will resolve the best build workflow configuration for you based on your build profile's settings from [**eas.json**](/eas/json/).
+
+It's ideal for people who just want to have the build done without worrying about altering and configuring the build process manually.
+It can be a great starting point for your custom build configuration if you are interested in using other custom steps before or after the build process and you don't want to change the build process itself.
+
+If you want to have more control over the build process and customize it for your needs you may be interested in what are the custom functions and steps that are executed behind the scenes by this function. This is what will be resolved as a build process for you based on your build profile's configuration:
+
+1. for iOS build:
+   - if your build doesn't use credentials ([simulator](/eas/json/#simulator) build or when using when using [`withoutCredentials`](/eas/json/withoutcredentials-0)):
+     - [`eas/checkout`](#eascheckout)
+     - [`eas/install_node_modules`](#easinstall_node_modules)
+     - [`eas/prebuild`](#easprebuild)
+     - Install pods using the `pod install` command
+     - [`eas/configure_eas_update`](#easconfigure_eas_update)
+     - [`eas/generate_gymfile_from_template`](#easgenerate_gymfile_from_template)
+     - [`eas/run_fastlane`](#easrun_fastlane)
+     - [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts)
+   - if your build uses credentials (for both `internal` and `store` [distribution](/eas/json/#distribution) builds):
+     - [`eas/checkout`](#eascheckout)
+     - [`eas/install_node_modules`](#easinstall_node_modules)
+     - [`eas/get_credentials_for_build_triggered_by_github_integration`](#easget_credentials_for_build_triggered_by_github_integration)
+     - [`eas/resolve_apple_team_id_from_credentials`](#easresolve_apple_team_id_from_credentials)
+     - [`eas/prebuild`](#easprebuild)
+     - Install pods using the `pod install` command
+     - [`eas/configure_eas_update`](#easconfigure_eas_update)
+     - [`eas/configure_ios_credentials`](#easconfigure_ios_credentials)
+     - [`eas/configure_ios_version`](#easconfigure_ios_version)
+     - [`eas/generate_gymfile_from_template`](#easgenerate_gymfile_from_template)
+     - [`eas/run_fastlane`](#easrun_fastlane)
+     - [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts)
+2. for Android build:
+   - if your build doesn't use credentials (when using [`withoutCredentials`](/eas/json/withoutcredentials-1) option):
+     - [`eas/checkout`](#eascheckout)
+     - [`eas/install_node_modules`](#easinstall_node_modules)
+     - [`eas/prebuild`](#easprebuild)
+     - [`eas/configure_eas_update`](#easconfigure_eas_update)
+     - [`eas/run_gradle`](#easrun_gradle)
+     - [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts)
+   - if your build uses credentials (for both `internal` and `store` [distribution](/eas/json/#distribution) builds):
+     - [`eas/checkout`](#eascheckout)
+     - [`eas/install_node_modules`](#easinstall_node_modules)
+     - [`eas/get_credentials_for_build_triggered_by_github_integration`](#easget_credentials_for_build_triggered_by_github_integration)
+     - [`eas/prebuild`](#easprebuild)
+     - [`eas/configure_eas_update`](#easconfigure_eas_update)
+     - [`eas/inject_android_credentials`](#easinject_android_credentials)
+     - [`eas/configure_android_version`](#easconfigure_android_version)
+     - [`eas/run_gradle`](#easrun_gradle)
+     - [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts)
+
+You can replace the `eas/build` command call by using these steps in your YAML configuration file:
+
+<BoxLink
+  title="ios-simulator-build.yml"
+  description="View the steps executed behind the scenes by the `eas/build` function for an iOS simulator build in our example repository."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-custom-builds-example/blob/main/.eas/build/ios-simulator-build.yml"
+/>
+<BoxLink
+  title="ios-credentials-build.yml"
+  description="View the steps executed behind the scenes by the `eas/build` function for an iOS build with credentials in our example repository."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-custom-builds-example/blob/main/.eas/build/ios-build-with-credentials.yml"
+/>
+<BoxLink
+  title="android-build-without-credentials.yml"
+  description="View the steps executed behind the scenes by the `eas/build` function for an Android build without credentials in our example repository."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-custom-builds-example/blob/main/.eas/build/android-build-without-credentials.yml"
+/>
+<BoxLink
+  title="android-build-with-credentials.yml"
+  description="View the steps executed behind the scenes by the `eas/build` function for an Android build with credentials in our example repository."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-custom-builds-example/blob/main/.eas/build/android-build-with-credentials.yml"
+/>
+
+Known limitations:
+
+- This function won't configure updates for you properly if you still use the legacy classic updates. You should use the EAS Update instead. Check our [migration guide](/eas-update/migrate-from-classic-updates/) for more information.
+- Currently it doesn't accept any inputs and the resolved build process will be configured based on your build profile from [**eas.json**](/eas/json/) settings.
+- The build process produced by `eas/build` is not configurable and you can't customize it. If you need to customize the build process you should use the subset of functions and steps that are executed behind the scenes by this function and configure them manually in your YAML configuration file as shown in the examples above.
+
 #### `eas/maestro_test`
 
 All-in-one function that installs Maestro, prepares a testing environment (Android Emulator or iOS Simulator), and tests the app.
