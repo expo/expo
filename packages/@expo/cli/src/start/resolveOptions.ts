@@ -1,10 +1,10 @@
 import assert from 'assert';
+import chalk from 'chalk';
 
+import { Log } from '../log';
 import { hasDirectDevClientDependency } from '../utils/analytics/getDevClientProperties';
 import { AbortCommandError, CommandError } from '../utils/errors';
 import { resolvePortAsync } from '../utils/port';
-import { Log } from '../log';
-import chalk from 'chalk';
 
 export type Options = {
   privateKeyPath: string | null;
