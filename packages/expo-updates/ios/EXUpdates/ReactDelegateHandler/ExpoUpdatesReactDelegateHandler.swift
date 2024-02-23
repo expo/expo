@@ -82,10 +82,9 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
       fatalError("`reactDelegate` should not be nil")
     }
 
-    let bridge = RCTBridge(delegate: self.bridgeDelegate, launchOptions: self.launchOptions)
+    let rootView = EXCreateReactBindingRootView(self.bridgeDelegate, self.rootViewInitialProperties, self.launchOptions)
     appController.bridge = bridge
 
-    let rootView = RCTRootView(bridge: bridge!, moduleName: self.rootViewModuleName!, initialProperties: self.rootViewInitialProperties)
     rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white
     let window = UIApplication.shared.delegate!.window!!
     let rootViewController = reactDelegate.createRootViewController()
