@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Fixed broken JavaScript unit tests. ([#27257](https://github.com/expo/expo/pull/27257) by [@kudo](https://github.com/kudo))
+
 ## 12.9.0 — 2023-12-12
 
 ### 🐛 Bug fixes
