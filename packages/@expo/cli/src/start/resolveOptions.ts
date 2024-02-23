@@ -5,6 +5,7 @@ import { Log } from '../log';
 import { hasDirectDevClientDependency } from '../utils/analytics/getDevClientProperties';
 import { AbortCommandError, CommandError } from '../utils/errors';
 import { resolvePortAsync } from '../utils/port';
+import { canResolveDevClient } from './detectDevClient';
 
 export type Options = {
   privateKeyPath: string | null;
@@ -81,23 +82,12 @@ export async function resolveSchemeAsync(
   projectRoot: string,
   options: { scheme?: string; devClient?: boolean }
 ): Promise<string | null> {
-  const resolveFrom = require('resolve-from') as typeof import('resolve-from');
-
-  const isDevClientPackageInstalled = (() => {
-    try {
-      // we check if `expo-dev-launcher` is installed instead of `expo-dev-client`
-      // because someone could install only launcher.
-      resolveFrom(projectRoot, 'expo-dev-launcher');
-      return true;
-    } catch {
-      return false;
-    }
-  })();
-
   if (typeof options.scheme === 'string') {
     // Use the custom scheme
     return options.scheme ?? null;
-  } else if (options.devClient || isDevClientPackageInstalled) {
+  }
+
+  if (options.devClient || canResolveDevClient(projectRoot)) {
     const { getOptionalDevClientSchemeAsync } =
       require('../utils/scheme') as typeof import('../utils/scheme');
     // Attempt to find the scheme or warn the user how to setup a custom scheme
