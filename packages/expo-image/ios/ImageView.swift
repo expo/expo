@@ -260,19 +260,19 @@ public final class ImageView: ExpoView {
         // .path() on iOS 16 will remove the leading slash
         return source.uri?.path()
       }
-      
+
       // manually drop the leading slash below iOS 16
       if let path = source.uri?.path {
         return String(path.dropFirst())
       }
       return nil
     }()
-    
+
     if let path, let local = UIImage(named: path) {
       renderImage(local)
       return true
     }
-      
+
     return false
   }
 

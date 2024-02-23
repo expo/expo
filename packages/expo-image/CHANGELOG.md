@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- On `iOS`, support loading assets in the native project. This already worked on android.
+- On `iOS`, support loading assets in the native project. This already worked on android. ([#27251](https://github.com/expo/expo/pull/27251) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
