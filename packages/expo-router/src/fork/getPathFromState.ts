@@ -146,20 +146,27 @@ export function getPathDataFromState<ParamList extends object>(
   );
 }
 
-function processParamsWithUserSettings(configItem: ConfigItem, params: Record<string, any>) {
+function processParamsWithUserSettings(configItem: ConfigItem | undefined, params: object) {
   const stringify = configItem?.stringify;
 
   return Object.fromEntries(
-    Object.entries(params).map(([key, value]) => [
-      key,
-      // TODO: Strip nullish values here.
-      stringify?.[key]
-        ? stringify[key](value)
-        : // Preserve rest params
-          Array.isArray(value)
-          ? value
-          : String(value),
-    ])
+    Object.entries(params).map(([key, value]) => {
+      if (typeof value === 'object') {
+        return Array.isArray(value)
+          ? [key, value]
+          : [key, processParamsWithUserSettings(configItem?.screens?.[key], value)];
+      }
+      return [
+        key,
+        // TODO: Strip nullish values here.
+        stringify?.[key]
+          ? stringify[key](value)
+          : // Preserve rest params
+            Array.isArray(value)
+            ? value
+            : String(value),
+      ];
+    })
   );
 }
 
@@ -408,13 +415,15 @@ function getPathFromResolvedState(
   return { path: appendBaseUrl(basicSanitizePath(path)), params: decodeParams(allParams) };
 }
 
-function decodeParams(params: Record<string, string>) {
+function decodeParams(params: object) {
   const parsed: Record<string, any> = {};
 
   for (const [key, value] of Object.entries(params)) {
     try {
       if (Array.isArray(value)) {
         parsed[key] = value.map((v) => decodeURIComponent(v));
+      } else if (typeof value === 'object') {
+        parsed[key] = decodeParams(value);
       } else {
         parsed[key] = decodeURIComponent(value);
       }

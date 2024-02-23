@@ -102,27 +102,5 @@ export function useGlobalSearchParams<
 export function useLocalSearchParams<
   TParams extends SearchParams = SearchParams,
 >(): Partial<TParams> {
-  const params = React.useContext(NavigationRouteContext)?.params ?? {};
-  return Object.fromEntries(
-    Object.entries(params).map(([key, value]) => {
-      if (Array.isArray(value)) {
-        return [
-          key,
-          value.map((v) => {
-            try {
-              return decodeURIComponent(v);
-            } catch {
-              return v;
-            }
-          }),
-        ];
-      } else {
-        try {
-          return [key, decodeURIComponent(value as string)];
-        } catch {
-          return [key, value];
-        }
-      }
-    })
-  ) as Partial<TParams>;
+  return React.useContext(NavigationRouteContext)?.params ?? {};
 }

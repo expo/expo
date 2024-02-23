@@ -2,7 +2,7 @@ import { renderHook as tlRenderHook } from '@testing-library/react-native';
 import React from 'react';
 import { expectType } from 'tsd';
 
-import { ExpoRoot, router } from '../exports';
+import { ExpoRoot, Slot, router } from '../exports';
 import { useGlobalSearchParams, useLocalSearchParams, usePathname, useSegments } from '../hooks';
 import Stack from '../layouts/Stack';
 import { act, renderRouter } from '../testing-library';
@@ -209,6 +209,60 @@ describe(useGlobalSearchParams, () => {
           fruit: 'apple',
           shape: 'square',
         },
+      },
+    ]);
+  });
+
+  it('nested search parameters', () => {
+    const rootLayoutHooks: unknown[] = [];
+    const nestedLayoutHooks: unknown[] = [];
+
+    renderRouter({
+      index: () => null,
+      _layout: function Test() {
+        rootLayoutHooks.push({
+          url: usePathname(),
+          globalParams: useGlobalSearchParams(),
+          params: useLocalSearchParams(),
+        });
+        return <Slot />;
+      },
+      '(test)/_layout': function Test() {
+        nestedLayoutHooks.push({
+          url: usePathname(),
+          globalParams: useGlobalSearchParams(),
+          params: useLocalSearchParams(),
+        });
+        return <Slot />;
+      },
+      '(test)/test': () => null,
+    });
+
+    act(() => {
+      router.navigate({
+        pathname: '/(test)/test',
+        params: { fruit: 'apple' },
+      });
+    });
+
+    expect(rootLayoutHooks).toEqual([
+      {
+        url: '/', // This is the initial render
+        params: {},
+        globalParams: {},
+      },
+      {
+        url: '/test',
+        params: {}, // There are no local params
+        globalParams: { fruit: 'apple', screen: 'test', params: { fruit: 'apple' } },
+      },
+    ]);
+
+    expect(nestedLayoutHooks).toEqual([
+      {
+        url: '/test',
+        globalParams: { fruit: 'apple', screen: 'test', params: { fruit: 'apple' } },
+        params: { screen: 'test', params: { fruit: 'apple' } },
       },
     ]);
   });
