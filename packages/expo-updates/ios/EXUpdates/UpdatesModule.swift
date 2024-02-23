@@ -78,10 +78,6 @@ public final class UpdatesModule: Module {
       AppController.sharedInstance.shouldEmitJsEvents = false
     }
 
-    OnDestroy {
-      AppController.sharedInstance.appContext = nil
-    }
-
     AsyncFunction("reload") { (promise: Promise) in
       AppController.sharedInstance.requestRelaunch {
         promise.resolve(nil)

@@ -88,10 +88,6 @@ class UpdatesModule : Module() {
       UpdatesController.instance.shouldEmitJsEvents = false
     }
 
-    OnDestroy {
-      UpdatesController.instance.appContext = null
-    }
-
     AsyncFunction("reload") { promise: Promise ->
       UpdatesController.instance.relaunchReactApplicationForModule(
         object : IUpdatesController.ModuleCallback<Unit> {
