@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed an issue where `isBlurhashString` always returned `true` .([#27251](https://github.com/expo/expo/pull/27251) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 1.11.0 — 2024-02-05
