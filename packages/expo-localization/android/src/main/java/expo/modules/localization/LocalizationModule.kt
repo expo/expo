@@ -137,6 +137,20 @@ class LocalizationModule : Module() {
     }
   }
 
+  private fun getCurrencyProperties(locale: Locale): Map<String, Any?> {
+    return try {
+      mapOf(
+      "currencyCode" to Currency.getInstance(locale).currencyCode,
+      // currency symbol can be localized to display locale (1st on the list) or to the locale for the currency (as done here).
+      "currencySymbol" to Currency.getInstance(locale).getSymbol(locale))
+    } catch (e: Exception) {
+      mapOf(
+        "currencyCode" to null,
+        "currencySymbol" to null
+      )
+    }
+  }
+
   private fun getPreferredLocales(): List<Map<String, Any?>> {
     val locales = mutableListOf<Map<String, Any?>>()
     val localeList: LocaleListCompat = LocaleListCompat.getDefault()
@@ -156,12 +170,8 @@ class LocalizationModule : Module() {
             "digitGroupingSeparator" to decimalFormat.groupingSeparator.toString(),
 
             "measurementSystem" to getMeasurementSystem(locale),
-            "currencyCode" to decimalFormat.currency.currencyCode,
-
-            // currency symbol can be localized to display locale (1st on the list) or to the locale for the currency (as done here).
-            "currencySymbol" to Currency.getInstance(locale).getSymbol(locale),
             "temperatureUnit" to getTemperatureUnit(locale)
-          )
+          ) + getCurrencyProperties(locale)
         )
       } catch (e: Exception) {
         // warn about the problematic locale

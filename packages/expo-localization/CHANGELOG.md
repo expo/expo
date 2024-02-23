@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix es-419 locale returning empty list.
+
 ### 💡 Others
 
 ## 14.8.3 - 2024-01-18
