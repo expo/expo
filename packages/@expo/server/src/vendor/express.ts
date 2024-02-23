@@ -1,4 +1,4 @@
-import { writeReadableStreamToWritable } from '@remix-run/node';
+import { writeReadableStreamToWritable, createReadableStreamFromReadable } from '@remix-run/node';
 import type * as express from 'express';
 
 import { createRequestHandler as createExpoHandler } from '..';
@@ -70,7 +70,7 @@ export function convertRequest(req: express.Request, res: express.Response): Req
   };
 
   if (req.method !== 'GET' && req.method !== 'HEAD') {
-    init.body = req.body;
+    init.body = createReadableStreamFromReadable(req);
   }
 
   return new Request(url.href, init);

@@ -55,7 +55,7 @@ function convertRequest(req, res) {
         signal: controller.signal,
     };
     if (req.method !== 'GET' && req.method !== 'HEAD') {
-        init.body = req.body;
+        init.body = (0, node_1.createReadableStreamFromReadable)(req);
     }
     return new Request(url.href, init);
 }
