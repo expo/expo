@@ -139,7 +139,6 @@ class VideoModule : Module() {
 
     Class(VideoPlayer::class) {
       Constructor { source: VideoSource ->
-        val mediaItem = MediaItem.fromUri(source)
         VideoPlayer(activity.applicationContext, appContext, source.toMediaItem())
       }
 

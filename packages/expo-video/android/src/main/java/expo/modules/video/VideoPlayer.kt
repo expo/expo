@@ -26,18 +26,18 @@ import expo.modules.kotlin.sharedobjects.SharedObject
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
 @UnstableApi
 class VideoPlayer(context: Context, private val appContext: AppContext, private val mediaItem: MediaItem) : AutoCloseable, SharedObject() {
-    private val currentActivity: Activity by lazy {
-      appContext.activityProvider?.currentActivity
-        ?: throw Exceptions.MissingActivity()
-    }
-    // This improves the performance of playing DRM-protected content
-    private var renderersFactory = DefaultRenderersFactory(context)
-      .forceEnableMediaCodecAsynchronousQueueing()
+  private val currentActivity: Activity by lazy {
+    appContext.activityProvider?.currentActivity
+      ?: throw Exceptions.MissingActivity()
+  }
 
-    private var loadControl = DefaultLoadControl.Builder()
-      .setPrioritizeTimeOverSizeThresholds(false)
-      .build()
+  // This improves the performance of playing DRM-protected content
+  private var renderersFactory = DefaultRenderersFactory(context)
+    .forceEnableMediaCodecAsynchronousQueueing()
 
+  private var loadControl = DefaultLoadControl.Builder()
+    .setPrioritizeTimeOverSizeThresholds(false)
+    .build()
 
   val player = ExoPlayer
     .Builder(context, renderersFactory)
