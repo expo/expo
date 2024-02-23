@@ -17,7 +17,6 @@ In this chapter, we will create the first screen of the StickerSmash app.
   alt="Initial layout."
   src="/static/images/tutorial/initial-layout.jpg"
   style={{ maxWidth: 300 }}
-  containerStyle={{ marginBottom: 10 }}
 />
 
 The screen above displays an image and two buttons. The app user can select an image using one of the two buttons. The first button allows the user to select an image from their device. The second button allows the user to continue with a default image provided by the app.
@@ -34,7 +33,6 @@ Before we build this screen by writing code, let's break it down into some essen
   alt="Break down of initial layout."
   src="/static/images/tutorial/breakdown-of-layout.jpg"
   style={{ maxWidth: 300 }}
-  containerStyle={{ marginBottom: 10 }}
 />
 
 There are three essential elements:
@@ -49,7 +47,6 @@ The first button is composed of multiple components. The parent element provides
   alt="Break down of the button component with row."
   src="/static/images/tutorial/breakdown-of-buttons.png"
   style={{ maxWidth: 400 }}
-  containerStyle={{ marginBottom: 10 }}
 />
 
 In React Native, styling (such as the yellow border) is done using JavaScript as compared to the web, where CSS is used. Most of the React Native core components accept a `style` prop that accepts a JavaScript object as its value. For detailed information on styling, see [Styling in React Native](https://reactnative.dev/docs/style).
@@ -148,7 +145,6 @@ We can use React Native's `<Image>` component to display the image in the app. T
   alt="Background image that we are going to use as a placeholder for the tutorial."
   src="/static/images/tutorial/background-image.png"
   style={{ maxWidth: 250 }}
-  containerStyle={{ marginBottom: 10 }}
 />
 
 Next, import and use the `<Image>` component from React Native and `background-image.png` in the **App.js**. Let's also add styles to display the image.
@@ -386,7 +382,6 @@ Let's take a look at our app on Android, iOS and the web:
   alt="Initial layout."
   src="/static/images/tutorial/buttons-created.jpg"
   style={{ maxWidth: 720 }}
-  containerStyle={{ marginBottom: 10 }}
 />
 
 The second button with the label "Use this photo" resembles the actual button from the design. However, the first button needs more styling to match the design.
