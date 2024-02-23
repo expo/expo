@@ -5,5 +5,6 @@ declare const _default: ConfigPlugin<void | {
     locationWhenInUsePermission?: string | undefined;
     isIosBackgroundLocationEnabled?: boolean | undefined;
     isAndroidBackgroundLocationEnabled?: boolean | undefined;
+    isAndroidForegroundServiceEnabled?: boolean | undefined;
 }>;
 export default _default;
