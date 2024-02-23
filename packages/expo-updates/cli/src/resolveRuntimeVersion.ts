@@ -5,7 +5,7 @@ import { Command } from './cli';
 import { requireArg, assertArgs, getProjectRoot } from './utils/args';
 import * as Log from './utils/log';
 
-export const generateFingerprint: Command = async (argv) => {
+export const resolveRuntimeVersion: Command = async (argv) => {
   const args = assertArgs(
     {
       // Types
@@ -21,31 +21,28 @@ export const generateFingerprint: Command = async (argv) => {
     Log.exit(
       chalk`
 {bold Description}
-Generate fingerprint for use in expo-updates runtime version
+Resolve expo-updates runtime version
 
 {bold Usage}
-  {dim $} npx expo-updates fingerprint:generate --platform <platform>
+  {dim $} npx expo-updates runtimeversion:resolve --platform <platform>
 
   Options
-  --platform <string>                  Platform to generate a fingerprint for
+  --platform <string>                  Platform to resolve runtime version for
   -h, --help                           Output usage information
     `,
       0
     );
   }
 
-  const [{ createFingerprintAsync }, { resolveWorkflowAsync }] = await Promise.all([
-    import('../../utils/build/createFingerprintAsync.js'),
-    import('../../utils/build/workflow.js'),
-  ]);
+  const { resolveRuntimeVersionAsync } = await import(
+    '../../utils/build/resolveRuntimeVersionAsync.js'
+  );
 
   const platform = requireArg(args, '--platform');
   if (!['ios', 'android'].includes(platform)) {
     throw new Error(`Invalid platform argument: ${platform}`);
   }
 
-  const projectRoot = getProjectRoot(args);
-  const workflow = await resolveWorkflowAsync(projectRoot, platform);
-  const result = await createFingerprintAsync(projectRoot, platform, workflow);
-  console.log(JSON.stringify(result));
+  const runtimeVersion = await resolveRuntimeVersionAsync(getProjectRoot(args), platform);
+  console.log(JSON.stringify({ runtimeVersion }));
 };
