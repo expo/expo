@@ -92,16 +92,23 @@ function getPathDataFromState(state, _options = { screens: DEFAULT_SCREENS }) {
 exports.getPathDataFromState = getPathDataFromState;
 function processParamsWithUserSettings(configItem, params) {
     const stringify = configItem?.stringify;
-    return Object.fromEntries(Object.entries(params).map(([key, value]) => [
-        key,
-        // TODO: Strip nullish values here.
-        stringify?.[key]
-            ? stringify[key](value)
-            : // Preserve rest params
-                Array.isArray(value)
-                    ? value
-                    : String(value),
-    ]));
+    return Object.fromEntries(Object.entries(params).map(([key, value]) => {
+        if (typeof value === 'object') {
+            return Array.isArray(value)
+                ? [key, value]
+                : [key, processParamsWithUserSettings(configItem?.screens?.[key], value)];
+        }
+        return [
+            key,
+            // TODO: Strip nullish values here.
+            stringify?.[key]
+                ? stringify[key](value)
+                : // Preserve rest params
+                    Array.isArray(value)
+                        ? value
+                        : String(value),
+        ];
+    }));
 }
 function deepEqual(a, b) {
     if (a === b) {
@@ -293,6 +300,9 @@ function decodeParams(params) {
         try {
             if (Array.isArray(value)) {
                 parsed[key] = value.map((v) => decodeURIComponent(v));
+            }
+            else if (typeof value === 'object') {
+                parsed[key] = decodeParams(value);
             }
             else {
                 parsed[key] = decodeURIComponent(value);
