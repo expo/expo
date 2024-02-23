@@ -1,9 +1,11 @@
+@file:OptIn(EitherType::class)
+
 package expo.modules.video
 
 import android.app.Activity
 import android.view.View
-import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackParameters
+import expo.modules.kotlin.apifeatures.EitherType
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.ViewProps
@@ -11,6 +13,8 @@ import com.facebook.yoga.YogaConstants
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.types.Either
+import expo.modules.video.records.VideoSource
 import expo.modules.kotlin.views.ViewDefinitionBuilder
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -134,9 +138,8 @@ class VideoModule : Module() {
     }
 
     Class(VideoPlayer::class) {
-      Constructor { source: String ->
-        val mediaItem = MediaItem.fromUri(source)
-        VideoPlayer(activity.applicationContext, mediaItem)
+      Constructor { source: VideoSource ->
+        VideoPlayer(activity.applicationContext, source.toMediaItem())
       }
 
       Property("isPlaying")
@@ -202,10 +205,15 @@ class VideoModule : Module() {
         }
       }
 
-      Function("replace") { ref: VideoPlayer, source: String ->
+      Function("replace") { ref: VideoPlayer, source: Either<String, VideoSource> ->
+        val videoSource = if (source.`is`(VideoSource::class)) {
+          source.get(VideoSource::class)
+        } else {
+          VideoSource(source.get(String::class))
+        }
+
         appContext.mainQueue.launch {
-          val mediaItem = MediaItem.fromUri(source)
-          ref.player.setMediaItem(mediaItem)
+          ref.player.setMediaItem(videoSource.toMediaItem())
         }
       }
 
