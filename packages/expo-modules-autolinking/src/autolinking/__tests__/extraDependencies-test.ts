@@ -1,6 +1,5 @@
 import { getConfig } from '@expo/config';
 
-import { AndroidMavenRepositoryAuthenticationScheme } from '../../types';
 import { getBuildPropertiesAsync, resolveExtraDependenciesAsync } from '../extraDependencies';
 
 jest.mock('@expo/config', () => ({
@@ -105,7 +104,7 @@ describe(resolveExtraDependenciesAsync, () => {
                       username: 'user',
                       password: 'password',
                     },
-                    authentication: AndroidMavenRepositoryAuthenticationScheme.BasicAuthentication,
+                    authentication: 'basic',
                   },
                 ],
               },
@@ -148,8 +147,7 @@ describe(resolveExtraDependenciesAsync, () => {
                       name: 'token',
                       value: 'some_token',
                     },
-                    authentication:
-                      AndroidMavenRepositoryAuthenticationScheme.HttpHeaderAuthentication,
+                    authentication: 'header',
                   },
                 ],
               },
@@ -192,7 +190,7 @@ describe(resolveExtraDependenciesAsync, () => {
                       username: 'user',
                       password: 'password',
                     },
-                    authentication: AndroidMavenRepositoryAuthenticationScheme.DigestAuthentication,
+                    authentication: 'digest',
                   },
                 ],
               },

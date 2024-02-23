@@ -228,12 +228,6 @@ export interface RawExpoModuleConfig {
   };
 }
 
-export enum AndroidMavenRepositoryAuthenticationScheme {
-  BasicAuthentication = 'basic',
-  DigestAuthentication = 'digest',
-  HttpHeaderAuthentication = 'header',
-}
-
 interface AndroidMavenRepositoryPasswordCredentials {
   username: string;
   password: string;
