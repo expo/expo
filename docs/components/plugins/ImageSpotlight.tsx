@@ -25,8 +25,12 @@ export default function ImageSpotlight({ alt, src, style, containerStyle, captio
       {caption && (
         <figcaption
           style={{
-            marginTop: 14,
             fontSize: 14,
+            paddingLeft: 20,
+            paddingRight: 20,
+            paddingTop: 25,
+            paddingBottom: 5,
+            lineHeight: 1.5,
             color: theme.text.secondary,
             textAlign: 'center',
           }}>
