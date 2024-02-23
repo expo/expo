@@ -1,7 +1,5 @@
-import { ExpoResponse } from 'expo-router/server';
-
-export function GET(): ExpoResponse {
-  return ExpoResponse.json({
+export function GET(): Response {
+  return new Response(JSON.stringify({
     var: process.env.TEST_SECRET_KEY,
-  });
+  }));
 }
