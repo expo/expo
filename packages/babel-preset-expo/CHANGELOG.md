@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add basic `react-server` support.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

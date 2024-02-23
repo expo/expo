@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add basic `react-server` support.
 - Add warnings when URI schemes cannot be resolved for dev client launches. ([#27241](https://github.com/expo/expo/pull/27241) by [@EvanBacon](https://github.com/EvanBacon))
 - Add total files bundled to the bundling finished message. ([#27215](https://github.com/expo/expo/pull/27215) by [@EvanBacon](https://github.com/EvanBacon))
 - Add better API Route error messages. ([#27024](https://github.com/expo/expo/pull/27024) by [@EvanBacon](https://github.com/EvanBacon))
