@@ -65,7 +65,7 @@ class MavenRepo {
   MavenRepo(Object data) {
     this.url = data.url
     this.credentials = data.credentials
-    this.authentication = this.authentication 
+    this.authentication = data.authentication 
   }
 }
 
