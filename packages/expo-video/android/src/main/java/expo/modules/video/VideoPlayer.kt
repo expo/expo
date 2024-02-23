@@ -14,6 +14,8 @@ import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.DefaultLoadControl
+import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSessionService
 import androidx.media3.ui.PlayerView
@@ -24,14 +26,23 @@ import expo.modules.kotlin.sharedobjects.SharedObject
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
 @UnstableApi
 class VideoPlayer(context: Context, private val appContext: AppContext, private val mediaItem: MediaItem) : AutoCloseable, SharedObject() {
-  private val currentActivity: Activity by lazy {
-    appContext.activityProvider?.currentActivity
-      ?: throw Exceptions.MissingActivity()
-  }
+    private val currentActivity: Activity by lazy {
+      appContext.activityProvider?.currentActivity
+        ?: throw Exceptions.MissingActivity()
+    }
+    // This improves the performance of playing DRM-protected content
+    private var renderersFactory = DefaultRenderersFactory(context)
+      .forceEnableMediaCodecAsynchronousQueueing()
+
+    private var loadControl = DefaultLoadControl.Builder()
+      .setPrioritizeTimeOverSizeThresholds(false)
+      .build()
+
 
   val player = ExoPlayer
-    .Builder(context)
+    .Builder(context, renderersFactory)
     .setLooper(context.mainLooper)
+    .setLoadControl(loadControl)
     .build()
 
   // We duplicate some properties of the player, because we don't want to always use the mainQueue to access them.

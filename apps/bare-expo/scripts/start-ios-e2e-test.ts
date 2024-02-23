@@ -8,7 +8,7 @@ import path from 'path';
 const TARGET_DEVICE = 'iPhone 15';
 const TARGET_DEVICE_IOS_VERSION = 17;
 const MAESTRO_GENERATED_FLOW = 'e2e/maestro-generated.yaml';
-const OUTPUT_APP_PATH = 'ios/build/Bare Expo.app';
+const OUTPUT_APP_PATH = 'ios/build/BareExpo.app';
 const MAESTRO_DRIVER_STARTUP_TIMEOUT = '120000'; // Wait 2 minutes for Maestro driver to start
 
 enum StartMode {
@@ -22,7 +22,7 @@ enum StartMode {
     const startMode = getStartMode();
 
     const projectRoot = path.resolve(__dirname, '..');
-    const deviceId = await queryDeviceIdAsync(TARGET_DEVICE);
+    const deviceId = await queryDeviceIdAsync(TARGET_DEVICE_IOS_VERSION, TARGET_DEVICE);
     if (!deviceId) {
       throw new Error(`Device not found: ${TARGET_DEVICE}`);
     }
@@ -34,7 +34,7 @@ enum StartMode {
       await fs.cp(binaryPath, appBinaryPath, { recursive: true });
     }
     if (startMode === StartMode.TEST || startMode === StartMode.BUILD_AND_TEST) {
-      await retryAsync(() => testAsync(projectRoot, deviceId, appBinaryPath), 3);
+      await retryAsync(() => testAsync(projectRoot, deviceId, appBinaryPath), 6);
     }
   } catch (e) {
     console.error('Uncaught Error', e);
@@ -121,30 +121,35 @@ async function delayAsync(timeMs: number): Promise<void> {
 /**
  * Query simulator UDID
  */
-async function queryDeviceIdAsync(device: string): Promise<string | null> {
+async function queryDeviceIdAsync(iosVersion: number, device: string): Promise<string | null> {
   const { stdout } = await spawnAsync('xcrun', [
     'simctl',
     'list',
     'devices',
+    'iPhone',
     'available',
     '--json',
   ]);
   const { devices: deviceWithRuntimes } = JSON.parse(stdout);
+
+  // Try to find the target device first
   for (const [runtime, devices] of Object.entries<{ name: string; udid: string }[]>(
     deviceWithRuntimes
   )) {
-    if (
-      !runtime.startsWith(`com.apple.CoreSimulator.SimRuntime.iOS-${TARGET_DEVICE_IOS_VERSION}-`)
-    ) {
-      continue;
-    }
-    for (const { name, udid } of devices) {
-      if (name === device) {
-        return udid;
+    if (runtime.startsWith(`com.apple.CoreSimulator.SimRuntime.iOS-${iosVersion}-`)) {
+      for (const { name, udid } of devices) {
+        if (name === device) {
+          return udid;
+        }
       }
     }
   }
-  return null;
+
+  // Fallback to the first available device
+  const firstEntry = Object.entries<{ name: string; udid: string }[]>(deviceWithRuntimes).find(
+    ([runtime, devices]) => devices.length > 0
+  );
+  return firstEntry?.[1][0]?.udid ?? null;
 }
 
 /**

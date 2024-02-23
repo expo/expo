@@ -7,3 +7,15 @@ internal class PictureInPictureUnsupportedException: Exception {
     "Picture in picture is not supported on this device"
   }
 }
+
+internal class DRMUnsupportedException: GenericException<DRMType> {
+  override var reason: String {
+    "DRMType: `\(param)` is unsupported on iOS"
+  }
+}
+
+internal class DRMLoadException: GenericException<String?> {
+  override var reason: String {
+    "Failed to decrypt the video stream: \(param ?? "unknown")"
+  }
+}

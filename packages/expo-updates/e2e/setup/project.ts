@@ -337,8 +337,8 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@~0.72.6-0',
-        '@react-native-tvos/config-tv': '~0.0.2',
+        'react-native': 'npm:react-native-tvos@~0.73.4-0',
+        '@react-native-tvos/config-tv': '^0.0.6',
       },
       expo: {
         install: {

@@ -277,6 +277,29 @@ PODS:
   - EXTaskManager (11.7.0):
     - ExpoModulesCore
     - UMAppLoader
+  - EXUpdates (0.24.3):
+    - EASClient
+    - EXManifests
+    - ExpoModulesCore
+    - EXStructuredHeaders
+    - EXUpdatesInterface
+    - glog
+    - RCT-Folly (= 2022.05.16.00)
+    - ReachabilitySwift
+    - React-Core
+    - sqlite3 (~> 3.42.0)
+  - EXUpdates/Tests (0.24.3):
+    - EASClient
+    - EXManifests
+    - ExpoModulesCore
+    - ExpoModulesTestCore
+    - EXStructuredHeaders
+    - EXUpdatesInterface
+    - glog
+    - RCT-Folly (= 2022.05.16.00)
+    - ReachabilitySwift
+    - React-Core
+    - sqlite3 (~> 3.42.0)
   - EXUpdatesInterface (0.15.0)
   - FBLazyVector (0.73.4)
   - FBReactNativeSpec (0.73.4):
@@ -361,6 +384,7 @@ PODS:
     - FBLazyVector (= 0.73.4)
     - RCTRequired (= 0.73.4)
     - React-Core (= 0.73.4)
+  - ReachabilitySwift (5.0.0)
   - React (0.73.4):
     - React-Core (= 0.73.4)
     - React-Core/DevSupport (= 0.73.4)
@@ -1430,10 +1454,10 @@ PODS:
   - sqlite3/common (3.42.0)
   - UMAppLoader (4.5.0)
   - Yoga (1.14.0)
-  - ZXingObjC/Core (3.6.5)
-  - ZXingObjC/OneD (3.6.5):
+  - ZXingObjC/Core (3.6.9)
+  - ZXingObjC/OneD (3.6.9):
     - ZXingObjC/Core
-  - ZXingObjC/PDF417 (3.6.5):
+  - ZXingObjC/PDF417 (3.6.9):
     - ZXingObjC/Core
 
 DEPENDENCIES:
@@ -1515,6 +1539,8 @@ DEPENDENCIES:
   - EXStructuredHeaders (from `../../../packages/expo-structured-headers/ios`)
   - EXStructuredHeaders/Tests (from `../../../packages/expo-structured-headers/ios`)
   - EXTaskManager (from `../../../packages/expo-task-manager/ios`)
+  - EXUpdates (from `../../../packages/expo-updates/ios`)
+  - EXUpdates/Tests (from `../../../packages/expo-updates/ios`)
   - EXUpdatesInterface (from `../../../packages/expo-updates-interface/ios`)
   - FBLazyVector (from `../../../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../../../node_modules/react-native/React/FBReactNativeSpec`)
@@ -1596,6 +1622,7 @@ SPEC REPOS:
     - Nimble
     - OHHTTPStubs
     - Quick
+    - ReachabilitySwift
     - SDWebImage
     - SDWebImageAVIFCoder
     - SDWebImageSVGCoder
@@ -1802,6 +1829,9 @@ EXTERNAL SOURCES:
   EXTaskManager:
     inhibit_warnings: false
     :path: "../../../packages/expo-task-manager/ios"
+  EXUpdates:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-updates/ios"
   EXUpdatesInterface:
     inhibit_warnings: false
     :path: "../../../packages/expo-updates-interface/ios"
@@ -1952,7 +1982,7 @@ SPEC CHECKSUMS:
   EXNotifications: 6e3b49fa7f916bc2783d37fbd5599509b160776c
   Expo: 5096704437d0388c1ae6c622c8fd6d1b61889a53
   expo-dev-client: 62325d7ddd0b339eb2e50e472b2e058e222c1c2d
-  expo-dev-launcher: e8901e4c4dc46c5c48939c8e6a98ab6dbd08a839
+  expo-dev-launcher: ca386ccf918a39bdbe8f70faf8d38995874f2ff2
   expo-dev-menu: bbb2b4dfdf7ecee57d165a8069fd6fc3634874d8
   expo-dev-menu-interface: 3c36b4d5032397e022958a2041afe91a130ea74c
   ExpoAppleAuthentication: 4fc9972356977f009911f2f3a5f56319c2a5b11b
@@ -2002,6 +2032,7 @@ SPEC CHECKSUMS:
   EXSplashScreen: d6d7ea9582e4ed7655cf893b32dca13ef0712279
   EXStructuredHeaders: 3b8ec10c65a4607dc976b6cdfa5136d2ea2ece19
   EXTaskManager: 81b2dfaaba6d9f9a4bc3e3e2a786a98004eb9e98
+  EXUpdates: e2cff3892ee9025c433082bb6e721d213c1a6f5b
   EXUpdatesInterface: 4f787eeabc62c258f978ea4865c67adfb6b2f19f
   FBLazyVector: 84f6edbe225f38aebd9deaf1540a4160b1f087d7
   FBReactNativeSpec: f40d49b222e5ff964f98c8aa4f08baa6c1e15e2d
@@ -2021,6 +2052,7 @@ SPEC CHECKSUMS:
   RCT-Folly: 7169b2b1c44399c76a47b5deaaba715eeeb476c0
   RCTRequired: ab7f915c15569f04a49669e573e6e319a53f9faa
   RCTTypeSafety: 63b97ced7b766865057e7154db0e81ce4ee6cf1e
+  ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
   React: 1c87497e50fa40ba9c54e5ea5e53483a0f8eecc0
   React-callinvoker: e3a52a9a93e3eb004d7282c26a4fb27003273fe6
   React-Codegen: 50c0f8f073e71b929b057b68bf31be604f1dccc8
@@ -2083,8 +2115,8 @@ SPEC CHECKSUMS:
   sqlite3: f163dbbb7aa3339ad8fc622782c2d9d7b72f7e9c
   UMAppLoader: 5df85360d65cabaef544be5424ac64672e648482
   Yoga: 64cd2a583ead952b0315d5135bf39e053ae9be70
-  ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
+  ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: cccda3579ef345d565a519d8578fc9fd5dfe1fc8
+PODFILE CHECKSUM: 428ebd89059c49443b3f67b727657762b113ac01
 
 COCOAPODS: 1.14.2

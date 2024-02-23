@@ -4,6 +4,8 @@ import AVFoundation
 import ExpoModulesCore
 
 internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable {
+  lazy var contentKeyManager = ContentKeyManager()
+
   var staysActiveInBackground = false {
     didSet {
       if staysActiveInBackground {

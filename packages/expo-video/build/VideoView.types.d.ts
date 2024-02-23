@@ -38,7 +38,7 @@ export declare class VideoPlayer {
     /**
      * Replaces the current source with a new one.
      */
-    replace(source: string): void;
+    replace(source: VideoSource): void;
     /**
      * Seeks the playback by the given number of seconds.
      */
@@ -120,5 +120,47 @@ export interface VideoViewProps extends ViewProps {
      */
     startsPictureInPictureAutomatically?: boolean;
 }
+/**
+ * Specifies which type of DRM to use. Android supports Widevine, PlayReady and ClearKey, iOS supports FairPlay.
+ * */
+type DRMType = 'clearkey' | 'fairplay' | 'playready' | 'widevine';
+/**
+ * Specifies DRM options which will be used by the player while loading the video.
+ */
+type DRMOptions = {
+    /**
+     * Determines which type of DRM to use.
+     */
+    type: DRMType;
+    /**
+     * Determines the license server URL.
+     */
+    licenseServer: string;
+    /**
+     * Determines headers sent to the license server on license requests.
+     */
+    headers?: {
+        [key: string]: string;
+    };
+    /**
+     * Specifies whether the DRM is a multi-key DRM.
+     * @platform android
+     */
+    multiKey?: boolean;
+    /**
+     * Specifies the content ID of the stream.
+     * @platform ios
+     */
+    contentId?: string;
+    /**
+     * Specifies the certificate URL for the FairPlay DRM.
+     * @platform ios
+     */
+    certificateUrl?: string;
+};
+export type VideoSource = string | {
+    uri: string;
+    drm?: DRMOptions;
+} | null;
 export {};
 //# sourceMappingURL=VideoView.types.d.ts.map
