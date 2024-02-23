@@ -1,11 +1,11 @@
 import assert from 'assert';
 import chalk from 'chalk';
 
+import { canResolveDevClient } from './detectDevClient';
 import { Log } from '../log';
 import { hasDirectDevClientDependency } from '../utils/analytics/getDevClientProperties';
 import { AbortCommandError, CommandError } from '../utils/errors';
 import { resolvePortAsync } from '../utils/port';
-import { canResolveDevClient } from './detectDevClient';
 
 export type Options = {
   privateKeyPath: string | null;
