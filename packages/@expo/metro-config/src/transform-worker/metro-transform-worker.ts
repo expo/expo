@@ -61,6 +61,13 @@ interface JSFile extends BaseFile {
   readonly ast?: ParseResult | null;
   readonly type: JSFileType;
   readonly functionMap: FBSourceFunctionMap | null;
+  // Added by `babel-preset-expo` for React server components.
+  clientReferences:
+    | {
+        entryPoint: string;
+        exports: string[];
+      }[]
+    | null;
 }
 
 interface JSONFile extends BaseFile {
@@ -117,6 +124,7 @@ const minifyCode = async (
       map,
       // functionMap is overridden by the serializer
       functionMap: null,
+      clientReferences: null,
       path: filename,
       // isIgnored is overriden by the serializer
       isIgnored: false,
@@ -391,6 +399,7 @@ async function transformJS(
         code,
         lineCount: countLines(code),
         map,
+        clientReferences: file.clientReferences,
         functionMap: file.functionMap,
       },
       type: file.type,
@@ -422,6 +431,7 @@ async function transformAsset(
     type: 'js/module/asset',
     ast: result.ast,
     functionMap: null,
+    clientReferences: null,
   };
 
   return transformJS(jsFile, context);
@@ -573,6 +583,7 @@ export async function transform(
     code: sourceCode,
     type: options.type === 'script' ? 'js/script' : 'js/module',
     functionMap: null,
+    clientReferences: null,
   };
 
   return transformJSWithBabel(file, context);
