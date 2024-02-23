@@ -130,7 +130,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     previewLayer = AVCaptureVideoPreviewLayer.init(session: session)
     previewLayer?.videoGravity = .resizeAspectFill
     previewLayer?.needsDisplayOnBoundsChange = true
-    barCodeScanner.setPreviewLayer(previewLayer)
+    barCodeScanner?.setPreviewLayer(previewLayer)
     #endif
     self.changePreviewOrientation(orientation: UIApplication.shared.statusBarOrientation)
     self.initializeCaptureSessionInput()
