@@ -107,13 +107,6 @@ export async function cloneTemplateAndCopyToProjectAsync({
   try {
     const templateChecksum = await cloneTemplateAsync({ templateDirectory, template, exp, ora });
 
-    const files = await getTemplateFilesToRenameAsync({ cwd: projectRoot });
-    await renameTemplateAppNameAsync({
-      cwd: projectRoot,
-      files,
-      name: exp.name,
-    });
-
     const platforms = validateTemplatePlatforms({
       templateDirectory,
       platforms: unknownPlatforms,
@@ -124,6 +117,14 @@ export async function cloneTemplateAndCopyToProjectAsync({
       platforms,
     });
 
+    const files = await getTemplateFilesToRenameAsync({ cwd: projectRoot });
+    await renameTemplateAppNameAsync({
+      cwd: projectRoot,
+      files,
+      name: exp.name,
+    });
+
+    // Says: "Created native directories"
     ora.succeed(createCopyFilesSuccessMessage(platforms, results));
 
     return {
