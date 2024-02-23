@@ -83,9 +83,9 @@ public class FileSystemLegacyUtilities: NSObject, EXInternalModule, EXFileSystem
   }
 
   @objc
-  public func getInternalPathPermissions(_ path: URL) -> EXFileSystemPermissionFlags {
+  public func getInternalPathPermissions(_ url: URL) -> EXFileSystemPermissionFlags {
     let scopedDirs: [String] = [cachesDirectory, documentDirectory]
-    let standardizedPath = path.standardized.path
+    let standardizedPath = url.standardized.path
     for scopedDirectory in scopedDirs {
       if standardizedPath.hasPrefix(scopedDirectory + "/") || standardizedPath == scopedDirectory {
         return [.read, .write]
@@ -95,15 +95,15 @@ public class FileSystemLegacyUtilities: NSObject, EXInternalModule, EXFileSystem
   }
 
   @objc
-  public func getExternalPathPermissions(_ path: URL) -> EXFileSystemPermissionFlags {
-    if self.isScoped && path.path.contains("ExponentExperienceData") {
+  public func getExternalPathPermissions(_ url: URL) -> EXFileSystemPermissionFlags {
+    if self.isScoped && url.path.contains("ExponentExperienceData") {
       return []
     }
     var filePermissions: EXFileSystemPermissionFlags = []
-    if FileManager.default.isReadableFile(atPath: path.absoluteString) {
+    if FileManager.default.isReadableFile(atPath: url.absoluteString) {
       filePermissions.insert(.read)
     }
-    if FileManager.default.isWritableFile(atPath: path.absoluteString) {
+    if FileManager.default.isWritableFile(atPath: url.absoluteString) {
       filePermissions.insert(.write)
     }
     return filePermissions
