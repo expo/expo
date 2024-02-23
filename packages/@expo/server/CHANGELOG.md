@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Update Node polyfills, removing `ExpoResponse` and `ExpoRequest` globals in the process.
+
 ## 0.3.0 — 2023-12-12
 
 ### 🎉 New features
