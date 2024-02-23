@@ -83,8 +83,6 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     }
 
     let rootView = EXCreateReactBindingRootView(self.bridgeDelegate, self.rootViewInitialProperties, self.launchOptions)
-    appController.bridge = bridge
-
     rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white
     let window = UIApplication.shared.delegate!.window!!
     let rootViewController = reactDelegate.createRootViewController()

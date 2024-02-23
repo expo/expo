@@ -10,16 +10,9 @@ import ExpoModulesCore
  */
 public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppControllerInterface, StartupProcedureDelegate {
   private static let ErrorDomain = "EXUpdatesAppController"
-  private static let EXUpdatesEventName = "Expo.nativeUpdatesEvent"
-  private static let EXUpdatesStateChangeEventName = "Expo.nativeUpdatesStateChangeEvent"
-
-  // Events for the legacy UpdateEvent JS listener
-  public static let UpdateAvailableEventName = "updateAvailable"
-  public static let NoUpdateAvailableEventName = "noUpdateAvailable"
-  public static let ErrorEventName = "error"
 
   public weak var delegate: AppControllerDelegate?
-  public weak var bridge: AnyObject?
+  public weak var appContext: AppContext?
 
   internal let config: UpdatesConfig
   private let database: UpdatesDatabase
@@ -28,6 +21,14 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
   private let updatesDirectoryInternal: URL
   private let controllerQueue = DispatchQueue(label: "expo.controller.ControllerQueue")
   public private(set) var isStarted = false
+
+  public var shouldEmitJsEvents = false {
+    didSet {
+      if shouldEmitJsEvents == true {
+        sendQueuedEventsToAppContext()
+      }
+    }
+  }
 
   private var eventsToSendToJS: [[String: Any?]] = []
 
@@ -125,14 +126,14 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
       DispatchQueue.main.async { [weak self] in
         if let strongSelf = self {
           strongSelf.delegate?.appController(strongSelf, didStartWithSuccess: strongSelf.startupProcedure.launchAssetUrl() != nil)
-          strongSelf.sendQueuedEventsToBridge()
+          strongSelf.sendQueuedEventsToAppContext()
         }
       }
     }
   }
 
-  func startupProcedure(_ startupProcedure: StartupProcedure, didEmitLegacyUpdateEventForBridge eventType: String, body: [String: Any]) {
-    sendLegacyUpdateEventToBridge(eventType, body: body)
+  func startupProcedure(_ startupProcedure: StartupProcedure, didEmitLegacyUpdateEventForAppContext eventType: String, body: [String: Any]) {
+    sendLegacyUpdateEventToAppContext(eventType, body: body)
   }
 
   func startupProcedure(_ startupProcedure: StartupProcedure, errorRecoveryDidRequestRelaunchWithCompletion completion: @escaping (Error?, Bool) -> Void) {
@@ -196,34 +197,38 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
 
   // MARK: - Send events to JS
 
-  internal func sendLegacyUpdateEventToBridge(_ eventType: String, body: [String: Any]) {
-    logger.info(message: "sendLegacyUpdateEventToBridge(): type = \(eventType)")
-    sendEventToBridge(EnabledAppController.EXUpdatesEventName, eventType, body: body)
+  internal func sendLegacyUpdateEventToAppContext(_ eventType: String, body: [String: Any]) {
+    logger.info(message: "sendLegacyUpdateEventToAppContext(): type = \(eventType)")
+    sendEventToAppContext(EXUpdatesEventName, eventType, body: body)
   }
 
-  internal func sendUpdateStateChangeEventToBridge(_ eventType: UpdatesStateEventType, body: [String: Any?]) {
-    logger.info(message: "sendUpdateStateChangeEventToBridge(): type = \(eventType)")
-    sendEventToBridge(EnabledAppController.EXUpdatesStateChangeEventName, "\(eventType)", body: body)
+  internal func sendUpdateStateChangeEventToAppContext(_ eventType: UpdatesStateEventType, body: [String: Any?]) {
+    logger.info(message: "sendUpdateStateChangeEventToAppContext(): type = \(eventType)")
+    sendEventToAppContext(EXUpdatesStateChangeEventName, "\(eventType)", body: body)
   }
 
-  private func sendEventToBridge(_ eventName: String, _ eventType: String, body: [String: Any?]) {
+  private func sendEventToAppContext(_ eventName: String, _ eventType: String, body: [String: Any?]) {
     var mutableBody = body
     mutableBody["type"] = eventType
 
-    guard let bridge = bridge else {
+    guard let appContext = appContext,
+      let eventEmitter = appContext.eventEmitter,
+      shouldEmitJsEvents == true else {
       eventsToSendToJS.append([
         "eventName": eventName,
         "mutableBody": mutableBody
       ])
-      logger.warn(message: "EXUpdates: Could not emit event: name = \(eventName), type = \(eventType). Event will be emitted when the bridge is available", code: .jsRuntimeError)
+      logger.warn(message: "EXUpdates: Could not emit event: name = \(eventName), type = \(eventType). Event will be emitted when the appContext is available", code: .jsRuntimeError)
       return
     }
-    logger.debug(message: "sendEventToBridge: \(eventName), \(mutableBody)")
-    bridge.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [eventName, mutableBody])
+    logger.debug(message: "sendEventToAppContext: \(eventName), \(mutableBody)")
+    eventEmitter.sendEvent(withName: eventName, body: mutableBody)
   }
 
-  internal func sendQueuedEventsToBridge() {
-    guard let bridge = bridge else {
+  internal func sendQueuedEventsToAppContext() {
+    guard let appContext = appContext,
+      let eventEmitter = appContext.eventEmitter,
+      shouldEmitJsEvents == true else {
       return
     }
     eventsToSendToJS.forEach { event in
@@ -231,8 +236,8 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
         let mutableBody = event["mutableBody"] as? [String: Any?] else {
         return
       }
-      logger.debug(message: "sendEventToBridge: \(eventName), \(mutableBody)")
-      bridge.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [eventName, mutableBody])
+      logger.debug(message: "sendEventToAppContext: \(eventName), \(mutableBody)")
+      eventEmitter.sendEvent(withName: eventName, body: mutableBody)
     }
     eventsToSendToJS = []
   }

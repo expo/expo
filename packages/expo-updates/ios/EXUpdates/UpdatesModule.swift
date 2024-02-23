@@ -17,6 +17,14 @@ public final class UpdatesModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoUpdates")
 
+    Events(
+      EXUpdatesEventName,
+      EXUpdatesStateChangeEventName,
+      UpdateAvailableEventName,
+      NoUpdateAvailableEventName,
+      ErrorEventName
+    )
+
     Constants {
       let constantsForModule = AppController.sharedInstance.getConstantsForModule()
 
@@ -56,6 +64,22 @@ public final class UpdatesModule: Module {
         "shouldDeferToNativeForAPIMethodAvailabilityInDevelopment":
           constantsForModule.shouldDeferToNativeForAPIMethodAvailabilityInDevelopment || UpdatesUtils.isNativeDebuggingEnabled()
       ]
+    }
+
+    OnCreate {
+      AppController.sharedInstance.appContext = self.appContext
+    }
+
+    OnStartObserving {
+      AppController.sharedInstance.shouldEmitJsEvents = true
+    }
+
+    OnStopObserving {
+      AppController.sharedInstance.shouldEmitJsEvents = false
+    }
+
+    OnDestroy {
+      AppController.sharedInstance.appContext = nil
     }
 
     AsyncFunction("reload") { (promise: Promise) in

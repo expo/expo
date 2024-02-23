@@ -11,8 +11,9 @@ import ExpoModulesCore
  */
 public class DisabledAppController: InternalAppControllerInterface {
   public private(set) var isStarted: Bool = false
+  public var shouldEmitJsEvents = false
 
-  public weak var bridge: AnyObject?
+  public weak var appContext: AppContext?
 
   public weak var delegate: AppControllerDelegate?
 
