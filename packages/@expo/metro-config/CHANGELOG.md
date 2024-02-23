@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add basic `react-server` support.
+- Add basic `react-server` support. ([#27264](https://github.com/expo/expo/pull/27264) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `--no-bytecode` flag to `expo export` to disable generating Hermes bytecode for use with debugging tools. ([#26985](https://github.com/expo/expo/pull/26985) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for splitting on `require.resolveWeak` syntax. ([#27014](https://github.com/expo/expo/pull/27014) by [@EvanBacon](https://github.com/EvanBacon))
 
