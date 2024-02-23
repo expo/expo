@@ -8,6 +8,7 @@ import { getIsReactServer } from './common';
 const FORBIDDEN_CLIENT_IMPORTS = ['server-only'];
 const FORBIDDEN_REACT_SERVER_IMPORTS = ['client-only'];
 
+/** Prevent importing certain known imports in given environments. This is for sanity to ensure a module never accidentally gets imported unexpectedly. */
 export function environmentRestrictedImportsPlugin(
   api: ConfigAPI & { types: typeof types }
 ): babel.PluginObj {

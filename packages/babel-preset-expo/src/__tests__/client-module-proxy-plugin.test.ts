@@ -76,7 +76,7 @@ describe('use client', () => {
   it(`collects metadata with React client references`, () => {
     const options = {
       ...DEF_OPTIONS,
-      caller: getCaller({ ...ENABLED_CALLER, isReactServer: false, platform: 'ios' }),
+      caller: getCaller({ ...ENABLED_CALLER, isReactServer: true, platform: 'ios' }),
     };
 
     const sourceCode = `
@@ -95,7 +95,29 @@ describe('use client', () => {
       clientReferences: { entryPoint: 'file:///unknown', exports: ['foo', 'default'] },
     });
 
-    // This isn't added because the process is not react server.
+    expect(contents.code).toMatch('react-server-dom-webpack');
+  });
+
+  it(`does not collect metadata when bundling for the client`, () => {
+    const options = {
+      ...DEF_OPTIONS,
+      caller: getCaller({ ...ENABLED_CALLER, isReactServer: false, platform: 'ios' }),
+    };
+
+    const sourceCode = `
+    "use client";
+    import { Text } from 'react-native';
+    
+    export const foo = 'bar';
+    
+    export default function App() {
+      return <Text>Hello World</Text>
+    }
+    `;
+
+    const contents = babel.transform(sourceCode, options);
+    expect(contents.metadata).toEqual({});
+
     expect(contents.code).not.toMatch('react-server-dom-webpack');
   });
 
