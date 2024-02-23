@@ -57,6 +57,7 @@ export class UrlCreator {
       // Prohibit the use of `_` characters in the protocol, Node will throw an error when parsing these URLs
       protocol.includes('_')
     ) {
+      debug(`Invalid protocol for dev client URL: ${protocol}`);
       return null;
     }
 
