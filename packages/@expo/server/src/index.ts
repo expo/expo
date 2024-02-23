@@ -75,10 +75,7 @@ export function createRequestHandler(
       console.error(error);
     },
   }: {
-    getHtml?: (
-      request: Request,
-      route: RouteInfo<RegExp>
-    ) => Promise<string | Response | null>;
+    getHtml?: (request: Request, route: RouteInfo<RegExp>) => Promise<string | Response | null>;
     getRoutesManifest?: (distFolder: string) => Promise<ExpoRoutesManifestV1<RegExp> | null>;
     getApiRoute?: (route: RouteInfo<RegExp>) => Promise<any>;
     logApiRouteExecutionError?: (error: Error) => void;

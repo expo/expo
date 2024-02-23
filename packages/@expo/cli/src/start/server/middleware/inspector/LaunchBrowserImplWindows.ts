@@ -40,7 +40,6 @@ export default class LaunchBrowserImplWindows implements LaunchBrowser, LaunchBr
         'powershell.exe',
         ['-c', `Get-Package -Name '${browserType}'`],
         {
-          // @ts-expect-error: Missing NODE_ENV
           env,
           stdio: 'ignore',
         }
