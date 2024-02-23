@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Update Node polyfills, removing `ExpoResponse` and `ExpoRequest` globals in the process. ([#27261](https://github.com/expo/expo/pull/27261) by [@kitten](https://github.com/kitten))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
@@ -12,8 +14,6 @@
 - Fix http server not properly handling headers with multiple values like Set-Cookie. ([#26652](https://github.com/expo/expo/pull/26652) by [@hdwatts](https://github.com/hdwatts))
 
 ### 💡 Others
-
-- Update Node polyfills, removing `ExpoResponse` and `ExpoRequest` globals in the process.
 
 ## 0.3.0 — 2023-12-12
 
