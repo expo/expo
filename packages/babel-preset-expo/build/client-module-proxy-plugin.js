@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.reactClientReferencesPlugin = void 0;
 const url_1 = __importDefault(require("url"));
-const debug = require('debug')('expo:babel:rsc');
 function reactClientReferencesPlugin(api) {
     const { types: t } = api;
     const reactServerAdapter = 'react-server-dom-webpack/server';
@@ -30,47 +29,14 @@ function reactClientReferencesPlugin(api) {
                     // Do nothing for code that isn't marked as a client component.
                     return;
                 }
-                if (isUseClient) {
-                    // NOTE: This is unused but may be used for production manifests in the future
-                    // Collect a list of all the exports in the file.
-                    const exports = [];
-                    path.traverse({
-                        ExportNamedDeclaration(path) {
-                            const { node } = path;
-                            if (node.declaration) {
-                                if (t.isVariableDeclaration(node.declaration)) {
-                                    exports.push(...node.declaration.declarations.map((decl) => decl.id.name));
-                                }
-                                else {
-                                    exports.push(node.declaration.id.name);
-                                }
-                            }
-                            else if (node.specifiers) {
-                                exports.push(...node.specifiers.map((spec) => spec.exported.name));
-                            }
-                        },
-                        ExportDefaultDeclaration(path) {
-                            const { node } = path;
-                            if (node.declaration) {
-                                exports.push('default');
-                            }
-                        },
-                    });
-                    // TODO: Handle module.exports somehow...
-                    debug('Client references', filePath, exports);
-                    // Bundling for the RSC requests, collect the manifest as metadata.
-                    // @ts-expect-error: Add metadata to the file.
-                    state.file.metadata['clientReferences'] = {
-                        entryPoint: outputKey,
-                        exports,
-                    };
-                }
                 // Clear the body
                 if (isUseClient) {
                     path.node.body = [];
                     path.node.directives = [];
                     // Inject the following:
                     //
+                    // module.exports = require('react-server-dom-webpack/server').createClientModuleProxy(`${outputKey}#${filePath}`)
+                    // TODO: Use `require.resolveWeak` instead of `filePath` to avoid leaking the file path.
                     // module.exports = require('react-server-dom-webpack/server').createClientModuleProxy(`${outputKey}#${require.resolveWeak(filePath)}`)
                     path.pushContainer('body', t.expressionStatement(t.assignmentExpression('=', t.memberExpression(t.identifier('module'), t.identifier('exports')), t.callExpression(t.memberExpression(t.callExpression(t.identifier('require'), [
                         t.stringLiteral(reactServerAdapter),

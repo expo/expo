@@ -91,10 +91,6 @@ describe('use client', () => {
     `;
 
     const contents = babel.transform(sourceCode, options);
-    expect(contents.metadata).toEqual({
-      clientReferences: { entryPoint: 'file:///unknown', exports: ['foo', 'default'] },
-    });
-
     expect(contents.code).toMatch('react-server-dom-webpack');
   });
 
