@@ -1,39 +1,22 @@
-import { theme } from '@expo/styleguide';
-import { CSSProperties } from 'react';
+import { mergeClasses } from '@expo/styleguide';
+import { type CSSProperties } from 'react';
+
+import { LightboxImage } from '~/ui/components/LightboxImage';
 
 type Props = {
   alt: string;
   style?: CSSProperties;
-  containerStyle?: CSSProperties;
+  containerClassName?: string;
   src: string;
   caption?: string;
 };
 
-export default function ImageSpotlight({ alt, src, style, containerStyle, caption }: Props) {
+export default function ImageSpotlight({ alt, src, style, containerClassName, caption }: Props) {
   return (
-    <figure
-      style={{
-        textAlign: 'center',
-        backgroundColor: theme.background.subtle,
-        paddingTop: 10,
-        paddingBottom: 10,
-        marginTop: 20,
-        marginBottom: 20,
-        ...containerStyle,
-      }}>
-      <img src={src} alt={alt} style={style} className="inline" />
+    <figure className={mergeClasses('text-center bg-subtle py-2.5 my-5', containerClassName)}>
+      <LightboxImage src={src} alt={alt} style={style} className="inline" />
       {caption && (
-        <figcaption
-          style={{
-            fontSize: 14,
-            paddingLeft: 20,
-            paddingRight: 20,
-            paddingTop: 25,
-            paddingBottom: 5,
-            lineHeight: 1.5,
-            color: theme.text.secondary,
-            textAlign: 'center',
-          }}>
+        <figcaption className="mt-[14px] text-secondary text-center text-xs px-8 py-2">
           {caption}
         </figcaption>
       )}
