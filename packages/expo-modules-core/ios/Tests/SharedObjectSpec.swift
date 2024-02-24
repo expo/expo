@@ -32,6 +32,12 @@ final class SharedObjectSpec: ExpoSpec {
         try runtime.eval("new expo.SharedObject()")
         expect(appContext.sharedObjectRegistry.size) == registrySizeBefore
       }
+
+      it("inherits from EventEmitter") {
+        let isEventEmitter = try runtime.eval("new expo.SharedObject() instanceof expo.EventEmitter")
+        expect(isEventEmitter.kind) == .bool
+        expect(try isEventEmitter.asBool()) == true
+      }
     }
 
     describe("Concrete JS class") {

@@ -7,6 +7,7 @@
 #include <jsi/jsi.h>
 #include "JSIUtils.h"
 #include "ObjectDeallocator.h"
+#include "EventEmitter.h"
 
 namespace jsi = facebook::jsi;
 
@@ -40,7 +41,7 @@ jsi::Function createClass(jsi::Runtime &runtime, const char *className, common::
 /**
  Class representing a native state of the shared object.
  */
-class JSI_EXPORT NativeState : public jsi::NativeState {
+class JSI_EXPORT NativeState : public EventEmitter::NativeState {
 public:
   const ObjectId objectId = 0;
   const ObjectReleaser releaser;
