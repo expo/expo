@@ -116,15 +116,18 @@ async function expectTemplateAppNameToHaveBeenRenamed(projectRoot: string) {
     },
     'android/app/build.gradle': {
       negativeMatch: 'com.helloworld',
+      // Although renameTemplateAppName() renames to "com.basicprebuild"
+      // post-extraction, there seems to be a follow-up step that (correctly)
+      // renames it once again to the value configured in `exp.android.package`.
       positiveMatch: 'com.example.minimal',
     },
     'android/app/src/main/java/com/example/minimal/MainApplication.kt': {
       negativeMatch: 'com.helloworld',
-      positiveMatch: 'com.basicprebuild',
+      positiveMatch: 'com.example.minimal',
     },
     'android/app/src/main/java/com/example/minimal/MainActivity.kt': {
       negativeMatch: 'com.helloworld',
-      positiveMatch: 'com.basicprebuild',
+      positiveMatch: 'com.example.minimal',
     },
     'ios/Podfile': {
       negativeMatch: 'HelloWorld',
