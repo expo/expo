@@ -7,7 +7,7 @@ export type NativeLinearGradientProps = ViewProps &
     locations?: number[] | null;
     startPoint?: NativeLinearGradientPoint | null;
     endPoint?: NativeLinearGradientPoint | null;
-    ditherPaintAndroid?: boolean;
+    dither?: boolean;
   }>;
 
 export type getLinearGradientBackgroundImage = (

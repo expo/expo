@@ -60,10 +60,12 @@ export type LinearGradientProps = ViewProps & {
   end?: LinearGradientPoint | null;
 
   /**
-   * Enables or disables paint dithering on Android. Paint dithering can fix color banding issue.
-   * @default false
+   * Enables or disables paint dithering. Dithering can reduce the gradient color banding issue.
+   * Setting `false` may improve gradient rendering performance.
+   * @default true
+   * @platform android
    */
-  ditherPaintAndroid?: boolean | false;
+  dither?: boolean;
 };
 
 /**
@@ -71,7 +73,7 @@ export type LinearGradientProps = ViewProps & {
  */
 export class LinearGradient extends React.Component<LinearGradientProps> {
   render() {
-    const { colors, locations, start, end, ditherPaintAndroid, ...props } = this.props;
+    const { colors, locations, start, end, dither, ...props } = this.props;
     let resolvedLocations = locations;
     if (locations && colors.length !== locations.length) {
       console.warn('LinearGradient colors and locations props should be arrays of the same length');
@@ -85,7 +87,7 @@ export class LinearGradient extends React.Component<LinearGradientProps> {
           web: colors as any,
           default: colors.map(processColor),
         })}
-        ditherPaintAndroid={Platform.select({ android: ditherPaintAndroid || false })}
+        dither={Platform.select({ android: dither })}
         locations={resolvedLocations}
         startPoint={_normalizePoint(start)}
         endPoint={_normalizePoint(end)}
