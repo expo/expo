@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Fixed an issue where `isBlurhashString` always returned `true` .([#27251](https://github.com/expo/expo/pull/27251) by [@alanjhughes](https://github.com/alanjhughes))
+- Fix incompatible api usage on tvOS.
 
 ### 💡 Others
 
