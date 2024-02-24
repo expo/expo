@@ -260,7 +260,7 @@ public final class ImageView: ExpoView {
         // .path() on iOS 16 will remove the leading slash
 #if os(tvOS)
         // but it doens't on tvOS 16 🙃
-        if let path = source.uri?.path {
+        if let path = source.uri?.path() {
           return String(path.dropFirst())
         }
         return nil
