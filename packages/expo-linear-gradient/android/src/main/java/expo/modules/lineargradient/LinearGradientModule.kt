@@ -31,7 +31,7 @@ class LinearGradientModule : Module() {
       }
 
       Prop("dither") { view, dither: Boolean? ->
-        view.setDither(ditherPaint ?: true)
+        view.setDither(dither ?: true)
       }
     }
   }
