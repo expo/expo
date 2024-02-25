@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Added support for Paint dithering on Android. ([#27153](https://github.com/expo/expo/pull/27153) by [@alexandrius](https://github.com/alexandrius))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
