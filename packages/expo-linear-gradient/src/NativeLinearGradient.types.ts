@@ -7,6 +7,7 @@ export type NativeLinearGradientProps = ViewProps &
     locations?: number[] | null;
     startPoint?: NativeLinearGradientPoint | null;
     endPoint?: NativeLinearGradientPoint | null;
+    dither?: boolean;
   }>;
 
 export type getLinearGradientBackgroundImage = (
