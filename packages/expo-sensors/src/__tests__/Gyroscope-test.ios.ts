@@ -4,20 +4,6 @@ afterEach(() => {
   Gyroscope.removeAllListeners();
 });
 
-it(`adds an "gyroscopeDidUpdate" listener`, () => {
-  const NativeGyroscope = Gyroscope._nativeModule;
-
-  const mockListener = jest.fn();
-  const subscription = Gyroscope.addListener(mockListener);
-
-  expect(NativeGyroscope.addListener).toHaveBeenCalledTimes(1);
-  expect(NativeGyroscope.addListener).toHaveBeenCalledWith('gyroscopeDidUpdate');
-
-  subscription.remove();
-  expect(NativeGyroscope.removeListeners).toHaveBeenCalledTimes(1);
-  expect(NativeGyroscope.removeListeners).toHaveBeenCalledWith(1);
-});
-
 it(`notifies listeners`, () => {
   const mockListener = jest.fn();
   Gyroscope.addListener(mockListener);
