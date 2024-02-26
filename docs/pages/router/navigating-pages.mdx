@@ -3,7 +3,10 @@ title: Navigate between pages
 description: Create links to move between pages.
 ---
 
+import { createDecipheriv } from 'crypto';
+import { difference } from 'lodash';
 import { FileTree } from '~/ui/components/FileTree';
+import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 
 Expo Router uses "links" to move between pages in the app. This is conceptually similar to how the web works with `<a>` tags and the `href` attribute.
 
@@ -65,28 +68,41 @@ To navigate to a route without the stack unwinding, you can use the `push` prop 
 
 In contrast, the `replace` method substitutes the current route in the navigation stack with a new one, effectively replacing the current screen with the new one without adding to the stack.
 
-## Imperative navigation
+To navigate, you can provide a full path like `/profile/settings`, a relative path like `../settings` or by passing an object like `{ pathname: 'profile', params: { id: '123' } }`.
 
-You may want to navigate from a global store when a user logs in or out. You can use the `router` object or `useRouter` hook to navigate imperatively (outside of React).
-
-```js
-import { router } from 'expo-router';
-
-export function logout() {
-  /* @info Navigate to <strong>/login</strong> */
-  router.replace('/login');
-  /* @end */
-}
-```
-
-The `router` object is immutable and contains the following functions:
-
-- **navigate**: `(href: Href) => void` Navigate to a route using the default behavior. You can provide a full path like **/profile/settings** or a relative path like **../settings**. Navigate to dynamic routes by passing an object like `{ pathname: 'profile', params: { id: '123' } }`.
-- **push**: `(href: Href) => void` Navigate to a route by always pushing onto the stack. You can provide a full path like **/profile/settings** or a relative path like **../settings**. Navigate to dynamic routes by passing an object like `{ pathname: 'profile', params: { id: '123' } }`.
-- **replace**: `(href: Href) => void` Navigate to a route by substituting the current route with a new one. This is useful for redirects.
-- **back**: `() => void` Navigate back to previous route.
-- **canGoBack**: `() => boolean` Returns `true` if a valid history stack exists and the `back()` function can pop back.
-- **setParams**: `(params: Record<string, string>) => void` Update the query params for the currently selected route.
+<Table>
+  <TableHead>
+    <Row>
+      <HeaderCell>Name</HeaderCell>
+      <HeaderCell>Description</HeaderCell>
+    </Row>
+  </TableHead>
+  <tbody>
+    <Row>
+      <Cell>`navigate`</Cell>
+      <Cell>
+        Navigate to a route using the default behavior. Navigate will only push a new screen if the
+        new route is different (not including search parameters or the hash), otherwise the current
+        screen will rerender with the new parameters. If you navigate to a route is that is in the
+        history, the stack will unwind to that route.
+      </Cell>
+    </Row>
+    <Row>
+      <Cell>`push`</Cell>
+      <Cell>
+        The same as `navigate`, except a new screen will always be created. You can push the current
+        route multiple times, or with new parameters.
+      </Cell>
+    </Row>
+    <Row>
+      <Cell>replace</Cell>
+      <Cell>
+        Remove the current route from the history and replace it with the specifed URL. This is
+        useful for redirects
+      </Cell>
+    </Row>
+  </tbody>
+</Table>
 
 ## Linking to dynamic routes
 
@@ -156,6 +172,29 @@ export default function Page() {
 Use `router.replace()` to replace the current screen imperatively.
 
 Native navigation does not always support `replace`. For example on Twitter, you wouldn't be able to "replace" directly from a profile to a tweet, this is because the UI requires a back button to return to the feed or other top-level tab screen. In this case, replace would switch to the feed tab, and push the tweet route on top of it, or if you were on a different tweet inside the feed tab, it would replace the current tweet with the new tweet. This exact behavior can be obtained in Expo Router by using [`unstable_settings`](/router/advanced/router-settings).
+
+## Imperative navigation
+
+You can also navigate imperatively using the `router` object. This is useful when you need to perform a navigation action outside of a React component, such as in a event handler or a utility function.
+
+```js
+import { router } from 'expo-router';
+
+export function logout() {
+  /* @info Navigate to <strong>/login</strong> */
+  router.replace('/login');
+  /* @end */
+}
+```
+
+The `router` object is immutable and contains the following functions:
+
+- **navigate**: `(href: Href) => void`. Perform a `navigate` action.
+- **push**: `(href: Href) => void`. Perform a `push` action.
+- **replace**: `(href: Href) => void`. Perform a `replace` action.
+- **back**: `() => void` Navigate back to previous route.
+- **canGoBack**: `() => boolean` Returns `true` if a valid history stack exists and the `back()` function can pop back.
+- **setParams**: `(params: Record<string, string>) => void` Update the query params for the currently selected route.
 
 ## Autocomplete
 
