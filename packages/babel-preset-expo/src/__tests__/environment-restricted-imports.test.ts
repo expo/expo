@@ -34,7 +34,7 @@ const DEF_OPTIONS = {
 const originalEnv = process.env;
 
 beforeEach(() => {
-  process.env = { ...originalEnv };
+  process.env = { ...originalEnv, FORCE_COLOR: '0' };
 });
 
 afterAll(() => {
