@@ -1,5 +1,6 @@
 import { ConfigAPI, PluginItem, TransformOptions } from '@babel/core';
 
+import { reactClientReferencesPlugin } from './client-module-proxy-plugin';
 import {
   getBaseUrl,
   getBundler,
@@ -7,12 +8,15 @@ import {
   getIsDev,
   getIsFastRefreshEnabled,
   getIsProd,
+  getIsReactServer,
   hasModule,
 } from './common';
+import { environmentRestrictedImportsPlugin } from './environment-restricted-imports';
 import { expoInlineManifestPlugin } from './expo-inline-manifest-plugin';
 import { expoRouterBabelPlugin } from './expo-router-plugin';
 import { expoInlineEnvVars, expoInlineTransformEnvVars } from './inline-env-vars';
 import { lazyImports } from './lazyImports';
+import { environmentRestrictedReactAPIsPlugin } from './restricted-react-api-plugin';
 
 type BabelPresetExpoPlatformOptions = {
   /** Enable or disable adding the Reanimated plugin by default. @default `true` */
@@ -61,6 +65,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   let platform = api.caller((caller) => (caller as any)?.platform);
   const engine = api.caller((caller) => (caller as any)?.engine) ?? 'default';
   const isDev = api.caller(getIsDev);
+  const isReactServer = api.caller(getIsReactServer);
   const isFastRefreshEnabled = api.caller(getIsFastRefreshEnabled);
   const baseUrl = api.caller(getBaseUrl);
   const supportsStaticESM: boolean | undefined = api.caller(
@@ -166,6 +171,17 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   if (hasModule('expo-router')) {
     extraPlugins.push(expoRouterBabelPlugin);
   }
+
+  // Ensure these only run when the user opts-in to bundling for a react server to prevent unexpected behavior for
+  // users who are bundling using the client-only system.
+  if (isReactServer) {
+    extraPlugins.push(reactClientReferencesPlugin);
+
+    extraPlugins.push(environmentRestrictedReactAPIsPlugin);
+  }
+
+  // This plugin is fine to run whenever as the server-only imports were introduced as part of RSC and shouldn't be used in any client code.
+  extraPlugins.push(environmentRestrictedImportsPlugin);
 
   if (isFastRefreshEnabled) {
     extraPlugins.push([
