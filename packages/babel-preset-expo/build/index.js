@@ -1,10 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const client_module_proxy_plugin_1 = require("./client-module-proxy-plugin");
 const common_1 = require("./common");
+const environment_restricted_imports_1 = require("./environment-restricted-imports");
 const expo_inline_manifest_plugin_1 = require("./expo-inline-manifest-plugin");
 const expo_router_plugin_1 = require("./expo-router-plugin");
 const inline_env_vars_1 = require("./inline-env-vars");
 const lazyImports_1 = require("./lazyImports");
+const restricted_react_api_plugin_1 = require("./restricted-react-api-plugin");
 function getOptions(options, platform) {
     const tag = platform === 'web' ? 'web' : 'native';
     return {
@@ -18,6 +21,7 @@ function babelPresetExpo(api, options = {}) {
     let platform = api.caller((caller) => caller?.platform);
     const engine = api.caller((caller) => caller?.engine) ?? 'default';
     const isDev = api.caller(common_1.getIsDev);
+    const isReactServer = api.caller(common_1.getIsReactServer);
     const isFastRefreshEnabled = api.caller(common_1.getIsFastRefreshEnabled);
     const baseUrl = api.caller(common_1.getBaseUrl);
     const supportsStaticESM = api.caller((caller) => caller?.supportsStaticESM);
@@ -106,6 +110,14 @@ function babelPresetExpo(api, options = {}) {
     if ((0, common_1.hasModule)('expo-router')) {
         extraPlugins.push(expo_router_plugin_1.expoRouterBabelPlugin);
     }
+    // Ensure these only run when the user opts-in to bundling for a react server to prevent unexpected behavior for
+    // users who are bundling using the client-only system.
+    if (isReactServer) {
+        extraPlugins.push(client_module_proxy_plugin_1.reactClientReferencesPlugin);
+        extraPlugins.push(restricted_react_api_plugin_1.environmentRestrictedReactAPIsPlugin);
+    }
+    // This plugin is fine to run whenever as the server-only imports were introduced as part of RSC and shouldn't be used in any client code.
+    extraPlugins.push(environment_restricted_imports_1.environmentRestrictedImportsPlugin);
     if (isFastRefreshEnabled) {
         extraPlugins.push([
             require('react-refresh/babel'),

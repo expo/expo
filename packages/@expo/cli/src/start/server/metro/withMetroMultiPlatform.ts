@@ -35,6 +35,7 @@ import { installExitHooks } from '../../../utils/exit';
 import { isInteractive } from '../../../utils/interactive';
 import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
+import { isServerEnvironment } from '../middleware/metroOptions';
 import { PlatformBundlers } from '../platformBundlers';
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] };
@@ -285,7 +286,8 @@ export function withExtendedResolver(
       if (
         // In browser runtimes, we want to either resolve a local node module by the same name, or shim the module to
         // prevent crashing when Node.js built-ins are imported.
-        context.customResolverOptions?.environment !== 'node'
+        context.customResolverOptions?.environment !== 'node' &&
+        context.customResolverOptions?.environment !== 'react-server'
       ) {
         // Perform optional resolve first. If the module doesn't exist (no module in the node_modules)
         // then we can mock the file to use an empty module.
@@ -392,7 +394,7 @@ export function withExtendedResolver(
         preferNativePlatform: platform !== 'web',
       };
 
-      if (context.customResolverOptions?.environment === 'node') {
+      if (isServerEnvironment(context.customResolverOptions?.environment)) {
         // Adjust nodejs source extensions to sort mjs after js, including platform variants.
         if (nodejsSourceExtensions === null) {
           nodejsSourceExtensions = getNodejsExtensions(context.sourceExts);
@@ -405,6 +407,11 @@ export function withExtendedResolver(
         // Node.js runtimes should only be importing main at the moment.
         // This is a temporary fix until we can support the package.json exports.
         context.mainFields = ['main', 'module'];
+
+        // Enable react-server import conditions.
+        if (context.customResolverOptions?.environment === 'react-server') {
+          context.unstable_conditionNames = ['node', 'require', 'react-server', 'server'];
+        }
       } else {
         // Non-server changes
 
