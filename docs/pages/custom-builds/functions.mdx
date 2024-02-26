@@ -63,7 +63,7 @@ export default myFunction;
 
 ## Compile the function
 
-Functions must be compiled to a single JavaScript file that can be run without installing any Node Module dependencies. The default `build` script for generated functions uses the [ncc](https://github.com/vercel/ncc) to compile your function into a single file with all its dependencies. If you don't have the `ncc` installed globally on your machine, run `npm install -g @vercel/ncc` to install it. Next, run the build script in the **.eas/build/myFunction** directory:
+Functions must be compiled to a single JavaScript file that can be run without installing any dependencies. The default `build` script for generated functions uses [ncc](https://github.com/vercel/ncc) to compile your function into a single file with all its dependencies. If you don't have the `ncc` installed globally on your machine, run `npm install -g @vercel/ncc` to install it. Next, run the build script in the **.eas/build/myFunction** directory:
 
 <Terminal cmd={['$ npm run build']} />
 
@@ -87,9 +87,9 @@ The `build` script generates **build/index.js**. This file must be uploaded to E
 
 <Step label="3">
 
-## Connect the function to the custom build config
+## Expose the function to the custom build config
 
-> **Note:** The following example assumes that you have already set up a custom build workflow and connected it with your **eas.json**. If you haven't, see our ["Get started with custom builds" guide](/custom-builds/get-started/#create-a-workflow) first.
+> **Note:** The following example assumes that you have already set up a custom build workflow and configured it in your **eas.json**. If you haven't, see our [“Get started with custom builds” guide](/custom-builds/get-started/#create-a-workflow) first.
 
 Let's assume that you have a **config.yml** file in the **.eas/build** directory. It contains the following content:
 
