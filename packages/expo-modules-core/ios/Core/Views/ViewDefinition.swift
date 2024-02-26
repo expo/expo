@@ -41,7 +41,7 @@ public final class ViewDefinition<ViewType: UIView>: ObjectDefinition, AnyViewDe
   // MARK: - AnyViewDefinition
 
   public func createView(appContext: AppContext) -> UIView? {
-    if let expoViewType = ViewType.self as? ExpoView.Type {
+    if let expoViewType = ViewType.self as? AnyExpoView.Type {
       return expoViewType.init(appContext: appContext)
     }
     if let legacyViewType = ViewType.self as? EXLegacyExpoViewProtocol.Type {
