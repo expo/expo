@@ -6,6 +6,8 @@ import android.app.Activity
 import android.view.View
 import androidx.media3.common.PlaybackParameters
 import expo.modules.kotlin.apifeatures.EitherType
+import androidx.media3.common.Player.REPEAT_MODE_ONE
+import androidx.media3.common.Player.REPEAT_MODE_OFF
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.ViewProps
@@ -189,6 +191,20 @@ class VideoModule : Module() {
         }
         .set { ref: VideoPlayer, staysActive: Boolean ->
           ref.staysActiveInBackground = staysActive
+        }
+
+      Property("isLooping")
+        .get { ref: VideoPlayer ->
+          ref.player.repeatMode == REPEAT_MODE_ONE
+        }
+        .set { ref: VideoPlayer, isLooping: Boolean ->
+          appContext.mainQueue.launch {
+            ref.player.repeatMode = if (isLooping) {
+              REPEAT_MODE_ONE
+            } else {
+              REPEAT_MODE_OFF
+            }
+          }
         }
 
       Function("getPlaybackSpeed") { ref: VideoPlayer ->

@@ -24,6 +24,7 @@ class VideoPlayerWeb {
     _isMuted = false;
     timestamp = 0;
     _volume = 1;
+    _isLooping = false;
     staysActiveInBackground = false; // Not supported on web. Dummy to match the interface.
     set isMuted(value) {
         this._mountedVideos.forEach((video) => {
@@ -45,6 +46,15 @@ class VideoPlayerWeb {
             this._volume = video.volume;
         });
         return this._volume;
+    }
+    set isLooping(value) {
+        this._mountedVideos.forEach((video) => {
+            video.loop = value;
+        });
+        this._isLooping = value;
+    }
+    get isLooping() {
+        return this._isLooping;
     }
     mountVideoView(video) {
         this._mountedVideos.add(video);

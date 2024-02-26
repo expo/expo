@@ -118,6 +118,13 @@ public final class VideoModule: Module {
         player.staysActiveInBackground = staysActive
       }
 
+      Property("isLooping") { (player: VideoPlayer) -> Bool in
+        return player.isLooping
+      }
+      .set { (player, isLooping: Bool) in
+        player.isLooping = isLooping
+      }
+
       Function("play") { player in
         player.pointer.play()
       }
@@ -135,23 +142,7 @@ public final class VideoModule: Module {
           videoSource = source.get()
         }
 
-        guard
-          let videoSource = videoSource,
-          let url = videoSource.uri
-        else {
-          player.pointer.replaceCurrentItem(with: nil)
-          return
-        }
-
-        let asset = AVURLAsset(url: url)
-        let playerItem = AVPlayerItem(asset: asset)
-
-        if let drm = videoSource.drm {
-          try drm.type.assertIsSupported()
-          player.contentKeyManager.addContentKeyRequest(videoSource: videoSource, asset: asset)
-        }
-
-        player.pointer.replaceCurrentItem(with: playerItem)
+        try player.replaceCurrentItem(with: videoSource)
       }
 
       Function("seekBy") { (player, seconds: Double) in

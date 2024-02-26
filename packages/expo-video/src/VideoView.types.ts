@@ -10,6 +10,12 @@ export declare class VideoPlayer {
   isPlaying: boolean;
 
   /**
+   * Determines whether the player should automatically replay after reaching the end of the video.
+   * @default false
+   */
+  isLooping: boolean;
+
+  /**
    * Boolean value whether the player is currently muted.
    */
   isMuted: boolean;

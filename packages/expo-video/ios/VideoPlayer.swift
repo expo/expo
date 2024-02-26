@@ -1,10 +1,17 @@
 // Copyright 2023-present 650 Industries. All rights reserved.
 
 import AVFoundation
+import MediaPlayer
 import ExpoModulesCore
 
 internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable {
   lazy var contentKeyManager = ContentKeyManager()
+
+  var isLooping = false {
+    didSet {
+      self.applyIsLooping()
+    }
+  }
 
   var staysActiveInBackground = false {
     didSet {
@@ -16,6 +23,8 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable {
     }
   }
 
+  private var playerItemObserver: NSObjectProtocol?
+
   override init(_ pointer: AVPlayer) {
     super.init(pointer)
     NowPlayingManager.shared.registerPlayer(pointer)
@@ -25,6 +34,43 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable {
   deinit {
     NowPlayingManager.shared.unregisterPlayer(pointer)
     VideoManager.shared.unregister(videoPlayer: self)
+  }
+
+  func replaceCurrentItem(with videoSource: VideoSource?) throws {
+    guard
+      let videoSource = videoSource,
+      let url = videoSource.uri
+    else {
+      pointer.replaceCurrentItem(with: nil)
+      applyIsLooping()
+      return
+    }
+
+    let asset = AVURLAsset(url: url)
+    let playerItem = AVPlayerItem(asset: asset)
+
+    if let drm = videoSource.drm {
+      try drm.type.assertIsSupported()
+      contentKeyManager.addContentKeyRequest(videoSource: videoSource, asset: asset)
+    }
+
+    pointer.replaceCurrentItem(with: playerItem)
+    applyIsLooping()
+  }
+
+  private func applyIsLooping() {
+    NotificationCenter.default.removeObserver(playerItemObserver)
+    playerItemObserver = nil
+
+    if let currentItem = pointer.currentItem, isLooping {
+      playerItemObserver = NotificationCenter.default.addObserver(
+        forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
+        object: pointer.currentItem,
+        queue: nil) { [weak self] _ in
+          self?.pointer.seek(to: .zero)
+          self?.pointer.play()
+      }
+    }
   }
 
   /**

@@ -9,11 +9,14 @@ declare class VideoPlayerWeb implements VideoPlayer {
     _isMuted: boolean;
     timestamp: number;
     _volume: number;
+    _isLooping: boolean;
     staysActiveInBackground: boolean;
     set isMuted(value: boolean);
     get isMuted(): boolean;
     set volume(value: number);
     get volume(): number;
+    set isLooping(value: boolean);
+    get isLooping(): boolean;
     mountVideoView(video: HTMLVideoElement): void;
     unmountVideoView(video: HTMLVideoElement): void;
     play(): void;
