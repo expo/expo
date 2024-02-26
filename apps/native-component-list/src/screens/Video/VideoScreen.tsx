@@ -43,11 +43,9 @@ export default function VideoScreen() {
   const [showNativeControls, setShowNativeControls] = React.useState(true);
   const [requiresLinearPlayback, setRequiresLinearPlayback] = React.useState(false);
   const [staysActiveInBackground, setStaysActiveInBackground] = React.useState(false);
-  const player = useVideoPlayer(videoSources[selectedSource]);
+  const [isLooping, setIsLooping] = React.useState(false);
 
-  useEffect(() => {
-    player.staysActiveInBackground = true;
-  }, []);
+  const player = useVideoPlayer(videoSources[selectedSource]);
 
   const enterFullscreen = useCallback(() => {
     ref.current?.enterFullscreen();
@@ -89,6 +87,14 @@ export default function VideoScreen() {
     [staysActiveInBackground]
   );
 
+  const updateIsLooping = useCallback(
+    (isLooping: boolean) => {
+      player.isLooping = isLooping;
+      setIsLooping(isLooping);
+    },
+    [isLooping]
+  );
+
   useEffect(() => {
     player.play();
   }, []);
@@ -116,7 +122,7 @@ export default function VideoScreen() {
           console.log('Exited Picture in Picture mode');
         }}
       />
-      <ScrollView>
+      <ScrollView style={styles.controlsContainer}>
         <Text>PictureInPicture Active: {isInPictureInPicture ? 'Yes' : 'No'}</Text>
         <Text>VideoSource:</Text>
         <Picker
@@ -182,6 +188,13 @@ export default function VideoScreen() {
             style={styles.switch}
             titleStyle={styles.switchTitle}
           />
+          <TitledSwitch
+            title="Loop playback"
+            value={isLooping}
+            setValue={updateIsLooping}
+            style={styles.switch}
+            titleStyle={styles.switchTitle}
+          />
         </View>
       </ScrollView>
     </View>
@@ -194,6 +207,10 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: 50,
+  },
+  controlsContainer: {
+    alignSelf: 'stretch',
   },
   row: {
     flexDirection: 'row',
@@ -204,6 +221,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#e0e0e0',
   },
   switch: {
+    flex: 1,
     flexDirection: 'column',
   },
   switchTitle: {
