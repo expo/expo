@@ -27,11 +27,11 @@
 #import "EXScopedNotificationCategoriesModule.h"
 #import "EXScopedServerRegistrationModule.h"
 
-#import <ExpoFileSystem/EXFileSystem.h>
-
 #if __has_include(<EXTaskManager/EXTaskManager.h>)
 #import <EXTaskManager/EXTaskManager.h>
 #endif
+
+#import <ExpoModulesCore-Swift.h>
 
 @implementation EXScopedModuleRegistryAdapter
 
@@ -53,17 +53,13 @@
   [moduleRegistry registerExportedModule:scopedFacebook];
 #endif
 
-#if __has_include(<ExpoFileSystem/EXFileSystem.h>)
-  if (params[@"fileSystemDirectories"]) {
-    // Override the FileSystem module with custom document and cache directories
-    NSString *documentDirectory = params[@"fileSystemDirectories"][@"documentDirectory"];
-    NSString *cachesDirectory = params[@"fileSystemDirectories"][@"cachesDirectory"];
-    EXFileSystem *fileSystemModule = [[EXFileSystem alloc] initWithDocumentDirectory:documentDirectory
-                                                                     cachesDirectory:cachesDirectory];
-    [moduleRegistry registerExportedModule:fileSystemModule];
-    [moduleRegistry registerInternalModule:fileSystemModule];
-  }
-#endif
+if (params[@"fileSystemDirectories"]) {
+  // Override the FileSystem module with custom document and cache directories
+  NSString *documentDirectory = params[@"fileSystemDirectories"][@"documentDirectory"];
+  NSString *cachesDirectory = params[@"fileSystemDirectories"][@"cachesDirectory"];
+  EXFileSystemLegacyUtilities *fileSystemModule = [[EXFileSystemLegacyUtilities alloc] initWithDocumentDirectory:documentDirectory cachesDirectory:cachesDirectory];
+  [moduleRegistry registerInternalModule:fileSystemModule];
+}
 
 #if __has_include(<EXFont/EXFontLoader.h>)
   EXScopedFontLoader *fontModule = [[EXScopedFontLoader alloc] init];
@@ -80,11 +76,6 @@
 
   EXExpoUserNotificationCenterProxy *userNotificationCenter = [[EXExpoUserNotificationCenterProxy alloc] initWithUserNotificationCenter:kernelServices[EX_UNVERSIONED(@"EXUserNotificationCenter")]];
   [moduleRegistry registerInternalModule:userNotificationCenter];
-
-#if __has_include(<ExpoFileSystem/EXFilePermissionModule.h>)
-  EXScopedFilePermissionModule *filePermissionModule = [[EXScopedFilePermissionModule alloc] init];
-  [moduleRegistry registerInternalModule:filePermissionModule];
-#endif
 
 #if __has_include(<EXSecureStore/EXSecureStore.h>)
   EXScopedSecureStore *secureStoreModule = [[EXScopedSecureStore alloc] initWithScopeKey:scopeKey andConstantsBinding:constantsBinding];
