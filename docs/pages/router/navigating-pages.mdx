@@ -4,7 +4,6 @@ description: Create links to move between pages.
 ---
 
 import { FileTree } from '~/ui/components/FileTree';
-import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 
 Expo Router uses "links" to move between pages in the app. This is conceptually similar to how the web works with `<a>` tags and the `href` attribute.
 
@@ -68,11 +67,11 @@ In contrast, the `replace` method substitutes the current route in the navigatio
 
 To navigate, you can provide a full path (`/profile/settings`), a relative path (`../settings`), or by passing an object (`{ pathname: 'profile', params: { id: '123' } }`).
 
-| Name      | Description                                                                                                                               |
-| --------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `navigate` | Navigate to a route using the default behavior. `navigate` only pushes a new screen if the new route is different (not including search parameters or the hash). Otherwise, the current screen rerenders with the new parameters. If you navigate to a route that is in the history, the stack will reset to that route. |
-| `push`    | The same as `navigate`, except a new screen is always created. You can push the current route multiple times or with new parameters. |
-| `replace` | Remove the current route from the history and replace it with the specified URL. This is useful for redirects.                              |
+| Name       | Description                                                                                                                                                                                                                                                                                                                        |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `navigate` | Navigate to a route using the default behavior. `navigate` only pushes a new screen if the new route is different (not including search parameters or the hash). Otherwise, the current screen rerenders with the new parameters. If you navigate to a route that is in the history, the stack will dismiss screens to that route. |
+| `push`     | The same as `navigate`, except a new screen is always created. You can push the current route multiple times or with new parameters.                                                                                                                                                                                               |
+| `replace`  | Remove the current route from the history and replace it with the specified URL. This is useful for redirects.                                                                                                                                                                                                                     |
 
 ## Linking to dynamic routes
 
