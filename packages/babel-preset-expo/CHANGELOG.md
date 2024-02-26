@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- Disable color in snapshot tests in CI.
+- Disable color in snapshot tests in CI. ([#27301](https://github.com/expo/expo/pull/27301) by [@EvanBacon](https://github.com/EvanBacon))
 - Upgrade `babel-plugin-react-native-web` for latest `react-native-web` aliases. ([#27214](https://github.com/expo/expo/pull/27214) by [@EvanBacon](https://github.com/EvanBacon))
 - Directly resolve plugins. ([#27041](https://github.com/expo/expo/pull/27041) by [@EvanBacon](https://github.com/EvanBacon))
 
