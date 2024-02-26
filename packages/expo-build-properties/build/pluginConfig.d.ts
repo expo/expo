@@ -68,21 +68,45 @@ export interface PluginConfigTypeAndroid {
     /**
      * Add extra maven repositories to all gradle projects.
      *
-     * This acts like to add the following code to **android/build.gradle**:
+     *
+     * Takes an array of objects or strings.
+     * Strings are passed as the `url` property of the object with no credentials or authentication scheme.
+     *
+     * This adds the following code to **android/build.gradle**:
+     * ```groovy
+     * allprojects {
+     *  repositories {
+     *   maven {
+     *    url "https://foo.com/maven-releases"
+     *  }
+     * }
+     * ```
+     *
+     * By using an `AndroidMavenRepository` object, you can specify credentials and an authentication scheme.
+     *
      * ```groovy
      * allprojects {
      *   repositories {
      *     maven {
-     *       url [THE_EXTRA_MAVEN_REPOSITORY]
+     *       url "https://foo.com/maven-releases"
+     *       credentials {
+     *        username = "bar"
+     *        password = "baz"
+     *       }
+     *       authentication {
+     *        basic(BasicAuthentication)
+     *       }
      *     }
      *   }
      * }
      * ```
      *
+     * @see [Gradle documentation](https://docs.gradle.org/current/userguide/declaring_repositories.html#sec:case-for-maven)
+     *
      * @hide For the implementation details,
-     * this property is actually handled by `expo-modules-autolinking` but not the config-plugins inside expo-build-properties.
+     * this property is actually handled by `expo-modules-autolinking` not the config-plugins inside `expo-build-properties`
      */
-    extraMavenRepos?: string[];
+    extraMavenRepos?: (AndroidMavenRepository | string)[];
     /**
      * Indicates whether the app intends to use cleartext network traffic.
      *
@@ -107,6 +131,37 @@ export interface PluginConfigTypeAndroid {
      */
     manifestQueries?: PluginConfigTypeAndroidQueries;
 }
+export interface AndroidMavenRepository {
+    /**
+     * The URL of the Maven repository.
+     */
+    url: string;
+    /**
+     * The credentials to use when accessing the Maven repository.
+     * May be of type PasswordCredentials, HttpHeaderCredentials, or AWSCredentials.
+     *
+     * @see the authentication schemes section of [Gradle documentation](https://docs.gradle.org/current/userguide/declaring_repositories.html#sec:authentication_schemes) for more information.
+     */
+    credentials?: AndroidMavenRepositoryCredentials;
+    /**
+     * The authentication scheme to use when accessing the Maven repository.
+     */
+    authentication?: 'basic' | 'digest' | 'header';
+}
+interface AndroidMavenRepositoryPasswordCredentials {
+    username: string;
+    password: string;
+}
+interface AndroidMavenRepositoryHttpHeaderCredentials {
+    name: string;
+    value: string;
+}
+interface AndroidMavenRepositoryAWSCredentials {
+    accessKey: string;
+    secretKey: string;
+    sessionToken?: string;
+}
+type AndroidMavenRepositoryCredentials = AndroidMavenRepositoryPasswordCredentials | AndroidMavenRepositoryHttpHeaderCredentials | AndroidMavenRepositoryAWSCredentials;
 /**
  * Interface representing available configuration for iOS native build properties.
  * @platform ios
@@ -309,3 +364,4 @@ export interface PluginConfigTypeAndroidQueriesData {
  * @ignore
  */
 export declare function validateConfig(config: any): PluginConfigType;
+export {};
