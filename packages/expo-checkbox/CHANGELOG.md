@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Mark React client components with "use client" directives.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

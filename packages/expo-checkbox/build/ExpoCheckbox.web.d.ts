@@ -1,4 +1,5 @@
 /**
+ * Copyright © 2024 650 Industries.
  * Copyright (c) Nicolas Gallagher.
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
