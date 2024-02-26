@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On Android `fileSize` was named `filesize` which did not match the docs & typescript definition. ([#27293](https://github.com/expo/expo/pull/27293) by [@WookieFPV](https://github.com/wookieFPV))
+
 ### 💡 Others
 
 ### 💡 Others
