@@ -2,30 +2,7 @@ import { getConfig } from '@expo/config';
 import path from 'path';
 
 import { getProjectPackageJsonPathAsync } from './mergeLinkingOptions';
-
-interface AndroidMavenRepository {
-  url: string;
-}
-
-interface IosPod {
-  name: string;
-  version?: string;
-  configurations?: string[];
-  modular_headers?: boolean;
-  source?: string;
-  path?: string;
-  podspec?: string;
-  testspecs?: string[];
-  git?: string;
-  branch?: string;
-  tag?: string;
-  commit?: string;
-}
-
-interface ExtraDependencies {
-  androidMavenRepos: AndroidMavenRepository[];
-  iosPods?: IosPod[];
-}
+import type { ExtraDependencies } from '../types';
 
 /**
  * Gets the `expo-build-properties` settings from the app config.

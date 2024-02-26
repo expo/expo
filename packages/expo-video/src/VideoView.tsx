@@ -2,10 +2,15 @@ import { ReactNode, PureComponent, useMemo, createRef } from 'react';
 
 import NativeVideoModule from './NativeVideoModule';
 import NativeVideoView from './NativeVideoView';
-import { VideoPlayer, VideoViewProps } from './VideoView.types';
+import { VideoPlayer, VideoSource, VideoViewProps } from './VideoView.types';
 
-export function useVideoPlayer(source: string | null = null): VideoPlayer {
+export function useVideoPlayer(source: VideoSource): VideoPlayer {
   return useMemo(() => {
+    if (typeof source === 'string') {
+      return new NativeVideoModule.VideoPlayer({
+        uri: source,
+      });
+    }
     return new NativeVideoModule.VideoPlayer(source);
   }, []);
 }
@@ -22,6 +27,14 @@ export function isPictureInPictureSupported(): Promise<boolean> {
 
 export class VideoView extends PureComponent<VideoViewProps> {
   nativeRef = createRef<any>();
+
+  replace(source: VideoSource) {
+    if (typeof source === 'string') {
+      this.nativeRef.current?.replace({ uri: source });
+      return;
+    }
+    this.nativeRef.current?.replace(source);
+  }
 
   enterFullscreen() {
     this.nativeRef.current?.enterFullscreen();

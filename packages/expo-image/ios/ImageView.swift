@@ -163,6 +163,11 @@ public final class ImageView: ExpoView {
     context[ImageView.contextSourceKey] = source
     context[ImageView.screenScaleKey] = screenScale
 
+    // Do it here so we don't waste resources trying to fetch from a remote URL
+    if maybeRenderLocalAsset(from: source) {
+      return
+    }
+
     onLoadStart([:])
 
     pendingOperation = imageManager.loadImage(
@@ -247,6 +252,36 @@ public final class ImageView: ExpoView {
     } else {
       displayPlaceholderIfNecessary()
     }
+  }
+
+  private func maybeRenderLocalAsset(from source: ImageSource) -> Bool {
+    let path: String? = {
+      if #available(iOS 16.0, tvOS 16.0, *) {
+        // .path() on iOS 16 will remove the leading slash
+#if os(tvOS)
+        // but it doesn't on tvOS 16 🙃
+        if let path = source.uri?.path() {
+          return String(path.dropFirst())
+        }
+        return nil
+#else
+        return source.uri?.path()
+#endif
+      }
+
+      // manually drop the leading slash below iOS 16
+      if let path = source.uri?.path {
+        return String(path.dropFirst())
+      }
+      return nil
+    }()
+
+    if let path, let local = UIImage(named: path) {
+      renderImage(local)
+      return true
+    }
+
+    return false
   }
 
   // MARK: - Placeholder
@@ -389,11 +424,11 @@ public final class ImageView: ExpoView {
       sdImageView.image = image
     }
 
-    #if !os(tvOS)
+#if !os(tvOS)
     if enableLiveTextInteraction {
       analyzeImage()
     }
-    #endif
+#endif
   }
 
   // MARK: - Helpers
@@ -433,7 +468,7 @@ public final class ImageView: ExpoView {
   }
 
   // MARK: - Live Text Interaction
-  #if !os(tvOS)
+#if !os(tvOS)
   @available(iOS 16.0, macCatalyst 17.0, *)
   static let imageAnalyzer = ImageAnalyzer.isSupported ? ImageAnalyzer() : nil
 
@@ -483,5 +518,5 @@ public final class ImageView: ExpoView {
     }
     return interaction as? ImageAnalysisInteraction
   }
-  #endif
+#endif
 }

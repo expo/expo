@@ -9,6 +9,7 @@ declare class VideoPlayerWeb implements VideoPlayer {
     _isMuted: boolean;
     timestamp: number;
     _volume: number;
+    staysActiveInBackground: boolean;
     set isMuted(value: boolean);
     get isMuted(): boolean;
     set volume(value: number);

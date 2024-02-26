@@ -58,7 +58,8 @@
     "remark-mdx": "^2.2.1",
     "remark-mdx-disable-explicit-jsx": "^0.1.0",
     "remark-mdx-frontmatter": "^2.1.1",
-    "tippy.js": "^6.3.7"
+    "tippy.js": "^6.3.7",
+    "yet-another-react-lightbox": "^3.17.0"
   },
   "devDependencies": {
     "@apidevtools/json-schema-ref-parser": "^11.1.0",

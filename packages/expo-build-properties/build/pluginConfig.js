@@ -47,7 +47,63 @@ const schema = {
                     nullable: true,
                 },
                 networkInspector: { type: 'boolean', nullable: true },
-                extraMavenRepos: { type: 'array', items: { type: 'string' }, nullable: true },
+                extraMavenRepos: {
+                    type: 'array',
+                    items: {
+                        type: ['string', 'object'],
+                        anyOf: [
+                            { type: 'string', nullable: false },
+                            {
+                                type: 'object',
+                                required: ['url'],
+                                properties: {
+                                    url: { type: 'string', nullable: false },
+                                    credentials: {
+                                        type: 'object',
+                                        oneOf: [
+                                            {
+                                                type: 'object',
+                                                properties: {
+                                                    username: { type: 'string' },
+                                                    password: { type: 'string' },
+                                                },
+                                                required: ['username', 'password'],
+                                                additionalProperties: false,
+                                            },
+                                            {
+                                                type: 'object',
+                                                properties: {
+                                                    name: { type: 'string' },
+                                                    value: { type: 'string' },
+                                                },
+                                                required: ['name', 'value'],
+                                                additionalProperties: false,
+                                            },
+                                            {
+                                                type: 'object',
+                                                properties: {
+                                                    accessKey: { type: 'string' },
+                                                    secretKey: { type: 'string' },
+                                                    sessionToken: { type: 'string', nullable: true },
+                                                },
+                                                required: ['accessKey', 'secretKey'],
+                                                additionalProperties: false,
+                                            },
+                                        ],
+                                        nullable: true,
+                                    },
+                                    authentication: {
+                                        type: 'string',
+                                        enum: ['basic', 'digest', 'header'],
+                                        nullable: true,
+                                    },
+                                },
+                                additionalProperties: false,
+                            },
+                        ],
+                    },
+                    nullable: true,
+                },
                 usesCleartextTraffic: { type: 'boolean', nullable: true },
                 useLegacyPackaging: { type: 'boolean', nullable: true },
                 manifestQueries: {
