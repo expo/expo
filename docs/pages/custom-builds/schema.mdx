@@ -1408,22 +1408,17 @@ build:
           message: 'This is a message to plain input URL'
           slack_hook_url: 'https://hooks.slack.com/services/[rest_of_hook_url]'
     # @end #
-    # @info #
     - eas/send_slack_message:
         name: Send Slack message to a default webhook URL from SLACK_HOOK_URL secret
         inputs:
           message: 'This is a test message to default URL from SLACK_HOOK_URL secret'
-    # @end #
-    # @info #
     - eas/send_slack_message:
         name: Send Slack message to a webhook URL from specified secret
         inputs:
           message: 'This is a test message to a URL from specified secret'
           slack_hook_url: ${ eas.env.ANOTHER_SLACK_HOOK_URL }
-    # @end #
 
     - eas/build
-    # @info #
     - eas/send_slack_message:
         if: ${ always() }
         name: Send Slack message when the build finishes (Android)
@@ -1432,8 +1427,6 @@ build:
             This is a test message when Android build finishes
             Status: `${ steps.run_gradle.status_text }`
             Link: `${ eas.job.expoBuildUrl }`
-    # @end #
-    # @info #
     - eas/send_slack_message:
         if: ${ always() }
         name: Send Slack message when the build finishes (iOS)
@@ -1442,8 +1435,6 @@ build:
             This is a test message when iOS build finishes
             Status: `${ steps.run_fastlane.status_text }`
             Link: `${ eas.job.expoBuildUrl }`
-    # @end #
-    # @info #
     - eas/send_slack_message:
         if: ${ failure() }
         name: Send Slack message when the build fails (Android)
@@ -1451,8 +1442,6 @@ build:
           message: |
             This is a test message when Android build fails
             Error: `${ steps.run_gradle.error_text }`
-    # @end #
-    # @info #
     - eas/send_slack_message:
         if: ${ failure() }
         name: Send Slack message when the build fails (iOS)
@@ -1460,15 +1449,12 @@ build:
           message: |
             This is a test message when iOS build fails
             Error: `${ steps.run_fastlane.error_text }`
-    # @end #
-    # @info #
     - eas/send_slack_message:
         if: ${ success() }
         name: Send Slack message when the build succeeds
         inputs:
           message: |
             This is a test message when build succeeds
-    # @end #
 ```
 
 | Input               | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
