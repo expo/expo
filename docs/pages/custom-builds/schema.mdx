@@ -578,6 +578,13 @@ The all-in-one function that encapsulates the entire EAS Build build process. It
 It's ideal for people who just want to have the build done without worrying about altering and configuring the build process manually.
 It can be a great starting point for your custom build configuration if you are interested in using other custom steps before or after the build process and you don't want to change the build process itself.
 
+```yaml example.yml
+build:
+  name: Run a build using a single command
+  steps:
+    - eas/build
+```
+
 If you want to have more control over the build process and customize it for your needs you may be interested in what are the custom functions and steps that are executed behind the scenes by this function. This is what will be resolved as a build process for you based on your build profile's configuration:
 
 1. for iOS build:
