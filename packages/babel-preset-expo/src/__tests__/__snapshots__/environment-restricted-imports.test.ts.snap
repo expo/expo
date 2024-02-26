@@ -2,12 +2,12 @@
 
 exports[`forbidden server imports client mode (default) asserts importing server-side modules in client components 1`] = `
 "/unknown: Importing 'server-only' module is not allowed in a client component.
-[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m { [33mA[39m } [36mfrom[39m [32m'server-only'[39m[33m;[39m[0m
-[0m [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[0m"
+> 1 | import { A } from 'server-only';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
 `;
 
 exports[`forbidden server imports react server mode asserts importing client-side modules in server components 1`] = `
 "/unknown: Importing 'client-only' module is not allowed in a React server bundle. Add the "use client" directive to this file or one of the parent modules to allow importing this module.
-[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m { [33mA[39m } [36mfrom[39m [32m'client-only'[39m[33m;[39m[0m
-[0m [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[0m"
+> 1 | import { A } from 'client-only';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
 `;

@@ -2,11 +2,11 @@
 
 exports[`asserts that use client and use server cannot be used together 1`] = `
 "/unknown: It's not possible to have both \`use client\` and \`use server\` directives in the same file.
-[0m[31m[1m>[22m[39m[90m 1 |[39m[0m
-[0m [90m   |[39m [31m[1m^[22m[39m[0m
-[0m [90m 2 |[39m     [32m'use server'[39m[33m;[39m[0m
-[0m [90m 3 |[39m     [32m'use client'[39m[33m;[39m[0m
-[0m [90m 4 |[39m     [0m"
+> 1 |
+    | ^
+  2 |     'use server';
+  3 |     'use client';
+  4 |     "
 `;
 
 exports[`use client does nothing without use client directive 1`] = `"export var foo = 'bar';"`;
