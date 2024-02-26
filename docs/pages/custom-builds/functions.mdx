@@ -67,7 +67,7 @@ After generating the function, you will want to compile it and connect it to you
 
 ### Compile the function
 
-Functions must be compiled to a single JavaScript file that can be run without installing any Node Module dependencies. The default `build` script for generated functions uses the [ncc](https://github.com/vercel/ncc) to compile your function into a single file with all its dependencies. If you don't have the `ncc` installed globally on your machine, run `npm install -g @vercel/ncc` to install it. Next, run the build script in the  **.eas/build/myFunction** directory:
+Functions must be compiled to a single JavaScript file that can be run without installing any Node Module dependencies. The default `build` script for generated functions uses the [ncc](https://github.com/vercel/ncc) to compile your function into a single file with all its dependencies. If you don't have the `ncc` installed globally on your machine, run `npm install -g @vercel/ncc` to install it. Next, run the build script in the **.eas/build/myFunction** directory:
 
 <Terminal cmd={['$ npm run build']} />
 
@@ -96,9 +96,7 @@ build:
   name: My example config
   steps:
     - eas/checkout
-    - run:
-        name: Install dependencies
-        command: npm install
+    - eas/install_node_modules
     - run:
         name: Finished
         command: echo Finished
@@ -111,9 +109,7 @@ build:
   name: My example config
   steps:
     - eas/checkout
-    - run:
-        name: Install dependencies
-        command: npm install
+    - eas/install_node_modules
     - run:
         name: Finished
         command: echo Finished
@@ -135,9 +131,7 @@ build:
   name: My example config
   steps:
     - eas/checkout
-    - run:
-        name: Install dependencies
-        command: npm install
+    - eas/install_node_modules
     # @info #
     - my_function
     # @end #
@@ -169,9 +163,7 @@ build:
   name: My example config
   steps:
     - eas/checkout
-    - run:
-        name: Install dependencies
-        command: npm install
+    - eas/install_node_modules
     # @info #
     - my_function:
         inputs:
