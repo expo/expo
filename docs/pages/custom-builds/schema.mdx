@@ -586,47 +586,56 @@ build:
 
 To have more control over the build process and customize it as per your requirements, see the following custom functions and steps that run in the background by `eas/build`. They are executed as a build process based on your build profile's configuration.
 
-1. for iOS build:
-   - if your build doesn't use credentials ([simulator](/eas/json/#simulator) build or when using when using [`withoutCredentials`](/eas/json/withoutcredentials-0)):
-     - [`eas/checkout`](#eascheckout)
-     - [`eas/install_node_modules`](#easinstall_node_modules)
-     - [`eas/prebuild`](#easprebuild)
-     - Install pods using the `pod install` command
-     - [`eas/configure_eas_update`](#easconfigure_eas_update)
-     - [`eas/generate_gymfile_from_template`](#easgenerate_gymfile_from_template)
-     - [`eas/run_fastlane`](#easrun_fastlane)
-     - [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts)
-   - if your build uses credentials (for both `internal` and `store` [distribution](/eas/json/#distribution) builds):
-     - [`eas/checkout`](#eascheckout)
-     - [`eas/install_node_modules`](#easinstall_node_modules)
-     - [`eas/get_credentials_for_build_triggered_by_github_integration`](#easget_credentials_for_build_triggered_by_github_integration)
-     - [`eas/resolve_apple_team_id_from_credentials`](#easresolve_apple_team_id_from_credentials)
-     - [`eas/prebuild`](#easprebuild)
-     - Install pods using the `pod install` command
-     - [`eas/configure_eas_update`](#easconfigure_eas_update)
-     - [`eas/configure_ios_credentials`](#easconfigure_ios_credentials)
-     - [`eas/configure_ios_version`](#easconfigure_ios_version)
-     - [`eas/generate_gymfile_from_template`](#easgenerate_gymfile_from_template)
-     - [`eas/run_fastlane`](#easrun_fastlane)
-     - [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts)
-2. for Android build:
-   - if your build doesn't use credentials (when using [`withoutCredentials`](/eas/json/withoutcredentials-1) option):
-     - [`eas/checkout`](#eascheckout)
-     - [`eas/install_node_modules`](#easinstall_node_modules)
-     - [`eas/prebuild`](#easprebuild)
-     - [`eas/configure_eas_update`](#easconfigure_eas_update)
-     - [`eas/run_gradle`](#easrun_gradle)
-     - [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts)
-   - if your build uses credentials (for both `internal` and `store` [distribution](/eas/json/#distribution) builds):
-     - [`eas/checkout`](#eascheckout)
-     - [`eas/install_node_modules`](#easinstall_node_modules)
-     - [`eas/get_credentials_for_build_triggered_by_github_integration`](#easget_credentials_for_build_triggered_by_github_integration)
-     - [`eas/prebuild`](#easprebuild)
-     - [`eas/configure_eas_update`](#easconfigure_eas_update)
-     - [`eas/inject_android_credentials`](#easinject_android_credentials)
-     - [`eas/configure_android_version`](#easconfigure_android_version)
-     - [`eas/run_gradle`](#easrun_gradle)
-     - [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts)
+##### Android
+
+When a build configuration is using [`withoutCredentials`](/eas/json/#withoutcredentials):
+
+- [`eas/checkout`](#eascheckout)
+- [`eas/install_node_modules`](#easinstall_node_modules)
+- [`eas/prebuild`](#easprebuild)
+- [`eas/configure_eas_update`](#easconfigure_eas_update)
+- [`eas/run_gradle`](#easrun_gradle)
+- [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts)
+
+When a build configuration uses credentials (for both `internal` and `store` [distribution](/eas/json/#distribution) builds):
+
+- [`eas/checkout`](#eascheckout)
+- [`eas/install_node_modules`](#easinstall_node_modules)
+- [`eas/get_credentials_for_build_triggered_by_github_integration`](#easget_credentials_for_build_triggered_by_github_integration)
+- [`eas/prebuild`](#easprebuild)
+- [`eas/configure_eas_update`](#easconfigure_eas_update)
+- [`eas/inject_android_credentials`](#easinject_android_credentials)
+- [`eas/configure_android_version`](#easconfigure_android_version)
+- [`eas/run_gradle`](#easrun_gradle)
+- [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts)
+
+##### iOS
+
+When a build configuration is using [`withoutCredentials`](/eas/json/#withoutcredentials) or [`simulator`](/eas/json/#simulator):
+
+- [`eas/checkout`](#eascheckout)
+- [`eas/install_node_modules`](#easinstall_node_modules)
+- [`eas/prebuild`](#easprebuild)
+- Install pods using the `pod install` command
+- [`eas/configure_eas_update`](#easconfigure_eas_update)
+- [`eas/generate_gymfile_from_template`](#easgenerate_gymfile_from_template)
+- [`eas/run_fastlane`](#easrun_fastlane)
+- [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts)
+
+When a build configuration uses credentials (for both `internal` and `store` [distribution](/eas/json/#distribution) builds):
+
+- [`eas/checkout`](#eascheckout)
+- [`eas/install_node_modules`](#easinstall_node_modules)
+- [`eas/get_credentials_for_build_triggered_by_github_integration`](#easget_credentials_for_build_triggered_by_github_integration)
+- [`eas/resolve_apple_team_id_from_credentials`](#easresolve_apple_team_id_from_credentials)
+- [`eas/prebuild`](#easprebuild)
+- Install pods using the `pod install` command
+- [`eas/configure_eas_update`](#easconfigure_eas_update)
+- [`eas/configure_ios_credentials`](#easconfigure_ios_credentials)
+- [`eas/configure_ios_version`](#easconfigure_ios_version)
+- [`eas/generate_gymfile_from_template`](#easgenerate_gymfile_from_template)
+- [`eas/run_fastlane`](#easrun_fastlane)
+- [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts)
 
 You can replace the `eas/build` command call by using these steps in your YAML configuration file:
 
