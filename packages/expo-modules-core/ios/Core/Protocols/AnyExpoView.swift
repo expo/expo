@@ -1,9 +1,3 @@
-//
-//  AnyExpoView.swift
-//  ExpoModulesCore
-//
-//  Created by Dominic Go on 2/26/24.
-//
 import UIKit
 import React
 
