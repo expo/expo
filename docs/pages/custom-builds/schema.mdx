@@ -573,10 +573,9 @@ EAS provides a set of built-in reusable functions that you can use in a workflow
 
 #### `eas/build`
 
-The all-in-one function that encapsulates the entire EAS Build build process. It will resolve the best build workflow configuration for you based on your build profile's settings from [**eas.json**](/eas/json/).
+The all-in-one function that encapsulates the entire EAS Build build process. It resolves the best build workflow configuration based on your build profile's settings from [**eas.json**](/eas/json/).
 
-It's ideal for people who just want to have the build done without worrying about altering and configuring the build process manually.
-It can be a great starting point for your custom build configuration if you are interested in using other custom steps before or after the build process and you don't want to change the build process itself.
+It's ideal for people who just want to have the build done without worrying about altering and configuring the build process manually. It can be a great starting point for your custom build configuration if you are interested in using other custom steps before or after the build process and you don't want to change the build process itself.
 
 ```yaml example.yml
 build:
@@ -585,7 +584,7 @@ build:
     - eas/build
 ```
 
-If you want to have more control over the build process and customize it for your needs you may be interested in what are the custom functions and steps that are executed behind the scenes by this function. This is what will be resolved as a build process for you based on your build profile's configuration:
+To have more control over the build process and customize it as per your requirements, see the following custom functions and steps that run in the background by `eas/build`. They are executed as a build process based on your build profile's configuration.
 
 1. for iOS build:
    - if your build doesn't use credentials ([simulator](/eas/json/#simulator) build or when using when using [`withoutCredentials`](/eas/json/withoutcredentials-0)):
@@ -656,10 +655,10 @@ You can replace the `eas/build` command call by using these steps in your YAML c
   href="https://github.com/expo/eas-custom-builds-example/blob/main/.eas/build/android-build-with-credentials.yml"
 />
 
-Known limitations:
+##### Known limitations
 
-- This function won't configure updates for you properly if you still use the legacy classic updates. You should use the EAS Update instead. Check our [migration guide](/eas-update/migrate-from-classic-updates/) for more information.
-- Currently it doesn't accept any inputs and the resolved build process will be configured based on your build profile from [**eas.json**](/eas/json/) settings.
+- This function doesn't configure legacy classic updates. If you are using classic updates, [migrate to EAS Update](/eas-update/migrate-from-classic-updates/) before using this function.
+- It doesn't accept any inputs, and the resolved build process will be configured based on your build profile from [**eas.json**](/eas/json/).
 - The build process produced by `eas/build` is not configurable and you can't customize it. If you need to customize the build process you should use the subset of functions and steps that are executed behind the scenes by this function and configure them manually in your YAML configuration file as shown in the examples above.
 
 #### `eas/maestro_test`
