@@ -40,6 +40,7 @@ const screens = [
   'SegmentedControl',
   'Slider',
   'Switch',
+  'Symbols',
   'Text',
   'TextInput',
   'TouchableBounce',

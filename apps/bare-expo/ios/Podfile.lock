@@ -257,6 +257,8 @@ PODS:
     - sqlite3 (~> 3.42.0)
   - ExpoStoreReview (6.8.2):
     - ExpoModulesCore
+  - ExpoSymbols (0.0.1):
+    - ExpoModulesCore
   - ExpoSystemUI (2.9.1):
     - ExpoModulesCore
   - ExpoTrackingTransparency (3.3.0):
@@ -1531,6 +1533,7 @@ DEPENDENCIES:
   - ExpoSpeech (from `../../../packages/expo-speech/ios`)
   - ExpoSQLite (from `../../../packages/expo-sqlite/ios`)
   - ExpoStoreReview (from `../../../packages/expo-store-review/ios`)
+  - ExpoSymbols (from `../../../packages/expo-symbols/ios`)
   - ExpoSystemUI (from `../../../packages/expo-system-ui/ios`)
   - ExpoTrackingTransparency (from `../../../packages/expo-tracking-transparency/ios`)
   - ExpoVideo (from `../../../packages/expo-video/ios`)
@@ -1806,6 +1809,9 @@ EXTERNAL SOURCES:
   ExpoStoreReview:
     inhibit_warnings: false
     :path: "../../../packages/expo-store-review/ios"
+  ExpoSymbols:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-symbols/ios"
   ExpoSystemUI:
     inhibit_warnings: false
     :path: "../../../packages/expo-system-ui/ios"
@@ -2025,6 +2031,7 @@ SPEC CHECKSUMS:
   ExpoSpeech: 5e108798facd5e77e0ff040bdae6907aebeed6c5
   ExpoSQLite: d94fa32e0c3c0038f6bd345530f4816abb0b89fb
   ExpoStoreReview: c39b480799f1d7239f6100e9a79edbef64f2e733
+  ExpoSymbols: 01f91e307a4b8bee4da4fc5bc47efe912a5cfcde
   ExpoSystemUI: 921601d83ed776533f1d654f02c0fdece0a0632b
   ExpoTrackingTransparency: bbae3e495bc58c79b9430cfbc217a56c2ddc9354
   ExpoVideo: 5c7f090a003df15ab6a0e73184995cc22529b4dd

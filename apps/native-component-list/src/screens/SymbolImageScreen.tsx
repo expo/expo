@@ -1,7 +1,7 @@
-import { Symbol, SymbolViewProps } from 'expo-image';
+import { Symbol, SymbolViewProps } from 'expo-symbols';
 import { Text, View, StyleSheet, ScrollView } from 'react-native';
 
-import { symbols } from './images/symbols';
+import { symbols } from '../constants/Symbols';
 
 type RowProps = { title?: string } & Partial<SymbolViewProps>;
 

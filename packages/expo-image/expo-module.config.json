@@ -1,7 +1,7 @@
 {
   "platforms": ["apple", "android"],
   "apple": {
-    "modules": ["ImageModule", "SymbolModule"]
+    "modules": ["ImageModule"]
   },
   "android": {
     "modules": ["expo.modules.image.ExpoImageModule"]
