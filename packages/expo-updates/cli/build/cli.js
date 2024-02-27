@@ -45,6 +45,7 @@ const commands = {
     'codesigning:configure': () => import('./configureCodeSigning.js').then((i) => i.configureCodeSigning),
     'assets:verify': () => import('./assetsVerify.js').then((i) => i.expoAssetsVerify),
     'fingerprint:generate': () => import('./generateFingerprint.js').then((i) => i.generateFingerprint),
+    'runtimeversion:resolve': () => import('./resolveRuntimeVersion.js').then((i) => i.resolveRuntimeVersion),
 };
 const args = (0, arg_1.default)({
     // Types

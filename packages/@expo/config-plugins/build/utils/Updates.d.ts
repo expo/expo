@@ -13,6 +13,10 @@ export declare function getRuntimeVersionAsync(projectRoot: string, config: Pick
     android?: Pick<Android, 'versionCode' | 'runtimeVersion'>;
     ios?: Pick<IOS, 'buildNumber' | 'runtimeVersion'>;
 }, platform: 'android' | 'ios'): Promise<string | null>;
+export declare function resolveRuntimeVersionPolicyAsync(policy: 'appVersion' | 'nativeVersion' | 'sdkVersion', config: Pick<ExpoConfig, 'version' | 'sdkVersion'> & {
+    android?: Pick<Android, 'versionCode'>;
+    ios?: Pick<IOS, 'buildNumber'>;
+}, platform: 'android' | 'ios'): Promise<string>;
 export declare function getSDKVersion(config: Pick<ExpoConfigUpdates, 'sdkVersion'>): string | null;
 export declare function getUpdatesEnabled(config: Pick<ExpoConfigUpdates, 'updates'>): boolean;
 export declare function getUpdatesTimeout(config: Pick<ExpoConfigUpdates, 'updates'>): number;

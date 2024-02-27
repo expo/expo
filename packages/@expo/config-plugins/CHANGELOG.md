@@ -13,6 +13,7 @@
 - Remove classic updates SDK version and release channel. ([#26061](https://github.com/expo/expo/pull/26061), [#26065](https://github.com/expo/expo/pull/26065) by [@wschurman](https://github.com/wschurman))
 - [expo-updates] Remove unused methods. ([#26810](https://github.com/expo/expo/pull/26810) by [@wschurman](https://github.com/wschurman))
 - [expo-updates] Fix fingerprint runtime version policy. ([#26901](https://github.com/expo/expo/pull/26901) by [@wschurman](https://github.com/wschurman))
+- Add expo-updates cli runtimeversion:resolve command. ([#27263](https://github.com/expo/expo/pull/27263) by [@wschurman](https://github.com/wschurman))
 
 ### 📚 3rd party library updates
 

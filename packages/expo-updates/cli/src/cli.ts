@@ -24,6 +24,8 @@ const commands: { [command: string]: () => Promise<Command> } = {
   'assets:verify': () => import('./assetsVerify.js').then((i) => i.expoAssetsVerify),
   'fingerprint:generate': () =>
     import('./generateFingerprint.js').then((i) => i.generateFingerprint),
+  'runtimeversion:resolve': () =>
+    import('./resolveRuntimeVersion.js').then((i) => i.resolveRuntimeVersion),
 };
 
 const args = arg(
