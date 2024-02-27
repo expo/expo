@@ -875,6 +875,38 @@ build:
   href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/installNodeModules.ts"
 />
 
+#### `eas/get_credentials_for_build_triggered_by_github_integration`
+
+Resolves the credentials for a build triggered by our [GitHub integration](/build/building-from-github/). Call this function if you are using the GitHub integration and your custom build needs to use credentials.
+
+This is a no-op if the build was not triggered by the GitHub integration. This function is automatically executed by [`eas/build`](#easbuild) function group.
+
+```yaml example.yml
+build:
+  name: Example Android config for a build triggered by GitHub integration
+  steps:
+    - eas/checkout
+    - eas/use_npm_token
+    - eas/install_node_modules
+    # @info #
+    - eas/get_credentials_for_build_triggered_by_github_integration
+    # @end #
+    - eas/configure_eas_update:
+        inputs:
+          throw_if_not_configured: false
+    - eas/inject_android_credentials
+    - eas/configure_android_version
+    - eas/run_gradle
+    - eas/find_and_upload_build_artifacts
+```
+
+<BoxLink
+  title="eas/get_credentials_for_build_triggered_by_github_integration source code"
+  description="View the source code for the eas/get_credentials_for_build_triggered_by_github_integration function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/getCredentialsForBuildTriggeredByGitHubIntegration.ts"
+/>
+
 #### `eas/resolve_apple_team_id_from_credentials`
 
 > **Warning** This function is only available for iOS builds
