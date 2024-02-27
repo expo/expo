@@ -26,6 +26,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.linkTo = exports.setParams = exports.canDismiss = exports.canGoBack = exports.goBack = exports.dismissAll = exports.replace = exports.dismiss = exports.push = exports.navigate = void 0;
 const native_1 = require("@react-navigation/native");
 const Linking = __importStar(require("expo-linking"));
+const non_secure_1 = require("nanoid/non-secure");
 const href_1 = require("../link/href");
 const path_1 = require("../link/path");
 const url_1 = require("../utils/url");
@@ -144,7 +145,7 @@ function linkTo(href, event) {
     return navigationRef.dispatch(getNavigateAction(state, rootState, event));
 }
 exports.linkTo = linkTo;
-function rewriteNavigationStateToParams(state, params = {}) {
+function rewriteNavigationStateToParams(state, type, params = {}) {
     if (!state)
         return params;
     // We Should always have at least one route in the state
@@ -152,25 +153,35 @@ function rewriteNavigationStateToParams(state, params = {}) {
     params.screen = lastRoute.name;
     // Weirdly, this always needs to be an object. If it's undefined, it won't work.
     params.params = lastRoute.params ? JSON.parse(JSON.stringify(lastRoute.params)) : {};
+    if (type === 'PUSH') {
+        params.key = `${params.screen}-${(0, non_secure_1.nanoid)()}`; // @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L406-L407
+    }
     if (lastRoute.state) {
-        rewriteNavigationStateToParams(lastRoute.state, params.params);
+        rewriteNavigationStateToParams(lastRoute.state, type, params.params);
     }
     return JSON.parse(JSON.stringify(params));
 }
 function getNavigateAction(state, parentState, type = 'NAVIGATE', target = parentState.key) {
-    // Get the current route, which will be the last in the stack
-    const route = state.routes[state.routes.length - 1];
-    // Find the previous route in the parent state
-    const previousRoute = parentState.routes.findLast((parentRoute) => {
-        return isSameRoute(route, parentRoute);
-    });
-    if (route.state && previousRoute?.state) {
-        // return getNavigateAction(route.state, previousRoute.state as NavigationState, type, target);
-    }
-    // Either we reached the bottom of the state or the point where the routes diverged
-    const { screen, params } = rewriteNavigationStateToParams(state);
-    if (type === 'PUSH' && parentState.type !== 'stack') {
+    const { screen, params } = rewriteNavigationStateToParams(state, type);
+    let key;
+    if (type === 'PUSH') {
+        /*
+         * The StackAction.PUSH does not work correctly with Expo Router.
+         *
+         * This is because if provide a getId() function for every route, which changes how React Navigation handles stack routing.
+         * By default PUSH will always push a screen, but if a getId() function is preset, it will instead navigate to the screen with the same id.
+         * @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L279-L290
+         *
+         * Expo Router should keep the default behavior of PUSH, and ALWAYS push a new screen to the stack, even if the IDs are the same
+         *
+         * To fix this, we change to a `NAVIGATE` action with a new key. In navigate, screens are matches either by key or getId() function.
+         * By generating a new unique key, we can ensure that the screen is always pushed to the stack.
+         *
+         */
         type = 'NAVIGATE';
+        if (parentState.type === 'stack') {
+            key = `${screen}-${(0, non_secure_1.nanoid)()}`; // @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L406-L407
+        }
     }
     else if (type === 'REPLACE' && parentState.type === 'tab') {
         type = 'JUMP_TO';
@@ -179,20 +190,10 @@ function getNavigateAction(state, parentState, type = 'NAVIGATE', target = paren
         type,
         target,
         payload: {
+            key,
             name: screen,
             params,
         },
     };
-}
-/**
- * Routes match if they share the same name and their preferredId's match
- * @see: https://github.com/react-navigation/react-navigation/blob/a2993721f59d92257cef5608c33a993f8d420a80/packages/routers/src/StackRouter.tsx#L378-L382
- */
-function isSameRoute(a = {}, b = {}) {
-    if (a.name !== b.name)
-        return false;
-    if ('state' in b && b.state?.type !== 'stack')
-        return false;
-    return true;
 }
 //# sourceMappingURL=routing.js.map

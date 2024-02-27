@@ -1,5 +1,6 @@
-import { PartialRoute, Route, StackActions, type NavigationState } from '@react-navigation/native';
+import { StackActions, type NavigationState } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
+import { nanoid } from 'nanoid/non-secure';
 
 import { type RouterStore } from './router-store';
 import { ResultState } from '../fork/getStateFromPath';
@@ -142,10 +143,12 @@ export function linkTo(this: RouterStore, href: string, event?: string) {
 type NavigationParams = Partial<{
   screen: string;
   params: NavigationParams;
+  key?: string;
 }>;
 
 function rewriteNavigationStateToParams(
-  state?: { routes: ResultState['routes'] } | NavigationState,
+  state: { routes: ResultState['routes'] } | NavigationState | undefined,
+  type: string,
   params: NavigationParams = {}
 ) {
   if (!state) return params;
@@ -155,8 +158,12 @@ function rewriteNavigationStateToParams(
   // Weirdly, this always needs to be an object. If it's undefined, it won't work.
   params.params = lastRoute.params ? JSON.parse(JSON.stringify(lastRoute.params)) : {};
 
+  if (type === 'PUSH') {
+    params.key = `${params.screen}-${nanoid()}`; // @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L406-L407
+  }
+
   if (lastRoute.state) {
-    rewriteNavigationStateToParams(lastRoute.state, params.params);
+    rewriteNavigationStateToParams(lastRoute.state, type, params.params);
   }
 
   return JSON.parse(JSON.stringify(params));
@@ -168,23 +175,29 @@ function getNavigateAction(
   type = 'NAVIGATE',
   target = parentState.key
 ) {
-  // Get the current route, which will be the last in the stack
-  const route = state.routes[state.routes.length - 1]!;
+  const { screen, params } = rewriteNavigationStateToParams(state, type);
 
-  // Find the previous route in the parent state
-  const previousRoute = parentState.routes.findLast((parentRoute) => {
-    return isSameRoute(route, parentRoute);
-  });
+  let key: string | undefined;
 
-  if (route.state && previousRoute?.state) {
-    // return getNavigateAction(route.state, previousRoute.state as NavigationState, type, target);
-  }
-
-  // Either we reached the bottom of the state or the point where the routes diverged
-  const { screen, params } = rewriteNavigationStateToParams(state);
-
-  if (type === 'PUSH' && parentState.type !== 'stack') {
+  if (type === 'PUSH') {
+    /*
+     * The StackAction.PUSH does not work correctly with Expo Router.
+     *
+     * This is because if provide a getId() function for every route, which changes how React Navigation handles stack routing.
+     * By default PUSH will always push a screen, but if a getId() function is preset, it will instead navigate to the screen with the same id.
+     * @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L279-L290
+     *
+     * Expo Router should keep the default behavior of PUSH, and ALWAYS push a new screen to the stack, even if the IDs are the same
+     *
+     * To fix this, we change to a `NAVIGATE` action with a new key. In navigate, screens are matches either by key or getId() function.
+     * By generating a new unique key, we can ensure that the screen is always pushed to the stack.
+     *
+     */
     type = 'NAVIGATE';
+
+    if (parentState.type === 'stack') {
+      key = `${screen}-${nanoid()}`; // @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L406-L407
+    }
   } else if (type === 'REPLACE' && parentState.type === 'tab') {
     type = 'JUMP_TO';
   }
@@ -193,21 +206,9 @@ function getNavigateAction(
     type,
     target,
     payload: {
+      key,
       name: screen,
       params,
     },
   };
-}
-
-/**
- * Routes match if they share the same name and their preferredId's match
- * @see: https://github.com/react-navigation/react-navigation/blob/a2993721f59d92257cef5608c33a993f8d420a80/packages/routers/src/StackRouter.tsx#L378-L382
- */
-function isSameRoute(
-  a: PartialRoute<any> | Route<any> = {},
-  b: PartialRoute<any> | Route<any> = {}
-) {
-  if (a.name !== b.name) return false;
-  if ('state' in b && b.state?.type !== 'stack') return false;
-  return true;
 }

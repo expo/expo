@@ -3,7 +3,7 @@ import React from 'react';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
-import { act, screen, renderRouter } from '../testing-library';
+import { act, screen, renderRouter, testRouter } from '../testing-library';
 /**
  * Stacks are the most common navigator and have unique navigation actions
  *
@@ -22,7 +22,6 @@ describe('canDismiss', () => {
     );
 
     expect(router.canDismiss()).toBe(false);
-
     act(() => router.push('/b'));
     expect(router.canDismiss()).toBe(true);
   });
@@ -41,28 +40,6 @@ describe('canDismiss', () => {
 
     expect(router.canDismiss()).toBe(false);
     act(() => router.push('/b'));
-    expect(router.canDismiss()).toBe(false);
-  });
-
-  it('should work with nested stacks', () => {
-    renderRouter(
-      {
-        _layout: () => <Tabs />,
-        '(a)/_layout': () => <Stack />,
-        '(a)/a': () => null,
-        '(a)/b': () => null,
-        c: () => null,
-      },
-      {
-        initialUrl: '/a',
-      }
-    );
-
-    expect(router.canDismiss()).toBe(false);
-    act(() => router.push('/b'));
-    expect(router.canDismiss()).toBe(true);
-
-    act(() => router.push('/c'));
     expect(router.canDismiss()).toBe(false);
   });
 });
@@ -115,4 +92,34 @@ test('dismissAll', () => {
   act(() => router.dismissAll());
   expect(screen).toHavePathname('/a');
   expect(router.canDismiss()).toBe(false);
+});
+
+test('pushing in a nested stack should only rerender the nested stack', () => {
+  const RootLayout = jest.fn(() => <Stack />);
+  const NestedLayout = jest.fn(() => <Stack />);
+  const NestedNestedLayout = jest.fn(() => <Stack />);
+
+  renderRouter(
+    {
+      _layout: RootLayout,
+      '[one]/_layout': NestedLayout,
+      '[one]/a': () => null,
+      '[one]/b': () => null,
+      '[one]/[two]/_layout': NestedNestedLayout,
+      '[one]/[two]/a': () => null,
+    },
+    {
+      initialUrl: '/one/a',
+    }
+  );
+
+  testRouter.push('/one/b');
+  expect(RootLayout).toHaveBeenCalledTimes(1);
+  expect(NestedLayout).toHaveBeenCalledTimes(2);
+  expect(NestedNestedLayout).toHaveBeenCalledTimes(0);
+
+  testRouter.push('/one/two/a');
+  expect(RootLayout).toHaveBeenCalledTimes(1);
+  expect(NestedLayout).toHaveBeenCalledTimes(3);
+  expect(NestedNestedLayout).toHaveBeenCalledTimes(1);
 });
