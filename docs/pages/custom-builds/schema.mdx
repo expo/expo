@@ -571,6 +571,109 @@ EAS provides a set of built-in reusable functions that you can use in a workflow
 
 > **info** **Tip:** Any function that is built-in and provided by EAS must start with the `eas/` prefix.
 
+#### `eas/build`
+
+The all-in-one function that encapsulates the entire EAS Build build process. It resolves the best build workflow configuration based on your build profile's settings from [**eas.json**](/eas/json/).
+
+It's ideal for people who just want to have the build done without worrying about altering and configuring the build process manually. It can be a great starting point for your custom build configuration if you are interested in using other custom steps before or after the build process and you don't want to change the build process itself.
+
+```yaml example.yml
+build:
+  name: Run a build using a single command
+  steps:
+    - eas/build
+```
+
+To have more control over the build process and customize it as per your requirements, see the following custom functions and steps that run in the background by `eas/build`. They are executed as a build process based on your build profile's configuration.
+
+##### Android
+
+When a build configuration is using [`withoutCredentials`](/eas/json/#withoutcredentials):
+
+- [`eas/checkout`](#eascheckout)
+- [`eas/use_npm_token`](#easuse_npm_token)
+- [`eas/install_node_modules`](#easinstall_node_modules)
+- [`eas/prebuild`](#easprebuild)
+- [`eas/configure_eas_update`](#easconfigure_eas_update)
+- [`eas/run_gradle`](#easrun_gradle)
+- [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts)
+
+When a build configuration uses credentials (for both `internal` and `store` [distribution](/eas/json/#distribution) builds):
+
+- [`eas/checkout`](#eascheckout)
+- [`eas/use_npm_token`](#easuse_npm_token)
+- [`eas/install_node_modules`](#easinstall_node_modules)
+- [`eas/get_credentials_for_build_triggered_by_github_integration`](#easget_credentials_for_build_triggered_by_github_integration)
+- [`eas/prebuild`](#easprebuild)
+- [`eas/configure_eas_update`](#easconfigure_eas_update)
+- [`eas/inject_android_credentials`](#easinject_android_credentials)
+- [`eas/configure_android_version`](#easconfigure_android_version)
+- [`eas/run_gradle`](#easrun_gradle)
+- [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts)
+
+##### iOS
+
+When a build configuration is using [`withoutCredentials`](/eas/json/#withoutcredentials) or [`simulator`](/eas/json/#simulator):
+
+- [`eas/checkout`](#eascheckout)
+- [`eas/use_npm_token`](#easuse_npm_token)
+- [`eas/install_node_modules`](#easinstall_node_modules)
+- [`eas/prebuild`](#easprebuild)
+- Install pods using the `pod install` command
+- [`eas/configure_eas_update`](#easconfigure_eas_update)
+- [`eas/generate_gymfile_from_template`](#easgenerate_gymfile_from_template)
+- [`eas/run_fastlane`](#easrun_fastlane)
+- [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts)
+
+When a build configuration uses credentials (for both `internal` and `store` [distribution](/eas/json/#distribution) builds):
+
+- [`eas/checkout`](#eascheckout)
+- [`eas/use_npm_token`](#easuse_npm_token)
+- [`eas/install_node_modules`](#easinstall_node_modules)
+- [`eas/get_credentials_for_build_triggered_by_github_integration`](#easget_credentials_for_build_triggered_by_github_integration)
+- [`eas/resolve_apple_team_id_from_credentials`](#easresolve_apple_team_id_from_credentials)
+- [`eas/prebuild`](#easprebuild)
+- Install pods using the `pod install` command
+- [`eas/configure_eas_update`](#easconfigure_eas_update)
+- [`eas/configure_ios_credentials`](#easconfigure_ios_credentials)
+- [`eas/configure_ios_version`](#easconfigure_ios_version)
+- [`eas/generate_gymfile_from_template`](#easgenerate_gymfile_from_template)
+- [`eas/run_fastlane`](#easrun_fastlane)
+- [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts)
+
+You can replace the `eas/build` command call by using these steps in your YAML configuration file:
+
+<BoxLink
+  title="ios-simulator-build.yml"
+  description="View the steps executed behind the scenes by the `eas/build` function for an iOS simulator build in our example repository."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-custom-builds-example/blob/main/.eas/build/ios-simulator-build.yml"
+/>
+<BoxLink
+  title="ios-credentials-build.yml"
+  description="View the steps executed behind the scenes by the `eas/build` function for an iOS build with credentials in our example repository."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-custom-builds-example/blob/main/.eas/build/ios-build-with-credentials.yml"
+/>
+<BoxLink
+  title="android-build-without-credentials.yml"
+  description="View the steps executed behind the scenes by the `eas/build` function for an Android build without credentials in our example repository."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-custom-builds-example/blob/main/.eas/build/android-build-without-credentials.yml"
+/>
+<BoxLink
+  title="android-build-with-credentials.yml"
+  description="View the steps executed behind the scenes by the `eas/build` function for an Android build with credentials in our example repository."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-custom-builds-example/blob/main/.eas/build/android-build-with-credentials.yml"
+/>
+
+##### Known limitations
+
+- This function doesn't configure legacy classic updates. If you are using classic updates, [migrate to EAS Update](/eas-update/migrate-from-classic-updates/) before using this function.
+- It doesn't accept any inputs, and the resolved build process will be configured based on your build profile from [**eas.json**](/eas/json/).
+- The build process produced by `eas/build` is not configurable and you can't customize it. If you need to customize the build process, use the subset of functions and steps that are executed behind the scenes by this function and configure them manually in the YAML configuration file, as shown in the examples above.
+
 #### `eas/maestro_test`
 
 All-in-one function that installs Maestro, prepares a testing environment (Android Emulator or iOS Simulator), and tests the app.
