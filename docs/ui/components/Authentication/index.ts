@@ -3,7 +3,6 @@ export { GridItem } from './GridItem';
 export { Box } from './Box';
 
 const ASSETS_PATH = '/static/images/sdk/auth-session/';
-
 export const ASSETS = {
   apple: ASSETS_PATH + 'apple.png',
   asgardeo: ASSETS_PATH + 'asgardeo.png',
@@ -29,4 +28,5 @@ export const ASSETS = {
   twitch: ASSETS_PATH + 'twitch.png',
   twitter: ASSETS_PATH + 'twitter.png',
   uber: ASSETS_PATH + 'uber.png',
+  calendly: ASSETS_PATH + 'calendly.svg',
 } as const;
