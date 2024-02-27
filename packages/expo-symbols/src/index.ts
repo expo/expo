@@ -1,4 +1,2 @@
-import SymbolView from './SymbolModuleView';
-
-export { SymbolView as Symbol };
+export { default as Symbol } from './SymbolModuleView';
 export * from './SymbolModule.types';
