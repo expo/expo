@@ -161,7 +161,7 @@ function rewriteNavigationStateToParams(state, type, params = {}) {
     }
     return JSON.parse(JSON.stringify(params));
 }
-function getNavigateAction(state, parentState, type = 'NAVIGATE', target = parentState.key) {
+function getNavigateAction(state, parentState, type = 'NAVIGATE') {
     const { screen, params } = rewriteNavigationStateToParams(state, type);
     let key;
     if (type === 'PUSH') {
@@ -188,7 +188,7 @@ function getNavigateAction(state, parentState, type = 'NAVIGATE', target = paren
     }
     return {
         type,
-        target,
+        // target: parentState.key,
         payload: {
             key,
             name: screen,

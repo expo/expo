@@ -169,12 +169,7 @@ function rewriteNavigationStateToParams(
   return JSON.parse(JSON.stringify(params));
 }
 
-function getNavigateAction(
-  state: ResultState,
-  parentState: NavigationState,
-  type = 'NAVIGATE',
-  target = parentState.key
-) {
+function getNavigateAction(state: ResultState, parentState: NavigationState, type = 'NAVIGATE') {
   const { screen, params } = rewriteNavigationStateToParams(state, type);
 
   let key: string | undefined;
@@ -204,7 +199,7 @@ function getNavigateAction(
 
   return {
     type,
-    target,
+    // target: parentState.key,
     payload: {
       key,
       name: screen,
