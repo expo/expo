@@ -188,7 +188,7 @@ function getNavigateAction(state, parentState, type = 'NAVIGATE') {
     }
     return {
         type,
-        // target: parentState.key,
+        target: parentState.key,
         payload: {
             key,
             name: screen,
