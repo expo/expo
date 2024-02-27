@@ -39,6 +39,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 100
+      - name: ⬇️ Fetch commits from base branch
+        run: git fetch origin ${{ github.event.before || github.base_ref || 'main' }}:${{ github.event.before || github.base_ref || 'main' }} --depth 100
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
