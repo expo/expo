@@ -6,5 +6,5 @@ In production, this is implemented by the UpdatesController singleton.
  */
 interface UpdatesStateChangeEventSender {
   // Method to send events
-  fun sendUpdateStateChangeEventToBridge(eventType: UpdatesStateEventType, context: UpdatesStateContext)
+  fun sendUpdateStateChangeEventToAppContext(eventType: UpdatesStateEventType, context: UpdatesStateContext)
 }

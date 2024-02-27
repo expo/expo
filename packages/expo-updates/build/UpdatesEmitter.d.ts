@@ -1,4 +1,4 @@
-import { EventSubscription } from 'fbemitter';
+import { type EventSubscription } from 'fbemitter';
 import type { UpdateEvent, UpdatesNativeStateChangeEvent } from './Updates.types';
 /**
  * Adds a callback to be invoked when updates-related events occur (such as upon the initial app

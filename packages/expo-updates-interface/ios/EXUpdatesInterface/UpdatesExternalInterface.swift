@@ -1,6 +1,7 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
 import Foundation
+import ExpoModulesCore
 
 public typealias UpdatesErrorBlock = (_ error: Error) -> Void
 public typealias UpdatesUpdateSuccessBlock = (_ manifest: [String: Any]?) -> Void
@@ -19,7 +20,7 @@ public typealias UpdatesManifestBlock = (_ manifest: [String: Any]) -> Bool
  */
 @objc(EXUpdatesExternalInterface)
 public protocol UpdatesExternalInterface {
-  @objc weak var bridge: AnyObject? { get set }
+  @objc weak var appContext: AppContext? { get set }
   @objc weak var updatesExternalInterfaceDelegate: (any UpdatesExternalInterfaceDelegate)? { get set }
   @objc var launchAssetURL: URL? { get }
 

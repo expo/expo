@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Decouple from "bridge" in `expo-updates`. ([#27216](https://github.com/expo/expo/pull/27216) by [@kudo](https://github.com/kudo))
+
 ## 0.15.3 - 2024-01-18
 
 _This version does not introduce any user-facing changes._

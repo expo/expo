@@ -3,6 +3,7 @@ package expo.modules.updates
 import android.os.Bundle
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactInstanceManager
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
@@ -10,6 +11,7 @@ import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.manifest.Update
 import expo.modules.updates.statemachine.UpdatesStateContext
 import java.io.File
+import java.lang.ref.WeakReference
 import java.util.Date
 
 interface IUpdatesController {
@@ -39,6 +41,11 @@ interface IUpdatesController {
    */
   val updatesDirectory: File?
 
+  /**
+   * The [AppContext] assigned from [UpdatesModule]
+   */
+  var appContext: WeakReference<AppContext>?
+
   fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager)
 
   /**
@@ -48,6 +55,8 @@ interface IUpdatesController {
    * @param context the base context of the application, ideally a [ReactApplication]
    */
   fun start()
+
+  var shouldEmitJsEvents: Boolean
 
   interface ModuleCallback<T> {
     fun onSuccess(result: T)

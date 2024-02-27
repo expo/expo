@@ -93,7 +93,7 @@ class UpdatesStateMachine(
   }
 
   private fun sendChangeEventToJS(event: UpdatesStateEvent) {
-    changeEventSender.sendUpdateStateChangeEventToBridge(
+    changeEventSender.sendUpdateStateChangeEventToAppContext(
       event.type,
       context.copy()
     )
