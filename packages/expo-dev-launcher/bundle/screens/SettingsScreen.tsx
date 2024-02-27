@@ -345,19 +345,21 @@ function UpdatesDebugSettings() {
       </View>
 
       <View px="medium">
-        <Heading color="secondary">Current Settings</Heading>
+        <Text color="secondary">Current Settings</Text>
         <Spacer.Vertical size="medium" />
       </View>
 
       <View bg="default" padding="medium" rounded="large">
-        <Text type="mono">{JSON.stringify(updatesConfig, null, 2)}</Text>
+        <Text type="mono" size="small">
+          {JSON.stringify(updatesConfig, null, 2)}
+        </Text>
       </View>
 
       <Spacer.Vertical size="medium" />
 
       <View px="medium">
         <Heading size="small" color="secondary">
-          EAS Updates App ID
+          EAS project ID
         </Heading>
         <Spacer.Vertical size="small" />
       </View>
@@ -367,7 +369,7 @@ function UpdatesDebugSettings() {
           blurOnSubmit
           autoCapitalize="none"
           keyboardType="url"
-          placeholder="Set App Id"
+          placeholder="Set EAS project ID"
           defaultValue={updatesConfig?.appId ?? ''}
           onSubmitEditing={onUrlChange}
         />
@@ -377,6 +379,7 @@ function UpdatesDebugSettings() {
         <Heading size="small" color="secondary">
           Runtime Version
         </Heading>
+        <Spacer.Vertical size="small" />
       </View>
       <View bg="default" rounded="large" py="small" px="small">
         <TextInput
