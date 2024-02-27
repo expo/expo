@@ -57,7 +57,7 @@ Resolve expo-updates runtime version
     if (!['ios', 'android'].includes(platform)) {
         throw new Error(`Invalid platform argument: ${platform}`);
     }
-    const runtimeVersion = await resolveRuntimeVersionAsync((0, args_1.getProjectRoot)(args), platform);
-    console.log(JSON.stringify({ runtimeVersion }));
+    const runtimeVersionInfo = await resolveRuntimeVersionAsync((0, args_1.getProjectRoot)(args), platform);
+    console.log(JSON.stringify(runtimeVersionInfo));
 };
 exports.resolveRuntimeVersion = resolveRuntimeVersion;
