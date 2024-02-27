@@ -56,6 +56,27 @@ struct ExpoCameraUtilsNext {
     }
   }
 
+  static func toOrientationString(orientation: UIDeviceOrientation) -> String {
+    switch orientation {
+    case .portrait:
+      return "portrait"
+    case .landscapeLeft:
+      return "landscapeLeft"
+    case .landscapeRight:
+      return "landscapeRight"
+    case .portraitUpsideDown:
+      return "portraitUpsideDown"
+    case .faceDown:
+      return "faceDown"
+    case .faceUp:
+      return "faceUp"
+    case .unknown:
+      return "unknown"
+    @unknown default:
+      return "unknown"
+    }
+  }
+
   static func export(orientation: UIImage.Orientation) -> Int {
     switch orientation {
     case .left:

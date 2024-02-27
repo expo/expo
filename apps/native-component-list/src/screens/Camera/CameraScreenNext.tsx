@@ -31,8 +31,8 @@ const flashIcons: Record<string, string> = {
 };
 
 const volumeIcons: Record<string, string> = {
-  on: 'ios-volume-high',
-  off: 'ios-volume-mute',
+  on: 'volume-high',
+  off: 'volume-mute',
 };
 
 const photos: CameraCapturedPicture[] = [];
