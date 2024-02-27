@@ -178,14 +178,15 @@ function getNavigateAction(state: ResultState, parentState: NavigationState, typ
     /*
      * The StackAction.PUSH does not work correctly with Expo Router.
      *
-     * This is because if provide a getId() function for every route, which changes how React Navigation handles stack routing.
-     * By default PUSH will always push a screen, but if a getId() function is preset, it will instead navigate to the screen with the same id.
-     * @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L279-L290
+     * Expo Router provides a getId() function for every route, altering how React Navigation handles stack routing.
+     * Ordinarily, PUSH always adds a new screen to the stack. However, with getId() present, it navigates to the screen with the matching ID instead (by moving the screen to the top of the stack)
+     * When you try and push to a screen with the same ID, no navigation will occur
+     * Refer to: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L279-L290
      *
-     * Expo Router should keep the default behavior of PUSH, and ALWAYS push a new screen to the stack, even if the IDs are the same
+     * Expo Router needs to retain the default behavior of PUSH, consistently adding new screens to the stack, even if their IDs are identical.
      *
-     * To fix this, we change to a `NAVIGATE` action with a new key. In navigate, screens are matches either by key or getId() function.
-     * By generating a new unique key, we can ensure that the screen is always pushed to the stack.
+     * To resolve this issue, we switch to using a NAVIGATE action with a new key. In the navigate action, screens are matched by either key or getId() function.
+     * By generating a unique new key, we ensure that the screen is always pushed onto the stack.
      *
      */
     type = 'NAVIGATE';
