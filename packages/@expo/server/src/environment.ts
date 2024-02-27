@@ -1,3 +1,4 @@
+/* eslint-disable no-var */
 import { installGlobals as installRemixGlobals } from '@remix-run/node';
 
 declare const Response: {
@@ -11,8 +12,23 @@ declare const Response: {
   redirect(url: string | URL, status?: number): Response;
 };
 
+declare global {
+  /** @deprecated */
+  var ExpoRequest: typeof Request;
+  /** @deprecated */
+  var ExpoResponse: typeof Response;
+}
+
+/** @deprecated */
+export const ExpoRequest = Request;
+/** @deprecated */
+export const ExpoResponse = Request;
+
 export function installGlobals() {
   installRemixGlobals();
+
+  global.ExpoRequest = Request;
+  global.ExpoResponse = Response;
 
   if (typeof Response.error !== 'function') {
     Response.error = function error() {
