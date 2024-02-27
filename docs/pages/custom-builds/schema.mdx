@@ -773,7 +773,8 @@ build:
 #### `eas/get_credentials_for_build_triggered_by_github_integration`
 
 Resolves the credentials for a build triggered by our [GitHub integration](/build/building-from-github/). If you are using the GitHub integration and your custom build needs to use credentials, you must call this function.
-This is a no-op if the build was not triggered by the GitHub integration. This function is Automatically executed by [`eas/build`](#easbuild) function group.
+
+This is a no-op if the build was not triggered by the GitHub integration. This function is automatically executed by [`eas/build`](#easbuild) function group.
 
 ```yaml example.yml
 build:
