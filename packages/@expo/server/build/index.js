@@ -64,13 +64,11 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
     let routesManifest;
     function updateRequestWithConfig(request, config) {
         const params = {};
-        const url = request.url;
-        const expoUrl = new url_1.URL(url);
-        const match = config.namedRegex.exec(expoUrl.pathname);
+        const url = new url_1.URL(request.url);
+        const match = config.namedRegex.exec(url.pathname);
         if (match?.groups) {
             for (const [key, value] of Object.entries(match.groups)) {
                 const namedKey = config.routeKeys[key];
-                expoUrl.searchParams.set(namedKey, value);
                 params[namedKey] = value;
             }
         }

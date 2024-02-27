@@ -88,14 +88,11 @@ export function createRequestHandler(
     config: ExpoRouterServerManifestV1FunctionRoute
   ) {
     const params: Record<string, string> = {};
-    const url = request.url;
-
-    const expoUrl = new URL(url);
-    const match = config.namedRegex.exec(expoUrl.pathname);
+    const url = new URL(request.url);
+    const match = config.namedRegex.exec(url.pathname);
     if (match?.groups) {
       for (const [key, value] of Object.entries(match.groups)) {
         const namedKey = config.routeKeys[key];
-        expoUrl.searchParams.set(namedKey, value);
         params[namedKey] = value;
       }
     }
