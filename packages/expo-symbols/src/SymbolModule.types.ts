@@ -26,7 +26,6 @@ export interface SymbolViewProps extends ViewProps {
   weight?: SymbolWeight;
   /**
    * An array of colors to use when the [SymbolType](#symboltype) is 'palette'.
-   *
    */
   colors?: string | string[] | null;
   /**

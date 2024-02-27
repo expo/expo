@@ -1,7 +1,7 @@
 import { Symbol, SymbolViewProps } from 'expo-symbols';
 import { Text, View, StyleSheet, ScrollView } from 'react-native';
 
-import { symbols } from '../constants/Symbols';
+import { Symbols } from '../constants';
 
 type RowProps = { title?: string } & Partial<SymbolViewProps>;
 
@@ -17,7 +17,7 @@ function SymbolRow({ title, ...props }: RowProps) {
     <View style={{ gap: 5 }}>
       <Text style={styles.title}>{title}</Text>
       <View style={{ flexDirection: 'row' }}>
-        {getRandomRow(symbols).map((symbol, index) => (
+        {getRandomRow(Symbols).map((symbol, index) => (
           <Symbol
             {...props}
             name={symbol}
@@ -47,7 +47,7 @@ function SymbolWeights({ title, ...props }: RowProps) {
     <View style={{ gap: 5 }}>
       <Text style={styles.title}>{title}</Text>
       <View style={{ flexDirection: 'row' }}>
-        {getRandomRow(symbols).map((symbol, index) => {
+        {getRandomRow(Symbols).map((symbol, index) => {
           const weight = weights[index % weights.length];
           return (
             <View key={index} style={{ alignItems: 'center' }}>
@@ -74,7 +74,7 @@ function SymbolScales({ title, ...props }: RowProps) {
     <View style={{ gap: 5 }}>
       <Text style={styles.title}>{title}</Text>
       <View style={{ flexDirection: 'row' }}>
-        {getRandomRow(symbols).map((symbol, index) => {
+        {getRandomRow(Symbols).map((symbol, index) => {
           const scale = scales[index % scales.length];
           return (
             <View key={index} style={{ alignItems: 'center' }}>

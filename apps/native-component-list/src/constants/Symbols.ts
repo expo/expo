@@ -1,4 +1,4 @@
-export const symbols = [
+export default [
   'keyboard.badge.ellipsis',
   'bandage',
   'minus',
