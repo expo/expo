@@ -85,6 +85,13 @@ You can configure `expo-location` using its built-in [config plugin](/config-plu
         'A boolean to enable the [`ACCESS_BACKGROUND_LOCATION`](#permission-access_background_location) permission.',
       default: 'false',
     },
+    {
+      name: 'isAndroidForegroundServiceEnabled',
+      platform: 'android',
+      description:
+        'A boolean to enable the [`FOREGROUND_SERVICE`](#permission-foreground_service) permission and [`FOREGROUND_SERVICE_LOCATION`](#permission-foreground_service_location).',
+      default: 'false',
+    },
   ]}
 />
 
@@ -223,15 +230,18 @@ When you install the `expo-location` module, it automatically adds the following
 
 - `ACCESS_COARSE_LOCATION`: for approximate device location
 - `ACCESS_FINE_LOCATION`: for precise device location
-- `FOREGROUND_SERVICE`: to subscribe to location updates while the app is in use
 
-To use background location features, you must add the `ACCESS_BACKGROUND_LOCATION` in **app.json** and [submit your app for review and request access to use the background location permission](https://support.google.com/googleplay/android-developer/answer/9799150?hl=en).
+The following permissions are optional:
+
+- `FOREGROUND_SERVICE` and `FOREGROUND_SERVICE_LOCATION`: to be able to access location while the app is open but backgrounded. `FOREGROUND_SERVICE_LOCATION` is only required as of Android 14. When you enable this in a new build, you will need to [submit your app for review and request access to use the foreground service permission](https://support.google.com/googleplay/android-developer/answer/13392821?hl=en).
+- `ACCESS_BACKGROUND_LOCATION`: to be able to access location while the app is backgrounded or closed. When you enable this in a new build, you will need to [submit your app for review and request access to use the background location permission](https://support.google.com/googleplay/android-developer/answer/9799150?hl=en).
 
 <AndroidPermissions
   permissions={[
     'ACCESS_COARSE_LOCATION',
     'ACCESS_FINE_LOCATION',
     'FOREGROUND_SERVICE',
+    'FOREGROUND_SERVICE_LOCATION',
     'ACCESS_BACKGROUND_LOCATION',
   ]}
 />

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Make foreground service permission opt-in with `isAndroidForegroundServiceEnabled` config plugin option [#27265](https://github.com/expo/expo/pull/27265) by [@brentvatne](https://github.com/brentvatne))
+
 ### 🐛 Bug fixes
 
 - [Android] Fixed: `NullPointerException: it must not be null`. ([#26688](https://github.com/expo/expo/pull/26688) by [@lukmccall](https://github.com/lukmccall))
