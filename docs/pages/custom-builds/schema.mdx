@@ -575,9 +575,8 @@ EAS provides a set of built-in reusable functions that you can use in a workflow
 All-in-one function that installs Maestro, prepares a testing environment (Android Emulator or iOS Simulator), and tests the app.
 
 | Input       | Description                                                                                                                                                 |
-|-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `flow_path` | **string** Path (or multiple paths, each in a separate line) to [Maestro flows](https://maestro.mobile.dev/getting-started/writing-your-first-flow) to run. |
-
 
 ```yaml build-and-test.yml
 build:
@@ -594,11 +593,12 @@ build:
     # @end #
 ```
 
- Behind the scenes, it uses:
+Behind the scenes, it uses:
+
 - [`eas/install_maestro`](#easinstall_maestro) to install Maestro
 - [`eas/start_android_emulator`](#easstart_android_emulator) to start an Android Emulator if needed
 - [`eas/start_ios_simulator`](#easstart_ios_simulator) to start an iOS Simulator if needed
-- Custom `run` to install **.apk**  to the running Android Emulator and **.app** to iOS Simulator
+- Custom `run` to install **.apk** to the running Android Emulator and **.app** to iOS Simulator
 - Series of `run` to execute `maestro test` for each of the provided flows
 - [`eas/upload_artifact`](#easupload_artifact) to upload Maestro test artifacts as build artifact
 
