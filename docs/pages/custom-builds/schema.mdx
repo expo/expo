@@ -1200,9 +1200,9 @@ build:
 
 #### `eas/find_and_upload_build_artifacts`
 
-> **Warning** You can currently upload each artifact type only once per workflow.
+> **Warning** **You can currently upload each artifact type only once per workflow.**<br />If you use [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts) while having [`buildArtifactPaths`](/eas/json/#buildartifactpaths) configured in your build profile and the step finds and uploads some build artifacts, any following `eas/upload_artifact` step will fail.<br />To solve this, for now, we recommend removing `buildArtifactPaths` from custom build's profiles and uploading artifacts manually with `eas/upload_artifact` in the YAML workflow if you need to call it there.
 
-Automatically finds and uploads application archive, other build artifacts, and Xcode logs looking at default locations and respecting `${ eas.job.buildArtifactPaths }` setting. Uploads found artifacts to the EAS servers.
+Automatically finds and uploads application archive, additional build artifacts, and Xcode logs from the default locations and using the [`buildArtifactPaths`](/eas/json#buildartifactpaths) configuration. Uploads found artifacts to the EAS servers.
 
 ```yaml example.yml
 build:
@@ -1264,9 +1264,9 @@ build:
 
 #### `eas/upload_artifact`
 
-Uploads a build artifact.
+Uploads build artifacts from provided paths.
 
-> **Warning** You can currently upload each artifact type only once per workflow.
+> **Warning** **You can currently upload each artifact type only once per workflow.**<br />If you use [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts) while having [`buildArtifactPaths`](/eas/json/#buildartifactpaths) configured in your build profile and the step finds and uploads some build artifacts, any following `eas/upload_artifact` step will fail.<br />To solve this, for now, we recommend removing `buildArtifactPaths` from custom build's profiles and uploading artifacts manually with `eas/upload_artifact` in the YAML workflow if you need to call it there.
 
 For example, a workflow with the following `steps` will upload an artifact to the EAS servers:
 
@@ -1281,17 +1281,18 @@ build:
         inputs:
           path: fixtures/app-debug.apk
     - eas/upload_artifact:
-        name: Upload build artifact
+        name: Upload artifacts
         inputs:
           type: build-artifact
-          path: assets/icon.png
+          path: |
+            assets/*.jpg
+            assets/*.png
 ```
 
-| Property      | Description                                                                                                                                                     |
-| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`        | The name of the step in the reusable function that shows in the build logs.                                                                                     |
-| `inputs.path` | **string** Required. The path to the artifact that is uploaded to the EAS servers.                                                                              |
-| `inputs.type` | **string** The type of artifact that is uploaded to the EAS servers. Allowed values: `application-archive`, `build-artifact`. Defaults to `application-archive` |
+| Input  | Description                                                                                                                                                                                                                               |
+| ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `path` | **string** Required. Path or newline-delimited list of paths to the artifacts to upload to EAS servers. You can use `*` wildcard and other [glob patterns that `fast-glob` supports](https://github.com/mrmlnc/fast-glob#pattern-syntax). |
+| `type` | **string** The type of artifact that is uploaded to the EAS servers. Allowed values are `application-archive` and `build-artifact`. Defaults to `application-archive`.                                                                    |
 
 <BoxLink
   title="eas/upload_artifact source code"
@@ -1302,7 +1303,7 @@ build:
 
 #### `eas/install_maestro`
 
-Makes sure [Maestro](https://maestro.mobile.dev), the mobile UI testing framework, is installed along with all its dependencies. 
+Makes sure [Maestro](https://maestro.mobile.dev), the mobile UI testing framework, is installed along with all its dependencies.
 
 ```yaml build-and-test.yml
 build:
@@ -1312,7 +1313,7 @@ build:
     # ... simulator/emulator setup
     # @info #
     - eas/install_maestro:
-    # @end #
+        # @end #
         inputs:
           # @info If you need to, you can provide the Maestro version to install. #
           maestro_version: 1.35.0
@@ -1327,7 +1328,7 @@ build:
 ```
 
 | Input             | Description                                                                                                                      |
-|-------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | `maestro_version` | **string** Maestro version to install (for example, 1.35.0). If not provided, `install_maestro` will install the latest version. |
 
 <BoxLink
@@ -1355,7 +1356,7 @@ build:
 ```
 
 | Input                  | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-|------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `device_name`          | **string** Name for the created device. You can customize it if starting multiple emulators.                                                                                                                                                                                                                                                                                                                                                                       |
 | `system_image_package` | **string** Android package path to use for the emulator. For example, `system-images;android-30;default;x86_64`.<br />To get a list of available system images, run [`sdkmanager --list`](https://developer.android.com/tools/sdkmanager#list) on a local computer. VMs run on x86_64 architecture, so always choose `x86_64` package variants. The [`sdkmanager` tool](https://developer.android.com/tools/sdkmanager) comes from Android SDK command-line tools. |
 
@@ -1382,7 +1383,7 @@ build:
 ```
 
 | Input               | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-|---------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `device_identifier` | **string** Name or UDID of the Simulator you want to start. Examples include `iPhone [XY] Pro`, `AEF997BB-222C-4379-89BA-D21070B1D787`.<br />**Note:** Available Simulators are different for every image. If you change the image, the Simulator for a given name may become unavailable. For instance, an Xcode 14 image will have iPhone 14 Simulators, while an Xcode 15 image will have iPhone 15 simulators. In general, we encourage not providing this input. See [runner images](/build/eas-json/#selecting-a-base-image) for more information. |
 
 <BoxLink
@@ -1456,9 +1457,9 @@ build:
             This is a test message when build succeeds
 ```
 
-| Input               | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-|---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `message` | **string** The text of the message you want to send. For example, `'This is the content of the message'`.<br /> <br />**Note:** You can reference build job properties and [use other steps outputs](#use-output-from-one-step-to-another) in the message for dynamic evaluation. For example, `'Build URL: ${ eas.job.expoBuildUrl }'`, `Build finished with status: ${ steps.run_fastlane.status_text }`, `Build failed with error: ${ steps.run_gradle.error_text }`. |
+| Input            | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `message`        | **string** The text of the message you want to send. For example, `'This is the content of the message'`.<br /> <br />**Note:** You can reference build job properties and [use other steps outputs](#use-output-from-one-step-to-another) in the message for dynamic evaluation. For example, `'Build URL: ${ eas.job.expoBuildUrl }'`, `Build finished with status: ${ steps.run_fastlane.status_text }`, `Build failed with error: ${ steps.run_gradle.error_text }`. |
 | `slack_hook_url` | **string** The URL of the previously configured Slack webhook URL, which will post your message to the specified channel. You can provide the plain URL like `slack_hook_url: 'https://hooks.slack.com/services/[rest_of_hook_url]'`, use EAS secrets like `slack_hook_url: ${ eas.env.ANOTHER_SLACK_HOOK_URL }`, or set the `SLACK_HOOK_URL` secret, which will serve as a default webhook URL (in this last case, there is no need to provide `slack_hook_url` input). |
 
 <BoxLink
