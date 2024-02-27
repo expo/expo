@@ -3,6 +3,7 @@ package expo.modules.kotlin.sharedobjects
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.jni.JavaScriptObject
 import expo.modules.kotlin.jni.JavaScriptWeakObject
+import java.lang.ref.WeakReference
 
 @JvmInline
 value class SharedObjectId(val value: Int) {
@@ -21,7 +22,9 @@ typealias SharedObjectPair = Pair<SharedObject, JavaScriptWeakObject>
 
 const val sharedObjectIdPropertyName = "__expo_shared_object_id__"
 
-class SharedObjectRegistry {
+class SharedObjectRegistry(appContext: AppContext) {
+  private val appContextHolder = WeakReference(appContext)
+
   private var currentId: SharedObjectId = SharedObjectId(1)
 
   internal var pairs = mutableMapOf<SharedObjectId, SharedObjectPair>()
@@ -35,11 +38,15 @@ class SharedObjectRegistry {
   internal fun add(native: SharedObject, js: JavaScriptObject): SharedObjectId {
     val id = pullNextId()
     native.sharedObjectId = id
-    js.defineProperty(sharedObjectIdPropertyName, id.value)
 
-    js.defineDeallocator {
-      delete(id)
-    }
+    // This property should be deprecated, but it's still used when passing as a view prop.
+    // It's already defined in the JS base SharedObject class prototype,
+    // but with the current implementation it's possible to use a raw object for registration.
+    js.defineProperty(sharedObjectIdPropertyName, id.value)
+    appContextHolder
+      .get()
+      ?.jsiInterop
+      ?.setNativeStateForSharedObject(id.value, js)
 
     val jsWeakObject = js.createWeak()
     synchronized(this) {
@@ -49,10 +56,9 @@ class SharedObjectRegistry {
   }
 
   internal fun delete(id: SharedObjectId) {
-    val removedObject: SharedObjectPair? = synchronized(this) {
-      return@synchronized pairs.remove(id)
-    }
-    removedObject?.let { (native, js) ->
+    synchronized(this) {
+      pairs.remove(id)
+    }?.let { (native, _) ->
       native.sharedObjectId = SharedObjectId(0)
       native.deallocate()
     }

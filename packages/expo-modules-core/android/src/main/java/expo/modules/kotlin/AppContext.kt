@@ -79,7 +79,7 @@ class AppContext(
     ModuleHolder(module)
   }
 
-  internal val sharedObjectRegistry = SharedObjectRegistry()
+  internal val sharedObjectRegistry = SharedObjectRegistry(this)
 
   internal val classRegistry = ClassRegistry()
 
@@ -154,7 +154,7 @@ class AppContext(
 
     trace("AppContext.installJSIInterop") {
       try {
-        jsiInterop = JSIInteropModuleRegistry(this)
+        jsiInterop = JSIInteropModuleRegistry()
         val reactContext = reactContextHolder.get() ?: return@trace
         val jsContextHolder = reactContext.javaScriptContextHolder?.get() ?: return@trace
 
@@ -168,6 +168,7 @@ class AppContext(
           .takeIf { it != 0L }
           ?.let {
             jsiInterop.installJSI(
+              this,
               it,
               jniDeallocator,
               jsCallInvokerHolder

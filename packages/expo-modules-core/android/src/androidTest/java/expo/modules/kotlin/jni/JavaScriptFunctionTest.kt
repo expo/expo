@@ -9,8 +9,8 @@ class JavaScriptFunctionTest {
 
   @Before
   fun before() {
-    jsiInterop = JSIInteropModuleRegistry(defaultAppContextMock()).apply {
-      installJSIForTests()
+    jsiInterop = JSIInteropModuleRegistry().apply {
+      installJSIForTests(defaultAppContextMock())
     }
   }
 
