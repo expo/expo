@@ -606,47 +606,47 @@ Behind the scenes, it uses:
 If you need to customize the Maestro version, run a specific Android Emulator or iOS Simulator, or upload multiple build artifacts you will need to write this series of steps yourself.
 
 <Collapsible summary={<>An example Android workflow with <code>eas/mastro_test</code> expanded</>}>
-  ```yaml build-and-test-android-expanded.yml
-  build:
-    name: Build and test (Android, expanded)
-    steps:
-      - eas/build
-      # @info #
-      - eas/install_maestro
-      - eas/start_android_emulator:
-          inputs:
-            system_package_name: system-images;android-34;default;x86_64
-      - run:
-          command: |
-            # shopt -s globstar is necessary to add /**/ support
-            shopt -s globstar
-            # shopt -s nullglob is necessary not to try to install
-            # SEARCH_PATH literally if there are no matching files.
-            shopt -s nullglob
+```yaml build-and-test-android-expanded.yml
+build:
+  name: Build and test (Android, expanded)
+  steps:
+    - eas/build
+    # @info #
+    - eas/install_maestro
+    - eas/start_android_emulator:
+        inputs:
+          system_package_name: system-images;android-34;default;x86_64
+    - run:
+        command: |
+          # shopt -s globstar is necessary to add /**/ support
+          shopt -s globstar
+          # shopt -s nullglob is necessary not to try to install
+          # SEARCH_PATH literally if there are no matching files.
+          shopt -s nullglob
 
-            SEARCH_PATH="android/app/build/outputs/**/*.apk"
-            FILES_FOUND=false
+          SEARCH_PATH="android/app/build/outputs/**/*.apk"
+          FILES_FOUND=false
 
-            for APP_PATH in $SEARCH_PATH; do
-              FILES_FOUND=true
-              echo "Installing \\"$APP_PATH\\""
-              adb install "$APP_PATH"
-            done
+          for APP_PATH in $SEARCH_PATH; do
+            FILES_FOUND=true
+            echo "Installing \\"$APP_PATH\\""
+            adb install "$APP_PATH"
+          done
 
-            if ! $FILES_FOUND; then
-              echo "No files found matching \\"$SEARCH_PATH\\". Are you sure you've built an Emulator app?"
-              exit 1
-            fi
-      - run:
-          command: |
-            maestro test maestro/flow.yaml
-      - eas/upload_artifact:
-          name: Upload test artifact
-          if: ${ always() }
-          inputs:
-            type: build-artifact
-            path: ${ eas.env.HOME }/.maestro/tests
-      # @end #
+          if ! $FILES_FOUND; then
+            echo "No files found matching \\"$SEARCH_PATH\\". Are you sure you've built an Emulator app?"
+            exit 1
+          fi
+    - run:
+        command: |
+          maestro test maestro/flow.yaml
+    - eas/upload_artifact:
+        name: Upload test artifact
+        if: ${ always() }
+        inputs:
+          type: build-artifact
+          path: ${ eas.env.HOME }/.maestro/tests
+    # @end #
 
 ````
 </Collapsible>
