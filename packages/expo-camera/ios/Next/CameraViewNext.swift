@@ -282,7 +282,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
           default: physicalOrientation)
         if deviceOrientation != self.physicalOrientation {
           self.physicalOrientation = deviceOrientation
-          onResponsiveOrientationChanged(["orientation": deviceOrientation.rawValue])
+          onResponsiveOrientationChanged(["orientation": ExpoCameraUtilsNext.toOrientationString(orientation: deviceOrientation)])
         }
       }
     } else {
