@@ -572,7 +572,7 @@ EAS provides a set of built-in reusable functions that you can use in a workflow
 
 #### `eas/maestro_test`
 
-All-in-one function that installs Maestro, prepares a testing environment (iOS Simulator or Android Emulator) and tests the app.
+All-in-one function that installs Maestro, prepares a testing environment (Android Emulator or iOS Simulator), and tests the app.
 
 | Input       | Description                                                                                                                                                 |
 |-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -595,14 +595,14 @@ build:
 ```
 
  Behind the scenes, it uses:
-- [`eas/install_maestro`](#easinstall_maestro) to install Maestro,
-- [`eas/start_android_emulator`](#easstart_android_emulator) to start an Android Emulator if needed,
-- [`eas/start_ios_simulator`](#easstart_ios_simulator) to start an iOS Simulator if needed,
-- custom `run` to install APK/APP to the running Emulator/Simulator,
-- series of `run`s to execute `maestro test` for each of the provided flows,
-- [`eas/upload_artifact`](#easupload_artifact) to upload Maestro test artifacts as build artifact.
+- [`eas/install_maestro`](#easinstall_maestro) to install Maestro
+- [`eas/start_android_emulator`](#easstart_android_emulator) to start an Android Emulator if needed
+- [`eas/start_ios_simulator`](#easstart_ios_simulator) to start an iOS Simulator if needed
+- Custom `run` to install **.apk**  to the running Android Emulator and **.app** to iOS Simulator
+- Series of `run` to execute `maestro test` for each of the provided flows
+- [`eas/upload_artifact`](#easupload_artifact) to upload Maestro test artifacts as build artifact
 
-If you need to customize Maestro version, run specific Simulator/Emulator or upload multiple build artifacts, you will need to write this series of steps yourself.
+If you need to customize the Maestro version, run a specific Android Emulator or iOS Simulator, or upload multiple build artifacts you will need to write this series of steps yourself.
 
 ```yaml build-and-test-android-expanded.yml
 build:
