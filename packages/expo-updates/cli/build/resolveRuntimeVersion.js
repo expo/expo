@@ -27,11 +27,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateFingerprint = void 0;
+exports.resolveRuntimeVersion = void 0;
 const chalk_1 = __importDefault(require("chalk"));
 const args_1 = require("./utils/args");
 const Log = __importStar(require("./utils/log"));
-const generateFingerprint = async (argv) => {
+const resolveRuntimeVersion = async (argv) => {
     const args = (0, args_1.assertArgs)({
         // Types
         '--help': Boolean,
@@ -42,27 +42,22 @@ const generateFingerprint = async (argv) => {
     if (args['--help']) {
         Log.exit((0, chalk_1.default) `
 {bold Description}
-Generate fingerprint for use in expo-updates runtime version
+Resolve expo-updates runtime version
 
 {bold Usage}
-  {dim $} npx expo-updates fingerprint:generate --platform <platform>
+  {dim $} npx expo-updates runtimeversion:resolve --platform <platform>
 
   Options
-  --platform <string>                  Platform to generate a fingerprint for
+  --platform <string>                  Platform to resolve runtime version for
   -h, --help                           Output usage information
     `, 0);
     }
-    const [{ createFingerprintAsync }, { resolveWorkflowAsync }] = await Promise.all([
-        import('../../utils/build/createFingerprintAsync.js'),
-        import('../../utils/build/workflow.js'),
-    ]);
+    const { resolveRuntimeVersionAsync } = await import('../../utils/build/resolveRuntimeVersionAsync.js');
     const platform = (0, args_1.requireArg)(args, '--platform');
     if (!['ios', 'android'].includes(platform)) {
         throw new Error(`Invalid platform argument: ${platform}`);
     }
-    const projectRoot = (0, args_1.getProjectRoot)(args);
-    const workflow = await resolveWorkflowAsync(projectRoot, platform);
-    const result = await createFingerprintAsync(projectRoot, platform, workflow);
-    console.log(JSON.stringify(result));
+    const runtimeVersion = await resolveRuntimeVersionAsync((0, args_1.getProjectRoot)(args), platform);
+    console.log(JSON.stringify({ runtimeVersion }));
 };
-exports.generateFingerprint = generateFingerprint;
+exports.resolveRuntimeVersion = resolveRuntimeVersion;

@@ -8,6 +8,7 @@ const config_1 = require("@expo/config");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const createFingerprintAsync_1 = require("./createFingerprintAsync");
+const workflow_1 = require("./workflow");
 async function createFingerprintForBuildAsync(platform, possibleProjectRoot, destinationDir) {
     // Remove projectRoot validation when we no longer support React Native <= 62
     let projectRoot;
@@ -33,7 +34,8 @@ async function createFingerprintForBuildAsync(platform, possibleProjectRoot, des
         // not a policy that needs fingerprinting
         return;
     }
-    const fingerprint = await (0, createFingerprintAsync_1.createFingerprintAsync)(projectRoot, platform);
+    const workflow = await (0, workflow_1.resolveWorkflowAsync)(projectRoot, platform);
+    const fingerprint = await (0, createFingerprintAsync_1.createFingerprintAsync)(projectRoot, platform, workflow);
     console.log(JSON.stringify(fingerprint.sources));
     fs_1.default.writeFileSync(path_1.default.join(destinationDir, 'fingerprint'), fingerprint.hash);
 }
