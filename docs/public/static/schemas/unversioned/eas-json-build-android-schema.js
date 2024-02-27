@@ -69,4 +69,13 @@ export default [
       'Path (or pattern) where EAS Build is going to look for the application archive. EAS Build uses the `fast-glob` npm library for [pattern matching](https://github.com/mrmlnc/fast-glob#pattern-syntax). The default value is `android/app/build/outputs/**/*.{apk,aab}`.'
     ],
   },
+  {
+    name: 'config',
+    type: 'string',
+    description: [
+      'Custom workflow file name that will be used to run this Android build. You can also specify this property on profile level for platform-agnostic workflows. [Learn more](/custom-builds/get-started/).',
+      '',
+      'Example: `"config": "production-android.yml"` will use workflow from `.eas/build/production-android.yml`.'
+    ],
+  },
 ]
