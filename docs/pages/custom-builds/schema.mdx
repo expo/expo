@@ -5,6 +5,7 @@ description: A reference of configuration options for custom builds with EAS Bui
 maxHeadingDepth: 5
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { GithubIcon } from '@expo/styleguide-icons';
 
@@ -569,6 +570,136 @@ functions:
 EAS provides a set of built-in reusable functions that you can use in a workflow without defining the function definition.
 
 > **info** **Tip:** Any function that is built-in and provided by EAS must start with the `eas/` prefix.
+
+#### `eas/maestro_test`
+
+All-in-one function that installs Maestro, prepares a testing environment (Android Emulator or iOS Simulator), and tests the app.
+
+| Input       | Description                                                                                                                                                 |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `flow_path` | **string** Path (or multiple paths, each in a separate line) to [Maestro flows](https://maestro.mobile.dev/getting-started/writing-your-first-flow) to run. |
+
+```yaml build-and-test.yml
+build:
+  name: Build and test
+  steps:
+    - eas/build
+    # @info #
+    - eas/maestro_test:
+        inputs:
+          flow_path: |
+            maestro/sign_in.yaml
+            maestro/create_post.yaml
+            maestro/sign_out.yaml
+    # @end #
+```
+
+Behind the scenes, it uses:
+
+- [`eas/install_maestro`](#easinstall_maestro) to install Maestro
+- [`eas/start_android_emulator`](#easstart_android_emulator) to start an Android Emulator if needed
+- [`eas/start_ios_simulator`](#easstart_ios_simulator) to start an iOS Simulator if needed
+- Custom `run` to install **.apk** to the running Android Emulator and **.app** to iOS Simulator
+- Series of `run` to execute `maestro test` for each of the provided flows
+- [`eas/upload_artifact`](#easupload_artifact) to upload Maestro test artifacts as build artifact
+
+If you need to customize the Maestro version, run a specific Android Emulator or iOS Simulator, or upload multiple build artifacts you will need to write this series of steps yourself.
+
+<Collapsible summary={<>An example Android workflow with <code>eas/mastro_test</code> expanded</>}>
+```yaml build-and-test-android-expanded.yml
+build:
+  name: Build and test (Android, expanded)
+  steps:
+    - eas/build
+    # @info #
+    - eas/install_maestro
+    - eas/start_android_emulator:
+        inputs:
+          system_package_name: system-images;android-34;default;x86_64
+    - run:
+        command: |
+          # shopt -s globstar is necessary to add /**/ support
+          shopt -s globstar
+          # shopt -s nullglob is necessary not to try to install
+          # SEARCH_PATH literally if there are no matching files.
+          shopt -s nullglob
+
+          SEARCH_PATH="android/app/build/outputs/**/*.apk"
+          FILES_FOUND=false
+
+          for APP_PATH in $SEARCH_PATH; do
+            FILES_FOUND=true
+            echo "Installing \\"$APP_PATH\\""
+            adb install "$APP_PATH"
+          done
+
+          if ! $FILES_FOUND; then
+            echo "No files found matching \\"$SEARCH_PATH\\". Are you sure you've built an Emulator app?"
+            exit 1
+          fi
+    - run:
+        command: |
+          maestro test maestro/flow.yaml
+    - eas/upload_artifact:
+        name: Upload test artifact
+        if: ${ always() }
+        inputs:
+          type: build-artifact
+          path: ${ eas.env.HOME }/.maestro/tests
+    # @end #
+
+````
+</Collapsible>
+
+<Collapsible summary={<>An example iOS workflow with <code>eas/mastro_test</code> expanded</>}>
+
+```yaml build-and-test-ios-expanded.yml
+build:
+name: Build and test (iOS, expanded)
+steps:
+- eas/build
+# @info #
+- eas/install_maestro
+- eas/start_ios_simulator
+- run:
+    command: |
+      # shopt -s nullglob is necessary not to try to install
+      # SEARCH_PATH literally if there are no matching files.
+      shopt -s nullglob
+
+      SEARCH_PATH="ios/build/Build/Products/*simulator/*.app"
+      FILES_FOUND=false
+
+      for APP_PATH in $SEARCH_PATH; do
+        FILES_FOUND=true
+        echo "Installing \\"$APP_PATH\\""
+        xcrun simctl install booted "$APP_PATH"
+      done
+
+      if ! $FILES_FOUND; then
+        echo "No files found matching \\"$SEARCH_PATH\\". Are you sure you've built a Simulator app?"
+        exit 1
+      fi
+- run:
+    command: |
+      maestro test maestro/flow.yaml
+- eas/upload_artifact:
+    name: Upload test artifact
+    if: ${ always() }
+    inputs:
+      type: build-artifact
+      path: ${ eas.env.HOME }/.maestro/tests
+# @end #
+````
+
+</Collapsible>
+
+<BoxLink
+  title="eas/maestro_test source code"
+  description="View the source code for the eas/maestro_test function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functionGroups/maestroTest.ts"
+/>
 
 #### `eas/checkout`
 
