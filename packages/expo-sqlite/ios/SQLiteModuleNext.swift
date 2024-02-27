@@ -126,6 +126,7 @@ public final class SQLiteModuleNext: Module {
       // swiftlint:enable line_length
 
       AsyncFunction("stepAsync") { (statement: NativeStatement, database: NativeDatabase) -> SQLiteColumnValues? in
+        // test comment
         return try step(statement: statement, database: database)
       }
       Function("stepSync") { (statement: NativeStatement, database: NativeDatabase) -> SQLiteColumnValues? in
