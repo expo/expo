@@ -185,6 +185,16 @@ class VideoModule : Module() {
           }
         }
 
+      Property("rate")
+        .get { ref: VideoPlayer ->
+          ref.playbackParameters.speed
+        }
+        .set { ref: VideoPlayer, rate: Float ->
+          appContext.mainQueue.launch {
+            ref.playbackParameters = PlaybackParameters(rate)
+          }
+        }
+
       Property("staysActiveInBackground")
         .get { ref: VideoPlayer ->
           ref.staysActiveInBackground
@@ -206,16 +216,6 @@ class VideoModule : Module() {
             }
           }
         }
-
-      Function("getPlaybackSpeed") { ref: VideoPlayer ->
-        ref.playbackParameters.speed
-      }
-
-      Function("setPlaybackSpeed") { ref: VideoPlayer, speed: Float ->
-        appContext.mainQueue.launch {
-          ref.playbackParameters = PlaybackParameters(speed)
-        }
-      }
 
       Function("play") { ref: VideoPlayer ->
         appContext.mainQueue.launch {

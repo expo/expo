@@ -1,5 +1,6 @@
 import { useVideoPlayer, VideoView, VideoSource } from '@expo/video';
 import { Picker } from '@react-native-picker/picker';
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { Platform } from 'expo-modules-core';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { PixelRatio, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -27,6 +28,7 @@ const androidDrmSource: VideoSource = {
 };
 const videoLabels: string[] = ['Big Buck Bunny', 'Elephants Dream'];
 const videoSources: VideoSource[] = [bigBuckBunnySource, elephantsDreamSource];
+const playbackSpeeds: number[] = [0.25, 0.5, 1, 1.5, 2, 16];
 
 if (Platform.OS === 'android') {
   videoLabels.push('Tears of Steel (DRM protected)');
@@ -44,6 +46,7 @@ export default function VideoScreen() {
   const [requiresLinearPlayback, setRequiresLinearPlayback] = React.useState(false);
   const [staysActiveInBackground, setStaysActiveInBackground] = React.useState(false);
   const [isLooping, setIsLooping] = React.useState(false);
+  const [playbackSpeedIndex, setPlaybackSpeedIndex] = React.useState(2);
 
   const player = useVideoPlayer(videoSources[selectedSource]);
 
@@ -147,6 +150,16 @@ export default function VideoScreen() {
           style={styles.button}
           title="Toggle picture in picture"
           onPress={togglePictureInPicture}
+        />
+        <Text>Playback Speed: </Text>
+        <SegmentedControl
+          values={playbackSpeeds.map((speed) => `${speed}x`)}
+          selectedIndex={playbackSpeedIndex}
+          onValueChange={(value) => {
+            player.rate = parseFloat(value);
+            setPlaybackSpeedIndex(playbackSpeeds.indexOf(parseFloat(value)));
+          }}
+          backgroundColor="#e5e5e5"
         />
         <View style={styles.row}>
           <TitledSwitch

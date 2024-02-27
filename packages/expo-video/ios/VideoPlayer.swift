@@ -13,6 +13,17 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable {
     }
   }
 
+  var desiredRate: Float = 1.0 {
+    didSet {
+      if #available(iOS 16.0, *) {
+        pointer.defaultRate = desiredRate
+      }
+      if pointer.rate != 0 {
+        pointer.rate = desiredRate
+      }
+    }
+  }
+
   var staysActiveInBackground = false {
     didSet {
       if staysActiveInBackground {
@@ -24,11 +35,28 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable {
   }
 
   private var playerItemObserver: NSObjectProtocol?
+  private var playerRateObserver: NSObjectProtocol?
 
   override init(_ pointer: AVPlayer) {
     super.init(pointer)
     NowPlayingManager.shared.registerPlayer(pointer)
     VideoManager.shared.register(videoPlayer: self)
+
+    playerRateObserver = pointer.observe(\.rate, options: [.new]) {[weak self] _, change in
+      guard let newRate = change.newValue, let self else {
+        return
+      }
+
+      if #available(iOS 16.0, *) {
+        if self.pointer.defaultRate != desiredRate {
+          // User changed the playback speed in the native controls. Update the desiredRate variable
+          self.desiredRate = self.pointer.defaultRate
+        }
+      } else if newRate != 0 && newRate != desiredRate {
+        // On iOS < 16 play() method always returns the reate to 1.0, we have to keep resetting it back to desiredRate
+        self.pointer.rate = desiredRate
+      }
+    }
   }
 
   deinit {

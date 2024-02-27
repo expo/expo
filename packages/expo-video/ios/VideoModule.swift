@@ -125,6 +125,13 @@ public final class VideoModule: Module {
         player.isLooping = isLooping
       }
 
+      Property("rate") { (player: VideoPlayer) -> Float in
+        return player.desiredRate
+      }
+      .set { (player, rate: Float) in
+        player.desiredRate = rate
+      }
+
       Function("play") { player in
         player.pointer.play()
       }

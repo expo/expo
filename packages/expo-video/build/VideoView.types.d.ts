@@ -26,6 +26,11 @@ export declare class VideoPlayer {
      */
     volume: number;
     /**
+     * Float value between 0 and 16 indicating the current playback speed of the player.
+     * @default 1.0
+     */
+    rate: number;
+    /**
      * Determines whether the player should continue playing after the app enters the background.
      * @default false
      * @platform ios

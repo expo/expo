@@ -25,6 +25,7 @@ class VideoPlayerWeb {
     timestamp = 0;
     _volume = 1;
     _isLooping = false;
+    _playbackRate = 1.0;
     staysActiveInBackground = false; // Not supported on web. Dummy to match the interface.
     set isMuted(value) {
         this._mountedVideos.forEach((video) => {
@@ -34,6 +35,14 @@ class VideoPlayerWeb {
     }
     get isMuted() {
         return this._isMuted;
+    }
+    set rate(value) {
+        this._mountedVideos.forEach((video) => {
+            video.playbackRate = value;
+        });
+    }
+    get rate() {
+        return this._playbackRate;
     }
     set volume(value) {
         this._mountedVideos.forEach((video) => {
@@ -167,6 +176,7 @@ class VideoPlayerWeb {
             this._mountedVideos.forEach((mountedVideo) => {
                 if (mountedVideo === video || mountedVideo.playbackRate === video.playbackRate)
                     return;
+                this._playbackRate = video.playbackRate;
                 mountedVideo.playbackRate = video.playbackRate;
             });
         };

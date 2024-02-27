@@ -31,6 +31,7 @@ class VideoPlayerWeb implements VideoPlayer {
   timestamp: number = 0;
   _volume: number = 1;
   _isLooping: boolean = false;
+  _playbackRate: number = 1.0;
   staysActiveInBackground: boolean = false; // Not supported on web. Dummy to match the interface.
 
   set isMuted(value: boolean) {
@@ -41,6 +42,15 @@ class VideoPlayerWeb implements VideoPlayer {
   }
   get isMuted(): boolean {
     return this._isMuted;
+  }
+
+  set rate(value: number) {
+    this._mountedVideos.forEach((video) => {
+      video.playbackRate = value;
+    });
+  }
+  get rate(): number {
+    return this._playbackRate;
   }
 
   set volume(value: number) {
@@ -185,6 +195,7 @@ class VideoPlayerWeb implements VideoPlayer {
     video.onratechange = () => {
       this._mountedVideos.forEach((mountedVideo) => {
         if (mountedVideo === video || mountedVideo.playbackRate === video.playbackRate) return;
+        this._playbackRate = video.playbackRate;
         mountedVideo.playbackRate = video.playbackRate;
       });
     };

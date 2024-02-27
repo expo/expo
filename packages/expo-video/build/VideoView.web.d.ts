@@ -10,9 +10,12 @@ declare class VideoPlayerWeb implements VideoPlayer {
     timestamp: number;
     _volume: number;
     _isLooping: boolean;
+    _playbackRate: number;
     staysActiveInBackground: boolean;
     set isMuted(value: boolean);
     get isMuted(): boolean;
+    set rate(value: number);
+    get rate(): number;
     set volume(value: number);
     get volume(): number;
     set isLooping(value: boolean);
