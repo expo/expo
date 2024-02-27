@@ -706,6 +706,8 @@ Behind the scenes, it uses:
 - Series of `run` to execute `maestro test` for each of the provided flows
 - [`eas/upload_artifact`](#easupload_artifact) to upload Maestro test artifacts as build artifact
 
+> **Warning** We have observed that Maestro tests often time out if run on images with Xcode 15.0 or 15.2. Xcode 15.1 and Xcode 14.3.1 seem to be unaffected.
+
 If you need to customize the Maestro version, run a specific Android Emulator or iOS Simulator, or upload multiple build artifacts you will need to write this series of steps yourself.
 
 <Collapsible summary={<>An example Android workflow with <code>eas/mastro_test</code> expanded</>}>
