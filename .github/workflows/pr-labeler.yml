@@ -55,8 +55,8 @@ jobs:
         id: base-commit
         run: |
           # Since we limit this pr-labeler workflow only triggered from limited paths, we should use custom base commit
-          REF=${{ github.event.before || github.base_ref || 'main' }}
-          echo base-commit=$(git log -n 1 $REF || 'main' --pretty=format:'%H' -- .github/workflows/pr-labeler.yml apps/bare-expo apps/test-suite packages yarn.lock) >> "$GITHUB_OUTPUT"
+          REF=${{ github.base_ref || 'main' }}
+          echo base-commit=$(git log -n 1 $REF --pretty=format:'%H' -- .github/workflows/pr-labeler.yml apps/bare-expo apps/test-suite packages yarn.lock) >> "$GITHUB_OUTPUT"
       - name: 📷 Check fingerprint
         id: fingerprint
         uses: expo/expo-github-action/fingerprint@main
