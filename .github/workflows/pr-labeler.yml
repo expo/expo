@@ -59,7 +59,7 @@ jobs:
       - name: 👀 Debug fingerprint
         run: |
           echo "previousGitCommit=${{ steps.fingerprint.outputs.previous-git-commit }} currentGitCommit=${{ steps.fingerprint.outputs.current-git-commit }}"
-          echo "previousFingerprintIsEmpty=${{ steps.fingerprint.outputs.previous-fingerprint == 'null' }}"
+          echo "previousFingerprint=${{ steps.fingerprint.outputs.previous-fingerprint }}"
 
       - name: 🏷️ Labeling PR
         uses: actions/github-script@v6
