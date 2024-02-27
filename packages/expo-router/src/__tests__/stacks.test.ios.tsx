@@ -1,10 +1,10 @@
 import React from 'react';
 
+import { store } from '../global-state/router-store';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
 import { act, screen, renderRouter, testRouter } from '../testing-library';
-import { store } from '../global-state/router-store';
 /**
  * Stacks are the most common navigator and have unique navigation actions
  *
