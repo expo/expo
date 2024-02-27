@@ -46,6 +46,6 @@ Generate fingerprint for use in expo-updates runtime version
 
   const projectRoot = getProjectRoot(args);
   const workflow = await resolveWorkflowAsync(projectRoot, platform);
-  const result = await createFingerprintAsync(projectRoot, platform, workflow);
+  const result = await createFingerprintAsync(projectRoot, platform, workflow, { silent: true });
   console.log(JSON.stringify(result));
 };

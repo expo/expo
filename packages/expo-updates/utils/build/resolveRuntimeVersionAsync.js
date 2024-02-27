@@ -5,7 +5,7 @@ const config_1 = require("@expo/config");
 const config_plugins_1 = require("@expo/config-plugins");
 const createFingerprintAsync_1 = require("./createFingerprintAsync");
 const workflow_1 = require("./workflow");
-async function resolveRuntimeVersionAsync(projectRoot, platform) {
+async function resolveRuntimeVersionAsync(projectRoot, platform, options) {
     const { exp: config } = (0, config_1.getConfig)(projectRoot, {
         isPublicConfig: true,
         skipSDKVersionRequirement: true,
@@ -17,7 +17,7 @@ async function resolveRuntimeVersionAsync(projectRoot, platform) {
     const workflow = await (0, workflow_1.resolveWorkflowAsync)(projectRoot, platform);
     const policy = runtimeVersion.policy;
     if (policy === 'fingerprintExperimental') {
-        const fingerprint = await (0, createFingerprintAsync_1.createFingerprintAsync)(projectRoot, platform, workflow);
+        const fingerprint = await (0, createFingerprintAsync_1.createFingerprintAsync)(projectRoot, platform, workflow, options);
         return { runtimeVersion: fingerprint.hash, fingerprintSources: fingerprint.sources };
     }
     if (workflow !== 'managed') {
