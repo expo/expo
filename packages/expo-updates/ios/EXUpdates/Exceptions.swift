@@ -37,7 +37,7 @@ public final class UpdatesReloadException: Exception {
   }
 
   public override var reason: String {
-    "Could not reload application. Ensure you have set the `bridge` property of AppController."
+    "Could not reload application. Ensure you have set the `appContext` property of AppController."
   }
 }
 

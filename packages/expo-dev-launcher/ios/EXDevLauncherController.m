@@ -585,7 +585,8 @@
     }
 
     if (self.updatesInterface) {
-      ((id<EXUpdatesExternalInterface>)self.updatesInterface).bridge = self.appBridge;
+      ExpoBridgeModule *expoBridgeModule = [self.appBridge moduleForClass:ExpoBridgeModule.class];
+      ((id<EXUpdatesExternalInterface>)self.updatesInterface).appContext = expoBridgeModule.appContext;
     }
   });
 }

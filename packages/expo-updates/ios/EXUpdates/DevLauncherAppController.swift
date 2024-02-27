@@ -19,7 +19,8 @@ import ExpoModulesCore
 @objc(EXUpdatesDevLauncherController)
 @objcMembers
 public final class DevLauncherAppController: NSObject, InternalAppControllerInterface, UpdatesExternalInterface {
-  public weak var bridge: AnyObject?
+  public weak var appContext: AppContext?
+  public var shouldEmitJsEvents = false
 
   public weak var delegate: AppControllerDelegate?
   public weak var updatesExternalInterfaceDelegate: (any EXUpdatesInterface.UpdatesExternalInterfaceDelegate)?
