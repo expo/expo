@@ -29,6 +29,7 @@ export async function createFingerprintForBuildAsync(
 
   const runtimeVersion = config[platform]?.runtimeVersion ?? config.runtimeVersion;
   if (!runtimeVersion || typeof runtimeVersion === 'string') {
+    // normal runtime versions don't need fingerprinting
     return;
   }
 

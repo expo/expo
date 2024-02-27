@@ -43,6 +43,6 @@ Resolve expo-updates runtime version
     throw new Error(`Invalid platform argument: ${platform}`);
   }
 
-  const runtimeVersion = await resolveRuntimeVersionAsync(getProjectRoot(args), platform);
-  console.log(JSON.stringify({ runtimeVersion }));
+  const runtimeVersionInfo = await resolveRuntimeVersionAsync(getProjectRoot(args), platform);
+  console.log(JSON.stringify(runtimeVersionInfo));
 };

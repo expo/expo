@@ -20,14 +20,20 @@ describe(resolveRuntimeVersionAsync, () => {
     jest.mocked(getConfig).mockReturnValue({
       exp: { name: 'test', slug: 'test', runtimeVersion: '3' },
     } as any);
-    await expect(resolveRuntimeVersionAsync('.', 'ios')).resolves.toEqual('3');
+    await expect(resolveRuntimeVersionAsync('.', 'ios')).resolves.toEqual({
+      runtimeVersion: '3',
+      fingerprintSources: null,
+    });
   });
 
   it('uses platform precedence for constant string', async () => {
     jest.mocked(getConfig).mockReturnValue({
       exp: { name: 'test', slug: 'test', runtimeVersion: '3', ios: { runtimeVersion: '4' } },
     } as any);
-    await expect(resolveRuntimeVersionAsync('.', 'ios')).resolves.toEqual('4');
+    await expect(resolveRuntimeVersionAsync('.', 'ios')).resolves.toEqual({
+      runtimeVersion: '4',
+      fingerprintSources: null,
+    });
   });
 
   it('throws for bare when not fingerprint policy or constant string', async () => {
@@ -47,7 +53,10 @@ describe(resolveRuntimeVersionAsync, () => {
     } as any);
     jest.mocked(createFingerprintAsync).mockResolvedValue({ hash: 'hello', sources: [] });
 
-    await expect(resolveRuntimeVersionAsync('.', 'ios')).resolves.toEqual('hello');
+    await expect(resolveRuntimeVersionAsync('.', 'ios')).resolves.toEqual({
+      runtimeVersion: 'hello',
+      fingerprintSources: [],
+    });
   });
 
   it('returns the config plugins evaluated when other policy', async () => {
@@ -58,6 +67,9 @@ describe(resolveRuntimeVersionAsync, () => {
     jest.mocked(resolveWorkflowAsync).mockResolvedValue('managed');
     jest.mocked(Updates.resolveRuntimeVersionPolicyAsync).mockResolvedValue('what');
 
-    await expect(resolveRuntimeVersionAsync('.', 'ios')).resolves.toEqual('what');
+    await expect(resolveRuntimeVersionAsync('.', 'ios')).resolves.toEqual({
+      runtimeVersion: 'what',
+      fingerprintSources: null,
+    });
   });
 });

@@ -1,5 +1,6 @@
 import { getConfig } from '@expo/config';
 import { Updates } from '@expo/config-plugins';
+import { FingerprintSource } from '@expo/fingerprint';
 
 import { createFingerprintAsync } from './createFingerprintAsync';
 import { resolveWorkflowAsync } from './workflow';
@@ -7,7 +8,10 @@ import { resolveWorkflowAsync } from './workflow';
 export async function resolveRuntimeVersionAsync(
   projectRoot: string,
   platform: 'ios' | 'android'
-): Promise<string | null> {
+): Promise<{
+  runtimeVersion: string | null;
+  fingerprintSources: FingerprintSource[] | null;
+}> {
   const { exp: config } = getConfig(projectRoot, {
     isPublicConfig: true,
     skipSDKVersionRequirement: true,
@@ -15,7 +19,7 @@ export async function resolveRuntimeVersionAsync(
 
   const runtimeVersion = config[platform]?.runtimeVersion ?? config.runtimeVersion;
   if (!runtimeVersion || typeof runtimeVersion === 'string') {
-    return runtimeVersion ?? null;
+    return { runtimeVersion: runtimeVersion ?? null, fingerprintSources: null };
   }
 
   const workflow = await resolveWorkflowAsync(projectRoot, platform);
@@ -23,7 +27,8 @@ export async function resolveRuntimeVersionAsync(
   const policy = runtimeVersion.policy;
 
   if (policy === 'fingerprintExperimental') {
-    return (await createFingerprintAsync(projectRoot, platform, workflow)).hash;
+    const fingerprint = await createFingerprintAsync(projectRoot, platform, workflow);
+    return { runtimeVersion: fingerprint.hash, fingerprintSources: fingerprint.sources };
   }
 
   if (workflow !== 'managed') {
@@ -32,5 +37,8 @@ export async function resolveRuntimeVersionAsync(
     );
   }
 
-  return await Updates.resolveRuntimeVersionPolicyAsync(policy, config, platform);
+  return {
+    runtimeVersion: await Updates.resolveRuntimeVersionPolicyAsync(policy, config, platform),
+    fingerprintSources: null,
+  };
 }

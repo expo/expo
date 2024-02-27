@@ -12,16 +12,20 @@ async function resolveRuntimeVersionAsync(projectRoot, platform) {
     });
     const runtimeVersion = config[platform]?.runtimeVersion ?? config.runtimeVersion;
     if (!runtimeVersion || typeof runtimeVersion === 'string') {
-        return runtimeVersion ?? null;
+        return { runtimeVersion: runtimeVersion ?? null, fingerprintSources: null };
     }
     const workflow = await (0, workflow_1.resolveWorkflowAsync)(projectRoot, platform);
     const policy = runtimeVersion.policy;
     if (policy === 'fingerprintExperimental') {
-        return (await (0, createFingerprintAsync_1.createFingerprintAsync)(projectRoot, platform, workflow)).hash;
+        const fingerprint = await (0, createFingerprintAsync_1.createFingerprintAsync)(projectRoot, platform, workflow);
+        return { runtimeVersion: fingerprint.hash, fingerprintSources: fingerprint.sources };
     }
     if (workflow !== 'managed') {
         throw new Error(`You're currently using the bare workflow, where runtime version policies are not supported. You must set your runtime version manually. For example, define your runtime version as "1.0.0", not {"policy": "appVersion"} in your app config. https://docs.expo.dev/eas-update/runtime-versions`);
     }
-    return await config_plugins_1.Updates.resolveRuntimeVersionPolicyAsync(policy, config, platform);
+    return {
+        runtimeVersion: await config_plugins_1.Updates.resolveRuntimeVersionPolicyAsync(policy, config, platform),
+        fingerprintSources: null,
+    };
 }
 exports.resolveRuntimeVersionAsync = resolveRuntimeVersionAsync;
