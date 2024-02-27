@@ -300,7 +300,8 @@ PODS:
     - ReachabilitySwift
     - React-Core
     - sqlite3 (~> 3.42.0)
-  - EXUpdatesInterface (0.15.0)
+  - EXUpdatesInterface (0.15.0):
+    - ExpoModulesCore
   - FBLazyVector (0.73.4)
   - FBReactNativeSpec (0.73.4):
     - RCT-Folly (= 2022.05.16.00)
@@ -2033,7 +2034,7 @@ SPEC CHECKSUMS:
   EXStructuredHeaders: 3b8ec10c65a4607dc976b6cdfa5136d2ea2ece19
   EXTaskManager: 81b2dfaaba6d9f9a4bc3e3e2a786a98004eb9e98
   EXUpdates: e2cff3892ee9025c433082bb6e721d213c1a6f5b
-  EXUpdatesInterface: 4f787eeabc62c258f978ea4865c67adfb6b2f19f
+  EXUpdatesInterface: 431fbb833aefbc9b7252b24a6a563209ff94f87d
   FBLazyVector: 84f6edbe225f38aebd9deaf1540a4160b1f087d7
   FBReactNativeSpec: f40d49b222e5ff964f98c8aa4f08baa6c1e15e2d
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
