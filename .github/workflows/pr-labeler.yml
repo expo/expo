@@ -9,6 +9,7 @@ on:
       - apps/test-suite/**
       - packages/**
       - yarn.lock
+      # Adding new paths should also update the following "Get the base commit" step's paths
   pull_request:
     types: [opened, synchronize]
     paths:
@@ -37,7 +38,7 @@ jobs:
       - name: 👀 Checkout
         uses: actions/checkout@v4
         with:
-          submodules: true
+          fetch-depth: 100
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
@@ -50,11 +51,17 @@ jobs:
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
+      - name: Get the base commit
+        id: base-commit
+        run: |
+          # Since we limit this pr-labeler workflow only triggered from limited paths, we should use custom base commit
+          echo base-commit=$(git log -n 1 --pretty=format:'%H' -- .github/workflows/pr-labeler.yml apps/bare-expo apps/test-suite packages yarn.lock) >> "$GITHUB_OUTPUT"
       - name: 📷 Check fingerprint
         id: fingerprint
         uses: expo/expo-github-action/fingerprint@main
         with:
           working-directory: apps/bare-expo
+          previous-git-commit: ${{ steps.base-commit.outputs.base-commit }}
 
       - name: 👀 Debug fingerprint
         run: |
