@@ -6,6 +6,10 @@
 @class EXAppContext;
 @class EXRuntime;
 
+#if __has_include(<ReactCommon/RCTRuntimeExecutor.h>)
+@class RCTRuntimeExecutor;
+#endif // React Native >=0.74
+
 @interface EXJavaScriptRuntimeManager : NSObject
 
 /**
@@ -13,6 +17,10 @@
  the runtime is not available yet or the remote debugging is enabled.
  */
 + (nullable EXRuntime *)runtimeFromBridge:(nonnull RCTBridge *)bridge NS_SWIFT_NAME(runtime(fromBridge:));
+
+#if __has_include(<ReactCommon/RCTRuntimeExecutor.h>)
++ (nullable EXRuntime *)runtimeFromBridge:(nonnull RCTBridge *)bridge withExecutor:(nonnull RCTRuntimeExecutor *)executor;
+#endif // React Native >=0.74
 
 /**
  Installs ExpoModules host object in the runtime of the given app context.

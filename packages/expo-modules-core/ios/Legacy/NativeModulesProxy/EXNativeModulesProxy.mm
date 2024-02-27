@@ -192,9 +192,9 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
 
 - (void)setBridge:(RCTBridge *)bridge
 {
-  ExpoBridgeModule* expoBridgeModule = [bridge moduleForClass:ExpoBridgeModule.class];
-  [expoBridgeModule legacyProxyDidSetBridgeWithLegacyModulesProxy:self
-                                             legacyModuleRegistry:_exModuleRegistry];
+  ExpoBridgeModule *expoBridgeModule = [bridge moduleForClass:ExpoBridgeModule.class];
+  [expoBridgeModule legacyProxyDidSetBridge:self legacyModuleRegistry:_exModuleRegistry];
+
   _appContext = [expoBridgeModule appContext];
 
   if (!_bridge) {
@@ -337,6 +337,7 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
 {
   // Hacky way to get a dictionary with `RCTComponentData` from UIManager.
   NSMutableDictionary<NSString *, RCTComponentData *> *componentDataByName = [bridge.uiManager valueForKey:@"_componentDataByName"];
+
   Class wrappedViewModuleClass = [ViewModuleWrapper createViewModuleWrapperClassWithModule:viewModule];
   NSString *className = NSStringFromClass(wrappedViewModuleClass);
 

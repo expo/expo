@@ -31,9 +31,11 @@ public final class AppContext: NSObject {
   /**
    The legacy module registry with modules written in the old-fashioned way.
    */
+  @objc
   public weak var legacyModuleRegistry: EXModuleRegistry?
 
-  internal weak var legacyModulesProxy: LegacyNativeModulesProxy?
+  @objc
+  public weak var legacyModulesProxy: LegacyNativeModulesProxy?
 
   /**
    React bridge of the context's app. Can be `nil` when the bridge
@@ -99,6 +101,12 @@ public final class AppContext: NSObject {
     self.legacyModuleRegistry = legacyModuleRegistry as? EXModuleRegistry
   }
 
+  @objc
+  public convenience override init() {
+    self.init(config: .default)
+  }
+
+  @objc
   @discardableResult
   public func useModulesProvider(_ providerName: String) -> Self {
     return useModulesProvider(Self.modulesProvider(withName: providerName))
