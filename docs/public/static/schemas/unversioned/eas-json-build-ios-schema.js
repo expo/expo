@@ -95,4 +95,13 @@ export default [
       'Path (or pattern) where EAS Build is going to look for the application archive. EAS Build uses the `fast-glob` npm package for [pattern matching](https://github.com/mrmlnc/fast-glob#pattern-syntax). You should modify that path only if you are using a custom **Gymfile**. The default is `ios/build/Build/Products/*-iphonesimulator/*.app` when building for simulator and `ios/build/*.ipa` in other cases.'
     ],
   },
+  {
+    name: 'config',
+    type: 'string',
+    description: [
+      'Custom workflow file name that will be used to run this iOS build. You can also specify this property on profile level for platform-agnostic workflows. [Learn more](/custom-builds/get-started/).',
+      '',
+      'Example: `"config": "production-ios.yml"` will use workflow from `.eas/build/production-ios.yml`.'
+    ],
+  },
 ]

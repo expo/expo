@@ -155,4 +155,13 @@ export default [
       },
     ],
   },
+  {
+    name: 'config',
+    type: 'string',
+    description: [
+      'Custom workflow file name that will be used to run this build. You can also specify this property on platform level for platform-specific workflows. [Learn more](/custom-builds/get-started/).',
+      '',
+      'Example: `"config": "production.yml"` will use workflow from `.eas/build/production.yml`.'
+    ],
+  },
 ];
