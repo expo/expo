@@ -49,12 +49,19 @@ const commands = {
 };
 const args = (0, arg_1.default)({
     // Types
+    '--version': Boolean,
     '--help': Boolean,
     // Aliases
     '-h': '--help',
 }, {
     permissive: true,
 });
+if (args['--version']) {
+    // Version is added in the build script.
+    const packageJSON = require('../../package.json');
+    console.log(packageJSON.version);
+    process.exit(0);
+}
 const command = args._[0];
 const commandArgs = args._.slice(1);
 // Handle `--help` flag
@@ -80,4 +87,8 @@ if (args['--help']) {
 // Install exit hooks
 process.on('SIGINT', () => process.exit(0));
 process.on('SIGTERM', () => process.exit(0));
+if (!(command in commands)) {
+    console.error(`Invalid command: ${command}`);
+    process.exit(1);
+}
 commands[command]().then((exec) => exec(commandArgs));
