@@ -772,7 +772,7 @@ build:
 
 #### `eas/get_credentials_for_build_triggered_by_github_integration`
 
-Resolves the credentials for a build triggered by our [GitHub integration](/build/building-from-github/). If you are using the GitHub integration and your custom build needs to use credentials, you must call this function.
+Resolves the credentials for a build triggered by our [GitHub integration](/build/building-from-github/). Call this function if you are using the GitHub integration and your custom build needs to use credentials.
 
 This is a no-op if the build was not triggered by the GitHub integration. This function is automatically executed by [`eas/build`](#easbuild) function group.
 
