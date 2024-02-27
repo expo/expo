@@ -47,7 +47,7 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
   const isAutoDevClient =
     args['--dev-client'] == null &&
     args['--go'] == null &&
-    hasDirectDevClientDependency(projectRoot);
+    false
 
   const isDevClient = isAutoDevClient || isUserDefinedDevClient;
 
@@ -71,7 +71,7 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
     port: args['--port'],
     minify: !!args['--minify'],
 
-    devClient: isDevClient,
+    devClient: false,
 
     scheme,
     host,
