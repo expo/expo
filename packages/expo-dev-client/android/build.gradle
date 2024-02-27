@@ -51,7 +51,7 @@ android {
     minSdkVersion safeExtGet('minSdkVersion', 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 34)
     versionCode 1
-    versionName "3.3.8"
+    versionName "3.3.9"
 
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }

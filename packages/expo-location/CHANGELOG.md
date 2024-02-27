@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [Android] Make foreground service permission opt-in with `isAndroidForegroundServiceEnabled` config plugin option [#27265](https://github.com/expo/expo/pull/27265) by [@brentvatne](https://github.com/brentvatne))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 16.5.4 — 2024-02-27
+
+### 🎉 New features
+
+- [Android] Make foreground service permission opt-in with `isAndroidForegroundServiceEnabled` config plugin option [#27265](https://github.com/expo/expo/pull/27265) by [@brentvatne](https://github.com/brentvatne))
 
 ## 16.5.3 — 2024-02-06
 

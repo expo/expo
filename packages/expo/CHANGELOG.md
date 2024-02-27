@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 50.0.8 — 2024-02-27
+
+### 💡 Others
+
 - Export `DevToolsPluginClient` from `expo/devtools`. ([#27125](https://github.com/expo/expo/pull/27125) by [@cyrilbo](https://github.com/cyrilbo))
 
 ## 50.0.7 — 2024-02-16
