@@ -162,3 +162,15 @@ jobs:
               repo: context.repo.repo,
               body: body,
             });
+      - name: 💬 Delete comment with fingerprint
+        if: ${{ steps.fingerprint.outputs.fingerprint-diff == '[]' && steps.old_comment.outputs.comment-id != '' }}
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.deleteComment({
+              issue_number: context.issue.number,
+              comment_id: '${{ steps.old_comment.outputs.comment-id }}',
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
