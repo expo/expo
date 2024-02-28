@@ -12,7 +12,7 @@ public class AssetModule: Module {
     Name("AssetModule")
 
     AsyncFunction("downloadAsync") { (url: URL, md5Hash: String?, type: String, promise: Promise) in
-      if(url.isFileURL) {
+      if url.isFileURL {
         promise.resolve(url.path)
       }
       guard let cacheFileId = md5Hash ?? getMD5Hash(fromURL: url),
@@ -22,17 +22,17 @@ public class AssetModule: Module {
         return
       }
 
-      let localUrl =  URL(fileURLWithPath: "\(cachesDirectory)/ExponentAsset-\(cacheFileId).\(type)");
+      let localUrl = URL(fileURLWithPath: "\(cachesDirectory)/ExponentAsset-\(cacheFileId).\(type)")
 
       guard let fileData = FileManager.default.contents(atPath: localUrl.path) else {
         downloadAsset(appContext: appContext, url: url, localUrl: localUrl, promise: promise)
         return
       }
-      if(md5Hash == nil) {
+      if md5Hash == nil {
         promise.resolve(localUrl.path)
         return
       }
-      if(md5Hash == getMD5Hash(fromData: fileData)) {
+      if md5Hash == getMD5Hash(fromData: fileData) {
         promise.resolve(localUrl.path)
         return
       }
@@ -40,26 +40,24 @@ public class AssetModule: Module {
     }
   }
 
-
   private func getMD5Hash(fromURL url: URL) -> String? {
     guard let urlData = url.absoluteString.data(using: .utf8) else {
       return nil
     }
-    return getMD5Hash(fromData: urlData);
+    return getMD5Hash(fromData: urlData)
   }
 
   private func getMD5Hash(fromData data: Data?) -> String? {
     guard let data = data else {
       return nil
     }
-    return Data(Insecure.MD5.hash(data: data)).base64EncodedString();
+    return Data(Insecure.MD5.hash(data: data)).base64EncodedString()
   }
 
   func downloadAsset(appContext: AppContext, url: URL, localUrl: URL, promise: Promise) {
     do {
       try appContext.fileSystem?.ensureDirExists(withPath: localUrl.path)
-    }
-    catch {
+    } catch {
       promise.reject(UnableToDownloadAssetException(url))
       return
     }
@@ -71,10 +69,10 @@ public class AssetModule: Module {
       promise.reject(UnableToDownloadAssetException(url))
       return
     }
-    
+
     let downloadTask = URLSession.shared.downloadTask(with: url) {
       urlOrNil, _, _ in
-      
+
       guard let fileURL = urlOrNil else {
         promise.reject(UnableToDownloadAssetException(url))
         return
