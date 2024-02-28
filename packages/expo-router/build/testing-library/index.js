@@ -124,5 +124,9 @@ exports.testRouter = {
             expect(react_native_1.screen).toHavePathnameWithParams(path);
         }
     },
+    /** If there's history that supports invoking the `back` function. */
+    dismissAll() {
+        (0, react_native_1.act)(() => imperative_api_1.router.dismissAll());
+    },
 };
 //# sourceMappingURL=index.js.map

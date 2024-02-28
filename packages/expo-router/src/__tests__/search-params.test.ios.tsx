@@ -1,3 +1,4 @@
+import { store } from '../global-state/router-store';
 import { router } from '../imperative-api';
 import { screen, testRouter, renderRouter, act } from '../testing-library';
 
@@ -21,11 +22,79 @@ describe('push', () => {
     testRouter.push('/page'); // Duplicate pushes are allowed pushes the new '/page'
     testRouter.push('/page?c=true');
 
-    testRouter.back('/page');
-    testRouter.back('/page');
-    testRouter.back('/page?b=true');
-    testRouter.back('/page?a=true');
-    testRouter.back('/page');
+    expect(store.rootState).toStrictEqual({
+      index: 5,
+      key: expect.any(String),
+      routeNames: ['page', '_sitemap', '+not-found'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: 'page',
+          params: undefined,
+          path: '/page',
+        },
+        {
+          key: expect.any(String),
+          name: 'page',
+          params: {
+            a: 'true',
+          },
+          path: undefined,
+        },
+        {
+          key: expect.any(String),
+          name: 'page',
+          params: {
+            b: 'true',
+          },
+          path: undefined,
+        },
+        {
+          key: expect.any(String),
+          name: 'page',
+          params: {},
+          path: undefined,
+        },
+        {
+          key: expect.any(String),
+          name: 'page',
+          params: {},
+          path: undefined,
+        },
+        {
+          key: expect.any(String),
+          name: 'page',
+          params: {
+            c: 'true',
+          },
+          path: undefined,
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    });
+
+    testRouter.back();
+    testRouter.back();
+    testRouter.back();
+    testRouter.back();
+    testRouter.back();
+
+    expect(store.rootState).toEqual({
+      index: 0,
+      key: expect.any(String),
+      routeNames: ['page', '_sitemap', '+not-found'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: 'page',
+          params: undefined,
+          path: '/page',
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    });
 
     expect(testRouter.canGoBack()).toBe(false);
   });
@@ -33,6 +102,9 @@ describe('push', () => {
 
 describe('navigate', () => {
   it('can handle navigation between routes', async () => {
+    /*
+     * This test is currently incorrect. See #27285
+     */
     renderRouter(
       {
         page: () => null,
@@ -48,6 +120,44 @@ describe('navigate', () => {
     testRouter.navigate('/page'); // Will not create new screen are we are already on page
     testRouter.navigate('/page?c=true');
 
+    expect(store.rootState).toStrictEqual({
+      index: 3,
+      key: expect.any(String),
+      routeNames: ['page', '_sitemap', '+not-found'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: 'page',
+          params: undefined,
+          path: '/page',
+        },
+        {
+          key: expect.any(String),
+          name: 'page',
+          params: {
+            a: 'true',
+          },
+          path: undefined,
+        },
+        {
+          key: expect.any(String),
+          name: 'page',
+          params: {},
+          path: undefined,
+        },
+        {
+          key: expect.any(String),
+          name: 'page',
+          params: {
+            c: 'true',
+          },
+          path: undefined,
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    });
+
     testRouter.back('/page');
     testRouter.back('/page?a=true'); // We go back to a=true, as b=true was replaced
     testRouter.back('/page');
@@ -55,7 +165,7 @@ describe('navigate', () => {
     expect(testRouter.canGoBack()).toBe(false);
   });
 
-  it.skip('handles popToTop', async () => {
+  it('handles dismissAll', async () => {
     // TODO: add popToTop to the router
     renderRouter(
       {
@@ -69,7 +179,64 @@ describe('navigate', () => {
     testRouter.navigate('/page?a=true');
     testRouter.navigate('/page?b=true');
     testRouter.navigate('/page?c=true');
-    (testRouter as any).popToTop('/page');
+
+    expect(store.rootState).toStrictEqual({
+      index: 3,
+      key: expect.any(String),
+      routeNames: ['page', '_sitemap', '+not-found'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: 'page',
+          params: undefined,
+          path: '/page',
+        },
+        {
+          key: expect.any(String),
+          name: 'page',
+          params: {
+            a: 'true',
+          },
+          path: undefined,
+        },
+        {
+          key: expect.any(String),
+          name: 'page',
+          params: {
+            b: 'true',
+          },
+          path: undefined,
+        },
+        {
+          key: expect.any(String),
+          name: 'page',
+          params: {
+            c: 'true',
+          },
+          path: undefined,
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    });
+
+    testRouter.dismissAll();
+
+    expect(store.rootState).toStrictEqual({
+      index: 0,
+      key: expect.any(String),
+      routeNames: ['page', '_sitemap', '+not-found'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: 'page',
+          params: undefined,
+          path: '/page',
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    });
 
     expect(testRouter.canGoBack()).toBe(false);
   });
@@ -90,6 +257,45 @@ describe('replace', () => {
     testRouter.navigate('/page?b=true');
     testRouter.replace('/page?a=true'); // This will clear the previous route
     testRouter.navigate('/page?c=true');
+
+    expect(store.rootState).toStrictEqual({
+      index: 3,
+      key: expect.any(String),
+      routeNames: ['page', '_sitemap', '+not-found'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: 'page',
+          params: undefined,
+          path: '/page',
+        },
+        {
+          key: expect.any(String),
+          name: 'page',
+          params: {
+            a: 'true',
+          },
+          path: undefined,
+        },
+        {
+          key: expect.any(String),
+          name: 'page',
+          params: {
+            a: 'true',
+          },
+        },
+        {
+          key: expect.any(String),
+          name: 'page',
+          params: {
+            c: 'true',
+          },
+          path: undefined,
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    });
 
     testRouter.back('/page?a=true');
     testRouter.back('/page?a=true'); // It will be present twice

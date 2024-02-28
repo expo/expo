@@ -33,10 +33,12 @@ export declare const testRouter: {
     /** Replace with provided pathname and assert the pathname */
     replace(path: string): void;
     /** Go back in history and asset the new pathname */
-    back(path: string): void;
+    back(path?: string): void;
     /** If there's history that supports invoking the `back` function. */
     canGoBack(): boolean;
     /** Update the current route query params and assert the new pathname */
     setParams(params?: Record<string, string>, path?: string): void;
+    /** If there's history that supports invoking the `back` function. */
+    dismissAll(): void;
 };
 //# sourceMappingURL=index.d.ts.map
