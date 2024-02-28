@@ -1,3 +1,5 @@
+// Copyright © 2024 650 Industries.
+'use client';
 import * as React from 'react';
 import { Platform, processColor } from 'react-native';
 import NativeLinearGradient from './NativeLinearGradient';
