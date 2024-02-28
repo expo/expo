@@ -19,10 +19,10 @@ import * as React from 'react';
 import createMemoryHistory from '@react-navigation/native/lib/commonjs/createMemoryHistory';
 // This was removed as we don't use ServerContext
 // import ServerContext from './ServerContext';
+import { ServerLocationContext } from '../global-state/serverLocationContext';
 /* End of fork */
 import type { LinkingOptions } from '@react-navigation/native';
 import { appendBaseUrl } from './getPathFromState';
-import { ServerLocationContext } from '../global-state/serverLocationContext';
 
 type ResultState = ReturnType<typeof getStateFromPathDefault>;
 
