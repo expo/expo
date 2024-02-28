@@ -113,6 +113,7 @@ open class TestContext(
 ) {
   fun global() = jsiInterop.global()
   fun evaluateScript(script: String) = jsiInterop.evaluateScript(script)
+  fun evaluateScript(vararg script: String) = jsiInterop.evaluateScript(script.joinToString(separator = "\n"))
   fun waitForAsyncFunction(jsCode: String) = jsiInterop.waitForAsyncFunction(methodQueue, jsCode)
 }
 
