@@ -1,11 +1,12 @@
 import { getAssetByID } from '@react-native/assets-registry/registry';
 import { Platform } from 'expo-modules-core';
 
+import { downloadAsync } from './AssetModule';
 import { AssetMetadata, selectAssetSource } from './AssetSources';
 import * as AssetUris from './AssetUris';
 import * as ImageAssets from './ImageAssets';
 import { getLocalAssetUri } from './LocalAssets';
-import { downloadAsync, IS_ENV_WITH_LOCAL_ASSETS } from './PlatformUtils';
+import { IS_ENV_WITH_LOCAL_ASSETS } from './PlatformUtils';
 import resolveAssetSource from './resolveAssetSource';
 
 // @docsMissing

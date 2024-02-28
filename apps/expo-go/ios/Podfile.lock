@@ -1,4 +1,6 @@
 PODS:
+  - AssetModule (9.0.1):
+    - ExpoModulesCore
   - boost (1.83.0)
   - CocoaLumberjack (3.5.3):
     - CocoaLumberjack/Core (= 3.5.3)
@@ -199,6 +201,8 @@ PODS:
     - ReachabilitySwift
     - React-Core
     - sqlite3 (~> 3.42.0)
+  - EXUpdatesInterface (0.15.0):
+    - ExpoModulesCore
   - EXUpdatesInterface (0.15.0):
     - ExpoModulesCore
   - FBLazyVector (0.73.4)
@@ -1489,6 +1493,7 @@ PODS:
     - ZXingObjC/Core
 
 DEPENDENCIES:
+  - AssetModule (from `../../../packages/expo-asset/ios`)
   - boost (from `../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/boost.podspec`)
   - CocoaLumberjack (~> 3.5.3)
   - DoubleConversion (from `../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/DoubleConversion.podspec`)
@@ -1676,6 +1681,8 @@ SPEC REPOS:
     - ZXingObjC
 
 EXTERNAL SOURCES:
+  AssetModule:
+    :path: "../../../packages/expo-asset/ios"
   boost:
     :podspec: "../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/boost.podspec"
   DoubleConversion:
@@ -1944,7 +1951,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/googlemaps/google-maps-ios-utils.git
 
 SPEC CHECKSUMS:
-  boost: d3f49c53809116a5d38da093a8aa78bf551aed09
+  boost: 26fad476bfa736552bbfa698a06cc530475c1505
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
   EASClient: b550a8d3d3d9d1211ba71eabf789cb46c7e92b3c
@@ -2021,7 +2028,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2
   GoogleMaps: a146f275ee429d14822178c7a841c03366ec92a1
   GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
-  hermes-engine: 0933c22606de894dccc3248ae93129951a6e8e6b
+  hermes-engine: 405eb9582083506e33e69e67b3e029ae49432793
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libaom: 144606b1da4b5915a1054383c3a4459ccdb3c661
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7

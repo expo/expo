@@ -1,10 +1,11 @@
 import { getAssetByID } from '@react-native/assets-registry/registry';
 import { Platform } from 'expo-modules-core';
+import { downloadAsync } from './AssetModule';
 import { selectAssetSource } from './AssetSources';
 import * as AssetUris from './AssetUris';
 import * as ImageAssets from './ImageAssets';
 import { getLocalAssetUri } from './LocalAssets';
-import { downloadAsync, IS_ENV_WITH_LOCAL_ASSETS } from './PlatformUtils';
+import { IS_ENV_WITH_LOCAL_ASSETS } from './PlatformUtils';
 import resolveAssetSource from './resolveAssetSource';
 /**
  * The `Asset` class represents an asset in your app. It gives metadata about the asset (such as its

@@ -1,4 +1,6 @@
 PODS:
+  - AssetModule (9.0.1):
+    - ExpoModulesCore
   - boost (1.83.0)
   - DoubleConversion (1.1.6)
   - EASClient (0.11.0):
@@ -589,6 +591,17 @@ PODS:
     - ExpoModulesCore
   - FBLazyVector (0.74.0-rc.2)
   - fmt (9.1.0)
+  - EXUpdatesInterface (0.15.0):
+    - ExpoModulesCore
+  - FBLazyVector (0.73.4)
+  - FBReactNativeSpec (0.73.4):
+    - RCT-Folly (= 2022.05.16.00)
+    - RCTRequired (= 0.73.4)
+    - RCTTypeSafety (= 0.73.4)
+    - React-Core (= 0.73.4)
+    - React-jsi (= 0.73.4)
+    - ReactCommon/turbomodule/core (= 0.73.4)
+  - fmt (6.2.1)
   - glog (0.3.5)
   - GoogleMaps (7.3.0):
     - GoogleMaps/Maps (= 7.3.0)
@@ -1924,6 +1937,7 @@ PODS:
     - ZXingObjC/Core
 
 DEPENDENCIES:
+  - AssetModule (from `../../../packages/expo-asset/ios`)
   - boost (from `../../../node_modules/react-native/third-party-podspecs/boost.podspec`)
   - DoubleConversion (from `../../../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EASClient (from `../../../packages/expo-eas-client/ios`)
@@ -2099,6 +2113,9 @@ SPEC REPOS:
     - ZXingObjC
 
 EXTERNAL SOURCES:
+  AssetModule:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-asset/ios"
   boost:
     :podspec: "../../../node_modules/react-native/third-party-podspecs/boost.podspec"
   DoubleConversion:
@@ -2447,6 +2464,7 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
+  AssetModule: fb2e04ff0a7e8519e92c60237193b4c011b0107f
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   EASClient: b550a8d3d3d9d1211ba71eabf789cb46c7e92b3c
