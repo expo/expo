@@ -1,3 +1,4 @@
+import { createSnapshotFriendlyRef } from 'expo-modules-core';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
@@ -13,7 +14,7 @@ export class Image extends React.PureComponent<ImageProps> {
 
   constructor(props) {
     super(props);
-    this.nativeViewRef = React.createRef();
+    this.nativeViewRef = createSnapshotFriendlyRef();
   }
 
   /**
