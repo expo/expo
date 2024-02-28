@@ -5,7 +5,7 @@ import { store } from '../global-state/router-store';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
-import { act, renderRouter, screen } from '../testing-library';
+import { act, renderRouter, screen, testRouter } from '../testing-library';
 import { Slot } from '../views/Navigator';
 
 it('stacks should always push a new route', () => {
@@ -19,7 +19,7 @@ it('stacks should always push a new route', () => {
   });
 
   // Initial stale state
-  expect(store.rootStateSnapshot()).toEqual({
+  expect(store.rootStateSnapshot()).toStrictEqual({
     routes: [{ name: 'index', path: '/' }],
     stale: true,
   });
@@ -61,6 +61,7 @@ it('stacks should always push a new route', () => {
             },
           },
         },
+        path: undefined,
       },
       {
         key: expect.any(String),
@@ -76,6 +77,7 @@ it('stacks should always push a new route', () => {
             },
           },
         },
+        path: undefined,
       },
       {
         key: expect.any(String),
@@ -91,6 +93,7 @@ it('stacks should always push a new route', () => {
             },
           },
         },
+        path: undefined,
       },
       {
         key: expect.any(String),
@@ -106,6 +109,7 @@ it('stacks should always push a new route', () => {
             },
           },
         },
+        path: undefined,
       },
       {
         key: expect.any(String),
@@ -121,6 +125,7 @@ it('stacks should always push a new route', () => {
             },
           },
         },
+        path: undefined,
       },
     ],
   });
@@ -178,4 +183,107 @@ it('should navigate as expected when nested Stacks & Tabs', async () => {
 
   act(() => router.back());
   expect(screen).toHavePathname('/apple/2/taste');
+});
+
+it('works in a nested layout Stack->Tab->Stack', () => {
+  renderRouter({
+    index: () => null,
+    _layout: () => <Stack />,
+    '(tabs)/_layout': () => <Tabs />,
+    '(tabs)/a': () => <Text testID="a" />,
+    '(tabs)/b': () => <Text testID="b" />,
+    '(tabs)/c/_layout': () => <Stack />,
+    '(tabs)/c/one': () => <Text testID="c/one" />,
+    '(tabs)/c/two': () => <Text testID="c/two" />,
+    d: () => null,
+  });
+
+  testRouter.push('/a');
+  expect(screen.getByTestId('a')).toBeOnTheScreen();
+  testRouter.push('/b');
+  expect(screen.getByTestId('b')).toBeOnTheScreen();
+  testRouter.push('/c/one');
+  expect(screen.getByTestId('c/one')).toBeOnTheScreen();
+  testRouter.push('/c/two');
+  expect(screen.getByTestId('c/two')).toBeOnTheScreen();
+  testRouter.push('/c/two');
+  expect(screen.getByTestId('c/two')).toBeOnTheScreen();
+
+  testRouter.push('/d');
+
+  expect(store.rootStateSnapshot()).toStrictEqual({
+    index: 6,
+    key: expect.any(String),
+    routeNames: ['index', '(tabs)', 'd', '_sitemap', '+not-found'],
+    routes: [
+      {
+        key: expect.any(String),
+        name: 'index',
+        params: undefined,
+        path: '/',
+      },
+      {
+        key: expect.any(String),
+        name: '(tabs)',
+        params: {
+          params: {},
+          screen: 'a',
+        },
+        path: undefined,
+      },
+      {
+        key: expect.any(String),
+        name: '(tabs)',
+        params: {
+          params: {},
+          screen: 'b',
+        },
+        path: undefined,
+      },
+      {
+        key: expect.any(String),
+        name: '(tabs)',
+        params: {
+          params: {
+            params: {},
+            screen: 'one',
+          },
+          screen: 'c',
+        },
+        path: undefined,
+      },
+      {
+        key: expect.any(String),
+        name: '(tabs)',
+        params: {
+          params: {
+            params: {},
+            screen: 'two',
+          },
+          screen: 'c',
+        },
+        path: undefined,
+      },
+      {
+        key: expect.any(String),
+        name: '(tabs)',
+        params: {
+          params: {
+            params: {},
+            screen: 'two',
+          },
+          screen: 'c',
+        },
+        path: undefined,
+      },
+      {
+        key: expect.any(String),
+        name: 'd',
+        params: {},
+        path: undefined,
+      },
+    ],
+    stale: false,
+    type: 'stack',
+  });
 });
