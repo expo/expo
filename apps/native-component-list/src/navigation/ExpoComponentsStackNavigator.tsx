@@ -410,6 +410,12 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/SymbolImageScreen'));
+    },
+    name: 'Symbols',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/WebViewScreen'));
     },
     name: 'WebView',
