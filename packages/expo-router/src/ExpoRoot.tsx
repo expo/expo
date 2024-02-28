@@ -11,6 +11,7 @@ import UpstreamNavigationContainer from './fork/NavigationContainer';
 import { useInitializeExpoRouter } from './global-state/router-store';
 import { RequireContext } from './types';
 import { SplashScreen } from './views/Splash';
+import { ServerLocationContext } from './global-state/serverLocationContext';
 
 export type ExpoRootProps = {
   context: RequireContext;
@@ -93,9 +94,11 @@ function ContextNavigator({
       documentTitle={{
         enabled: false,
       }}>
-      <WrapperComponent>
-        <Component />
-      </WrapperComponent>
+      <ServerLocationContext.Provider value={initialLocation}>
+        <WrapperComponent>
+          <Component />
+        </WrapperComponent>
+      </ServerLocationContext.Provider>
     </UpstreamNavigationContainer>
   );
 }

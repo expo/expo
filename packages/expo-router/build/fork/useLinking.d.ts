@@ -1,6 +1,6 @@
 import { NavigationContainerRef, ParamListBase } from '@react-navigation/core';
-import type { LinkingOptions } from '@react-navigation/native/lib/module/types';
 import * as React from 'react';
+import type { LinkingOptions } from '@react-navigation/native';
 /**
  * Run async function in series as it's called.
  */

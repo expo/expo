@@ -14,10 +14,15 @@ import {
 import isEqual from 'fast-deep-equal';
 import * as React from 'react';
 
-import createMemoryHistory from './createMemoryHistory';
-import ServerContext from './ServerContext';
-import type { LinkingOptions } from './types';
+/* Start of fork. Source: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/useLinking.tsx#L13  */
+// createMemoryHistory is a self-contained module with no side effects any only depends on `nanoid` and `tiny-warning`
+import createMemoryHistory from '@react-navigation/native/lib/commonjs/createMemoryHistory';
+// This was removed as we don't use ServerContext
+// import ServerContext from './ServerContext';
+/* End of fork */
+import type { LinkingOptions } from '@react-navigation/native';
 import { appendBaseUrl } from './getPathFromState';
+import { ServerLocationContext } from '../global-state/serverLocationContext';
 
 type ResultState = ReturnType<typeof getStateFromPathDefault>;
 
@@ -144,7 +149,12 @@ export default function useLinking(
     getActionFromStateRef.current = getActionFromState;
   });
 
-  const server = React.useContext(ServerContext);
+  /* Start of fork. Source: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/useLinking.tsx#L142 */
+  // ServerContext is used inside ServerContainer to set the location during SSR: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/ServerContainer.tsx#L50-L54
+  // Expo Router uses the `initialLocation` prop to set the initial location during SSR:
+  const location = React.useContext(ServerLocationContext);
+  const server = { location };
+  /* End of fork */
 
   const getInitialState = React.useCallback(() => {
     let value: ResultState | undefined;
@@ -273,9 +283,9 @@ export default function useLinking(
             focusedRoute.name === route.name &&
             isEqual(focusedRoute.params, route.params)
           ) {
-            /* Start of diff. Source: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/useLinking.tsx#L280  */
+            /* Start of fork. Source: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/useLinking.tsx#L280  */
             return appendBaseUrl(route.path);
-            /* End of diff */
+            /* End of fork */
           }
         }
       }

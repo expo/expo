@@ -1,11 +1,7 @@
 "use strict";
 /* eslint-disable */
 // Forked from react-navigation to add basePath functionality to web.
-// By default, on load React Navigation uses the path stored in the state. That code is commented out
-// so it falls back to calling getPathFromState
 // https://github.com/react-navigation/react-navigation/blob/6.x/packages/native/src/useLinking.tsx
-// Changed:
-//   - https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/useLinking.tsx#L264-L283
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -35,10 +31,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.series = void 0;
 const core_1 = require("@react-navigation/core");
-const ServerContext_1 = __importDefault(require("@react-navigation/native/lib/module/ServerContext"));
-const createMemoryHistory_1 = __importDefault(require("@react-navigation/native/lib/module/createMemoryHistory"));
-// import isEqual from 'fast-deep-equal';
+const fast_deep_equal_1 = __importDefault(require("fast-deep-equal"));
 const React = __importStar(require("react"));
+/* Start of fork. Source: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/useLinking.tsx#L13  */
+// createMemoryHistory is a self-contained module with no side effects any only depends on `nanoid` and `tiny-warning`
+const createMemoryHistory_1 = __importDefault(require("@react-navigation/native/lib/commonjs/createMemoryHistory"));
+const getPathFromState_1 = require("./getPathFromState");
+const serverLocationContext_1 = require("../global-state/serverLocationContext");
 /**
  * Find the matching navigation state that changed between 2 navigation states
  * e.g.: a -> b -> c -> d and a -> b -> c -> e -> f, if history in b changed, b is the matching state
@@ -79,7 +78,7 @@ const series = (cb) => {
     return callback;
 };
 exports.series = series;
-const linkingHandlers = [];
+let linkingHandlers = [];
 function useLinking(ref, { independent, enabled = true, config, getStateFromPath = core_1.getStateFromPath, getPathFromState = core_1.getPathFromState, getActionFromState = core_1.getActionFromState, }) {
     React.useEffect(() => {
         if (process.env.NODE_ENV === 'production') {
@@ -124,7 +123,12 @@ function useLinking(ref, { independent, enabled = true, config, getStateFromPath
         getPathFromStateRef.current = getPathFromState;
         getActionFromStateRef.current = getActionFromState;
     });
-    const server = React.useContext(ServerContext_1.default);
+    /* Start of fork. Source: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/useLinking.tsx#L142 */
+    // ServerContext is used inside ServerContainer to set the location during SSR: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/ServerContainer.tsx#L50-L54
+    // Expo Router uses the `initialLocation` prop to set the initial location during SSR:
+    const location = React.useContext(serverLocationContext_1.ServerLocationContext);
+    const server = { location };
+    /* End of fork */
     const getInitialState = React.useCallback(() => {
         let value;
         if (enabledRef.current) {
@@ -211,6 +215,21 @@ function useLinking(ref, { independent, enabled = true, config, getStateFromPath
             return;
         }
         const getPathForRoute = (route, state) => {
+            // If the `route` object contains a `path`, use that path as long as `route.name` and `params` still match
+            // This makes sure that we preserve the original URL for wildcard routes
+            if (route?.path) {
+                const stateForPath = getStateFromPathRef.current(route.path, configRef.current);
+                if (stateForPath) {
+                    const focusedRoute = (0, core_1.findFocusedRoute)(stateForPath);
+                    if (focusedRoute &&
+                        focusedRoute.name === route.name &&
+                        (0, fast_deep_equal_1.default)(focusedRoute.params, route.params)) {
+                        /* Start of fork. Source: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/useLinking.tsx#L280  */
+                        return (0, getPathFromState_1.appendBaseUrl)(route.path);
+                        /* End of fork */
+                    }
+                }
+            }
             return getPathFromStateRef.current(state, configRef.current);
         };
         if (ref.current) {
@@ -266,7 +285,10 @@ function useLinking(ref, { independent, enabled = true, config, getStateFromPath
                     const nextIndex = history.backIndex({ path });
                     const currentIndex = history.index;
                     try {
-                        if (nextIndex !== -1 && nextIndex < currentIndex) {
+                        if (nextIndex !== -1 &&
+                            nextIndex < currentIndex &&
+                            // We should only go back if the entry exists and it's less than current index
+                            history.get(nextIndex - currentIndex)) {
                             // An existing entry for this path exists and it's less than current index, go back to that
                             await history.go(nextIndex - currentIndex);
                         }
