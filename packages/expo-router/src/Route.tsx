@@ -1,3 +1,5 @@
+'use client';
+
 import React, { ReactNode, useContext } from 'react';
 
 import type { ErrorBoundaryProps } from './exports';

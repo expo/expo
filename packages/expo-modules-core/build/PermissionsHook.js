@@ -1,3 +1,5 @@
+// Copyright © 2024 650 Industries.
+'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 /**
  * Get or request permission for protected functionality within the app.

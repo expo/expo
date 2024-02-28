@@ -1,3 +1,7 @@
+// Copyright © 2024 650 Industries.
+
+'use client';
+
 import React from 'react';
 import { findNodeHandle, NativeModules, requireNativeComponent, HostComponent } from 'react-native';
 

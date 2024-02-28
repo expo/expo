@@ -1,4 +1,5 @@
 /**
+ * Copyright © 2024 650 Industries.
  * Copyright (c) Nicolas Gallagher.
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -7,9 +8,11 @@
  *
  * see: https://github.com/necolas/react-native-web
  */
+'use client';
 import React from 'react';
 // @ts-ignore
 import { StyleSheet, View, unstable_createElement as createElement } from 'react-native';
+// TODO: Class components are not supported with React Server Components.
 export default class ExpoCheckbox extends React.PureComponent {
     handleChange = (event) => {
         const value = event.nativeEvent.target.checked;

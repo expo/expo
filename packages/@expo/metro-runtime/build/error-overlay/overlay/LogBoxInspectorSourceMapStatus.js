@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 650 Industries.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+'use client';
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -24,13 +32,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LogBoxInspectorSourceMapStatus = void 0;
-/**
- * Copyright (c) 650 Industries.
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
 const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const LogBoxButton_1 = require("../UI/LogBoxButton");
