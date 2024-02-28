@@ -139,6 +139,13 @@ public final class VideoModule: Module {
         player.shouldCorrectPitch = shouldCorrectPitch
       }
 
+      Property("volume") { (player: VideoPlayer) -> Float in
+        return player.pointer.volume
+      }
+      .set { (player, volume: Float) in
+        player.pointer.volume = volume
+      }
+
       Function("play") { player in
         player.pointer.play()
       }

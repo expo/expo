@@ -24,9 +24,6 @@ export declare class VideoPlayer {
    * Float value between 0 and 1 representing the current volume.
    * Muting the player doesn't affect the volume. In other words, when the player is muted, the volume is the same as
    * when unmuted. Similarly, setting the volume doesn't unmute the player.
-   *
-   * @platform android
-   * @platform web
    */
   volume: number;
 

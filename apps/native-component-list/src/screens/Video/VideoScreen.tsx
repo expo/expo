@@ -1,4 +1,5 @@
 import { useVideoPlayer, VideoView, VideoSource } from '@expo/video';
+import Slider from '@react-native-community/slider';
 import { Picker } from '@react-native-picker/picker';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { Platform } from 'expo-modules-core';
@@ -47,6 +48,8 @@ export default function VideoScreen() {
   const [staysActiveInBackground, setStaysActiveInBackground] = React.useState(false);
   const [isLooping, setIsLooping] = React.useState(false);
   const [playbackSpeedIndex, setPlaybackSpeedIndex] = React.useState(2);
+  const [shouldCorrectPitch, setShouldCorrectPitch] = React.useState(true);
+  const [volume, setVolume] = React.useState(1);
 
   const player = useVideoPlayer(videoSources[selectedSource]);
 
@@ -98,8 +101,14 @@ export default function VideoScreen() {
     [isLooping]
   );
 
+  const updateShouldCorrectPitch = useCallback((correctPitch: boolean) => {
+    player.shouldCorrectPitch = correctPitch;
+    setShouldCorrectPitch(correctPitch);
+  }, []);
+
   useEffect(() => {
     player.play();
+    player.shouldCorrectPitch = shouldCorrectPitch;
   }, []);
 
   return (
@@ -150,6 +159,17 @@ export default function VideoScreen() {
           style={styles.button}
           title="Toggle picture in picture"
           onPress={togglePictureInPicture}
+        />
+        <Text>Playback Volume: </Text>
+        <Slider
+          style={{ alignSelf: 'stretch' }}
+          minimumValue={0}
+          maximumValue={1}
+          value={volume}
+          onValueChange={(value) => {
+            player.volume = value;
+            setVolume(value);
+          }}
         />
         <Text>Playback Speed: </Text>
         <SegmentedControl
@@ -205,6 +225,15 @@ export default function VideoScreen() {
             title="Loop playback"
             value={isLooping}
             setValue={updateIsLooping}
+            style={styles.switch}
+            titleStyle={styles.switchTitle}
+          />
+        </View>
+        <View style={styles.row}>
+          <TitledSwitch
+            title="Should correct pitch"
+            value={shouldCorrectPitch}
+            setValue={updateShouldCorrectPitch}
             style={styles.switch}
             titleStyle={styles.switchTitle}
           />
