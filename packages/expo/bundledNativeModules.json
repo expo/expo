@@ -101,5 +101,5 @@
   "unimodules-image-loader-interface": "~6.1.0",
   "@shopify/react-native-skia": "0.1.221",
   "@shopify/flash-list": "1.6.3",
-  "@sentry/react-native": "5.17.0"
+  "@sentry/react-native": "5.19.1"
 }
