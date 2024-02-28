@@ -39,7 +39,7 @@ export async function createFingerprintForBuildAsync(
   }
 
   const workflow = await resolveWorkflowAsync(projectRoot, platform);
-  const fingerprint = await createFingerprintAsync(projectRoot, platform, workflow);
+  const fingerprint = await createFingerprintAsync(projectRoot, platform, workflow, {});
 
   console.log(JSON.stringify(fingerprint.sources));
 

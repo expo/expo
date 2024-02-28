@@ -25,9 +25,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createFingerprintAsync = void 0;
 const Fingerprint = __importStar(require("@expo/fingerprint"));
-async function createFingerprintAsync(projectRoot, platform, workflow) {
+async function createFingerprintAsync(projectRoot, platform, workflow, options) {
     if (workflow === 'generic') {
         return await Fingerprint.createFingerprintAsync(projectRoot, {
+            ...options,
             platforms: [platform],
         });
     }
@@ -35,6 +36,7 @@ async function createFingerprintAsync(projectRoot, platform, workflow) {
         // ignore everything in native directories to ensure fingerprint is the same
         // no matter whether project has been prebuilt
         return await Fingerprint.createFingerprintAsync(projectRoot, {
+            ...options,
             platforms: [platform],
             ignorePaths: ['/android/**/*', '/ios/**/*'],
         });
