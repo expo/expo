@@ -13,7 +13,7 @@ public class AssetModule: Module {
 
     AsyncFunction("downloadAsync") { (url: URL, md5Hash: String?, type: String, promise: Promise) in
       if url.isFileURL {
-        promise.resolve(url.path)
+        promise.resolve(url.standardizedFileURL.absoluteString)
       }
       guard let cacheFileId = md5Hash ?? getMD5Hash(fromURL: url),
             let cachesDirectory = appContext?.fileSystem?.cachesDirectory,
@@ -29,11 +29,11 @@ public class AssetModule: Module {
         return
       }
       if md5Hash == nil {
-        promise.resolve(localUrl.path)
+        promise.resolve(localUrl.standardizedFileURL.absoluteString)
         return
       }
       if md5Hash == getMD5Hash(fromData: fileData) {
-        promise.resolve(localUrl.path)
+        promise.resolve(localUrl.standardizedFileURL.absoluteString)
         return
       }
       downloadAsset(appContext: appContext, url: url, localUrl: localUrl, promise: promise)
@@ -80,7 +80,7 @@ public class AssetModule: Module {
       do {
         try? FileManager.default.removeItem(at: localUrl)
         try FileManager.default.moveItem(at: fileURL, to: localUrl)
-        promise.resolve(localUrl.path)
+        promise.resolve(localUrl.standardizedFileURL.absoluteString)
       } catch {
         promise.reject(UnableToDownloadAssetException(url))
       }
