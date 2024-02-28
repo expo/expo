@@ -5,7 +5,6 @@
 #include "JavaReferencesCache.h"
 #include "JSReferencesCache.h"
 #include "SharedObject.h"
-#include <android/log.h>
 
 #include <fbjni/detail/Meta.h>
 #include <fbjni/fbjni.h>
@@ -65,19 +64,7 @@ void JSIInteropModuleRegistry::installJSI(
     jsInvokerHolder->cthis()->getCallInvoker()
   );
 
-  runtimeHolder->installMainObject();
-
-  auto expoModules = std::make_shared<ExpoModulesHostObject>(this);
-  auto expoModulesObject = jsi::Object::createFromHostObject(*runtime, expoModules);
-
-  // Define the `global.expo.modules` object.
-  runtimeHolder
-    ->getMainObject()
-    ->setProperty(
-      *runtime,
-      "modules",
-      expoModulesObject
-    );
+  prepareRuntime();
 }
 
 void JSIInteropModuleRegistry::installJSIForTests(
@@ -100,13 +87,20 @@ void JSIInteropModuleRegistry::installJSIForTests(
 void JSIInteropModuleRegistry::prepareRuntime() {
   runtimeHolder->installMainObject();
 
+  EventEmitter::installClass(runtimeHolder->get());
+
+  SharedObject::installBaseClass(
+    runtimeHolder->get(),
+    [this](const SharedObject::ObjectId objectId) {
+      deleteSharedObject(objectId);
+    }
+  );
+
   auto expoModules = std::make_shared<ExpoModulesHostObject>(this);
   auto expoModulesObject = jsi::Object::createFromHostObject(
     runtimeHolder->get(),
     expoModules
   );
-
-  EventEmitter::installClass(runtimeHolder->get());
 
   // Define the `global.expo.modules` object.
   runtimeHolder
@@ -116,13 +110,6 @@ void JSIInteropModuleRegistry::prepareRuntime() {
       "modules",
       expoModulesObject
     );
-
-  SharedObject::installBaseClass(
-    runtimeHolder->get(),
-    [this](const SharedObject::ObjectId objectId) {
-      deleteSharedObject(objectId);
-    }
-  );
 }
 
 jni::local_ref<JavaScriptModuleObject::javaobject>
