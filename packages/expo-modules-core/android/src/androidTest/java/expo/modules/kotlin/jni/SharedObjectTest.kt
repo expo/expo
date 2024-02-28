@@ -29,7 +29,7 @@ class SharedObjectTest {
   }
 
   @Test
-  fun inherits_from_EventEmitter() = withJSIInterop{
+  fun inherits_from_EventEmitter() = withJSIInterop {
     val inheritsFromEventEmitter = evaluateScript("new expo.SharedObject() instanceof expo.EventEmitter")
     Truth.assertThat(inheritsFromEventEmitter.getBool()).isTrue()
   }
