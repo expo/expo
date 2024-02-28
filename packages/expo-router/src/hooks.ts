@@ -1,11 +1,11 @@
 import { NavigationRouteContext } from '@react-navigation/native';
 import React from 'react';
 
+import { LocalRouteParamsContext } from './Route';
 import { store, useStoreRootState, useStoreRouteInfo } from './global-state/router-store';
 import { Router } from './types';
 
 type SearchParams = Record<string, string | string[]>;
-
 export function useRootNavigationState() {
   return useStoreRootState();
 }
@@ -102,7 +102,9 @@ export function useGlobalSearchParams<
 export function useLocalSearchParams<
   TParams extends SearchParams = SearchParams,
 >(): Partial<TParams> {
-  const params = React.useContext(NavigationRouteContext)?.params ?? {};
+  const params = React.useContext(LocalRouteParamsContext) ?? {};
+  console.log(usePathname());
+  console.log('params', params);
   return Object.fromEntries(
     Object.entries(params).map(([key, value]) => {
       if (Array.isArray(value)) {

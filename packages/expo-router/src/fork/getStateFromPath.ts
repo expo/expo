@@ -677,7 +677,7 @@ const findInitialRoute = (
 // returns state object with values depending on whether
 // it is the end of state and if there is initialRoute for this level
 const createStateObject = (
-  initialRoute: ParsedRoute | undefined,
+  initialRoute: string | undefined,
   route: ParsedRoute,
   isEmpty: boolean
 ): InitialState => {
@@ -685,7 +685,7 @@ const createStateObject = (
     if (initialRoute) {
       return {
         index: 1,
-        routes: [initialRoute, route],
+        routes: [{ name: initialRoute }, route],
       };
     }
     return {
@@ -696,7 +696,7 @@ const createStateObject = (
   if (initialRoute) {
     return {
       index: 1,
-      routes: [initialRoute, { ...route, state: { routes: [] } }],
+      routes: [{ name: initialRoute }, { ...route, state: { routes: [] } }],
     };
   }
   return {
@@ -713,11 +713,7 @@ const createNestedStateObject = (
   let route = routes.shift() as ParsedRoute;
   const parentScreens: string[] = [];
 
-  let initialRouteName = findInitialRoute(route.name, parentScreens, initialRoutes);
-  let initialRoute: ParsedRoute | undefined;
-  if (initialRouteName) {
-    initialRoute = { name: initialRouteName, params: route.params };
-  }
+  let initialRoute = findInitialRoute(route.name, parentScreens, initialRoutes);
 
   parentScreens.push(route.name);
 
@@ -727,10 +723,7 @@ const createNestedStateObject = (
     let nestedState = state;
 
     while ((route = routes.shift() as ParsedRoute)) {
-      initialRouteName = findInitialRoute(route.name, parentScreens, initialRoutes);
-      if (initialRouteName) {
-        initialRoute = { name: initialRouteName, params: route.params };
-      }
+      initialRoute = findInitialRoute(route.name, parentScreens, initialRoutes);
 
       const nestedStateIndex = nestedState.index || nestedState.routes.length - 1;
 

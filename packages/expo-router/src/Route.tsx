@@ -40,6 +40,9 @@ export type RouteNode = {
 };
 
 const CurrentRouteContext = React.createContext<RouteNode | null>(null);
+export const LocalRouteParamsContext = React.createContext<
+  Record<string, string | undefined> | undefined
+>({});
 
 if (process.env.NODE_ENV !== 'production') {
   CurrentRouteContext.displayName = 'RouteNode';
@@ -59,8 +62,20 @@ export function useContextKey(): string {
 }
 
 /** Provides the matching routes and filename to the children. */
-export function Route({ children, node }: { children: ReactNode; node: RouteNode }) {
-  return <CurrentRouteContext.Provider value={node}>{children}</CurrentRouteContext.Provider>;
+export function Route({
+  children,
+  node,
+  route,
+}: {
+  children: ReactNode;
+  node: RouteNode;
+  route?: { params: Record<string, string | undefined> };
+}) {
+  return (
+    <LocalRouteParamsContext.Provider value={route?.params}>
+      <CurrentRouteContext.Provider value={node}>{children}</CurrentRouteContext.Provider>
+    </LocalRouteParamsContext.Provider>
+  );
 }
 
 export { sortRoutesWithInitial, sortRoutes };

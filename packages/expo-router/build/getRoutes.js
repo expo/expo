@@ -57,6 +57,7 @@ function getDirectoryTree(contextModule, options) {
             continue;
         }
         isValid = true;
+        debugger;
         const meta = getFileMeta(filePath);
         // This is a file that should be ignored. e.g maybe it has an invalid platform?
         if (meta.specificity < 0) {
@@ -233,7 +234,7 @@ pathToRemove = '') {
         pathToRemove = layout.route ? `${layout.route}/` : '';
         // Now update this layout with the new relative route and dynamic conventions
         layout.route = newRoute;
-        layout.dynamic = generateDynamic(layout.route);
+        layout.dynamic = generateDynamic(layout.contextKey.slice(0));
     }
     // This should never occur as there will always be a root layout, but it makes the type system happy
     if (!layout)
