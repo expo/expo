@@ -50,6 +50,11 @@ export interface Options {
      * Additional sources for hashing.
      */
     extraSources?: HashSource[];
+    /**
+     * Whether running the functions should mute all console output. This is useful when fingerprinting is being done as
+     * part of a CLI that outputs a fingerprint and outputting anything else pollutes the results.
+     */
+    silent?: boolean;
 }
 export interface NormalizedOptions extends Options {
     platforms: NonNullable<Options['platforms']>;

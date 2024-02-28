@@ -25,24 +25,24 @@ export async function getHashSourcesAsync(
 ): Promise<HashSource[]> {
   const results = await Promise.all([
     // expo
-    profile(getExpoAutolinkingAndroidSourcesAsync)(projectRoot, options),
-    profile(getExpoAutolinkingIosSourcesAsync)(projectRoot, options),
-    profile(getExpoConfigSourcesAsync)(projectRoot, options),
-    profile(getEasBuildSourcesAsync)(projectRoot, options),
+    profile(options, getExpoAutolinkingAndroidSourcesAsync)(projectRoot, options),
+    profile(options, getExpoAutolinkingIosSourcesAsync)(projectRoot, options),
+    profile(options, getExpoConfigSourcesAsync)(projectRoot, options),
+    profile(options, getEasBuildSourcesAsync)(projectRoot, options),
 
     // bare managed files
-    profile(getGitIgnoreSourcesAsync)(projectRoot, options),
-    profile(getPackageJsonScriptSourcesAsync)(projectRoot, options),
+    profile(options, getGitIgnoreSourcesAsync)(projectRoot, options),
+    profile(options, getPackageJsonScriptSourcesAsync)(projectRoot, options),
 
     // bare native files
-    profile(getBareAndroidSourcesAsync)(projectRoot, options),
-    profile(getBareIosSourcesAsync)(projectRoot, options),
+    profile(options, getBareAndroidSourcesAsync)(projectRoot, options),
+    profile(options, getBareIosSourcesAsync)(projectRoot, options),
 
     // rn-cli autolinking
-    profile(getRncliAutolinkingSourcesAsync)(projectRoot, options),
+    profile(options, getRncliAutolinkingSourcesAsync)(projectRoot, options),
 
     // patch-package
-    profile(getPatchPackageSourcesAsync)(projectRoot, options),
+    profile(options, getPatchPackageSourcesAsync)(projectRoot, options),
   ]);
 
   // extra sources

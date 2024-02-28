@@ -12,8 +12,8 @@ const chalk_1 = __importDefault(require("chalk"));
  * @param fn function to profile.
  * @param functionName optional name of the function to display in the profile output.
  */
-function profile(fn, functionName = fn.name) {
-    if (!process.env['DEBUG']) {
+function profile(options, fn, functionName = fn.name) {
+    if (!process.env['DEBUG'] || options.silent) {
         return fn;
     }
     const name = chalk_1.default.dim(`⏱  [profile] ${functionName ?? 'unknown'}`);

@@ -1,16 +1,17 @@
 import { getConfig } from '@expo/config';
 import { Updates } from '@expo/config-plugins';
-import { FingerprintSource } from '@expo/fingerprint';
+import * as Fingerprint from '@expo/fingerprint';
 
 import { createFingerprintAsync } from './createFingerprintAsync';
 import { resolveWorkflowAsync } from './workflow';
 
 export async function resolveRuntimeVersionAsync(
   projectRoot: string,
-  platform: 'ios' | 'android'
+  platform: 'ios' | 'android',
+  options: Fingerprint.Options
 ): Promise<{
   runtimeVersion: string | null;
-  fingerprintSources: FingerprintSource[] | null;
+  fingerprintSources: Fingerprint.FingerprintSource[] | null;
 }> {
   const { exp: config } = getConfig(projectRoot, {
     isPublicConfig: true,
@@ -27,7 +28,7 @@ export async function resolveRuntimeVersionAsync(
   const policy = runtimeVersion.policy;
 
   if (policy === 'fingerprintExperimental') {
-    const fingerprint = await createFingerprintAsync(projectRoot, platform, workflow);
+    const fingerprint = await createFingerprintAsync(projectRoot, platform, workflow, options);
     return { runtimeVersion: fingerprint.hash, fingerprintSources: fingerprint.sources };
   }
 

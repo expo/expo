@@ -63,6 +63,7 @@ export async function createFingerprintSourceAsync(
       break;
     case 'dir':
       result = await profile(
+        options,
         createDirHashResultsAsync,
         `createDirHashResultsAsync(${source.filePath})`
       )(source.filePath, limiter, projectRoot, options);

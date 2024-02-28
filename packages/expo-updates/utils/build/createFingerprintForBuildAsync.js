@@ -36,7 +36,7 @@ async function createFingerprintForBuildAsync(platform, possibleProjectRoot, des
         return;
     }
     const workflow = await (0, workflow_1.resolveWorkflowAsync)(projectRoot, platform);
-    const fingerprint = await (0, createFingerprintAsync_1.createFingerprintAsync)(projectRoot, platform, workflow);
+    const fingerprint = await (0, createFingerprintAsync_1.createFingerprintAsync)(projectRoot, platform, workflow, {});
     console.log(JSON.stringify(fingerprint.sources));
     fs_1.default.writeFileSync(path_1.default.join(destinationDir, 'fingerprint'), fingerprint.hash);
 }
