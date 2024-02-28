@@ -1,10 +1,6 @@
 /* eslint-disable */
 // Forked from react-navigation to add basePath functionality to web.
-// By default, on load React Navigation uses the path stored in the state. That code is commented out
-// so it falls back to calling getPathFromState
 // https://github.com/react-navigation/react-navigation/blob/6.x/packages/native/src/useLinking.tsx
-// Changed:
-//   - https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/useLinking.tsx#L264-L283
 
 import {
   findFocusedRoute,
@@ -15,11 +11,13 @@ import {
   NavigationState,
   ParamListBase,
 } from '@react-navigation/core';
-import ServerContext from '@react-navigation/native/lib/module/ServerContext';
-import createMemoryHistory from '@react-navigation/native/lib/module/createMemoryHistory';
-import type { LinkingOptions } from '@react-navigation/native/lib/module/types';
-// import isEqual from 'fast-deep-equal';
+import isEqual from 'fast-deep-equal';
 import * as React from 'react';
+
+import createMemoryHistory from './createMemoryHistory';
+import ServerContext from './ServerContext';
+import type { LinkingOptions } from './types';
+import { appendBaseUrl } from './getPathFromState';
 
 type ResultState = ReturnType<typeof getStateFromPathDefault>;
 
@@ -74,7 +72,7 @@ export const series = (cb: () => Promise<void>) => {
   return callback;
 };
 
-const linkingHandlers: symbol[] = [];
+let linkingHandlers: Symbol[] = [];
 
 type Options = LinkingOptions<ParamListBase> & {
   independent?: boolean;
@@ -146,7 +144,7 @@ export default function useLinking(
     getActionFromStateRef.current = getActionFromState;
   });
 
-  const server: any = React.useContext(ServerContext);
+  const server = React.useContext(ServerContext);
 
   const getInitialState = React.useCallback(() => {
     let value: ResultState | undefined;
@@ -262,6 +260,26 @@ export default function useLinking(
       route: ReturnType<typeof findFocusedRoute>,
       state: NavigationState
     ): string => {
+      // If the `route` object contains a `path`, use that path as long as `route.name` and `params` still match
+      // This makes sure that we preserve the original URL for wildcard routes
+      if (route?.path) {
+        const stateForPath = getStateFromPathRef.current(route.path, configRef.current);
+
+        if (stateForPath) {
+          const focusedRoute = findFocusedRoute(stateForPath);
+
+          if (
+            focusedRoute &&
+            focusedRoute.name === route.name &&
+            isEqual(focusedRoute.params, route.params)
+          ) {
+            /* Start of diff. Source: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/useLinking.tsx#L280  */
+            return appendBaseUrl(route.path);
+            /* End of diff */
+          }
+        }
+      }
+
       return getPathFromStateRef.current(state, configRef.current);
     };
 
@@ -334,7 +352,12 @@ export default function useLinking(
           const currentIndex = history.index;
 
           try {
-            if (nextIndex !== -1 && nextIndex < currentIndex) {
+            if (
+              nextIndex !== -1 &&
+              nextIndex < currentIndex &&
+              // We should only go back if the entry exists and it's less than current index
+              history.get(nextIndex - currentIndex)
+            ) {
               // An existing entry for this path exists and it's less than current index, go back to that
               await history.go(nextIndex - currentIndex);
             } else {
