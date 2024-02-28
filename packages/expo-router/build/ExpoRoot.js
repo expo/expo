@@ -35,8 +35,8 @@ const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const NavigationContainer_1 = __importDefault(require("./fork/NavigationContainer"));
 const router_store_1 = require("./global-state/router-store");
-const Splash_1 = require("./views/Splash");
 const serverLocationContext_1 = require("./global-state/serverLocationContext");
+const Splash_1 = require("./views/Splash");
 const isTestEnv = process.env.NODE_ENV === 'test';
 const INITIAL_METRICS = react_native_1.Platform.OS === 'web' || isTestEnv
     ? {
