@@ -32,6 +32,7 @@ class VideoPlayerWeb implements VideoPlayer {
   _volume: number = 1;
   _isLooping: boolean = false;
   _playbackRate: number = 1.0;
+  _shouldCorrectPitch: boolean = true;
   staysActiveInBackground: boolean = false; // Not supported on web. Dummy to match the interface.
 
   set isMuted(value: boolean) {
@@ -76,6 +77,16 @@ class VideoPlayerWeb implements VideoPlayer {
 
   get isLooping(): boolean {
     return this._isLooping;
+  }
+
+  get shouldCorrectPitch(): boolean {
+    return this._shouldCorrectPitch;
+  }
+  set shouldCorrectPitch(value: boolean) {
+    this._mountedVideos.forEach((video) => {
+      video.preservesPitch = value;
+    });
+    this._shouldCorrectPitch = value;
   }
 
   mountVideoView(video: HTMLVideoElement) {

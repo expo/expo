@@ -34,6 +34,12 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable {
     }
   }
 
+  var shouldCorrectPitch = true {
+    didSet {
+      pointer.currentItem?.audioTimePitchAlgorithm = shouldCorrectPitch ? .spectral : .varispeed
+    }
+  }
+
   private var playerItemObserver: NSObjectProtocol?
   private var playerRateObserver: NSObjectProtocol?
 
@@ -76,6 +82,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable {
 
     let asset = AVURLAsset(url: url)
     let playerItem = AVPlayerItem(asset: asset)
+    playerItem.audioTimePitchAlgorithm = shouldCorrectPitch ? .spectral : .varispeed
 
     if let drm = videoSource.drm {
       try drm.type.assertIsSupported()

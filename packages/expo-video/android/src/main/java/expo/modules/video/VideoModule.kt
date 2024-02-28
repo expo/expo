@@ -191,7 +191,18 @@ class VideoModule : Module() {
         }
         .set { ref: VideoPlayer, rate: Float ->
           appContext.mainQueue.launch {
-            ref.playbackParameters = PlaybackParameters(rate)
+            val pitch = if (ref.shouldCorrectPitch) 1f else rate
+            ref.playbackParameters = PlaybackParameters(rate, pitch)
+          }
+        }
+
+      Property("shouldCorrectPitch")
+        .get { ref: VideoPlayer ->
+          ref.shouldCorrectPitch
+        }
+        .set { ref: VideoPlayer, shouldCorrectPitch: Boolean ->
+          appContext.mainQueue.launch {
+            ref.shouldCorrectPitch = shouldCorrectPitch
           }
         }
 

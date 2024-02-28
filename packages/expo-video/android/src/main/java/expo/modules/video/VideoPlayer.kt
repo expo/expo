@@ -22,6 +22,7 @@ import androidx.media3.ui.PlayerView
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.sharedobjects.SharedObject
+import kotlinx.coroutines.launch
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
 @UnstableApi
@@ -53,6 +54,12 @@ class VideoPlayer(context: Context, private val appContext: AppContext, private 
   var userVolume = 1f
   var requiresLinearPlayback = false
   var staysActiveInBackground = false
+  var shouldCorrectPitch = false
+    set(shouldCorrectPitch) {
+      applyPitchCorrection()
+      field = shouldCorrectPitch
+    }
+
   private var serviceConnection: ServiceConnection
   internal var playbackServiceBinder: PlaybackServiceBinder? = null
   lateinit var timeline: Timeline
@@ -75,6 +82,7 @@ class VideoPlayer(context: Context, private val appContext: AppContext, private 
       if (player.playbackParameters == value) return
       player.playbackParameters = value
       field = value
+      applyPitchCorrection()
     }
 
   private val playerListener = object : Player.Listener {
@@ -151,5 +159,11 @@ class VideoPlayer(context: Context, private val appContext: AppContext, private 
   fun prepare() {
     player.setMediaItem(mediaItem)
     player.prepare()
+  }
+
+  private fun applyPitchCorrection() {
+    val speed = playbackParameters.speed
+    val pitch = if (shouldCorrectPitch) 1f else speed
+    playbackParameters = PlaybackParameters(speed, pitch)
   }
 }

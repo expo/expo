@@ -31,6 +31,17 @@ export declare class VideoPlayer {
   volume: number;
 
   /**
+   * Boolean value indicating if the player should correct audio pitch when the playback speed changes.
+   *
+   * > On web, changing this property is not supported, the player always corrects the pitch.
+   *
+   * @default true
+   * @platform android
+   * @platform ios
+   */
+  shouldCorrectPitch: boolean;
+
+  /**
    * Float value between 0 and 16 indicating the current playback speed of the player.
    * @default 1.0
    */

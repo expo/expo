@@ -132,6 +132,13 @@ public final class VideoModule: Module {
         player.desiredRate = rate
       }
 
+      Property("shouldCorrectPitch") { (player: VideoPlayer) -> Bool in
+        return player.shouldCorrectPitch
+      }
+      .set { (player, shouldCorrectPitch: Bool) in
+        player.shouldCorrectPitch = shouldCorrectPitch
+      }
+
       Function("play") { player in
         player.pointer.play()
       }

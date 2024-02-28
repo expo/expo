@@ -11,6 +11,7 @@ declare class VideoPlayerWeb implements VideoPlayer {
     _volume: number;
     _isLooping: boolean;
     _playbackRate: number;
+    _shouldCorrectPitch: boolean;
     staysActiveInBackground: boolean;
     set isMuted(value: boolean);
     get isMuted(): boolean;
@@ -20,6 +21,8 @@ declare class VideoPlayerWeb implements VideoPlayer {
     get volume(): number;
     set isLooping(value: boolean);
     get isLooping(): boolean;
+    get shouldCorrectPitch(): boolean;
+    set shouldCorrectPitch(value: boolean);
     mountVideoView(video: HTMLVideoElement): void;
     unmountVideoView(video: HTMLVideoElement): void;
     play(): void;
