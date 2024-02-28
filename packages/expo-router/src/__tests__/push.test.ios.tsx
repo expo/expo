@@ -52,11 +52,9 @@ it('stacks should always push a new route', () => {
         name: '(group)',
         params: {
           id: '1',
-          key: expect.any(String),
           screen: 'post/[id]',
           params: {
             id: '1',
-            key: expect.any(String),
             screen: 'index',
             params: {
               id: '1',
@@ -70,11 +68,9 @@ it('stacks should always push a new route', () => {
         name: '(group)',
         params: {
           id: '1',
-          key: expect.any(String),
           screen: 'user/[id]',
           params: {
             id: '1',
-            key: expect.any(String),
             screen: 'index',
             params: {
               id: '1',
@@ -88,11 +84,9 @@ it('stacks should always push a new route', () => {
         name: '(group)',
         params: {
           id: '2',
-          key: expect.any(String),
           screen: 'post/[id]',
           params: {
             id: '2',
-            key: expect.any(String),
             screen: 'index',
             params: {
               id: '2',
@@ -106,11 +100,9 @@ it('stacks should always push a new route', () => {
         name: '(group)',
         params: {
           id: '1',
-          key: expect.any(String),
           screen: 'user/[id]',
           params: {
             id: '1',
-            key: expect.any(String),
             screen: 'index',
             params: {
               id: '1',
@@ -124,11 +116,9 @@ it('stacks should always push a new route', () => {
         name: '(group)',
         params: {
           id: '2',
-          key: expect.any(String),
           screen: 'user/[id]',
           params: {
             id: '2',
-            key: expect.any(String),
             screen: 'index',
             params: {
               id: '2',
@@ -236,7 +226,6 @@ it('works in a nested layout Stack->Tab->Stack', () => {
         key: expect.any(String),
         name: '(tabs)',
         params: {
-          key: expect.any(String),
           params: {},
           screen: 'a',
         },
@@ -246,7 +235,6 @@ it('works in a nested layout Stack->Tab->Stack', () => {
         key: expect.any(String),
         name: '(tabs)',
         params: {
-          key: expect.any(String),
           params: {},
           screen: 'b',
         },
@@ -256,9 +244,7 @@ it('works in a nested layout Stack->Tab->Stack', () => {
         key: expect.any(String),
         name: '(tabs)',
         params: {
-          key: expect.any(String),
           params: {
-            key: expect.any(String),
             params: {},
             screen: 'one',
           },
@@ -270,9 +256,7 @@ it('works in a nested layout Stack->Tab->Stack', () => {
         key: expect.any(String),
         name: '(tabs)',
         params: {
-          key: expect.any(String),
           params: {
-            key: expect.any(String),
             params: {},
             screen: 'two',
           },
@@ -284,9 +268,7 @@ it('works in a nested layout Stack->Tab->Stack', () => {
         key: expect.any(String),
         name: '(tabs)',
         params: {
-          key: expect.any(String),
           params: {
-            key: expect.any(String),
             params: {},
             screen: 'two',
           },

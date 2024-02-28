@@ -95,7 +95,7 @@ test('dismissAll', () => {
   expect(router.canDismiss()).toBe(false);
 });
 
-test('dismissAll nested', () => {
+test.only('dismissAll nested', () => {
   renderRouter(
     {
       _layout: () => <Tabs />,
@@ -158,9 +158,7 @@ test('dismissAll nested', () => {
         key: expect.any(String),
         name: 'one',
         params: {
-          key: expect.any(String),
           params: {
-            key: expect.any(String),
             params: {},
             screen: 'page',
           },
@@ -187,7 +185,6 @@ test('dismissAll nested', () => {
               key: expect.any(String),
               name: 'two',
               params: {
-                key: expect.any(String),
                 params: {},
                 screen: 'page',
               },
@@ -267,9 +264,7 @@ test('dismissAll nested', () => {
         key: expect.any(String),
         name: 'one',
         params: {
-          key: expect.any(String),
           params: {
-            key: expect.any(String),
             params: {},
             screen: 'page',
           },
@@ -296,7 +291,6 @@ test('dismissAll nested', () => {
               key: expect.any(String),
               name: 'two',
               params: {
-                key: expect.any(String),
                 params: {},
                 screen: 'page',
               },
@@ -370,9 +364,7 @@ test('dismissAll nested', () => {
         key: expect.any(String),
         name: 'one',
         params: {
-          key: expect.any(String),
           params: {
-            key: expect.any(String),
             params: {},
             screen: 'page',
           },

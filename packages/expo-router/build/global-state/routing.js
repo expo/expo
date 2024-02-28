@@ -145,7 +145,7 @@ function linkTo(href, event) {
     return navigationRef.dispatch(getNavigateAction(state, rootState, event));
 }
 exports.linkTo = linkTo;
-function rewriteNavigationStateToParams(state, type, params = {}) {
+function rewriteNavigationStateToParams(state, params = {}) {
     if (!state)
         return params;
     // We Should always have at least one route in the state
@@ -153,16 +153,13 @@ function rewriteNavigationStateToParams(state, type, params = {}) {
     params.screen = lastRoute.name;
     // Weirdly, this always needs to be an object. If it's undefined, it won't work.
     params.params = lastRoute.params ? JSON.parse(JSON.stringify(lastRoute.params)) : {};
-    if (type === 'PUSH') {
-        params.key = `${params.screen}-${(0, non_secure_1.nanoid)()}`; // @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L406-L407
-    }
     if (lastRoute.state) {
-        rewriteNavigationStateToParams(lastRoute.state, type, params.params);
+        rewriteNavigationStateToParams(lastRoute.state, params.params);
     }
     return JSON.parse(JSON.stringify(params));
 }
 function getNavigateAction(state, parentState, type = 'NAVIGATE') {
-    const { screen, params } = rewriteNavigationStateToParams(state, type);
+    const { screen, params } = rewriteNavigationStateToParams(state);
     let key;
     if (type === 'PUSH') {
         /*
