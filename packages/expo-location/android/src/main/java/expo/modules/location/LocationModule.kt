@@ -273,6 +273,10 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
         throw ForegroundServiceStartNotAllowedException()
       }
 
+      if (!hasForegroundServicePermissions()) {
+        throw ForegroundServicePermissionsException()
+      }
+
       mTaskManager.registerTask(taskName, LocationTaskConsumer::class.java, options.toMutableMap())
       return@AsyncFunction
     }
@@ -722,8 +726,22 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       val canAccessFineLocation = it.hasGrantedPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
       val canAccessCoarseLocation = it.hasGrantedPermissions(Manifest.permission.ACCESS_COARSE_LOCATION)
       return !canAccessFineLocation && !canAccessCoarseLocation
-    }
-    return true
+    } ?: throw Exceptions.AppContextLost()
+  }
+
+  private fun hasForegroundServicePermissions(): Boolean {
+    appContext.permissions?.let {
+      return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        val canAccessForegroundServiceLocation = it.hasGrantedPermissions(Manifest.permission.FOREGROUND_SERVICE_LOCATION)
+        val canAccessForegroundService = it.hasGrantedPermissions(Manifest.permission.FOREGROUND_SERVICE)
+        canAccessForegroundService && canAccessForegroundServiceLocation
+      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        val canAccessForegroundService = it.hasGrantedPermissions(Manifest.permission.FOREGROUND_SERVICE)
+        canAccessForegroundService
+      } else {
+        true
+      }
+    } ?: throw Exceptions.AppContextLost()
   }
 
   /**
