@@ -98,8 +98,6 @@ exports.useGlobalSearchParams = useGlobalSearchParams;
  */
 function useLocalSearchParams() {
     const params = react_1.default.useContext(Route_1.LocalRouteParamsContext) ?? {};
-    console.log(usePathname());
-    console.log('params', params);
     return Object.fromEntries(Object.entries(params).map(([key, value]) => {
         if (Array.isArray(value)) {
             return [
