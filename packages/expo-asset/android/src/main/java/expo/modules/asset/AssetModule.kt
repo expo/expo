@@ -10,8 +10,6 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import java.io.File
 import java.io.FileInputStream
 import java.net.URI
-import java.net.URL
-import java.nio.file.Paths
 import java.security.DigestInputStream
 import java.security.MessageDigest
 
@@ -46,7 +44,6 @@ class AssetModule : Module() {
       e.printStackTrace()
       return null
     }
-
   }
 
   private fun downloadAsset(appContext: AppContext, uri: URI, localUrl: File, promise: Promise) {
@@ -83,7 +80,7 @@ class AssetModule : Module() {
       val cacheFileId = md5Hash ?: getMD5HashOfFilePath(uri)
       val cacheDirectory = appContext.cacheDirectory
 
-      val localUrl = File("${cacheDirectory}/ExponentAsset-${cacheFileId}.$type")
+      val localUrl = File("$cacheDirectory/ExponentAsset-$cacheFileId.$type")
 
       if (!localUrl.exists()) {
         downloadAsset(appContext, uri, localUrl, promise)
@@ -102,4 +99,3 @@ class AssetModule : Module() {
     }
   }
 }
-
