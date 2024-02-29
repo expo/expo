@@ -449,11 +449,11 @@ describe('+not-found', () => {
   it(`should not match top-level deep dynamic with nested index`, () => {
     let routes = getRoutes(
       inMemoryContext({
-        './(group)/+not-found/(group)/index.tsx': () => null,
-        // './+not-found/index.tsx': () => null,
-        // './+not-found/(group)/index.tsx': () => null,
-        // './(group1)/+not-found/(group2)/index.tsx': () => null,
-        // './(group1)/+not-found/(group2)/(group3)/index.tsx': () => null,
+        './(group)/+not-found/(group)/a.tsx': () => null,
+        './+not-found/b.tsx': () => null,
+        './+not-found/(group)/c.tsx': () => null,
+        './(group1)/+not-found/(group2)/d.tsx': () => null,
+        './(group1)/+not-found/(group2)/(group3)/e.tsx': () => null,
       }),
       { internal_stripLoadRoute: true }
     );
