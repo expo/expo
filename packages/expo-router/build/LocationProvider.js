@@ -27,7 +27,7 @@ function isIndexPath(state) {
 }
 // TODO: Split up getPathFromState to return all this info at once.
 function getNormalizedStatePath({ path: statePath, params, }, baseUrl) {
-    const pathname = new URL(statePath, 'http://localhost').pathname;
+    const [pathname] = statePath.split('?');
     return {
         // Strip empty path at the start
         segments: (0, getStateFromPath_1.stripBaseUrl)(pathname, baseUrl).split('/').filter(Boolean).map(decodeURIComponent),
