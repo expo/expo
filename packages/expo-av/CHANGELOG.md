@@ -5,7 +5,7 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
-
+- Added support for HLS Stream with ExoPlayer in favor of multi-variant playlist. ([#20537](https://github.com/expo/expo/pull/20537) by [@asharamseervi](https://github.com/asharamseervi))
 ### 🐛 Bug fixes
 
 - [iOS] Improve precision for syncing two videos and updating new video position when user sets tolerances to 0 ([#26018](https://github.com/expo/expo/pull/26018) by [@jpudysz](https://github.com/jpudysz))
