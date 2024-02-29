@@ -55,7 +55,7 @@ function appendContents({ src, newSrc, tag, comment, }) {
     }
     return { contents: src, didClear: false, didMerge: false };
 }
-const withCamera = (config, { cameraPermission, microphonePermission } = {}) => {
+const withCamera = (config, { cameraPermission, microphonePermission, recordAudioAndroid = true } = {}) => {
     config = (0, config_plugins_1.withInfoPlist)(config, (config) => {
         config.modResults.NSCameraUsageDescription =
             cameraPermission || config.modResults.NSCameraUsageDescription || CAMERA_USAGE;
@@ -66,8 +66,8 @@ const withCamera = (config, { cameraPermission, microphonePermission } = {}) => 
     config = config_plugins_1.AndroidConfig.Permissions.withPermissions(config, [
         'android.permission.CAMERA',
         // Optional
-        'android.permission.RECORD_AUDIO',
-    ]);
+        recordAudioAndroid && 'android.permission.RECORD_AUDIO',
+    ].filter(Boolean));
     return withAndroidCameraGradle(config);
 };
 exports.default = (0, config_plugins_1.createRunOncePlugin)(withCamera, pkg.name, pkg.version);

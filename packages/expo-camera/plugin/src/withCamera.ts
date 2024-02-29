@@ -82,8 +82,9 @@ const withCamera: ConfigPlugin<
   {
     cameraPermission?: string;
     microphonePermission?: string;
+    recordAudioAndroid?: boolean;
   } | void
-> = (config, { cameraPermission, microphonePermission } = {}) => {
+> = (config, { cameraPermission, microphonePermission, recordAudioAndroid = true } = {}) => {
   config = withInfoPlist(config, (config) => {
     config.modResults.NSCameraUsageDescription =
       cameraPermission || config.modResults.NSCameraUsageDescription || CAMERA_USAGE;
@@ -94,11 +95,14 @@ const withCamera: ConfigPlugin<
     return config;
   });
 
-  config = AndroidConfig.Permissions.withPermissions(config, [
-    'android.permission.CAMERA',
-    // Optional
-    'android.permission.RECORD_AUDIO',
-  ]);
+  config = AndroidConfig.Permissions.withPermissions(
+    config,
+    [
+      'android.permission.CAMERA',
+      // Optional
+      recordAudioAndroid && 'android.permission.RECORD_AUDIO',
+    ].filter(Boolean) as string[]
+  );
 
   return withAndroidCameraGradle(config);
 };
