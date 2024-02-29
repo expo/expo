@@ -8,7 +8,7 @@
 
 ### 🎉 New features
 
-- Export `BarcodeTypes` constant.
+- Export `BarcodeTypes` constant. ([#27376](https://github.com/expo/expo/pull/27376) by [@hbiede](https://github.com/hbiede))
 
 ### 🐛 Bug fixes
 
