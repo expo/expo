@@ -55,7 +55,7 @@ function appendContents({ src, newSrc, tag, comment, }) {
     }
     return { contents: src, didClear: false, didMerge: false };
 }
-const withCamera = (config, { cameraPermission, microphonePermission, recordAudioAndroid } = {}) => {
+const withCamera = (config, { cameraPermission, microphonePermission, recordAudioAndroid = true } = {}) => {
     config = (0, config_plugins_1.withInfoPlist)(config, (config) => {
         config.modResults.NSCameraUsageDescription =
             cameraPermission || config.modResults.NSCameraUsageDescription || CAMERA_USAGE;
