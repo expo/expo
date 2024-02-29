@@ -26,6 +26,8 @@ class DevMenuModule : Module() {
     }
 
     AsyncFunction("addDevMenuCallbacks") { callbacks: ReadableArray ->
+      DevMenuManager.registeredCallbacks.clear()
+
       val size = callbacks.size()
       for (i in 0 until size) {
         val callback = callbacks.getMap(i)
