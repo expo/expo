@@ -175,13 +175,21 @@ class VideoModule : Module() {
           }
         }
 
-      Property("currentTime")
+      Property("positionMillis")
         .get { ref: VideoPlayer ->
           // TODO: we shouldn't block the thread, but there are no events for the player position change,
           //  so we can't update the currentTime in a non-blocking way like the other properties.
           //  Until we think of something better we can temporarily do it this way
           runBlocking(appContext.mainQueue.coroutineContext) {
             ref.player.currentPosition
+          }
+        }
+        .set { ref: VideoPlayer, position: Long ->
+          appContext.mainQueue.launch {
+            ref.player.seekTo(position)
+          }
+          appContext.mainQueue.launch {
+            ref.player.currentPosition.toInt()
           }
         }
 

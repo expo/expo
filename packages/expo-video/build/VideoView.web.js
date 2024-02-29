@@ -22,7 +22,6 @@ class VideoPlayerWeb {
     _audioNodes = new Set();
     isPlaying = false;
     _isMuted = false;
-    timestamp = 0;
     _volume = 1;
     _isLooping = false;
     _playbackRate = 1.0;
@@ -65,6 +64,15 @@ class VideoPlayerWeb {
     }
     get isLooping() {
         return this._isLooping;
+    }
+    get positionMillis() {
+        // All videos should be synchronized, so we return the position of the first video.
+        return Math.round([...this._mountedVideos][0].currentTime * 1000);
+    }
+    set positionMillis(value) {
+        this._mountedVideos.forEach((video) => {
+            video.currentTime = value / 1000;
+        });
     }
     get shouldCorrectPitch() {
         return this._shouldCorrectPitch;
@@ -167,7 +175,6 @@ class VideoPlayerWeb {
             this.isMuted = video.muted;
         };
         video.onseeking = () => {
-            this.timestamp = video.currentTime;
             this._mountedVideos.forEach((mountedVideo) => {
                 if (mountedVideo === video || mountedVideo.currentTime === video.currentTime)
                     return;
@@ -175,7 +182,6 @@ class VideoPlayerWeb {
             });
         };
         video.onseeked = () => {
-            this.timestamp = video.currentTime;
             this._mountedVideos.forEach((mountedVideo) => {
                 if (mountedVideo === video || mountedVideo.currentTime === video.currentTime)
                     return;

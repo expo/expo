@@ -125,6 +125,17 @@ public final class VideoModule: Module {
         player.isLooping = isLooping
       }
 
+      Property("positionMillis") {(player: VideoPlayer) -> Int64 in
+        let time = player.pointer.currentTime().convertScale(1000, method: .roundHalfAwayFromZero)
+        return Int64(time.seconds * 1000.0)
+      }
+      .set { (player, positionMillis: Int64) in
+        // Only clamp the lower limit, AVPlayer automatically clamps the upper limit.
+        let clampedMillis = max(0, positionMillis)
+        let timeToSeek = CMTimeMakeWithSeconds(Float64(clampedMillis) / 1000.0, preferredTimescale: .max)
+        player.pointer.seek(to: timeToSeek, toleranceBefore: .zero, toleranceAfter: .zero)
+      }
+
       Property("rate") { (player: VideoPlayer) -> Float in
         return player.desiredRate
       }

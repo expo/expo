@@ -7,7 +7,6 @@ declare class VideoPlayerWeb implements VideoPlayer {
     _audioNodes: Set<MediaElementAudioSourceNode>;
     isPlaying: boolean;
     _isMuted: boolean;
-    timestamp: number;
     _volume: number;
     _isLooping: boolean;
     _playbackRate: number;
@@ -21,6 +20,8 @@ declare class VideoPlayerWeb implements VideoPlayer {
     get volume(): number;
     set isLooping(value: boolean);
     get isLooping(): boolean;
+    get positionMillis(): number;
+    set positionMillis(value: number);
     get shouldCorrectPitch(): boolean;
     set shouldCorrectPitch(value: boolean);
     mountVideoView(video: HTMLVideoElement): void;
