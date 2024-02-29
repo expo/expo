@@ -15,11 +15,9 @@ export type ResultState = PartialState<NavigationState> & {
 };
 export declare function getUrlWithReactNavigationConcessions(path: string, baseUrl?: string | undefined): {
     nonstandardPathname: string;
-    url: null;
-} | {
-    nonstandardPathname: string;
-    url: URL;
-};
+    pathname: string;
+    hash: string;
+} | null;
 /**
  * Utility to parse a path string to initial state object accepted by the container.
  * This is useful for deep linking when we need to handle the incoming URL.
