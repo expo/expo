@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 16.5.5 — 2024-02-29
+
+_This version does not introduce any user-facing changes._
+
 ## 16.5.4 — 2024-02-27
 
 ### 🎉 New features
