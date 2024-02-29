@@ -72,6 +72,7 @@
     "semver": "^7.5.4",
     "sharp": "^0.32.6",
     "strip-ansi": "^6.0.0",
+    "temp-dir": "^2.0.0",
     "terminal-link": "^2.1.1",
     "typedoc": "0.25.7",
     "uuid": "^9.0.0",
