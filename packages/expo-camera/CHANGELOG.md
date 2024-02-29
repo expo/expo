@@ -26,6 +26,7 @@
 ### 💡 Others
 
 - Make the casing of `Barcode` consistent. ([#26900](https://github.com/expo/expo/pull/26900) by [@alanjhughes](https://github.com/alanjhughes))
+- On `Android`, requesting audio permissions was meant to be optional in the config plugin.
 
 ## 14.0.1 - 2023-12-19
 
