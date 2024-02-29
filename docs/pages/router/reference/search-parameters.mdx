@@ -262,7 +262,7 @@ import { router, useLocalSearchParams, Link } from 'expo-router';
 
 export default function User() {
   // Access the hash
-  const { '#': hash } = useSearchParams<{ '#': string }>();
+  const { '#': hash } = useLocalSearchParams<{ '#': string }>();
 
   return (
     <>
