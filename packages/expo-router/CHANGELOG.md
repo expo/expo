@@ -7,17 +7,10 @@
 ### 🎉 New features
 
 - Mark React client components with "use client" directives. ([#27300](https://github.com/expo/expo/pull/27300) by [@EvanBacon](https://github.com/EvanBacon))
-- Allow the file extension to be specified for `renderRouter`'s filepaths ([#26510](https://github.com/expo/expo/pull/26510) by [@marklawlor](https://github.com/marklawlor))
-- Add `useNavigationContainerRef` to access the root NavigationContainer ref. ([#26529](https://github.com/expo/expo/pull/26529) by [@EvanBacon](https://github.com/EvanBacon))
-- Allow `renderRouter()` to accept an array of strings to quickly mock multiple empty components. ([#26651](https://github.com/expo/expo/pull/26651) by [@marklawlor](https://github.com/marklawlor))
-- Add `.dismiss(), .dismissAll() and .canDismiss()` to `router` APIs. ([#26711](https://github.com/expo/expo/pull/26711) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 
 - Fix issue with skipping all imports. ([#27238](https://github.com/expo/expo/pull/27238) by [@EvanBacon](https://github.com/EvanBacon))
-- Fix issue with top-level catch-all not matching client-side routing behavior. ([#26861](https://github.com/expo/expo/pull/26861) by [@EvanBacon](https://github.com/EvanBacon))
-- Remove error hiding system. ([#26607](https://github.com/expo/expo/pull/26607) by [@EvanBacon](https://github.com/EvanBacon))
-- Make `@testing-library/jest-native` usage optional ([#26650](https://github.com/expo/expo/pull/26650) by [@marklawlor](https://github.com/marklawlor))
 - Include search parameters in the default Screen.getId() function. ([#26710](https://github.com/expo/expo/pull/26710) by [@marklawlor](https://github.com/marklawlor))
 - Fix sitemap missing paths ([#26507](https://github.com/expo/expo/pull/26507) by [@marklawlor](https://github.com/marklawlor))
 - API routes incorrectly reporting duplicate routes ([#26507](https://github.com/expo/expo/pull/26507) by [@marklawlor](https://github.com/marklawlor))
@@ -30,7 +23,43 @@
 
 ### 💡 Others
 
+## 3.4.8 - 2024-02-29
+
+### 🎉 New features
+
+- Allow the file extension to be specified for `renderRouter`'s filepaths ([#26510](https://github.com/expo/expo/pull/26510) by [@marklawlor](https://github.com/marklawlor))
+- Allow `renderRouter()` to accept an array of strings to quickly mock multiple empty components. ([#26651](https://github.com/expo/expo/pull/26651) by [@marklawlor](https://github.com/marklawlor))
+- Add `.dismiss(), .dismissAll() and .canDismiss()` to `router` APIs. ([#26711](https://github.com/expo/expo/pull/26711) by [@marklawlor](https://github.com/marklawlor))
+
+## 3.4.7 - 2024-02-06
+
+### 🐛 Bug fixes
+
+- Fix issue with top-level catch-all not matching client-side routing behavior. ([#26861](https://github.com/expo/expo/pull/26861) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
 - Reduce usage of `expo-constants`. ([#26834](https://github.com/expo/expo/pull/26834) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 3.4.6 - 2024-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 3.4.5 - 2024-01-23
+
+### 🐛 Bug fixes
+
+- Remove error hiding system. ([#26607](https://github.com/expo/expo/pull/26607) by [@EvanBacon](https://github.com/EvanBacon))
+- Make `@testing-library/jest-native` usage optional ([#26650](https://github.com/expo/expo/pull/26650) by [@marklawlor](https://github.com/marklawlor))
+
+## 3.4.4 - 2024-01-20
+
+### 🎉 New features
+
+- Add `useNavigationContainerRef` to access the root NavigationContainer ref. ([#26529](https://github.com/expo/expo/pull/26529) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
 - Deprecate `useRootNavigation` in favor of `useNavigationContainerRef`. ([#26529](https://github.com/expo/expo/pull/26529) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove duplicate context mocking functions ([#26651](https://github.com/expo/expo/pull/26651) by [@marklawlor](https://github.com/marklawlor))
 
