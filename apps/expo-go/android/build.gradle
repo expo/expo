@@ -9,11 +9,11 @@ buildscript {
 
     dbFlowVersion = '4.2.4'
     buildToolsVersion = '34.0.0'
-    kotlinVersion = '1.8.10'
+    kotlinVersion = '1.9.22'
     gradleDownloadTaskVersion = '5.0.1'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
 
-    ndkVersion = "25.1.8937393"
+    ndkVersion = "26.1.10909125"
   }
   repositories {
     google()
