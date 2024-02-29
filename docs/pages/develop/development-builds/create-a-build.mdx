@@ -14,18 +14,17 @@ import Video from '~/components/plugins/Video';
 
 > If you are looking to create a development build **locally**, rather than remotely on EAS, you can [create local builds with `npx expo run:[android|ios]`](/guides/local-app-development/#local-builds-with-expo-dev-client) or with [`eas build --local`](/build-reference/local-builds/).
 
-Development builds can be created with [EAS Build](/build/introduction/) or [locally on your computer](/guides/local-app-development/), if you have Android Studio and Xcode installed.
+Development builds can be created with [EAS Build](/build/introduction/) or [locally on your computer](/guides/local-app-development/) if you have Android Studio and Xcode installed.
 
 In this guide, you'll find information on creating a development build with EAS and installing it on an emulator/simulator or a physical device to continue developing your app.
 
 ## Prerequisites
 
-All you will need an React Native Android and/or iOS project that is configured to build with EAS Build. If you haven't configured your project yet, refer to the ["Create your first build"](/build/setup/) page.
-
+You will need a React Native Android and/or iOS project that is configured to build with EAS Build. If you haven't configured your project yet, see [Create your first build](/build/setup/).
 
 ## Instructions
 
-The following instructions cover both Android and iOS and physical devices and emulators. You can use whichever instructions are relevant to your project. If you would prefer a video over text, you can skip to ["Video walkthroughs"](#video-walkthroughs).
+The following instructions cover both Android and iOS and physical devices and emulators. You can use whichever instructions are relevant to your project. If you would prefer a video over text, skip to [Video walkthroughs](#video-walkthroughs).
 
 <Step label="1">
 
@@ -45,7 +44,7 @@ Apps that don't use [Continuous Native Generation](/workflow/continuous-native-g
 
 ## Verify your eas.json configuration
 
-The first time you ran the `eas build` command, it creates an [**eas.json**](/build/eas-json/) file at the root of your project directory. The **eas.json** includes with three default build profiles &mdash; `development`, `preview`, and `production`. If you have removed the `development` profile since you first initialized **eas.json**, you should add it back now. A minimal configuration is shown below:
+The first time you run the `eas build` command, it creates an [**eas.json**](/build/eas-json/) file at the root of your project directory. The **eas.json** includes three default build profiles &mdash; `development`, `preview`, and `production`. If you have removed the `development` profile since you first initialized **eas.json**, you should add it back now. A minimal configuration is shown below:
 
 ```json eas.json
 {
@@ -85,7 +84,7 @@ Each platform has specific instructions you'll have to follow:
 
 <Tab>
 
-To create and install the development build on an Android Emulator, you will need an **.apk**. To create it, run the following command:
+To create and install the development build on an Android Emulator, you will need a **.apk**. To create it, run the following command:
 
 <Terminal cmd={['$ eas build --profile development --platform android']} />
 
