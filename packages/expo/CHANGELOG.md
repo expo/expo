@@ -9,19 +9,49 @@
 ### 🐛 Bug fixes
 
 - Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357) by [@kudo](https://github.com/kudo))
-- Fixed React Native Community CLI not being able to autolink the `expo` package when Expo autolinking is not used. ([#26932](https://github.com/expo/expo/pull/26932) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
-- Mark the exp prop as optional, this is only used in Expo Go ([#27095](https://github.com/expo/expo/pull/27095) by [@brentvatne](https://github.com/brentvatne))
 - [expo-updates] Migrate to requireNativeModule/requireOptionalNativeModule. ([#25648](https://github.com/expo/expo/pull/25648) by [@wschurman](https://github.com/wschurman))
 - Remove implicit dependency on expo-updates to do runtime version check at runtime. ([#26080](https://github.com/expo/expo/pull/26080) by [@wschurman](https://github.com/wschurman))
-- Export `DevToolsPluginClient` from `expo/devtools`. ([#27125](https://github.com/expo/expo/pull/27125) by [@cyrilbo](https://github.com/cyrilbo))
 
 ### 📚 3rd party library updates
 
 - Update react-native to 0.73.2. ([#26311](https://github.com/expo/expo/pull/26311) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 50.0.8 - 2024-02-27
+
+### 💡 Others
+
+- Export `DevToolsPluginClient` from `expo/devtools`. ([#27125](https://github.com/expo/expo/pull/27125) by [@cyrilbo](https://github.com/cyrilbo))
+
+## 50.0.7 - 2024-02-16
+
+### 💡 Others
+
+- Mark the exp prop as optional, this is only used in Expo Go ([#27095](https://github.com/expo/expo/pull/27095) by [@brentvatne](https://github.com/brentvatne))
+
+### 📚 3rd party library updates
+
 - Update react-native to 0.73.4. ([#26774](https://github.com/expo/expo/pull/26774) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 50.0.6 - 2024-02-06
+
+### 🐛 Bug fixes
+
+- Fixed React Native Community CLI not being able to autolink the `expo` package when Expo autolinking is not used. ([#26932](https://github.com/expo/expo/pull/26932) by [@tsapeta](https://github.com/tsapeta))
+
+## 50.0.5 - 2024-02-01
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.4 - 2024-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.3 - 2024-01-23
+
+_This version does not introduce any user-facing changes._
 
 ## 50.0.2 - 2024-01-18
 

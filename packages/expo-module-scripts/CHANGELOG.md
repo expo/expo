@@ -10,12 +10,16 @@
 
 ### 🐛 Bug fixes
 
-- Use `node18` tsconfig in `expo-module-scripts` to match the dependencies. ([#26738](https://github.com/expo/expo/pull/26738)) by ([@krystofwoldrich](https://github.com/krystofwoldrich))
-
 ### 💡 Others
 
 - Target Node 18 in the Babel CLI preset. ([#26847](https://github.com/expo/expo/pull/26847) by [@simek](https://github.com/simek))
 - Update Babel dependencies to the latest version from `7.23` releases. ([#26525](https://github.com/expo/expo/pull/26525) by [@simek](https://github.com/simek))
+
+## 3.4.1 - 2024-02-01
+
+### 🐛 Bug fixes
+
+- Use `node18` tsconfig in `expo-module-scripts` to match the dependencies. ([#26738](https://github.com/expo/expo/pull/26738)) by ([@krystofwoldrich](https://github.com/krystofwoldrich)) ([#26738](https://github.com/expo/expo/pull/26738) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ## 3.4.0 — 2023-12-12
 
