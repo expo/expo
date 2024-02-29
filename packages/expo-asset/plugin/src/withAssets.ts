@@ -9,7 +9,7 @@ export type AssetProps = {
   assets?: string[];
 };
 
-const withAssets: ConfigPlugin<AssetProps> = (config, props) => {
+const withAssets: ConfigPlugin<AssetProps | null> = (config, props) => {
   if (!props) {
     return config;
   }
