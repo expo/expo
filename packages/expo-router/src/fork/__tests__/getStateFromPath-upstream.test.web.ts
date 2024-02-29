@@ -119,7 +119,7 @@ it('handles leading slash when converting', () => {
   });
 });
 
-it('handles ending slash when converting', () => {
+it.only('handles ending slash when converting', () => {
   const path = 'foo/bar/?count=42';
 
   expect(

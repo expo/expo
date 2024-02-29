@@ -72,7 +72,7 @@ function encodeURIComponentPreservingBrackets(str) {
  * @returns Path representing the state, e.g. /foo/bar?count=42.
  */
 function getPathFromState(state, _options) {
-    return getPathDataFromState(state, _options).pathWithHash;
+    return getPathDataFromState(state, _options).path;
 }
 exports.default = getPathFromState;
 function getPathDataFromState(state, _options = { screens: DEFAULT_SCREENS }) {
@@ -295,13 +295,12 @@ function getPathFromResolvedState(state, configs, { preserveGroups, preserveDyna
             break;
         }
     }
-    const params = decodeParams(allParams);
-    let pathWithHash = path;
     if (hash) {
-        pathWithHash += `#${hash}`;
-        params['#'] = hash;
+        allParams['#'] = hash;
+        path += `#${hash}`;
     }
-    return { path: appendBaseUrl(basicSanitizePath(path)), params, pathWithHash };
+    const params = decodeParams(allParams);
+    return { path: appendBaseUrl(basicSanitizePath(path)), params };
 }
 function decodeParams(params) {
     const parsed = {};

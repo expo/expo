@@ -115,7 +115,7 @@ export default function getPathFromState<ParamList extends object>(
     preserveDynamicRoutes?: boolean;
   }
 ): string {
-  return getPathDataFromState(state, _options).pathWithHash;
+  return getPathDataFromState(state, _options).path;
 }
 
 export function getPathDataFromState<ParamList extends object>(
@@ -418,15 +418,14 @@ function getPathFromResolvedState(
     }
   }
 
-  const params = decodeParams(allParams);
-  let pathWithHash = path;
-
   if (hash) {
-    pathWithHash += `#${hash}`;
-    params['#'] = hash;
+    allParams['#'] = hash;
+    path += `#${hash}`;
   }
 
-  return { path: appendBaseUrl(basicSanitizePath(path)), params, pathWithHash };
+  const params = decodeParams(allParams);
+
+  return { path: appendBaseUrl(basicSanitizePath(path)), params };
 }
 
 function decodeParams(params: Record<string, string>) {
