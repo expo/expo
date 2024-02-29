@@ -34,11 +34,6 @@ PODS:
   - EXManifests/Tests (0.13.0):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - EXMediaLibrary (15.9.0):
-    - ExpoModulesCore
-    - glog
-    - RCT-Folly (= 2022.05.16.00)
-    - React-Core
   - EXNotifications (0.27.1):
     - ExpoModulesCore
   - Expo (50.0.0-preview.4):
@@ -209,6 +204,9 @@ PODS:
     - ExpoModulesCore
     - GoogleMaps (= 7.3.0)
     - GooglePlaces (= 7.3.0)
+  - ExpoMediaLibrary (15.9.0):
+    - ExpoModulesCore
+    - React-Core
   - ExpoModulesCore (1.11.2):
     - glog
     - RCT-Folly (= 2022.05.16.00)
@@ -1480,7 +1478,6 @@ DEPENDENCIES:
   - EXLocation (from `../../../packages/expo-location/ios`)
   - EXManifests (from `../../../packages/expo-manifests/ios`)
   - EXManifests/Tests (from `../../../packages/expo-manifests/ios`)
-  - EXMediaLibrary (from `../../../packages/expo-media-library/ios`)
   - EXNotifications (from `../../../packages/expo-notifications/ios`)
   - Expo (from `../../../packages/expo`)
   - expo-dev-client (from `../../../packages/expo-dev-client/ios`)
@@ -1518,6 +1515,7 @@ DEPENDENCIES:
   - ExpoLocalization (from `../../../packages/expo-localization/ios`)
   - ExpoMailComposer (from `../../../packages/expo-mail-composer/ios`)
   - ExpoMaps (from `../../../packages/expo-maps/ios`)
+  - ExpoMediaLibrary (from `../../../packages/expo-media-library/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
   - ExpoModulesCore/Tests (from `../../../packages/expo-modules-core`)
   - ExpoModulesTestCore (from `../../../packages/expo-modules-test-core/ios`)
@@ -1673,9 +1671,6 @@ EXTERNAL SOURCES:
   EXManifests:
     inhibit_warnings: false
     :path: "../../../packages/expo-manifests/ios"
-  EXMediaLibrary:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-media-library/ios"
   EXNotifications:
     inhibit_warnings: false
     :path: "../../../packages/expo-notifications/ios"
@@ -1768,6 +1763,9 @@ EXTERNAL SOURCES:
   ExpoMaps:
     inhibit_warnings: false
     :path: "../../../packages/expo-maps/ios"
+  ExpoMediaLibrary:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-media-library/ios"
   ExpoModulesCore:
     inhibit_warnings: false
     :path: "../../../packages/expo-modules-core"
@@ -1985,7 +1983,6 @@ SPEC CHECKSUMS:
   EXJSONUtils: d138005ee11b84fc4e3bf7119a160034db5d5e20
   EXLocation: 4cdbc108ff5bd944d981b7d0c0cf98630104a84a
   EXManifests: 2355abd4aeacfb75eec5b43393c0aef9c2789fcf
-  EXMediaLibrary: 9ca30a11319813904316ac3910bc4beef6af5b8a
   EXNotifications: 6e3b49fa7f916bc2783d37fbd5599509b160776c
   Expo: 5096704437d0388c1ae6c622c8fd6d1b61889a53
   expo-dev-client: 62325d7ddd0b339eb2e50e472b2e058e222c1c2d
@@ -2017,6 +2014,7 @@ SPEC CHECKSUMS:
   ExpoLocalization: b3b77d35b8c7653700ae3045bf6d8175ab91d042
   ExpoMailComposer: 1f980bbdd0647500178625f453e509cef1282d43
   ExpoMaps: e9e83d84c3af7c25fc4a139917239881e319e08a
+  ExpoMediaLibrary: 488827a3f563c2242b318553ca018a7b8c0c4644
   ExpoModulesCore: fdc0871aabd9a27e89849e809e5d3af520f10c9f
   ExpoModulesTestCore: 0fe626daae71122fbc305d7fbb87b1afd283e4c5
   ExpoNetwork: 97d7774ab8f62e35f08db77fbef0388d5e1f2c76
