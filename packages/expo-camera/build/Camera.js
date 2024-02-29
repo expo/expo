@@ -77,6 +77,7 @@ export default class Camera extends React.Component {
         Type: CameraManager.Type,
         FlashMode: CameraManager.FlashMode,
         AutoFocus: CameraManager.AutoFocus,
+        BarcodeType: CameraManager.BarcodeType,
         WhiteBalance: CameraManager.WhiteBalance,
         VideoQuality: CameraManager.VideoQuality,
         VideoStabilization: CameraManager.VideoStabilization || {},

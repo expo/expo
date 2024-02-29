@@ -347,6 +347,7 @@ export type ConstantsType = {
     Type: CameraType;
     FlashMode: FlashMode;
     AutoFocus: AutoFocus;
+    BarcodeType: Record<string, string>;
     WhiteBalance: WhiteBalance;
     VideoQuality: VideoQuality;
     VideoStabilization: VideoStabilization;

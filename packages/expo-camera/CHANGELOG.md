@@ -9,6 +9,7 @@
 ### 🎉 New features
 
 - `BarCodeAnalyzer` now passes an additional `raw` field to its `onComplete` callback, corresponding to the barcode value as it was encoded in the barcode without parsing. Will always be undefined on iOS. ([#25391](https://github.com/expo/expo/pull/25391) by [@ajacquierbret](https://github.com/ajacquierbret))
+- Export `BarcodeTypes` constant.
 
 ### 🐛 Bug fixes
 

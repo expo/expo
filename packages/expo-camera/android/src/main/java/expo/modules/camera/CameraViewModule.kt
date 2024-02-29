@@ -3,6 +3,7 @@ package expo.modules.camera
 import android.Manifest
 import com.google.android.cameraview.AspectRatio
 import com.google.android.cameraview.Size
+import com.google.mlkit.vision.barcode.common.Barcode
 import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask
 import expo.modules.core.interfaces.services.UIManager
 import expo.modules.core.utilities.EmulatorUtilities
@@ -33,6 +34,21 @@ class CameraViewModule : Module() {
       "AutoFocus" to mapOf(
         "on" to true,
         "off" to false
+      ),
+      "BarcodeType" to mapOf(
+        "aztec" to Barcode.FORMAT_AZTEC,
+        "codabar" to Barcode.FORMAT_CODABAR,
+        "code128" to Barcode.FORMAT_CODE_128,
+        "code39" to Barcode.FORMAT_CODE_39,
+        "code93" to Barcode.FORMAT_CODE_93,
+        "datamatrix" to Barcode.FORMAT_DATA_MATRIX,
+        "ean13" to Barcode.FORMAT_EAN_13,
+        "ean8" to Barcode.FORMAT_EAN_8,
+        "itf14" to Barcode.FORMAT_ITF,
+        "pdf417" to Barcode.FORMAT_PDF417,
+        "qr" to Barcode.FORMAT_QR_CODE,
+        "upc_a" to Barcode.FORMAT_UPC_A
+        "upc_e" to Barcode.FORMAT_UPC_E,
       ),
       "WhiteBalance" to mapOf(
         "auto" to com.google.android.cameraview.Constants.WB_AUTO,

@@ -24,10 +24,10 @@ struct ExpoCameraUtils {
     }
 
     return orientation
-}
+  }
 
-  static func videoOrientation(for interfaceOrientaion: UIInterfaceOrientation) -> AVCaptureVideoOrientation {
-    switch interfaceOrientaion {
+  static func videoOrientation(for interfaceOrientation: UIInterfaceOrientation) -> AVCaptureVideoOrientation {
+    switch interfaceOrientation {
     case .portrait:
       return .portrait
     case .landscapeLeft:
@@ -41,8 +41,8 @@ struct ExpoCameraUtils {
     }
   }
 
-  static func videoOrientation(for deviceOrientaion: UIDeviceOrientation) -> AVCaptureVideoOrientation {
-    switch deviceOrientaion {
+  static func videoOrientation(for deviceOrientation: UIDeviceOrientation) -> AVCaptureVideoOrientation {
+    switch deviceOrientation {
     case .portrait:
       return .portrait
     case .portraitUpsideDown:

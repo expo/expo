@@ -317,6 +317,24 @@ export type BarCodeSize = {
 };
 
 /**
+ * The available barcode types that can be scanned.
+ */
+export type BarCodeType =
+    | 'aztec'
+    | 'ean13'
+    | 'ean8'
+    | 'qr'
+    | 'pdf417'
+    | 'upc_e'
+    | 'datamatrix'
+    | 'code39'
+    | 'code93'
+    | 'itf14'
+    | 'codabar'
+    | 'code128'
+    | 'upc_a';
+
+/**
  * These coordinates are represented in the coordinate space of the camera source (e.g. when you
  * are using the camera view, these values are adjusted to the dimensions of the view).
  */
@@ -380,6 +398,7 @@ export type ConstantsType = {
   Type: CameraType;
   FlashMode: FlashMode;
   AutoFocus: AutoFocus;
+  BarcodeType: Record<string, BarCodeType>;
   WhiteBalance: WhiteBalance;
   VideoQuality: VideoQuality;
   VideoStabilization: VideoStabilization;
@@ -540,7 +559,7 @@ export type CameraNativeProps = {
 
 // @docsMissing
 export type BarCodeSettings = {
-  barCodeTypes: string[];
+  barCodeTypes: BarCodeType[];
   interval?: number;
 };
 
