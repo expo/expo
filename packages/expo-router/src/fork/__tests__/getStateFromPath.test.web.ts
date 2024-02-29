@@ -181,9 +181,6 @@ it(`matches unmatched existing groups against 404`, () => {
       getMockConfig([
         '+not-found',
         '(app)/_layout',
-        '(app)/(explore)/_layout',
-        '(app)/(explore)/[user]/index',
-        '(app)/(explore)/explore',
 
         '(app)/([user])/_layout',
         '(app)/([user])/[user]/index',

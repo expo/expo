@@ -88,3 +88,56 @@ export default function Page() {
   return <Text>Blog post: {slug}</Text>;
 }
 ```
+
+## Understanding page resolution
+
+If there are multiple groups, a single URL can correspond to multiple pages. When navigating to a URL, the displayed page is chosen based on the following criteria:
+
+1. **State**: The state of the current route. For example, whether the route is inside the same group.
+2. **Specificity**: The number of segments in the route path. For example, `/` has a specificity of 1, `/blog` has a specificity of 2, and `/blog/[slug]` has a specificity of 3. The route with the highest specificity is chosen.
+3. **Order**: The alphabetical order in which the pages are defined in the file system. For example, `/blog/[slug]` will be matched before `/blog/[...rest]`
+
+If you ever recieve an error that a page is impossible to navigate to, it is because another route with a higher specificity and/or order will always be choosen before it.
+
+### State
+
+Your current route state are the groups that the route is inside. For example, if you are on the `/(app)/blog` route, the state is `['(app)']`. If you are on the `/(app)/(tabs)/settings` route, the state is `['(app)', '(tabs)']`.
+
+When moving from one route to another, the state is preserved. For example, if you are on the `/(app)/blog` route and navigate to the `/(app,tabs)/settings` route, the state is preserved as `['(app)']`. If the next route has a different set of groups, the state is updated to match the new set of groups. For example, if you are on the `/(app)/blog` route and navigate to the `/(tabs)/settings` route, the state is updated to `['(tabs)']`.
+You can explicitly set the state of the next route by including the groups within the URL. For example, `<Link href="/(tabs)/settings" />` will always set the state to `['(tabs)']`. You don't need to include all the groups in the URL, only the ones that you want to set.
+
+Understanding the state is important is navigating multiple times. Consider the following file structure:
+
+<FileTree
+  files={[
+    ['(public)/index.tsx'],
+    ['(public,private)/news.tsx'],
+    ['(public)/user.tsx'],
+    ['(private)/user.tsx'],
+    ['(private)/dashboard.tsx'],
+  ]}
+/>
+
+If current route is `/` (the `/(public)/index.tsx` page) and the user navigates to `/news`, the displayed page is `/(public,private)/news.tsx` and state is `['(public)']`. When the user navigates to `/user`, the displayed page `/(public)/user` route, as the state was preserve as `['(public)']. Only when user explicitly navigates to `/(private)/user`or to `/(private)/dashboard` will the state be updated to`['(private)']`.
+
+### Specificity
+
+The specificity of a route is the number of segments in the route path. For example, `/` has a specificity of 1, `/blog` has a specificity of 2, and `/blog/[slug]` has a specificity of 3.
+
+When a route is matched, the route with the highest specificity is chosen.
+
+Examples:
+
+- `/(app)/[...pages].tsx` and `/(app)/user/[...pages].tsx`, the latter is chosen because it has a higher specificity
+- `/(app)/blog.tsx` and `/(app)/(nested)/[page].tsx`, `/(app)/blog.tsx` will cause a compiler error because its impossible to navigate to. The latter has a higher specificity and will always be chosen.
+- `/(app)/index` and `/index.tsx`, `index.tsx` will cause a compiler error because its impossible to navigate to. The former has a higher specificity and will always be chosen.
+
+### Order
+
+When two routes have the same specificity, the route that is choosen by filename ordering. Static routes are always chosen before dynamic routes, otherwise they are chosen by alphabetical order.
+
+Examples:
+
+- `/(app)/blog.tsx` and `/(app)/[slug].tsx`, `/(app)/blog.tsx` is chosen because it is static
+- `/(tabs)/user.tsx` and `/(app)/user.tsx`, `/(app)/user.tsx` is chosen becausethe `(app)` group is alphabetically first
+- `/(app)/[page].tsx` and `/(app)/[slug].tsx`, `/(app)/[slug].tsx` will cause a compiler error as it is impossible to navigate to.

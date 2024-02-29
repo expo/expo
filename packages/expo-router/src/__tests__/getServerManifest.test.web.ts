@@ -221,7 +221,7 @@ it(`converts dynamic routes`, () => {
 
 it(`converts dynamic routes on same level with specificity`, () => {
   const routesManifest = getServerManifest(
-    getRoutesFor(['./index.tsx', './a.tsx', './[a].tsx', './[...a].tsx', './(a)/[a].tsx'])
+    getRoutesFor(['./index.tsx', './a.tsx', './[...a].tsx', './(a)/[a].tsx'])
   );
   expect(routesManifest).toEqual({
     apiRoutes: [],
@@ -242,12 +242,6 @@ it(`converts dynamic routes on same level with specificity`, () => {
         file: './(a)/[a].tsx',
         namedRegex: '^(?:/\\(a\\))?/(?<a>[^/]+?)(?:/)?$',
         page: './(a)/[a]',
-        routeKeys: { a: 'a' },
-      },
-      {
-        file: './[a].tsx',
-        namedRegex: '^/(?<a>[^/]+?)(?:/)?$',
-        page: './[a]',
         routeKeys: { a: 'a' },
       },
       {

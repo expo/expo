@@ -29,7 +29,7 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
     }) => BottomTabNavigationOptions) | undefined;
 } & import("@react-navigation/native").DefaultRouterOptions & {
     backBehavior?: import("@react-navigation/routers/lib/typescript/src/TabRouter").BackBehavior | undefined;
-} & import("@react-navigation/bottom-tabs/lib/typescript/src/types").BottomTabNavigationConfig, "initialRouteName" | "children" | "id" | "screenListeners" | "screenOptions"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+} & import("@react-navigation/bottom-tabs/lib/typescript/src/types").BottomTabNavigationConfig, "children" | "id" | "initialRouteName" | "screenListeners" | "screenOptions"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     id?: string | undefined;
     children: React.ReactNode;
     screenListeners?: Partial<{
@@ -81,7 +81,7 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
     }) => BottomTabNavigationOptions) | undefined;
 } & import("@react-navigation/native").DefaultRouterOptions & {
     backBehavior?: import("@react-navigation/routers/lib/typescript/src/TabRouter").BackBehavior | undefined;
-} & import("@react-navigation/bottom-tabs/lib/typescript/src/types").BottomTabNavigationConfig, "initialRouteName" | "children" | "id" | "screenListeners" | "screenOptions"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+} & import("@react-navigation/bottom-tabs/lib/typescript/src/types").BottomTabNavigationConfig, "children" | "id" | "initialRouteName" | "screenListeners" | "screenOptions"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     id?: string | undefined;
     children: React.ReactNode;
     screenListeners?: Partial<{
@@ -140,7 +140,7 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
             show?: import("@react-navigation/bottom-tabs/lib/typescript/src/types").TabBarVisibilityAnimationConfig | undefined;
             hide?: import("@react-navigation/bottom-tabs/lib/typescript/src/types").TabBarVisibilityAnimationConfig | undefined;
         } | undefined;
-        tabBarStyle?: false | import("react-native").Animated.Value | import("react-native").RegisteredStyle<import("react-native").ViewStyle> | import("react-native").Animated.AnimatedInterpolation<string | number> | import("react-native").Animated.WithAnimatedObject<import("react-native").ViewStyle> | import("react-native").Animated.WithAnimatedArray<import("react-native").ViewStyle | import("react-native").Falsy | import("react-native").RegisteredStyle<import("react-native").ViewStyle> | import("react-native").RecursiveArray<import("react-native").ViewStyle | import("react-native").Falsy | import("react-native").RegisteredStyle<import("react-native").ViewStyle>> | readonly (import("react-native").ViewStyle | import("react-native").Falsy | import("react-native").RegisteredStyle<import("react-native").ViewStyle>)[]> | null | undefined;
+        tabBarStyle?: false | import("react-native").RegisteredStyle<import("react-native").ViewStyle> | import("react-native").Animated.Value | import("react-native").Animated.AnimatedInterpolation<string | number> | import("react-native").Animated.WithAnimatedObject<import("react-native").ViewStyle> | import("react-native").Animated.WithAnimatedArray<import("react-native").Falsy | import("react-native").ViewStyle | import("react-native").RegisteredStyle<import("react-native").ViewStyle> | import("react-native").RecursiveArray<import("react-native").Falsy | import("react-native").ViewStyle | import("react-native").RegisteredStyle<import("react-native").ViewStyle>> | readonly (import("react-native").Falsy | import("react-native").ViewStyle | import("react-native").RegisteredStyle<import("react-native").ViewStyle>)[]> | null | undefined;
         tabBarBackground?: (() => React.ReactNode) | undefined;
         lazy?: boolean | undefined;
         header?: ((props: import("@react-navigation/bottom-tabs").BottomTabHeaderProps) => React.ReactNode) | undefined;

@@ -450,10 +450,10 @@ describe('+not-found', () => {
     let routes = getRoutes(
       inMemoryContext({
         './(group)/+not-found/(group)/index.tsx': () => null,
-        './+not-found/index.tsx': () => null,
-        './+not-found/(group)/index.tsx': () => null,
-        './(group1)/+not-found/(group2)/index.tsx': () => null,
-        './(group1)/+not-found/(group2)/(group3)/index.tsx': () => null,
+        // './+not-found/index.tsx': () => null,
+        // './+not-found/(group)/index.tsx': () => null,
+        // './(group1)/+not-found/(group2)/index.tsx': () => null,
+        // './(group1)/+not-found/(group2)/(group3)/index.tsx': () => null,
       }),
       { internal_stripLoadRoute: true }
     );
@@ -817,5 +817,33 @@ describe('api routes', () => {
       generated: true,
       route: '',
     });
+  });
+});
+
+describe('invalid routes', () => {
+  it('should throw if a page is impossible to reach due to an overriding page in route', () => {
+    expect(() => {
+      getRoutes(
+        inMemoryContext({
+          index: () => null,
+          '(app)/index': () => null,
+        })
+      );
+    }).toThrowErrorMatchingInlineSnapshot(
+      `"The route files "./index.js" and "./(app)/index.js" conflict on the route "/". The route file "./index.js" is impossible to navigate to as "./(app)/index.js" has higher specificity."`
+    );
+  });
+
+  it('should throw if a page is impossible to reach due to an overriding page in route', () => {
+    expect(() => {
+      getRoutes(
+        inMemoryContext({
+          '(app)/index': () => null,
+          '(app)/(apple)/(orange)/index': () => null,
+        })
+      );
+    }).toThrowErrorMatchingInlineSnapshot(
+      `"The route files "./(app)/index.js" and "./(app)/(apple)/(orange)/index.js" conflict on the route "/". The route file "./(app)/index.js" is impossible to navigate to as "./(app)/(apple)/(orange)/index.js" has higher specificity."`
+    );
   });
 });

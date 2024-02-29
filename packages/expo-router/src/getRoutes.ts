@@ -273,7 +273,8 @@ function flattenDirectoryTreeToRoutes(
   /* The nearest _layout file in the directory tree */
   layout?: RouteNode,
   /* Route names are relative to their layout */
-  pathToRemove = ''
+  pathToRemove = '',
+  duplicateMap = new Map<string, (RouteNode & { segments: string[] })[]>()
 ) {
   /**
    * This directory has a _layout file so it becomes the new target for hoisting routes.
@@ -315,12 +316,98 @@ function flattenDirectoryTreeToRoutes(
       delete (routeNode as any).loadRoute;
     }
 
+    // This duplicate check is asserting that non-group pages do not conflict with group pages
+    // e.g /index and /(app)/index are in conflict
+    if (process.env.NODE_ENV !== 'production') {
+      if (routeNode.type !== 'api' && !routeNode.internal) {
+        const segments = routeNode.route.split('/');
+        const url =
+          removeSupportedExtensions(routeNode.contextKey.slice(2))
+            .split('/')
+            .reduce((acc, segment, index) => {
+              if (segment.startsWith('(')) {
+                return acc;
+              }
+              if (segment === 'index' && index === segments!.length - 1) {
+                return acc;
+              }
+              return `${acc}/${segment}`;
+            }, '') || '/';
+
+        if (duplicateMap.has(url)) {
+          const possibleDuplicates = duplicateMap.get(url)!;
+
+          for (const possibleDuplicate of possibleDuplicates) {
+            if (possibleDuplicate.contextKey === routeNode.contextKey) {
+              continue;
+            }
+
+            let smaller: RouteNode & { segments: string[] };
+            let larger: RouteNode & { segments: string[] };
+
+            if (possibleDuplicate.segments!.length < segments!.length) {
+              smaller = possibleDuplicate;
+              larger = { ...routeNode, segments };
+            } else {
+              smaller = { ...routeNode, segments };
+              larger = possibleDuplicate;
+            }
+
+            let isDuplicate = true;
+            // This is a look-ahead search to see if the smaller route is overshadowed by the larger route
+            // So we need to keep track of where to start searching in the larger route
+            let largerIndex = 0;
+            for (let i = 0; i < smaller.segments!.length; i++) {
+              const remainingLargeSegments = larger.segments!.slice(largerIndex);
+              for (let j = 0; j < remainingLargeSegments.length; j++) {
+                const small = smaller.segments![i];
+                const large = remainingLargeSegments[j];
+                if (small === large) {
+                  largerIndex += j + 1;
+                  break;
+                }
+
+                // We are comparing a small group to something else.
+                // If these don't match, then its not a duplicate/overshadowed
+                if (small.startsWith('(')) {
+                  isDuplicate = false;
+                  break;
+                }
+
+                // small is either a static route or a dynamic route
+                // If the large route is a group, then it might overshadows the small route
+                if (large.startsWith('(')) {
+                  continue;
+                }
+
+                isDuplicate = false;
+                break;
+              }
+
+              if (!isDuplicate) {
+                break;
+              }
+            }
+
+            if (isDuplicate) {
+              throw new Error(
+                `The route files "${smaller.contextKey}" and "${larger.contextKey}" conflict on the route "${url}". The route file "${smaller.contextKey}" is impossible to navigate to as "${larger.contextKey}" has higher specificity.`
+              );
+            }
+          }
+          possibleDuplicates.push({ ...routeNode, segments });
+        } else if (url) {
+          duplicateMap.set(url, [{ ...routeNode, segments }]);
+        }
+      }
+    }
+
     layout.children.push(routeNode);
   }
 
   // Recursively flatten the subdirectories
   for (const child of directory.subdirectories.values()) {
-    flattenDirectoryTreeToRoutes(child, options, layout, pathToRemove);
+    flattenDirectoryTreeToRoutes(child, options, layout, pathToRemove, duplicateMap);
   }
 
   return layout;
