@@ -16,8 +16,8 @@ public class AssetModule: Module {
         promise.resolve(url.standardizedFileURL.absoluteString)
       }
       guard let cacheFileId = md5Hash ?? getMD5Hash(fromURL: url),
-            let cachesDirectory = appContext?.fileSystem?.cachesDirectory,
-            let appContext = appContext else {
+      let cachesDirectory = appContext?.fileSystem?.cachesDirectory,
+      let appContext = appContext else {
         promise.reject(UnableToDownloadAssetException(url))
         return
       }
@@ -70,9 +70,7 @@ public class AssetModule: Module {
       return
     }
 
-    let downloadTask = URLSession.shared.downloadTask(with: url) {
-      urlOrNil, _, _ in
-
+    let downloadTask = URLSession.shared.downloadTask(with: url) { urlOrNil, _, _ in
       guard let fileURL = urlOrNil else {
         promise.reject(UnableToDownloadAssetException(url))
         return
