@@ -947,12 +947,12 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   }
 
   private func createBarCodeScanner() -> EXBarCodeScannerInterface? {
-    guard let barCodeScnnerProvider: EXBarCodeScannerProviderInterface? =
+    guard let barCodeScannerProvider: EXBarCodeScannerProviderInterface? =
       appContext?.legacyModule(implementing: EXBarCodeScannerProviderInterface.self) else {
       return nil
     }
 
-    guard let scanner = barCodeScnnerProvider?.createBarCodeScanner() else {
+    guard let scanner = barCodeScannerProvider?.createBarCodeScanner() else {
       return nil
     }
 

@@ -476,12 +476,12 @@ export type CameraProps = ViewProps & {
    */
   onMountError?: (event: CameraMountError) => void;
   /**
-   * Settings exposed by [`BarCodeScanner`](bar-code-scanner) module. Supported settings: **barCodeTypes**.
+   * See [BarCodeSettings](#barcodesettings).
    * @example
    * ```tsx
    * <Camera
    *   barCodeScannerSettings={{
-   *     barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
+   *     barCodeTypes: [Camera.Constants.BarcodeType.qr],
    *   }}
    * />
    * ```
@@ -491,8 +491,7 @@ export type CameraProps = ViewProps & {
    * Callback that is invoked when a bar code has been successfully scanned. The callback is provided with
    * an object of the [`BarCodeScanningResult`](#barcodescanningresult) shape, where the `type`
    * refers to the bar code type that was scanned and the `data` is the information encoded in the bar code
-   * (in this case of QR codes, this is often a URL). See [`BarCodeScanner.Constants.BarCodeType`](bar-code-scanner#supported-formats)
-   * for supported values.
+   * (in this case of QR codes, this is often a URL). See [supported formats](#supported-barcode-formats).
    * @param scanningResult
    */
   onBarCodeScanned?: (scanningResult: BarCodeScanningResult) => void;
@@ -557,9 +556,17 @@ export type CameraNativeProps = {
   responsiveOrientationWhenOrientationLocked?: boolean;
 };
 
-// @docsMissing
 export type BarCodeSettings = {
+  /**
+   * An array of bar code types. Usage: `Camera.Constants.BarCodeType.<codeType>` where
+   * `codeType` is one of these [listed above](#supported-barcode-formats). Defaults to all supported bar
+   * code types. It is recommended to provide only the bar code formats you expect to scan to
+   * minimize battery usage.
+   *
+   * For example: `barCodeTypes={[Camera.Constants.BarCodeType.qr]}`.
+   */
   barCodeTypes: BarCodeType[];
+  // @docsMissing
   interval?: number;
 };
 

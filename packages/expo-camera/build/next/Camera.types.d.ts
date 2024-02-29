@@ -295,11 +295,12 @@ export type CameraProps = ViewProps & {
      */
     onMountError?: (event: CameraMountError) => void;
     /**
+     * See [BarCodeSettings](#barcodesettings).
      * @example
      * ```tsx
      * <CameraView
      *   barcodeScannerSettings={{
-     *     barcodeTypes: ["qr"],
+     *     barcodeTypes: [Camera.Constants.BarcodeType.qr],
      *   }}
      * />
      * ```
@@ -367,6 +368,14 @@ export type CameraNativeProps = {
     responsiveOrientationWhenOrientationLocked?: boolean;
 };
 export type BarcodeSettings = {
+    /**
+     * An array of bar code types. Usage: `Camera.Constants.BarCodeType.<codeType>` where
+     * `codeType` is one of these [listed above](#supported-barcode-formats). Defaults to all supported bar
+     * code types. It is recommended to provide only the bar code formats you expect to scan to
+     * minimize battery usage.
+     *
+     * For example: `barCodeTypes={[Camera.Constants.BarCodeType.qr]}`.
+     */
     barcodeTypes: BarcodeType[];
     interval?: number;
 };
