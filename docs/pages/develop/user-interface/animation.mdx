@@ -4,6 +4,7 @@ description: Learn how to integrate the react-native-reanimated library and use 
 ---
 
 import { Terminal, SnackInline } from '~/ui/components/Snippet';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
 Animations are a great way to enhance and provide a better user experience. In your Expo projects, you can use the [Animated API](https://reactnative.dev/docs/next/animations) from React Native. However, if you want to use more advanced animations with better performance, you can use the [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) library. It provides an API that simplifies the process of creating smooth, powerful, and maintainable animations.
 
@@ -13,6 +14,16 @@ To install `react-native-reanimated`, run the following command:
 
 <Terminal cmd={['$ npx expo install react-native-reanimated']} />
 
+<Tabs>
+
+<Tab label="SDK 50 and higher">
+
+No additional configuration is required for SDK 50 and above. [Reanimated Babel plugin](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary#reanimated-babel-plugin) is automatically configured in `babel-expo-preset` when you install the library.
+
+</Tab>
+
+<Tab label="SDK 49 and lower">
+
 After the installation completes, add the Babel plugin to **babel.config.js**:
 
 ```js babel.config.js
@@ -20,18 +31,42 @@ module.exports = function (api) {
   api.cache(true);
   return {
     presets: ['babel-preset-expo'],
+    /* @info Add the Reanimated Babel Plugin as the last item in the plugins array.*/
     plugins: ['react-native-reanimated/plugin'],
+    /* @end */
   };
 };
 ```
 
-After you add the Babel plugin, restart your development server and clear the bundler cache using `npx expo start --clear`.
+After you add the Babel plugin, restart your development server and clear the bundler cache using the command:
+
+<Terminal cmd={['$ npx expo start --clear']} />
 
 > If you load other Babel plugins, the Reanimated plugin has to be the last item in the plugins array.
 
+</Tab>
+
+</Tabs>
+
 ### Web support
 
-**For web**, install the [`@babel/plugin-proposal-export-namespace-from`](https://babeljs.io/docs/en/babel-plugin-proposal-export-namespace-from#installation) Babel plugin and update the **babel.config.js** to load it:
+<Tabs>
+
+<Tab label="SDK 50 and higher">
+
+No additional configuration is required for SDK 50 and above when using `react-native-reanimated`.
+
+</Tab>
+
+<Tab label="SDK 49">
+
+No additional configuration is required for web. Make sure that `react-native-reanimated/plugin` is added to **babel.config.js** as mentioned in [SDK 49 and below installation step](/#installation).
+
+</Tab>
+
+<Tab label="SDK 48 and lower">
+
+Install the [`@babel/plugin-proposal-export-namespace-from`](https://babeljs.io/docs/en/babel-plugin-proposal-export-namespace-from#installation) Babel plugin and update the **babel.config.js** to load it:
 
 {/* prettier-ignore */}
 ```js babel.config.js
@@ -41,11 +76,17 @@ plugins: [
 ],
 ```
 
-After you add the Babel plugin, restart your development server and clear the bundler cache using `npx expo start --clear`.
+Next, restart your development server and clear the bundler cache using the command:
+
+<Terminal cmd={['$ npx expo start --clear']} />
+
+</Tab>
+
+</Tabs>
 
 ## Minimal example
 
-The following example shows how to use the `react-native-reanimated` library to create a simple animation. For more information on the API and its usage, see [**`react-native-reanimated` documentation**](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/your-first-animation).
+The following example shows how to use the `react-native-reanimated` library to create a simple animation. For more information on the API and its usage, see [`react-native-reanimated` documentation](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/your-first-animation).
 
 <SnackInline label="Using react-native-reanimated" dependencies={['react-native-reanimated']}>
 
@@ -91,7 +132,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    flexDirection: 'column',
   },
   box: {
     width: 100,
@@ -104,6 +144,6 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-### Other animation libraries
+## Other animation libraries
 
-Other animation packages are available, such as Moti, that you also use in your Expo project and work on Android, iOS, and the web. For more information on its API and usage, see [Moti's documentation](https://moti.fyi/).
+Other animation packages are available, such as [Moti](https://moti.fyi/), that you can use in your Expo project and work on Android, iOS, and web.
