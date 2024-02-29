@@ -18,7 +18,7 @@ internal class FileExtensionException: Exception {
   }
 }
 
-internal class UnsupportedAssetTypeException: GenericException<String>  {
+internal class UnsupportedAssetTypeException: GenericException<String> {
   override var reason: String {
     "This URL does not contain a valid asset type: \(param)"
   }
@@ -38,13 +38,13 @@ internal class SaveAssetException: Exception {
 
 internal class MissingPListKeyException: GenericException<String> {
   override var reason: String {
-    "This app is missing \(param). Add this entry to your bundle's Info.plist."
+    "This app is missing \(param). Add this entry to your bundle's Info.plist"
   }
 }
 
 internal class MissingFileException: GenericException<String> {
   override var reason: String {
-    "Couldn't open file: \(param). Make sure if this file exists."
+    "Couldn't open file: \(param). Make sure if this file exists"
   }
 }
 
@@ -110,7 +110,7 @@ internal class CusrorException: Exception {
 
 internal class SortByKeyException: GenericException<String> {
   override var reason: String {
-    "SortBy key \"\(param)\" is not supported!"
+    "SortBy key \"\(param)\" is not supported"
   }
 }
 
