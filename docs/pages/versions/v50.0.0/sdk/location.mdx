@@ -89,8 +89,7 @@ You can configure `expo-location` using its built-in [config plugin](/config-plu
       name: 'isAndroidForegroundServiceEnabled',
       platform: 'android',
       description:
-        'A boolean to enable the [`FOREGROUND_SERVICE`](#permission-foreground_service) permission and [`FOREGROUND_SERVICE_LOCATION`](#permission-foreground_service_location).',
-      default: 'false',
+        'A boolean to enable the [`FOREGROUND_SERVICE`](#permission-foreground_service) permission and [`FOREGROUND_SERVICE_LOCATION`](#permission-foreground_service_location). Defaults to `true` if `isAndroidBackgroundLocationEnabled` is `true`, otherwise `false`.',
     },
   ]}
 />
