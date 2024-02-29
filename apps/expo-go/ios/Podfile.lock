@@ -37,11 +37,6 @@ PODS:
   - EXManifests/Tests (0.13.0):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - EXMediaLibrary (15.9.0):
-    - ExpoModulesCore
-    - glog
-    - RCT-Folly (= 2022.05.16.00)
-    - React-Core
   - EXNotifications (0.27.1):
     - ExpoModulesCore
   - Expo (50.0.0-preview.4):
@@ -108,6 +103,9 @@ PODS:
     - ExpoModulesCore
   - ExpoMailComposer (12.7.0):
     - ExpoModulesCore
+  - ExpoMediaLibrary (15.9.0):
+    - ExpoModulesCore
+    - React-Core
   - ExpoModulesCore (1.11.2):
     - glog
     - RCT-Folly (= 2022.05.16.00)
@@ -1505,7 +1503,6 @@ DEPENDENCIES:
   - EXLocation (from `../../../packages/expo-location/ios`)
   - EXManifests (from `../../../packages/expo-manifests/ios`)
   - EXManifests/Tests (from `../../../packages/expo-manifests/ios`)
-  - EXMediaLibrary (from `../../../packages/expo-media-library/ios`)
   - EXNotifications (from `../../../packages/expo-notifications/ios`)
   - Expo (from `../../../packages/expo`)
   - ExpoAppleAuthentication (from `../../../packages/expo-apple-authentication/ios`)
@@ -1534,6 +1531,7 @@ DEPENDENCIES:
   - ExpoLocalAuthentication (from `../../../packages/expo-local-authentication/ios`)
   - ExpoLocalization (from `../../../packages/expo-localization/ios`)
   - ExpoMailComposer (from `../../../packages/expo-mail-composer/ios`)
+  - ExpoMediaLibrary (from `../../../packages/expo-media-library/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
   - ExpoModulesCore/Tests (from `../../../packages/expo-modules-core`)
   - ExpoModulesTestCore (from `../../../packages/expo-modules-test-core/ios`)
@@ -1700,8 +1698,6 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-location/ios"
   EXManifests:
     :path: "../../../packages/expo-manifests/ios"
-  EXMediaLibrary:
-    :path: "../../../packages/expo-media-library/ios"
   EXNotifications:
     :path: "../../../packages/expo-notifications/ios"
   Expo:
@@ -1754,6 +1750,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-localization/ios"
   ExpoMailComposer:
     :path: "../../../packages/expo-mail-composer/ios"
+  ExpoMediaLibrary:
+    :path: "../../../packages/expo-media-library/ios"
   ExpoModulesCore:
     :path: "../../../packages/expo-modules-core"
   ExpoModulesTestCore:
@@ -1954,7 +1952,6 @@ SPEC CHECKSUMS:
   EXJSONUtils: d138005ee11b84fc4e3bf7119a160034db5d5e20
   EXLocation: 4cdbc108ff5bd944d981b7d0c0cf98630104a84a
   EXManifests: 2355abd4aeacfb75eec5b43393c0aef9c2789fcf
-  EXMediaLibrary: 9ca30a11319813904316ac3910bc4beef6af5b8a
   EXNotifications: 6e3b49fa7f916bc2783d37fbd5599509b160776c
   Expo: 5096704437d0388c1ae6c622c8fd6d1b61889a53
   ExpoAppleAuthentication: 4fc9972356977f009911f2f3a5f56319c2a5b11b
@@ -1981,6 +1978,7 @@ SPEC CHECKSUMS:
   ExpoLocalAuthentication: c55ffb179683efed04cb144fc80ccf26891f0cb4
   ExpoLocalization: b3b77d35b8c7653700ae3045bf6d8175ab91d042
   ExpoMailComposer: 1f980bbdd0647500178625f453e509cef1282d43
+  ExpoMediaLibrary: 488827a3f563c2242b318553ca018a7b8c0c4644
   ExpoModulesCore: fdc0871aabd9a27e89849e809e5d3af520f10c9f
   ExpoModulesTestCore: 0fe626daae71122fbc305d7fbb87b1afd283e4c5
   ExpoNetwork: 97d7774ab8f62e35f08db77fbef0388d5e1f2c76
