@@ -47,8 +47,8 @@ class CameraViewModule : Module() {
         "itf14" to Barcode.FORMAT_ITF,
         "pdf417" to Barcode.FORMAT_PDF417,
         "qr" to Barcode.FORMAT_QR_CODE,
-        "upc_a" to Barcode.FORMAT_UPC_A
-        "upc_e" to Barcode.FORMAT_UPC_E,
+        "upc_a" to Barcode.FORMAT_UPC_A,
+        "upc_e" to Barcode.FORMAT_UPC_E
       ),
       "WhiteBalance" to mapOf(
         "auto" to com.google.android.cameraview.Constants.WB_AUTO,

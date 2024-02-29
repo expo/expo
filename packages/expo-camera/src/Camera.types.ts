@@ -320,19 +320,19 @@ export type BarCodeSize = {
  * The available barcode types that can be scanned.
  */
 export type BarCodeType =
-    | 'aztec'
-    | 'ean13'
-    | 'ean8'
-    | 'qr'
-    | 'pdf417'
-    | 'upc_e'
-    | 'datamatrix'
-    | 'code39'
-    | 'code93'
-    | 'itf14'
-    | 'codabar'
-    | 'code128'
-    | 'upc_a';
+  | 'aztec'
+  | 'ean13'
+  | 'ean8'
+  | 'qr'
+  | 'pdf417'
+  | 'upc_e'
+  | 'datamatrix'
+  | 'code39'
+  | 'code93'
+  | 'itf14'
+  | 'codabar'
+  | 'code128'
+  | 'upc_a';
 
 /**
  * These coordinates are represented in the coordinate space of the camera source (e.g. when you

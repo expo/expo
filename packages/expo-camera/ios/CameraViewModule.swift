@@ -37,7 +37,7 @@ public final class CameraViewModule: Module {
         "on": CameraAutoFocus.on.rawValue,
         "off": CameraAutoFocus.off.rawValue
       ],
-      "BarcodeType": BarcodeScannerUtils.getDefaultSettings()[BARCODE_TYPES_KEY].map { $0.rawValue },
+      "BarcodeType": BarcodeScannerUtils.getDefaultSettings()[BARCODE_TYPES_KEY]?.map { $0.rawValue } ?? [],
       "WhiteBalance": [
         "auto": CameraWhiteBalance.auto.rawValue,
         "sunny": CameraWhiteBalance.sunny.rawValue,
