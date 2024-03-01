@@ -10,12 +10,25 @@ const path_1 = __importDefault(require("path"));
 exports.FINGERPRINT_IGNORE_FILENAME = '.fingerprintignore';
 exports.DEFAULT_IGNORE_PATHS = [
     exports.FINGERPRINT_IGNORE_FILENAME,
+    // Android
     '**/android/build/**/*',
+    '**/android/.cxx/**/*',
     '**/android/app/build/**/*',
     '**/android/app/.cxx/**/*',
+    '**/android-annotation/build/**/*',
+    '**/android-annotation/.cxx/**/*',
+    '**/android-annotation-processor/build/**/*',
+    '**/android-annotation-processor/.cxx/**/*',
+    // Android gradle plugins
+    '**/*-gradle-plugin/build/**/*',
+    '**/*-gradle-plugin/.gradle/**/*',
+    '**/*-gradle-plugin/.cxx/**/*',
+    // iOS
     '**/ios/Pods/**/*',
     '**/ios/build/**/*',
     '**/ios/*.xcworkspace/xcuserdata/**/*',
+    // System files that differ from machine to machine
+    '**/.DS_Store',
     // Ignore all expo configs because we will read expo config in a HashSourceContents already
     'app.config.ts',
     'app.config.js',

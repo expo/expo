@@ -38,7 +38,7 @@ async function createFingerprintAsync(projectRoot, platform, workflow, options) 
         return await Fingerprint.createFingerprintAsync(projectRoot, {
             ...options,
             platforms: [platform],
-            ignorePaths: ['/android/**/*', '/ios/**/*'],
+            ignorePaths: ['android/**/*', 'ios/**/*'],
         });
     }
 }
