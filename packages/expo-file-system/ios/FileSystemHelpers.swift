@@ -92,6 +92,7 @@ internal func copyPHAsset(fromUrl: URL, toUrl: URL, with resourceManager: PHAsse
         if let error {
           promise.reject(FailedToCopyAssetException(fromUrl.absoluteString))
         }
+        promise.resolve()
       }
     } else {
       promise.reject(FailedToCopyAssetException(fromUrl.absoluteString))
