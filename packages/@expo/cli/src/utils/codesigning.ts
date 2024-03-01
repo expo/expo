@@ -349,7 +349,7 @@ function validateStoredDevelopmentExpoRootCertificateCodeSigningInfo(
 
   // TODO(wschurman): maybe move to @expo/code-signing-certificates
 
-  // ensure all intermediate certificates are valid (in case we forget to rotate)
+  // ensure all intermediate certificates are valid
   for (const certificate of certificateChain) {
     const now = new Date();
     if (certificate.validity.notBefore > now || certificate.validity.notAfter < now) {
