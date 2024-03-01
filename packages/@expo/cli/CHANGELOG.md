@@ -34,6 +34,7 @@
 - [Android] correct drawable types in updates embedded manifest. ([#26676](https://github.com/expo/expo/pull/26676) by [@douglowder](https://github.com/douglowder))
 - Fix progress bar locking in at `100%` when bundling app. ([#26775](https://github.com/expo/expo/pull/26775) by [@byCedric](https://github.com/byCedric))
 - Keep typed routes in-sync with current Expo Router version ([#26578](https://github.com/expo/expo/pull/26578) by [@marklawlor](https://github.com/marklawlor))
+- Fix development codesigning certificate validity checks. ([#27361](https://github.com/expo/expo/pull/27361) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 
