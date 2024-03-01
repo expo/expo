@@ -17,9 +17,9 @@ describe(createGetIdForRoute, () => {
     expect(getId()).toBe('');
   });
 
-  it(`returns the search params when the route is not dynamic`, () => {
+  it(`should ignore search params`, () => {
     const getId = createGetIdForRoute(createMockRoute('foo', './foo.tsx'));
-    expect(getId({ params: { foo: 'bar' } })).toBe('./foo.tsx?foo=bar');
+    expect(getId({ params: { foo: 'bar' } })).toBe('');
   });
 
   it(`returns a function that picks deep the dynamic name from params`, () => {
@@ -30,7 +30,7 @@ describe(createGetIdForRoute, () => {
     expect(getId({ params: { bacon: ['bacon', 'other'] } })).toBe('bacon/other');
 
     // With search parameters
-    expect(getId({ params: { bar: 'foo' } })).toBe('[...bacon]?bar=foo');
+    expect(getId({ params: { bar: 'foo' } })).toBe('[...bacon]');
 
     // Deep dynamic route
     expect(getId({ params: { bacon: ['foo', 'bar'] } })).toBe('foo/bar');
@@ -47,7 +47,7 @@ describe(createGetIdForRoute, () => {
     // Matching param (ideal case)
     expect(getId({ params: { user: 'bacon' } })).toBe('bacon');
     // With search parameters
-    expect(getId({ params: { bar: 'foo' } })).toBe('[user]?bar=foo');
+    expect(getId({ params: { bar: 'foo' } })).toBe('[user]');
     // No params
     expect(getId({ params: undefined })).toBe('[user]');
 
@@ -63,7 +63,7 @@ describe(createGetIdForRoute, () => {
     // Fills partial params
     expect(getId({ params: { user: 'bacon' } })).toBe('bacon/[bar]');
     // With search parameters
-    expect(getId({ params: { baz: 'foo' } })).toBe('[user]/[bar]?baz=foo');
+    expect(getId({ params: { baz: 'foo' } })).toBe('[user]/[bar]');
     // No params
     expect(getId({ params: undefined })).toBe('[user]/[bar]');
 

@@ -233,10 +233,7 @@ export function createGetIdForRoute(
   return ({ params = {} } = {} as { params?: Record<string, any> }) => {
     const segments: string[] = [];
 
-    const unprocessedParams = new Set(Object.keys(params));
-
     for (const dynamic of include.values()) {
-      unprocessedParams.delete(dynamic.name);
       const value = params?.[dynamic.name];
       if (Array.isArray(value) && value.length > 0) {
         // If we are an array with a value
@@ -251,34 +248,7 @@ export function createGetIdForRoute(
       }
     }
 
-    let id = segments.join('/');
-
-    const searchParams: string[] = [];
-    if (route.children?.length === 0) {
-      /**
-       * Child routes IDs are a combination of their dynamic segments and the search parameters
-       * As search parameters can be anything, we build an exclude list of its parents dynamic segments.
-       */
-      for (const key of unprocessedParams) {
-        // These are internal React Navigation values and should not be included
-        if (key === 'screen' || key === 'params') {
-          continue;
-        }
-        searchParams.push(`${key}=${params[key]}`);
-      }
-    }
-
-    if (searchParams.length) {
-      // Return the context key if there is no id. This way we can at least ensure its the same route
-      id = `${id || route.contextKey}?${searchParams.join('&')}`;
-    }
-
-    /**
-     * We should always return a truthy value, failing to do so will cause React Navigation to
-     * fall back to `key` based navigation. This is an issue for search parameters where are either
-     * part of the key or the id.
-     */
-    return id;
+    return segments.join('/') ?? route.contextKey;
   };
 }
 
