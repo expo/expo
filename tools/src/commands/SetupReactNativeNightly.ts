@@ -55,6 +55,8 @@ async function main() {
     'datetimepicker.patch',
     'lottie-react-native.patch',
     'react-native-gesture-handler.patch',
+    'react-native-pager-view.patch',
+    'react-native-screens.patch',
     'react-native-reanimated.patch',
     'react-native-safe-area-context.patch',
   ];
