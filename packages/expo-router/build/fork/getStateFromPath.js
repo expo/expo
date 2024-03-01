@@ -226,7 +226,7 @@ function sortConfigs(a, b) {
     }
     return bParts.length - aParts.length;
 }
-function getStateFromEmptyPathWithConfigs(path, configs, initialRoutes) {
+function getStateFromEmptyPathWithConfigs(path, hash, configs, initialRoutes) {
     // We need to add special handling of empty path so navigation to empty path also works
     // When handling empty path, we should only look at the root level config
     // NOTE(EvanBacon): We only care about matching leaf nodes.
@@ -261,7 +261,7 @@ function getStateFromEmptyPathWithConfigs(path, configs, initialRoutes) {
             _route: match._route,
         };
     });
-    return createNestedStateObject(path, undefined, routes, configs, initialRoutes);
+    return createNestedStateObject(path, hash, routes, configs, initialRoutes);
 }
 function getStateFromPathWithConfigs(path, configs, initialRoutes, baseUrl = process.env.EXPO_BASE_URL) {
     const formattedPaths = getUrlWithReactNavigationConcessions(path);
@@ -272,7 +272,7 @@ function getStateFromPathWithConfigs(path, configs, initialRoutes, baseUrl = pro
     if (!path.startsWith('/'))
         cleanPath = cleanPath.slice(1);
     if (formattedPaths.nonstandardPathname === '/') {
-        return getStateFromEmptyPathWithConfigs(cleanPath, configs, initialRoutes);
+        return getStateFromEmptyPathWithConfigs(cleanPath, formattedPaths.url.hash.slice(1), configs, initialRoutes);
     }
     // We match the whole path against the regex instead of segments
     // This makes sure matches such as wildcard will catch any unmatched routes, even if nested

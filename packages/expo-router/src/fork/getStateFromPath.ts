@@ -306,6 +306,7 @@ function sortConfigs(a: RouteConfig, b: RouteConfig): number {
 
 function getStateFromEmptyPathWithConfigs(
   path: string,
+  hash: string,
   configs: RouteConfig[],
   initialRoutes: InitialRouteConfig[]
 ): ResultState | undefined {
@@ -353,7 +354,7 @@ function getStateFromEmptyPathWithConfigs(
     };
   });
 
-  return createNestedStateObject(path, undefined, routes, configs, initialRoutes);
+  return createNestedStateObject(path, hash, routes, configs, initialRoutes);
 }
 
 function getStateFromPathWithConfigs(
@@ -373,7 +374,12 @@ function getStateFromPathWithConfigs(
   if (!path.startsWith('/')) cleanPath = cleanPath.slice(1);
 
   if (formattedPaths.nonstandardPathname === '/') {
-    return getStateFromEmptyPathWithConfigs(cleanPath, configs, initialRoutes);
+    return getStateFromEmptyPathWithConfigs(
+      cleanPath,
+      formattedPaths.url.hash.slice(1),
+      configs,
+      initialRoutes
+    );
   }
 
   // We match the whole path against the regex instead of segments
