@@ -40,10 +40,8 @@ API Routes are defined by creating files in the **app** directory with the `+api
 An API route is created in the **app** directory. For example, add the following route handler. It is executed when the route `/hello` is matched.
 
 ```js app/hello+api.ts
-import { ExpoRequest, ExpoResponse } from 'expo-router/server';
-
-export function GET(request: ExpoRequest) {
-  return ExpoResponse.json({ hello: 'world' });
+export function GET(request: Request) {
+  return Response.json({ hello: 'world' });
 }
 ```
 
@@ -108,15 +106,13 @@ Deploy the website and server to a [hosting provider](#deployment) to access the
 
 ## Requests
 
-Requests use the global `ExpoRequest` object. It is a subclass of the standard [`Request`](https://fetch.spec.whatwg.org/#request) object and provides additional functionality such as the `expoUrl` object &mdash; a `URL` that has access to query parameters according to the Expo Router file convention.
+Requests use the global, standard [`Request`](https://fetch.spec.whatwg.org/#request) object.
 
 ```ts app/blog/[post]+api.ts
-import { ExpoRequest, ExpoResponse } from 'expo-router/server';
-
-export async function GET(request: ExpoRequest, { post }: Record<string, string>) {
+export async function GET(request: Request, { post }: Record<string, string>) {
   // const postId = request.expoUrl.searchParams.get('post')
   // fetch data for 'post'
-  return ExpoResponse.json({ ... });
+  return Response.json({ ... });
 }
 ```
 
@@ -125,37 +121,33 @@ export async function GET(request: ExpoRequest, { post }: Record<string, string>
 Use the `request.json()` function to access the request body. It automatically parses the body and returns the result.
 
 ```ts app/validate+api.ts
-import { ExpoRequest, ExpoResponse } from 'expo-router/server';
-
-export async function POST(request: ExpoRequest) {
+export async function POST(request: Request) {
   const body = await request.json();
 
-  return ExpoResponse.json({ ... });
+  return Response.json({ ... });
 }
 ```
 
 ## Response
 
-Responses use the global `ExpoResponse` object. It is a subclass of the standard [`Response`](https://fetch.spec.whatwg.org/#response) object and provides additional functionality such as the `ExpoResponse.json` &mdash; an initializer which automatically stringifies the response body and returns status `200`.
+Responses use the global, standard [`Response`](https://fetch.spec.whatwg.org/#response) object.
 
 ```ts app/demo+api.ts
-import { ExpoRequest, ExpoResponse } from 'expo-router/server';
-
 export function GET() {
-  return ExpoResponse.json({ hello: 'universe' });
+  return Response.json({ hello: 'universe' });
 }
 ```
 
 ## Errors
 
-You can respond to server errors by using the `ExpoResponse` object.
+You can respond to server errors by using the `Response` object.
 
 ```ts app/blog/[post].ts
-import { ExpoRequest, ExpoResponse } from 'expo-router/server';
+import { Request, Response } from 'expo-router/server';
 
-export async function GET(request: ExpoRequest, { post }: Record<string, string>) {
+export async function GET(request: Request, { post }: Record<string, string>) {
   if (!post) {
-    return new ExpoResponse('No post found', {
+    return new Response('No post found', {
       status: 404,
       headers: {
         'Content-Type': 'text/plain',
@@ -163,7 +155,7 @@ export async function GET(request: ExpoRequest, { post }: Record<string, string>
     });
   }
   // fetch data for `post`
-  return ExpoResponse.json({ ... });
+  return Response.json({ ... });
 }
 ```
 

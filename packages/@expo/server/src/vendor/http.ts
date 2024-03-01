@@ -1,13 +1,7 @@
-import {
-  AbortController,
-  Headers,
-  RequestInit,
-  writeReadableStreamToWritable,
-} from '@remix-run/node';
+import { writeReadableStreamToWritable, createReadableStreamFromReadable } from '@remix-run/node';
 import * as http from 'http';
 
 import { createRequestHandler as createExpoHandler } from '..';
-import { ExpoRequest, ExpoResponse } from '../environment';
 
 type NextFunction = (err?: any) => void;
 
@@ -45,7 +39,7 @@ export function createRequestHandler(
 }
 
 // Convert an http request to an expo request
-export function convertRequest(req: http.IncomingMessage, res: http.ServerResponse): ExpoRequest {
+export function convertRequest(req: http.IncomingMessage, res: http.ServerResponse): Request {
   const url = new URL(req.url!, `http://${req.headers.host}`);
 
   // Abort action/loaders once we can no longer write a response
@@ -61,10 +55,10 @@ export function convertRequest(req: http.IncomingMessage, res: http.ServerRespon
   };
 
   if (req.method !== 'GET' && req.method !== 'HEAD') {
-    init.body = req;
+    init.body = createReadableStreamFromReadable(req);
   }
 
-  return new ExpoRequest(url.href, init);
+  return new Request(url.href, init);
 }
 
 export function convertHeaders(requestHeaders: http.IncomingHttpHeaders): Headers {
@@ -85,14 +79,12 @@ export function convertHeaders(requestHeaders: http.IncomingHttpHeaders): Header
   return headers;
 }
 
-export async function respond(res: http.ServerResponse, expoRes: ExpoResponse): Promise<void> {
+export async function respond(res: http.ServerResponse, expoRes: Response): Promise<void> {
   res.statusMessage = expoRes.statusText;
   res.statusCode = expoRes.status;
 
-  for (const [key, values] of Object.entries(expoRes.headers.raw())) {
-    for (const value of values) {
-      res.appendHeader(key, value);
-    }
+  for (const [key, value] of expoRes.headers.entries()) {
+    res.appendHeader(key, value);
   }
 
   if (expoRes.body) {

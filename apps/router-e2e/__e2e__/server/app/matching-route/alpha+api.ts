@@ -1,5 +1,3 @@
-import { ExpoResponse } from 'expo-router/server';
-
 export function POST() {
-  return ExpoResponse.json({ foo: 'bar' });
+  return new Response(JSON.stringify({ foo: 'bar' }));
 }

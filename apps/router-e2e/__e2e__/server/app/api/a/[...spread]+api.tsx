@@ -1,5 +1,3 @@
-import { ExpoRequest, ExpoResponse } from 'expo-router/server';
-
-export function GET(req: ExpoRequest): ExpoResponse {
-  return ExpoResponse.json({ results: req.expoUrl.searchParams.get('spread') });
+export function GET(_req: Request, { spread }): Response {
+  return new Response(JSON.stringify({ results: spread }));
 }

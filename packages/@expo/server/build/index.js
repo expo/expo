@@ -3,14 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ExpoRequest = exports.ExpoResponse = exports.createRequestHandler = exports.getRoutesManifest = void 0;
+exports.createRequestHandler = exports.getRoutesManifest = void 0;
 require("@expo/server/install");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const url_1 = require("url");
-const environment_1 = require("./environment");
-Object.defineProperty(exports, "ExpoRequest", { enumerable: true, get: function () { return environment_1.ExpoRequest; } });
-Object.defineProperty(exports, "ExpoResponse", { enumerable: true, get: function () { return environment_1.ExpoResponse; } });
 const debug = require('debug')('expo:server');
 function getProcessedManifest(path) {
     // TODO: JSON Schema for validation
@@ -43,7 +40,7 @@ function getRoutesManifest(distFolder) {
 }
 exports.getRoutesManifest = getRoutesManifest;
 // TODO: Reuse this for dev as well
-function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutesManifest, getHtml = async (request, route) => {
+function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutesManifest, getHtml = async (_request, route) => {
     // serve a static file
     const filePath = path_1.default.join(distFolder, route.page + '.html');
     if (!fs_1.default.existsSync(filePath)) {
@@ -67,19 +64,14 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
     let routesManifest;
     function updateRequestWithConfig(request, config) {
         const params = {};
-        const url = request.url;
-        const expoUrl = new environment_1.ExpoURL(url);
-        const match = config.namedRegex.exec(expoUrl.pathname);
+        const url = new url_1.URL(request.url);
+        const match = config.namedRegex.exec(url.pathname);
         if (match?.groups) {
             for (const [key, value] of Object.entries(match.groups)) {
                 const namedKey = config.routeKeys[key];
-                expoUrl.searchParams.set(namedKey, value);
                 params[namedKey] = value;
             }
         }
-        request[environment_1.NON_STANDARD_SYMBOL] = {
-            url: expoUrl,
-        };
         return params;
     }
     return async function handler(request) {
@@ -90,7 +82,7 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
             }
             else {
                 // Development error when Expo Router is not setup.
-                return new environment_1.ExpoResponse('No routes manifest found', {
+                return new Response('No routes manifest found', {
                     status: 404,
                     headers: {
                         'Content-Type': 'text/plain',
@@ -116,17 +108,17 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
                 const contents = await getHtml(request, route);
                 // TODO: What's the standard behavior for malformed projects?
                 if (!contents) {
-                    return new environment_1.ExpoResponse('Not found', {
+                    return new Response('Not found', {
                         status: 404,
                         headers: {
                             'Content-Type': 'text/plain',
                         },
                     });
                 }
-                else if (contents instanceof environment_1.ExpoResponse) {
+                else if (contents instanceof Response) {
                     return contents;
                 }
-                return new environment_1.ExpoResponse(contents, {
+                return new Response(contents, {
                     status: 200,
                     headers: {
                         'Content-Type': 'text/html',
@@ -140,12 +132,12 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
                 continue;
             }
             const func = await getApiRoute(route);
-            if (func instanceof environment_1.ExpoResponse) {
+            if (func instanceof Response) {
                 return func;
             }
             const routeHandler = func?.[request.method];
             if (!routeHandler) {
-                return new environment_1.ExpoResponse('Method not allowed', {
+                return new Response('Method not allowed', {
                     status: 405,
                     headers: {
                         'Content-Type': 'text/plain',
@@ -162,7 +154,7 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
                 if (error instanceof Error) {
                     logApiRouteExecutionError(error);
                 }
-                return new environment_1.ExpoResponse('Internal server error', {
+                return new Response('Internal server error', {
                     status: 500,
                     headers: {
                         'Content-Type': 'text/plain',
@@ -181,17 +173,17 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
             const contents = await getHtml(request, route);
             // TODO: What's the standard behavior for malformed projects?
             if (!contents) {
-                return new environment_1.ExpoResponse('Not found', {
+                return new Response('Not found', {
                     status: 404,
                     headers: {
                         'Content-Type': 'text/plain',
                     },
                 });
             }
-            else if (contents instanceof environment_1.ExpoResponse) {
+            else if (contents instanceof Response) {
                 return contents;
             }
-            return new environment_1.ExpoResponse(contents, {
+            return new Response(contents, {
                 status: 404,
                 headers: {
                     'Content-Type': 'text/html',
@@ -199,7 +191,7 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
             });
         }
         // 404
-        const response = new environment_1.ExpoResponse('Not found', {
+        const response = new Response('Not found', {
             status: 404,
             headers: {
                 'Content-Type': 'text/plain',
