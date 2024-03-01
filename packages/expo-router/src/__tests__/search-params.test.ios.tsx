@@ -4,6 +4,7 @@ import { screen, testRouter, renderRouter, act } from '../testing-library';
 
 describe('push', () => {
   /*
+   * Push should always push
    * @see: https://reactnavigation.org/docs/navigating/#navigate-to-a-route-multiple-times
    */
   it('can handle navigation between routes', async () => {
@@ -101,6 +102,7 @@ describe('push', () => {
 });
 
 describe('navigate', () => {
+  // Navigate ignores search params when routing.
   it('can handle navigation between routes', async () => {
     /*
      * This test is currently incorrect. See #27285
@@ -121,97 +123,70 @@ describe('navigate', () => {
     testRouter.navigate('/page?c=true');
 
     expect(store.rootState).toStrictEqual({
-      index: 3,
+      index: 0,
       key: expect.any(String),
       routeNames: ['page', '_sitemap', '+not-found'],
       routes: [
         {
           key: expect.any(String),
           name: 'page',
-          params: undefined,
-          path: '/page',
-        },
-        {
-          key: expect.any(String),
-          name: 'page',
-          params: {
-            a: 'true',
-          },
-          path: undefined,
-        },
-        {
-          key: expect.any(String),
-          name: 'page',
-          params: {},
-          path: undefined,
-        },
-        {
-          key: expect.any(String),
-          name: 'page',
           params: {
             c: 'true',
           },
-          path: undefined,
+          path: '/page',
         },
       ],
       stale: false,
       type: 'stack',
     });
 
-    testRouter.back('/page');
-    testRouter.back('/page?a=true'); // We go back to a=true, as b=true was replaced
-    testRouter.back('/page');
-
+    // There is nothing to go back, as we only re-rerendered the same route.
     expect(testRouter.canGoBack()).toBe(false);
   });
 
   it('handles dismissAll', async () => {
     // TODO: add popToTop to the router
-    renderRouter(
-      {
-        page: () => null,
-      },
-      {
-        initialUrl: 'page',
-      }
-    );
+    renderRouter({
+      index: () => null,
+      '[page]': () => null,
+    });
 
-    testRouter.navigate('/page?a=true');
-    testRouter.navigate('/page?b=true');
-    testRouter.navigate('/page?c=true');
+    testRouter.navigate('/a');
+    testRouter.navigate('/b');
+    testRouter.navigate('/c');
 
     expect(store.rootState).toStrictEqual({
       index: 3,
       key: expect.any(String),
-      routeNames: ['page', '_sitemap', '+not-found'],
+      routeNames: ['index', '_sitemap', '[page]', '+not-found'],
       routes: [
         {
           key: expect.any(String),
-          name: 'page',
+          name: 'index',
           params: undefined,
-          path: '/page',
+          path: '/',
         },
         {
           key: expect.any(String),
-          name: 'page',
+          name: '[page]',
           params: {
-            a: 'true',
+            page: 'a',
           },
           path: undefined,
         },
         {
           key: expect.any(String),
-          name: 'page',
+          name: '[page]',
           params: {
-            b: 'true',
+            page: 'b',
           },
           path: undefined,
         },
         {
           key: expect.any(String),
-          name: 'page',
+          name: '[page]',
           params: {
-            c: 'true',
+            page: 'c',
           },
           path: undefined,
         },
@@ -225,13 +200,13 @@ describe('navigate', () => {
     expect(store.rootState).toStrictEqual({
       index: 0,
       key: expect.any(String),
-      routeNames: ['page', '_sitemap', '+not-found'],
+      routeNames: ['index', '_sitemap', '[page]', '+not-found'],
       routes: [
         {
           key: expect.any(String),
-          name: 'page',
+          name: 'index',
           params: undefined,
-          path: '/page',
+          path: '/',
         },
       ],
       stale: false,
@@ -253,10 +228,10 @@ describe('replace', () => {
       }
     );
 
-    testRouter.navigate('/page?a=true');
-    testRouter.navigate('/page?b=true');
+    testRouter.push('/page?a=true');
+    testRouter.push('/page?b=true');
     testRouter.replace('/page?a=true'); // This will clear the previous route
-    testRouter.navigate('/page?c=true');
+    testRouter.push('/page?c=true');
 
     expect(store.rootState).toStrictEqual({
       index: 3,

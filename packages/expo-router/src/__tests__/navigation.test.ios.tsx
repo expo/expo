@@ -1202,3 +1202,41 @@ describe('consistent url encoding', () => {
     );
   });
 });
+
+describe('stack unwinding', () => {
+  it('navigate will unwind the stack', () => {
+    renderRouter(
+      {
+        '[test]': () => null,
+      },
+      {
+        initialUrl: '/a',
+      }
+    );
+
+    act(() => router.navigate('/a')); // This will rerender and not push
+    act(() => router.navigate('/b'));
+    act(() => router.navigate('/c'));
+    act(() => router.navigate('/a')); // This will unwind the stack
+
+    expect(router.canGoBack()).toBe(false);
+  });
+
+  it('push will never unwind the stack', () => {
+    renderRouter(
+      {
+        '[test]': () => null,
+      },
+      {
+        initialUrl: '/a',
+      }
+    );
+
+    act(() => router.push('/a'));
+    act(() => router.push('/b'));
+    act(() => router.push('/c'));
+    act(() => router.push('/a')); // This will unwind the stack
+
+    expect(router.canGoBack()).toBe(true); //
+  });
+});
