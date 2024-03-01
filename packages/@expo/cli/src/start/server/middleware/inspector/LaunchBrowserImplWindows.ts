@@ -40,7 +40,6 @@ export default class LaunchBrowserImplWindows implements LaunchBrowser, LaunchBr
         'powershell.exe',
         ['-c', `Get-Package -Name '${browserType}'`],
         {
-          // @ts-expect-error: Missing NODE_ENV
           env,
           stdio: 'ignore',
         }
@@ -90,7 +89,6 @@ export default class LaunchBrowserImplWindows implements LaunchBrowser, LaunchBr
             `taskkill.exe /pid @(Get-WmiObject Win32_Process -Filter "name = '${this._appId}.exe' AND CommandLine LIKE '%chrome-devtools-frontend.appspot.com%'" | Select-Object -ExpandProperty ProcessId)`,
           ],
           {
-            // @ts-expect-error: Missing NODE_ENV
             env,
             stdio: 'ignore',
           }
