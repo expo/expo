@@ -43,7 +43,7 @@ public final class AppContext: NSObject {
    or when the app context is "bridgeless" (for example in native unit tests).
    */
   @objc
-  public internal(set) weak var reactBridge: RCTBridge?
+  public weak var reactBridge: RCTBridge?
 
   /**
    Underlying JSI runtime of the running app.
