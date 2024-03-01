@@ -7,24 +7,20 @@ import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
+Tabs are a common way to navigate between different sections of an app. Expo Router provides a tabs layout to help you create a tab bar at the bottom of your app. The fastest way to get started is to use a template. See the [quick start installation guide](/router/installation/#quick-start) to get started.
+
+Read on to learn how to add tabs to an existing project or to customize your app's tabs.
+
 ## Get started
-
-### Use a template
-
-The fastest way to get started with tabs is by using a pre-made template. Run the following command to create a new project with tabs:
-
-<Terminal cmd={['npx create-expo-app --template tabs']} />
-
-### Set up tabs in an existing project
 
 You can use file-based routing to create a tabs layout. Here's an example file structure:
 
 <FileTree
   files={[
-    'app/_layout.js',
-    'app/(tabs)/_layout.js',
-    'app/(tabs)/index.js',
-    'app/(tabs)/settings.js',
+    'app/_layout.tsx',
+    'app/(tabs)/_layout.tsx',
+    'app/(tabs)/index.tsx',
+    'app/(tabs)/settings.tsx',
   ]}
 />
 
@@ -36,25 +32,25 @@ This file structure will produce a layout with a tab bar at the bottom of the sc
   style={{ maxWidth: 540 }}
 />
 
-You can use the **app/\_layout.js** file to define your app's main navigator:
+You can use the **app/\_layout.tsx** file to define your app's main navigator:
 
-```jsx app/_layout.js
+```tsx app/_layout.tsx
 import { Stack } from 'expo-router/stack';
 
-export default function Layout() {
-  return (
-    <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }}>
-    </Stack>
-  );
+export default function AppLayout() {
+ return (
+   <Stack>
+     <Stack.Screen name="(tabs)" options={{ headerShown: false }}>
+   </Stack>
+ );
 }
 ```
 
-The **(tabs)** folder is a special folder name that tells Expo Router to use the `Tabs` layout.
+The **(tabs)** directory is a special directory name that tells Expo Router to use the `Tabs` layout.
 
-Inside it, the example shows three files. The first is **(tabs)/\_layout.js**. This file is the main layout file for the tab bar and each tab. Inside it, you can control how the tab bar and each time item looks and behaves.
+From the example, the **(tabs)** directory has three files. The first is **(tabs)/\_layout.tsx**. This file is the main layout file for the tab bar and each tab. Inside it, you can control how the tab bar and each tab button look and behave.
 
-```jsx app/(tabs)/_layout.js
+```tsx app/(tabs)/_layout.tsx
 import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
@@ -81,11 +77,11 @@ export default function TabLayout() {
 }
 ```
 
-The tabs layout wraps the [Bottom Tabs](https://reactnavigation.org/docs/bottom-tab-navigator) from React Navigation. You can use the options presented on the React Navigation documentation to customize the tab bar.
+The tabs layout wraps the [Bottom Tabs Navigator](https://reactnavigation.org/docs/bottom-tab-navigator) from React Navigation. You can use the options presented in the React Navigation documentation to customize the tab bar.
 
-Finally, we have the two tab files which make up the content of the tabs: **app/(tabs)/index.js** and **app/(tabs)/settings.js**. The contents of these files are identical, so we'll only show one of them:
+Finally, we have the two tab files which make up the content of the tabs: **app/(tabs)/index.tsx** and **app/(tabs)/settings.tsx**.
 
-```jsx app/(tabs)/index.js & app/(tabs)/settings.js
+```tsx app/(tabs)/index.tsx & app/(tabs)/settings.tsx
 import { View, Text } from "react-native";
 
 export default function Tab() {
@@ -97,7 +93,7 @@ export default function Tab() {
 }
 ```
 
-The tab file named **index.js** will become the default tab when the app is loaded. We made the second tab file **settings.js** to show how you can add more tabs to the tab bar.
+The tab file named **index.tsx** will become the default tab when the app is loaded. We made the second tab file **settings.tsx** to show how you can add more tabs to the tab bar.
 
 ## Advanced
 
@@ -105,8 +101,9 @@ The tab file named **index.js** will become the default tab when the app is load
 
 Sometimes you want a route to exist but not show up in the tab bar, you can pass `href: null` to disable the button:
 
-```jsx app/(tabs)/_layout.js
+```tsx app/(tabs)/_layout.tsx
 import { Tabs } from 'expo-router/tabs';
+
 export default function AppLayout() {
   return (
     <Tabs>
@@ -127,8 +124,9 @@ export default function AppLayout() {
 
 You may want to use a dynamic route in your tab bar (for example, a profile tab). For this case, you'll want the button to always link to a specific `href`.
 
-```jsx app/(tabs)/_layout.js
+```tsx app/(tabs)/_layout.tsx
 import { Tabs } from 'expo-router/tabs';
+
 export default function AppLayout() {
   return (
     <Tabs>
@@ -138,7 +136,7 @@ export default function AppLayout() {
         options={{
           // Ensure the tab always links to the same href.
           href: '/evanbacon',
-          // OR you can use the Href object:
+          // OR you can use the href object:
           href: {
             pathname: '/[user]',
             params: {
