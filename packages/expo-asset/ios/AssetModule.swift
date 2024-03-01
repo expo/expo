@@ -9,7 +9,7 @@ internal class UnableToDownloadAssetException: GenericException<URL> {
 
 public class AssetModule: Module {
   public func definition() -> ModuleDefinition {
-    Name("AssetModule")
+    Name("ExpoAsset")
 
     AsyncFunction("downloadAsync") { (url: URL, md5Hash: String?, type: String, promise: Promise) in
       if url.isFileURL {

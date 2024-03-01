@@ -1,6 +1,4 @@
 PODS:
-  - AssetModule (9.0.1):
-    - ExpoModulesCore
   - boost (1.83.0)
   - DoubleConversion (1.1.6)
   - EASClient (0.11.0):
@@ -327,6 +325,8 @@ PODS:
     - ReactCommon/turbomodule/core
     - Yoga
   - ExpoAppleAuthentication (6.3.0):
+    - ExpoModulesCore
+  - ExpoAsset (9.0.1):
     - ExpoModulesCore
   - ExpoBackgroundFetch (11.8.0):
     - ExpoModulesCore
@@ -1937,7 +1937,6 @@ PODS:
     - ZXingObjC/Core
 
 DEPENDENCIES:
-  - AssetModule (from `../../../packages/expo-asset/ios`)
   - boost (from `../../../node_modules/react-native/third-party-podspecs/boost.podspec`)
   - DoubleConversion (from `../../../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EASClient (from `../../../packages/expo-eas-client/ios`)
@@ -1965,6 +1964,7 @@ DEPENDENCIES:
   - expo-dev-menu/Tests (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu/UITests (from `../../../packages/expo-dev-menu`)
   - ExpoAppleAuthentication (from `../../../packages/expo-apple-authentication/ios`)
+  - ExpoAsset (from `../../../packages/expo-asset/ios`)
   - ExpoBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
   - ExpoBattery (from `../../../packages/expo-battery/ios`)
   - ExpoBlur (from `../../../packages/expo-blur/ios`)
@@ -2113,9 +2113,6 @@ SPEC REPOS:
     - ZXingObjC
 
 EXTERNAL SOURCES:
-  AssetModule:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-asset/ios"
   boost:
     :podspec: "../../../node_modules/react-native/third-party-podspecs/boost.podspec"
   DoubleConversion:
@@ -2173,6 +2170,9 @@ EXTERNAL SOURCES:
   ExpoAppleAuthentication:
     inhibit_warnings: false
     :path: "../../../packages/expo-apple-authentication/ios"
+  ExpoAsset:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-asset/ios"
   ExpoBackgroundFetch:
     inhibit_warnings: false
     :path: "../../../packages/expo-background-fetch/ios"
@@ -2464,7 +2464,6 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  AssetModule: fb2e04ff0a7e8519e92c60237193b4c011b0107f
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   EASClient: b550a8d3d3d9d1211ba71eabf789cb46c7e92b3c
@@ -2485,6 +2484,7 @@ SPEC CHECKSUMS:
   expo-dev-menu: 3f87f2b892d4dd30f2ab3fe2a356a72fe0e3de11
   expo-dev-menu-interface: 3c36b4d5032397e022958a2041afe91a130ea74c
   ExpoAppleAuthentication: 4fc9972356977f009911f2f3a5f56319c2a5b11b
+  ExpoAsset: 518654245b6a5f4d498b96d49eaa9888070e70e8
   ExpoBackgroundFetch: 094377b73648adb55032a440f50cad1a5d3c3a89
   ExpoBattery: c75a7c094d64d89d96d3e3f419627b152da94f29
   ExpoBlur: af75411ec9ec077d5da8ff0b59d77701f9982c2a

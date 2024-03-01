@@ -1,12 +1,13 @@
 package expo.modules.asset
 
 import android.net.Uri
-import expo.modules.kotlin.Promise
 import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileInputStream
 import java.net.URI
@@ -23,58 +24,50 @@ class AssetModule : Module() {
   }
 
   private fun getMD5HashOfFileContent(file: File): String? {
-    try {
+    return try {
       val md = MessageDigest.getInstance("MD5")
       val fis = FileInputStream(file)
-      val dis = DigestInputStream(fis, md)
-
-      while (dis.read() != -1) {
-        // Read the file content
+      DigestInputStream(fis, md).use { dis ->
+        while (dis.read() != -1) {
+          // Read the file content
+        }
+        md.digest().joinToString(separator = "") { "%02x".format(it) }
       }
-
-      val digest = md.digest()
-      fis.close()
-
-      val result = StringBuilder()
-      for (b in digest) {
-        result.append(String.format("%02x", b))
-      }
-      return result.toString()
     } catch (e: Exception) {
       e.printStackTrace()
-      return null
+      null
     }
   }
 
-  private fun downloadAsset(appContext: AppContext, uri: URI, localUrl: File, promise: Promise) {
+  private suspend fun downloadAsset(appContext: AppContext, uri: URI, localUrl: File): Uri {
     if (localUrl.parentFile?.exists() != true) {
       localUrl.mkdirs()
     }
 
     if (appContext.filePermission?.getPathPermissions(appContext.reactContext, localUrl.parent)?.contains(Permission.WRITE) != true) {
-      promise.reject(UnableToDownloadAssetException(uri.toString()))
-      return
+      throw UnableToDownloadAssetException(uri.toString())
     }
 
-    try {
-      uri.toURL().openStream().use { input ->
-        localUrl.outputStream().use { output ->
-          input.copyTo(output)
+    return withContext(appContext.backgroundCoroutineScope.coroutineContext) {
+      try {
+        uri.toURL().openStream().use { input ->
+          localUrl.outputStream().use { output ->
+            input.copyTo(output)
+          }
         }
+        Uri.fromFile(localUrl)
+      } catch (e: Exception) {
+        throw UnableToDownloadAssetException(uri.toString())
       }
-      promise.resolve(Uri.fromFile(localUrl))
-    } catch (e: Exception) {
-      promise.reject(UnableToDownloadAssetException(uri.toString()))
     }
   }
 
   override fun definition() = ModuleDefinition {
-    Name("AssetModule")
+    Name("ExpoAsset")
 
-    AsyncFunction("downloadAsync") { uri: URI, md5Hash: String?, type: String, promise: Promise ->
+    AsyncFunction("downloadAsync") Coroutine { uri: URI, md5Hash: String?, type: String ->
       if (uri.scheme === "file") {
-        promise.resolve(uri)
-        return@AsyncFunction
+        return@Coroutine uri
       }
 
       val cacheFileId = md5Hash ?: getMD5HashOfFilePath(uri)
@@ -83,19 +76,14 @@ class AssetModule : Module() {
       val localUrl = File("$cacheDirectory/ExponentAsset-$cacheFileId.$type")
 
       if (!localUrl.exists()) {
-        downloadAsset(appContext, uri, localUrl, promise)
-        return@AsyncFunction
+        return@Coroutine downloadAsset(appContext, uri, localUrl)
       }
 
-      if (md5Hash == null) {
-        promise.resolve(Uri.fromFile(localUrl))
-        return@AsyncFunction
+      if (md5Hash == null || md5Hash == getMD5HashOfFileContent(localUrl)) {
+        return@Coroutine Uri.fromFile(localUrl)
       }
-      if (md5Hash == getMD5HashOfFileContent(localUrl)) {
-        promise.resolve(Uri.fromFile(localUrl))
-        return@AsyncFunction
-      }
-      downloadAsset(appContext, uri, localUrl, promise)
+
+      return@Coroutine downloadAsset(appContext, uri, localUrl)
     }
   }
 }

@@ -15,9 +15,7 @@
     "test": "expo-module test",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module",
-    "open:ios": "open -a \"Xcode\" example/ios",
-    "open:android": "open -a \"Android Studio\" example/android"
+    "expo-module": "expo-module"
   },
   "keywords": [
     "react-native",
@@ -43,12 +41,14 @@
     "expo-constants": "~15.4.0",
     "expo-file-system": "~16.0.0",
     "invariant": "^2.2.4",
-    "md5-file": "^3.2.3",
-    "expo-module-scripts": "^3.4.0",
-    "expo-modules-core": "^1.11.2"
+    "md5-file": "^3.2.3"
   },
   "devDependencies": {
     "@testing-library/react-hooks": "^7.0.1",
-    "@types/react-native__assets": "~1.0.0"
+    "@types/react-native__assets": "~1.0.0",
+    "expo-module-scripts": "^3.0.0"
+  },
+  "peerDependencies": {
+    "expo": "*"
   }
 }
