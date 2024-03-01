@@ -35,6 +35,7 @@ RCT_EXPORT_MODULE(ExpoModulesCore);
   // it's actually an instance of `RCTBridgeProxy` that provides backwards compatibility.
   // Also, hold on with initializing the runtime until `setRuntimeExecutor` is called.
   _bridge = bridge;
+  _appContext.reactBridge = bridge;
 
 #if !__has_include(<ReactCommon/RCTRuntimeExecutor.h>)
   _appContext._runtime = [EXJavaScriptRuntimeManager runtimeFromBridge:bridge];
