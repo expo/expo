@@ -122,7 +122,8 @@ android {
       cmake {
         abiFilters (*reactNativeArchitectures())
         arguments "-DANDROID_STL=c++_shared",
-          "-DSQLITE3_SRC_DIR=${toPlatformIndependentPath(SQLITE3_SRC_DIR)}"
+          "-DSQLITE3_SRC_DIR=${toPlatformIndependentPath(SQLITE3_SRC_DIR)}",
+          "-DSQLITE_CUSTOM_BUILDFLAGS=${findProperty('expo.sqlite.customBuildFlags') ?: ''}"
       }
     }
   }
