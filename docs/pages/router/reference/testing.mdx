@@ -11,6 +11,8 @@ Expo Router relies on your file system, which can present challenges when settin
 
 Before you proceed, ensure you have set up `jest-expo` according to the [Unit Testing](/develop/unit-testing/) and [`@testing-library/react-native`](https://callstack.github.io/react-native-testing-library/docs/getting-started).
 
+If you use Typescript, please add `expo-router/types/jest` to tsconfig.json's `types`.
+
 ### Jest Native Matchers (optional)
 
 [`@testing-library/jest-native`](https://testing-library.com/docs/ecosystem-jest-native/) provides custom Jest matchers that can be used to extend the functionality of `@testing-library/react-native`. If installed, Expo Router will automatically perform the `@testing-library/jest-native` setup.
