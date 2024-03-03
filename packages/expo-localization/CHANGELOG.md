@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix es-419 locale returning empty list. ([#27250](https://github.com/expo/expo/pull/27250) by [@aleqsio](https://github.com/aleqsio))
+- [Web] Gracefully handle unsupported language tags. ([#27403](https://github.com/expo/expo/pull/27403) by [@mary-ext](https://github.com/mary-ext))
 
 ### 💡 Others
 
