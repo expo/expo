@@ -154,6 +154,8 @@ PODS:
     - sqlite3 (~> 3.42.0)
   - ExpoStoreReview (6.8.2):
     - ExpoModulesCore
+  - ExpoSymbols (0.0.1):
+    - ExpoModulesCore
   - ExpoSystemUI (2.9.1):
     - ExpoModulesCore
   - ExpoTrackingTransparency (3.3.0):
@@ -197,7 +199,8 @@ PODS:
     - ReachabilitySwift
     - React-Core
     - sqlite3 (~> 3.42.0)
-  - EXUpdatesInterface (0.15.0)
+  - EXUpdatesInterface (0.15.0):
+    - ExpoModulesCore
   - FBLazyVector (0.73.4)
   - FBReactNativeSpec (0.73.4):
     - RCT-Folly (= 2022.05.16.00)
@@ -1547,6 +1550,7 @@ DEPENDENCIES:
   - ExpoSpeech (from `../../../packages/expo-speech/ios`)
   - ExpoSQLite (from `../../../packages/expo-sqlite/ios`)
   - ExpoStoreReview (from `../../../packages/expo-store-review/ios`)
+  - ExpoSymbols (from `../../../packages/expo-symbols/ios`)
   - ExpoSystemUI (from `../../../packages/expo-system-ui/ios`)
   - ExpoTrackingTransparency (from `../../../packages/expo-tracking-transparency/ios`)
   - ExpoVideo (from `../../../packages/expo-video/ios`)
@@ -1780,6 +1784,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-sqlite/ios"
   ExpoStoreReview:
     :path: "../../../packages/expo-store-review/ios"
+  ExpoSymbols:
+    :path: "../../../packages/expo-symbols/ios"
   ExpoSystemUI:
     :path: "../../../packages/expo-system-ui/ios"
   ExpoTrackingTransparency:
@@ -1938,7 +1944,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/googlemaps/google-maps-ios-utils.git
 
 SPEC CHECKSUMS:
-  boost: 26fad476bfa736552bbfa698a06cc530475c1505
+  boost: d3f49c53809116a5d38da093a8aa78bf551aed09
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
   EASClient: b550a8d3d3d9d1211ba71eabf789cb46c7e92b3c
@@ -1993,6 +1999,7 @@ SPEC CHECKSUMS:
   ExpoSpeech: 5e108798facd5e77e0ff040bdae6907aebeed6c5
   ExpoSQLite: d94fa32e0c3c0038f6bd345530f4816abb0b89fb
   ExpoStoreReview: c39b480799f1d7239f6100e9a79edbef64f2e733
+  ExpoSymbols: 01f91e307a4b8bee4da4fc5bc47efe912a5cfcde
   ExpoSystemUI: 921601d83ed776533f1d654f02c0fdece0a0632b
   ExpoTrackingTransparency: bbae3e495bc58c79b9430cfbc217a56c2ddc9354
   ExpoVideo: 5c7f090a003df15ab6a0e73184995cc22529b4dd
@@ -2002,7 +2009,7 @@ SPEC CHECKSUMS:
   EXStructuredHeaders: 3b8ec10c65a4607dc976b6cdfa5136d2ea2ece19
   EXTaskManager: 81b2dfaaba6d9f9a4bc3e3e2a786a98004eb9e98
   EXUpdates: eedf5578c7d6b9587e8dc81f35cf1f73efadca0f
-  EXUpdatesInterface: 4f787eeabc62c258f978ea4865c67adfb6b2f19f
+  EXUpdatesInterface: 431fbb833aefbc9b7252b24a6a563209ff94f87d
   FBLazyVector: 84f6edbe225f38aebd9deaf1540a4160b1f087d7
   FBReactNativeSpec: c6ea14d5cfd8a86d2a6e5820f51a8e78e759f723
   FirebaseCore: 25c0400b670fd1e2f2104349cd3b5dcce8d9418f
