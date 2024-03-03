@@ -1,5 +1,7 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
+#include <TargetConditionals.h>
+
 #if TARGET_OS_IOS || TARGET_OS_TV
 
 #import <UIKit/UIKit.h>
