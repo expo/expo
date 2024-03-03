@@ -129,10 +129,17 @@ export default {
     return locales?.map((languageTag) => {
       // TextInfo is an experimental API that is not available in all browsers.
       // We might want to consider using a locale lookup table instead.
-      const locale =
-        typeof Intl !== 'undefined'
-          ? (new Intl.Locale(languageTag) as unknown as ExtendedLocale)
-          : { region: null, textInfo: null, language: null };
+
+      let locale = {} as ExtendedLocale;
+      
+      if (typeof Intl !== 'undefined') {
+        // Gracefully handle language codes like `en-GB-oed` which is unsupported
+        // but is otherwise a valid language tag (grandfathered)
+        try {
+          locale = new Intl.Locale(languageTag) as unknown as ExtendedLocale
+        } catch {}
+      }
+
       const { region, textInfo, language } = locale;
 
       // Properties added only for compatibility with native, use `toLocaleString` instead.
