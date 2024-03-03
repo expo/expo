@@ -131,23 +131,31 @@ export default {
       // We might want to consider using a locale lookup table instead.
 
       let locale = {} as ExtendedLocale;
-      
+
+      // Properties added only for compatibility with native, use `toLocaleString` instead.
+      let digitGroupingSeparator: string | null = null;
+      let decimalSeparator: string | null = null;
+      let temperatureUnit: "fahrenheit" | "celsius" | null = null;
+
       if (typeof Intl !== 'undefined') {
         // Gracefully handle language codes like `en-GB-oed` which is unsupported
         // but is otherwise a valid language tag (grandfathered)
         try {
           locale = new Intl.Locale(languageTag) as unknown as ExtendedLocale
+
+          digitGroupingSeparator =
+            Array.from((10000).toLocaleString(languageTag)).filter((c) => c > '9' || c < '0')[0] ||
+            null; // using 1e5 instead of 1e4 since for some locales (like pl-PL) 1e4 does not use digit grouping
+
+          decimalSeparator = (1.1).toLocaleString(languageTag).substring(1, 2);
         } catch {}
       }
 
       const { region, textInfo, language } = locale;
 
-      // Properties added only for compatibility with native, use `toLocaleString` instead.
-      const digitGroupingSeparator =
-        Array.from((10000).toLocaleString(languageTag)).filter((c) => c > '9' || c < '0')[0] ||
-        null; // using 1e5 instead of 1e4 since for some locales (like pl-PL) 1e4 does not use digit grouping
-      const decimalSeparator = (1.1).toLocaleString(languageTag).substring(1, 2);
-      const temperatureUnit = region ? regionToTemperatureUnit(region) : null;
+      if (region) {
+        temperatureUnit = regionToTemperatureUnit(region)
+      }
 
       return {
         languageTag,
