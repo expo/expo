@@ -20,8 +20,6 @@ PODS:
     - ExpoModulesCore
   - EXContacts (12.8.1):
     - ExpoModulesCore
-  - EXFont (11.10.0):
-    - ExpoModulesCore
   - EXImageLoader (4.6.0):
     - ExpoModulesCore
     - React-Core
@@ -171,6 +169,8 @@ PODS:
   - ExpoFileSystem/Tests (16.0.1):
     - ExpoModulesCore
     - ExpoModulesTestCore
+  - ExpoFont (11.10.0):
+    - ExpoModulesCore
   - ExpoGL (13.6.0):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
@@ -1471,7 +1471,6 @@ DEPENDENCIES:
   - EXBarCodeScanner (from `../../../packages/expo-barcode-scanner/ios`)
   - EXConstants (from `../../../packages/expo-constants/ios`)
   - EXContacts (from `../../../packages/expo-contacts/ios`)
-  - EXFont (from `../../../packages/expo-font/ios`)
   - EXImageLoader (from `../../../packages/expo-image-loader/ios`)
   - EXJSONUtils (from `../../../packages/expo-json-utils/ios`)
   - EXJSONUtils/Tests (from `../../../packages/expo-json-utils/ios`)
@@ -1503,6 +1502,7 @@ DEPENDENCIES:
   - ExpoDocumentPicker (from `../../../packages/expo-document-picker/ios`)
   - ExpoFileSystem (from `../../../packages/expo-file-system/ios`)
   - ExpoFileSystem/Tests (from `../../../packages/expo-file-system/ios`)
+  - ExpoFont (from `../../../packages/expo-font/ios`)
   - ExpoGL (from `../../../packages/expo-gl`)
   - ExpoHaptics (from `../../../packages/expo-haptics/ios`)
   - ExpoImage (from `../../../packages/expo-image/ios`)
@@ -1656,9 +1656,6 @@ EXTERNAL SOURCES:
   EXContacts:
     inhibit_warnings: false
     :path: "../../../packages/expo-contacts/ios"
-  EXFont:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-font/ios"
   EXImageLoader:
     inhibit_warnings: false
     :path: "../../../packages/expo-image-loader/ios"
@@ -1727,6 +1724,9 @@ EXTERNAL SOURCES:
   ExpoFileSystem:
     inhibit_warnings: false
     :path: "../../../packages/expo-file-system/ios"
+  ExpoFont:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-font/ios"
   ExpoGL:
     inhibit_warnings: false
     :path: "../../../packages/expo-gl"
@@ -1978,7 +1978,6 @@ SPEC CHECKSUMS:
   EXBarCodeScanner: 2c2fee40a33902612792b2f0de4e9da40f080613
   EXConstants: cefee7155f9ed25c610d0b6cf96972f485e4cbae
   EXContacts: 2ef734aa7b13c8e5ff20fb77d04f1cb172b61456
-  EXFont: b4a7dd9f19df9c55e9b9a1849e801d6726e7a8a3
   EXImageLoader: 55080616b2fe9da19ef8c7f706afd9814e279b6b
   EXJSONUtils: d138005ee11b84fc4e3bf7119a160034db5d5e20
   EXLocation: 4cdbc108ff5bd944d981b7d0c0cf98630104a84a
@@ -2002,6 +2001,7 @@ SPEC CHECKSUMS:
   ExpoDevice: 30d5e44aff42048ab016fa0c37a51fdb6b1f8608
   ExpoDocumentPicker: 015978166ecdb556dbeff1db7413a051f8c03bc7
   ExpoFileSystem: d36501dcf237026e7ddb26324abcbfe44461aecc
+  ExpoFont: bcc7540ccd16e3339eb9f7e215f1eecad7a0e22c
   ExpoGL: 085542f97b13f2428ac2edb077c9a90f4566944d
   ExpoHaptics: 76961bc7692870eb8ddac0527260a7ecaf28300d
   ExpoImage: 390c524542b258f8173f475c1cc71f016444a7be

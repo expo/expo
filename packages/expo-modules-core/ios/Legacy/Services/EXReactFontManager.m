@@ -9,47 +9,6 @@
 #import <ExpoModulesCore/EXFontManagerInterface.h>
 #import <ExpoModulesCore/EXAppLifecycleService.h>
 
-static dispatch_once_t initializeCurrentFontProcessorsOnce;
-
-static NSPointerArray *currentFontProcessors;
-
-@implementation UIFont (EXFontManager)
-
-+ (nullable UIFont *)EXfontWithName:(NSString *)name size:(CGFloat)fontSize
-{
-  for (id<EXFontProcessorInterface> fontProcessor in currentFontProcessors) {
-    NSNumber *size = [NSNumber numberWithFloat:fontSize];
-    UIFont *font = [fontProcessor updateFont:nil withFamily:name size:size weight:nil style:nil variant:nil scaleMultiplier:1];
-    if (font) {
-      return font;
-    }
-  }
-  return [self EXfontWithName:name size:fontSize];
-}
-
-@end
-
-@implementation RCTFont (EXReactFontManager)
-
-+ (UIFont *)EXUpdateFont:(UIFont *)uiFont
-              withFamily:(NSString *)family
-                    size:(NSNumber *)size
-                  weight:(NSString *)weight
-                   style:(NSString *)style
-                 variant:(NSArray<NSDictionary *> *)variant
-         scaleMultiplier:(CGFloat)scaleMultiplier
-{
-  UIFont *font;
-  for (id<EXFontProcessorInterface> fontProcessor in currentFontProcessors) {
-    font = [fontProcessor updateFont:uiFont withFamily:family size:size weight:weight style:style variant:variant scaleMultiplier:scaleMultiplier];
-    if (font) {
-      return font;
-    }
-  }
-  return [self EXUpdateFont:uiFont withFamily:family size:size weight:weight style:style variant:variant scaleMultiplier:scaleMultiplier];
-}
-
-@end
 
 /**
  * This class is responsible for allowing other modules to register as font processors in React Native.
@@ -79,52 +38,5 @@ static NSPointerArray *currentFontProcessors;
 @end
 
 @implementation EXReactFontManager
-
-EX_REGISTER_MODULE();
-
-- (instancetype)init
-{
-  if (self = [super init]) {
-    _fontProcessors = [NSMutableSet set];
-  }
-  return self;
-}
-
-+ (const NSArray<Protocol *> *)exportedInterfaces
-{
-  return @[@protocol(EXFontManagerInterface)];
-}
-
-+ (void)initialize
-{
-  dispatch_once(&initializeCurrentFontProcessorsOnce, ^{
-    currentFontProcessors = [NSPointerArray weakObjectsPointerArray];
-  });
-  
-  #ifdef RN_FABRIC_ENABLED
-    Class uiFont = [UIFont class];
-    SEL uiUpdate = @selector(fontWithName:size:);
-    SEL exUpdate = @selector(EXfontWithName:size:);
-    
-    method_exchangeImplementations(class_getClassMethod(uiFont, uiUpdate),
-                                   class_getClassMethod(uiFont, exUpdate));
-  #else
-    Class rtcClass = [RCTFont class];
-    SEL rtcUpdate = @selector(updateFont:withFamily:size:weight:style:variant:scaleMultiplier:);
-    SEL exUpdate = @selector(EXUpdateFont:withFamily:size:weight:style:variant:scaleMultiplier:);
-    
-    method_exchangeImplementations(class_getClassMethod(rtcClass, rtcUpdate),
-                                   class_getClassMethod(rtcClass, exUpdate));
-  #endif
-}
-
-# pragma mark - EXFontManager
-
-- (void)addFontProcessor:(id<EXFontProcessorInterface>)processor
-{
-  [_fontProcessors addObject:processor];
-  [currentFontProcessors compact];
-  [currentFontProcessors addPointer:(__bridge void * _Nullable)(processor)];
-}
 
 @end
