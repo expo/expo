@@ -135,7 +135,7 @@ export default {
       // Properties added only for compatibility with native, use `toLocaleString` instead.
       let digitGroupingSeparator: string | null = null;
       let decimalSeparator: string | null = null;
-      let temperatureUnit: "fahrenheit" | "celsius" | null = null;
+      let temperatureUnit: 'fahrenheit' | 'celsius' | null = null;
 
       // Gracefully handle language codes like `en-GB-oed` which is unsupported
       // but is otherwise a valid language tag (grandfathered)
