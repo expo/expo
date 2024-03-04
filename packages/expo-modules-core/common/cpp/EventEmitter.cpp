@@ -30,6 +30,13 @@ void Listeners::clear() noexcept {
   listenersMap.clear();
 }
 
+size_t Listeners::listenersCount(std::string eventName) noexcept {
+  if (!listenersMap.contains(eventName)) {
+    return 0;
+  }
+  return listenersMap[eventName].size();
+}
+
 void Listeners::call(jsi::Runtime &runtime, std::string eventName, const jsi::Object &thisObject, const jsi::Value *args, size_t count) noexcept {
   if (!listenersMap.contains(eventName)) {
     return;
@@ -66,6 +73,22 @@ NativeState::Shared NativeState::get(jsi::Runtime &runtime, jsi::Object &object,
 
 #pragma mark - Utils
 
+void callObservingFunction(jsi::Runtime &runtime, jsi::Object &object, const char* functionName, std::string eventName) {
+  jsi::Value fnValue = object.getProperty(runtime, functionName);
+
+  if (!fnValue.isObject()) {
+    // Skip it if there is no observing function.
+    return;
+  }
+
+  fnValue
+    .getObject(runtime)
+    .asFunction(runtime)
+    .callWithThis(runtime, object, {
+      jsi::Value(runtime, jsi::String::createFromUtf8(runtime, eventName))
+    });
+}
+
 jsi::Function getClass(jsi::Runtime &runtime) {
   return runtime
     .global()
@@ -84,6 +107,10 @@ void installClass(jsi::Runtime &runtime) {
 
     if (NativeState::Shared state = NativeState::get(runtime, thisObject, true)) {
       state->listeners.add(runtime, eventName, listener);
+
+      if (state->listeners.listenersCount(eventName) == 1) {
+        callObservingFunction(runtime, thisObject, "startObserving", eventName);
+      }
     }
     return jsi::Value::undefined();
   };
@@ -94,7 +121,13 @@ void installClass(jsi::Runtime &runtime) {
     jsi::Object thisObject = thisValue.getObject(runtime);
 
     if (NativeState::Shared state = NativeState::get(runtime, thisObject, false)) {
+      size_t listenersCountBefore = state->listeners.listenersCount(eventName);
+
       state->listeners.remove(runtime, eventName, listener);
+
+      if (listenersCountBefore >= 1 && state->listeners.listenersCount(eventName) == 0) {
+        callObservingFunction(runtime, thisObject, "stopObserving", eventName);
+      }
     }
     return jsi::Value::undefined();
   };
@@ -104,7 +137,13 @@ void installClass(jsi::Runtime &runtime) {
     jsi::Object thisObject = thisValue.getObject(runtime);
 
     if (NativeState::Shared state = NativeState::get(runtime, thisObject, false)) {
+      size_t listenersCountBefore = state->listeners.listenersCount(eventName);
+
       state->listeners.removeAll(eventName);
+
+      if (listenersCountBefore >= 1) {
+        callObservingFunction(runtime, thisObject, "stopObserving", eventName);
+      }
     }
     return jsi::Value::undefined();
   };
