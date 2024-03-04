@@ -25,13 +25,13 @@ class AssetModule : Module() {
 
   private fun getMD5HashOfFileContent(file: File): String? {
     return try {
-      val md = MessageDigest.getInstance("MD5")
-      val fis = FileInputStream(file)
-      DigestInputStream(fis, md).use { dis ->
-        while (dis.read() != -1) {
-          // Read the file content
+      FileInputStream(file).use { inputStream ->
+        DigestInputStream(
+          inputStream,
+          MessageDigest.getInstance("MD5")
+        ).use { digestInputStream ->
+          digestInputStream.messageDigest.digest().joinToString(separator = "") { "%02x".format(it) }
         }
-        md.digest().joinToString(separator = "") { "%02x".format(it) }
       }
     } catch (e: Exception) {
       e.printStackTrace()

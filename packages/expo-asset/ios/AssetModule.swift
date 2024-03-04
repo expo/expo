@@ -28,11 +28,7 @@ public class AssetModule: Module {
         downloadAsset(appContext: appContext, url: url, localUrl: localUrl, promise: promise)
         return
       }
-      if md5Hash == nil {
-        promise.resolve(localUrl.standardizedFileURL.absoluteString)
-        return
-      }
-      if md5Hash == getMD5Hash(fromData: fileData) {
+      if md5Hash == nil || md5Hash == getMD5Hash(fromData: fileData) {
         promise.resolve(localUrl.standardizedFileURL.absoluteString)
         return
       }
@@ -51,7 +47,7 @@ public class AssetModule: Module {
     guard let data = data else {
       return nil
     }
-    return Data(Insecure.MD5.hash(data: data)).base64EncodedString()
+    return Data(Insecure.MD5.hash(data: data)).map { String(format: "%02hhx", $0) }.joined()
   }
 
   func downloadAsset(appContext: AppContext, url: URL, localUrl: URL, promise: Promise) {
