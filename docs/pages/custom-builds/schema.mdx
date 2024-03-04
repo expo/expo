@@ -1662,6 +1662,10 @@ build:
 #### `eas/send_slack_message`
 
 Sends a specified message to a configured [Slack webhook URL](https://api.slack.com/messaging/webhooks), which then posts it in the related Slack channel.
+The message can be specified as plain text or as a [Slack Block Kit](https://api.slack.com/block-kit) message.
+With both cases, you can reference build job properties and [use other steps outputs](#use-output-from-one-step-to-another) in the message for dynamic evaluation.
+For example, `'Build URL: ${ eas.job.expoBuildUrl }'`, `Build finished with status: ${ steps.run_fastlane.status_text }`, `Build failed with error: ${ steps.run_gradle.error_text }`.
+Either "message" or "payload" has to be specified, but not both.
 
 ```yaml send-slack-message.yml
 build:
@@ -1721,11 +1725,52 @@ build:
         inputs:
           message: |
             This is a test message when build succeeds
+    - eas/send_slack_message:
+        if: ${ always() }
+        name: Send Slack message with Slack Block Kit layout
+        inputs:
+          payload:
+            blocks:
+              - type: section
+                text:
+                  type: mrkdwn
+                  text: |-
+                    Hello, Sir Developer
+
+                     *Your build has finished!*
+              - type: divider
+              - type: section
+                text:
+                  type: mrkdwn
+                  text: |-
+                    *${ eas.env.EAS_BUILD_ID }*
+                    *Status:* `${ steps.run_gradle.status_text }`
+                    *Link:* `${ eas.job.expoBuildUrl }`
+                accessory:
+                  type: image
+                  image_url: [your_image_url]
+                  alt_text: alt text for image
+              - type: divider
+              - type: actions
+                elements:
+                  - type: button
+                    text:
+                      type: plain_text
+                      text: 'Do a thing :rocket:'
+                      emoji: true
+                    value: a_thing
+                  - type: button
+                    text:
+                      type: plain_text
+                      text: 'Do another thing :x:'
+                      emoji: true
+                    value: another_thing
 ```
 
 | Input            | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `message`        | **string** The text of the message you want to send. For example, `'This is the content of the message'`.<br /> <br />**Note:** You can reference build job properties and [use other steps outputs](#use-output-from-one-step-to-another) in the message for dynamic evaluation. For example, `'Build URL: ${ eas.job.expoBuildUrl }'`, `Build finished with status: ${ steps.run_fastlane.status_text }`, `Build failed with error: ${ steps.run_gradle.error_text }`. |
+| `message`        | **string** The text of the message you want to send. For example, `'This is the content of the message'`.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                                        |
+| `payload`        | **string** The contents of the message you want to send defined using [Slack Block Kit](https://api.slack.com/block-kit) layout.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                 |
 | `slack_hook_url` | **string** The URL of the previously configured Slack webhook URL, which will post your message to the specified channel. You can provide the plain URL like `slack_hook_url: 'https://hooks.slack.com/services/[rest_of_hook_url]'`, use EAS secrets like `slack_hook_url: ${ eas.env.ANOTHER_SLACK_HOOK_URL }`, or set the `SLACK_HOOK_URL` secret, which will serve as a default webhook URL (in this last case, there is no need to provide `slack_hook_url` input). |
 
 <BoxLink
