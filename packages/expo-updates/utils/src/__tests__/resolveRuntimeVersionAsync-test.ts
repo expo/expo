@@ -20,9 +20,11 @@ describe(resolveRuntimeVersionAsync, () => {
     jest.mocked(getConfig).mockReturnValue({
       exp: { name: 'test', slug: 'test', runtimeVersion: '3' },
     } as any);
+    jest.mocked(resolveWorkflowAsync).mockResolvedValue('managed');
     await expect(resolveRuntimeVersionAsync('.', 'ios', {})).resolves.toEqual({
       runtimeVersion: '3',
       fingerprintSources: null,
+      workflow: 'managed',
     });
   });
 
@@ -30,9 +32,11 @@ describe(resolveRuntimeVersionAsync, () => {
     jest.mocked(getConfig).mockReturnValue({
       exp: { name: 'test', slug: 'test', runtimeVersion: '3', ios: { runtimeVersion: '4' } },
     } as any);
+    jest.mocked(resolveWorkflowAsync).mockResolvedValue('managed');
     await expect(resolveRuntimeVersionAsync('.', 'ios', {})).resolves.toEqual({
       runtimeVersion: '4',
       fingerprintSources: null,
+      workflow: 'managed',
     });
   });
 
@@ -51,11 +55,13 @@ describe(resolveRuntimeVersionAsync, () => {
     jest.mocked(getConfig).mockReturnValue({
       exp: { name: 'test', slug: 'test', runtimeVersion: { policy: 'fingerprintExperimental' } },
     } as any);
+    jest.mocked(resolveWorkflowAsync).mockResolvedValue('managed');
     jest.mocked(createFingerprintAsync).mockResolvedValue({ hash: 'hello', sources: [] });
 
     await expect(resolveRuntimeVersionAsync('.', 'ios', {})).resolves.toEqual({
       runtimeVersion: 'hello',
       fingerprintSources: [],
+      workflow: 'managed',
     });
   });
 
@@ -70,6 +76,7 @@ describe(resolveRuntimeVersionAsync, () => {
     await expect(resolveRuntimeVersionAsync('.', 'ios', {})).resolves.toEqual({
       runtimeVersion: 'what',
       fingerprintSources: null,
+      workflow: 'managed',
     });
   });
 });

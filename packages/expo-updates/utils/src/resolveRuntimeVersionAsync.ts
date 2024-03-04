@@ -12,24 +12,25 @@ export async function resolveRuntimeVersionAsync(
 ): Promise<{
   runtimeVersion: string | null;
   fingerprintSources: Fingerprint.FingerprintSource[] | null;
+  workflow: 'managed' | 'generic';
 }> {
   const { exp: config } = getConfig(projectRoot, {
     isPublicConfig: true,
     skipSDKVersionRequirement: true,
   });
 
+  const workflow = await resolveWorkflowAsync(projectRoot, platform);
+
   const runtimeVersion = config[platform]?.runtimeVersion ?? config.runtimeVersion;
   if (!runtimeVersion || typeof runtimeVersion === 'string') {
-    return { runtimeVersion: runtimeVersion ?? null, fingerprintSources: null };
+    return { runtimeVersion: runtimeVersion ?? null, fingerprintSources: null, workflow };
   }
-
-  const workflow = await resolveWorkflowAsync(projectRoot, platform);
 
   const policy = runtimeVersion.policy;
 
   if (policy === 'fingerprintExperimental') {
     const fingerprint = await createFingerprintAsync(projectRoot, platform, workflow, options);
-    return { runtimeVersion: fingerprint.hash, fingerprintSources: fingerprint.sources };
+    return { runtimeVersion: fingerprint.hash, fingerprintSources: fingerprint.sources, workflow };
   }
 
   if (workflow !== 'managed') {
@@ -41,5 +42,6 @@ export async function resolveRuntimeVersionAsync(
   return {
     runtimeVersion: await Updates.resolveRuntimeVersionPolicyAsync(policy, config, platform),
     fingerprintSources: null,
+    workflow,
   };
 }
