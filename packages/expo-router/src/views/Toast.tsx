@@ -1,5 +1,5 @@
 import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
-import React from 'react';
+import React, { type PropsWithChildren } from 'react';
 import { ActivityIndicator, Animated, Image, Platform, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -22,7 +22,7 @@ function useFadeIn() {
   return value;
 }
 
-export function ToastWrapper({ children }: { children: React.ReactNode }) {
+export function ToastWrapper({ children }: React.PropsWithChildren) {
   const inTabBar = React.useContext(BottomTabBarHeightContext);
   const Wrapper = inTabBar ? View : SafeAreaView;
 
@@ -37,11 +37,10 @@ export function Toast({
   children,
   filename,
   warning,
-}: {
-  children: React.ReactNode;
+}: PropsWithChildren<{
   filename?: string;
   warning?: boolean;
-}) {
+}>) {
   const filenamePretty = React.useMemo(() => {
     if (!filename) return undefined;
     return 'app' + filename.replace(/^\./, '');

@@ -8,7 +8,7 @@ export type RouteInfo<TRegex = string> = {
   file: string;
   page: string;
   namedRegex: TRegex;
-  routeKeys: { [named: string]: string };
+  routeKeys: Record<string, string>;
 };
 
 export type ExpoRoutesManifestV1<TRegex = string> = {

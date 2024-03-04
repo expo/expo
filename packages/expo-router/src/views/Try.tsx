@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component, type ComponentType, type PropsWithChildren } from 'react';
 
 import { SplashScreen } from './Splash';
 
@@ -10,12 +10,11 @@ export type ErrorBoundaryProps = {
   error: Error;
 };
 
-// No way to access `getDerivedStateFromError` from a functional component afaict.
-export class Try extends React.Component<
-  {
-    catch: React.ComponentType<ErrorBoundaryProps>;
-    children: React.ReactNode;
-  },
+// No way to access `getDerivedStateFromError` from a function component afaict.
+export class Try extends Component<
+  PropsWithChildren<{
+    catch: ComponentType<ErrorBoundaryProps>;
+  }>,
   { error?: Error }
 > {
   state = { error: undefined };

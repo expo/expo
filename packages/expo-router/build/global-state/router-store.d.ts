@@ -13,12 +13,12 @@ import { RequireContext } from '../types';
 export declare class RouterStore {
     routeNode: RouteNode | null;
     rootComponent: ComponentType;
-    linking: ExpoLinkingOptions | undefined;
+    linking?: ExpoLinkingOptions;
     private hasAttemptedToHideSplash;
-    initialState: ResultState | undefined;
-    rootState: ResultState | undefined;
-    nextState: ResultState | undefined;
-    routeInfo?: UrlObject | undefined;
+    initialState?: ResultState;
+    rootState?: ResultState;
+    nextState?: ResultState;
+    routeInfo?: UrlObject;
     navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
     navigationRefSubscription: () => void;
     rootStateSubscribers: Set<() => void>;

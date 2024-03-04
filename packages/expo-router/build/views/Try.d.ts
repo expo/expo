@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component, type ComponentType, type PropsWithChildren } from 'react';
 /** Props passed to a page's `ErrorBoundary` export. */
 export type ErrorBoundaryProps = {
     /** Retry rendering the component by clearing the `error` state. */
@@ -6,10 +6,9 @@ export type ErrorBoundaryProps = {
     /** The error that was thrown. */
     error: Error;
 };
-export declare class Try extends React.Component<{
-    catch: React.ComponentType<ErrorBoundaryProps>;
-    children: React.ReactNode;
-}, {
+export declare class Try extends Component<PropsWithChildren<{
+    catch: ComponentType<ErrorBoundaryProps>;
+}>, {
     error?: Error;
 }> {
     state: {

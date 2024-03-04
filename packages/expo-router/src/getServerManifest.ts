@@ -33,7 +33,7 @@ export interface Group {
 }
 
 export interface RouteRegex {
-  groups: { [groupName: string]: Group };
+  groups: Record<string, Group>;
   re: RegExp;
 }
 
@@ -149,7 +149,7 @@ function removeTrailingSlash(route: string): string {
 function getNamedParametrizedRoute(route: string) {
   const segments = removeTrailingSlash(route).slice(1).split('/');
   const getSafeRouteKey = buildGetSafeRouteKey();
-  const routeKeys: { [named: string]: string } = {};
+  const routeKeys: Record<string, string> = {};
   return {
     namedParameterizedRoute: segments
       .map((segment, index) => {

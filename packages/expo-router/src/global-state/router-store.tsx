@@ -36,13 +36,13 @@ import { getQualifiedRouteComponent } from '../useScreens';
 export class RouterStore {
   routeNode!: RouteNode | null;
   rootComponent!: ComponentType;
-  linking: ExpoLinkingOptions | undefined;
+  linking?: ExpoLinkingOptions;
   private hasAttemptedToHideSplash: boolean = false;
 
-  initialState: ResultState | undefined;
-  rootState: ResultState | undefined;
-  nextState: ResultState | undefined;
-  routeInfo?: UrlObject | undefined;
+  initialState?: ResultState;
+  rootState?: ResultState;
+  nextState?: ResultState;
+  routeInfo?: UrlObject;
 
   navigationRef!: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
   navigationRefSubscription!: () => void;

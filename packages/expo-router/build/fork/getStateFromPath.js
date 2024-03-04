@@ -482,7 +482,7 @@ const findInitialRoute = (routeName, parentScreens, initialRoutes) => {
 };
 // returns state object with values depending on whether
 // it is the end of state and if there is initialRoute for this level
-const createStateObject = (initialRoute, route, isEmpty) => {
+const createStateObject = (route, isEmpty, initialRoute) => {
     if (isEmpty) {
         if (initialRoute) {
             return {
@@ -509,13 +509,13 @@ const createNestedStateObject = (path, routes, routeConfigs, initialRoutes) => {
     const parentScreens = [];
     let initialRoute = findInitialRoute(route.name, parentScreens, initialRoutes);
     parentScreens.push(route.name);
-    const state = createStateObject(initialRoute, route, routes.length === 0);
+    const state = createStateObject(route, routes.length === 0, initialRoute);
     if (routes.length > 0) {
         let nestedState = state;
         while ((route = routes.shift())) {
             initialRoute = findInitialRoute(route.name, parentScreens, initialRoutes);
             const nestedStateIndex = nestedState.index || nestedState.routes.length - 1;
-            nestedState.routes[nestedStateIndex].state = createStateObject(initialRoute, route, routes.length === 0);
+            nestedState.routes[nestedStateIndex].state = createStateObject(route, routes.length === 0, initialRoute);
             if (routes.length > 0) {
                 nestedState = nestedState.routes[nestedStateIndex].state;
             }

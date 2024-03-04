@@ -20,7 +20,7 @@ export function getInitialURL(): Promise<string | null> | string {
   if (Platform.OS === 'web') {
     if (typeof window === 'undefined') {
       return '';
-    } else if (typeof window.location?.href === 'string') {
+    } else if (window.location?.href) {
       return window.location.href;
     }
   }
@@ -70,7 +70,7 @@ export function getRootURL(): string {
 }
 
 export function addEventListener(listener: (url: string) => void) {
-  let callback: (({ url }: { url: string }) => void) | undefined = undefined;
+  let callback: (({ url }: { url: string }) => void) | undefined;
 
   if (isExpoGo) {
     // This extra work is only done in the Expo Go app.

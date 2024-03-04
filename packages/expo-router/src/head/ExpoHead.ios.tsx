@@ -50,7 +50,7 @@ function useMetaChildren(children: React.ReactNode) {
 
 type SerializedMeta = {
   type: string;
-  props: { [key: string]: string | undefined };
+  props: Record<string, string | undefined>;
 };
 
 function serializedMetaChildren(meta: MetaNode[]): SerializedMeta[] {
@@ -289,13 +289,13 @@ function deepObjectCompare(a: any, b: any) {
 
 HeadNative.Provider = React.Fragment;
 
-function HeadShim(props: { children?: React.ReactNode }) {
+function HeadShim(props: React.PropsWithChildren) {
   return null;
 }
 
 HeadShim.Provider = React.Fragment;
 
 // Native Head is only enabled in bare iOS apps.
-export const Head: ((props: { children?: React.ReactNode }) => React.ReactNode) & {
+export const Head: ((props: React.PropsWithChildren) => React.ReactNode) & {
   Provider: React.ComponentType;
 } = ExpoHead ? HeadNative : HeadShim;
