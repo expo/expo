@@ -13,7 +13,7 @@ import {
   TextInput,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { ScrollView, Switch } from 'react-native';
+import { ScrollView, useTVEventHandler } from 'react-native';
 import { useQueryClient } from 'react-query';
 
 import { SafeAreaTop } from '../components/SafeAreaTop';
@@ -31,7 +31,6 @@ export function SettingsScreen() {
   const { userData } = useUser();
   const [, setClipboardError] = React.useState('');
   const [clipboardContent, setClipboardContent] = React.useState('');
-
   const {
     showsAtLaunch,
     setShowsAtLaunch,
@@ -99,12 +98,14 @@ export function SettingsScreen() {
               <Spacer.Horizontal size="small" />
               <Text size="large">Show menu at launch</Text>
               <Spacer.Horizontal />
+              {/*
               <Switch
                 accessibilityRole="switch"
                 accessibilityLabel="Toggle showing menu at launch"
                 value={showsAtLaunch}
                 onValueChange={() => setShowsAtLaunch(!showsAtLaunch)}
               />
+ */}
             </Row>
           </View>
 

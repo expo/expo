@@ -17,7 +17,7 @@ import {
   BranchIcon,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { Animated, ScrollView, KeyboardAvoidingView } from 'react-native';
+import { Animated, ScrollView, KeyboardAvoidingView, useTVEventHandler } from 'react-native';
 
 import { AppHeader } from '../components/AppHeader';
 import { DevServerExplainerModal } from '../components/DevServerExplainerModal';
@@ -52,6 +52,12 @@ export function HomeScreen({ pollInterval = 1000, pollAmount = 5, navigation }: 
   const { data: devSessions, pollAsync, isFetching } = useDevSessions();
   const toastStack = useToastStack();
   const { projectUrl } = useUpdatesConfig();
+
+  const [lastEvent, setLastEvent] = React.useState('');
+
+  useTVEventHandler((event) => {
+    setLastEvent(event.eventType);
+  });
 
   const crashReport = useCrashReport();
 
@@ -135,7 +141,8 @@ export function HomeScreen({ pollInterval = 1000, pollAmount = 5, navigation }: 
                   <TerminalIcon />
                 </View>
                 <Heading color="secondary">Development servers</Heading>
-
+                <Spacer.Horizontal />
+                <Heading color="secondary">{lastEvent}</Heading>
                 <Spacer.Horizontal />
 
                 {devSessions?.length > 0 && (
@@ -312,7 +319,10 @@ function RecentlyOpenedApps({ onRecentAppPress, loadingUrl }) {
         <Heading color="secondary">Recently opened</Heading>
         <Spacer.Horizontal />
 
-        <Button.FadeOnPressContainer bg="ghost" onPress={clearRecentlyOpenedApps}>
+        <Button.FadeOnPressContainer
+          hasTVPreferredFocus
+          bg="ghost"
+          onPress={clearRecentlyOpenedApps}>
           <View rounded="medium" px="small" py="micro">
             <Heading size="small" weight="semibold" color="secondary">
               Reset

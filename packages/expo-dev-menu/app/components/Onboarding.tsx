@@ -61,7 +61,6 @@ export function Onboarding({ isDevice }: OnboardingProps) {
               This is the developer menu. It gives you access to useful tools in your development
               builds.
             </Text>
-
             <Spacer.Vertical size="medium" />
             <Text size="medium" maxFontSizeMultiplier={1.2}>
               {isDevice ? deviceMessage : simulatorMessage}
@@ -70,7 +69,10 @@ export function Onboarding({ isDevice }: OnboardingProps) {
 
           <Spacer.Vertical size="large" />
 
-          <Button.FadeOnPressContainer bg="primary" onPress={onOnboardingFinishedPress}>
+          <Button.FadeOnPressContainer
+            hasTVPreferredFocus
+            bg="primary"
+            onPress={onOnboardingFinishedPress}>
             <View py="small">
               <Button.Text align="center" size="medium" color="primary" weight="medium">
                 Continue

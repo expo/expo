@@ -20,7 +20,7 @@ import {
   scale,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { Platform, ScrollView, Switch } from 'react-native';
+import { Platform, ScrollView } from 'react-native';
 import semver from 'semver';
 
 import { Onboarding } from './Onboarding';
@@ -460,12 +460,6 @@ function SettingsRowSwitch({
         <Spacer.Horizontal />
 
         <View width="16" style={{ alignItems: 'flex-end' }}>
-          <Switch
-            testID={testID}
-            disabled={disabled}
-            value={isEnabled && !disabled}
-            onValueChange={() => setIsEnabled(!isEnabled)}
-          />
         </View>
       </Row>
 

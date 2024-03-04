@@ -182,6 +182,8 @@ function FadeOnPressContainer({
     <Container
       onPressIn={onPressIn}
       onPressOut={onPressOut}
+      onFocus={onPressIn}
+      onBlur={onPressOut}
       {...props}
       style={{
         opacity: animatedValue.current,
