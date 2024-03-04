@@ -3395,7 +3395,7 @@
   dependencies:
     "@react-native/codegen" "0.74.1"
 
-"@react-native/babel-preset@0.74.1", "@react-native/babel-preset@^0.74.1":
+"@react-native/babel-preset@0.74.1", "@react-native/babel-preset@^0.73.18":
   version "0.74.1"
   resolved "https://registry.yarnpkg.com/@react-native/babel-preset/-/babel-preset-0.74.1.tgz#96813549cac768b5ff59c9b74f51acf80909e707"
   integrity sha512-c7xbLs0/fjDmORYs86xz3syTFiJhtRb6JzXpGes04ZNdY7NWdz7aqEfeleyBJbmCfDOr16WZJRy4JcPLvNKjZg==
