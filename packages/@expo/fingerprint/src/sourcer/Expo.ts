@@ -159,6 +159,14 @@ export async function getExpoAutolinkingAndroidSourcesAsync(
         debug(`Adding expo-modules-autolinking android dir - ${chalk.dim(filePath)}`);
         results.push({ type: 'dir', filePath, reasons });
       }
+      if (module.plugins) {
+        for (const plugin of module.plugins) {
+          const filePath = path.relative(projectRoot, plugin.sourceDir);
+          plugin.sourceDir = filePath; // use relative path for the dir
+          debug(`Adding expo-modules-autolinking android dir - ${chalk.dim(filePath)}`);
+          results.push({ type: 'dir', filePath, reasons });
+        }
+      }
     }
     results.push({
       type: 'contents',
