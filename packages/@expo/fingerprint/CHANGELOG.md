@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Fix fingerprint of ios (xcode projects). ([#26901](https://github.com/expo/expo/pull/26901) by [@wschurman](https://github.com/wschurman))
+- Fix inconsistent hashes for autolinking. ([#27390](https://github.com/expo/expo/pull/27390) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 
