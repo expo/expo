@@ -26,6 +26,8 @@
 
 ### 💡 Others
 
+- Enable Jest tests for all platforms
+
 ## 3.4.8 - 2024-02-29
 
 ### 🎉 New features
