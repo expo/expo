@@ -26,9 +26,7 @@ export interface Group {
     optional: boolean;
 }
 export interface RouteRegex {
-    groups: {
-        [groupName: string]: Group;
-    };
+    groups: Record<string, Group>;
     re: RegExp;
 }
 export declare function getServerManifest(route: RouteNode): ExpoRouterServerManifestV1;

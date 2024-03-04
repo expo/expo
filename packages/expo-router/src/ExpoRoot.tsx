@@ -3,7 +3,7 @@
 import { NavigationAction } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import { StatusBar } from 'expo-status-bar';
-import React, { FunctionComponent, ReactNode, Fragment } from 'react';
+import React, { type PropsWithChildren, Fragment, type ComponentType } from 'react';
 import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -15,7 +15,7 @@ import { SplashScreen } from './views/Splash';
 export type ExpoRootProps = {
   context: RequireContext;
   location?: URL;
-  wrapper?: FunctionComponent<{ children: ReactNode }>;
+  wrapper?: ComponentType<PropsWithChildren>;
 };
 
 const isTestEnv = process.env.NODE_ENV === 'test';
@@ -38,7 +38,7 @@ export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRo
    * View's like <SafeAreaProvider /> generate a <div> so if the parent wrapper
    * is a HTML document, we need to ensure its inside the <body>
    */
-  const wrapper = ({ children }) => {
+  const wrapper = ({ children }: PropsWithChildren) => {
     return (
       <ParentWrapper>
         <SafeAreaProvider
