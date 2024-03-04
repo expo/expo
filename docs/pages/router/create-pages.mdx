@@ -56,7 +56,27 @@ For example, create the **app** directory in your project and then create a file
 
 The above example matches the `/` route in the app and the browser. Files named **index** match the parent directory and do not add a path segment. For example, **app/settings/index.js** matches `/settings` in the app.
 
-> Platform extensions (for example, **.ios.js**, **.native.ts**) are not supported in the **app** directory. See [Platform-specific modules](/router/advanced/platform-specific-modules), for more information.
+## Platform specific extensions
+
+> **warning** Platform-specific extensions were added in Expo Router 3.x.x. If you are using an older version, please see [Platform-specific modules](/router/advanced/platform-specific-modules), for more information.
+
+Metro bundler's platform-specific extensions (for example, **.ios.js** or **.native.ts**) are supported in the **app** directory only if a **non-platform version** also exists. This ensures that routes are universal across platforms for deep linking.
+
+Consider the following project:
+
+<FileTree
+  files={[
+    'app/_layout.js',
+    'app/_layout.web.js',
+    'app/index.js',
+    'app/about.js',
+    'app/about.web.js',
+  ]}
+/>
+
+In this project, the **\_layout.web.js** file is used as a layout on the web and **\_layout.js** is used on all other platform. The **index.js** file is used as the home page for all platforms. The **about.web.js** file is used as the about page for the web and **about.js** file is used on all other platforms.
+
+> **info** Always provide a file without a platform extension to ensure every platform has a default implementation.
 
 ## Dynamic routes
 
