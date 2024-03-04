@@ -1,7 +1,7 @@
 import { BottomTabNavigationEventMap, BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
 import { ParamListBase, TabNavigationState } from '@react-navigation/native';
 import React from 'react';
-import { Href } from '../link/href';
+import { ExpoRouter } from '../../types/expo-router';
 export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@react-navigation/native").DefaultRouterOptions<string> & {
     id?: string | undefined;
     children: React.ReactNode;
@@ -29,7 +29,7 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
     }) => BottomTabNavigationOptions) | undefined;
 } & import("@react-navigation/native").DefaultRouterOptions & {
     backBehavior?: import("@react-navigation/routers/lib/typescript/src/TabRouter").BackBehavior | undefined;
-} & import("@react-navigation/bottom-tabs/lib/typescript/src/types").BottomTabNavigationConfig, "initialRouteName" | "children" | "id" | "screenListeners" | "screenOptions"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+} & import("@react-navigation/bottom-tabs/lib/typescript/src/types").BottomTabNavigationConfig, "initialRouteName" | "id" | "children" | "screenListeners" | "screenOptions"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     id?: string | undefined;
     children: React.ReactNode;
     screenListeners?: Partial<{
@@ -81,7 +81,7 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
     }) => BottomTabNavigationOptions) | undefined;
 } & import("@react-navigation/native").DefaultRouterOptions & {
     backBehavior?: import("@react-navigation/routers/lib/typescript/src/TabRouter").BackBehavior | undefined;
-} & import("@react-navigation/bottom-tabs/lib/typescript/src/types").BottomTabNavigationConfig, "initialRouteName" | "children" | "id" | "screenListeners" | "screenOptions"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+} & import("@react-navigation/bottom-tabs/lib/typescript/src/types").BottomTabNavigationConfig, "initialRouteName" | "id" | "children" | "screenListeners" | "screenOptions"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     id?: string | undefined;
     children: React.ReactNode;
     screenListeners?: Partial<{
@@ -140,7 +140,7 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
             show?: import("@react-navigation/bottom-tabs/lib/typescript/src/types").TabBarVisibilityAnimationConfig | undefined;
             hide?: import("@react-navigation/bottom-tabs/lib/typescript/src/types").TabBarVisibilityAnimationConfig | undefined;
         } | undefined;
-        tabBarStyle?: false | import("react-native").Animated.Value | import("react-native").RegisteredStyle<import("react-native").ViewStyle> | import("react-native").Animated.AnimatedInterpolation<string | number> | import("react-native").Animated.WithAnimatedObject<import("react-native").ViewStyle> | import("react-native").Animated.WithAnimatedArray<import("react-native").ViewStyle | import("react-native").Falsy | import("react-native").RegisteredStyle<import("react-native").ViewStyle> | import("react-native").RecursiveArray<import("react-native").ViewStyle | import("react-native").Falsy | import("react-native").RegisteredStyle<import("react-native").ViewStyle>> | readonly (import("react-native").ViewStyle | import("react-native").Falsy | import("react-native").RegisteredStyle<import("react-native").ViewStyle>)[]> | null | undefined;
+        tabBarStyle?: false | import("react-native").Animated.Value | import("react-native").Animated.AnimatedInterpolation<string | number> | import("react-native").RegisteredStyle<import("react-native").ViewStyle> | import("react-native").Animated.WithAnimatedObject<import("react-native").ViewStyle> | import("react-native").Animated.WithAnimatedArray<import("react-native").Falsy | import("react-native").ViewStyle | import("react-native").RegisteredStyle<import("react-native").ViewStyle> | import("react-native").RecursiveArray<import("react-native").Falsy | import("react-native").ViewStyle | import("react-native").RegisteredStyle<import("react-native").ViewStyle>> | readonly (import("react-native").Falsy | import("react-native").ViewStyle | import("react-native").RegisteredStyle<import("react-native").ViewStyle>)[]> | null | undefined;
         tabBarBackground?: (() => React.ReactNode) | undefined;
         lazy?: boolean | undefined;
         header?: ((props: import("@react-navigation/bottom-tabs").BottomTabHeaderProps) => React.ReactNode) | undefined;
@@ -148,7 +148,10 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
         unmountOnBlur?: boolean | undefined;
         freezeOnBlur?: boolean | undefined;
     } & {
-        href?: Href | null | undefined;
+        href?: string | {
+            pathname: P;
+            params?: ExpoRouter.InputRouteParams<P> | undefined;
+        } | null | undefined;
     }, TabNavigationState<ParamListBase>, BottomTabNavigationEventMap>) => null;
 };
 export default Tabs;

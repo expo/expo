@@ -27,6 +27,7 @@
 - Fix incorrect initial URL on web when using baseUrl ([#27287](https://github.com/expo/expo/pull/27287) by [@marklawlor](https://github.com/marklawlor))
 - Cancel ExpoRouter SplashScreen during test teardown ([#27620](https://github.com/expo/expo/pull/27620) by [@marklawlor](https://github.com/marklawlor))
 - Export `toHaveRouterState` and other matcher types from `expo-router/testing-library` ([#27646](https://github.com/expo/expo/pull/27646) by [@marklawlor](https://github.com/marklawlor))
+- Fix missing types from typed routes
 
 ### 💡 Others
 
@@ -71,7 +72,10 @@ _This version does not introduce any user-facing changes._
 
 - Deprecate `useRootNavigation` in favor of `useNavigationContainerRef`. ([#26529](https://github.com/expo/expo/pull/26529) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove duplicate context mocking functions ([#26651](https://github.com/expo/expo/pull/26651) by [@marklawlor](https://github.com/marklawlor))
-- Update to remove `ExpoRequest`/`ExpoResponse` imports from `@expo/server`. ([#27261](https://github.com/expo/expo/pull/27261) by [@kitten](https://github.com/kitten))
+  <<<<<<< HEAD
+- # Update to remove `ExpoRequest`/`ExpoResponse` imports from `@expo/server`. ([#27261](https://github.com/expo/expo/pull/27261) by [@kitten](https://github.com/kitten))
+- Update to remove `ExpoRequest`/`ExpoResponse`imports from`@expo/server`. ([#27261](https://github.com/expo/expo/pull/27261) by [@kitten](https://github.com/kitten))
+  > > > > > > > cb56b95849 ([router]: consolidate router types)
 
 ## 3.4.3 - 2024-01-18
 
