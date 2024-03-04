@@ -92,8 +92,9 @@ public final class SharedObjectRegistry {
   internal func add(native nativeObject: SharedObject, javaScript jsObject: JavaScriptObject) -> SharedObjectId {
     let id = pullNextId()
 
-    // Assigns the ID to the objects.
+    // Assign the ID and the app context to the object.
     nativeObject.sharedObjectId = id
+    nativeObject.appContext = appContext
 
     // This property should be deprecated, but it's still used when passing as a view prop.
     // It's already defined in the JS base SharedObject class prototype,

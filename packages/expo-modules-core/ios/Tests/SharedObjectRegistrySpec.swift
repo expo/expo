@@ -43,6 +43,11 @@ final class SharedObjectRegistrySpec: ExpoSpec {
         let id = sharedObjectRegistry.add(native: nativeObject, javaScript: runtime.createObject())
         expect(nativeObject.sharedObjectId) == id
       }
+      it("assigns the app context on native object") {
+        let nativeObject = TestSharedObject()
+        sharedObjectRegistry.add(native: nativeObject, javaScript: runtime.createObject())
+        expect(nativeObject.appContext) == appContext
+      }
       it("assigns id on JS object") {
         let jsObject = runtime.createObject()
         let id = sharedObjectRegistry.add(native: TestSharedObject(), javaScript: jsObject)
