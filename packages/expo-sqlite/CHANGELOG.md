@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `expo-sqlite/next` cannot be imported from an ESM project. ([#27423](https://github.com/expo/expo/pull/27423) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 13.2.2 - 2024-01-25
