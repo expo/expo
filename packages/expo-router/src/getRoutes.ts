@@ -186,7 +186,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           directory.files.set(fileKey, nodes);
         }
 
-        // TODO(Platform Route): Throw error if specificity > 0, as you cannot specify platform extensions for api routes
+        // API Routes have no specificity, they are always the first node
         const existing = nodes[0];
 
         if (existing) {
@@ -364,9 +364,9 @@ function getFileMeta(key: string, options: Options) {
     } else if (platformExtension === 'native' && options.platform !== 'web') {
       // `native` is allow but isn't as specific as the platform
       specificity = 1;
-    } else if (options.platform) {
-      // If we have a platform, then we should ignore the other platform extensions
-      // We might not have a platform if we are generating the routes for the sitemap, typed routes, etc
+    } else if (platformExtension !== options.platform) {
+      // Somehow we have a platform extension that doesn't match the options.platform and it isn't native
+      // This is an invalid file and we will ignore it
       specificity = -1;
     }
 
@@ -605,5 +605,7 @@ function getMostSpecific(routes: RouteNode[]) {
     );
   }
 
+  // This works even tho routes is holey array (e.g it might have index 0 and 2 but not 1)
+  // `.length` includes the holes in its count
   return routes[routes.length - 1];
 }
