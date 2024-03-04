@@ -9,16 +9,14 @@ export type ScreenProps<TOptions extends Record<string, any> = Record<string, an
      * If all children are redirect={true}, the layout will render `null` as there are no children to render.
      */
     redirect?: boolean;
-    initialParams?: {
-        [key: string]: any;
-    };
+    initialParams?: Record<string, any>;
     options?: TOptions;
     listeners?: ScreenListeners<State, EventMap> | ((prop: {
         route: RouteProp<ParamListBase, string>;
         navigation: any;
     }) => ScreenListeners<State, EventMap>);
     getId?: ({ params }: {
-        params?: Record<string, any> | undefined;
+        params?: Record<string, any>;
     }) => string | undefined;
 };
 /**

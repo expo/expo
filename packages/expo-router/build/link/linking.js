@@ -48,7 +48,7 @@ function getInitialURL() {
         if (typeof window === 'undefined') {
             return '';
         }
-        else if (typeof window.location?.href === 'string') {
+        else if (window.location?.href) {
             return window.location.href;
         }
     }
@@ -90,7 +90,7 @@ function getRootURL() {
 }
 exports.getRootURL = getRootURL;
 function addEventListener(listener) {
-    let callback = undefined;
+    let callback;
     if (isExpoGo) {
         // This extra work is only done in the Expo Go app.
         callback = ({ url }) => {

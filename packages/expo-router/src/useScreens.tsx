@@ -33,7 +33,7 @@ export type ScreenProps<
    * If all children are redirect={true}, the layout will render `null` as there are no children to render.
    */
   redirect?: boolean;
-  initialParams?: { [key: string]: any };
+  initialParams?: Record<string, any>;
   options?: TOptions;
 
   listeners?:
@@ -43,7 +43,7 @@ export type ScreenProps<
         navigation: any;
       }) => ScreenListeners<State, EventMap>);
 
-  getId?: ({ params }: { params?: Record<string, any> | undefined }) => string | undefined;
+  getId?: ({ params }: { params?: Record<string, any> }) => string | undefined;
 };
 
 function getSortedChildren(
