@@ -104,7 +104,18 @@ export async function getExpoConfigSourcesAsync(
 function normalizeExpoConfig(config: ExpoConfig): string {
   // Deep clone by JSON.parse/stringify that assumes the config is serializable.
   const normalizedConfig: ExpoConfig = JSON.parse(JSON.stringify(config));
-  delete normalizedConfig.runtimeVersion;
+  if (typeof normalizedConfig.runtimeVersion === 'string') {
+    delete normalizedConfig.runtimeVersion;
+  }
+  if (typeof normalizedConfig.android?.runtimeVersion === 'string') {
+    delete normalizedConfig.android.runtimeVersion;
+  }
+  if (typeof normalizedConfig.ios?.runtimeVersion === 'string') {
+    delete normalizedConfig.ios.runtimeVersion;
+  }
+  if (typeof normalizedConfig.web?.runtimeVersion === 'string') {
+    delete normalizedConfig.web.runtimeVersion;
+  }
   delete normalizedConfig._internal;
   return stringifyJsonSorted(normalizedConfig);
 }
