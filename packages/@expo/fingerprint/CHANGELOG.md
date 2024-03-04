@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- Remove runtimeVersion from ignore normalization of expo config when policy. ([#27141](https://github.com/expo/expo/pull/27141) by [@wschurman](https://github.com/wschurman))
+
 ## 0.6.0 — 2023-12-12
 
 _This version does not introduce any user-facing changes._
