@@ -54,6 +54,11 @@ private:
   void clear() noexcept;
 
   /**
+   Returns a number of listeners added for the given event name.
+   */
+  size_t listenersCount(std::string eventName) noexcept;
+
+  /**
    Calls listeners for the given event name, with the given `this` object and payload arguments.
    */
   void call(jsi::Runtime &runtime, std::string eventName, const jsi::Object &thisObject, const jsi::Value *args, size_t count) noexcept;
