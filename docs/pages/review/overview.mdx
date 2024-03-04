@@ -6,19 +6,17 @@ description: Learn about different strategies you can use for reviewing your app
 
 import { BoxLink } from '~/ui/components/BoxLink';
 
-Whether you have built a native app using EAS Build or locally, the next step in your app development journey is to release a preview version of your app so that you can share it with your testing team. Sharing a preview version of your app allows anyone to test it on a device or run it on multiple test devices. It also allows them to experience how the app is used in production.
-
-This page outlines different strategies to share a preview version of your app using internal distribution and EAS Update.
+This page outlines different strategies to share a preview version of your app using internal distribution and EAS Update. Sharing a preview version of your app with testers allows them to download and run it on their devices, as if it were distributed through a store.
 
 ## Internal distribution
 
-Internal distribution is a strategy for sharing an app with a limited audience. It is used for testing purposes within a team or organization or a selected group of testers. Android and iOS provide different ways to install a build of your application directly on a device.
+Internal distribution is a strategy for sharing an app with a limited audience. It is used for testing purposes within a team or organization or a selected group of testers, or even by an individual developer that is testing their own app. Android and iOS provide different ways to install a build of your application directly on a device.
 
-Google Play beta provides both closed and open tracks. You can invite specific users to test your app in the closed beta. In the open beta, you can make your app available to anyone participating in the beta program.
+Google Play beta provides both closed and open tracks. You can invite specific users to test your app in the closed beta. In the open beta, you can make your app available to anyone participating in the beta program. You could alternatively distribute the APK directly to testers.
 
-Apple offers ad hoc provisioning profile to distribute your app to test on devices registered to your Apple Developer account. You can also use TestFlight to share your app with up to 10,000 external testers by [uploading your app](/submit/ios/).
+Apple offers ad hoc provisioning to distribute your app to test on devices registered to your Apple Developer account. You can also use TestFlight to share your app with up to 10,000 external testers by [uploading your app](/submit/ios/).
 
-However, both of these methods are time-consuming and limiting. EAS Build can help you overcome these limitations by providing a shareable URL for your team to get it up and running.
+EAS Build makes it easy to generate a shareable URL that your team can use to download an installable APK for Android or an ad hoc provisioned app for iOS.
 
 <BoxLink
   title="How to set up an internal distribution build"
@@ -28,7 +26,7 @@ However, both of these methods are time-consuming and limiting. EAS Build can he
 
 ## Using EAS Update with development builds
 
-Development builds are highly recommended for a robust and flexible solution, especially when planning to deploy your app to production. They provide a comprehensive development environment that can be further configured to generate previews for your app during the review stage.
+You can use [development builds](/develop/development-builds/introduction/) to load previews of your app during the review stage by publishing the preview with EAS Update.
 
 Even though Expo Go is an open-source sandbox that can be good for previewing isolated prototypes on Android and iOS, it is not intended for production apps. It should be avoided during the preview process of your app.
 
