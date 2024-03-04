@@ -8,6 +8,7 @@ export type Options = {
     internal_stripLoadRoute?: boolean;
     skipGenerated?: boolean;
     importMode?: string;
+    platform?: string;
 };
 /**
  * Given a Metro context module, return an array of nested routes.
