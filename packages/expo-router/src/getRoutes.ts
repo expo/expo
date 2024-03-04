@@ -187,7 +187,6 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
         }
 
         // TODO(Platform Route): Throw error if specificity > 0, as you cannot specify platform extensions for api routes
-
         const existing = nodes[0];
 
         if (existing) {
@@ -337,7 +336,7 @@ function getFileMeta(key: string, options: Options) {
   const filename = parts[parts.length - 1];
   const filenameWithoutExtensions = removeSupportedExtensions(filename);
   const isLayout = filenameWithoutExtensions === '_layout';
-  const isApi = filename.match(/\+api\.[jt]sx?$/);
+  const isApi = filename.match(/\+api\.(\w+\.)?[jt]sx?$/);
 
   if (filenameWithoutExtensions.startsWith('(') && filenameWithoutExtensions.endsWith(')')) {
     throw new Error(`Invalid route ./${key}. Routes cannot end with '(group)' syntax`);
@@ -350,13 +349,16 @@ function getFileMeta(key: string, options: Options) {
       `Invalid route ./${key}. Route nodes cannot start with the '+' character. "Please rename to ${renamedRoute}"`
     );
   }
-
   let specificity = 0;
   const platformExtension = filenameWithoutExtensions.split('.')[1];
   const hasPlatformExtension = validPlatforms.has(platformExtension);
 
   if (hasPlatformExtension) {
-    if (platformExtension === options.platform) {
+    if (!options.platform) {
+      // If we don't have a platform, then we should ignore this file
+      // This used by typed routes, sitemap, etc
+      specificity = -1;
+    } else if (platformExtension === options.platform) {
       // If the platform extension is the same as the options.platform, then it is the most specific
       specificity = 2;
     } else if (platformExtension === 'native' && options.platform !== 'web') {
@@ -370,7 +372,7 @@ function getFileMeta(key: string, options: Options) {
 
     if (isApi && specificity !== 0) {
       throw new Error(
-        `Api routes cannot have platform extensions. Please remove ${platformExtension} from ./${key}`
+        `Api routes cannot have platform extensions. Please remove '.${platformExtension}' from './${key}'`
       );
     }
 
@@ -598,7 +600,9 @@ function getMostSpecific(routes: RouteNode[]) {
   const route = routes[routes.length - 1];
 
   if (!routes[0]) {
-    throw new Error(`${route.contextKey} does not contain a non-platform fallback route`);
+    throw new Error(
+      `The file ${route.contextKey} does not have a fallback sibling file without a platform extension.`
+    );
   }
 
   return routes[routes.length - 1];
