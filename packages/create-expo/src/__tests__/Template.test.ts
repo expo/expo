@@ -9,7 +9,7 @@ describe(resolvePackageModuleId, () => {
       type: 'file',
       uri: expect.stringMatching('./path/to/template.tgz'),
     });
-    expect(path.isAbsolute(result.uri)).toBe(true);
+    expect(result.type === 'file' && path.isAbsolute(result.uri)).toBe(true);
   });
   it(`resolves darwin local path`, () => {
     expect(resolvePackageModuleId('./path/to/template.tgz')).toEqual({
@@ -31,6 +31,18 @@ describe(resolvePackageModuleId, () => {
     expect(resolvePackageModuleId('basic')).toEqual({
       type: 'npm',
       uri: 'basic',
+    });
+  });
+  it('resolves github repository url', () => {
+    expect(
+      resolvePackageModuleId(
+        'https://github.com/expo/expo/tree/sdk-49/templates/expo-template-bare-minimum'
+      )
+    ).toMatchObject({
+      type: 'repository',
+      uri: expect.objectContaining({
+        pathname: '/expo/expo/tree/sdk-49/templates/expo-template-bare-minimum',
+      }),
     });
   });
 });

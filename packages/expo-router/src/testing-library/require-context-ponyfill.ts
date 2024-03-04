@@ -3,7 +3,12 @@ import fs from 'node:fs';
 // @ts-ignore: types node
 import path from 'node:path';
 
-import { RequireContext } from '../types';
+import type { RequireContext } from '../types';
+
+interface RequireContextPonyFill extends RequireContext {
+  __add(file: string): void;
+  __delete(file: string): void;
+}
 
 export default function requireContext(
   base = '.',
@@ -23,7 +28,7 @@ export default function requireContext(
         return;
       }
 
-      if (!regularExpression.test(fullPath)) return;
+      if (!regularExpression.test(relativePath)) return;
 
       files[relativePath] = true;
     });
@@ -31,7 +36,7 @@ export default function requireContext(
 
   readDirectory(base);
 
-  const context: RequireContext = Object.assign(
+  const context: RequireContextPonyFill = Object.assign(
     function Module(file: string) {
       return require(path.join(base, file));
     },
@@ -39,6 +44,12 @@ export default function requireContext(
       keys: () => Object.keys(files),
       resolve: (key: string) => key,
       id: '0',
+      __add(file: string) {
+        files[file] = true;
+      },
+      __delete(file: string) {
+        delete files[file];
+      },
     }
   );
 

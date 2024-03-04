@@ -14,8 +14,11 @@
 #include <jsi/jsi.h>
 #include <ReactCommon/CallInvokerHolder.h>
 #include <ReactCommon/CallInvoker.h>
+
 #if REACT_NATIVE_TARGET_VERSION >= 73
+
 #include <ReactCommon/NativeMethodCallInvokerHolder.h>
+
 #endif
 
 #include <memory>
@@ -100,6 +103,10 @@ public:
     jni::local_ref<JavaScriptObject::javaobject> js
   );
 
+  void deleteSharedObject(
+    int objectId
+  );
+
   /**
    * Exposes a `JavaScriptRuntime::drainJSEventLoop` function to Kotlin
    */
@@ -111,6 +118,14 @@ public:
   jni::global_ref<JNIDeallocator::javaobject> jniDeallocator;
 
   bool wasDeallocated = false;
+
+  void registerClass(jni::local_ref<jclass> native,
+                     jni::local_ref<JavaScriptObject::javaobject> jsClass);
+
+  jni::local_ref<JavaScriptObject::javaobject> getJavascriptClass(jni::local_ref<jclass> native);
+
+  ~JSIInteropModuleRegistry();
+
 private:
   friend HybridBase;
   jni::global_ref<JSIInteropModuleRegistry::javaobject> javaPart_;
@@ -127,5 +142,9 @@ private:
   inline bool callHasModule(const std::string &moduleName) const;
 
   void jniWasDeallocated();
+
+  void prepareRuntime();
+
+  void jniSetNativeStateForSharedObject(int id, jni::alias_ref<JavaScriptObject::javaobject> jsObject);
 };
 } // namespace expo

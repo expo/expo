@@ -12,4 +12,11 @@ enum class DecodeFormat(val value: String) : Enumerable {
       RGB_565 -> com.bumptech.glide.load.DecodeFormat.PREFER_RGB_565
     }
   }
+
+  fun toBytes(): Int {
+    return when (this) {
+      ARGB_8888 -> 4
+      RGB_565 -> 2
+    }
+  }
 }

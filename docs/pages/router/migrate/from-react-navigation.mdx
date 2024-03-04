@@ -33,7 +33,7 @@ We recommend making the following modifications to your codebase before beginnin
 
 Refactor screens to [use serializable top-level query parameters](https://reactnavigation.org/docs/params/#what-should-be-in-params). We recommend this in React Navigation as well.
 
-In Expo Router, search parameters can only serializable top-level values such as `number`, `boolean`, and `string`. React Navigation doesn't have the same restrictions, so users can sometimes pass invalid parameters like Functions, Objects, Maps, and so on.
+In Expo Router, search parameters can only serialize top-level values such as `number`, `boolean`, and `string`. React Navigation doesn't have the same restrictions, so users can sometimes pass invalid parameters like Functions, Objects, Maps, and so on.
 
 If your code has something similar to the below:
 
@@ -63,22 +63,21 @@ On web, returning `null` from the root will cause [static rendering](/router/ref
 
 ### Delete unused or managed code
 
-Expo Router automatically adds `react-native-gesture-handler` (when installed) and `react-native-safe-area-context` support.
+Expo Router automatically adds `react-native-safe-area-context` support.
 
 ```diff
-- import { GestureHandlerRootView } from 'react-native-gesture-handler';
 - import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function App() {
   return (
--    <GestureHandlerRootView style={{ flex: 1 }}>
--      <SafeAreaProvider>
-        <MyApp />
--      </SafeAreaProvider>
--    </GestureHandlerRootView>
+-    <SafeAreaProvider>
+      <MyApp />
+-    </SafeAreaProvider>
   )
 }
 ```
+
+Expo Router **does not** add `react-native-gesture-handler` (as of v3), so you'll have to add this yourself if you are using Gesture Handler or `<Drawer />` layout. Avoid using this package on web since it adds a lot of JavaScript that is often unused.
 
 ### Copy screens to the app directory
 
@@ -156,9 +155,11 @@ export default function RootLayout() {
     <Stack>
       <Stack.Screen
         name="(home)"
-        options={/* @info Options can be expressed using the Screen component on a navigator. This has the same types as React Navigation. */{
-          title: 'Home Screen',
-        }/* @end */}
+        options={
+          /* @info Options can be expressed using the Screen component on a navigator. This has the same types as React Navigation. */ {
+            title: 'Home Screen',
+          } /* @end */
+        }
       />
     </Stack>
   );

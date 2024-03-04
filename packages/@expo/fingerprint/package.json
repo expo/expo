@@ -41,7 +41,7 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/fingerprint#readme",
   "dependencies": {
-    "@expo/spawn-async": "^1.5.0",
+    "@expo/spawn-async": "^1.7.2",
     "chalk": "^4.1.2",
     "debug": "^4.3.4",
     "find-up": "^5.0.0",

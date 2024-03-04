@@ -24,7 +24,7 @@ import kotlin.reflect.typeOf
 
 @DefinitionMarker
 class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null) : ObjectDefinitionBuilder() {
-  private var name: String? = null
+  internal var name: String? = null
 
   @PublishedApi
   internal var viewManagerDefinition: ViewManagerDefinition? = null

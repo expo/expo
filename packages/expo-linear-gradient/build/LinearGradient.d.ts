@@ -50,6 +50,13 @@ export type LinearGradientProps = ViewProps & {
      * @default { x: 0.5, y: 1.0 }
      */
     end?: LinearGradientPoint | null;
+    /**
+     * Enables or disables paint dithering. Dithering can reduce the gradient color banding issue.
+     * Setting `false` may improve gradient rendering performance.
+     * @default true
+     * @platform android
+     */
+    dither?: boolean;
 };
 /**
  * Renders a native view that transitions between multiple colors in a linear direction.

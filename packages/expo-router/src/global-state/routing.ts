@@ -1,7 +1,8 @@
-import { type NavigationState } from '@react-navigation/native';
+import { StackActions, type NavigationState } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
+import { nanoid } from 'nanoid/non-secure';
 
-import type { RouterStore } from './router-store';
+import { type RouterStore } from './router-store';
 import { ResultState } from '../fork/getStateFromPath';
 import { Href, resolveHref } from '../link/href';
 import { resolve } from '../link/path';
@@ -23,8 +24,16 @@ export function push(this: RouterStore, url: Href) {
   return this.linkTo(resolveHref(url), 'PUSH');
 }
 
+export function dismiss(this: RouterStore, count?: number) {
+  this.navigationRef?.dispatch(StackActions.pop(count));
+}
+
 export function replace(this: RouterStore, url: Href) {
   return this.linkTo(resolveHref(url), 'REPLACE');
+}
+
+export function dismissAll(this: RouterStore) {
+  this.navigationRef?.dispatch(StackActions.popToTop());
 }
 
 export function goBack(this: RouterStore) {
@@ -42,6 +51,22 @@ export function canGoBack(this: RouterStore): boolean {
     return false;
   }
   return this.navigationRef?.current?.canGoBack() ?? false;
+}
+
+export function canDismiss(this: RouterStore): boolean {
+  let state = this.rootState;
+
+  // Keep traversing down the state tree until we find a stack navigator that we can pop
+  while (state) {
+    if (state.type === 'stack' && state.routes.length > 1) {
+      return true;
+    }
+    if (state.index === undefined) return false;
+
+    state = state.routes?.[state.index]?.state as any;
+  }
+
+  return false;
 }
 
 export function setParams(this: RouterStore, params: Record<string, string | number> = {}) {
@@ -118,10 +143,11 @@ export function linkTo(this: RouterStore, href: string, event?: string) {
 type NavigationParams = Partial<{
   screen: string;
   params: NavigationParams;
+  key?: string;
 }>;
 
 function rewriteNavigationStateToParams(
-  state?: { routes: ResultState['routes'] } | NavigationState,
+  state: { routes: ResultState['routes'] } | NavigationState | undefined,
   params: NavigationParams = {}
 ) {
   if (!state) return params;
@@ -139,21 +165,30 @@ function rewriteNavigationStateToParams(
 }
 
 function getNavigateAction(state: ResultState, parentState: NavigationState, type = 'NAVIGATE') {
-  const route = state.routes[state.routes.length - 1]!;
-
-  const currentRoute = parentState.routes.find((parentRoute) => parentRoute.name === route.name);
-  const routesAreEqual = parentState.routes[parentState.index] === currentRoute;
-
-  // If there is nested state and the routes are equal, we should keep going down the tree
-  if (route.state && routesAreEqual && currentRoute.state) {
-    return getNavigateAction(route.state, currentRoute.state as any, type);
-  }
-
-  // Either we reached the bottom of the state or the point where the routes diverged
   const { screen, params } = rewriteNavigationStateToParams(state);
 
-  if (type === 'PUSH' && parentState.type !== 'stack') {
+  let key: string | undefined;
+
+  if (type === 'PUSH') {
+    /*
+     * The StackAction.PUSH does not work correctly with Expo Router.
+     *
+     * Expo Router provides a getId() function for every route, altering how React Navigation handles stack routing.
+     * Ordinarily, PUSH always adds a new screen to the stack. However, with getId() present, it navigates to the screen with the matching ID instead (by moving the screen to the top of the stack)
+     * When you try and push to a screen with the same ID, no navigation will occur
+     * Refer to: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L279-L290
+     *
+     * Expo Router needs to retain the default behavior of PUSH, consistently adding new screens to the stack, even if their IDs are identical.
+     *
+     * To resolve this issue, we switch to using a NAVIGATE action with a new key. In the navigate action, screens are matched by either key or getId() function.
+     * By generating a unique new key, we ensure that the screen is always pushed onto the stack.
+     *
+     */
     type = 'NAVIGATE';
+
+    if (parentState.type === 'stack') {
+      key = `${screen}-${nanoid()}`; // @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L406-L407
+    }
   } else if (type === 'REPLACE' && parentState.type === 'tab') {
     type = 'JUMP_TO';
   }
@@ -162,6 +197,7 @@ function getNavigateAction(state: ResultState, parentState: NavigationState, typ
     type,
     target: parentState.key,
     payload: {
+      key,
       name: screen,
       params,
     },

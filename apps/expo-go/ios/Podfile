@@ -8,8 +8,8 @@ install! 'cocoapods',
 platform :ios, '13.4'
 inhibit_all_warnings!
 
-# Disable expo-updates auto create manifest in podspec script_phase
-$expo_updates_create_manifest = false
+# Disable expo-updates auto create updates resources in podspec script_phase
+$expo_updates_create_updates_resources = false
 
 target 'Expo Go' do
   pod 'CocoaLumberjack', '~> 3.5.3'
@@ -72,13 +72,11 @@ target 'Expo Go' do
     installer.target_installation_results.pod_target_installation_results
       .each do |pod_name, target_installation_result|
 
-      # Needed for Reanimated to compile
+      # Enable hermes debugger even on release builds
       if pod_name == 'React-hermes' || pod_name == 'hermes-engine'
         target_installation_result.native_target.build_configurations.each do |config|
-          if "Debug" == config.name
-            config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
-            config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << "HERMES_ENABLE_DEBUGGER=1"
-          end
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << "HERMES_ENABLE_DEBUGGER=1"
         end
       end
 

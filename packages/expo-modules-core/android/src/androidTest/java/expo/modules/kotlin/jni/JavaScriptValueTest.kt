@@ -1,9 +1,7 @@
-@file:OptIn(ExperimentalCoroutinesApi::class)
-
 package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import expo.modules.kotlin.jni.extensions.addSingleQuotes
 import org.junit.Before
 import org.junit.Test
 
@@ -12,8 +10,8 @@ class JavaScriptValueTest {
 
   @Before
   fun before() {
-    jsiInterop = JSIInteropModuleRegistry(defaultAppContextMock()).apply {
-      installJSIForTests()
+    jsiInterop = JSIInteropModuleRegistry().apply {
+      installJSIForTests(defaultAppContextMock())
     }
   }
 
@@ -28,7 +26,7 @@ class JavaScriptValueTest {
 
   @Test
   fun should_wrap_strings() {
-    val stringResult = jsiInterop.evaluateScript("\"expo is awesome\"")
+    val stringResult = jsiInterop.evaluateScript("expo is awesome".addSingleQuotes())
 
     Truth.assertThat(stringResult.kind()).isEqualTo("string")
     Truth.assertThat(stringResult.isString()).isEqualTo(true)
@@ -46,7 +44,7 @@ class JavaScriptValueTest {
 
   @Test
   fun should_wrap_objects() {
-    val objectResult = jsiInterop.evaluateScript("({\"p1\":123})")
+    val objectResult = jsiInterop.evaluateScript("({'p1':123})")
 
     Truth.assertThat(objectResult.kind()).isEqualTo("object")
     Truth.assertThat(objectResult.isObject()).isEqualTo(true)
@@ -67,20 +65,17 @@ class JavaScriptValueTest {
   @Test
   fun should_be_passed_as_a_reference() {
     var receivedObject: JavaScriptObject? = null
-    withJSIInterop(
-      inlineModule {
-        Name("TestModule")
-        Function("f") { jsValue: JavaScriptValue ->
-          val jsObject = jsValue.getObject()
-          receivedObject = jsObject
-          jsObject.setProperty("expo", 123)
-        }
+    withSingleModule({
+      Function("f") { jsValue: JavaScriptValue ->
+        val jsObject = jsValue.getObject()
+        receivedObject = jsObject
+        jsObject.setProperty("expo", 123)
       }
-    ) {
+    }) {
       val result = evaluateScript(
         """
         const x = {};
-        expo.modules.TestModule.f(x);
+        $moduleRef.f(x);
         x
         """.trimIndent()
       ).getObject()
@@ -91,13 +86,10 @@ class JavaScriptValueTest {
   }
 
   @Test
-  fun null_should_be_pass_as_js_value() = withJSIInterop(
-    inlineModule {
-      Name("TestModule")
-      Function("f") { a: JavaScriptValue -> a.isNull() }
-    }
-  ) {
-    val value = evaluateScript("expo.modules.TestModule.f(null)").getBool()
+  fun null_should_be_pass_as_js_value() = withSingleModule({
+    Function("f") { a: JavaScriptValue -> a.isNull() }
+  }) {
+    val value = call("f", "null").getBool()
     Truth.assertThat(value).isTrue()
   }
 }

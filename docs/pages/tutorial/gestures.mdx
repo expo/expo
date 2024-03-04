@@ -23,39 +23,15 @@ In this chapter, we are going to add two different gestures using the React Nati
 ## Install and configure libraries
 
 The React Native Gesture Handler library provides a way to interact with the native platform's gesture response system.
-To animate between gesture states, we will use the [Reanimated library](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/handling-gestures).
+To animate between gesture states, we will use the [Reanimated library](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/handling-gestures/).
 
 To install them, stop the development server by pressing <kbd>Ctrl</kbd> + <kbd>c</kbd> and run the following command in the terminal:
 
 <Terminal cmd={['$ npx expo install react-native-gesture-handler react-native-reanimated']} />
 
-Next, also install `@babel/plugin-proposal-export-namespace-from`, which is required to configure the Reanimated library:
-
-<Terminal cmd={['$ npm install -D @babel/plugin-proposal-export-namespace-from ']} />
-
-Then, add Reanimated's Babel plugin to **babel.config.js**:
-
-{/* prettier-ignore */}
-```jsx babel.config.js
-module.exports = function (api) {
-  api.cache(true);
-  return {
-    presets: ['babel-preset-expo'],
-    /* @info Add the plugins array and inside it, add the plugins.*/
-    plugins: [
-      "@babel/plugin-proposal-export-namespace-from",
-      "react-native-reanimated/plugin",
-    ],
-    /* @end */
-  };
-};
-```
-
 Now, start the development server again:
 
-<Terminal cmd={['$ npx expo start -c']} />
-
-> **Tip**: We are using `-c` option here because we modified the **babel.config.js** file.
+<Terminal cmd={['$ npx expo start']} />
 
 To get gesture interactions to work in the app, we'll render `<GestureHandlerRootView>` from `react-native-gesture-handler` to wrap the top-level component of our app (also known as the "root component").
 

@@ -1,5 +1,6 @@
 import { ConfigAPI, PluginItem, TransformOptions } from '@babel/core';
 
+import { reactClientReferencesPlugin } from './client-module-proxy-plugin';
 import {
   getBaseUrl,
   getBundler,
@@ -7,12 +8,15 @@ import {
   getIsDev,
   getIsFastRefreshEnabled,
   getIsProd,
+  getIsReactServer,
   hasModule,
 } from './common';
+import { environmentRestrictedImportsPlugin } from './environment-restricted-imports';
 import { expoInlineManifestPlugin } from './expo-inline-manifest-plugin';
 import { expoRouterBabelPlugin } from './expo-router-plugin';
 import { expoInlineEnvVars, expoInlineTransformEnvVars } from './inline-env-vars';
 import { lazyImports } from './lazyImports';
+import { environmentRestrictedReactAPIsPlugin } from './restricted-react-api-plugin';
 
 type BabelPresetExpoPlatformOptions = {
   /** Enable or disable adding the Reanimated plugin by default. @default `true` */
@@ -61,6 +65,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   let platform = api.caller((caller) => (caller as any)?.platform);
   const engine = api.caller((caller) => (caller as any)?.engine) ?? 'default';
   const isDev = api.caller(getIsDev);
+  const isReactServer = api.caller(getIsReactServer);
   const isFastRefreshEnabled = api.caller(getIsFastRefreshEnabled);
   const baseUrl = api.caller(getBaseUrl);
   const supportsStaticESM: boolean | undefined = api.caller(
@@ -104,10 +109,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     // `@react-native/babel-preset` configures this plugin with `{ loose: true }`, which breaks all
     // getters and setters in spread objects. We need to add this plugin ourself without that option.
     // @see https://github.com/expo/expo/pull/11960#issuecomment-887796455
-    extraPlugins.push([
-      require.resolve('@babel/plugin-transform-object-rest-spread'),
-      { loose: false },
-    ]);
+    extraPlugins.push([require('@babel/plugin-transform-object-rest-spread'), { loose: false }]);
   } else {
     // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
     // JSX is used in a function body. This is technically not required in production, but we
@@ -158,7 +160,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   }
 
   if (platform === 'web') {
-    extraPlugins.push(require.resolve('babel-plugin-react-native-web'));
+    extraPlugins.push(require('babel-plugin-react-native-web'));
 
     // Webpack uses the DefinePlugin to provide the manifest to `expo-constants`.
     if (bundler !== 'webpack') {
@@ -169,6 +171,17 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   if (hasModule('expo-router')) {
     extraPlugins.push(expoRouterBabelPlugin);
   }
+
+  // Ensure these only run when the user opts-in to bundling for a react server to prevent unexpected behavior for
+  // users who are bundling using the client-only system.
+  if (isReactServer) {
+    extraPlugins.push(reactClientReferencesPlugin);
+
+    extraPlugins.push(environmentRestrictedReactAPIsPlugin);
+  }
+
+  // This plugin is fine to run whenever as the server-only imports were introduced as part of RSC and shouldn't be used in any client code.
+  extraPlugins.push(environmentRestrictedImportsPlugin);
 
   if (isFastRefreshEnabled) {
     extraPlugins.push([
@@ -255,12 +268,12 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     plugins: [
       ...extraPlugins,
       // TODO: Remove
-      [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
-      require.resolve('@babel/plugin-transform-export-namespace-from'),
+      [require('@babel/plugin-proposal-decorators'), { legacy: true }],
+      require('@babel/plugin-transform-export-namespace-from'),
       // Automatically add `react-native-reanimated/plugin` when the package is installed.
       // TODO: Move to be a customTransformOption.
       hasModule('react-native-reanimated') &&
-        platformOptions.reanimated !== false && [require.resolve('react-native-reanimated/plugin')],
+        platformOptions.reanimated !== false && [require('react-native-reanimated/plugin')],
     ].filter(Boolean) as PluginItem[],
   };
 }

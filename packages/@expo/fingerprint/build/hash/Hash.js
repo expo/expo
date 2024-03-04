@@ -45,7 +45,7 @@ async function createFingerprintSourceAsync(source, limiter, projectRoot, option
             result = await createFileHashResultsAsync(source.filePath, limiter, projectRoot, options);
             break;
         case 'dir':
-            result = await (0, Profile_1.profile)(createDirHashResultsAsync, `createDirHashResultsAsync(${source.filePath})`)(source.filePath, limiter, projectRoot, options);
+            result = await (0, Profile_1.profile)(options, createDirHashResultsAsync, `createDirHashResultsAsync(${source.filePath})`)(source.filePath, limiter, projectRoot, options);
             break;
         default:
             throw new Error('Unsupported source type');

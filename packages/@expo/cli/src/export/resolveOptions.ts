@@ -10,6 +10,7 @@ export type Options = {
   dev: boolean;
   clear: boolean;
   minify: boolean;
+  bytecode: boolean;
   dumpAssetmap: boolean;
   sourceMaps: boolean;
 };
@@ -34,9 +35,15 @@ export function resolvePlatformOption(
 
   const assertPlatformBundler = (platform: Platform): Platform => {
     if (!platformsAvailable[platform]) {
+      if (!exp.platforms?.includes(platform) && platform === 'web') {
+        // Pass through so the more robust error message is shown.
+        return platform;
+      }
       throw new CommandError(
         'BAD_ARGS',
-        `Platform "${platform}" is not configured to use the Metro bundler in the project Expo config.`
+        `Platform "${platform}" is not configured to use the Metro bundler in the project Expo config, or is missing from the supported platforms in the platforms array: [${exp.platforms?.join(
+          ', '
+        )}].`
       );
     }
 
@@ -75,6 +82,7 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
     platforms: resolvePlatformOption(exp, platformBundlers, args['--platform']),
     outputDir: args['--output-dir'] ?? 'dist',
     minify: !args['--no-minify'],
+    bytecode: !args['--no-bytecode'],
     clear: !!args['--clear'],
     dev: !!args['--dev'],
     maxWorkers: args['--max-workers'],

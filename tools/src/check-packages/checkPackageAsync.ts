@@ -16,13 +16,22 @@ export default async function checkPackageAsync(
   options: ActionOptions
 ): Promise<boolean> {
   try {
-    if (options.isPlugin) {
-      logger.info(`🔌 Checking ${green.bold(pkg.packageName)} plugin`);
-    } else {
-      logger.info(`🔍 Checking ${green.bold(pkg.packageName)} package`);
+    switch (options.checkPackageType) {
+      case 'package':
+        logger.info(`🔍 Checking ${green.bold(pkg.packageName)} package`);
+        break;
+      case 'plugin':
+        logger.info(`🔌 Checking ${green.bold(pkg.packageName)} plugin`);
+        break;
+      case 'cli':
+        logger.info(`🍣 Checking ${green.bold(pkg.packageName)} cli`);
+        break;
+      case 'utils':
+        logger.info(`🥜 Checking ${green.bold(pkg.packageName)} utils`);
+        break;
     }
 
-    const args = options.isPlugin ? ['plugin'] : [];
+    const args = options.checkPackageType === 'package' ? [] : [options.checkPackageType];
     if (options.build) {
       await runPackageScriptAsync(pkg, 'clean', args);
       await runPackageScriptAsync(pkg, 'build', args);
@@ -31,7 +40,11 @@ export default async function checkPackageAsync(
       }
 
       if (options.uniformityCheck) {
-        await checkUniformityAsync(pkg, './build');
+        if (options.checkPackageType === 'package') {
+          await checkUniformityAsync(pkg, './build');
+        } else {
+          await checkUniformityAsync(pkg, `./${options.checkPackageType}/build`);
+        }
         if (pkg.scripts.bundle) {
           await checkUniformityAsync(pkg, '*bundle');
         }
@@ -39,8 +52,8 @@ export default async function checkPackageAsync(
     }
     if (options.test) {
       const args = ['--watch', 'false', '--passWithNoTests'];
-      if (options.isPlugin) {
-        args.unshift('plugin');
+      if (options.checkPackageType !== 'package') {
+        args.unshift(options.checkPackageType);
       }
       if (process.env.CI) {
         // Limit to one worker on CIs
@@ -50,8 +63,8 @@ export default async function checkPackageAsync(
     }
     if (options.lint) {
       const args = ['--max-warnings', '0'];
-      if (options.isPlugin) {
-        args.unshift('plugin');
+      if (options.checkPackageType !== 'package') {
+        args.unshift(options.checkPackageType);
       }
       if (options.fixLint) {
         args.push('--fix');
@@ -60,8 +73,21 @@ export default async function checkPackageAsync(
     }
     logger.log(`✨ ${green.bold(pkg.packageName)} checks passed`);
 
-    if (!options.isPlugin && pkg.hasPlugin) {
-      return await checkPackageAsync(pkg, { ...options, isPlugin: true });
+    if (options.checkPackageType === 'package') {
+      let finalResult: boolean = true;
+      if (pkg.hasPlugin) {
+        finalResult =
+          finalResult && (await checkPackageAsync(pkg, { ...options, checkPackageType: 'plugin' }));
+      }
+      if (pkg.hasCli) {
+        finalResult =
+          finalResult && (await checkPackageAsync(pkg, { ...options, checkPackageType: 'cli' }));
+      }
+      if (pkg.hasUtils) {
+        finalResult =
+          finalResult && (await checkPackageAsync(pkg, { ...options, checkPackageType: 'utils' }));
+      }
+      return finalResult;
     }
     return true;
   } catch {

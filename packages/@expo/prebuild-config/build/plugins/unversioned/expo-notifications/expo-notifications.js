@@ -31,7 +31,7 @@ const withNotificationsEntitlement = (config, mode) => {
     return config;
   });
 };
-var _default = (0, _createLegacyPlugin().createLegacyPlugin)({
+var _default = exports.default = (0, _createLegacyPlugin().createLegacyPlugin)({
   packageName: 'expo-notifications',
   fallback: [
   // Android
@@ -39,5 +39,4 @@ var _default = (0, _createLegacyPlugin().createLegacyPlugin)({
   // iOS
   [withNotificationsEntitlement, 'development']]
 });
-exports.default = _default;
 //# sourceMappingURL=expo-notifications.js.map

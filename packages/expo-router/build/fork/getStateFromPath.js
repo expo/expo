@@ -18,6 +18,7 @@ function getUrlWithReactNavigationConcessions(path, baseUrl = process.env.EXPO_B
         return {
             nonstandardPathname: '',
             inputPathnameWithoutHash: '',
+            url: null,
         };
     }
     const pathname = parsed.pathname;
@@ -27,6 +28,7 @@ function getUrlWithReactNavigationConcessions(path, baseUrl = process.env.EXPO_B
         nonstandardPathname: stripBaseUrl(pathname, baseUrl).replace(/^\/+/g, '').replace(/\/+$/g, '') + '/',
         // React Navigation doesn't support hashes, so here
         inputPathnameWithoutHash: stripBaseUrl(path, baseUrl).replace(/#.*$/, ''),
+        url: parsed,
     };
 }
 exports.getUrlWithReactNavigationConcessions = getUrlWithReactNavigationConcessions;
@@ -263,10 +265,16 @@ function getStateFromEmptyPathWithConfigs(path, configs, initialRoutes) {
     });
     return createNestedStateObject(path, routes, configs, initialRoutes);
 }
-function getStateFromPathWithConfigs(path, configs, initialRoutes) {
+function getStateFromPathWithConfigs(path, configs, initialRoutes, baseUrl = process.env.EXPO_BASE_URL) {
     const formattedPaths = getUrlWithReactNavigationConcessions(path);
+    if (!formattedPaths.url)
+        return;
+    let cleanPath = stripBaseUrl((0, matchers_1.stripGroupSegmentsFromPath)(formattedPaths.url.pathname), baseUrl) +
+        formattedPaths.url.search;
+    if (!path.startsWith('/'))
+        cleanPath = cleanPath.slice(1);
     if (formattedPaths.nonstandardPathname === '/') {
-        return getStateFromEmptyPathWithConfigs(formattedPaths.inputPathnameWithoutHash, configs, initialRoutes);
+        return getStateFromEmptyPathWithConfigs(cleanPath, configs, initialRoutes);
     }
     // We match the whole path against the regex instead of segments
     // This makes sure matches such as wildcard will catch any unmatched routes, even if nested
@@ -275,7 +283,7 @@ function getStateFromPathWithConfigs(path, configs, initialRoutes) {
         return undefined;
     }
     // This will always be empty if full path matched
-    return createNestedStateObject(formattedPaths.inputPathnameWithoutHash, routes, configs, initialRoutes);
+    return createNestedStateObject(cleanPath, routes, configs, initialRoutes);
 }
 const joinPaths = (...paths) => []
     .concat(...paths.map((p) => p.split('/')))
@@ -474,7 +482,7 @@ const findInitialRoute = (routeName, parentScreens, initialRoutes) => {
 };
 // returns state object with values depending on whether
 // it is the end of state and if there is initialRoute for this level
-const createStateObject = (initialRoute, route, isEmpty) => {
+const createStateObject = (route, isEmpty, initialRoute) => {
     if (isEmpty) {
         if (initialRoute) {
             return {
@@ -501,13 +509,13 @@ const createNestedStateObject = (path, routes, routeConfigs, initialRoutes) => {
     const parentScreens = [];
     let initialRoute = findInitialRoute(route.name, parentScreens, initialRoutes);
     parentScreens.push(route.name);
-    const state = createStateObject(initialRoute, route, routes.length === 0);
+    const state = createStateObject(route, routes.length === 0, initialRoute);
     if (routes.length > 0) {
         let nestedState = state;
         while ((route = routes.shift())) {
             initialRoute = findInitialRoute(route.name, parentScreens, initialRoutes);
             const nestedStateIndex = nestedState.index || nestedState.routes.length - 1;
-            nestedState.routes[nestedStateIndex].state = createStateObject(initialRoute, route, routes.length === 0);
+            nestedState.routes[nestedStateIndex].state = createStateObject(route, routes.length === 0, initialRoute);
             if (routes.length > 0) {
                 nestedState = nestedState.routes[nestedStateIndex].state;
             }
@@ -516,7 +524,7 @@ const createNestedStateObject = (path, routes, routeConfigs, initialRoutes) => {
     }
     route = (0, findFocusedRoute_1.findFocusedRoute)(state);
     // Remove groups from the path while preserving a trailing slash.
-    route.path = (0, matchers_1.stripGroupSegmentsFromPath)(path);
+    route.path = path;
     const params = parseQueryParams(route.path, findParseConfigForRoute(route.name, routeConfigs));
     if (params) {
         route.params = Object.assign(Object.create(null), route.params);

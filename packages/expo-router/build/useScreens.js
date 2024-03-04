@@ -137,30 +137,32 @@ function getQualifiedRouteComponent(value) {
 exports.getQualifiedRouteComponent = getQualifiedRouteComponent;
 /** @returns a function which provides a screen id that matches the dynamic route name in params. */
 function createGetIdForRoute(route) {
-    if (!route.dynamic?.length) {
-        return undefined;
+    const include = new Map();
+    if (route.dynamic) {
+        for (const segment of route.dynamic) {
+            include.set(segment.name, segment);
+        }
     }
-    return ({ params }) => {
-        const getPreferredId = (segment) => {
-            // Params can be undefined when there are no params in the route.
-            const preferredId = params?.[segment.name];
-            // If the route has a dynamic segment, use the matching parameter
-            // as the screen id. This enables pushing a screen like `/[user]` multiple times
-            // when the user is different.
-            if (preferredId) {
-                if (!Array.isArray(preferredId)) {
-                    return preferredId;
-                }
-                else if (preferredId.length) {
-                    // Deep dynamic routes will return as an array, so we'll join them to create a
-                    // fully qualified string.
-                    return preferredId.join('/');
-                }
-                // Empty arrays...
+    return ({ params = {} } = {}) => {
+        const segments = [];
+        for (const dynamic of include.values()) {
+            const value = params?.[dynamic.name];
+            if (Array.isArray(value) && value.length > 0) {
+                // If we are an array with a value
+                segments.push(value.join('/'));
             }
-            return segment.deep ? `[...${segment.name}]` : `[${segment.name}]`;
-        };
-        return route.dynamic?.map((segment) => getPreferredId(segment)).join('/');
+            else if (value && !Array.isArray(value)) {
+                // If we have a value and not an empty array
+                segments.push(value);
+            }
+            else if (dynamic.deep) {
+                segments.push(`[...${dynamic.name}]`);
+            }
+            else {
+                segments.push(`[${dynamic.name}]`);
+            }
+        }
+        return segments.join('/') ?? route.contextKey;
     };
 }
 exports.createGetIdForRoute = createGetIdForRoute;

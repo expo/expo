@@ -5,10 +5,14 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
- 
+
+- Add background playback support. ([#27110](https://github.com/expo/expo/pull/27110) by [@behenate](https://github.com/behenate))
+- Add DRM support for Android and iOS. ([#26465](https://github.com/expo/expo/pull/26465) by [@behenate](https://github.com/behenate))
+- [Android] Add Picture in Picture support. ([#26368](https://github.com/expo/expo/pull/26368) by [@behenate](https://github.com/behenate))
 - [Android] Add fullscreen support. ([#26159](https://github.com/expo/expo/pull/26159) by [@behenate](https://github.com/behenate))
 - [web] Add volume ([#26137](https://github.com/expo/expo/pull/26137) by [@behenate](https://github.com/behenate))
 - Initial release for Android 🎉 ([#26033](https://github.com/expo/expo/pull/26033) by [@behenate](https://github.com/behenate))
+- [Android] Adds support for boarders. ([#27003](https://github.com/expo/expo/pull/27003) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 

@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import Constants from 'expo-constants';
 import React, { Text } from 'react-native';
 
 import {
@@ -548,7 +547,7 @@ it('can pop back from a nested modal to a nested sibling', async () => {
   expect(screen).toHavePathname('/slot');
 });
 
-it.only('supports multi-level 404s', async () => {
+it('supports multi-level 404s', async () => {
   renderRouter({
     index: () => <Text>found</Text>,
     '+not-found': () => <Text>404</Text>,
@@ -649,25 +648,12 @@ it('can deep link, pop back, and move around with initialRouteName in root layou
   expect(screen).toHavePathname('/a/b');
 });
 
-jest.mock('expo-constants', () => ({
-  __esModule: true,
-  ExecutionEnvironment: jest.requireActual('expo-constants').ExecutionEnvironment,
-  default: {
-    expoConfig: {},
-  },
-}));
-
 afterEach(() => {
-  Constants.expoConfig!.experiments = undefined;
+  delete process.env.EXPO_BASE_URL;
 });
 
 it('respects baseUrl', async () => {
-  // @ts-expect-error
-  Constants.expoConfig = {
-    experiments: {
-      baseUrl: '/one/two',
-    },
-  };
+  process.env.EXPO_BASE_URL = '/one/two';
 
   renderRouter({
     index: function Index() {
@@ -759,22 +745,13 @@ it('can push nested stacks with initial route names without creating circular re
   expect(screen).toHavePathname('/menu/123');
 });
 
-it('can push & replace with nested Slots', async () => {
+it('can replace with nested Slots', async () => {
   renderRouter({
     _layout: () => <Slot />,
     index: () => <Text testID="index" />,
     'one/_layout': () => <Slot />,
     'one/index': () => <Text testID="one" />,
   });
-
-  // Push
-  act(() => router.push('/one'));
-  expect(screen).toHavePathname('/one');
-  expect(screen.getByTestId('one')).toBeOnTheScreen();
-
-  act(() => router.push('/'));
-  expect(screen).toHavePathname('/');
-  expect(screen.getByTestId('index')).toBeOnTheScreen();
 
   // Replace
   act(() => router.replace('/one'));
@@ -783,6 +760,19 @@ it('can push & replace with nested Slots', async () => {
 
   act(() => router.replace('/'));
   expect(screen).toHavePathname('/');
+});
+
+it('can push with top-level catch-all route', () => {
+  renderRouter({
+    '[...all]': () => <Text testID="index" />,
+  });
+
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('index')).toBeOnTheScreen();
+
+  // // If we push once and go back, we are back to index
+  act(() => router.push('/test'));
+  expect(screen.getByTestId('index')).toBeOnTheScreen();
 });
 
 it('can push the same route multiple times', () => {
@@ -1014,6 +1004,42 @@ describe('consistent url encoding', () => {
     );
   });
 
+  it('can handle parenthesis in the url', async () => {
+    renderRouter(
+      {
+        '[param]': () => {
+          const local = useLocalSearchParams();
+          const global = useGlobalSearchParams();
+          return <Text testID="id">{JSON.stringify({ local, global })}</Text>;
+        },
+        '(app)/value/[param]': () => {
+          const local = useLocalSearchParams();
+          const global = useGlobalSearchParams();
+          return <Text testID="id">{JSON.stringify({ local, global })}</Text>;
+        },
+      },
+      {
+        initialUrl: '/(param)',
+      }
+    );
+
+    let component = screen.getByTestId('id');
+    expect(screen).toHavePathname('/(param)');
+    expect(screen).toHaveSearchParams({ param: '(param)' });
+    expect(component).toHaveTextContent(
+      JSON.stringify({ local: { param: '(param)' }, global: { param: '(param)' } })
+    );
+
+    act(() => router.push('/(app)/value/(param)'));
+
+    component = screen.getByTestId('id');
+    expect(screen).toHavePathname('/value/(param)');
+    expect(screen).toHaveSearchParams({ param: '(param)' });
+    expect(component).toHaveTextContent(
+      JSON.stringify({ local: { param: '(param)' }, global: { param: '(param)' } })
+    );
+  });
+
   it('can handle non-url encoded percent sign deep linking', async () => {
     renderRouter(
       {
@@ -1174,5 +1200,43 @@ describe('consistent url encoding', () => {
     expect(component).toHaveTextContent(
       JSON.stringify({ local: { param: 'start%end' }, global: { param: 'start%end' } })
     );
+  });
+});
+
+describe('stack unwinding', () => {
+  it('navigate will unwind the stack', () => {
+    renderRouter(
+      {
+        '[test]': () => null,
+      },
+      {
+        initialUrl: '/a',
+      }
+    );
+
+    act(() => router.navigate('/a')); // This will rerender and not push
+    act(() => router.navigate('/b'));
+    act(() => router.navigate('/c'));
+    act(() => router.navigate('/a')); // This will unwind the stack
+
+    expect(router.canGoBack()).toBe(false);
+  });
+
+  it('push will never unwind the stack', () => {
+    renderRouter(
+      {
+        '[test]': () => null,
+      },
+      {
+        initialUrl: '/a',
+      }
+    );
+
+    act(() => router.push('/a'));
+    act(() => router.push('/b'));
+    act(() => router.push('/c'));
+    act(() => router.push('/a')); // This will unwind the stack
+
+    expect(router.canGoBack()).toBe(true); //
   });
 });

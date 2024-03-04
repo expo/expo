@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+- Update error message to reflect that web crypto works on web with a localhost hostname and often doesn't require `https`. ([#26729](https://github.com/expo/expo/pull/26729) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 12.8.1 - 2024-02-16
+
+### 🎉 New features
+
+- Added support for macOS platform. ([#26831](https://github.com/expo/expo/pull/26831) by [@tsapeta](https://github.com/tsapeta))
+
 ## 12.8.0 — 2023-11-14
 
 ### 🛠 Breaking changes

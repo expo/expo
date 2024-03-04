@@ -1,7 +1,7 @@
 import ZXingObjC
 import AVFoundation
 
-let BARCODE_TYPES_KEY = "barCodeTypes"
+let BARCODE_TYPES_KEY = "barcodeTypes"
 
 class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptureVideoDataOutputSampleBufferDelegate {
   var onBarcodeScanned: (([String: Any]?) -> Void)?
@@ -42,7 +42,7 @@ class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
         let zxingCoveredTypes = Set(zxingBarcodeReaders.keys)
         zxingEnabled = !zxingCoveredTypes.isDisjoint(with: newTypes)
         sessionQueue.async {
-          self.maybeStartBarCodeScanning()
+          self.maybeStartBarcodeScanning()
         }
       }
     }
@@ -59,7 +59,7 @@ class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
         if self.metadataOutput != nil {
           self.setConnection(enabled: true)
         } else {
-          self.maybeStartBarCodeScanning()
+          self.maybeStartBarcodeScanning()
         }
       } else {
         self.setConnection(enabled: false)
@@ -73,7 +73,7 @@ class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
     }
   }
 
-  func maybeStartBarCodeScanning() {
+  func maybeStartBarcodeScanning() {
     guard isScanningBarcodes else {
       return
     }
@@ -93,7 +93,7 @@ class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
     metadataOutput?.metadataObjectTypes = requestedTypes
   }
 
-  func stopBarCodeScanning() {
+  func stopBarcodeScanning() {
     removeOutputs()
     if isScanningBarcodes {
       onBarcodeScanned?(nil)
@@ -198,7 +198,7 @@ class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
   }
 
   func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-    guard let barCodeTypes = settings[BARCODE_TYPES_KEY],
+    guard let barcodeTypes = settings[BARCODE_TYPES_KEY],
       let metadataOutput,
       zxingEnabled else {
       return
@@ -217,8 +217,8 @@ class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
 
       if let videoFrame = CMSampleBufferGetImageBuffer(sampleBuffer),
       let videoFrameImage = ZXCGImageLuminanceSource.createImage(from: videoFrame) {
-        self.scanBarcodes(from: videoFrameImage) { barCodeScannerResult in
-          self.onBarcodeScanned?(BarcodeScannerUtils.zxResultToDictionary(barCodeScannerResult))
+        self.scanBarcodes(from: videoFrameImage) { barcodeScannerResult in
+          self.onBarcodeScanned?(BarcodeScannerUtils.zxResultToDictionary(barcodeScannerResult))
         }
       }
     }

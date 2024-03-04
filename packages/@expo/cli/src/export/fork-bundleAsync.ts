@@ -22,6 +22,7 @@ import {
   ExpoMetroBundleOptions,
   getMetroDirectBundleOptionsForExpoConfig,
 } from '../start/server/middleware/metroOptions';
+import { CommandError } from '../utils/errors';
 
 export type MetroDevServerOptions = LoadOptions;
 
@@ -30,6 +31,7 @@ export type BundleOptions = {
   platform: 'android' | 'ios' | 'web';
   dev?: boolean;
   minify?: boolean;
+  bytecode: boolean;
   sourceMapUrl?: string;
   sourcemaps?: boolean;
 };
@@ -69,6 +71,7 @@ export async function createBundlesAsync(
     platforms: Platform[];
     dev?: boolean;
     minify?: boolean;
+    bytecode: boolean;
     sourcemaps?: boolean;
     entryPoint?: string;
   }
@@ -92,6 +95,7 @@ export async function createBundlesAsync(
         bundleOptions.entryPoint ?? getEntryWithServerRoot(projectRoot, { platform, pkg }),
       sourcemaps: bundleOptions.sourcemaps,
       minify: bundleOptions.minify,
+      bytecode: bundleOptions.bytecode,
       dev: bundleOptions.dev,
     }))
   );
@@ -104,6 +108,17 @@ export async function createBundlesAsync(
     }),
     {}
   );
+}
+
+function assertMetroConfig(
+  config: ConfigT
+): asserts config is ConfigT & { serializer: NonNullable<ConfigT['serializer']> } {
+  if (!config.serializer?.customSerializer) {
+    throw new CommandError(
+      'METRO_CONFIG_MALFORMED',
+      `The Metro bundler configuration is missing required features from 'expo/metro-config' and cannot be used with Expo CLI. Ensure the metro.config.js file is extending 'expo/metro-config'. Learn more: https://docs.expo.dev/guides/customizing-metro`
+    );
+  }
 }
 
 async function bundleProductionMetroClientAsync(
@@ -123,6 +138,8 @@ async function bundleProductionMetroClientAsync(
     isExporting: true,
   });
 
+  assertMetroConfig(config);
+
   const metroServer = await Metro.runMetro(config, {
     watch: false,
   });
@@ -137,15 +154,16 @@ async function bundleProductionMetroClientAsync(
       ...Server.DEFAULT_BUNDLE_OPTIONS,
       sourceMapUrl: bundle.sourceMapUrl,
       ...getMetroDirectBundleOptionsForExpoConfig(projectRoot, expoConfig, {
+        minify: bundle.minify,
         mainModuleName: bundle.entryPoint,
         platform: bundle.platform,
         mode: bundle.dev ? 'development' : 'production',
         engine: isHermes ? 'hermes' : undefined,
         serializerIncludeMaps: bundle.sourcemaps,
+        bytecode: bundle.bytecode && isHermes,
         // Bundle splitting on web-only for now.
         // serializerOutput: bundle.platform === 'web' ? 'static' : undefined,
         serializerOutput: 'static',
-        serializerIncludeBytecode: isHermes,
         isExporting: true,
       }),
       bundleType: 'bundle',
@@ -310,6 +328,8 @@ async function forkMetroBuildAsync(
     // Custom options we pass to the serializer to emulate the URL query parameters.
     serializerOptions: options.serializerOptions,
   };
+
+  assertMetroConfig(metro._config);
 
   const bundle = await metro._config.serializer.customSerializer!(
     entryPoint,

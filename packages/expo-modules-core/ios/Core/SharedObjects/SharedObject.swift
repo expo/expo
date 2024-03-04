@@ -18,6 +18,11 @@ open class SharedObject: AnySharedObject {
   public internal(set) var sharedObjectId: SharedObjectId = 0
 
   /**
+   An app context for which the shared object was created.
+   */
+  public internal(set) weak var appContext: AppContext?
+
+  /**
    The default public initializer of the shared object.
    */
   public init() {}
@@ -26,6 +31,24 @@ open class SharedObject: AnySharedObject {
    Returns the JavaScript shared object associated with the native shared object.
    */
   public func getJavaScriptObject() -> JavaScriptObject? {
-    return SharedObjectRegistry.toJavaScriptObject(self)
+    return appContext?.sharedObjectRegistry.toJavaScriptObject(self)
+  }
+
+  /**
+   Sends an event with the given name and arguments to the associated JavaScript object.
+   NOTE: For now this must be run from the JavaScript thread!
+   TODO: Use the runtime executor to ensure running on the proper thread.
+   */
+  public func sendEvent(name eventName: String, args: AnyArgument...) {
+    let jsObject = self.getJavaScriptObject()
+
+    do {
+      try jsObject?
+        .getProperty("emit")
+        .asFunction()
+        .call(withArguments: [eventName] + args, thisObject: jsObject, asConstructor: false)
+    } catch {
+      log.error("Unable to send event '\(eventName)' by shared object of type \(String(describing: Self.self))", error)
+    }
   }
 }

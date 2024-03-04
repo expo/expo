@@ -1,5 +1,8 @@
+// Copyright © 2024 650 Industries.
+'use client';
+
 import { createURL } from 'expo-linking';
-import React from 'react';
+import React, { type PropsWithChildren } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { usePathname, useRouter } from '../hooks';
@@ -8,7 +11,7 @@ import { useNavigation } from '../useNavigation';
 
 const useLayoutEffect = typeof window !== 'undefined' ? React.useLayoutEffect : function () {};
 
-function NoSSR({ children }: { children: React.ReactNode }) {
+function NoSSR({ children }: PropsWithChildren) {
   const [render, setRender] = React.useState(false);
   React.useEffect(() => {
     setRender(true);

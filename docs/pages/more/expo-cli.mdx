@@ -8,7 +8,7 @@ import { Terminal } from '~/ui/components/Snippet';
 import { StatusTag } from '~/ui/components/Tag';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
-> **info** This documentation refers to the Local Expo CLI (SDK 46 and above). For information on legacy Expo CLI, see [Global Expo CLI](/archive/expo-cli).
+> **info** This documentation refers to the Local Expo CLI. For information on legacy CLI, see [Global Expo CLI](/archive/expo-cli).
 
 The `expo` package provides a small and powerful CLI tool `npx expo` which is designed to keep you moving fast during app development.
 
@@ -185,7 +185,7 @@ For example, if your project does not have an **ios** directory in the root of y
 - `--no-install`: Skip installing dependencies. On iOS, this will also skip running `npx pod-install` if the `dependencies` field in the project's `package.json` has changed.
 - `--no-bundler`: Skip starting the dev server. Enabled automatically if the dev server is already serving the app from a different process.
 - `-d, --device [device]`: Device name or ID to build the app on. You can pass `--device` without arguments to select a device from a list of available options. This supports connected devices as well as virtual devices.
-- `-p, --port <port>`: Port to start the development server. **Default: 8081**. This is only relevant for development builds. Production builds will [export](#exporting) the project and embeds the files in the native binary before installing them on a device.
+- `-p, --port <port>`: Port to start the development server. **Default: 8081**. This is only relevant for development builds. Production builds will [export](#exporting) the project and embed the files in the native binary before installing them on a device.
 
 #### Compiling Android
 
@@ -199,7 +199,7 @@ You can compile the Android app for production by running:
 
 This build is not automatically code-signed for submission to the Google Play Store. This command should be used to test bugs that may only show up in production builds. To generate a production build that is code signed for the Play Store, we recommend using [EAS Build](/build/introduction).
 
-You can debug the native Android project using native debugging tools by opening the `android/` folder in Android Studio:
+You can debug the native Android project using native debugging tools by opening the **android** directory in Android Studio:
 
 <Terminal cmd={['$ open -a /Applications/Android Studio.app android']} />
 
@@ -251,18 +251,13 @@ The following options are provided:
 - `--max-workers <number>`: Maximum number of tasks to allow the bundler to spawn. Setting this to `0` will run all transpilation on the same process, meaning you can easily debug Babel transpilation.
 - `-c, --clear`: Clear the bundler cache before exporting.
 - `--no-minify`: Skip minifying JavaScript and CSS assets (SDK 49 and above).
+- `--no-bytecode`: Skip generating Hermes bytecode for native platforms (SDK 50 and above). Only use this for analyzing bundle sizes and never ship UTF-8 bundles to native platforms as this will lead to drastically longer startup times.
 
 #### Hosting with sub-paths
 
-> Experimental functionality. It will be available from SDK 50.
+> Experimental functionality. Available from SDK 50.
 
 <Tabs>
-
-<Tab label="SDK 49 and below">
-
-    Exporting for a sub-path is not supported in SDK 49 and below.
-
-</Tab>
 
 <Tab label="SDK 50 and above">
 
@@ -323,6 +318,12 @@ export default function Blog() {
   return <img src="/my-root/assets/image.png" />;
 }
 ```
+
+</Tab>
+
+<Tab label="SDK 49 and below">
+
+    Exporting for a sub-path is not supported in SDK 49 and below.
 
 </Tab>
 

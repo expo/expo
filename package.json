@@ -14,14 +14,12 @@
   "workspaces": {
     "packages": [
       "apps/*",
-      "apps/test-suite/puppeteer-test",
       "packages/*",
       "packages/@expo/*"
     ]
   },
   "resolutions": {
-    "react-native": "0.73.2",
-    "react-refresh": "^0.14.0",
+    "react-native": "0.73.4",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/core": "^6.4.9",
     "**/util": "~0.12.4"

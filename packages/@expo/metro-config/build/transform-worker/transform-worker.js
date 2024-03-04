@@ -45,7 +45,8 @@ async function transform(config, projectRoot, filename, data, options) {
     // If the file is not CSS, then use the default behavior.
     if (!isCss) {
         const environment = options.customTransformOptions?.environment;
-        if (environment !== 'node' &&
+        const isClientEnvironment = environment !== 'node' && environment !== 'react-server';
+        if (isClientEnvironment &&
             // TODO: Ensure this works with windows.
             (filename.match(new RegExp(`^app/\\+html(\\.${options.platform})?\\.([tj]sx?|[cm]js)?$`)) ||
                 // Strip +api files.
@@ -58,7 +59,7 @@ async function transform(config, projectRoot, filename, data, options) {
                 '"> The server-only file was removed from the client JS bundle by Expo CLI."')
                 : Buffer.from(''), options);
         }
-        if (environment !== 'node' &&
+        if (isClientEnvironment &&
             !filename.match(/\/node_modules\//) &&
             filename.match(/\+api(\.(native|ios|android|web))?\.[tj]sx?$/)) {
             // Clear the contents of +api files when bundling for the client.

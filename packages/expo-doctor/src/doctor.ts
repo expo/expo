@@ -5,11 +5,13 @@ import semver from 'semver';
 import { DirectPackageInstallCheck } from './checks/DirectPackageInstallCheck';
 import { ExpoConfigCommonIssueCheck } from './checks/ExpoConfigCommonIssueCheck';
 import { ExpoConfigSchemaCheck } from './checks/ExpoConfigSchemaCheck';
-import { GlobalPackageInstalledCheck } from './checks/GlobalPackageInstalledCheck';
-import { GlobalPrereqsVersionCheck } from './checks/GlobalPrereqsVersionCheck';
+import { GlobalPackageInstalledLocallyCheck } from './checks/GlobalPackageInstalledLocallyCheck';
 import { IllegalPackageCheck } from './checks/IllegalPackageCheck';
 import { InstalledDependencyVersionCheck } from './checks/InstalledDependencyVersionCheck';
+import { MetroConfigCheck } from './checks/MetroConfigCheck';
+import { NativeToolingVersionCheck } from './checks/NativeToolingVersionCheck';
 import { PackageJsonCheck } from './checks/PackageJsonCheck';
+import { PackageManagerVersionCheck } from './checks/PackageManagerVersionCheck';
 import { ProjectSetupCheck } from './checks/ProjectSetupCheck';
 import { SupportPackageVersionCheck } from './checks/SupportPackageVersionCheck';
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks/checks.types';
@@ -118,15 +120,17 @@ export async function runChecksAsync(
 export function getChecksInScopeForProject(exp: ExpoConfig) {
   // add additional checks here
   const checks = [
-    new GlobalPrereqsVersionCheck(),
+    new PackageManagerVersionCheck(),
     new IllegalPackageCheck(),
-    new GlobalPackageInstalledCheck(),
+    new GlobalPackageInstalledLocallyCheck(),
     new SupportPackageVersionCheck(),
     new ExpoConfigSchemaCheck(),
     new ExpoConfigCommonIssueCheck(),
     new DirectPackageInstallCheck(),
     new PackageJsonCheck(),
     new ProjectSetupCheck(),
+    new MetroConfigCheck(),
+    new NativeToolingVersionCheck(),
   ];
   if (env.EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK) {
     Log.log(

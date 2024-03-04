@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
 import com.facebook.react.ReactInstanceManager
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.Reaper
@@ -26,6 +27,7 @@ import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
 import expo.modules.updatesinterface.UpdatesInterface
 import org.json.JSONObject
 import java.io.File
+import java.lang.ref.WeakReference
 
 /**
  * Main entry point to expo-updates in development builds with expo-dev-client. Similar to EnabledUpdatesController
@@ -44,6 +46,8 @@ class UpdatesDevLauncherController(
   private val updatesDirectoryException: Exception?,
   private val callbacks: UpdatesInterfaceCallbacks
 ) : IUpdatesController, UpdatesInterface {
+  override var appContext: WeakReference<AppContext>? = null
+  override var shouldEmitJsEvents = false
   override val isEmergencyLaunch = updatesDirectoryException != null
 
   private var launcher: Launcher? = null
@@ -52,7 +56,6 @@ class UpdatesDevLauncherController(
   private var updatesConfiguration: UpdatesConfiguration? = initialUpdatesConfiguration
 
   private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context))
-  private val fileDownloader = FileDownloader(context)
 
   private var mSelectionPolicy: SelectionPolicy? = null
   private var defaultSelectionPolicy: SelectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(
@@ -132,6 +135,7 @@ class UpdatesDevLauncherController(
 
     setDevelopmentSelectionPolicy()
 
+    val fileDownloader = FileDownloader(context, updatesConfiguration!!)
     val loader = RemoteLoader(
       context,
       updatesConfiguration!!,
@@ -155,7 +159,7 @@ class UpdatesDevLauncherController(
           callback.onSuccess(null)
           return
         }
-        launchUpdate(loaderResult.updateEntity, updatesConfiguration!!, context, callback)
+        launchUpdate(loaderResult.updateEntity, updatesConfiguration!!, fileDownloader, context, callback)
       }
 
       override fun onAssetLoaded(
@@ -200,6 +204,7 @@ class UpdatesDevLauncherController(
   private fun launchUpdate(
     update: UpdateEntity,
     configuration: UpdatesConfiguration,
+    fileDownloader: FileDownloader,
     context: Context,
     callback: UpdatesInterface.UpdateCallback
   ) {
@@ -304,17 +309,17 @@ class UpdatesDevLauncherController(
   override fun checkForUpdate(
     callback: IUpdatesController.ModuleCallback<IUpdatesController.CheckForUpdateResult>
   ) {
-    callback.onFailure(NotAvailableInDevClientException("Cannot check for update in a development client. A non-development build should be used to test this functionality."))
+    callback.onFailure(NotAvailableInDevClientException("Updates.checkForUpdateAsync() is not supported in development builds."))
   }
 
   override fun fetchUpdate(
     callback: IUpdatesController.ModuleCallback<IUpdatesController.FetchUpdateResult>
   ) {
-    callback.onFailure(NotAvailableInDevClientException("Cannot fetch update in a development client. A non-development build should be used to test this functionality."))
+    callback.onFailure(NotAvailableInDevClientException("Updates.fetchUpdateAsync() is not supported in development builds."))
   }
 
   override fun getExtraParams(callback: IUpdatesController.ModuleCallback<Bundle>) {
-    callback.onFailure(NotAvailableInDevClientException("Cannot get extra params in a development client. A non-development build should be used to test this functionality."))
+    callback.onFailure(NotAvailableInDevClientException("Updates.getExtraParamsAsync() is not supported in development builds."))
   }
 
   override fun setExtraParam(
@@ -322,6 +327,6 @@ class UpdatesDevLauncherController(
     value: String?,
     callback: IUpdatesController.ModuleCallback<Unit>
   ) {
-    callback.onFailure(NotAvailableInDevClientException("Cannot set extra params in a development client. A non-development build should be used to test this functionality."))
+    callback.onFailure(NotAvailableInDevClientException("Updates.setExtraParamAsync() is not supported in development builds."))
   }
 }

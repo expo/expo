@@ -1,6 +1,6 @@
 import GLWrap from './GLWrap';
 
-// WebGL 2.0 sample - http://webglsamples.org/WebGL2Samples/#transform_feedback_separated_2
+// WebGL 2.0 sample - https://webglsamples.org/WebGL2Samples/#transform_feedback_separated_2
 export default GLWrap('WebGL2 - Transform feedback', async (gl) => {
   const POSITION_LOCATION = 0;
   const VELOCITY_LOCATION = 1;

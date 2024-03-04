@@ -7,9 +7,16 @@ import {
   AuthenticationType,
   LocalAuthenticationResult,
   SecurityLevel,
+  BiometricsSecurityLevel,
 } from './LocalAuthentication.types';
 
-export { LocalAuthenticationOptions, AuthenticationType, LocalAuthenticationResult, SecurityLevel };
+export {
+  LocalAuthenticationOptions,
+  AuthenticationType,
+  LocalAuthenticationResult,
+  SecurityLevel,
+  BiometricsSecurityLevel,
+};
 
 // @needsAudit
 /**

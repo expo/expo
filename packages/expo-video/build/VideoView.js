@@ -1,13 +1,34 @@
 import { PureComponent, useMemo, createRef } from 'react';
 import NativeVideoModule from './NativeVideoModule';
 import NativeVideoView from './NativeVideoView';
-export function useVideoPlayer(source = null) {
+export function useVideoPlayer(source) {
     return useMemo(() => {
+        if (typeof source === 'string') {
+            return new NativeVideoModule.VideoPlayer({
+                uri: source,
+            });
+        }
         return new NativeVideoModule.VideoPlayer(source);
     }, []);
 }
+/**
+ * Returns whether the current device supports Picture in Picture (PiP) mode.
+ * @returns A `boolean` which is `true` if the device supports PiP mode, and `false` otherwise.
+ * @platform android
+ * @platform ios
+ */
+export function isPictureInPictureSupported() {
+    return NativeVideoModule.isPictureInPictureSupported();
+}
 export class VideoView extends PureComponent {
     nativeRef = createRef();
+    replace(source) {
+        if (typeof source === 'string') {
+            this.nativeRef.current?.replace({ uri: source });
+            return;
+        }
+        this.nativeRef.current?.replace(source);
+    }
     enterFullscreen() {
         this.nativeRef.current?.enterFullscreen();
     }
@@ -17,6 +38,7 @@ export class VideoView extends PureComponent {
     /**
      * Enters Picture in Picture (PiP) mode. Throws an exception if the device does not support PiP.
      * > **Note:** Only one player can be in Picture in Picture (PiP) mode at a time.
+     * @platform android
      * @platform ios 14+
      */
     startPictureInPicture() {
@@ -24,6 +46,7 @@ export class VideoView extends PureComponent {
     }
     /**
      * Exits Picture in Picture (PiP) mode.
+     * @platform android
      * @platform ios 14+
      */
     stopPictureInPicture() {

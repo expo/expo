@@ -1,5 +1,6 @@
 ---
 title: Build Expo apps for TV
+sidebar_title: Build apps for TV
 description: A guide for building an Expo app for an Android TV or Apple TV target.
 ---
 
@@ -46,12 +47,36 @@ You will need:
 
 > **Info** If you are starting with an SDK 49 project, you will need to [upgrade to SDK 50 or higher](/workflow/upgrading-expo-sdk-walkthrough/) before proceeding through the following steps.
 
+## Supported modules
+
+At this time, TV applications work with the following packages and APIs listed in our Expo API docs.
+
+- [AppleAuthentication](/versions/latest/sdk/apple-authentication/)
+- [Application](/versions/latest/sdk/application/)
+- [Asset](/versions/latest/sdk/asset/)
+- [AV](/versions/latest/sdk/av/)
+- [BlurView](/versions/latest/sdk/blur-view/)
+- [Crypto](/versions/latest/sdk/crypto/)
+- [Device](/versions/latest/sdk/device/)
+- [FileSystem](/versions/latest/sdk/filesystem/)
+- [FlashList](/versions/latest/sdk/flash-list/)
+- [Font](/versions/latest/sdk/font/)
+- [Image](/versions/latest/sdk/image)
+- [KeepAwake](/versions/latest/sdk/keep-awake/)
+- [LinearGradient](/versions/latest/sdk/linear-gradient/)
+- [Localization](/versions/latest/sdk/localization/)
+- [Reanimated](/versions/latest/sdk/reanimated/)
+- [SplashScreen](/versions/latest/sdk/splash-screen/)
+- [Updates](/versions/latest/sdk/updates/)
+
+TV also works with [react-navigation](https://reactnavigation.org/), [react-native-video](https://github.com/react-native-video/react-native-video), and many other commonly used third-party React Native libraries.
+
 ## Limitations
 
-Certain Expo modules are not supported at this time, most notably:
+Certain Expo packages are not supported at this time, most notably:
 
-- `expo-dev-client`
-- `expo-router`
+- [Expo DevClient](/versions/latest/sdk/dev-client/)
+- [Expo Router](/router/introduction/)
 
 <Step label="1">
 
@@ -84,29 +109,32 @@ In **package.json**, modify the `react-native` dependency to use the TV repo, an
 
 ## Add the TV config plugin
 
-<Terminal cmd={['npx expo install @react-native-tvos/config-tv']} />
-
-Installing the library adds the `@react-native-tvos/config-tv` plugin to your project's **app.json**.
+<Terminal cmd={['npx expo install --dev @react-native-tvos/config-tv']} />
 
 When installed, the plugin will modify the project for TV when either:
 
 - The environment variable `EXPO_TV` is set to `1`
 - The plugin parameter `isTV` is set to `true`
 
-Make sure that this plugin appears in `app.json`. It is recommended to set the `showVerboseWarnings` property to `true` to see additional information during prebuild.
+Verify that this plugin appears in **app.json**:
 
 ```json app.json
 {
   "plugins": [
-    [
-      "@react-native-tvos/config-tv",
-      {
-        "showVerboseWarnings": true
-      }
-    ]
+    "@react-native-tvos/config-tv"
   ]
 }
 ```
+
+ To see additional information on the plugin's actions during prebuild, you can set [debug environment variables](https://github.com/debug-js/debug#conventions) before running prebuild. (See also our documentation on [Expo CLI environment variables](/more/expo-cli/#environment-variables).)
+
+<Terminal cmd={[
+  '# See all Expo CLI and config plugin debug information',
+  'export DEBUG=expo:*',
+  '',
+  '# See only debug information for the TV plugin',
+  'export DEBUG=expo:react-native-tvos:config-tv']}
+/>
 
 </Step>
 

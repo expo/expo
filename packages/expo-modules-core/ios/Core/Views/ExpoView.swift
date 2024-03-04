@@ -6,7 +6,7 @@ import React
  The view that extends `RCTView` which handles some styles (e.g. borders) and accessibility.
  Inherit from `ExpoView` to keep this behavior and let your view use the associated `AppContext`.
  */
-open class ExpoView: RCTView {
+open class ExpoView: RCTView, AnyExpoView {
   /**
    A weak pointer to the associated `AppContext`.
    */

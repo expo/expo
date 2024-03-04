@@ -122,7 +122,9 @@ const renderInterface = ({
       <APISectionDeprecationNote comment={comment} />
       <APISectionPlatformTags comment={comment} />
       <H3Code tags={getTagNamesList(comment)}>
-        <MONOSPACE weight="medium">{name}</MONOSPACE>
+        <MONOSPACE weight="medium" className="wrap-anywhere">
+          {name}
+        </MONOSPACE>
       </H3Code>
       {extendedTypes?.length ? (
         <CALLOUT className={ELEMENT_SPACING}>

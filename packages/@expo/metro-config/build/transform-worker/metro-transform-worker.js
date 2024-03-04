@@ -52,6 +52,7 @@ const metro_transform_plugins_1 = __importDefault(require("metro-transform-plugi
 const getMinifier_1 = __importDefault(require("metro-transform-worker/src/utils/getMinifier"));
 const node_assert_1 = __importDefault(require("node:assert"));
 const assetTransformer = __importStar(require("./asset-transformer"));
+const resolveOptions_1 = require("./resolveOptions");
 // asserts non-null
 function nullthrows(x, message) {
     (0, node_assert_1.default)(x != null, message);
@@ -158,27 +159,43 @@ async function transformJS(file, { config, options, projectRoot }) {
     // NOTE(EvanBacon): We apply this conditionally in `babel-preset-expo` with other AST transforms.
     // plugins.push([metroTransformPlugins.inlinePlugin, babelPluginOpts]);
     // TODO: This MUST be run even though no plugins are added, otherwise the babel runtime generators are broken.
-    // if (plugins.length) {
-    ast = nullthrows(
-    // @ts-expect-error
-    (0, core_1.transformFromAstSync)(ast, '', {
-        ast: true,
-        babelrc: false,
-        code: false,
-        configFile: false,
-        comments: true,
-        filename: file.filename,
-        plugins,
-        sourceMaps: false,
-        // Not-Cloning the input AST here should be safe because other code paths above this call
-        // are mutating the AST as well and no code is depending on the original AST.
-        // However, switching the flag to false caused issues with ES Modules if `experimentalImportSupport` isn't used https://github.com/facebook/metro/issues/641
-        // either because one of the plugins is doing something funky or Babel messes up some caches.
-        // Make sure to test the above mentioned case before flipping the flag back to false.
-        cloneInputAst: true,
-    }).ast);
-    // }
+    if (plugins.length) {
+        ast = nullthrows(
+        // @ts-expect-error
+        (0, core_1.transformFromAstSync)(ast, '', {
+            ast: true,
+            babelrc: false,
+            code: false,
+            configFile: false,
+            comments: true,
+            filename: file.filename,
+            plugins,
+            sourceMaps: false,
+            // NOTE(kitten): This was done to wipe the paths/scope caches, which the `constantFoldingPlugin` needs to work,
+            // but has been replaced with `programPath.scope.crawl()`.
+            // Old Note from Metro:
+            // > Not-Cloning the input AST here should be safe because other code paths above this call
+            // > are mutating the AST as well and no code is depending on the original AST.
+            // > However, switching the flag to false caused issues with ES Modules if `experimentalImportSupport` isn't used https://github.com/facebook/metro/issues/641
+            // > either because one of the plugins is doing something funky or Babel messes up some caches.
+            // > Make sure to test the above mentioned case before flipping the flag back to false.
+            cloneInputAst: false,
+        }).ast);
+    }
     if (!options.dev) {
+        // NOTE(kitten): Any Babel helpers that have been added (`path.hub.addHelper(...)`) will usually not have any
+        // references, and hence the `constantFoldingPlugin` below will remove them.
+        // To fix the references we add an explicit `programPath.scope.crawl()`. Alternatively, we could also wipe the
+        // Babel traversal cache (`traverse.cache.clear()`)
+        const clearProgramScopePlugin = {
+            visitor: {
+                Program: {
+                    enter(path) {
+                        path.scope.crawl();
+                    },
+                },
+            },
+        };
         // Run the constant folding plugin in its own pass, avoiding race conditions
         // with other plugins that have exit() visitors on Program (e.g. the ESM
         // transform).
@@ -191,8 +208,14 @@ async function transformJS(file, { config, options, projectRoot }) {
             configFile: false,
             comments: true,
             filename: file.filename,
-            plugins: [[metro_transform_plugins_1.default.constantFoldingPlugin, babelPluginOpts]],
+            plugins: [
+                clearProgramScopePlugin,
+                [metro_transform_plugins_1.default.constantFoldingPlugin, babelPluginOpts],
+            ],
             sourceMaps: false,
+            // NOTE(kitten): In Metro, this is also false, but only works because the prior run of `transformFromAstSync` was always
+            // running with `cloneInputAst: true`.
+            // This isn't needed anymore since `clearProgramScopePlugin` re-crawls the AST’s scope instead.
             cloneInputAst: false,
         }).ast);
     }
@@ -237,13 +260,11 @@ async function transformJS(file, { config, options, projectRoot }) {
             ({ ast: wrappedAst } = JsFileWrapping_1.default.wrapModule(ast, importDefault, importAll, dependencyMapName, config.globalPrefix));
         }
     }
-    const minify = options.minify &&
-        options.unstable_transformProfile !== 'hermes-canary' &&
-        options.unstable_transformProfile !== 'hermes-stable';
     const reserved = [];
     if (config.unstable_dependencyMapReservedName != null) {
         reserved.push(config.unstable_dependencyMapReservedName);
     }
+    const minify = (0, resolveOptions_1.shouldMinify)(options);
     if (minify &&
         file.inputFileSize <= config.optimizationSizeLimit &&
         !config.unstable_disableNormalizePseudoGlobals) {
@@ -320,10 +341,7 @@ async function transformJSON(file, { options, config, projectRoot }) {
         ? JsFileWrapping_1.default.jsonToCommonJS(file.code)
         : JsFileWrapping_1.default.wrapJson(file.code, config.globalPrefix);
     let map = [];
-    // TODO: When we can reuse transformJS for JSON, we should not derive `minify` separately.
-    const minify = options.minify &&
-        options.unstable_transformProfile !== 'hermes-canary' &&
-        options.unstable_transformProfile !== 'hermes-stable';
+    const minify = (0, resolveOptions_1.shouldMinify)(options);
     if (minify) {
         ({ map, code } = await minifyCode(config, projectRoot, file.filename, code, file.code, map));
     }

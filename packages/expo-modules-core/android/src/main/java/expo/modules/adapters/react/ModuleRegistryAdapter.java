@@ -18,6 +18,7 @@ import expo.modules.core.interfaces.InternalModule;
 import expo.modules.core.interfaces.Package;
 import expo.modules.kotlin.AppContext;
 import expo.modules.kotlin.CoreLoggerKt;
+import expo.modules.kotlin.ExpoBridgeModule;
 import expo.modules.kotlin.KotlinInteropModuleRegistry;
 import expo.modules.kotlin.ModulesProvider;
 import expo.modules.kotlin.views.ViewWrapperDelegateHolder;
@@ -72,6 +73,7 @@ public class ModuleRegistryAdapter implements ReactPackage {
       kotlinInteropModuleRegistry.updateModuleHoldersInViewManagers(mWrapperDelegateHolders);
     }
 
+    nativeModules.add(new ExpoBridgeModule(reactContext));
     return nativeModules;
   }
 

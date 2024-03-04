@@ -4,7 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-export async function fetchAsync(url: string): Promise<{ body: string; headers: Headers }> {
+export async function fetchAsync(
+  url: string
+): Promise<{ body: string; status: number; headers: Headers }> {
   const response = await fetch(url, {
     method: 'GET',
     headers: {
@@ -14,6 +16,7 @@ export async function fetchAsync(url: string): Promise<{ body: string; headers: 
   });
   return {
     body: await response.text(),
+    status: response.status,
     headers: response.headers,
   };
 }

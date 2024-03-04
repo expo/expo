@@ -27,7 +27,7 @@ When we're ready to create a build of our Expo project, we can run `eas build` t
 
 - **Channel:** The channel is a name we can give to multiple builds to identify them easily. It is defined in `eas.json`. For instance, we may have an Android and an iOS build with a channel named "production", while we have another pair of builds with a channel named "staging". Then, we can distribute the builds with the "production" channel to the public app stores, while keeping the "staging" builds on the Play Store Internal Track and TestFlight.
   Later when we publish an update, we can make it available to the builds with the "staging" channel first; then once we test our changes, we can make the update available to the builds with the "production" channel.
-- **Runtime version:** The runtime version describes the JS–native interface defined by the native code layer that runs our app's update layer. It is defined in a project's app config (`app.json`/`app.config.js`). Whenever we make changes to our native code that change our app's JS–native interface, we'll need to update the runtime version. [Learn more.](/eas-update/runtime-versions)
+- **Runtime version:** The runtime version describes the JS-native interface defined by the native code layer that runs our app's update layer. It is defined in a project's app config (`app.json`/`app.config.js`). Whenever we make changes to our native code that change our app's JS-native interface, we'll need to update the runtime version. [Learn more.](/eas-update/runtime-versions)
 - **Platform:** Every build has a platform, such as "Android" or "iOS".
 
 If we made two sets of builds with the channels named "staging" and "production", we could distribute builds to four different places:
@@ -40,8 +40,7 @@ This diagram is just an example of how you could create builds and name their ch
 
 Once we've created builds, we can change the update layer of our project by publishing an update. For example, we could change some text inside **App.js**, then we could publish that change as an update.
 
-To publish an update, we can run `eas update --auto`. This command will create a local update bundle inside the `./dist` folder in our project. Once it's created an update bundle, it will upload that bundle to EAS servers, in a database object named a _branch_. A branch has a name, and contains a list of updates, where the most recent update is the active update on the branch.
-We can think of EAS branches just like Git branches. Just as Git branches contain a list of commits, EAS branches contain a list of updates.
+To publish an update, we can run `eas update --auto`. This command will create a local update bundle inside the **dist** directory in our project. Once it's created an update bundle, it will upload that bundle to EAS servers, in a database object named a _branch_. A branch has a name and contains a list of updates, where the most recent update is the active update on the branch. We can think of EAS branches just like Git branches. Just as Git branches contain a list of commits, EAS branches contain a list of updates.
 
 <ImageSpotlight
   alt="Branches with its most recent update pointed out as the active one"

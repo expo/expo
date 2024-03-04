@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package expo.modules.kotlin.jni
 
 import android.view.View
@@ -14,6 +16,7 @@ import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.modules.ModuleDefinitionBuilder
+import expo.modules.kotlin.sharedobjects.ClassRegistry
 import expo.modules.kotlin.sharedobjects.SharedObjectRegistry
 import io.mockk.every
 import io.mockk.mockk
@@ -33,6 +36,7 @@ internal fun defaultAppContextMock(
     ModuleHolder(module)
   }
   every { appContextMock.coreModule } answers { coreModule }
+  every { appContextMock.classRegistry } answers { ClassRegistry() }
   every { appContextMock.jniDeallocator } answers { jniDeallocator }
   every { appContextMock.findView<View>(capture(slot())) } answers { mockk() }
   return appContextMock
@@ -87,15 +91,13 @@ internal inline fun withJSIInterop(
       register(it)
     }
   }
-  val sharedObjectRegistry = SharedObjectRegistry()
+  val sharedObjectRegistry = SharedObjectRegistry(appContextMock)
   every { appContextMock.registry } answers { registry }
   every { appContextMock.sharedObjectRegistry } answers { sharedObjectRegistry }
 
-  val jsiIterop = JSIInteropModuleRegistry(appContextMock).apply {
-    installJSIForTests(jniDeallocator)
-  }
-
+  val jsiIterop = JSIInteropModuleRegistry()
   every { appContextMock.jsiInterop } answers { jsiIterop }
+  jsiIterop.installJSIForTests(appContextMock, jniDeallocator)
 
   block(jsiIterop, methodQueue)
 
@@ -105,11 +107,90 @@ internal inline fun withJSIInterop(
   afterCleanup(jniDeallocator)
 }
 
-@OptIn(ExperimentalCoroutinesApi::class)
+open class TestContext(
+  val jsiInterop: JSIInteropModuleRegistry,
+  val methodQueue: TestScope
+) {
+  fun global() = jsiInterop.global()
+  fun evaluateScript(script: String) = jsiInterop.evaluateScript(script)
+  fun evaluateScript(vararg script: String) = jsiInterop.evaluateScript(script.joinToString(separator = "\n"))
+  fun waitForAsyncFunction(jsCode: String) = jsiInterop.waitForAsyncFunction(methodQueue, jsCode)
+}
+
+class SingleTestContext(
+  moduleName: String,
+  jsiInterop: JSIInteropModuleRegistry,
+  methodQueue: TestScope
+) : TestContext(jsiInterop, methodQueue) {
+  val moduleRef = "expo.modules.$moduleName"
+
+  fun property(propertyName: String) =
+    jsiInterop.evaluateScript("$moduleRef.$propertyName")
+
+  fun property(propertyName: String, newValue: String) {
+    jsiInterop.evaluateScript("$moduleRef.$propertyName = $newValue")
+  }
+
+  fun call(functionName: String, args: String = "") = jsiInterop.evaluateScript(
+    "$moduleRef.$functionName($args)"
+  )
+
+  fun callClass(className: String, functionName: String? = null, args: String = ""): JavaScriptValue {
+    if (functionName == null) {
+      return jsiInterop.evaluateScript("new $moduleRef.$className()")
+    }
+
+    return jsiInterop.evaluateScript("(new $moduleRef.$className()).$functionName($args)")
+  }
+
+  fun classProperty(className: String, propertyName: String) =
+    jsiInterop.evaluateScript("(new $moduleRef.$className()).$propertyName")
+
+  fun callAsync(functionName: String, args: String = "") = jsiInterop.waitForAsyncFunction(
+    methodQueue,
+    "$moduleRef.$functionName($args)"
+  )
+
+  fun callClassAsync(className: String, functionName: String? = null, args: String = ""): JavaScriptValue {
+    if (functionName == null) {
+      return jsiInterop.evaluateScript("new $moduleRef.$className()")
+    }
+
+    return jsiInterop.waitForAsyncFunction(methodQueue, "(new $moduleRef.$className()).$functionName($args)")
+  }
+
+  fun callViewAsync(viewName: String, functionName: String, args: String = ""): JavaScriptValue {
+    return jsiInterop.waitForAsyncFunction(methodQueue, "$moduleRef.$viewName.$functionName($args)")
+  }
+}
+
 internal inline fun withJSIInterop(
   vararg modules: Module,
   block: JSIInteropModuleRegistry.(methodQueue: TestScope) -> Unit
 ) = withJSIInterop(*modules, block = block, afterCleanup = {})
+
+internal inline fun withSingleModule(
+  crossinline definition: ModuleDefinitionBuilder.() -> Unit = {},
+  block: SingleTestContext.() -> Unit
+) {
+  var moduleName = "TestModule"
+  withJSIInterop(
+    object : Module() {
+      override fun definition() = ModuleDefinition {
+        Name(moduleName)
+        definition()
+
+        name?.let {
+          moduleName = it
+        }
+      }
+    },
+    block = { methodQueue ->
+      val testContext = SingleTestContext(moduleName, this, methodQueue)
+      block.invoke(testContext)
+    }
+  )
+}
 
 /**
  * A syntax sugar that creates a new module from the definition block.

@@ -91,17 +91,21 @@ android {
   }
 
   sourceSets {
+    def rnVersion = getRNVersion()
+    main {
+      java {
+        if (rnVersion >= versionToNumber(0, 74, 0)) {
+          srcDirs += "src/react-native-74/main"
+        } else {
+          srcDirs += "src/react-native-73/main"
+        }
+      }
+    }
     debug {
       java {
         srcDirs += ['../vendored/react-native-gesture-handler/android/']
         srcDirs += ['../vendored/react-native-safe-area-context/android/']
 
-        def expoPackageVersion = getExpoPackageVersion()
-        if (expoPackageVersion >= versionToNumber(45, 0, 0)) {
-          srcDirs += "src/expo-45"
-        } else {
-          srcDirs += "src/expo-44"
-        }
       }
     }
 
@@ -181,7 +185,7 @@ dependencies {
   // Needed by gesture handler
   implementation "androidx.core:core-ktx:1.6.0"
 
-  api "androidx.browser:browser:1.2.0"
+  api "androidx.browser:browser:1.6.0"
 
   testImplementation "com.google.truth:truth:1.1.2"
   testImplementation "org.robolectric:robolectric:4.10"
@@ -194,7 +198,10 @@ def versionToNumber(major, minor, patch) {
 }
 
 def getNodeModulesPackageVersion(packageName, overridePropName) {
-  def nodeModulesVersion = ["node", "-e", "console.log(require('$packageName/package.json').version);"].execute(null, projectDir).text.trim()
+  def nodeModulesVersion = providers.exec {
+    workingDir(projectDir)
+    commandLine("node", "-e", "console.log(require('$packageName/package.json').version);")
+  }.standardOutput.asText.get().trim()
   def version = safeExtGet(overridePropName, nodeModulesVersion)
 
   def coreVersion = version.split("-")[0]
@@ -207,6 +214,6 @@ def getNodeModulesPackageVersion(packageName, overridePropName) {
   )
 }
 
-def getExpoPackageVersion() {
-  return getNodeModulesPackageVersion("expo", "expoPackageVersion")
+def getRNVersion() {
+  return getNodeModulesPackageVersion("react-native", "reactNativeVersion")
 }

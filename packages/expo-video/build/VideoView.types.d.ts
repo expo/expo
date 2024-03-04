@@ -16,9 +16,17 @@ export declare class VideoPlayer {
      * Muting the player doesn't affect the volume. In other words, when the player is muted, the volume is the same as
      * when unmuted. Similarly, setting the volume doesn't unmute the player.
      *
-     * @platform android, web
+     * @platform android
+     * @platform web
      */
     volume: number;
+    /**
+     * Determines whether the player should continue playing after the app enters the background.
+     * @default false
+     * @platform ios
+     * @platform android
+     */
+    staysActiveInBackground: boolean;
     /**
      * Resumes the player.
      */
@@ -30,7 +38,7 @@ export declare class VideoPlayer {
     /**
      * Replaces the current source with a new one.
      */
-    replace(source: string): void;
+    replace(source: VideoSource): void;
     /**
      * Seeks the playback by the given number of seconds.
      */
@@ -60,12 +68,10 @@ export interface VideoViewProps extends ViewProps {
     /**
      * Describes how the video should be scaled to fit in the container.
      * Options are 'contain', 'cover', and 'fill'.
-     * @platform ios, web
      */
     contentFit: VideoContentFit | undefined;
     /**
      * Determines whether fullscreen mode is allowed or not.
-     * @platform ios, web
      */
     allowsFullscreen: boolean | undefined;
     /**
@@ -75,6 +81,7 @@ export interface VideoViewProps extends ViewProps {
     showsTimecodes: boolean | undefined;
     /**
      * Determines whether the player allows the user to skip media content.
+     * @platform android
      * @platform ios
      */
     requiresLinearPlayback: boolean | undefined;
@@ -88,11 +95,13 @@ export interface VideoViewProps extends ViewProps {
     } | undefined;
     /**
      * A callback to call after the video player enters Picture in Picture (PiP) mode.
+     * @platform android
      * @platform ios 14+
      */
     onPictureInPictureStart?: () => void;
     /**
      * A callback to call after the video player exits Picture in Picture (PiP) mode.
+     * @platform android
      * @platform ios 14+
      */
     onPictureInPictureStop?: () => void;
@@ -106,9 +115,52 @@ export interface VideoViewProps extends ViewProps {
      * Determines whether the player should start Picture in Picture (PiP) automatically when the app is in the background.
      * > **Note:** Only one player can be in Picture in Picture (PiP) mode at a time.
      * @default false
+     * @platform android 12+
      * @platform ios 14.2+
      */
     startsPictureInPictureAutomatically?: boolean;
 }
+/**
+ * Specifies which type of DRM to use. Android supports Widevine, PlayReady and ClearKey, iOS supports FairPlay.
+ * */
+type DRMType = 'clearkey' | 'fairplay' | 'playready' | 'widevine';
+/**
+ * Specifies DRM options which will be used by the player while loading the video.
+ */
+type DRMOptions = {
+    /**
+     * Determines which type of DRM to use.
+     */
+    type: DRMType;
+    /**
+     * Determines the license server URL.
+     */
+    licenseServer: string;
+    /**
+     * Determines headers sent to the license server on license requests.
+     */
+    headers?: {
+        [key: string]: string;
+    };
+    /**
+     * Specifies whether the DRM is a multi-key DRM.
+     * @platform android
+     */
+    multiKey?: boolean;
+    /**
+     * Specifies the content ID of the stream.
+     * @platform ios
+     */
+    contentId?: string;
+    /**
+     * Specifies the certificate URL for the FairPlay DRM.
+     * @platform ios
+     */
+    certificateUrl?: string;
+};
+export type VideoSource = string | {
+    uri: string;
+    drm?: DRMOptions;
+} | null;
 export {};
 //# sourceMappingURL=VideoView.types.d.ts.map

@@ -6,7 +6,18 @@ import {
 import * as SplashScreen from 'expo-splash-screen';
 import { useSyncExternalStore, useMemo, ComponentType, Fragment } from 'react';
 
-import { canGoBack, goBack, linkTo, navigate, push, replace, setParams } from './routing';
+import {
+  canGoBack,
+  canDismiss,
+  goBack,
+  linkTo,
+  navigate,
+  dismiss,
+  dismissAll,
+  push,
+  replace,
+  setParams,
+} from './routing';
 import { getSortedRoutes } from './sort-routes';
 import { UrlObject, getRouteInfoFromState } from '../LocationProvider';
 import { RouteNode } from '../Route';
@@ -25,13 +36,13 @@ import { getQualifiedRouteComponent } from '../useScreens';
 export class RouterStore {
   routeNode!: RouteNode | null;
   rootComponent!: ComponentType;
-  linking: ExpoLinkingOptions | undefined;
+  linking?: ExpoLinkingOptions;
   private hasAttemptedToHideSplash: boolean = false;
 
-  initialState: ResultState | undefined;
-  rootState: ResultState | undefined;
-  nextState: ResultState | undefined;
-  routeInfo?: UrlObject | undefined;
+  initialState?: ResultState;
+  rootState?: ResultState;
+  nextState?: ResultState;
+  routeInfo?: UrlObject;
 
   navigationRef!: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
   navigationRefSubscription!: () => void;
@@ -44,7 +55,10 @@ export class RouterStore {
   goBack = goBack.bind(this);
   canGoBack = canGoBack.bind(this);
   push = push.bind(this);
+  dismiss = dismiss.bind(this);
   replace = replace.bind(this);
+  dismissAll = dismissAll.bind(this);
+  canDismiss = canDismiss.bind(this);
   setParams = setParams.bind(this);
   navigate = navigate.bind(this);
 

@@ -8,6 +8,7 @@ import path from 'path';
 import { Log } from './log';
 import { formatRunCommand, PackageManagerName } from './resolvePackageManager';
 import { env } from './utils/env';
+import { downloadAndExtractGitHubRepositoryAsync } from './utils/github';
 import {
   applyBetaTag,
   applyKnownNpmPackageNameRules,
@@ -51,6 +52,23 @@ function deepMerge(target: any, source: any) {
 
 export function resolvePackageModuleId(moduleId: string) {
   if (
+    // Supports github repository URLs
+    moduleId.startsWith('https://github.com')
+  ) {
+    try {
+      const uri = new URL(moduleId);
+      debug('Resolved moduleId to repository path:', moduleId);
+      return { type: 'repository', uri } as const;
+    } catch (error: any) {
+      if (error.code === 'ERR_INVALID_URL') {
+        throw new Error(`Invalid URL: "${moduleId}" provided`);
+      } else {
+        throw error;
+      }
+    }
+  }
+
+  if (
     // Supports `file:./path/to/template.tgz`
     moduleId?.startsWith('file:') ||
     // Supports `../path/to/template.tgz`
@@ -62,11 +80,11 @@ export function resolvePackageModuleId(moduleId: string) {
       moduleId = moduleId.substring(5);
     }
     debug(`Resolved moduleId to file path:`, moduleId);
-    return { type: 'file', uri: path.resolve(moduleId) };
-  } else {
-    debug(`Resolved moduleId to NPM package:`, moduleId);
-    return { type: 'npm', uri: moduleId };
+    return { type: 'file', uri: path.resolve(moduleId) } as const;
   }
+
+  debug(`Resolved moduleId to NPM package:`, moduleId);
+  return { type: 'npm', uri: moduleId } as const;
 }
 
 /**
@@ -83,13 +101,19 @@ export async function extractAndPrepareTemplateAppAsync(
 
   const { type, uri } = resolvePackageModuleId(npmPackage || 'expo-template-blank');
 
-  const resolvedUri = type === 'file' ? uri : getResolvedTemplateName(applyBetaTag(uri));
-
-  await downloadAndExtractNpmModuleAsync(resolvedUri, {
-    cwd: projectRoot,
-    name: projectName,
-    disableCache: type === 'file',
-  });
+  if (type === 'repository') {
+    await downloadAndExtractGitHubRepositoryAsync(uri, {
+      cwd: projectRoot,
+      name: projectName,
+    });
+  } else {
+    const resolvedUri = type === 'file' ? uri : getResolvedTemplateName(applyBetaTag(uri));
+    await downloadAndExtractNpmModuleAsync(resolvedUri, {
+      cwd: projectRoot,
+      name: projectName,
+      disableCache: type === 'file',
+    });
+  }
 
   await sanitizeTemplateAsync(projectRoot);
 

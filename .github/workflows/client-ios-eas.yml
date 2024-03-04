@@ -17,7 +17,7 @@ on:
     paths:
       - .github/workflows/client-ios-eas.yml
       - apps/eas-expo-go/**
-      - ios/**
+      - apps/expo-go/ios/**
       - tools/src/dynamic-macros/**
       - tools/src/commands/IosGenerateDynamicMacros.ts
       - secrets/**
@@ -34,7 +34,7 @@ jobs:
     if: ${{ github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]') }}
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
       - name: 🔓 Decrypt secrets if possible

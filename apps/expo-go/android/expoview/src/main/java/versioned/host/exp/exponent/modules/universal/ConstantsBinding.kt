@@ -52,11 +52,6 @@ class ConstantsBinding(
   private val executionEnvironment: ExecutionEnvironment
     get() = ExecutionEnvironment.STORE_CLIENT
 
-  override fun getOrCreateInstallationId(): String {
-    // Override scoped installationId from ConstantsService with unscoped
-    return exponentSharedPreferences.getOrCreateUUID()
-  }
-
   companion object {
     private fun convertPixelsToDp(px: Float, context: Context): Int {
       val resources = context.resources

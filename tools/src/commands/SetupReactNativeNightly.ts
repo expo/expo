@@ -9,7 +9,6 @@ import semver from 'semver';
 import { EXPO_DIR, EXPOTOOLS_DIR } from '../Constants';
 import logger from '../Logger';
 import { getPackageViewAsync } from '../Npm';
-import { transformFileAsync } from '../Transforms';
 import { applyPatchAsync } from '../Utils';
 import { installAsync as workspaceInstallAsync } from '../Workspace';
 
@@ -54,7 +53,10 @@ async function main() {
 
   const patches = [
     'datetimepicker.patch',
+    'lottie-react-native.patch',
     'react-native-gesture-handler.patch',
+    'react-native-pager-view.patch',
+    'react-native-screens.patch',
     'react-native-reanimated.patch',
     'react-native-safe-area-context.patch',
   ];
@@ -117,25 +119,7 @@ async function updateExpoModulesAsync() {
 }
 
 async function updateBareExpoAsync(nightlyVersion: string) {
-  const root = path.join(EXPO_DIR, 'apps', 'bare-expo');
-
-  // Flipper was removed in 0.74
-  await transformFileAsync(path.join(root, 'ios', 'Podfile'), [
-    {
-      find: `flipper_config = ENV['NO_FLIPPER'] == "1" || ENV['CI'] ? FlipperConfiguration.disabled : FlipperConfiguration.enabled`,
-      replaceWith: '',
-    },
-    {
-      find: /:flipper_configuration => FlipperConfiguration.disabled,/g,
-      replaceWith: '',
-    },
-  ]);
-  await transformFileAsync(path.join(root, 'android', 'app', 'build.gradle'), [
-    {
-      find: `implementation("com.facebook.react:flipper-integration")`,
-      replaceWith: '',
-    },
-  ]);
+  // no-op currently
 }
 
 async function queryNpmDistTagVersionAsync(pkg: string, distTag: string) {

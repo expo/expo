@@ -1,12 +1,15 @@
 package expo.modules.kotlin.jni
 
 import com.facebook.jni.HybridData
+import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import com.facebook.soloader.SoLoader
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.JavaScriptEvaluateException
 import expo.modules.kotlin.sharedobjects.SharedObject
+import expo.modules.kotlin.sharedobjects.SharedObjectId
+import expo.modules.kotlin.weak
 import java.lang.ref.WeakReference
 
 /**
@@ -16,9 +19,8 @@ import java.lang.ref.WeakReference
  */
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
-class JSIInteropModuleRegistry(appContext: AppContext) : Destructible {
-
-  internal val appContextHolder = WeakReference(appContext)
+class JSIInteropModuleRegistry : Destructible {
+  internal lateinit var appContextHolder: WeakReference<AppContext> // = WeakReference(appContext)
 
   // Has to be called "mHybridData" - fbjni uses it via reflection
   @DoNotStrip
@@ -26,24 +28,53 @@ class JSIInteropModuleRegistry(appContext: AppContext) : Destructible {
 
   private external fun initHybrid(): HybridData
 
+  @OptIn(FrameworkAPI::class)
+  fun installJSI(
+    appContext: AppContext,
+    jsRuntimePointer: Long,
+    jniDeallocator: JNIDeallocator,
+    jsInvokerHolder: CallInvokerHolderImpl
+  ) {
+    appContextHolder = appContext.weak()
+    installJSI(
+      jsRuntimePointer,
+      jniDeallocator,
+      jsInvokerHolder
+    )
+  }
+
   /**
    * Initializes the `ExpoModulesHostObject` and adds it to the global object.
    */
-  external fun installJSI(
+  @OptIn(FrameworkAPI::class)
+  private external fun installJSI(
     jsRuntimePointer: Long,
     jniDeallocator: JNIDeallocator,
     jsInvokerHolder: CallInvokerHolderImpl
   )
 
+  @OptIn(FrameworkAPI::class)
+  fun installJSIForTests(
+    appContext: AppContext,
+    jniDeallocator: JNIDeallocator
+  ) {
+    appContextHolder = appContext.weak()
+    installJSIForTests(jniDeallocator)
+  }
+
+  @OptIn(FrameworkAPI::class)
+  fun installJSIForTests(
+    appContext: AppContext
+  ) {
+    appContextHolder = appContext.weak()
+    installJSIForTests(appContext.jniDeallocator)
+  }
+
   /**
    * Initializes the test runtime. Shouldn't be used in the production.
    */
-  external fun installJSIForTests(
+  private external fun installJSIForTests(
     jniDeallocator: JNIDeallocator
-  )
-
-  fun installJSIForTests() = installJSIForTests(
-    appContextHolder.get()!!.jniDeallocator
   )
 
   /**
@@ -72,6 +103,8 @@ class JSIInteropModuleRegistry(appContext: AppContext) : Destructible {
    * Informs C++ that runtime was deallocated.
    */
   external fun wasDeallocated()
+
+  external fun setNativeStateForSharedObject(id: Int, js: JavaScriptObject)
 
   /**
    * Returns a `JavaScriptModuleObject` that is a bridge between [expo.modules.kotlin.modules.Module]
@@ -108,6 +141,33 @@ class JSIInteropModuleRegistry(appContext: AppContext) : Destructible {
       .get()
       ?.sharedObjectRegistry
       ?.add(native as SharedObject, js)
+  }
+
+  @Suppress("unused")
+  @DoNotStrip
+  fun deleteSharedObject(id: Int) {
+    appContextHolder
+      .get()
+      ?.sharedObjectRegistry
+      ?.delete(SharedObjectId(id))
+  }
+
+  @Suppress("unused")
+  @DoNotStrip
+  fun registerClass(native: Class<*>, js: JavaScriptObject) {
+    appContextHolder
+      .get()
+      ?.classRegistry
+      ?.add(native, js)
+  }
+
+  @Suppress("unused")
+  @DoNotStrip
+  fun getJavascriptClass(native: java.lang.Class<*>): JavaScriptObject? {
+    return appContextHolder
+      .get()
+      ?.classRegistry
+      ?.toJavaScriptObject(native)
   }
 
   @Suppress("unused")

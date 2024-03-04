@@ -44,28 +44,6 @@ describe(validateConfig, () => {
     );
   });
 
-  it('should not allow ios.flipper=true and ios.useFrameworks at the same time', () => {
-    expect(() =>
-      validateConfig({ ios: { flipper: true, useFrameworks: 'static' } })
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"\`ios.flipper\` cannot be enabled when \`ios.useFrameworks\` is set."`
-    );
-  });
-
-  it(`should not allow ios.flipper='0.999.0' and ios.useFrameworks at the same time`, () => {
-    expect(() =>
-      validateConfig({ ios: { flipper: '0.999.0', useFrameworks: 'static' } })
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"\`ios.flipper\` cannot be enabled when \`ios.useFrameworks\` is set."`
-    );
-  });
-
-  it('should allow ios.flipper=false and ios.useFrameworks at the same time', () => {
-    expect(() =>
-      validateConfig({ ios: { flipper: false, useFrameworks: 'static' } })
-    ).not.toThrow();
-  });
-
   it('should use `enableShrinkResourcesInReleaseBuilds` with `enableProguardInReleaseBuilds`', () => {
     expect(() =>
       validateConfig({ android: { enableShrinkResourcesInReleaseBuilds: true } })
@@ -102,5 +80,81 @@ describe(validateConfig, () => {
     expect(() => {
       validateConfig({ ios: { extraPods: [{}] } });
     }).toThrow();
+  });
+
+  it('should validate android.extraMavenRepos', () => {
+    expect(() => {
+      validateConfig({
+        android: {
+          extraMavenRepos: [
+            {
+              url: 'https://foo.com/maven-repos',
+              credentials: { username: 'user', password: 'password' },
+              authentication: 'basic',
+            },
+          ],
+        },
+      });
+    }).not.toThrow();
+
+    expect(() => {
+      validateConfig({
+        android: {
+          extraMavenRepos: [
+            {
+              url: 'https://foo.com/maven-repos',
+              credentials: { username: 'user', password: 'password' },
+              authentication: 'basic',
+            },
+            {
+              url: 'https://bar.com/maven-repos',
+              credentials: { username: 'user', password: 'password' },
+              authentication: 'basic',
+            },
+          ],
+        },
+      });
+    }).not.toThrow();
+
+    expect(() => {
+      validateConfig({
+        android: {
+          extraMavenRepos: [
+            {
+              url: 'https://foo.com/maven-repos',
+              credentials: { username: 'user' },
+              authentication: 'basic',
+            },
+          ],
+        },
+      });
+    }).toThrow();
+
+    // Maintain backwards compatibility
+    expect(() => {
+      validateConfig({
+        android: {
+          extraMavenRepos: ['https://foo.com/maven-repos'],
+        },
+      });
+    }).not.toThrow();
+
+    // Allow mix and match of old and new format
+    expect(() => {
+      validateConfig({
+        android: {
+          extraMavenRepos: ['https://foo.com/maven-repos', { url: 'https://bar.com/maven-repos' }],
+        },
+      });
+    }).not.toThrow();
+
+    // Empty array is allowed
+    expect(() => {
+      validateConfig({
+        android: {
+          extraMavenRepos: [],
+        },
+      });
+    }).not.toThrow();
   });
 });

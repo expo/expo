@@ -35,12 +35,13 @@
   },
   "devDependencies": {
     "@expo/json-file": "8.3.0",
-    "@expo/package-manager": "^1.1.1",
-    "@expo/spawn-async": "^1.7.0",
+    "@expo/package-manager": "^1.4.0",
+    "@expo/spawn-async": "^1.7.2",
     "@types/debug": "^4.1.7",
     "@types/getenv": "^1.0.0",
     "@types/node": "^16.11.56",
     "@types/node-fetch": "^2.5.8",
+    "@types/picomatch": "^2.3.3",
     "@types/prompts": "2.0.14",
     "@types/tar": "^6.1.2",
     "@vercel/ncc": "^0.38.0",
@@ -52,6 +53,7 @@
     "minipass": "^3.3.6",
     "node-fetch": "^2.6.7",
     "ora": "3.4.0",
+    "picomatch": "^2.3.1",
     "prompts": "^2.4.2",
     "tar": "6.1.13",
     "update-check": "^1.5.4"

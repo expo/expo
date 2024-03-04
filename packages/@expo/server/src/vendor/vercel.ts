@@ -1,16 +1,10 @@
 // NOTE: VercelRequest/VercelResponse wrap http primitives in Node
 // plus some helper inputs and outputs, which we don't need to define
 // our interface types
-import {
-  AbortController,
-  Headers,
-  RequestInit,
-  writeReadableStreamToWritable,
-} from '@remix-run/node';
+import { writeReadableStreamToWritable, createReadableStreamFromReadable } from '@remix-run/node';
 import * as http from 'http';
 
 import { createRequestHandler as createExpoHandler } from '..';
-import { ExpoRequest, ExpoResponse } from '../environment';
 
 export type RequestHandler = (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void>;
 
@@ -44,7 +38,7 @@ export function convertHeaders(requestHeaders: http.IncomingMessage['headers']):
   return headers;
 }
 
-export function convertRequest(req: http.IncomingMessage, res: http.ServerResponse): ExpoRequest {
+export function convertRequest(req: http.IncomingMessage, res: http.ServerResponse): Request {
   const host = req.headers['x-forwarded-host'] || req.headers['host'];
   // doesn't seem to be available on their req object!
   const protocol = req.headers['x-forwarded-proto'] || 'https';
@@ -63,15 +57,15 @@ export function convertRequest(req: http.IncomingMessage, res: http.ServerRespon
   };
 
   if (req.method !== 'GET' && req.method !== 'HEAD') {
-    init.body = req;
+    init.body = createReadableStreamFromReadable(req);
   }
 
-  return new ExpoRequest(url.href, init);
+  return new Request(url.href, init);
 }
 
-export async function respond(res: http.ServerResponse, expoRes: ExpoResponse): Promise<void> {
+export async function respond(res: http.ServerResponse, expoRes: Response): Promise<void> {
   res.statusMessage = expoRes.statusText;
-  res.writeHead(expoRes.status, expoRes.statusText, expoRes.headers.raw());
+  res.writeHead(expoRes.status, expoRes.statusText, [...expoRes.headers.entries()]);
 
   if (expoRes.body) {
     await writeReadableStreamToWritable(expoRes.body, res);

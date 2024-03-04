@@ -130,7 +130,7 @@ describe('serializes', () => {
     });
   });
 
-  /*   describe('debugId', () => {
+  describe('debugId', () => {
     describe('legacy serializer', () => {
       it(`serializes with debugId annotation`, async () => {
         const artifacts = await serializeTo({
@@ -583,6 +583,80 @@ describe('serializes', () => {
     expect(bundle.map).toMatch(/debugId/);
   });
 
+  // Serialize to a split bundle
+  async function serializeSplitAsync(fs: Record<string, string>) {
+    return await serializeTo({
+      fs,
+      options: { platform: 'web', dev: false, output: 'static' },
+    });
+  }
+
+  it(`bundle splits a weak import`, async () => {
+    const artifacts = await serializeSplitAsync({
+      'index.js': `
+          require.resolveWeak('./foo')
+        `,
+      'foo.js': `
+          export const foo = 'foo';
+        `,
+    });
+
+    expect(artifacts.map((art) => art.filename)).toMatchInlineSnapshot(`
+      [
+        "_expo/static/js/web/index-f691569b43bf60b98587650a8aef72d2.js",
+        "_expo/static/js/web/foo-c054379d08b2cfa157d6fc1caa8f4802.js",
+      ]
+    `);
+
+    expect(artifacts).toMatchInlineSnapshot(`
+      [
+        {
+          "filename": "_expo/static/js/web/index-f691569b43bf60b98587650a8aef72d2.js",
+          "metadata": {
+            "isAsync": false,
+            "modulePaths": [
+              "/app/index.js",
+            ],
+            "requires": [],
+          },
+          "originFilename": "index.js",
+          "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
+        dependencyMap[0];
+      },"/app/index.js",{"0":"/app/foo.js","paths":{"/app/foo.js":"/_expo/static/js/web/foo-c054379d08b2cfa157d6fc1caa8f4802.js"}});
+      TEST_RUN_MODULE("/app/index.js");",
+          "type": "js",
+        },
+        {
+          "filename": "_expo/static/js/web/foo-c054379d08b2cfa157d6fc1caa8f4802.js",
+          "metadata": {
+            "isAsync": true,
+            "modulePaths": [
+              "/app/foo.js",
+            ],
+            "requires": [],
+          },
+          "originFilename": "foo.js",
+          "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
+        Object.defineProperty(exports, '__esModule', {
+          value: true
+        });
+        const foo = 'foo';
+        exports.foo = foo;
+      },"/app/foo.js",[]);",
+          "type": "js",
+        },
+      ]
+    `);
+
+    // Split bundle
+    expect(artifacts.length).toBe(2);
+    expect(artifacts[1].metadata).toEqual({
+      isAsync: true,
+      modulePaths: ['/app/foo.js'],
+      requires: [],
+    });
+  });
+
   it(`bundle splits an async import`, async () => {
     const artifacts = await serializeSplitAsync({
       'index.js': `
@@ -878,5 +952,5 @@ describe('serializes', () => {
     // });
     // // Ensure the dedupe chunk isn't run, just loaded.
     // expect(artifacts[3].source).not.toMatch(/TEST_RUN_MODULE/);
-  }); */
+  });
 });

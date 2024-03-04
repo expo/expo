@@ -116,7 +116,7 @@ public final class ImageModule: Module {
       var failed = false
 
       urls.forEach { url in
-        SDWebImagePrefetcher.shared.prefetchURLs([url], context: context, progress: nil, completed: { loaded, skipped in
+        SDWebImagePrefetcher.shared.prefetchURLs([url], context: context, progress: nil, completed: { _, skipped in
           if skipped > 0 && !failed {
             failed = true
             promise.resolve(false)
@@ -128,6 +128,21 @@ public final class ImageModule: Module {
           }
         })
       }
+    }
+
+    AsyncFunction("generateBlurhashAsync") { (url: URL, numberOfComponents: CGSize, promise: Promise) in
+      let downloader = SDWebImageDownloader()
+      let parsedNumberOfComponents = (Int(numberOfComponents.width), Int(numberOfComponents.height))
+      downloader.downloadImage(with: url, progress: nil, completed: { image, _, _, _ in
+        DispatchQueue.global().async {
+          if let downloadedImage = image {
+            let blurhashString = blurhash(fromImage: downloadedImage, numberOfComponents: parsedNumberOfComponents)
+            promise.resolve(blurhashString)
+          } else {
+            promise.reject(BlurhashGenerationException())
+          }
+        }
+      })
     }
 
     AsyncFunction("clearMemoryCache") { () -> Bool in

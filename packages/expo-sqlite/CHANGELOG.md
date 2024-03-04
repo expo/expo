@@ -6,9 +6,17 @@
 
 ### 🎉 New features
 
+- [Android] Added `expo.sqlite.customBuildFlags` gradle property to support custom sqlite3 building flags. ([#27385](https://github.com/expo/expo/pull/27385) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 13.2.2 - 2024-01-25
+
+### 💡 Others
+
+- Remove `onDatabaseChange` event from legacy API as it is not supported natively. ([#26655](https://github.com/expo/expo/pull/26655) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 13.2.1 - 2024-01-10
 

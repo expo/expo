@@ -4,6 +4,8 @@
 #import <ExpoModulesCore/EXSingletonModule.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
+#import <ExpoModulesCore/Swift.h>
+
 static dispatch_once_t onceToken;
 static NSMutableSet<Class> *EXModuleClasses;
 static NSMutableSet<Class> *EXSingletonModuleClasses;
@@ -11,6 +13,9 @@ static NSMutableSet<Class> *EXSingletonModuleClasses;
 void (^EXinitializeGlobalModulesRegistry)(void) = ^{
   EXModuleClasses = [NSMutableSet set];
   EXSingletonModuleClasses = [NSMutableSet set];
+
+  // Also add temporary Swift modules from core
+  [EXModuleClasses addObject:[EXFileSystemLegacyUtilities class]];
 };
 
 extern void EXRegisterModule(Class);

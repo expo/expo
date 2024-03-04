@@ -34,7 +34,7 @@
     "expo-dev-menu": "4.5.1",
     "expo-manifests": "~0.13.0",
     "resolve-from": "^5.0.0",
-    "semver": "^7.5.3"
+    "semver": "^7.5.4"
   },
   "devDependencies": {
     "@babel/plugin-transform-export-namespace-from": "^7.23.4",
@@ -52,7 +52,7 @@
     "graphql": "^16.0.1",
     "graphql-request": "^3.6.1",
     "react": "18.2.0",
-    "react-native": "0.73.2",
+    "react-native": "0.73.4",
     "react-query": "^3.34.16",
     "url": "^0.11.0"
   },

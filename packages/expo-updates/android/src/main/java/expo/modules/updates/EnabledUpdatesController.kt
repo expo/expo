@@ -9,6 +9,7 @@ import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.updates.db.BuildData
@@ -41,13 +42,15 @@ class EnabledUpdatesController(
   private val updatesConfiguration: UpdatesConfiguration,
   override val updatesDirectory: File
 ) : IUpdatesController, UpdatesStateChangeEventSender {
+  override var appContext: WeakReference<AppContext>? = null
+
   private val reactNativeHost: WeakReference<ReactNativeHost>? = if (context is ReactApplication) {
     WeakReference(context.reactNativeHost)
   } else {
     null
   }
   private val logger = UpdatesLogger(context)
-  private val fileDownloader = FileDownloader(context)
+  private val fileDownloader = FileDownloader(context, updatesConfiguration)
   private val selectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(
     updatesConfiguration.getRuntimeVersion()
   )
@@ -66,10 +69,17 @@ class EnabledUpdatesController(
 
   private var isStartupFinished = false
 
+  override var shouldEmitJsEvents = false
+    set(value) {
+      field = value
+      UpdatesUtils.sendQueuedEventsToAppContext(value, appContext, logger)
+    }
+
   @Synchronized
   private fun onStartupProcedureFinished() {
     isStartupFinished = true
     (this@EnabledUpdatesController as java.lang.Object).notify()
+    UpdatesUtils.sendQueuedEventsToAppContext(shouldEmitJsEvents, appContext, logger)
   }
 
   private val startupProcedure = StartupProcedure(
@@ -169,7 +179,7 @@ class EnabledUpdatesController(
     stateMachine.queueExecution(procedure)
   }
 
-  override fun sendUpdateStateChangeEventToBridge(eventType: UpdatesStateEventType, context: UpdatesStateContext) {
+  override fun sendUpdateStateChangeEventToAppContext(eventType: UpdatesStateEventType, context: UpdatesStateContext) {
     sendEventToJS(UPDATES_STATE_CHANGE_EVENT_NAME, eventType.type, context.writableMap)
   }
 
@@ -178,7 +188,7 @@ class EnabledUpdatesController(
   }
 
   private fun sendEventToJS(eventName: String, eventType: String, params: WritableMap?) {
-    UpdatesUtils.sendEventToReactNative(reactNativeHost, logger, eventName, eventType, params)
+    UpdatesUtils.sendEventToAppContext(shouldEmitJsEvents, appContext, logger, eventName, eventType, params)
   }
 
   override fun getConstantsForModule(): IUpdatesController.UpdatesModuleConstants {
@@ -280,12 +290,5 @@ class EnabledUpdatesController(
 
   companion object {
     private val TAG = EnabledUpdatesController::class.java.simpleName
-
-    private const val UPDATE_AVAILABLE_EVENT = "updateAvailable"
-    private const val UPDATE_NO_UPDATE_AVAILABLE_EVENT = "noUpdateAvailable"
-    private const val UPDATE_ERROR_EVENT = "error"
-
-    const val UPDATES_EVENT_NAME = "Expo.nativeUpdatesEvent"
-    const val UPDATES_STATE_CHANGE_EVENT_NAME = "Expo.nativeUpdatesStateChangeEvent"
   }
 }

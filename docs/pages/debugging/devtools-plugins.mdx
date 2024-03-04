@@ -8,7 +8,9 @@ import { Terminal } from '~/ui/components/Snippet';
 
 > **warning** Available from SDK 50 and above.
 
-Dev tools plugins are available in your local development environment to help you debug your app. They consist of a small amount of code you add to a project that enables two-way communication between the app and an external Chrome window. This setup provides display tools to inspect the app, trigger certain behaviors for testing, and more. Dev tools plugins are similar to Flipper plugins that are available in Development builds and Expo Go, and do not require adding native modules or config plugins to your project.
+Dev tools plugins are available in your local development environment to help you debug your app. They consist of a small amount of code you add to a project that enables two-way communication between the app and an external Chrome window. This setup provides display tools to inspect the app, trigger certain behaviors for testing, and more.
+
+Dev tools plugins are similar to Flipper plugins that are available in Development builds and Expo Go, and do not require adding native modules or config plugins to your project.
 
 ## Add a dev tools plugin to a project
 
@@ -51,7 +53,7 @@ export default App() {
 
 ### Compatibility with Expo Go and Development builds
 
-Dev tools plugins should only include JavaScript code. They are generally compatible with Expo Go and [Development builds](/development-builds/introduction/) and should not require creating a new development build to add the plugin. If a package's underlying module that the plugin inspects includes native code and is not part of Expo Go, create a new development build to use both the component and the plugin from that package.
+Dev tools plugins should only include JavaScript code. They are generally compatible with Expo Go and [Development builds](/develop/development-builds/introduction/) and should not require creating a new development build to add the plugin. If a package's underlying module that the plugin inspects includes native code and is not part of Expo Go, create a new development build to use both the component and the plugin from that package.
 
 For example, a dev tools plugin that inspects [React Native Firebase](/guides/using-firebase/#using-react-native-firebase) will not work with Expo Go. React Native Firebase includes native code that is not part of Expo Go. To use the dev tools plugin and React Native Firebase, create a development build.
 
@@ -65,15 +67,17 @@ After installing the dev tools plugin and adding the connecting required code to
 
 Expo provides some dev tools plugins for common debugging tasks. Follow the instructions below to start using them in your app.
 
+> **Note**: Each of the following dev tools plugin hooks will only enable the plugin in development mode. It doesn't affect your production bundle.
+
 ### React Navigation
 
-Inspired by [`@react-navigation/devtools`](https://github.com/react-navigation/react-navigation/tree/main/packages/devtools) and [`flipper-plugin-react-navigation`](https://github.com/react-navigation/react-navigation/tree/main/packages/flipper-plugin-react-navigation), the React Navigation dev tools plugin allows seeing history of [React Navigation](https://reactnavigation.org/) actions and state. You can also rewind to previous points in your navigation history and send deep links to your app. Since Expo Router is built upon React Navigation, this plugin is fully compatible with [Expo Router](/router/introduction).
+Inspired by [`@react-navigation/devtools`](https://github.com/react-navigation/react-navigation/tree/main/packages/devtools), the React Navigation dev tools plugin allows seeing the history of [React Navigation](https://reactnavigation.org/) actions and state. You can also rewind to previous points in your navigation history and send deep links to your app. Since Expo Router is built upon React Navigation, this plugin is fully compatible with [Expo Router](/router/introduction).
 
 To use the plugin, start by installing the package:
 
 <Terminal cmd={['$ npx expo install @dev-plugins/react-navigation']} />
 
-Pass the navigation root to the plugin in your app's entry point when running in development mode:
+Pass the navigation root to the plugin in your app's entry point:
 
 <Tabs tabs={["Expo Router", "React Navigation"]}>
 <Tab>
@@ -166,7 +170,7 @@ const queryClient = new QueryClient({});
 export default function App() {
   useReactQueryDevTools(queryClient);
 
-  return <QueryClientProvider>{/* ... */}</QueryClientProvider>;
+  return <QueryClientProvider client={queryClient}>{/* ... */}</QueryClientProvider>;
 }
 ```
 

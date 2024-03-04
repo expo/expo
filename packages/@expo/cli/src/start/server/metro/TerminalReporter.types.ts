@@ -2,6 +2,8 @@ import type { ReportableEvent } from 'metro';
 import type { TerminalReportableEvent } from 'metro/src/lib/TerminalReporter';
 import type { Terminal } from 'metro-core';
 
+import { MetroEnvironment } from '../middleware/metroOptions';
+
 export type GlobalCacheDisabledReason = 'too_many_errors' | 'too_many_misses';
 
 export type BundleDetails = {
@@ -11,7 +13,7 @@ export type BundleDetails = {
   entryFile: string;
   minify: boolean;
   platform: string | null | undefined;
-  customTransformOptions?: { environment?: 'node' };
+  customTransformOptions?: { environment?: MetroEnvironment };
   runtimeBytecodeVersion: number | null | undefined;
 };
 
@@ -20,6 +22,12 @@ export type BundleProgress = {
   transformedFileCount: number;
   totalFileCount: number;
   ratio: number;
+};
+
+export type BundleProgressUpdate = {
+  buildID: string;
+  transformedFileCount: number;
+  totalFileCount: number;
 };
 
 export { TerminalReportableEvent };
@@ -124,11 +132,7 @@ export interface TerminalReporterInterface {
     buildID,
     transformedFileCount,
     totalFileCount,
-  }: {
-    buildID: string;
-    transformedFileCount: number;
-    totalFileCount: number;
-  }): void;
+  }: BundleProgressUpdate): void;
 
   /**
    * This function is exclusively concerned with updating the internal state.

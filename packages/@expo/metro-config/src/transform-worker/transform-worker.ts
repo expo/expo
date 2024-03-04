@@ -30,9 +30,9 @@ export async function transform(
   // If the file is not CSS, then use the default behavior.
   if (!isCss) {
     const environment = options.customTransformOptions?.environment;
-
+    const isClientEnvironment = environment !== 'node' && environment !== 'react-server';
     if (
-      environment !== 'node' &&
+      isClientEnvironment &&
       // TODO: Ensure this works with windows.
       (filename.match(new RegExp(`^app/\\+html(\\.${options.platform})?\\.([tj]sx?|[cm]js)?$`)) ||
         // Strip +api files.
@@ -55,7 +55,7 @@ export async function transform(
     }
 
     if (
-      environment !== 'node' &&
+      isClientEnvironment &&
       !filename.match(/\/node_modules\//) &&
       filename.match(/\+api(\.(native|ios|android|web))?\.[tj]sx?$/)
     ) {

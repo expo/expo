@@ -41,11 +41,11 @@
     "@expo/config-plugins": "~7.8.0",
     "@expo/config-types": "^50.0.0-alpha.1",
     "@expo/image-utils": "^0.4.0",
-    "@expo/json-file": "^8.2.37",
+    "@expo/json-file": "^8.3.0",
     "debug": "^4.3.1",
     "fs-extra": "^9.0.0",
     "resolve-from": "^5.0.0",
-    "semver": "7.5.3",
+    "semver": "7.5.4",
     "xml2js": "0.6.0"
   },
   "peerDependencies": {

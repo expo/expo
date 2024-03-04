@@ -40,7 +40,9 @@ You can configure `expo-camera` using its built-in [config plugin](/config-plugi
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera."
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
+          "recordAudioAndroid": true
         }
       ]
     ]
@@ -63,6 +65,13 @@ You can configure `expo-camera` using its built-in [config plugin](/config-plugi
       platform: 'ios',
       description: 'A string to set the [`NSMicrophoneUsageDescription`](#ios) permission message.',
       default: '"Allow $(PRODUCT_NAME) to access your microphone"',
+    },
+    {
+      name: 'recordAudioAndroid',
+      platform: 'android',
+      description:
+        'A boolean that determines whether to enable the `RECORD_AUDIO` permission on Android.',
+      default: 'true',
     },
   ]}
 />

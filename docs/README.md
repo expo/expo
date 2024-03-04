@@ -129,7 +129,7 @@ We use Algolia as a main search results provider for our docs. Besides the query
 In `ui/components/CommandMenu/utils.ts`, you can see the `facetFilters` set to `[['version:none', 'version:{version}']]`. Translated to English, this means - search on all pages where `version` is `none`, or the currently selected version. Here are the rules we use to set this tag:
 
 - all unversioned pages use the version tag `none`,
-- all versioned pages use the SDK version (for example, `v46.0.0` or `v47.0.0`),
+- all versioned pages use the SDK version (for example, `v50.0.0` or `v49.0.0`),
 - all pages with `hideFromSearch: true` frontmatter entry don't have the version tag.
 
 Currently, the base results for Expo docs are combined with other results from multiple sources, such as:
@@ -231,7 +231,7 @@ In the terminal window and run the following command with to generate the JSON d
 - Read the **NOTE** in the below snippet for updating the docs for `unversioned`:
 
 ```shell
-et generate-docs-api-data --packageName expo-constants --sdk 47
+et generate-docs-api-data --packageName expo-constants --sdk 50
 
 #### NOTE ####
 # To update unversioned docs, run the command without mentioning the SDK version

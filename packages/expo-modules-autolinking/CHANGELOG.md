@@ -6,9 +6,17 @@
 
 ### 🎉 New features
 
+- Expand Android auto-linking to support new expo-build-properties ([#26895](https://github.com/expo/expo/pull/26895) by [@bpeltonc](https://github.com/bpeltonc))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 1.10.3 - 2024-02-06
+
+### 🐛 Bug fixes
+
+- Fixed generating a list of app delegate subscribers. ([#26851](https://github.com/expo/expo/pull/26851) by [@tsapeta](https://github.com/tsapeta))
 
 ## 1.10.2 - 2024-01-18
 
