@@ -89,6 +89,33 @@ final class SharedObjectSpec: ExpoSpec {
         expect(releaseFunction.kind) == .function
       }
     }
+
+    describe("Native object") {
+      it("sends events") {
+        // Create the shared object
+        let jsObject = try runtime
+          .eval("sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample()")
+          .asObject()
+
+        // Add a listener that adds three arguments
+        try runtime.eval([
+          "total = 0",
+          "sharedObject.addListener('test event', (a, b, c) => { total = a + b + c })"
+        ])
+
+        // Get the native instance
+        let nativeObject = appContext.sharedObjectRegistry.toNativeObject(jsObject)
+
+        // Send an event from the native object to JS
+        nativeObject?.sendEvent(name: "test event", args: 1, 2, 3)
+
+        // Check the value that is set by the listener
+        let total = try runtime.eval("total")
+
+        expect(total.kind) == .number
+        expect(try total.asInt()) == 6
+      }
+    }
   }
 }
 
