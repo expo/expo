@@ -181,8 +181,6 @@ namespace ExpoRouter {
     back: () => void;
     /** If there's history that supports invoking the `back` function. */
     canGoBack: () => boolean;
-    /** If there's history that supports invoking the `back` function. */
-    canGoBack: () => boolean;
     /** Navigate to the provided href using a push operation if possible. */
     push: (href: Href) => void;
     /** Navigate to the provided href. */
