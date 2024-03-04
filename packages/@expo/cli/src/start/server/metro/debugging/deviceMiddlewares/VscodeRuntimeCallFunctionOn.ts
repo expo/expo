@@ -1,13 +1,7 @@
 import Protocol from 'devtools-protocol';
 
-import {
-  CdpMessage,
-  DebuggerMetadata,
-  DebuggerRequest,
-  DeviceResponse,
-  InspectorHandler,
-} from './types';
-import { getDebuggerType, respond } from './utils';
+import { CdpMessage, DebuggerRequest, DeviceResponse, DeviceMiddleware } from './types';
+import { getDebuggerType } from './utils';
 
 /**
  * Vscode is trying to inject a script to fetch information about "Stringy" variables.
@@ -16,13 +10,14 @@ import { getDebuggerType, respond } from './utils';
  * @see https://github.com/expo/vscode-expo/issues/231
  * @see https://github.com/microsoft/vscode-js-debug/blob/dcccaf3972d675cc1e5c776450bb4c3dc8c178c1/src/adapter/stackTrace.ts#L319-L324
  */
-export class VscodeRuntimeCallFunctionOnHandler implements InspectorHandler {
-  onDebuggerMessage(
-    message: DebuggerRequest<RuntimeCallFunctionOn>,
-    { socket, userAgent }: DebuggerMetadata
-  ): boolean {
-    if (getDebuggerType(userAgent) === 'vscode' && message.method === 'Runtime.callFunctionOn') {
-      return respond<DeviceResponse<RuntimeCallFunctionOn>>(socket, {
+export class VscodeRuntimeCallFunctionOnMiddleware extends DeviceMiddleware {
+  isEnabled() {
+    return getDebuggerType(this.debuggerInfo.userAgent) === 'vscode';
+  }
+
+  handleDebuggerMessage(message: DebuggerRequest<RuntimeCallFunctionOn>) {
+    if (message.method === 'Runtime.callFunctionOn') {
+      return this.sendToDebugger<DeviceResponse<RuntimeCallFunctionOn>>({
         id: message.id,
         result: {
           // We don't know the `type` and vscode allows `type: undefined`

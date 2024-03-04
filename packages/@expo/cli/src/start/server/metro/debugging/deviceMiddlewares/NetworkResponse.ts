@@ -2,20 +2,22 @@ import type { Protocol } from 'devtools-protocol';
 
 import {
   CdpMessage,
-  InspectorHandler,
-  DebuggerMetadata,
+  DeviceMiddleware,
   DeviceRequest,
   DebuggerRequest,
   DebuggerResponse,
   DeviceResponse,
 } from './types';
-import { respond } from './utils';
 
-export class NetworkResponseHandler implements InspectorHandler {
+export class NetworkResponseMiddleware extends DeviceMiddleware {
   /** All known responses, mapped by request id */
   storage = new Map<string, DebuggerResponse<NetworkGetResponseBody>['result']>();
 
-  onDeviceMessage(message: DeviceRequest<NetworkReceivedResponseBody>) {
+  isEnabled() {
+    return this.page.capabilities.nativeNetworkInspection !== true;
+  }
+
+  handleDeviceMessage(message: DeviceRequest<NetworkReceivedResponseBody>) {
     if (message.method === 'Expo(Network.receivedResponseBody)') {
       const { requestId, ...requestInfo } = message.params;
       this.storage.set(requestId, requestInfo);
@@ -25,15 +27,12 @@ export class NetworkResponseHandler implements InspectorHandler {
     return false;
   }
 
-  onDebuggerMessage(
-    message: DebuggerRequest<NetworkGetResponseBody>,
-    { socket }: DebuggerMetadata
-  ) {
+  handleDebuggerMessage(message: DebuggerRequest<NetworkGetResponseBody>) {
     if (
       message.method === 'Network.getResponseBody' &&
       this.storage.has(message.params.requestId)
     ) {
-      return respond<DeviceResponse<NetworkGetResponseBody>>(socket, {
+      return this.sendToDebugger<DeviceResponse<NetworkGetResponseBody>>({
         id: message.id,
         result: this.storage.get(message.params.requestId)!,
       });

@@ -1,27 +1,21 @@
 import chalk from 'chalk';
 
-import { createInspectorDeviceClass } from './InspectorDevice';
-import { createInspectorProxyClass } from './InspectorProxy';
+import { createDeviceMiddlewareFactory } from './createDeviceMiddlewareFactory';
 import { Log } from '../../../../log';
 import { type MetroBundlerDevServer } from '../MetroBundlerDevServer';
 
 export function createDebugMiddleware(metroBundler: MetroBundlerDevServer) {
   // Load the React Native debugging tools from project
   // TODO: check if this works with isolated modules
-  const { createDevMiddleware, unstable_Device, unstable_InspectorProxy } =
+  const { createDevMiddleware } =
     require('@react-native/dev-middleware') as typeof import('@react-native/dev-middleware');
-
-  // Create the extended inspector proxy, using our own device class
-  const ExpoInspectorProxy = createInspectorProxyClass(
-    unstable_InspectorProxy,
-    createInspectorDeviceClass(metroBundler, unstable_Device)
-  );
 
   const { middleware, websocketEndpoints } = createDevMiddleware({
     projectRoot: metroBundler.projectRoot,
     serverBaseUrl: metroBundler.getUrlCreator().constructUrl({ scheme: 'http', hostType: 'lan' }),
     logger: createLogger(chalk.bold('Debug:')),
-    unstable_InspectorProxy: ExpoInspectorProxy,
+    // @ts-expect-error Upgrade to latest `@react-native/dev-middleware` with the device middleware API
+    unstable_deviceMessageMiddleware: createDeviceMiddlewareFactory(metroBundler),
     unstable_experiments: {
       enableNewDebugger: true,
     },
