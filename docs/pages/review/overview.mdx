@@ -5,12 +5,15 @@ description: Learn about different strategies you can use for reviewing your app
 ---
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { CODE } from '~/ui/components/Text';
+import { BuildIcon, LayersTwo02Icon, GithubIcon } from '@expo/styleguide-icons';
 
-This page outlines different strategies to share a preview version of your app using internal distribution and EAS Update. Sharing a preview version of your app with testers allows them to download and run it on their devices, as if it were distributed through a store.
+This page outlines different strategies to share a preview version of your app using internal distribution and EAS Update. Sharing a preview version with testers allows them to download and run it on their devices as if it were distributed through a store.
 
 ## Internal distribution
 
-Internal distribution is a strategy for sharing an app with a limited audience. It is used for testing purposes within a team or organization or a selected group of testers, or even by an individual developer that is testing their own app. Android and iOS provide different ways to install a build of your application directly on a device.
+Internal distribution is a strategy for sharing an app with a limited audience. It is used for testing purposes within a team or organization, or a selected group of testers, or by an individual developer that is testing their own app. Android and iOS provide different ways to install a build of your application directly on a device.
 
 Google Play beta provides both closed and open tracks. You can invite specific users to test your app in the closed beta. In the open beta, you can make your app available to anyone participating in the beta program. You could alternatively distribute the APK directly to testers.
 
@@ -22,42 +25,54 @@ EAS Build makes it easy to generate a shareable URL that your team can use to do
   title="How to set up an internal distribution build"
   description="Learn how EAS Build provides shareable URLs for your builds with your team for internal distribution."
   href="/build/internal-distribution/"
+  Icon={BuildIcon}
 />
 
 ## Using EAS Update with development builds
 
 You can use [development builds](/develop/development-builds/introduction/) to load previews of your app during the review stage by publishing the preview with EAS Update.
 
+<Collapsible summary="Can I use Expo Go for reviewing releases?">
+
 Even though Expo Go is an open-source sandbox that can be good for previewing isolated prototypes on Android and iOS, it is not intended for production apps. It should be avoided during the preview process of your app.
 
-You can use a development build with EAS Update and see the getting started guide for further instructions to set up the `expo-updates` library and learn how to create a link between a build and an update.
+</Collapsible>
 
 <BoxLink
   title="Get started with EAS Update"
   description="Learn how to get started using expo-updates library and use EAS Update in your project."
   href="/eas-update/expo-dev-client/"
+  Icon={LayersTwo02Icon}
 />
-
-EAS Update allows you to push updates to iterate faster with your team. You can publish a new update for your team to preview. This process allows any team member or reviewer with a registered device to review the latest version of your app by scanning a QR code.
 
 <BoxLink
   title="Develop with EAS Update"
-  description="Learn how to iterate faster locally or with your team."
+  description="Learn how to use EAS Update to push changes to iterate faster with your team. This process allows any team member or reviewer with a registered device to review the latest version of your app by scanning the QR code."
   href="/eas-update/develop-faster/"
+  Icon={LayersTwo02Icon}
 />
-
-If you have the `expo-dev-client` library installed in your project, your team can launch different app versions and preview a published update inside the development build. It supports loading published EAS updates through channels.
 
 <BoxLink
-  title="Use expo-dev-client with EAS Update"
-  description="Learn how to use expo-dev-client library to preview a published EAS Update inside a development build."
-  href="/eas-update/expo-dev-client/"
-/>
+  title={
+    <>
+      Use <CODE>expo-dev-client</CODE> with EAS Update
+    </>
+  }
+  description={
+    <>
+      Learn how to use <CODE>expo-dev-client</CODE> in your project to launch different app
+      versions and preview a published update inside a development build. This library also
+      supports loading published EAS updates through channels.
+    </>
 
-You can also use GitHub Actions to automate the process of publishing updates. It makes deploying updates consistent and fast, leaving you more time to develop your app.
+}
+href="/eas-update/expo-dev-client/"
+Icon={LayersTwo02Icon}
+/>
 
 <BoxLink
   title="Use GitHub Actions"
-  description="Learn how to use GitHub Actions to automate publishing updates with EAS Update."
+  description="Learn how to use GitHub Actions to automate the process of publishing updates with EAS Update. It also makes deploying updates consistent and fast, leaving you more time to develop your app."
   href="/eas-update/github-actions/"
+  Icon={GithubIcon}
 />
