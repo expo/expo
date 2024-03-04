@@ -14,7 +14,7 @@
 - Add expo-updates cli fingerprint:generate command. ([#27119](https://github.com/expo/expo/pull/27119) by [@wschurman](https://github.com/wschurman))
 - Add expo-updates cli runtimeversion:resolve command. ([#27263](https://github.com/expo/expo/pull/27263) by [@wschurman](https://github.com/wschurman))
 - Add --version top-level flag and also add handler for missing command in expo-update cli. ([#27296](https://github.com/expo/expo/pull/27296) by [@wschurman](https://github.com/wschurman))
-- Add more debug information to runtimeversion:resolve CLI output. ([#27323](https://github.com/expo/expo/pull/27323) by [@wschurman](https://github.com/wschurman))
+- Add more debug information to runtimeversion:resolve CLI output. ([#27323](https://github.com/expo/expo/pull/27323), [#27387](https://github.com/expo/expo/pull/27387) by [@wschurman](https://github.com/wschurman))
 - Added React Native New Architecture support. ([#27216](https://github.com/expo/expo/pull/27216) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
