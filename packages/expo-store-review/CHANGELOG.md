@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- drop unused web `name` property.
+
 ## 6.8.3 - 2024-01-18
 
 ### 💡 Others

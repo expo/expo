@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- drop unused web `name` property.
+
 ## 5.8.3 - 2024-01-18
 
 _This version does not introduce any user-facing changes._

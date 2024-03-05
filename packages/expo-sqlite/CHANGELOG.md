@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- drop unused web `name` property.
+
 ## 13.2.2 - 2024-01-25
 
 ### 💡 Others

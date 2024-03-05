@@ -9,8 +9,10 @@
 ### 🐛 Bug fixes
 
 - [Android] Enhanced resource management in VideoThumbnails module by ensuring closure of `ParcelFileDescriptor` and releasing `MediaMetadataRetriever` post-use. ([#26100](https://github.com/expo/expo/pull/26100) by [@hirbod](https://github.com/hirbod))
-  
+
 ### 💡 Others
+
+- drop unused web `name` property.
 
 ## 7.9.0 — 2023-12-12
 

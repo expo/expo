@@ -17,6 +17,7 @@
 
 ### 💡 Others
 
+- drop unused web `name` property.
 - On `Android`, requesting audio permissions was meant to be optional in the config plugin. ([#27365](https://github.com/expo/expo/pull/27365) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 14.0.5 - 2024-02-16

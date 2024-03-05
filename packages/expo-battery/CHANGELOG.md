@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- drop unused web `name` property.
+
 ## 7.7.2 - 2023-12-19
 
 _This version does not introduce any user-facing changes._

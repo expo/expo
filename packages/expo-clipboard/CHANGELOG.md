@@ -10,6 +10,7 @@
 
 ### 💡 Others
 
+- drop unused web `name` property.
 - Rename `CornerStyle` and `DisplayMode` types to include `Type` suffix in name. ([#27190](https://github.com/expo/expo/pull/27190) by [@simek](https://github.com/simek))
 
 ## 5.0.1 - 2023-12-19

@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- drop unused web `name` property.
+
 ## 16.0.7 - 2024-02-27
 
 ### 🐛 Bug fixes
