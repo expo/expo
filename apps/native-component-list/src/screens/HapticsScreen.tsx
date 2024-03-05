@@ -1,5 +1,5 @@
 import * as Haptics from 'expo-haptics';
-import { SectionList, SectionListData, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { SectionList, SectionListData, StyleSheet, Text, View } from 'react-native';
 
 import Button from '../components/Button';
 import MonoText from '../components/MonoText';
