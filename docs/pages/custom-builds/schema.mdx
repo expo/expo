@@ -111,11 +111,11 @@ build:
 
 #### Sharing environment variables with other steps
 
-Environment variables `export`ed in one step's `command` are not automatically exposed to other steps. To share an environment variable with other steps, use `set-env` executable.
+Environment variables exported (using `export`) in one step's `command` are not automatically exposed to other steps. To share an environment variable with other steps, use the `set-env` executable.
 
-`set-env` expects to be called with two arguments, environment variable's name and value. Example: `set-env NPM_TOKEN "abcdef"` will expose `$NPM_TOKEN` variable with value `abcdef` to other steps.
+`set-env` expects to be called with two arguments: environment variable's name and value. For example, `set-env NPM_TOKEN "abcdef"` will expose `$NPM_TOKEN` variable with value `abcdef` to other steps.
 
-> **Note:** Variables shared with `set-env` are not automatically `export`ed locally. You need to call `export` yourself.
+> **Note:** Variables shared with `set-env` are not automatically exported locally. You need to call `export` yourself.
 
 ```yaml
 build:
