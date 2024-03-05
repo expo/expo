@@ -34,9 +34,6 @@
     "web": {
       "bundler": "metro",
       "output": "server"
-    },
-    "android": {
-      "package": "net.owow.is.sandboox"
     }
   }
 }
