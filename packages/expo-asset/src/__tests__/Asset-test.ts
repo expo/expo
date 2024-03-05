@@ -20,6 +20,24 @@ jest.mock('react-native/Libraries/Image/resolveAssetSource', () => {
   };
 });
 
+jest.mock('../ExpoAsset', () => {
+  const ExpoAsset = jest.requireActual('../ExpoAsset');
+  return {
+    ...ExpoAsset,
+    downloadAsync: jest.fn(
+      async () => 'file:///Caches/Expo.app/ExponentAsset-cafecafecafecafecafecafecafecafe.png'
+    ),
+  };
+});
+
+jest.mock('../ExpoAsset.web', () => {
+  const ExpoAsset = jest.requireActual('../ExpoAsset.web');
+  return {
+    ...ExpoAsset,
+    downloadAsync: jest.fn(async () => 'https://example.com/icon.png'),
+  };
+});
+
 jest.mock('../ImageAssets', () => {
   const ImageAssets = jest.requireActual('../ImageAssets');
   return {
@@ -133,24 +151,6 @@ it(`throws when creating an asset from a missing module`, () => {
 
 it(`downloads uncached assets`, async () => {
   const { Asset } = require('../index');
-
-  jest.mock('../ExpoAsset', () => {
-    const ExpoAsset = jest.requireActual('../ExpoAsset');
-    return {
-      ...ExpoAsset,
-      downloadAsync: jest.fn(
-        async () => 'file:///Caches/Expo.app/ExponentAsset-cafecafecafecafecafecafecafecafe.png'
-      ),
-    };
-  });
-
-  jest.mock('../ExpoAsset.web', () => {
-    const ExpoAsset = jest.requireActual('../ExpoAsset.web');
-    return {
-      ...ExpoAsset,
-      downloadAsync: jest.fn(async () => 'https://example.com/icon.png'),
-    };
-  });
 
   const asset = Asset.fromMetadata(mockImageMetadata);
   expect(asset.localUri).toBeNull();
