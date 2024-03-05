@@ -1,5 +1,5 @@
 export default {
-    NativeDatabase(databaseName, options) {
+    NativeDatabase(databaseName, options, serializedData) {
         throw new Error('Unimplemented');
     },
     NativeStatement() {
