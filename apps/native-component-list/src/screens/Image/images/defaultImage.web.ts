@@ -1,3 +1,3 @@
-const defaultImage = require('../../../../assets/images/expo-icon@3x.png');
+const defaultImage = require('../../../../assets/images/expo-icon.png');
 
 export default defaultImage;
