@@ -39,7 +39,8 @@
     "expo-image-loader": "~5.0.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^4.0.0"
+    "expo-module-scripts": "^4.0.0",
+    "@testing-library/user-event": "^14.5.2"
   },
   "peerDependencies": {
     "expo": "*"
