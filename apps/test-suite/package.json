@@ -42,7 +42,7 @@
     "expo-random": "~13.6.0",
     "expo-secure-store": "~12.8.0",
     "expo-speech": "~11.7.0",
-    "expo-sqlite": "~13.2.0",
+    "expo-sqlite": "~13.3.0",
     "expo-task-manager": "~11.7.0",
     "expo-web-browser": "~12.8.0",
     "firebase": "^9.3.0",

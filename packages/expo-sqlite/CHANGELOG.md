@@ -6,14 +6,20 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 13.3.0 — 2024-03-05
+
+### 🎉 New features
+
 - [Android] Added `expo.sqlite.customBuildFlags` gradle property to support custom sqlite3 building flags. ([#27385](https://github.com/expo/expo/pull/27385) by [@kudo](https://github.com/kudo))
 - Added `serializeAsync()` and `deserializeDatabaseAsync()` to serialze and deserialize databases. ([#27422](https://github.com/expo/expo/pull/27422) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
 - Fixed `expo-sqlite/next` cannot be imported from an ESM project. ([#27423](https://github.com/expo/expo/pull/27423) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 13.2.2 — 2024-01-25
 
