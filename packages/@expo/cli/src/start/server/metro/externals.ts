@@ -73,8 +73,8 @@ async function tapExternalRequirePolyfill(projectRoot: string) {
   );
   await writeIfDifferentAsync(
     path.join(projectRoot, EXTERNAL_REQUIRE_NATIVE_POLYFILL),
-    // 'global.$$require_external = typeof expo === "undefined" ? require : () => null;'
-    'global.$$require_external = typeof expo === "undefined" ? require : (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);}'
+    // Wrap in try/catch to support Android.
+    'try { global.$$require_external = typeof expo === "undefined" ? eval("require") : (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} } catch { global.$$require_external = (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} }'
   );
 }
 
