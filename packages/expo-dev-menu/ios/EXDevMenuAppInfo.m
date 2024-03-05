@@ -53,6 +53,9 @@
 
 +(NSString *)getAppIcon
 {
+#if TARGET_OS_TV
+  return @"";
+#else
   NSString *appIcon = @"";
   NSString *appIconName = [[[[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"CFBundleIconFiles"]  lastObject];
 
@@ -63,6 +66,7 @@
   }
 
   return appIcon;
+#endif
 }
 
 +(NSString *)getUpdatesConfigForKey:(NSString *)key

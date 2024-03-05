@@ -48,7 +48,9 @@ open class OverlayContainerViewController: UIViewController {
             guard isViewLoaded else { return }
             oldValue.forEach { removeChild($0) }
             loadOverlayViews()
+          #if !os(tvOS)
             setNeedsStatusBarAppearanceUpdate()
+          #endif
         }
     }
 
@@ -57,9 +59,11 @@ open class OverlayContainerViewController: UIViewController {
         return viewControllers.last
     }
 
+  #if !os(tvOS)
     open override var childForStatusBarStyle: UIViewController? {
         return topViewController
     }
+  #endif
 
     /// The scroll view managing the overlay translation.
     weak open var drivingScrollView: UIScrollView? {

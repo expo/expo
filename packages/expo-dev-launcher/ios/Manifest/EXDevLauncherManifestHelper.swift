@@ -4,6 +4,7 @@ import UIKit
 
 @objc
 public class EXDevLauncherManifestHelper: NSObject {
+  #if !os(tvOS)
   private static func defaultOrientationForOrientationMask(_ orientationMask: UIInterfaceOrientationMask) -> UIInterfaceOrientation {
     if orientationMask.contains(.all) {
       return UIInterfaceOrientation.unknown
@@ -31,6 +32,7 @@ public class EXDevLauncherManifestHelper: NSObject {
 
     return defaultOrientationForOrientationMask(orientationMask)
   }
+#endif
 
   @objc
   public static func hexStringToColor(_ hexString: String?) -> UIColor? {

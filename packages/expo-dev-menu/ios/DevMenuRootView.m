@@ -30,7 +30,7 @@
 - (bool)becomeFirstResponder
 {
   // Avoid first responder status so that it won't hijack React Native keyboard commands.
-  return NO;
+  return YES;
 }
 
 @end

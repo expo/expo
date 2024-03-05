@@ -1,6 +1,9 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <React/RCTRootView.h>
+#if TARGET_OS_TV
+@class RCTTVRemoteHandler;
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -1,10 +1,36 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+#if canImport(SafariServices)
 import SafariServices
+#endif
 import React
 
 private let DEV_LAUNCHER_DEFAULT_SCHEME = "expo-dev-launcher"
+
+#if os(tvOS)
+
+public class DevLauncherAuth: Module {
+  public func definition() -> ModuleDefinition {
+    Name("ExpoDevLauncherAuth")
+    AsyncFunction("openAuthSessionAsync") { (authURL: URL, redirectURL: String, promise: Promise) in
+      throw Exception()
+    }
+    AsyncFunction("getAuthSchemeAsync") { () -> String in
+      return DEV_LAUNCHER_DEFAULT_SCHEME
+    }
+    AsyncFunction("setSessionAsync") { (session: String?) in
+      UserDefaults.standard.set(session, forKey: "expo-session-secret")
+    }
+
+    AsyncFunction("restoreSessionAsync") {
+      return UserDefaults.standard.string(forKey: "expo-session-secret")
+    }
+
+  }
+}
+
+#else
 
 public class DevLauncherAuth: Module {
   private var redirectPromise: Promise?
@@ -71,3 +97,5 @@ public class DevLauncherAuth: Module {
     self.redirectPromise = nil
   }
 }
+
+#endif

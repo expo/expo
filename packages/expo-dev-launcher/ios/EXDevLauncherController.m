@@ -537,7 +537,9 @@
   self.manifest = manifest;
   self.manifestURL = appUrl;
   _possibleManifestURL = nil;
+#if !TARGET_OS_TV
   __block UIInterfaceOrientation orientation = [EXDevLauncherManifestHelper exportManifestOrientation:manifest.orientation];
+#endif
   __block UIColor *backgroundColor = [EXDevLauncherManifestHelper hexStringToColor:manifest.iosOrRootBackgroundColor];
 
   __weak __typeof(self) weakSelf = self;
@@ -554,7 +556,7 @@
     [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:bundleUrl];
 #endif
 
-    if (@available(iOS 12, *)) {
+    if (@available(iOS 12, tvOS 12, *)) {
       UIUserInterfaceStyle userInterfaceStyle = [EXDevLauncherManifestHelper exportManifestUserInterfaceStyle:manifest.userInterfaceStyle];
       [self _applyUserInterfaceStyle:userInterfaceStyle];
 
@@ -562,7 +564,7 @@
       // RNC appearance checks the global trait collection and doesn't have another way to override the user interface.
       // So we swap `currentTraitCollection` with one from the root view controller.
       // Note that the root view controller will have the correct value of `userInterfaceStyle`.
-      if (@available(iOS 13.0, *)) {
+      if (@available(iOS 13.0, tvOS 13.0, *)) {
         if (userInterfaceStyle != UIUserInterfaceStyleUnspecified) {
           UITraitCollection.currentTraitCollection = [self.window.rootViewController.traitCollection copy];
         }
@@ -686,6 +688,9 @@
 
 -(NSString *)getAppIcon
 {
+#if TARGET_OS_TV
+  return @"";
+#else
   NSString *appIcon = @"";
   NSString *appIconName = [[[[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"CFBundleIconFiles"]  lastObject];
 
@@ -696,6 +701,7 @@
   }
 
   return appIcon;
+#endif
 }
 
 -(NSString *)getUpdatesConfigForKey:(NSString *)key
@@ -723,8 +729,10 @@
 }
 
 -(void)copyToClipboard:(NSString *)content {
+#if !TARGET_OS_TV
   UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
   clipboard.string = (content ? : @"");
+#endif
 }
 
 - (void)setDevMenuAppBridge

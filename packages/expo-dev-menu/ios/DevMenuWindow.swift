@@ -37,7 +37,11 @@ class DevMenuWindow: UIWindow, OverlayContainerViewControllerDelegate {
     self.rootViewController = bottomSheetController
     self.backgroundColor = UIColor(white: 0, alpha: 0.4)
     self.bounds = UIScreen.main.bounds
+    #if os(tvOS)
+    self.windowLevel = .normal
+    #else
     self.windowLevel = .statusBar
+    #endif
     self.isHidden = true
   }
 

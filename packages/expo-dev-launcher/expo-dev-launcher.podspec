@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '13.4'
+  s.platforms      = { :ios => '13.4', :tvos => '13.4' }
   s.swift_version  = '5.2'
   s.source         = { :git => 'https://github.com/github_account/expo-development-client.git', :tag => "#{s.version}" }
   s.static_framework = true
@@ -20,11 +20,18 @@ Pod::Spec.new do |s|
   s.requires_arc   = true
   s.header_dir     = 'EXDevLauncher'
 
-  s.resource_bundles = {
+  s.ios.resource_bundles = {
     'EXDevLauncher' => [
       'ios/assets',
       'ios/main.jsbundle',
       'ios/Views/EXDevLauncherErrorView.storyboard'
+    ]
+  }
+  s.tvos.resource_bundles = {
+    'EXDevLauncher' => [
+      'ios/assets',
+      'ios/main.jsbundle',
+      'ios/Views/EXDevLauncherTVErrorView.storyboard'
     ]
   }
 

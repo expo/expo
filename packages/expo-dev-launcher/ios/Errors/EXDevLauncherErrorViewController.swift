@@ -52,7 +52,11 @@ public class EXDevLauncherErrorViewController: UIViewController, UITableViewData
       return nil
     }
 
+    #if os(tvOS)
+    let storyboard = UIStoryboard(name: "EXDevLauncherTVErrorView", bundle: bundle)
+    #else
     let storyboard = UIStoryboard(name: "EXDevLauncherErrorView", bundle: bundle)
+    #endif
     let vc = storyboard.instantiateViewController(withIdentifier: "EXDevLauncherErrorView") as? EXDevLauncherErrorViewController
 
     vc?.manager = manager

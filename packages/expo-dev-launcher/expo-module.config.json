@@ -1,6 +1,6 @@
 {
   "name": "expo-dev-launcher",
-  "platforms": ["ios", "android"],
+  "platforms": ["ios", "tvos", "android"],
   "ios": {
     "podspecPath": "expo-dev-launcher.podspec",
     "swiftModuleName": "EXDevLauncher",

@@ -44,11 +44,13 @@ class DevMenuViewController: UIViewController {
     reactRootView?.becomeFirstResponder()
   }
 
+  #if !os(tvOS)
   override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
     get {
       return UIInterfaceOrientationMask.all
     }
   }
+  #endif
 
   @available(iOS 12.0, *)
   override var overrideUserInterfaceStyle: UIUserInterfaceStyle {
