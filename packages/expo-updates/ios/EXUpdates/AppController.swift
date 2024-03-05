@@ -52,12 +52,6 @@ public enum FetchUpdateResult {
 @objc(EXUpdatesAppControllerInterface)
 public protocol AppControllerInterface {
   /**
-   The RCTBridge for which EXUpdates is providing the JS bundle and assets.
-   This is optional, but required in order for `Updates.reload()` and Updates module events to work.
-   */
-  @objc weak var bridge: AnyObject? { get set }
-
-  /**
    Delegate which will be notified when EXUpdates has an update ready to launch and
    `launchAssetUrl` is nonnull.
    */
@@ -85,7 +79,15 @@ public protocol AppControllerInterface {
 }
 
 public protocol InternalAppControllerInterface: AppControllerInterface {
+  /**
+   The AppContext from expo-modules-core.
+   This is optional, but required for expo-updates module events to work.
+   */
+  var appContext: AppContext? { get set }
+
   var updatesDirectory: URL? { get }
+
+  var shouldEmitJsEvents: Bool { get set }
 
   func getConstantsForModule() -> UpdatesModuleConstants
   func requestRelaunch(

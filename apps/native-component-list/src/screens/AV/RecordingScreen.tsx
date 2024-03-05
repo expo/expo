@@ -1,46 +1,33 @@
-import React from 'react';
-import { PixelRatio, ScrollView, StyleSheet } from 'react-native';
+import { useState } from 'react';
+import { ScrollView, StyleSheet } from 'react-native';
 
 import AudioModeSelector from './AudioModeSelector';
 import Player from './AudioPlayer';
 import Recorder from './Recorder';
 import HeadingText from '../../components/HeadingText';
 
-interface State {
-  recordingUri?: string;
+export default function RecordingScreen() {
+  const [recordingUri, setRecordingUri] = useState<string | undefined>(undefined);
+
+  return (
+    <ScrollView contentContainerStyle={styles.contentContainer}>
+      <HeadingText>Audio mode</HeadingText>
+      <AudioModeSelector />
+      <HeadingText>Recorder</HeadingText>
+      <Recorder onDone={(recordingUri: string) => setRecordingUri(recordingUri)} />
+      {recordingUri && (
+        <>
+          <HeadingText>Last recording</HeadingText>
+          <Player source={{ uri: recordingUri }} />
+        </>
+      )}
+    </ScrollView>
+  );
 }
 
-// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
-// eslint-disable-next-line @typescript-eslint/ban-types
-export default class RecordingScreen extends React.Component<{}, State> {
-  static navigationOptions = {
-    title: 'Audio Recording',
-  };
-
-  readonly state: State = {};
-
-  _handleRecordingFinished = (recordingUri: string) => this.setState({ recordingUri });
-
-  _maybeRenderLastRecording = () =>
-    this.state.recordingUri ? (
-      <>
-        <HeadingText>Last recording</HeadingText>
-        <Player source={{ uri: this.state.recordingUri }} />
-      </>
-    ) : null;
-
-  render() {
-    return (
-      <ScrollView contentContainerStyle={styles.contentContainer}>
-        <HeadingText>Audio mode</HeadingText>
-        <AudioModeSelector />
-        <HeadingText>Recorder</HeadingText>
-        <Recorder onDone={this._handleRecordingFinished} />
-        {this._maybeRenderLastRecording()}
-      </ScrollView>
-    );
-  }
-}
+RecordingScreen.navigationOptions = {
+  title: 'Audio Recording',
+};
 
 const styles = StyleSheet.create({
   contentContainer: {
@@ -65,7 +52,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 30,
   },
   player: {
-    borderBottomWidth: 1.0 / PixelRatio.get(),
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#cccccc',
   },
 });

@@ -91,15 +91,13 @@ internal inline fun withJSIInterop(
       register(it)
     }
   }
-  val sharedObjectRegistry = SharedObjectRegistry()
+  val sharedObjectRegistry = SharedObjectRegistry(appContextMock)
   every { appContextMock.registry } answers { registry }
   every { appContextMock.sharedObjectRegistry } answers { sharedObjectRegistry }
 
-  val jsiIterop = JSIInteropModuleRegistry(appContextMock).apply {
-    installJSIForTests(jniDeallocator)
-  }
-
+  val jsiIterop = JSIInteropModuleRegistry()
   every { appContextMock.jsiInterop } answers { jsiIterop }
+  jsiIterop.installJSIForTests(appContextMock, jniDeallocator)
 
   block(jsiIterop, methodQueue)
 
@@ -115,11 +113,12 @@ open class TestContext(
 ) {
   fun global() = jsiInterop.global()
   fun evaluateScript(script: String) = jsiInterop.evaluateScript(script)
+  fun evaluateScript(vararg script: String) = jsiInterop.evaluateScript(script.joinToString(separator = "\n"))
   fun waitForAsyncFunction(jsCode: String) = jsiInterop.waitForAsyncFunction(methodQueue, jsCode)
 }
 
 class SingleTestContext(
-  private val moduleName: String,
+  moduleName: String,
   jsiInterop: JSIInteropModuleRegistry,
   methodQueue: TestScope
 ) : TestContext(jsiInterop, methodQueue) {

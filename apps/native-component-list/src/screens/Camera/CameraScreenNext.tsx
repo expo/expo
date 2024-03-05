@@ -1,5 +1,5 @@
-import Ionicons from '@expo/vector-icons/build/Ionicons';
-import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {
   BarcodePoint,
   BarcodeScanningResult,
@@ -31,8 +31,8 @@ const flashIcons: Record<string, string> = {
 };
 
 const volumeIcons: Record<string, string> = {
-  on: 'ios-volume-high',
-  off: 'ios-volume-mute',
+  on: 'volume-high',
+  off: 'volume-mute',
 };
 
 const photos: CameraCapturedPicture[] = [];

@@ -8,9 +8,19 @@
 
 ### 🎉 New features
 
-- Added support for Apple tvOS. ([#26965](https://github.com/expo/expo/pull/26965) by [@douglowder](https://github.com/douglowder))
+- Mark React client components with "use client" directives. ([#27300](https://github.com/expo/expo/pull/27300) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 12.7.2 - 2024-02-16
+
+### 🎉 New features
+
+- Added support for Apple tvOS. ([#26965](https://github.com/expo/expo/pull/26965) by [@douglowder](https://github.com/douglowder))
+
+## 12.7.1 - 2024-01-23
 
 ### 💡 Others
 

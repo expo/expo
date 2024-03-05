@@ -1,3 +1,7 @@
+// Copyright © 2024 650 Industries.
+// NOTE: Forcing this to be a client boundary so the errors are a bit clearer. In the future we can
+// make this a shim on the server by ignoring the globals that are missing in React Server contexts (Node.js).
+'use client';
 import { NativeModules } from 'react-native';
 const LegacyNativeProxy = NativeModules.NativeUnimoduleProxy;
 // Fixes `cannot find name 'global'.` in tests

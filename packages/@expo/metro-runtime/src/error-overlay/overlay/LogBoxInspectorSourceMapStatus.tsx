@@ -5,6 +5,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
+'use client';
+
 import React, { useEffect, useState } from 'react';
 import { Animated, Easing, GestureResponderEvent, StyleSheet, Text } from 'react-native';
 

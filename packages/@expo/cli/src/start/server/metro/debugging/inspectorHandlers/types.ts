@@ -1,5 +1,6 @@
 import type { unstable_Device } from '@react-native/dev-middleware';
 
+// @ts-expect-error until we sort out an issue with private members
 export type DebuggerMetadata = NonNullable<unstable_Device['_debuggerConnection']>;
 
 export interface InspectorHandler {

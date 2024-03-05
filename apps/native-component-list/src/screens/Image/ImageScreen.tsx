@@ -118,13 +118,6 @@ export const ImageScreens = [
       return optionalRequire(() => require('./ImageMediaLibraryScreen'));
     },
   },
-  {
-    name: 'Local asset',
-    route: 'image/local-asset',
-    getComponent() {
-      return optionalRequire(() => require('./ImageLocalScreen'));
-    },
-  },
 ];
 
 if (Platform.OS === 'ios') {

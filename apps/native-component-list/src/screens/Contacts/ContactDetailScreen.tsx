@@ -1,4 +1,4 @@
-import Ionicons from '@expo/vector-icons/build/Ionicons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import * as Contacts from 'expo-contacts';
 import * as ImagePicker from 'expo-image-picker';
 import * as Linking from 'expo-linking';

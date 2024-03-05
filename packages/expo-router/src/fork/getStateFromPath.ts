@@ -39,7 +39,7 @@ export type ResultState = PartialState<NavigationState> & {
 type ParsedRoute = {
   name: string;
   path?: string;
-  params?: Record<string, any> | undefined;
+  params?: Record<string, any>;
 };
 
 export function getUrlWithReactNavigationConcessions(
@@ -677,9 +677,9 @@ const findInitialRoute = (
 // returns state object with values depending on whether
 // it is the end of state and if there is initialRoute for this level
 const createStateObject = (
-  initialRoute: string | undefined,
   route: ParsedRoute,
-  isEmpty: boolean
+  isEmpty: boolean,
+  initialRoute?: string
 ): InitialState => {
   if (isEmpty) {
     if (initialRoute) {
@@ -717,7 +717,7 @@ const createNestedStateObject = (
 
   parentScreens.push(route.name);
 
-  const state: InitialState = createStateObject(initialRoute, route, routes.length === 0);
+  const state: InitialState = createStateObject(route, routes.length === 0, initialRoute);
 
   if (routes.length > 0) {
     let nestedState = state;
@@ -728,9 +728,9 @@ const createNestedStateObject = (
       const nestedStateIndex = nestedState.index || nestedState.routes.length - 1;
 
       nestedState.routes[nestedStateIndex].state = createStateObject(
-        initialRoute,
         route,
-        routes.length === 0
+        routes.length === 0,
+        initialRoute
       );
 
       if (routes.length > 0) {

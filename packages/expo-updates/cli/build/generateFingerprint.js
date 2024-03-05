@@ -52,12 +52,17 @@ Generate fingerprint for use in expo-updates runtime version
   -h, --help                           Output usage information
     `, 0);
     }
-    const { createFingerprintAsync } = await import('../../utils/build/createFingerprintAsync.js');
+    const [{ createFingerprintAsync }, { resolveWorkflowAsync }] = await Promise.all([
+        import('../../utils/build/createFingerprintAsync.js'),
+        import('../../utils/build/workflow.js'),
+    ]);
     const platform = (0, args_1.requireArg)(args, '--platform');
     if (!['ios', 'android'].includes(platform)) {
         throw new Error(`Invalid platform argument: ${platform}`);
     }
-    const result = await createFingerprintAsync((0, args_1.getProjectRoot)(args), platform);
+    const projectRoot = (0, args_1.getProjectRoot)(args);
+    const workflow = await resolveWorkflowAsync(projectRoot, platform);
+    const result = await createFingerprintAsync(projectRoot, platform, workflow, { silent: true });
     console.log(JSON.stringify(result));
 };
 exports.generateFingerprint = generateFingerprint;

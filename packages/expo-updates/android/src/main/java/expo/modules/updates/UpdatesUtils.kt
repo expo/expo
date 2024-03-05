@@ -2,14 +2,11 @@ package expo.modules.updates
 
 import android.content.Context
 import android.net.ConnectivityManager
-import android.os.AsyncTask
 import android.util.Base64
 import android.util.Log
-import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
-import com.facebook.react.modules.core.DeviceEventManagerModule
+import expo.modules.kotlin.AppContext
 import expo.modules.updates.UpdatesConfiguration.CheckAutomaticallyConfiguration
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.logging.UpdatesErrorCode
@@ -33,6 +30,9 @@ import kotlin.experimental.and
  */
 object UpdatesUtils {
   private val TAG = UpdatesUtils::class.java.simpleName
+
+  @get:Synchronized @set:Synchronized
+  private var eventsToSendToJS = mutableListOf<Pair<String, WritableMap>>()
 
   private const val UPDATES_DIRECTORY_NAME = ".expo-internal"
 
@@ -160,58 +160,67 @@ object UpdatesUtils {
     }
   }
 
-  fun sendEventToReactNative(
-    reactNativeHost: WeakReference<ReactNativeHost>?,
+  fun sendEventToAppContext(
+    shouldEmitJsEvents: Boolean,
+    weakAppContext: WeakReference<AppContext>?,
     logger: UpdatesLogger,
     eventName: String,
     eventType: String,
     params: WritableMap?
   ) {
-    val host = reactNativeHost?.get()
-    if (host != null) {
-      AsyncTask.execute {
-        try {
-          var reactContext: ReactContext? = null
-          // in case we're trying to send an event before the reactContext has been initialized
-          // continue to retry for 5000ms
-          for (i in 0..4) {
-            // Calling host.reactInstanceManager has a side effect of creating a new
-            // reactInstanceManager if there isn't already one. We want to avoid this so we check
-            // if it has an instance first.
-            if (host.hasInstance()) {
-              reactContext = host.reactInstanceManager.currentReactContext
-              if (reactContext != null) {
-                break
-              }
-            }
-            Thread.sleep(1000)
-          }
-          if (reactContext != null) {
-            val emitter = reactContext.getJSModule(
-              DeviceEventManagerModule.RCTDeviceEventEmitter::class.java
-            )
-            if (emitter != null) {
-              var eventParams = params
-              if (eventParams == null) {
-                eventParams = Arguments.createMap()
-              }
-              eventParams!!.putString("type", eventType)
-              logger.info("Emitted event: name = $eventName, type = $eventType")
-              emitter.emit(eventName, eventParams)
-              return@execute
-            }
-          }
-          logger.error("Could not emit $eventName $eventType event; no event emitter was found.", UpdatesErrorCode.JSRuntimeError)
-        } catch (e: Exception) {
-          logger.error("Could not emit $eventName $eventType event; no react context was found.", UpdatesErrorCode.JSRuntimeError)
-        }
-      }
-    } else {
-      logger.error(
-        "Could not emit $eventType event; UpdatesController was not initialized with an instance of ReactApplication.",
-        UpdatesErrorCode.Unknown
-      )
+    val eventParams = params ?: Arguments.createMap()
+    eventParams.putString("type", eventType)
+
+    if (!shouldEmitJsEvents) {
+      eventsToSendToJS.add(Pair(eventName, eventParams))
+      logger.error("Could not emit $eventName $eventType event; no subscribers registered.", UpdatesErrorCode.JSRuntimeError)
+      return
     }
+    val appContext = weakAppContext?.get() ?: run {
+      eventsToSendToJS.add(Pair(eventName, eventParams))
+      logger.error("Could not emit $eventName $eventType event; no app context was found.", UpdatesErrorCode.JSRuntimeError)
+      return
+    }
+    val updatesModule = appContext.registry.getModule("ExpoUpdates") ?: run {
+      eventsToSendToJS.add(Pair(eventName, eventParams))
+      logger.error("Could not emit $eventName $eventType event; no ExpoUpdates module was found.", UpdatesErrorCode.JSRuntimeError)
+      return
+    }
+    val eventEmitter = appContext.eventEmitter(updatesModule) ?: run {
+      eventsToSendToJS.add(Pair(eventName, eventParams))
+      logger.error("Could not emit $eventName $eventType event; no event emitter was found.", UpdatesErrorCode.JSRuntimeError)
+      return
+    }
+
+    logger.info("Emitted event: name = $eventName, type = $eventType")
+    eventEmitter.emit(eventName, eventParams)
+  }
+
+  fun sendQueuedEventsToAppContext(
+    shouldEmitJsEvents: Boolean,
+    weakAppContext: WeakReference<AppContext>?,
+    logger: UpdatesLogger
+  ) {
+    if (!shouldEmitJsEvents) {
+      return
+    }
+    val appContext = weakAppContext?.get() ?: run {
+      return
+    }
+    val updatesModule = appContext.registry.getModule("ExpoUpdates") ?: run {
+      return
+    }
+    val eventEmitter = appContext.eventEmitter(updatesModule) ?: run {
+      return
+    }
+
+    eventsToSendToJS.forEach { event ->
+      val eventName = event.first
+      val eventParams = event.second
+      logger.info("Emitted event: name = $eventName, type = ${eventParams.getString("type")}")
+      eventEmitter.emit(eventName, eventParams)
+    }
+    eventsToSendToJS.clear()
   }
 
   fun shouldCheckForUpdateOnLaunch(

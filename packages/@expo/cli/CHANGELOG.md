@@ -12,12 +12,7 @@
 - Add total files bundled to the bundling finished message. ([#27215](https://github.com/expo/expo/pull/27215) by [@EvanBacon](https://github.com/EvanBacon))
 - Add better API Route error messages. ([#27024](https://github.com/expo/expo/pull/27024) by [@EvanBacon](https://github.com/EvanBacon))
 - Prevent bundling production react modules in development. ([#27041](https://github.com/expo/expo/pull/27041) by [@EvanBacon](https://github.com/EvanBacon))
-- Add `--no-bytecode` flag to `expo export` to disable generating Hermes bytecode for use with debugging tools. ([#26985](https://github.com/expo/expo/pull/26985) by [@EvanBacon](https://github.com/EvanBacon))
-- Add stack traces for warnings and errors that originate from API routes or server rendering. ([#26812](https://github.com/expo/expo/pull/26812) by [@EvanBacon](https://github.com/EvanBacon))
-- Add better error when `metro.config.js` does not extend `expo/metro-config`. ([#26726](https://github.com/expo/expo/pull/26726) by [@EvanBacon](https://github.com/EvanBacon))
-- Add support for GitHub URLs in `expo prebuild --template`. ([#26631](https://github.com/expo/expo/pull/26631) by [@byCedric](https://github.com/byCedric))
 - Added building only for connected CPU architectures on Android when using the new architecture. ([#26800](https://github.com/expo/expo/pull/26800) by [@alanjhughes](https://github.com/alanjhughes))
-- Add HTTPS support for using tunnels with ngrok. ([#26838](https://github.com/expo/expo/pull/26838) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
@@ -26,27 +21,74 @@
 - Always reset production bundler cache in run command. ([#27114](https://github.com/expo/expo/pull/27114) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix expo router src log memo. ([#27013](https://github.com/expo/expo/pull/27013) by [@EvanBacon](https://github.com/EvanBacon))
 - Prevent run commands from hanging when the process completes. ([#26960](https://github.com/expo/expo/pull/26960) by [@EvanBacon](https://github.com/EvanBacon))
-- Mark compressed `.gz` files as binary to avoid corruption when unpacking with `expo prebuild --template`. ([#26741](https://github.com/expo/expo/pull/26741) by [@shirakaba](https://github.com/shirakaba))
-- Add better validation for Metro web when exporting production bundles. ([#26732](https://github.com/expo/expo/pull/26732) by [@EvanBacon](https://github.com/EvanBacon))
-- Fix `tsconfig.json` resolution of `baseUrl` when `paths` is not defined. ([#26734](https://github.com/expo/expo/pull/26734) by [@EvanBacon](https://github.com/EvanBacon))
-- Fix stack traces for Node.js errors. ([#26607](https://github.com/expo/expo/pull/26607) by [@EvanBacon](https://github.com/EvanBacon))
-- Fixed crash when launching React DevTools. ([#26550](https://github.com/expo/expo/pull/26550) by [@kudo](https://github.com/kudo))
-- Only show "Web is waiting" message after project is initialized with web. ([#26694](https://github.com/expo/expo/pull/26694) by [@byCedric](https://github.com/byCedric))
-- [Android] correct drawable types in updates embedded manifest. ([#26676](https://github.com/expo/expo/pull/26676) by [@douglowder](https://github.com/douglowder))
-- Fix progress bar locking in at `100%` when bundling app. ([#26775](https://github.com/expo/expo/pull/26775) by [@byCedric](https://github.com/byCedric))
 - Keep typed routes in-sync with current Expo Router version ([#26578](https://github.com/expo/expo/pull/26578) by [@marklawlor](https://github.com/marklawlor))
+- Fix development codesigning certificate validity checks. ([#27361](https://github.com/expo/expo/pull/27361) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 
-- Filter URL files out of stacks in Node logs. ([#26868](https://github.com/expo/expo/pull/26868) by [@EvanBacon](https://github.com/EvanBacon))
 - Change server log tag. ([#26834](https://github.com/expo/expo/pull/26834) by [@EvanBacon](https://github.com/EvanBacon))
 - Eagerly perform iOS system checks to speed up iOS simulator launches. ([#26746](https://github.com/expo/expo/pull/26746) by [@EvanBacon](https://github.com/EvanBacon))
-- Improve warning for favicon missing during web export. ([#26733](https://github.com/expo/expo/pull/26733) by [@EvanBacon](https://github.com/EvanBacon))
 - Enable lazy modules with swc when building `@expo/cli`. ([#27061](https://github.com/expo/expo/pull/27061) by [@byCedric](https://github.com/byCedric))
+- Update to remove `ExpoRequest/ExpoResponse` imports from `@expo/server`. ([#27261](https://github.com/expo/expo/pull/27261) by [@kitten](https://github.com/kitten))
 
 ### 📚 3rd party library updates
 
 - update semver from 7.5.3 to 7.5.4. ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
+
+## 0.17.6 - 2024-02-27
+
+### 🎉 New features
+
+- Add `--no-bytecode` flag to `expo export` to disable generating Hermes bytecode for use with debugging tools. ([#26985](https://github.com/expo/expo/pull/26985) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.17.5 - 2024-02-06
+
+### 🎉 New features
+
+- Add stack traces for warnings and errors that originate from API routes or server rendering. ([#26812](https://github.com/expo/expo/pull/26812) by [@EvanBacon](https://github.com/EvanBacon))
+- Add HTTPS support for using tunnels with ngrok. ([#26838](https://github.com/expo/expo/pull/26838) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- Mark compressed `.gz` files as binary to avoid corruption when unpacking with `expo prebuild --template`. ([#26741](https://github.com/expo/expo/pull/26741) by [@shirakaba](https://github.com/shirakaba))
+
+### 💡 Others
+
+- Filter URL files out of stacks in Node logs. ([#26868](https://github.com/expo/expo/pull/26868) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.17.4 - 2024-02-01
+
+### 🎉 New features
+
+- Add better error when `metro.config.js` does not extend `expo/metro-config`. ([#26726](https://github.com/expo/expo/pull/26726) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+- Add better validation for Metro web when exporting production bundles. ([#26732](https://github.com/expo/expo/pull/26732) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix `tsconfig.json` resolution of `baseUrl` when `paths` is not defined. ([#26734](https://github.com/expo/expo/pull/26734) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix progress bar locking in at `100%` when bundling app. ([#26775](https://github.com/expo/expo/pull/26775) by [@byCedric](https://github.com/byCedric))
+
+## 0.17.3 - 2024-01-26
+
+### 🐛 Bug fixes
+
+- [Android] correct drawable types in updates embedded manifest. ([#26676](https://github.com/expo/expo/pull/26676) by [@douglowder](https://github.com/douglowder))
+
+## 0.17.2 - 2024-01-23
+
+### 🎉 New features
+
+- Add support for GitHub URLs in `expo prebuild --template`. ([#26631](https://github.com/expo/expo/pull/26631) by [@byCedric](https://github.com/byCedric))
+
+### 🐛 Bug fixes
+
+- Fix stack traces for Node.js errors. ([#26607](https://github.com/expo/expo/pull/26607) by [@EvanBacon](https://github.com/EvanBacon))
+- Fixed crash when launching React DevTools. ([#26550](https://github.com/expo/expo/pull/26550) by [@kudo](https://github.com/kudo))
+- Only show "Web is waiting" message after project is initialized with web. ([#26694](https://github.com/expo/expo/pull/26694) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+- Improve warning for favicon missing during web export. ([#26733](https://github.com/expo/expo/pull/26733) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.17.1 - 2024-01-18
 

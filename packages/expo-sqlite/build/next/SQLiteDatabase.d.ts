@@ -26,6 +26,12 @@ export declare class SQLiteDatabase {
      */
     execAsync(source: string): Promise<void>;
     /**
+     * [Serialize the database](https://sqlite.org/c3ref/serialize.html) as `Uint8Array`.
+     *
+     * @param databaseName The name of the current attached databases. The default value is `main` which is the default database name.
+     */
+    serializeAsync(databaseName?: string): Promise<Uint8Array>;
+    /**
      * Create a [prepared SQLite statement](https://www.sqlite.org/c3ref/prepare.html).
      *
      * @param source A string containing the SQL query.
@@ -91,6 +97,14 @@ export declare class SQLiteDatabase {
      * @param source A string containing all the SQL queries.
      */
     execSync(source: string): void;
+    /**
+     * [Serialize the database](https://sqlite.org/c3ref/serialize.html) as `Uint8Array`.
+     *
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
+     *
+     * @param databaseName The name of the current attached databases. The default value is `main` which is the default database name.
+     */
+    serializeSync(databaseName?: string): Uint8Array;
     /**
      * Create a [prepared SQLite statement](https://www.sqlite.org/c3ref/prepare.html).
      *
@@ -221,6 +235,22 @@ export declare function openDatabaseAsync(databaseName: string, options?: SQLite
  * @param options Open options.
  */
 export declare function openDatabaseSync(databaseName: string, options?: SQLiteOpenOptions): SQLiteDatabase;
+/**
+ * Given a `Uint8Array` data and [deserialize to memory database](https://sqlite.org/c3ref/deserialize.html).
+ *
+ * @param serializedData The binary array to deserialize from [`SQLiteDatabase.serializeAsync()`](#serializeasyncdatabasename).
+ * @param options Open options.
+ */
+export declare function deserializeDatabaseAsync(serializedData: Uint8Array, options?: SQLiteOpenOptions): Promise<SQLiteDatabase>;
+/**
+ * Given a `Uint8Array` data and [deserialize to memory database](https://sqlite.org/c3ref/deserialize.html).
+ *
+ * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
+ *
+ * @param serializedData The binary array to deserialize from [`SQLiteDatabase.serializeSync()`](#serializesyncdatabasename)
+ * @param options Open options.
+ */
+export declare function deserializeDatabaseSync(serializedData: Uint8Array, options?: SQLiteOpenOptions): SQLiteDatabase;
 /**
  * Delete a database file.
  *

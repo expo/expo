@@ -1,9 +1,14 @@
+// Copyright © 2024 650 Industries.
+
+'use client';
+
 import * as React from 'react';
 import { View } from 'react-native';
 
 import { BlurViewProps } from './BlurView.types';
 import getBackgroundColor from './getBackgroundColor';
 
+// TODO: Class components are not supported with React Server Components.
 export default class BlurView extends React.Component<BlurViewProps> {
   private blurViewRef = React.createRef<View>();
 

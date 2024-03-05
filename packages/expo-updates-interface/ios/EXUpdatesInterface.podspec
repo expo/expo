@@ -26,4 +26,6 @@ Pod::Spec.new do |s|
   s.user_target_xcconfig = {
     'HEADER_SEARCH_PATHS' => '"${PODS_CONFIGURATION_BUILD_DIR}/EXUpdatesInterface/Swift Compatibility Header"',
   }
+
+  s.dependency 'ExpoModulesCore'
 end

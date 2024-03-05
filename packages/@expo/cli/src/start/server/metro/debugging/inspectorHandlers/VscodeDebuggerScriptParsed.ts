@@ -57,6 +57,7 @@ export class VscodeDebuggerScriptParsedHandler implements InspectorHandler {
       }
 
       if (message.params.scriptId != null) {
+        // @ts-expect-error until we sort out an issue with private members
         this.device._scriptIdToSourcePathMapping.set(message.params.scriptId, message.params.url);
       }
     }

@@ -25,6 +25,7 @@ export function LightboxImage({ src, alt, ...rest }: Props) {
           aria: true,
           closeOnBackdropClick: true,
         }}
+        carousel={{ finite: true }}
         render={{
           buttonPrev: () => null,
           buttonNext: () => null,

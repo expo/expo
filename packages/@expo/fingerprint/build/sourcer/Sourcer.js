@@ -13,20 +13,20 @@ const debug = require('debug')('expo:fingerprint:sourcer:Sourcer');
 async function getHashSourcesAsync(projectRoot, options) {
     const results = await Promise.all([
         // expo
-        (0, Profile_1.profile)(Expo_1.getExpoAutolinkingAndroidSourcesAsync)(projectRoot, options),
-        (0, Profile_1.profile)(Expo_1.getExpoAutolinkingIosSourcesAsync)(projectRoot, options),
-        (0, Profile_1.profile)(Expo_1.getExpoConfigSourcesAsync)(projectRoot, options),
-        (0, Profile_1.profile)(Expo_1.getEasBuildSourcesAsync)(projectRoot, options),
+        (0, Profile_1.profile)(options, Expo_1.getExpoAutolinkingAndroidSourcesAsync)(projectRoot, options),
+        (0, Profile_1.profile)(options, Expo_1.getExpoAutolinkingIosSourcesAsync)(projectRoot, options),
+        (0, Profile_1.profile)(options, Expo_1.getExpoConfigSourcesAsync)(projectRoot, options),
+        (0, Profile_1.profile)(options, Expo_1.getEasBuildSourcesAsync)(projectRoot, options),
         // bare managed files
-        (0, Profile_1.profile)(Bare_1.getGitIgnoreSourcesAsync)(projectRoot, options),
-        (0, Profile_1.profile)(Bare_1.getPackageJsonScriptSourcesAsync)(projectRoot, options),
+        (0, Profile_1.profile)(options, Bare_1.getGitIgnoreSourcesAsync)(projectRoot, options),
+        (0, Profile_1.profile)(options, Bare_1.getPackageJsonScriptSourcesAsync)(projectRoot, options),
         // bare native files
-        (0, Profile_1.profile)(Bare_1.getBareAndroidSourcesAsync)(projectRoot, options),
-        (0, Profile_1.profile)(Bare_1.getBareIosSourcesAsync)(projectRoot, options),
+        (0, Profile_1.profile)(options, Bare_1.getBareAndroidSourcesAsync)(projectRoot, options),
+        (0, Profile_1.profile)(options, Bare_1.getBareIosSourcesAsync)(projectRoot, options),
         // rn-cli autolinking
-        (0, Profile_1.profile)(Bare_1.getRncliAutolinkingSourcesAsync)(projectRoot, options),
+        (0, Profile_1.profile)(options, Bare_1.getRncliAutolinkingSourcesAsync)(projectRoot, options),
         // patch-package
-        (0, Profile_1.profile)(PatchPackage_1.getPatchPackageSourcesAsync)(projectRoot, options),
+        (0, Profile_1.profile)(options, PatchPackage_1.getPatchPackageSourcesAsync)(projectRoot, options),
     ]);
     // extra sources
     if (options.extraSources) {

@@ -33,6 +33,12 @@ const withLocation = (config, { locationAlwaysAndWhenInUsePermission, locationAl
                 LOCATION_USAGE;
         return config;
     });
+    // If the user has not specified a value for isAndroidForegroundServiceEnabled,
+    // we default to the value of isAndroidBackgroundLocationEnabled because we want
+    // to enable foreground by default if background location is enabled.
+    const enableAndroidForegroundService = typeof isAndroidForegroundServiceEnabled === 'undefined'
+        ? isAndroidBackgroundLocationEnabled
+        : isAndroidForegroundServiceEnabled;
     return config_plugins_1.AndroidConfig.Permissions.withPermissions(config, [
         // Note: these are already added in the library AndroidManifest.xml and so
         // are not required here, we may want to remove them in the future.
@@ -40,8 +46,8 @@ const withLocation = (config, { locationAlwaysAndWhenInUsePermission, locationAl
         'android.permission.ACCESS_FINE_LOCATION',
         // These permissions are optional, and not listed in the library AndroidManifest.xml
         isAndroidBackgroundLocationEnabled && 'android.permission.ACCESS_BACKGROUND_LOCATION',
-        isAndroidForegroundServiceEnabled && 'android.permission.FOREGROUND_SERVICE',
-        isAndroidForegroundServiceEnabled && 'android.permission.FOREGROUND_SERVICE_LOCATION',
+        enableAndroidForegroundService && 'android.permission.FOREGROUND_SERVICE',
+        enableAndroidForegroundService && 'android.permission.FOREGROUND_SERVICE_LOCATION',
     ].filter(Boolean));
 };
 exports.default = (0, config_plugins_1.createRunOncePlugin)(withLocation, pkg.name, pkg.version);

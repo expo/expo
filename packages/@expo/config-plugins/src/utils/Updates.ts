@@ -90,27 +90,41 @@ export async function getRuntimeVersionAsync(
       );
     }
     return runtimeVersion;
-  } else if (runtimeVersion.policy === 'appVersion') {
-    return getAppVersion(config);
-  } else if (runtimeVersion.policy === 'nativeVersion') {
-    return getNativeVersion(config, platform);
-  } else if (runtimeVersion.policy === 'sdkVersion') {
-    if (!config.sdkVersion) {
-      throw new Error("An SDK version must be defined when using the 'sdkVersion' runtime policy.");
-    }
-    return getRuntimeVersionForSDKVersion(config.sdkVersion);
+  } else if (!runtimeVersion.policy) {
+    throw new Error(
+      `"${runtimeVersion}" is not a valid runtime version. Only a string or a runtime version policy is supported.`
+    );
   } else if (runtimeVersion.policy === 'fingerprintExperimental') {
     console.warn(
       `Use of the experimental '${runtimeVersion.policy}' runtime policy may result in unexpected system behavior.`
     );
     return FINGERPRINT_RUNTIME_VERSION_SENTINEL;
+  } else {
+    return await resolveRuntimeVersionPolicyAsync(runtimeVersion.policy, config, platform);
   }
+}
 
-  throw new Error(
-    `"${
-      typeof runtimeVersion === 'object' ? JSON.stringify(runtimeVersion) : runtimeVersion
-    }" is not a valid runtime version. getRuntimeVersionAsync only supports a string or one of the following policies: sdkVersion, appVersion, nativeVersion, fingerprintExperimental.`
-  );
+export async function resolveRuntimeVersionPolicyAsync(
+  policy: 'appVersion' | 'nativeVersion' | 'sdkVersion',
+  config: Pick<ExpoConfig, 'version' | 'sdkVersion'> & {
+    android?: Pick<Android, 'versionCode'>;
+    ios?: Pick<IOS, 'buildNumber'>;
+  },
+  platform: 'android' | 'ios'
+): Promise<string> {
+  if (policy === 'appVersion') {
+    return getAppVersion(config);
+  } else if (policy === 'nativeVersion') {
+    return getNativeVersion(config, platform);
+  } else if (policy === 'sdkVersion') {
+    if (!config.sdkVersion) {
+      throw new Error("An SDK version must be defined when using the 'sdkVersion' runtime policy.");
+    }
+    return getRuntimeVersionForSDKVersion(config.sdkVersion);
+  } else {
+    // fingerprintExperimental is resolvable only at build time (not in config plugin).
+    throw new Error(`"${policy}" is not a valid runtime version policy type.`);
+  }
 }
 
 export function getSDKVersion(config: Pick<ExpoConfigUpdates, 'sdkVersion'>): string | null {

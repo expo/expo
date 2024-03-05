@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { createFingerprintAsync } from './createFingerprintAsync';
+import { resolveWorkflowAsync } from './workflow';
 
 export async function createFingerprintForBuildAsync(
   platform: 'ios' | 'android',
@@ -28,6 +29,7 @@ export async function createFingerprintForBuildAsync(
 
   const runtimeVersion = config[platform]?.runtimeVersion ?? config.runtimeVersion;
   if (!runtimeVersion || typeof runtimeVersion === 'string') {
+    // normal runtime versions don't need fingerprinting
     return;
   }
 
@@ -36,7 +38,8 @@ export async function createFingerprintForBuildAsync(
     return;
   }
 
-  const fingerprint = await createFingerprintAsync(projectRoot, platform);
+  const workflow = await resolveWorkflowAsync(projectRoot, platform);
+  const fingerprint = await createFingerprintAsync(projectRoot, platform, workflow, {});
 
   console.log(JSON.stringify(fingerprint.sources));
 

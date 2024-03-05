@@ -6,7 +6,6 @@ exports.respond = exports.convertRequest = exports.convertHeaders = exports.crea
 // our interface types
 const node_1 = require("@remix-run/node");
 const __1 = require("..");
-const environment_1 = require("../environment");
 /**
  * Returns a request handler for Vercel's Node.js runtime that serves the
  * response using Remix.
@@ -19,7 +18,7 @@ function createRequestHandler({ build }) {
 }
 exports.createRequestHandler = createRequestHandler;
 function convertHeaders(requestHeaders) {
-    const headers = new node_1.Headers();
+    const headers = new Headers();
     for (const [key, values] of Object.entries(requestHeaders)) {
         if (values) {
             if (Array.isArray(values)) {
@@ -41,7 +40,7 @@ function convertRequest(req, res) {
     const protocol = req.headers['x-forwarded-proto'] || 'https';
     const url = new URL(`${protocol}://${host}${req.url}`);
     // Abort action/loaders once we can no longer write a response
-    const controller = new node_1.AbortController();
+    const controller = new AbortController();
     res.on('close', () => controller.abort());
     const init = {
         method: req.method,
@@ -51,14 +50,16 @@ function convertRequest(req, res) {
         signal: controller.signal,
     };
     if (req.method !== 'GET' && req.method !== 'HEAD') {
-        init.body = req;
+        init.body = (0, node_1.createReadableStreamFromReadable)(req);
+        // @ts-expect-error
+        init.duplex = 'half';
     }
-    return new environment_1.ExpoRequest(url.href, init);
+    return new Request(url.href, init);
 }
 exports.convertRequest = convertRequest;
 async function respond(res, expoRes) {
     res.statusMessage = expoRes.statusText;
-    res.writeHead(expoRes.status, expoRes.statusText, expoRes.headers.raw());
+    res.writeHead(expoRes.status, expoRes.statusText, [...expoRes.headers.entries()]);
     if (expoRes.body) {
         await (0, node_1.writeReadableStreamToWritable)(expoRes.body, res);
     }

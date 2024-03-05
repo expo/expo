@@ -4,6 +4,7 @@
 #include "ExpoModulesHostObject.h"
 #include "JavaReferencesCache.h"
 #include "JSReferencesCache.h"
+#include "SharedObject.h"
 
 #include <fbjni/detail/Meta.h>
 #include <fbjni/fbjni.h>
@@ -31,11 +32,20 @@ void JSIInteropModuleRegistry::registerNatives() {
                    makeNativeMethod("createObject", JSIInteropModuleRegistry::createObject),
                    makeNativeMethod("drainJSEventLoop", JSIInteropModuleRegistry::drainJSEventLoop),
                    makeNativeMethod("wasDeallocated", JSIInteropModuleRegistry::jniWasDeallocated),
+                   makeNativeMethod("setNativeStateForSharedObject",
+                                    JSIInteropModuleRegistry::jniSetNativeStateForSharedObject),
                  });
 }
 
 JSIInteropModuleRegistry::JSIInteropModuleRegistry(jni::alias_ref<jhybridobject> jThis)
   : javaPart_(jni::make_global(jThis)) {}
+
+JSIInteropModuleRegistry::~JSIInteropModuleRegistry() {
+  // The runtime would be deallocated automatically.
+  // However, we need to enforce the order of deallocations.
+  // The runtime has to be deallocated before the JNI part.
+  runtimeHolder.reset();
+}
 
 void JSIInteropModuleRegistry::installJSI(
   jlong jsRuntimePointer,
@@ -54,19 +64,7 @@ void JSIInteropModuleRegistry::installJSI(
     jsInvokerHolder->cthis()->getCallInvoker()
   );
 
-  runtimeHolder->installMainObject();
-
-  auto expoModules = std::make_shared<ExpoModulesHostObject>(this);
-  auto expoModulesObject = jsi::Object::createFromHostObject(*runtime, expoModules);
-
-  // Define the `global.expo.modules` object.
-  runtimeHolder
-    ->getMainObject()
-    ->setProperty(
-      *runtime,
-      "modules",
-      expoModulesObject
-    );
+  prepareRuntime();
 }
 
 void JSIInteropModuleRegistry::installJSIForTests(
@@ -82,19 +80,36 @@ void JSIInteropModuleRegistry::installJSIForTests(
 
   jsRegistry = std::make_unique<JSReferencesCache>(jsiRuntime);
 
+  prepareRuntime();
+#endif // !UNIT_TEST
+}
+
+void JSIInteropModuleRegistry::prepareRuntime() {
   runtimeHolder->installMainObject();
 
-  auto expoModules = std::make_shared<ExpoModulesHostObject>(this);
-  auto expoModulesObject = jsi::Object::createFromHostObject(jsiRuntime, expoModules);
+  EventEmitter::installClass(runtimeHolder->get());
 
+  SharedObject::installBaseClass(
+    runtimeHolder->get(),
+    [this](const SharedObject::ObjectId objectId) {
+      deleteSharedObject(objectId);
+    }
+  );
+
+  auto expoModules = std::make_shared<ExpoModulesHostObject>(this);
+  auto expoModulesObject = jsi::Object::createFromHostObject(
+    runtimeHolder->get(),
+    expoModules
+  );
+
+  // Define the `global.expo.modules` object.
   runtimeHolder
     ->getMainObject()
     ->setProperty(
-      jsiRuntime,
+      runtimeHolder->get(),
       "modules",
-      std::move(expoModulesObject)
+      expoModulesObject
     );
-#endif // !UNIT_TEST
 }
 
 jni::local_ref<JavaScriptModuleObject::javaobject>
@@ -181,6 +196,14 @@ void JSIInteropModuleRegistry::registerSharedObject(
   method(javaPart_, std::move(native), std::move(js));
 }
 
+void JSIInteropModuleRegistry::deleteSharedObject(int objectId) {
+  const static auto method = expo::JSIInteropModuleRegistry::javaClassLocal()
+    ->getMethod<void(int)>(
+      "deleteSharedObject"
+    );
+  method(javaPart_, objectId);
+}
+
 void JSIInteropModuleRegistry::registerClass(
   jni::local_ref<jclass> native,
   jni::local_ref<JavaScriptObject::javaobject> jsClass
@@ -204,5 +227,22 @@ jni::local_ref<JavaScriptObject::javaobject> JSIInteropModuleRegistry::getJavasc
 
 void JSIInteropModuleRegistry::jniWasDeallocated() {
   wasDeallocated = true;
+}
+
+void JSIInteropModuleRegistry::jniSetNativeStateForSharedObject(
+  int id,
+  jni::alias_ref<JavaScriptObject::javaobject> jsObject
+) {
+  auto nativeState = std::make_shared<expo::SharedObject::NativeState>(
+    id,
+    [this](int id) {
+      deleteSharedObject(id);
+    }
+  );
+
+  jsObject
+    ->cthis()
+    ->get()
+    ->setNativeState(runtimeHolder->get(), std::move(nativeState));
 }
 } // namespace expo
