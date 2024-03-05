@@ -43,9 +43,6 @@ function loadImageAsync(uri: string): Promise<HTMLCanvasElement> {
 }
 
 export default {
-  get name(): string {
-    return 'ExpoImageManipulator';
-  },
   async manipulateAsync(
     uri: string,
     actions: Action[] = [],

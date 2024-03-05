@@ -1,10 +1,6 @@
 import { SQLiteOpenOptions } from './NativeDatabase';
 
 export default {
-  get name(): string {
-    return 'ExpoSQLiteNext';
-  },
-
   NativeDatabase(databaseName: string, options?: SQLiteOpenOptions): void {
     throw new Error('Unimplemented');
   },

@@ -126,9 +126,6 @@ async function handlePermissionsQueryAsync(
 }
 
 export default {
-  get name(): string {
-    return 'ExponentCameraManager';
-  },
   get Type() {
     return {
       back: 'back',

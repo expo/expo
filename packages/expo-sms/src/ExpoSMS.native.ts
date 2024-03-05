@@ -1,3 +1,2 @@
 import { requireNativeModule } from 'expo-modules-core';
-
-export default requireNativeModule('ExpoPrint');
+export default requireNativeModule('ExpoSMS');
