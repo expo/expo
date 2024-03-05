@@ -109,6 +109,67 @@ build:
     # @end #
 ```
 
+#### Sharing environment variables with other steps
+
+Environment variables exported (using `export`) in one step's `command` are not automatically exposed to other steps. To share an environment variable with other steps, use the `set-env` executable.
+
+`set-env` expects to be called with two arguments: environment variable's name and value. For example, `set-env NPM_TOKEN "abcdef"` will expose `$NPM_TOKEN` variable with value `abcdef` to other steps.
+
+> **Note:** Variables shared with `set-env` are not automatically exported locally. You need to call `export` yourself.
+
+```yaml
+build:
+  name: Shared environment variable example
+  steps:
+    - run:
+        name: Set environment variables
+        command: |
+          set -x
+
+          # Set variable
+          ENV_TEST_LOCAL="present-only-in-current-shell-context"
+          # Set and export variable
+          export ENV_TEST_LOCAL_EXPORT="present-in-current-step"
+          # Set shared EAS Workflow variable
+          set-env ENV_TEST_SET_ENV "present-in-following-steps"
+
+          # Will print "ENV_TEST_LOCAL: present-only-in-current-shell-context"
+          # because current shell has access to this local variable.
+          echo "ENV_TEST_LOCAL: $ENV_TEST_LOCAL"
+
+          # Will print "ENV_TEST_LOCAL_EXPORT: present-in-current-step"
+          # because export also sets the local variable value.
+          echo "ENV_TEST_LOCAL_EXPORT: $ENV_TEST_LOCAL_EXPORT"
+
+          # Will "ENV_TEST_SET_ENV: "
+          # because set-env does not set or export variables.
+          echo "ENV_TEST_SET_ENV: $ENV_TEST_SET_ENV"
+
+          # Will only print LOCALLY_EXPORTED_ENV,
+          # because it is the only export-ed variable.
+          env | grep ENV_TEST_
+    - run:
+        name: Check variables values in next step
+        command: |
+          set -x
+
+          # Will print "ENV_TEST_LOCAL: ", because ENV_TEST_LOCAL
+          # is only a local variable in previous step.
+          echo "ENV_TEST_LOCAL: $ENV_TEST_LOCAL"
+
+          # Will print "ENV_TEST_LOCAL_EXPORT: "
+          # because export does not share a variable to other steps.
+          echo "ENV_TEST_LOCAL_EXPORT: $ENV_TEST_LOCAL_EXPORT"
+
+          # Will print "ENV_TEST_SET_ENV: present-in-following-steps"
+          # because set-env "exported" variable to other steps.
+          echo "ENV_TEST_SET_ENV: $ENV_TEST_SET_ENV"
+
+          # Will only print ENV_TEST_SET_ENV,
+          # because set-env "exported" it to other steps.
+          env | grep ENV_TEST_
+```
+
 #### `steps[].run.name`
 
 The name that is used in build logs to display the name of the step.
