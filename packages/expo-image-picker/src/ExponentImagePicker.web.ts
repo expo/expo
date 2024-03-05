@@ -95,6 +95,7 @@ function openFileBrowserAsync({
   input.setAttribute('type', 'file');
   input.setAttribute('accept', mediaTypeFormat);
   input.setAttribute('id', String(Math.random()));
+  input.setAttribute('data-testid', 'file-input');
   if (allowsMultipleSelection) {
     input.setAttribute('multiple', 'multiple');
   }
