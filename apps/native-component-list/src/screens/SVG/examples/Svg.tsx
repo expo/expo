@@ -90,7 +90,11 @@ function SvgNativeMethods() {
 
   return (
     <View>
-      <Svg.Svg height="100" width="150" ref={root}>
+      <Svg.Svg
+        height="100"
+        width="150"
+        // @ts-expect-error
+        ref={root}>
         <G x="40" onPress={() => root.current?.toDataURL?.((base64: string) => setBase64(base64))}>
           <Circle cx="32" cy="32" r="4.167" fill="blue" />
           <Path
