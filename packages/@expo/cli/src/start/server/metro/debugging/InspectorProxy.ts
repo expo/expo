@@ -33,6 +33,7 @@ export function createInspectorProxyClass(
 
       wss.on('connection', async (socket: WS, req) => {
         try {
+          // @ts-expect-error until we sort out an issue with private members
           const fallbackDeviceId = String(this._deviceCounter++);
 
           const query = url.parse(req.url || '', true).query || {};
@@ -40,6 +41,7 @@ export function createInspectorProxyClass(
           const deviceName = asString(query.name) || 'Unknown';
           const appName = asString(query.app) || 'Unknown';
 
+          // @ts-expect-error until we sort out an issue with private members
           const oldDevice = this._devices.get(deviceId);
           // FIX: Create a new device instance using our own extended class
           const newDevice = new MetroDeviceClass(
@@ -47,7 +49,9 @@ export function createInspectorProxyClass(
             deviceName,
             appName,
             socket,
+            // @ts-expect-error until we sort out an issue with private members
             this._projectRoot,
+            // @ts-expect-error until we sort out an issue with private members
             this._eventReporter
           );
 
@@ -55,13 +59,16 @@ export function createInspectorProxyClass(
             oldDevice.handleDuplicateDeviceConnection(newDevice);
           }
 
+          // @ts-expect-error until we sort out an issue with private members
           this._devices.set(deviceId, newDevice);
 
           debug(`Got new connection: name=${deviceName}, app=${appName}, device=${deviceId}`);
 
           socket.on('close', () => {
             // FIX: Only clean up the device reference, if not replaced by new device
+            // @ts-expect-error until we sort out an issue with private members
             if (this._devices.get(deviceId) === newDevice) {
+              // @ts-expect-error until we sort out an issue with private members
               this._devices.delete(deviceId);
               debug(`Device ${deviceName} disconnected.`);
             } else {
@@ -72,6 +79,7 @@ export function createInspectorProxyClass(
           console.error('error', e);
           socket.close(INTERNAL_ERROR_CODE, e?.toString() ?? 'Unknown error');
           // FIX: add missing event reporter
+          // @ts-expect-error until we sort out an issue with private members
           this._eventReporter?.logEvent({
             type: 'connect_debugger_app',
             status: 'error',
@@ -109,6 +117,7 @@ export function createInspectorProxyClass(
             throw new Error('Incorrect URL - must provide device and page IDs');
           }
 
+          // @ts-expect-error until we sort out an issue with private members
           const device = this._devices.get(deviceId);
           if (device == null) {
             throw new Error('Unknown device with ID ' + deviceId);
@@ -118,6 +127,7 @@ export function createInspectorProxyClass(
         } catch (e) {
           console.error(e);
           socket.close(INTERNAL_ERROR_CODE, e?.toString() ?? 'Unknown error');
+          // @ts-expect-error until we sort out an issue with private members
           this._eventReporter?.logEvent({
             type: 'connect_debugger_frontend',
             status: 'error',
