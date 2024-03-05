@@ -203,8 +203,6 @@ PODS:
     - sqlite3 (~> 3.42.0)
   - EXUpdatesInterface (0.15.0):
     - ExpoModulesCore
-  - EXUpdatesInterface (0.15.0):
-    - ExpoModulesCore
   - FBLazyVector (0.73.4)
   - FBReactNativeSpec (0.73.4):
     - RCT-Folly (= 2022.05.16.00)
