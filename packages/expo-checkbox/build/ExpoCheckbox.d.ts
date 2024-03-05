@@ -1,7 +1,3 @@
-import React from 'react';
-import { CheckboxProps } from './Checkbox.types';
-export default class ExpoCheckbox extends React.PureComponent<CheckboxProps> {
-    private handleChange;
-    render(): JSX.Element;
-}
+import type { CheckboxProps } from './Checkbox.types';
+export default function ExpoCheckbox({ color, disabled, onChange, onValueChange, style, value, ...other }: CheckboxProps): JSX.Element;
 //# sourceMappingURL=ExpoCheckbox.d.ts.map
