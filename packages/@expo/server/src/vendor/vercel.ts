@@ -58,6 +58,8 @@ export function convertRequest(req: http.IncomingMessage, res: http.ServerRespon
 
   if (req.method !== 'GET' && req.method !== 'HEAD') {
     init.body = createReadableStreamFromReadable(req);
+    // @ts-expect-error
+    init.duplex = 'half';
   }
 
   return new Request(url.href, init);
