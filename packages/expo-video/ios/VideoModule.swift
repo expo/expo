@@ -96,36 +96,36 @@ public final class VideoModule: Module {
         return videoPlayer
       }
 
-      Property("isPlaying") { (player: VideoPlayer) in
+      Property("isPlaying") { player -> Bool in
         return player.pointer.timeControlStatus == .playing
       }
 
-      Property("isMuted") { (player: VideoPlayer) -> Bool in
+      Property("isMuted") { player -> Bool in
         return player.pointer.isMuted
       }
       .set { (player, isMuted: Bool) in
         player.pointer.isMuted = isMuted
       }
 
-      Property("currentTime") { (player: VideoPlayer) -> Double in
+      Property("currentTime") { player -> Double in
         return player.pointer.currentTime().seconds
       }
 
-      Property("staysActiveInBackground") { (player: VideoPlayer) -> Bool in
+      Property("staysActiveInBackground") { player -> Bool in
         return player.staysActiveInBackground
       }
       .set { (player, staysActive: Bool) in
         player.staysActiveInBackground = staysActive
       }
 
-      Property("isLooping") { (player: VideoPlayer) -> Bool in
+      Property("isLooping") { player -> Bool in
         return player.isLooping
       }
       .set { (player, isLooping: Bool) in
         player.isLooping = isLooping
       }
 
-      Property("positionMillis") {(player: VideoPlayer) -> Int64 in
+      Property("positionMillis") { player -> Int64 in
         let time = player.pointer.currentTime().convertScale(1000, method: .roundHalfAwayFromZero)
         return Int64(time.seconds * 1000.0)
       }
@@ -136,21 +136,21 @@ public final class VideoModule: Module {
         player.pointer.seek(to: timeToSeek, toleranceBefore: .zero, toleranceAfter: .zero)
       }
 
-      Property("rate") { (player: VideoPlayer) -> Float in
+      Property("rate") { player -> Float in
         return player.desiredRate
       }
       .set { (player, rate: Float) in
         player.desiredRate = rate
       }
 
-      Property("shouldCorrectPitch") { (player: VideoPlayer) -> Bool in
+      Property("shouldCorrectPitch") { player -> Bool in
         return player.shouldCorrectPitch
       }
       .set { (player, shouldCorrectPitch: Bool) in
         player.shouldCorrectPitch = shouldCorrectPitch
       }
 
-      Property("volume") { (player: VideoPlayer) -> Float in
+      Property("volume") { player -> Float in
         return player.pointer.volume
       }
       .set { (player, volume: Float) in

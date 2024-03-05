@@ -188,9 +188,6 @@ class VideoModule : Module() {
           appContext.mainQueue.launch {
             ref.player.seekTo(position)
           }
-          appContext.mainQueue.launch {
-            ref.player.currentPosition.toInt()
-          }
         }
 
       Property("rate")

@@ -9,7 +9,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable {
 
   var isLooping = false {
     didSet {
-      self.applyIsLooping()
+      applyIsLooping()
     }
   }
 
@@ -101,9 +101,10 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable {
       playerItemObserver = NotificationCenter.default.addObserver(
         forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
         object: pointer.currentItem,
-        queue: nil) { [weak self] _ in
-          self?.pointer.seek(to: .zero)
-          self?.pointer.play()
+        queue: nil
+      ) { [weak self] _ in
+        self?.pointer.seek(to: .zero)
+        self?.pointer.play()
       }
     }
   }
