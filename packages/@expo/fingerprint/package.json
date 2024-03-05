@@ -47,7 +47,8 @@
     "find-up": "^5.0.0",
     "minimatch": "^3.0.4",
     "p-limit": "^3.1.0",
-    "resolve-from": "^5.0.0"
+    "resolve-from": "^5.0.0",
+    "semver": "^7.5.4"
   },
   "devDependencies": {
     "@types/find-up": "^4.0.0",
