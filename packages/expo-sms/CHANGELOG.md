@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [web] `sendSMSAsync` now throws error code `ERR_UNAVAILABLE` instead of `E_SMS_UNAVAILABLE`. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
