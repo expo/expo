@@ -14,7 +14,7 @@ it(`normalizes one phone number into an array`, async () => {
     expect(ExpoSMS.sendSMSAsync).toHaveBeenLastCalledWith(['0123456789', '9876543210'], 'test', {});
   } catch (e) {
     if (Platform.OS === 'web') {
-      expect(e.code).toBe('E_SMS_UNAVAILABLE');
+      expect(e.code).toBe('ERR_UNAVAILABLE');
     }
   }
 });
@@ -46,7 +46,7 @@ it(`normalizes attachments parameter to always pass array to native`, async () =
     });
   } catch (e) {
     if (Platform.OS === 'web') {
-      expect(e.code).toBe('E_SMS_UNAVAILABLE');
+      expect(e.code).toBe('ERR_UNAVAILABLE');
     }
   }
 });
