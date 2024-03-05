@@ -200,26 +200,13 @@ export async function getExpoAutolinkingIosSourcesAsync(
     return [];
   }
 
-  let platformParam = 'apple';
-  const expoPackageRoot = resolveFrom.silent(projectRoot, 'expo/package.json');
-  const autolinkingPackageJsonPath = resolveFrom.silent(
-    expoPackageRoot ?? projectRoot,
-    'expo-modules-autolinking/package.json'
-  );
-  if (autolinkingPackageJsonPath) {
-    const autolinkingPackageJson = require(autolinkingPackageJsonPath);
-    // expo-modules-autolinking 1.10.0 added support for apple platform
-    if (semver.lt(autolinkingPackageJson.version, '1.10.0')) {
-      platformParam = 'ios';
-    }
-  }
-
+  const platform = getIosAutolinkingPlatformParam(projectRoot);
   try {
     const reasons = ['expoAutolinkingIos'];
     const results: HashSource[] = [];
     const { stdout } = await spawnAsync(
       'npx',
-      ['expo-modules-autolinking', 'resolve', '-p', platformParam, '--json'],
+      ['expo-modules-autolinking', 'resolve', '-p', platform, '--json'],
       { cwd: projectRoot }
     );
     const config = JSON.parse(stdout);
@@ -254,4 +241,26 @@ export function sortExpoAutolinkingAndroidConfig(config: Record<string, any>): R
     );
   }
   return config;
+}
+
+/**
+ * Get the platform parameter for expo-modules-autolinking.
+ *
+ * Older autolinking uses `ios` and newer autolinking uses `apple`.
+ */
+function getIosAutolinkingPlatformParam(projectRoot: string): string {
+  let platformParam = 'apple';
+  const expoPackageRoot = resolveFrom.silent(projectRoot, 'expo/package.json');
+  const autolinkingPackageJsonPath = resolveFrom.silent(
+    expoPackageRoot ?? projectRoot,
+    'expo-modules-autolinking/package.json'
+  );
+  if (autolinkingPackageJsonPath) {
+    const autolinkingPackageJson = require(autolinkingPackageJsonPath);
+    // expo-modules-autolinking 1.10.0 added support for apple platform
+    if (semver.lt(autolinkingPackageJson.version, '1.10.0')) {
+      platformParam = 'ios';
+    }
+  }
+  return platformParam;
 }

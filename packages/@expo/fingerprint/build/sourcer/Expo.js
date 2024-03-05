@@ -164,20 +164,11 @@ async function getExpoAutolinkingIosSourcesAsync(projectRoot, options) {
     if (!options.platforms.includes('ios')) {
         return [];
     }
-    let platformParam = 'apple';
-    const expoPackageRoot = resolve_from_1.default.silent(projectRoot, 'expo/package.json');
-    const autolinkingPackageJsonPath = resolve_from_1.default.silent(expoPackageRoot ?? projectRoot, 'expo-modules-autolinking/package.json');
-    if (autolinkingPackageJsonPath) {
-        const autolinkingPackageJson = require(autolinkingPackageJsonPath);
-        // expo-modules-autolinking 1.10.0 added support for apple platform
-        if (semver_1.default.lt(autolinkingPackageJson.version, '1.10.0')) {
-            platformParam = 'ios';
-        }
-    }
+    const platform = getIosAutolinkingPlatformParam(projectRoot);
     try {
         const reasons = ['expoAutolinkingIos'];
         const results = [];
-        const { stdout } = await (0, spawn_async_1.default)('npx', ['expo-modules-autolinking', 'resolve', '-p', platformParam, '--json'], { cwd: projectRoot });
+        const { stdout } = await (0, spawn_async_1.default)('npx', ['expo-modules-autolinking', 'resolve', '-p', platform, '--json'], { cwd: projectRoot });
         const config = JSON.parse(stdout);
         for (const module of config.modules) {
             for (const pod of module.pods) {
@@ -211,4 +202,22 @@ function sortExpoAutolinkingAndroidConfig(config) {
     return config;
 }
 exports.sortExpoAutolinkingAndroidConfig = sortExpoAutolinkingAndroidConfig;
+/**
+ * Get the platform parameter for expo-modules-autolinking.
+ *
+ * Older autolinking uses `ios` and newer autolinking uses `apple`.
+ */
+function getIosAutolinkingPlatformParam(projectRoot) {
+    let platformParam = 'apple';
+    const expoPackageRoot = resolve_from_1.default.silent(projectRoot, 'expo/package.json');
+    const autolinkingPackageJsonPath = resolve_from_1.default.silent(expoPackageRoot ?? projectRoot, 'expo-modules-autolinking/package.json');
+    if (autolinkingPackageJsonPath) {
+        const autolinkingPackageJson = require(autolinkingPackageJsonPath);
+        // expo-modules-autolinking 1.10.0 added support for apple platform
+        if (semver_1.default.lt(autolinkingPackageJson.version, '1.10.0')) {
+            platformParam = 'ios';
+        }
+    }
+    return platformParam;
+}
 //# sourceMappingURL=Expo.js.map
