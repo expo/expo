@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Button } from 'react-native';
 
 import { Page, Section } from '../components/Page';
