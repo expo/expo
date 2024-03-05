@@ -4,6 +4,13 @@ type ExpoObject = {
     };
     uuidv4: () => string;
     uuidv5: (name: string, namespace: string) => string;
+    getViewConfig(viewName: string): ExpoViewConfig | null;
+};
+type ExpoViewConfig = {
+    validAttributes: Record<string, any>;
+    directEventTypes: Record<string, {
+        registrationName: string;
+    }>;
 };
 declare global {
     var expo: ExpoObject | undefined;
