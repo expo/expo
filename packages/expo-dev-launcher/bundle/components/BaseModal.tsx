@@ -1,5 +1,6 @@
 import { Button, Divider, Heading, Row, Spacer, View, XIcon } from 'expo-dev-client-components';
 import * as React from 'react';
+import { useTVEventHandler, TVEventControl } from 'react-native';
 
 import { useModalStack } from '../providers/ModalStackProvider';
 
@@ -14,6 +15,19 @@ export function BaseModal({ children, title }: BaseModalProps) {
   const onClosePress = () => {
     modalStack.pop();
   };
+
+  useTVEventHandler((event) => {
+    if (event.eventType === 'menu') {
+      modalStack.pop();
+    }
+  });
+
+  React.useEffect(() => {
+    TVEventControl.enableTVMenuKey();
+    return () => {
+      TVEventControl.disableTVMenuKey();
+    };
+  }, []);
 
   return (
     <View bg="default" rounded="large" shadow="medium" mx="small">
