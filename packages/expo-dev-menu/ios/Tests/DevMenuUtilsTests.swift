@@ -11,7 +11,12 @@ class DevMenuUtilsTest: XCTestCase {
   func test_if_bundle_is_present() {
     let bundle = DevMenuUtils.resourcesBundle()
 
+    #if os(tvOS)
+    let jsBundleResourceName = "EXDevMenuAppTV.ios"
+    #else
+    let jsBundleResourceName = "EXDevMenuApp.ios"
+    #endif
     XCTAssertNotNil(bundle)
-    XCTAssertNotNil(bundle!.url(forResource: "EXDevMenuApp.ios", withExtension: "js"))
+    XCTAssertNotNil(bundle!.url(forResource: jsBundleResourceName, withExtension: "js"))
   }
 }

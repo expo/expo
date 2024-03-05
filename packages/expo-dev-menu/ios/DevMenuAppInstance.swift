@@ -66,7 +66,12 @@ class DevMenuAppInstance: DevMenuRCTAppDelegate {
   // MARK: private
 
   private func jsSourceUrl() -> URL? {
-    return DevMenuUtils.resourcesBundle()?.url(forResource: "EXDevMenuApp.ios", withExtension: "js")
+    #if os(tvOS)
+    let jsBundleResourceName = "EXDevMenuAppTV.ios"
+    #else
+    let jsBundleResourceName = "EXDevMenuApp.ios"
+    #endif
+    return DevMenuUtils.resourcesBundle()?.url(forResource: jsBundleResourceName, withExtension: "js")
   }
 
   private func jsPackagerHost() -> String? {

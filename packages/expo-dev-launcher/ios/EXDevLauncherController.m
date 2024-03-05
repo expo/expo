@@ -179,7 +179,11 @@
     return launcherURL;
   }
   NSURL *bundleURL = [[NSBundle mainBundle] URLForResource:@"EXDevLauncher" withExtension:@"bundle"];
+#if TARGET_OS_TV
+  return [[NSBundle bundleWithURL:bundleURL] URLForResource:@"main.tv" withExtension:@"jsbundle"];
+#else
   return [[NSBundle bundleWithURL:bundleURL] URLForResource:@"main" withExtension:@"jsbundle"];
+#endif
 }
 
 

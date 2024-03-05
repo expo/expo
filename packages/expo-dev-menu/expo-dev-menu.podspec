@@ -28,9 +28,17 @@ Pod::Spec.new do |s|
   s.requires_arc   = true
   s.header_dir     = 'EXDevMenu'
 
-  s.resource_bundles = { 'EXDevMenu' => [
+  s.ios.resource_bundles = { 'EXDevMenu' => [
     'ios/assets',
-    'assets/*.ios.js',
+    'assets/EXDevMenuApp.ios.js',
+    'assets/dev-menu-packager-host',
+    'assets/*.ttf',
+    'assets/*.otf'
+  ]}
+
+  s.tvos.resource_bundles = { 'EXDevMenu' => [
+    'ios/assets',
+    'assets/EXDevMenuAppTV.ios.js',
     'assets/dev-menu-packager-host',
     'assets/*.ttf',
     'assets/*.otf'

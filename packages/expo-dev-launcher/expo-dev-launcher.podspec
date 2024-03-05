@@ -30,7 +30,7 @@ Pod::Spec.new do |s|
   s.tvos.resource_bundles = {
     'EXDevLauncher' => [
       'ios/assets',
-      'ios/main.jsbundle',
+      'ios/main.tv.jsbundle',
       'ios/Views/EXDevLauncherTVErrorView.storyboard'
     ]
   }
