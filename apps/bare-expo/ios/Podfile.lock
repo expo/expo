@@ -596,9 +596,9 @@ PODS:
   - GoogleMaps/Maps (7.3.0):
     - GoogleMaps/Base
   - GooglePlaces (7.3.0)
-  - hermes-engine (0.74.0-rc.1):
-    - hermes-engine/Pre-built (= 0.74.0-rc.1)
-  - hermes-engine/Pre-built (0.74.0-rc.1)
+  - hermes-engine (0.74.0-rc.2):
+    - hermes-engine/Pre-built (= 0.74.0-rc.2)
+  - hermes-engine/Pre-built (0.74.0-rc.2)
   - libaom (3.0.0):
     - libvmaf (>= 2.2.0)
   - libavif (0.11.1):
@@ -2448,7 +2448,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
-  DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
+  DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   EASClient: b550a8d3d3d9d1211ba71eabf789cb46c7e92b3c
   EXApplication: 7d3063cc3cbd14a0d3c6e1c73854f4a71901ac67
   EXAV: 69adaa7433e7123a7dc9df9841fd80e954916d2d
@@ -2522,7 +2522,7 @@ SPEC CHECKSUMS:
   glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
   GoogleMaps: a146f275ee429d14822178c7a841c03366ec92a1
   GooglePlaces: 0609463845250bbadafa1739938181e54dece439
-  hermes-engine: 4ee88ed6eea3635a2a6b6b9f7e07a85bde4df06f
+  hermes-engine: 563fc2ee6a71d0768170d4b72176ebe13f7477eb
   libaom: 144606b1da4b5915a1054383c3a4459ccdb3c661
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libvmaf: 27f523f1e63c694d14d534cd0fddd2fab0ae8711

@@ -417,9 +417,9 @@ PODS:
   - FBLazyVector (0.74.0-rc.2)
   - fmt (9.1.0)
   - glog (0.3.5)
-  - hermes-engine (0.74.0-rc.1):
-    - hermes-engine/Pre-built (= 0.74.0-rc.1)
-  - hermes-engine/Pre-built (0.74.0-rc.1)
+  - hermes-engine (0.74.0-rc.2):
+    - hermes-engine/Pre-built (= 0.74.0-rc.2)
+  - hermes-engine/Pre-built (0.74.0-rc.2)
   - Nimble (13.0.0)
   - OHHTTPStubs (9.1.0):
     - OHHTTPStubs/Default (= 9.1.0)
@@ -1839,8 +1839,8 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  boost: 26fad476bfa736552bbfa698a06cc530475c1505
-  DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
+  boost: d3f49c53809116a5d38da093a8aa78bf551aed09
+  DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   EASClient: b550a8d3d3d9d1211ba71eabf789cb46c7e92b3c
   EXJSONUtils: d138005ee11b84fc4e3bf7119a160034db5d5e20
   EXManifests: 2355abd4aeacfb75eec5b43393c0aef9c2789fcf
@@ -1857,7 +1857,7 @@ SPEC CHECKSUMS:
   FBLazyVector: fa59cfcc9893760f58a0af6f5c25d5736c6d0b14
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
-  hermes-engine: 4ee88ed6eea3635a2a6b6b9f7e07a85bde4df06f
+  hermes-engine: 563fc2ee6a71d0768170d4b72176ebe13f7477eb
   Nimble: 97d90931cca412a23224ff29e258809f75c258f7
   OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
   Quick: d32871931c05547cb4e0bc9009d66a18b50d8558
