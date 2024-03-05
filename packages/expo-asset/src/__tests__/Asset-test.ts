@@ -1,33 +1,13 @@
-jest.mock('expo-file-system', () => {
-  const FileSystem = jest.requireActual('expo-file-system');
-  return {
-    ...FileSystem,
-    cacheDirectory: 'file:///Caches/Expo.app/',
-    getInfoAsync: jest.fn(),
-    downloadAsync: jest.fn(),
-  };
-});
-
 const { Platform } = jest.requireActual('expo-modules-core');
 
-jest.mock('expo-modules-core', () => {
-  const ExpoModulesCore = jest.requireActual('expo-modules-core');
-  return {
-    ...ExpoModulesCore,
-    requireOptionalNativeModule: (moduleName) => {
-      if (moduleName !== 'ExpoUpdates') {
-        return jest.requireActual('expo-modules-core').requireOptionalNativeModule(moduleName);
-      }
-
-      return {
-        ...jest.requireActual('expo-modules-core').requireOptionalNativeModule('ExpoUpdates'),
-        localAssets: {
-          test1: 'file:///Expo.app/asset_test1.png',
-        },
-      };
-    },
-  };
-});
+jest.mock('../PlatformUtils', () => ({
+  ...jest.requireActual('../PlatformUtils'),
+  getLocalAssets: () => {
+    return {
+      test1: 'file:///Expo.app/asset_test1.png',
+    };
+  },
+}));
 
 jest.mock('@react-native/assets-registry/registry', () => ({
   getAssetByID: jest.fn(),
@@ -152,14 +132,29 @@ it(`throws when creating an asset from a missing module`, () => {
 });
 
 it(`downloads uncached assets`, async () => {
-  const FileSystem = require('expo-file-system');
   const { Asset } = require('../index');
+
+  jest.mock('../ExpoAsset', () => {
+    const ExpoAsset = jest.requireActual('../ExpoAsset');
+    return {
+      ...ExpoAsset,
+      downloadAsync: jest.fn(
+        async () => 'file:///Caches/Expo.app/ExponentAsset-cafecafecafecafecafecafecafecafe.png'
+      ),
+    };
+  });
+
+  jest.mock('../ExpoAsset.web', () => {
+    const ExpoAsset = jest.requireActual('../ExpoAsset.web');
+    return {
+      ...ExpoAsset,
+      downloadAsync: jest.fn(async () => 'https://example.com/icon.png'),
+    };
+  });
 
   const asset = Asset.fromMetadata(mockImageMetadata);
   expect(asset.localUri).toBeNull();
 
-  FileSystem.getInfoAsync.mockReturnValueOnce({ exists: false });
-  FileSystem.downloadAsync.mockReturnValueOnce({ md5: mockImageMetadata.hash });
   await asset.downloadAsync();
 
   expect(asset.downloading).toBe(false);
@@ -173,31 +168,23 @@ it(`downloads uncached assets`, async () => {
 });
 
 it(`uses the local file system's cache directory for downloads`, async () => {
-  const FileSystem = require('expo-file-system');
   const { Asset } = require('../index');
 
   const asset = Asset.fromMetadata(mockImageMetadata);
-  FileSystem.getInfoAsync.mockReturnValueOnce({
-    exists: true,
-    md5: mockImageMetadata.hash,
-  });
+
   await asset.downloadAsync();
   expect(asset.downloaded).toBe(true);
-  expect(FileSystem.downloadAsync).not.toHaveBeenCalled();
 });
 
 if (Platform.OS !== 'web') {
   it(`coalesces downloads`, async () => {
-    const FileSystem = require('expo-file-system');
     const { Asset } = require('../index');
 
     const asset = Asset.fromMetadata(mockImageMetadata);
-    FileSystem.getInfoAsync.mockReturnValue({ exists: false });
-    FileSystem.downloadAsync.mockReturnValue({ md5: mockImageMetadata.hash });
 
     await Promise.all([asset.downloadAsync(), asset.downloadAsync()]);
-    expect(FileSystem.getInfoAsync).toHaveBeenCalledTimes(1);
-    expect(FileSystem.downloadAsync).toHaveBeenCalledTimes(1);
+    const ExpoAsset = jest.requireMock('../ExpoAsset');
+    expect(ExpoAsset.downloadAsync).toHaveBeenCalledTimes(1);
   });
 }
 
