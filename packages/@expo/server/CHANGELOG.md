@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix issue with `duplex` streams not being properly handled.
 - Throw "method not found" when an API route has no exports. ([#27024](https://github.com/expo/expo/pull/27024) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
