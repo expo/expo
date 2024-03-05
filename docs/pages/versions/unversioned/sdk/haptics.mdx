@@ -4,11 +4,11 @@ description: A library that provides access to the system's vibration effects on
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-haptics'
 packageName: 'expo-haptics'
 iconUrl: '/static/images/packages/expo-haptics.png'
+platforms: ['android', 'ios']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
 **`expo-haptics`** provides haptic (touch) feedback for
@@ -21,8 +21,6 @@ On iOS, _the Taptic engine will do nothing if any of the following conditions ar
 - Low Power Mode is enabled. This can be detected with [`expo-battery`](/versions/latest/sdk/battery/).
 - User disabled the Taptic Engine in settings.
 - iOS Camera is active (in order prevent destabilization).
-
-<PlatformsSection android emulator ios simulator />
 
 ## Installation
 

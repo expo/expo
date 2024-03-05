@@ -4734,7 +4734,7 @@ OAuth 2.0 protocol
            
         </span>
         <div
-          class="!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5 css-7sgr13-PlatformTag"
+          class="!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5 select-none css-7sgr13-PlatformTag"
         >
           <svg
             class="icon-xs text-palette-blue12"
@@ -9763,7 +9763,7 @@ exports[`APISection expo-pedometer 1`] = `
          
       </span>
       <div
-        class="!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5 css-7sgr13-PlatformTag"
+        class="!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5 select-none css-7sgr13-PlatformTag"
       >
         <svg
           class="icon-xs text-palette-blue12"

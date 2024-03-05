@@ -4,18 +4,16 @@ description: A library that provides access to controlling the visibility behavi
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-splash-screen'
 packageName: 'expo-splash-screen'
 iconUrl: '/static/images/packages/expo-splash-screen.png'
+platforms: ['android', 'ios', 'tvos']
 ---
 
 import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 The `SplashScreen` module from the `expo-splash-screen` library is used to tell the splash screen to remain visible until it has been explicitly told to hide. This is useful to do tasks that will happen behind the scenes such as making API calls, pre-loading fonts, animating the splash screen and so on.
 
 Also, see the guide on [creating a splash screen image](/develop/user-interface/splash-screen/), or [quickly generate an icon and splash screen using your browser](https://buildicon.netlify.app/).
-
-<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
