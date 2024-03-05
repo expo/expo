@@ -132,7 +132,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
           return
         }
         self.delegates.remove(delegate)
-        guard error != nil else {
+        guard error == nil else {
           promise.reject(SaveAssetException())
           return
         }
