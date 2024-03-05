@@ -24,10 +24,10 @@ if (typeof globalThis.__REACT_DEVTOOLS_GLOBAL_HOOK__ === 'undefined') {
   globalThis.__REACT_DEVTOOLS_GLOBAL_HOOK__ = {
     isDisabled: true, // Used by `react-test-renderer` https://github.com/facebook/react/blob/113ab9af08c46e8a548a397154f5c9dfeb96ab6a/packages/react-reconciler/src/ReactFiberDevToolsHook.js#L60
     renderers: {
-      // https://github.com/hoxyq/react-native/blob/fbbb4246707d85b692c006e0cb3b186a7c9068bc/packages/react-native/Libraries/Inspector/getInspectorDataForViewAtPoint.js#L40
+      // https://github.com/facebook/react-native/blob/fbbb4246707d85b692c006e0cb3b186a7c9068bc/packages/react-native/Libraries/Inspector/getInspectorDataForViewAtPoint.js#L40
       values: () => [],
     },
-    on() {}, // https://github.com/hoxyq/react-native/blob/fbbb4246707d85b692c006e0cb3b186a7c9068bc/packages/react-native/Libraries/Inspector/getInspectorDataForViewAtPoint.js#L45
+    on() {}, // https://github.com/facebook/react-native/blob/fbbb4246707d85b692c006e0cb3b186a7c9068bc/packages/react-native/Libraries/Inspector/getInspectorDataForViewAtPoint.js#L45
   };
   // React is inconsistent with how it checks for the global hook
   globalThis.window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = globalThis.__REACT_DEVTOOLS_GLOBAL_HOOK__;
