@@ -1,7 +1,4 @@
 export default {
-    get name() {
-        return 'ExpoSQLiteNext';
-    },
     NativeDatabase(databaseName, options) {
         throw new Error('Unimplemented');
     },
