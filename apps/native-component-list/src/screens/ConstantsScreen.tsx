@@ -33,7 +33,7 @@ function ExpoConstant({ name }: { name: string }) {
   return (
     <View style={{ marginBottom: 10 }}>
       <HeadingText>{name}</HeadingText>
-      <MonoText containerStyle={error && { borderColor: 'red' }}>{error ?? evaluated}</MonoText>
+      <MonoText containerStyle={error ? { borderColor: 'red' } : {}}>{error ?? evaluated}</MonoText>
     </View>
   );
 }
