@@ -303,6 +303,40 @@ exports[`metro+hermes uses the platform's react-native import 1`] = `
 var _reactNative=require("react-native");"
 `;
 
+exports[`react compiler allows destructuring in the catch block 1`] = `
+"var _jsxDevRuntime = require("react/jsx-dev-runtime");var _jsxFileName = "/Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/src/__tests__/samples/destructure-catch.tsx";function App() {
+  var foo = function () {
+    try {
+      console.log('hey');
+    } catch (_ref) {var message = _ref.message;
+      // NOTE(EvanBacon): React compiler throws:
+      // (BuildHIR::lowerAssignment) Could not find binding for declaration.
+      console.error(message);
+    }
+  };
+  return /*#__PURE__*/(0, _jsxDevRuntime.jsxDEV)("div", { children: "Hello" }, void 0, false, { fileName: _jsxFileName, lineNumber: 11, columnNumber: 10 }, this);
+}"
+`;
+
+exports[`react compiler supports functions with discarded return values in try/catch blocks that run in memos 1`] = `
+"Object.defineProperty(exports, "__esModule", { value: true });exports.useSideEffectMayThrow = useSideEffectMayThrow;var _react = require("react");
+
+function SIDE_EFFECT_MAY_THROW() {}
+
+// NOTE(EvanBacon): React compiler throws:
+// Cannot read properties of undefined (reading 'preds')
+function useSideEffectMayThrow() {
+  return (0, _react.useMemo)(function () {
+    try {
+      SIDE_EFFECT_MAY_THROW();
+      return true;
+    } catch {
+      return false;
+    }
+  }, []);
+}"
+`;
+
 exports[`webpack composes with babel-plugin-module-resolver 1`] = `
 "
 import"react-native";
