@@ -21,7 +21,8 @@ export default {
   NativeDatabase: jest
     .fn()
     .mockImplementation(
-      (databaseName: string, options?: SQLiteOpenOptions) => new NativeDatabase(databaseName)
+      (databaseName: string, options?: SQLiteOpenOptions, serializedData?: Uint8Array) =>
+        new NativeDatabase(databaseName, options, serializedData)
     ),
 
   NativeStatement: jest.fn().mockImplementation(() => new NativeStatement()),
@@ -35,8 +36,12 @@ export default {
 class NativeDatabase {
   private readonly sqlite3Db: sqlite3.Database;
 
-  constructor(databaseName: string) {
-    this.sqlite3Db = new sqlite3(databaseName);
+  constructor(databaseName: string, options?: SQLiteOpenOptions, serializedData?: Uint8Array) {
+    if (serializedData != null) {
+      this.sqlite3Db = new sqlite3(Buffer.from(serializedData));
+    } else {
+      this.sqlite3Db = new sqlite3(databaseName);
+    }
   }
 
   //#region Asynchronous API
@@ -50,6 +55,9 @@ class NativeDatabase {
   });
   execAsync = jest.fn().mockImplementation(async (source: string) => {
     return this.sqlite3Db.exec(source);
+  });
+  serializeAsync = jest.fn().mockImplementation(async (databaseName: string) => {
+    return this.sqlite3Db.serialize({ attached: databaseName });
   });
   prepareAsync = jest
     .fn()
@@ -65,6 +73,9 @@ class NativeDatabase {
   isInTransactionSync = jest.fn().mockImplementation(() => this.sqlite3Db.inTransaction);
   closeSync = jest.fn().mockImplementation(() => this.sqlite3Db.close());
   execSync = jest.fn().mockImplementation((source: string) => this.sqlite3Db.exec(source));
+  serializeSync = jest.fn().mockImplementation((databaseName: string) => {
+    return this.sqlite3Db.serialize({ attached: databaseName });
+  });
   prepareSync = jest.fn().mockImplementation((nativeStatement: NativeStatement, source: string) => {
     nativeStatement.sqlite3Stmt = this.sqlite3Db.prepare(source);
   });

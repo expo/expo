@@ -2,7 +2,7 @@ export default {
     get name() {
         return 'ExpoSQLiteNext';
     },
-    NativeDatabase(databaseName, options) {
+    NativeDatabase(databaseName, options, serializedData) {
         throw new Error('Unimplemented');
     },
     NativeStatement() {

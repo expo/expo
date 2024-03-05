@@ -1,7 +1,12 @@
 // @ts-ignore-next-line: no @types/node
 import fs from 'fs/promises';
 
-import { openDatabaseAsync, openDatabaseSync, SQLiteDatabase } from '../SQLiteDatabase';
+import {
+  deserializeDatabaseAsync,
+  openDatabaseAsync,
+  openDatabaseSync,
+  SQLiteDatabase,
+} from '../SQLiteDatabase';
 
 jest.mock('../ExpoSQLiteNext');
 
@@ -312,6 +317,25 @@ describe('Database - Synchronous calls', () => {
 
     const results = db.getAllSync<TestEntity>('SELECT * FROM test');
     expect(results.length).toBe(0);
+  });
+});
+
+describe('Database - serialize / deserialize', () => {
+  it('serialize / deserialize in between should keep the data', async () => {
+    const db = await openDatabaseAsync(':memory:');
+    await db.execAsync(
+      'CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL, intValue INTEGER)'
+    );
+    await db.runAsync('INSERT INTO test (value, intValue) VALUES (?, ?)', 'test', 123);
+
+    const serialized = await db.serializeAsync();
+    await db.closeAsync();
+
+    const db2 = await deserializeDatabaseAsync(serialized);
+    const result = await db2.getFirstAsync<TestEntity>('SELECT * FROM test');
+    expect(result?.value).toBe('test');
+    expect(result?.intValue).toBe(123);
+    await db2.closeAsync();
   });
 });
 

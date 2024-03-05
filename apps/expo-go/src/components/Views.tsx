@@ -53,6 +53,7 @@ export const StyledScrollView = React.forwardRef(
     const { style, ...otherProps } = props;
     const backgroundColor = useThemeBackgroundColor(props, 'absolute');
 
+    // @ts-expect-error until react-native-gesture-handler fixes the type
     return <ScrollView {...otherProps} style={[{ backgroundColor }, style]} ref={ref} />;
   }
 );

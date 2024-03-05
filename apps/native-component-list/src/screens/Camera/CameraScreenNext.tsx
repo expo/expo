@@ -1,5 +1,5 @@
-import Ionicons from '@expo/vector-icons/build/Ionicons';
-import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {
   BarcodePoint,
   BarcodeScanningResult,

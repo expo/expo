@@ -36,6 +36,14 @@ export class SQLiteDatabase {
         return this.nativeDatabase.execAsync(source);
     }
     /**
+     * [Serialize the database](https://sqlite.org/c3ref/serialize.html) as `Uint8Array`.
+     *
+     * @param databaseName The name of the current attached databases. The default value is `main` which is the default database name.
+     */
+    serializeAsync(databaseName = 'main') {
+        return this.nativeDatabase.serializeAsync(databaseName);
+    }
+    /**
      * Create a [prepared SQLite statement](https://www.sqlite.org/c3ref/prepare.html).
      *
      * @param source A string containing the SQL query.
@@ -138,6 +146,16 @@ export class SQLiteDatabase {
      */
     execSync(source) {
         return this.nativeDatabase.execSync(source);
+    }
+    /**
+     * [Serialize the database](https://sqlite.org/c3ref/serialize.html) as `Uint8Array`.
+     *
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
+     *
+     * @param databaseName The name of the current attached databases. The default value is `main` which is the default database name.
+     */
+    serializeSync(databaseName = 'main') {
+        return this.nativeDatabase.serializeSync(databaseName);
     }
     /**
      * Create a [prepared SQLite statement](https://www.sqlite.org/c3ref/prepare.html).
@@ -289,6 +307,32 @@ export function openDatabaseSync(databaseName, options) {
     const nativeDatabase = new ExpoSQLite.NativeDatabase(databaseName, openOptions);
     nativeDatabase.initSync();
     return new SQLiteDatabase(databaseName, openOptions, nativeDatabase);
+}
+/**
+ * Given a `Uint8Array` data and [deserialize to memory database](https://sqlite.org/c3ref/deserialize.html).
+ *
+ * @param serializedData The binary array to deserialize from [`SQLiteDatabase.serializeAsync()`](#serializeasyncdatabasename).
+ * @param options Open options.
+ */
+export async function deserializeDatabaseAsync(serializedData, options) {
+    const openOptions = options ?? {};
+    const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', openOptions, serializedData);
+    await nativeDatabase.initAsync();
+    return new SQLiteDatabase(':memory:', openOptions, nativeDatabase);
+}
+/**
+ * Given a `Uint8Array` data and [deserialize to memory database](https://sqlite.org/c3ref/deserialize.html).
+ *
+ * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
+ *
+ * @param serializedData The binary array to deserialize from [`SQLiteDatabase.serializeSync()`](#serializesyncdatabasename)
+ * @param options Open options.
+ */
+export function deserializeDatabaseSync(serializedData, options) {
+    const openOptions = options ?? {};
+    const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', openOptions, serializedData);
+    nativeDatabase.initSync();
+    return new SQLiteDatabase(':memory:', openOptions, nativeDatabase);
 }
 /**
  * Delete a database file.
