@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- drop unused web `name` property.
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 11.8.0 — 2023-12-12
 
