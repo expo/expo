@@ -1,4 +1,3 @@
-import React from 'react';
 import { Platform } from 'react-native';
 
 import ComponentListScreen from './ComponentListScreen';
@@ -96,12 +95,12 @@ export const ScreenItems = screens.map((name) => ({
 }));
 
 export default function ExpoApisScreen() {
-  const renderItemRight = React.useCallback(
-    ({ name }: { name: string }) => (
-      <ExpoAPIIcon name={name} style={{ marginRight: 10, marginLeft: 6 }} />
-    ),
-    []
+  return (
+    <ComponentListScreen
+      renderItemRight={({ name }: { name: string }) => (
+        <ExpoAPIIcon name={name} style={{ marginRight: 10, marginLeft: 6 }} />
+      )}
+      apis={ScreenItems}
+    />
   );
-
-  return <ComponentListScreen renderItemRight={renderItemRight} apis={ScreenItems} />;
 }

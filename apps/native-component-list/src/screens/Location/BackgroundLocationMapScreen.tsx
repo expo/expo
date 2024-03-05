@@ -1,5 +1,5 @@
-import FontAwesome from '@expo/vector-icons/build/FontAwesome';
-import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';

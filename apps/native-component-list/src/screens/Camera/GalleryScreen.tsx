@@ -1,4 +1,4 @@
-import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 import React from 'react';
