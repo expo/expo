@@ -5,6 +5,7 @@ import fs from 'fs/promises';
 import os from 'os';
 import path from 'path';
 import resolveFrom from 'resolve-from';
+import semver from 'semver';
 
 import { getExpoConfigLoaderPath } from './ExpoConfigLoader';
 import { getFileBasedHashSourceAsync, stringifyJsonSorted } from './Utils';
@@ -199,12 +200,26 @@ export async function getExpoAutolinkingIosSourcesAsync(
     return [];
   }
 
+  let platformParam = 'apple';
+  const expoPackageRoot = resolveFrom.silent(projectRoot, 'expo/package.json');
+  const autolinkingPackageJsonPath = resolveFrom.silent(
+    expoPackageRoot ?? projectRoot,
+    'expo-modules-autolinking/package.json'
+  );
+  if (autolinkingPackageJsonPath) {
+    const autolinkingPackageJson = require(autolinkingPackageJsonPath);
+    // expo-modules-autolinking 1.10.0 added support for apple platform
+    if (semver.lt(autolinkingPackageJson.version, '1.10.0')) {
+      platformParam = 'ios';
+    }
+  }
+
   try {
     const reasons = ['expoAutolinkingIos'];
     const results: HashSource[] = [];
     const { stdout } = await spawnAsync(
       'npx',
-      ['expo-modules-autolinking', 'resolve', '-p', 'ios', '--json'],
+      ['expo-modules-autolinking', 'resolve', '-p', platformParam, '--json'],
       { cwd: projectRoot }
     );
     const config = JSON.parse(stdout);
