@@ -802,6 +802,27 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
       expect(error.toString()).toMatch(/unable to close due to unfinalized statements/);
     });
   });
+
+  describe('Database - serialize / deserialize', () => {
+    it('serialize / deserialize in between should keep the data', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      await db.execAsync(`
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL);
+INSERT INTO users (user_id, name, k, j) VALUES (1, 'Tim Duncan', 1, 23.4);
+INSERT INTO users (user_id, name, k, j) VALUES (2, 'Manu Ginobili', 5, 72.8);
+INSERT INTO users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.14);
+`);
+
+      const serialized = await db.serializeAsync();
+      await db.closeAsync();
+      const db2 = await SQLite.deserializeDatabaseAsync(serialized);
+
+      const result = await db2.getAllAsync<UserEntity>('SELECT * FROM users');
+      expect(result.length).toBe(3);
+      await db2.closeAsync();
+    });
+  });
 }
 
 async function delayAsync(timeMs: number) {

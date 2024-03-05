@@ -48,19 +48,24 @@ public final class SQLiteModuleNext: Module {
 
     // swiftlint:disable:next closure_body_length
     Class(NativeDatabase.self) {
-      Constructor { (databaseName: String, options: OpenDatabaseOptions) -> NativeDatabase in
-        guard let path = pathForDatabaseName(name: databaseName) else {
-          throw DatabaseException()
-        }
-
-        // Try to find opened database for fast refresh
-        if let cachedDb = findCachedDatabase(where: { $0.databaseName == databaseName && $0.openOptions == options && !options.useNewConnection }) {
-          return cachedDb
-        }
-
+      Constructor { (databaseName: String, options: OpenDatabaseOptions, serializedData: Data?) -> NativeDatabase in
         var db: OpaquePointer?
-        if sqlite3_open(path.absoluteString, &db) != SQLITE_OK {
-          throw DatabaseException()
+
+        if let serializedData = serializedData {
+          db = try deserializeDatabase(serializedData)
+        } else {
+          guard let path = pathForDatabaseName(name: databaseName) else {
+            throw DatabaseException()
+          }
+
+          // Try to find opened database for fast refresh
+          if let cachedDb = findCachedDatabase(where: { $0.databaseName == databaseName && $0.openOptions == options && !options.useNewConnection }) {
+            return cachedDb
+          }
+
+          if sqlite3_open(path.absoluteString, &db) != SQLITE_OK {
+            throw DatabaseException()
+          }
         }
 
         let database = NativeDatabase(db, databaseName: databaseName, openOptions: options)
@@ -98,6 +103,13 @@ public final class SQLiteModuleNext: Module {
       }
       Function("execSync") { (database: NativeDatabase, source: String) in
         try exec(database: database, source: source)
+      }
+
+      AsyncFunction("serializeAsync") { (database: NativeDatabase, databaseName: String) in
+        try serialize(database: database, databaseName: databaseName)
+      }
+      Function("serializeSync") { (database: NativeDatabase, databaseName: String) in
+        try serialize(database: database, databaseName: databaseName)
       }
 
       AsyncFunction("prepareAsync") { (database: NativeDatabase, statement: NativeStatement, source: String) in
@@ -176,6 +188,30 @@ public final class SQLiteModuleNext: Module {
     return directory?.appendingPathComponent(name)
   }
 
+  private func deserializeDatabase(_ serializedData: Data) throws -> OpaquePointer? {
+    var db: OpaquePointer?
+    if sqlite3_open(MEMORY_DB_NAME, &db) != SQLITE_OK {
+      throw DatabaseException()
+    }
+    let size = sqlite3_int64(serializedData.count)
+    guard let buffer = sqlite3_malloc64(sqlite3_uint64(size)) else {
+      throw SQLiteErrorException("Unable to allocate memory for \(size) bytes")
+    }
+    try serializedData.withUnsafeBytes {
+      guard let baseAddress = $0.baseAddress else {
+        sqlite3_free(buffer)
+        throw SQLiteErrorException("Unable to get allocated memory base address")
+      }
+      memcpy(buffer, baseAddress, Int(size))
+    }
+    let flags = UInt32(SQLITE_DESERIALIZE_RESIZEABLE | SQLITE_DESERIALIZE_FREEONCLOSE)
+    let ret = sqlite3_deserialize(db, "main", buffer.assumingMemoryBound(to: UInt8.self), size, size, flags)
+    if ret != SQLITE_OK {
+      throw SQLiteErrorException(convertSqlLiteErrorToString(db))
+    }
+    return db
+  }
+
   private func initDb(database: NativeDatabase) throws {
     try maybeThrowForClosedDatabase(database)
     if database.openOptions.enableCRSQLite {
@@ -195,6 +231,19 @@ public final class SQLiteModuleNext: Module {
       sqlite3_free(error)
       throw SQLiteErrorException(errorString)
     }
+  }
+
+  private func serialize(database: NativeDatabase, databaseName: String) throws -> Data {
+    try maybeThrowForClosedDatabase(database)
+
+    var size: sqlite3_int64 = 0
+    guard let bytes = sqlite3_serialize(database.pointer, databaseName, &size, 0) else {
+      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+    }
+
+    let serializedData = Data(bytes: bytes, count: Int(size))
+    sqlite3_free(bytes)
+    return serializedData
   }
 
   private func prepareStatement(database: NativeDatabase, statement: NativeStatement, source: String) throws {
@@ -289,10 +338,14 @@ public final class SQLiteModuleNext: Module {
     statement.isFinalized = true
   }
 
-  private func convertSqlLiteErrorToString(_ db: NativeDatabase) -> String {
-    let code = sqlite3_errcode(db.pointer)
-    let message = String(cString: sqlite3_errmsg(db.pointer), encoding: .utf8) ?? ""
+  private func convertSqlLiteErrorToString(_ db: OpaquePointer?) -> String {
+    let code = sqlite3_errcode(db)
+    let message = String(cString: sqlite3_errmsg(db), encoding: .utf8) ?? ""
     return "Error code \(code): \(message)"
+  }
+
+  private func convertSqlLiteErrorToString(_ db: NativeDatabase) -> String {
+    return convertSqlLiteErrorToString(db.pointer)
   }
 
   private func closeDatabase(_ db: NativeDatabase) throws {

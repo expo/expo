@@ -52,6 +52,8 @@ internal class NativeDatabaseBinding : Closeable {
   external fun sqlite3_load_extension(libPath: String, entryProc: String): Int
   external fun sqlite3_open(dbPath: String): Int
   external fun sqlite3_prepare_v2(source: String, statement: NativeStatementBinding): Int
+  external fun sqlite3_serialize(databaseName: String): ByteArray
+  external fun sqlite3_deserialize(databaseName: String, serializedData: ByteArray): Int
   private external fun sqlite3_update_hook(enabled: Boolean) // Keeps it private internally and uses `enableUpdateHook` publicly
 
   external fun convertSqlLiteErrorToString(): String

@@ -5,7 +5,11 @@ export default {
     return 'ExpoSQLiteNext';
   },
 
-  NativeDatabase(databaseName: string, options?: SQLiteOpenOptions): void {
+  NativeDatabase(
+    databaseName: string,
+    options?: SQLiteOpenOptions,
+    serializedData?: Uint8Array
+  ): void {
     throw new Error('Unimplemented');
   },
 
