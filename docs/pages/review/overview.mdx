@@ -8,6 +8,7 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { CODE } from '~/ui/components/Text';
 import { BuildIcon, LayersTwo02Icon, GithubIcon } from '@expo/styleguide-icons';
+import Video from '~/components/plugins/Video';
 
 This page outlines different strategies to share a preview version of your app using internal distribution and EAS Update. Sharing a preview version with testers allows them to download and run it on their devices as if it were distributed through a store.
 
@@ -30,13 +31,21 @@ EAS Build makes it easy to generate a shareable URL that your team can use to do
 
 ## Using EAS Update with development builds
 
-You can use [development builds](/develop/development-builds/introduction/) to load previews of your app during the review stage by publishing the preview with EAS Update.
+You can use [development builds](/develop/development-builds/introduction/) to load previews of your app during the review stage by publishing an update with EAS Update.
 
 <Collapsible summary="Can I use Expo Go for reviewing releases?">
 
 Even though Expo Go is an open-source sandbox that can be good for previewing isolated prototypes on Android and iOS, it is not intended for production apps. It should be avoided during the preview process of your app.
 
 </Collapsible>
+
+### Get started
+
+<Video
+  file="review/eas-update-01.mp4"
+  spaceAfter={70}
+  caption="When an update is published, you can use the Expo dashboard to generate and share links with your team."
+/>
 
 <BoxLink
   title="Get started with EAS Update"
@@ -50,11 +59,12 @@ Even though Expo Go is an open-source sandbox that can be good for previewing is
   Icon={LayersTwo02Icon}
 />
 
-<BoxLink
-  title="Develop with EAS Update"
-  description="Learn how to use EAS Update to push changes to iterate faster with your team. This process allows any team member or reviewer with a registered device to review the latest version of your app by scanning the QR code."
-  href="/eas-update/develop-faster/"
-  Icon={LayersTwo02Icon}
+### `expo-dev-client` library
+
+<Video
+  file="review/eas-update-02.mp4"
+  spaceAfter={70}
+  caption="Using the development build on a device allows you to fetch and view updates directly."
 />
 
 <BoxLink
@@ -65,14 +75,21 @@ Even though Expo Go is an open-source sandbox that can be good for previewing is
   }
   description={
     <>
-      Learn how to use <CODE>expo-dev-client</CODE> in your project to launch different app
-      versions and preview a published update inside a development build. This library also
-      supports loading published EAS updates through channels.
+      Learn how to use <CODE>expo-dev-client</CODE> in your project to launch different app versions
+      and preview a published update inside a development build. This library also supports loading
+      published EAS updates through channels.
     </>
+  }
+  href="/eas-update/expo-dev-client/"
+  Icon={LayersTwo02Icon}
+/>
 
-}
-href="/eas-update/expo-dev-client/"
-Icon={LayersTwo02Icon}
+### GitHub Actions
+
+<Video
+  file="review/eas-update-03.mp4"
+  spaceAfter={70}
+  caption="Using GitHub actions, you can generate previews on your PR and use the generated QR code to fetch and view the update."
 />
 
 <BoxLink
