@@ -72,39 +72,47 @@ describe(getNameFromFilePath, () => {
 });
 
 describe(matchArrayGroupName, () => {
-  it(`matches`, () => {
+  it(`should not match routes without groups`, () => {
     expect(matchArrayGroupName('[[...foobar]]')).toEqual(undefined);
     expect(matchArrayGroupName('[[foobar]]')).toEqual(undefined);
     expect(matchArrayGroupName('[...foobar]')).toEqual(undefined);
     expect(matchArrayGroupName('[foobar]')).toEqual(undefined);
-    expect(matchArrayGroupName('(foobar)')).toEqual(undefined);
-    expect(matchArrayGroupName('(foo,bar)')).toEqual('foo,bar');
-    expect(matchArrayGroupName('((foobar))')).toEqual(undefined);
-    expect(matchArrayGroupName('(...foobar)')).toEqual(undefined);
     expect(matchArrayGroupName('foobar')).toEqual(undefined);
     expect(matchArrayGroupName('leading/foobar')).toEqual(undefined);
+    expect(matchArrayGroupName('leading/foobar/trailing')).toEqual(undefined);
+  });
+  it(`should not match routes with a single group`, () => {
+    expect(matchArrayGroupName('(foobar)')).toEqual(undefined);
+    expect(matchArrayGroupName('((foobar))')).toEqual(undefined);
+    expect(matchArrayGroupName('(...foobar)')).toEqual(undefined);
     expect(matchArrayGroupName('leading/(foobar)')).toEqual(undefined);
     expect(matchArrayGroupName('leading/((foobar))')).toEqual(undefined);
     expect(matchArrayGroupName('leading/(...foobar)')).toEqual(undefined);
-    expect(matchArrayGroupName('leading/(foo,bar)')).toEqual('foo,bar');
-    expect(matchArrayGroupName('leading/foobar/trailing')).toEqual(undefined);
     expect(matchArrayGroupName('leading/(foobar)/trailing')).toEqual(undefined);
     expect(matchArrayGroupName('leading/((foobar))/trailing')).toEqual(undefined);
     expect(matchArrayGroupName('leading/(...foobar)/trailing')).toEqual(undefined);
-    expect(matchArrayGroupName('leading/(foo,bar)/trailing)')).toEqual('foo,bar');
-    expect(matchArrayGroupName('leading/((foo),(bar))/trailing)')).toEqual('(foo),(bar)');
-    expect(matchArrayGroupName('leading/(foo,bar)/(fruit,apple)')).toEqual('foo,bar');
     expect(matchArrayGroupName('(leading)/foobar')).toEqual(undefined);
     expect(matchArrayGroupName('(leading)/(foobar)')).toEqual(undefined);
     expect(matchArrayGroupName('(leading)/((foobar))')).toEqual(undefined);
     expect(matchArrayGroupName('(leading)/(...foobar)')).toEqual(undefined);
-    expect(matchArrayGroupName('(leading)/(foo,bar)')).toEqual('foo,bar');
     expect(matchArrayGroupName('(leading)/foobar/trailing')).toEqual(undefined);
     expect(matchArrayGroupName('(leading)/(foobar)/trailing')).toEqual(undefined);
     expect(matchArrayGroupName('(leading)/((foobar))/trailing')).toEqual(undefined);
     expect(matchArrayGroupName('(leading)/(...foobar)/trailing')).toEqual(undefined);
+  });
+  it(`should match routes with array group syntax`, () => {
+    expect(matchArrayGroupName('(foo,bar)')).toEqual('foo,bar');
+    expect(matchArrayGroupName('leading/(foo,bar)')).toEqual('foo,bar');
+    expect(matchArrayGroupName('leading/(foo,bar)/trailing)')).toEqual('foo,bar');
+    expect(matchArrayGroupName('leading/((foo),(bar))/trailing)')).toEqual('(foo),(bar)');
+    expect(matchArrayGroupName('leading/(foo,bar)/(fruit,apple)')).toEqual('foo,bar');
+    expect(matchArrayGroupName('(leading)/(foo,bar)')).toEqual('foo,bar');
     expect(matchArrayGroupName('(leading)/(foo,bar)/trailing)')).toEqual('foo,bar');
     expect(matchArrayGroupName('(leading)/((foo),(bar))/trailing)')).toEqual('(foo),(bar)');
+  });
+  it(`should only match the first group with array group syntax`, () => {
     expect(matchArrayGroupName('(leading)/(foo,bar)/(fruit,apple)')).toEqual('foo,bar');
+    expect(matchArrayGroupName('(leading)/((foo),bar)/(fruit,apple)')).toEqual('(foo),bar');
+    expect(matchArrayGroupName('(leading)/(foo,bar)/((fruit),apple)')).toEqual('foo,bar');
   });
 });
