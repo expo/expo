@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Thrown an exception when nested types can't be converted instead of crashing the app. ([#27449](https://github.com/expo/expo/pull/27449) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 1.11.9 — 2024-02-16
