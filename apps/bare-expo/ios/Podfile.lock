@@ -43,7 +43,7 @@ PODS:
     - React-Core
   - EXNotifications (0.27.6):
     - ExpoModulesCore
-  - Expo (50.0.8):
+  - Expo (50.0.9):
     - ExpoModulesCore
   - expo-dev-client (3.3.9):
     - EXManifests
@@ -209,14 +209,14 @@ PODS:
     - ExpoModulesCore
     - GoogleMaps (= 7.3.0)
     - GooglePlaces (= 7.3.0)
-  - ExpoModulesCore (1.11.9):
+  - ExpoModulesCore (1.11.10):
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
     - React-NativeModulesApple
     - React-RCTAppDelegate
     - ReactCommon/turbomodule/core
-  - ExpoModulesCore/Tests (1.11.9):
+  - ExpoModulesCore/Tests (1.11.10):
     - ExpoModulesTestCore
     - glog
     - RCT-Folly (= 2022.05.16.00)
@@ -1953,7 +1953,7 @@ SPEC CHECKSUMS:
   EXManifests: 5e8c29f36c716af768a4ea47ec05e1b89ab93091
   EXMediaLibrary: 5a74f7d9cce776ca07cb3090b948cedd7d4841a1
   EXNotifications: e11f0e9a5b657c064a481a5d522f3bc5a07bf7cd
-  Expo: c2d3edc1b1e833e26d837b03aa46d9137ca63302
+  Expo: be3d5d402b533252fdbb77cfa277df5e930aae17
   expo-dev-client: dbc8e8a81d17a9d92e083a2856d056ba9a58984d
   expo-dev-launcher: 3f2a78d97842a3fdc2f0116f775d8dbc32396cbd
   expo-dev-menu: b964921baa1bda2a7ff42a407d1d7698ce215faf
@@ -1982,7 +1982,7 @@ SPEC CHECKSUMS:
   ExpoLocalization: f5f5d71dc0c9514d3d77b2771144f6fed6398d04
   ExpoMailComposer: 078adb05f97c26d4a131a47dc9003eacb6879ef2
   ExpoMaps: 3b04ed21d9989ea1216591a9013e2f561e750db8
-  ExpoModulesCore: 1391529545de72f7f64ecabc7adb912306ab4d34
+  ExpoModulesCore: b2ae7a3fc6193556273c5db90065fbe7e11c7a60
   ExpoModulesTestCore: b7729fdcea4e82dbef9722dc1e84e29ed0d281b0
   ExpoNetwork: 97d7774ab8f62e35f08db77fbef0388d5e1f2c76
   ExpoPrint: 206723b8e7dd9b37a2b8e70d23485ace6d248bb4

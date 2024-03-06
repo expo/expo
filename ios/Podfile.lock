@@ -837,7 +837,7 @@ PODS:
     - React-Core
   - EXNotifications (0.27.6):
     - ExpoModulesCore
-  - Expo (50.0.8):
+  - Expo (50.0.9):
     - ExpoModulesCore
   - ExpoAppleAuthentication (6.3.0):
     - ExpoModulesCore
@@ -899,13 +899,13 @@ PODS:
     - ExpoModulesCore
   - ExpoMailComposer (12.7.1):
     - ExpoModulesCore
-  - ExpoModulesCore (1.11.9):
+  - ExpoModulesCore (1.11.10):
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
     - React-NativeModulesApple
     - React-RCTAppDelegate
     - ReactCommon/turbomodule/core
-  - ExpoModulesCore/Tests (1.11.9):
+  - ExpoModulesCore/Tests (1.11.10):
     - ExpoModulesTestCore
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
@@ -3275,7 +3275,7 @@ SPEC CHECKSUMS:
   EXManifests: 5e8c29f36c716af768a4ea47ec05e1b89ab93091
   EXMediaLibrary: 179f3ffc668ca2eb7b14e8ed7b404321624f9093
   EXNotifications: e11f0e9a5b657c064a481a5d522f3bc5a07bf7cd
-  Expo: c2d3edc1b1e833e26d837b03aa46d9137ca63302
+  Expo: be3d5d402b533252fdbb77cfa277df5e930aae17
   ExpoAppleAuthentication: 4fc9972356977f009911f2f3a5f56319c2a5b11b
   ExpoBackgroundFetch: 80d41ec15c6cce0bafb5d2326b8e85f42152eba7
   ExpoBattery: 60bf880aea8f769fe39f709a920442542c1bfd62
@@ -3299,7 +3299,7 @@ SPEC CHECKSUMS:
   ExpoLocalAuthentication: c55ffb179683efed04cb144fc80ccf26891f0cb4
   ExpoLocalization: f5f5d71dc0c9514d3d77b2771144f6fed6398d04
   ExpoMailComposer: 078adb05f97c26d4a131a47dc9003eacb6879ef2
-  ExpoModulesCore: 4574d8cd5d432ef2c9287607aa9dddd61ec31b4a
+  ExpoModulesCore: c92a1bdeba3b0e066fa28b6e874b87ca45d1eac0
   ExpoModulesTestCore: b7729fdcea4e82dbef9722dc1e84e29ed0d281b0
   ExpoNetwork: 97d7774ab8f62e35f08db77fbef0388d5e1f2c76
   ExpoPrint: 206723b8e7dd9b37a2b8e70d23485ace6d248bb4
@@ -3345,7 +3345,7 @@ SPEC CHECKSUMS:
   GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
   GTMAppAuth: 99fb010047ba3973b7026e45393f51f27ab965ae
   GTMSessionFetcher: e8647203b65cee28c5f73d0f473d096653945e72
-  hermes-engine: 76f3e8261dc50057a41d3e818803801761af4aee
+  hermes-engine: b9b4b6552c38689dc488bf9119b42310e4b8892e
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libaom: 144606b1da4b5915a1054383c3a4459ccdb3c661
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
