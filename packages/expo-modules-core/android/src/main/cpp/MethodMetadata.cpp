@@ -197,12 +197,12 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
   ) -> const jsi::Value & {
     if (!takesOwner) {
       return args[index];
-    } else {
-      if (index != 0) {
-        return args[index - 1];
-      }
-      return thisValue;
     }
+
+    if (index != 0) {
+      return args[index - 1];
+    }
+    return thisValue;
   };
 
   for (size_t argIndex = 0; argIndex < count; argIndex++) {

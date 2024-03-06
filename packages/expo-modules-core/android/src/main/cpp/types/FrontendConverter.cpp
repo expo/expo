@@ -34,7 +34,7 @@ jobject IntegerFrontendConverter::convert(
     ->getJClass("java/lang/Integer");
   jmethodID integerConstructor = integerClass.getMethod("<init>", "(I)V");
   return env->NewObject(integerClass.clazz, integerConstructor,
-                        static_cast<int>(value.getNumber()));
+                        static_cast<int>(value.asNumber()));
 }
 
 bool IntegerFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -51,7 +51,7 @@ jobject LongFrontendConverter::convert(
     ->getJClass("java/lang/Long");
   jmethodID longConstructor = longClass.getMethod("<init>", "(J)V");
   return env->NewObject(longClass.clazz, longConstructor,
-                        static_cast<jlong>(value.getNumber()));
+                        static_cast<jlong>(value.asNumber()));
 }
 
 bool LongFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -68,7 +68,7 @@ jobject FloatFrontendConverter::convert(
     ->getJClass("java/lang/Float");
   jmethodID floatConstructor = floatClass.getMethod("<init>", "(F)V");
   return env->NewObject(floatClass.clazz, floatConstructor,
-                        static_cast<float>(value.getNumber()));
+                        static_cast<float>(value.asNumber()));
 }
 
 bool FloatFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -84,7 +84,7 @@ jobject BooleanFrontendConverter::convert(
   auto &booleanClass = JavaReferencesCache::instance()
     ->getJClass("java/lang/Boolean");
   jmethodID booleanConstructor = booleanClass.getMethod("<init>", "(Z)V");
-  return env->NewObject(booleanClass.clazz, booleanConstructor, value.getBool());
+  return env->NewObject(booleanClass.clazz, booleanConstructor, value.asBool());
 }
 
 bool BooleanFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -100,7 +100,7 @@ jobject DoubleFrontendConverter::convert(
   auto &doubleClass = JavaReferencesCache::instance()
     ->getJClass("java/lang/Double");
   jmethodID doubleConstructor = doubleClass.getMethod("<init>", "(D)V");
-  return env->NewObject(doubleClass.clazz, doubleConstructor, value.getNumber());
+  return env->NewObject(doubleClass.clazz, doubleConstructor, value.asNumber());
 }
 
 bool DoubleFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -113,7 +113,7 @@ jobject StringFrontendConverter::convert(
   JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &value
 ) const {
-  return env->NewStringUTF(value.getString(rt).utf8(rt).c_str());
+  return env->NewStringUTF(value.asString(rt).utf8(rt).c_str());
 }
 
 bool StringFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -159,7 +159,7 @@ jobject ByteArrayFrontendConverter::convert(
   JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &value
 ) const {
-  auto typedArray = TypedArray(rt, value.getObject(rt));
+  auto typedArray = TypedArray(rt, value.asObject(rt));
   size_t length = typedArray.byteLength(rt);
   auto byteArray = jni::JArrayByte::newArray(length);
   byteArray->setRegion(0, length, static_cast<const signed char *>(typedArray.getRawPointer(rt)));
@@ -189,7 +189,7 @@ jobject TypedArrayFrontendConverter::convert(
   return JavaScriptTypedArray::newInstance(
     moduleRegistry,
     moduleRegistry->runtimeHolder->weak_from_this(),
-    std::make_shared<jsi::Object>(value.getObject(rt))
+    std::make_shared<jsi::Object>(value.asObject(rt))
   ).release();
 }
 
@@ -227,7 +227,7 @@ jobject JavaScriptObjectFrontendConverter::convert(
   return JavaScriptObject::newInstance(
     moduleRegistry,
     moduleRegistry->runtimeHolder->weak_from_this(),
-    std::make_shared<jsi::Object>(value.getObject(rt))
+    std::make_shared<jsi::Object>(value.asObject(rt))
   ).release();
 }
 
@@ -247,7 +247,7 @@ jobject JavaScriptFunctionFrontendConverter::convert(
   return JavaScriptFunction::newInstance(
     moduleRegistry,
     moduleRegistry->runtimeHolder->weak_from_this(),
-    std::make_shared<jsi::Function>(value.getObject(rt).asFunction(rt))
+    std::make_shared<jsi::Function>(value.asObject(rt).asFunction(rt))
   ).release();
 }
 
@@ -255,7 +255,7 @@ bool JavaScriptFunctionFrontendConverter::canConvert(
   jsi::Runtime &rt,
   const jsi::Value &value
 ) const {
-  return value.isObject() && value.asObject(rt).isFunction(rt);
+  return value.isObject() && value.getObject(rt).isFunction(rt);
 }
 
 jobject UnknownFrontendConverter::convert(
@@ -403,7 +403,7 @@ jobject PrimitiveArrayFrontendConverter::convert(
 }
 
 bool PrimitiveArrayFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
-  return value.isObject() && value.asObject(rt).isArray(rt);
+  return value.isObject() && value.getObject(rt).isArray(rt);
 }
 
 ListFrontendConverter::ListFrontendConverter(
@@ -444,7 +444,7 @@ jobject ListFrontendConverter::convert(
 }
 
 bool ListFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
-  return value.isObject() && value.asObject(rt).isArray(rt);
+  return value.isObject() && value.getObject(rt).isArray(rt);
 }
 
 MapFrontendConverter::MapFrontendConverter(
@@ -501,7 +501,7 @@ bool MapFrontendConverter::canConvert(
 jobject ViewTagFrontendConverter::convert(jsi::Runtime &rt, JNIEnv *env,
                                           JSIInteropModuleRegistry *moduleRegistry,
                                           const jsi::Value &value) const {
-  auto nativeTag = value.getObject(rt).getProperty(rt, "nativeTag");
+  auto nativeTag = value.asObject(rt).getProperty(rt, "nativeTag");
   if (nativeTag.isNull()) {
     return nullptr;
   }
@@ -520,12 +520,12 @@ bool ViewTagFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &va
 jobject SharedObjectIdConverter::convert(jsi::Runtime &rt, JNIEnv *env,
                                          JSIInteropModuleRegistry *moduleRegistry,
                                          const jsi::Value &value) const {
-  auto objectId = value.getObject(rt).getProperty(rt, "__expo_shared_object_id__");
+  auto objectId = value.asObject(rt).getProperty(rt, "__expo_shared_object_id__");
   if (objectId.isNull()) {
     return nullptr;
   }
 
-  auto viewTag = (int) objectId.getNumber();
+  auto viewTag = (int) objectId.asNumber();
   auto &integerClass = JavaReferencesCache::instance()
     ->getJClass("java/lang/Integer");
   jmethodID integerConstructor = integerClass.getMethod("<init>", "(I)V");
