@@ -97,5 +97,5 @@ export async function sendSMSAsync(
  * ```
  */
 export async function isAvailableAsync(): Promise<boolean> {
-  return ExpoSMS.isAvailableAsync();
+  return ExpoSMS.isAvailableAsync?.() ?? false;
 }

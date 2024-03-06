@@ -143,17 +143,20 @@ const renderType = ({
             </MONOSPACE>
           </H3Code>
           <CommentTextBlock comment={comment} includePlatforms={false} />
-          {type.type === 'intersection' ? (
+          {type.type === 'intersection' || type.type === 'union' ? (
             <>
               <P>
                 {type.types
-                  .filter(type => ['reference', 'union', 'intersection'].includes(type.type))
+                  .filter(type =>
+                    ['reference', 'union', 'intersection', 'intrinsic'].includes(type.type)
+                  )
                   .map(validType => (
                     <Fragment key={`nested-reference-type-${validType.name}`}>
-                      <CODE>{resolveTypeName(validType)}</CODE>{' '}
+                      <CODE>{resolveTypeName(validType)}</CODE>
+                      {type.type === 'union' ? ' or ' : ' '}
                     </Fragment>
                   ))}
-                extended by:
+                {type.type === 'union' ? 'object shaped as below' : 'extended by'}:
               </P>
               <br />
             </>
@@ -187,7 +190,13 @@ const renderType = ({
             {literalTypes.map((lt, index) => (
               <span key={`${name}-literal-type-${index}`}>
                 <CODE>{resolveTypeName(lt)}</CODE>
-                {index + 1 !== literalTypes.length ? <span>&ensp;</span> : ''}
+                {index + 1 !== literalTypes.length ? (
+                  <CALLOUT tag="span" theme="quaternary">
+                    {' | '}
+                  </CALLOUT>
+                ) : (
+                  ''
+                )}
               </span>
             ))}
           </P>

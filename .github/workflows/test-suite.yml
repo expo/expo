@@ -215,7 +215,7 @@ jobs:
 
   android-test:
     needs: android-build
-    runs-on: macos-13
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         api-level: [33]
