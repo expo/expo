@@ -271,6 +271,176 @@ it(`converts dynamic routes on same level with specificity`, () => {
   }
 });
 
+it(`converts array syntax API routes`, () => {
+  const routesFor = getRoutesFor(['./(a,b)/foo+api.tsx']);
+  expect(routesFor).toEqual({
+    children: [
+      {
+        children: [],
+        contextKey: './(a,b)/foo+api.tsx',
+        dynamic: null,
+        loadRoute: expect.anything(),
+        route: '(a)/foo',
+        type: 'api',
+      },
+      {
+        children: [],
+        contextKey: './(a,b)/foo+api.tsx',
+        dynamic: null,
+        loadRoute: expect.anything(),
+        route: '(b)/foo',
+        type: 'api',
+      },
+    ],
+    contextKey: 'expo-router/build/views/Navigator.js',
+    dynamic: null,
+    loadRoute: expect.anything(),
+    generated: true,
+    route: '',
+    type: 'layout',
+  });
+  const routesManifest = getServerManifest(routesFor);
+  expect(routesManifest).toEqual({
+    apiRoutes: [
+      // Ensure only one copy of the route is present
+      {
+        file: './(a,b)/foo+api.tsx',
+        namedRegex: '^(?:/\\((?:a|b)\\))?/foo(?:/)?$',
+        page: './(a,b)/foo+api',
+        routeKeys: {},
+      },
+    ],
+    htmlRoutes: [],
+    notFoundRoutes: [],
+  });
+
+  const match = (url: string) => {
+    return routesManifest.apiRoutes.find((r) => new RegExp(r.namedRegex).test(url))?.page;
+  };
+
+  const matches = (url: string) => {
+    expect(match(url)).toBe('./(a,b)/foo+api');
+  };
+
+  matches('/foo');
+  matches('/(a)/foo');
+  matches('/(b)/foo');
+
+  // Cannot match the exact array syntax
+  expect(match('/(a,b)/foo')).toBeUndefined();
+  // No special variation
+  expect(match('/(a,)/foo')).toBeUndefined();
+  expect(match('/(a )/foo')).toBeUndefined();
+  expect(match('/(, a )/foo')).toBeUndefined();
+});
+
+it(`converts array syntax HTML routes`, () => {
+  const routesFor = getRoutesFor(['./(a,b)/foo.tsx']);
+  expect(routesFor).toEqual({
+    children: [
+      {
+        children: [],
+        contextKey: './(a,b)/foo.tsx',
+        entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/foo.tsx'],
+        dynamic: null,
+        loadRoute: expect.anything(),
+        route: '(a)/foo',
+        type: 'route',
+      },
+      {
+        children: [],
+        contextKey: './(a,b)/foo.tsx',
+        entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/foo.tsx'],
+        dynamic: null,
+        loadRoute: expect.anything(),
+        route: '(b)/foo',
+        type: 'route',
+      },
+    ],
+    contextKey: 'expo-router/build/views/Navigator.js',
+    dynamic: null,
+    loadRoute: expect.anything(),
+    generated: true,
+    route: '',
+    type: 'layout',
+  });
+  const routesManifest = getServerManifest(routesFor);
+  expect(routesManifest).toEqual({
+    apiRoutes: [],
+    htmlRoutes: [
+      {
+        file: './(a,b)/foo.tsx',
+        namedRegex: '^(?:/\\((?:a|b)\\))?/foo(?:/)?$',
+        page: './(a,b)/foo',
+        routeKeys: {},
+      },
+    ],
+    notFoundRoutes: [],
+  });
+
+  const match = (url: string) => {
+    return routesManifest.htmlRoutes.find((r) => new RegExp(r.namedRegex).test(url))?.page;
+  };
+
+  const matches = (url: string) => {
+    expect(match(url)).toBe('./(a,b)/foo');
+  };
+
+  matches('/foo');
+  matches('/(a)/foo');
+  matches('/(b)/foo');
+
+  // Cannot match the exact array syntax
+  expect(match('/(a,b)/foo')).toBeUndefined();
+  // No special variation
+  expect(match('/(a,)/foo')).toBeUndefined();
+  expect(match('/(a )/foo')).toBeUndefined();
+  expect(match('/(, a )/foo')).toBeUndefined();
+});
+
+it(`converts nested array syntax HTML routes`, () => {
+  const routesFor = getRoutesFor(['./(a,b)/(c, d)/foo.tsx']);
+  const routesManifest = getServerManifest(routesFor);
+  expect(routesManifest).toEqual({
+    apiRoutes: [],
+    htmlRoutes: [
+      {
+        file: './(a,b)/(c, d)/foo.tsx',
+        namedRegex: '^(?:/\\((?:a|b)\\))?(?:/\\((?:c|d)\\))?/foo(?:/)?$',
+        page: './(a,b)/(c, d)/foo',
+        routeKeys: {},
+      },
+    ],
+    notFoundRoutes: [],
+  });
+
+  const match = (url: string) => {
+    return routesManifest.htmlRoutes.find((r) => new RegExp(r.namedRegex).test(url))?.page;
+  };
+
+  const matches = (url: string) => {
+    expect(match(url)).toBe('./(a,b)/(c, d)/foo');
+  };
+
+  matches('/foo');
+  matches('/(a)/foo');
+  matches('/(b)/foo');
+  matches('/(c)/foo');
+  matches('/(d)/foo');
+  matches('/(a)/(c)/foo');
+  matches('/(b)/(d)/foo');
+
+  // Cannot match the exact array syntax
+  expect(match('/(a,b)/foo')).toBeUndefined();
+  expect(match('/(a)/(b)/foo')).toBeUndefined();
+  expect(match('/(a)/(c,d)/foo')).toBeUndefined();
+  expect(match('/(c,d)/foo')).toBeUndefined();
+  // No special variation
+  expect(match('/(a,)/foo')).toBeUndefined();
+  expect(match('/(a )/foo')).toBeUndefined();
+  expect(match('/(, a )/foo')).toBeUndefined();
+});
+
 it(`matches top-level catch-all before +not-found route`, () => {
   const routesManifest = getServerManifest(getRoutesFor(['./[...a].tsx', './+not-found.tsx']));
   expect(routesManifest).toEqual({

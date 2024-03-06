@@ -9,6 +9,17 @@ function isApiRoute(route) {
 function isNotFoundRoute(route) {
     return route.dynamic && route.dynamic[route.dynamic.length - 1].notFound;
 }
+function uniqueBy(arr, key) {
+    const seen = new Set();
+    return arr.filter((item) => {
+        const id = key(item);
+        if (seen.has(id)) {
+            return false;
+        }
+        seen.add(id);
+        return true;
+    });
+}
 // Given a nested route tree, return a flattened array of all routes that can be matched.
 function getServerManifest(route) {
     function getFlatNodes(route) {
@@ -18,7 +29,8 @@ function getServerManifest(route) {
         const key = (0, matchers_1.getContextKey)(route.contextKey).replace(/\/index$/, '') ?? '/';
         return [[key, route]];
     }
-    const flat = getFlatNodes(route)
+    // Remove duplicates from the runtime manifest which expands array syntax.
+    const flat = uniqueBy(getFlatNodes(route), ([key]) => key)
         .sort(([, a], [, b]) => (0, sortRoutes_1.sortRoutes)(b, a))
         .reverse();
     const apiRoutes = flat.filter(([, route]) => isApiRoute(route));
@@ -125,8 +137,19 @@ function getNamedParametrizedRoute(route) {
                     : `/(?<${cleanedKey}>[^/]+?)`;
             }
             else if (/^\(.*\)$/.test(segment)) {
-                // Make section optional
-                return `(?:/${escapeStringRegexp(segment)})?`;
+                const groupName = (0, matchers_1.matchGroupName)(segment)
+                    .split(',')
+                    .map((group) => group.trim())
+                    .filter(Boolean);
+                if (groupName.length > 1) {
+                    const optionalSegment = `\\((?:${groupName.map(escapeStringRegexp).join('|')})\\)`;
+                    // Make section optional
+                    return `(?:/${optionalSegment})?`;
+                }
+                else {
+                    // Use simpler regex for single groups
+                    return `(?:/${escapeStringRegexp(segment)})?`;
+                }
             }
             else {
                 return `/${escapeStringRegexp(segment)}`;

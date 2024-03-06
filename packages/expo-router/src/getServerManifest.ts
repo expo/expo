@@ -8,7 +8,7 @@
  * Based on https://github.com/vercel/next.js/blob/1df2686bc9964f1a86c444701fa5cbf178669833/packages/next/src/shared/lib/router/utils/route-regex.ts
  */
 import type { RouteNode } from './Route';
-import { getContextKey } from './matchers';
+import { getContextKey, matchGroupName } from './matchers';
 import { sortRoutes } from './sortRoutes';
 
 // TODO: Share these types across cli, server, router, etc.
@@ -45,6 +45,18 @@ function isNotFoundRoute(route: RouteNode) {
   return route.dynamic && route.dynamic[route.dynamic.length - 1].notFound;
 }
 
+function uniqueBy<T>(arr: T[], key: (item: T) => string): T[] {
+  const seen = new Set<string>();
+  return arr.filter((item) => {
+    const id = key(item);
+    if (seen.has(id)) {
+      return false;
+    }
+    seen.add(id);
+    return true;
+  });
+}
+
 // Given a nested route tree, return a flattened array of all routes that can be matched.
 export function getServerManifest(route: RouteNode): ExpoRouterServerManifestV1 {
   function getFlatNodes(route: RouteNode): [string, RouteNode][] {
@@ -56,7 +68,8 @@ export function getServerManifest(route: RouteNode): ExpoRouterServerManifestV1 
     return [[key, route]];
   }
 
-  const flat = getFlatNodes(route)
+  // Remove duplicates from the runtime manifest which expands array syntax.
+  const flat = uniqueBy(getFlatNodes(route), ([key]) => key)
     .sort(([, a], [, b]) => sortRoutes(b, a))
     .reverse();
 
@@ -188,8 +201,18 @@ function getNamedParametrizedRoute(route: string) {
               : `/(?<${cleanedKey}>.+?)`
             : `/(?<${cleanedKey}>[^/]+?)`;
         } else if (/^\(.*\)$/.test(segment)) {
-          // Make section optional
-          return `(?:/${escapeStringRegexp(segment)})?`;
+          const groupName = matchGroupName(segment)!
+            .split(',')
+            .map((group) => group.trim())
+            .filter(Boolean);
+          if (groupName.length > 1) {
+            const optionalSegment = `\\((?:${groupName.map(escapeStringRegexp).join('|')})\\)`;
+            // Make section optional
+            return `(?:/${optionalSegment})?`;
+          } else {
+            // Use simpler regex for single groups
+            return `(?:/${escapeStringRegexp(segment)})?`;
+          }
         } else {
           return `/${escapeStringRegexp(segment)}`;
         }
