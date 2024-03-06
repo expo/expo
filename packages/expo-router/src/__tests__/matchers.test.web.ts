@@ -4,6 +4,7 @@ import {
   getNameFromFilePath,
   matchGroupName,
   stripGroupSegmentsFromPath,
+  matchArrayGroupName,
 } from '../matchers';
 
 describe(stripGroupSegmentsFromPath, () => {
@@ -36,6 +37,7 @@ describe(matchGroupName, () => {
     expect(matchGroupName('leading/((foobar))/trailing')).toEqual('(foobar)');
     expect(matchGroupName('leading/(...foobar)/trailing')).toEqual('...foobar');
     expect(matchGroupName('leading/(foo,bar)/trailing)')).toEqual('foo,bar');
+    expect(matchGroupName('leading/(foo,bar)/(fruit,apple)')).toEqual('foo,bar');
   });
 });
 describe(matchDynamicName, () => {
@@ -66,5 +68,43 @@ describe(getNameFromFilePath, () => {
     expect(getNameFromFilePath('../../../(pages)/[any]/[...home].ts')).toBe(
       '(pages)/[any]/[...home]'
     );
+  });
+});
+
+describe(matchArrayGroupName, () => {
+  it(`matches`, () => {
+    expect(matchArrayGroupName('[[...foobar]]')).toEqual(undefined);
+    expect(matchArrayGroupName('[[foobar]]')).toEqual(undefined);
+    expect(matchArrayGroupName('[...foobar]')).toEqual(undefined);
+    expect(matchArrayGroupName('[foobar]')).toEqual(undefined);
+    expect(matchArrayGroupName('(foobar)')).toEqual(undefined);
+    expect(matchArrayGroupName('(foo,bar)')).toEqual('foo,bar');
+    expect(matchArrayGroupName('((foobar))')).toEqual(undefined);
+    expect(matchArrayGroupName('(...foobar)')).toEqual(undefined);
+    expect(matchArrayGroupName('foobar')).toEqual(undefined);
+    expect(matchArrayGroupName('leading/foobar')).toEqual(undefined);
+    expect(matchArrayGroupName('leading/(foobar)')).toEqual(undefined);
+    expect(matchArrayGroupName('leading/((foobar))')).toEqual(undefined);
+    expect(matchArrayGroupName('leading/(...foobar)')).toEqual(undefined);
+    expect(matchArrayGroupName('leading/(foo,bar)')).toEqual('foo,bar');
+    expect(matchArrayGroupName('leading/foobar/trailing')).toEqual(undefined);
+    expect(matchArrayGroupName('leading/(foobar)/trailing')).toEqual(undefined);
+    expect(matchArrayGroupName('leading/((foobar))/trailing')).toEqual(undefined);
+    expect(matchArrayGroupName('leading/(...foobar)/trailing')).toEqual(undefined);
+    expect(matchArrayGroupName('leading/(foo,bar)/trailing)')).toEqual('foo,bar');
+    expect(matchArrayGroupName('leading/((foo),(bar))/trailing)')).toEqual('(foo),(bar)');
+    expect(matchArrayGroupName('leading/(foo,bar)/(fruit,apple)')).toEqual('foo,bar');
+    expect(matchArrayGroupName('(leading)/foobar')).toEqual(undefined);
+    expect(matchArrayGroupName('(leading)/(foobar)')).toEqual(undefined);
+    expect(matchArrayGroupName('(leading)/((foobar))')).toEqual(undefined);
+    expect(matchArrayGroupName('(leading)/(...foobar)')).toEqual(undefined);
+    expect(matchArrayGroupName('(leading)/(foo,bar)')).toEqual('foo,bar');
+    expect(matchArrayGroupName('(leading)/foobar/trailing')).toEqual(undefined);
+    expect(matchArrayGroupName('(leading)/(foobar)/trailing')).toEqual(undefined);
+    expect(matchArrayGroupName('(leading)/((foobar))/trailing')).toEqual(undefined);
+    expect(matchArrayGroupName('(leading)/(...foobar)/trailing')).toEqual(undefined);
+    expect(matchArrayGroupName('(leading)/(foo,bar)/trailing)')).toEqual('foo,bar');
+    expect(matchArrayGroupName('(leading)/((foo),(bar))/trailing)')).toEqual('(foo),(bar)');
+    expect(matchArrayGroupName('(leading)/(foo,bar)/(fruit,apple)')).toEqual('foo,bar');
   });
 });
