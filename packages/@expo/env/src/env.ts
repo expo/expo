@@ -198,9 +198,17 @@ export function getFiles(
   }
 
   if (mode && !['development', 'test', 'production'].includes(mode)) {
-    throw new Error(
-      `Environment variable "NODE_ENV=${mode}" is invalid. Valid values are "development", "test", and "production`
-    );
+    if (silent) {
+      debug(
+        `NODE_ENV="${mode}" is non-conventional and might cause development code to run in production. Use "development", "test", or "production" instead.`
+      );
+    } else {
+      console.warn(
+        chalk.yellow(
+          `"NODE_ENV=${mode}" is non-conventional and might cause development code to run in production. Use "development", "test", or "production" instead`
+        )
+      );
+    }
   }
 
   if (!mode) {
