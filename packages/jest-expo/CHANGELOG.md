@@ -13,6 +13,7 @@
 - Mock `EventEmitter` from `expo-modules-core`. ([#26945](https://github.com/expo/expo/pull/26945) by [@aleqsio](https://github.com/aleqsio))
 - Remove most of Constants.appOwnership. ([#26313](https://github.com/expo/expo/pull/26313) by [@wschurman](https://github.com/wschurman))
 - Simulate the mocked `expo-modules-core.EventEmitter` like a true EventEmitter. ([#27257](https://github.com/expo/expo/pull/27257) by [@kudo](https://github.com/kudo))
+- Add mock for `window.__REACT_DEVTOOLS_GLOBAL_HOOK__` if undefined. ([#27434](https://github.com/expo/expo/pull/27434) by [@marklawlor](https://github.com/marklawlor))
 
 ## 50.0.2 - 2024-02-06
 
