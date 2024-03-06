@@ -2,27 +2,6 @@ import { NativeModules } from 'react-native';
 
 import NativeModulesProxy from './NativeModulesProxy';
 
-type ExpoObject = {
-  modules:
-    | undefined
-    | {
-        [key: string]: any;
-      };
-  uuidv4: () => string;
-  uuidv5: (name: string, namespace: string) => string;
-  getViewConfig(viewName: string): ExpoViewConfig | null;
-};
-
-type ExpoViewConfig = {
-  validAttributes: Record<string, any>;
-  directEventTypes: Record<string, { registrationName: string }>;
-};
-
-declare global {
-  // eslint-disable-next-line no-var
-  var expo: ExpoObject | undefined;
-}
-
 /**
  * Imports the native module registered with given name. In the first place it tries to load
  * the module installed through the JSI host object and then falls back to the bridge proxy module.
