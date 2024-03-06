@@ -1,4 +1,3 @@
-import './ts-declarations/global';
 import { DeviceEventEmitter } from 'react-native';
 import { EventEmitter } from './EventEmitter';
 import NativeModulesProxy from './NativeModulesProxy';

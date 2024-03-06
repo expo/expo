@@ -1,5 +1,3 @@
-import './ts-declarations/global';
-
 import { DeviceEventEmitter } from 'react-native';
 
 import { EventEmitter, Subscription } from './EventEmitter';
@@ -11,6 +9,8 @@ import { CodedError } from './errors/CodedError';
 import { UnavailabilityError } from './errors/UnavailabilityError';
 
 import './sweet/setUpErrorManager.fx';
+
+export type * from './ts-declarations/global';
 
 export { default as uuid } from './uuid';
 

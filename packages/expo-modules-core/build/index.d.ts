@@ -1,4 +1,3 @@
-import './ts-declarations/global';
 import { DeviceEventEmitter } from 'react-native';
 import { EventEmitter, Subscription } from './EventEmitter';
 import NativeModulesProxy from './NativeModulesProxy';
@@ -8,6 +7,7 @@ import Platform from './Platform';
 import { CodedError } from './errors/CodedError';
 import { UnavailabilityError } from './errors/UnavailabilityError';
 import './sweet/setUpErrorManager.fx';
+export type * from './ts-declarations/global';
 export { default as uuid } from './uuid';
 export { DeviceEventEmitter, EventEmitter, NativeModulesProxy, ProxyNativeModule, Platform, Subscription, requireNativeViewManager, CodedError, UnavailabilityError, };
 export * from './requireNativeModule';
