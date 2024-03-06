@@ -245,5 +245,5 @@ internal class UnsupportedClass(
 ) : CodedException(message = "Unsupported type: '$clazz'")
 
 internal class PromiseAlreadySettledException(functionName: String) : CodedException(
-  message = "Promise passed to '$functionName' was already settled. It will lead to a crash in the production environment!"
+  message = "Promised pass to '$functionName' was already settled. It will lead to a crash in the production environment!"
 )

@@ -3,7 +3,13 @@ import CryptoKit
 
 internal class UnableToDownloadAssetException: GenericException<URL> {
   override var reason: String {
-    "Unable to download asset from url: \(param)"
+    "Unable to download asset from url: '\(param.absoluteString)'"
+  }
+}
+
+internal class UnableToSaveAssetToDirectoryException: GenericException<URL> {
+  override var reason: String {
+    "Unable to save asset to directory: '\(param.absoluteString)'"
   }
 }
 
@@ -51,18 +57,18 @@ public class AssetModule: Module {
   }
 
   func downloadAsset(appContext: AppContext, url: URL, localUrl: URL, promise: Promise) {
-    do {
-      try appContext.fileSystem?.ensureDirExists(withPath: localUrl.path)
-    } catch {
-      promise.reject(UnableToDownloadAssetException(url))
+    guard let fileSystem = appContext.fileSystem else {
+      promise.reject(UnableToSaveAssetToDirectoryException(url))
       return
     }
-    guard let fileSystem = appContext.fileSystem else {
-      promise.reject(UnableToDownloadAssetException(url))
+    do {
+      try fileSystem.ensureDirExists(withPath: localUrl.path)
+    } catch {
+      promise.reject(UnableToSaveAssetToDirectoryException(localUrl))
       return
     }
     guard fileSystem.permissions(forURI: localUrl).contains(EXFileSystemPermissionFlags.write) else {
-      promise.reject(UnableToDownloadAssetException(url))
+      promise.reject(UnableToSaveAssetToDirectoryException(localUrl))
       return
     }
 
@@ -72,11 +78,12 @@ public class AssetModule: Module {
         return
       }
       do {
+        // the file may already exist, so we need to remove it first
         try? FileManager.default.removeItem(at: localUrl)
         try FileManager.default.moveItem(at: fileURL, to: localUrl)
         promise.resolve(localUrl.standardizedFileURL.absoluteString)
       } catch {
-        promise.reject(UnableToDownloadAssetException(url))
+        promise.reject(UnableToSaveAssetToDirectoryException(localUrl))
       }
     }
     downloadTask.resume()
