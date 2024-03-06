@@ -1,9 +1,21 @@
+import { getMockConfig } from 'expo-router/build/testing-library/mock-config';
 import { ExpoRouterRuntimeManifest } from '../../start/server/metro/MetroBundlerDevServer';
 import {
   getHtmlFiles,
   getPathVariations,
   getFilesToExportFromServerAsync,
 } from '../exportStaticAsync';
+
+jest.mock('expo-router/build/views/Navigator', () => ({}));
+
+jest.mock('react-native', () => ({}));
+jest.mock('expo-linking', () => ({}));
+jest.mock('expo-modules-core', () => ({}));
+jest.mock('@react-navigation/native', () => ({}));
+
+function Route() {
+  return null;
+}
 
 describe(getPathVariations, () => {
   it(`should get path variations`, () => {
@@ -67,62 +79,35 @@ describe(getPathVariations, () => {
   });
 });
 
-function mockExpandRuntimeManifest(manifest: ExpoRouterRuntimeManifest) {
-  function mockExpandRuntimeManifestScreens(screens: ExpoRouterRuntimeManifest['screens']) {
-    return Object.fromEntries(
-      Object.entries(screens).map(([key, value]) => {
-        if (typeof value === 'string') {
-          return [
-            key,
-            {
-              path: value,
-              screens: {},
-              _route: {},
-            },
-          ];
-        } else if (Object.keys(value.screens).length) {
-          return [
-            key,
-            {
-              ...value,
-              screens: mockExpandRuntimeManifestScreens(value.screens),
-            },
-          ];
-        }
-        return [key, value];
-      })
-    );
-  }
-
-  return {
-    ...manifest,
-    screens: mockExpandRuntimeManifestScreens(manifest.screens),
-  };
-}
-
 describe(getHtmlFiles, () => {
   it(`should get html files`, () => {
     expect(
       getHtmlFiles({
         includeGroupVariations: true,
-        manifest: mockExpandRuntimeManifest({
-          initialRouteName: undefined,
-          screens: {
-            alpha: {
-              path: 'alpha',
-              screens: { index: '', second: 'second' },
-              initialRouteName: 'index',
+
+        manifest: getMockConfig(
+          {
+            './alpha/_layout.tsx': {
+              unstable_settings: { initialRouteName: 'index' },
+              default: Route,
             },
-            '(app)': {
-              path: '(app)',
-              screens: { compose: 'compose', index: '', 'note/[note]': 'note/:note' },
-              initialRouteName: 'index',
+            './alpha/index.tsx': Route,
+            './alpha/second.tsx': Route,
+            //
+            './(app)/_layout.tsx': {
+              unstable_settings: { initialRouteName: 'index' },
+              default: Route,
             },
-            '(auth)/sign-in': '(auth)/sign-in',
-            _sitemap: '_sitemap',
-            '[...404]': '*404',
+            './(app)/compose.tsx': Route,
+            './(app)/index.tsx': Route,
+            './(app)/note/[note].tsx': Route,
+            //
+            './(auth)/sign-in.js': Route,
+            './_sitemap.tsx': Route,
+            './[...404].tsx': Route,
           },
-        }),
+          false
+        ),
       })
         .map((a) => a.filePath)
         .sort((a, b) => a.length - b.length)
@@ -141,42 +126,80 @@ describe(getHtmlFiles, () => {
       '(app)/note/[note].html',
     ]);
   });
+
+  it(`should get html files with top-level array syntax`, () => {
+    expect(
+      getHtmlFiles({
+        includeGroupVariations: true,
+
+        manifest: getMockConfig(
+          {
+            './(a,b)/index.tsx': Route,
+          },
+          false
+        ),
+      })
+        .map(({ filePath, pathname }) => ({ filePath, pathname }))
+        .sort((a, b) => a.filePath.length - b.filePath.length)
+    ).toEqual([
+      // TODO: This may not be right
+      { filePath: '(a).html', pathname: '(a)' },
+      { filePath: '(b).html', pathname: '(b)' },
+    ]);
+  });
+  it(`should get html files with nested array syntax`, () => {
+    expect(
+      getHtmlFiles({
+        includeGroupVariations: true,
+        manifest: getMockConfig(
+          {
+            './(a,b)/foo.tsx': Route,
+          },
+          false
+        ),
+      })
+        .map(({ filePath, pathname }) => ({ filePath, pathname }))
+        .sort((a, b) => a.filePath.length - b.filePath.length)
+    ).toEqual([
+      { filePath: 'foo.html', pathname: 'foo' },
+      { filePath: '(a)/foo.html', pathname: '(a)/foo' },
+      { filePath: '(b)/foo.html', pathname: '(b)/foo' },
+    ]);
+  });
+
   it(`should get html files 2`, () => {
     expect(
       getHtmlFiles({
         includeGroupVariations: true,
-        manifest: mockExpandRuntimeManifest({
-          initialRouteName: undefined,
-          screens: {
-            '(root)': {
-              path: '(root)',
-              screens: {
-                '(index)': {
-                  path: '(index)',
-                  screens: {
-                    '[...missing]': '*missing',
-                    index: '',
-                    notifications: 'notifications',
-                  },
-                  initialRouteName: 'index',
-                },
-              },
-              initialRouteName: '(index)',
+
+        manifest: getMockConfig(
+          {
+            './(root)/_layout.tsx': {
+              unstable_settings: { initialRouteName: '(index)' },
+              default: Route,
             },
+            './(root)/(index)/_layout.tsx': {
+              unstable_settings: { initialRouteName: 'index' },
+              default: Route,
+            },
+            './(root)/(index)/index.tsx': Route,
+            './(root)/(index)/[...missing].tsx': Route,
+            './(root)/(index)/notifications.tsx': Route,
           },
-        }),
+          false
+        ),
       })
         .map((a) => a.filePath)
         .sort((a, b) => a.length - b.length)
     ).toEqual([
       'index.html',
-      '[...missing].html',
       '(root)/index.html',
+      '[...missing].html',
       '(index)/index.html',
       'notifications.html',
       '(root)/[...missing].html',
-      '(index)/[...missing].html',
       '(root)/(index)/index.html',
+      '(index)/[...missing].html',
       '(root)/notifications.html',
       '(index)/notifications.html',
       '(root)/(index)/[...missing].html',
@@ -187,26 +210,22 @@ describe(getHtmlFiles, () => {
     expect(
       getHtmlFiles({
         includeGroupVariations: false,
-        manifest: mockExpandRuntimeManifest({
-          initialRouteName: undefined,
-          screens: {
-            '(root)': {
-              path: '(root)',
-              screens: {
-                '(index)': {
-                  path: '(index)',
-                  screens: {
-                    '[...missing]': '*missing',
-                    index: '',
-                    notifications: 'notifications',
-                  },
-                  initialRouteName: 'index',
-                },
-              },
-              initialRouteName: '(index)',
+        manifest: getMockConfig(
+          {
+            './(root)/_layout.tsx': {
+              unstable_settings: { initialRouteName: '(index)' },
+              default: Route,
             },
+            './(root)/(index)/_layout.tsx': {
+              unstable_settings: { initialRouteName: 'index' },
+              default: Route,
+            },
+            './(root)/(index)/index.tsx': Route,
+            './(root)/(index)/[...missing].tsx': Route,
+            './(root)/(index)/notifications.tsx': Route,
           },
-        }),
+          false
+        ),
       })
         .map((a) => a.filePath)
         .sort((a, b) => a.length - b.length)
@@ -219,24 +238,30 @@ describe(getHtmlFiles, () => {
     expect(
       getHtmlFiles({
         includeGroupVariations: false,
-        manifest: mockExpandRuntimeManifest({
-          initialRouteName: undefined,
-          screens: {
-            alpha: {
-              path: 'alpha',
-              screens: { index: '', second: 'second' },
-              initialRouteName: 'index',
+        manifest: getMockConfig(
+          {
+            './alpha/_layout.tsx': {
+              unstable_settings: { initialRouteName: 'index' },
+              default: Route,
             },
-            '(app)': {
-              path: '(app)',
-              screens: { compose: 'compose', index: '', 'note/[note]': 'note/:note' },
-              initialRouteName: 'index',
+            './alpha/index.tsx': Route,
+            './alpha/second.tsx': Route,
+
+            './(app)/_layout.tsx': {
+              unstable_settings: { initialRouteName: 'index' },
+              default: Route,
             },
-            '(auth)/sign-in': '(auth)/sign-in',
-            _sitemap: '_sitemap',
-            '[...404]': '*404',
+            './(app)/compose.tsx': Route,
+            './(app)/index.tsx': Route,
+            './(app)/note/[note].tsx': Route,
+
+            './(auth)/sign-in.js': Route,
+
+            './_sitemap.tsx': Route,
+            './[...404].tsx': Route,
           },
-        }),
+          false
+        ),
       })
         .map((a) => a.filePath)
         .sort((a, b) => a.length - b.length)
@@ -259,42 +284,77 @@ describe(getFilesToExportFromServerAsync, () => {
 
     const files = await getFilesToExportFromServerAsync('/', {
       exportServer: false,
-      manifest: mockExpandRuntimeManifest({
-        initialRouteName: undefined,
-        screens: {
-          alpha: {
-            path: 'alpha',
-            screens: { index: '', second: 'second' },
-            initialRouteName: 'index',
+      manifest: getMockConfig(
+        {
+          './alpha/_layout.tsx': {
+            unstable_settings: { initialRouteName: 'index' },
+            default: Route,
           },
-          '(app)': {
-            path: '(app)',
-            screens: { compose: 'compose', index: '', 'note/[note]': 'note/:note' },
-            initialRouteName: 'index',
+          './alpha/index.tsx': Route,
+          './alpha/second.tsx': Route,
+
+          './(app)/_layout.tsx': {
+            unstable_settings: { initialRouteName: 'index' },
+            default: Route,
           },
-          '(auth)/sign-in': '(auth)/sign-in',
-          _sitemap: '_sitemap',
-          '[...404]': '*404',
+          './(app)/compose.tsx': Route,
+          './(app)/index.tsx': Route,
+          './(app)/note/[note].tsx': Route,
+
+          './(auth)/sign-in.js': Route,
+
+          './_sitemap.tsx': Route,
+          './[...404].tsx': Route,
         },
-      }),
+        false
+      ),
       renderAsync,
     });
 
-    expect([...files.keys()]).toEqual([
+    expect([...files.keys()].sort()).toEqual([
+      '(app)/compose.html',
+      '(app)/index.html',
+      '(app)/note/[note].html',
+      '(auth)/sign-in.html',
+      '[...404].html',
+      '_sitemap.html',
       'alpha/index.html',
       'alpha/second.html',
-      '(app)/compose.html',
       'compose.html',
-      '(app)/index.html',
       'index.html',
-      '(app)/note/[note].html',
       'note/[note].html',
-      '(auth)/sign-in.html',
       'sign-in.html',
-      '_sitemap.html',
-      '[...404].html',
     ]);
 
     expect([...files.values()].every((file) => file.targetDomain === 'client')).toBeTruthy();
+  });
+
+  it(`should export from server with array syntax`, async () => {
+    const renderAsync = jest.fn(async () => '');
+
+    const files = await getFilesToExportFromServerAsync('/', {
+      exportServer: true,
+      manifest: getMockConfig(
+        {
+          './(a,b)/multi-group.tsx': Route,
+        },
+        false
+      ),
+      renderAsync,
+    });
+
+    expect(renderAsync).toHaveBeenNthCalledWith(1, {
+      filePath: '(a)/multi-group.html',
+      pathname: '(a)/multi-group',
+      route: expect.anything(),
+    });
+    expect(renderAsync).toHaveBeenNthCalledWith(2, {
+      filePath: '(b)/multi-group.html',
+      pathname: '(b)/multi-group',
+      route: expect.anything(),
+    });
+    expect([...files.keys()]).toEqual(['(a)/multi-group.html', '(b)/multi-group.html']);
+
+    expect([...files.values()].every((file) => file.targetDomain === 'server')).toBeTruthy();
   });
 });

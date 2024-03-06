@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix using array syntax `(a,b)` with server output.
 - Fix issue with skipping all imports. ([#27238](https://github.com/expo/expo/pull/27238) by [@EvanBacon](https://github.com/EvanBacon))
 - Include search parameters in the default Screen.getId() function. ([#26710](https://github.com/expo/expo/pull/26710) by [@marklawlor](https://github.com/marklawlor))
 - Fix sitemap missing paths ([#26507](https://github.com/expo/expo/pull/26507) by [@marklawlor](https://github.com/marklawlor))
@@ -63,7 +64,7 @@ _This version does not introduce any user-facing changes._
 
 - Deprecate `useRootNavigation` in favor of `useNavigationContainerRef`. ([#26529](https://github.com/expo/expo/pull/26529) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove duplicate context mocking functions ([#26651](https://github.com/expo/expo/pull/26651) by [@marklawlor](https://github.com/marklawlor))
-- Update to remove `ExpoRequest/`ExpoResponse` imports from `@expo/server`. ([#27261](https://github.com/expo/expo/pull/27261) by [@kitten](https://github.com/kitten))
+- Update to remove `ExpoRequest/`ExpoResponse`imports from`@expo/server`. ([#27261](https://github.com/expo/expo/pull/27261) by [@kitten](https://github.com/kitten))
 
 ## 3.4.3 - 2024-01-18
 

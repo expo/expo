@@ -141,9 +141,10 @@ describe('server-output', () => {
     });
 
     it(`can serve up static html in array group`, async () => {
-      expect(getFiles()).toContain('server/(a,b)/multi-group.html');
-      expect(getFiles()).not.toContain('server/(a)/multi-group.html');
-      expect(getFiles()).not.toContain('server/(b)/multi-group.html');
+      expect(getFiles()).not.toContain('server/multi-group.html');
+      expect(getFiles()).not.toContain('server/(a,b)/multi-group.html');
+      expect(getFiles()).toContain('server/(a)/multi-group.html');
+      expect(getFiles()).toContain('server/(b)/multi-group.html');
       expect(await fetch('http://localhost:3000/multi-group').then((res) => res.text())).toMatch(
         /<div data-testid="multi-group">/
       );
@@ -162,8 +163,8 @@ describe('server-output', () => {
     it(`can not serve up static html in retained array group syntax`, async () => {
       // Should not be able to match the array syntax
       expect(
-        await fetch('http://localhost:3000/(a,b)/multi-group').then((res) => res.text())
-      ).toMatch(/Not found/);
+        await fetch('http://localhost:3000/(a,b)/multi-group').then((res) => res.status)
+      ).toEqual(404);
     });
 
     it(`can serve up API route in array group`, async () => {

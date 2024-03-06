@@ -21,43 +21,21 @@ exports.testRouter = exports.renderRouter = exports.getMockContext = exports.get
 /// <reference types="../../types/jest" />
 require("./expect");
 const react_native_1 = require("@testing-library/react-native");
-const path_1 = __importDefault(require("path"));
 const react_1 = __importDefault(require("react"));
-const context_stubs_1 = require("./context-stubs");
+const mock_config_1 = require("./mock-config");
+Object.defineProperty(exports, "getMockConfig", { enumerable: true, get: function () { return mock_config_1.getMockConfig; } });
+Object.defineProperty(exports, "getMockContext", { enumerable: true, get: function () { return mock_config_1.getMockContext; } });
 const mocks_1 = require("./mocks");
 const ExpoRoot_1 = require("../ExpoRoot");
 const getPathFromState_1 = __importDefault(require("../fork/getPathFromState"));
 const getLinkingConfig_1 = require("../getLinkingConfig");
-const getRoutes_1 = require("../getRoutes");
 const router_store_1 = require("../global-state/router-store");
 const imperative_api_1 = require("../imperative-api");
 // re-export everything
 __exportStar(require("@testing-library/react-native"), exports);
-function isOverrideContext(context) {
-    return Boolean(typeof context === 'object' && 'appDir' in context);
-}
-function getMockConfig(context) {
-    return (0, getLinkingConfig_1.getNavigationConfig)((0, getRoutes_1.getExactRoutes)(getMockContext(context)));
-}
-exports.getMockConfig = getMockConfig;
-function getMockContext(context) {
-    if (typeof context === 'string') {
-        return (0, context_stubs_1.requireContext)(path_1.default.resolve(process.cwd(), context));
-    }
-    else if (Array.isArray(context)) {
-        return (0, context_stubs_1.inMemoryContext)(Object.fromEntries(context.map((filename) => [filename, { default: () => null }])));
-    }
-    else if (isOverrideContext(context)) {
-        return (0, context_stubs_1.requireContextWithOverrides)(context.appDir, context.overrides);
-    }
-    else {
-        return (0, context_stubs_1.inMemoryContext)(context);
-    }
-}
-exports.getMockContext = getMockContext;
 function renderRouter(context = './app', { initialUrl = '/', ...options } = {}) {
     jest.useFakeTimers();
-    const mockContext = getMockContext(context);
+    const mockContext = (0, mock_config_1.getMockContext)(context);
     // Reset the initial URL
     (0, mocks_1.setInitialUrl)(initialUrl);
     // Force the render to be synchronous
