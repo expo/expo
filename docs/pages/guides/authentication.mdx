@@ -38,6 +38,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
     protocol={['OAuth 2', 'OpenID']}
     image={ASSETS.beyondidentity}
   />
+  <GridItem title="Calendly" protocol={['OAuth 2']} image={ASSETS.calendly} />
   <GridItem title="Cognito" protocol={['OAuth 2', 'OpenID']} image={ASSETS.cognito} />
   <GridItem title="Coinbase" protocol={['OAuth 2']} image={ASSETS.coinbase} />
   <GridItem title="Descope" protocol={['OAuth 2', 'OpenID']} image={ASSETS.descope} />
@@ -72,7 +73,6 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
   <GridItem title="Twitch" protocol={['OAuth 2']} image={ASSETS.twitch} />
   <GridItem title="Twitter" protocol={['OAuth 2']} image={ASSETS.twitter} />
   <GridItem title="Uber" protocol={['OAuth 2']} image={ASSETS.uber} />
-  <GridItem title="Calendly" protocol={['OAuth 2']} image={ASSETS.calendly} />
 
 </Grid>
 
@@ -487,6 +487,115 @@ export default function App() {
 
 </Box>
 {/* End Beyond Identity */}
+
+{/* Start Calendly*/}
+<Box
+  name="Calendly"
+  createUrl="https://developer.calendly.com/getting-started"
+  image={ASSETS.calendly}
+>
+| Website                   | Provider  | PKCE      | Auto Discovery |
+| ------------------------- | --------- | --------- | -------------- |
+| [Get Your Config](https://developer.calendly.com/getting-started) | OAuth 2.0 | Supported | Not Available  |
+- `redirectUri` requires 2 slashes (`://`).
+- Example redirectUri:
+  - Standalone / development build: `myapp://*`
+  - Web: `https://yourwebsite.com/*`
+<Tabs tabs={["Auth Code"]}>
+
+<Tab>
+{/* prettier-ignore */}
+```jsx Calendly Example
+import * as WebBrowser from 'expo-web-browser';
+import {
+  makeRedirectUri,
+  useAuthRequest,
+  exchangeCodeAsync,
+} from "expo-auth-session";
+import React, { useEffect, useState } from "react";
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native, this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+const discovery = {
+  authorizationEndpoint: "https://auth.calendly.com/oauth/authorize",
+  tokenEndpoint: "https://auth.calendly.com/oauth/token",
+};
+
+export default function App() {
+  const [authTokens, setAuthTokens] = useState({access_token: "", refresh_token: ""});
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: /* @info Your client id. Can be hardcoded or put it in .env file */ process.env.EXPO_PUBLIC_Client_ID /* @end */,
+      usePKCE: true,
+      redirectUri: makeRedirectUri({
+        native: /* @info Set up scheme property in your app.json or app.config.js. For example, app.json {scheme: "myapp"} */ "myapp://" /* @end */, 
+      }),
+    },
+    discovery
+  );
+  
+  useEffect(() => {
+    const exchange = async (exchangeTokenReq) => {
+      try {
+        const exchangeTokenResponse = await exchangeCodeAsync(
+          {
+            clientId: process.env.EXPO_PUBLIC_Client_ID,
+            code: /* @info Received code from first request*/ exchangeTokenReq /* @end */,
+            redirectUri: makeRedirectUri({
+              native: "myapp://",
+            }),
+            extraParams: {
+              code_verifier: request.codeVerifier,
+            },
+          },
+          discovery
+        );
+        setAuthTokens(exchangeTokenResponse);
+      } catch (error) {
+        console.error("error", error);
+      }
+    };
+
+    if (response) {
+      if (response.error) {
+        console.error(
+          "Authentication error",
+          response.params.error_description || "something went wrong"
+        );
+      }
+      if (response.type === "success") {
+        /* @info Exchange Received Code for Access Token */
+        exchange( response.params.code);
+        /* @end */
+      }
+    }
+  }, [discovery, request, response]);
+
+  return (
+  <SafeAreaView>
+      <View>
+        <Text>0Auth2</Text>
+        <Button
+          title="Connect to Calendly"
+          onPress={() => {
+            /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+            promptAsync();
+            /* @end */
+          }}
+        />
+        <Text>AuthTokens: {JSON.stringify(authTokens)}</Text>
+      </View>
+  </SafeAreaView>
+  )
+}
+
+```
+</Tab>
+</Tabs>
+</Box>
+{/* End Calendly*/}
 
 <Box
   name="Cognito"
@@ -1941,116 +2050,6 @@ export default function App() {
 </Tabs>
 </Box>
 {/* End Uber */}
-
-{/* Start Calendly*/}
-<Box
-  name="Calendly"
-  createUrl="https://developer.calendly.com/getting-started"
-  image={ASSETS.calendly}
->
-| Website                   | Provider  | PKCE      | Auto Discovery |
-| ------------------------- | --------- | --------- | -------------- |
-| [Get Your Config](https://developer.calendly.com/getting-started) | OAuth 2.0 | Supported | Not Available  |
-- `redirectUri` requires 2 slashes (`://`).
-- Example redirectUri:
-  - Standalone / development build: `myapp://*`
-  - Web: `https://yourwebsite.com/*`
-<Tabs tabs={["Auth Code"]}>
-
-<Tab>
-
-{/* prettier-ignore */}
-```jsx Calendly Example
-import * as WebBrowser from 'expo-web-browser';
-import {
-  makeRedirectUri,
-  useAuthRequest,
-  exchangeCodeAsync,
-} from "expo-auth-session";
-import React, { useEffect, useState } from "react";
-
-/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
-WebBrowser.maybeCompleteAuthSession();
-/* @end */
-
-const discovery = {
-  authorizationEndpoint: "https://auth.calendly.com/oauth/authorize",
-  tokenEndpoint: "https://auth.calendly.com/oauth/token",
-};
-
-export default function App() {
-  const [authTokens, setAuthTokens] = useState({access_token: "", refresh_token: ""});
-  const [request, response, promptAsync] = useAuthRequest(
-    {
-      clientId: /* @info Your client id. Can be hardcoded or put it in .env file */ process.env.EXPO_PUBLIC_Client_ID /* @end */,
-      usePKCE: true,
-      redirectUri: makeRedirectUri({
-        native: /* @info Set up scheme property in your app.json or app.config.js. EX app.json {scheme: "myapp"} */ "myapp://" /* @end */, 
-      }),
-    },
-    discovery
-  );
-  
-  useEffect(() => {
-    const exchange = async (exchangeTokenReq) => {
-      try {
-        const exchangeTokenResponse = await exchangeCodeAsync(
-          {
-            clientId: process.env.EXPO_PUBLIC_Client_ID,
-            code: /* @info Recieved Code from firs request*/ exchangeTokenReq /* @end */,
-            redirectUri: makeRedirectUri({
-              native: "myapp://",
-            }),
-            extraParams: {
-              code_verifier: request.codeVerifier,
-            },
-          },
-          discovery
-        );
-        setAuthTokens(exchangeTokenResponse);
-      } catch (error) {
-        console.error("error", error);
-      }
-    };
-
-    if (response) {
-      if (response.error) {
-        console.error(
-          "Authentication error",
-          response.params.error_description || "something went wrong"
-        );
-      }
-      if (response.type === "success") {
-        /* @info Exchange Received Code for Access Token */
-        exchange( response.params.code);
-        /* @end */
-      }
-    }
-  }, [discovery, request, response]);
-
-  return (
-  <SafeAreaView>
-      <View>
-        <Text>0Auth2</Text>
-        <Button
-          title="Connect to calendly"
-          onPress={() => {
-            /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-            promptAsync();
-            /* @end */
-          }}
-        />
-        <Text>AuthTokens: {JSON.stringify(authTokens)}</Text>
-      </View>
-  </SafeAreaView>
-  )
-}
-
-```
-</Tab>
-</Tabs>
-</Box>
-{/* End Calendly*/}
 
 {/* End Guides */}
 

@@ -8,6 +8,7 @@ export const ASSETS = {
   asgardeo: ASSETS_PATH + 'asgardeo.png',
   azure: ASSETS_PATH + 'azure.png',
   beyondidentity: ASSETS_PATH + 'beyondidentity.png',
+  calendly: ASSETS_PATH + 'calendly.svg',
   cognito: ASSETS_PATH + 'cognito.png',
   coinbase: ASSETS_PATH + 'coinbase.png',
   id4: ASSETS_PATH + 'identity4.png',
@@ -28,5 +29,4 @@ export const ASSETS = {
   twitch: ASSETS_PATH + 'twitch.png',
   twitter: ASSETS_PATH + 'twitter.png',
   uber: ASSETS_PATH + 'uber.png',
-  calendly: ASSETS_PATH + 'calendly.svg',
 } as const;
