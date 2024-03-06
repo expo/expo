@@ -79,9 +79,6 @@ async function getPermissionsAsync(): Promise<PermissionResponse> {
 let lastKnownPosition: LocationObject | null = null;
 
 export default {
-  get name(): string {
-    return 'ExpoLocation';
-  },
   async getProviderStatusAsync(): Promise<{ locationServicesEnabled: boolean }> {
     return {
       locationServicesEnabled: 'geolocation' in navigator,

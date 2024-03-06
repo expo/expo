@@ -12,10 +12,6 @@ import {
 } from '../NativeStatement';
 
 export default {
-  get name(): string {
-    return 'ExpoSQLiteNext';
-  },
-
   deleteDatebaseAsync: jest.fn(),
 
   NativeDatabase: jest

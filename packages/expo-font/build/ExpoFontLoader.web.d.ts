@@ -1,7 +1,6 @@
 import { UnloadFontOptions } from './Font';
 import { FontResource } from './Font.types';
 declare const _default: {
-    readonly name: string;
     unloadAllAsync(): Promise<void>;
     unloadAsync(fontFamilyName: string, options?: UnloadFontOptions): Promise<void>;
     getServerResources(): string[];

@@ -14,10 +14,6 @@ const MediaTypeInput = {
 };
 
 export default {
-  get name(): string {
-    return 'ExponentImagePicker';
-  },
-
   async launchImageLibraryAsync({
     mediaTypes = MediaTypeOptions.Images,
     allowsMultipleSelection = false,

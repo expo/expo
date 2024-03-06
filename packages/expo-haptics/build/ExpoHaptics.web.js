@@ -1,6 +1,2 @@
-export default {
-    get name() {
-        return 'ExpoHaptics';
-    },
-};
+export default {};
 //# sourceMappingURL=ExpoHaptics.web.js.map

@@ -6,7 +6,6 @@ import { LocationLastKnownOptions, LocationObject, LocationOptions } from './Loc
  */
 declare function getPermissionsAsync(): Promise<PermissionResponse>;
 declare const _default: {
-    readonly name: string;
     getProviderStatusAsync(): Promise<{
         locationServicesEnabled: boolean;
     }>;

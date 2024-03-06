@@ -1,7 +1,6 @@
 import { PermissionResponse } from 'expo-modules-core';
 import { ImagePickerResult, MediaTypeOptions } from './ImagePicker.types';
 declare const _default: {
-    readonly name: string;
     launchImageLibraryAsync({ mediaTypes, allowsMultipleSelection, base64, }: {
         mediaTypes?: MediaTypeOptions | undefined;
         allowsMultipleSelection?: boolean | undefined;

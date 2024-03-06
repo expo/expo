@@ -3,10 +3,6 @@ import { Platform } from 'expo-modules-core';
 import { DocumentPickerAsset, DocumentPickerOptions, DocumentPickerResult } from './types';
 
 export default {
-  get name(): string {
-    return 'ExpoDocumentPicker';
-  },
-
   async getDocumentAsync({
     type = '*/*',
     multiple = false,

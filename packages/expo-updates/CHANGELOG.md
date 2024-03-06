@@ -27,6 +27,7 @@
 
 ### 💡 Others
 
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
 - [ios] Remove unnecessary delegate from FileDownloader. ([#25783](https://github.com/expo/expo/pull/25783) by [@wschurman](https://github.com/wschurman))
 - Migrate to requireNativeModule/requireOptionalNativeModule. ([#25648](https://github.com/expo/expo/pull/25648) by [@wschurman](https://github.com/wschurman))
 - Remove classic updates. ([#26036](https://github.com/expo/expo/pull/26036), [#26037](https://github.com/expo/expo/pull/26037), [#26048](https://github.com/expo/expo/pull/26048), [#26059](https://github.com/expo/expo/pull/26059), [#26061](https://github.com/expo/expo/pull/26061), [#26065](https://github.com/expo/expo/pull/26065), [#26080](https://github.com/expo/expo/pull/26080), [#26230](https://github.com/expo/expo/pull/26230) by [@wschurman](https://github.com/wschurman))

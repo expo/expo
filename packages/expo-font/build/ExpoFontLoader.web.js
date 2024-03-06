@@ -57,9 +57,6 @@ function getHeadElements() {
     ];
 }
 export default {
-    get name() {
-        return 'ExpoFontLoader';
-    },
     async unloadAllAsync() {
         if (!Platform.isDOMAvailable)
             return;

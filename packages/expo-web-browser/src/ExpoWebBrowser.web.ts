@@ -50,9 +50,6 @@ function dismissPopup() {
 }
 
 export default {
-  get name() {
-    return 'ExpoWebBrowser';
-  },
   async openBrowserAsync(
     url: string,
     browserParams: WebBrowserOpenOptions = {}

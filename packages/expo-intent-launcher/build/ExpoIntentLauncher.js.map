@@ -1,1 +1,1 @@
-{"version":3,"file":"ExpoIntentLauncher.js","sourceRoot":"","sources":["../src/ExpoIntentLauncher.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,MAAM,mBAAmB,CAAC;AACxD,eAAe,mBAAmB,CAAC,oBAAoB,CAAC,CAAC","sourcesContent":["import { requireNativeModule } from 'expo-modules-core';\nexport default requireNativeModule('ExpoIntentLauncher');\n"]}
+{"version":3,"file":"ExpoIntentLauncher.js","sourceRoot":"","sources":["../src/ExpoIntentLauncher.ts"],"names":[],"mappings":"AAAA,eAAe,EAAS,CAAC","sourcesContent":["export default {} as any;\n"]}

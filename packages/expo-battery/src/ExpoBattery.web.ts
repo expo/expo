@@ -33,10 +33,6 @@ interface BatteryManagerEventTarget extends EventTarget {
 }
 
 export default {
-  get name(): string {
-    return 'ExpoBattery';
-  },
-
   get isSupported(): boolean {
     // https://developer.mozilla.org/en-US/docs/Web/API/Navigator/getBattery#Browser_compatibility
     return Platform.isDOMAvailable && ('getBattery' in navigator || 'battery' in navigator);

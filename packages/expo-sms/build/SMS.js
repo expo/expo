@@ -84,6 +84,6 @@ export async function sendSMSAsync(addresses, message, options) {
  * ```
  */
 export async function isAvailableAsync() {
-    return ExpoSMS.isAvailableAsync();
+    return ExpoSMS.isAvailableAsync?.() ?? false;
 }
 //# sourceMappingURL=SMS.js.map
