@@ -581,6 +581,58 @@ describe(withExtendedResolver, () => {
       platform
     );
   });
+
+  it(`aliases React Native renderer modules to canaries on native`, async () => {
+    vol.fromJSON(
+      {
+        'node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js':
+          '',
+        '.expo/metro/canary/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js':
+          '',
+        'node_modules/@react-native/assets-registry/registry.js': '',
+      },
+      '/'
+    );
+
+    ['ios', 'android'].forEach((platform) => {
+      // Emulate throwing when the module doesn't exist...
+      jest
+        .mocked(getResolveFunc())
+        .mockClear()
+        .mockImplementationOnce(() => {
+          return {
+            type: 'sourceFile',
+            filePath:
+              '/node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js',
+          };
+        });
+
+      const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
+        tsconfig: {},
+        isTsconfigPathsEnabled: false,
+        isReactCanaryEnabled: true,
+      });
+
+      const result = modified.resolver.resolveRequest!(
+        getDefaultRequestContext(),
+        '/node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js',
+        platform
+      );
+
+      expect(result).toEqual({
+        filePath:
+          '/.expo/metro/canary/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js',
+        type: 'sourceFile',
+      });
+
+      expect(getResolveFunc()).toBeCalledTimes(1);
+      expect(getResolveFunc()).toBeCalledWith(
+        expect.anything(),
+        '/node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js',
+        platform
+      );
+    });
+  });
 });
 
 describe(getNodejsExtensions, () => {
