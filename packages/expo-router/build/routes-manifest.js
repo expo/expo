@@ -18,6 +18,7 @@ function createRoutesManifest(paths) {
         preserveApiRoutes: true,
         ignoreRequireErrors: true,
         ignoreEntryPoints: true,
+        platform: 'web',
     });
     if (!routeTree) {
         return null;
