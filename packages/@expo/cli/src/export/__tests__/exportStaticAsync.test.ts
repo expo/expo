@@ -1,6 +1,5 @@
 import { getMockConfig } from 'expo-router/build/testing-library/mock-config';
 
-import { ExpoRouterRuntimeManifest } from '../../start/server/metro/MetroBundlerDevServer';
 import {
   getHtmlFiles,
   getPathVariations,
