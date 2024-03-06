@@ -41,6 +41,8 @@
     "extends": "universe/node"
   },
   "dependencies": {
+    "react-forget-runtime": "file:../../../forget-feedback/dist/react-forget-runtime",
+    "babel-plugin-react-forget": "file:../../../forget-feedback",
     "@babel/plugin-proposal-decorators": "^7.12.9",
     "@babel/plugin-transform-export-namespace-from": "^7.22.11",
     "@babel/plugin-transform-object-rest-spread": "^7.12.13",

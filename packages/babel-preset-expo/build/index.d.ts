@@ -13,6 +13,12 @@ type BabelPresetExpoPlatformOptions = {
     disableFlowStripTypesTransform?: boolean;
     enableBabelRuntime?: boolean;
     unstable_transformProfile?: 'default' | 'hermes-stable' | 'hermes-canary';
+    'babel-plugin-react-forget'?: false | {
+        enableUseMemoCachePolyfill?: boolean;
+        compilationMode?: 'infer' | 'strict';
+        panicThreshold?: 'NONE' | 'ERROR' | 'WARNING' | 'INFO' | 'DEBUG';
+        logger?: {};
+    };
 };
 export type BabelPresetExpoOptions = BabelPresetExpoPlatformOptions & {
     /** Web-specific settings. */

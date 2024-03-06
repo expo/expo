@@ -1,5 +1,11 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const path_1 = __importDefault(require("path"));
+const chalk_1 = __importDefault(require("chalk"));
+const fs_1 = __importDefault(require("fs"));
 const client_module_proxy_plugin_1 = require("./client-module-proxy-plugin");
 const common_1 = require("./common");
 const environment_restricted_imports_1 = require("./environment-restricted-imports");
@@ -17,10 +23,12 @@ function getOptions(options, platform) {
 }
 function babelPresetExpo(api, options = {}) {
     const bundler = api.caller(common_1.getBundler);
+    const projectRoot = api.caller(common_1.getPossibleProjectRoot);
     const isWebpack = bundler === 'webpack';
     let platform = api.caller((caller) => caller?.platform);
     const engine = api.caller((caller) => caller?.engine) ?? 'default';
     const isDev = api.caller(common_1.getIsDev);
+    const isNodeModule = api.caller(common_1.getIsNodeModule);
     const isReactServer = api.caller(common_1.getIsReactServer);
     const isFastRefreshEnabled = api.caller(common_1.getIsFastRefreshEnabled);
     const baseUrl = api.caller(common_1.getBaseUrl);
@@ -52,6 +60,63 @@ function babelPresetExpo(api, options = {}) {
     // `@react-native/babel-preset` will handle it.
     const lazyImportsOption = platformOptions?.lazyImports;
     const extraPlugins = [];
+    // Add compiler as soon as possible to prevent other plugins from modifying the code.
+    if (
+    // Don't run compiler on node modules, it can only safely be run on the user's code.
+    !isNodeModule &&
+        // Only run for client code. It's unclear if compiler has any benefits for React Server Components.
+        !isReactServer &&
+        // Give users the ability to opt-out of the feature, per-platform.
+        platformOptions['babel-plugin-react-forget'] !== false &&
+        // Opt-in for now...
+        !!platformOptions['babel-plugin-react-forget']) {
+        extraPlugins.push([
+            require('babel-plugin-react-forget'),
+            {
+                // TODO: This isn't needed after React 19 apparently.
+                enableUseMemoCachePolyfill: true,
+                compilationMode: 'infer',
+                panicThreshold: 'NONE',
+                logger: {
+                    logEvent: (filename, event) => {
+                        let relativeFilename = projectRoot ? path_1.default.relative(projectRoot, filename) : filename;
+                        if (event.kind === 'CompileError') {
+                            // e.g. (BuildHIR::lowerStatement) Handle var kinds in VariableDeclaration
+                            if (event.detail.severity === 'Todo') {
+                                return;
+                            }
+                            // "InvalidJS",
+                            // "InvalidReact",
+                            // "InvalidConfig",
+                            // "Todo",
+                            // "Invariant"
+                            const icon = `[${event.detail.severity}]`;
+                            const pathWithPrefix = (0, chalk_1.default) `${icon} {dim ${relativeFilename}}`;
+                            const { codeFrameColumns } = require('@babel/code-frame');
+                            console.log(pathWithPrefix +
+                                '\n\n' +
+                                codeFrameColumns(fs_1.default.readFileSync(filename, 'utf8'), event.detail.loc, {
+                                    forceColor: true,
+                                    message: event.detail.reason,
+                                }));
+                        }
+                        else if (event.kind === 'CompileSuccess') {
+                            if (event.memoSlots > 0 || event.memoBlocks > 0) {
+                                console.log(
+                                // NOTE: fnName won't be defined if the function is anonymous or an arrow function.
+                                (0, chalk_1.default) `✅ Optimized {bold ${event.fnName ?? '[anonymous]'}} {dim (${relativeFilename}:${event.fnLoc.start.line}:${event.fnLoc.start.column})}`);
+                            }
+                        }
+                        else {
+                            console.log(filename, event);
+                        }
+                    },
+                    ...platformOptions['babel-plugin-react-forget']?.logger,
+                },
+                ...platformOptions['babel-plugin-react-forget'],
+            },
+        ]);
+    }
     if (engine !== 'hermes') {
         // `@react-native/babel-preset` configures this plugin with `{ loose: true }`, which breaks all
         // getters and setters in spread objects. We need to add this plugin ourself without that option.
