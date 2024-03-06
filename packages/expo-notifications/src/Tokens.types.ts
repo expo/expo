@@ -1,4 +1,4 @@
-import { Platform } from 'expo-modules-core';
+import { type Platform } from 'expo-modules-core';
 
 // @docsMissing
 export interface NativeDevicePushToken {
@@ -22,9 +22,9 @@ export type WebDevicePushTokenKeys = {
 };
 
 // @docsMissing
-type ExplicitlySupportedDevicePushToken = NativeDevicePushToken | WebDevicePushToken;
+export type ExplicitlySupportedDevicePushToken = NativeDevicePushToken | WebDevicePushToken;
 
-type ImplicitlySupportedDevicePushToken = {
+export type ImplicitlySupportedDevicePushToken = {
   /**
    * Either `android`, `ios` or `web`.
    */

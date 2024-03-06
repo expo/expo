@@ -118,6 +118,7 @@ const nonLinkableTypes = [
   'PureComponent',
   'E',
   'EventSubscription',
+  'K',
   'Listener',
   'NativeSyntheticEvent',
   'ParsedQs',
@@ -169,6 +170,8 @@ const hardcodedTypeLinks: Record<string, string> = {
   DeviceSensor: '/versions/latest/sdk/sensors',
   Element: 'https://www.typescriptlang.org/docs/handbook/jsx.html#function-component',
   Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
+  Exclude:
+    'https://www.typescriptlang.org/docs/handbook/utility-types.html#excludeuniontype-excludedmembers',
   ExpoConfig:
     'https://github.com/expo/expo/blob/main/packages/%40expo/config-types/src/ExpoConfig.ts',
   ExpoUpdatesManifest: '/versions/latest/sdk/updates/#expoupdatesmanifest',
@@ -182,9 +185,11 @@ const hardcodedTypeLinks: Record<string, string> = {
   Omit: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys',
   Pick: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys',
   Partial: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype',
+  Platform: 'https://reactnative.dev/docs/platform',
   Promise:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
   ReactNode: 'https://reactnative.dev/docs/react-node',
+  Required: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#requiredtype',
   ShareOptions: 'https://reactnative.dev/docs/share#share',
   SyntheticEvent: 'https://react.dev/reference/react-dom/components/common#react-event-object',
   View: 'https://reactnative.dev/docs/view',

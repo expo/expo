@@ -8302,7 +8302,8 @@ in order to enable/disable the permission.
         </a>
       </code>
        
-      extended by:
+      extended by
+      :
     </p>
     <br />
     <div
@@ -9281,8 +9282,11 @@ you don't get this value.
         >
           PermissionHookBehavior
         </code>
-        <span>
-           
+        <span
+          class="css-1hmnf1v-TextComponent"
+          data-text="true"
+        >
+           | 
         </span>
       </span>
       <span>
@@ -11206,8 +11210,11 @@ in order to enable/disable the permission.
         >
           'never'
         </code>
-        <span>
-           
+        <span
+          class="css-1hmnf1v-TextComponent"
+          data-text="true"
+        >
+           | 
         </span>
       </span>
       <span>

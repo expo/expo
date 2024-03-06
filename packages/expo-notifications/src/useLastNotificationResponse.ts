@@ -15,7 +15,8 @@ import NotificationsEmitterModule from './NotificationsEmitterModule';
  * - `null` - if no notification response has been received yet,
  * - a [`NotificationResponse`](#notificationresponse) object - if a notification response was received.
  *
- * @example Responding to a notification tap by opening a URL that could be put into the notification's `data`
+ * @example
+ * Responding to a notification tap by opening a URL that could be put into the notification's `data`
  * (opening the URL is your responsibility and is not a part of the `expo-notifications` API):
  * ```jsx
  * import * as Notifications from 'expo-notifications';
