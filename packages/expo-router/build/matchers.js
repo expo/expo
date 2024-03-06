@@ -23,9 +23,9 @@ function matchGroupName(name) {
     return name.match(/^(?:[^\\(\\)])*?\(([^\\/]+)\).*?$/)?.[1];
 }
 exports.matchGroupName = matchGroupName;
-/** Match `(a,b,c)/(d,c)` -> `[['a','b','c'], ['d','e']]` */
+/** Match the first array group name `(a,b,c)/(d,c)` -> `'a,b,c'` */
 function matchArrayGroupName(name) {
-    return name.match(/\(\s*\w[\w\s]*?,.*?\)/g)?.map((match) => match.slice(1, -1));
+    return name.match(/(?:[^\\(\\)])*?\(([^\\/]+,[^\\/]+)\).*?$/)?.[1];
 }
 exports.matchArrayGroupName = matchArrayGroupName;
 function getNameFromFilePath(name) {
