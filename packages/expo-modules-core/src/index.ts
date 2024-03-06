@@ -10,6 +10,8 @@ import { UnavailabilityError } from './errors/UnavailabilityError';
 
 import './sweet/setUpErrorManager.fx';
 
+export type * from './ts-declarations/global';
+
 export { default as uuid } from './uuid';
 
 export {
