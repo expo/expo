@@ -1,4 +1,5 @@
 import { getMockConfig } from 'expo-router/build/testing-library/mock-config';
+
 import { ExpoRouterRuntimeManifest } from '../../start/server/metro/MetroBundlerDevServer';
 import {
   getHtmlFiles,
@@ -142,9 +143,9 @@ describe(getHtmlFiles, () => {
         .map(({ filePath, pathname }) => ({ filePath, pathname }))
         .sort((a, b) => a.filePath.length - b.filePath.length)
     ).toEqual([
-      // TODO: This may not be right
-      { filePath: '(a).html', pathname: '(a)' },
-      { filePath: '(b).html', pathname: '(b)' },
+      { filePath: 'index.html', pathname: '' },
+      { filePath: '(a)/index.html', pathname: '(a)' },
+      { filePath: '(b)/index.html', pathname: '(b)' },
     ]);
   });
   it(`should get html files with nested array syntax`, () => {
@@ -356,5 +357,28 @@ describe(getFilesToExportFromServerAsync, () => {
     expect([...files.keys()]).toEqual(['(a)/multi-group.html', '(b)/multi-group.html']);
 
     expect([...files.values()].every((file) => file.targetDomain === 'server')).toBeTruthy();
+  });
+
+  it(`should export from server with top-level array syntax`, async () => {
+    const renderAsync = jest.fn(async () => '');
+
+    const files = await getFilesToExportFromServerAsync('/', {
+      exportServer: true,
+      manifest: getMockConfig(
+        {
+          './(a,b)/index.tsx': Route,
+        },
+        false
+      ),
+      renderAsync,
+    });
+
+    expect(renderAsync).toHaveBeenNthCalledWith(1, {
+      filePath: '(a)/index.html',
+      pathname: '(a)',
+      route: expect.anything(),
+    });
+
+    expect([...files.keys()]).toEqual(['(a)/index.html', '(b)/index.html']);
   });
 });

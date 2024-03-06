@@ -399,6 +399,39 @@ it(`converts array syntax HTML routes`, () => {
   expect(match('/(, a )/foo')).toBeUndefined();
 });
 
+it(`converts top-level array syntax HTML routes`, () => {
+  const routesManifest = getServerManifest(getRoutesFor(['./(a,b)/index.tsx']));
+  expect(routesManifest).toEqual({
+    apiRoutes: [],
+    htmlRoutes: [
+      {
+        file: './(a,b)/index.tsx',
+        namedRegex: '^(?:/\\(b\\))?(?:/)?$',
+        page: '/(b)/index',
+        routeKeys: {},
+      },
+      {
+        file: './(a,b)/index.tsx',
+        namedRegex: '^(?:/\\(a\\))?(?:/)?$',
+        page: '/(a)/index',
+        routeKeys: {},
+      },
+    ],
+    notFoundRoutes: [],
+  });
+
+  const match = (url: string) => {
+    return routesManifest.htmlRoutes.find((r) => new RegExp(r.namedRegex).test(url))?.file;
+  };
+
+  expect(match('/')).toBeDefined();
+  expect(match('/(a)')).toBeDefined();
+  expect(match('/(a)/')).toBeDefined();
+  expect(match('/(b)')).toBeDefined();
+  //
+  expect(match('/(a,b)')).toBeUndefined();
+});
+
 it(`converts nested array syntax HTML routes`, () => {
   const routesFor = getRoutesFor(['./(a,b)/(c, d)/foo.tsx']);
   const routesManifest = getServerManifest(routesFor);
