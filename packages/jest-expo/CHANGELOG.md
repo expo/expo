@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add mock for `window.__REACT_DEVTOOLS_GLOBAL_HOOK__` if undefined. ([#27434](https://github.com/expo/expo/pull/27434) by [@marklawlor](https://github.com/marklawlor))
+
 ## 50.0.2 — 2024-02-06
 
 _This version does not introduce any user-facing changes._
