@@ -293,7 +293,7 @@ exports.getIgnoreList = getIgnoreList;
  */
 function extrapolateGroups(key, keys = new Set()) {
     const match = (0, matchers_1.matchArrayGroupName)(key);
-    if (!match || !match?.includes(',')) {
+    if (!match) {
         keys.add(key);
         return keys;
     }

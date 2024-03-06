@@ -372,7 +372,7 @@ export function getIgnoreList(options?: Options) {
 function extrapolateGroups(key: string, keys: Set<string> = new Set()): Set<string> {
   const match = matchArrayGroupName(key);
 
-  if (!match || !match?.includes(',')) {
+  if (!match) {
     keys.add(key);
     return keys;
   }
