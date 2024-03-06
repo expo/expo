@@ -163,7 +163,7 @@ describe(`will throw if a route does not have a platform fallback`, () => {
         { internal_stripLoadRoute: true, platform: Platform.OS, skipGenerated: true }
       );
     }).toThrowErrorMatchingInlineSnapshot(
-      `"The file ./folder/page.web.tsx does not have a fallback sibling file without a platform extension."`
+      `"Platform-specific route "./folder/page.web.tsx" is missing the required fallback route "./folder/page.tsx"."`
     );
   });
 });
