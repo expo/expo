@@ -170,7 +170,7 @@ export async function removeTagAsync(
   tagName: string,
   spawnOptions?: SpawnOptions
 ): Promise<void> {
-  await spawnAsync('npm', ['dist-tag', 'rm', packageName, tagName]);
+  await spawnAsync('npm', ['dist-tag', 'rm', packageName, tagName], spawnOptions);
 }
 
 /**
