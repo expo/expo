@@ -12,9 +12,9 @@ EAS Update helps us fix critical bugs in production. It can also help us iterate
 
 Whether a new feature is being developed, stabilized, QA'd, or critiqued, it's often useful to to allow others to preview what it looks and feels like before it is released to production.
 
-Traditionally previewing meant re-building the project distributing it to a reviewer manually. Previewing features with EAS Update removes the need for re-building in most cases and can help us preview new features more quickly.
+Traditionally previewing meant re-building the project and distributing it to a reviewer manually. Previewing features with EAS Update removes the need for re-building in most cases and can help us preview new features more quickly.
 
 A published update can be loaded in various environments:
-- An [expo-dev-client](/eas-update/expo-dev-client/) build with a matching runtime version. Either an [internal distribution](/build/internal-distribution/) or simulator/emulator build.
-- A build distributed via TestFlight, Google Play beta, or [internal distribution](/build/internal-distribution/) with a matching runtime version and channel pointing to a branch with the published update. With this strategy, often a EAS Update channel like "alpha" or "beta" will be used, and builds and updates will be created from development branches in source control.
+- A [development build](/eas-update/expo-dev-client/) with a matching runtime version, distributed through [internal distribution](/build/internal-distribution/) or as an emulator or simulator build.
+- A release build distributed via Google Play beta, TestFlight, or [internal distribution](/build/internal-distribution/) with a matching runtime version and channel pointing to a branch with the published update. With this strategy, often an EAS Update channel like "alpha" or "beta" will be used, and builds and updates will be created from development branches in source control.
 - Expo Go can also load published updates in cases where custom native code is not used.
