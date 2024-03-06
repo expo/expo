@@ -1,11 +1,8 @@
-import { SyntheticPlatformEmitter } from 'expo-modules-core';
+import { DeviceEventEmitter } from 'expo-modules-core';
 import { assertSensorEventEnabledAsync, getPermissionsAsync, isSensorEnabledAsync, requestPermissionsAsync, } from './utils/isSensorEnabledAsync.web';
 const scalar = Math.PI / 180;
 const eventName = 'deviceorientation';
 export default {
-    get name() {
-        return 'ExponentAccelerometer';
-    },
     async isAvailableAsync() {
         if (typeof DeviceOrientationEvent === 'undefined') {
             return false;
@@ -13,7 +10,7 @@ export default {
         return await isSensorEnabledAsync(eventName);
     },
     _handleMotion({ alpha, beta, gamma }) {
-        SyntheticPlatformEmitter.emit('accelerometerDidUpdate', {
+        DeviceEventEmitter.emit('accelerometerDidUpdate', {
             x: gamma * scalar,
             y: beta * scalar,
             z: alpha * scalar,

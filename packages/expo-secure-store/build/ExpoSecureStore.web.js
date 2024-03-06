@@ -1,6 +1,2 @@
-export default {
-    get name() {
-        return 'ExpoSecureStore';
-    },
-};
+export default {};
 //# sourceMappingURL=ExpoSecureStore.web.js.map
