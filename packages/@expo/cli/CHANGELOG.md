@@ -15,7 +15,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix using array syntax `(a,b)` with server output.
+- Fix using array syntax `(a,b)` with server output. ([#27462](https://github.com/expo/expo/pull/27462) by [@EvanBacon](https://github.com/EvanBacon))
 - Prevent `console.log` statements from colliding with Metro logs. ([#27217](https://github.com/expo/expo/pull/27217) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix using dev server URL in development. ([#27213](https://github.com/expo/expo/pull/27213) by [@EvanBacon](https://github.com/EvanBacon))
 - Always reset production bundler cache in run command. ([#27114](https://github.com/expo/expo/pull/27114) by [@EvanBacon](https://github.com/EvanBacon))
