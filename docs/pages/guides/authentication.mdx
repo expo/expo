@@ -1982,7 +1982,7 @@ export default function App() {
   const [authTokens, setAuthTokens] = useState({access_token: "", refresh_token: ""});
   const [request, response, promptAsync] = useAuthRequest(
     {
-      clientId: /* @info Your client id, can hardcode or put it in .env file */ process.env.EXPO_PUBLIC_Client_ID /* @end */,
+      clientId: /* @info Your client id. Can be hardcoded or put it in .env file */ process.env.EXPO_PUBLIC_Client_ID /* @end */,
       usePKCE: true,
       redirectUri: makeRedirectUri({
         native: /* @info Set up scheme property in your app.json or app.config.js. EX app.json {scheme: "myapp"} */ "myapp://" /* @end */, 
