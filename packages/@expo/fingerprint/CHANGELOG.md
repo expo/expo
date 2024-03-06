@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Add silent option. ([#27325](https://github.com/expo/expo/pull/27325) by [@wschurman](https://github.com/wschurman))
+- Add debug option to enable verbose debug output. ([#27457](https://github.com/expo/expo/pull/27457) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 
