@@ -175,12 +175,12 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
     count++;
   }
 
-  // The `count < this->args` case is handled by the Kotlin part
-  if (count > this->args) {
+  // The `count < argTypes.size()` case is handled by the Kotlin part
+  if (count > argTypes.size()) {
     throwNewJavaException(
       InvalidArgsNumberException::create(
         count,
-        this->args
+        argTypes.size()
       ).get()
     );
   }
@@ -232,17 +232,16 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
 MethodMetadata::MethodMetadata(
   std::string name,
   bool takesOwner,
-  int args,
   bool isAsync,
   jni::local_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
   jni::global_ref<jobject> &&jBodyReference
 ) : name(std::move(name)),
     takesOwner(takesOwner),
-    args(args),
     isAsync(isAsync),
     jBodyReference(std::move(jBodyReference)) {
-  argTypes.reserve(args);
-  for (size_t i = 0; i < args; i++) {
+  size_t argsSize = expectedArgTypes->size();
+  argTypes.reserve(argsSize);
+  for (size_t i = 0; i < argsSize; i++) {
     auto expectedType = expectedArgTypes->getElement(i);
     argTypes.push_back(
       std::make_unique<AnyType>(std::move(expectedType))
@@ -253,13 +252,11 @@ MethodMetadata::MethodMetadata(
 MethodMetadata::MethodMetadata(
   std::string name,
   bool takesOwner,
-  int args,
   bool isAsync,
   std::vector<std::unique_ptr<AnyType>> &&expectedArgTypes,
   jni::global_ref<jobject> &&jBodyReference
 ) : name(std::move(name)),
     takesOwner(takesOwner),
-    args(args),
     isAsync(isAsync),
     argTypes(std::move(expectedArgTypes)),
     jBodyReference(std::move(jBodyReference)) {
@@ -287,7 +284,7 @@ jsi::Function MethodMetadata::toSyncFunction(
   return jsi::Function::createFromHostFunction(
     runtime,
     moduleRegistry->jsRegistry->getPropNameID(runtime, name),
-    args,
+    argTypes.size(),
     [this, moduleRegistry](
       jsi::Runtime &rt,
       const jsi::Value &thisValue,
@@ -358,7 +355,7 @@ jsi::Function MethodMetadata::toAsyncFunction(
   return jsi::Function::createFromHostFunction(
     runtime,
     moduleRegistry->jsRegistry->getPropNameID(runtime, name),
-    args,
+    argTypes.size(),
     [this, moduleRegistry](
       jsi::Runtime &rt,
       const jsi::Value &thisValue,

@@ -58,7 +58,6 @@ class ModuleHolder<T : Module>(val module: T) {
               clazzModuleObject,
               constructor.takesOwner,
               ownerClass,
-              constructor.argsCount,
               constructor.getCppRequiredTypes().toTypedArray(),
               constructor.getJNIFunctionBody(clazz.name, appContext)
             )

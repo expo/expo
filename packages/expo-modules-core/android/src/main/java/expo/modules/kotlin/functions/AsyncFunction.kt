@@ -59,7 +59,6 @@ abstract class AsyncFunction(
     jsObject.registerAsyncFunction(
       name,
       takesOwner,
-      argsCount,
       desiredArgsTypes.map { it.getCppRequiredTypes() }.toTypedArray()
     ) { args, promiseImpl ->
       if (BuildConfig.DEBUG) {

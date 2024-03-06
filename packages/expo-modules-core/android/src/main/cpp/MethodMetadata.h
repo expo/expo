@@ -36,10 +36,6 @@ public:
    */
   bool takesOwner;
   /**
-   * Number of arguments
-   */
-  int args;
-  /**
    * Whether this function is async
    */
   bool isAsync;
@@ -51,7 +47,6 @@ public:
   MethodMetadata(
     std::string name,
     bool takesOwner,
-    int args,
     bool isAsync,
     jni::local_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
     jni::global_ref<jobject> &&jBodyReference
@@ -60,7 +55,6 @@ public:
   MethodMetadata(
     std::string name,
     bool takesOwner,
-    int args,
     bool isAsync,
     std::vector<std::unique_ptr<AnyType>> &&expectedArgTypes,
     jni::global_ref<jobject> &&jBodyReference
