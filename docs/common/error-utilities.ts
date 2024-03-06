@@ -293,6 +293,10 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/v47.0.0/sdk/permissions/': '/guides/permissions/',
   '/versions/latest/sdk/permissions/': '/guides/permissions/',
 
+  // Random API replaced with Crypto
+  '/versions/v50.0.0/sdk/random/': '/versions/v50.0.0/sdk/crypto/',
+  '/versions/latest/sdk/random/': '/versions/latest/sdk/crypto/',
+
   // Redirect bare guides to unified workflow guides
   '/bare/using-libraries/': '/workflow/using-libraries/',
   '/bare/exploring-bare-workflow/': '/bare/overview/',
