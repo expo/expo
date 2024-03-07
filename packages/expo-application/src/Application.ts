@@ -3,6 +3,14 @@ import { Platform, UnavailabilityError } from 'expo-modules-core';
 import { ApplicationReleaseType, PushNotificationServiceEnvironment } from './Application.types';
 import ExpoApplication from './ExpoApplication';
 
+type JSONValue = boolean | number | string | null | JSONArray | JSONObject;
+
+interface JSONArray extends Array<JSONValue> {}
+
+interface JSONObject {
+  [key: string]: JSONValue | undefined;
+}
+
 // @needsAudit
 /**
  * The human-readable version of the native application that may be displayed in the app store.
@@ -48,6 +56,16 @@ export const applicationName: string | null = ExpoApplication
 export const applicationId: string | null = ExpoApplication
   ? ExpoApplication.applicationId || null
   : null;
+
+// @needsAudit
+/**
+ * Returns the compiled Apple `Info.plist` for the app. This function is `undefined` on Android and web.
+ *
+ * @example `{"CFBundleDevelopmentRegion": "en", "CFBundleExecutable": "Scribbles", ...}`
+ * @platform ios
+ */
+export const getAppleInfoPlist: (() => Record<string, JSONObject>) | undefined =
+  ExpoApplication?.getAppleInfoPlist;
 
 // @needsAudit
 /**

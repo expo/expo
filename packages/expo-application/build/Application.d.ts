@@ -1,4 +1,10 @@
 import { ApplicationReleaseType, PushNotificationServiceEnvironment } from './Application.types';
+type JSONValue = boolean | number | string | null | JSONArray | JSONObject;
+interface JSONArray extends Array<JSONValue> {
+}
+interface JSONObject {
+    [key: string]: JSONValue | undefined;
+}
 /**
  * The human-readable version of the native application that may be displayed in the app store.
  * This is the `Info.plist` value for `CFBundleShortVersionString` on iOS and the version name set
@@ -29,6 +35,13 @@ export declare const applicationName: string | null;
  * @example `"com.cocoacasts.scribbles"`, `"com.apple.Pages"`
  */
 export declare const applicationId: string | null;
+/**
+ * Returns the compiled Apple `Info.plist` for the app. This function is `undefined` on Android and web.
+ *
+ * @example `{"CFBundleDevelopmentRegion": "en", "CFBundleExecutable": "Scribbles", ...}`
+ * @platform ios
+ */
+export declare const getAppleInfoPlist: (() => Record<string, JSONObject>) | undefined;
 /**
  * Gets the value of [`Settings.Secure.ANDROID_ID`](https://developer.android.com/reference/android/provider/Settings.Secure.html#ANDROID_ID).
  * This is a hexadecimal `string` unique to each combination of app-signing key, user, and device.

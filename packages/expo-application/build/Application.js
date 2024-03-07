@@ -45,6 +45,14 @@ export const applicationId = ExpoApplication
     : null;
 // @needsAudit
 /**
+ * Returns the compiled Apple `Info.plist` for the app. This function is `undefined` on Android and web.
+ *
+ * @example `{"CFBundleDevelopmentRegion": "en", "CFBundleExecutable": "Scribbles", ...}`
+ * @platform ios
+ */
+export const getAppleInfoPlist = ExpoApplication?.getAppleInfoPlist;
+// @needsAudit
+/**
  * Gets the value of [`Settings.Secure.ANDROID_ID`](https://developer.android.com/reference/android/provider/Settings.Secure.html#ANDROID_ID).
  * This is a hexadecimal `string` unique to each combination of app-signing key, user, and device.
  * The value may change if a factory reset is performed on the device or if an APK signing key changes.
