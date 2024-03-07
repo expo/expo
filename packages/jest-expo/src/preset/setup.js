@@ -28,6 +28,7 @@ if (typeof globalThis.__REACT_DEVTOOLS_GLOBAL_HOOK__ === 'undefined') {
       values: () => [],
     },
     on() {}, // https://github.com/facebook/react-native/blob/fbbb4246707d85b692c006e0cb3b186a7c9068bc/packages/react-native/Libraries/Inspector/getInspectorDataForViewAtPoint.js#L45
+    off() {},
   };
   // React is inconsistent with how it checks for the global hook
   globalThis.window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = globalThis.__REACT_DEVTOOLS_GLOBAL_HOOK__;
