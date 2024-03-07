@@ -10,6 +10,7 @@ const promises_1 = __importDefault(require("fs/promises"));
 const p_limit_1 = __importDefault(require("p-limit"));
 const path_1 = __importDefault(require("path"));
 const Path_1 = require("../utils/Path");
+const Predicates_1 = require("../utils/Predicates");
 const Profile_1 = require("../utils/Profile");
 /**
  * Create a `Fingerprint` from `HashSources` array
@@ -50,7 +51,11 @@ async function createFingerprintSourceAsync(source, limiter, projectRoot, option
         default:
             throw new Error('Unsupported source type');
     }
-    return { ...source, hash: result?.hex ?? null };
+    return {
+        ...source,
+        hash: result?.hex ?? null,
+        ...(options.debug ? { debugInfo: result?.debugInfo } : undefined),
+    };
 }
 exports.createFingerprintSourceAsync = createFingerprintSourceAsync;
 /**
@@ -89,7 +94,12 @@ async function createFileHashResultsAsync(filePath, limiter, projectRoot, option
             stream.on('close', () => {
                 if (!resolved) {
                     const hex = hasher.digest('hex');
-                    resolve({ id: filePath, hex });
+                    resolve({
+                        type: 'file',
+                        id: filePath,
+                        hex,
+                        ...(options.debug ? { debugInfo: { path: filePath, hash: hex } } : undefined),
+                    });
                     resolved = true;
                 }
             });
@@ -112,28 +122,34 @@ async function createDirHashResultsAsync(dirPath, limiter, projectRoot, options,
         return null;
     }
     const dirents = (await promises_1.default.readdir(path_1.default.join(projectRoot, dirPath), { withFileTypes: true })).sort((a, b) => a.name.localeCompare(b.name));
-    const promises = [];
-    for (const dirent of dirents) {
+    const results = (await Promise.all(dirents.map(async (dirent) => {
         if (dirent.isDirectory()) {
             const filePath = path_1.default.join(dirPath, dirent.name);
-            promises.push(createDirHashResultsAsync(filePath, limiter, projectRoot, options, depth + 1));
+            return await createDirHashResultsAsync(filePath, limiter, projectRoot, options, depth + 1);
         }
         else if (dirent.isFile()) {
             const filePath = path_1.default.join(dirPath, dirent.name);
-            promises.push(createFileHashResultsAsync(filePath, limiter, projectRoot, options));
+            return await createFileHashResultsAsync(filePath, limiter, projectRoot, options);
         }
-    }
-    const hasher = (0, crypto_1.createHash)(options.hashAlgorithm);
-    const results = (await Promise.all(promises)).filter((result) => result != null);
+        return null;
+    }))).filter(Predicates_1.nonNullish);
     if (results.length === 0) {
         return null;
     }
+    const hasher = (0, crypto_1.createHash)(options.hashAlgorithm);
+    const children = [];
     for (const result of results) {
         hasher.update(result.id);
         hasher.update(result.hex);
+        children.push(result.debugInfo);
     }
     const hex = hasher.digest('hex');
-    return { id: dirPath, hex };
+    return {
+        type: 'dir',
+        id: dirPath,
+        hex,
+        ...(options.debug ? { debugInfo: { path: dirPath, children, hash: hex } } : undefined),
+    };
 }
 exports.createDirHashResultsAsync = createDirHashResultsAsync;
 /**
@@ -141,7 +157,12 @@ exports.createDirHashResultsAsync = createDirHashResultsAsync;
  */
 async function createContentsHashResultsAsync(source, options) {
     const hex = (0, crypto_1.createHash)(options.hashAlgorithm).update(source.contents).digest('hex');
-    return { id: source.id, hex };
+    return {
+        type: 'contents',
+        id: source.id,
+        hex,
+        ...(options.debug ? { debugInfo: { hash: hex } } : undefined),
+    };
 }
 exports.createContentsHashResultsAsync = createContentsHashResultsAsync;
 /**

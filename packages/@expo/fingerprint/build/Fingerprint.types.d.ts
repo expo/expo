@@ -5,6 +5,11 @@ export type FingerprintSource = HashSource & {
      * If the source is excluding by `Options.dirExcludes`, the value will be null.
      */
     hash: string | null;
+    /**
+     * Debug info from the hashing process. Differs based on source type. Designed to be consumed by humans
+     * as opposed to programmatically.
+     */
+    debugInfo?: DebugInfo;
 };
 export interface Fingerprint {
     /**
@@ -55,6 +60,10 @@ export interface Options {
      * part of a CLI that outputs a fingerprint and outputting anything else pollutes the results.
      */
     silent?: boolean;
+    /**
+     * Whether to include verbose debug info in source output. Useful for debugging.
+     */
+    debug?: boolean;
 }
 export interface NormalizedOptions extends Options {
     platforms: NonNullable<Options['platforms']>;
@@ -88,7 +97,35 @@ export interface HashSourceContents {
     reasons: string[];
 }
 export type HashSource = HashSourceFile | HashSourceDir | HashSourceContents;
-export interface HashResult {
+export interface DebugInfoFile {
+    path: string;
+    hash: string;
+}
+export interface DebugInfoDir {
+    path: string;
+    hash: string;
+    children: (DebugInfoFile | DebugInfoDir | undefined)[];
+}
+export interface DebugInfoContents {
+    hash: string;
+}
+export type DebugInfo = DebugInfoFile | DebugInfoDir | DebugInfoContents;
+export interface HashResultFile {
+    type: 'file';
     id: string;
     hex: string;
+    debugInfo?: DebugInfoFile;
 }
+export interface HashResultDir {
+    type: 'dir';
+    id: string;
+    hex: string;
+    debugInfo?: DebugInfoDir;
+}
+export interface HashResultContents {
+    type: 'contents';
+    id: string;
+    hex: string;
+    debugInfo?: DebugInfoContents;
+}
+export type HashResult = HashResultFile | HashResultDir | HashResultContents;
