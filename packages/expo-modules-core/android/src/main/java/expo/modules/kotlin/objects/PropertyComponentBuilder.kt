@@ -4,7 +4,6 @@ import expo.modules.kotlin.functions.SyncFunctionComponent
 import expo.modules.kotlin.types.AnyType
 import expo.modules.kotlin.types.toAnyType
 import kotlin.reflect.KType
-import kotlin.reflect.typeOf
 
 open class PropertyComponentBuilder(
   val name: String
@@ -16,14 +15,14 @@ open class PropertyComponentBuilder(
    * Modifier that sets property getter that has no arguments (the caller is not used).
    */
   inline fun <T> get(crossinline body: () -> T) = apply {
-    getter = SyncFunctionComponent("get", arrayOf()) { body() }
+    getter = SyncFunctionComponent("get", emptyArray()) { body() }
   }
 
   /**
    * Modifier that sets property setter that receives only the new value as an argument.
    */
   inline fun <reified T> set(crossinline body: (newValue: T) -> Unit) = apply {
-    setter = SyncFunctionComponent("set", arrayOf({ typeOf<T>() }.toAnyType<T>())) { body(it[0] as T) }
+    setter = SyncFunctionComponent("set", arrayOf(toAnyType<T>())) { body(it[0] as T) }
   }
 
   fun build(): PropertyComponent {
@@ -53,7 +52,7 @@ class PropertyComponentBuilderWithThis<ThisType>(
    * Modifier that sets property setter that receives only the new value as an argument.
    */
   inline fun <reified T> set(crossinline body: (self: ThisType, newValue: T) -> Unit) = apply {
-    setter = SyncFunctionComponent("set", arrayOf(AnyType(thisType), { typeOf<T>() }.toAnyType<T>())) {
+    setter = SyncFunctionComponent("set", arrayOf(AnyType(thisType), toAnyType<T>())) {
       @Suppress("UNCHECKED_CAST")
       body(it[0] as ThisType, it[1] as T)
     }.also {

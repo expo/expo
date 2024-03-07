@@ -5,6 +5,7 @@ import expo.modules.kotlin.jni.ExpectedType
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.KTypeProjection
+import kotlin.reflect.typeOf
 
 class LazyKType(
   override val classifier: KClass<*>,
@@ -50,6 +51,10 @@ inline fun <reified T> (() -> KType).toAnyType() = AnyType(
     kTypeProvider = this
   )
 )
+
+inline fun <reified T> toAnyType(): AnyType {
+  return { typeOf<T>() }.toAnyType<T>()
+}
 
 class AnyType(
   val kType: KType
