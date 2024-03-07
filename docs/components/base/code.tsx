@@ -3,12 +3,17 @@ import { mergeClasses, theme, Themes, typography } from '@expo/styleguide';
 import { borderRadius, spacing } from '@expo/styleguide-base';
 import { FileCode01Icon, LayoutAlt01Icon, Server03Icon } from '@expo/styleguide-icons';
 import { Language, Prism } from 'prism-react-renderer';
-import * as React from 'react';
+import { useEffect, useRef, useState, type PropsWithChildren, Children } from 'react';
 import tippy, { roundArrow } from 'tippy.js';
 
 import { useCodeBlockSettingsContext } from '~/providers/CodeBlockSettingsProvider';
 import { Snippet } from '~/ui/components/Snippet/Snippet';
 import { SnippetContent } from '~/ui/components/Snippet/SnippetContent';
+import {
+  EXPAND_SNIPPET_BOUND,
+  EXPAND_SNIPPET_BOUND_CLASSNAME,
+  SnippetExpandOverlay,
+} from '~/ui/components/Snippet/SnippetExpandOverlay';
 import { SnippetHeader } from '~/ui/components/Snippet/SnippetHeader';
 import { CopyAction } from '~/ui/components/Snippet/actions/CopyAction';
 import { SettingsAction } from '~/ui/components/Snippet/actions/SettingsAction';
@@ -139,10 +144,12 @@ function parseValue(value: string) {
   };
 }
 
-export function Code({ className, children }: React.PropsWithChildren<Props>) {
+export function Code({ className, children }: PropsWithChildren<Props>) {
+  const contentRef = useRef<HTMLPreElement>(null);
   const { preferredTheme, wordWrap } = useCodeBlockSettingsContext();
+  const [isExpanded, setExpanded] = useState(true);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const tippyFunc = testTippy || tippy;
     tippyFunc('.code-annotation.with-tooltip', {
       allowHTML: true,
@@ -153,6 +160,10 @@ export function Code({ className, children }: React.PropsWithChildren<Props>) {
       offset: [0, 20],
       appendTo: document.body,
     });
+
+    if (contentRef?.current?.clientHeight) {
+      setExpanded(!(contentRef.current.clientHeight > EXPAND_SNIPPET_BOUND));
+    }
   }, []);
 
   // note(simek): MDX dropped `inlineCode` pseudo-tag, and we need to relay on `pre` and `code` now,
@@ -160,7 +171,7 @@ export function Code({ className, children }: React.PropsWithChildren<Props>) {
   const rootProps =
     className && className.startsWith('language')
       ? { className, children }
-      : (React.Children.toArray(children)[0] as JSX.Element)?.props;
+      : (Children.toArray(children)[0] as JSX.Element)?.props;
 
   const value = parseValue(rootProps?.children?.toString() || '');
   let html = value.value;
@@ -199,26 +210,36 @@ export function Code({ className, children }: React.PropsWithChildren<Props>) {
       </SnippetHeader>
       <SnippetContent className="p-0">
         <pre
+          ref={contentRef}
           css={STYLES_CODE_CONTAINER}
-          className={mergeClasses(wordWrap && '!whitespace-pre-wrap !break-words')}
+          className={mergeClasses(
+            'relative',
+            wordWrap && '!whitespace-pre-wrap !break-words',
+            isExpanded ? 'max-h-[unset]' : `!overflow-hidden ${EXPAND_SNIPPET_BOUND_CLASSNAME}`
+          )}
           {...attributes}>
           <code
             css={STYLES_CODE_BLOCK}
             dangerouslySetInnerHTML={{ __html: html.replace(/^@@@.+@@@/g, '') }}
           />
+          {!isExpanded && <SnippetExpandOverlay onClick={() => setExpanded(true)} />}
         </pre>
       </SnippetContent>
     </Snippet>
   ) : (
     <pre
+      ref={contentRef}
       css={[STYLES_CODE_CONTAINER, STYLES_CODE_CONTAINER_BLOCK]}
       className={mergeClasses(
+        'relative',
         preferredTheme === Themes.DARK && 'dark-theme',
         wordWrap && '!whitespace-pre-wrap !break-words',
+        isExpanded ? 'max-h-[unset]' : `!overflow-hidden ${EXPAND_SNIPPET_BOUND_CLASSNAME}`,
         'last:mb-0'
       )}
       {...attributes}>
       <code css={STYLES_CODE_BLOCK} dangerouslySetInnerHTML={{ __html: html }} />
+      {!isExpanded && <SnippetExpandOverlay onClick={() => setExpanded(true)} />}
     </pre>
   );
 }
@@ -295,7 +316,7 @@ const codeBlockInlineContainerStyle = {
   padding: 0,
 };
 
-type CodeBlockProps = React.PropsWithChildren<{ inline?: boolean; theme?: TextTheme }>;
+type CodeBlockProps = PropsWithChildren<{ inline?: boolean; theme?: TextTheme }>;
 
 export const CodeBlock = ({ children, theme, inline = false }: CodeBlockProps) => {
   const Element = inline ? 'span' : 'pre';
