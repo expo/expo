@@ -29,20 +29,20 @@ it(`sorts different route types`, () => {
   ).toEqual({
     apiRoutes: [
       expect.objectContaining({
-        page: './b+api',
+        file: './b+api.tsx',
       }),
     ],
     htmlRoutes: [
       expect.objectContaining({
-        page: './a',
+        file: './a.js',
       }),
     ],
     notFoundRoutes: [
       expect.objectContaining({
-        page: './c/+not-found',
+        file: './c/+not-found.tsx',
       }),
       expect.objectContaining({
-        page: './+not-found',
+        file: './+not-found.ts',
       }),
     ],
   });
@@ -54,19 +54,13 @@ it(`converts a server manifest`, () => {
       {
         file: './api/[post]+api.tsx',
         namedRegex: '^/api/(?<post>[^/]+?)(?:/)?$',
-        page: './api/[post]+api',
+        page: '/api/[post]',
         routeKeys: { post: 'post' },
       },
     ],
-    htmlRoutes: [{ file: './home.js', namedRegex: '^/home(?:/)?$', page: './home', routeKeys: {} }],
+    htmlRoutes: [{ file: './home.js', namedRegex: '^/home(?:/)?$', page: '/home', routeKeys: {} }],
     notFoundRoutes: [],
   });
-});
-
-xit(`converts single basic`, () => {
-  expect(getServerManifest(getRoutesFor(['./home.js']))).toEqual([
-    { namedRegex: '^/home(?:/)?$', routeKeys: {} },
-  ]);
 });
 
 describe(parseParameter, () => {
@@ -101,7 +95,7 @@ it(`supports groups`, () => {
       {
         file: './(a)/b.tsx',
         namedRegex: '^(?:/\\(a\\))?/b(?:/)?$',
-        page: './(a)/b',
+        page: '/(a)/b',
         routeKeys: {},
       },
     ],
@@ -115,17 +109,17 @@ it(`converts index routes`, () => {
   ).toEqual({
     apiRoutes: [],
     htmlRoutes: [
-      { file: './index.tsx', namedRegex: '^/(?:/)?$', page: './index', routeKeys: {} },
+      { file: './index.tsx', namedRegex: '^/(?:/)?$', page: '/index', routeKeys: {} },
       {
         file: './a/index/b.tsx',
         namedRegex: '^/a/index/b(?:/)?$',
-        page: './a/index/b',
+        page: '/a/index/b',
         routeKeys: {},
       },
       {
         file: './a/index/index.js',
         namedRegex: '^/a/index(?:/)?$',
-        page: './a/index/index',
+        page: '/a/index/index',
         routeKeys: {},
       },
     ],
@@ -199,19 +193,19 @@ it(`converts dynamic routes`, () => {
       {
         file: './c/[d]/e/[...f].js',
         namedRegex: '^/c/(?<d>[^/]+?)/e(?:/(?<f>.+?))?(?:/)?$',
-        page: './c/[d]/e/[...f]',
+        page: '/c/[d]/e/[...f]',
         routeKeys: { d: 'd', f: 'f' },
       },
       {
         file: './[a].tsx',
         namedRegex: '^/(?<a>[^/]+?)(?:/)?$',
-        page: './[a]',
+        page: '/[a]',
         routeKeys: { a: 'a' },
       },
       {
         file: './[...b].tsx',
         namedRegex: '^(?:/(?<b>.+?))?(?:/)?$',
-        page: './[...b]',
+        page: '/[...b]',
         routeKeys: { b: 'b' },
       },
     ],
@@ -229,31 +223,31 @@ it(`converts dynamic routes on same level with specificity`, () => {
       {
         file: './index.tsx',
         namedRegex: '^/(?:/)?$',
-        page: './index',
+        page: '/index',
         routeKeys: {},
       },
       {
         file: './a.tsx',
         namedRegex: '^/a(?:/)?$',
-        page: './a',
+        page: '/a',
         routeKeys: {},
       },
       {
         file: './(a)/[a].tsx',
         namedRegex: '^(?:/\\(a\\))?/(?<a>[^/]+?)(?:/)?$',
-        page: './(a)/[a]',
+        page: '/(a)/[a]',
         routeKeys: { a: 'a' },
       },
       {
         file: './[a].tsx',
         namedRegex: '^/(?<a>[^/]+?)(?:/)?$',
-        page: './[a]',
+        page: '/[a]',
         routeKeys: { a: 'a' },
       },
       {
         file: './[...a].tsx',
         namedRegex: '^(?:/(?<a>.+?))?(?:/)?$',
-        page: './[...a]',
+        page: '/[...a]',
         routeKeys: { a: 'a' },
       },
     ],
@@ -261,14 +255,242 @@ it(`converts dynamic routes on same level with specificity`, () => {
   });
 
   for (const [matcher, page] of [
-    ['/', './index'],
-    ['/a', './a'],
-    ['/b', './(a)/[a]'],
+    ['/', './index.tsx'],
+    ['/a', './a.tsx'],
+    ['/b', './(a)/[a].tsx'],
   ]) {
-    expect(routesManifest.htmlRoutes.find((r) => new RegExp(r.namedRegex).test(matcher)).page).toBe(
+    expect(routesManifest.htmlRoutes.find((r) => new RegExp(r.namedRegex).test(matcher)).file).toBe(
       page
     );
   }
+});
+
+it(`converts array syntax API routes`, () => {
+  const routesFor = getRoutesFor(['./(a,b)/foo+api.tsx']);
+  expect(routesFor).toEqual({
+    children: [
+      {
+        children: [],
+        contextKey: './(a,b)/foo+api.tsx',
+        dynamic: null,
+        loadRoute: expect.anything(),
+        route: '(a)/foo',
+        type: 'api',
+      },
+      {
+        children: [],
+        contextKey: './(a,b)/foo+api.tsx',
+        dynamic: null,
+        loadRoute: expect.anything(),
+        route: '(b)/foo',
+        type: 'api',
+      },
+    ],
+    contextKey: 'expo-router/build/views/Navigator.js',
+    dynamic: null,
+    loadRoute: expect.anything(),
+    generated: true,
+    route: '',
+    type: 'layout',
+  });
+  const routesManifest = getServerManifest(routesFor);
+  expect(routesManifest).toEqual({
+    apiRoutes: [
+      // Should only be one API route entry.
+      {
+        file: './(a,b)/foo+api.tsx',
+        namedRegex: '^(?:/\\((?:a|b)\\))?/foo(?:/)?$',
+        routeKeys: {},
+        // NOTE: This isn't correct, but page isn't used with API Routes.
+        page: '/(b)/foo',
+      },
+    ],
+    htmlRoutes: [],
+    notFoundRoutes: [],
+  });
+
+  const match = (url: string) => {
+    return routesManifest.apiRoutes.find((r) => new RegExp(r.namedRegex).test(url))?.file;
+  };
+
+  const matches = (url: string) => {
+    expect(match(url)).toBe('./(a,b)/foo+api.tsx');
+  };
+
+  matches('/foo');
+  matches('/(a)/foo');
+  matches('/(b)/foo');
+
+  // Cannot match the exact array syntax
+  expect(match('/(a,b)/foo')).toBeUndefined();
+  // No special variation
+  expect(match('/(a,)/foo')).toBeUndefined();
+  expect(match('/(a )/foo')).toBeUndefined();
+  expect(match('/(, a )/foo')).toBeUndefined();
+});
+
+it(`converts array syntax HTML routes`, () => {
+  const routesFor = getRoutesFor(['./(a,b)/foo.tsx']);
+  expect(routesFor).toEqual({
+    children: [
+      {
+        children: [],
+        contextKey: './(a,b)/foo.tsx',
+        entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/foo.tsx'],
+        dynamic: null,
+        loadRoute: expect.anything(),
+        route: '(a)/foo',
+        type: 'route',
+      },
+      {
+        children: [],
+        contextKey: './(a,b)/foo.tsx',
+        entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/foo.tsx'],
+        dynamic: null,
+        loadRoute: expect.anything(),
+        route: '(b)/foo',
+        type: 'route',
+      },
+    ],
+    contextKey: 'expo-router/build/views/Navigator.js',
+    dynamic: null,
+    loadRoute: expect.anything(),
+    generated: true,
+    route: '',
+    type: 'layout',
+  });
+  const routesManifest = getServerManifest(routesFor);
+  expect(routesManifest).toEqual({
+    apiRoutes: [],
+    htmlRoutes: [
+      {
+        file: './(a,b)/foo.tsx',
+        namedRegex: '^(?:/\\(b\\))?/foo(?:/)?$',
+        page: '/(b)/foo',
+        routeKeys: {},
+      },
+      {
+        file: './(a,b)/foo.tsx',
+        namedRegex: '^(?:/\\(a\\))?/foo(?:/)?$',
+        page: '/(a)/foo',
+        routeKeys: {},
+      },
+    ],
+    notFoundRoutes: [],
+  });
+
+  const match = (url: string) => {
+    return routesManifest.htmlRoutes.find((r) => new RegExp(r.namedRegex).test(url))?.file;
+  };
+
+  const matches = (url: string) => {
+    expect(match(url)).toBe('./(a,b)/foo.tsx');
+  };
+
+  matches('/foo');
+  matches('/(a)/foo');
+  matches('/(b)/foo');
+
+  // Cannot match the exact array syntax
+  expect(match('/(a,b)/foo')).toBeUndefined();
+  // No special variation
+  expect(match('/(a,)/foo')).toBeUndefined();
+  expect(match('/(a )/foo')).toBeUndefined();
+  expect(match('/(, a )/foo')).toBeUndefined();
+});
+
+it(`converts top-level array syntax HTML routes`, () => {
+  const routesManifest = getServerManifest(getRoutesFor(['./(a,b)/index.tsx']));
+  expect(routesManifest).toEqual({
+    apiRoutes: [],
+    htmlRoutes: [
+      {
+        file: './(a,b)/index.tsx',
+        namedRegex: '^(?:/\\(b\\))?(?:/)?$',
+        page: '/(b)/index',
+        routeKeys: {},
+      },
+      {
+        file: './(a,b)/index.tsx',
+        namedRegex: '^(?:/\\(a\\))?(?:/)?$',
+        page: '/(a)/index',
+        routeKeys: {},
+      },
+    ],
+    notFoundRoutes: [],
+  });
+
+  const match = (url: string) => {
+    return routesManifest.htmlRoutes.find((r) => new RegExp(r.namedRegex).test(url))?.file;
+  };
+
+  expect(match('/')).toBeDefined();
+  expect(match('/(a)')).toBeDefined();
+  expect(match('/(a)/')).toBeDefined();
+  expect(match('/(b)')).toBeDefined();
+  //
+  expect(match('/(a,b)')).toBeUndefined();
+});
+
+it(`converts nested array syntax HTML routes`, () => {
+  const routesFor = getRoutesFor(['./(a,b)/(c, d)/foo.tsx']);
+  const routesManifest = getServerManifest(routesFor);
+  expect(routesManifest).toEqual({
+    apiRoutes: [],
+    htmlRoutes: [
+      {
+        file: './(a,b)/(c, d)/foo.tsx',
+        namedRegex: '^(?:/\\(b\\))?(?:/\\(d\\))?/foo(?:/)?$',
+        page: '/(b)/(d)/foo',
+        routeKeys: {},
+      },
+      {
+        file: './(a,b)/(c, d)/foo.tsx',
+        namedRegex: '^(?:/\\(b\\))?(?:/\\(c\\))?/foo(?:/)?$',
+        page: '/(b)/(c)/foo',
+        routeKeys: {},
+      },
+      {
+        file: './(a,b)/(c, d)/foo.tsx',
+        namedRegex: '^(?:/\\(a\\))?(?:/\\(d\\))?/foo(?:/)?$',
+        page: '/(a)/(d)/foo',
+        routeKeys: {},
+      },
+      {
+        file: './(a,b)/(c, d)/foo.tsx',
+        namedRegex: '^(?:/\\(a\\))?(?:/\\(c\\))?/foo(?:/)?$',
+        page: '/(a)/(c)/foo',
+        routeKeys: {},
+      },
+    ],
+    notFoundRoutes: [],
+  });
+
+  const match = (url: string) => {
+    return routesManifest.htmlRoutes.find((r) => new RegExp(r.namedRegex).test(url))?.file;
+  };
+
+  const matches = (url: string) => {
+    expect(match(url)).toBe('./(a,b)/(c, d)/foo.tsx');
+  };
+
+  matches('/foo');
+  matches('/(a)/foo');
+  matches('/(b)/foo');
+  matches('/(c)/foo');
+  matches('/(d)/foo');
+  matches('/(a)/(c)/foo');
+  matches('/(b)/(d)/foo');
+
+  // Cannot match the exact array syntax
+  expect(match('/(a,b)/foo')).toBeUndefined();
+  expect(match('/(a)/(b)/foo')).toBeUndefined();
+  expect(match('/(a)/(c,d)/foo')).toBeUndefined();
+  expect(match('/(c,d)/foo')).toBeUndefined();
+  // No special variation
+  expect(match('/(a,)/foo')).toBeUndefined();
+  expect(match('/(a )/foo')).toBeUndefined();
+  expect(match('/(, a )/foo')).toBeUndefined();
 });
 
 it(`matches top-level catch-all before +not-found route`, () => {
@@ -279,7 +501,7 @@ it(`matches top-level catch-all before +not-found route`, () => {
       {
         file: './[...a].tsx',
         namedRegex: '^(?:/(?<a>.+?))?(?:/)?$',
-        page: './[...a]',
+        page: '/[...a]',
         routeKeys: { a: 'a' },
       },
     ],
@@ -287,20 +509,20 @@ it(`matches top-level catch-all before +not-found route`, () => {
       {
         file: './+not-found.tsx',
         namedRegex: '^(?:/(?<notfound>.+?))?(?:/)?$',
-        page: './+not-found',
+        page: '/+not-found',
         routeKeys: { notfound: 'not-found' },
       },
     ],
   });
 
   for (const [matcher, page] of [
-    ['', './[...a]'],
-    ['/', './[...a]'],
-    ['//', './[...a]'],
-    ['/a', './[...a]'],
-    ['/b/c/', './[...a]'],
+    ['', './[...a].tsx'],
+    ['/', './[...a].tsx'],
+    ['//', './[...a].tsx'],
+    ['/a', './[...a].tsx'],
+    ['/b/c/', './[...a].tsx'],
   ]) {
-    expect(routesManifest.htmlRoutes.find((r) => new RegExp(r.namedRegex).test(matcher)).page).toBe(
+    expect(routesManifest.htmlRoutes.find((r) => new RegExp(r.namedRegex).test(matcher)).file).toBe(
       page
     );
   }

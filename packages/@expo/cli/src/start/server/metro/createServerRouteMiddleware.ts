@@ -125,7 +125,7 @@ export function createRouteHandlerMiddleware(
           warnInvalidWebOutput();
         }
 
-        const resolvedFunctionPath = await resolveAsync(route.page, {
+        const resolvedFunctionPath = await resolveAsync(route.file, {
           extensions: ['.js', '.jsx', '.ts', '.tsx'],
           basedir: options.appDir,
         })!;

@@ -4,15 +4,15 @@ exports.stateCache = exports.getLinkingConfig = exports.getNavigationConfig = vo
 const native_1 = require("@react-navigation/native");
 const getReactNavigationConfig_1 = require("./getReactNavigationConfig");
 const linking_1 = require("./link/linking");
-function getNavigationConfig(routes) {
-    return (0, getReactNavigationConfig_1.getReactNavigationConfig)(routes, true);
+function getNavigationConfig(routes, metaOnly = true) {
+    return (0, getReactNavigationConfig_1.getReactNavigationConfig)(routes, metaOnly);
 }
 exports.getNavigationConfig = getNavigationConfig;
-function getLinkingConfig(routes) {
+function getLinkingConfig(routes, metaOnly = true) {
     return {
         prefixes: [],
         // @ts-expect-error
-        config: getNavigationConfig(routes),
+        config: getNavigationConfig(routes, metaOnly),
         // A custom getInitialURL is used on native to ensure the app always starts at
         // the root path if it's launched from something other than a deep link.
         // This helps keep the native functionality working like the web functionality.

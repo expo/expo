@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix using array syntax `(a,b)` with server output. ([#27462](https://github.com/expo/expo/pull/27462) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix issue with skipping all imports. ([#27238](https://github.com/expo/expo/pull/27238) by [@EvanBacon](https://github.com/EvanBacon))
 - Include search parameters in the default Screen.getId() function. ([#26710](https://github.com/expo/expo/pull/26710) by [@marklawlor](https://github.com/marklawlor))
 - Fix sitemap missing paths ([#26507](https://github.com/expo/expo/pull/26507) by [@marklawlor](https://github.com/marklawlor))

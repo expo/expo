@@ -29,6 +29,20 @@ describe('server-output', () => {
     560 * 1000
   );
 
+  function getFiles() {
+    // List output files with sizes for snapshotting.
+    // This is to make sure that any changes to the output are intentional.
+    // Posix path formatting is used to make paths the same across OSes.
+    return klawSync(outputDir)
+      .map((entry) => {
+        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
+          return null;
+        }
+        return path.posix.relative(outputDir, entry.path);
+      })
+      .filter(Boolean);
+  }
+
   describe('requests', () => {
     beforeAll(async () => {
       await ensurePortFreeAsync(3000);
@@ -124,6 +138,60 @@ describe('server-output', () => {
       expect(
         await fetch('http://localhost:3000/clearly-missing').then((res) => res.text())
       ).toMatch(/<div id="root">/);
+    });
+
+    it(`can serve up static html in array group`, async () => {
+      expect(getFiles()).not.toContain('server/multi-group.html');
+      expect(getFiles()).not.toContain('server/(a,b)/multi-group.html');
+      expect(getFiles()).toContain('server/(a)/multi-group.html');
+      expect(getFiles()).toContain('server/(b)/multi-group.html');
+      expect(await fetch('http://localhost:3000/multi-group').then((res) => res.text())).toMatch(
+        /<div data-testid="multi-group">/
+      );
+    });
+
+    it(`can serve up static html in specific array group`, async () => {
+      expect(
+        await fetch('http://localhost:3000/(a)/multi-group').then((res) => res.text())
+      ).toMatch(/<div data-testid="multi-group">/);
+
+      expect(
+        await fetch('http://localhost:3000/(b)/multi-group').then((res) => res.text())
+      ).toMatch(/<div data-testid="multi-group">/);
+    });
+
+    it(`can not serve up static html in retained array group syntax`, async () => {
+      // Should not be able to match the array syntax
+      expect(
+        await fetch('http://localhost:3000/(a,b)/multi-group').then((res) => res.status)
+      ).toEqual(404);
+    });
+
+    it(`can serve up API route in array group`, async () => {
+      expect(getFiles()).toContain('server/_expo/functions/(a,b)/multi-group-api+api.js');
+      expect(getFiles()).not.toContain('server/_expo/functions/(a)/multi-group-api+api.js');
+      expect(getFiles()).not.toContain('server/_expo/functions/(b)/multi-group-api+api.js');
+
+      expect(
+        await fetch('http://localhost:3000/multi-group-api').then((res) => res.json())
+      ).toEqual({ value: 'multi-group-api-get' });
+    });
+
+    it(`can serve up API route in specific array group`, async () => {
+      // Should be able to match all the group variations
+      expect(
+        await fetch('http://localhost:3000/(a)/multi-group-api').then((res) => res.json())
+      ).toEqual({ value: 'multi-group-api-get' });
+      expect(
+        await fetch('http://localhost:3000/(b)/multi-group-api').then((res) => res.json())
+      ).toEqual({ value: 'multi-group-api-get' });
+    });
+
+    it(`can not serve up API route in retained array group syntax`, async () => {
+      // Should not be able to match the array syntax
+      expect(
+        await fetch('http://localhost:3000/(a,b)/multi-group-api').then((res) => res.status)
+      ).toEqual(404);
     });
 
     it(
@@ -269,14 +337,7 @@ describe('server-output', () => {
       // List output files with sizes for snapshotting.
       // This is to make sure that any changes to the output are intentional.
       // Posix path formatting is used to make paths the same across OSes.
-      const files = klawSync(outputDir)
-        .map((entry) => {
-          if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-            return null;
-          }
-          return path.posix.relative(outputDir, entry.path);
-        })
-        .filter(Boolean);
+      const files = getFiles();
 
       // The wrapper should not be included as a route.
       expect(files).not.toContain('server/+html.html');

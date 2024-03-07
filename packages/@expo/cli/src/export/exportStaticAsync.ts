@@ -7,6 +7,7 @@
 import assert from 'assert';
 import chalk from 'chalk';
 import { RouteNode } from 'expo-router/build/Route';
+import { stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 import { inspect } from 'util';
@@ -285,6 +286,7 @@ export function getHtmlFiles({
 
       if (leaf != null) {
         let filePath = baseUrl + leaf;
+
         if (leaf === '') {
           filePath =
             baseUrl === ''
@@ -292,6 +294,11 @@ export function getHtmlFiles({
               : baseUrl.endsWith('/')
                 ? baseUrl + 'index'
                 : baseUrl.slice(0, -1);
+        } else if (
+          // If the path is a collection of group segments leading to an index route, append `/index`.
+          stripGroupSegmentsFromPath(filePath) === ''
+        ) {
+          filePath += '/index';
         }
 
         // This should never happen, the type of `string | object` originally comes from React Navigation.

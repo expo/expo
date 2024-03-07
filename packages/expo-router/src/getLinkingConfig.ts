@@ -10,22 +10,25 @@ import {
   getStateFromPath,
 } from './link/linking';
 
-export function getNavigationConfig(routes: RouteNode): {
+export function getNavigationConfig(
+  routes: RouteNode,
+  metaOnly: boolean = true
+): {
   initialRouteName?: string;
   screens: Record<string, Screen>;
 } {
-  return getReactNavigationConfig(routes, true);
+  return getReactNavigationConfig(routes, metaOnly);
 }
 
 export type ExpoLinkingOptions = LinkingOptions<object> & {
   getPathFromState?: typeof getPathFromState;
 };
 
-export function getLinkingConfig(routes: RouteNode): ExpoLinkingOptions {
+export function getLinkingConfig(routes: RouteNode, metaOnly: boolean = true): ExpoLinkingOptions {
   return {
     prefixes: [],
     // @ts-expect-error
-    config: getNavigationConfig(routes),
+    config: getNavigationConfig(routes, metaOnly),
     // A custom getInitialURL is used on native to ensure the app always starts at
     // the root path if it's launched from something other than a deep link.
     // This helps keep the native functionality working like the web functionality.
