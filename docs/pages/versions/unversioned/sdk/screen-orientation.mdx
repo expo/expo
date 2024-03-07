@@ -4,6 +4,7 @@ description: A universal library for managing a device's screen orientation.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-screen-orientation'
 packageName: 'expo-screen-orientation'
 iconUrl: '/static/images/packages/expo-screen-orientation.png'
+platforms: ['android', 'ios', 'web']
 ---
 
 import {
@@ -11,11 +12,9 @@ import {
   ConfigPluginExample,
   ConfigPluginProperties,
 } from '~/components/plugins/ConfigSection';
-import { palette } from '@expo/styleguide';
 import APISection from '~/components/plugins/APISection';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 Screen Orientation is defined as the orientation in which graphics are painted on the device. For example, the figure below has a device in a vertical and horizontal physical orientation, but a portrait screen orientation. For physical device orientation, see the orientation section of [Device Motion](devicemotion.mdx).
 
@@ -27,8 +26,6 @@ Screen Orientation is defined as the orientation in which graphics are painted o
 On both Android and iOS platforms, changes to the screen orientation will override any system settings or user preferences. On Android, it is possible to change the screen orientation while taking the user's preferred orientation into account. On iOS, user and system settings are not accessible by the application and any changes to the screen orientation will override existing settings.
 
 > Web has [limited support](https://caniuse.com/#feat=deviceorientation).
-
-<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 

@@ -4,11 +4,11 @@ description: A library that provides a way to encrypt and securely store key-val
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-secure-store'
 packageName: 'expo-secure-store'
 iconUrl: '/static/images/packages/expo-secure-store.png'
+platforms: ['android', 'ios']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 import {
   ConfigPluginExample,
   ConfigReactNative,
@@ -21,8 +21,6 @@ import { SnackInline } from '~/ui/components/Snippet';
 **Size limit for a value is 2048 bytes. An attempt to store larger values may fail. Currently, we print a warning when the limit is reached, however, in a future SDK version an error might be thrown.**
 
 **The `requireAuthentication` option is not supported in Expo Go when biometric authentication is available due to a missing `NSFaceIDUsageDescription` key.**
-
-<PlatformsSection android emulator ios simulator />
 
 > This API is not compatible with devices running Android 5 or lower.
 

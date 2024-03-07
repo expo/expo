@@ -4,11 +4,11 @@ description: A cross-platform and performant React component that loads and rend
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-image'
 packageName: 'expo-image'
 iconUrl: '/static/images/packages/expo-image.png'
+platforms: ['android', 'ios', 'tvos', 'web']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { Terminal } from '~/ui/components/Snippet';
 import { YesIcon, NoIcon, PendingIcon } from '~/ui/components/DocIcons';
 
@@ -23,8 +23,6 @@ import { YesIcon, NoIcon, PendingIcon } from '~/ui/components/DocIcons';
 - Transitioning between images when the source changes (no more flickering!)
 - Implements the CSS [`object-fit`](https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit) and [`object-position`](https://developer.mozilla.org/en-US/docs/Web/CSS/object-position) properties (see [`contentFit`](#contentfit) and [`contentPosition`](#contentposition) props)
 - Uses performant [`SDWebImage`](https://github.com/SDWebImage/SDWebImage) and [`Glide`](https://github.com/bumptech/glide) under the hood
-
-<PlatformsSection android emulator ios simulator web />
 
 #### Supported image formats
 

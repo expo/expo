@@ -4,17 +4,14 @@ description: A library that provides access to the device's accelerometer sensor
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-sensors'
 packageName: 'expo-sensors'
 iconUrl: '/static/images/packages/expo-sensors.png'
+platforms: ['android', 'ios*', 'web']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
-import PlatformsSection from '~/components/plugins/PlatformsSection';
-
 `Accelerometer` from `expo-sensors` provides access to the device accelerometer sensor(s) and associated listeners to respond to changes in acceleration in three-dimensional space, meaning any movement or vibration.
-
-<PlatformsSection android emulator ios web />
 
 ## Installation
 

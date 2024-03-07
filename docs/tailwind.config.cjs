@@ -53,6 +53,46 @@ module.exports = {
           opacity: 0,
         },
       },
+      slideDownAndFade: {
+        '0%': {
+          opacity: 0,
+          transform: 'translateY(8px)',
+        },
+        '100%': {
+          opacity: 1,
+          transform: 'translateY(0)',
+        },
+      },
+      slideRightAndFade: {
+        '0%': {
+          opacity: 0,
+          transform: 'translateX(8px)',
+        },
+        '100%': {
+          opacity: 1,
+          transform: 'translateX(0)',
+        },
+      },
+      slideLeftAndFade: {
+        '0%': {
+          opacity: 0,
+          transform: 'translateX(-8px)',
+        },
+        '100%': {
+          opacity: 1,
+          transform: 'translateX(0)',
+        },
+      },
+      slideUpAndFade: {
+        '0%': {
+          opacity: 0,
+          transform: 'translateY(-8px)',
+        },
+        '100%': {
+          opacity: 1,
+          transform: 'translateY(0)',
+        },
+      },
       slideUpAndFadeIn: {
         '0%': {
           opacity: 0,
@@ -67,6 +107,10 @@ module.exports = {
     animation: {
       fadeIn: 'fadeIn 0.25s ease-out',
       fadeOut: 'fadeOut 0.15s ease-in',
+      slideDownAndFade: 'slideDownAndFade 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+      slideRightAndFade: 'slideRightAndFade 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+      slideLeftAndFade: 'slideLeftAndFade 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+      slideUpAndFade: 'slideUpAndFade 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
       slideUpAndFadeIn: 'slideUpAndFadeIn 0.25s ease-out',
     },
   },

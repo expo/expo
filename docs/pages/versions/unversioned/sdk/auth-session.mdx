@@ -3,17 +3,15 @@ title: AuthSession
 description: A universal library that provides an API to handle browser-based authentication.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-auth-session'
 packageName: 'expo-auth-session'
+platforms: ['android', 'ios', 'web']
 ---
 
 import APISection from '~/components/plugins/APISection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import { Terminal } from '~/ui/components/Snippet';
 
 `AuthSession` enables web browser-based authentication (for example, browser-based OAuth flows) in your app by utilizing [WebBrowser](webbrowser.mdx) and [Crypto](crypto.mdx). For implementation details, refer to this reference, and for usage, see the [Authentication](/guides/authentication/) guide.
-
-<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 

@@ -4,6 +4,7 @@ description: A library that provides access to the local file system on the devi
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-file-system'
 packageName: 'expo-file-system'
 iconUrl: '/static/images/packages/expo-file-system.png'
+platforms: ['android', 'ios', 'tvos']
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
@@ -11,7 +12,6 @@ import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import { AndroidPermissions } from '~/components/plugins/permissions';
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
 `expo-file-system` provides access to a file system stored locally on the device. Within Expo Go, each project has a separate file system and has no access to the file system of other Expo projects. However, it can save content shared by other projects to the local filesystem, as well as share local files with other projects. It is also capable of uploading and downloading files from network URLs.
@@ -24,8 +24,6 @@ import { SnackInline } from '~/ui/components/Snippet';
   style={{ maxWidth: 850, maxHeight: 600 }}
   containerClassName="bg-white"
 />
-
-<PlatformsSection android emulator ios simulator />
 
 ## Installation
 

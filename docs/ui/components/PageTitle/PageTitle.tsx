@@ -1,8 +1,7 @@
-import { css } from '@emotion/react';
-import { breakpoints, spacing } from '@expo/styleguide-base';
+import { Button, mergeClasses } from '@expo/styleguide';
 import { BuildIcon, GithubIcon } from '@expo/styleguide-icons';
 
-import { A, CALLOUT, H1 } from '~/ui/components/Text';
+import { CALLOUT, H1 } from '~/ui/components/Text';
 
 type Props = {
   title?: string;
@@ -14,69 +13,55 @@ type Props = {
 export const PageTitle = ({ title, packageName, iconUrl, sourceCodeUrl }: Props) => (
   <div className="flex my-2 items-center justify-between max-xl-gutters:flex-col max-xl-gutters:items-start">
     <H1 className="!my-0">
-      {iconUrl && <img src={iconUrl} css={titleIconStyle} alt={`Expo ${title} icon`} />}
+      {iconUrl && (
+        <img
+          src={iconUrl}
+          className="float-left mr-3.5 relative -top-0.5 size-[42px]"
+          alt={`Expo ${title} icon`}
+        />
+      )}
       {packageName && packageName.startsWith('expo-') && 'Expo '}
       {title}
     </H1>
     {packageName && (
-      <span css={linksContainerStyle}>
+      <span className="flex gap-1 max-lg-gutters:mt-3 max-lg-gutters:mb-1">
         {sourceCodeUrl && (
-          <A
-            isStyled
+          <Button
+            theme="quaternary"
+            className="min-h-[48px] min-w-[60px] px-2 justify-center max-lg-gutters:min-h-[unset]"
             openInNewTab
             href={sourceCodeUrl}
-            css={linkStyle}
             title={`View source code of ${packageName} on GitHub`}>
-            <GithubIcon className="text-icon-secondary" />
-            <CALLOUT crawlable={false} theme="secondary">
-              GitHub
-            </CALLOUT>
-          </A>
+            <div
+              className={mergeClasses(
+                'flex flex-col items-center',
+                'max-lg-gutters:flex-row max-lg-gutters:gap-1.5'
+              )}>
+              <GithubIcon className="text-icon-secondary" />
+              <CALLOUT crawlable={false} theme="secondary">
+                GitHub
+              </CALLOUT>
+            </div>
+          </Button>
         )}
-        <A
-          isStyled
+        <Button
+          theme="quaternary"
           openInNewTab
+          className="min-h-[48px] min-w-[60px] px-2 justify-center max-lg-gutters:min-h-[unset]"
           href={`https://www.npmjs.com/package/${packageName}`}
-          css={linkStyle}
           title="View package in npm Registry">
-          <BuildIcon className="text-icon-secondary" />
-          <CALLOUT crawlable={false} theme="secondary">
-            npm
-          </CALLOUT>
-        </A>
+          <div
+            className={mergeClasses(
+              'flex flex-col items-center',
+              'max-lg-gutters:flex-row max-lg-gutters:gap-1.5'
+            )}>
+            <BuildIcon className="text-icon-secondary" />
+            <CALLOUT crawlable={false} theme="secondary">
+              npm
+            </CALLOUT>
+          </div>
+        </Button>
       </span>
     )}
   </div>
 );
-
-const titleIconStyle = css({
-  float: 'left',
-  marginRight: spacing[3.5],
-  position: 'relative',
-  top: -2,
-  width: 42,
-  height: 42,
-});
-
-const linksContainerStyle = css({
-  display: 'flex',
-  gap: spacing[6],
-
-  [`@media screen and (max-width: ${breakpoints.large}px)`]: {
-    marginTop: spacing[3],
-    marginBottom: spacing[1],
-  },
-});
-
-const linkStyle = css({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: spacing[0.5],
-  alignItems: 'center',
-  minWidth: 44,
-
-  [`@media screen and (max-width: ${breakpoints.large}px)`]: {
-    flexDirection: 'row',
-    gap: spacing[2],
-  },
-});

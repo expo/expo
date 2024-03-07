@@ -3,10 +3,10 @@ title: MapView
 description: A library that provides a Map component that uses Google Maps on Android and Apple Maps or Google Maps on iOS.
 sourceCodeUrl: 'https://github.com/react-native-maps/react-native-maps'
 packageName: 'react-native-maps'
+platforms: ['android', 'ios']
 ---
 
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
@@ -16,8 +16,6 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
 `react-native-maps` provides a Map component that uses Google Maps on Android and Apple Maps or Google Maps on iOS.
 
 No additional setup is required when testing your project using Expo Go. However, **to deploy the app binary on app stores** additional steps are required for Google Maps. For more information, see the [instructions below](#deploy-app-with-google-maps).
-
-<PlatformsSection android emulator ios simulator />
 
 ## Installation
 

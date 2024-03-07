@@ -22,8 +22,8 @@ const STYLES_CONTAINER = css`
   flex-direction: column;
 
   @media screen and (max-width: 1440px) {
-    border-left: 0px;
-    border-right: 0px;
+    border-left: 0;
+    border-right: 0;
   }
 
   @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
@@ -183,7 +183,7 @@ class ScrollContainer extends React.Component<ScrollContainerProps> {
 type Props = React.PropsWithChildren<{
   onContentScroll?: (scrollTop: number) => void;
   isMobileMenuVisible: boolean;
-  tocVisible: boolean;
+  hideTOC: boolean;
   header: React.ReactNode;
   sidebarScrollPosition: number;
   sidebar: React.ReactNode;
@@ -216,7 +216,7 @@ export default class DocumentationNestedScrollLayout extends React.Component<Pro
       sidebarRight,
       sidebarScrollPosition,
       isMobileMenuVisible,
-      tocVisible,
+      hideTOC,
       children,
     } = this.props;
 
@@ -239,7 +239,7 @@ export default class DocumentationNestedScrollLayout extends React.Component<Pro
               <div css={STYLES_CENTER_WRAPPER}>{children}</div>
             </ScrollContainer>
           </div>
-          {tocVisible && (
+          {!hideTOC && (
             <div css={[STYLES_SIDEBAR, STYLES_RIGHT]}>
               <ScrollContainer ref={this.sidebarRightRef}>
                 {React.cloneElement(sidebarRight, {

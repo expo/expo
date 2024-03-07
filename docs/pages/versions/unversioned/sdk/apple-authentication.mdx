@@ -3,19 +3,17 @@ title: AppleAuthentication
 description: A library that provides Sign in with Apple capability for iOS 13 and higher.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-apple-authentication'
 packageName: 'expo-apple-authentication'
+platforms: ['ios 13+', 'tvos']
 ---
 
 import { ConfigReactNative, ConfigPluginExample } from '~/components/plugins/ConfigSection';
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
 `expo-apple-authentication` provides Apple authentication for iOS 13+. It does not yet support lower iOS versions, Android, or the web.
 
 Beginning with iOS 13, any app that includes third-party authentication options **must** provide Apple authentication as an option to comply with App Store Review guidelines. For more information, see Apple authentication on the [Sign In with Apple](https://developer.apple.com/sign-in-with-apple/) website.
-
-<PlatformsSection ios simulator />
 
 ## Installation
 

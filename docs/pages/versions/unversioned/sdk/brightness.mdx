@@ -4,11 +4,11 @@ description: A library that provides access to an API for getting and setting th
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-brightness'
 packageName: 'expo-brightness'
 iconUrl: '/static/images/packages/expo-brightness.png'
+platforms: ['android', 'ios']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
 import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import { AndroidPermissions } from '~/components/plugins/permissions';
@@ -16,8 +16,6 @@ import { AndroidPermissions } from '~/components/plugins/permissions';
 An API to get and set screen brightness.
 
 On Android, there is a global system-wide brightness setting, and each app has its own brightness setting that can optionally override the global setting. It is possible to set either of these values with this API. On iOS, the system brightness setting cannot be changed programmatically; instead, any changes to the screen brightness will persist until the device is locked or powered off.
-
-<PlatformsSection android emulator ios simulator />
 
 ## Installation
 

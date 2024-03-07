@@ -4,11 +4,11 @@ description: A React component that renders a preview for the device's front or 
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-camera'
 packageName: 'expo-camera'
 iconUrl: '/static/images/packages/expo-camera.png'
+platforms: ['android*', 'ios*', 'web']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
 import {
   ConfigReactNative,
@@ -18,8 +18,6 @@ import {
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 
 `expo-camera` provides a React component that renders a preview of the device's front or back camera. The camera's parameters such as zoom, auto focus, white balance and flash mode are adjustable. Using `Camera`, you can take photos and record videos that are saved to the app's cache. The component is also capable of detecting faces and bar codes appearing in the preview. Run the [example](#usage) on your device to see all these features working together.
-
-<PlatformsSection android ios web />
 
 > **info** Android devices can use one of two available Camera APIs: you can opt-in to using [`Camera2`](https://developer.android.com/reference/android/hardware/camera2/package-summary) with the `useCamera2Api` prop.
 

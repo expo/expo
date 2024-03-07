@@ -17,6 +17,7 @@ export const StatusTag = ({ status, type, note, className }: StatusTagProps) => 
       className={mergeClasses(
         status === 'deprecated' && TAG_CLASSES['deprecated'],
         status === 'experimental' && TAG_CLASSES['experimental'],
+        'select-none',
         className
       )}
       css={[tagStyle, type === 'toc' && tagToCStyle]}>

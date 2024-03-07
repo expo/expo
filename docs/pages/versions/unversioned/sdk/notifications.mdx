@@ -4,6 +4,7 @@ description: A library that provides an API to fetch push notification tokens an
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-notifications'
 packageName: 'expo-notifications'
 iconUrl: '/static/images/packages/expo-notifications.png'
+platforms: ['android*', 'ios*', 'web']
 ---
 
 import { ConfigReactNative, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
@@ -11,7 +12,6 @@ import { AndroidPermissions } from '~/components/plugins/permissions';
 import { SnackInline } from '~/ui/components/Snippet';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { Collapsible } from '~/ui/components/Collapsible';
 import APISection from '~/components/plugins/APISection';
 import { PlatformTags } from '~/ui/components/Tag';
@@ -19,23 +19,13 @@ import { Tab, Tabs } from '~/ui/components/Tabs';
 
 `expo-notifications` provides an API to fetch push notification tokens and to present, schedule, receive and respond to notifications.
 
-<PlatformsSection title="Push notifications Platform Compatibility" android ios />
-
-<PlatformsSection
-  title="Local notifications Platform Compatibility"
-  android
-  emulator
-  ios
-  simulator
-/>
-
 ## Features
 
 - Schedule a one-off notification for a specific date or some time from now
 - Schedule a notification repeating in some time interval (or a calendar date match on iOS)
 - Get and set the application badge icon number
-- Fetch a native device push token so you can send push notifications with FCM and APNs
-- Fetch an Expo push token so you can send push notifications with Expo
+- Fetch a native device push token, so you can send push notifications with FCM and APNs
+- Fetch an Expo push token, so you can send push notifications with Expo
 - Listen to incoming notifications in the foreground and background
 - Listen to interactions with notifications
 - Handle notifications when the app is in the foreground

@@ -4,16 +4,14 @@ description: A library that provides battery information for the physical device
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-battery'
 packageName: 'expo-battery'
 iconUrl: '/static/images/packages/expo-battery.png'
+platforms: ['android', 'ios*', 'web']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
 **`expo-battery`** provides battery information for the physical device (such as battery level, whether or not the device is charging, and more) as well as corresponding event listeners.
-
-<PlatformsSection android emulator ios web />
 
 ## Installation
 

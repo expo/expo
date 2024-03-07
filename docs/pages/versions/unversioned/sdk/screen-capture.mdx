@@ -3,11 +3,11 @@ title: ScreenCapture
 description: A library that allows you to protect screens in your app from being captured or recorded.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-screen-capture'
 packageName: 'expo-screen-capture'
+platforms: ['android', 'ios']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
 `expo-screen-capture` allows you to protect screens in your app from being captured or recorded, as well as be notified if a screenshot is taken while your app is foregrounded. The two most common reasons you may want to prevent screen capture are:
@@ -18,8 +18,6 @@ import { SnackInline } from '~/ui/components/Snippet';
 This is especially important on Android since the [`android.media.projection`](https://developer.android.com/about/versions/android-5.0.html#ScreenCapture) API allows third-party apps to perform screen capture or screen sharing (even if the app is in the background).
 
 > **warning** Currently, taking screenshots on iOS cannot be prevented. This is due to underlying OS limitations.
-
-<PlatformsSection android emulator ios simulator />
 
 ## Installation
 

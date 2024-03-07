@@ -3,14 +3,12 @@ title: registerRootComponent
 description: A universal component that allows setting the initial React component to render natively in the app's root React Native view.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo/src/launch'
 packageName: 'expo'
+platforms: ['android', 'ios', 'web']
 ---
 
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 Sets the initial React component to render natively in the app's root React Native view on iOS, Android, and the web. It also adds dev-only debugging tools for use with `npx expo start`.
-
-<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 

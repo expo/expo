@@ -47,7 +47,7 @@ const Home = () => {
   const { palette, background } = theme;
   return (
     <ScreenClassProvider>
-      <DocumentationPage tocVisible={false} hideFromSearch>
+      <DocumentationPage hideTOC hideFromSearch>
         <div className="h-0">
           <DevicesImageMasks />
         </div>
