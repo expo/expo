@@ -81,17 +81,16 @@ function babelPresetExpo(api, options = {}) {
     if (platformOptions.useTransformReactJSXExperimental != null) {
         throw new Error(`babel-preset-expo: The option 'useTransformReactJSXExperimental' has been removed in favor of { jsxRuntime: 'classic' }.`);
     }
+    const inlineEnv = {
+        EXPO_OS: platform,
+    };
     // Allow jest tests to redefine the environment variables.
     if (process.env.NODE_ENV !== 'test') {
-        extraPlugins.push([
-            inline_env_vars_1.expoInlineTransformEnvVars,
-            {
-                // These values should not be prefixed with `EXPO_PUBLIC_`, so we don't
-                // squat user-defined environment variables.
-                EXPO_BASE_URL: baseUrl,
-            },
-        ]);
+        // These values should not be prefixed with `EXPO_PUBLIC_`, so we don't
+        // squat user-defined environment variables.
+        inlineEnv['EXPO_BASE_URL'] = baseUrl;
     }
+    extraPlugins.push([inline_env_vars_1.expoInlineTransformEnvVars, inlineEnv]);
     // Only apply in non-server, for metro-only, in production environments, when the user hasn't disabled the feature.
     // Webpack uses DefinePlugin for environment variables.
     // Development uses an uncached serializer.

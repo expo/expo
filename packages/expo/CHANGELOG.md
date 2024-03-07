@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add global type for `process.env.EXPO_OS` value.
+
 ### 🐛 Bug fixes
 
 - Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357) by [@kudo](https://github.com/kudo))

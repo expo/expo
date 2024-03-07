@@ -1,6 +1,7 @@
 import * as babel from '@babel/core';
 
 import preset from '..';
+import { minifyLikeMetroAsync } from './minify-util';
 
 function getCaller(props: Record<string, string | boolean>): babel.TransformCaller {
   return props as unknown as babel.TransformCaller;
@@ -29,6 +30,31 @@ function stripReactNativeImport(code: string) {
     )
     .replace('var _reactNative=require("react-native");', '');
 }
+
+it(`does not remove Platform module in development`, () => {
+  const options = {
+    ...DEFAULT_OPTS,
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: true }),
+  };
+
+  const sourceCode = `
+    import { Platform } from 'react-native';
+  
+    if (Platform.OS === 'ios') {
+      console.log('ios')
+    }
+    
+    Platform.select({
+      ios: () => console.log('ios'),
+      web: () => console.log('web'),
+      android: () => console.log('android'),
+    })
+    `;
+
+  expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toMatch(
+    /_Platform\.default\.OS===/
+  );
+});
 
 it(`removes Platform module usage on web`, () => {
   const options = {
@@ -99,5 +125,61 @@ it(`removes __DEV__ usage`, () => {
     }
     `;
 
+  // No minfication needed here, the babel plugin does it to ensure the imports are removed before dependencies are collected.
   expect(babel.transform(sourceCode, options)!.code!).toEqual(``);
+});
+
+describe('process.env.EXPO_OS', () => {
+  const originalEnv = process.env;
+  beforeEach(() => {
+    process.env = { ...originalEnv };
+  });
+  afterAll(() => {
+    process.env = originalEnv;
+  });
+
+  [true, false].forEach((isDev) => {
+    ['development', 'test', 'production'].forEach((env) => {
+      it(`inlines process.env.EXPO_OS usage in NODE_ENV=${env} when bundling for dev=${isDev}`, () => {
+        process.env.NODE_ENV = env;
+        const options = {
+          babelrc: false,
+          presets: [preset],
+          filename: 'unknown',
+          // Make the snapshot easier to read
+          retainLines: true,
+          caller: getCaller({ name: 'metro', platform: 'ios', isDev }),
+        };
+
+        expect(babel.transform('process.env.EXPO_OS', options)!.code).toBe('"ios";');
+        expect(
+          babel.transform('process.env.EXPO_OS', {
+            ...options,
+            caller: getCaller({ name: 'metro', platform: 'web', isDev }),
+          })!.code
+        ).toBe('"web";');
+      });
+    });
+  });
+
+  it(`can use process.env.EXPO_OS to minify`, async () => {
+    const options = {
+      babelrc: false,
+      presets: [preset],
+      filename: 'unknown',
+      // Make the snapshot easier to read
+      compact: true,
+      caller: getCaller({ name: 'metro', platform: 'ios', isDev: false }),
+    };
+
+    const src = `
+    if (process.env.EXPO_OS === 'ios') {
+      console.log('ios');
+    }
+    `;
+
+    const results = babel.transform(src, options)!;
+    const min = await minifyLikeMetroAsync(results);
+    expect(min.code).toBe("console.log('ios');");
+  });
 });
