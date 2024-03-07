@@ -42,7 +42,7 @@
     "@expo/config": "~8.5.0",
     "@expo/config-plugins": "~7.8.0",
     "@expo/devcert": "^1.0.0",
-    "@expo/env": "~0.2.0",
+    "@expo/env": "~0.2.2",
     "@expo/image-utils": "^0.4.0",
     "@expo/json-file": "^8.2.37",
     "@expo/metro-config": "~0.17.0",
