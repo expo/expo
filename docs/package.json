@@ -31,6 +31,7 @@
     "@mdx-js/loader": "^2.2.1",
     "@mdx-js/mdx": "^2.2.1",
     "@mdx-js/react": "^2.2.1",
+    "@radix-ui/react-tooltip": "^1.0.7",
     "@reach/tabs": "^0.18.0",
     "@sentry/react": "^7.80.1",
     "clipboard-copy": "^4.0.1",

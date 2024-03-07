@@ -3,11 +3,11 @@ title: TaskManager
 description: A library that provides support for tasks that can run in the background.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-task-manager'
 packageName: 'expo-task-manager'
+platforms: ['android', 'ios']
 ---
 
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import APISection from '~/components/plugins/APISection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
 import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 
@@ -17,8 +17,6 @@ Some features of this module are used by other modules under the hood. Here is a
 - [Location](location.mdx)
 - [BackgroundFetch](background-fetch.mdx)
 - [Notifications](notifications.mdx)
-
-<PlatformsSection android emulator ios simulator />
 
 ## Installation
 

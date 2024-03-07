@@ -4,16 +4,14 @@ description: A library that provides access to the device's pedometer sensor.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-sensors'
 packageName: 'expo-sensors'
 iconUrl: '/static/images/packages/expo-sensors.png'
+platforms: ['android', 'ios']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
 `Pedometer` from `expo-sensors` uses the system `hardware.Sensor` on Android and Core Motion on iOS to get the user's step count, and also allows you to subscribe to pedometer updates.
-
-<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
