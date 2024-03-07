@@ -8,6 +8,7 @@ import React from 'react';
 import { Pressable, Platform } from 'react-native';
 
 import { withLayoutContext } from './withLayoutContext';
+import { useGlobalSearchParams, useLocalSearchParams } from '../hooks';
 import { Link } from '../link/Link';
 import { Href } from '../link/href';
 
@@ -20,8 +21,17 @@ export const Tabs = withLayoutContext<
   TabNavigationState<ParamListBase>,
   BottomTabNavigationEventMap
 >(BottomTabNavigator, (screens) => {
+  const globalParams = useGlobalSearchParams();
+  const localSearchParams = useLocalSearchParams();
+
+  const navigationKeySuffix = Object.keys(localSearchParams)
+    .map((key) => `${key}=${globalParams[key]}`)
+    .join(':');
+
   // Support the `href` shortcut prop.
   return screens.map((screen) => {
+    const navigationKey = `${screen.name}-${navigationKeySuffix}`;
+
     if (typeof screen.options !== 'function' && screen.options?.href !== undefined) {
       const { href, ...options } = screen.options;
       if (options.tabBarButton) {
@@ -29,6 +39,7 @@ export const Tabs = withLayoutContext<
       }
       return {
         ...screen,
+        navigationKey: screen.navigationKey ?? navigationKey,
         options: {
           ...options,
           tabBarButton: (props) => {
@@ -50,7 +61,10 @@ export const Tabs = withLayoutContext<
         },
       };
     }
-    return screen;
+    return {
+      ...screen,
+      navigationKey: screen.navigationKey ?? navigationKey,
+    };
   });
 });
 
