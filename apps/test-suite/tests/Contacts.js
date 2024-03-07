@@ -135,7 +135,7 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
       await image.downloadAsync();
 
       const fields = {
-        [Contacts.Fields.Image]: image.localUri,
+        [Contacts.Fields.Image]: { uri: image.localUri },
         [Contacts.Fields.FirstName]: 'Kenny',
         [Contacts.Fields.LastName]: 'McCormick',
       };
@@ -380,7 +380,7 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
       expect(contact).toEqual(
         jasmine.objectContaining({
           contactType: jasmine.any(String),
-          name: jasmine.any(String),
+          firstName: jasmine.any(String),
           id: jasmine.any(String),
         })
       );

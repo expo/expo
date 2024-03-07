@@ -2,7 +2,7 @@ import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
 import { breakpoints } from '@expo/styleguide-base';
 import { useRouter } from 'next/compat/router';
-import { useEffect, useState, createRef } from 'react';
+import { useEffect, useState, createRef, type PropsWithChildren } from 'react';
 
 import * as RoutesUtils from '~/common/routes';
 import { isRouteActive } from '~/common/routes';
@@ -13,13 +13,15 @@ import DocumentationSidebarRight, {
 } from '~/components/DocumentationSidebarRight';
 import Head from '~/components/Head';
 import { usePageApiVersion } from '~/providers/page-api-version';
-import { NavigationRouteWithSection } from '~/types/common';
+import { NavigationRouteWithSection, PageMetadata } from '~/types/common';
 import { Footer } from '~/ui/components/Footer';
 import { Header } from '~/ui/components/Header';
 import { PageTitle } from '~/ui/components/PageTitle';
 import { Separator } from '~/ui/components/Separator';
 import { Sidebar } from '~/ui/components/Sidebar';
-import { P } from '~/ui/components/Text';
+import { Tag } from '~/ui/components/Tag';
+import { FOOTNOTE, P } from '~/ui/components/Text';
+import * as Tooltip from '~/ui/components/Tooltip';
 
 const STYLES_DOCUMENT = css`
   background: ${theme.background.default};
@@ -31,16 +33,7 @@ const STYLES_DOCUMENT = css`
   }
 `;
 
-type Props = React.PropsWithChildren<{
-  title?: string;
-  description?: string;
-  sourceCodeUrl?: string;
-  tocVisible: boolean;
-  packageName?: string;
-  iconUrl?: string;
-  /** If the page should not show up in the Algolia Docsearch results */
-  hideFromSearch?: boolean;
-}>;
+export type DocPageProps = PropsWithChildren<PageMetadata>;
 
 function appendSectionToRoute(route?: NavigationRouteWithSection) {
   if (route?.children) {
@@ -63,8 +56,9 @@ export default function DocumentationPage({
   iconUrl,
   children,
   hideFromSearch,
-  tocVisible,
-}: Props) {
+  platforms,
+  hideTOC,
+}: DocPageProps) {
   const [isMobileMenuVisible, setMobileMenuVisible] = useState(false);
   const { version } = usePageApiVersion();
   const router = useRouter();
@@ -140,7 +134,7 @@ export default function DocumentationPage({
       sidebar={sidebarElement}
       sidebarRight={sidebarRightElement}
       sidebarActiveGroup={sidebarActiveGroup}
-      tocVisible={tocVisible}
+      hideTOC={hideTOC ?? false}
       isMobileMenuVisible={isMobileMenuVisible}
       onContentScroll={handleContentScroll}
       sidebarScrollPosition={sidebarScrollPosition}>
@@ -173,6 +167,32 @@ export default function DocumentationPage({
           <P theme="secondary" data-description="true">
             {description}
           </P>
+        )}
+        {platforms && (
+          <div className="inline-flex mt-3 flex-wrap gap-y-1.5">
+            {platforms
+              .sort((a, b) => a.localeCompare(b))
+              .map(platform => {
+                if (platform.includes('*')) {
+                  return (
+                    <Tooltip.Root>
+                      <Tooltip.Trigger key={platform} className="cursor-default">
+                        <Tag name={platform} className="!rounded-full" />
+                      </Tooltip.Trigger>
+                      <Tooltip.Content side="bottom">
+                        {platform.startsWith('android') && (
+                          <FOOTNOTE>Android Emulator not supported</FOOTNOTE>
+                        )}
+                        {platform.startsWith('ios') && (
+                          <FOOTNOTE>iOS Simulator not supported</FOOTNOTE>
+                        )}
+                      </Tooltip.Content>
+                    </Tooltip.Root>
+                  );
+                }
+                return <Tag name={platform} key={platform} className="!rounded-full" />;
+              })}
+          </div>
         )}
         {title && <Separator />}
         {children}

@@ -5,8 +5,6 @@ import type {
   Subscription,
 } from 'expo-modules-core';
 
-import { CalendarTriggerInput as NativeCalendarTriggerInput } from './NotificationScheduler.types';
-
 /**
  * An object represents a notification delivered by a push notification system.
  *
@@ -58,7 +56,7 @@ export interface CalendarNotificationTrigger {
  * The region used to determine when the system sends the notification.
  * @platform ios
  */
-interface Region {
+export interface Region {
   type: string;
   /**
    * The identifier for the region object.
@@ -255,12 +253,27 @@ export type ChannelAwareTriggerInput = {
   channelId: string;
 };
 
+// @docsMissing
+export type CalendarTriggerInputValue = {
+  timezone?: string;
+  year?: number;
+  month?: number;
+  weekday?: number;
+  weekOfMonth?: number;
+  weekOfYear?: number;
+  weekdayOrdinal?: number;
+  day?: number;
+  hour?: number;
+  minute?: number;
+  second?: number;
+};
+
 /**
  * A trigger that will cause the notification to be delivered once or many times when the date components match the specified values.
  * Corresponds to native [`UNCalendarNotificationTrigger`](https://developer.apple.com/documentation/usernotifications/uncalendarnotificationtrigger?language=objc).
  * @platform ios
  */
-export type CalendarTriggerInput = NativeCalendarTriggerInput['value'] & {
+export type CalendarTriggerInput = CalendarTriggerInputValue & {
   channelId?: string;
   repeats?: boolean;
 };

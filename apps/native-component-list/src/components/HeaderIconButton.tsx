@@ -1,5 +1,4 @@
-import Ionicons from '@expo/vector-icons/build/Ionicons';
-import React from 'react';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { StyleSheet, TouchableOpacity, TouchableOpacityProps } from 'react-native';
 
 type Props = TouchableOpacityProps & {

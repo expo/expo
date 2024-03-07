@@ -36,7 +36,7 @@ concurrency:
 
 jobs:
   test:
-    runs-on: macos-13
+    runs-on: ubuntu-22.04
     timeout-minutes: 150
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
@@ -53,6 +53,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: true
+      - name: 🧹 Cleanup GitHub Linux runner disk space
+        uses: ./.github/actions/cleanup-linux-disk-space
       - name: 🔨 Use JDK 17
         uses: actions/setup-java@v4
         with:

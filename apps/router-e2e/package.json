@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "expo start"
+    "start": "expo start",
+    "start:react-native-canary": "EXPO_E2E_RSC=1 E2E_ROUTER_SRC=react-native-canary expo start"
   },
   "dependencies": {
     "expo": "~50.0.0-alpha.0",
