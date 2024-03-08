@@ -79,7 +79,7 @@ function babelPresetExpo(api, options = {}) {
         // This nets out slightly faster in development when considering the cost of bundling server dependencies.
         inlines['typeof window'] = isServerEnv ? 'undefined' : 'object';
     }
-    // if (!isDev) {
+    // if (isProduction) {
     //   inlines['process.env.NODE_ENV'] = 'production';
     //   inlines['__DEV__'] = false;
     // }
