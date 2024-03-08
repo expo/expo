@@ -150,7 +150,7 @@ class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
       top: ref.current?.offsetTop - window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR,
     });
 
-    if (!history?.replaceState) {
+    if (history?.replaceState) {
       history.replaceState(history.state, '', '#' + slug);
     }
   };
@@ -165,7 +165,7 @@ class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
       top: 0,
     });
 
-    if (!history?.replaceState) {
+    if (history?.replaceState) {
       history.replaceState(history.state, '', ' ');
     }
   };
