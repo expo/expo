@@ -187,6 +187,7 @@ const general = [
       makePage('router/advanced/modals.mdx'),
       makePage('router/advanced/platform-specific-modules.mdx'),
       makePage('router/advanced/shared-routes.mdx'),
+      makePage('router/reference/not-found.mdx'),
       makePage('router/advanced/router-settings.mdx'),
       makePage('router/advanced/apple-handoff.mdx'),
     ]),
@@ -468,7 +469,6 @@ const preview = [
   makeSection('Preview', [
     makePage('preview/introduction.mdx'),
     makePage('preview/support.mdx'),
-    makePage('router/reference/not-found.mdx'),
     { expanded: true },
   ]),
 ];
