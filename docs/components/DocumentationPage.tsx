@@ -1,11 +1,10 @@
-import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { mergeClasses } from '@expo/styleguide';
 import { breakpoints } from '@expo/styleguide-base';
 import { useRouter } from 'next/compat/router';
 import { useEffect, useState, createRef, type PropsWithChildren } from 'react';
 
 import * as RoutesUtils from '~/common/routes';
-import { isRouteActive } from '~/common/routes';
+import { appendSectionToRoute, isRouteActive } from '~/common/routes';
 import * as WindowUtils from '~/common/window';
 import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScrollLayout';
 import DocumentationSidebarRight, {
@@ -13,40 +12,16 @@ import DocumentationSidebarRight, {
 } from '~/components/DocumentationSidebarRight';
 import Head from '~/components/Head';
 import { usePageApiVersion } from '~/providers/page-api-version';
-import { NavigationRouteWithSection, PageMetadata } from '~/types/common';
+import { PageMetadata } from '~/types/common';
 import { Footer } from '~/ui/components/Footer';
 import { Header } from '~/ui/components/Header';
+import { PagePlatformTags } from '~/ui/components/PagePlatformTags';
 import { PageTitle } from '~/ui/components/PageTitle';
 import { Separator } from '~/ui/components/Separator';
 import { Sidebar } from '~/ui/components/Sidebar';
-import { Tag } from '~/ui/components/Tag';
-import { FOOTNOTE, P } from '~/ui/components/Text';
-import * as Tooltip from '~/ui/components/Tooltip';
-
-const STYLES_DOCUMENT = css`
-  background: ${theme.background.default};
-  margin: 0 auto;
-  padding: 40px 56px;
-
-  @media screen and (max-width: ${breakpoints.medium + 124}px) {
-    padding: 20px 16px 48px 16px;
-  }
-`;
+import { P } from '~/ui/components/Text';
 
 export type DocPageProps = PropsWithChildren<PageMetadata>;
-
-function appendSectionToRoute(route?: NavigationRouteWithSection) {
-  if (route?.children) {
-    return route.children.map((entry: NavigationRouteWithSection) =>
-      route.type !== 'page'
-        ? Object.assign(entry, {
-            section: route.section ? `${route.section} - ${route.name}` : route.name,
-          })
-        : route
-    );
-  }
-  return route;
-}
 
 export default function DocumentationPage({
   title,
@@ -154,7 +129,11 @@ export default function DocumentationPage({
           RoutesUtils.isPreviewPath(pathname) ||
           RoutesUtils.isArchivePath(pathname)) && <meta name="robots" content="noindex" />}
       </Head>
-      <div css={STYLES_DOCUMENT}>
+      <div
+        className={mergeClasses(
+          'mx-auto py-10 px-14',
+          'max-lg-gutters:px-4 max-lg-gutters:pt-5 max-lg-gutters:pb-12'
+        )}>
         {title && (
           <PageTitle
             title={title}
@@ -168,32 +147,7 @@ export default function DocumentationPage({
             {description}
           </P>
         )}
-        {platforms && (
-          <div className="inline-flex mt-3 flex-wrap gap-y-1.5">
-            {platforms
-              .sort((a, b) => a.localeCompare(b))
-              .map(platform => {
-                if (platform.includes('*')) {
-                  return (
-                    <Tooltip.Root>
-                      <Tooltip.Trigger key={platform} className="cursor-default">
-                        <Tag name={platform} className="!rounded-full" />
-                      </Tooltip.Trigger>
-                      <Tooltip.Content side="bottom">
-                        {platform.startsWith('android') && (
-                          <FOOTNOTE>Android Emulator not supported</FOOTNOTE>
-                        )}
-                        {platform.startsWith('ios') && (
-                          <FOOTNOTE>iOS Simulator not supported</FOOTNOTE>
-                        )}
-                      </Tooltip.Content>
-                    </Tooltip.Root>
-                  );
-                }
-                return <Tag name={platform} key={platform} className="!rounded-full" />;
-              })}
-          </div>
-        )}
+        {platforms && <PagePlatformTags platforms={platforms} />}
         {title && <Separator />}
         {children}
         <Footer
