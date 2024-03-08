@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Filter extra avd info when listing emulators. ([#27497](https://github.com/expo/expo/pull/27497) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ## 0.17.7 — 2024-03-07
