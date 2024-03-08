@@ -47,7 +47,7 @@ struct PropertyDescriptor {
   const bool configurable = false;
   const bool enumerable = false;
   const bool writable = false;
-  const jsi::Value value = 0;
+  const jsi::Value value = jsi::Value::undefined();
   const std::function<jsi::Value(jsi::Runtime &runtime, jsi::Object thisObject)> get = 0;
   const std::function<void(jsi::Runtime &runtime, jsi::Object thisObject, jsi::Value newValue)> set = 0;
 }; // PropertyDescriptor
