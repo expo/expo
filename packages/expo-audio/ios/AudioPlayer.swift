@@ -6,7 +6,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Identifiable {
   var isLooping = false
   var shouldCorrectPitch = false
   var pitchCorrectionQuality: AVAudioTimePitchAlgorithm = .varispeed
-  
+
   var isLoaded: Bool {
     pointer.currentItem?.status == .readyToPlay
   }
@@ -16,7 +16,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Identifiable {
   var isBuffering: Bool {
     playerIsBuffering()
   }
-  
+
   private func playerIsBuffering() -> Bool {
     let avPlayer = pointer
     let buffering: Bool = {
