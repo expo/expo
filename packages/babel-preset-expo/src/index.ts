@@ -131,6 +131,18 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
       },
     ]);
   }
+  // if (isProduction) {
+  //   // Metro applies this plugin too but it does it after the imports have been transformed which breaks
+  //   // the plugin. Here, we'll apply it before the commonjs transform, in production, to ensure `Platform.OS`
+  //   // is replaced with a string literal and `__DEV__` is converted to a boolean.
+  //   // Applying early also means that web can be transformed before the `react-native-web` transform mutates the import.
+  //   extraPlugins.push([
+  //     require('./minify-platform-plugin'),
+  //     {
+  //       platform,
+  //     },
+  //   ]);
+  // }
 
   if (platformOptions.useTransformReactJSXExperimental != null) {
     throw new Error(

@@ -55,6 +55,50 @@ it(`removes Platform module usage on web`, () => {
   );
 });
 
+it(`removes Platform module usage on web (expo-modules-core)`, () => {
+  const options = {
+    ...DEFAULT_OPTS,
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+  };
+
+  const sourceCode = `
+    import { Platform } from 'expo-modules-core';
+  
+    if (Platform.OS === 'ios') {
+      console.log('ios')
+    }
+    
+    Platform.select({
+      ios: () => console.log('ios'),
+      web: () => console.log('web'),
+      android: () => console.log('android'),
+    })
+    `;
+
+  expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toEqual(
+    `(function(){return console.log('web');});`
+  );
+});
+
+it(`does not use native option from Platform module on web`, () => {
+  const options = {
+    ...DEFAULT_OPTS,
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+  };
+
+  const sourceCode = `
+    import { Platform } from 'react-native';
+    
+    Platform.select({
+      native: () => console.log('ios'),
+    })
+    `;
+
+  expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toEqual(
+    `(function(){return console.log('web');});`
+  );
+});
+
 it(`removes Platform module usage on native`, () => {
   const options = {
     ...DEFAULT_OPTS,
