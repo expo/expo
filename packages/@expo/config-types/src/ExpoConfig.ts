@@ -707,6 +707,44 @@ export interface Android {
   runtimeVersion?:
     | string
     | { policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprintExperimental' };
+  /**
+   * Lets you specify the screen sizes your application supports.
+   */
+  supportsScreens?: {
+    /**
+     * Indicates whether the application supports "small" screen form-factors. This is "true" by default.
+     */
+    smallScreens?: boolean;
+    /**
+     * Indicates whether the application supports "normal" screen form-factors. This is "true" by default.
+     */
+    normalScreens?: boolean;
+    /**
+     * Indicates whether the application supports "largeScreens" screen form-factors. The default value for this varies between some versions, so it's better if you explicitly declare this attribute.
+     */
+    largeScreens?: boolean;
+    /**
+     * Indicates whether the application supports "xlargeScreens" screen form-factors. The default value for this varies between some versions, so it's better if you explicitly declare this attribute.
+     */
+    xlargeScreens?: boolean;
+    /**
+     * Indicates whether the application includes resources to accommodate any screen density.
+     * For applications that support Android 1.6 (API level 4) and higher, this is "true" by default.
+     */
+    anyDensity?: boolean;
+    /**
+     * Specifies the minimum smallestWidth required for the app. The smallestWidth is the shortest dimension of the screen space, in dp units, that must be available to your application UI. That is, it is the shortest of the available screen's two dimensions.
+     */
+    requiresSmallestWidthDp?: number;
+    /**
+     * Lets you enable screen compatibility mode as a user-optional feature by specifying the maximum "smallest screen width" for which your application is designed. By default, screen compatibility mode is disabled.
+     */
+    compatibleWidthLimitDp?: number;
+    /**
+     * Lets you force-enable screen compatibility mode by specifying the maximum "smallest screen width" for which your application is designed.
+     */
+    largestWidthLimitDp?: number;
+  };
 }
 export interface AndroidIntentFiltersData {
   /**
