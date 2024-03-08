@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- Use `typeof window` checks for removing server code.
+- Use `typeof window` checks for removing server code. ([#27514](https://github.com/expo/expo/pull/27514) by [@EvanBacon](https://github.com/EvanBacon))
 - [expo-updates] Migrate to requireNativeModule/requireOptionalNativeModule. ([#25648](https://github.com/expo/expo/pull/25648) by [@wschurman](https://github.com/wschurman))
 - Remove implicit dependency on expo-updates to do runtime version check at runtime. ([#26080](https://github.com/expo/expo/pull/26080) by [@wschurman](https://github.com/wschurman))
 
