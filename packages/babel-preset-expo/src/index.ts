@@ -9,6 +9,7 @@ import {
   getIsFastRefreshEnabled,
   getIsProd,
   getIsReactServer,
+  getIsServer,
   hasModule,
 } from './common';
 import { environmentRestrictedImportsPlugin } from './environment-restricted-imports';
@@ -38,6 +39,9 @@ type BabelPresetExpoPlatformOptions = {
   enableBabelRuntime?: boolean;
   // Defaults to `'default'`, can also use `'hermes-canary'`
   unstable_transformProfile?: 'default' | 'hermes-stable' | 'hermes-canary';
+
+  /** Enable `typeof window` runtime checks. The default behavior is to minify `typeof window` on web clients to `"object"` and `"undefined"` on servers. */
+  minifyTypeofWindow?: boolean;
 };
 
 export type BabelPresetExpoOptions = BabelPresetExpoPlatformOptions & {
@@ -65,6 +69,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   let platform = api.caller((caller) => (caller as any)?.platform);
   const engine = api.caller((caller) => (caller as any)?.engine) ?? 'default';
   const isDev = api.caller(getIsDev);
+  const isServer = api.caller(getIsServer);
   const isReactServer = api.caller(getIsReactServer);
   const isFastRefreshEnabled = api.caller(getIsFastRefreshEnabled);
   const baseUrl = api.caller(getBaseUrl);
@@ -84,6 +89,12 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   }
 
   const platformOptions = getOptions(options, platform);
+
+  if (platformOptions.useTransformReactJSXExperimental != null) {
+    throw new Error(
+      `babel-preset-expo: The option 'useTransformReactJSXExperimental' has been removed in favor of { jsxRuntime: 'classic' }.`
+    );
+  }
 
   if (platformOptions.disableImportExportTransform == null) {
     if (platform === 'web') {
@@ -117,6 +128,33 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     extraPlugins.push(require('@babel/plugin-transform-parameters'));
   }
 
+  const isServerEnv = isServer || isReactServer;
+
+  const inlines: Record<string, boolean | string> = {
+    'process.env.EXPO_OS': platform,
+    // 'typeof document': isServerEnv ? 'undefined' : 'object',
+  };
+
+  // `typeof window` is left in place for native + client environments.
+  const minifyTypeofWindow =
+    (platformOptions.minifyTypeofWindow ?? isServerEnv) || platform === 'web';
+
+  if (minifyTypeofWindow !== false) {
+    // This nets out slightly faster in development when considering the cost of bundling server dependencies.
+    inlines['typeof window'] = isServerEnv ? 'undefined' : 'object';
+  }
+
+  // if (!isDev) {
+  //   inlines['process.env.NODE_ENV'] = 'production';
+  //   inlines['__DEV__'] = false;
+  // }
+
+  if (process.env.NODE_ENV !== 'test') {
+    inlines['process.env.EXPO_BASE_URL'] = baseUrl;
+  }
+
+  extraPlugins.push([require('babel-plugin-transform-define'), inlines]);
+
   if (isProduction && hasModule('metro-transform-plugins')) {
     // Metro applies this plugin too but it does it after the imports have been transformed which breaks
     // the plugin. Here, we'll apply it before the commonjs transform, in production, to ensure `Platform.OS`
@@ -128,24 +166,6 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
         dev: isDev,
         inlinePlatform: true,
         platform,
-      },
-    ]);
-  }
-
-  if (platformOptions.useTransformReactJSXExperimental != null) {
-    throw new Error(
-      `babel-preset-expo: The option 'useTransformReactJSXExperimental' has been removed in favor of { jsxRuntime: 'classic' }.`
-    );
-  }
-
-  // Allow jest tests to redefine the environment variables.
-  if (process.env.NODE_ENV !== 'test') {
-    extraPlugins.push([
-      expoInlineTransformEnvVars,
-      {
-        // These values should not be prefixed with `EXPO_PUBLIC_`, so we don't
-        // squat user-defined environment variables.
-        EXPO_BASE_URL: baseUrl,
       },
     ]);
   }
