@@ -1,6 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import EXUpdatesInterface
 
 /**
  * Manages and controls the auto-setup behavior of expo-updates in applicable environments.
@@ -44,6 +45,13 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
   }()
 
   public override func createBridge(reactDelegate: ExpoReactDelegate, bridgeDelegate: RCTBridgeDelegate, launchOptions: [AnyHashable: Any]?) -> RCTBridge? {
+    if EXAppDefines.APP_DEBUG && !UpdatesUtils.isNativeDebuggingEnabled() {
+      // In development builds with expo-dev-client, completes the auto-setup for development
+      // builds with the expo-updates integration by passing a reference to DevLauncherController
+      // over to the registry, which expo-dev-client can access.
+      UpdatesControllerRegistry.sharedInstance.controller = AppController.initializeAsDevLauncherWithoutStarting()
+      return nil
+    }
     if !shouldEnableAutoSetup {
       return nil
     }
