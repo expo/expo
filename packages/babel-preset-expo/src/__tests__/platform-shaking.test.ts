@@ -30,6 +30,62 @@ function stripReactNativeImport(code: string) {
     .replace('var _reactNative=require("react-native");', '');
 }
 
+it(`removes Platform module without import (undefined behavior)`, () => {
+  const options = {
+    ...DEFAULT_OPTS,
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+  };
+
+  const sourceCode = `  
+    if (Platform.OS === 'ios') {
+      console.log('ios')
+    }
+    
+    Platform.select({
+      ios: () => console.log('ios'),
+      web: () => console.log('web'),
+      android: () => console.log('android'),
+    })
+    `;
+
+  expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toEqual(
+    `(function(){return console.log('web');});`
+  );
+});
+it(`supports Platform module default fallback on web`, () => {
+  const options = {
+    ...DEFAULT_OPTS,
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+  };
+
+  const sourceCode = `      
+    Platform.select({
+      ios: () => console.log('ios'),
+      default: () => console.log('default'),
+    })`;
+
+  expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toEqual(
+    `(function(){return console.log('default');});`
+  );
+});
+
+xit(`removes Platform module and native fallback on web`, () => {
+  const options = {
+    ...DEFAULT_OPTS,
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+  };
+
+  const sourceCode = `      
+    Platform.select({
+      native: () => console.log('native'),
+      default: () => console.log('default'),
+    })`;
+
+  expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toEqual(
+    `(function(){return console.log('web');});`
+  );
+});
+
 it(`removes Platform module usage on web`, () => {
   const options = {
     ...DEFAULT_OPTS,
