@@ -117,32 +117,18 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     extraPlugins.push(require('@babel/plugin-transform-parameters'));
   }
 
-  if (isProduction && hasModule('metro-transform-plugins')) {
+  if (isProduction) {
     // Metro applies this plugin too but it does it after the imports have been transformed which breaks
     // the plugin. Here, we'll apply it before the commonjs transform, in production, to ensure `Platform.OS`
     // is replaced with a string literal and `__DEV__` is converted to a boolean.
     // Applying early also means that web can be transformed before the `react-native-web` transform mutates the import.
     extraPlugins.push([
-      require('metro-transform-plugins/src/inline-plugin.js'),
+      require('./minify-platform-plugin'),
       {
-        dev: isDev,
-        inlinePlatform: true,
         platform,
       },
     ]);
   }
-  // if (isProduction) {
-  //   // Metro applies this plugin too but it does it after the imports have been transformed which breaks
-  //   // the plugin. Here, we'll apply it before the commonjs transform, in production, to ensure `Platform.OS`
-  //   // is replaced with a string literal and `__DEV__` is converted to a boolean.
-  //   // Applying early also means that web can be transformed before the `react-native-web` transform mutates the import.
-  //   extraPlugins.push([
-  //     require('./minify-platform-plugin'),
-  //     {
-  //       platform,
-  //     },
-  //   ]);
-  // }
 
   if (platformOptions.useTransformReactJSXExperimental != null) {
     throw new Error(
@@ -152,6 +138,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
   const inlineEnv: Record<string, string> = {
     EXPO_OS: platform,
+    NODE_ENV: isDev ? 'development' : 'production',
   };
 
   // Allow jest tests to redefine the environment variables.
