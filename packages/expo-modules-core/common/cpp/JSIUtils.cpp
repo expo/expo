@@ -5,6 +5,10 @@
 
 namespace expo::common {
 
+jsi::Object getCoreObject(jsi::Runtime &runtime) {
+  return runtime.global().getPropertyAsObject(runtime, "expo");
+}
+
 jsi::Function createClass(jsi::Runtime &runtime, const char *name, ClassConstructor constructor) {
   std::string nativeConstructorKey("__native_constructor__");
 
