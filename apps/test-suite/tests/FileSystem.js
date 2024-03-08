@@ -465,7 +465,7 @@ export async function test({ describe, expect, it, ...t }) {
         const localUri = FS.documentDirectory + 'doesnt/exists/download1.png';
         await FS.downloadAsync(remoteUrl, localUri);
       } catch (err) {
-        expect(err.message).toMatch(/does not exist/);
+        expect(err.message).toMatch(/(does not exist)|(doesn't exist)/);
       }
     }, 30000);
 
