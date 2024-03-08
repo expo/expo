@@ -76,7 +76,7 @@ export async function allowScreenCaptureAsync(key: string = 'default'): Promise<
 /**
  * A React hook to prevent screen capturing for as long as the owner component is mounted.
  *
- * @param key. If provided, this will prevent multiple instances of this hook or the
+ * @param key If provided, this will prevent multiple instances of this hook or the
  * `preventScreenCaptureAsync` and `allowScreenCaptureAsync` methods from conflicting with each other.
  * This argument is useful if you have multiple active components using the `allowScreenCaptureAsync`
  * hook. Defaults to `'default'`.

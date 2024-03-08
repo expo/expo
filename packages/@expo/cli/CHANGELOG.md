@@ -24,6 +24,7 @@
 - Prevent run commands from hanging when the process completes. ([#26960](https://github.com/expo/expo/pull/26960) by [@EvanBacon](https://github.com/EvanBacon))
 - Keep typed routes in-sync with current Expo Router version ([#26578](https://github.com/expo/expo/pull/26578) by [@marklawlor](https://github.com/marklawlor))
 - Fix development codesigning certificate validity checks. ([#27361](https://github.com/expo/expo/pull/27361) by [@wschurman](https://github.com/wschurman))
+- Filter extra avd info when listing emulators. ([#27497](https://github.com/expo/expo/pull/27497) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 

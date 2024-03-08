@@ -46,6 +46,7 @@ const commands = {
     'assets:verify': () => import('./assetsVerify.js').then((i) => i.expoAssetsVerify),
     'fingerprint:generate': () => import('./generateFingerprint.js').then((i) => i.generateFingerprint),
     'runtimeversion:resolve': () => import('./resolveRuntimeVersion.js').then((i) => i.resolveRuntimeVersion),
+    'configuration:syncnative': () => import('./syncConfigurationToNative.js').then((i) => i.syncConfigurationToNative),
 };
 const args = (0, arg_1.default)({
     // Types
