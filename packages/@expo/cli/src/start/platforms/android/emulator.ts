@@ -28,7 +28,7 @@ export async function listAvdsAsync(): Promise<Device[]> {
         .split(os.EOL)
         .filter(Boolean)
         /**
-         * AVD names cannot contain spaces. This removes extra info lines from the output. e.g.
+         * AVD IDs cannot contain spaces. This removes extra info lines from the output. e.g.
          * "INFO    | Storing crashdata in: /tmp/android-brent/emu-crash-34.1.18.db
          */
         .filter((name) => !name.trim().includes(' '))
