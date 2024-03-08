@@ -89,8 +89,6 @@ export default function AudioModeSelector() {
     />
   );
 
-  console.log({ state });
-
   return (
     <View style={{ marginTop: 5 }}>
       {renderToggle({

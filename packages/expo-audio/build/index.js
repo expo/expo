@@ -8,7 +8,6 @@ export function useAudioPlayer(source = null, statusListener) {
     useEffect(() => {
         const subscription = addStatusUpdateListener((status) => {
             if (status.id === player.id) {
-                console.log(status);
                 statusListener?.(status);
             }
         });
@@ -22,7 +21,6 @@ export function useAudioRecorder(options, statusListener) {
     useEffect(() => {
         const subscription = addRecordingStatusListener((status) => {
             if (status.id === recorder.id) {
-                console.log({ status, state });
                 statusListener?.(status);
             }
         });
@@ -30,13 +28,11 @@ export function useAudioRecorder(options, statusListener) {
     }, [recorder.id]);
     useEffect(() => {
         const interval = setInterval(() => {
-            if (recorder.isRecording) {
-                setState(recorder.getStatus());
-            }
+            setState(recorder.getStatus());
         }, 1000);
         return () => clearInterval(interval);
     }, [recorder.id]);
-    return recorder;
+    return [recorder, state];
 }
 export function addStatusUpdateListener(listener) {
     return audioModuleEmitter.addListener('onPlaybackStatusUpdate', listener);
