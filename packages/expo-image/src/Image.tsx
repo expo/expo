@@ -17,6 +17,11 @@ export class Image extends React.PureComponent<ImageProps> {
   }
 
   /**
+   * @hidden
+   */
+  static Image = ExpoImageModule.Image;
+
+  /**
    * Preloads images at the given URLs that can be later used in the image view.
    * Preloaded images are cached to the memory and disk by default, so make sure
    * to use `disk` (default) or `memory-disk` [cache policy](#cachepolicy).
@@ -103,6 +108,15 @@ export class Image extends React.PureComponent<ImageProps> {
    */
   async stopAnimating(): Promise<void> {
     await this.nativeViewRef.current.stopAnimating();
+  }
+
+  /**
+   * Loads an image from the given source to memory and resolves to
+   * an object that references the native image instance.
+   * @platform ios
+   */
+  static load(source: any): Promise<any> {
+    return ExpoImageModule.load(source);
   }
 
   render() {
