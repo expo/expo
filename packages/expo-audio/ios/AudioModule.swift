@@ -368,12 +368,24 @@ public class AudioModule: Module, RecordingResultHandler {
     guard let desc = try? getCurrentInput() else {
       throw NoInputFoundException()
     }
+<<<<<<< HEAD
 
     return [
       "name": desc.portName,
       "type": desc.portType.rawValue,
       "uid": desc.uid
     ]
+||||||| parent of ef66781a2e ([audio] Fix rate after pause)
+    
+    throw NoInputFoundException()
+=======
+    
+    return [
+      "name": desc.portName,
+      "type": desc.portType,
+      "uid": desc.uid
+    ]
+>>>>>>> ef66781a2e ([audio] Fix rate after pause)
   }
 
   private func setInput(_ input: String) throws {
