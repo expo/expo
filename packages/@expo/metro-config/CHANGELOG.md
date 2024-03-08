@@ -13,6 +13,7 @@
 
 ### 💡 Others
 
+- Use `typeof window` checks for removing server code.
 - Uncomment all Metro tests. ([#26610](https://github.com/expo/expo/pull/26610) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.17.5 - 2024-02-27

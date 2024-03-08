@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- Use `typeof window` checks for removing server code.
+
 ## 1.11.0 — 2024-02-05
 
 ### 🎉 New features
