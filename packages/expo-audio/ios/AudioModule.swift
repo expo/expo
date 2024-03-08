@@ -16,6 +16,7 @@ public class AudioModule: Module, RecordingResultHandler {
   // MARK: Properties
   private var allowsRecording = false
   private var recordingSettings = [String : Any]()
+  private var currentRate: Float = 0.0
   
   // MARK: Observers
   private var cancellables = Set<AnyCancellable>()
@@ -176,14 +177,18 @@ public class AudioModule: Module, RecordingResultHandler {
         guard sessionIsActive else {
           return
         }
+        let rate = currentRate > 0 ? currentRate : 1.0
         addPlaybackEndNotification(player: player)
         registerTimeObserver(player: player, for: player.sharedObjectId)
-        player.pointer.play()
+        player.pointer.playImmediately(atRate: rate)
       }
       
       Function("setRate") { (player, rate: Double, pitchCorrectionQuality: PitchCorrectionQuality?) in
         let playerRate = rate < 0 ? 0.0 : Float(min(rate, 2.0))
-        player.pointer.rate = playerRate
+        if player.isPlaying {
+          player.pointer.rate = playerRate
+        }
+        currentRate = playerRate
         if player.shouldCorrectPitch {
           player.pitchCorrectionQuality = pitchCorrectionQuality?.toPitchAlgorithm() ?? .varispeed
           player.pointer.currentItem?.audioTimePitchAlgorithm = player.pitchCorrectionQuality
@@ -346,17 +351,15 @@ public class AudioModule: Module, RecordingResultHandler {
   }
   
   private func getCurrentInput() throws -> [String: Any] {
-    let desc = try? getCurrentInput()
-    
-    if let desc {
-      return [
-        "name": desc.portName,
-        "type": desc.portType,
-        "uid": desc.uid
-      ]
+    guard let desc = try? getCurrentInput() else {
+      throw NoInputFoundException()
     }
     
-    throw NoInputFoundException()
+    return [
+      "name": desc.portName,
+      "type": desc.portType,
+      "uid": desc.uid
+    ]
   }
   
   private func setInput(_ input: String) throws {
